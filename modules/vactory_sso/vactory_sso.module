@@ -1,0 +1,51 @@
+<?php
+
+/**
+ * @file
+ * The current module customize oauth_login_oauth2 contrib module.
+ */
+
+use Drupal\oauth_login_oauth2\Controller\oauth_login_oauth2Controller;
+use Drupal\user\UserInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\user\Entity\User;
+
+/**
+ * Implements hook_entity_presave().
+ */
+function vactory_sso_user_presave(EntityInterface $entity) {
+  $route_name = Drupal::routeMatch()->getRouteName();
+  // Create a new user from sso case.
+  if ($route_name == "oauth_login_oauth2.mo_login") {
+    // Reset sso users counter.
+    \Drupal::configFactory()->getEditable('oauth_login_oauth2.settings')
+      ->set('oauth_login_oauth2_free_users', 0)
+      ->save();
+  }
+}
+
+/**
+ * Implements hook_user_login().
+ */
+function vactory_sso_user_login(UserInterface $account) {
+  $route_name = Drupal::routeMatch()->getRouteName();
+  // Check if it's a user from Keycloak IDP then update fields.
+  if ($route_name == 'oauth_login_oauth2.mo_login') {
+    $user = User::load($account->id());
+    $config = Drupal::config('vactory_sso.settings');
+    // Get the ressource owner to access keycloak user data.
+    $resourceOwner = $_SESSION['resource_owner'];
+    $user_data_provider = new oauth_login_oauth2Controller();
+    for ($i = 0; $i < $config->get('max_attr_count'); $i++) {
+      $user_field_name = $config->get('vactory_sso_drupal_user_attr_' . ($i + 1));
+      $keycloak_attr_name = $config->get('vactory_sso_keycloak_user_attr_' . ($i + 1));
+      // Only fields which are mapped in vactory_sso settings page
+      // will be updated.
+      if (!empty($user_field_name) && !empty($keycloak_attr_name)) {
+        $keycloak_attr_value = $user_data_provider->getnestedattribute($resourceOwner, $keycloak_attr_name);
+        $user->set($user_field_name, $keycloak_attr_value);
+      }
+    }
+    $user->save();
+  }
+}

@@ -1,0 +1,12 @@
+{% if content.0.link is not empty and content.0.link_alt is not empty %}
+  <div class="row">
+    <div class="col-12">
+      {% set _icon = (content.0.icon is not empty) ? content.0.icon : 'icon-arrow_forward' %}
+      {% set link_target = (content.0.link_target > 0) ? '_blank' : '_self' %}
+      <div class="btn-see-more--wrapper text-center">
+        <a class="btn-with-icon {{ _icon }}" target="{{ link_target }}"
+           href="{{ content.0.link }}">{{ content.0.link_alt }}</a>
+      </div>
+    </div>
+  </div>
+{% endif %}

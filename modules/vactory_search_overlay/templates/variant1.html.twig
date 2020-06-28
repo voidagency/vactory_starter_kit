@@ -1,0 +1,14 @@
+{{ attach_library('vactory_search_overlay/vactory_search_overlay.variant1') }}
+<div class="search-overlay-variant1">
+  <div class="container">
+    <div class="search-block-formulaire">
+      <button id="btn-search-overlay-close" class="icon icon-close btn-search-overlay-close" aria-label="Close search form">
+      </button>
+      {{ form }}
+      <span class="search__info">
+        {{ 'Appuyer sur la touche " Entrée" du clavier pour lancer la recherche' | t }}
+        <i class="icon icon-enter"></i>
+      </span>
+    </div>
+  </div>
+</div>

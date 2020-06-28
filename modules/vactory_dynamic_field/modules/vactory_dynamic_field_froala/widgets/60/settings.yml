@@ -1,0 +1,31 @@
+name: '60 - Froala - CTA 2 Cols Image, Title & Description'
+multiple: TRUE
+category: 'Call to action'
+enabled: TRUE
+limit: 2
+fields:
+  image:
+    type: image
+    label: 'Image'
+  image_alt:
+      type: text
+      label: 'Text alternatif'
+  title:
+    type: text
+    label: 'Title'
+  description:
+    type: textarea
+    label: 'Description'
+  link:
+    type: url_extended
+    label: 'Lien'
+  link_alt:
+    type: text
+    label: 'Titre lien'
+  link_target:
+    type: checkbox
+    label: 'Ouvrir dans une nouvelle fenêtre'
+extra_fields:
+  title:
+      type: text
+      label: 'Titre'

@@ -1,0 +1,54 @@
+variant2:
+  js:
+    js/variant2.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
+variant3:
+  js:
+    js/variant3.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
+variant4:
+  js:
+    js/variant4.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
+variant5:
+  js:
+    js/variant5.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
+variant6:
+  js:
+    js/variant6.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
+variant7:
+  js:
+    js/variant7.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
+variant9:
+  js:
+    js/variant9.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
+variant10:
+  js:
+    js/variant10.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
+variant11:
+  js:
+    js/variant11.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings

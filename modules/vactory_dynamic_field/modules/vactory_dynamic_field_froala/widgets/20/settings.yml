@@ -1,0 +1,16 @@
+name: '20 - Froala - Content Title & Image Fluid'
+multiple: FALSE
+category: 'Froala'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: 'Title'
+  image:
+    type: image
+    label: 'Image'
+    option:
+      '#required': TRUE
+  image_alt:
+    type: text
+    label: 'Text alternatif'

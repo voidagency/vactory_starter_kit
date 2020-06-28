@@ -1,0 +1,10 @@
+langcode: fr
+status: true
+dependencies: {  }
+name: Page
+type: vactory_page
+description: 'Manage your pages content.'
+help: ''
+new_revision: true
+preview_mode: 1
+display_submitted: false

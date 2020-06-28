@@ -1,0 +1,21 @@
+name: 'C07 - Vidéo'
+multiple: FALSE
+category: 'Videos'
+enabled: TRUE
+fields:
+  image:
+    type: image
+    label: 'Image'
+  image_alt:
+    type: text
+    label: "Text alternative de l'image"
+  video:
+    type: text
+    label: 'Video'
+    options:
+      '#description': '<b><i class="link">How ?</i></b><br><b>URL Example</b>: https://www.youtube.com/watch?v=BZDyr2OpWBU <br> <b>Value to insert</b>: BZDyr2OpWBU'
+  content:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'full_html'

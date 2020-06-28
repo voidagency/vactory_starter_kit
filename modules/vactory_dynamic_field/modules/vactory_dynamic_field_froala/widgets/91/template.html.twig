@@ -1,0 +1,32 @@
+<div class="fdb-block">
+    <div class="row text-center">
+        {% for item in content %}
+
+            {% if loop.index == 1 %}
+                <div class="col-12 col-sm-6 col-lg-5 col-xl-4 m-auto">
+            {% else %}
+                <div class="col-12 col-sm-6 col-lg-5 col-xl-4 m-auto pt-4 pt-sm-0">
+            {% endif %}
+
+                {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : '' %}
+                {% set picto = image_uri|image_style('large') %}
+                {% set lqip_image = image_uri|image_style('lqip') %}
+
+                {% if item.image.0 is not empty %}
+                    <img alt="{{ item.image_alt }}"
+                        class="lazyload fdb-icon"
+                        src="{{ lqip_image }}"
+                        data-src="{{ picto }}">
+                {% endif %}
+                {% if item.title is not empty %}
+                    <h3><strong>{{ item.title }}</strong></h3>
+                {% endif %}
+                {% if item.description is not empty %}
+                    <p>{{ item.description }}</p>
+                {% endif %}
+            </div>
+
+        {% endfor %}
+
+    </div>
+</div>

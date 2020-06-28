@@ -1,0 +1,13 @@
+name: 'C21 - Template iframe'
+multiple: FALSE
+category: 'Content'
+enabled: TRUE
+fields:
+  iframe:
+    type: url_extended
+    label: 'Lien prise RDV'
+    options:
+      '#required': TRUE
+  iframe_height:
+    type: number
+    label: "La hauteur de l'iframe"

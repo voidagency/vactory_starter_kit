@@ -1,0 +1,45 @@
+name: 'S05 - Full Slider - Tabs vertical'
+multiple: TRUE
+category: 'Sliders'
+enabled: TRUE
+limit: 5
+fields:
+  title:
+    type: text
+    label: 'Title'
+    options:
+      '#required': TRUE
+  second_title:
+    type: text
+    label: 'Sous-titre'
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': TRUE
+  image_mobile:
+    type: image
+    label: 'Image Pour mobile'
+  video:
+    type: text
+    label: 'Video'
+    options:
+      '#description': '<b><i class="link">How ?</i></b><br><b>URL Example</b>: https://www.youtube.com/watch?v=BZDyr2OpWBU <br> <b>Value to insert</b>: BZDyr2OpWBU'
+  content:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'full_html'
+  cta_url:
+    type: url_extended
+    label: 'Read More Link'
+    placeholder_value: 'https://www.google.com'
+  cta_label:
+    type: text
+    label: 'URL label'
+  cta_icon:
+    type: text
+    label: 'Icon'
+  link_target:
+    type: checkbox
+    label: 'Ouvrir dans une nouvelle fenêtre'

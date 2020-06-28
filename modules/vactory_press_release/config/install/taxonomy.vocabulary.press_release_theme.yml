@@ -1,0 +1,8 @@
+langcode: en
+status: true
+dependencies: {  }
+name: 'Press release - Theme'
+vid: press_release_theme
+description: 'press release vocabulary.'
+hierarchy: 0
+weight: 0

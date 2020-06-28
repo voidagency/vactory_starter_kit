@@ -1,0 +1,10 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - webform.webform.vactory_job_application
+id: webform_submission.vactory_job_application
+target_entity_type_id: webform_submission
+target_bundle: vactory_job_application
+default_langcode: site_default
+language_alterable: false

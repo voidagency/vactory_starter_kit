@@ -1,0 +1,33 @@
+name: '39 - Froala - Testimonials Inline (name & role block)'
+multiple: TRUE
+category: 'Testimonials'
+enabled: TRUE
+fields:
+  image:
+    type: image
+    label: 'Image Profile'
+    options:
+      '#required': TRUE
+  image_alt:
+      type: text
+      label: 'Text alternatif'
+  description:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'full_html'
+  name:
+    type: text
+    label: 'Name'
+    options:
+      '#required': TRUE
+  role:
+    type: text
+    label: 'Role'
+  mode:
+    type: checkbox
+    label: 'Activer le mode inversé '
+extra_fields:
+  intro:
+    type: textarea
+    lable: 'Introduction'    

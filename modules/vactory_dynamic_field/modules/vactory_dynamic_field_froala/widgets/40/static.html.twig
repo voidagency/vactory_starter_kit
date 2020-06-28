@@ -1,0 +1,21 @@
+<div class="fdb-block">
+    <div class="row text-center">
+        <div class="col-12">
+            <h3><strong>Title</strong></h3>
+            <div class="mt-5 justify-content-center">
+
+                {% for item in 0..10 %}
+                {% if loop.index == 7 %}
+            </div>
+            <div class="mt-2 mt-md-5 justify-content-center">
+                {% endif %}
+                    {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/96/30.jpg" %}
+                    <img alt="Image Alt" height="30"
+                        class="ml-3 mr-3 mb-2 mt-2 lazyload"
+                        src="{{ content.image_placeholder }}"
+                        data-src="{{ placehold }}">
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>

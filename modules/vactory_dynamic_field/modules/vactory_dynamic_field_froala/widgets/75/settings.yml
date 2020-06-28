@@ -1,0 +1,16 @@
+name: '75 - Froala - Features 8 Blocks Title & Description'
+multiple: TRUE
+category: 'Froala'
+enabled: TRUE
+limit: 8
+fields:
+  title:
+    type: text
+    label: 'Titre'
+    options:
+      '#required': TRUE
+  description:
+    type: textarea
+    label: 'Description'
+    options:
+      '#required': TRUE

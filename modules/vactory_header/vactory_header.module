@@ -1,0 +1,147 @@
+<?php
+
+/**
+ * @file
+ * Contain related hooks.
+ */
+
+use Drupal\Core\Template\Attribute;
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_header_theme($existing, $type, $theme, $path) {
+  return [
+    "block_vactory_header1" => [
+      "variables" => ["content" => NULL],
+      "template"  => "block--vactory-header1",
+    ],
+    "block_vactory_header2" => [
+      "variables" => ["content" => NULL],
+      "template"  => "block--vactory-header2",
+    ],
+    "block_vactory_header3" => [
+      "template"  => "block--vactory-header3",
+      "variables" => [
+        "connect" => "",
+        "anonym"  => "",
+        "user"    => [],
+      ],
+    ],
+    "block_vactory_header4" => [
+      "variables" => ["content" => NULL],
+      "template"  => "block--vactory-header4",
+    ],
+    "block_vactory_header5" => [
+      "variables" => ["content" => NULL],
+      "template"  => "block--vactory-header5",
+    ],
+    "block_vactory_header6" => [
+      'variables' => [
+        'user'  => [],
+        'alert' => [],
+      ],
+      "template"  => "block--vactory-header6",
+    ],
+    "block_vactory_header7" => [
+      "variables" => ["content" => NULL],
+      "template"  => "block--vactory-header7",
+    ],
+    "block_vactory_header8" => [
+      "variables" => ["content" => NULL],
+      "template"  => "block--vactory-header8",
+    ],
+    "block_vactory_header9" => [
+      "variables" => ["content" => NULL],
+      "template"  => "block--vactory-header9",
+    ],
+    "block_vactory_header_amp" => [
+      "variables" => ["content" => NULL],
+      "template" => "block-vactory-header-amp",
+    ],
+    "MenuMacro" => [
+      "template" => "MenuMacro",
+    ],
+    "MegaMenuMacro" => [
+      "template" => "MegaMenuMacro",
+    ],
+    "MobileMenuMacro" => [
+      "template" => "MobileMenuMacro",
+    ],
+    "vh_hamburger" => [
+      "template" => "vh-hamburger",
+    ],
+  ];
+}
+
+/**
+ * Implements template_preprocess_html().
+ */
+function vactory_header_preprocess_html(&$variables) {
+  $config = \Drupal::config('vactory_header.settings');
+  $variante_number = $config->get('variante_number');
+
+  if (!$variables['attributes'] instanceof Attribute) {
+    $variables['attributes'] = new Attribute();
+  }
+
+  if (!empty($variante_number)) {
+    $header_variante_class = 'vh-header-' . $variante_number;
+    // Add our class to body.
+    $variables['attributes']->addClass($header_variante_class);
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_header_preprocess_links__language_block(&$variables) {
+
+  $config = \Drupal::config('block.block.vactoryheaderblockv3');
+  $use_lang_code = $config->get('settings.use_lang_code');
+
+  if (isset($use_lang_code) && $use_lang_code) {
+    foreach ($variables['links'] as $lang_code => $language_link) {
+      $variables['links'][$lang_code]['link']['#title'] = strtoupper($lang_code);
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_header_preprocess_block_vactory_header1(&$variables) {
+  $module_handler = Drupal::service('module_handler');
+  $variables['is_academy_enabled'] = $module_handler->moduleExists('vactory_academy');
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_header_preprocess_page(&$variables) {
+
+  if (!\Drupal::service('router.admin_context')->isAdminRoute()) {
+    $variables['#attached']['library'][] = 'vactory_header/vactory_header.header-helper';
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_alter().
+ */
+function vactory_header_theme_suggestions_alter(array &$suggestions, array $variables, $hook) {
+  $header_variants = [
+    'block_vactory_header1',
+    'block_vactory_header2',
+    'block_vactory_header3',
+    'block_vactory_header4',
+    'block_vactory_header5',
+    'block_vactory_header6',
+    'block_vactory_header7',
+    'block_vactory_header8',
+    'block_vactory_header9',
+    'block_vactory_header_amp',
+  ];
+  if (in_array($hook, $header_variants)) {
+    $suggestions[] = 'custom_' . $hook;
+  }
+}

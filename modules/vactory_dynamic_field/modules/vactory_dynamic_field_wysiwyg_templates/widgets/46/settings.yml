@@ -1,0 +1,20 @@
+name: 'C46 - Toolbox contact'
+multiple: TRUE
+category: 'Toolbox'
+enabled: TRUE
+fields:
+  icon:
+    type: text
+    label: 'Icon'
+    options:
+      '#required': TRUE
+  url:
+    type: text
+    label: 'Link'  
+  description:
+    type: text
+    label: 'Description'   
+extra_fields:
+  mode:
+    type: checkbox
+    label: 'Toolbox with descriptions'       

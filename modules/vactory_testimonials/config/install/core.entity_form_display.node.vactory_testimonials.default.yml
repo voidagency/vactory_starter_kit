@@ -1,0 +1,163 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.vactory_testimonials.body
+    - field.field.node.vactory_testimonials.field_vactory_address
+    - field.field.node.vactory_testimonials.field_vactory_date
+    - field.field.node.vactory_testimonials.field_vactory_excerpt
+    - field.field.node.vactory_testimonials.field_vactory_media
+    - field.field.node.vactory_testimonials.field_vactory_profils
+    - field.field.node.vactory_testimonials.field_vactory_role
+    - field.field.node.vactory_testimonials.field_vactory_seo_status
+    - node.type.vactory_testimonials
+  module:
+    - datetime
+    - media_library
+    - path
+    - text
+    - yoast_seo
+id: node.vactory_testimonials.default
+targetEntityType: node
+bundle: vactory_testimonials
+mode: default
+content:
+  body:
+    type: text_textarea_with_summary
+    weight: 10
+    settings:
+      rows: 9
+      summary_rows: 3
+      placeholder: ''
+    third_party_settings: {  }
+    region: content
+  created:
+    type: datetime_timestamp
+    weight: 4
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_vactory_address:
+    weight: 11
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  field_vactory_date:
+    weight: 15
+    settings: {  }
+    third_party_settings: {  }
+    type: datetime_default
+    region: content
+  field_vactory_excerpt:
+    weight: 14
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  field_vactory_media:
+    weight: 12
+    settings: {  }
+    third_party_settings: {  }
+    type: media_library_widget
+    region: content
+  field_vactory_profils:
+    weight: 16
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_vactory_role:
+    weight: 17
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_vactory_seo_status:
+    weight: 18
+    settings:
+      edit_title: false
+      edit_description: false
+    third_party_settings: {  }
+    type: yoast_seo_widget
+    region: content
+  langcode:
+    type: language_select
+    weight: 1
+    region: content
+    settings:
+      include_locked: true
+    third_party_settings: {  }
+  path:
+    type: path
+    weight: 7
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  promote:
+    type: boolean_checkbox
+    settings:
+      display_label: true
+    weight: 5
+    region: content
+    third_party_settings: {  }
+  publish_on:
+    type: datetime_timestamp_no_default
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  status:
+    type: boolean_checkbox
+    settings:
+      display_label: true
+    weight: 9
+    region: content
+    third_party_settings: {  }
+  sticky:
+    type: boolean_checkbox
+    settings:
+      display_label: true
+    weight: 6
+    region: content
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  translation:
+    weight: 3
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  uid:
+    type: entity_reference_autocomplete
+    weight: 2
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    region: content
+    third_party_settings: {  }
+  unpublish_on:
+    type: datetime_timestamp_no_default
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  url_redirects:
+    weight: 8
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden: {  }

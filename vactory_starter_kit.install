@@ -1,0 +1,104 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Vactory starter kit module.
+ */
+
+use Drupal\user\Entity\User;
+use Drupal\user\RoleInterface;
+use Drupal\shortcut\Entity\Shortcut;
+use Drupal\node\Entity\Node;
+
+/**
+ * Implements hook_install().
+ */
+function vactory_starter_kit_install() {
+  // Allow visitor account creation with administrative approval.
+  $user_settings = \Drupal::configFactory()->getEditable('user.settings');
+  $user_settings->set('register', USER_REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL)
+    ->save(TRUE);
+
+  // Assign user 1 the "administrator" role.
+  $user = User::load(1);
+  $user->roles[] = 'administrator';
+  $user->save();
+
+  // Allow authenticated users to use shortcuts.
+  user_role_grant_permissions(RoleInterface::AUTHENTICATED_ID, ['access shortcuts']);
+
+  // Populate the default shortcut set.
+  $shortcut = Shortcut::create([
+    'shortcut_set' => 'default',
+    'title'        => t('Add content'),
+    'weight'       => -20,
+    'link'         => ['uri' => 'internal:/node/add'],
+  ]);
+  $shortcut->save();
+
+  $shortcut = Shortcut::create([
+    'shortcut_set' => 'default',
+    'title'        => t('All content'),
+    'weight'       => -19,
+    'link'         => ['uri' => 'internal:/admin/content'],
+  ]);
+  $shortcut->save();
+
+  // Assign user 1 the "administrator" role.
+  $user = User::load(1);
+  $user->roles[] = 'administrator';
+  $user->save();
+
+  \Drupal::configFactory()
+    ->getEditable('vactory.settings')
+    ->set('logo.use_default', TRUE);
+
+  // Enable the admin theme.
+  \Drupal::configFactory()
+    ->getEditable('node.settings')
+    ->set('use_admin_theme', TRUE)
+    ->save(TRUE);
+
+  // Enable the admin theme.
+  \Drupal::configFactory()
+    ->getEditable('xmlsitemap.settings')
+    ->set('disable_cron_regeneration', TRUE)
+    ->save(TRUE);
+
+  // Set default theme to "Vactory".
+  \Drupal::configFactory()
+    ->getEditable('system.theme')
+    ->set('default', 'vactory')
+    ->save();
+
+  // Set default admin theme to "Seven".
+  \Drupal::configFactory()
+    ->getEditable('system.theme')
+    ->set('admin', 'seven')
+    ->save();
+
+  \Drupal::service('theme_handler')->reset();
+  \Drupal::service('theme_handler')->rebuildThemeData();
+  \Drupal::service('theme_handler')->refreshInfo();
+
+  // Create Homepage node.
+  $node = Node::create([
+    'type'     => 'vactory_page',
+    'title'    => 'Homepage',
+    'langcode' => 'en',
+    'uid'      => 1,
+  ]);
+  $node->save();
+
+  // Set front page to "node" - HP.
+  \Drupal::configFactory()
+    ->getEditable('system.site')
+    ->set('page.front', '/node/' . $node->id())
+    ->save(TRUE);
+
+  // Run cron.
+  \Drupal::service('cron')->run();
+
+  // Run a complete cache flush.
+  drupal_flush_all_caches();
+}

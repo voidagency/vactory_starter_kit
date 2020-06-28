@@ -1,0 +1,104 @@
+$vf6-bg-footer: $gray-100;
+$vf6-text-color: rgba(0,0,0,0.85);
+$vf6-bg-footer-left: $secondary;
+
+@include nav-color(vf-footer--variant6 , $vf6-text-color);
+
+.vf-footer.vf-footer--variant6 {
+  background-color: $vf6-bg-footer;
+  >.container {
+      @include media-breakpoint-down(lg) {
+        max-width: 100%;
+    }
+  }
+  .vf-footer-items {
+    display: flex;
+    flex-direction: column-reverse;
+  }
+
+  .vf-footer-left {
+    background-color: $vf6-bg-footer-left;
+    @include rem( padding,10px);
+    @include rem( font-size, 12px);
+    text-align: center;
+    .block-footer-logo {
+      img {
+        @include rem( max-height, 35px);
+      }
+    }
+  }
+
+  .vf-footer-right {
+    @include rem( padding-top, 20px);
+    @include rem( padding-bottom, 20px);
+    .block-footer-app ,
+    .block-social-media{
+      text-align: center;
+      > div {
+        @include rem(padding-bottom,15px);
+      }
+    }
+    .block-icon-store {
+      a {
+        @include rem(margin-right, 30px);
+        &:last-child {
+          margin-right: 0;
+        }
+      }
+    }
+  }
+}
+
+@include media-breakpoint-up(lg) {
+  .vf-footer.vf-footer--variant6 {
+    position: relative;
+    .vf-footer-items {
+      flex-direction: inherit;
+    }
+    .vf-footer-left,
+    .vf-footer-right {
+      @include rem( padding-top, 50px);
+      @include rem( padding-bottom, 72px);
+    }
+    .block-footer-logo ,
+    .block-footer-app {
+      @include rem( margin-bottom, 36px);
+    }
+    .vf-footer-left {
+      text-align: left;
+      z-index: 1;
+      position: inherit;
+      .block-footer-description {
+        @include rem( font-size, 29px);
+        @include rem( line-height, 35px);
+        @include rem( margin-bottom, 60px);
+        @include rem( max-width, 350px);
+      }
+      &::after {
+        position: absolute;
+        content: "";
+        background:$vf6-bg-footer-left;
+        width: 50vw;
+        height: 100%;
+        left: 0;
+        top: 0;
+        z-index: -1;
+        @media all and (-ms-high-contrast: none), (-ms-high-contrast: active) {
+          z-index: 0;
+        }
+      }
+    }
+    .vf-footer-right {
+      > div:not(:last-child) {
+        padding-bottom:0;
+      }
+      .block-footer-app {
+        display: flex;
+      }
+      .block-social-media {
+        @include rem( margin-bottom, 86px);
+      }
+    }
+  }
+}
+

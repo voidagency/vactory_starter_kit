@@ -1,0 +1,38 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_vactory_paragraphs
+    - node.type.vactory_academy
+    - paragraphs.paragraphs_type.vactory_component
+    - paragraphs.paragraphs_type.vactory_paragraph_block
+  module:
+    - entity_reference_revisions
+  enforced:
+    module:
+      - vactory_academy
+id: node.vactory_academy.field_vactory_paragraphs
+field_name: field_vactory_paragraphs
+entity_type: node
+bundle: vactory_academy
+label: Paragraphs
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:paragraph'
+  handler_settings:
+    negate: 0
+    target_bundles:
+      vactory_component: vactory_component
+      vactory_paragraph_block: vactory_paragraph_block
+    target_bundles_drag_drop:
+      vactory_component:
+        enabled: true
+        weight: 3
+      vactory_paragraph_block:
+        enabled: true
+        weight: 4
+field_type: entity_reference_revisions

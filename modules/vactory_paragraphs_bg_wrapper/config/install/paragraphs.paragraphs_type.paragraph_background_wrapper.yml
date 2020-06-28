@@ -1,0 +1,8 @@
+langcode: en
+status: true
+dependencies: {  }
+id: paragraph_background_wrapper
+label: Background
+icon_uuid: null
+description: ''
+behavior_plugins: {  }

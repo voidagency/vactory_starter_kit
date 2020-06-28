@@ -1,0 +1,59 @@
+{% set mode = 0 %}
+{% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/500/219.jpg" %}
+
+<aside class="t-2b-image-video-title-text-button block-with-bg inversed">
+  <div class="row align-items-center">
+
+    {% if mode > 0 %}
+      <div class="col-12 col-md-6">
+        <h2>Title</h2>
+        <p class="text-large">Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+          Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.</p>
+        <div class="d-md-none">
+          <div class="block-image">
+            <img alt="Image Alt"
+                 class="img-fluid lazyload"
+                 src="{{ content.image_placeholder }}"
+                 data-src="{{ placehold }}">
+          </div>
+        </div>
+        <p class="t-2b-buttons"><a class="btn btn-with-icon icon-arrow_forward"
+                                   href="#">Read More</a></p>
+      </div>
+      <div class="col-12 col-md-6 mb-4 mb-md-0 d-none d-md-block">
+        <div class="block-image">
+          <img alt="Image Alt"
+               class="img-fluid lazyload"
+               src="{{ content.image_placeholder }}"
+               data-src="//place-hold.it/500x219">
+        </div>
+      </div>
+    {% else %}
+      <div class="col-12 col-md-6 mb-4 mb-md-0 d-none d-md-block">
+        <div class="block-image">
+          <img alt="Image Alt"
+               class="img-fluid lazyload"
+               src="{{ content.image_placeholder }}"
+               data-src="{{ placehold }}">
+        </div>
+      </div>
+      <div class="col-12 col-md-6">
+        <h2>Title</h2>
+        <p class="text-large">Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+          Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.</p>
+        <div class="d-md-none">
+          <div class="block-image">
+            <img alt="Image Alt"
+                 class="img-fluid lazyload"
+                 src="{{ content.image_placeholder }}"
+                 data-src="{{ placehold }}">
+          </div>
+        </div>
+
+        <p class="t-2b-buttons"><a class="btn btn-with-icon icon-arrow_forward"
+                                   href="#">Read More</a></p>
+
+      </div>
+    {% endif %}
+  </div>
+</aside>

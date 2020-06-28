@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_background_type
+    - paragraphs.paragraphs_type.paragraph_background_wrapper
+  module:
+    - options
+id: paragraph.paragraph_background_wrapper.field_background_type
+field_name: field_background_type
+entity_type: paragraph
+bundle: paragraph_background_wrapper
+label: 'Background type'
+description: ''
+required: true
+translatable: false
+default_value:
+  -
+    value: solid
+default_value_callback: ''
+settings: {  }
+field_type: list_string

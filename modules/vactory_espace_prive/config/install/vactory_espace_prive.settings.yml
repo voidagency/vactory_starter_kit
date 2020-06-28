@@ -1,0 +1,10 @@
+path_login: '/espace-prive/login'
+path_register: '/espace-prive/register'
+path_profile: '/espace-prive/profile'
+path_welcome: '/espace-prive/welcome'
+path_password: '/espace-prive/password'
+redirect_mode: 'to_new_path'
+dependencies:
+  enforced:
+    module:
+      - vactory_espace_prive

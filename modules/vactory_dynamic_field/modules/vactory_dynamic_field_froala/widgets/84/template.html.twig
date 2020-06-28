@@ -1,0 +1,44 @@
+<div class="fdb-block">
+    <div class="row justify-content-center">
+        <div class="col-12 text-left">
+            {% if extra_fields.title is not empty %}
+                <h2>{{ extra_fields.title }}</h2>
+            {% endif %}
+            {% if extra_fields.intro is not empty %}
+                <p class="lead">{{ extra_fields.intro }}</p>
+            {% endif %}
+        </div>
+    </div>
+    <div class="row text-left pt-5">
+        {% for item in content %}
+
+            {% if loop.index == 1 %}
+                <div class="col-12 col-sm-6 col-md-5">
+            {% else %}
+                <div class="col-12 col-sm-6 col-md-5 ml-sm-auto pt-5 pt-sm-0">
+            {% endif %}
+
+                {% set image_uri =(item.image.0 is defined) ?  get_image(item.image.0) : '' %}
+                {% set picto = image_uri|image_style('max_650x650') %}
+                {% set lqip_image = image_uri|image_style('lqip') %}
+
+                {% if item.image.0 is not empty %}
+                    <div class="lazy-wrapper">
+                        <img alt="{{ item.image_alt }}"
+                            class="lazyload img-fluid"
+                            src="{{ lqip_image }}"
+                            data-src="{{ picto }}">
+                    </div>
+                {% endif %}
+                {% if item.title is not empty %}
+                    <h3><strong>{{ item.title }}</strong></h3>
+                {% endif %}
+                {% if item.description is not empty %}
+                    <div>{{ item.description.value|raw }}</div>
+                {% endif %}
+            </div>
+
+        {% endfor %}
+
+    </div>
+</div>

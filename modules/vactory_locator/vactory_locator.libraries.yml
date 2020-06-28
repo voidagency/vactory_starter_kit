@@ -1,0 +1,7 @@
+vactory_locator.locator:
+  js:
+    https://cdn.rawgit.com/googlemaps/js-marker-clusterer/gh-pages/src/markerclusterer.js: {type: external }
+    js/locator.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings

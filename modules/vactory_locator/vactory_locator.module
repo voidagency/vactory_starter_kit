@@ -1,0 +1,268 @@
+<?php
+
+/**
+ * @file
+ * Contains vactory_locator.module.
+ */
+
+use Drupal\taxonomy\Entity\Term;
+use Drupal\Core\Messenger\MessengerInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\views\Plugin\views\cache\CachePluginBase;
+use Drupal\views\ViewExecutable;
+use Drupal\Component\Serialization\Json;
+
+/**
+ * Implements hook_help().
+ */
+function vactory_locator_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the vactory_locator module.
+    case 'help.page.vactory_locator':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Map locator.') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_locator_theme() {
+  $theme = [];
+  $theme['locator_entity'] = [
+    'render element' => 'elements',
+    'file'           => 'locator_entity.page.inc',
+    'template'       => 'locator_entity',
+  ];
+  $theme['locator_entity_content_add_list'] = [
+    'render element' => 'content',
+    'variables'      => ['content' => NULL],
+    'file'           => 'locator_entity.page.inc',
+  ];
+  $theme['vactory_locator'] = [
+    'render element' => 'children',
+  ];
+  $theme['locator_pin'] = [
+    'template'  => 'pin',
+    'variables' => [
+      'name'                               => '',
+      'field_locator_info'                 => [],
+      'field_locator_adress_address_line1' => '',
+      'field_locator_adress_address_line2' => '',
+      'field_locator_adress_country_code'  => '',
+      'field_locator_adress_locality'      => '',
+      'field_locator_adress_postal_code'   => '',
+      'field_locator_email'                => '',
+      'field_locator_description'          => '',
+      'field_locator_image'                => '',
+      'field_locator_fax'                  => '',
+      'field_locator_phone'                => '',
+      'field_locator_autre'                => '',
+      'field_locator_autre_2'              => '',
+      'field_locator_autre_3'              => '',
+      'field_locator_autre_4'              => '',
+      'field_locator_autre_5'              => '',
+    ],
+  ];
+  $theme['locator_search_list_element'] = [
+    'template'  => 'search-list-element',
+    'variables' => [
+      'name'                               => '',
+      'field_locator_info'                 => [],
+      'field_locator_adress_address_line1' => '',
+      'field_locator_adress_address_line2' => '',
+      'field_locator_adress_country_code'  => '',
+      'field_locator_adress_locality'      => '',
+      'field_locator_adress_postal_code'   => '',
+      'field_locator_email'                => '',
+      'field_locator_description'          => '',
+      'field_locator_image'                => '',
+      'field_locator_fax'                  => '',
+      'field_locator_phone'                => '',
+      'field_locator_autre'                => '',
+      'field_locator_autre_2'              => '',
+      'field_locator_autre_3'              => '',
+      'field_locator_autre_4'              => '',
+      'field_locator_autre_5'              => '',
+    ],
+  ];
+  $theme['map_block'] = [
+    'variables' => [
+      'url' => NULL,
+      'enable_filter' => NULL,
+    ],
+    'template'  => 'map-block',
+  ];
+
+  $theme['locator_category_list'] = [
+    'template'  => 'locator-category-list',
+    'variables' => [
+      'content' => NULL,
+    ],
+  ];
+
+  return $theme;
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK().
+ */
+function vactory_locator_theme_suggestions_locator_entity(array $variables) {
+  $suggestions = [];
+  $entity = $variables['elements']['#locator_entity'];
+  $sanitized_view_mode = strtr($variables['elements']['#view_mode'], '.', '_');
+
+  $suggestions[] = 'locator_entity__' . $sanitized_view_mode;
+  $suggestions[] = 'locator_entity__' . $entity->bundle();
+  $suggestions[] = 'locator_entity__' . $entity->bundle() . '__' . $sanitized_view_mode;
+  $suggestions[] = 'locator_entity__' . $entity->id();
+  $suggestions[] = 'locator_entity__' . $entity->id() . '__' . $sanitized_view_mode;
+  return $suggestions;
+}
+
+/**
+ * Implements hook_migration_plugins_alter().
+ */
+function vactory_locator_migration_plugins_alter(array &$migrations) {
+  if (
+    isset($migrations['locator_items']) &&
+    isset($migrations['locator_items']['source']['plugin']) &&
+    $migrations['locator_items']['source']['plugin'] == 'csv'
+  ) {
+    // Change path of csv file used as source in locator_items migration.
+    // The file uploaded by the config
+    // form here admin/config/system/locator-csv-import.
+    $src_csv_file = \Drupal::service('config.factory')
+      ->getEditable('locator_migration.settings')
+      ->get('csv_file_path');
+    if ($src_csv_file) {
+      $migrations['locator_items']['source']['path'] = $src_csv_file;
+    }
+    else {
+      \Drupal::messenger()
+        ->addMessage(t("The csv source file hasn't configured yet for <b>locator_items</b> migrate go to <em>/admin/config/system/locator-csv-import</em> to upload new file. Otherwise the <b>locator_items</b> migrate will use <b>locator_migrate/locator_items.csv</b> from vactory_locator module."), MessengerInterface::TYPE_WARNING);
+    }
+  }
+}
+
+/**
+ * Implements hook_views_post_render().
+ */
+function vactory_locator_views_post_render(ViewExecutable $view, &$output, CachePluginBase $cache) {
+  if ($view->id() === 'vactory_locator' && $view->current_display === 'vactory_locator_listing') {
+    $stream_wrapper_manager = \Drupal::service('stream_wrapper_manager');
+    $entity_manager = \Drupal::service('entity_type.manager');
+    $file_storage = $entity_manager->getStorage('file');
+    $decode_data = Json::decode($output['#markup']->jsonSerialize());
+
+    foreach ($decode_data as $key => $item) {
+      if (isset($item) && !empty($item)) {
+        $entity_loc_info = $view->result[$key]->_entity->get('field_locator_info')
+          ->getValue();
+        $decode_data[$key]['field_locator_info'] = [
+          'lat' => $entity_loc_info[0]['lat'],
+          'lon' => $entity_loc_info[0]['lon'],
+        ];
+        $image = $view->result[$key]->_entity->get('field_locator_image')
+          ->getValue();
+        if (isset($image[0]['target_id'])) {
+          $fid = $image[0]['target_id'];
+          $file = $file_storage->load($fid);
+          if ($file) {
+            $wrapper = $stream_wrapper_manager->getViaUri($file->getFileUri());
+            $decode_data[$key]['field_locator_image'] = $wrapper->getExternalUrl();
+          }
+        }
+
+        // Add pin, rendered item.
+        $decode_data[$key]['pin'] = _rendered_pin($decode_data[$key], 'locator_pin');
+        $decode_data[$key]['search_list_element'] = _rendered_pin($decode_data[$key], 'locator_search_list_element');
+
+        // Add field Term ID.
+        $term_info = [
+          'vid' => 'locator_category',
+          'name' => $item['field_locator_category'],
+        ];
+        $term = Drupal::entityManager()->getStorage('taxonomy_term')->loadByProperties($term_info);
+        if (count($term) == 1) {
+          $tid = array_keys($term)[0];
+        }
+        else {
+          $tid = NULL;
+        }
+        $decode_data[$key]['category_id'] = $tid;
+
+      }
+    }
+
+    $data = [
+      'results'    => $decode_data,
+      'total_rows' => $view->total_rows,
+    ];
+
+    $output['#markup'] = Json::encode($data);
+    // $output['#plain_text'] = Json::encode($data);
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_locator_preprocess_map_block(&$variables) {
+  $current_lang_code = \Drupal::languageManager()
+    ->getCurrentLanguage()
+    ->getId();
+  $terms = \Drupal::entityTypeManager()
+    ->getStorage('taxonomy_term')
+    ->loadTree('locator_category');
+  $terms_info = [];
+  if (isset($terms) && !empty($terms)) {
+    foreach ($terms as $key => $term) {
+      $term = Term::load($term->tid);
+      $translated_term = \Drupal::service('entity.repository')
+        ->getTranslationFromContext($term, $current_lang_code);
+      $terms_info[] = [
+        'name' => $translated_term->getName(),
+        'tid'  => $translated_term->id(),
+      ];
+    }
+  }
+
+  $variables['content']['terms'] = $terms_info;
+}
+
+/**
+ * Render Pin Data lat, lon, name, description.
+ *
+ * @param array $data
+ *   (Item Data lat, lon, name, description .....)
+ *
+ * @return array
+ *   Rendered HTML Item.
+ */
+function _rendered_pin(array $data, $theme) {
+
+  // Add prefix # to data keys.
+  $data = array_combine(
+    array_map(function ($key) {
+      return '#' . $key;
+    }, array_keys($data)),
+    $data
+  );
+  // Locator pin template.
+  $localisation_theme = [
+    // '#theme' => 'locator_pin',.
+    '#theme' => $theme,
+  ];
+  // Merge data with template.
+  $result = array_merge($localisation_theme, $data);
+
+  // Render the template to HTML.
+  $marker = \Drupal::service('renderer')->renderPlain($result);
+
+  return $marker;
+}

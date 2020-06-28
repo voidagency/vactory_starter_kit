@@ -1,0 +1,55 @@
+{{ attach_library('vactory_dynamic_field_sliders/variant7') }}
+<section class="vf-slider--swiper">
+  <div class="swiper-container slideshow">
+    <div class="swiper-wrapper">
+
+      {% for item in content %}
+        {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : '' %}
+        {% set fluid_image = file_url(image_uri) %}
+        <div class="swiper-slide slide">
+          <div class="slide-image" style="background-image: url({{ fluid_image }})"></div>
+          {% if item.title is not empty %}
+            <span class="slide-title">
+          {#{ item.title }#}
+              {% set _index = 1 %}
+              {% for index, word in item.title|split(' ') %}
+              <span class="word-part">
+                {% set wordTable = word|split('') %}
+                {% set lengthWord = wordTable.length %}
+                {% for index, chart in wordTable %}
+                  {% if not loop.first %}
+                    {% if not loop.last %}
+                      {{ "-->" }}<span class="vertical-part chart chart{{ _index }}">{{ chart }}</span>{{ "<!--" }}
+                        {% else %}
+                      {{ "-->" }}<span class="vertical-part chart chart{{ _index }}">{{ chart }}</span>
+                    {% endif %}
+                      {% else %}
+                    <span class="vertical-part chart chart{{ _index }}">{{ chart }}</span>{{ "<!--" }}
+                  {% endif %}
+                  {% set _index = _index + 1 %}
+                {% endfor %}
+                      </span>
+            {% endfor %}
+        </span>
+          {% endif %}
+          {% if item.description is not empty %}
+            <span class="slide-description">
+          {{ item.description }}
+        </span>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+
+
+    <div class="slideshow-pagination"></div>
+
+    <div class="slideshow-navigation d-lg-block d-none">
+      <div class="slideshow-navigation-button prev"><span class="icon icon-arrow-left"></span></div>
+      <div class="slideshow-navigation-button next"><span class="icon icon-arrow-right"></span></div>
+    </div>
+
+  </div>
+
+</section>
+

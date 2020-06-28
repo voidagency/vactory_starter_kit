@@ -1,0 +1,5 @@
+# Custom permission to add css classes to nodes.
+administer field css class:
+  title: 'Administer field css class'
+  description: 'Permission to Assign CSS classes to the node.'
+  restrict access: TRUE

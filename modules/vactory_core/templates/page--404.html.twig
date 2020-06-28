@@ -1,0 +1,35 @@
+{#
+/**
+ * @file
+ * Template for the main page.
+ */
+#}
+
+{% if page.header %}
+    {{ page.header }}
+{% endif %}
+
+<main role="main">
+    {% if page.bridge %}
+        {{ page.bridge }}
+    {% endif %}
+    {% block v_page_content %}
+        <div class="container page-content">
+            <h1> {{ 'Oups :(' | trans }} </h1>
+            <p>
+                {{ 'It seems that this page does not exist ...' | t }}
+            </p>
+            <p>
+                <a href="{{ url('<front>') }}" class="btn btn-primary">{{ 'Home'|t }}</a>
+            </p>
+        </div>
+    {% endblock %}
+</main>
+
+{% if page.footer %}
+    {{ page.footer }}
+{% endif %}
+
+{% if page.bottom %}
+    {{ page.bottom }}
+{% endif %}

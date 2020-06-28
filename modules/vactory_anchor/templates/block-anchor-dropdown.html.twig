@@ -1,0 +1,25 @@
+{% if menu_links is not empty %}
+  {{ attach_library('vactory_anchor/anchorLib') }}
+
+  {% if html_attributes.dir == 'ltr' %}
+    {% set dropdown_direction_class = ' dropleft' %}
+  {% else %}
+    {% set dropdown_direction_class = ' dropright' %}
+  {% endif %}
+
+  <div class="btn-group {{ dropdown_direction_class }}">
+    <button class="btn btn-anchor dropdown-toggle" type="button" id="anchorDropdownMenuButton" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+      <span class="hamburger-box">
+                        <span class="hamburger-inner"></span>
+                      </span>
+    </button>
+    <div class="dropdown-menu" aria-labelledby="anchorDropdownMenuButton">
+      {% for item in menu_links %}
+        <a class="dropdown-item" href="#{{ item.id }}">{{ item.label }}</a>
+      {% endfor %}
+    </div>
+  </div>
+
+
+{% endif %}

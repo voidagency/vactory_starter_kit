@@ -1,0 +1,20 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_vactory_address
+    - node.type.vactory_job_ads
+  module:
+    - text
+id: node.vactory_job_ads.field_vactory_address
+field_name: field_vactory_address
+entity_type: node
+bundle: vactory_job_ads
+label: 'Recruiter''s Adress'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: text_long

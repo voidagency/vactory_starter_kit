@@ -1,0 +1,18 @@
+.governance-slider-full {
+  .slick-list {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+.card-governance {
+  .card-governance-social-media {
+    margin: 20px auto 0 auto;
+    .social-media-links--platforms {
+      display: flex;
+      li {
+        @include rem(margin-left, 10px);
+        @include rem(margin-right, 10px);
+      }
+    }
+  }
+}

@@ -1,0 +1,170 @@
+{{ attach_library('vactory_header/vactory_header.variant5') }}
+{% set main_navigation_menu = simplify_menu('main') %}
+
+{% set mon_espace_url = '#' %}
+{% set rdv_url = '#' %}
+{% set paiement_url = '#' %}
+{% set map_url = (content.header_config.map_nid is not empty) ? path('entity.node.canonical', {'node': content.header_config.map_nid}) : '#' %}
+
+{# this macro is the logo svg code #}
+{% macro svgMacro() -%}
+  <div class="vh-header--svg d-flex align-items-center">
+    {{ vactory_render('block', 'system_branding_block', {use_site_name: false}) }}
+  </div>
+{%- endmacro %}
+
+{# this macro is for principal menu #}
+{% macro menuMacro(menu, level) -%}
+
+  {# Set our default level as an integer. #}
+  {% set default_level = 1 %}
+
+  <nav class="nav nav-pills">
+    {% for menu_item in menu %}
+      {# Check if this is the active item. #}
+      {% set active = (menu_item.active or menu_item.active_trail) ? ' active' : '' %}
+
+      <a class="nav-link {{ active }}" href="{{ menu_item.url }}">{{ menu_item.text }}</a>
+    {% endfor %}
+  </nav>
+{%- endmacro %}
+
+{# This code will be render as second hide menu on etablisement page #}
+
+{% macro second_menu_global(espace, rdv, paiement, showLabel) -%}
+  <a href="{{ espace }}" role="button" title="{{ 'Mon espace' | t }}" target="_parent" data-toggle="tooltip"
+     data-placement="top" class="btn btn-light">
+    <i class="icon-doctor"></i>
+    {% if showLabel == true %}
+      {{ 'Mon espace' | t }}
+    {% endif %}
+  </a>
+  <a href="{{ rdv }}" role="button" title="{{ 'Rendez-vous' | t }}" target="_parent" data-toggle="tooltip"
+     data-placement="top" class="btn btn-light">
+    <i class="icon-calendar-valide"></i>
+    {% if showLabel == true %}
+      {{ 'Rendez-vous' | t }}
+    {% endif %}
+  </a>
+  <a href="{{ paiement }}" role="button" title="{{ 'Paiement' | t }}" target="_parent" data-toggle="tooltip"
+     data-placement="top" class="btn btn-light">
+    <i class="icon-paiement"></i>
+    {% if showLabel == true %}
+      {{ 'Paiement' | t }}
+    {% endif %}
+  </a>
+{%- endmacro %}
+
+{% macro second_menu_local(etablissementEspace, etablissementRdv, etablissementPaiement, showLabel) -%}
+
+  {% if etablissementEspace is not empty %}
+    <a href="{{ etablissementEspace }}" target="_parent"
+       role="button"
+       title="{{ 'Mon espace' | t }}" data-toggle="tooltip"
+       data-placement="top" class="btn btn-light">
+      <i class="icon-account"></i>
+      {% if showLabel == true %}
+        {{ 'Mon espace' | t }}
+      {% endif %}
+    </a>
+  {% endif %}
+
+  {% if etablissementRdv is not empty %}
+    <a href="{{ etablissementRdv }}" target="_parent"
+       role="button"
+       title="{{ 'Rendez-vous' | t }}" data-toggle="tooltip"
+       data-placement="top" class="btn btn-light">
+      <i class="icon-calendar-valide"></i>
+      {% if showLabel == true %}
+        {{ 'Rendez-vous' | t }}
+      {% endif %}
+    </a>
+  {% endif %}
+
+  {% if etablissementPaiement is not empty %}
+    <a href="{{ etablissementPaiement }}" target="_parent" role="button"
+       title="{{ 'Paiement' | t }}" data-toggle="tooltip"
+       data-placement="top" class="btn btn-light">
+      <i class="icon-paiement"></i>
+      {% if showLabel == true %}
+        {{ 'Paiement' | t }}
+      {% endif %}
+    </a>
+  {% endif %}
+{%- endmacro %}
+
+<header id="vh-header" class="vh-header vh-variant5">
+  <div class="fixed-sticky-header vh-sticky">
+    <div class="vh-header--top"></div>
+    <div class="container-fluid">
+      <div class="vh-layout d-flex align-items-start flex-column">
+        <div class="vh-header--branding d-flex align-items-center justify-content-between">
+          <div class="navbar-brand d-flex align-items-lg-center" href="{{ content.path_front }}">
+            {{ _self.svgMacro() }}
+          </div>
+          <div class="vh-hamburger d-lg-none">
+            <!-- @todo: twig this -->
+            <button id="vhm-hamburger-btn" class="hamburger hamburger--collapse js-offcanvas-trigger" type="button"
+                    aria-label="Menu" role="button" data-offcanvas-trigger="vhm" aria-controls="navigation"
+                    aria-expanded="true/false">
+              <div class="hamburger-box">
+                <span class="hamburger-inner"></span>
+              </div>
+            </button>
+          </div>
+        </div>
+        <div
+          class="vh-header--menu-wrapper d-flex align-items-center justify-content-lg-between flex-column flex-lg-row pt-0">
+          <div class="vh-header--top vh-header--top-menu d-block d-lg-none">
+          </div>
+          <div class="vh-layout vh-layout--mobile d-block d-lg-none container">
+            <div
+              class="vh-header--branding vh-header--branding-menu d-flex align-items-center justify-content-between">
+              <div class="navbar-brand d-flex align-items-lg-center" href="{{ content.path_front }}">
+                {{ _self.svgMacro() }}
+              </div>
+              <div class="vh-hamburger d-lg-none">
+                <!-- @todo: twig this -->
+                <button id="vhm-hamburger-btn" class="hamburger hamburger--collapse js-offcanvas-trigger" type="button"
+                        aria-label="Menu" role="button" data-offcanvas-trigger="vhm" aria-controls="navigation"
+                        aria-expanded="true/false">
+                  <div class="hamburger-box">
+                    <span class="hamburger-inner"></span>
+                  </div>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div
+            class="vh-header--menu-mobile d-flex flex-column justify-content-center align-items-center flex-lg-row justify-content-lg-between w-100">
+            <div class="vh-header--menu">
+              {{ _self.menuMacro(main_navigation_menu.menu_tree) }}
+            </div>
+            <div class="vh-header--navigation--switcher d-flex d-column align-items-center">
+              <div class="vh-header--navigation d-none d-lg-block ">
+                <a href="#" role="button" title="{{ 'Search' | t }}" target="_parent"
+                   data-toggle="tooltip" data-placement="top" class="btn btn-light vh--search-button js-btn-search-overlay">
+                  <i class="icon-search-lightest"></i>
+                </a>
+                {{ _self.second_menu_global(mon_espace_url, rdv_url, paiement_url, false) }}
+              </div>
+              <div class="vh-header--language-switcher">
+                {{ vactory_render('block', 'language_dropdown_block:language_interface') }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-bg"></div>
+  </div>
+  <div class="vh-header--navigation--switcher fixed d-lg-none d-block">
+    <div class="vh-header--navigation d-flex align-items-center justify-content-between flex-wrap">
+        <a href="#" role="button" title="{{ 'Search' | t }}" target="_parent"
+           data-toggle="tooltip" data-placement="top" class="btn btn-light vh--search-button js-btn-search-overlay">
+          <i class="icon-search-lightest"></i> {{ 'Search' | t }}
+        </a>
+      {{ _self.second_menu_global(mon_espace_url, rdv_url, paiement_url, true) }}
+    </div>
+  </div>
+</header>

@@ -1,0 +1,44 @@
+.vf-slider-content-avec-background {
+  .slick-arrow {
+    border-color: #FFF;
+    color: #FFF;
+  }
+  .vf-slider-content-bg {
+    background-size: cover;
+    position: relative;
+    &:before{
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, .7);
+    }
+  }
+
+  .vf-content-bg-slides {
+    height: 350px;
+
+    .slick-list.draggable {
+      height: 100%;
+    }
+  }
+  .vf-bg-content {
+    color: $white;
+    max-width: 500px;
+
+    &--title, &--text {
+      color: $white;
+    }
+    &--title {
+
+    }
+    &--text {
+
+    }
+    &--link {
+
+    }
+  }
+}

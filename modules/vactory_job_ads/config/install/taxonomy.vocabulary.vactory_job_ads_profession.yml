@@ -1,0 +1,8 @@
+langcode: en
+status: true
+dependencies: {  }
+name: 'Job Ads - Profession'
+vid: vactory_job_ads_profession
+description: 'Taxonomy for Vactory job Ads Profession'
+hierarchy: 0
+weight: 0

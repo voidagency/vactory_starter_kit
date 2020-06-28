@@ -1,0 +1,30 @@
+name: '55 - Froala - Pricing 4 Cols Gray Title, Price, CTA & Items'
+multiple: TRUE
+category: 'Tables'
+enabled: TRUE
+limit: 4
+fields:
+  title:
+    type: text
+    label: 'Titre'
+  price:
+    type: text
+    label: 'Price'
+  link:
+    type: url_extended
+    label: 'Lien'
+  link_alt:
+    type: text
+    label: 'Titre lien'
+  lists:
+    type: text_format
+    label: 'Items'
+    options:
+      '#format': 'full_html'
+  link_target:
+    type: checkbox
+    label: 'Ouvrir dans une nouvelle fenêtre'
+extra_fields:
+  title:
+      type: text
+      label: 'Titre'

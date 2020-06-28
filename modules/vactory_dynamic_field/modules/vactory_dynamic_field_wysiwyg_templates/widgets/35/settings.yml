@@ -1,0 +1,21 @@
+name: 'C35 - Full image with description'
+multiple: FALSE
+category: 'Content'
+enabled: TRUE
+fields:
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': TRUE
+  image_alt:
+    type: text
+    label: 'Image alt'
+  zoom_image:
+    type: checkbox
+    label: "Faire zoomer l'image"
+  description:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'full_html'

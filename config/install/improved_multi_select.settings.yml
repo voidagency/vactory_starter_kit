@@ -1,0 +1,12 @@
+isall: false
+url: "node/*/edit\r\n*/node/*/edit\r\n*/node/*/edit*"
+selectors: ''
+filtertype: partial
+orderable: false
+groupresetfilter: false
+buttontext_add: '>'
+buttontext_addall: »
+buttontext_del: '<'
+buttontext_delall: «
+buttontext_moveup: 'Move up'
+buttontext_movedown: 'Move down'

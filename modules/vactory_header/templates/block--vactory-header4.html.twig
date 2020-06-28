@@ -1,0 +1,161 @@
+{{ attach_library('vactory_header/vactory_header.variant4') }}
+
+{% set navigation_main = simplify_menu('main') %}
+{% set navigation_secondaire = simplify_menu('top-navigation') %}
+
+{% macro navigationMainMacro(menu, level) -%}
+  {# Set our default level as an integer. #}
+  {% set default_level = 1 %}
+
+
+  {% for key, menu_item in menu %}
+    {# Check if this is the active item. #}
+    {% set active = (menu_item.active) ? ' is-active' : '' %}
+    {# Check if this item is in the active trail. #}
+    {% set active = active ~ ((menu_item.active_trail) ? ' is-active-trail' : '') %}
+    {# Check if this item has childs. #}
+    {% set has_sub = ((menu_item.submenu) ? 'has-sub' : '') %}
+
+    {% if level is null %}
+      <li class="nav-item {{ has_sub }}">
+    {% endif %}
+
+    {% if level is null %}
+      <a href="{{ menu_item.url }}"
+         class="nav-link menu__link{{ active }} menu__link__title">{{ menu_item.text }}</a>
+
+      {% if menu_item.submenu %}
+        <div class="vh-header--menu-wrapper is-closed">
+          <ul class="menu-sub menu-sub--{{ level|default(default_level) }}">
+            {# Since this menu item has a submenu, recall function and increment counter. #}
+            {{ _self.navigationMainMacro(menu_item.submenu, level|default(default_level) + 1) }}
+          </ul>
+        </div>
+      {% endif %}
+
+    {% endif %}
+
+    {# Submenu #}
+    {% if level is not null %}
+      <li>
+        <a href="{{ menu_item.url }}"
+           class="menu__link{{ active }}">{{ menu_item.text }}</a>
+      </li>
+    {% endif %}
+
+
+    {% if level is null %}
+      </li>
+    {% endif %}
+
+  {% endfor %}
+{%- endmacro %}
+
+{% macro navigationSecondaireMacro(menu, level) -%}
+  {# Set our default level as an integer. #}
+  {% set default_level = 1 %}
+
+  <ul class="menu-level--{{ level|default(default_level) }} d-lg-flex m-0 pl-2">
+    {% for key, menu_item in menu %}
+      {# Check if this is the active item. #}
+      {% set active = (menu_item.active) ? ' is-active' : '' %}
+      {# Check if this item is in the active trail. #}
+      {% set active = active ~ ((menu_item.active_trail) ? ' is-active-trail' : '') %}
+      {# Get Icon. #}
+      {% set icon = menu_item.options.attributes.class %}
+
+      <li class="menu__item{{ active }} mr-2 menu__item--{{ level|default(default_level) }}">
+        <a href="{{ menu_item.url }}" class="btn btn-outline-light btn-sm  menu__link{{ active }}">
+          {% if icon|trim is not empty %}
+            <i class="{{ icon }}"></i>
+          {% endif %}
+          {{ menu_item.text }}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+{%- endmacro %}
+
+
+<div id="vh-header" class="vh-header vh-variant4 vh-sticky">
+  <div class="vh-header-inner">
+    <div class="container-fluid">
+      <div class="d-flex align-items-center justify-content-between">
+
+        {# LOGO HEADER #}
+        <div class="logo">
+          {{ vactory_render('block', 'system_branding_block', {use_site_name: false}) }}
+        </div>
+        {# End LOGO HEADER #}
+
+        {# Bloc Search - visible on mobile #}
+        <div class="search pr-1 d-lg-none mb-1">
+          <button class="icon-search icon btn-search-overlay js-btn-search-overlay"></button>
+        </div>
+        {# End search #}
+        {# Burger Menu #}
+        <div class="vh-hamburger pl-1 d-lg-none">
+          <button class="hamburger hamburger--collapse js-offcanvas-trigger p-1" type="button" aria-label="Menu"
+                  role="button" data-toggle="offcanvas" aria-controls="navigation" aria-expanded="true/false">
+                        <span class="hamburger-box">
+                            <span class="hamburger-inner"></span>
+                        </span>
+          </button>
+        </div>
+        {# End Burger Menu #}
+
+
+        {# Navigations header #}
+        <div class="d-lg-flex flex-column flex-fill layer-menu-mobile">
+
+          <div class="d-flex d-lg-none layer-menu-top align-items-center">
+            <div class="logo">
+              {{ vactory_render('block', 'system_branding_block', {use_site_name: false}) }}
+            </div>
+
+            {# Burger Menu #}
+            <div class="vh-hamburger">
+              <button class="hamburger hamburger--collapse js-offcanvas-trigger" type="button"
+                      aria-label="Menu" role="button" data-toggle="offcanvas" aria-controls="navigation"
+                      aria-expanded="true/false">
+                                <span class="hamburger-box">
+                                    <span class="hamburger-inner"></span>
+                                </span>
+              </button>
+            </div>
+
+          </div>
+          {# End Burger Menu #}
+
+          {# Navigatioon Secondaire - TOP #}
+          <div class="d-flex align-items-center justify-content-end vh-header-top-right">
+            <div class="vh-header-social-media">
+              {{ vactory_render('block', 'socialmedialinks') }}
+            </div>
+            <div class="navigation-secondary">
+              {{ _self.navigationSecondaireMacro(navigation_secondaire.menu_tree) }}
+            </div>
+            <div class="search d-none d-md-block">
+              <button class="icon-search icon btn-search-overlay js-btn-search-overlay"></button>
+            </div>
+          </div>
+          {# End Navigatioon Secondaire - TOP #}
+
+          {# Navigation Main #}
+          <div class="vh-header--navigation">
+            <nav class="navbar navbar-expand-lg pr-0">
+              <ul class="navbar-nav ml-lg-auto">
+                {{ _self.navigationMainMacro(navigation_main.menu_tree) }}
+              </ul>
+            </nav>
+          </div>
+        </div>
+
+        {# END Navigation Main #}
+        {# END Navigations header #}
+
+
+      </div>
+    </div>
+  </div>
+</div>

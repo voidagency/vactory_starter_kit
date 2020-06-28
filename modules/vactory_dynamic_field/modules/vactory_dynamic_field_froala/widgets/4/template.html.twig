@@ -1,0 +1,11 @@
+{% set floated = (content.0.mode == 1)? 'justify-content-end' : '' %}
+
+<div class="fdb-block">
+  <div class="row {{ floated }}">
+    <div class="col col-sm-10 col-md-8 text-left">
+      {% if content.0.description is not empty %}
+        <div class="text-h3">{{ content.0.description.value|raw }}</div>
+      {% endif %}
+    </div>
+  </div>
+</div>

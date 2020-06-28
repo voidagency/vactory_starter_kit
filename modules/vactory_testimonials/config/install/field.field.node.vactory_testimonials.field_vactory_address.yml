@@ -1,0 +1,20 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_vactory_address
+    - node.type.vactory_testimonials
+  module:
+    - text
+id: node.vactory_testimonials.field_vactory_address
+field_name: field_vactory_address
+entity_type: node
+bundle: vactory_testimonials
+label: Address
+description: 'This field will contain your adress'
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: text_long

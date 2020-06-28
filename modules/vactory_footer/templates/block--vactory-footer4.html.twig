@@ -1,0 +1,60 @@
+<footer class="vf-footer vf-footer--variant4">
+    <div class="vf-footer-items">
+        <div class="vf-footer__top">
+            <div class="container">
+                <div class="first-block d-flex">
+                    <div class="block_content block-footer-app">
+                        <div class="field__item">
+                            <div class="align-self-center">
+                                <p class="app-store-title">{{ "Téléchargez l'application" | t }}</p>
+                            </div>
+                            <div class="block-icon-store">
+                                <a href="/">
+                                    <img alt="Void logo" src="//place-hold.it/135x40">
+                                </a>
+                                <a href="/">
+                                    <img alt="Void logo" src="//place-hold.it/135x40">
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="block-content block-social-media">
+                        <div class="field__item">
+                            <div class="align-self-center">
+                                <p class="social-media-title">{{ "Suivez-nous" | t }}</p>
+                            </div>
+                            <div class="align-self-center">
+                                 {{ vactory_render('block', 'socialmedialinks') }}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="vf-footer__bottom">
+            <div class="container">
+                <div class="block-footer-menu-separate justify-content-center d-flex">
+                    {{ vactory_render('block', 'system_menu_block:footer') }}
+                </div>
+
+                <div class="last-block d-flex ">
+                    <div class="block_content block-footer-copyright">
+                        <div class="field__item">
+                            <p>{{ "© 2019 Tous droits réservés Wana Money" | t }}</p>
+                        </div>
+                    </div>
+                    <div class="block-content block-footer-realisation_void">
+                        <div class="field__item">
+                            <p>{{ "Conception et développement" | t }}
+                                <a href="/">
+                                    <img alt="Void logo" src="//place-hold.it/52x14">
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+

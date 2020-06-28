@@ -1,0 +1,43 @@
+<div class="t-slider-cards t-2-cols">
+  {% if extra_fields.intro is not empty %}
+    <p class="intro">{{ extra_fields.intro }}</p>
+  {% endif %}
+  <div class="row vf-slick-slider"
+       data-mobile-arrows="true"
+       data-toshow="2">
+    {% for item in content %}
+      {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : "" %}
+    {% set lqip_image = (image_uri is not empty) ? image_uri|image_style('lqip') : ""%}
+      {% set fluid_image = file_url(image_uri) %}
+      {% set imageAlt = (item.image_alt is not empty) ? item.image_alt : item.title %}
+
+      <div class="col-md-6">
+        <div class="t-box">
+          {% if item.image is not empty %}
+            <div class="t-box-img-wrapper">
+              <img class="img-fluid lazyload"
+                   alt="{{ imageAlt }}"
+                   src="{{ lqip_image }}"
+                   data-src="{{ fluid_image }}"/>
+            </div>
+          {% endif %}
+          {% if item.title is not empty %}
+            <h3 class="t-card-title">{{ item.title }}</h3>
+          {% endif %}
+          <div class="t-box-description-link">
+            {% if item.description is not empty %}
+              <div class="t-box-description">
+                {{ item.description.value|raw }}
+              </div>
+            {% endif %}
+            {% if item.link is not empty and item.link_alt is not empty %}
+              {% set link_target = (item.link_target > 0) ? '_blank' : '_self' %}
+              <a href="{{ item.link }}" target="{{ link_target }}" class="btn btn-primary">{{ item.link_alt }}</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  <div class="slick-controls d-lg-none"></div>
+</div>

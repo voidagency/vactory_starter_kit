@@ -1,0 +1,25 @@
+<div class="fdb-block">
+    <div class="row text-center justify-content-center">
+        <div class="col-8">
+            <h2>Title</h2>
+            <p class="lead intro">Lorem Ipsum is simply dummy text of the printing and typesetting industry</p>
+        </div>
+    </div>
+    <div class="row">
+        {% for i in 0..3 %}
+            {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/175/112.jpg" %}
+            <div class="col-12 col-sm-6 col-lg-3 text-sm-left text-center">
+                <div class="fdb-box py-0 pb-3">
+                 <img alt="Image Alt"
+                    class="img-fluid lazyload"
+                    src="{{ content.image_placeholder }}"
+                    data-src="{{ placehold }}">
+                    <div class="content">
+                        <h3><strong>Jhon Doe</strong></h3>
+                        <p>Artist</p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>

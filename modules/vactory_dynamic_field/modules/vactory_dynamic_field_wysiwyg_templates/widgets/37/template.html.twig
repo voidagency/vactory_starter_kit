@@ -1,0 +1,25 @@
+<div class="t-background-contenu-libre-up">
+  {% set image_uri = (content.0.image.0 is defined) ? get_image(content.0.image.0) : "" %}
+  {% set fluid_image = file_url(image_uri) %}
+  {% set lqip_image = image_uri|image_style('lqip') %}
+  {% set upBackground = (content.0.intro is not empty) ? 'up' : '' %}
+  {% if content.0.intro is not empty %}
+    <div class="container">
+      <div class="t-background-image-intro py-lg-5 px-lg-4 py-3">
+        {{ content.0.intro.value | raw }}
+      </div>
+    </div>
+  {% endif %}
+  <div class="t-background-image parallax-bg lazyload {{ upBackground }}"
+       src="{{ fluid_image }}"
+       data-bg="{{ fluid_image }}"
+       style="background-image: url('{{ lqip_image }}')"
+    ></div>
+  {% if content.0.description is not empty %}
+    <div class="container up">
+      <div class="t-background-content-libre py-lg-5 px-lg-4 py-3">
+        {{ content.0.description.value | raw }}
+      </div>
+    </div>
+  {% endif %}
+</div>

@@ -1,0 +1,69 @@
+blockquote {
+  border-left: none
+}
+
+.quote-badge {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.quote-box {
+  overflow: hidden;
+  border-radius: 17px;
+  background-color: #4ADFCC;
+  @include rem(margin-top, 25px);
+  color: white;
+  width: 325px;
+  box-shadow: 2px 2px 2px 2px #E0E0E0;
+
+}
+
+.quotation-mark {
+
+  @include rem(margin-top, -10px);
+  font-weight: bold;
+  @include rem(font-size, 100px);
+  color: white;
+  font-family: "Times New Roman", Georgia, Serif;
+
+}
+
+.quote-text {
+  @include rem(font-size, 19px);
+  @include rem(margin-top, -65px);
+}
+
+.box {
+  background: $white;
+  transition: all 0.2s ease;
+  border: 2px dashed #dadada;
+  @include rem(margin-top, 10px);
+  box-sizing: border-box;
+  border-radius: 5px;
+  background-clip: padding-box;
+  @include rem(padding, 0 20px 20px 20px);
+  min-height: 340px;
+}
+
+.box:hover {
+  border: 2px solid #525C7A;
+}
+
+.box span.box-title {
+  color: #fff;
+  @include rem(font-size, 24px);
+  font-weight: 300;
+  text-transform: uppercase;
+}
+
+.box .box-content {
+  @include rem(padding, 16px);
+  border-radius: 0 0 2px 2px;
+  background-clip: padding-box;
+  box-sizing: border-box;
+}
+
+.box .box-content p {
+  color: #515c66;
+  text-transform: none;
+}
+

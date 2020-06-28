@@ -1,0 +1,9 @@
+langcode: en
+status: true
+name: Blog
+type: vactory_blog
+description: 'Manage your blog content.'
+help: ''
+new_revision: true
+preview_mode: 1
+display_submitted: false

@@ -1,0 +1,38 @@
+name: 'C27 - 4 card with image and tille and button view more'
+multiple: TRUE
+category: 'Content'
+enabled: TRUE
+limit: 4
+fields:
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': TRUE
+  image_alt:
+    type: text
+    label: 'text image alternative'
+  title:
+    type: text
+    label: 'Titre'
+    options:
+      '#required': TRUE
+  link:
+    type: url_extended
+    label: 'Lien'
+  link_target:
+    type: checkbox
+    label: "Ouvrir le lien dans une nouvelle onglet"
+extra_fields:
+  introduction:
+    type: textarea
+    label: 'Introduction'
+  link2:
+    type: url_extended
+    label: 'Lien'
+  link2_alt:
+    type: text
+    label: 'text du lien'
+  link2_target:
+    type: checkbox
+    label: "Ouvrir le lien dans une nouvelle onglet"

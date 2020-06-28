@@ -1,0 +1,38 @@
+<div class="t-bloc-partners">
+  {% set parrentClass = (extra_fields.mode > 0) ? 'vf-slick-mobile' : '' %}
+  {% if extra_fields.intro is not empty %}
+    <div class="t-block-parners intro text-center">
+      {{ extra_fields.intro }}
+    </div>
+  {% endif %}
+  <div class="t-block-partners-wrapper d-flex flex-wrap vf-slick-slider row-eq-height {{ parrentClass }}"
+       data-toshow="3"
+       data-dots="false"
+       data-arrows="true"
+       data-mobile-centermode="false">
+    {% for item in content %}
+
+      {% set image_uri = (item.image.0 is defined) ?  get_image(item.image.0) : "" %}
+      {% set lqip_image = image_uri|image_style('lqip') %}
+      {% set fluid_image = file_url(image_uri) %}
+      {% set image_alt = (item.image_alt is not empty) ? item.image_alt  : 'Image' %}
+
+
+      {% if extra_fields.mode > 0 %} <div class="col-lg-3 col-md-4 col-sm-6 col-12 card-partner"> {% endif %}
+      <div class="t-bloc-item-partner d-flex align-items-center flex-wrap justify-content-center">
+        <div class="t-partner-image d-flex justify-content-center align-items-center lazy-wrapper {% if extra_fields.mode > 0 %} mb-3 {% endif %}">
+          {% if item.site is not empty %} <a href="{{ item.site }}" target="_blank"> {% endif %}
+              <img class="img-fluid mb-3 lazyload"
+                   src="{{ lqip_image }}"
+                   data-src="{{ fluid_image }}"
+                   alt="{{ image_alt }}">
+            {% if item.site is not empty %} </a> {% endif %}
+        </div>
+        {% if item.title is not empty %}
+          <h5 class="text-center mt-auto"><strong>{{ item.title }}</strong></h5>
+        {% endif %}
+      </div>
+      {% if extra_fields.mode > 0 %} </div> {% endif %}
+    {% endfor %}
+  </div>
+</div>

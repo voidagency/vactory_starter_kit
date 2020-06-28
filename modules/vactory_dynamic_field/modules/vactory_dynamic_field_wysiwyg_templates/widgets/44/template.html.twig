@@ -1,0 +1,36 @@
+<div class="testimonial-single text-center my-5 p-1">
+    {% if extra_fields.intro is not empty %}
+        <div class="row text-center justify-content-center mb-3">
+            <div class="col-md-10 col-lg-8">
+            {% if extra_fields.intro is not empty %}
+                <p>{{ extra_fields.intro }}</p>
+            {% endif %}
+            </div>
+        </div>
+    {% endif %}
+    <div class="row vf-slick-slider" 
+        data-toshow="1"
+        data-dots="false"
+        data-arrows="true"
+        data-mobile-centermode="false">
+        {% for item in content %}
+            {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : '' %}
+            {% set profile_image = image_uri|image_style('medium') %}
+            {% set lqip_image = image_uri|image_style('lqip') %}
+            <div class="pt-3 pb-3">
+                <div class="mx-auto mb-2 lazy-small-square">
+                    <img alt="{{ item.image_alt }}"
+                        class="lazyload rounded-circle d-inline"
+                        src="{{ lqip_image }}"
+                        data-src="{{ profile_image }}">
+                </div>
+                <p class="mx-5"><i class='icon-quote-left mr-1'></i>{{ item.description }}</p>
+                <h4 class="mb-2">
+                    {{ item.name }}
+                </h4>
+                <p>{{ item.role }}</p>
+            </div>
+        {% endfor %}
+    </div>       
+</div>
+

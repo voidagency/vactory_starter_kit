@@ -1,0 +1,18 @@
+{% set widget_class = content.field_ar_element_width[0]['#markup'] %}
+{% set class_media_type = content.field_ar_media_type[0]['#plain_text']|clean_class %}
+
+<article class="item bk-white awb-chiffre {{ widget_class }}">
+  <div class="item-wrap">
+    <div class="header-content">
+      <ul class="filtres">
+        <li>
+          <a href="{{ content.thematic_link }}" class="tag"># {{ content.field_ar_thematic[0]['#plain_text'] }}</a>
+        </li>
+        <li><span class="media"><i class="icon icon-{{ class_media_type }}"></i></span></li>
+      </ul>
+    </div>
+    <div class="item-content">
+      {{ content.body }}
+    </div>
+  </div>
+</article>

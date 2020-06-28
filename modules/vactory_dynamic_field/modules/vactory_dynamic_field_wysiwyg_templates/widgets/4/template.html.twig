@@ -1,0 +1,37 @@
+<div class="row t-6-points-indices vf-slick-slider vf-slick-mobile slick-padding wow"
+     data-mobile-centermode="true"
+     data-mobile-centerpadding="40px">
+  {% for item in content %}
+
+    {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : "" %}
+    {% set lqip_image = (image_uri is not empty) ? image_uri|image_style('lqip') : ""%}
+    {% set reverse = (item.reverse > 0) ? 'flex-row-reverse d-flex justify-content-center' : '' %}
+    {% set profile_image = file_url(image_uri) %}
+    {% set imageAlt = (item.image_alt is not empty) ? item.image_alt : "Image" %}
+
+    <div class="col-md-4 t-item">
+      <div class="t-box lazy-wrapper">
+        {% if item.image is defined %}
+            <img alt="{{ imageAlt }}"
+                 class="img-fluid lazyload"
+                 src="{{ lqip_image }}"
+                 data-src="{{ file_url(profile_image) }}">
+            {% endif %}
+        <div class="t-box-description">
+          {% if item.number is not empty %}
+            <div class="t-box-description-number">
+              <p>
+                <span class='{{reverse}}'>{{item.textchiffre}}
+                  <span class="js-number-animate" data-number="{{ item.number }}">{{ 0 }}</span>
+                </span>
+              </p>
+            </div>
+          {% endif %}
+          {% if item.name is not empty %}
+            <p class="text-small">{{ item.name }}</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>

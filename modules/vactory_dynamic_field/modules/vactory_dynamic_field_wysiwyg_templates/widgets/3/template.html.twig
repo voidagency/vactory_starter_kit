@@ -1,0 +1,46 @@
+<div class="t-3cols-image-title-text-permalinks">
+  <div class="row vf-slick-slider vf-slick-mobile slick-padding justify-content-lg-center slick-arrows-mobile"
+       data-arrows="true"
+       data-mobile-arrows="true"
+  >
+    {% for item in content %}
+      {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : "" %}
+      {% set lqip_image = image_uri|image_style('lqip') %}
+      {% set fluid_image = file_url(image_uri) %}
+      {% set _imgVideo = (item.video is not empty) ? 'js-img-video' : null %}
+      {% set imageAlt = (item.image_alt is not empty) ? item.image_alt : item.title %}
+      {% set link_target = (item.link_target > 0) ? '_blank' : '_self' %}
+      {% set lazyClass = (item.video is empty and item.link is empty) ? 'lazy-wrapper' : '' %}
+
+      <div class="col-md-4 {{ _imgVideo }}">
+        <div class="t-block-image-description">
+          <div class="t-3b-image block-image {{ lazyClass }}">
+            {% if item.video is not empty %}
+              <a class="image-scale lazy-wrapper" data-fancybox href="{{ "https://www.youtube-nocookie.com/embed/" ~ item.video }}">
+            {% elseif item.link is not empty %}
+                <a class="image-scale lazy-wrapper" href="{{ item.link }}" target="{{ link_target }}">
+            {% endif %}
+                <img data-src="{{ fluid_image }}"
+                     src="{{ lqip_image }}"
+                     class="img-fluid lazyload"
+                     alt="{{ imageAlt }}">
+                  {% if item.video is not empty or item.link is not empty %} </a>{% endif %}
+          </div>
+          <div class="t-3cols-description">
+            {% if item.title is not empty %}
+              <h3 class="h4">{{ item.title }}</h3>
+            {% endif %}
+            {% if item.description is not empty %}
+              <p>{{ item.description }}</p>
+            {% endif %}
+            {% if item.video is not empty %}
+              <a class="permalink" data-fancybox href="{{ "https://www.youtube-nocookie.com/embed/" ~ item.video }}">{{ 'Voir la video' | t }}</a>
+            {% elseif item.link is not empty and item.link_alt is not empty %}
+              <a class="permalink" target="{{ link_target }}" href="{{ item.link }}">{{ item.link_alt }}</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>

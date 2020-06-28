@@ -1,0 +1,31 @@
+langcode: en
+status: null
+dependencies: {  }
+id: vactory_mailchimp_newsletter
+title: 'Inscription à la newsletter'
+mc_lists:
+  f332b1744b: f332b1744b
+mode: 1
+mergefields:
+  EMAIL: true
+  BIRTHDAY: 0
+  FNAME: 0
+  LNAME: 0
+description: 'Stay informed.'
+doublein: false
+send_welcome: null
+include_interest_groups: false
+settings:
+  path: ''
+  submit_button: Submit
+  confirmation_message: 'You have been successfully subscribed.'
+  destination: ''
+  mergefields:
+    EMAIL: 'O:8:"stdClass":8:{s:3:"tag";s:5:"EMAIL";s:4:"name";s:13:"Email Address";s:4:"type";s:5:"email";s:8:"required";b:1;s:13:"default_value";s:0:"";s:6:"public";b:1;s:13:"display_order";i:1;s:7:"options";O:8:"stdClass":1:{s:4:"size";i:25;}}'
+    BIRTHDAY: 0
+    FNAME: 0
+    LNAME: 0
+  description: 'Stay informed.'
+  doublein: 0
+  include_interest_groups: 0
+  safe_interest_groups: 0

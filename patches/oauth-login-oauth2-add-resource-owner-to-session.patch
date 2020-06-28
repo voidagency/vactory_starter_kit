@@ -1,0 +1,12 @@
+diff --git a/modules/contrib/oauth_login_oauth2/src/Controller/oauth_login_oauth2Controller.php b/modules/contrib/oauth_login_oauth2/src/Controller/oauth_login_oauth2Controller.php
+index d5ca34131..6e07334c9 100644
+--- a/modules/contrib/oauth_login_oauth2/src/Controller/oauth_login_oauth2Controller.php
++++ b/modules/contrib/oauth_login_oauth2/src/Controller/oauth_login_oauth2Controller.php
+@@ -115,6 +115,7 @@ public function oauth_login_oauth2_mo_login()
+             $resourceownerdetailsurl .= $accessToken;
+         }
+         $resourceOwner = UserResource::getResourceOwner($resourceownerdetailsurl, $accessToken);
++        $_SESSION['resource_owner'] = $resourceOwner;
+         /*
+         *   Test Configuration
+         */

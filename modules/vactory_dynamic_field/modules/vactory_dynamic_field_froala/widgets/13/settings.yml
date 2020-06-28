@@ -1,0 +1,28 @@
+name: '13 - Froala - Content 3 Thumbnails Top & Full Text'
+multiple: FALSE
+category: 'Froala'
+enabled: TRUE
+fields:
+  image_1:
+    type: image
+    label: 'Thumbnail 1'
+  image_alt_1:
+    type: text
+    label: 'Text alternatif 1'
+  image_2:
+    type: image
+    label: 'Thumbnail 2'
+  image_alt_2:
+    type: text
+    label: 'Text alternatif 2'
+  image_3:
+    type: image
+    label: 'Thumbnail 3'
+  image_alt_3:
+    type: text
+    label: 'Text alternatif 3'
+  description:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'full_html'

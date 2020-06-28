@@ -1,0 +1,112 @@
+$vf4-bg-bottom: $gray-700;
+$vf4-text-color: $white;
+$vf4-bg-top: $gray-200;
+$vf4-border-footer: 1px solid rgba($white,.15);
+$vf4-footer-top-text-color: $black;
+
+@include nav-color(vf-footer--variant4 , $vf4-text-color);
+
+.vf-footer.vf-footer--variant4 {
+  .vf-footer__top {
+    background-color: $vf4-bg-top;
+    @include rem(padding-top, 30px);
+    @include rem(padding-bottom, 30px);
+
+    .block-footer-app {
+      a{
+        @include rem(margin-right, 30px);
+      }
+    }
+  }
+  .vf-footer__bottom {
+    background-color: $vf4-bg-bottom;
+    position: relative;
+
+
+    [class*="block-footer-menu"] {
+      @include rem(padding-top, 20px);
+      @include rem(padding-bottom, 20px);
+    }
+
+    .last-block {
+      border-top:$vf4-border-footer;
+      color: $vf4-text-color;
+      @include rem(padding-top, 10px);
+      @include rem(padding-bottom, 20px);
+      @include rem(font-size, 16px);
+      @include rem(line-height, 24px);
+      font-weight:300;
+    }
+
+
+  }
+}
+
+@include media-breakpoint-up(lg) {
+  .vf-footer.vf-footer--variant4 {
+    .vf-footer__top {
+      .first-block {
+        justify-content: space-between;
+        .field__item {
+          display: flex;
+          flex-direction: row;
+          height: 100%;
+        }
+      }
+
+      .block-icon-store {
+        margin-bottom: 0;
+      }
+    }
+    .vf-footer__bottom {
+      .last-block {
+        @include rem(padding-top, 20px);
+        @include rem(padding-bottom, 30px);
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .block-footer-realisation_void,
+      .block-footer-copyright {
+        .field__item {
+          display: flex;
+          flex-direction: row;
+        }
+      }
+    }
+  }
+}
+
+@include media-breakpoint-down(lg) {
+  .vf-footer.vf-footer--variant4 {
+    .vf-footer__top {
+      text-align: center;
+      .first-block {
+        flex-direction:column;
+        .field__item {
+          flex-direction:column;
+          p {
+            margin-bottom: 16px;
+          }
+        }
+        .block-social-media {
+          flex-direction:column;
+        }
+      }
+      .block-icon-store {
+        @include rem(margin-bottom, 10px);
+        a{
+          &:last-child{
+            margin-right: 0;
+          }
+        }
+      }
+    }
+    .vf-footer__bottom {
+      .last-block {
+        text-align: center;
+        flex-direction:column;
+      }
+    }
+  }
+}

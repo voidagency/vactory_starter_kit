@@ -1,0 +1,16 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - focal_point
+name: locator_infowindow
+label: 'Locator InfoWindow'
+effects:
+  a68a9bfd-b64b-4652-8ce0-42008f7f26c5:
+    uuid: a68a9bfd-b64b-4652-8ce0-42008f7f26c5
+    id: focal_point_scale_and_crop
+    weight: 1
+    data:
+      width: 200
+      height: 200
+      crop_type: focal_point

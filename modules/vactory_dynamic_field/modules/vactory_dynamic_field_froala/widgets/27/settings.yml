@@ -1,0 +1,22 @@
+name: '27 - Froala - Content 2 Blocks Image, Description'
+multiple: TRUE
+category: 'Froala'
+enabled: TRUE
+limit: 2
+fields:
+  image:
+    type: image
+    label: 'Image'
+  image_alt:
+    type: text
+    label: 'Text alternatif'
+  description:
+    type: textarea
+    label: 'Description'
+extra_fields:
+  title:
+    type: text
+    label: 'Titre'
+  description:
+    type: textarea
+    label: 'Description'

@@ -1,0 +1,7 @@
+name: Vactory Single Sign On (VSSO)
+description: This module customize miniOrange OAuth Login contrib module.
+type: module
+core: 8.x
+configure: vactory_sso.settings
+
+

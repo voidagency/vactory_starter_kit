@@ -1,0 +1,31 @@
+{% set image_uri = (content.0.image.0 is defined) ? get_image(content.0.image.0) : "" %}
+{% set lqip_image = image_uri|image_style('lqip') %}
+{% set fluid_image = file_url(image_uri) %}
+{% set modeInverse = (content.0.mode > 0) ? 'ml-sm-auto mr-sm-0 m-auto' : 'm-auto m-md-0' %}
+<div class="t-background-with-card py-5 lazyload"
+     data-bg="{{ fluid_image }}"
+     style="background-image: url({{ lqip_image }})">
+  <div class="container">
+    <div class="row text-left">
+      <div class="col-12 col-md-7 col-lg-5 col-sm-9 {{ modeInverse }}">
+        <div class="p-4 shadow t-background-with-card-details">
+          {% if content.0.title is not empty %}
+            <h2>{{ content.0.title }}</h2>
+          {% endif %}
+          {% if content.0.description is not empty %}
+            <p>
+              {{ content.0.description }}
+            </p>
+          {% endif %}
+          {% if content.0.link is not empty and content.0.link_alt is not empty %}
+            {% set link_target = (content.0.link_target > 0) ? '_blank' : '_self' %}
+            <div>
+              <a class="btn btn-primary" href="{{ content.0.link }}"
+                 target="{{ link_target }}">{{ content.0.link_alt }}</a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

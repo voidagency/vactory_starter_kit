@@ -1,0 +1,21 @@
+name: 'C17 - Slider vidéos'
+multiple: TRUE
+category: 'Sliders'
+enabled: TRUE
+fields:
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': TRUE
+  image_alt:
+    type: text
+    label: 'Image alt'
+  video:
+    type: text
+    label: 'Video ID'
+    options:
+      '#description': '<b><i class="link">How ?</i></b><br><b>URL Example</b>: https://www.youtube.com/watch?v=BZDyr2OpWBU <br> <b>Value to insert</b>: BZDyr2OpWBU'
+  titleVideo:
+    type: text
+    label: 'Titre de video'

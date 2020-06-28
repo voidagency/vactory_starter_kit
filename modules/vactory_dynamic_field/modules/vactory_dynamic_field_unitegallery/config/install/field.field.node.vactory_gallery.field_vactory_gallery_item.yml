@@ -1,0 +1,27 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_vactory_gallery_item
+    - node.type.vactory_gallery
+  module:
+    - vactory_dynamic_field
+
+id: node.vactory_gallery.field_vactory_gallery_item
+field_name: field_vactory_gallery_item
+entity_type: node
+bundle: vactory_gallery
+label: 'Gallery item'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  allowed_providers:
+    vactory_unitegallery: vactory_unitegallery
+    vactory_bootstrap: 0
+    vactory_froala: 0
+    vactory_dynamic_sliders: 0
+    vactory_wysiwyg_templates: 0
+field_type: field_wysiwyg_dynamic

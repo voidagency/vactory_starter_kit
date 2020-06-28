@@ -1,0 +1,17 @@
+<div class="fdb-block">
+    <div class="row justify-content-center">
+        <div class="col-12 col-sm-10 col-md-8 col-lg-4 text-center">
+            {% if extra_fields.title is not empty %}
+                <p class="text-h3">{{ extra_fields.title }}</p>
+            {% endif %}
+            <p class="text-h2">
+                {% for item in content %}
+                    {% if item.link is not empty and item.name is not empty %}
+                        {% set link_target = (item.link_target > 0) ? '_blank' : '_self' %}
+                        <a href="{{ item.link }}" target="{{ link_target }}" class="mx-2"><i class="icon-{{ item.name }}"><!-- # --></i></a>
+                    {% endif %}
+                {% endfor %}
+            </p>
+        </div>
+    </div>
+</div>

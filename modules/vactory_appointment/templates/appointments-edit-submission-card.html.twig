@@ -1,0 +1,55 @@
+{#
+/**
+ * @file
+ * Theme override to display a view of unformatted rows.
+ *
+ * Available variables:
+ * - title: The title of this group of rows. May be empty.
+ * - rows: A list of the view's row items.
+ *   - attributes: The row's HTML attributes.
+ *   - content: The row's content.
+ * - view: The view object.
+ * - default_row_class: A flag indicating whether default classes should be
+ *   used on rows.
+ *
+ * @see template_preprocess_views_view_unformatted()
+ */
+#}
+{% if title %}
+  <h3>{{ title }}</h3>
+{% endif %}
+{% for row in rows %}
+  {%
+    set row_classes = [
+      default_row_class ? 'view__row',
+      'card card--inline',
+      'mb-3',
+    ]
+  %}
+  <article{{ row.attributes.addClass(row_classes) }}>
+    <div class="card-col position-relative card-body--inline">
+      <div class="card-body">
+        {% set appointment = row.content['#row'] %}
+        {% set first_name = appointment._entity.adviser_id.entity.field_first_name.value %}
+        {% set last_name = appointment._entity.adviser_id.entity.field_last_name.value %}
+        {% set agency_object = appointment._entity.appointment_agency.entity %}
+        {% set motif_object = appointment._entity.appointment_type.entity %}
+        {% set edit_url_params = {'agency': agency_object.field_path_agency.value, 'appointment_type': motif_object.field_path_motif_name.value} %}
+        {% set edit_appointment_id = row.content.appointment_id|url_encode %}
+        {% set edit_url = path('vactory_appointment.appointment_submit_form', edit_url_params) ~ '?aid=' ~ edit_appointment_id  %}
+        <h4 class="card-title">
+          {{ appointment._entity.title.value }}
+        </h4>
+        <div class="card-text">
+          <p>{{ 'Avec'|t }} {{ first_name|capitalize }} {{ last_name|upper }}</p>
+          <p>{{ 'Agence de rendez-vous' }} : {{ agency_object.name.value }}</p>
+          <p>{{ 'Type de rendez-vous' }} : {{ motif_object.name.value }}</p>
+        </div>
+        <div>
+          <a href="{{ edit_url }}" class="btn btn-primary">{{ 'Modifier'|t }}</a>
+          <a href="{{ url('vactory_appointment.appointment_delete_submit_form', {'appointment_id': row.content.appointment_id|url_encode}) }}" class="btn btn-danger">{{ 'Supprimer'|t }}</a>
+        </div>
+      </div>
+    </div>
+  </article>
+{% endfor %}

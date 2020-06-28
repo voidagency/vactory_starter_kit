@@ -1,0 +1,34 @@
+name: '87 - Froala - Features 2 Blocks Image Inline With Title & Description'
+multiple: TRUE
+category: 'Froala'
+enabled: TRUE
+limit: 2
+fields:
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': TRUE
+  image_alt:
+    type: text
+    label: 'Text alternatif'
+  title:
+    type: text
+    label: 'Titre'
+    options:
+      '#required': TRUE
+  description:
+    type: textarea
+    label: 'Description'
+    options:
+      '#required': TRUE
+extra_fields:
+  title:
+    type: text
+    label: 'Titre'
+  image:
+    type: image
+    label: 'Image'
+  image_alt:
+    type: text
+    label: 'Text alternatif'

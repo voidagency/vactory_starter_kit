@@ -1,0 +1,71 @@
+{#
+/**
+ * @file
+ * Article Component.
+ * themes/interface/src/scss/stylesheets/components/article/_article.scss
+ */
+#}
+
+{% if classes is not defined %}
+    {% set classes = [] %}
+{% endif %}
+{% set classes = classes|merge(['card']) %}
+
+<article {{ attributes.addClass(classes) }}>
+    {% if is_anonymous %}
+        <div class="flag flag-favorite-academy js-flag-favorite-academy-2 action-flag">
+            <a href="{{ url('user.login') }} {{- redirect_params }}" class="favorite-course prefix-icon-heart"></a>
+        </div>
+    {% else %}
+        {{ content.flag_favorite_academy }}
+    {% endif %}
+    <div class="card-image__wrapper">
+        {{ addAttributes(content.field_vactory_media, {'class': ['vf-card__image', 'img-fluid']}) }}
+    </div>
+    <div class="card-body">
+        {{ contextual_links }}
+        {{ title_prefix }}
+        <h4{{ title_attributes }} class="card-title">
+            {% if  url is null %}
+                <span class="link font-semibold text-uppercase font-20">{{ label }}</span>
+            {% else %}
+                <a href="{{ url }}" rel="bookmark" class="link font-semibold text-uppercase font-20">{{ label }}</a>
+            {% endif %}
+        </h4>
+        {{ title_suffix }}
+
+       
+          {#% <h6 class="card-subtitle">
+            <span class="badge badge-primary">{{ content.field_vactory_theme.0['#plain_text'] }}</span>
+            {{ content.field_vactory_date.0['#text']|date('d/m/Y') }}
+          </h6>#}
+          <p>{{ instructor.first_name|capitalize }} {{ instructor.last_name|capitalize }}</p>
+          <div class="star-rating mb-2">
+            {% set rating = content.rate_vote_widget["#results"].fivestar.vote_average %}
+            {% set rating = content.rate_vote_widget["#results"].fivestar.vote_average %}
+            {% for i in 0..4 %}
+              {% if rating >=1 %}
+                <span class="favorite-star checked-full"></span>
+              {% elseif rating <1  and rating >0 %}  
+                <span class="favorite-star checked-half"></span>
+              {% else %}
+                <span class="favorite-star"></span>
+              {% endif %}
+              {% set rating = rating - 1 %}
+            {% endfor %}
+            {% if content.rate_vote_widget["#results"].fivestar.vote_count is not null %}
+              <span class='ml-2'>{{ content.rate_vote_widget["#results"].fivestar.vote_average }} ({{ content.rate_vote_widget["#results"].fivestar.vote_count }} {{ 'Notes'|t }})</span>
+            {% endif %}
+          </div>
+          {#{{ content.rate_vote_widget}}#}
+          <span class='badge-primary badge-top'>{{ 'Drurée'|t }} {{ content.field_academy_duree.0['#context']['value'] }}</span>
+
+        {{ noWrapper(hideLabel(content.field_vactory_excerpt)) }}
+
+        {% if url is not null %}
+            <div class="card-read-more">
+                <a href="{{ url }}" class="btn btn-primary">{{ 'Read more'|t }}</a>
+            </div>
+        {% endif %}
+    </div>
+</article>

@@ -1,0 +1,32 @@
+<div class="t-bloc-partners">
+
+    <div class="t-block-parners intro text-center">
+      <p>
+        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's
+        standard dummy text ever since the 1500s.
+      </p>
+    </div>
+  <div class="t-block-partners-wrapper d-flex flex-wrap vf-slick-slider row-eq-height vf-slick-mobile"
+       data-toshow="3"
+       data-dots="false"
+       data-arrows="true"
+       data-mobile-centermode="false">
+    {% for item in 0..3 %}
+      {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/205/120.jpg" %}
+      <div class="col-lg-3 col-md-4 col-sm-6 col-12 card-partner">
+      <div class="t-bloc-item-partner d-flex align-items-center flex-wrap justify-content-center">
+        <div class="t-partner-image d-flex justify-content-center align-items-center lazy-wrapper mb-3">
+          <a href="#" target="_blank">
+            <img class="img-fluid mb-3 lazyload"
+                 src="{{ content.image_placeholder }}"
+                 data-src="{{ placehold }}"
+                 alt="Image Alt">
+             </a>
+        </div>
+          <h5 class="text-center mt-auto"><strong>Image cliquable</strong></h5>
+      </div>
+       </div>
+    {% endfor %}
+  </div>
+</div>
+

@@ -1,0 +1,34 @@
+<?php
+
+/**
+ * @file
+ * Primary hooks for vactory search overlay.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_search_overlay_theme($existing, $type, $theme, $path) {
+  return [
+    'block_vactory_search_overlay_variant1' => [
+      'variables' => ['form' => ''],
+      'template'  => 'variant1',
+    ],
+    'block_vactory_search_overlay_variant2' => [
+      'variables' => ['form' => ''],
+      'template'  => 'variant2',
+    ],
+    'search_overlay_form'                   => [
+      'render element' => 'form',
+      'template'       => 'search-overlay-form',
+    ],
+    'vactory_search_overlay_form_variant1'  => [
+      'render element' => 'form',
+      'template'       => 'search-overlay-form-variant1',
+    ],
+    'vactory_search_overlay_form_variant2'  => [
+      'render element' => 'form',
+      'template'       => 'search-overlay-form-variant2',
+    ],
+  ];
+}

@@ -1,0 +1,35 @@
+name: '7 - Froala - Content Title, Sub-title, CTA & Fluid Image'
+multiple: FALSE
+category: 'Froala'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: 'Titre'
+  subtitle:
+    type: text
+    label: 'Sub-Title'
+  link_1:
+    type: url_extended
+    label: 'Link 1'
+  link_alt_1:
+    type: text
+    label: 'Link Alt 1'
+  link_target_1:
+    type: checkbox
+    label: 'Ouvrir dans une nouvelle fenêtre'
+  link_2:
+    type: url_extended
+    label: 'Link 2'
+  link_alt_2:
+    type: text
+    label: 'Link Alt 2'
+  link_target_2:
+    type: checkbox
+    label: 'Ouvrir dans une nouvelle fenêtre'
+  image:
+    type: image
+    label: 'Fluid Image'
+  image_alt:
+    type: text
+    label: 'Text alternatif'

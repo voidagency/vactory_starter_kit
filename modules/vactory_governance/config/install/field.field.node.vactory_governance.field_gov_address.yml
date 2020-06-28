@@ -1,0 +1,46 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_gov_address
+    - node.type.vactory_governance
+  module:
+    - address
+id: node.vactory_governance.field_gov_address
+field_name: field_gov_address
+entity_type: node
+bundle: vactory_governance
+label: Address
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  available_countries: {  }
+  langcode_override: ''
+  field_overrides:
+    givenName:
+      override: hidden
+    additionalName:
+      override: hidden
+    familyName:
+      override: hidden
+    organization:
+      override: hidden
+    addressLine1:
+      override: required
+    addressLine2:
+      override: optional
+    postalCode:
+      override: optional
+    sortingCode:
+      override: hidden
+    dependentLocality:
+      override: hidden
+    locality:
+      override: optional
+    administrativeArea:
+      override: hidden
+  fields: {  }
+field_type: address

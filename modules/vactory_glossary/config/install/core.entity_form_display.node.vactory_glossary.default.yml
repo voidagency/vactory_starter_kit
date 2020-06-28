@@ -1,0 +1,120 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.vactory_glossary.body
+    - field.field.node.vactory_glossary.field_vactory_seo_status
+    - field.field.node.vactory_glossary.field_vactory_taxonomy_1
+    - node.type.vactory_glossary
+  module:
+    - path
+    - text
+    - yoast_seo
+id: node.vactory_glossary.default
+targetEntityType: node
+bundle: vactory_glossary
+mode: default
+content:
+  body:
+    type: text_textarea_with_summary
+    weight: 11
+    settings:
+      rows: 9
+      summary_rows: 3
+      placeholder: ''
+    third_party_settings: {  }
+    region: content
+  created:
+    type: datetime_timestamp
+    weight: 4
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_vactory_seo_status:
+    weight: 12
+    settings:
+      edit_title: false
+      edit_description: false
+    third_party_settings: {  }
+    type: yoast_seo_widget
+    region: content
+  field_vactory_taxonomy_1:
+    weight: 2
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  langcode:
+    type: language_select
+    weight: 1
+    region: content
+    settings:
+      include_locked: true
+    third_party_settings: {  }
+  path:
+    type: path
+    weight: 8
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  promote:
+    type: boolean_checkbox
+    settings:
+      display_label: true
+    weight: 6
+    region: content
+    third_party_settings: {  }
+  publish_on:
+    type: datetime_timestamp_no_default
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  status:
+    type: boolean_checkbox
+    settings:
+      display_label: true
+    weight: 10
+    region: content
+    third_party_settings: {  }
+  sticky:
+    type: boolean_checkbox
+    settings:
+      display_label: true
+    weight: 7
+    region: content
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  translation:
+    weight: 5
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  uid:
+    type: entity_reference_autocomplete
+    weight: 3
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    region: content
+    third_party_settings: {  }
+  unpublish_on:
+    type: datetime_timestamp_no_default
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  url_redirects:
+    weight: 9
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden: {  }

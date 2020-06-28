@@ -1,0 +1,12 @@
+<div class="fdb-block">
+    <div class="row">
+        <div class="col text-left">
+            {% if content.0.title is not empty %}
+                <h2>{{ content.0.title }}</h2>
+            {% endif %}
+            {% if content.0.description is not empty %}
+                <div>{{ content.0.description.value|raw }}</div>
+            {% endif %}
+        </div>
+    </div>
+</div>

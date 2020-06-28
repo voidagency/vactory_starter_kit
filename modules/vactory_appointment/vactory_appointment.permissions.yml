@@ -1,0 +1,10 @@
+administer appointments:
+  title: 'Administer appointments'
+add appointments:
+  title: 'Add appointments'
+edit appointments:
+  title: 'Edit appointments'
+delete appointments:
+  title: 'Delete appointments'
+view appointments:
+  title: 'View appointments'

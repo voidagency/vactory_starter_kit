@@ -1,0 +1,49 @@
+<div class="t-key-figures-wrapper">
+  <div class="row row-eq-height t-key-figures vf-slick-slider vf-slick-mobile">
+    {% for item in content %}
+      {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : "" %}
+      {% set lqip_image = (image_uri is not empty) ? image_uri|image_style('lqip') : ""%}
+      {% set reverse = (item.reverse > 0) ? 'flex-row-reverse d-flex justify-content-center' : '' %}
+      {% set fluid_image = file_url(image_uri) %}
+      {% set image_alt = (item.image_alt is not empty) ? item.image_alt : "Image" %}
+      <div class="col-sm-6 col-lg-4">
+        <div class="shadow text-center h-100 py-5 px-3">
+          {% if item.image.0 is not empty %}
+            <div class="t-key-figures-img mb-4 lazy-wrapper">
+              <img class="lazyload"
+                   src="{{ lqip_image }}"
+                   data-src="{{ fluid_image }}"
+                   alt="{{ image_alt }}">
+            </div>
+          {% endif %}
+          {% if item.chiffre is not empty or item.textchiffre is not empty %}
+            <p class="nbr stroke-style mb-4 wow">
+              {% if item.chiffre is not empty %}
+              <span class='{{reverse}}'>{{ (item.textchiffre is not empty) ? item.textchiffre : ''}}
+                <span class="js-number-animate" data-number="{{ item.chiffre }}">{{ 0 }}</span>
+              </span>
+              {% endif %}
+            </p>
+          {% endif %}
+          {% if item.description is not empty %}
+            <p><strong>{{ item.description }}</strong></p>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  {% if extra_fields.extra_description.value is not empty %}
+    <div class="row">
+      <div class="t-key-figures-details mt-lg-4 mt-3 mb-3 col-12">
+        {{ extra_fields.extra_description.value | raw }}
+      </div>
+      {% if extra_fields.link is not empty and extra_fields.link_alt is not empty %}
+        {% set link_target = (extra_fields.link_target > 0) ? '_blank' : '_self' %}
+        <p class="mx-auto">
+          <a href="{{ extra_fields.link }}" target="{{ link_target }}"
+             class="btn btn-lg btn-outline-primary">{{ extra_fields.link_alt }}</a>
+        </p>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>

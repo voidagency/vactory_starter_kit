@@ -1,0 +1,31 @@
+name: 'C45 - Testimonials image, description & name'
+multiple: TRUE
+category: 'Testimonials'
+enabled: TRUE
+fields:
+  description:
+    type: textarea
+    label: 'Description' 
+  name:
+    type: text
+    label: 'Name'
+    options:
+      '#required': TRUE
+  role:
+    type: text
+    label: 'Role'
+  image:
+    type: image
+    label: 'Image Profile'
+    options:
+      '#required': TRUE
+  image_alt:
+      type: text
+      label: 'Text alternatif'
+extra_fields:
+  intro:
+    type: textarea
+    lable: 'Introduction'
+  mode:
+    type: checkbox
+    label: 'Active reverse mode'    

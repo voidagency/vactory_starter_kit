@@ -1,0 +1,14 @@
+langcode: en
+status: true
+dependencies: {  }
+name: partner_image_style_x2
+label: 'Partner logo x2'
+effects:
+  a0e01787-90d9-41af-93f5-a17495dd08ac:
+    uuid: a0e01787-90d9-41af-93f5-a17495dd08ac
+    id: image_scale
+    weight: 1
+    data:
+      width: null
+      height: 80
+      upscale: false

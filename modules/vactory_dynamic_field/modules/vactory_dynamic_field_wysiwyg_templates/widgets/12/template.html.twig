@@ -1,0 +1,27 @@
+{% set image_uri = (content.0.image.0 is defined) ? get_image(content.0.image.0) : "" %}
+{% set fluid_image = file_url(image_uri) %}
+{% set lqip_image = image_uri|image_style('lqip') %}
+{% set _setBg = (content.0.image_bg > 0) ? 'block-with-bg' : null %}
+{% set imageAlt = (content.0.image_alt is not empty) ? content.0.image_alt : "Image" %}
+
+<div class="t-thight-image-text">
+  <div class="row">
+    <div class="col-md-6">
+      <div class="t-thight-image-text-image {{ _setBg }}">
+        <div class="t-thight-image-text-image-container lazy-wrapper">
+          <img class="lazyload"
+               src="{{ lqip_image }}"
+               data-src="{{ fluid_image }}"
+               alt="{{ imageAlt }}">
+        </div>
+      </div>
+    </div>
+    {% if content.0.description is not empty %}
+      <div class="col-md-6">
+        <div class="t-description">
+          {{ content.0.description.value|raw }}
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>

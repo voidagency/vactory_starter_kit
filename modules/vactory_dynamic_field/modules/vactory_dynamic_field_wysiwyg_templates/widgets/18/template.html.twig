@@ -1,0 +1,43 @@
+<div class="t-boxed-text-with-icon">
+  {% if extra_fields.bigtitle is not empty %}
+    <h3>{{ extra_fields.bigtitle }}</h3>
+  {% endif %}
+  <div class="row">
+    {% for item in content %}
+      {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : "" %}
+      {% set lqip_image = image_uri|image_style('lqip') %}
+      {% set fluid_image = file_url(image_uri) %}
+      {% set imageAlt = (item.image_alt is not empty) ? item.image_alt : item.title %}
+
+      <div class="col-md-12 t-boxed-parent">
+        <div class="t-item-box">
+          <div class="d-flex t-item flex-column flex-lg-row">
+            <div class="t-item-img">
+              {% if item.image is not empty %}
+                <img class="img-fluid lazyload"
+                     src="{{ lqip_image }}"
+                     data-src="{{ fluid_image }}"
+                     alt="{{ imageAlt }}">
+              {% endif %}
+            </div>
+            <div class="t-item-details">
+              {% if item.title is not empty %}
+                <h3 class="h4">{{ item.title }}</h3>
+              {% endif %}
+              {% if item.description is not empty %}
+                <p>{{ item.description }}</p>
+              {% endif %}
+            </div>
+          </div>
+          {% if item.details.value is not empty %}
+            <div class="t-item">
+              <div class="t-boxed-details">
+                {{ item.details.value|raw }}
+              </div>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>

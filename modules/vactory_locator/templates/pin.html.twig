@@ -1,0 +1,114 @@
+{#
+/**
+ * @file
+ * Default theme implementation for locator pin.
+ *
+ * Available variables:
+ * - name : the item name.
+ * - field_locator_info : array contain item localisation info (lat & lon).
+ * - field_locator_adress_address_line1 : item adresse .
+ * - field_locator_adress_address_line2 : the second item adresse.
+ * - field_locator_category : item category.
+ * - field_locator_adress_country_code :  item country (this return the full country name).
+ * - field_locator_adress_locality : item city.
+ * - field_locator_adress_postal_code :  item postal code.
+ * - field_locator_email : item E-mail.
+ * - field_locator_description : description about item.
+ * - field_locator_image : uri item image.
+ * - field_locator_fax : item fax.
+ * - field_locator_phone : item phone number.
+ * - field_locator_autre : other information about item (we have 4 other available information juste add
+ *   item number (_number) in the end like this field_locator_autre_2, field_locator_autre_3, ... ).
+ */
+#}
+
+<div>
+  <ul>
+    <li>
+      <label> {{ 'Name :' | t }} </label>
+      <p> {{ name }} </p>
+      <div class="interaire">
+        <a href="#" class="itineraire-btn" data-lat="{{field_locator_info['lat']}}"
+          data-lon="{{field_locator_info['lon']}}">{{"Itinéraire"|t}}</a>
+          </br>
+        <a href="#" class="gmaps-btn" data-lat="{{field_locator_info['lat']}}"
+          data-lon="{{field_locator_info['lon']}}">{{"Afficher sur Gmaps"|t}}</a>
+      </div>
+    </li>
+    <li>
+      <label> {{ 'Localisation Information :' | t }} </label>
+      <ul>
+        <li>
+          <p> {{ field_locator_info.lat }} </p>
+        </li>
+        <li>
+          <p> {{ field_locator_info.lon }} </p>
+        </li>
+      </ul>
+    </li>
+    <li>
+      <label> {{ 'First adresse' | t }} </label>
+      <p> {{ field_locator_adress_address_line1 }}</br><span id="distance"></span> </p>
+    </li>
+    <li>
+      <label> {{ 'Second adresse' | t }} </label>
+      <p> {{ field_locator_adress_address_line2 }} </p>
+    </li>
+    <li>
+      <label> {{ 'Category' | t }} </label>
+      <p> {{ field_locator_category }} </p>
+    </li>
+    <li>
+      <label> {{ 'Country' | t }} </label>
+      <p> {{ field_locator_adress_country_code }} </p>
+    </li>
+    <li>
+      <label> {{ 'City' | t }} </label>
+      <p> {{ field_locator_adress_locality }} </p>
+    </li>
+    <li>
+      <label> {{ 'Postal Code' | t }} </label>
+      <p> {{ field_locator_adress_postal_code }} </p>
+    </li>
+    <li>
+      <label> {{ 'Adresse E-mail' | t }} </label>
+      <p> {{ field_locator_email }} </p>
+    </li>
+    <li>
+      <label> {{ 'Description' | t }} </label>
+      <p> {{ field_locator_description }} </p>
+    </li>
+    <li>
+      <label> {{ 'Image' | t }} </label>
+      <p><img src="{{ field_locator_image }}"></p>
+    </li>
+    <li>
+      <label> {{ 'Fax Number' | t }} </label>
+      <p> {{ field_locator_fax }} </p>
+    </li>
+    <li>
+      <label> {{ 'Phone Number' | t }} </label>
+      <p> {{ field_locator_phone }} </p>
+    </li>
+    <li>
+      <label> {{ 'Other Information' | t }} </label>
+      <ul>
+        <li>
+          <p> {{ field_locator_autre }} </p>
+        </li>
+        <li>
+          <p> {{ field_locator_autre_2 }} </p>
+        </li>
+        <li>
+          <p> {{ field_locator_autre_3 }} </p>
+        </li>
+        <li>
+          <p> {{ field_locator_autre_4 }} </p>
+        </li>
+        <li>
+          <p> {{ field_locator_autre_5 }} </p>
+        </li>
+      </ul>
+    </li>
+  </ul>
+</div>

@@ -1,0 +1,17 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.vactory_testimonials_profils
+  module:
+    - content_translation
+third_party_settings:
+  content_translation:
+    enabled: true
+    bundle_settings:
+      untranslatable_fields_hide: '0'
+id: taxonomy_term.vactory_testimonials_profils
+target_entity_type_id: taxonomy_term
+target_bundle: vactory_testimonials_profils
+default_langcode: current_interface
+language_alterable: true

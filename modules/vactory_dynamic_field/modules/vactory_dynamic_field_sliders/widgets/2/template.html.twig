@@ -1,0 +1,35 @@
+{# https://codyhouse.co/demo/pointy-slider/index.html #}
+
+{{ attach_library('vactory_dynamic_field_sliders/variant2') }}
+
+<div class="vf-slider--pointy-slider">
+  <ul class="cd-slider">
+    {% for item in content %}
+      {% set is_visible = (loop.first) ? 'is-visible' : '' %}
+      {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : '' %}
+      {% set lqip_image = image_uri|image_style('lqip') %}
+      {% set image = image_uri|image_style('vactory_slider2_image') %}
+
+      <li class="{{ is_visible }}">
+        <div class="cd-half-block image lazyload"
+             data-bg="{{ image }}"
+             style="background-image: url('{{ lqip_image }}');"></div>
+
+        <div class="cd-half-block content">
+          <div class="animated">
+            {% if item.title is not empty %}
+              <h2>{{ item.title }}</h2>
+            {% endif %}
+
+            {% if item.content.value is not empty %}
+              <div>{{ item.content.value | raw }}</div>
+            {% endif %}
+            {% if item.cta_url is not empty and item.cta_alt is not empty %}
+              <a href="{{ item.cta_url }}" class="btn">{{ item.cta_alt }}</a>
+            {% endif %}
+          </div>
+        </div>
+      </li> <!-- .cd-half-block.content -->
+    {% endfor %}
+  </ul> <!-- .cd-slider -->
+</div> <!-- .vf-slider--pointy-slider -->

@@ -1,0 +1,7 @@
+langcode: en
+status: true
+dependencies: {  }
+id: vactory_block_component
+label: Template
+revision: 1
+description: 'Template block type'

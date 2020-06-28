@@ -1,0 +1,31 @@
+name: '41 - Froala - Testimonials 2 Cols Description, Image & Name'
+multiple: TRUE
+category: 'Testimonials'
+enabled: TRUE
+fields:
+  description:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'full_html'
+      '#required': TRUE
+  name:
+    type: text
+    label: 'Name'
+    options:
+      '#required': TRUE
+  image:
+    type: image
+    label: 'Image Profile'
+    options:
+      '#required': TRUE
+  image_alt:
+      type: text
+      label: 'Text alternatif'
+extra_fields:
+  intro:
+    type: textarea
+    lable: 'Introduction'
+  reverse_mode:
+    type: checkbox
+    label: 'Active mode invers'  

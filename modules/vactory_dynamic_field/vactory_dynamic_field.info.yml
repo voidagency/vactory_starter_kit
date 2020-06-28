@@ -1,0 +1,11 @@
+name: 'Dynamic Field'
+type: module
+description: Wysiwyg Dynamic Field.
+package: Vactory Core
+core: 8.x
+configure: vactory_dynamic_field.settings_form
+dependencies:
+  - twig_tweak
+  - twig_extender
+  - jquery_colorpicker
+  - field_group

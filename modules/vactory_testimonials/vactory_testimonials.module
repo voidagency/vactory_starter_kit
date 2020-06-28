@@ -1,0 +1,37 @@
+<?php
+
+/**
+ * @file
+ * Contain related hooks.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_testimonials_theme($existing, $type, $theme, $path) {
+  return [
+    // Node > Testimonials.
+    'node__vactory_testimonials__vactory_card_minimal'                    => [
+      'base hook' => 'node',
+      'template'  => 'card-minimal',
+    ],
+
+    // Views > Testimonials.
+    'views_view_unformatted__vactory_testimonials__block_list'            => [
+      'base hook' => 'views_view_unformatted',
+      'template'  => 'block-list',
+    ],
+
+    // Views > Customized Testimonials.
+    'views_view_unformatted__vactory_testimonials__block_list_customized' => [
+      'base hook' => 'views_view_unformatted',
+      'template'  => 'block-list-secondary',
+    ],
+
+    // Node > Testimonials Customized Mode.
+    'node__vactory_testimonials__vactory_card_minimal_secondary'          => [
+      'base hook' => 'node',
+      'template'  => 'card-minimal-secondary',
+    ],
+  ];
+}

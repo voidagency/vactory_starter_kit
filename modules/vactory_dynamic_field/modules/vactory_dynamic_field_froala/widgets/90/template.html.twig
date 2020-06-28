@@ -1,0 +1,30 @@
+<div class="fdb-block">
+    <div class="row text-left">
+        {% for item in content %}
+
+            {% if loop.index == 1 %}
+                <div class="col-12 col-md-8 m-auto col-lg-4">
+            {% else %}
+                <div class="col-12 col-md-8 m-auto col-lg-4 pt-5 pt-lg-0">
+            {% endif %}
+
+                <div class="fdb-box fdb-touch">
+                    {% if item.title is not empty %}
+                         <h2>{{ item.title }}</h2>
+                    {% endif %}
+                    {% if item.description is not empty %}
+                        <p>{{ item.description }}</p>
+                    {% endif %}
+                    {% if item.link is not empty and item.link_alt is not empty %}
+                        {% set link_target = (content.0.link_target > 0) ? '_blank' : '_self' %}
+                        <p class="mt-3"><a href="{{ item.link }}" target="{{ link_target }}">{{ item.link_alt }}</a></p>
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+</div>

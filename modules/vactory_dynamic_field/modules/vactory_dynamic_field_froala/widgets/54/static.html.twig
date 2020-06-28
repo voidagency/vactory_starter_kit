@@ -1,0 +1,25 @@
+<div class="fdb-block">
+    <div class="row text-center">
+        <div class="col">
+            <h2>Title</h2>
+        </div>
+    </div>
+    <div class="row mt-5 align-items-top">
+
+        {% for item in 0..2 %}
+            <div class="col-12 col-md-8 mx-auto mb-3 mb-lg-0 col-lg-4 text-center">
+                {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/80/80.jpg" %}
+                <img alt="Image Alt" height="80"
+                    class="lazyload"
+                    src="{{ content.image_placeholder }}"
+                    data-src="{{ placehold }}">
+                <h2><strong>Title</strong></h2>
+                <p class="text-h3 mb-4 mb-lg-5"><em>99€/month</em></p>
+                <div>values</div>
+                <p class="text-center mt-4 mt-lg-5"><a class="btn btn-primary" href="#">Read More</a></p>
+            </div>
+
+        {% endfor %}
+
+    </div>
+</div>

@@ -1,0 +1,16 @@
+<div class="t-three-card-with-cta">
+  <div class="row">
+    {% for item in content %}
+      {% set _icon = (item.link_icon is not empty) ? item.link_icon : 'icon-arrow_forward' %}
+      <div class="col-md-4 t-item">
+        {% if item.title is not empty %}
+          <p class="t-title">{{ item.title }}</p>
+        {% endif %}
+        {% if item.link is not empty and item.link_alt is not empty %}
+          {% set link_target = (item.link_target > 0) ? '_blank' : '_self' %}
+          <a href="{{ item.link }}" target="{{ link_target }}" class="btn-with-icon {{ _icon }}">{{ item.link_alt }}</a>
+        {% endif %}
+      </div>
+    {% endfor %}
+  </div>
+</div>

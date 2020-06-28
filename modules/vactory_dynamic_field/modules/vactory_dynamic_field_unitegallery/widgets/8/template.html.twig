@@ -1,0 +1,21 @@
+{{ attach_library('vactory_dynamic_field_unitegallery/unitegallery.carousel') }}
+
+<div id="gallery-carousel"
+     style="display:none;">
+  {% for item in content %}
+    {% set thumbnail_src = (item.thumbnail.0 is defined) ? get_image_url(item.thumbnail.0) : '' %}
+    {% set image_src = (item.image.0 is defined) ? get_image_url(item.image.0) : '' %}
+
+    <a href="#.">
+      <img
+        {% if item.description is not empty %} data-description="{{ item.description }}" {% endif %}
+        src="{{ thumbnail_src }}"
+        data-image="{{ image_src }}"
+        {% if item.videoId is not empty %}
+          data-type="youtube"
+          data-videoid="{{ item.videoId }}"
+        {% endif %}
+        style="display:none">
+    </a>
+  {% endfor %}
+</div>

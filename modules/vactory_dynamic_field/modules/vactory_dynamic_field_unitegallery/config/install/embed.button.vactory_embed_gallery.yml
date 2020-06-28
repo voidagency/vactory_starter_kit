@@ -1,0 +1,19 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - node.type.vactory_gallery
+  module:
+    - entity_embed
+    - node
+label: Gallery
+id: vactory_embed_gallery
+type_id: entity
+type_settings:
+  entity_type: node
+  bundles:
+    - vactory_gallery
+  display_plugins: {  }
+  entity_browser: ''
+  entity_browser_settings: {  }
+icon_uuid: null

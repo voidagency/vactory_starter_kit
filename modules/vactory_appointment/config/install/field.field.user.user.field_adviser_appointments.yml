@@ -1,0 +1,24 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.user.field_adviser_appointments
+  enforced:
+    module:
+      - vactory_appointment
+  module:
+    - user
+id: user.user.field_adviser_appointments
+field_name: field_adviser_appointments
+entity_type: user
+bundle: user
+label: 'RDVs de conseiller'
+description: ''
+required: true
+translatable: false
+default_value:
+  -
+    value: '{}'
+default_value_callback: ''
+settings: {  }
+field_type: string_long

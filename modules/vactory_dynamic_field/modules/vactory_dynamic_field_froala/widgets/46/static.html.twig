@@ -1,0 +1,75 @@
+<div class="fdb-block">
+    <div class="row text-center justify-content-center">
+        <div class="col-md-10 col-lg-7">
+                 <h2>Title</h2>
+        </div>
+    </div>
+    <div class="row mt-5 justify-content-center">
+        {% for item in 0..2 %}
+            {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/50/50.jpg" %}
+            {% if loop.index >= 2 %}
+                <div class="col-md-10 col-lg-3 pt-5 pt-lg-0 ml-auto mr-auto text-center">
+            {% else %}
+                <div class="col-md-10 col-lg-3 ml-auto mr-auto text-center">
+            {% endif %}
+
+                    <p class="text-h3 mb-4 mb-lg-5">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
+                    <p>
+                     <img alt="Image Alt" height="50"
+                        class="rounded-circle lazyload"
+                        src="{{ content.image_placeholder }}"
+                        data-src="{{ placehold }}">
+                     </p>
+                    <p class="text-h3"><strong>Jhon Doe</strong></p>
+                    <p>Role</p>
+               </div>
+        {% endfor %}
+
+    </div>
+
+    <div class="mt-5 vf-slick-slider" 
+        data-toshow="3"
+        data-dots="false"
+        data-arrows="true"
+        data-mobile-centermode="false">
+        {% for item in 0..6 %}
+            {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/50/50.jpg" %}
+            <div class='p-3'>
+                <div class="shadow-sm  p-3 text-center">
+                    <p class="text-h3 mb-4">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
+                    <p>
+                     <img alt="Image Alt" height="50"
+                        class="rounded-circle lazyload mr-auto ml-auto"
+                        src="{{ content.image_placeholder }}"
+                        data-src="{{ placehold }}">
+                    </p>
+                    <p class="text-h3"><strong>Jhon Doe</strong></p>
+                    <p>Role</p>
+               </div>
+            </div>   
+        {% endfor %}
+    </div>
+
+    <div class="mt-5 vf-slick-slider" 
+        data-toshow="3"
+        data-dots="false"
+        data-arrows="true"
+        data-mobile-centermode="false">
+        {% for item in 0..6 %}
+            {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/50/50.jpg" %}
+            <div class='p-3'>
+                <div class="shadow-sm qoute-right p-3 text-center">
+                    <p>
+                     <img alt="Image Alt" height="50"
+                        class="rounded-circle lazyload mr-auto ml-auto"
+                        src="{{ content.image_placeholder }}"
+                        data-src="{{ placehold }}">
+                    </p>
+                    <p class="text-h3 mb-1"><strong>Jhon Doe</strong></p>
+                    <p>Role</p>
+                    <p class="text-h3 mb-4">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
+               </div>
+            </div>   
+        {% endfor %}
+    </div>
+</div>

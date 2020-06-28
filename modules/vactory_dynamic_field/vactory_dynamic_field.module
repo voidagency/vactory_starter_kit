@@ -1,0 +1,296 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Vactory Wysiwyg Components module.
+ */
+
+define("VACTORY_DYNAMIC_FIELD_V_IMAGE_PLACEHOLDER", "data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==");
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Field\WidgetBase;
+use Drupal\Component\Utility\NestedArray;
+use Drupal\Core\Render\Element;
+use Drupal\Core\Field\FieldStorageDefinitionInterface;
+use Drupal\Core\Language\Language;
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_dynamic_field_theme() {
+  return [
+    'vactory_dynamic_main'                 => [
+      'variables' => [
+        'platform'     => '',
+        'widgets_path' => '',
+        'content'      => [],
+        'extra_fields' => [],
+      ],
+      'template'  => 'main',
+    ],
+    'vactory_dynamic_current_widget'       => [
+      'variables' => [
+        'widget' => [],
+      ],
+      'template'  => 'current-widget',
+    ],
+    'vactory_dynamic_demo_main'            => [
+      'variables' => [
+        'content' => [],
+      ],
+      'template'  => 'main-demo',
+    ],
+    'vactory_dynamic_demo_preview_main'    => [
+      'variables' => [
+        'content' => [],
+      ],
+      'template'  => 'main-demo-preview',
+    ],
+    'vactory_dynamic_demo_template_detail' => [
+      'variables' => [
+        'content' => [],
+      ],
+      'template'  => 'main-demo-detail',
+    ],
+    'vactory_dynamic_select_template' => [
+      'variables' => [
+        'content' => [],
+      ],
+      'template'  => 'select-template-item',
+    ],
+    'custom_text_format_wrapper' => [
+      'template' => 'dynamic-field-text-format-wrapper',
+      'base hook' => 'text_format_wrapper',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_dynamic_field_preprocess_vactory_dynamic_main(&$variables) {
+  $template = $variables['content']['template'];
+  if ($template == 40 && isset($variables['content']['components'][0]['link_to_cookie'])) {
+    $cookie_usage = $variables['content']['components'][0]['link_to_cookie'];
+    $path = \Drupal::request()->getRequestUri();
+    $variables['#attached']['drupalSettings'] = [
+      'cookie_pop'   => $cookie_usage,
+      'current_path' => $path,
+    ];
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_dynamic_field_preprocess_page(&$variables) {
+  $is_admin_path = \Drupal::service('router.admin_context')->isAdminRoute();
+  if ($is_admin_path) {
+    $variables['#attached']['library'][] = 'vactory_dynamic_field/vactory_widgets';
+  }
+}
+
+/**
+ * Implements hook_field_widget_form_alter().
+ */
+function vactory_dynamic_field_field_widget_form_alter(&$element, FormStateInterface $form_state, $context) {
+  $items = $context['items'];
+  $fieldDefinition = $items->getFieldDefinition();
+  $storage = $fieldDefinition->getFieldStorageDefinition();
+  $type = $storage->getType();
+  $cardinality = $storage->getCardinality();
+
+  // Check if the current field type is field_wysiwyg_dynamic type,
+  // and the field cardinality is unlimited.
+  if ($type == 'field_wysiwyg_dynamic' && $cardinality == FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED) {
+    // Add remove button only for templates with no empty data.
+    if (!empty($element['widget_id']['#default_value'])) {
+      $field_parents = isset($element['#field_parents']) ? $element['#field_parents'] : [];
+      $field_name = $fieldDefinition->getName();
+      $language = isset($element['#language']) ? $element['#language'] : Language::LANGCODE_NOT_SPECIFIED;
+      $delta = $element['#delta'];
+      // Get parent which will we use into Remove Button Element.
+      $parents = array_merge($field_parents, [
+        $field_name,
+        $language,
+        $delta,
+      ]);
+      $remove_btn_name = implode('_', $parents) . '_remove_button';
+      $element['remove_button'] = [
+        '#delta' => $delta,
+        '#name' => $remove_btn_name,
+        '#type' => 'submit',
+        '#button_type' => 'danger',
+        '#value' => t('Remove'),
+        '#validate' => [],
+        '#submit' => ['remove_template_submit'],
+        '#limit_validation_errors' => [],
+        '#ajax' => [
+          'callback' => 'remove_template_callback',
+        ],
+      ];
+    }
+  }
+}
+
+/**
+ * Remove multiple templates Ajax callback.
+ */
+function remove_template_callback(array $form, FormStateInterface &$form_state) {
+  $triggering_element = $form_state->getTriggeringElement();
+  $delta = $triggering_element['#delta'];
+  // Get Element parent values.
+  $element_parent = NestedArray::getValue($form, array_slice($triggering_element['#array_parents'], 0, -3));
+  $element_parent['widget'][$delta]['#attributes']['class'][] = 'update-templates-deltas';
+
+  return $element_parent;
+}
+
+/**
+ * Callback remove template.
+ *
+ * Update templates weights & deltas after removing an element.
+ */
+function remove_template_submit(array $form, FormStateInterface &$form_state) {
+  $formValues = $form_state->getValues();
+  $formInputs = $form_state->getUserInput();
+  $triggering_element = $form_state->getTriggeringElement();
+  $delta = $triggering_element['#delta'];
+  // Get element parents list.
+  $element_parents = array_slice($triggering_element['#array_parents'], 0, -2);
+
+  // Get direct element parent values.
+  $parent_element = NestedArray::getValue($form, $element_parents);
+  $field_name = $parent_element['#field_name'];
+  // Get direct element parent parents list.
+  $parents = $parent_element['#field_parents'];
+  $field_state = WidgetBase::getWidgetState($parents, $field_name, $form_state);
+
+  // Go ahead and renumber everything from our delta to the last
+  // item down one. This will overwrite the item being removed.
+  for ($i = $delta; $i <= $field_state['items_count']; $i++) {
+    $next_element_old_position = array_merge($element_parents, [$i + 1]);
+    $next_element_new_position = array_merge($element_parents, [$i]);
+
+    $next_element = NestedArray::getValue($form, $next_element_old_position);
+    $keys = array_keys($next_element_old_position, 'widget', TRUE);
+    foreach ($keys as $key) {
+      unset($next_element_old_position[$key]);
+    }
+    $next_element_value = NestedArray::getValue($formValues, $next_element_old_position);
+    $next_element_input = NestedArray::getValue($formInputs, $next_element_old_position);
+
+    $keys = array_keys($next_element_new_position, 'widget', TRUE);
+    foreach ($keys as $key) {
+      unset($next_element_new_position[$key]);
+    }
+
+    // Set new element parents.
+    $next_element['#parents'] = $next_element_new_position;
+
+    // Delete default value for the last deleted element.
+    if ($field_state['items_count'] == 0) {
+      $struct_key = NestedArray::getValue($formInputs, $next_element_new_position);
+      if (is_null($next_element_value)) {
+        foreach ($struct_key as &$key) {
+          $key = '';
+        }
+        $next_element_value = $struct_key;
+      }
+      if (is_null($next_element_input)) {
+        $next_element_input = $next_element_value;
+      }
+    }
+
+    // Move the element around.
+    NestedArray::setValue($formValues, $next_element['#parents'], $next_element_value, TRUE);
+    NestedArray::setValue($formInputs, $next_element['#parents'], $next_element_input);
+
+    // Save new element values.
+    foreach ($formValues as $key => $value) {
+      $form_state->setValue($key, $value);
+    }
+    $form_state->setUserInput($formInputs);
+
+    // Move the entity in our saved state.
+    if (isset($field_state['original_deltas'][$i + 1])) {
+      $field_state['original_deltas'][$i] = $field_state['original_deltas'][$i + 1];
+    }
+    else {
+      unset($field_state['original_deltas'][$i]);
+    }
+  }
+
+  if ($field_state['items_count'] > 0) {
+    $field_state['items_count']--;
+  }
+
+  // Update weights with new values.
+  $address = array_slice($triggering_element['#array_parents'], 0, -2);
+  $keys = array_keys($address, 'widget', TRUE);
+  foreach ($keys as $key) {
+    unset($address[$key]);
+  }
+  $input = NestedArray::getValue($formInputs, $address);
+
+  if ($input && is_array($input)) {
+    // Sort by weight.
+    uasort($input, '_field_multiple_value_form_sort_helper');
+
+    // Reweight everything in the correct order.
+    $weight = -1 * $field_state['items_count'];
+    foreach ($input as $key => $item) {
+      if ($item) {
+        $input[$key]['_weight'] = $weight++;
+      }
+    }
+    NestedArray::setValue($formInputs, $address, $input);
+    $form_state->setUserInput($formInputs);
+  }
+
+  $element_id = isset($form[$field_name]['#id']) ? $form[$field_name]['#id'] : '';
+  if (!$element_id) {
+    $element_id = $parent_element['#id'];
+  }
+  $field_state['wrapper_id'] = $element_id;
+  WidgetBase::setWidgetState($parents, $field_name, $form_state, $field_state);
+
+  $form_state->setRebuild();
+}
+
+/**
+ * Implements hook_element_info_alter().
+ */
+function vactory_dynamic_field_element_info_alter(array &$info) {
+  if (isset($info['container'])) {
+    $info['container']['#process'][] = 'remove_template_process_container';
+  }
+}
+
+/**
+ * Element container process function to set remove ajax wrapper ID.
+ */
+function remove_template_process_container(&$element) {
+  if (isset($element['widget']['add_more']['#ajax']['wrapper'])) {
+    $children = Element::children($element['widget']);
+    $wrapperId = $element['widget']['add_more']['#ajax']['wrapper'];
+
+    foreach ($children as $child) {
+      if (isset($element['widget'][$child]['remove_button'])) {
+        $element['widget'][$child]['remove_button']['#ajax']['wrapper'] = $wrapperId;
+      }
+    }
+  }
+
+  return $element;
+}
+
+/**
+ * Implements hook_theme_suggestions_alter().
+ */
+function vactory_dynamic_field_theme_suggestions_alter(array &$suggestions, array $variables, $hook) {
+  $route_name = Drupal::routeMatch()->getRouteName();
+  if ($hook == 'text_format_wrapper' && $route_name == 'vactory_dynamic_field.open_modal_form') {
+    $suggestions[] = 'custom_' . $hook;
+  }
+}

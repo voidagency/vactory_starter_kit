@@ -1,0 +1,17 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - vactory_locator.locator_entity_type.vactory_locator
+  module:
+    - content_translation
+third_party_settings:
+  content_translation:
+    enabled: true
+    bundle_settings:
+      untranslatable_fields_hide: '0'
+id: locator_entity.vactory_locator
+target_entity_type_id: locator_entity
+target_bundle: vactory_locator
+default_langcode: current_interface
+language_alterable: true

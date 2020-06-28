@@ -1,0 +1,48 @@
+<div class="fdb-block fdb-block-hasbackground">
+            {% if extra_fields.title is not empty %}
+            <div class="row text-center">
+              <div class="col">
+                <h2 class="text-white">{{ extra_fields.title }}</h2>
+              </div>
+            </div>
+            {% endif %}
+    <div class="container">
+        <div class="row mt-5 align-items-center no-gutters">
+
+            {% for item in content %}
+
+                {% if loop.index == 2 %}
+                    <div class="col-12 col-sm-10 col-md-8 ml-auto mr-auto col-lg-4 text-center mt-4 mt-lg-0 sl-1 pt-0 pt-lg-3 pb-0 pb-lg-3 bg-gray fdb-touch">
+                        <div class="pb-5 pt-5 pl-4 pr-4">
+                {% elseif loop.index == 3 %}
+                    <div class="col-12 col-sm-10 col-md-8 ml-auto mr-auto col-lg-4 text-center mt-4 mt-lg-0">
+                        <div class="bg-gray pb-5 pt-5 pl-4 pr-4">
+                {% else %}
+                    <div class="col-12 col-sm-10 col-md-8 m-auto col-lg-4 text-center">
+                        <div class="bg-gray pb-5 pt-5 pl-4 pr-4">
+                {% endif %}
+                    {% if item.title is not empty %}
+                        <h2 class="font-weight-light">{{ item.title }}</h2>
+                    {% endif %}
+                    {% if item.price is not empty %}
+                         <p class="text-h1 mt-5 mb-5"><strong>{{ item.price }}</strong></p>
+                    {% endif %}
+                    {% if item.lists is not empty %}
+                         <div class="text-left">{{ item.lists.value | raw }}</div>
+                    {% endif %}
+                    {% if item.link is not empty and item.link_alt is not empty %}
+                        {% set link_target = (content.0.link_target > 0) ? '_blank' : '_self' %}
+                        {% if loop.index == 2 %}
+                            <p class="text-center pt-4"><a class="btn btn-primary" href="{{ item.link }}" target="{{ link_target }}">{{ item.link_alt }}</a></p>
+                        {% else %}
+                            <p class="text-center pt-4"><a class="btn btn-outline-primary" href="{{ item.link }}" target="{{ link_target }}">{{ item.link_alt }}</a></p>
+                        {% endif %}
+                    {% endif %}
+                    </div>
+                </div>
+
+            {% endfor %}
+
+        </div>
+    </div>
+</div>

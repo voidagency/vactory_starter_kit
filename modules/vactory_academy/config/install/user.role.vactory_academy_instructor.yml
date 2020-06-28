@@ -1,0 +1,30 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_academy
+id: vactory_academy_instructor
+label: Instructor
+weight: 6
+is_admin: null
+permissions:
+  - 'access content overview'
+  - 'access toolbar'
+  - 'access user profiles'
+  - 'administer comments'
+  - 'administer nodes'
+  - 'create content translations'
+  - 'create vactory_academy content'
+  - 'delete any vactory_academy content'
+  - 'delete content translations'
+  - 'delete own vactory_academy content'
+  - 'delete vactory_academy revisions'
+  - 'edit any vactory_academy content'
+  - 'edit own vactory_academy content'
+  - 'revert vactory_academy revisions'
+  - 'translate vactory_academy node'
+  - 'update content translations'
+  - 'view own unpublished content'
+  - 'view the administration theme'
+  - 'view vactory_academy revisions'

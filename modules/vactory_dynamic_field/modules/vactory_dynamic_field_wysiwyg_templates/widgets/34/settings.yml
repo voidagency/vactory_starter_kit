@@ -1,0 +1,32 @@
+name: "C34 - Template background box with title and description on hover"
+multiple: TRUE
+category: 'Content'
+enabled: TRUE
+fields:
+  image:
+    type: image
+    label: 'Thumbnail'
+    options:
+      '#required': TRUE
+  image_alt:
+    type: text
+    label: 'Text alternatif'
+  title:
+    type: text
+    label: 'Ttire'
+    options:
+      '#required': TRUE
+  description:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': full_html
+  link:
+    type: url_extended
+    label: 'link'
+  link_target:
+    type: checkbox
+    label: 'Ouvrir le lien dans une nouvelle fenetre'
+  full:
+    type: checkbox
+    label: 'Active full whidth'  

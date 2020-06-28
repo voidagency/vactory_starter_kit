@@ -1,0 +1,9 @@
+name: 'Partners'
+description: 'Provides vactory partner content type and related configuration. content type for vactory partner'
+type: module
+core: 8.x
+dependencies:
+  - vactory_core
+  - vactory_field
+  - vactory_views
+package: Vactory

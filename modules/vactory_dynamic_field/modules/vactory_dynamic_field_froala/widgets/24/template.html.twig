@@ -1,0 +1,71 @@
+{% set image_uri_1 = (content.0.image_1.0 is defined) ? get_image(content.0.image_1.0) : '' %}
+{% set image_1 = image_uri_1|image_style('large') %}
+{% set lqip_image_1 = image_uri_1|image_style('lqip') %}
+
+{% set image_uri_2 = (content.0.image_2.0 is defined) ? get_image(content.0.image_2.0) : '' %}
+{% set image_2 = image_uri_2|image_style('medium') %}
+{% set lqip_image_2 = image_uri_2|image_style('lqip') %}
+
+{% set image_uri_3 = (content.0.image_3.0 is defined) ? get_image(content.0.image_3.0) : '' %}
+{% set image_3 = image_uri_3|image_style('medium') %}
+{% set lqip_image_3 = image_uri_3|image_style('lqip') %}
+
+{% set image_uri_4 = (content.0.image_4.0 is defined) ? get_image(content.0.image_4.0) : '' %}
+{% set image_4 = image_uri_4|image_style('thumbnail') %}
+{% set lqip_image_4 = image_uri_4|image_style('lqip') %}
+
+<div class="fdb-block">
+    <div class="row text-center align-items-center">
+        {% if content.0.image_1.0 is not empty %}
+            <div class="col-8 col-md-4">
+                <div class="img-ratio">
+                    <img alt="{{ content.0.image_alt_1 }}"
+                        class="img-fluid lazyload"
+                        src="{{ lqip_image_1 }}"
+                        data-src="{{ image_1 }}">
+                </div>    
+            </div>
+        {% endif %}
+        <div class="col-4 col-md-2 ">
+            {% if content.0.image_2.0 is not empty %}
+                <div class="row">
+                    <div class="col-12">
+                        <div class="img-ratio">
+                            <img alt="{{ content.0.image_alt_2 }}"
+                                class="img-fluid lazyload"
+                                src="{{ lqip_image_2 }}"
+                                data-src="{{ image_2 }}">
+                        </div>        
+                    </div>
+                </div>
+            {% endif %}
+            {% if content.0.image_3.0 is not empty %}
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="img-ratio">
+                            <img alt="{{ content.0.image_alt_3 }}"
+                                class="img-fluid lazyload"
+                                src="{{ lqip_image_3 }}"
+                                data-src="{{ image_3 }}">
+                        </div>        
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-5 ml-auto pt-5 pt-md-0">
+            {% if content.0.image_4.0 is not empty %}
+                <img alt="{{ content.0.image_alt_4 }}"
+                    class="fdb-icon lazyload"
+                    src="{{ lqip_image_4 }}"
+                    data-src="{{ image_4 }}"> 
+            {% endif %}
+            {% if content.0.title is not empty %}
+                 <h2>{{ content.0.title }}</h2>
+            {% endif %}
+            {% if content.0.description is not empty %}
+                <p class="text-h3">{{ content.0.description }}</p>
+            {% endif %}
+        </div>
+    </div>
+</div>

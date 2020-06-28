@@ -1,0 +1,27 @@
+<?php
+
+/**
+ * @file
+ * Primary hooks.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_splashscreen_theme() {
+  return [
+    'block_splashscreen' => [
+      "variables" => ["content" => []],
+      "template"  => 'block-splashscreen',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_cron().
+ */
+function vactory_splashscreen_cron() {
+  // Update splashscreens.
+  \Drupal::service('vactory_splashscreen.splashscreen.manage')
+    ->updateSplashScreensStatus();
+}

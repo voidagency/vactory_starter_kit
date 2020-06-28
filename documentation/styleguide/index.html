@@ -1,0 +1,397 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Factory - Styleguide</title>
+
+    <style>
+        .bd-example-border-utils [class^=border] {
+            display: inline-block;
+            width: 5rem;
+            height: 5rem;
+            margin: .25rem;
+            background-color: #f5f5f5;
+        }
+
+        .fdb-block.dark h1, .fdb-block.dark .text-h1 {
+            color: #FFF;
+        }
+    </style>
+</head>
+<body>
+<div id="catalog"/>
+
+<!-- Use the development version to get helpful errors in your console -->
+<!-- <script src="https://unpkg.com/catalog@3/dist/catalog-standalone.development.js"></script> -->
+
+<!-- Use the minified production version to get optimal performance -->
+<script src="assets/catalog-standalone.min.js"></script>
+
+<script src="/core/assets/vendor/domready/ready.min.js"></script>
+<script src="/core/assets/vendor/jquery/jquery.min.js"></script>
+<script src="/libraries/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+<!-- <script src="/libraries/jquery-ui/jquery-ui.min.js"></script> -->
+<script src="/libraries/modernizr/modernizr-custom.js"></script>
+<script src="/libraries/rangeslider.js/rangeslider.min.js"></script>
+<!-- <script src="/libraries/datepicker/dist/datepicker.js"></script> -->
+<script src="/libraries/noUiSlider/nouislider.min.js"></script>
+<script src="/libraries/bootstrap-select/dist/js/bootstrap-select.min.js"></script>
+<script src="/libraries/bootstrap-multiselect/dist/js/bootstrap-multiselect.js"></script>
+<script src="/libraries/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+<script src="/libraries/jquery-validation/dist/jquery.validate.min.js"></script>
+<script src="/libraries/bootstrap-validator/dist/validator.min.js"></script>
+<script src="/libraries/gsap/src/minified/TweenMax.min.js"></script>
+<script src="/libraries/scrollreveal/dist/scrollreveal.min.js"></script>
+<script src="/libraries/slick/slick/slick.min.js"></script>
+<script src="/libraries/fancybox/dist/jquery.fancybox.js"></script>
+<script src="/libraries/masonry-layout/dist/masonry.pkgd.min.js"></script>
+<script src="/libraries/responsive-toolkit/dist/bootstrap-toolkit.min.js"></script>
+<script src="/libraries/waypoints/lib/jquery.waypoints.min.js"></script>
+<script src="/libraries/WOW/dist/wow.min.js"></script>
+<script src="/libraries/jquery.mb.YTPlayer/dist/jquery.mb.YTPlayer.js"></script>
+<script src="/libraries/js-offcanvas/dist/_js/js-offcanvas.pkgd.js"></script>
+<script src="/core/misc/drupal.js"></script>
+<script src="/themes/vactory/assets/js/vactory.script.js"></script>
+
+<script>
+    var theme = {
+        palette: {
+            color1: "#264653",
+            color2: "#2a9d8f",
+            color3: "#e9c46a",
+            color4: "#f4a261",
+            color5: "#e76f51"
+        }
+    };
+
+    Catalog.render({
+        title: 'Factory - Styleguide',
+        logoSrc: 'assets/logo.png',
+        theme: {
+            // Colors
+            background: '#F9F9F9',
+            textColor: '#333333',
+            codeColor: '#00263E',
+            linkColor: theme.palette.color2,
+
+            // NavigationBar background color, but also sometimes used as a foreground
+            // or border color.
+            lightColor: '#D6D6D6',
+
+            // Used in PageHeader
+            pageHeadingBackground: theme.palette.color1,
+            pageHeadingTextColor: '#fff',
+
+            // Used in Menu and PageHeader to make sure the top parts have
+            // the same height.
+            pageHeadingHeight: 200,
+
+            // Used for navigation bar
+            navBarBackground: '#F2F2F2',
+            navBarTextColor: theme.palette.color1,
+
+            // Used in ResponsiveTabs (tab text), Download specimen (title text).
+            // Typography: headings.
+            brandColor: theme.palette.color1,
+
+            sidebarColor: '#FFFFFF',
+            sidebarColorActive: '#D1312E',
+            sidebarColorText: theme.palette.color1,
+            sidebarColorTextActive: theme.palette.color2,
+            sidebarColorLine: '#EBEBEB',
+            sidebarColorHeading: theme.palette.color1,
+
+            // Used in the html, react, and image specimens.
+            bgLight: '#F2F2F2',
+            bgDark: '#333333',
+
+            // Keys appear to be PrismJS token types.
+            codeStyles: {
+                tag: {color: theme.palette.color2},
+                punctuation: {color: '#535353'},
+                script: {color: '#3F7397'},
+                function: {color: theme.palette.color2},
+                keyword: {color: '#3F7397'},
+                string: {color: '#00263E'}
+            },
+
+            // Patterns
+            checkerboardPatternLight: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAAAAACoWZBhAAAAF0lEQVQI12P4BAI/QICBFCaYBPNJYQIAkUZftTbC4sIAAAAASUVORK5CYII=',
+            checkerboardPatternDark: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAAAAACoWZBhAAAAFklEQVQI12NQBQF2EGAghQkmwXxSmADZJQiZ2ZZ46gAAAABJRU5ErkJggg==',
+
+            // Fonts
+            fontFamily: "'Roboto', sans-serif",
+            fontHeading: "'Roboto', sans-serif",
+            fontMono: "'Roboto Mono', monospace",
+
+            // Base font size in pixels.
+            baseFontSize: 16,
+
+            // Modular scale ratio that is used to figure out all the different font sizes
+            msRatio: 1.2
+        },
+        styles: [
+            '/libraries/slick/slick/slick.css',
+            '/libraries/slick/slick/slick-theme.css',
+            '/libraries/animate-css/animate.min.css',
+            // '/libraries/datepicker/dist/datepicker.css',
+            '/libraries/bootstrap-datepicker/dist/css/bootstrap-datepicker3.standalone.min.css',
+            '/libraries/bootstrap-select/dist/css/bootstrap-select.css',
+            '/libraries/bootstrap-multiselect/dist/css/bootstrap-multiselect.css',
+            '/libraries/jquery.mb.YTPlayer/dist/css/jquery.mb.YTPlayer.min.css',
+            '/libraries/js-offcanvas/dist/_css/js-offcanvas.css',
+            // '/libraries/jquery-ui/jquery-ui.css',
+            '/libraries/rangeslider.js/rangeslider.css',
+            '/libraries/noUiSlider/nouislider.min.css',
+            //'/themes/factory/assets/css/factory.style.css',
+            '/themes/vactory/assets/css/vactory.style.css',
+            '/themes/vactory/assets/css/styleguide.css',
+            '//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css',
+            '/modules/contrib/social_media_links/css/social_media_links.theme.css?pz3w1p'
+        ],
+        scripts: [
+            // '/core/assets/vendor/domready/ready.min.js',
+            // '/core/assets/vendor/jquery/jquery.min.js',
+            // '/themes/vactory/node_modules/popper.js/dist/umd/popper.js',
+            // '/themes/vactory/node_modules/bootstrap/dist/js/bootstrap.js',
+            // '/libraries/modernizr/modernizr-custom.js',
+            // '/libraries/bootstrap-select/dist/js/bootstrap-select.min.js',
+            // '/libraries/datepicker/dist/datepicker.js',
+            // '/libraries/bootstrap-multiselect/dist/js/bootstrap-multiselect.js',
+            // '/libraries/jquery-validation/dist/jquery.validate.min.js',
+            // '/libraries/bootstrap-validator/dist/validator.min.js',
+            // '/libraries/gsap/src/minified/TweenMax.min.js',
+            // '/libraries/scrollreveal/dist/scrollreveal.min.js',
+            // '/libraries/slick/slick/slick.min.js',
+            // '/libraries/fancybox/dist/jquery.fancybox.js',
+            // '/libraries/masonry-layout/dist/masonry.pkgd.min.js',
+            // '/libraries/responsive-toolkit/dist/bootstrap-toolkit.min.js',
+            // '/libraries/waypoints/lib/jquery.waypoints.min.js',
+            // '/libraries/WOW/dist/wow.min.js',
+            // '/libraries/jquery.mb.YTPlayer/dist/jquery.mb.YTPlayer.js',
+            // '/libraries/js-offcanvas/dist/_js/js-offcanvas.pkgd.js',
+            // '/core/misc/drupal.js',
+            // '/themes/vactory/assets/js/vactory.script.js'
+            '/libraries/clipboard/dist/clipboard_code.js'
+        ],
+        pages: [
+            {
+                path: '/',
+                title: 'Introduction',
+                src: 'docs/intro.md'
+            },
+            {
+                path: '/guidelines',
+                title: 'Guidelines',
+                src: 'docs/guidelines.md'
+            },
+            {
+                path: '/design-tokens',
+                title: 'Design Token',
+                src: 'docs/design-tokens.md'
+            },
+            {
+                title: 'Layout',
+                pages: [
+                    {
+                        path: '/layouts/grid-layouts',
+                        title: 'Grid/Layout',
+                        src: 'docs/layouts/grid-layouts.md'
+                    },
+                    {
+                        path: '/layouts/media-objects',
+                        title: 'Media Objects',
+                        src: 'docs/layouts/media-objects.md'
+                    },
+                    {
+                        styles: ['docs/layouts/footer.css'],
+                        path: '/layouts/footer',
+                        title: 'Footer',
+                        src: 'docs/layouts/footer.md'
+                    }
+
+                ]
+            },
+            {
+                title: 'Elements',
+                pages: [
+                    {
+                        path: '/elements/buttons',
+                        title: 'Buttons',
+                        content: Catalog.pageLoader('docs/elements/buttons.md')
+                    },
+                    {
+                        path: '/elements/breadcrumb',
+                        title: 'Breadcrumb',
+                        content: Catalog.pageLoader('docs/elements/breadcrumb.md')
+                    },
+                    {
+                        path: '/elements/collapse',
+                        title: 'Collapse',
+                        content: Catalog.pageLoader('docs/elements/collapse.md')
+                    },
+                    {
+                        path: '/elements/dropdowns',
+                        title: 'Dropdowns',
+                        content: Catalog.pageLoader('docs/elements/dropdowns.md')
+                    },
+                    {
+                        path: '/elements/forms',
+                        title: 'Forms',
+                        content: Catalog.pageLoader('docs/elements/forms.md')
+                    },
+                    {
+                      path: '/elements/custom_forms',
+                      title: 'Custom Form',
+                      content: Catalog.pageLoader('docs/elements/custom_form.md')
+                    },
+                    {
+                        path: '/elements/badges',
+                        title: 'Badges',
+                        content: Catalog.pageLoader('docs/elements/badges.md')
+                    },
+                    {
+                        path: '/elements/list_group',
+                        title: 'List Group',
+                        content: Catalog.pageLoader('docs/elements/list_group.md')
+                    },
+                    {
+                        path: '/elements/pagination',
+                        title: 'Pagination',
+                        content: Catalog.pageLoader('docs/elements/pagination.md')
+                    },
+                    {
+                      path: '/elements/tables',
+                      title: 'Tables',
+                      content: Catalog.pageLoader('docs/elements/tables.md')
+                    },
+                   /* {
+                      path: '/elements/noUilider',
+                      title: 'noUiSlider',
+                      content: Catalog.pageLoader('docs/elements/noUiSlider.md')
+                    },
+                    {
+                      path: '/elements/rangeslider',
+                      title: 'Range Slider',
+                      content: Catalog.pageLoader('docs/elements/rangeslider.md')
+                    },*/
+                    {
+                      path: '/elements/date_picker',
+                      title: 'Date Picker',
+                      content: Catalog.pageLoader('docs/elements/date_picker.md')
+                    },
+                    {
+                      path: '/elements/tabs',
+                      title: 'Tabs',
+                      content: Catalog.pageLoader('docs/elements/tabs.md')
+                    },
+                    {
+                      path: '/elements/progress_bars',
+                      title: 'Progress Bars',
+                      content: Catalog.pageLoader('docs/elements/progress_bars.md')
+                    }
+                ]
+            },
+            {
+                title: 'Components',
+                pages: [
+                    {
+                      path: '/components/iconography',
+                      title: 'Iconography',
+                      content: Catalog.pageLoader('docs/components/iconography.md')
+                    },
+                    {
+                        path: '/components/card',
+                        title: 'Cards',
+                        content: Catalog.pageLoader('docs/components/cards.md')
+                    },
+                    {
+                      path: '/components/modals',
+                      title: 'Modals',
+                      content: Catalog.pageLoader('docs/components/modals.md')
+                    }
+                    
+                ]
+            },
+//            {
+//                title: 'Utilities',
+//                pages: [
+//                    {
+//                        path: '/utilities/borders',
+//                        title: 'Borders',
+//                        content: Catalog.pageLoader('docs/utilities/borders.md')
+//                    }
+//                ]
+//            },
+            {
+                title: 'Mixins',
+                pages: [
+                    {
+                        path: '/mixins/row-make-equal-height',
+                        title: 'Equal Height',
+                        content: Catalog.pageLoader('docs/mixins/row-make-equal-height.md')
+                    },
+                    {
+                        path: '/mixins/ie',
+                        title: 'IE',
+                        content: Catalog.pageLoader('docs/mixins/ie.md')
+                    },
+                    {
+                        path: '/mixins/placeholder',
+                        title: 'Placeholder',
+                        content: Catalog.pageLoader('docs/mixins/placeholder.md')
+                    },
+                    {
+                        path: '/mixins/responsive-ratio',
+                        title: 'Responsive Ratio',
+                        content: Catalog.pageLoader('docs/mixins/responsive-ratio.md')
+                    },
+                    {
+                        path: '/mixins/pseudo',
+                        title: 'Pseudo',
+                        content: Catalog.pageLoader('docs/mixins/pseudo.md')
+                    },
+                    {
+                        path: '/mixins/rtl',
+                        title: 'RTL',
+                        content: Catalog.pageLoader('docs/mixins/rtl.md')
+                    },
+                    {
+                      path: '/mixins/px-to-rem',
+                      title: 'pixle to rem',
+                      content: Catalog.pageLoader('docs/mixins/px-to-rem.md')
+                    }
+                ]
+            },
+            {
+                title: 'Animations',
+                pages: [
+                    {
+                        path: '/animations/buttons',
+                        title: 'Buttons',
+                        content: Catalog.pageLoader('docs/animations/buttons.md')
+                    },
+                    {
+                        path: '/animations/buttons-2d',
+                        title: 'Buttons 2D',
+                        content: Catalog.pageLoader('docs/animations/buttons-2d.md')
+                    },
+                    {
+                        path: '/animations/progress_bars',
+                        title: 'Progress Bars',
+                        content: Catalog.pageLoader('docs/animations/progress_bars.md')
+                    }
+                ]
+            }
+            ,
+            {
+                title: 'Version & Update',
+                path: '/version',
+                src: 'docs/version.md'
+            }
+        ]
+    }, document.getElementById('catalog'));
+</script>
+</body>
+</html>

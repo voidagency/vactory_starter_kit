@@ -1,0 +1,117 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.card_inline
+    - field.field.node.vactory_academy.body
+    - field.field.node.vactory_academy.comment
+    - field.field.node.vactory_academy.field_academy_duree
+    - field.field.node.vactory_academy.field_vactory_academy_langue
+    - field.field.node.vactory_academy.field_vactory_date
+    - field.field.node.vactory_academy.field_vactory_excerpt
+    - field.field.node.vactory_academy.field_vactory_file
+    - field.field.node.vactory_academy.field_vactory_file_multiple
+    - field.field.node.vactory_academy.field_vactory_instructor
+    - field.field.node.vactory_academy.field_vactory_media
+    - field.field.node.vactory_academy.field_vactory_meta_tags
+    - field.field.node.vactory_academy.field_vactory_paragraphs
+    - field.field.node.vactory_academy.field_vactory_seo_status
+    - field.field.node.vactory_academy.field_vactory_theme
+    - field.field.node.vactory_academy.field_vactory_youtube_videos
+    - node.type.vactory_academy
+    - responsive_image.styles.vactory_one_col
+  module:
+    - datetime
+    - media_responsive_thumbnail
+    - smart_trim
+    - user
+  enforced:
+    module:
+      - vactory_academy
+id: node.vactory_academy.card_inline
+targetEntityType: node
+bundle: vactory_academy
+mode: card_inline
+content:
+  field_academy_duree:
+    type: string
+    weight: 7
+    region: content
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+  field_vactory_date:
+    weight: 3
+    label: hidden
+    settings:
+      timezone_override: ''
+      format_type: html_date
+    third_party_settings: {  }
+    type: datetime_default
+    region: content
+  field_vactory_excerpt:
+    weight: 1
+    label: hidden
+    settings:
+      trim_length: 50
+      trim_type: words
+      trim_suffix: ...
+      wrap_class: trimmed
+      more_text: More
+      more_class: more-link
+      trim_options:
+        text: true
+        trim_zero: false
+      wrap_output: false
+      more_link: false
+      summary_handler: full
+    third_party_settings: {  }
+    type: smart_trim
+    region: content
+  field_vactory_media:
+    type: media_responsive_thumbnail
+    weight: 2
+    region: content
+    label: hidden
+    settings:
+      responsive_image_style: vactory_one_col
+      image_link: ''
+    third_party_settings: {  }
+  field_vactory_theme:
+    weight: 4
+    label: hidden
+    settings:
+      link: false
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  flag_favorite_academy:
+    weight: 5
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  rate_vote_widget:
+    weight: 6
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  body: true
+  comment: true
+  field_vactory_academy_langue: true
+  field_vactory_file: true
+  field_vactory_file_multiple: true
+  field_vactory_instructor: true
+  field_vactory_meta_tags: true
+  field_vactory_paragraphs: true
+  field_vactory_seo_status: true
+  field_vactory_youtube_videos: true
+  langcode: true
+  search_api_excerpt: true

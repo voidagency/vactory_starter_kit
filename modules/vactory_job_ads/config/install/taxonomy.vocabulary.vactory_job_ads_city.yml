@@ -1,0 +1,8 @@
+langcode: en
+status: true
+dependencies: {  }
+name: 'Job Ads - City'
+vid: vactory_job_ads_city
+description: 'Taxonomy for Vactory job Ads City'
+hierarchy: 0
+weight: 0

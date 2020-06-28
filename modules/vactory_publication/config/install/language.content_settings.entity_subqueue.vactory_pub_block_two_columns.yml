@@ -1,0 +1,10 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - entityqueue.entity_queue.vactory_pub_block_two_columns
+id: entity_subqueue.vactory_pub_block_two_columns
+target_entity_type_id: entity_subqueue
+target_bundle: vactory_pub_block_two_columns
+default_langcode: site_default
+language_alterable: false

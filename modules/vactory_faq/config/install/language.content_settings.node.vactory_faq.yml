@@ -1,0 +1,10 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - node.type.vactory_faq
+id: node.vactory_faq
+target_entity_type_id: node
+target_bundle: vactory_faq
+default_langcode: current_interface
+language_alterable: true

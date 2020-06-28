@@ -1,0 +1,21 @@
+<div class="fdb-block">
+    <div class="row text-center">
+        {% for item in 0..1 %}
+
+            {% if loop.index == 1 %}
+                <div class="col-12 col-sm-6 col-lg-5 col-xl-4 m-auto">
+            {% else %}
+                <div class="col-12 col-sm-6 col-lg-5 col-xl-4 m-auto pt-4 pt-sm-0">
+            {% endif %}
+                    {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/60/60.jpg" %}
+                    <img alt="Image Alt"
+                        class="lazyload fdb-icon"
+                        src="{{ content.image_placeholder }}"
+                        data-src="{{ placehold }}">
+                    <h3><strong>Title</strong></h3>
+                    <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry</p>
+            </div>
+
+        {% endfor %}
+
+    </div>

@@ -1,0 +1,23 @@
+{% set main_navigation_menu = simplify_menu('main') %}
+
+<div id="vh-header" class="vh-header vh-variant1">
+    <div class="container">
+        <div class="vh-layout">
+
+            <div class="vh-header--branding">
+                {{ vactory_render('block', 'system_branding_block', {use_site_name: false}) }}
+            </div>
+
+            <nav id="cbp-hrmenu" class="vh-header--menu cbp-hrmenu d-none d-lg-block">
+                {{ _self.menuMacro(main_navigation_menu.menu_tree) }}
+            </nav>
+
+            <div class="vh-header--search-form d-none d-lg-block px-2">
+                {{ vactory_render('block', 'search_form_block') }}
+            </div>
+            <div class="vh-header--language-switcher d-none d-lg-block">
+                {{ vactory_render('block', 'language_dropdown_block:language_interface') }}
+            </div>
+        </div>
+    </div>
+</div>

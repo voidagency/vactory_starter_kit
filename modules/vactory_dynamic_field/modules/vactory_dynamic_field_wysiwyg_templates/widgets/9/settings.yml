@@ -1,0 +1,27 @@
+name: 'C09 - 3 boutons'
+multiple: TRUE
+category: 'Call to action'
+limit: 3
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: 'Title'
+    options:
+      '#required': TRUE
+  link:
+    type: url_extended
+    label: 'Lien du bouton'
+    options:
+      '#requited': TRUE
+  link_alt:
+    type: text
+    label: 'Texte du bouton'
+    options:
+      '#requited': TRUE
+  link_icon:
+    type: text
+    label: 'icon of the button'
+  link_target:
+    type: checkbox
+    label: 'Ouvrir dans une nouvelle fenêtre'

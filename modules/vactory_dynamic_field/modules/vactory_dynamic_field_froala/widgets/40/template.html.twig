@@ -1,0 +1,30 @@
+<div class="fdb-block">
+    <div class="row text-center">
+        <div class="col-12">
+            {% if  extra_fields.title is not empty %}
+                <h3><strong>{{ extra_fields.title }}</strong></h3>
+            {% endif %}
+            <div class="mt-5 justify-content-center">
+
+                {% for item in content %}
+
+                    {% if loop.index == 7 %}
+                        </div><div class="mt-2 mt-md-5 justify-content-center">
+                    {% endif %}
+
+                    {% set image_uri = (content.0.logo.0 is defined) ? get_image(item.logo.0) : '' %}
+                    {% set logo_company = image_uri|image_style('thumbnail') %}
+                    {% set lqip_image = image_uri|image_style('lqip') %}
+                {% if content.0.logo.0 is not empty %}
+                    <img height="30" alt="{{ content.image_alt }}"
+                        class="ml-3 mr-3 mb-2 mt-2 lazyload"
+                        src="{{ lqip_image }}"
+                        data-src="{{ logo_company }}">
+                {% endif %}
+                {% endfor %}
+
+            </div>
+
+        </div>
+    </div>
+</div>

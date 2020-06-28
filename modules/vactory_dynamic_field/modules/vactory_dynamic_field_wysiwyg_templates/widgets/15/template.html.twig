@@ -1,0 +1,31 @@
+<div class="t-temoignage-box">
+  <div class="row vf-slick-slider"
+       data-toshow="2"
+       data-dots="true"
+       data-mobile-dots="true"
+       data-mobile-arrows="true"
+  >
+    {% for item in content %}
+      <div class="col-md-6">
+        <div class="t-box">
+          {% if item.temoignage_opinion is not empty %}
+            <p class="t-box-description">
+              {{ item.temoignage_opinion }}
+            </p>
+          {% endif %}
+          {% if item.temoignage is not empty %}
+            <p class="t-box-temoignage text-small">
+              {{ item.temoignage }}
+            </p>
+          {% endif %}
+          {% if item.temoignage_operation is not empty %}
+            <p class="t-box-temoignage-operation text-small">
+              {{ item.temoignage_operation }}
+            </p>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  <div class="slick-controls d-lg-none"></div>
+</div>

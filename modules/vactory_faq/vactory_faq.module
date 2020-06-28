@@ -1,0 +1,19 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for vactory FAQ module.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_faq_theme() {
+  return [
+    // Node > full.
+    'node__vactory_faq__full' => [
+      'base hook' => 'node',
+      'template'  => 'full',
+    ],
+  ];
+}

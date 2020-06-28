@@ -1,0 +1,25 @@
+name: 'U02 - UniteGallery - Tiles Columns - With Links'
+multiple: TRUE
+category: 'UniteGallery'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: 'Title'
+    options:
+      '#required': TRUE
+  thumbnail:
+    type: image
+    label: 'Thumbnail'
+    options:
+      '#required': TRUE
+      '#description': 'Image size largeur: 400px'
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': TRUE
+  cta_url:
+    type: url_extended
+    label: 'Link'
+    placeholder_value: 'https://www.google.com'

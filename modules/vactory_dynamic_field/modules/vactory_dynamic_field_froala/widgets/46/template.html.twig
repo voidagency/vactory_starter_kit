@@ -1,0 +1,52 @@
+{% set reverse_mode = (extra_fields.mode == 1)? 'd-flex flex-column-reverse' : ' ' %}
+{% set margin_name = (extra_fields.mode == 1)? 'mb-0' : ' ' %}
+{% set margin_role = (extra_fields.mode == 1)? 'mb-3' : ' ' %}
+{% if extra_fields.intro is not empty %}
+    <div class="row text-center justify-content-center mb-3">
+        <div class="col-md-10 col-lg-8">
+        {% if extra_fields.intro is not empty %}
+            <p>{{ extra_fields.intro }}</p>
+        {% endif %}
+        </div>
+    </div>
+{% endif %}
+<div class="fdb-block">
+    <div class="row mt-5  vf-slick-slider" 
+        data-toshow="3"
+        data-dots="false"
+        data-arrows="true"
+        data-mobile-centermode="false">
+        {% for item in content %}
+
+                <div class="col-md-10 col-lg-4 ml-auto mr-auto text-center">
+
+                {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : '' %}
+                {% set image_profile = image_uri|image_style('thumbnail') %}
+                {% set lqip_image = image_uri|image_style('lqip') %}
+                <div class="{{ reverse_mode }} fdb-box shadow-sm qoute-right">
+                    {% if item.description is not empty %}
+                        <p class="text-h3">{{ item.description }}</p>
+                    {% endif %}
+                    {% if item.image.0 is not empty %}
+                        <p>
+                            <img alt="{{ item.image_alt }}" height="50"
+                                class="lazyload rounded-circle"
+                                src="{{ lqip_image }}"
+                                data-src="{{ image_profile }}">
+                        </p>
+                    {% endif %}
+                    <div class='info'>
+                        {% if item.name is not empty %}
+                            <p class="text-h3 {{ margin_name }}"><strong>{{ item.name }}</strong></p>
+                        {% endif %}
+                        {% if item.role is not empty %}
+                            <p class="{{ margin_role }}">{{ item.role }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+        {% endfor %}
+
+    </div>
+</div>

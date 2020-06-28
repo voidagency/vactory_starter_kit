@@ -1,0 +1,8 @@
+langcode: en
+status: true
+dependencies: {  }
+name: 'Testimonials - Profils'
+vid: vactory_testimonials_profils
+description: 'Taxonomy for Vactory Testimonials'
+hierarchy: 0
+weight: 0

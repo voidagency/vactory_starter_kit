@@ -1,0 +1,120 @@
+$bg-footer: $gray-700;
+$footer-text-color: $white;
+$footer-border-color: $white;
+
+.vf-footer--variant2 {
+  padding: 0 !important;
+
+  .vf-mailchimp--newsleter {
+    .input-group.mt-4 {
+      align-items: center;
+
+      input[type=email] {
+        @include rem(margin-right, 10px);
+      }
+    }
+  }
+
+  .vf-footer__middle__bottom {
+    background-color: $primary;
+    * {
+      color: $footer-text-color;
+    }
+  }
+
+  .vf-footer__middle {
+    @include rem(padding, 40px 0);
+
+    .block-footer-contacter_nous {
+      i {
+        display: inline-block;
+        @include rem(margin-right, 6px);
+      }
+    }
+
+    .block-content {
+      flex: 1;
+
+      h2 {
+        @include rem(margin-bottom, 25px);
+      }
+
+    }
+  }
+
+  .vf-footer__bottom {
+    .vf-footer__bottom--items {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      border-top: 1px solid $footer-border-color;
+      @include rem(padding, 20px 0);
+
+      .block-footer-realisation_void {
+        .field__item {
+          display: flex;
+          flex-direction: row;
+
+          p {
+            @include rem(margin-right, 5px);
+
+            &:last-child {
+              margin-right: 0;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+@include media-breakpoint-down(md) {
+  //.vf-footer--variant2 .vf-footer__middle .block-content
+  .vf-footer--variant2 {
+
+    .vf-mailchimp--newsleter {
+      .input-group.mt-4 {
+        flex-direction: column;
+
+        input[type=email] {
+          margin-right: 0;
+          @include rem(margin-bottom, 20px);
+          border-radius: inherit;
+          width: 100%;
+        }
+
+        .input-group-btn {
+          &, input.form-submit {
+            width: 100%;
+          }
+        }
+      }
+    }
+
+    .vf-footer__middle {
+      .col-md-4 {
+        &:not(:last-child) {
+          .block-content {
+            @include rem(margin-bottom, 20px);
+          }
+        }
+      }
+    }
+
+    .vf-footer__bottom {
+      .vf-footer__bottom--items {
+        flex-direction: column;
+        justify-content: center;
+
+        .block-content {
+          text-align: center;
+          @include rem(margin, 0 auto 10px auto);
+
+          &:last-child {
+            margin-bottom: 0;
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,15 @@
+name: 'User'
+type: module
+description: 'Handle user forms & profiles.'
+package: Vactory Core
+core: 8.x
+dependencies:
+  - content_translation
+  - field
+  - file
+  - image
+  - language
+  - path
+  - persistent_login
+  - text
+  - user

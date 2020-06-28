@@ -1,0 +1,120 @@
+.favorite-course {
+  color: $white;
+  &::before {
+    content: $icon-heart;
+    font-family: 'vactory';
+    font-size: 25px;
+    padding-right: 5px;
+  }
+  &:hover {
+    color: $white;
+    &::before {
+      content:$icon-like;
+    }
+  }
+  &.active {
+    &::before {
+      font-weight: 900;
+      color: $red;
+      content:$icon-like;
+    }
+  }
+}
+.block-about-instructor {
+  .avatar {
+    max-width: 100px;
+  }
+}
+.academy-user-menu {
+  list-style: none;
+  li {
+    border: 1px solid #2196f3;
+    padding: 6px;
+    margin-right: 3px;
+  }
+}
+
+.vf-card--academy {
+  .card-read-more a:before {
+    display: none;
+  }
+  &.card:hover {
+    img {
+      transform: none;
+    }
+  }
+}
+.academy-video {
+  img {
+    border: 2px solid $white;
+    border-radius: 3px;
+    width: 100%;
+  }
+}
+.play-videos {
+  position: relative;
+  display: block;
+  &::after {
+    content: $icon-play;
+    position: absolute;
+    font-family: 'vactory';
+    font-size: 40px;
+    color: $white;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    z-index: 2;
+  }
+  &::before {
+    content: "";
+    position: absolute;
+    height: 50px;
+    width: 50px;
+    border-radius: 50px;
+    background: $gray-700;
+    opacity: .7;
+    z-index: 2;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+  }
+}
+.card {
+  .flag {
+    position: absolute;
+    top: 10px;
+    right: 0;
+    z-index: 9;
+  }
+  .favorite-course {
+    font-size: 0;
+    color: $black;
+  }
+  .badge-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 0 11px;
+  }
+}
+
+@include media-breakpoint-up(md) {
+  .page--vactory-academy .container .block-detail .container{
+    padding: 0;
+  }
+}
+@include media-breakpoint-down(md) {
+  .wrapper-flag_favorite {
+    position: absolute;
+    z-index: 9;
+    font-size: 0;
+    top: 4%;
+    .favorite-course {
+      &::before {
+        background: rgba($color: $black, $alpha: .3);
+        padding: 3px 10px;
+        border-radius: 50%;
+      }
+    }
+  }
+}

@@ -1,0 +1,35 @@
+name: 'C36 - Card inline inversed'
+multiple: TRUE
+category: Content
+enabled: TRUE
+fields:
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': TRUe
+  image_alt:
+    type: text
+    label: 'Image text alternative'
+  title:
+    type: text
+    label: 'Titre line 1'
+    options:
+      '#required': TRUE
+  title2:
+    type: text
+    label: 'Titre line 2'
+  description:
+    type: textarea
+    label: 'Description'
+    options:
+      '#required': TRUE
+  link:
+    type: url_extended
+    label: 'lien'
+  link_alt:
+    type: text
+    label: 'text du lien'
+  link_target:
+    type: checkbox
+    label: 'Ouvrir dans une nouvelle fenêtre'

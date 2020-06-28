@@ -1,0 +1,17 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - vactory_locator.locator_entity_type.vactory_locator
+id: locator_entity.vactory_locator.metatag
+field_name: metatag
+entity_type: locator_entity
+bundle: vactory_locator
+label: Metatags
+description: 'The meta tags for the entity.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: map

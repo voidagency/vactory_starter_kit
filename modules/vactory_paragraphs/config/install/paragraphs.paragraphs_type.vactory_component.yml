@@ -1,0 +1,8 @@
+langcode: fr
+status: true
+dependencies: {  }
+id: vactory_component
+label: Template
+icon_uuid: null
+description: 'Template Dynamic field'
+behavior_plugins: {  }

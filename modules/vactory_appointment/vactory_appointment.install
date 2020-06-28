@@ -1,0 +1,24 @@
+<?php
+
+/**
+ * @file
+ * Module install hooks.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function vactory_appointment_install() {
+  $appointment_hours_string = \Drupal::configFactory()->get('vactory_appointment.settings')
+    ->get('appointment_hours_string');
+  $hours_string = preg_split('/\n|\r\n?/', $appointment_hours_string);
+  $appointment_hours = [];
+  foreach ($hours_string as $appointment_hour) {
+    $appointment_hour = explode('|', $appointment_hour);
+    $appointment_hours[$appointment_hour[0]] = $appointment_hour[1];
+  }
+  Drupal::configFactory()
+    ->getEditable('vactory_appointment.settings')
+    ->set('appointment_hours', $appointment_hours)
+    ->save();
+}

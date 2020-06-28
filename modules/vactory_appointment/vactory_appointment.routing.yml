@@ -1,0 +1,91 @@
+vactory_appointment.appointments_settings:
+  path: '/admin/config/system/appointments-configuration'
+  defaults:
+    _title: 'Appointments settings'
+    _form: '\Drupal\vactory_appointment\Form\SettingsForm'
+  requirements:
+    _permission: 'administer appointments'
+
+entity.vactory_appointment.collection:
+  path: '/admin/structure/appointment/list'
+  defaults:
+    _entity_list: 'vactory_appointment'
+    _title: 'Appointments List'
+  requirements:
+    _permission: 'view appointments'
+
+entity.vactory_appointment.canonical:
+  path: '/admin/structure/vactory_appointment/{vactory_appointment}'
+  defaults:
+    _entity_view: 'vactory_appointment'
+    _title: 'Appointment Content'
+  requirements:
+    _entity_access: 'vactory_appointment.view'
+
+entity.vactory_appointment.add_page:
+  path: '/admin/structure/vactory_appointment/add'
+  defaults:
+    _entity_form: vactory_appointment.add
+    _title: 'Add Appointment'
+  requirements:
+    _entity_create_access: 'vactory_appointment'
+
+entity.vactory_appointment.edit_form:
+  path: '/admin/structure/vactory_appointment/{vactory_appointment}/edit'
+  defaults:
+    _entity_form: vactory_appointment.edit
+    _title: 'Edit Appointment'
+  requirements:
+    _entity_access: 'vactory_appointment.edit'
+
+entity.vactory_appointment.delete_form:
+  path: '/admin/structure/vactory_appointment/{vactory_appointment}/delete'
+  defaults:
+    _entity_form: vactory_appointment.delete
+    _title: 'Delete Appointment'
+  requirements:
+    _entity_access: 'vactory_appointment.delete'
+
+vactory_appointment.appointment_types_listing:
+  path: '/borne/{agency}/prendre-rendez-vous'
+  defaults:
+    _controller: '\Drupal\vactory_appointment\Controller\AppointmentTypesController::content'
+    _title: 'Delete Appointment'
+  requirements:
+    _permission: 'access content'
+
+vactory_appointment.appointment_submit_form:
+  path: '/borne/{agency}/{appointment_type}'
+  defaults:
+    _form: '\Drupal\vactory_appointment\Form\AppointmentSubmitForm'
+    _title: 'Prendre un rendez vous'
+  requirements:
+    _permission: 'access content'
+vactory_appointment.appointment_edit_submit_form:
+  path: '/borne/modifier-rendez-vous'
+  defaults:
+    _form: '\Drupal\vactory_appointment\Form\AppointmentEditSubmitForm'
+    _title: 'Modifier un rendez vous'
+  requirements:
+    _permission: 'access content'
+vactory_appointment.appointment_delete_submit_form:
+  path: '/borne/supprimer-rendez-vous/{appointment_id}'
+  defaults:
+    _controller: '\Drupal\vactory_appointment\Controller\AppointmentDeleteController::deleteAppointmentSubmit'
+    _title: 'Suprimer un rendez vous'
+  requirements:
+    _permission: 'access content'
+vactory_appointment.appointment_confirm_deletion_message:
+  path: '/borne/supprimer-rendez-vous/{appointment_id}/confirmation'
+  defaults:
+    _controller: '\Drupal\vactory_appointment\Controller\AppointmentDeleteController::deleteAppointmentConfirmation'
+    _title: 'Suprimer un rendez vous'
+  requirements:
+    _permission: 'access content'
+vactory_appointment.agency_services_page:
+  path: '/borne/{agency_path}'
+  defaults:
+    _controller: '\Drupal\vactory_appointment\Controller\AgencyServicesController::content'
+    _title: 'Agency services'
+  requirements:
+    _permission: 'access content'

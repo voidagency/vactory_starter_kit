@@ -1,0 +1,306 @@
+<?php
+
+/**
+ * @file
+ * Primary hooks for vactory_academy module.
+ */
+
+use Drupal\Core\Url;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Drupal\user\Entity\User;
+use Drupal\node\Entity\Node;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\views\ViewExecutable;
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_academy_theme() {
+  return [
+    // Node > academy.
+    'node__vactory_academy__card_inline' => [
+      'base hook' => 'node',
+      'template'  => 'card-inline',
+    ],
+    // Node > full.
+    'node__vactory_academy__full'        => [
+      'base hook' => 'node',
+      'template'  => 'full',
+    ],
+    'node__vactory_academy__card' => [
+      'base hook' => 'node',
+      'template'  => 'card',
+    ],
+    'user__vactory_academy__full' => [
+      'base hook' => 'user',
+      'template' => 'user--full',
+    ],
+    'block_user_instructor_about' => [
+      'template' => 'block-about-instructor',
+      'variables' => [
+        'user' => NULL,
+        'content' => NULL,
+      ],
+    ],
+    'block_authenticated_user_header' => [
+      'template' => 'block-authenticated-user-header',
+      'variables' => [
+        'user' => NULL,
+      ],
+    ],
+    'flag__favorite_academy' => [
+      'base hook' => 'flag',
+      'template' => 'favorite-link',
+    ],
+    'rate_template_fivestar__vactory_academy' => [
+      'base hook' => 'rate_template_fivestar',
+      'template' => 'vactory-academy-vote',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function vactory_academy_preprocess_node(&$variables) {
+  /** @var \Drupal\node\Entity\Node $node */
+  $node = $variables['node'];
+
+  if ($node->getType() != 'vactory_academy') {
+    return;
+  }
+
+  if (isset($node->field_vactory_image)) {
+    $node->field_vactory_image[0]->title = $node->label();
+    $node->field_vactory_image[0]->alt = $node->label();
+  }
+
+  $instructor_id = $node->get('field_vactory_instructor')->getValue()[0]['target_id'];
+  $instructor = User::load($instructor_id);
+  if (isset($instructor)) {
+    $variables['instructor']['first_name'] = $instructor->get('field_first_name')->value;
+    $variables['instructor']['last_name'] = $instructor->get('field_last_name')->value;
+  }
+
+  $current_user = Drupal::currentUser();
+  if (in_array('anonymous', $current_user->getRoles())) {
+    $variables['is_anonymous'] = TRUE;
+  }
+  else {
+    $variables['is_anonymous'] = FALSE;
+  }
+
+  // Get node alias to use it as a redirection params.
+  $node_alias = $node->toUrl()->toString();
+  $variables['redirect_params'] = '?destination=' . $node_alias;
+}
+
+/**
+ * Implements hook_theme_suggestions_alter().
+ */
+function vactory_academy_theme_suggestions_alter(array &$suggestions, array $variables, $hook) {
+  if ($hook == 'user') {
+    $view_mode = isset($variables['elements']['#view_mode']) ? $variables['elements']['#view_mode'] : '';
+    if (is_instructor_profile() && $view_mode == 'full') {
+      $suggestions[] = 'user__vactory_academy__' . $view_mode;
+    }
+  }
+
+  if ($hook == 'rate_template_fivestar') {
+    $suggestions[] = 'rate_template_fivestar__vactory_academy';
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_academy_preprocess_node__vactory_academy__full(&$variables) {
+  $current_user = Drupal::currentUser();
+  if (in_array('anonymous', $current_user->getRoles())) {
+    $variables['is_anonymous'] = TRUE;
+  }
+  else {
+    $variables['is_anonymous'] = FALSE;
+  }
+
+  $node = $variables['node'];
+  $instructor_id = $node->get('field_vactory_instructor')->getValue()[0]['target_id'];
+  $instructor = User::load($instructor_id);
+  if (isset($instructor)) {
+    $variables['instructor']['first_name'] = $instructor->get('field_first_name')->value;
+    $variables['instructor']['last_name'] = $instructor->get('field_last_name')->value;
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_academy_preprocess_field__comment(&$variables) {
+  $current_user = Drupal::currentUser();
+  $node = Drupal::routeMatch()->getParameter('node');
+  // Anonymous users could not comment academy content types nodes.
+  if (in_array('anonymous', $current_user->getRoles()) && $node->bundle() == 'vactory_academy') {
+    unset($variables['comment_form']);
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_academy_preprocess_user__vactory_academy__full(&$variables) {
+  $visited_account = Drupal::routeMatch()->getParameter('user');
+  $visited_account = User::load($visited_account->id());
+  $variables['instructor_statistics'] = get_academy_instructor_statistics($visited_account);
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_academy_form_user_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $modified_account = Drupal::routeMatch()->getParameter('user');
+  if ($modified_account && !in_array('vactory_academy_instructor', $modified_account->getRoles())) {
+    // Those fields are available only for users with instructor role.
+    $form['field_about_the_author']['#access'] = FALSE;
+    $form['field_user_profession']['#access'] = FALSE;
+    $form['field_social_media_links']['#access'] = FALSE;
+    $form['field_first_name']['#access'] = FALSE;
+    $form['field_last_name']['#access'] = FALSE;
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_academy_form_node_vactory_academy_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $current_user = Drupal::currentUser();
+  // An instructor should not edit course intructor field.
+  if (in_array('vactory_academy_instructor', $current_user->getRoles()) && !in_array('administrator', $current_user->getRoles())) {
+    $form['field_vactory_instructor']['#access'] = FALSE;
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_academy_form_node_vactory_academy_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $current_user = Drupal::currentUser();
+  // Academy instructor field is default to current authenticated instructor.
+  if (in_array('vactory_academy_instructor', $current_user->getRoles()) && !in_array('administrator', $current_user->getRoles())) {
+    $form['field_vactory_instructor']['widget']['#default_value'] = $current_user->id();
+    $form['field_vactory_instructor']['#access'] = FALSE;
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_academy_form_views_exposed_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $route_name = Drupal::routeMatch()->getRouteName();
+  $current_user = Drupal::currentUser();
+  $is_instructor_and_not_admin = in_array('vactory_academy_instructor', $current_user->getRoles()) && !in_array('administrator', $current_user->getRoles());
+  // Instructors can only administrate Academy content.
+  if ($route_name == 'system.admin_content' && $is_instructor_and_not_admin) {
+    $form['type']['#default_value'] = 'vactory_academy';
+    $form['type']['#access'] = FALSE;
+  }
+}
+
+/**
+ * Implements hook_views_pre_render().
+ */
+function vactory_academy_views_pre_render(ViewExecutable $view) {
+  $current_user = Drupal::currentUser();
+  // Only instructors can edit or delete theirs own course.
+  $is_instructor_and_not_admin = in_array('vactory_academy_instructor', $current_user->getRoles()) && !in_array('administrator', $current_user->getRoles());
+  if ($view->id() == 'content' && $is_instructor_and_not_admin) {
+    $results = $view->result;
+    if (!empty($results)) {
+      foreach ($results as $key => $result) {
+        $node = $result->_entity;
+        $instructor_id = $node->get('field_vactory_instructor')->getValue()[0]['target_id'];
+        if ($instructor_id !== $current_user->id()) {
+          unset($results[$key]);
+        }
+      }
+    }
+    $view->result = $results;
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_academy_preprocess_node__vactory_academy__card_inline(&$variables) {
+  $node = $variables['node'];
+  $instructor_id = $node->get('field_vactory_instructor')->getValue()[0]['target_id'];
+  $instructor = User::load($instructor_id);
+  if (isset($instructor)) {
+    $variables['instructor']['first_name'] = $instructor->get('field_first_name')->value;
+    $variables['instructor']['last_name'] = $instructor->get('field_last_name')->value;
+  }
+}
+
+/**
+ * Function to check if the visited account has role instructor.
+ */
+function is_instructor_profile() {
+  $route_name = Drupal::routeMatch()->getRouteName();
+  if ($route_name == 'entity.user.canonical') {
+    $visited_account = Drupal::routeMatch()->getParameter('user');
+    if (in_array('vactory_academy_instructor', $visited_account->getRoles())) {
+      return TRUE;
+    }
+  }
+
+  return FALSE;
+}
+
+/**
+ * Provide total comments on an instructor courses .
+ */
+function get_academy_instructor_statistics(User $user) {
+  $nids = \Drupal::entityQuery('node')
+    ->condition('type', 'vactory_academy')
+    ->execute();
+
+  if (!empty($nids)) {
+    $nodes = Node::loadMultiple($nids);
+    $sum_avis = 0;
+    $sum_courses = 0;
+    foreach ($nodes as $node) {
+      $instructor_id = $node->get('field_vactory_instructor')->getValue()[0]['target_id'];
+      if ($user->id() == $instructor_id) {
+        $sum_avis += $node->get('comment')->comment_count;
+        $sum_courses++;
+      }
+    }
+
+    $statistic['nb_avis'] = $sum_avis;
+    $statistic['nb_courses'] = $sum_courses;
+  }
+  else {
+    $statistic['nb_avis'] = 0;
+    $statistic['nb_courses'] = 0;
+  }
+
+  return $statistic;
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_academy_preprocess_page(&$variables) {
+  $route_name = Drupal::routeMatch()->getRouteName();
+  // Check if it's a user profile page.
+  if ($route_name == 'entity.user.canonical') {
+    $visited_account = Drupal::routeMatch()->getParameter('user');
+    $visited_account = User::load($visited_account->id());
+    $current_user = Drupal::currentUser();
+    // Seuls les profils des enseignants peuvent être visités.
+    if (!is_instructor_profile() && $current_user->id() !== $visited_account->id()) {
+      $profile_url = Url::fromRoute('system.403');
+      $redirect = new RedirectResponse($profile_url->toString());
+      $redirect->send();
+    }
+  }
+}

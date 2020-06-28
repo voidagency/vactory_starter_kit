@@ -1,0 +1,45 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the varbase blog module.
+ */
+
+use Symfony\Component\Yaml\Yaml;
+use Drupal\Core\Config;
+use Drupal\Core\Config\InstallStorage;
+use Drupal\Core\Config\StorageInterface;
+use Drupal\Core\Config\FileStorage;
+
+/**
+ * Implements hook_install().
+ */
+function vactory_social_auth_install() {
+
+  $module_name = preg_replace('/_install$/', '', __FUNCTION__);
+  $module_path = Drupal::service('module_handler')->getModule($module_name)->getPath();
+
+  // Install optional configs.
+  $optional_install_path = $module_path . '/' . InstallStorage::CONFIG_OPTIONAL_DIRECTORY;
+  if (is_dir($optional_install_path)) {
+    $config_installer = \Drupal::service('config.installer');
+    $config_installer->installDefaultConfig('module', $module_name);
+
+    // Install any optional config the module provides.
+    $storage = new FileStorage($optional_install_path, StorageInterface::DEFAULT_COLLECTION);
+    $config_installer->installOptionalConfig($storage, '');
+
+    // Have the .settings.yml configs into the active config.
+    $settings_config_files = file_scan_directory($optional_install_path, '/^.*\\.(settings.yml)$/i');
+    if (isset($settings_config_files) && is_array($settings_config_files)) {
+      foreach ($settings_config_files as $settings_config_file) {
+        $settings_config_file_content = file_get_contents(DRUPAL_ROOT . '/' . $settings_config_file->uri);
+        $settings_config_file_data = (array) Yaml::parse($settings_config_file_content);
+        $config_factory = \Drupal::configFactory()->getEditable($settings_config_file->name);
+        $config_factory->setData($settings_config_file_data)->save(TRUE);
+      }
+    }
+  }
+  // ---------------------------------------------------------------------------
+
+}

@@ -1,0 +1,29 @@
+block.vactory_admin_library:
+  path: '/admin/structure/block/vactory/library/{theme}'
+  defaults:
+    _controller: '\Drupal\vactory_core\Controller\VactoryBlockController::listBlocks'
+    _title: 'Place block'
+  requirements:
+    _access_theme: 'TRUE'
+    _permission: 'administer blocks params'
+
+#node.add_page:
+#  path: '/node/add'
+#  defaults:
+#    _title: 'Add content'
+#    _controller: '\Drupal\vactory_core\Controller\VactoryNodeController::addVactoryPage'
+#  options:
+#    _node_operation_route: TRUE
+#  requirements:
+#    _node_add_access: 'node'
+
+#contact.site_page:
+#  path: '/contact'
+#  defaults:
+#    _title: 'Contact'
+#    _controller: '\Drupal\vactory_core\Controller\VactoryContactController::contactSitePage'
+#    contact_form: NULL
+#  options:
+#    no_cache: TRUE
+#  requirements:
+#    _permission: 'access content'

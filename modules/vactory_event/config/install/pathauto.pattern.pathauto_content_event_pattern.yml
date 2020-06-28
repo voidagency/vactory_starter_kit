@@ -1,0 +1,21 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: pathauto_content_event_pattern
+label: 'Pathauto Content event Pattern'
+type: 'canonical_entities:node'
+pattern: '/event/[node:title]'
+selection_criteria:
+  912050e5-35c6-4f66-b3a1-81f9c8ce3494:
+    id: node_type
+    bundles:
+      vactory_event: vactory_event
+    negate: false
+    context_mapping:
+      node: node
+    uuid: 912050e5-35c6-4f66-b3a1-81f9c8ce3494
+selection_logic: and
+weight: -5
+relationships: {  }

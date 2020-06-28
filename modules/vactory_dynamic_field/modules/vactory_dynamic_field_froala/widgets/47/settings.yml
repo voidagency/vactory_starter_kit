@@ -1,0 +1,39 @@
+name: '47 - Froala - Pricing Dark Title, Price, Description, Items & CTA'
+multiple: TRUE
+category: 'Tables'
+enabled: TRUE
+limit: 3
+fields:
+  title:
+    type: text
+    label: 'Titre'
+  price:
+    type: text
+    label: 'Price'
+  description:
+    type: textarea
+    label: 'Description'
+  lists:
+    type: text_format
+    label: 'Items'
+    options:
+      '#format': 'full_html'
+  link:
+    type: url_extended
+    label: 'Lien'
+  link_alt:
+    type: text
+    label: 'Titre lien'
+  link_target:
+    type: checkbox
+    label: 'Ouvrir dans une nouvelle fenêtre'
+extra_fields:
+  background:
+    type: image
+    label: 'Background'
+  title:
+      type: text
+      label: 'Titre'
+  color:
+    type: checkbox
+    label: 'bg-dark'

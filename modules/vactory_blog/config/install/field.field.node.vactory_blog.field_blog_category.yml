@@ -1,0 +1,28 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_blog_category
+    - node.type.vactory_blog
+    - taxonomy.vocabulary.vactory_blog_categories
+id: node.vactory_blog.field_blog_category
+field_name: field_blog_category
+entity_type: node
+bundle: vactory_blog
+label: Category
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      vactory_blog_categories: vactory_blog_categories
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

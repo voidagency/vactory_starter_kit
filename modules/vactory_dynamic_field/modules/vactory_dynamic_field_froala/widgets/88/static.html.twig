@@ -1,0 +1,24 @@
+<div class="fdb-block">
+    <div class="row text-center">
+        {% for item in 0..3 %}
+
+            {% if loop.index == 1 %}
+                <div class="col-12 col-sm-6 col-md-3">
+            {% else %}
+                <div class="col-12 col-sm-6 col-md-3 pt-5 pt-sm-0">
+            {% endif %}
+
+                    {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/60/60.jpg" %}
+                    <img alt="Image Alt"
+                        class="lazyload fdb-icon"
+                        src="{{ content.image_placeholder }}"
+                        data-src="{{ placehold }}">
+                    <h3><strong>Title</strong></h3>
+                    <p class="mt-3"><a class="btn btn-primary" href="#" >Read More</a></p>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+</div>

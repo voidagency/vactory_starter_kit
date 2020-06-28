@@ -1,0 +1,10 @@
+{% if title %}
+  <h3>{{ title }}</h3>
+{% endif %}
+<div id="js--wrapper-annual-grid">
+  <div class="annual-grid">
+    {% for row in rows %}
+      {{ row.content }}
+    {% endfor %}
+  </div>
+</div>

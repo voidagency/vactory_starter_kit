@@ -1,0 +1,26 @@
+name: 'U08 - UniteGallery - Carousel'
+multiple: TRUE
+category: 'UniteGallery'
+enabled: TRUE
+fields:
+  description:
+    type: textarea
+    label: 'Description'
+    options:
+      '#required': TRUE
+  thumbnail:
+    type: image
+    label: 'Thumbnail'
+    options:
+      '#required': TRUE
+      '#description': 'Image size largeur: 400px'
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': TRUE
+  videoId:
+    type: text
+    label: 'VideoId Youtube'
+    options:
+      '#description': 'Youtube ID: l1g0fn5Nm_g, crIaEzXgqto, MVt32qoyhi0, 7SlILk2WMTI'

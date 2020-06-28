@@ -1,0 +1,24 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.paragraph_background_wrapper.field_background_type
+    - field.field.paragraph.paragraph_background_wrapper.field_paragraph_type
+    - paragraphs.paragraphs_type.paragraph_background_wrapper
+id: paragraph.paragraph_background_wrapper.default
+targetEntityType: paragraph
+bundle: paragraph_background_wrapper
+mode: default
+content:
+  field_bg_color:
+    weight: 1
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: jquery_colorpicker_color_display
+    region: content
+hidden:
+  field_background_type: true
+  field_paragraph_type: true
+  paragraph_background_image: true
+  paragraph_container: true

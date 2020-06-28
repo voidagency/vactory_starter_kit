@@ -1,0 +1,10 @@
+{{ attach_library('vactory_splashscreen/splash_screen.v1') }}
+<div class="splash-screen variant1 effect-flip-h">
+  <a href="" class="close"><i class="icon-close"></i></a>
+  <div class="splash-screen--content container">
+    {% for pid in content.content %}
+      {{ drupal_entity('paragraph', pid) }}
+    {% endfor %}
+  </div>
+</div>
+

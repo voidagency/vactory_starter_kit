@@ -1,0 +1,26 @@
+name: '28 - Froala - Content Left Block Title, Description & CTA With Background'
+multiple: FALSE
+category: 'Froala'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: 'Titre'
+  description:
+    type: textarea
+    label: 'Description'
+  link:
+    type: url_extended
+    label: 'Lien'
+  link_alt:
+    type: text
+    label: 'Titre lien'
+  link_target:
+    type: checkbox
+    label: 'Ouvrir dans une nouvelle fenêtre'
+  touch:
+    type: checkbox
+    label: 'Ajouter touch decoration a haut de block'
+  mode:
+    type: checkbox
+    label: 'Activer le mode inversé (Description To Right)'

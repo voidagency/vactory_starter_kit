@@ -1,0 +1,36 @@
+name: 'C13 - Slider 3 colonnes : image + titre + description + bouton'
+multiple: TRUE
+category: 'Content'
+enabled: TRUE
+fields:
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': TRUE
+      '#description': 'Image size largeur: 140px hauteur: 140px'
+  image_alt:
+    type: text
+    label: 'Image alt'
+  title:
+    type: text
+    label: 'Titre'
+  description:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'full_html'
+      '#required': TRUE
+  link:
+    type: url_extended
+    label: 'Button lien'
+  link_alt:
+    type: text
+    label: 'button text'
+  link_target:
+    type: checkbox
+    label: 'Ouvrir dans une nouvelle fenêtre'
+extra_fields:
+  bigtitle:
+    type: text
+    label: 'Titre du block'

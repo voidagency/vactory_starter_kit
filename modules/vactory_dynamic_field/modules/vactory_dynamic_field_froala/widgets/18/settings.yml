@@ -1,0 +1,45 @@
+name: '18 - Froala - Content Left Image, Right Block Thumbnail Text & CTA'
+multiple: FALSE
+category: 'Call to action'
+enabled: TRUE
+fields:
+  image_1:
+    type: image
+    label: 'Image'
+    option:
+      '#required': TRUE
+  image_alt_1:
+    type: text
+    label: 'Text alternatif'
+  image_2:
+    type: image
+    label: 'Thumbnail'
+    option:
+      '#required': TRUE
+  image_alt_2:
+    type: text
+    label: 'Text alternatif'
+  title:
+    type: text
+    label: 'Titre'
+  description:
+    type: textarea
+    label: 'Description'
+  link_1:
+    type: url_extended
+    label: 'Lien 1'
+  link_alt_1:
+    type: text
+    label: 'Titre Lien 1'
+  link_target_1:
+    type: checkbox
+    label: 'Ouvrir dans une nouvelle fenêtre'
+  link_2:
+    type: url_extended
+    label: 'Lien 2'
+  link_alt_2:
+    type: text
+    label: 'Titre Lien 2'
+  link_target_2:
+    type: checkbox
+    label: 'Ouvrir dans une nouvelle fenêtre'

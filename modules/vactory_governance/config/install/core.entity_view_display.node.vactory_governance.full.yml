@@ -1,0 +1,109 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.full
+    - field.field.node.vactory_governance.body
+    - field.field.node.vactory_governance.field_gov_address
+    - field.field.node.vactory_governance.field_gov_social_media
+    - field.field.node.vactory_governance.field_vactory_email
+    - field.field.node.vactory_governance.field_vactory_fax
+    - field.field.node.vactory_governance.field_vactory_media
+    - field.field.node.vactory_governance.field_vactory_name
+    - field.field.node.vactory_governance.field_vactory_seo_status
+    - field.field.node.vactory_governance.field_vactory_taxonomy_1
+    - field.field.node.vactory_governance.field_vactory_telephone
+    - node.type.vactory_governance
+  module:
+    - address
+    - social_media_links_field
+    - text
+    - user
+id: node.vactory_governance.full
+targetEntityType: node
+bundle: vactory_governance
+mode: full
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 1
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_gov_address:
+    weight: 5
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: address_default
+    region: content
+  field_gov_social_media:
+    weight: 8
+    label: hidden
+    settings:
+      appearance: {  }
+      link_attributes: {  }
+    third_party_settings: {  }
+    type: social_media_links_field_default
+    region: content
+  field_image:
+    weight: 4
+    label: hidden
+    settings:
+      image_style: ''
+      image_link: ''
+    third_party_settings: {  }
+    type: image
+    region: content
+  field_vactory_email:
+    weight: 4
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: basic_string
+    region: content
+  field_vactory_fax:
+    type: string
+    weight: 6
+    region: content
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+  field_vactory_name:
+    weight: 2
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_vactory_taxonomy_1:
+    weight: 3
+    label: hidden
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_vactory_telephone:
+    type: string
+    weight: 7
+    region: content
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  field_vactory_media: true
+  field_vactory_seo_status: true
+  langcode: true
+  node_banner_image: true
+  search_api_excerpt: true

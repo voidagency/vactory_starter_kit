@@ -1,0 +1,19 @@
+name: '59 - Froala - CTA Social Media'
+multiple: TRUE
+category: 'Call to action'
+enabled: TRUE
+limit: 10
+fields:
+  name:
+    type: text
+    label: 'Titre'
+  link:
+    type: url_extended
+    label: 'Lien'
+  link_target:
+    type: checkbox
+    label: 'Ouvrir dans une nouvelle fenêtre'
+extra_fields:
+  title:
+      type: text
+      label: 'Titre'

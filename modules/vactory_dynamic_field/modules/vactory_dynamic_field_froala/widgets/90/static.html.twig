@@ -1,0 +1,30 @@
+<div class="fdb-block">
+    <div class="row text-left">
+        {% for item in 0..2 %}
+
+            {% if loop.index == 1 %}
+                <div class="col-12 col-md-8 m-auto col-lg-4">
+            {% else %}
+                <div class="col-12 col-md-8 m-auto col-lg-4 pt-5 pt-lg-0">
+            {% endif %}
+
+                <div class="fdb-box fdb-touch">
+
+                         <h2>Title</h2>
+
+
+                        <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
+
+
+
+                        <p class="mt-3"><a href="#" >Read More</a></p>
+
+
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+</div>

@@ -1,0 +1,14 @@
+langcode: en
+status: true
+dependencies: {  }
+name: partner_image_style
+label: 'Partner logo x1'
+effects:
+  9af56f7f-7d23-434b-b215-f3d2a30f473b:
+    uuid: 9af56f7f-7d23-434b-b215-f3d2a30f473b
+    id: image_scale
+    weight: 1
+    data:
+      width: null
+      height: 40
+      upscale: false

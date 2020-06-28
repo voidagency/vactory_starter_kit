@@ -1,0 +1,17 @@
+{% if menu_links is not empty %}
+    {{ attach_library('vactory_anchor/anchorLib') }}
+
+    <ul class="nav justify-content-center p-3 mb-2 bg-light text-dark">
+        {% for item in menu_links %}
+            <li class="nav-item">
+                <a class="nav-link anchor-link" href="#{{ item.id }}">{{ item.label }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <div class="ancre-custom-block">
+        {% if custom_block is not empty %}
+            {{ vactory_render('block', custom_block) }}
+        {% endif %}
+    </div>
+{% endif %}

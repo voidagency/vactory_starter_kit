@@ -1,0 +1,15 @@
+name: 'C06 - Chiffres clés'
+multiple: TRUE
+category: 'Key figures'
+enabled: TRUE
+fields:
+  number:
+    type: text
+    label: 'Chiffres'
+    options:
+      '#required': TRUE
+  name:
+    type: text
+    label: 'Nom'
+    options:
+      '#required': TRUE

@@ -1,0 +1,32 @@
+{% set image_uri = (content.0.image.0 is defined) ? get_image(content.0.image.0) : '' %}
+{% set fluid_image = image_uri|image_style('max_1300x1300') %}
+{% set lqip_image = image_uri|image_style('lqip') %}
+
+<div class="fdb-block">
+    <div class="row">
+        <div class="col text-center">
+            {% if content.0.title is not empty %}
+                <h2>{{ content.0.title }}</h2>
+            {% endif %}
+            {% if content.0.subtitle is not empty %}
+                <h2>{{ content.0.subtitle }}</h2>
+            {% endif %}
+            <p class="text-h3">
+                {% if content.0.link_1 is not empty  and content.0.link_alt_1 is not empty %}
+                    {% set link_target_1 = (content.0.link_target_1 > 0) ? '_blank' : '_self' %}
+                    <a href="{{ content.0.link_1 }}" target="{{ link_target_1 }}">{{ content.0.link_alt_1 }}</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                {% endif %}
+                {% if content.0.link_2 is not empty  and content.0.link_alt_2 is not empty %}
+                    {% set link_target_2 = (content.0.link_target_2 > 0) ? '_blank' : '_self' %}
+                    <a href="{{ content.0.link_2 }}" target="{{ link_target_2 }}" >{{ content.0.link_alt_2 }}</a>
+                {% endif %}
+            </p>
+            {% if content.0.image.0 is not empty %}
+                <img alt="{{ content.0.image_alt }}"
+                    class="img-fluid mt-5 lazyload"
+                    src="{{ lqip_image }}"
+                    data-src="{{ fluid_image }}">
+            {% endif %}
+        </div>
+    </div>
+</div>

@@ -1,0 +1,48 @@
+<?php
+
+/**
+ * @file
+ * Primary hooks for Press kit.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_press_kit_theme() {
+  return [
+    // Node > card.
+    'node__vactory_press_kit__card'        => [
+      'base hook' => 'node',
+      'template'  => 'card',
+    ],
+    // Node > card inline.
+    'node__vactory_press_kit__card_inline' => [
+      'base hook' => 'node',
+      'template'  => 'card-inline',
+    ],
+    // Node > Masonry.
+    'node__vactory_press_kit__masonry'     => [
+      'base hook' => 'node',
+      'template'  => 'masonry',
+    ],
+    // Node > full.
+    'node__vactory_press_kit__full'        => [
+      'base hook' => 'node',
+      'template'  => 'full',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function vactory_press_kit_preprocess_node(&$variables) {
+  /** @var \Drupal\node\Entity\Node $node */
+  $node = $variables['node'];
+
+  if ($node->getType() == 'vactory_press_kit') {
+    if (isset($node->field_vactory_image)) {
+      $node->field_vactory_image[0]->title = $node->label();
+    }
+  }
+}

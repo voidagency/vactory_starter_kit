@@ -1,0 +1,20 @@
+services:
+  vactory_core.field.twig_extension:
+    class: Drupal\vactory_core\TwigExtension\TwigExtension
+    tags:
+      - { name: twig.extension }
+  simplify_menu.menu_items:
+    class: Drupal\vactory_core\MenuItems
+    arguments: ['@menu.link_tree']
+  vactory_core.disable_route_subscriber:
+    class: Drupal\vactory_core\EventSubscriber\DisableRouteSubscriber
+    tags:
+      - { name: event_subscriber }
+  vactory_core.disable_route_node_subscriber:
+      class: Drupal\vactory_core\Routing\RouteSubscriber
+      tags:
+        - { name: event_subscriber }
+  vactory_core.remove_x_generator_response_header:
+    class: Drupal\vactory_core\EventSubscriber\RemoveXGeneratorResponseHeader
+    tags:
+      - { name: event_subscriber }

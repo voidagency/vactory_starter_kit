@@ -1,0 +1,84 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.vactory_tender.body
+    - field.field.node.vactory_tender.field_vactory_date
+    - field.field.node.vactory_tender.field_vactory_excerpt
+    - field.field.node.vactory_tender.field_vactory_media_document
+    - field.field.node.vactory_tender.field_vactory_media_file
+    - field.field.node.vactory_tender.field_vactory_reference
+    - node.type.vactory_tender
+  module:
+    - datetime
+    - text
+    - user
+id: node.vactory_tender.default
+targetEntityType: node
+bundle: vactory_tender
+mode: default
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 1
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_vactory_date:
+    weight: 2
+    label: above
+    settings:
+      format_type: medium
+      timezone_override: ''
+    third_party_settings: {  }
+    type: datetime_default
+    region: content
+  field_vactory_excerpt:
+    weight: 7
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_vactory_media_document:
+    weight: 9
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_vactory_media_file:
+    weight: 10
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_vactory_reference:
+    weight: 3
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  langcode:
+    type: language
+    weight: 8
+    region: content
+    label: above
+    settings:
+      link_to_entity: false
+      native_language: false
+    third_party_settings: {  }
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  node_banner_image: true

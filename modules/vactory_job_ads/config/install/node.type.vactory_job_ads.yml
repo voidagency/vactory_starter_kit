@@ -1,0 +1,9 @@
+langcode: en
+status: true
+name: 'Job Ads'
+type: vactory_job_ads
+description: 'Manage your Job Ads content.'
+help: ''
+new_revision: true
+preview_mode: 1
+display_submitted: false

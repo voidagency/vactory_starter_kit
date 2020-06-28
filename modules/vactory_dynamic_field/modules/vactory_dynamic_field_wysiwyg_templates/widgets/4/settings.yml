@@ -1,0 +1,30 @@
+name: 'C04 - Chiffres clés avec image background'
+multiple: TRUE
+category: 'Key figures'
+enabled: TRUE
+fields:
+  image:
+    type: image
+    label: 'Image Profile'
+    options:
+      '#required': true
+      '#description': 'Image size largeur: 398px hauteur: 404px'
+  image_alt:
+    type: text
+    label: 'Image alt'
+  number:
+    type: text
+    label: 'Chiffre'
+    options:
+      '#required': true
+  textchiffre:
+    type: text
+    label: 'Text Chiffre'
+  reverse:
+    type: checkbox
+    label: 'Afficher le texte après le chiffre ( ex: % )'      
+  name:
+    type: text
+    label: 'Nom'
+    options:
+      '#required': true

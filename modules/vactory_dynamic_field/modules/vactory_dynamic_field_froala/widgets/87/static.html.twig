@@ -1,0 +1,48 @@
+
+<div class="fdb-block">
+    <div class="row justify-content-center pb-xl-5">
+        <div class="col-8 col-sm-8 text-center">
+
+                <h2>Froala Design Blocks</h2>
+
+                {% set placehold_1 = "https://picsum.photos/id/" ~ random(1, 200) ~ "/255/155.jpg" %}
+                <img alt="Image Alt"
+                    class="lazyload img-fluid mt-5"
+                    src="{{ content.image_placeholder }}"
+                    data-src="{{ placehold_1 }}">
+        </div>
+    </div>
+    <div class="row text-left justify-content-center pt-5">
+        {% for item in 0..1 %}
+
+            {% if loop.index == 1 %}
+                <div class="col-12 col-md-6 col-lg-5 m-sm-auto">
+            {% else %}
+                <div class="col-12 col-md-6 col-lg-5 m-sm-auto pt-3 pt-sm-5 pt-md-0">
+            {% endif %}
+
+                <div class="row">
+                    <div class="col-3">
+                        {% set placehold_2 = "https://picsum.photos/id/" ~ random(1, 200) ~ "/255/255.jpg" %}
+                        <img alt="Image Alt"
+                            class="lazyload img-fluid"
+                            src="{{ content.image_placeholder }}"
+                            data-src="{{ placehold_2 }}">
+                    </div>
+
+                    <div class="col-9">
+
+                            <h3><strong>item</strong></h3>
+
+
+                            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry</p>
+
+                    </div>
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+</div>

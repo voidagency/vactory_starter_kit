@@ -1,0 +1,14 @@
+vactory_locator.settings_form:
+  path: '/admin/config/system/locator-configuration'
+  defaults:
+    _title: 'Locator settings'
+    _form: '\Drupal\vactory_locator\Form\SettingsForm'
+  requirements:
+    _permission: 'administer locator entity entities'
+vactory_locator.locator_migration_settings:
+  path: '/admin/config/system/locator-csv-import'
+  defaults:
+    _form: '\Drupal\vactory_locator\Form\MigrationSettingsForm'
+    _title: 'Upload CSV file used in locator migration'
+  requirements:
+    _permission: 'administer locator entity entities'

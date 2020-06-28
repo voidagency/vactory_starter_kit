@@ -1,0 +1,8 @@
+From,To,Redirect,Language
+hello-world,node/1,301,fr
+path-with-query?query=alt,node/2,
+redirect-to-external/site,http://markfullmer.com
+redirect/status/code,http://writing.markfullmer.com?query=test,307,en
+another,node/237?query=test,307
+node/7,/fellowship
+node/8,<front>

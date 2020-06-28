@@ -1,0 +1,131 @@
+{#
+/**
+ * @file
+ * Default theme implementation to display a paragraph.
+ *
+ * Available variables:
+ * - paragraph: Full paragraph entity.
+ *   Only method names starting with "get", "has", or "is" and a few common
+ *   methods such as "id", "label", and "bundle" are available. For example:
+ *   - paragraph.getCreatedTime() will return the paragraph creation timestamp.
+ *   - paragraph.id(): The paragraph ID.
+ *   - paragraph.bundle(): The type of the paragraph, for example, "image" or "text".
+ *   - paragraph.getOwnerId(): The user ID of the paragraph author.
+ *   See Drupal\paragraphs\Entity\Paragraph for a full list of public properties
+ *   and methods for the paragraph object.
+ * - content: All paragraph items. Use {{ content }} to print them all,
+ *   or print a subset such as {{ content.field_example }}. Use
+ *   {{ content|without('field_example') }} to temporarily suppress the printing
+ *   of a given child element.
+ * - attributes: HTML attributes for the containing element.
+ *   The attributes.class element may contain one or more of the following
+ *   classes:
+ *   - paragraphs: The current template type (also known as a "theming hook").
+ *   - paragraphs--type-[type]: The current paragraphs type. For example, if the paragraph is an
+ *     "Image" it would result in "paragraphs--type--image". Note that the machine
+ *     name will often be in a short form of the human readable label.
+ *   - paragraphs--view-mode--[view_mode]: The View Mode of the paragraph; for example, a
+ *     preview would result in: "paragraphs--view-mode--preview", and
+ *     default: "paragraphs--view-mode--default".
+ * - view_mode: View mode; for example, "preview" or "full".
+ * - logged_in: Flag for authenticated user status. Will be true when the
+ *   current user is a logged-in member.
+ * - is_admin: Flag for admin user status. Will be true when the current user
+ *   is an administrator.
+ *
+ * @see template_preprocess_paragraph()
+ *
+ * @ingroup themeable
+ */
+#}
+{% set classes = [
+'paragraph',
+'paragraph--type--' ~ paragraph.bundle|clean_class,
+view_mode ? 'paragraph--view-mode--' ~ view_mode|clean_class,
+] %}
+
+{% set title_classes = [
+'title',
+] %}
+
+{# Renders Width field. #}
+{# Sets class name from values in database. #}
+{% if paragraph.paragraph_container %}
+  {% set layout_width = paragraph.paragraph_container.getString() %}
+
+  {# set layout_width_classes = [
+    'narrow_width' == layout_width ? 'container',
+    'full_width' == layout_width ? 'container-fluid',
+  ] #}
+
+  {% set parallax_class = (paragraph.paragraph_background_parallax.0.value > 0) ? "paragraph_parallax" : 0 %}
+
+  {# Merges Width field with classes. #}
+  {# set classes = classes|merge(layout_width_classes) #}
+
+  {% if layout_width == 'narrow_width' %}
+    {% set containerClasses = 'container' %}
+  {% elseif layout_width == 'full_width' %}
+    {% set containerClasses = 'container-fluid' %}
+  {% else %}
+    {% set containerClasses = 'no-container' %}
+  {% endif %}
+
+{% endif %}
+
+{% set background_attribute = create_attribute() %}
+{% if paragraph.paragraph_background_image and paragraph.paragraph_background_image.0.value.target_id is not empty and paragraph.paragraph_background_color.getString() is empty %}
+     {% set image_url = get_image_url(paragraph.paragraph_background_image.0.value.target_id) %}
+<div {{ background_attribute.addClass('has-background--image').addClass('bg-custom--' ~ paragraph.paragraph_css_class.getString() ~ ' ' ~ parallax_class) }} style="background-image: url('{{ image_url }}')">
+    {% endif %}
+
+    {% if paragraph.paragraph_background_color and paragraph.paragraph_background_color.getString() is not empty and paragraph.paragraph_background_color.getString() != "ff0000" and paragraph.paragraph_background_image.0.value.target_id is empty %}
+    {% set background_color = paragraph.paragraph_background_color.getString() %}
+    <div {{ background_attribute.addClass('has-background--solid').addClass('bg-custom--' ~ paragraph.paragraph_css_class.getString()) }} style="background-color: {{ '#' ~ background_color }}">
+        {% endif %}
+
+        {#  In Case background_color and background_image both set#}
+        {% if paragraph.paragraph_background_color and paragraph.paragraph_background_color.getString() is not empty and paragraph.paragraph_background_image and paragraph.paragraph_background_image.getString() is not empty %}
+        {% set background_color = paragraph.paragraph_background_color.getString() %}
+        {% set image_url = get_image_url(paragraph.paragraph_background_image.0.value.target_id) %}
+        {% if  paragraph.paragraph_background_color.getString() != "ff0000" %}
+        <div {{ background_attribute.addClass('has-background--image', 'has-background--solid').addClass('bg-custom--' ~ paragraph.paragraph_css_class.getString() ~ '' ~ parallax_class) }}
+                style="background-color: {{ '#' ~ background_color }}; background-image: url('{{ image_url }}')">
+            {% else %}
+            <div {{ background_attribute.addClass('has-background--image', 'has-background--solid').addClass('bg-custom--' ~ paragraph.paragraph_css_class.getString() ~ ' ' ~ parallax_class) }}
+                    style="background-image: url('{{ image_url }}')">
+                {% endif %}
+                {% endif %}
+
+{% block paragraph %}
+    <div{{ attributes.addClass(classes) }}>
+        <div class="{{ containerClasses }}">
+            {% block paragraphContent %}
+                {% if content.field_vactory_flag.0['#markup'] == 1 %}
+                    <h2{{ title_attributes.addClass(title_classes) }}>
+                    {{ noWrapper(hideLabel(addAttributes(content.field_vactory_title))) }}
+                    </h2>
+                {% endif %}
+            {% endblock paragraphContent %}
+            {{ noWrapper(hideLabel(addAttributes(content.field_vactory_component))) }}
+        </div>
+    </div>
+{% endblock paragraph %}
+
+    {% if paragraph.paragraph_background_image and paragraph.paragraph_background_image.0.value.target_id is not empty and paragraph.paragraph_background_color.getString() is empty %}
+        </div>
+    {% endif %}
+
+        {% if paragraph.paragraph_background_color and paragraph.paragraph_background_color.getString() is not empty and paragraph.paragraph_background_color.getString() != "ff0000" and paragraph.paragraph_background_image.0.value.target_id is empty %}
+            </div>
+        {% endif %}
+
+        {#  In Case background_color and background_image both set#}
+        {% if paragraph.paragraph_background_color and paragraph.paragraph_background_color.getString() is not empty and paragraph.paragraph_background_image and paragraph.paragraph_background_image.getString() is not empty %}
+
+            {% if  paragraph.paragraph_background_color.getString() != "ff0000" %}
+                </div>
+            {% else %}
+            </div>
+            {% endif %}
+        {% endif %}

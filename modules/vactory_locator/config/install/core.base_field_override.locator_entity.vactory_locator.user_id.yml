@@ -1,0 +1,19 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - vactory_locator.locator_entity_type.vactory_locator
+id: locator_entity.vactory_locator.user_id
+field_name: user_id
+entity_type: locator_entity
+bundle: vactory_locator
+label: 'Authored by'
+description: 'The user ID of author of the Locator Entity entity.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: default
+  handler_settings: {  }
+field_type: entity_reference

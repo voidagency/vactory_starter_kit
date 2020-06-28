@@ -1,0 +1,111 @@
+langcode: en
+status: false
+dependencies:
+  module:
+    - social_media_links
+  theme:
+    - vactory
+id: socialmedialinks
+theme: vactory
+region: bottom
+weight: 0
+provider: null
+plugin: social_media_links_block
+settings:
+  id: social_media_links_block
+  label: 'Social Media Links'
+  provider: social_media_links
+  label_display: '0'
+  platforms:
+    rss:
+      value: ''
+      description: ''
+      weight: '-10'
+    email:
+      value: ''
+      description: ''
+      weight: '-9'
+    youtube_channel:
+      value: ''
+      description: ''
+      weight: '-8'
+    instagram:
+      value: ''
+      description: ''
+      weight: '-7'
+    vimeo:
+      value: ''
+      description: ''
+      weight: '-6'
+    github:
+      value: ''
+      description: ''
+      weight: '-5'
+    bitbucket:
+      value: adminvoid
+      description: ''
+      weight: '-4'
+    drupal:
+      value: void
+      description: ''
+      weight: '-3'
+    tumblr:
+      value: ''
+      description: ''
+      weight: '-2'
+    contact:
+      value: ''
+      description: ''
+      weight: '-1'
+    behance:
+      value: ''
+      description: ''
+      weight: '0'
+    flickr:
+      value: ''
+      description: ''
+      weight: '1'
+    linkedin:
+      value: void-maroc
+      description: ''
+      weight: '2'
+    twitter:
+      value: ''
+      description: ''
+      weight: '3'
+    youtube:
+      value: ''
+      description: ''
+      weight: '4'
+    pinterest:
+      value: ''
+      description: ''
+      weight: '5'
+    vkontakte:
+      value: ''
+      description: ''
+      weight: '6'
+    facebook:
+      value: void.fr
+      description: ''
+      weight: '7'
+    googleplus:
+      value: ''
+      description: ''
+      weight: '8'
+    slideshare:
+      value: ''
+      description: ''
+      weight: '9'
+  appearance:
+    orientation: h
+    show_name: 0
+  link_attributes:
+    target: '<none>'
+    rel: '<none>'
+  iconset:
+    style: 'fontawesome:2x'
+    installed_iconsets:
+      fontawesome:
+        examples: ''
+visibility: {  }

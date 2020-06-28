@@ -1,0 +1,14 @@
+name: 'Search'
+description: 'Contain configs, templates and custom search code'
+type: module
+core: 8.x
+dependencies:
+  - better_exposed_filters
+  - node
+  - search_api
+  - search_api_db
+  - user
+  - views
+  - vactory_field
+version: 8.x-1.0
+package: Vactory Core

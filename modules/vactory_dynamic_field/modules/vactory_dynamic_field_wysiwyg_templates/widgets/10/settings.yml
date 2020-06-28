@@ -1,0 +1,16 @@
+name: 'C10 - Prix à la carte'
+multiple: TRUE
+category: 'Tables'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: 'Title'
+    options:
+      '#required': TRUE
+  number:
+    type: text
+    label: 'Price'
+  time_type:
+    type: text
+    label: 'Type of date'

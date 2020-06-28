@@ -1,0 +1,80 @@
+vactory_menu_breadcrumb.settings:
+  type: config_object
+  label: 'Vactory Menu Breadcrumb Settings'
+  mapping:
+    determine_menu:
+      type: boolean
+      label: 'Use menu the page belongs to, or the page for the taxonomy of which it is a member, for the breadcrumb.'
+    disable_admin_page:
+      type: boolean
+      label: 'Do not build menu-based breadcrumbs for admin pages.'
+    append_current_page:
+      type: boolean
+      label: 'Include the current page in the breadcrumb trail if it is in the menu.'
+    current_page_as_link:
+      type: boolean
+      label: 'If the current page in the breadcrumb trail should be a link.'
+    append_member_page:
+      type: boolean
+      label: 'This option affects breadcrumb display when the current page is a member of a taxonomy whose term is on a menu with "Taxonomy Attachment" selected.'
+    member_page_as_link:
+      type: boolean
+      label: 'Set TRUE to show the attached final breadcrumb as a link.'
+    remove_home:
+      type: boolean
+      label: 'Remove the home link.'
+    add_home:
+      type: boolean
+      label: 'Ensure that the very first link is the designated <front> page link.'
+    home_as_site_name:
+      type: boolean
+      label: 'Use the site name from the configuration settings.'
+    vactory_menu_breadcrumb_menus:
+      type: sequence
+      label: 'Menu Breadcrumb Menu Configurations'
+      sequence:
+        type: mapping
+        mapping:
+          enabled:
+            type: integer
+            label: 'Enabled'
+          weight:
+            type: integer
+            label: 'Weight'
+          taxattach:
+            type: integer
+            label: 'Taxonomy Attachment'
+          langhandle:
+            type: integer
+            label: 'Language Handling'
+    include_invalid_paths:
+      type: integer
+      label: 'Include invalid paths alias as plain-text segments'
+    excluded_paths:
+      type: text
+      label: 'Paths to be excluded while generating segments'
+    include_home_segment:
+      type: integer
+      label: 'Include the front page as a segment in the breadcrumb'
+    home_segment_title:
+      type: label
+      label: 'Title for the front page segment in the breadcrumb'
+      translatable: true
+    include_title_segment:
+      type: integer
+      label: 'Include the current page as a segment in the breadcrumb'
+    title_from_page_when_available:
+      type: integer
+      label: 'Use the real page title when available'
+    title_segment_as_link:
+      type: integer
+      label: 'Make the page title segment a link'
+    segments_separator:
+      type: text
+      label: 'Segments Separator'
+    use_menu_title_as_fallback:
+      type: integer
+      label: 'Use menu title as fallback instead of raw path component'
+    remove_repeated_segments:
+      type: integer
+      label: 'Remove repeated identical segments'

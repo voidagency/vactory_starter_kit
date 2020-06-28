@@ -1,0 +1,5 @@
+.btn-anchor.dropdown-toggle {
+  &::before, &::after {
+    display: none;
+  }
+}

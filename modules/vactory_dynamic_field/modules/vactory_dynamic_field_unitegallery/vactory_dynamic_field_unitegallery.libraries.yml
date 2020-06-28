@@ -1,0 +1,90 @@
+vvvmax.unitegallery:
+  remote: https://github.com/vvvmax/unitegallery/
+  version: 1.7.40
+  license:
+    name: MIT
+    url: https://github.com/vvvmax/unitegallery/blob/master/LICENSE
+    gpl-compatible: true
+  js:
+    js/library/unitegallery/js/unitegallery.js: {  }
+  css:
+    theme:
+      js/library/unitegallery/css/unite-gallery.css: {}
+  dependencies:
+    - core/jquery
+
+unitegallery.tiles.columns:
+  js:
+    js/library/unitegallery/themes/tiles/ug-theme-tiles.js: {}
+    js/variants/tiles.columns.js: {}
+  dependencies:
+    - vactory_dynamic_field_unitegallery/vvvmax.unitegallery
+
+unitegallery.tiles.columns.with_links:
+  js:
+    js/library/unitegallery/themes/tiles/ug-theme-tiles.js: {}
+    js/variants/tiles.columns-with-links.js: {}
+  dependencies:
+    - vactory_dynamic_field_unitegallery/vvvmax.unitegallery
+
+unitegallery.tiles.columns.videos:
+  js:
+    js/library/unitegallery/themes/tiles/ug-theme-tiles.js: {}
+    js/variants/tiles.columns-videos.js: {}
+  dependencies:
+    - vactory_dynamic_field_unitegallery/vvvmax.unitegallery
+
+unitegallery.tiles.justified:
+  js:
+    js/library/unitegallery/themes/tiles/ug-theme-tiles.js: {}
+    js/variants/tiles.justified.js: {}
+  dependencies:
+    - vactory_dynamic_field_unitegallery/vvvmax.unitegallery
+
+unitegallery.tiles.justified.with_links:
+  js:
+    js/library/unitegallery/themes/tiles/ug-theme-tiles.js: {}
+    js/variants/tiles.justified-with-links.js: {}
+  dependencies:
+    - vactory_dynamic_field_unitegallery/vvvmax.unitegallery
+
+unitegallery.tiles.nested:
+  js:
+    js/library/unitegallery/themes/tiles/ug-theme-tiles.js: {}
+    js/variants/tiles.nested.js: {}
+  dependencies:
+    - vactory_dynamic_field_unitegallery/vvvmax.unitegallery
+
+unitegallery.grid:
+  js:
+    js/library/unitegallery/themes/grid/ug-theme-grid.js: {}
+    js/variants/grid.js: {}
+  dependencies:
+    - vactory_dynamic_field_unitegallery/vvvmax.unitegallery
+
+unitegallery.carousel:
+  js:
+    js/library/unitegallery/themes/carousel/ug-theme-carousel.js: {}
+    js/variants/carousel.js: {}
+  dependencies:
+    - vactory_dynamic_field_unitegallery/vvvmax.unitegallery
+
+unitegallery.slider:
+  js:
+    js/library/unitegallery/themes/slider/ug-theme-slider.js: {}
+    js/variants/slider.js: {}
+  dependencies:
+    - vactory_dynamic_field_unitegallery/vvvmax.unitegallery
+
+unitegallery.video:
+  js:
+    js/library/unitegallery/themes/video/ug-theme-video.js: {}
+    js/variants/video.js: {}
+  css:
+    theme:
+      js/library/unitegallery/themes/video/skin-bottom-text.css: {}
+      js/library/unitegallery/themes/video/skin-right-no-thumb.css: {}
+      js/library/unitegallery/themes/video/skin-right-thumb.css: {}
+      js/library/unitegallery/themes/video/skin-right-title-only.css: {}
+  dependencies:
+    - vactory_dynamic_field_unitegallery/vvvmax.unitegallery

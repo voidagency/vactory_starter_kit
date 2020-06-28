@@ -1,0 +1,7 @@
+vactory_menu_breadcrumb.settings:
+  path: '/admin/config/user-interface/vactory-menu-breadcrumb'
+  defaults:
+    _title: 'Vactory Menu Breadcrumb'
+    _form: '\Drupal\vactory_menu_breadcrumb\Form\SettingsForm'
+  requirements:
+    _permission: 'administer site configuration'

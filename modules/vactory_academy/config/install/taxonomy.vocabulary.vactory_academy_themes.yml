@@ -1,0 +1,10 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_academy
+name: 'Academy - Themes'
+vid: vactory_academy_themes
+description: 'Academy taxonomy'
+weight: 0

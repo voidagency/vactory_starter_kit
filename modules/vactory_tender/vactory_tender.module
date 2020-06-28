@@ -1,0 +1,182 @@
+<?php
+
+/**
+ * @file
+ * Logic code for vactory_tender custom module.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\node\NodeInterface;
+use Drupal\file\Entity\File;
+use Drupal\node\Entity\Node;
+use Drupal\views\ViewExecutable;
+use Drupal\block_content\Entity\BlockContent;
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_tender_theme($existing, $type, $theme, $path) {
+  return [
+    'node__vactory_tender__card_inline' => [
+      'template'  => 'card-inline',
+      'base hook' => 'node',
+    ],
+
+    'webform__vactory_tender_form' => [
+      'base hook' => 'webform',
+      'template'  => 'webform--vactory-tender-form',
+    ],
+
+    'tender_subscription_page' => [
+      'template'  => 'tender-subscription-page',
+      'variables' => [
+        'content' => NULL,
+      ],
+    ],
+
+    'tender_download_page' => [
+      'template'  => 'tender-download-page',
+      'variables' => [
+        'content' => NULL,
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_tender_preprocess_node__vactory_tender__card_inline(&$variables) {
+  $config = \Drupal::config('vactory_tender.settings');
+  $show_form = $config->get('show_form');
+  $node = $variables['node'];
+  if ($node instanceof NodeInterface && $node->bundle() == 'vactory_tender') {
+    $nid = $variables['node']->get('nid')->value;
+    $crypted_nid = vactory_tender_encrypt($nid);
+    $tender_file_id = $node->get('field_vactory_media_file')
+      ->getValue()[0]['target_id'];
+    $tender_file_uri = File::load($tender_file_id)
+      ->getFileUri();
+    if (!empty($node->get('field_vactory_media_document')->getValue())) {
+      $tender_result_fid = $node->get('field_vactory_media_document')
+        ->getValue()[0]['target_id'];
+      $tender_result_uri = File::load($tender_result_fid)
+        ->getFileUri();
+      $variables['tender_result_uri'] = $tender_result_uri;
+    }
+
+    $variables['show_form'] = $show_form;
+    $variables['tender_file_uri'] = $tender_file_uri;
+    $variables['tender_node_id'] = $crypted_nid;
+
+  }
+}
+
+/**
+ * Implements hook_page_attachments_alter().
+ */
+function vactory_tender_page_attachments_alter(array &$attachments) {
+  $route_name = \Drupal::routeMatch()->getRouteName();
+  if ($route_name == 'vactory_tender.download_page') {
+    $crypted_nid = \Drupal::routeMatch()->getParameter('crypted_nid');
+    $nid = vactory_tender_decrypt($crypted_nid);
+    if (is_numeric($nid)) {
+      $node = Node::load($nid);
+
+      if ($node instanceof NodeInterface && $node->bundle() == 'vactory_tender') {
+        $fid = $node->get('field_vactory_media_file')->getValue()[0]['target_id'];
+        $file_uri = File::load($fid)->getFileUri();
+        $file_url = file_create_url($file_uri);
+
+        $meta_redirect = [
+          [
+            '#tag'        => 'meta',
+            '#attributes' => [
+              'http-equiv' => 'refresh',
+              'content'    => '5;url=' . $file_url,
+            ],
+          ],
+          'refresh',
+        ];
+
+        $attachments['#attached']['html_head'][] = $meta_redirect;
+      }
+    }
+  }
+}
+
+/**
+ * Function for crypting Node Ids.
+ */
+function vactory_tender_encrypt($nid) {
+  $cipher = 'aes-192-cbc';
+  $crypted_nid = openssl_encrypt($nid, $cipher, 'VoidTenders', 0, 'dsfa9p8y098hasdf');
+  $crypted_nid = base64_encode($crypted_nid);
+  return $crypted_nid;
+}
+
+/**
+ * Function for decrypting Node Ids.
+ */
+function vactory_tender_decrypt($crypted_nid) {
+  $cipher = 'aes-192-cbc';
+  $crypted_nid = base64_decode($crypted_nid);
+  $nid = openssl_decrypt($crypted_nid, $cipher, 'VoidTenders', 0, 'dsfa9p8y098hasdf');
+  return $nid;
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_tender_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if ($form_id == 'webform_submission_vactory_tender_form_add_form') {
+    $form['actions']['submit']['#submit'][] = '_vactory_tender_webform_redirection';
+    $form['#submit'][] = '_vactory_tender_webform_redirection';
+  }
+}
+
+/**
+ * Custom vactory_tender webform submission handler.
+ */
+function _vactory_tender_webform_redirection($form, FormStateInterface $form_state) {
+  $form_state->setRedirect('vactory_tender.download_page', [
+    'crypted_nid' => $form_state->getValue('crypted_nid'),
+  ]);
+}
+
+/**
+ * Implements hook_views_pre_view().
+ */
+function vactory_tender_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
+  // Check if header is enabled.
+  $is_header_enabled = !empty($view->display_handler->options['header']) ? TRUE : FALSE;
+  if ($view->id() == 'vactory_tenders' && $is_header_enabled) {
+    // Get the header block machine name.
+    $block_machine_name = $view->display_handler->options['header']['entity_block_content']['target'];
+    $entity_manager = \Drupal::service('entity_type.manager');
+    // Load Block by machine name.
+    $block = $entity_manager->getStorage('block_content')
+      ->loadByProperties(['block_machine_name' => $block_machine_name]);
+
+    if (is_array($block) && reset($block) instanceof BlockContent) {
+      // Get block view display.
+      $block_content = $entity_manager->getViewBuilder('block_content')
+        ->view(reset($block));
+      // Override the view header for the current display.
+      $item = [
+        'id' => 'area_text_custom',
+        'table' => 'views',
+        'field' => 'area_text_custom',
+        'relationship' => 'none',
+        'group_type' => 'none',
+        'admin_label' => '',
+        'empty' => TRUE,
+        'tokenize' => FALSE,
+        'content' => \Drupal::service('renderer')
+          ->render($block_content),
+        'plugin_id' => 'text_custom',
+      ];
+      $view->setHandler($display_id, 'header', 'area_text_custom', $item);
+    }
+  }
+}

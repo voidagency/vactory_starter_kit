@@ -1,0 +1,42 @@
+name: 'C24 - Publication'
+multiple: TRUE
+category: 'Content'
+enabled: TRUE
+fields:
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': true
+      '#description': 'Image size largeur:194px hauteur:142px'
+  image_alt:
+    type: text
+    label: 'Image alt'
+  title:
+    type: text
+    label: 'Titre'
+    options:
+      '#required': true
+  authors:
+    type: text
+    label: 'Auteurs'
+    options:
+      '#required': true
+  description:
+    type: text
+    label: 'Description'
+    options:
+      '#required': true
+  link:
+    type: url_extended
+    label: 'Lien'
+    options:
+      '#required': true
+  link_alt:
+    type: text
+    label: 'Lien text'
+    options:
+      '#required': true
+  link_target:
+    type: checkbox
+    label: 'Ouvrir dans une nouvelle fenêtre'

@@ -1,0 +1,116 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_gov_social_media
+    - node.type.vactory_governance
+  module:
+    - social_media_links_field
+id: node.vactory_governance.field_gov_social_media
+field_name: field_gov_social_media
+entity_type: node
+bundle: vactory_governance
+label: 'Social Media'
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    platform: null
+    value: null
+    platform_values:
+      facebook:
+        value: ''
+      googleplus:
+        value: ''
+      instagram:
+        value: ''
+      linkedin:
+        value: ''
+      twitter:
+        value: ''
+default_value_callback: ''
+settings:
+  iconset: 'fontawesome:in'
+  platforms:
+    behance:
+      description: ''
+      weight: '-10'
+      enabled: 0
+    bitbucket:
+      description: ''
+      weight: '-9'
+      enabled: 0
+    contact:
+      description: ''
+      weight: '-8'
+      enabled: 0
+    drupal:
+      description: ''
+      weight: '-7'
+      enabled: 0
+    email:
+      description: ''
+      weight: '-6'
+      enabled: 0
+    facebook:
+      enabled: '1'
+      description: ''
+      weight: '-5'
+    flickr:
+      description: ''
+      weight: '-4'
+      enabled: 0
+    github:
+      description: ''
+      weight: '-3'
+      enabled: 0
+    googleplus:
+      enabled: '1'
+      description: ''
+      weight: '-2'
+    instagram:
+      enabled: '1'
+      description: ''
+      weight: '-1'
+    linkedin:
+      enabled: '1'
+      description: ''
+      weight: '0'
+    pinterest:
+      description: ''
+      weight: '1'
+      enabled: 0
+    rss:
+      description: ''
+      weight: '2'
+      enabled: 0
+    slideshare:
+      description: ''
+      weight: '3'
+      enabled: 0
+    tumblr:
+      description: ''
+      weight: '4'
+      enabled: 0
+    twitter:
+      enabled: '1'
+      description: ''
+      weight: '5'
+    vimeo:
+      description: ''
+      weight: '6'
+      enabled: 0
+    vkontakte:
+      description: ''
+      weight: '7'
+      enabled: 0
+    youtube:
+      description: ''
+      weight: '8'
+      enabled: 0
+    youtube_channel:
+      description: ''
+      weight: '9'
+      enabled: 0
+field_type: social_media_links_field

@@ -1,0 +1,20 @@
+{# Sets Unique ID for Tabs. #}
+{% set tab_id = 'nav-tab-3' %}
+<nav>
+    <div class="nav nav-tabs" id="{{ tab_id }}" role="tablist">
+        {% for i in 0..2 %}
+            <a class="nav-item nav-link {% if i == 0 %} active {% endif %}" data-toggle="tab"
+               href="#{{ tab_id }}-{{ i + 1 }}" role="tab" aria-controls="{{ tab_id }}-{{ i + 1 }}"
+               aria-selected="{% if i == 0 %} true {% else %} false {% endif %}">Title</a>
+        {% endfor %}
+    </div>
+</nav>
+<div class="tab-content" id="{{ tab_id }}-Content">
+    {% for i in 0..2 %}
+        <div class="tab-pane fade {% if i == 0 %} active show {% endif %}" id="{{ tab_id }}-{{ i + 1 }}"
+             role="tabpanel" aria-labelledby="{{ tab_id }}-{{ i + 1 }}">Lorem Ipsum is simply dummy text of the printing
+            and typesetting industry. Lorem Ipsum has
+            been the industry's standard dummy text ever since the 1500s.
+        </div>
+    {% endfor %}
+</div>

@@ -1,0 +1,30 @@
+name: 'C29 - slider 2 or 3 cols with image title description and button'
+category: 'Sliders'
+multiple: TRUE
+enabled: TRUE
+fields:
+  image:
+    type: image
+    label: 'Image'
+  image_alt:
+    type: text
+    label: "Text alternative d'image"
+  title:
+    type: text
+    label: 'Titre'
+  description:
+    type: textarea
+    label: description
+  link:
+    type: url_extended
+    label: 'lien'
+  link_alt:
+    type: text
+    label: 'texte du lien'
+  link_target:
+    type: checkbox
+    label: "Ouvrir le lien dans une nouvelle onglet"
+extra_fields:
+  intro:
+    type: textarea
+    label: 'Introduction'

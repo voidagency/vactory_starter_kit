@@ -1,0 +1,30 @@
+<div class="fdb-block">
+    <div class="row text-center">
+        <div class="col">
+            <h2>Title</h2>
+        </div>
+    </div>
+    <div class="row mt-5 align-items-top">
+
+        {% for item in 0..3 %}
+
+        {% if loop.index >= 2 %}
+        <div class="col-12 col-sm-10 col-md-6 col-lg-5 m-auto col-xl-3 text-left pt-5 pt-md-0">
+            {% else %}
+            <div class="col-12 col-sm-10 col-md-6 col-lg-5 m-auto col-xl-3 text-left">
+                {% endif %}
+
+                <div class="bg-gray p-3 text-center br sl-1">
+                    <h2 class="font-weight-light">Title</h2>
+                    <p class="text-h2">99€/month</p>
+                    <p class="text-center"><a class="btn btn-primary mt-4" href="#">Values</a></p>
+                    <hr class="mt-5 mb-5">
+                    <div>values</div>
+                </div>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+    </div>

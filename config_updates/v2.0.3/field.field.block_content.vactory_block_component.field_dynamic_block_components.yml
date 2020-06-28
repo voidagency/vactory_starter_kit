@@ -1,0 +1,26 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - block_content.type.vactory_block_component
+    - field.storage.block_content.field_dynamic_block_components
+  module:
+    - vactory_dynamic_field
+id: block_content.vactory_block_component.field_dynamic_block_components
+field_name: field_dynamic_block_components
+entity_type: block_content
+bundle: vactory_block_component
+label: Templates
+description: ''
+required: false
+translatable: true
+default_value:
+  -
+    value:
+      template: -1
+default_value_callback: ''
+settings:
+  allowed_providers:
+    vactory_froala: 0
+    vactory_dynamic_sliders: 0
+field_type: field_wysiwyg_dynamic

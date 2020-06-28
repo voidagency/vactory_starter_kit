@@ -1,0 +1,37 @@
+name: 'S04 - Full background slider'
+multiple: TRUE
+category: 'Sliders'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: 'Title'
+    options:
+      '#required': TRUE
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': TRUE
+  image_mobile:
+    type: image
+    label: 'Mobile Image'
+  video:
+    type: text
+    label: 'Video'
+    options:
+      '#description': '<b><i class="link">How ?</i></b><br><b>URL Example</b>: https://www.youtube.com/watch?v=BZDyr2OpWBU <br> <b>Value to insert</b>: BZDyr2OpWBU'
+  content:
+    type: textarea
+    label: 'Description'
+    options:
+  cta_url:
+    type: url_extended
+    label: 'Read More Link'
+    placeholder_value: 'https://www.google.com'
+  cta_alt:
+    type: text
+    label: 'Read More Text'
+  link_target:
+    type: checkbox
+    label: "Ouvrir le lien dans une nouvelle fenetre"

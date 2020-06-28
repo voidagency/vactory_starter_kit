@@ -1,0 +1,12 @@
+name: 'Social Auth'
+description: 'Default configuration for Drupal Social Initiative.'
+type: module
+core: 8.x
+dependencies:
+  - social_api
+  - social_auth
+  - social_auth_facebook
+  - social_auth_google
+  - features
+version: 8.x-1.0
+package: Vactory

@@ -1,0 +1,21 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_path_agency
+    - taxonomy.vocabulary.dam_agencies
+  enforced:
+    module:
+      - vactory_appointment
+id: taxonomy_term.dam_agencies.field_path_agency
+field_name: field_path_agency
+entity_type: taxonomy_term
+bundle: dam_agencies
+label: 'Path agency name'
+description: 'Agency path name, <strong>Example:</strong> For a given agency Agence Maarif the value of Path agency name field will be <strong>agence-maarif</strong>, so the full path on the browser will be /borne/agence-maarif.'
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

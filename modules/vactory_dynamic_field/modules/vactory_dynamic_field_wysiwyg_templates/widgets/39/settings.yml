@@ -1,0 +1,26 @@
+name: 'C39 - 4 push with icon and title'
+category: Content
+multiple: TRUE
+limit: 4
+enabled: TRUE
+fields:
+  box_icon:
+    type: select
+    label: 'Icon'
+    options:
+      '#required': TRUE
+      '#options':
+        - 'icon-phone': 'phone'
+        - 'icon-email': 'E-mail'
+        - 'icon-gps': 'Map'
+  title:
+    type: text
+    label: 'Titre'
+    options:
+      '#required': TRUE
+  link:
+    type: url_extended
+    label: 'lien'
+  link_target:
+    type: checkbox
+    label: 'Ouvrir dans une nouvelle fenêtre'

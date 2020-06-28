@@ -1,0 +1,16 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - focal_point
+name: banner_1280_155
+label: Banner_1280_155
+effects:
+  banner_1280_155:
+    uuid: banner_1280_155
+    id: focal_point_scale_and_crop
+    weight: 1
+    data:
+      width: 1280
+      height: 155
+      crop_type: focal_point

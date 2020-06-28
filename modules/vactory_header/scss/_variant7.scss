@@ -1,0 +1,138 @@
+/************
+ * Header 7 *
+ ************/
+.vh-header-7 {
+  background-color: darkgrey;
+  @include media-breakpoint-up(lg) {
+    &.bottom {
+      top: -160px;
+    }
+
+    &.top {
+      top: -58px;
+    }
+  }
+  @include media-breakpoint-down(md) {
+    &.bottom {
+      top: -173px;
+    }
+
+    &.top {
+      top: 0;
+    }
+  }
+
+  .vh-header {
+    padding-bottom: 0;
+    @include media-breakpoint-down(md) {
+      &__middle-left {
+        display        : flex;
+        align-items    : center;
+        justify-content: space-between;
+        width          : 100%;
+      }
+    }
+
+    &__middle-wrapper {
+      position    : relative;
+      display     : flex;
+      align-items : center;
+      border-right: 1px solid $gray-500;
+      border-left : 1px solid $gray-500;
+    }
+
+    &__middle-left {
+      padding-right: 20px;
+      padding-left : 20px;
+    }
+
+    &__middle-right {
+      flex-wrap  : wrap;
+      padding-top: 10px;
+      border-left: 1px solid $gray-500;
+    }
+
+    &__social-link {
+      margin-right: 20px;
+      margin-left : auto;
+    }
+
+    &__language-drop-switcher {
+      margin-left: 20px;
+    }
+
+    &__menu {
+      flex      : 1;
+      flex-basis: 100%;
+      margin-top: 10px;
+      border-top: 1px solid $gray-500;
+    }
+
+    .navbar-nav.menu-level--1 {
+      display: table;
+      width  : 100%;
+    }
+
+    .nav-item.menu__item--1 {
+      display   : table-cell;
+      text-align: center;
+
+      &:not(:last-child) {
+        border-right: 1px solid $gray-500;
+      }
+
+      > .menu__link {
+        position      : relative;
+        text-transform: uppercase;
+
+        &.dropdown-toggle {
+          padding-right: 30px;
+
+          &::after {
+            position   : absolute;
+            top        : 50%;
+            right      : 20px;
+            width      : auto;
+            height     : auto;
+            border     : none;
+            content    : $icon-chevrons-down;
+            font-family: 'vactory';
+            transform  : translateY(-50%);
+          }
+        }
+      }
+    }
+
+    .nav-item.menu__item--2 {
+      > .menu__link {
+        position: relative;
+
+        &.dropdown-toggle {
+          padding-right: 20px;
+
+          &::after {
+            position   : absolute;
+            top        : 50%;
+            right      : 8px;
+            width      : auto;
+            height     : auto;
+            border     : none;
+            content    : $icon-arrow-forward;
+            font-family: 'vactory';
+            transform  : translateY(-50%);
+          }
+        }
+      }
+    }
+
+    .dropdown-menu.menu__level--1 {
+      border-radius   : 0;
+      background-color: $gray-500;
+    }
+
+    .dropdown-menu.menu__level--2 {
+      border-radius   : 0;
+      background-color: $gray-500;
+    }
+  }
+}

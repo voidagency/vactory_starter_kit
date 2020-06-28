@@ -1,0 +1,10 @@
+name: 'Vactory Mailchimp'
+description: 'Inscription à la newsletter MailChimp'
+type: module
+core: 8.x
+dependencies:
+  - mailchimp
+  - mailchimp_campaign
+  - mailchimp_signup
+version: 8.x-1.0
+package: Vactory

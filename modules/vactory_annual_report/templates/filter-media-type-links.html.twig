@@ -1,0 +1,22 @@
+<div class="btn-filter-group filter-media" role="group" aria-label="{{ 'Filter Media'|t }}">
+  {% for tid, link in links %}
+    {% if filter_current == tid %}
+      {% set active = 'active' %}
+    {% else %}
+      {% set active = '' %}
+    {% endif %}
+
+    {% if tid == 'All' %}
+      <span class="filter-tab">
+        <a href="#." class="btn btn-sm btn-outline-secondary {{ active }}" data-filter-name="{{ filter_name }}" id="{{ tid }}"> {{ 'All'|t }}
+        </a>
+      </span>
+    {% else %}
+      <span class="filter-tab">
+        <a href="#." class="btn btn-sm btn-outline-secondary {{ active }}" data-filter-name="{{ filter_name }}" id="{{ tid }}">
+          <i class="{{ link.icon_class }}"></i>
+        </a>
+      </span>
+    {% endif %}
+  {% endfor %}
+</div>

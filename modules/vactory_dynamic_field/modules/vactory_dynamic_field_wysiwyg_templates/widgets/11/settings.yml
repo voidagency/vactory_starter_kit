@@ -1,0 +1,29 @@
+name: 'C11 - 3 blocs avec image description et bouton'
+multiple: TRUE
+category: 'Content'
+enabled: TRUE
+limit: 3
+fields:
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': TRUE
+  image_alt:
+    type: text
+    label: 'Image alt'
+  description:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'full_html'
+      '#required': TRUE
+  link:
+    type: url_extended
+    label: 'link url'
+  link_alt:
+    type: text
+    label: 'Lien text'
+  link_target:
+    type: checkbox
+    label: 'Ouvrir dans une nouvelle fenêtre'

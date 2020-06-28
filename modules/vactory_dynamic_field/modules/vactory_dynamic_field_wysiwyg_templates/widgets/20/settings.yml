@@ -1,0 +1,20 @@
+name: 'C20 - Button view more'
+category: 'Call to action'
+enabled: TRUE
+fields:
+  link:
+    type: url_extended
+    label: 'Lien'
+    options:
+      '#required': TRUE
+  link_alt:
+    type: text
+    label: 'Lien text'
+    options:
+      '#required': TRUE
+  link_target:
+    type: checkbox
+    label: 'Ouvrir dans une nouvelle fenêtre'
+  icon:
+    type: text
+    label: 'Icon (optionel)'

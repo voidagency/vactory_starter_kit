@@ -1,0 +1,11 @@
+<div class="row text-center justify-content-center t-chiffre-and-text vf-slick-slider vf-slick-mobile wow">
+  {% for item in 0..2 %}
+    {% set random_text = random(50, 100) %}
+    <div class="col-md-2">
+      <div class="item">
+        <h3 class="js-number-animate" data-number="{{ random_text }}">{{ random_text }}</h3>
+        <p>Texte</p>
+      </div>
+    </div>
+  {% endfor %}
+</div>

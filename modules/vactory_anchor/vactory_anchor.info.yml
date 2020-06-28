@@ -1,0 +1,8 @@
+name: 'Anchor'
+description: 'Automatically generates anchored headings and nested navigations based on paragraphs titles.'
+type: module
+core: 8.x
+package: Vactory
+dependencies:
+  - block
+  - paragraphs

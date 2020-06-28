@@ -1,0 +1,7 @@
+langcode: en
+status: true
+dependencies: {  }
+name: 'Annual report - Media type'
+vid: vactory_ar_media_type
+description: ''
+weight: 0

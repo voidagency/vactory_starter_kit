@@ -1,0 +1,18 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for vactory zendesk module.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_zendesk_theme() {
+  return [
+    'block_zendesk' => [
+      "variables" => ["api_key" => []],
+      "template"  => 'block-zendesk',
+    ],
+  ];
+}

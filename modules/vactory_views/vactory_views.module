@@ -1,0 +1,286 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for vactory_views module.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Component\Utility\Xss;
+
+/**
+ * Implements hook_theme().
+ *
+ * @internal param $existing
+ * @internal param $type
+ * @internal param $theme
+ * @internal param $path
+ */
+function vactory_views_theme() {
+
+  // The file the implementation resides in `vactory_views.theme.inc`
+  // This file will be included prior to the theme being rendered,
+  // to make sure that the function or preprocess
+  // function (as needed) is actually loaded.
+  $preprocess_file = 'vactory_views.theme.inc';
+
+  return [
+    'vactory_views_slider'  => [
+      'variables' => [],
+      'file'      => $preprocess_file,
+    ],
+    'vactory_views_grid'    => [
+      'variables' => [],
+      'file'      => $preprocess_file,
+    ],
+    'vactory_views_masonry' => [
+      'variables' => [],
+      'file'      => $preprocess_file,
+    ],
+  ];
+}
+
+/**
+ * Default settings for slick.
+ *
+ * @param string $key
+ *   Key.
+ *
+ * @return array|mixed
+ *   Settings.
+ */
+function _vactory_views_slider_default_settings($key = NULL) {
+  $settings = [
+    'slidesToShow'   => 1,
+    'slidesToScroll' => 1,
+    'speed'          => 800,
+    'infinite'       => TRUE,
+    'dots'           => TRUE,
+    'arrows'         => TRUE,
+    'centerMode'     => FALSE,
+    'cssEase'        => 'cubic-bezier(0.585, -0.005, 0.635, 0.920)',
+    'responsive'     => [
+      'breakpoint' => '992',
+      'settings'   => [
+        'slidesToShow'   => 2,
+        'slidesToScroll' => 2,
+        'infinite'       => FALSE,
+        'dots'           => TRUE,
+        'arrows'         => FALSE,
+        'centerMode'     => FALSE,
+      ],
+    ],
+  ];
+
+  return isset($settings[$key]) ? $settings[$key] : $settings;
+}
+
+/**
+ * Return formatted js array of settings.
+ *
+ * @param mixed $settings
+ *   Settings.
+ *
+ * @return mixed
+ *   Settings.
+ */
+function _vactory_views_slider_format_settings($settings) {
+  $settings['slidesToShow'] = (int) $settings['slidesToShow'];
+  $settings['slidesToScroll'] = (int) $settings['slidesToScroll'];
+  $settings['speed'] = (int) $settings['speed'];
+  $settings['infinite'] = (bool) $settings['infinite'];
+  $settings['dots'] = (bool) $settings['dots'];
+  $settings['arrows'] = (bool) $settings['arrows'];
+  $settings['centerMode'] = (bool) $settings['centerMode'];
+  $settings['cssEase'] = Xss::filter($settings['cssEase']);
+
+  // Mobile configuration.
+  $settings['responsive']['settings']['slidesToShow'] = (int) $settings['responsive']['settings']['slidesToShow'];
+  $settings['responsive']['settings']['slidesToScroll'] = (int) $settings['responsive']['settings']['slidesToScroll'];
+  $settings['responsive']['settings']['dots'] = (bool) $settings['responsive']['settings']['dots'];
+  $settings['responsive']['settings']['arrows'] = (bool) $settings['responsive']['settings']['arrows'];
+  $settings['responsive']['settings']['centerMode'] = (bool) $settings['responsive']['settings']['centerMode'];
+
+  return $settings;
+}
+
+/**
+ * Default settings for masonry.
+ *
+ * @param mixed $key
+ *   Key.
+ *
+ * @return array|mixed
+ *   Settings.
+ */
+function _vactory_views_masonry_default_settings($key = NULL) {
+  $settings = [
+    'transitionDuration' => '0.4s',
+    'stagger'            => 30,
+    'resize'             => TRUE,
+    'horizontalOrder'    => TRUE,
+    'originTop'          => TRUE,
+  ];
+
+  return isset($settings[$key]) ? $settings[$key] : $settings;
+}
+
+/**
+ * Return formatted js array of settings.
+ *
+ * @param mixed $settings
+ *   Settings.
+ *
+ * @return mixed
+ *   Settings.
+ */
+function _vactory_views_masonry_format_settings($settings) {
+  $settings['transitionDuration'] = Xss::filter($settings['transitionDuration']);
+  $settings['stagger'] = (int) $settings['stagger'];
+  $settings['resize'] = (bool) $settings['resize'];
+  $settings['horizontalOrder'] = (bool) $settings['horizontalOrder'];
+  $settings['originTop'] = (bool) $settings['originTop'];
+
+  return $settings;
+}
+
+/**
+ * Alter Views Exposed Form.
+ *
+ * - Change label to placeholder.
+ * - Force Reset button.
+ * - Change BEF datepicker based on jQuery UI to Bootstrap Datepicker.
+ *
+ * Implements hook_form_alter().
+ *
+ * @param mixed $form
+ *   Form.
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *   Form state.
+ * @param mixed $form_id
+ *   Form id.
+ */
+function vactory_views_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if ($form_id == 'views_exposed_form') {
+
+    // Add the form-inline class at the form level so we can limit some
+    // styling changes to just BEF forms.
+    $form['#attributes']['class'][] = 'form-inline';
+
+    // Change label to placeholder.
+    foreach ($form['#info'] as $name => &$info) {
+      $label = $field = '';
+
+      if (isset($info['label']) && !empty($info['label'])) {
+        // Old label.
+        $label = $info['label'];
+        $field = $info['value'];
+      }
+
+      // Add a placeholder for textfield.
+      if (isset($form[$field]['#type']) && $form[$field]['#type'] == 'textfield') {
+        // phpcs:disable
+        $form[$field]['#attributes']['placeholder'] = t($label);
+        // phpcs:enable
+      }
+
+      // Update -- Any -- for select.
+      if (isset($form[$field]['#type']) && $form[$field]['#type'] == 'select') {
+        // phpcs:disable
+        $form[$field]['#options']['All'] = t($label);
+        // phpcs:enable
+      }
+
+      // Clear label.
+      if (isset($form[$field]['#type']) && ($form[$field]['#type'] == 'textfield' || $form[$field]['#type'] == 'select')) {
+        $info['label'] = '';
+      }
+    }
+
+    // Force reset button.
+    // @todo: if enabled.
+    if (isset($form['actions']['reset']['#access'])) {
+      $form['actions']['reset']['#access'] = TRUE;
+    }
+
+    // Change BEF datepicker based on jQuery UI to Bootstrap Datepicker.
+    foreach ($form as $name => &$info) {
+      if (
+        isset($info['#type']) &&
+        $info['#type'] == 'textfield' &&
+        isset($info['#attributes']['class']) &&
+        in_array("bef-datepicker", $info['#attributes']['class'])
+      ) {
+        $key = array_search('bef-datepicker', $info['#attributes']['class']);
+        unset($info['#attributes']['class'][$key]);
+      }
+    }
+
+    // Add custom datepicker.
+    foreach ($form['#info'] as $name => $value) {
+      if ($value['value'] === 'date') {
+        // Our custom datepicker.
+        //$form[$value['value']]['#attributes']['class'][] = 'js-vactory-datepicker';
+
+        // Disable autocomplete.
+        $form[$value['value']]['#attributes']['autocomplete'] = 'off';
+      }
+    }
+
+    // Remove BEF attached libs related to datepicker.
+    if (isset($form['#attached']['library'])) {
+      foreach ($form['#attached']['library'] as $index => $library) {
+        if ($library == 'core/jquery.ui.datepicker' || $library == 'better_exposed_filters/datepickers') {
+          unset($form['#attached']['library'][$index]);
+        }
+      }
+    }
+
+    // Pass the value of submit and reset buttons to t function
+    // to be translatable from ui.
+    if (isset($form['actions']['submit']['#value'])) {
+      // phpcs:disable
+      $form['actions']['submit']['#value'] = t($form['actions']['submit']['#value']);
+      // phpcs:enable
+    }
+    if (isset($form['actions']['reset']['#value'])) {
+      // phpcs:disable
+      $form['actions']['reset']['#value'] = t($form['actions']['reset']['#value']);
+      // phpcs:enable
+    }
+
+    if (isset($form['sort_by'])) {
+      foreach ($form['sort_by']['#options'] as $key => $option) {
+        // phpcs:disable
+        $form['sort_by']['#options'][$key] = t($form['sort_by']['#options'][$key]);
+        // phpcs:enable
+      }
+    }
+
+    if (isset($form['sort_order'])) {
+      foreach ($form['sort_order']['#options'] as $key => $option) {
+        // phpcs:disable
+        $form['sort_order']['#options'][$key] = t($form['sort_order']['#options'][$key]);
+        // phpcs:enable
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_views_view().
+ */
+function vactory_views_preprocess_views_view(&$variables) {
+  if (isset($variables['more']['#title'])) {
+    // phpcs:disable
+    $variables['more']['#title'] = t($variables['more']['#title']);
+    // phpcs:enable
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter().
+ */
+function vactory_views_theme_suggestions_vactory_views_slider_alter(array &$suggestions, array $variables) {
+  $suggestions[] = $variables['theme_hook_original'] . '__' . $variables['view']->current_display;
+}

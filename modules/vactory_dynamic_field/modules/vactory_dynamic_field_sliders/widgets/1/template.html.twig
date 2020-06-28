@@ -1,0 +1,49 @@
+<div class="vf-slider vf-slider--variant1">
+  <div class="vf-slider__items items vf-slick-slider slick-arrows-mobile"
+       data-toshow="1"
+       data-toscroll="1"
+       data-autoplay="true"
+       data-arrows="true"
+       data-mobile-arrows="true"
+  >
+    {% for item in content %}
+      <div class="slick-item">
+        <div class="vf-slider__item">
+          {% if item.image.0 is not empty %}
+            {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : '' %}
+            {% set lqip_image = image_uri|image_style('lqip') %}
+            {% set image = image_uri|image_style('vactory_slider1_image') %}
+            {% set image_alt = (item.image_alt is not empty) ? item.image_alt : 'image' %}
+            <div class="vf-slider__image lazy-wrapper">
+              <img alt="{{ image_alt }}"
+                   class="img-fluid lazyload"
+                   src="{{ lqip_image }}"
+                   data-src="{{ image }}">
+            </div>
+          {% endif %}
+
+          <div class="vf-slider__content">
+            {% if item.title is not empty %}
+              <h3 class="vf-slider__title">{{ item.title }}</h3>
+            {% endif %}
+            {% if item.content is not empty %}
+              <div class="vf-slider__body">
+                <p>
+                  {{ item.content }}
+                </p>
+              </div>
+            {% endif %}
+
+            {% if item.cta_url is not empty and item.cta_alt is not empty %}
+              <div class="vf-slider__cta">
+                {{ link(item.cta_alt, item.cta_url ) }}
+              </div>
+            {% endif %}
+          </div>
+
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  <div class="slider-dots"></div>
+</div>

@@ -1,0 +1,37 @@
+name: 'C03 - 3 images ou vidéos avec description et bouton'
+multiple: TRUE
+category: 'Content'
+limit: 3
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: 'Title'
+    options:
+      '#required': TRUE
+  description:
+    type: textarea
+    label: 'Description'
+  link:
+    type: url_extended
+    label: 'Lien du bouton'
+  link_alt:
+    type: text
+    label: 'Texte du bouton'
+  link_target:
+    type: checkbox
+    label: 'Ouvrir dans une nouvelle fenêtre'
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': TRUE
+      '#description': 'Image size largeur: 560px hauteur: 316px'
+  image_alt:
+    type: text
+    label: 'Image alt'
+  video:
+    type: text
+    label: 'Video ID'
+    options:
+      '#description': '<b><i class="link">How ?</i></b><br><b>URL Example</b>: https://www.youtube.com/watch?v=BZDyr2OpWBU <br> <b>Value to insert</b>: BZDyr2OpWBU'

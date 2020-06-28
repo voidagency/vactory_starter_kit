@@ -1,0 +1,26 @@
+name: 'S10 - Slider Parallax effect'
+multiple: TRUE
+category: 'Sliders'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: 'Titre'
+    options:
+      '#required': TRUE
+  subtitle:
+    type: text
+    label: 'Subtitle'
+    options:
+      '#required': TRUE
+  description:
+    type: textarea
+    label: 'Description'
+    options:
+      '#required': TRUE
+extra_fields:
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': TRUE

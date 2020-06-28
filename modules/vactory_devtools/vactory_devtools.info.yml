@@ -1,0 +1,32 @@
+name: 'Dev Tools'
+type: module
+description: 'Dev tools for geeks.'
+package: Vactory
+core: 8.x
+dependencies: []
+install:
+  - devel
+  - devel_generate
+  - twig_vardumper
+  - webprofiler
+  - modules_weight
+  - security_review
+  - views_ui
+  - features_ui
+  - field_ui
+  - stage_file_proxy
+  - module_filter
+  - styleguide
+uninstall:
+  - devel
+  - devel_generate
+  - twig_vardumper
+  - webprofiler
+  - modules_weight
+  - security_review
+  - views_ui
+  - features_ui
+  - field_ui
+  - stage_file_proxy
+  - module_filter
+  - styleguide

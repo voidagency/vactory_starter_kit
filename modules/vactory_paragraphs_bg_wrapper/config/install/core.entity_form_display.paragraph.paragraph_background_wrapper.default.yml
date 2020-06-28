@@ -1,0 +1,81 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.paragraph_background_wrapper.field_background_type
+    - field.field.paragraph.paragraph_background_wrapper.field_paragraph_type
+    - paragraphs.paragraphs_type.paragraph_background_wrapper
+  module:
+    - jquery_colorpicker
+    - media_library
+id: paragraph.paragraph_background_wrapper.default
+targetEntityType: paragraph
+bundle: paragraph_background_wrapper
+mode: default
+content:
+  field_background_type:
+    weight: 1
+    settings: {  }
+    third_party_settings: {  }
+    type: options_buttons
+    region: content
+  field_bg_color:
+    weight: 47
+    settings:
+      color: FFFFFF
+    third_party_settings: {  }
+    type: jquery_colorpicker
+    region: content
+  field_paragraph_type:
+    weight: 0
+    settings: {  }
+    third_party_settings: {  }
+    type: options_buttons
+    region: content
+  paragraph_background_color:
+    type: jquery_colorpicker
+    weight: 3
+    region: content
+    settings:
+      color: FFFFFF
+    third_party_settings: {  }
+  paragraph_background_image:
+    type: media_library_widget
+    weight: 2
+    region: content
+    settings:
+      media_types: {  }
+    third_party_settings: {  }
+  paragraph_background_parallax:
+    type: boolean_checkbox
+    settings:
+      display_label: true
+    weight: 45
+    region: content
+    third_party_settings: {  }
+  paragraph_container:
+    type: options_select
+    weight: 5
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  paragraph_css_class:
+    type: string_textfield
+    weight: 4
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  paragraph_identifier:
+    type: string_textfield
+    settings:
+      size: 60
+      placeholder: ''
+    weight: 0
+    region: content
+    third_party_settings: {  }
+hidden:
+  created: true
+  status: true
+  uid: true

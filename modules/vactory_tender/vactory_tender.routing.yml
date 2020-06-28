@@ -1,0 +1,23 @@
+vactory_tender.form_page:
+  path: '/appels-offres/downloader/{crypted_nid}/first-stage'
+  defaults:
+    _controller: '\Drupal\vactory_tender\Controller\TenderFormPage::content'
+    _title: "Appels d'offres"
+  requirements:
+    _permission: 'access content'
+
+vactory_tender.download_page:
+  path: '/appels-offres/downloader/{crypted_nid}/final-stage'
+  defaults:
+    _controller: '\Drupal\vactory_tender\Controller\TenderFileDownloader::content'
+    _title: "Appels d'offres"
+  requirements:
+    _permission: 'access content'
+
+vactory_tender.admin_settings:
+  path: '/admin/config/vactory_tender'
+  defaults:
+    _form: '\Drupal\vactory_tender\Form\SettingsForm'
+    _title: "Appels d'offres settings"
+  requirements:
+    _permission: 'administer vactory_tender'

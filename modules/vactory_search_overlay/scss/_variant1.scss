@@ -1,0 +1,226 @@
+$bg-search-overlay1: rgba(0, 0, 0, 0.85);
+$so1-color-search-input: rgb(171, 171, 171);
+$so1-border-input: 3px solid $primary;
+$so1-text-color: #FFF;
+$so1-transition-delay: 200ms;
+
+// Global
+.overflow-y {
+  overflow-y: hidden;
+}
+
+.search-overlay-variant1 {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: $bg-search-overlay1;
+  z-index: 9999;
+  visibility: hidden;
+  opacity: 0;
+  transition: opacity $so1-transition-delay ease-in, visibility $so1-transition-delay ease-in;
+  transition-delay: 100ms;
+
+  // form.search-block-form {
+  //   transform-origin: 0% 50%;
+  //   transform: scale3d(0, 1, 1);
+  //   transition: transform $so1-transition-delay ease-in;
+  // }
+
+  &.open {
+    visibility: visible;
+    opacity: 1;
+    transition-delay: 0ms;
+
+    // .search__info {
+    //   transform: translateY(0);
+    // }
+
+    // form.search-block-form {
+    //   transform: scale3d(1, 1, 1);
+    //   transition-delay: $so1-transition-delay;
+    // }
+
+    // .form-inline .form-group.form-actions {
+    //   opacity: 1;
+    //   transition: 0ms;
+    // }
+  }
+
+
+  form.search-block-form {
+    position: relative;
+  }
+
+  .search-block-formulaire {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    @include rem(padding, 50px 10px);
+
+  }
+
+  .form-inline .form-group.form-actions {
+    position: absolute;
+    top: 50%;
+    right: 0;
+    width: 2rem;
+    height: 2rem;
+    transform: translateY(-50%);
+    // opacity: 0;
+    // transition: opacity $so1-transition-delay ease-in $so1-transition-delay;
+
+    &:before {
+      content: $icon-search;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: $so1-text-color;
+      @include rem(font-size, 16px);
+      font-family: 'vactory';
+      z-index: 1;
+    }
+
+    input {
+      background-color: transparent;
+      border: 0;
+      font-size: 0;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      z-index: 3;
+
+      &, &:focus {
+        outline: none;
+        box-shadow: none;
+      }
+    }
+  }
+
+  .form-type-search {
+    width: 100%;
+
+    input.form-autocomplete,
+    input.form-search {
+      @include rem(font-size, 32px);
+      line-height: 1;
+      display: inline-block;
+      box-sizing: border-box;
+      width: 100%;
+      @include rem(padding, 16px 48px 16px 0);
+      color: $so1-text-color;
+      border: 0;
+      border-bottom: $so1-border-input;
+      border-radius: 0;
+      background-color: transparent;
+      outline: none;
+      -webkit-appearance: none;
+
+      &:focus {
+        outline: 0;
+        box-shadow: none;
+      }
+
+      &::-webkit-input-placeholder {
+        color: $so1-color-search-input;
+      }
+
+      &::-moz-placeholder {
+        color: $so1-color-search-input;
+      }
+
+      &:-ms-input-placeholder {
+        color: $so1-color-search-input;
+      }
+
+      &::-webkit-search-cancel-button,
+      &::-webkit-search-decoration {
+        -webkit-appearance: none;
+      }
+
+      &::-ms-clear {
+        display: none;
+      }
+    }
+  }
+
+  .search__info {
+    color: $so1-text-color;
+    display: block;
+    text-align: right;
+    @include rem(font-size, 13px);
+    // transform: translateY(100px);
+    // transition: transform 500ms ease-in;
+  }
+
+}
+
+.btn-search-overlay-close {
+  &, &:focus {
+    background-color: transparent;
+    border: 0;
+    outline: none;
+    color: $so1-text-color;
+    display: inline-block;
+    @include rem(font-size, 32px);
+    position: absolute;
+    top: -50px;
+    right: 0;
+    transition: transform 500ms ease-in, color 500ms ease-in;
+  }
+
+  &:hover {
+    transform: rotate(180deg);
+    color: $primary;
+  }
+}
+
+@include media-breakpoint-up(md) {
+  .search-overlay-variant1 {
+    .search-block-formulaire {
+      width: 75%;
+      @include rem(padding, 100px);
+    }
+
+    .form-inline .form-group.form-actions {
+      width: 5rem;
+      height: 5rem;
+
+      &:before {
+        @include rem(font-size, 48px);
+      }
+    }
+
+    .form-type-search {
+      width: 100%;
+
+      input.form-autocomplete,
+      input.form-search {
+        @include rem(font-size, 96px);
+        @include rem(padding, 16px 80px 16px 0);
+      }
+    }
+
+    .search__info {
+      color: $so1-text-color;
+      display: block;
+      text-align: right;
+      @include rem(font-size, 19px);
+    }
+
+  }
+  .btn-search-overlay-close {
+    cursor: pointer;
+
+    &, &:focus {
+      @include rem(font-size, 32px);
+      right: 20px;
+      top: 0;
+    }
+  }
+
+}

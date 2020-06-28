@@ -1,0 +1,13 @@
+name: 'Header'
+type: module
+description: 'Manage site header.'
+package: Vactory Core
+core: 8.x
+dependencies:
+  - block
+  - block_class
+  - block_field
+  - menu_item_extras
+  - menu_link_content
+  - simplify_menu
+  - vactory_core

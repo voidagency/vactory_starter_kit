@@ -1,0 +1,71 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.vactory_paragraph_block.field_titre_ancre
+    - field.field.paragraph.vactory_paragraph_block.field_vactory_block
+    - field.field.paragraph.vactory_paragraph_block.field_vactory_body
+    - field.field.paragraph.vactory_paragraph_block.field_vactory_flag
+    - field.field.paragraph.vactory_paragraph_block.field_vactory_flag_2
+    - field.field.paragraph.vactory_paragraph_block.field_vactory_title
+    - paragraphs.paragraphs_type.vactory_paragraph_block
+  module:
+    - block_field
+    - text
+id: paragraph.vactory_paragraph_block.default
+targetEntityType: paragraph
+bundle: vactory_paragraph_block
+mode: default
+content:
+  field_titre_ancre:
+    weight: 5
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_vactory_block:
+    weight: 3
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: block_field
+    region: content
+  field_vactory_body:
+    weight: 2
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_vactory_flag:
+    weight: 1
+    label: hidden
+    settings:
+      format: boolean
+      format_custom_true: ''
+      format_custom_false: ''
+    third_party_settings: {  }
+    type: boolean
+    region: content
+  field_vactory_flag_2:
+    weight: 4
+    label: hidden
+    settings:
+      format: boolean
+      format_custom_true: ''
+      format_custom_false: ''
+    third_party_settings: {  }
+    type: boolean
+    region: content
+  field_vactory_title:
+    weight: 0
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden:
+  paragraph_container: true

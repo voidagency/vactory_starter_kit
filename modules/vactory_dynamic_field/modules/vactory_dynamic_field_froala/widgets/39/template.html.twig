@@ -1,0 +1,51 @@
+{% if extra_fields.intro is not empty %}
+    <div class="row text-center justify-content-center">
+        <div class="col-md-10 col-lg-8">
+        {% if extra_fields.intro is not empty %}
+            <p>{{ extra_fields.intro }}</p>
+        {% endif %}
+        </div>
+    </div>
+{% endif %}
+<div class="fdb-block vf-slick-slider" 
+    data-toshow="1"
+    data-dots="false"
+    data-arrows="true"
+    data-mobile-centermode="false">
+
+    {% for item in content %}
+        {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : '' %}
+        {% set profile_image = image_uri|image_style('medium') %}
+        {% set lqip_image = image_uri|image_style('lqip') %}
+        {% set reverce = (item.mode == 1)? 'd-flex flex-row-reverse' : ' ' %}
+        {% set qoute = (item.mode == 1)? 'qoute-right' : 'qoute-left' %}
+        <div class="container">
+            <div class="fdb-box shadow-sm {{ qoute }}">
+                <div class="row align-items-center {{ reverce }}">
+                    <div class="col-10 col-sm-6 col-md-4 col-lg-3 col-xl-2 m-auto">
+                        <div class='lazy-small-square'>
+                            {% if  item.image.0 is not empty %}
+                                <img alt="{{ item.image_alt }}"
+                                    class="img-fluid rounded-circle lazyload"
+                                    src="{{ lqip_image }}"
+                                    data-src="{{ profile_image }}">
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div class="col-12 col-md-8 ml-auto mr-auto mt-4 mt-md-0">
+                        {% if  item.description is not empty %}
+                            <div class="text-h3">{{ item.description.value|raw }}</div>
+                        {% endif %}
+                        {% if  item.name is not empty %}
+                            <p class="text-h3 mt-4"><strong>{{ item.name }}</strong></p>
+                        {% endif %}
+                        {% if  item.role is not empty %}
+                            <p><em>{{ item.role }}</em></p>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endfor %}     
+</div>

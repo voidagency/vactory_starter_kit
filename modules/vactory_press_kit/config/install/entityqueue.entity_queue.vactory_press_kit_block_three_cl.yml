@@ -1,0 +1,24 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: vactory_press_kit_block_three_cl
+label: 'press kit Block Three Columns'
+handler: simple
+handler_configuration: {  }
+entity_settings:
+  target_type: node
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      vactory_press_kit: vactory_press_kit
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+queue_settings:
+  min_size: 0
+  max_size: 0
+  act_as_queue: false
+  reverse_in_admin: false

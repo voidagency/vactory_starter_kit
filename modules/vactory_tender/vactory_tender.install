@@ -1,0 +1,51 @@
+<?php
+
+/**
+ * @file
+ * Install file.
+ */
+
+use Drupal\vactory_tender\Exceptions\BlockCreationException;
+use Drupal\block_content\Entity\BlockContent;
+
+/**
+ * Implements hook_install().
+ */
+function vactory_tender_install() {
+  // Create tender view introduction custom block.
+  $block_views_introduction = BlockContent::create([
+    'info' => "Tenders view introduction",
+    'block_machine_name' => 'tender_view_introduction',
+    'type' => 'vactory_block_component',
+  ]);
+
+  try {
+    $block_views_introduction->save();
+  }
+  catch (BlockCreationException $e) {
+    $message = t("Problem has been detected while creating block tender_view_introduction, the block might be already exist.");
+    \Drupal::logger('vactory_tender')->notice($message);
+  }
+}
+
+/**
+ * Implements hook_update_N().
+ *
+ * Create default custom block introduction for vactory tender view.
+ */
+function vactory_tender_update_8101() {
+  // Create tender view introduction custom block.
+  $block_views_introduction = BlockContent::create([
+    'info' => 'Tenders view introduction',
+    'block_machine_name' => 'tender_view_introduction',
+    'type' => 'vactory_block_component',
+  ]);
+
+  try {
+    $block_views_introduction->save();
+  }
+  catch (BlockCreationException $e) {
+    $message = t("Problem has been detected while creating block tender_view_introduction, the block might be already exist.");
+    \Drupal::logger('vactory_tender')->notice($message);
+  }
+}

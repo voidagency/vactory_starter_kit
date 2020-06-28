@@ -1,0 +1,282 @@
+<?php
+
+/**
+ * @file
+ * Contain related hooks.
+ */
+
+use Drupal\Component\Render\FormattableMarkup;
+use Drupal\Component\Utility\Xss;
+use Drupal\Core\Field\FieldStorageDefinitionInterface;
+use Drupal\Core\Render\BubbleableMetadata;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Url;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Drupal\core\Site\Settings;
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_core_theme() {
+  return [
+    // Page > 404.
+    'page__404'                          => [
+      'base hook' => 'page',
+      'template'  => 'page--404',
+    ],
+    // Page > 403.
+    'page__403'                          => [
+      'base hook' => 'page',
+      'template'  => 'page--403',
+    ],
+    // Page > /admin/reports/status.
+    // Add Factory Version.
+    'status_report_general_info_vactory' => [
+      'template' => 'status-report-page-vactory',
+    ],
+    'vactory_responsive_image'           => [
+      'variables' => [
+        'meta'   => [],
+        'srcset'    => [],
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_element_info_alter().
+ */
+function vactory_core_element_info_alter(array &$info) {
+  if (isset($info['more_link']['#theme_wrappers']['container']['#attributes']['class'])) {
+    $info['more_link']['#theme_wrappers']['container']['#attributes']['class'][] = 'vf-more-link';
+  }
+
+  if (isset($info['actions'])) {
+    $info['actions']['#attributes']['class'][] = 'form-group';
+  }
+}
+
+/**
+ * Implements hook_entity_type_build().
+ */
+function vactory_core_entity_type_build(array &$entity_types) {
+  if (isset($entity_types['paragraph'])) {
+    $entity_types['paragraph']->setClass('Drupal\vactory_core\Entity\VactoryParagraph');
+  }
+}
+
+/**
+ * Implements hook_mail_alter().
+ */
+function vactory_core_mail_alter(&$message) {
+  switch ($message['key']) {
+    case 'page_mail':
+    case 'page_copy':
+    case 'cancel_confirm':
+    case 'password_reset':
+    case 'register_admin_created':
+    case 'register_no_approval_required':
+    case 'register_pending_approval':
+    case 'register_pending_approval_admin':
+    case 'status_activated':
+    case 'status_blocked':
+    case 'status_canceled':
+      $message['headers']['Content-Type'] = 'text/html; charset=UTF-8; format=flowed; delsp=yes';
+      foreach ($message['body'] as $key => $body) {
+        $message['body'][$key] = new FormattableMarkup($body, []);
+      }
+      break;
+
+  }
+
+  // Redirect all site mails (except reset password mail),
+  // When vactory_mail_redirect is defined.
+  $route_name = Drupal::routeMatch()->getRouteName();
+  $mail_redirect = Settings::get('vactory_mail_redirect', FALSE);
+  if ($mail_redirect && !empty($mail_redirect) && $route_name !== 'user.pass') {
+    $mail_dist = str_replace(',', ' ', $message['to']);
+    $prefix = t('Destination addresse(s)');
+    $to = $prefix . ': ' . $mail_dist;
+    $message['to'] = $to . '<' . $mail_redirect . '>';
+  }
+}
+
+/**
+ * Implements hook_token_info().
+ */
+function vactory_core_token_info() {
+
+  $types['vactory'] = [
+    'name'        => t('Vactory'),
+    'description' => t('Vactory custom token type'),
+  ];
+  $tokens['site_logo'] = [
+    'name'        => t('Site logo'),
+    'description' => t('The logo of the site.'),
+  ];
+
+  $tokens['node_summary'] = [
+    'name'        => t('Node summary'),
+    'description' => t('The description of the current page.'),
+  ];
+
+  return [
+    'types'  => $types,
+    'tokens' => [
+      'vactory' => $tokens,
+    ],
+  ];
+}
+
+/**
+ * Implements hook_tokens().
+ */
+function vactory_core_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
+  $replacements = [];
+
+  if ($type == 'vactory') {
+    foreach ($tokens as $name => $original) {
+      switch ($name) {
+        case 'site_logo':
+          $theme_name = \Drupal::service('theme.manager')
+            ->getActiveTheme()
+            ->getName();
+          $replacements[$original] = file_create_url(substr(theme_get_setting('logo.url', $theme_name), 1));
+          break;
+
+        case 'node_summary':
+          $value = (isset($data['node']) && $data['node']->get('node_summary')->first() && isset($data['node']->get('node_summary')->first()->getValue()['value'])) ? $data['node']->get('node_summary')->first()->getValue()['value'] : '';
+          $replacements[$original] = $value;
+          break;
+
+      }
+    }
+  }
+
+  return $replacements;
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_core_form_alter(&$form, FormStateInterface &$form_state, $form_id) {
+  // Node type form.
+  if ($form_id == 'node_type_edit_form' || $form_id == 'node_type_add_form') {
+    unset($form['workflow']['options']['#default_value']['promote']);
+    unset($form['workflow']['options']['#default_value']['sticky']);
+    $form['display']['display_submitted']['#default_value'] = FALSE;
+  }
+
+  // Dropdown XSS.
+  if ($form_id === 'lang_dropdown_form') {
+    $current_url = Url::fromRoute('<current>')->toString();
+    $form['#action'] = Xss::filter($current_url);
+  }
+}
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ */
+function vactory_core_form_node_form_alter(&$form, FormStateInterface $form_state) {
+  unset($form['promote']);
+  unset($form['sticky']);
+  if (isset($form['revision_log'])) {
+    $form['revision_log']['widget'][0]['value']['#required'] = TRUE;
+  }
+}
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function vactory_core_entity_base_field_info(EntityTypeInterface $entity_type) {
+  $fields = [];
+
+  if ($entity_type->id() === 'block_content') {
+    $fields['block_machine_name'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Machine Name'))
+      ->setRequired(TRUE)
+      ->setTranslatable(FALSE)
+      ->setDisplayOptions('form', [
+        'type'   => 'string_textfield',
+        'weight' => 0,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->addConstraint('UniqueField', []);
+  }
+
+  if ($entity_type->id() === 'menu_link_content') {
+    $fields['menu_role_show_role'] = BaseFieldDefinition::create('entity_reference')
+      ->setName('menu_per_role__show_role')
+      ->setTargetEntityTypeId('menu_link_content')
+      ->setLabel(t('Roles able to see the menu link'))
+      ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
+      ->setSetting('target_type', 'user_role')
+      ->setDisplayOptions('form', [
+        'type'   => 'options_buttons',
+        'weight' => 0,
+      ]);
+  }
+
+  return $fields;
+}
+
+/**
+ * Implements hook_page_attachments().
+ */
+function vactory_core_page_attachments(array &$page) {
+  $active_theme = \Drupal::service('theme.manager')->getActiveTheme();
+  $front_theme = \Drupal::config('system.theme')->get('default');
+  if ($active_theme->getName() != $front_theme) {
+    $page['#attached']['library'][] = 'vactory_core/ckeditor_config';
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter().
+ */
+function vactory_core_theme_suggestions_page_alter(array &$suggestions, array $variables) {
+  // Get Request Object.
+  $request = \Drupal::request();
+
+  // If there is HTTP Exception..
+  if ($exception = $request->attributes->get('exception')) {
+    if (
+    !(
+      gettype($exception) == 'object' &&
+      ($exception instanceof NotFoundHttpException || $exception instanceof AccessDeniedHttpException)
+    )
+    ) {
+      return;
+    }
+    // Get the status code.
+    $status_code = $exception->getStatusCode();
+    if (in_array($status_code, [
+      Response::HTTP_FORBIDDEN,
+      Response::HTTP_NOT_FOUND,
+    ])) {
+      $suggestions[] = 'page__' . $status_code;
+    }
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter().
+ */
+function vactory_core_theme_suggestions_status_report_general_info_alter(&$suggestions, &$vars) {
+  $suggestions[] = 'status_report_general_info_vactory';
+}
+
+/**
+ * Implements hook_page_attachments_alter().
+ */
+function vactory_core_page_attachments_alter(array &$attachments) {
+  foreach ($attachments['#attached']['html_head'] as $key => $attachment) {
+    if ($attachment[1] == 'system_meta_generator') {
+      unset($attachments['#attached']['html_head'][$key]);
+    }
+  }
+}

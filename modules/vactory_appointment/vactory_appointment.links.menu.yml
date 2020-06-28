@@ -1,0 +1,10 @@
+entity.vactory_appointment.collection:
+  title: 'Appointments'
+  route_name: entity.vactory_appointment.collection
+  description: 'List of Appointments'
+  parent: system.admin_structure
+vactory_appointment.admin.settings:
+  title: Appointment Settings
+  description: 'Configure Appointment entity'
+  route_name:  vactory_appointment.appointments_settings
+  parent: system.admin_config_system

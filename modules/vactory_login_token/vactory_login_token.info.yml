@@ -1,0 +1,9 @@
+name: login token
+description: login with token
+version: VERSION
+type: module
+core: 8.x
+dependencies:
+  - field
+  - text
+  - user

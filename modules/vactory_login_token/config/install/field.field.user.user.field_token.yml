@@ -1,0 +1,20 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.user.field_token
+  module:
+    - text
+    - user
+id: user.user.field_token
+field_name: field_token
+entity_type: user
+bundle: user
+label: Token
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: text

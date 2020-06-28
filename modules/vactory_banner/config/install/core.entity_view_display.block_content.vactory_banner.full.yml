@@ -1,0 +1,77 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - block_content.type.vactory_banner
+    - core.entity_view_mode.block_content.full
+    - field.field.block_content.vactory_banner.body
+    - field.field.block_content.vactory_banner.field_background_color
+    - field.field.block_content.vactory_banner.field_banner_image_mobile
+    - field.field.block_content.vactory_banner.field_vactory_blocks_multiple
+    - field.field.block_content.vactory_banner.field_vactory_flag
+    - field.field.block_content.vactory_banner.field_vactory_media
+    - field.field.block_content.vactory_banner.field_vactory_title
+    - responsive_image.styles.wide
+  module:
+    - block_field
+    - jquery_colorpicker
+    - media_responsive_thumbnail
+    - text
+id: block_content.vactory_banner.full
+targetEntityType: block_content
+bundle: vactory_banner
+mode: full
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 0
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_background_color:
+    type: jquery_colorpicker_raw_hex_display
+    weight: 3
+    region: content
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+  field_banner_image_mobile:
+    type: media_responsive_thumbnail
+    weight: 5
+    region: content
+    label: hidden
+    settings:
+      responsive_image_style: wide
+      image_link: ''
+    third_party_settings: {  }
+  field_vactory_blocks_multiple:
+    type: block_field
+    weight: 2
+    region: content
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+  field_vactory_flag:
+    type: boolean
+    weight: 1
+    region: content
+    label: hidden
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+  field_vactory_media:
+    type: media_responsive_thumbnail
+    weight: 4
+    region: content
+    label: hidden
+    settings:
+      responsive_image_style: wide
+      image_link: ''
+    third_party_settings: {  }
+hidden:
+  field_vactory_title: true
+  langcode: true
+  search_api_excerpt: true

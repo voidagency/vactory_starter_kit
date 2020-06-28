@@ -1,0 +1,53 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - image.style.partner_image_style
+    - image.style.partner_image_style_x2
+  theme:
+    - vactory
+id: partner_responsive_image_style
+label: 'partner responsive image style'
+image_style_mappings:
+  -
+    breakpoint_id: default.lg
+    multiplier: 1x
+    image_mapping_type: image_style
+    image_mapping: partner_image_style
+  -
+    breakpoint_id: default.lg
+    multiplier: 2x
+    image_mapping_type: image_style
+    image_mapping: partner_image_style_x2
+  -
+    breakpoint_id: default.md
+    multiplier: 1x
+    image_mapping_type: image_style
+    image_mapping: partner_image_style
+  -
+    breakpoint_id: default.md
+    multiplier: 2x
+    image_mapping_type: image_style
+    image_mapping: partner_image_style_x2
+  -
+    breakpoint_id: default.sm
+    multiplier: 1x
+    image_mapping_type: image_style
+    image_mapping: partner_image_style
+  -
+    breakpoint_id: default.sm
+    multiplier: 2x
+    image_mapping_type: image_style
+    image_mapping: partner_image_style_x2
+  -
+    breakpoint_id: default.xs
+    multiplier: 1x
+    image_mapping_type: image_style
+    image_mapping: partner_image_style
+  -
+    breakpoint_id: default.xs
+    multiplier: 2x
+    image_mapping_type: image_style
+    image_mapping: partner_image_style_x2
+breakpoint_group: vactory
+fallback_image_style: partner_image_style

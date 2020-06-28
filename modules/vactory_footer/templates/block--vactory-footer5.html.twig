@@ -1,0 +1,29 @@
+<footer class="vf-footer vf-footer--variant5">
+  <div class="container">
+    <div class="vf-footer-items">
+      <div class="vf-footer__top">
+        <div class="block-social-media d-flex justify-content-center">
+          {{ vactory_render('block', 'socialmedialinks') }}
+        </div>
+      </div>
+      <div class="vf-footer__middle">
+        <div class="block-footer-menu d-flex justify-content-center">
+          {{ vactory_render('block', 'system_menu_block:footer') }}
+        </div>
+      </div>
+      <div class="vf-footer__bottom">
+        <div class="d-flex align-items-center justify-content-lg-between flex-lg-row flex-column">
+          <div class="block-footer-copyright">
+            <p>{{ "©2019 Groupe Crédit Agricole du Maroc" | t }}</p>
+          </div>
+          <div class="block-footer-realisation_void">
+            <p>
+              {{ "Conception et développement" | t }}
+              <img alt="Void logo" src="{{ base_path ~ directory ~ '/assets/img/void-logo-footer.png' }}">
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</footer>

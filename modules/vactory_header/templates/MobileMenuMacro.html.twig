@@ -1,0 +1,41 @@
+{% macro MobileMenuMacro(menu, level) -%}
+
+  {# this Macro to use when generating navigation for the Mobile Menu Layer #}
+
+    {# Set our default level as an integer. #}
+    {% set default_level = 1 %}
+
+    <ul class="menu-level--{{ level|default(default_level) }}">
+        {% for menu_item in menu %}
+            {# Check if this is the active item. #}
+            {% set active = (menu_item.active) ? ' is-active' : '' %}
+
+            {# Check if this item is in the active trail. #}
+            {% set active = active ~ ((menu_item.active_trail) ? ' is-active-trail' : '') %}
+
+            {# Check if this item has childs. #}
+            {% set has_sub = ((menu_item.submenu) ? 'has-sub' : '') %}
+
+            {# Check if the link item has injected block to hide their parent menu link. #}
+            {% set megaMenu = (menu_item.fields.field_injected_block|render|trim is not empty) ? "has-sub mega-menu" : "" %}
+
+            <li class="menu__item{{ active }} menu__item--{{ level|default(default_level) }} {{megaMenu}} {{ has_sub }} {{ menu_item.options.attributes.class }}">
+              {# Call the block injected the menu if exist. #}
+              {% if menu_item.fields.field_injected_block | render | trim is not empty %}
+                <a href="{{ menu_item.url }}" class="menu__link{{ active }}">{{ menu_item.text }}</a>
+                <div class="menu-wrapper menu-sub--{{ level|default(default_level) }}">
+                  {{ menu_item.fields.field_injected_block }}
+                </div>
+              {% elseif menu_item.submenu %}
+                <a href="{{ menu_item.url }}" class="menu__link{{ active }}">{{ menu_item.text }}</a>
+                <div class="menu-sub--{{ level|default(default_level) }} menu-wrapper">
+                  {{ _self.MobileMenuMacro(menu_item.submenu, level|default(default_level) + 1) }}
+                </div>
+              {% else %}
+                <a href="{{ menu_item.url }}" class="menu__link{{ active }}">{{ menu_item.text }}</a>
+              {% endif %}
+          </li>
+
+        {% endfor %}
+    </ul>
+{%- endmacro %}

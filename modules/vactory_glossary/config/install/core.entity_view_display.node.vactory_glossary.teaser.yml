@@ -1,0 +1,34 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.vactory_glossary.body
+    - field.field.node.vactory_glossary.field_vactory_taxonomy_1
+    - node.type.vactory_glossary
+  module:
+    - text
+    - user
+id: node.vactory_glossary.teaser
+targetEntityType: node
+bundle: vactory_glossary
+mode: teaser
+content:
+  body:
+    label: hidden
+    type: text_summary_or_trimmed
+    weight: 101
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  field_vactory_taxonomy_1: true
+  langcode: true
+  node_banner_image: true

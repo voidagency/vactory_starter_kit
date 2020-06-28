@@ -1,0 +1,76 @@
+{{ attach_library('vactory_dynamic_field_sliders/variant6') }}
+
+{% set reversed = (extra_fields.reverse > 0) ? 'reversed-template' : '' %}
+
+<div class="vf-slider--fadein" data-autoplay="true">
+  <div class="container">
+    <div class="vf-slider--fadein-items {{ reversed }}">
+      {% for item in content %}
+        {% set activeClass = (loop.index == 1) ? 'active' : '' %}
+        {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : "" %}
+        {% set lqip_image = image_uri|image_style('lqip') %}
+        {% set fluid_image = file_url(image_uri) %}
+
+        <div class="vf-slider--fadein-item d-flex flex-lg-row flex-column {{ activeClass }}"
+             data-item="{{ loop.index }}">
+          {% if item.image.0 is defined %}
+            {% set image_alt = (item.image_alt is not empty) ? item.image_alt : 'Image' %}
+            <div class="item-image-wrapper">
+              <div class="item-image lazy-wrapper">
+                <img src="{{ lqip_image }}"
+                     data-src="{{ fluid_image }}"
+                     class="lazyload"
+                     alt="{{ image_alt }}">
+              </div>
+            </div>
+          {% endif %}
+
+          {% if item.title is not empty %}
+            <div class="item-header-title-wrapper">
+              <h2>
+                {% for index, word in item.title|split(' ') %}
+                  <span class="word-part">
+                    {% set wordTable = word|split('') %}
+                    {% set lengthWord = wordTable.length %}
+                    {% for index, chart in wordTable %}
+                      {% if not loop.first %}
+                        {% if not loop.last %}
+                          {{ "-->" }}<span class="vertical-part">{{ chart }}</span>{{ "<!--" }}
+                        {% else %}
+                          {{ "-->" }}<span class="vertical-part">{{ chart }}</span>
+                        {% endif %}
+                      {% else %}
+                        <span class="vertical-part">{{ chart }}</span>{{ "<!--" }}
+                      {% endif %}
+                    {% endfor %}
+                  </span>
+                {% endfor %}
+              </h2>
+            </div>
+          {% endif %}
+          {% if item.description is not empty %}
+            <div class="item-description">
+              {% set _words = item.description|split(' ') %}
+              <p>
+                {% for word, index in _words %}
+                  <span class="vertical-part">{{ index }}</span>
+                {% endfor %}
+              </p>
+            </div>
+          {% endif %}
+
+        </div>
+      {% endfor %}
+      <ul class="vf-fadein-dots d-flex">
+        {% for i in content %}
+          {% set activeClass = (loop.index == 1) ? 'active' : '' %}
+          <li class="m-1 {{ activeClass }}" data-item="{{ loop.index }}">{{ loop.index }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="vf-fadein-arrows d-lg-block d-none">
+    <button class="vf-fadein-prev"><i class="icon-arrow-left"></i></button>
+    <button class="vf-fadein-next"><i class="icon-arrow-right"></i></button>
+  </div>
+</div>

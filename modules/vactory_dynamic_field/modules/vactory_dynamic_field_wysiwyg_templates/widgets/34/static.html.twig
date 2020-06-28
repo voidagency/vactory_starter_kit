@@ -1,0 +1,20 @@
+<div class="row t-box-background-title-description-clickable">
+  {% for item in 0..1 %}
+    {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/540/270.jpg" %}
+    <div class="col-md-6 col-12 mb-3">
+      <div class="t-box-background-wrapper">
+        <div class="lazy-wrapper">
+          <img class="lazyload"
+               src="{{ content.image_placeholder }}"
+               data-src="{{ placehold }}"
+               alt="vactory image">
+        </div>
+        <div class="t-box-background-content">
+          <h2>Title</h2>
+          <p>Lorem Ipsum is simply dummy text of the printing... </p>
+        </div>
+        <a href="#"><!----></a>
+      </div>
+    </div>
+  {% endfor %}
+</div>

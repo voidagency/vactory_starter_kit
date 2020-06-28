@@ -1,0 +1,1 @@
+- Taxonomie > Chaque custom taxonomie doit impérativement contenir le nom du module qui l’implement pour pouvoir la différencier > News Theme, Event Category, Blog Tags et non pas > Theme, Category, Tags… etc > avec un nom machine > vactory_news_theme

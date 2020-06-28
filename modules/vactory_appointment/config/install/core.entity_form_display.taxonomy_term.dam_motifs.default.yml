@@ -1,0 +1,69 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.taxonomy_term.dam_motifs.field_motifs_image
+    - field.field.taxonomy_term.dam_motifs.field_path_motif_name
+    - taxonomy.vocabulary.dam_motifs
+  module:
+    - media_library
+    - path
+    - text
+  enforced:
+    module:
+      - vactory_appointment
+id: taxonomy_term.dam_motifs.default
+targetEntityType: taxonomy_term
+bundle: dam_motifs
+mode: default
+content:
+  description:
+    type: text_textarea
+    weight: 3
+    region: content
+    settings:
+      placeholder: ''
+      rows: 5
+    third_party_settings: {  }
+  field_motifs_image:
+    type: media_library_widget
+    weight: 2
+    settings:
+      media_types: {  }
+    third_party_settings: {  }
+    region: content
+  field_path_motif_name:
+    type: string_textfield
+    weight: 1
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  langcode:
+    type: language_select
+    weight: 4
+    region: content
+    settings:
+      include_locked: true
+    third_party_settings: {  }
+  name:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  path:
+    type: path
+    weight: 5
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  translation:
+    weight: 4
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden: {  }

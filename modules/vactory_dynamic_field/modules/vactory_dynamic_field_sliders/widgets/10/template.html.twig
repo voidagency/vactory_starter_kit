@@ -1,0 +1,35 @@
+{{ attach_library('vactory_dynamic_field_sliders/variant10') }}
+<div class="vf-slider--parallax-effect">
+  <div class="swiper-container">
+    {% set image_uri = (extra_fields.image.0 is defined) ? get_image(extra_fields.image.0) : '' %}
+    {% set fluid_img = file_url(image_uri) %}
+    {% set lqip_image = image_uri|image_style('lqip') %}
+    <div class="parallax-bg lazyload"
+         data-bg="{{ fluid_img }}"
+         style="background-image:url({{ lqip_image }})" data-swiper-parallax="-23%"></div>
+    <div class="swiper-wrapper">
+      {% for item in content %}
+        <div class="swiper-slide">
+          <div class="swiper-content">
+            {% if item.title %}
+              <h3 class="swiper-content--title" data-swiper-parallax="-300">{{ item.title }}</h3>
+            {% endif %}
+            {% if item.subtitle is not empty %}
+              <h4 class="swiper-content--subtitle" data-swiper-parallax="-200">Subtitle</h4>
+            {% endif %}
+            {% if item.description is not empty %}
+              <div class="swiper-content--text" data-swiper-parallax="-100">
+                <p>item.description</p>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    <!-- Add Pagination -->
+    <div class="swiper-pagination swiper-pagination-white"></div>
+    <!-- Add Navigation -->
+    <div class="swiper-button-prev swiper-button-white"></div>
+    <div class="swiper-button-next swiper-button-white"></div>
+  </div>
+</div>

@@ -1,0 +1,13 @@
+name: '6 - Froala - Content Title & Paragraphs'
+multiple: FALSE
+category: 'Froala'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: 'Titre'
+  description:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'full_html'

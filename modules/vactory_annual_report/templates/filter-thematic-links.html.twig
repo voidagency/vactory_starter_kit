@@ -1,0 +1,17 @@
+<div class="btn-group flex-wrap" role="group" aria-label="{{ 'Filter Thematic'|t }}">
+  {% for tid, tname in links %}
+    {% if filter_current == tid %}
+      {% set active = 'active' %}
+    {% else %}
+      {% set active = '' %}
+    {% endif %}
+
+    {% if tid == 'All' %}
+      <span class="filter-tab"><a href="#." class="btn btn-primary {{ active }}" data-filter-name="{{ filter_name }}"
+                                  id="{{ tid }}">{{ 'All'|t }}</a></span>
+    {% else %}
+      <span class="filter-tab"><a href="#." class="btn btn-primary {{ active }}" data-filter-name="{{ filter_name }}"
+                                  id="{{ tid }}"># {{ tname }}</a></span>
+    {% endif %}
+  {% endfor %}
+</div>

@@ -1,0 +1,11 @@
+name: 'Page'
+description: 'Provides page content type and related configuration.'
+type: module
+core: 8.x
+dependencies:
+  - content_translation
+  - pathauto
+  - vactory_core
+  - vactory_field
+  - vactory_paragraphs
+package: Vactory Core

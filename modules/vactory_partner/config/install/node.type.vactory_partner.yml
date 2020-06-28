@@ -1,0 +1,10 @@
+langcode: en
+status: true
+dependencies: { }
+name: Partner
+type: vactory_partner
+description: 'Manage your partners content.'
+help: ''
+new_revision: false
+preview_mode: 1
+display_submitted: false

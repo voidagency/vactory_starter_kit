@@ -1,0 +1,32 @@
+{{ attach_library('vactory_dynamic_field_unitegallery/unitegallery.grid') }}
+
+
+{% set unit_zoom = (extra_fields.zoom > 0) ? TRUE : FALSE %}
+{% set numberCols = (extra_fields.numberCols is not empty and extra_fields.numberCols != 0) ? extra_fields.numberCols : 2 %}
+{% set scrollVertical = (extra_fields.scrollVertical > 0) ? FALSE : TRUE %}
+{% set EnableArrows = (extra_fields.EnableArrows > 0) ? TRUE : FALSE %}
+{% set disableText = (extra_filds.disableText > 0) ? FALSE : TRUE %}
+<div id="gallery-grid"
+     {#data-provider="unitegallery"
+     data-template="6"#}
+     data-disabletext="{{ disableText }}"
+     data-position="{{ extra_fields.position }}"
+     data-zoom="{{ unit_zoom }}"
+     data-gridnumcols="{{ numberCols }}"
+     data-arrows-vertical="{{ scrollVertical }}"
+     data-arrowsenable="{{ EnableArrows }}"
+     style="display:none;">
+  {% for item in content %}
+    {% set thumbnail_src = (item.thumbnail.0 is defined) ? get_image_url(item.thumbnail.0) : '' %}
+    {% set image_src = (item.image.0 is defined) ? get_image_url(item.image.0) : '' %}
+
+    <a href="#.">
+      <img
+        {% if item.title is not empty  %} alt="{{ item.title }}" {% endif %}
+        {% if item.description is not empty %} data-description="{{ item.description }}" {% endif %}
+         src="{{ thumbnail_src }}"
+         data-image="{{ image_src }}"
+         style="display:none">
+    </a>
+  {% endfor %}
+</div>

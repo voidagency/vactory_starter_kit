@@ -1,0 +1,19 @@
+{% set image_uri = (content.0.image.0 is defined) ? get_image(content.0.image.0) : '' %}
+{% set fluid_image = image_uri|image_style('thumbnail') %}
+{% set lqip_image = image_uri|image_style('lqip') %}
+
+<div class="fdb-block">
+    <div class="row justify-content-center">
+        <div class="col col-md-8 text-center">
+            {% if content.0.image.0 is not empty %}
+                <img alt="{{ content.0.image_alt }}"
+                    class="lazyload fdb-icon mb-4"
+                    src="{{ lqip_image }}"
+                    data-src="{{ fluid_image }}">
+            {%  endif %}
+            {% if content.0.description is not empty %}
+                <div class="text-h3">{{ content.0.description.value|raw }}</div>
+            {%  endif %}
+        </div>
+    </div>
+</div>

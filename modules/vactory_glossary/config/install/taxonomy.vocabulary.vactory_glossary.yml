@@ -1,0 +1,8 @@
+langcode: en
+status: true
+dependencies: {  }
+name: 'Glossary - Secteur'
+vid: vactory_glossary
+description: 'Taxonomy for Glossary'
+hierarchy: 0
+weight: 0

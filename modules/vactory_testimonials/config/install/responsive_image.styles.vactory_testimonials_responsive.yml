@@ -1,0 +1,53 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - image.style.vactory_testimonials_1
+    - image.style.vactory_testimonials_2
+  theme:
+    - vactory
+id: vactory_testimonials_responsive
+label: 'Testimonials responsive'
+image_style_mappings:
+  -
+    breakpoint_id: default.lg
+    multiplier: 1x
+    image_mapping_type: image_style
+    image_mapping: vactory_testimonials_1
+  -
+    breakpoint_id: default.lg
+    multiplier: 2x
+    image_mapping_type: image_style
+    image_mapping: vactory_testimonials_2
+  -
+    breakpoint_id: default.md
+    multiplier: 1x
+    image_mapping_type: image_style
+    image_mapping: vactory_testimonials_1
+  -
+    breakpoint_id: default.md
+    multiplier: 2x
+    image_mapping_type: image_style
+    image_mapping: vactory_testimonials_2
+  -
+    breakpoint_id: default.sm
+    multiplier: 1x
+    image_mapping_type: image_style
+    image_mapping: vactory_testimonials_1
+  -
+    breakpoint_id: default.sm
+    multiplier: 2x
+    image_mapping_type: image_style
+    image_mapping: vactory_testimonials_2
+  -
+    breakpoint_id: default.xs
+    multiplier: 1x
+    image_mapping_type: image_style
+    image_mapping: vactory_testimonials_1
+  -
+    breakpoint_id: default.xs
+    multiplier: 2x
+    image_mapping_type: image_style
+    image_mapping: vactory_testimonials_2
+breakpoint_group: vactory
+fallback_image_style: vactory_testimonials_1

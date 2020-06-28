@@ -1,0 +1,3 @@
+services:
+  vactory_login_token.token_generator:
+    class: Drupal\vactory_login_token\Controller\TokenGenerateController

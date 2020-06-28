@@ -1,0 +1,64 @@
+{{ attach_library('vactory_dynamic_field_sliders/variant6') }}
+
+<div class="vf-slider--fadein" data-autoplay="true">
+  <div class="container">
+    <div class="vf-slider--fadein-items">
+      {% for i in 0..2 %}
+        {% set activeClass = (loop.index == 1) ? 'active' : '' %}
+        {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/300/450.jpg" %}
+        <div class="vf-slider--fadein-item d-flex flex-lg-row flex-column {{ activeClass }}"
+             data-item="{{ loop.index }}">
+          <div class="item-image-wrapper">
+            <div class="item-image lazy-wrapper">
+              <img src="{{ content.image_placeholder }}"
+                   data-src="{{ placehold }}"
+                   class="lazyload"
+                   alt="alt">
+            </div>
+          </div>
+          <div class="item-header-title-wrapper">
+            {% set _title = "Spotify" %}
+            <h2>
+              {% for index, word in _title|split(' ') %}
+                <span class="word-part">
+                  {% set wordTable = word|split('') %}
+                  {% set lengthWord = wordTable.length %}
+                  {% for index, chart in wordTable %}
+                    {% if not loop.first %}
+                      {% if not loop.last %}
+                        {{ "-->" }}<span class="vertical-part">{{ chart }}</span>{{ "<!--" }}
+                        {% else %}
+                        {{ "-->" }}<span class="vertical-part">{{ chart }}</span>
+                      {% endif %}
+                      {% else %}
+                      <span class="vertical-part">{{ chart }}</span>{{ "<!--" }}
+                    {% endif %}
+                  {% endfor %}
+                </span>
+              {% endfor %}
+            </h2>
+          </div>
+          <div class="item-description">
+            {% set _description = "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium assumenda consequatur cum debitis deserunt dignissimos dolorum illo ipsam laudantium magnam necessitatibus nemo nisi odit, porro provident sit, veritatis vitae voluptate?" %}
+            {% set _words = _description|split(' ') %}
+            <p>
+              {% for word in _words %}
+                <span class="vertical-part">{{ word }}</span>
+              {% endfor %}
+            </p>
+          </div>
+        </div>
+      {% endfor %}
+      <ul class="vf-fadein-dots d-flex">
+        {% for i in 0..2 %}
+          {% set activeClass = (loop.index == 1) ? 'active' : '' %}
+          <li class="m-1 {{ activeClass }}" data-item="{{ loop.index }}">{{ loop.index }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+  <div class="vf-fadein-arrows d-lg-block d-none">
+    <button class="vf-fadein-prev"><i class="icon-arrow-left"></i></button>
+    <button class="vf-fadein-next"><i class="icon-arrow-right"></i></button>
+  </div>
+</div>

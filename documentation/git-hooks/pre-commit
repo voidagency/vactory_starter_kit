@@ -1,0 +1,108 @@
+#!/usr/bin/env sh
+
+# Git precommit hook for validating drupal coding standards.
+#
+# This script will validate all staged files against the drupal coding
+# standards. In order to use this script you need to have the following
+# software installed:
+# - drush <http://drupal.org/project/drush>
+# - drupalcs <http://drupal.org/project/drupalcs>
+echo "\n\n";
+echo "-------------------------------------------------------------------";
+echo "\n";
+echo "              WELCOME TO VOID PRECOMMIT SCRIPT CHECKER             ";
+echo "\n";
+echo "-------------------------------------------------------------------";
+echo "\n\n";
+#--------------------------------------------------------------#
+#                       PHP code validation part               #
+#--------------------------------------------------------------#
+
+#---------------------------------------- MODIFER ALIAS DRUSH ICI -------------------------------------------#
+
+# Alias de Drush: Il faut modifier l'alias drush par l'alias que vous utilisez (L'alias par défaut est drush).
+# Ex: Si vous utiliser d8 comme alias modifier la ligne ci-dessous comme suite: drush=d8
+drush=drush;
+
+#------------------------------------------------------------------------------------------------------------#
+
+echo "--> Début de la vérification du code PHP...\n"
+DRUPALCS_FILE_PATTERN="\.(php|module|inc|install|test|profile|theme|yml|md|twig)$"
+
+# Initial check to see if all requirements to run this script are met.
+# Check if drush exists and is executable.
+if ! command -v $drush >/dev/null 2>&1; then
+  echo "Drush bin not found or executable."
+  exit 1
+fi
+# Check if the drupal code sniffer drush plugin is available.
+if ! $drush dcs -hq; then
+  echo "The drush drupalcs module has not been installed."
+  exit 1
+fi
+
+# Exit when one check fails.
+RETVAL_PHP=0
+# Collect the output.
+OUTPUT=""
+# Check each file in the staging area.
+for FILE in $(git diff --cached --name-only --diff-filter=ACRM); do
+  # Check against whitelist.
+  echo $FILE | egrep -q $DRUPALCS_FILE_PATTERN
+  if [ $? -eq 0 ]; then
+    $drush dcs $FILE;
+    [ $? -ne 0 ] && RETVAL_PHP=1
+  fi;
+done
+
+echo "--> Fin de la vérification du code PHP...\n"
+
+#--------------------------------------------------------------#
+#                       JS code validation part                #
+#--------------------------------------------------------------#
+
+echo "--> Début de la vérification du code JS...\n"
+JS_FILES=$(git diff --name-only --cached --diff-filter=ACRM|awk '{ if($1 ~ /.js/) print $1}')
+RETVAL_JS=0;
+if [ "$JS_FILES" != "" ]; then
+	OUTPUT=$(jshint $JS_FILES)
+	RETVAL_JS=$?
+  if [ $RETVAL_JS != 0 ]; then
+		printf "\n${RED}## Des erreurs JS ont été détectées :${NC}\n\n"
+		echo "$OUTPUT\n"
+	else
+		printf "${GREEN}## La vérification des fichiers JS s'est terminée avec succès.${NC}\n\n"
+	fi
+else
+  echo "--> Aucun fichier JS trouvé..!\n"
+fi
+echo "--> Fin de la vérification du code JS...\n"
+
+#--------------------------------------------------------------#
+#                     SCSS code validation part                #
+#--------------------------------------------------------------#
+
+echo "--> Début de la vérification du code SCSS...\n"
+SCSS_FILES=$(git diff --name-only --cached --diff-filter=ACRM|awk '{ if($1 ~ /.scss/) print $1}')
+RETVAL_SCSS=0;
+if [ "$SCSS_FILES" != "" ]; then
+	OUTPUT=$(scss-lint $SCSS_FILES)
+	RETVAL_SCSS=$?
+  if [ $RETVAL_SCSS != 0 ]; then
+		printf "\n${RED}## Des erreurs SCSS ont été détectées :${NC}\n\n"
+		echo "$OUTPUT\n"
+	else
+		printf "${GREEN}## La vérification des fichiers SCSS s'est terminée avec succès.${NC}\n\n"
+	fi
+else
+  echo "--> Aucun fichier SCSS trouvé..!\n"
+fi
+echo "--> Fin de la vérification du code SCSS...\n"
+
+
+if [ "$RETVAL_JS" != 0 -o "$RETVAL_PHP" != 0 -o "$RETVAL_SCSS" != 0 ]; then
+  echo "--> Merci de fixer les erreurs mentionnées et réessayer à nouveau..!"
+  exit 1;
+else
+  exit 0;
+fi

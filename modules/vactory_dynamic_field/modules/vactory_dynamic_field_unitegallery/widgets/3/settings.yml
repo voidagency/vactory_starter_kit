@@ -1,0 +1,22 @@
+name: 'U03 - UniteGallery - Tiles Columns - Videos'
+multiple: TRUE
+category: 'UniteGallery'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: 'Title'
+    options:
+      '#required': TRUE
+  thumbnail:
+    type: image
+    label: 'Thumbnail'
+    options:
+      '#required': TRUE
+      '#description': 'Image size largeur: 214px'
+  videoId:
+    type: text
+    label: 'VideoId Youtube'
+    options:
+      '#required': TRUE
+      '#description': 'Youtube ID: l1g0fn5Nm_g, crIaEzXgqto, MVt32qoyhi0, 7SlILk2WMTI'

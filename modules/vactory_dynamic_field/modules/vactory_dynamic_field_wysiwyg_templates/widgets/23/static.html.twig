@@ -1,0 +1,22 @@
+<div class="t-fiche-image-content">
+  {% for item in 0..2 %}
+    {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/133/133.jpg" %}
+    <div class="t-fiche-image-content-body">
+      <div class="row align-items-lg-center">
+        <div class="col-lg-3">
+          <div class="t-image-wrapper d-flex align-items-center justify-content-center lazy-wrapper">
+            <img data-src="{{ placehold }}"
+                 src="{{ content.image_placeholder }}"
+                 class="img-fluid lazyload"
+                 alt="Image Alt">
+          </div>
+        </div>
+        <div class="col-lg-9">
+          <div class="t-content">
+            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>

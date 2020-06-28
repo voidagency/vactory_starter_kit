@@ -1,0 +1,135 @@
+<?php
+
+/**
+ * @file
+ * Vactory Espace prive custom module related hooks.
+ */
+
+use Drupal\Core\Url;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_espace_prive_theme($existing, $type, $theme, $path) {
+  return [
+    'espace_prive_login' => [
+      'template' => 'espace-prive-login',
+      'variables' => [
+        'login_form' => NULL,
+      ],
+    ],
+    'espace_prive_registration' => [
+      'template' => 'espace-prive-registration',
+      'variables' => [
+        'registration_form' => NULL,
+      ],
+    ],
+    'espace_prive_profile' => [
+      'template' => 'espace-prive-profile',
+      'variables' => [
+        'profile_form' => NULL,
+      ],
+    ],
+    'espace_prive_password' => [
+      'template' => 'espace-prive-password',
+      'variables' => [
+        'password_form' => NULL,
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_espace_prive_preprocess_page(&$variables) {
+  $active_theme_name = \Drupal::service('theme.manager')->getActiveTheme()
+    ->getName();
+  $default_theme_name = \Drupal::config('system.theme')->get('default');
+  $current_path = Drupal::service('path.current')->getPath();
+  $route_name = \Drupal::routeMatch()->getRouteName();
+  if ($active_theme_name == $default_theme_name && is_default_user_path()) {
+    $espace_prive_settings = \Drupal::config('vactory_espace_prive.settings');
+    $is_redirect_to_notfound = $espace_prive_settings->get('redirect_mode') == 'to_not_found';
+    if ($is_redirect_to_notfound && $route_name != 'system.404') {
+      throw new NotFoundHttpException();
+    }
+    if (!$is_redirect_to_notfound) {
+      $new_route = '';
+      if ($route_name === 'entity.user.canonical') {
+        $new_route = 'vactory_espace_prive.welcome';
+      }
+      if ($route_name === 'entity.user.edit_form') {
+        $new_route = 'vactory_espace_prive.profile';
+      }
+      $user_paths = get_user_paths();
+      if (in_array($current_path, $user_paths['login_paths'])) {
+        $new_route = 'vactory_espace_prive.login';
+      }
+      if (in_array($current_path, $user_paths['register_paths'])) {
+        $new_route = 'vactory_espace_prive.register';
+      }
+      if (in_array($current_path, $user_paths['password_paths'])) {
+        $new_route = 'vactory_espace_prive.password';
+      }
+      if (!empty($new_route)) {
+        $url = Url::fromRoute($new_route);
+        $response = new RedirectResponse($url->toString());
+        $response->send();
+      }
+    }
+    \Drupal::service('page_cache_kill_switch')->trigger();
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_espace_prive_preprocess_input__password(&$variables) {
+  if ($variables['element']['#type'] == 'password') {
+    $title = $variables['element']['#id'] == 'edit-pass-pass1' ? t('Mot de passe') : t('Confirmer le mot de passe');
+    $title = $variables['element']['#id'] == 'edit-current-pass' ? t('Mot de passe actuel') : $title;
+    $variables['attributes']['placeholder'] = $title;
+  }
+}
+
+/**
+ * Check if current path is a user context path.
+ */
+function is_default_user_path() {
+  $current_path = Drupal::service('path.current')->getPath();
+  $route_name = \Drupal::routeMatch()->getRouteName();
+  $drupal_user_routes = [
+    'entity.user.canonical',
+    'entity.user.edit_form',
+  ];
+  $user_paths = get_user_paths();
+  $is_default_user_path = in_array($route_name, $drupal_user_routes);
+  if (in_array($current_path, array_merge($user_paths['login_paths'], $user_paths['register_paths'], $user_paths['password_paths']))) {
+    $is_default_user_path = TRUE;
+  }
+  return $is_default_user_path;
+}
+
+/**
+ * Get necessary user paths.
+ */
+function get_user_paths() {
+  $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
+  return [
+    'login_paths' => [
+      '/user/login',
+      '/' . $langcode . '/user/login',
+    ],
+    'register_paths' => [
+      '/user/register',
+      '/' . $langcode . '/user/register',
+    ],
+    'password_paths' => [
+      '/user/password',
+      '/' . $langcode . '/user/password',
+    ],
+  ];
+}

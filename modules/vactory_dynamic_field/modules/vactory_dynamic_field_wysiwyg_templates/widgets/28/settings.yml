@@ -1,0 +1,32 @@
+name: 'C28 - Template avec 3 pushs, intro et Description'
+multiple: TRUE
+category: 'Content'
+enabled: TRUE
+limit: 4
+fields:
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': TRUE
+  image_alt:
+    type: text
+    label: 'Image alt'
+  text_description:
+    type: text
+    label: 'Description'
+    options:
+      '#required': TRUE
+extra_fields:
+  intro:
+    type: textarea
+    label: 'introduction'
+  link:
+    type: url_extended
+    label: 'lien'
+  link_alt:
+    type: text
+    label: 'text du lien'
+  link_target:
+    type: checkbox
+    label: 'Ouvrir dans une nouvelle fenêtre'

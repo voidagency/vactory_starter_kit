@@ -1,0 +1,193 @@
+<?php
+
+/**
+ * @file
+ * Contain related hooks.
+ */
+
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Component\Utility\Html;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_paragraphs_theme($existing, $type, $theme, $path) {
+  return [
+    'paragraph__vactory_paragraph_block' => [
+      'base hook' => 'paragraph',
+      'template'  => 'paragraph--vactory-paragraph-block',
+    ],
+    'paragraph__vactory_component'       => [
+      'base hook' => 'paragraph',
+      'template'  => 'paragraph--vactory-component',
+    ],
+    'paragraph__vactory_paragraph_multi_template'       => [
+      'base hook' => 'paragraph',
+      'template'  => 'paragraph--vactory-paragraphs-multi-template',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function vactory_paragraphs_entity_base_field_info(EntityTypeInterface $entity_type) {
+  $fields = [];
+
+  if ($entity_type->id() === 'paragraph') {
+
+    $fields['paragraph_identifier'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Paragraph ID'))
+      ->setRevisionable(TRUE)
+      ->setTranslatable(TRUE)
+      ->setDisplayOptions('form', [
+        'type'     => 'string_textfield',
+        'settings' => [
+          'display_label' => TRUE,
+        ],
+        'weight'   => 0,
+      ])
+      ->setDisplayConfigurable('form', TRUE);
+
+    // @See vactory_paragraphs/templates/paragraph--vactory-paragraph-block.html.twig
+    $fields['paragraph_container'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Width'))
+      ->setRevisionable(TRUE)
+      ->setTranslatable(TRUE)
+      ->setRequired(TRUE)
+      ->setDefaultValue('narrow_width')
+      ->setSetting('allowed_values', [
+        'full_width'   => 'Full Width',
+        'narrow_width' => 'Narrow Width',
+        'no_container' => 'No Container',
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayOptions('form', [
+        'type'   => 'options_select',
+        'weight' => -10,
+      ]);
+
+    $fields['paragraph_css_class'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('CSS class(es)'))
+      ->setDisplayOptions('form', [
+        'type'   => 'string_textfield',
+        'weight' => 35,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setTranslatable(TRUE);
+
+    $fields['paragraph_background_image'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Image'))
+      ->setDescription(t('Set a background image.'))
+      ->setSetting('target_type', 'media')
+      ->setSetting('handler_settings', ['target_bundles' => ['image' => 'image']])
+      ->setRevisionable(TRUE)
+      ->setTranslatable(TRUE)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayOptions('form', [
+        'type'   => 'media_library_widget',
+        'weight' => 45,
+      ]);
+
+    $fields['paragraph_background_color'] = BaseFieldDefinition::create('jquery_colorpicker')
+      ->setLabel(t('Color'))
+      ->setDescription(t('Set a background color.'))
+      ->setRevisionable(TRUE)
+      ->setTranslatable(TRUE)
+      ->setDisplayOptions('form', [
+        'type'   => 'jquery_colorpicker',
+        'weight' => 45,
+      ])->setDefaultValue('ff0000')
+      ->setDisplayConfigurable('form', TRUE);
+
+    $fields['paragraph_background_parallax'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Activer parallax'))
+      ->setRevisionable(TRUE)
+      ->setTranslatable(TRUE)
+      ->setDisplayOptions('form', [
+        'type'     => 'boolean_checkbox',
+        'settings' => [
+          'display_label' => TRUE,
+        ],
+        'weight'   => 45,
+      ])
+      ->setDisplayConfigurable('form', TRUE);
+  }
+
+  return $fields;
+}
+
+/**
+ * Implements hook_preprocess_paragraph().
+ */
+function vactory_paragraphs_preprocess_paragraph(&$variables) {
+  /** @var \Drupal\paragraphs\Entity\Paragraph $paragraph */
+  $paragraph = $variables['paragraph'];
+
+  if ($paragraph->get('paragraph_identifier')->value != NULL) {
+    $identifier = Html::cleanCssIdentifier($paragraph->get('paragraph_identifier')->value);
+  }
+  else {
+    $title = ($paragraph->hasField('field_titre_ancre') && !empty($paragraph->get('field_titre_ancre')
+      ->getValue())) ? $paragraph->get('field_titre_ancre')->value : $paragraph->field_vactory_title->value;
+    $identifier = Html::cleanCssIdentifier($title . '-' . $paragraph->id());
+  }
+  $variables['attributes']['id'] = strtolower($identifier);
+  $class_css = $paragraph->get('paragraph_css_class')->getString();
+
+  if (!empty($class_css)) {
+    $variables['attributes']['class'][] = $class_css;
+  }
+}
+
+/**
+ * Implements hook_field_widget_WIDGET_TYPE_form_alter().
+ */
+function vactory_paragraphs_field_widget_entity_reference_paragraphs_form_alter(&$elements, FormStateInterface $form_state, array $context) {
+  if (!isset($elements['subform']['field_titre_ancre'])) {
+    return;
+  }
+
+  // Get paragraph field name.
+  /** @var \Drupal\field\Entity\FieldConfig $field_definition */
+  $field_definition = $context['items']->getFieldDefinition();
+  $field_name = $field_definition->getName();
+
+  $elements['subform']['field_titre_ancre']['#states'] = [
+    'invisible' => [
+      ':input[name="' . $field_name . '[' . $context['delta'] . '][subform][field_vactory_flag_2][value]"]' => ['checked' => FALSE],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_field_widget_form_alter().
+ */
+function vactory_paragraphs_field_widget_form_alter(&$element, FormStateInterface $form_state, $context) {
+  $field_name = !empty($context['items']->getName()) ? $context['items']->getName() : '';
+  if (!empty($field_name) && $field_name == 'paragraph_background_color') {
+    $value = $element['value']['#default_value'];
+    $element['value']['#default_value'] = (isset($value) && !empty($value) && $value != 'FFFFFF') ? $value : 'ff0000';
+  }
+  if (isset($context['form']['#entity_type']) && $context['form']['#entity_type'] == 'paragraph') {
+    if (in_array('field_vactory_paragraph_tab', $element['#field_parents'], TRUE)) {
+      if ($element['#title'] instanceof TranslatableMarkup && $element['#title']->getUntranslatedString() == 'Paragraph ID') {
+        $element['value']['#title'] = t('Tab ID');
+        $element['value']['#description'] = t('Set the HTML ID attribute value, useful to enhance CSS selectors for current tab (Default to "TabTitle-ParagraphID").');
+      }
+    }
+    // Hide paragraph anchor title field and anchor title display checkbox
+    // button while vactory_anchor module is disabled.
+    if (!empty($field_name) && in_array($field_name, ['field_vactory_flag_2', 'field_titre_ancre'])) {
+      $module_handler = Drupal::service('module_handler');
+      if (!$module_handler->moduleExists('vactory_anchor')) {
+        $element = NULL;
+      }
+    }
+  }
+}

@@ -1,0 +1,7 @@
+vactory_tender.settings:
+  type: mapping
+  label: "Appel d'offre config"
+  mapping:
+    show_form:
+      type: boolean
+      label: 'Display form'

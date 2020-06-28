@@ -1,0 +1,25 @@
+{% if content.is_dummy %}
+  {% if content.has_static_tpl %}
+    {% include widgets_path ~ '/' ~ content.template ~ '/static.html.twig' %}
+  {% else %}
+    <div class="container">
+      <div class="alert alert-danger text-align-center" role="alert">
+        {{ "Static template doesn't exist for the widget @platform:@wigdet !" | t({ '@platform': platform, '@wigdet': content.template }) }}
+      </div>
+    </div>
+  {% endif %}
+{% else %}
+  {% if content.has_amp_tpl and content.is_amp_page %}
+    {% include widgets_path ~ '/' ~ content.template ~ '/template.amp.html.twig' with {
+      'content': content.components,
+      'extra_fields': content.extra_field
+    } %}
+  {% else %}
+    {% include widgets_path ~ '/' ~ content.template ~ '/template.html.twig' with {
+      'content': content.components,
+      'extra_fields': content.extra_field
+    } %}
+  {% endif %}
+
+
+{% endif %}

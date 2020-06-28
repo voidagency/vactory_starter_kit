@@ -1,0 +1,28 @@
+name: '72 - Froala - CTA Inline Title & Description, With Image Fluid'
+multiple: FALSE
+category: 'Froala'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: 'Titre'
+  description:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'full_html'
+  link:
+    type: url_extended
+    label: 'Lien'
+  link_alt:
+    type: text
+    label: 'Titre lien'
+  link_target:
+    type: checkbox
+    label: 'Ouvrir dans une nouvelle fenêtre'
+  image:
+    type: image
+    label: 'Image'
+  image_alt:
+     type: text
+     label: 'Text alternatif'

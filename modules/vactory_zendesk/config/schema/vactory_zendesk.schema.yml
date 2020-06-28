@@ -1,0 +1,7 @@
+block.settings.vactory_zendesk_block:
+  type: block_settings
+  label: 'zendesk block configuration'
+  mapping:
+    api_key:
+      type: text
+      label: 'Block contents'

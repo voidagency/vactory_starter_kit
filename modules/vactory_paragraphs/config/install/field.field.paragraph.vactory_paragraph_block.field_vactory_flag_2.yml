@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_vactory_flag_2
+    - paragraphs.paragraphs_type.vactory_paragraph_block
+id: paragraph.vactory_paragraph_block.field_vactory_flag_2
+field_name: field_vactory_flag_2
+entity_type: paragraph
+bundle: vactory_paragraph_block
+label: 'Afficher au niveau du menu ancre.'
+description: ''
+required: false
+translatable: true
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

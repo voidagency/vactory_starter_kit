@@ -1,0 +1,21 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: pathauto_content_testimonials_pattern
+label: 'Pathauto Content Testimonials Pattern'
+type: 'canonical_entities:node'
+pattern: '/testimonials/[node:title]'
+selection_criteria:
+  1957fd97-5ab3-4769-a67a-98a570cba015:
+    id: node_type
+    bundles:
+      vactory_testimonials: vactory_testimonials
+    negate: false
+    context_mapping:
+      node: node
+    uuid: 1957fd97-5ab3-4769-a67a-98a570cba015
+selection_logic: and
+weight: -5
+relationships: {  }

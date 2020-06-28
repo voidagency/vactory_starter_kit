@@ -1,0 +1,159 @@
+langcode: fr
+status: true
+dependencies:
+  module:
+    - node
+    - vactory_field
+    - search_api
+    - search_api_exclude_entity
+  config:
+    - search_api.server.default_server
+    - core.entity_view_mode.node.full
+id: default_content_index
+name: 'Default content index'
+description: 'Default content index created for Vactory'
+read_only: false
+field_settings:
+  created:
+    label: 'Authored on'
+    datasource_id: 'entity:node'
+    property_path: created
+    type: date
+    dependencies:
+      module:
+        - node
+  node_grants:
+    label: 'Node access information'
+    property_path: search_api_node_grants
+    type: string
+    indexed_locked: true
+    type_locked: true
+    hidden: true
+  node_summary:
+    label: 'Page description'
+    datasource_id: 'entity:node'
+    property_path: node_summary
+    type: text
+    dependencies:
+      module:
+        - vactory_field
+  rendered_item:
+    label: 'Rendered HTML output'
+    property_path: rendered_item
+    type: text
+    configuration:
+      roles:
+        anonymous: anonymous
+      view_mode:
+        'entity:node':
+          vactory_news: full
+          vactory_page: full
+          vactory_publication: full
+  status:
+    label: Published
+    datasource_id: 'entity:node'
+    property_path: status
+    type: boolean
+    indexed_locked: true
+    type_locked: true
+    dependencies:
+      module:
+        - node
+  title:
+    label: Title
+    datasource_id: 'entity:node'
+    property_path: title
+    type: text
+    boost: !!float 2
+    dependencies:
+      module:
+        - node
+  type:
+    label: 'Content type'
+    datasource_id: 'entity:node'
+    property_path: type
+    type: string
+    dependencies:
+      module:
+        - node
+  uid:
+    label: uid
+    datasource_id: 'entity:node'
+    property_path: uid
+    type: integer
+    indexed_locked: true
+    type_locked: true
+    dependencies:
+      module:
+        - node
+  url:
+    label: URI
+    property_path: search_api_url
+    type: string
+datasource_settings:
+  'entity:node':
+    bundles:
+      default: true
+      selected:
+        - page
+    languages:
+      default: true
+      selected: {  }
+processor_settings:
+  add_url: {  }
+  aggregated_field: {  }
+  content_access:
+    weights:
+      preprocess_query: -50
+  entity_status: {  }
+  highlight:
+    highlight: always
+    highlight_partial: true
+    excerpt: true
+    excerpt_length: 256
+    exclude_fields:
+      - rendered_item
+      - title
+    prefix: '<strong>'
+    suffix: '</strong>'
+    weights:
+      postprocess_query: 0
+  ignorecase:
+    all_fields: false
+    fields:
+      - rendered_item
+      - title
+    weights:
+      preprocess_index: -47
+      preprocess_query: -46
+  rendered_item: {  }
+  search_api_exclude_entity_processor:
+    fields:
+      node:
+        - field_exclude_from_search
+  tokenizer:
+    all_fields: false
+    fields:
+      - rendered_item
+      - title
+    spaces: ''
+    overlap_cjk: 1
+    minimum_word_size: '3'
+    weights:
+      preprocess_index: -50
+      preprocess_query: -49
+  transliteration:
+    all_fields: false
+    fields:
+      - rendered_item
+      - title
+    weights:
+      preprocess_index: -48
+      preprocess_query: -47
+tracker_settings:
+  default:
+    indexing_order: fifo
+options:
+  index_directly: false
+  cron_limit: 50
+server: default_server

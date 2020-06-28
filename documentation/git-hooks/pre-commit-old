@@ -1,0 +1,122 @@
+#!/bin/sh
+
+# Globals
+pass=true
+RED='\033[1;31m'
+GREEN='\033[0;32m'
+NC='\033[0m'
+
+# Globals > PHPCS
+PHPCS_BIN=$HOME/.composer/vendor/bin/phpcs
+# ~/.config/composer/vendor/drupal/coder/coder_sniffer/Drupal/ruleset.xml
+PHPCS_CODING_STANDARD=Drupal
+PHPCS_IGNORE=node_modules,bower_components,vendor,txt,md,css,js
+PHPCS_EXTENSIONS=php,install,inc,twig,info
+
+# Globals > JsHint
+JSHINT_BIN=/usr/local/bin/jshint
+JSHINT_CONFIG=./themes/vactory/.jshintrc
+
+# Globals > scss-lint
+SCSS_LINT_BIN=$HOME/.rvm/gems/ruby-2.3.0/bin/scss-lint
+SCSS_LINT_CONFIG=./themes/vactory/.sass-lint.yml
+
+# Check if code sniffer is set up correctly
+if [ ! -x $PHPCS_BIN ]; then
+    echo "{RED}PHP CodeSniffer bin not found or executable -> $PHPCS_BIN${NC}"
+    exit 1
+fi
+
+# Check if jshint is set up correctly
+if [ ! -x $JSHINT_BIN ]; then
+    echo "{RED}JSHINT bin not found or executable -> $JSHINT_BIN${NC}"
+    exit 1
+fi
+
+# Check if scss-lint is set up correctly
+if [ ! -x $SCSS_LINT_BIN ]; then
+    echo "{RED}SCSS-LINT bin not found or executable -> $SCSS_LINT_BIN${NC}"
+    exit 1
+fi
+
+# this is the magic:
+# retrieve all files in staging area that are added, modified or renamed
+# but no deletions etc
+FILES=$(git diff --name-only --cached)
+JS_FILES=$(git diff --name-only --cached|awk '{ if($1 ~ /.js/) print $1}')
+SCSS_FILES=$(git diff --name-only --cached|awk '{ if($1 ~ /.scss/) print $1}')
+
+if [ "$FILES" == "" ]; then
+    exit 0
+fi
+
+# execute the code sniffer
+if [ "$PHPCS_IGNORE" != "" ]; then
+    IGNORE="--ignore=$PHPCS_IGNORE"
+else
+    IGNORE=""
+fi
+
+if [ "$PHPCS_ENCODING" != "" ]; then
+    ENCODING="--encoding=$PHPCS_ENCODING"
+else
+    ENCODING=""
+fi
+
+if [ "$PHPCS_EXTENSIONS" != "" ]; then
+    EXTENSIONS="--extensions=$PHPCS_EXTENSIONS"
+else
+    EXTENSIONS=""
+fi
+
+echo "Checking Drupal coding standards:"
+
+OUTPUT=$($PHPCS_BIN -s --standard=$PHPCS_CODING_STANDARD $EXTENSIONS $ENCODING $IGNORE $FILES)
+RETVAL=$?
+
+# If it didn't pass, announce it failed and print the output
+if [ $RETVAL != 0 ]; then
+	printf "\n${RED}phpcs failed:${NC}\n"
+	echo "$OUTPUT\n"
+	pass=false
+else
+	printf "${GREEN}phpcs passed.${NC}\n"
+fi
+
+# echo "Checking Drupal best practices:"
+# @todo
+
+echo "Running Linters:"
+
+if [ "$JS_FILES" != "" ]; then
+	OUTPUT=$($JSHINT_BIN $JSHINT_CONFIG $JS_FILES)
+	RETVAL=$?
+
+	if [ $RETVAL != 0 ]; then
+		printf "\n${RED}JsHint failed:${NC}\n"
+		echo "$OUTPUT\n"
+		pass=false
+	else
+		printf "${GREEN}JsHint passed.${NC}\n"
+	fi
+fi
+
+if [ "$SCSS_FILES" != "" ]; then
+	OUTPUT=$($SCSS_LINT_BIN --config $SCSS_LINT_CONFIG $SCSS_FILES)
+	RETVAL=$?
+
+	if [ $RETVAL != 0 ]; then
+		printf "\n${RED}SCSS failed:${NC}\n"
+		echo "$OUTPUT\n"
+		pass=false
+	else
+		printf "${GREEN}SCSS passed.${NC}\n"
+	fi
+fi
+
+# If there were no failures, it is good to commit
+if $pass; then
+	exit 0
+fi
+
+exit 1

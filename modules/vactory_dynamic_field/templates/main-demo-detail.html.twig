@@ -1,0 +1,12 @@
+<h2 class="h3 mt-3 pb-4 pt-5"><span class="badge badge-info float-right" style="background-color: #2196F3 !important;">{{ content.template.uuid }}</span> # {{ content.template.name }}</h2>
+<hr class="mb-5">
+
+<div class="mb-5">
+  {% if content.template.static_widget %}
+    {% include content.template.static_widget with {'image_placeholder': image_placeholder} %}
+  {% else %}
+    <div class="alert alert-warning" role="alert">
+      {{ 'Template non disponible' }}
+    </div>
+  {% endif %}
+</div>

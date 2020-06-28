@@ -1,0 +1,20 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.storage.locator_entity.field_locator_info
+    - vactory_locator.locator_entity_type.vactory_locator
+  module:
+    - vactory_google_map_field
+id: locator_entity.vactory_locator.field_locator_info
+field_name: field_locator_info
+entity_type: locator_entity
+bundle: vactory_locator
+label: 'Localisation Info'
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: vactory_google_map_field

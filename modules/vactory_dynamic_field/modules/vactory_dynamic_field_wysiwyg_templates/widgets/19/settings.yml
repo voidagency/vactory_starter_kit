@@ -1,0 +1,28 @@
+name: "C19 - Série d'images cliquables"
+multiple: TRUE
+category: 'Content'
+enabled: TRUE
+fields:
+  image:
+    type: image
+    label: 'Logo Partenaire'
+    options:
+      '#required': TRUE
+  image_alt:
+    type: text
+    label: 'Image alt text'
+  site:
+    type: url_extended
+    label: 'Lien du Site'
+  title:
+    type: text
+    label: 'Titre'
+extra_fields:
+  intro:
+    type: textarea
+    label: 'Introduction'
+  mode:
+    type: checkbox
+    label: 'Enable mode card'
+
+

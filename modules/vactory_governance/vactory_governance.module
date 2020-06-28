@@ -1,0 +1,42 @@
+<?php
+
+/**
+ * @file
+ * Primary hook.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_governance_theme($existing, $type, $theme, $path) {
+  return [
+    // Node > card.
+    'node__vactory_governance__card'        => [
+      'base hook' => 'node',
+      'template'  => 'card',
+    ],
+    // Node > card inline.
+    'node__vactory_governance__card_inline' => [
+      'base hook' => 'node',
+      'template'  => 'card-inline',
+    ],
+    // Node > Masonry.
+    'node__vactory_governance__masonry'     => [
+      'base hook' => 'node',
+      'template'  => 'masonry',
+    ],
+    // Node > full.
+    'node__vactory_governance__full'        => [
+      'base hook' => 'node',
+      'template'  => 'full',
+    ],
+    'governance_member_block'               => [
+      "variables" => ["content" => []],
+      "template"  => 'block--governance-member',
+    ],
+    'views_view__vactory_governance__block_slider_full' => [
+      'base hook' => 'views_view',
+      'template' => 'block-slider-full',
+    ],
+  ];
+}

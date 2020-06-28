@@ -1,0 +1,12 @@
+vactory_search_overlay.variant1:
+  js:
+    js/variant1.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
+vactory_search_overlay.variant2:
+  js:
+    js/variant2.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings

@@ -1,0 +1,26 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_vactory_document
+    - node.type.vactory_press_kit
+  module:
+    - file
+id: node.vactory_press_kit.field_vactory_document
+field_name: field_vactory_document
+entity_type: node
+bundle: vactory_press_kit
+label: Document
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  file_directory: 'press_kit/[date:custom:Y]-[date:custom:m]'
+  file_extensions: 'txt doc docx pdf'
+  max_filesize: ''
+  description_field: false
+  handler: 'default:file'
+  handler_settings: {  }
+field_type: file

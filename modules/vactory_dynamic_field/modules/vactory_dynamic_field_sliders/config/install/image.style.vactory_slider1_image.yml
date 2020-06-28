@@ -1,0 +1,16 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - focal_point
+name: vactory_slider1_image
+label: 'Slider 1 Image 400x250'
+effects:
+  vactory_sliders_variant1_image:
+    uuid: vactory_sliders_variant1_image
+    id: focal_point_scale_and_crop
+    weight: 2
+    data:
+      width: 400
+      height: 250
+      crop_type: focal_point

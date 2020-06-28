@@ -1,0 +1,51 @@
+{{ attach_library('vactory_dynamic_field_sliders/variant7') }}
+<section class="vf-slider--swiper">
+  <div class="swiper-container slideshow">
+    <div class="swiper-wrapper">
+
+      {% for item in 0..2 %}
+        {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/300/450.jpg" %}
+        <div class="swiper-slide slide">
+          <div class="slide-image" style="background-image: url({{ placehold }})"></div>
+            <span class="slide-title">
+              {% set _title = "Hello word" %}
+              {% set _index = 1 %}
+              {% for index, word in _title|split(' ') %}
+                <span class="word-part">
+                {% set wordTable = word|split('') %}
+                  {% set lengthWord = wordTable.length %}
+                  {% for index, chart in wordTable %}
+                    {% if not loop.first %}
+                      {% if not loop.last %}
+                        {{ "-->" }}<span class="vertical-part chart chart{{ _index }}">{{ chart }}</span>{{ "<!--" }}
+                        {% else %}
+                        {{ "-->" }}<span class="vertical-part chart chart{{ _index }}">{{ chart }}</span>
+                      {% endif %}
+                      {% else %}
+                      <span class="vertical-part chart chart{{ _index }}">{{ chart }}</span>{{ "<!--" }}
+                    {% endif %}
+                    {% set _index = _index + 1 %}
+                  {% endfor %}
+                      </span>
+              {% endfor %}
+        </span>
+            <span class="slide-description">
+              Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+              Atque cum dignissimos incidunt nam perferendis,
+            </span>
+        </div>
+      {% endfor %}
+    </div>
+
+
+    <div class="slideshow-pagination"></div>
+
+    <div class="slideshow-navigation d-lg-block d-none">
+      <div class="slideshow-navigation-button prev"><span class="icon icon-arrow-left"></span></div>
+      <div class="slideshow-navigation-button next"><span class="icon icon-arrow-right"></span></div>
+    </div>
+
+  </div>
+
+</section>
+

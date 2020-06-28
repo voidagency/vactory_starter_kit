@@ -1,0 +1,5 @@
+vactory_sso.admin:
+  title: Vactory Single Sign On (SSO)
+  description: "Manage Vactory Single Sign On (SSO) settings."
+  route_name: vactory_sso.settings
+  parent: system.admin_config_services

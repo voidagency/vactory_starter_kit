@@ -1,0 +1,14 @@
+name: 'Paragraphs'
+type: module
+description: 'Contains paragraphs related bundles.'
+package: Vactory Core
+core: 8.x
+dependencies:
+  - image
+  - text
+  - paragraphs
+  - vactory_field
+  - jquery_colorpicker
+  - field_group
+  - content_translation
+  - vactory_dynamic_field

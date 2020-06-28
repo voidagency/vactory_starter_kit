@@ -1,0 +1,15 @@
+{{ attach_library('vactory_dynamic_field_unitegallery/unitegallery.tiles.columns') }}
+<div id="gallery--tiles-columns" data-provider="unitegallery" data-template="1" style="display:none;">
+  {% for item in content %}
+    {% set thumbnail_src = (item.thumbnail.0 is defined) ? get_image_url(item.thumbnail.0) : '' %}
+    {% set image_src = (item.image.0 is defined) ? get_image_url(item.image.0) : '' %}
+
+    <a href="#.">
+      <img alt="{{ item.title }}"
+           src="{{ thumbnail_src }}"
+           data-image="{{ image_src }}"
+           {#data-description="{{ item.description }}"#}
+           style="display:none">
+    </a>
+  {% endfor %}
+</div>

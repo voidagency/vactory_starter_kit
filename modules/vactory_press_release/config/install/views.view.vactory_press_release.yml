@@ -1,0 +1,1397 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.card
+    - core.entity_view_mode.node.card_inline
+    - core.entity_view_mode.node.masonry
+    - entityqueue.entity_queue.vactory_press_rel_block_masonry
+    - entityqueue.entity_queue.vactory_press_rel_block_three_cl
+    - entityqueue.entity_queue.vactory_press_rel_block_two_cl
+    - entityqueue.entity_queue.vactory_press_release_slider_lar
+    - entityqueue.entity_queue.vactory_press_release_slider_sm
+    - taxonomy.vocabulary.press_release_theme
+  module:
+    - better_exposed_filters
+    - datetime
+    - entityqueue
+    - node
+    - taxonomy
+    - user
+    - vactory_views
+id: vactory_press_release
+label: 'Press Release'
+module: views
+description: 'Find and manage press releases.'
+tag: ''
+base_table: node_field_data
+base_field: nid
+core: 8.x
+display:
+  default:
+    display_plugin: default
+    id: default
+    display_title: Master
+    position: 0
+    display_options:
+      access:
+        type: perm
+        options:
+          perm: 'access content'
+      cache:
+        type: tag
+        options: {  }
+      query:
+        type: views_query
+        options:
+          disable_sql_rewrite: false
+          distinct: false
+          replica: false
+          query_comment: ''
+          query_tags: {  }
+      exposed_form:
+        type: bef
+        options:
+          submit_button: Appliquer
+          reset_button: true
+          reset_button_label: Réinitialiser
+          exposed_sorts_label: 'Trier par'
+          expose_sort_order: true
+          sort_asc_label: Ascendant
+          sort_desc_label: Descendant
+          bef:
+            field_vactory_date_value:
+              bef_format: bef_datepicker
+              more_options:
+                is_secondary: true
+      pager:
+        type: mini
+        options:
+          items_per_page: 10
+          offset: 0
+          id: 0
+          total_pages: null
+          expose:
+            items_per_page: false
+            items_per_page_label: 'Éléments par page'
+            items_per_page_options: '5, 10, 25, 50'
+            items_per_page_options_all: false
+            items_per_page_options_all_label: '- Tout -'
+            offset: false
+            offset_label: Offset
+          tags:
+            previous: ‹‹
+            next: ››
+      style:
+        type: default
+      row:
+        type: 'entity:node'
+        options:
+          relationship: none
+          view_mode: card
+      fields:
+        title:
+          id: title
+          table: node_field_data
+          field: title
+          entity_type: node
+          entity_field: title
+          label: ''
+          alter:
+            alter_text: false
+            make_link: false
+            absolute: false
+            trim: false
+            word_boundary: false
+            ellipsis: false
+            strip_tags: false
+            html: false
+          hide_empty: false
+          empty_zero: false
+          settings:
+            link_to_entity: true
+          plugin_id: field
+          relationship: none
+          group_type: group
+          admin_label: ''
+          exclude: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_alter_empty: true
+          click_sort_column: value
+          type: string
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+      filters:
+        status:
+          value: '1'
+          table: node_field_data
+          field: status
+          plugin_id: boolean
+          entity_type: node
+          entity_field: status
+          id: status
+          expose:
+            operator: ''
+          group: 1
+      sorts: {  }
+      title: 'Listing One Column'
+      header: {  }
+      footer: {  }
+      empty:
+        area_text_custom:
+          id: area_text_custom
+          table: views
+          field: area_text_custom
+          relationship: none
+          group_type: group
+          admin_label: ''
+          empty: true
+          tokenize: false
+          content: 'Aucun résultat n''a été trouvé !'
+          plugin_id: text_custom
+      relationships: {  }
+      arguments: {  }
+      display_extenders: {  }
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_content'
+        - 'languages:language_interface'
+        - url.query_args
+        - 'user.node_grants:view'
+        - user.permissions
+      tags: {  }
+  block_slider_large:
+    display_plugin: block
+    id: block_slider_large
+    display_title: 'Block Slider Large'
+    position: 2
+    display_options:
+      display_extenders:
+        metatag_display_extender: {  }
+      title: 'Block slider large'
+      defaults:
+        title: false
+        pager: false
+        css_class: false
+        use_more: false
+        use_more_always: false
+        use_more_text: false
+        link_display: false
+        link_url: false
+        filters: false
+        filter_groups: false
+        sorts: false
+        style: false
+        row: false
+        relationships: false
+      pager:
+        type: some
+        options:
+          items_per_page: 6
+      display_description: ''
+      block_description: 'Slider Large'
+      enabled: true
+      css_class: block-slider-large-vactory-press_release
+      use_more: true
+      use_more_always: true
+      use_more_text: 'See more'
+      link_display: listing_one_column
+      link_url: vactory/press_release/listing-one-column
+      filters:
+        status:
+          value: '1'
+          table: node_field_data
+          field: status
+          plugin_id: boolean
+          entity_type: node
+          entity_field: status
+          id: status
+          expose:
+            operator: ''
+          group: 1
+        type:
+          id: type
+          table: node_field_data
+          field: type
+          operator: in
+          value:
+            - vactory_press_release
+          exposed: false
+          entity_type: node
+          entity_field: type
+          plugin_id: bundle
+        langcode:
+          id: langcode
+          table: node_field_data
+          field: langcode
+          operator: in
+          value:
+            '***LANGUAGE_language_interface***': '***LANGUAGE_language_interface***'
+          exposed: false
+          entity_type: node
+          entity_field: langcode
+          plugin_id: language
+        entityqueue_relationship:
+          id: entityqueue_relationship
+          table: node_field_data
+          field: entityqueue_relationship
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: '='
+          value: '1'
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          entity_type: node
+          plugin_id: entity_queue_in_queue
+      filter_groups:
+        operator: AND
+        groups:
+          1: AND
+      rendering_language: '***LANGUAGE_language_interface***'
+      sorts:
+        entityqueue_relationship:
+          id: entityqueue_relationship
+          table: node_field_data
+          field: entityqueue_relationship
+          relationship: none
+          group_type: group
+          admin_label: ''
+          order: ASC
+          exposed: false
+          expose:
+            label: ''
+          entity_type: node
+          plugin_id: entity_queue_position
+      style:
+        type: vactory_views_slider
+        options:
+          row_class: ''
+          default_row_class: true
+          uses_fields: false
+          slidesToShow: '1'
+          slidesToScroll: '1'
+          speed: '800'
+          infinite: 1
+          dots: 1
+          cssEase: 'cubic-bezier(0.585, -0.005, 0.635, 0.920)'
+      row:
+        type: 'entity:node'
+        options:
+          relationship: none
+          view_mode: card_inline
+      relationships:
+        entityqueue_relationship:
+          id: entityqueue_relationship
+          table: node_field_data
+          field: entityqueue_relationship
+          relationship: none
+          group_type: group
+          admin_label: 'Content queue'
+          required: false
+          limit_queue: vactory_press_release_slider_lar
+          entity_type: node
+          plugin_id: entity_queue
+      block_category: 'Press Release'
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_interface'
+        - 'user.node_grants:view'
+        - user.permissions
+      tags:
+        - 'config:entityqueue.entity_queue.vactory_press_release_slider_lar'
+        - entity_field_info
+        - views_data
+  block_slider_small:
+    display_plugin: block
+    id: block_slider_small
+    display_title: 'Block Slider Small'
+    position: 2
+    display_options:
+      display_extenders:
+        metatag_display_extender: {  }
+      title: 'Block slider small'
+      defaults:
+        title: false
+        pager: false
+        css_class: false
+        use_more: false
+        use_more_always: false
+        use_more_text: false
+        link_display: false
+        link_url: false
+        filters: false
+        filter_groups: false
+        sorts: false
+        style: false
+        row: false
+        relationships: false
+      pager:
+        type: some
+        options:
+          items_per_page: 6
+      display_description: ''
+      block_description: 'Slider Small'
+      enabled: true
+      css_class: block-slider-small-vactory-press-release
+      use_more: true
+      use_more_always: true
+      use_more_text: 'Voir plus de presse'
+      link_display: listing_one_column
+      link_url: vactory/press_release/listing-one-column
+      filters:
+        status:
+          value: '1'
+          table: node_field_data
+          field: status
+          plugin_id: boolean
+          entity_type: node
+          entity_field: status
+          id: status
+          expose:
+            operator: ''
+          group: 1
+        type:
+          id: type
+          table: node_field_data
+          field: type
+          operator: in
+          value:
+            - vactory_press_release
+          exposed: false
+          entity_type: node
+          entity_field: type
+          plugin_id: bundle
+        langcode:
+          id: langcode
+          table: node_field_data
+          field: langcode
+          operator: in
+          value:
+            '***LANGUAGE_language_interface***': '***LANGUAGE_language_interface***'
+          exposed: false
+          entity_type: node
+          entity_field: langcode
+          plugin_id: language
+        entityqueue_relationship:
+          id: entityqueue_relationship
+          table: node_field_data
+          field: entityqueue_relationship
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: '='
+          value: '1'
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          entity_type: node
+          plugin_id: entity_queue_in_queue
+      filter_groups:
+        operator: AND
+        groups:
+          1: AND
+      rendering_language: '***LANGUAGE_language_interface***'
+      sorts:
+        entityqueue_relationship:
+          id: entityqueue_relationship
+          table: node_field_data
+          field: entityqueue_relationship
+          relationship: none
+          group_type: group
+          admin_label: ''
+          order: ASC
+          exposed: false
+          expose:
+            label: ''
+          entity_type: node
+          plugin_id: entity_queue_position
+      style:
+        type: vactory_views_slider
+        options:
+          row_class: ''
+          default_row_class: true
+          uses_fields: false
+          slidesToShow: '3'
+          slidesToScroll: '1'
+          speed: '800'
+          infinite: 1
+          dots: 1
+          cssEase: 'cubic-bezier(0.585, -0.005, 0.635, 0.920)'
+      row:
+        type: 'entity:node'
+        options:
+          relationship: none
+          view_mode: card
+      relationships:
+        entityqueue_relationship:
+          id: entityqueue_relationship
+          table: node_field_data
+          field: entityqueue_relationship
+          relationship: none
+          group_type: group
+          admin_label: 'Content queue'
+          required: false
+          limit_queue: vactory_press_release_slider_sm
+          entity_type: node
+          plugin_id: entity_queue
+      block_category: 'Press Release'
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_interface'
+        - 'user.node_grants:view'
+        - user.permissions
+      tags:
+        - 'config:entityqueue.entity_queue.vactory_press_release_slider_sm'
+        - entity_field_info
+        - views_data
+  block_three_columns:
+    display_plugin: block
+    id: block_three_columns
+    display_title: 'Block Three Columns'
+    position: 2
+    display_options:
+      display_extenders:
+        metatag_display_extender: {  }
+      title: 'Block three columns'
+      defaults:
+        title: false
+        pager: false
+        css_class: false
+        use_more: false
+        use_more_always: false
+        use_more_text: false
+        link_display: false
+        link_url: false
+        filters: false
+        filter_groups: false
+        sorts: false
+        style: false
+        row: false
+        relationships: false
+      pager:
+        type: some
+        options:
+          items_per_page: 3
+      display_description: ''
+      block_description: 'Three Columns'
+      enabled: true
+      css_class: block-three-columns-vactory-press-release
+      use_more: true
+      use_more_always: true
+      use_more_text: 'Voir plus de presse'
+      link_display: listing_three_columns
+      link_url: vactory/press_release/listing-one-column
+      filters:
+        status:
+          value: '1'
+          table: node_field_data
+          field: status
+          plugin_id: boolean
+          entity_type: node
+          entity_field: status
+          id: status
+          expose:
+            operator: ''
+          group: 1
+        type:
+          id: type
+          table: node_field_data
+          field: type
+          operator: in
+          value:
+            - vactory_press_release
+          exposed: false
+          entity_type: node
+          entity_field: type
+          plugin_id: bundle
+        langcode:
+          id: langcode
+          table: node_field_data
+          field: langcode
+          operator: in
+          value:
+            '***LANGUAGE_language_interface***': '***LANGUAGE_language_interface***'
+          exposed: false
+          entity_type: node
+          entity_field: langcode
+          plugin_id: language
+        entityqueue_relationship:
+          id: entityqueue_relationship
+          table: node_field_data
+          field: entityqueue_relationship
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: '='
+          value: '1'
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          entity_type: node
+          plugin_id: entity_queue_in_queue
+      filter_groups:
+        operator: AND
+        groups:
+          1: AND
+      rendering_language: '***LANGUAGE_language_interface***'
+      sorts:
+        entityqueue_relationship:
+          id: entityqueue_relationship
+          table: node_field_data
+          field: entityqueue_relationship
+          relationship: none
+          group_type: group
+          admin_label: ''
+          order: ASC
+          exposed: false
+          expose:
+            label: ''
+          entity_type: node
+          plugin_id: entity_queue_position
+      style:
+        type: vactory_views_grid
+        options:
+          uses_fields: false
+          xs: col-xs-12
+          sm: col-sm-6
+          md: col-md-4
+          lg: col-lg-4
+          wrapper_class_custom: eq-height
+          row_class_default: 1
+          row_class_custom: ''
+      row:
+        type: 'entity:node'
+        options:
+          relationship: none
+          view_mode: card
+      relationships:
+        entityqueue_relationship:
+          id: entityqueue_relationship
+          table: node_field_data
+          field: entityqueue_relationship
+          relationship: none
+          group_type: group
+          admin_label: 'Content queue'
+          required: false
+          limit_queue: vactory_press_rel_block_three_cl
+          entity_type: node
+          plugin_id: entity_queue
+      block_category: 'Press Release'
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_interface'
+        - 'user.node_grants:view'
+        - user.permissions
+      tags:
+        - 'config:entityqueue.entity_queue.vactory_press_rel_block_three_cl'
+        - entity_field_info
+        - views_data
+  block_two_columns:
+    display_plugin: block
+    id: block_two_columns
+    display_title: 'Block Two Columns'
+    position: 2
+    display_options:
+      display_extenders:
+        metatag_display_extender: {  }
+      title: 'Block two columns'
+      defaults:
+        title: false
+        pager: false
+        css_class: false
+        use_more: false
+        use_more_always: false
+        use_more_text: false
+        link_display: false
+        link_url: false
+        filters: false
+        filter_groups: false
+        sorts: false
+        style: false
+        row: false
+        relationships: false
+      pager:
+        type: some
+        options:
+          items_per_page: 2
+      display_description: ''
+      block_description: 'Two Columns'
+      enabled: true
+      css_class: block-two-columns-vactory-press-release
+      use_more: true
+      use_more_always: true
+      use_more_text: 'Voir plus de presse'
+      link_display: listing_two_columns
+      link_url: vactory/press-release/listing-one-column
+      filters:
+        status:
+          value: '1'
+          table: node_field_data
+          field: status
+          plugin_id: boolean
+          entity_type: node
+          entity_field: status
+          id: status
+          expose:
+            operator: ''
+          group: 1
+        type:
+          id: type
+          table: node_field_data
+          field: type
+          operator: in
+          value:
+            - vactory_press_release
+          exposed: false
+          entity_type: node
+          entity_field: type
+          plugin_id: bundle
+        langcode:
+          id: langcode
+          table: node_field_data
+          field: langcode
+          operator: in
+          value:
+            '***LANGUAGE_language_interface***': '***LANGUAGE_language_interface***'
+          exposed: false
+          entity_type: node
+          entity_field: langcode
+          plugin_id: language
+        entityqueue_relationship:
+          id: entityqueue_relationship
+          table: node_field_data
+          field: entityqueue_relationship
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: '='
+          value: '1'
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          entity_type: node
+          plugin_id: entity_queue_in_queue
+      filter_groups:
+        operator: AND
+        groups:
+          1: AND
+      rendering_language: '***LANGUAGE_language_interface***'
+      sorts:
+        entityqueue_relationship:
+          id: entityqueue_relationship
+          table: node_field_data
+          field: entityqueue_relationship
+          relationship: none
+          group_type: group
+          admin_label: ''
+          order: ASC
+          exposed: false
+          expose:
+            label: ''
+          entity_type: node
+          plugin_id: entity_queue_position
+      style:
+        type: vactory_views_grid
+        options:
+          uses_fields: false
+          xs: col-xs-12
+          sm: col-sm-6
+          md: col-md-6
+          lg: col-lg-6
+          wrapper_class_custom: eq-height
+          row_class_default: 1
+          row_class_custom: ''
+      row:
+        type: 'entity:node'
+        options:
+          relationship: none
+          view_mode: card
+      relationships:
+        entityqueue_relationship:
+          id: entityqueue_relationship
+          table: node_field_data
+          field: entityqueue_relationship
+          relationship: none
+          group_type: group
+          admin_label: 'Content queue'
+          required: false
+          limit_queue: vactory_press_rel_block_two_cl
+          entity_type: node
+          plugin_id: entity_queue
+      block_category: 'Press Release'
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_interface'
+        - 'user.node_grants:view'
+        - user.permissions
+      tags:
+        - 'config:entityqueue.entity_queue.vactory_press_rel_block_two_cl'
+        - entity_field_info
+        - views_data
+  listing_one_column:
+    display_plugin: page
+    id: listing_one_column
+    display_title: 'Listing One Column'
+    position: 1
+    display_options:
+      display_extenders: {  }
+      path: vactory/press-release/listing-one-column
+      display_description: ''
+      filters:
+        status:
+          value: '1'
+          table: node_field_data
+          field: status
+          plugin_id: boolean
+          entity_type: node
+          entity_field: status
+          id: status
+          expose:
+            operator: ''
+          group: 1
+        field_press_release_theme_target_id:
+          id: field_press_release_theme_target_id
+          table: node__field_press_release_theme
+          field: field_press_release_theme_target_id
+          vid: press_release_theme
+          exposed: true
+          type: select
+          expose:
+            label: Theme
+            identifier: theme
+            required: false
+          plugin_id: taxonomy_index_tid
+        field_vactory_date_value:
+          id: field_vactory_date_value
+          table: node__field_vactory_date
+          field: field_vactory_date_value
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: '='
+          value:
+            min: ''
+            max: ''
+            value: ''
+            type: date
+          group: 1
+          exposed: true
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            identifier: date
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              administrator: '0'
+              super_administrator: '0'
+              master: '0'
+              webmaster: '0'
+            placeholder: ''
+            min_placeholder: ''
+            max_placeholder: ''
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          plugin_id: datetime
+        type:
+          id: type
+          table: node_field_data
+          field: type
+          operator: in
+          value:
+            - vactory_press_release
+          exposed: false
+          entity_type: node
+          entity_field: type
+          plugin_id: bundle
+        langcode:
+          id: langcode
+          table: node_field_data
+          field: langcode
+          operator: in
+          value:
+            '***LANGUAGE_language_interface***': '***LANGUAGE_language_interface***'
+          exposed: false
+          entity_type: node
+          entity_field: langcode
+          plugin_id: language
+      defaults:
+        filters: false
+        filter_groups: false
+        exposed_form: false
+        arguments: false
+        title: false
+        pager: false
+        css_class: false
+        use_more: false
+        use_more_always: false
+        use_more_text: false
+        sorts: false
+        style: false
+        row: false
+        relationships: false
+      filter_groups:
+        operator: AND
+        groups:
+          1: AND
+      exposed_form:
+        type: bef
+        options:
+          submit_button: Appliquer
+          reset_button: true
+          reset_button_label: Réinitialiser
+          exposed_sorts_label: Trier
+          expose_sort_order: true
+          sort_asc_label: Ascendant
+          sort_desc_label: Descendant
+          input_required: false
+          text_input_required: 'Sélectionnez n''importe quel filtre et cliquez sur Appliquer pour voir les résultats'
+          bef:
+            general:
+              allow_secondary: false
+              secondary_label: 'Options avancées'
+              autosubmit: false
+              autosubmit_hide: false
+            created:
+              bef_format: bef_datepicker
+              more_options:
+                is_secondary: false
+            field_vactory_date_value:
+              bef_format: bef_datepicker
+              more_options:
+                is_secondary: true
+          text_input_required_format: restricted_html
+      arguments: {  }
+      enabled: true
+      title: press-release
+      pager:
+        type: full
+        options:
+          items_per_page: 9
+      css_class: listing-one-column-vactory-press-release
+      use_more: false
+      use_more_always: false
+      use_more_text: more
+      rendering_language: '***LANGUAGE_language_interface***'
+      sorts:
+        created:
+          id: created
+          table: node_field_data
+          field: created
+          relationship: none
+          group_type: group
+          admin_label: ''
+          order: DESC
+          exposed: false
+          expose:
+            label: ''
+          granularity: second
+          entity_type: node
+          entity_field: created
+          plugin_id: date
+      style:
+        type: vactory_views_grid
+        options:
+          uses_fields: false
+          xs: col-xs-12
+          sm: col-sm-12
+          md: col-md-12
+          lg: col-lg-12
+          wrapper_class_custom: ''
+          row_class_default: 1
+          row_class_custom: ''
+      row:
+        type: 'entity:node'
+        options:
+          relationship: none
+          view_mode: card_inline
+      relationships: {  }
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_interface'
+        - url
+        - url.query_args
+        - user
+        - 'user.node_grants:view'
+        - user.permissions
+      tags: {  }
+  listing_three_columns:
+    display_plugin: page
+    id: listing_three_columns
+    display_title: 'Listing Three Columns'
+    position: 1
+    display_options:
+      display_extenders: {  }
+      path: vactory/press-release/listing-three-columns
+      display_description: ''
+      title: 'Press Release'
+      defaults:
+        title: false
+        pager: false
+        css_class: false
+        use_more: false
+        use_more_always: false
+        use_more_text: false
+        filters: false
+        filter_groups: false
+        sorts: false
+        style: false
+        row: false
+        relationships: false
+      enabled: true
+      pager:
+        type: full
+        options:
+          items_per_page: 9
+      css_class: listing-three-columns-vactory-press-release
+      use_more: false
+      use_more_always: false
+      use_more_text: more
+      filters:
+        status:
+          value: '1'
+          table: node_field_data
+          field: status
+          plugin_id: boolean
+          entity_type: node
+          entity_field: status
+          id: status
+          expose:
+            operator: ''
+          group: 1
+        field_press_release_theme_target_id:
+          id: field_press_release_theme_target_id
+          table: node__field_press_release_theme
+          field: field_press_release_theme_target_id
+          vid: press_release_theme
+          exposed: true
+          type: select
+          expose:
+            label: Theme
+            identifier: theme
+            required: false
+          plugin_id: taxonomy_index_tid
+        field_vactory_date_value:
+          id: field_vactory_date_value
+          table: node__field_vactory_date
+          field: field_vactory_date_value
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: '='
+          value:
+            min: ''
+            max: ''
+            value: ''
+            type: date
+          group: 1
+          exposed: true
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            identifier: date
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              administrator: '0'
+              super_administrator: '0'
+              master: '0'
+              webmaster: '0'
+            placeholder: ''
+            min_placeholder: ''
+            max_placeholder: ''
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          plugin_id: datetime
+        type:
+          id: type
+          table: node_field_data
+          field: type
+          operator: in
+          value:
+            - vactory_press_release
+          exposed: false
+          entity_type: node
+          entity_field: type
+          plugin_id: bundle
+        langcode:
+          id: langcode
+          table: node_field_data
+          field: langcode
+          operator: in
+          value:
+            '***LANGUAGE_language_interface***': '***LANGUAGE_language_interface***'
+          exposed: false
+          entity_type: node
+          entity_field: langcode
+          plugin_id: language
+      filter_groups:
+        operator: AND
+        groups:
+          1: AND
+      rendering_language: '***LANGUAGE_language_interface***'
+      sorts:
+        created:
+          id: created
+          table: node_field_data
+          field: created
+          relationship: none
+          group_type: group
+          admin_label: ''
+          order: DESC
+          exposed: false
+          expose:
+            label: ''
+          granularity: second
+          entity_type: node
+          entity_field: created
+          plugin_id: date
+      style:
+        type: vactory_views_grid
+        options:
+          uses_fields: false
+          xs: col-xs-12
+          sm: col-sm-6
+          md: col-md-4
+          lg: col-lg-4
+          wrapper_class_custom: eq-height
+          row_class_default: 1
+          row_class_custom: ''
+      row:
+        type: 'entity:node'
+        options:
+          relationship: none
+          view_mode: card
+      relationships: {  }
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_interface'
+        - url
+        - url.query_args
+        - user
+        - 'user.node_grants:view'
+        - user.permissions
+      tags: {  }
+  listing_two_columns:
+    display_plugin: page
+    id: listing_two_columns
+    display_title: 'Listing Two Columns'
+    position: 1
+    display_options:
+      display_extenders: {  }
+      path: vactory/press-release/listing-two-columns
+      display_description: ''
+      title: 'Press Release'
+      defaults:
+        title: false
+        pager: false
+        css_class: false
+        use_more: false
+        use_more_always: false
+        use_more_text: false
+        filters: false
+        filter_groups: false
+        sorts: false
+        style: false
+        row: false
+        relationships: false
+      enabled: true
+      pager:
+        type: full
+        options:
+          items_per_page: 8
+      css_class: listing-two-columns-vactory-press-release
+      use_more: false
+      use_more_always: false
+      use_more_text: more
+      filters:
+        status:
+          value: '1'
+          table: node_field_data
+          field: status
+          plugin_id: boolean
+          entity_type: node
+          entity_field: status
+          id: status
+          expose:
+            operator: ''
+          group: 1
+        field_press_release_theme_target_id:
+          id: field_press_release_theme_target_id
+          table: node__field_press_release_theme
+          field: field_press_release_theme_target_id
+          vid: press_release_theme
+          exposed: true
+          type: select
+          expose:
+            label: Theme
+            identifier: theme
+            required: false
+          plugin_id: taxonomy_index_tid
+        field_vactory_date_value:
+          id: field_vactory_date_value
+          table: node__field_vactory_date
+          field: field_vactory_date_value
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: '='
+          value:
+            min: ''
+            max: ''
+            value: ''
+            type: date
+          group: 1
+          exposed: true
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            identifier: date
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              administrator: '0'
+              super_administrator: '0'
+              master: '0'
+              webmaster: '0'
+            placeholder: ''
+            min_placeholder: ''
+            max_placeholder: ''
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          plugin_id: datetime
+        type:
+          id: type
+          table: node_field_data
+          field: type
+          operator: in
+          value:
+            - vactory_press_release
+          exposed: false
+          entity_type: node
+          entity_field: type
+          plugin_id: bundle
+        langcode:
+          id: langcode
+          table: node_field_data
+          field: langcode
+          operator: in
+          value:
+            '***LANGUAGE_language_interface***': '***LANGUAGE_language_interface***'
+          exposed: false
+          entity_type: node
+          entity_field: langcode
+          plugin_id: language
+      filter_groups:
+        operator: AND
+        groups:
+          1: AND
+      rendering_language: '***LANGUAGE_language_interface***'
+      sorts:
+        created:
+          id: created
+          table: node_field_data
+          field: created
+          relationship: none
+          group_type: group
+          admin_label: ''
+          order: DESC
+          exposed: false
+          expose:
+            label: ''
+          granularity: second
+          entity_type: node
+          entity_field: created
+          plugin_id: date
+      style:
+        type: vactory_views_grid
+        options:
+          uses_fields: false
+          xs: col-xs-12
+          sm: col-sm-6
+          md: col-md-6
+          lg: col-lg-6
+          wrapper_class_custom: eq-height
+          row_class_default: 1
+          row_class_custom: ''
+      row:
+        type: 'entity:node'
+        options:
+          relationship: none
+          view_mode: card
+      relationships: {  }
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_interface'
+        - url
+        - url.query_args
+        - user
+        - 'user.node_grants:view'
+        - user.permissions
+      tags: {  }

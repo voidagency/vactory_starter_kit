@@ -1,0 +1,14 @@
+<div class="system-themes-list system-themes-list-installed clearfix">
+  <div class="theme-default clearfix">
+
+    {% if widget.screenshot %}
+      <img class="screenshot" src="{{ widget.screenshot }}" alt="Screenshot for Component"
+           title="Screenshot for Component" typeof="foaf:Image">
+    {% endif %}
+
+    <div class="theme-info">
+      <h3 class="theme-info__header">{{ widget.name }}</h3>
+      <div class="theme-info__description">{{ 'Category:'|t }} {{ widget.category }}</div>
+    </div>
+  </div>
+</div>

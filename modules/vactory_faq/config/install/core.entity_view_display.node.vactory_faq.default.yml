@@ -1,0 +1,33 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.vactory_faq.body
+    - field.field.node.vactory_faq.field_faq
+    - field.field.node.vactory_faq.field_vactory_seo_status
+    - node.type.vactory_faq
+  module:
+    - user
+    - yoast_seo
+id: node.vactory_faq.default
+targetEntityType: node
+bundle: vactory_faq
+mode: default
+content:
+  field_vactory_seo_status:
+    weight: 101
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: yoastseo_empty_formatter
+    region: content
+  links:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  addtoany: true
+  body: true
+  field_faq: true
+  langcode: true

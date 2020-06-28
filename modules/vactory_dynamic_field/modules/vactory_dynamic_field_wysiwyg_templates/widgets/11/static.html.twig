@@ -1,0 +1,26 @@
+<div class="t-three-card-with-image-desc-link">
+  <div class="row vf-slick-slider vf-slick-mobile slick-padding justify-content-lg-center slick-arrows-mobile"
+       data-arrows="true"
+       data-mobile-arrows="true"
+  >
+    {% for item in 0..2 %}
+      {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/160/145.jpg" %}
+      <div class="col-md-4">
+        <div class="t-box">
+          <img alt="Image Alt"
+               class="img-fluid"
+               src="{{ content.image_placeholder }}"
+               data-src="{{ placehold }}"/>
+          <div class="t-box-description-link">
+            <div class="t-box-description">
+              Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+              Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.
+            </div>
+            <a href="#"
+               class="permalink">Read More</a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>

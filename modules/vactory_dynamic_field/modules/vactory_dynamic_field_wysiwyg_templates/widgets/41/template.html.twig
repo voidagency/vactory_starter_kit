@@ -1,0 +1,22 @@
+<div class="row widget-links">
+  {% for item in content %}
+  {% set link_target = (item.link_target > 0) ? '_blank' : '_self' %}
+  {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : '' %}
+  {% set fluid_image = file_url(image_uri) %}
+  {% set lqip_image = image_uri|image_style('lqip') %}
+  {% set image_alt = (item.image_alt is not empty) ? item.image_alt : '' %}
+  <div class='col-lg-6 widget-links_item'>
+    <a  href="{{ item.link }}" target="{{ link_target }}" class="col-12 d-flex">
+      <div class="image-link lazy-wrapper"> 
+        <img alt="{{ image_alt }}"
+          class="img-fluid lazyload"
+          src="{{ lqip_image }}"
+          data-src="{{ fluid_image }}"/>
+      </div>
+      <div class="description-link">
+        <p>{{ item.description }}</p>
+      </div>
+    </a>
+  </div>
+  {% endfor %}
+</div>

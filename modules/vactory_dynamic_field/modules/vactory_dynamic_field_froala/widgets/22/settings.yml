@@ -1,0 +1,55 @@
+name: '22 - Froala - Content Left Block Text, CTA & Follow US With Background'
+multiple: FALSE
+category: 'Call to action'
+enabled: TRUE
+fields:
+  image:
+    type: image
+    label: 'Background'
+    options:
+      '#required': TRUE
+  title:
+    type: text
+    label: 'Titre'
+  description:
+    type: textarea
+    label: 'Description'
+  link:
+    type: url_extended
+    label: 'Lien'
+  link_alt:
+    type: text
+    label: 'Titre Lien'
+  link_target:
+    type: checkbox
+    label: 'Ouvrir dans une nouvelle fenêtre'
+  social_1:
+    type: text
+    label: 'Titre Social Network 1'
+  social_url_1:
+    type: url_extended
+    label: 'Lien Social Network 1'
+  link_target_1:
+    type: checkbox
+    label: 'Ouvrir dans une nouvelle fenêtre'
+  social_2:
+    type: text
+    label: 'Titre Social Network 2'
+  social_url_2:
+    type: url_extended
+    label: 'Lien Social Network 2'
+  link_target_2:
+    type: checkbox
+    label: 'Ouvrir dans une nouvelle fenêtre'
+  social_3:
+    type: text
+    label: 'Titre Social Network 3'
+  social_url_3:
+    type: url_extended
+    label: 'Lien Social Network 3'
+  link_target_3:
+    type: checkbox
+    label: 'Ouvrir dans une nouvelle fenêtre'
+  mode:
+    type: checkbox
+    label: 'Activer le mode inversé'

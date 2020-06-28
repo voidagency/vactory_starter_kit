@@ -1,0 +1,209 @@
+{#
+/**
+ * @file
+ * Theme override to display a node.
+ *
+ * Available variables:
+ * - node: The node entity with limited access to object properties and methods.
+     Only "getter" methods (method names starting with "get", "has", or "is")
+     and a few common methods such as "id" and "label" are available. Calling
+     other methods (such as node.delete) will result in an exception.
+ * - label: The title of the node.
+ * - content: All node items. Use {{ content }} to print them all,
+ *   or print a subset such as {{ content.field_example }}. Use
+ *   {{ content|without('field_example') }} to temporarily suppress the printing
+ *   of a given child element.
+ * - author_picture: The node author user entity, rendered using the "compact"
+ *   view mode.
+ * - metadata: Metadata for this node.
+ * - date: Themed creation date field.
+ * - author_name: Themed author name field.
+ * - url: Direct URL of the current node.
+ * - display_submitted: Whether submission information should be displayed.
+ * - attributes: HTML attributes for the containing element.
+ *   The attributes.class element may contain one or more of the following
+ *   classes:
+ *   - node: The current template type (also known as a "theming hook").
+ *   - node--type-[type]: The current node type. For example, if the node is an
+ *     "Article" it would result in "node--type-article". Note that the machine
+ *     name will often be in a short form of the human readable label.
+ *   - node--view-mode-[view_mode]: The View Mode of the node; for example, a
+ *     teaser would result in: "node--view-mode-teaser", and
+ *     full: "node--view-mode-full".
+ *   The following are controlled through the node publishing options.
+ *   - node--promoted: Appears on nodes promoted to the front page.
+ *   - node--sticky: Appears on nodes ordered above other non-sticky nodes in
+ *     teaser listings.
+ *   - node--unpublished: Appears on unpublished nodes visible only to site
+ *     admins.
+ * - title_attributes: Same as attributes, except applied to the main title
+ *   tag that appears in the template.
+ * - content_attributes: Same as attributes, except applied to the main
+ *   content tag that appears in the template.
+ * - author_attributes: Same as attributes, except applied to the author of
+ *   the node tag that appears in the template.
+ * - title_prefix: Additional output populated by modules, intended to be
+ *   displayed in front of the main title tag that appears in the template.
+ * - title_suffix: Additional output populated by modules, intended to be
+ *   displayed after the main title tag that appears in the template.
+ * - view_mode: View mode; for example, "teaser" or "full".
+ * - teaser: Flag for the teaser state. Will be true if view_mode is 'teaser'.
+ * - page: Flag for the full page state. Will be true if view_mode is 'full'.
+ * - readmore: Flag for more state. Will be true if the teaser content of the
+ *   node cannot hold the main body content.
+ * - logged_in: Flag for authenticated user status. Will be true when the
+ *   current user is a logged-in member.
+ * - is_admin: Flag for admin user status. Will be true when the current user
+ *   is an administrator.
+ *
+ * @see template_preprocess_node()
+ *
+ * @todo Remove the id attribute (or make it a class), because if that gets
+ *   rendered twice on a page this is invalid CSS for example: two lists
+ *   in different view modes.
+ */
+#}
+{% set academy_videos = content.field_vactory_file_multiple['#items'].value is defined ? content.field_vactory_file_multiple['#items'].value : '' %}
+
+<div class="block-top bg-secondary text-white position-relative pt-2 pb-4 row">
+    <div class='col-md-12 mb-md-3 wrapper-flag_favorite'>
+        {% if is_anonymous %}
+        <div class="flag flag-favorite-academy js-flag-favorite-academy-2 action-flag">
+            <a href="{{ url('user.login') }} {{- redirect_params }}" class="favorite-course d-flex justify-content-end align-items-center mr-3">{{ 'Ajouter à la liste de souhaits'|t }} </a>
+        </div>
+        {% else %}
+            {{ content.flag_favorite_academy }}
+        {% endif %}
+    </div>
+  <div class='col-md-12 d-flex flex-column-reverse flex-md-row'>
+    <div class='col-md-8 pr-md-4'>
+      <div class="pb-2">
+        <h2 class="text-white"> {{ label }} </h2>
+        {{ content.field_vactory_excerpt }}
+      </div>
+      <div class="d-flex pb-2">
+        <span class="badge badge-primary mt-auto mb-auto">
+          {{ content.field_vactory_theme.0['#title'] }}
+        </span>
+        <div class="star-rating ml-3">
+          {% set rating = content.rate_vote_widget["#results"].fivestar.vote_average %}
+          {% for i in 0..4 %}
+            {% if rating >=1 %}
+              <span class="favorite-star checked-full"></span>
+            {% elseif rating <1  and rating >0 %}  
+              <span class="favorite-star checked-half"></span>
+            {% else %}
+              <span class="favorite-star"></span>
+            {% endif %}
+            {% set rating = rating - 1 %}
+          {% endfor %}
+        </div>
+
+        {% if content.rate_vote_widget["#results"].fivestar.vote_count is not null %}
+          <span class='ml-2'>{{ content.rate_vote_widget["#results"].fivestar.vote_average }} ({{ content.rate_vote_widget["#results"].fivestar.vote_count }} {{ 'Notes'|t }})</span>
+        {% endif %}
+      </div>
+      <div class="d-md-flex pb-md-2">
+        <div class="academy-author">
+          {{ 'Créé par'|t }} {{ instructor.first_name }} {{ instructor.last_name }}
+        </div>
+        <div class="academy-date ml-md-2">
+          <span>{{'Dernière mise à jour :' |t }}</span>
+          {{ content.field_vactory_date['#items'].value|date('d/m/Y') }}
+        </div> 
+      </div>
+      <div class="d-flex align-items-center">
+        <span class="icon-comment mr-1"></span>
+        {{ content.field_vactory_academy_langue }}
+        <span class='ml-2'>{{ 'Durée: '|t }}</span>
+        {{content.field_academy_duree}}
+      </div>
+    </div>
+    <div class='col-md-4  mb-3 mb-md-0'>
+      {#%  if academy_videos is not empty %}
+        <div class="mb-4">
+          <h3>{{ 'Contenu du cours'|t }}</h3>
+          <div>
+              {% for academy_video in academy_videos %}
+              {% set video = file_object(academy_video.target_id) %}
+              <p>
+                  <a class="link-academy-video prefix-icon-file-movie-o h4" data-video="{{ file_url(video.uri.value) }}" href="">{{ academy_video.description }}</a>
+              </p>
+              {% endfor %}
+          </div>
+        </div>
+      {% endif %}#}
+      <div class="right-col_content p-0 mr-md-2">
+        {% if not is_anonymous %}
+          {% if content.field_vactory_youtube_videos['#items'].value is defined %}
+            <div class="academy-video text-center">
+              {#% <h3>{{ 'Contenu du cours'|t }}</h3>#}
+              <div class="mb-3">
+                {% for video in content.field_vactory_youtube_videos['#items'] %}
+                  <a data-fancybox href="{{ video.value }}" class='play-videos'>
+                      {{content.field_vactory_media}}
+                  </a>
+                {% endfor %}
+              </div>
+
+              {% if content.field_vactory_file.0['#file'].uri is defined %}
+                <a href="{{ file_url(content.field_vactory_file.0['#file'].uri.value) }}" class="btn btn-primary prefix-icon-download mb-2" download>{{ 'Télécharger le support du cours'|t }}</a>
+              {% endif %}
+            </div>
+          {% endif %}
+        {% else %}
+          <div class="academy-video">
+            {{content.field_vactory_media}}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>  
+</div>
+
+<div class="block-detail mb-4 mt-4 row">
+  <div class="col-md-8 ">
+    <div class="row">
+        {{content.field_vactory_paragraphs	}}
+    </div>
+  </div>
+  <div class="col-md-4 text-center">
+    <h2>{{ content.rate_vote_widget["#results"].fivestar.vote_average  }}</h2>
+   <div class="star-rating">
+      {% set rating = content.rate_vote_widget["#results"].fivestar.vote_average %}
+      {% for i in 0..4 %}
+        {% if rating >=1 %}
+          <span class="favorite-star checked-full"></span>
+        {% elseif rating <1  and rating >0 %}  
+          <span class="favorite-star checked-half"></span>
+        {% else %}
+          <span class="favorite-star"></span>
+        {% endif %}
+        {% set rating = rating - 1 %}
+      {% endfor %}
+    </div> 
+    <p>{{ 'Note du cours'|t }}</p>
+    {% if not is_anonymous %}
+      <div class='star-vote'>
+        {{ content.rate_vote_widget}}
+      </div>
+      <p>{{ 'Votre Vote'|t }}</p>
+    {% endif %}  
+
+    <div class="mb-3 mt-2">
+      <div class="card-body">
+        <p class="card-text mb-1">{{ 'Vous avez aimé ce cours ? Partagez le !'|t }}</p>
+          {{ vactory_render('block', 'addtoany_block') }}
+      </div>
+    </div>
+  </div>
+</div>
+<div class="border p-4 mb-2">
+    <h3>{{ 'À propos du formateur'|t }}</h3>
+    {{ vactory_render('block', 'vactory_academy_about_instructor') }}
+</div>
+<div class="mb-2">
+    {% if content.comment.0 is defined  %}
+        {{ content.comment }}
+    {% endif %}
+</div>

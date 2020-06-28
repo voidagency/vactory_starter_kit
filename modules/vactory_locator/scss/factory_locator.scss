@@ -1,0 +1,382 @@
+.block-location {
+  max-width: 100%;
+  position: relative;
+
+  .block-location-wrapper {
+    @include rem(margin-top,19px);
+    position: absolute;
+    z-index: 1;
+    width: 100%;
+  }
+
+  .location-search {
+    display: flex;
+    width: 100%;
+    background: $white;
+    @include rem(margin-bottom, 20px);
+    @include rem( padding, 14px 11px 13px 0px);
+    position: relative;
+    box-shadow: 0 1px 4px 0 rgba(0,0,0,0.3);
+    @include rtl() {
+      @include rem( padding, 14px 0px 13px 11px);
+
+    }
+
+    &:after ,
+    &:before {
+      @extend %icon;
+      position: absolute;
+      z-index: 1;
+      color: $black;
+      cursor: pointer;
+    }
+
+    &:after {
+      content: $icon-search-lightest;
+      @include rem(font-size, 16px);
+      @include rem(top, 26px);
+      right: 16px;
+      @include rtl() {
+        left: 16px;
+        right: auto;
+      }
+    }
+
+    &:before {
+      content: $icon-heart;
+      @include rem(font-size, 22px);
+      @include rem(padding, 10px);
+      top: 10px;
+      left: 10px;
+      box-shadow: 0 1px 3px 0 rgba(0,0,0,0.2);
+      border-radius: 2px;
+      @include rtl() {
+        right: 10px;
+        left: auto;
+      }
+    }
+
+    label {
+      display: none;
+    }
+  }
+
+  .btn-search ,
+  .btn-gps  {
+    background: transparent;
+    border: none;
+    font-size: 0;
+    position: absolute;
+    padding: 18px;
+    top: 10px;
+    cursor: pointer;
+    z-index: 1;
+  }
+  .input-search {
+    @include rem(margin-left, 60px);
+    @include rem(padding-right, 40px);
+    color: $black;
+    text-overflow: ellipsis;
+    @include rtl() {
+      @include rem(margin-right, 60px);
+      @include rem(padding-left, 40px);
+      margin-left: 0px;
+      @include rem(padding-right, 10px);
+    }
+  }
+
+  .btn-gps {
+    left: 10px;
+    @include rtl() {
+      left: auto;
+      right: 10px;
+    }
+  }
+
+
+  .location-list {
+    background: $white;
+    width: 100%;
+    display:none;
+    box-shadow: 0 1px 4px 0 rgba(0,0,0,0.3);
+
+
+    .list-group-item {
+      @include rem(padding, 10px 10px);
+      border: none;
+      border-bottom: 1px dashed $gray-500;
+      margin-bottom: 0;
+
+      &:last-child {
+        border-bottom: none;
+      }
+    }
+
+    .agences-box {
+      @include rem(max-height, 287px);
+      @include rem(border-radius, 8px);
+      position: relative;
+      overflow: auto;
+      overflow-x: hidden;
+
+
+      &::-webkit-scrollbar-track
+      {
+        background-color: $body-bg;
+        @include rem(border-radius, 8px);
+      }
+
+      &::-webkit-scrollbar
+      {
+        @include rem(width, 8px);
+        background-color: $body-bg;
+        @include rem(border-radius, 8px);
+      }
+
+      &::-webkit-scrollbar-thumb
+      {
+        @include rem(border-radius, 8px);
+        @include rem(height, 100px);
+        background-color: $primary;
+      }
+    }
+
+  }
+  .form-control{
+    &::placeholder {
+      color:  $black;
+    }
+  }
+
+  .nav-address {
+    width: 100%;
+    background-color: #fff;
+    @include rem(padding, 0 23px);
+    border-top: 2px solid #efefef;
+    display: flex;
+    align-items: center;
+    @include rem(height, 49px);
+    @include rem(border-radius, 0px 0px 8px 8px);
+    .counting-result {
+      @include rem(font-size, 11px);
+      color: #9f9f9f;
+    }
+
+    .navigation {
+      margin-left: auto;
+      @include rtl() {
+        margin-left: 0;
+        margin-right: auto;
+      }
+      a{
+        cursor: pointer;
+        @include rem(margin-left, 8px);
+      }
+      i{
+        @include rem(font-size,23px);
+        color: #9f9f9f;
+      }
+    }
+  }
+}
+
+.location-list-element {
+  // font-family: $font-family-base;
+  cursor: pointer;
+
+  h3 {
+    color: $black;
+    @include rem(margin-bottom, 5px);
+  }
+  p {
+    color: $black;
+    margin-bottom: 0;
+    @include rem(font-size, 14px);
+    @include rem(line-height, 19px);
+
+    a {
+      font-weight: 500;
+    }
+  }
+}
+
+.location-map {
+  width:100%;
+  height: 100vh;
+  padding-bottom: 120px;
+
+  button[aria-label="Close"] {
+    @include rtl() {
+      right: auto !important;
+      left: 0px !important;
+    }
+  }
+}
+
+.listeempty {
+  padding: 17px;
+  text-align: center;
+}
+
+.close-button {
+  position: absolute;
+  @include rem(top, 27px);
+  @include rem(right, 32px);
+  @include rem(font-size, 10px);
+  cursor: pointer;
+  @include rtl() {
+    right: auto;
+    @include rem(left, 32px);
+
+  }
+  a {
+    @include rem(padding, 7px);
+    display: none;
+  }
+}
+//
+@include media-breakpoint-up(lg) {
+  .block-location {
+    .location-search {
+      box-shadow: 0 2px 8px 0 rgba(0,0,0,0.3);
+      @include rem(padding, 31px 11px 13px 20px);
+
+      &:before ,
+      .input-search {
+        color: $primary;
+      }
+
+      &:after {
+        @include rem(font-size, 24px);
+      }
+
+      &:before {
+        box-shadow: none;
+        border: 1px solid;
+        @include rem(left, 21px);
+        @include rem(top, 23px);
+      }
+
+      label {
+        display: block;
+        position: absolute;
+        @include rem(top, 18px);
+        @include rem(left, 90px);
+        font-size: 14px;
+        font-weight: bold;
+      }
+
+      @include rtl() {
+        @include rem(padding, 31px 20px 13px 11px);
+        &:before {
+          @include rem(right, 21px);
+          left: auto;
+        }
+        label {
+          @include rem(right, 90px);
+          left: auto;
+        }
+      }
+    }
+
+    .input-search {
+      @include rem(padding-right, 80px);
+      @include rtl() {
+        @include rem(padding-left, 80px);
+        @include rem(padding-right, 10px);
+      }
+    }
+
+    .btn-gps {
+      left: 23px;
+      @include rem(top, 27px);
+      @include rtl() {
+        right: 23px;
+        left: auto;
+      }
+    }
+    .btn-search {
+      right: 18px;
+      @include rem(top, 16px);
+      @include rtl() {
+        left: 18px;
+        right: auto;
+      }
+    }
+    .location-search ,
+    .location-list {
+      @include rem(border-radius, 8px);
+    }
+    .location-search{
+      &:after {
+        @include rem(top,38px);
+      }
+    }
+    .location-list {
+      .list-group-item {
+        @include rem(padding, 13px 20px);
+      }
+    }
+
+    .location-list {
+      max-height: 337px;
+      box-shadow: 0 2px 8px 0 rgba(0,0,0,0.3);
+
+      &::-webkit-scrollbar-track
+      {
+        @include rem(border-radius, 8px);
+      }
+
+      &::-webkit-scrollbar
+      {
+        @include rem(border-radius, 8px);
+      }
+    }
+
+    .block-location-wrapper {
+      @include rem(margin-top,10px);
+      @include rem(margin-left, 30px);
+      max-width: 445px;
+      @include rtl() {
+        @include rem(margin-right, 30px);
+        margin-left: 0px;
+      }
+    }
+
+    .form-control{
+      &::placeholder {
+        color: $primary;
+      }
+    }
+
+    .close-button {
+      right: 46px;
+      @include rem(top, 40px);
+      @include rem(font-size, 16px);
+      @include rtl() {
+        right: auto;
+        left: 46px;
+      }
+    }
+
+    .nav-address {
+      .navigation {
+
+        i{
+          @include rem(font-size,26px);
+        }
+      }
+      .counting-result {
+        @include rem(font-size,13px);
+      }
+    }
+  }
+
+  .block--vactorylocatorblock {
+    .location-map {
+      padding-bottom: 120px;
+      height: 500px;
+    }
+  }
+
+}

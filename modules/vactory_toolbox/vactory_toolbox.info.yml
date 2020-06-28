@@ -1,0 +1,9 @@
+name: 'ToolBox'
+description: 'Block ToolBox'
+type: module
+package: Vactory
+core: 8.x
+dependencies:
+- node
+- block
+version: 8.x-1.0

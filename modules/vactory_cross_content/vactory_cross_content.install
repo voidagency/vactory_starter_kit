@@ -1,0 +1,23 @@
+<?php
+
+/**
+ * @file
+ * Install file.
+ */
+
+use Drupal\taxonomy\Entity\Term;
+
+/**
+ * Implements hook_install().
+ */
+function vactory_cross_content_install() {
+  // Create a Term to be used in The VCC's Block View.
+  $item = 'Default Term';
+    Term::create([
+      'parent' => [],
+      'name'   => $item,
+      'vid'    => 'vactory_cross_content_taxonomy',
+    ])->save();
+
+}
+

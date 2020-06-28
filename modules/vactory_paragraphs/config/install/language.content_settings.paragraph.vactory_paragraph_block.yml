@@ -1,0 +1,17 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - paragraphs.paragraphs_type.vactory_paragraph_block
+  module:
+    - content_translation
+third_party_settings:
+  content_translation:
+    enabled: true
+    bundle_settings:
+      untranslatable_fields_hide: '1'
+id: paragraph.vactory_paragraph_block
+target_entity_type_id: paragraph
+target_bundle: vactory_paragraph_block
+default_langcode: current_interface
+language_alterable: false

@@ -1,0 +1,42 @@
+<footer class="vf-footer vf-footer--variant6">
+    <div class="container">
+        <div class="vf-footer-items row">
+            <div class="vf-footer-left col-lg-6">
+                <div class="block-footer-logo">
+                    {{ vactory_render('block', 'system_branding_block', {use_site_name: false}) }}
+                </div>
+                <div class="block-footer-description">
+                    <p>{{ "Lorem ipsum dolor sit amet, consectetur adipisicing" | t }}</p>
+                </div>
+                <div class="block-footer-copyright">
+                    <p>{{ "© 2019 Tous droits réservés Wana Money" | t }}</p>
+                </div>
+            </div>
+            <div class="vf-footer-right col-lg-6">
+                <div class="block-footer-app">
+                    <div class="align-self-center">
+                        <p class="app-store-title">{{ "Téléchargez l'application" | t }}</p>
+                    </div>
+                    <div class="block-icon-store">
+                        <a href="/">
+                            <img alt="Void logo" src="//place-hold.it/112x33">
+                        </a>
+                        <a href="/">
+                            <img alt="Void logo" src="//place-hold.it/112x33">
+                        </a>
+                    </div>
+                </div>
+                <div class="block-social-media">
+                    <div class="align-self-center">
+                        <p class="social-media-title">{{ "Suivez-nous" | t }}</p>
+                    </div>
+                    {{ vactory_render('block', 'socialmedialinks') }}
+                </div>
+                <div class="block-footer-menu-separate sm-menu-center">
+                    {{ vactory_render('block', 'system_menu_block:footer') }}
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+

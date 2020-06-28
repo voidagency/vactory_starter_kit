@@ -1,0 +1,52 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.vactory_paragraph_multi_template.field_multi_paragraph_type
+    - field.field.paragraph.vactory_paragraph_multi_template.field_paragraph_introduction
+    - field.field.paragraph.vactory_paragraph_multi_template.field_vactory_paragraph_tab
+    - field.field.paragraph.vactory_paragraph_multi_template.field_vactory_title
+    - paragraphs.paragraphs_type.vactory_paragraph_multi_template
+  module:
+    - entity_reference_revisions
+    - options
+id: paragraph.vactory_paragraph_multi_template.default
+targetEntityType: paragraph
+bundle: vactory_paragraph_multi_template
+mode: default
+content:
+  field_multi_paragraph_type:
+    weight: 3
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_paragraph_introduction:
+    weight: 5
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: basic_string
+    region: content
+  field_vactory_paragraph_tab:
+    type: entity_reference_revisions_entity_view
+    weight: 2
+    label: hidden
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    region: content
+  field_vactory_title:
+    weight: 4
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden:
+  paragraph_background_image: true
+  paragraph_container: true
+  search_api_excerpt: true

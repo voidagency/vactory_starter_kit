@@ -1,0 +1,37 @@
+<div class="fdb-block">
+    <div class="container">
+                {% if  extra_fields.title is not empty %}
+                <div class="row text-center">
+                  <div class="col">
+                     <h2 class="text-light">{{ extra_fields.title }}</h2>
+                  </div>
+                </div>
+                {% endif %}
+        <div class="row text-center justify-content-sm-center no-gutters">
+            {% for item in content %}
+
+                {% if loop.index >= 2 %}
+                    <div class="col-12 col-sm-10 col-md-8 col-lg-7 col-xl-3 m-auto pt-5 pt-xl-0">
+                {% else %}
+                    <div class="col-12 col-sm-10 col-md-8 col-lg-7 col-xl-3 m-auto">
+                {% endif %}
+
+                    <div class="fdb-box fdb-touch">
+                        {% if  item.title is not empty %}
+                            <h2>{{ item.title }}</h2>
+                        {% endif %}
+                        {% if  item.description is not empty %}
+                            <p>{{ item.description }}</p>
+                        {% endif %}
+                        {% if  item.link is not empty and item.link_alt is not empty %}
+                             {% set link_target = (item.link > 0) ? '_blank' : '_self' %}
+                             <p class="mt-4"><a href="{{ item.link }}" target="{{ link_target }}">{{ item.link_alt }}</a></p>
+                        {% endif %}
+                    </div>
+
+                </div>
+
+            {% endfor %}
+        </div>
+    </div>
+</div>

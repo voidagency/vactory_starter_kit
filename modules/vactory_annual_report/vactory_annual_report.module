@@ -1,0 +1,222 @@
+<?php
+
+/**
+ * @file
+ * Module File.
+ */
+
+use Drupal\Component\Utility\Xss;
+use Drupal\taxonomy\Entity\Term;
+use Drupal\views\ViewExecutable;
+use Drupal\views\Views;
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_annual_report_theme($existing, $type, $theme, $path) {
+  return [
+    // Node, Card.
+    'node__vactory_annual_report__card'             => [
+      'base hook' => 'node',
+      'template'  => 'card',
+    ],
+    // Node > full.
+    'node__vactory_annual_report__full'             => [
+      'base hook' => 'node',
+      'template'  => 'full',
+    ],
+    // Views, unformatted List.
+    'views_view_unformatted__annual_report'         => [
+      'base hook' => 'views_view_unformatted',
+    ],
+    // Views view.
+    'views_view__annual_report'                     => [
+      'base hook' => 'views_view',
+    ],
+    // Thematic Filter Links.
+    'vactory_annual_report_filter_links_thematic'   => [
+      'template'  => 'filter-thematic-links',
+      'variables' => [
+        'links'          => [],
+        'filter_name'    => '',
+        'filter_current' => 'All',
+      ],
+    ],
+    // Media Type Filter Links.
+    'vactory_annual_report_filter_links_media_type' => [
+      'template'  => 'filter-media-type-links',
+      'variables' => [
+        'links'          => [],
+        'filter_name'    => '',
+        'filter_current' => 'All',
+      ],
+    ],
+    // Filter container.
+    'vactory_annual_report_filter_container'        => [
+      'template'  => 'filter-container',
+      'variables' => [
+        'thematic'   => [],
+        'media_type' => [],
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_views_pre_render().
+ */
+function vactory_annual_report_views_pre_render(ViewExecutable $view) {
+  if (isset($view) && ($view->storage->id() == 'annual_report')) {
+    // Add muuri library to annual report view.
+    $view->element['#attached']['library'][] = 'vactory_annual_report/vactory_annual_report.muuri_grid';
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter().
+ */
+function vactory_annual_report_theme_suggestions_views_view_unformatted_alter(array &$suggestions, array $variables) {
+  $view = $variables['view'] ?? NULL;
+  if ($view) {
+    // Add suggestion without display name to use it in the all displays.
+    $suggestions[] = 'views_view_unformatted__' . $view->id();
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_annual_report_preprocess_views_view_unformatted(&$variables) {
+  $view = $variables['view'];
+
+  if ($view->id() !== 'annual_report') {
+    return;
+  }
+
+  $rows = $variables['rows'] ?? [];
+  foreach ($rows as $key => $row) {
+    /** @var \Drupal\node\Entity\Node $node */
+    /* $node = $row['content']['#node'];
+    if ($node instanceof NodeInterface &&
+    $node->hasField('field_ar_element_width')) {
+    // Add the width class.
+    $variables['rows'][$key]['width_class'] =
+    $node->get('field_ar_element_width')->value ?? NULL;
+    }*/
+  }
+}
+
+/**
+ * Implements template_preprocess_form_element().
+ *
+ * Hide select.
+ */
+function vactory_annual_report_preprocess_form_element(&$variables) {
+  $element = &$variables['element'];
+
+  if (!isset($element['#name'])) {
+    return;
+  }
+
+  if (
+    $element['#name'] === 'field_ar_thematic_target_id' ||
+    $element['#name'] === 'field_ar_media_type_target_id') {
+    $variables['attributes']['class'] = ['d-none'];
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_annual_report_form_alter(&$form, $form_state, $form_id) {
+  // Apply the form_alter to a specific form #id
+  // the form #id can be found through inspecting the markup.
+  if (strpos($form['#id'], "views-exposed-form-annual-report") === 0) {
+    // Include a js and css, which was defined in libraries.yml.
+    $form['#attached']['library'][] = 'vactory_annual_report/vactory_annual_report.views_filter_links';
+
+    // Hide submit button.
+    $form['actions']['submit']['#attributes']['class'][] = 'd-none';
+
+    // Get current items.
+    $current_thematic = ((int) \Drupal::request()->get('field_ar_thematic_target_id') ?? 'All');
+    $current_media_type = ((int) \Drupal::request()->get('field_ar_media_type_target_id') ?? 'All');
+
+    $form['digital_report_filter'] = [
+      '#theme'      => 'vactory_annual_report_filter_container',
+      '#thematic'   => [
+        '#theme'          => 'vactory_annual_report_filter_links_thematic',
+        '#links'          => $form['field_ar_thematic_target_id']['#options'],
+        '#filter_name'    => 'field_ar_thematic_target_id',
+        '#filter_current' => $current_thematic,
+      ],
+      '#media_type' => [
+        '#theme'          => 'vactory_annual_report_filter_links_media_type',
+        '#links'          => $form['field_ar_media_type_target_id']['#options'],
+        '#filter_name'    => 'field_ar_media_type_target_id',
+        '#filter_current' => $current_media_type,
+      ],
+    ];
+  }
+}
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function vactory_annual_report_preprocess_node(&$variables) {
+  /** @var \Drupal\node\Entity\Node $node */
+  $node = $variables['node'];
+
+  if ($node->getType() !== 'vactory_annual_report') {
+    return;
+  }
+
+  $view = &drupal_static(__FUNCTION__);
+  if (!isset($view)) {
+    $view = Views::getView('annual_report');
+    $view->setDisplay('page_1');
+  }
+
+  $term_thematic_id = (int) $node->get('field_ar_thematic')
+    ->first()
+    ->getString();
+
+  /** @var \Drupal\Core\Url $view_url */
+  $view_url = $view->getUrl();
+  $view_url->setRouteParameter('field_ar_thematic_target_id', $term_thematic_id);
+
+  $variables['content']['thematic_link'] = $view_url;
+  //
+  //  // Image.
+  //  if ($node->get('field_vactory_media')->first()) {
+  //  $variables['content']['field_vactory_media'] =
+  // (int) $node->get('field_vactory_media')
+  // ->first()
+  // ->getString();
+  // }
+  // else {
+  // $variables['content']['field_vactory_media'] = NULL;
+  // }.
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_annual_report_preprocess_vactory_annual_report_filter_links_media_type(&$variables) {
+  // Get links list.
+  $links = $variables['links'];
+  foreach ($links as $tid => $link) {
+    if ($tid === 'All') {
+      continue;
+    }
+    // Get media type.
+    $media_link = Term::load($tid);
+    // Get css classes.
+    $link_icon_class = Xss::filter($media_link->get('field_media_type_css_class')->value);
+    // Change links vars, add classes.
+    $variables['links'][$tid] = [
+      't_name'     => $link,
+      'icon_class' => $link_icon_class,
+    ];
+  }
+}

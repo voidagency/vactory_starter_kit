@@ -1,0 +1,42 @@
+<div class="row t-slider-two-three-columns">
+  {% if extra_fields.intro %}
+    <div class="col-12">
+      <p class="intro">
+        {{ extra_fields.intro }}
+      </p>
+    </div>
+  {% endif %}
+  <div class="col">
+    <div class="vf-slick-slider row" data-toshow="3" data-mobile-arrows="true" data-arrows="true" data-dots="false">
+      {% for item in content %}
+        {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : ' ' %}
+        {% set lqip_image = image_uri|image_style('lqip') %}
+        {% set fluid_image = file_url(image_uri) %}
+        <div class="col text-center">
+          {% if item.image is not empty %}
+            {% set image_alt = (item.image_alt is not empty) ? item.image_alt : 'image' %}
+            <div class="t-slider-box-image mb-2 lazy-wrapper">
+              <img class="lazyload"
+                   src="{{ lqip_image }}"
+                   data-src="{{ fluid_image }}"
+                   alt="{{ image_alt }}">
+            </div>
+          {% endif %}
+          {% if item.title is not empty %}
+            <h4>{{ item.title }}</h4>
+          {% endif %}
+          {% if item.description is not empty %}
+            <p>
+              {{ item.description }}
+            </p>
+          {% endif %}
+          {% if item.link is not empty and item.link_alt is not empty %}
+            {% set link_target = (item.link_target > 0) ? '_blank' : '_self' %}
+            <a href="{{ item.link }}" class="permalink">{{ item.link_alt }}</a>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+    <div class="slick-controls d-lg-none"></div>
+  </div>
+</div>

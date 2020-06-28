@@ -1,0 +1,10 @@
+vactory_login_token.settings:
+  title: 'Token Login Settings'
+  route_name: auto_login_url.settings
+  base_route: entity.user.collection
+  weight: 25
+vactory_login_token.generation_en_masse:
+  title: 'Generation en masse Token'
+  route_name: auto_login_url.generation_en_masse
+  base_route: entity.user.collection
+  weight: 30

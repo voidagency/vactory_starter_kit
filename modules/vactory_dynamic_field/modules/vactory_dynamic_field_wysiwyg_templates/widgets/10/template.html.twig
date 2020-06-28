@@ -1,0 +1,21 @@
+<div class="t-boxed-table">
+  <div class="row">
+    {% for item in content %}
+      <div class="t-box col-12">
+        {% if item.title is not empty %}
+          <p class="t-box-title"> {{ item.title }} </p>
+        {% endif %}
+        <div class="t-box-side">
+          {% if item.number is not empty %}
+            <p>
+              <span>{{ item.number }}</span>
+              {% if item.time_type is not empty %}
+                / {{ item.time_type }}
+              {% endif %}
+            </p>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>

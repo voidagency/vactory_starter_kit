@@ -1,0 +1,71 @@
+<?php
+
+/**
+ * @file
+ * Install file.
+ */
+
+use Drupal\taxonomy\Entity\Term;
+use Drupal\vactory_news\Exceptions\BlockCreationException;
+use Drupal\block_content\Entity\BlockContent;
+
+/**
+ * Implements hook_install().
+ */
+function vactory_news_install() {
+  // Ensure the translation fields are created in the database.
+  \Drupal::service('entity.definition_update_manager')->applyUpdates();
+
+  // Term names to be added.
+  $items = [
+    'Annonce',
+    'Environnement',
+    'Innovation',
+    'Pubication',
+  ];
+
+  foreach ($items as $item) {
+    Term::create([
+      'parent' => [],
+      'name'   => $item,
+      'vid'    => 'vactory_news_theme',
+    ])->save();
+  }
+
+  // Create News view introduction custom block.
+  $block_views_introduction = BlockContent::create([
+    'info' => 'News view introduction',
+    'block_machine_name' => 'news_view_introduction',
+    'type' => 'vactory_block_component',
+  ]);
+
+  try {
+    $block_views_introduction->save();
+  }
+  catch (BlockCreationException $e) {
+    $message = t("Problem has been detected while creating block news_view_introduction, the block might be already exist.");
+    \Drupal::logger('vactory_news')->notice($message);
+  }
+}
+
+/**
+ * Implements hook_update_N().
+ *
+ * Create default custom block introduction for vactory news view.
+ */
+function vactory_news_update_8101() {
+  // Create News view introduction custom block.
+  $block_views_introduction = BlockContent::create([
+    'info' => 'News view introduction',
+    'block_machine_name' => 'news_view_introduction',
+    'type' => 'vactory_block_component',
+  ]);
+
+  try {
+    $block_views_introduction->save();
+  }
+  catch (BlockCreationException $e) {
+    $message = t("Problem has been detected while creating block news_view_introduction, the block might be already exist.");
+    \Drupal::logger('vactory_news')->notice($message);
+  }
+}

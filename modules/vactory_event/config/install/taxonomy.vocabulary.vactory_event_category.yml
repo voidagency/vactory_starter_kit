@@ -1,0 +1,8 @@
+langcode: en
+status: true
+dependencies: {  }
+name: 'Event - Categories'
+vid: vactory_event_category
+description: 'Utilisez les catégories pour regrouper les événements sur des sujets similaires.'
+hierarchy: 0
+weight: 0

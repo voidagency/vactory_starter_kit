@@ -1,0 +1,27 @@
+name: '84 - Froala - Features 2 Blocks Large Image, Title & Description'
+multiple: TRUE
+category: 'Froala'
+enabled: TRUE
+limit: 2
+fields:
+  image:
+    type: image
+    label: 'Image'
+  image_alt:
+    type: text
+    label: 'Text alternatif'
+  title:
+    type: text
+    label: 'Titre'
+  description:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'full_html'
+extra_fields:
+  title:
+    type: text
+    label: 'Titre'
+  intro:
+    type: textarea
+    label: 'Introduction'

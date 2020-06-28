@@ -1,0 +1,55 @@
+<footer class="vf-footer vf-footer--variant3">
+    <div class="vf-footer-items">
+        <div class="vf-footer__top">
+            <div class="container">
+                <div class="row first-footer-block">
+                    <div class="col-lg-4">
+                        <div class="block-footer-logo">
+                            {{ vactory_render('block', 'system_branding_block', {use_site_name: false}) }}
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="block--footer-mailchimp pb-2">
+                            {{ content.form }}
+                        </div>
+                    </div>
+                    <div class="col-lg-4">
+                        <div class="block-social-media justify-content-end">
+                            <h3 class="d-lg-none social-media-title">{{ "Follow us" | t }}</h3>
+                            {{ vactory_render('block', 'socialmedialinks') }}
+                        </div>
+                    </div>
+                </div>
+                <div class="block-contact-menu">
+                    <div class="block-contactez-nous d-none d-lg-block">
+                        {{ vactory_render('block', 'block-footer-contact-v3') }}
+                    </div>
+                    <div class="block-footer-menu sm-menu-block">
+                        {{ vactory_render('block', 'system_menu_block:footer') }}
+                    </div>
+                </div>
+                <div class="last-block d-lg-flex d-none">
+                    <div class="block_content block-footer-realisation_void">
+                        <div class="field__item">
+                            <p>
+                                {{ "Design by" | t }}
+                                <img alt="Void logo" src="//place-hold.it/52x14">
+                            </p>
+                        </div>
+                    </div>
+                    <div class="block-content block-footer-copyright">
+                        <div class="field__item">
+                            <p>{{ "WAFASALAF 2017 © All rights reserved" | t }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="vf-footer__bottom">
+            <div class="container">
+                {{ vactory_render('block', 'block-footer-text') }}
+            </div>
+        </div>
+    </div>
+</footer>
+

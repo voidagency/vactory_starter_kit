@@ -1,0 +1,22 @@
+<div class="container justify-content-center">
+  <div class="row col-md-12 justify-content-center mb-5">
+    <h2>{{ 'Prenez un rendez-vous'|t }}</h2>
+  </div>
+  <div class="row justify-content-center">
+    {% for item in content %}
+      {% set image = file_url(item.image_uri) %}
+      <article class="card col-md-3 mr-3">
+        <div>
+          <img src="{{ image }}" alt="{{ item.title }}">
+        </div>
+        <div class="card-body">
+          <h4 class="card-title">
+            <a href="{{ item.appointment_type_path }}" class="link font-semibold text-uppercase font-20">{{ item.title }}</a>
+          </h4>
+        </div>
+      </article>
+    {% endfor %}
+  </div>
+</div>
+
+

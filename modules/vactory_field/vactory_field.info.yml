@@ -1,0 +1,21 @@
+name: Field
+type: module
+description: 'Vactory Core Field Bases + Field Types, widgets & formatter'
+package: Vactory Core
+core: 8.x
+dependencies:
+  - field
+  - address
+  - block
+  - block_field
+  - block_content
+  - datetime
+  - file
+  - image
+  - link
+  - entity_reference_revisions
+  - paragraphs
+  - metatag
+  - yoast_seo
+  - search_api_exclude_entity
+  - vactory_dynamic_field

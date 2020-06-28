@@ -1,0 +1,324 @@
+// @component
+// @@header
+// sites/all/modules/custom/vactory_header/scss/_variant1.scss
+// Variant 1
+// -----------------------------------------------------------------------------
+
+/* === VARIABLES === */
+$vh1-primary-color: $primary !default;
+$vh1-primary-links-color: #999 !default;
+$vh1-primary-links-active-color: $primary !default;
+$vh1-secondary-links-color: #fff !default;
+$vh1-heading-color: #afdefa !default;
+
+/* === COMPONENTS === */
+
+// Desktop > Layout.
+// -----------------------------------------------------------------------------
+.vh-variant1 .vh-layout {
+  display: flex;
+  align-items: center;
+}
+
+// Desktop > Brand.
+// -----------------------------------------------------------------------------
+.vh-variant1 .navbar-brand {
+  float: none;
+  @include rem(padding, 10px 0);
+  @include rem(margin-bottom, 5px);
+  display: block;
+
+  > img {
+    max-width: 150px;
+    min-width: 150px;
+  }
+}
+
+@include media-breakpoint-down(md) {
+  .vh-header--branding {
+    flex: 1;
+  }
+}
+
+// Desktop > Primary Menu.
+// -----------------------------------------------------------------------------
+.vh-variant1 {
+  &.vh-fixed {
+    position: fixed;
+    left: 0;
+    width: 100%;
+    background-color: $white;
+    z-index: 10;
+    transition: top .3s ease-in;
+    &.top {
+      top: 0;
+      box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.1);
+    }
+    &.bottom {
+      top: -88px;
+    }
+  }
+  .cbp-hrmenu {
+    flex-grow: 1;
+  }
+
+  .cbp-hrmenu a {
+    font-family: $font-family-base;
+  }
+
+  /* general ul style */
+  .cbp-hrmenu ul {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+  }
+
+  /* first level ul style */
+  .cbp-hrmenu > .menu-level--1 {
+    width: 90%;
+    max-width: 70em;
+    margin: 0 auto;
+    @include rem(padding, 0 15px);
+  }
+
+  .cbp-hrmenu .menu-sub-inner--1 {
+    @include make-container();
+    @include make-container-max-widths();
+  }
+
+  .cbp-hrmenu > ul > li {
+    display: inline-block;
+  }
+
+  .cbp-hrmenu > ul > li > a {
+    font-weight: 700;
+    padding: 2em 1em;
+    color: $vh1-primary-links-color;
+    display: inline-block;
+    &.is-active-trail {
+      color: $vh1-primary-links-active-color;
+    }
+  }
+
+  .cbp-hrmenu > ul > li > a:hover {
+    color: $vh1-primary-color;
+    text-decoration: none;
+  }
+
+  .cbp-hrmenu > ul > li.cbp-hropen a,
+  .cbp-hrmenu > ul > li.cbp-hropen > a:hover {
+    color: $vh1-secondary-links-color;
+    background: $vh1-primary-color;
+  }
+
+  /* sub-menu */
+  .cbp-hrmenu .menu-sub--1 {
+    display: none;
+    position: absolute;
+    background: $vh1-primary-color;
+    width: 100%;
+    left: 0;
+    z-index: 3;
+  }
+
+  .cbp-hropen .menu-sub--1 {
+    display: block;
+    padding-bottom: 3em;
+  }
+
+  .cbp-hrmenu .menu-level--2 > li {
+    width: 33%;
+    float: left;
+    padding: 0 2em 0;
+  }
+
+  .cbp-hrmenu .menu-sub-inner--1:before,
+  .cbp-hrmenu .menu-sub-inner--1:after {
+    content: " ";
+    display: table;
+  }
+
+  .cbp-hrmenu .menu-sub-inner--1:after {
+    clear: both;
+  }
+
+  .cbp-hrmenu .menu-level--2 > li a {
+    line-height: 2em;
+  }
+
+  .cbp-hrmenu .menu-level--2 > li > a {
+    display: block;
+    color: $vh1-heading-color;
+    padding: 2em 0 0.6em;
+    margin: 0;
+    font-size: 160%;
+    font-weight: 300;
+  }
+
+  .cbp-hrmenu .menu-level--3 {
+    padding-left: 20px;
+  }
+}
+
+// Search form.
+// -----------------------------------------------------------------------------
+//.vh-variant1 input.form-autocomplete {
+//  //border-width: 2px;
+//  //border-color: $btn-primary-border;
+//  background-position: 98% center;
+//  //$color-rgba: rgba(red($input-border-focus), green($input-border-focus), blue($input-border-focus), .6);
+//
+//  &:focus {
+//    border-color: $input-border-focus;
+//    outline: 0;
+//    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px $color-rgba;
+//  }
+//}
+
+// Hamburger.
+// -----------------------------------------------------------------------------
+.vh-variant1 {
+  .vh-hamburger {
+    button:focus {
+      outline: 0;
+    }
+  }
+
+  .hamburger {
+    padding: 0;
+  }
+
+  .hamburger-box {
+    width: 30px;
+  }
+
+  .hamburger-inner, .hamburger-inner::before, .hamburger-inner::after {
+    width: 30px;
+    height: 2px;
+  }
+}
+
+// Mobile > Off canvas layer.
+// -----------------------------------------------------------------------------
+.vhm-variant1 {
+  &.c-offcanvas {
+    @include rem(padding, 10px 15px);
+  }
+
+  &.c-offcanvas--left,
+  &.c-offcanvas--right {
+    width: 17em;
+  }
+
+  &.c-offcanvas--left {
+    transform: translate3d(-17em, 0, 0);
+  }
+
+  &.c-offcanvas--right {
+    transform: translate3d(17em, 0, 0);
+  }
+
+  &.is-open {
+    transform: translate3d(0, 0, 0);
+    z-index: 9999;
+  }
+}
+
+// Mobile > Brand.
+// -----------------------------------------------------------------------------
+.vhm-variant1 .navbar-brand {
+  float: none;
+  padding: 0;
+  height: auto;
+  display: block;
+
+  img {
+    max-width: 150px;
+    min-width: 150px;
+  }
+}
+
+// Mobile > Search block.
+// -----------------------------------------------------------------------------
+.vhm-variant1 .vhm__search-form {
+  .navbar-form {
+    padding: 0;
+    @include rem(margin, 15px 0 0 0);
+
+    .form-item-keys {
+      flex-grow: 1;
+    }
+
+    .form-control {
+      width: 100%;
+    }
+  }
+
+  .block--search form {
+    display: flex;
+  }
+
+}
+
+// Mobile > Primary menu.
+// -----------------------------------------------------------------------------
+.vhm-variant1 {
+  display: flex;
+  flex-direction: column;
+  .vhm__menu {
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+  ul {
+    @include rem(padding, 0 0 0 17px);
+  }
+
+  > ul {
+    padding: 0;
+    list-style: none;
+  }
+
+  a {
+    @include rem(padding, 10px 0);
+    display: block;
+    position: relative;
+
+    &:hover {
+      text-decoration: none;
+    }
+
+    &.is-active-trail,
+    &.is-active {
+      font-weight: bold;
+    }
+
+    &.is-active-trail {
+      color: $vh1-primary-links-active-color;
+    }
+  }
+
+  .has-sub > div {
+    display: none;
+  }
+
+  .has-sub > a {
+    &::after {
+      @extend %icon;
+      content: $icon-chevron-right;
+      display: inline-block;
+      @include rem(font-size, 15px);
+      position: absolute;
+      top: 50%;
+      right: 13px;
+      transform: translateY(-50%) rotate(0);
+    }
+
+    // Transform arrow to cross.
+    &.selected {
+      &::after {
+        transform: translateY(-50%) rotate(90deg);
+      }
+    }
+  }
+}
+}

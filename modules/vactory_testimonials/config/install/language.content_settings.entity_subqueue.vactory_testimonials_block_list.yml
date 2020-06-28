@@ -1,0 +1,10 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - entityqueue.entity_queue.vactory_testimonials_block_list
+id: entity_subqueue.vactory_testimonials_block_list
+target_entity_type_id: entity_subqueue
+target_bundle: vactory_testimonials_block_list
+default_langcode: current_interface
+language_alterable: false

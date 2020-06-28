@@ -1,0 +1,26 @@
+name: 'C26 - Illustration et titre en colonnes'
+multiple: TRUE
+category: 'Content'
+enabled: TRUE
+limit: 4
+fields:
+  title:
+    type: text
+    label: 'Titre'
+    options:
+      '#required': TRUE
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': TRUE
+  image_alt:
+    type: text
+    label: 'Image alt'
+  link:
+    type: text
+    label: 'Lien (Enter the path. Ex: /page-path)'
+extra_fields:
+  introduction:
+    type: textarea
+    label: 'Introduction'

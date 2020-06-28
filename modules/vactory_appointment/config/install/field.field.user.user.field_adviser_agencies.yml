@@ -1,0 +1,32 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.user.field_adviser_agencies
+    - taxonomy.vocabulary.dam_agencies
+  module:
+    - user
+  enforced:
+    module:
+      - vactory_appointment
+id: user.user.field_adviser_agencies
+field_name: field_adviser_agencies
+entity_type: user
+bundle: user
+label: Agences
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      dam_agencies: dam_agencies
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

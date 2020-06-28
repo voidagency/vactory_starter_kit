@@ -1,0 +1,125 @@
+<?php
+
+/**
+ * @file
+ * Contain related hooks.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_user_preprocess_login_with(&$variables) {
+  $moduleHandler = \Drupal::service('module_handler');
+
+  if ($moduleHandler->moduleExists('social_api')) {
+    $social_networks = $variables['social_networks'];
+    $social_networks_definitions = Drupal::service('plugin.network.manager')
+      ->getDefinitions();
+
+    foreach ($social_networks as $network_id => $data) {
+      $variables['social_networks'][$network_id]['name'] = $social_networks_definitions[$network_id]['social_network'];
+    }
+  }
+}
+
+/**
+ * Login Form.
+ *
+ * Implements hook_form_FORM_ID_alter().
+ */
+function vactory_user_form_user_login_form_alter(&$form, FormStateInterface $form_state) {
+  /** @var \Drupal\Core\Routing\AdminContext $admin_context */
+  $admin_context = \Drupal::service('router.admin_context');
+  $moduleHandler = \Drupal::service('module_handler');
+
+  if ($admin_context->isAdminRoute()) {
+    return;
+  }
+
+  // Unused markup & elements.
+  unset(
+    $form['name']['#title'],
+    $form['name']['#description'],
+    $form['pass']['#title'],
+    $form['pass']['#description']
+  );
+
+  // Setup placeholders.
+  if ($moduleHandler->moduleExists('email_registration')) {
+    $config = \Drupal::config('email_registration.settings');
+    $login_with_username = $config->get('login_with_username');
+
+    $form['name']['#attributes']['placeholder'] = $login_with_username ? t('Enter your e-mail address or username') : t('Enter your e-mail address.');
+  }
+  else {
+    $form['name']['#attributes']['placeholder'] = t('Enter your e-mail address or username.');
+  }
+
+  $form['pass']['#attributes']['placeholder'] = t('Enter your password.');
+
+  $form['name']['#attributes']['placeholder'] = t('Enter your e-mail address or username.');
+  $form['name']['#type'] = 'textfield';
+  // Add custom validate.
+  $form['name']['#element_validate'] = ['_vactory_user_login_validate'];
+
+}
+
+/**
+ * Register Form.
+ *
+ * Implements hook_form_FORM_ID_alter().
+ */
+function vactory_user_form_user_register_form_alter(&$form, FormStateInterface $form_state) {
+  /** @var \Drupal\Core\Routing\AdminContext $admin_context */
+  $admin_context = \Drupal::service('router.admin_context');
+
+  if ($admin_context->isAdminRoute()) {
+    return;
+  }
+
+  $form['user_picture']['#access'] = FALSE;
+  $form['contact']['#access'] = FALSE;
+  $form['timezone']['#access'] = FALSE;
+  $form['field_about_the_author']['#access'] = FALSE;
+
+  // Unused markup & elements.
+  unset(
+    $form['field_first_name']['widget'][0]['#title'],
+    $form['field_first_name']['widget']['#title'],
+    $form['field_first_name']['widget'][0]['value']['#title'],
+    $form['field_last_name']['widget'][0]['#title'],
+    $form['field_last_name']['widget']['#title'],
+    $form['field_last_name']['widget'][0]['value']['#title'],
+    $form['account']['mail']['#title']
+  );
+
+  // Setup placeholders.
+  $form['field_first_name']['widget'][0]['value']['#attributes']['placeholder'] = t('First name');
+  $form['field_last_name']['widget'][0]['value']['#attributes']['placeholder'] = t('Last name');
+  $form['account']['mail']['#attributes']['placeholder'] = t('Enter your e-mail address.');
+}
+
+/**
+ * Form element validation handler for the user login form.
+ *
+ * Allows users to authenticate by username OR email.
+ */
+function _vactory_user_login_validate($form, FormStateInterface $form_state) {
+  $name_input = $form_state->getValue('name');
+
+  // Try loading by username.
+  if ($user = user_load_by_name($name_input)) {
+    return TRUE;
+  }
+
+  // Try loading by email.
+  if ($user = user_load_by_mail($name_input)) {
+    // Set the username for further validation.
+    $form_state->setValue('name', $user->getAccountName());
+    return TRUE;
+  }
+
+  return FALSE;
+}

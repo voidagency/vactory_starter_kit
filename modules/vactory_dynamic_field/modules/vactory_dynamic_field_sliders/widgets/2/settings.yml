@@ -1,0 +1,28 @@
+name: 'S02 - Pointy Slider'
+multiple: TRUE
+category: 'Sliders'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: 'Title'
+    options:
+      '#required': TRUE
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': TRUE
+      '#description': 'Image size largeur: xxxpx hauteur xxxpx'
+  content:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'full_html'
+  cta_url:
+    type: url_extended
+    label: 'Read More Link'
+    placeholder_value: 'https://www.google.com'
+  cta_alt:
+    type: text
+    label: 'Read More Text'

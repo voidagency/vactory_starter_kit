@@ -1,0 +1,25 @@
+<picture class="card-picture-figure">
+  <!--[if IE 9]>
+  <video style="display: none;"><![endif]-->
+  <source
+    data-srcset="{{ srcset.desktop_1x }} 1x, {{ srcset.desktop_2x }} 2x"
+    media="(min-width: 1200px)">
+  <source
+    srcset="{{ srcset.laptop_1x }} 1x, {{ srcset.laptop_2x }} 2x"
+    media="(min-width: 992px) and (max-width: 1199px)">
+  <source
+    data-srcset="{{ srcset.tablet_1x }} 1x, {{ srcset.tablet_2x }} 2x"
+    media="(min-width: 768px) and (max-width: 991px)">
+  <source
+    data-srcset="{{ srcset.mobile_1x }} 1x, {{ srcset.mobile_2x }} 2x"
+    media="(max-width: 767px)">
+  <!--[if IE 9]></video><![endif]-->
+
+  <img class="lazyload"
+       src="{{ srcset.lqip }}"
+       data-src="{{ srcset.original }}"
+       typeof="foaf:Image"
+       alt="{{ meta.alt }}"
+       title="{{ meta.title }}"
+  >
+</picture>

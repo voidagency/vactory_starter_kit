@@ -1,0 +1,29 @@
+{{ attach_library('vactory_dynamic_field_sliders/variant10') }}
+<div class="vf-slider--parallax-effect">
+  <div class="swiper-container">
+    {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/3600/600.jpg" %}
+    <div class="parallax-bg" style="background-image:url({{ placehold }})" data-swiper-parallax="-13%"></div>
+    <div class="swiper-wrapper">
+      {% for item in 0..3 %}
+        <div class="swiper-slide">
+          <div class="swiper-content">
+            <div class="swiper-content--title" data-swiper-parallax="-300">Slide 1</div>
+            <div class="swiper-content--subtitle" data-swiper-parallax="-300">Subtitle</div>
+            <div class="swiper-content--text" data-swiper-parallax="-300">
+              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam dictum mattis velit, sit amet faucibus
+                felis iaculis nec. Nulla laoreet justo vitae porttitor porttitor. Suspendisse in sem justo. Integer
+                laoreet magna nec elit suscipit, ac laoreet nibh euismod. Aliquam hendrerit lorem at elit facilisis
+                rutrum. Ut at ullamcorper velit. Nulla ligula nisi, imperdiet ut lacinia nec, tincidunt ut libero.
+                Aenean feugiat non eros quis feugiat.</p>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    <!-- Add Pagination -->
+    <div class="swiper-pagination swiper-pagination-white"></div>
+    <!-- Add Navigation -->
+    <div class="swiper-button-prev swiper-button-white"></div>
+    <div class="swiper-button-next swiper-button-white"></div>
+  </div>
+</div>

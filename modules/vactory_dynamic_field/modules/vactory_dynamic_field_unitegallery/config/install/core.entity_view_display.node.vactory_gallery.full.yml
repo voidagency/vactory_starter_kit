@@ -1,0 +1,31 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.full
+    - field.field.node.vactory_gallery.field_vactory_gallery_item
+    - node.type.vactory_gallery
+  module:
+    - user
+    - vactory_dynamic_field
+id: node.vactory_gallery.full
+targetEntityType: node
+bundle: vactory_gallery
+mode: full
+content:
+  field_vactory_gallery_item:
+    weight: 101
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: field_wysiwyg_dynamic_formatter
+    region: content
+  links:
+    weight: 100
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  langcode: true
+  search_api_excerpt: true

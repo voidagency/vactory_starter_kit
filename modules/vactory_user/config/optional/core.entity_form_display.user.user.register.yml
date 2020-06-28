@@ -1,0 +1,73 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_form_mode.user.register
+    - field.field.user.user.field_about_the_author
+    - field.field.user.user.field_adviser_agencies
+    - field.field.user.user.field_adviser_appointments
+    - field.field.user.user.field_first_name
+    - field.field.user.user.field_last_name
+    - field.field.user.user.field_social_media_links
+    - field.field.user.user.field_token
+    - field.field.user.user.field_token_experation_date
+    - field.field.user.user.field_user_profession
+    - field.field.user.user.user_picture
+    - image.style.thumbnail
+  module:
+    - image
+    - user
+id: user.user.register
+targetEntityType: user
+bundle: user
+mode: register
+content:
+  account:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_first_name:
+    type: string_textfield
+    weight: 3
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_last_name:
+    type: string_textfield
+    weight: 4
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  language:
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  timezone:
+    weight: 2
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  user_picture:
+    type: image_image
+    weight: 5
+    region: content
+    settings:
+      progress_indicator: throbber
+      preview_image_style: thumbnail
+    third_party_settings: {  }
+hidden:
+  field_about_the_author: true
+  field_adviser_agencies: true
+  field_adviser_appointments: true
+  field_social_media_links: true
+  field_token: true
+  field_token_experation_date: true
+  field_user_profession: true
+  langcode: true
+  path: true

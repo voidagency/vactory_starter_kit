@@ -1,0 +1,90 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.vactory_press_kit.field_press_kit_theme
+    - field.field.node.vactory_press_kit.field_vactory_date
+    - field.field.node.vactory_press_kit.field_vactory_document
+    - field.field.node.vactory_press_kit.field_vactory_excerpt
+    - field.field.node.vactory_press_kit.field_vactory_media
+    - field.field.node.vactory_press_kit.field_vactory_meta_tags
+    - field.field.node.vactory_press_kit.field_vactory_seo_status
+    - node.type.vactory_press_kit
+  module:
+    - datetime
+    - file
+    - metatag
+    - text
+    - user
+    - vactory_core
+id: node.vactory_press_kit.default
+targetEntityType: node
+bundle: vactory_press_kit
+mode: default
+content:
+  field_press_kit_theme:
+    weight: 3
+    label: hidden
+    settings:
+      link: false
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_vactory_date:
+    weight: 2
+    label: hidden
+    settings:
+      format_type: medium
+      timezone_override: ''
+    third_party_settings: {  }
+    type: datetime_default
+    region: content
+  field_vactory_document:
+    weight: 6
+    label: above
+    settings:
+      use_description_as_link_text: true
+    third_party_settings: {  }
+    type: file_default
+    region: content
+  field_vactory_excerpt:
+    weight: 1
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_vactory_media:
+    weight: 4
+    label: hidden
+    settings:
+      desktop_1x: vactory_two_cols_x1
+      desktop_2x: vactory_two_cols_x2
+      laptop_1x: vactory_two_cols_x1
+      laptop_2x: vactory_two_cols_x2
+      tablet_1x: vactory_two_cols_x1
+      tablet_2x: vactory_two_cols_x2
+      mobile_1x: vactory_two_cols_x1
+      mobile_2x: vactory_two_cols_x2
+      lqip: lqip
+    third_party_settings: {  }
+    type: lazy_image
+    region: content
+  field_vactory_meta_tags:
+    weight: 7
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: metatag_empty_formatter
+    region: content
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  field_vactory_seo_status: true
+  langcode: true
+  node_banner_image: true
+  search_api_excerpt: true

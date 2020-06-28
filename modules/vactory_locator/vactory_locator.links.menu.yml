@@ -1,0 +1,24 @@
+
+# Locator Entity menu items definition
+entity.locator_entity.collection:
+  title: 'Locator Entity list'
+  route_name: entity.locator_entity.collection
+  description: 'List Locator Entity entities'
+  parent: system.admin_structure
+  weight: 100
+
+
+# Locator Entity type menu items definition
+entity.locator_entity_type.collection:
+  title: 'Locator Entity type'
+  route_name: entity.locator_entity_type.collection
+  description: 'List Locator Entity type (bundles)'
+  parent: system.admin_structure
+  weight: 99
+
+# Locator setting menu items definition
+vactory_locator.settings_form:
+  title: Locator Settings
+  route_name: vactory_locator.settings_form
+  parent: system.admin_config_system
+  description: Configure Locator website settings.

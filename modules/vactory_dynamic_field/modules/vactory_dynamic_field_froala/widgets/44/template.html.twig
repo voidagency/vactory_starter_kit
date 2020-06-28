@@ -1,0 +1,48 @@
+{% if extra_fields.intro is not empty %}
+    <div class="row text-center justify-content-center mb-3">
+        <div class="col-md-10 col-lg-8">
+        {% if extra_fields.intro is not empty %}
+            <p>{{ extra_fields.intro }}</p>
+        {% endif %}
+        </div>
+    </div>
+{% endif %}
+<div class="fdb-block">
+    <div class="row mt-5 vf-slick-slider" 
+        data-toshow="3"
+        data-dots="false"
+        data-arrows="true"
+        data-mobile-centermode="false">
+
+        {% for item in content %}
+
+            {% if loop.index >= 2 %}
+                <div class="col-md-8 col-lg-4 col-xl-3 pt-5 pt-lg-0 m-auto text-center">
+            {% else %}
+                <div class="col-md-8 col-lg-4 col-xl-3 m-auto text-center">
+            {% endif %}
+
+            {% set image_uri =(item.image.0 is defined ) ? get_image(item.image.0) : '' %}
+            {% set image_profile = image_uri|image_style('medium') %}
+            {% set lqip_image = image_uri|image_style('lqip') %}
+                 {% if item.image.0 is not empty %}
+                    <img alt="{{ item.image_alt }}" height="50"
+                        class="lazyload rounded-circle"
+                        src="{{ lqip_image }}"
+                        data-src="{{ image_profile }}">
+                 {% endif %}
+                 {% if item.description is not empty %}
+                     <p class="text-h3 mt-3">{{ item.description }}</p>
+                 {% endif %}
+                 {% if item.name is not empty %}
+                    <p class="text-h3 mt-4 mt-xl-5"><strong>{{ item.name }}</strong></p>
+                 {% endif %}
+                 {% if item.role is not empty %}
+                     <p>{{ item.role }}</p>
+                 {% endif %}
+            </div>
+
+        {% endfor %}
+
+    </div>
+</div>

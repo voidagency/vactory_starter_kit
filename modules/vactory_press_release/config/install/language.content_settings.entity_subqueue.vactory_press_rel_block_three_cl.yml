@@ -1,0 +1,10 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - entityqueue.entity_queue.vactory_press_rel_block_three_cl
+id: entity_subqueue.vactory_press_rel_block_three_cl
+target_entity_type_id: entity_subqueue
+target_bundle: vactory_press_rel_block_three_cl
+default_langcode: current_interface
+language_alterable: false

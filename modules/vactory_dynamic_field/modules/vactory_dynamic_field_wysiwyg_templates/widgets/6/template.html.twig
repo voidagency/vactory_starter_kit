@@ -1,0 +1,14 @@
+<div class="row text-center justify-content-center t-chiffre-and-text vf-slick-slider vf-slick-mobile wow">
+  {% for item in content %}
+    <div class="col-md-2">
+      <div class="item">
+        {% if item.number is not empty %}
+          <h3 class="js-number-animate" data-number="{{ item.number }}">0</h3>
+        {% endif %}
+        {% if item.name is not empty %}
+          <p>{{ item.name }}</p>
+        {% endif %}
+      </div>
+    </div>
+  {% endfor %}
+</div>

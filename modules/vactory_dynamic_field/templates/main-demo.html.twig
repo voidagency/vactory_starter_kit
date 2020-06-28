@@ -1,0 +1,56 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mt-2 mb-2">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      {% for group, widgets in content.templates %}
+        {% if widgets is not empty %}
+          {% set class_active = (content.current_cid == group) ? 'active' : '' %}
+          <li class="nav-item {{ class_active }}">
+            <a class="nav-link" href="{{ path('vactory_dynamic_field.widgets_list', {'cid': group}) }}">{{ group }}</a>
+          </li>
+        {% endif %}
+      {% endfor %}
+    </ul>
+  </div>
+</nav>
+
+{% for group, widgets in content.templates_filtered %}
+  <div id="templates-group--{{ loop.index }}">
+
+    <div class="card-columns pt-4">
+
+      {% for widget in widgets %}
+        <div class="card">
+          {% if widget.static_widget %}
+            <a
+              href="{{ path('vactory_dynamic_field.widget_view', {'wid': widget.uuid}) }}" target="_blank">
+              <img class="card-img-top no-effect" src="{{ widget.screenshot }}" alt="Template screenshot">
+            </a>
+            <div class="card-body pt-1">
+              <h6 class="card-title font-weight-bold"><a
+                  href="{{ path('vactory_dynamic_field.widget_view', {'wid': widget.uuid}) }}" target="_blank"
+                  class="h6">{{ widget.name }}</a></h6>
+              <p class="card-text mb-0">
+                <small class="text-muted">{{ widget.uuid }}</small>
+              </p>
+            </div>
+          {% else %}
+            <div class="alert alert-warning" role="alert">
+              {{ 'Template non disponible' }}
+            </div>
+          {% endif %}
+        </div>
+
+      {% endfor %}
+
+    </div>
+  </div>
+{% endfor %}
+
+
+
+

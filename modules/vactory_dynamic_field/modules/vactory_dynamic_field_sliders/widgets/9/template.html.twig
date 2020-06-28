@@ -1,0 +1,36 @@
+{{ attach_library('vactory_dynamic_field_sliders/variant9') }}
+
+
+{% set direction = (extra_fields.direction is not empty) ? extra_fields.direction : 'horizontal' %}
+<div class="vf-slider--timeline vf-slider--timeline-{{ direction }}">
+  <div class="swiper-container">
+    <div class="swiper-wrapper">
+      {% for item in content %}
+        {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : '' %}
+        {% set fluid_img = file_url(image_uri) %}
+        {% set lqip = image_uri|image_style('lqip') %}
+        {% set year = (item.year is not empty) ? item.year : '0' %}
+
+        <div class="swiper-slide swiper-lazy" data-background="{{ fluid_img }}"
+             style="background-image: url({{ lqip }})" data-year="{{ year }}">
+          <div class="swiper-slide-content"><span class="timeline-year">{{ year }}</span>
+            {% if item.title is not empty %}
+              <h4 class="timeline-title">Our nice super title</h4>
+            {% endif %}
+            {% if item.description is not empty %}
+              <p class="timeline-text">Lorem ipsum dolor site amet, consectetur adipscing elit, sed
+                do eisumod tempor incididut ut labore et dolore magna aliqua. Ut enim ad mimim venjam,
+                quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+              </p>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+    {% if extra_fields.arrows > 0 %}
+      <div class="swiper-button-prev"></div>
+      <div class="swiper-button-next"></div>
+    {% endif %}
+    <div class="swiper-pagination"></div>
+  </div>
+</div>

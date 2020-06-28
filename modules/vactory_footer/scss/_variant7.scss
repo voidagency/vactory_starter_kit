@@ -1,0 +1,102 @@
+$bg-footer-top: $gray-800;
+$bg-footer-middle: $gray-700;
+$bg-footer-bootm: $gray-800;
+$footer-text-color: $white;
+$footer-border-color: $white;
+
+@include nav-color(vf-footer--variant7 , $footer-text-color);
+
+.vf-footer--variant7 {
+  * {
+    color: $footer-text-color;
+  }
+
+  .block-social-media {
+    .fa {
+      color: $footer-text-color;
+    }
+  }
+
+  .vf-footer__top {
+    background: $bg-footer-top;
+    &--items {
+      display: flex;
+      justify-content: space-between;
+      img {
+        max-height: 35px;
+      }
+    }
+  }
+
+  .vf-footer__middle {
+    @include rem(padding, 40px 0);
+    background-color: $bg-footer-middle;
+    .block-footer-contacter_nous {
+      i {
+        display: inline-block;
+        @include rem(margin-right, 6px);
+      }
+    }
+    //underline title
+    .title-underline {
+      @include rem(margin-bottom, 25px);
+      position: relative;
+      &::before {
+        content: '';
+        position: absolute;
+        bottom: -12px;
+        @include rem(height, 2px);
+        @include rem(width, 80px);
+        background: $bg-footer-top;
+      } 
+    }
+    .block--menu {
+      ul {
+        flex-direction: column;
+      }
+    }
+  }
+  .vf-footer__bottom {
+    background: $bg-footer-bootm;
+    .vf-footer__bottom--items {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      @include rem(padding, 20px 0);
+      text-align: center;
+    }
+
+    .block--footer-mailchimp {
+      .mailchimp-title {
+        align-self: center;
+        text-align: left;
+      }
+      form {
+        position: relative;
+      }
+      .mailchimp-input {
+        border-bottom:1px solid $footer-border-color;
+      }
+      .mailchimp-submit {
+        &:before {
+          color: $footer-border-color;
+        }
+      }
+    }
+  }
+}
+
+@include media-breakpoint-up(lg) {
+  .vf-footer--variant7 {
+    .vf-footer__bottom {
+      .block--footer-mailchimp {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 0;
+        .mailchimp-input {
+          width: 300px;
+        }
+      }
+    }
+  }
+}

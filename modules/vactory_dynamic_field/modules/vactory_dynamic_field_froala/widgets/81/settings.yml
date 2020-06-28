@@ -1,0 +1,28 @@
+name: '81 - Froala - Features 8 Blocks Image Inline With Title & Description'
+multiple: TRUE
+category: 'Froala'
+enabled: TRUE
+limit: 8
+fields:
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': TRUE
+  image_alt:
+    type: text
+    label: 'Text alternatif'
+  title:
+    type: text
+    label: 'Titre'
+    options:
+      '#required': TRUE
+  description:
+    type: textarea
+    label: 'Description'
+    options:
+      '#required': TRUE
+extra_fields:
+  title:
+    type: text
+    label: 'Titre'

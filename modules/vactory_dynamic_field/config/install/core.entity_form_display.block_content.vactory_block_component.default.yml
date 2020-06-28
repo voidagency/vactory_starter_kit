@@ -1,0 +1,48 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - block_content.type.vactory_block_component
+    - field.field.block_content.vactory_block_component.field_dynamic_block_components
+  module:
+    - vactory_dynamic_field
+id: block_content.vactory_block_component.default
+targetEntityType: block_content
+bundle: vactory_block_component
+mode: default
+content:
+  block_machine_name:
+    type: string_textfield
+    weight: 1
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_dynamic_block_components:
+    weight: 4
+    settings: {  }
+    third_party_settings: {  }
+    type: field_wysiwyg_dynamic_widget
+    region: content
+  info:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  langcode:
+    type: language_select
+    weight: 2
+    region: content
+    settings:
+      include_locked: true
+    third_party_settings: {  }
+  translation:
+    weight: 3
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden: {  }

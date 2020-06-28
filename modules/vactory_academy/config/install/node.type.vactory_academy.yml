@@ -1,0 +1,13 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_academy
+name: Academy
+type: vactory_academy
+description: 'Manage your Academy content.'
+help: ''
+new_revision: true
+preview_mode: 1
+display_submitted: false

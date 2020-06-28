@@ -1,0 +1,46 @@
+vactory_espace_prive.login:
+  path: '/espace-prive/login'
+  defaults:
+    _controller: '\Drupal\vactory_espace_prive\Controller\EspacePriveController::login'
+    _title: 'Se connecter'
+  requirements:
+    _permission: 'access content'
+vactory_espace_prive.register:
+  path: '/espace-prive/register'
+  defaults:
+    _controller: '\Drupal\vactory_espace_prive\Controller\EspacePriveController::register'
+    _title: 'Créer un compte'
+  requirements:
+    _permission: 'access content'
+vactory_espace_prive.profile:
+  path: '/espace-prive/profile'
+  defaults:
+    _controller: '\Drupal\vactory_espace_prive\Controller\EspacePriveController::profile'
+    _title: 'Mon profil'
+  requirements:
+    _role: 'authenticated'
+  options:
+    no_cache: 'TRUE'
+vactory_espace_prive.password:
+  path: '/espace-prive/password'
+  defaults:
+    _controller: '\Drupal\vactory_espace_prive\Controller\EspacePriveController::resetPassword'
+    _title: 'Réinitialisation du mot de passe'
+  requirements:
+    _permission: 'access content'
+vactory_espace_prive.welcome:
+  path: '/espace-prive/welcome'
+  defaults:
+    _controller: '\Drupal\vactory_espace_prive\Controller\EspacePriveController::welcome'
+    _title: 'Vactory vous souhaite la bienvenue'
+  requirements:
+    _role: 'authenticated'
+  options:
+    no_cache: 'TRUE'
+vactory_espace_prive.settings_form:
+  path: '/admin/config/people/vactory_espace_prive'
+  defaults:
+    _form: '\Drupal\vactory_espace_prive\Form\EspacePriveSettingsForm'
+    _title: 'Espace Privé Settings'
+  requirements:
+    _permission: 'administer site configuration'

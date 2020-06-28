@@ -1,0 +1,9 @@
+langcode: en
+status: true
+name: Glossary
+type: vactory_glossary
+description: 'Manage your glossary content.'
+help: ''
+new_revision: true
+preview_mode: 0
+display_submitted: false

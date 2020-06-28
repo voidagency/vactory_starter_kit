@@ -1,0 +1,28 @@
+name: 'C38 - background with card on the middle'
+category: Content
+multiple: FALSE
+enabled: TRUE
+fields:
+  image:
+    type: image
+    label: 'background image'
+  title:
+    type: text
+    label: 'Titre'
+    options:
+      '#required': TRUE
+  description:
+    type: textarea
+    label: 'description'
+  link:
+    type: url_extended
+    label: 'lien'
+  link_alt:
+    type: text
+    label: 'text du lien'
+  link_target:
+    type: checkbox
+    label: 'Ouvrir dans une nouvelle fenêtre'
+  mode:
+    type: checkbox
+    label: 'Inverser template'

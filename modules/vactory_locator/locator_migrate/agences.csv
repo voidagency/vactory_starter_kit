@@ -1,0 +1,266 @@
+Id;Langue;Nom;Adresse;Ville;Téléphone principal;Téléphone;Fax;Partenaires ou agences;Horaire ouverture;Ouvert Samedi;Longitude;Latitude
+136;fr;CASA HAY MOHAMMADI;27  bloc Kodia  bloc 5.;CASABLANCA;05 22 63 33 45;05 22 63 33 45 / 05 22 60 44 14;05 22 63 01 01;Agence;;Non;33.587458;-7.556615
+137;fr;CASA SIDI MAAROUF;Immeuble 105-N°13-14GH4  Programme Al Moustakbal.;CASABLANCA;529 012 221;0529 012 223/24;529 012 220;Agence;;Non;33.535099;-7.646098
+138;fr;CASA BERNOUSSI;Amal 1. Avenue Bnou Harita. N°108.;CASABLANCA;05 22 76 33 00;05 22 76 33 00;05 22 73 77 78;Agence;;Non;33.608767;-7.512031
+139;fr;EL FIDA;311  bd El Fida. place Sragna;CASABLANCA;05 22 85 98 60;05 22 85 98 60;05 22 81 02 68;Agence;;Non;33.572419;-7.593527
+1448;fr;CASA MECHOUAR;Angle rue d'Ifni et place Hamidou Al Watani - Résidence Attijariwafa bank;CASABLANCA;05 22 45 14 14 ;05 22 45 14 14 ;05 22 45 14 24;Agence;;Non;33.582198;-7.602249
+1449;fr;AIN CHOK;Quartier les crêtes. Haddaouia 3. Avenue du 2 mars. N°771.;CASABLANCA;05 22 52 93 40;05 22 52 93 40 à 42;05 22 50 18 34;Agence;;Non;33.553649;-7.604422
+1450;fr;SIDI OTHMANE;Complex commercial et administratif bd el Akid el Allam hay salama 3;CASABLANCA;05 29 01 17 37 ;05 29 01 17 37 à 41;05 29 01 17 36;Agence;;Non;33.564119;-7.555252
+1452;fr;CASA MED V;1  avenue Hassan II;CASABLANCA;05 22 88 96 80;05 22 88 96 80 à 89;05 22 48 64 32;Agence;;Non;33.59488;-7.618053
+1453;fr;SETTAT;25  Lotissement Hatim. Bd Hassan II.;SETTAT;05 23 72 93 60;05 23 72 93 60 à 62;05 23 72 24 05;Agence;;Non;32.99806;-7.620346
+1454;fr;MOHAMMEDIA;93  Bd la Résistance  Hassania II  El Alia;MOHAMMEDIA;05 29 01 06 84;05 29 01 06 84;05 29 01 06 83;Agence;;Non;33.697101;-7.371499
+1455;fr;CASA ABDELMOUMEN;72  Angle Bd Abdelmoumen et Rue Ram Allah;CASABLANCA;05 22 54 51 05;05 22 54 51 05;05 22 54 51 06;Agence;;Oui;33.5776283;-7.6258411
+1460;fr;CASA ANFA;155  bd d'Anfa;CASABLANCA;05 22 95 72 40;05 22 95 72 40/41/42/43;05 22 94 33 00;Agence;;Non;33.590858;-7.636201
+1461;fr;EL OULFA;Boulevard Oum Errabii. Groupe 1. « Résidence « Les jardins Oum Errabii ».;CASABLANCA;05 22 93 68 30;05 22 93 68 30 à 39;05 22 93 45 24;Agence;;Non;33.560574;-7.673049
+1466;fr;EL JADIDA;82 avenue Hassan II;El JADIDA;05 23 35 45 19;05 23 35 45 19;05 23 35 45 93;Agence;;Non;33.250496;-8.506293
+1467;fr;EMILE ZOLA;Quartier la Gare  Angle Bd Emile Zola  Rue Douai et Rue Sijilmassa;CASABLANCA;05 29 01 17 43;05 29 01 17 43;05 29 01 17 42;Agence;;Non;33.595769;-7.593409
+1468;fr;MARRAKECH KAWKAB;22  rue Imam Chafii Harti - Gueliz;MARRAKECH;05 24 43 33 09;05 24 43 33 09/10;05 24 43 33 15;Agence;;Non;31.627843;-8.007193
+1469;fr;AGADIR HASSAN II ;1  et 2 galerie Al Inbiat avenue Hassan II;AGADIR;05 28 82 67 53;05 28 82 67 53/54/57;05 28 82 67 52;Agence;;Non;30.414455;-9.593881
+1470;fr;AGADIR DAKHLA;149  Av. Hassan 1er  Dakhla.;AGADIR;05 28 21 49 65;05 28 21 49 65/66;05 28 21 49 67;Agence;;Non;30.408135;-9.556845
+1471;fr;MARRAKECH MEDINA;Rue Mly.Ismail - Immeuble des Héritiers Glaoui. Médina.;MARRAKECH;05 24 38 85 70  ;05 24 38 85 70  ;05 24 39 13 94;Agence;;Non;31.621576;-7.991867
+1472;fr;MARRAKECH HIVERNAGE;Résidence l'Hivernage  avenue de France;MARRAKECH;05 24 43 39 42;05 24 43 39 42;05 24 43 39 53;Agence;;Non;31.623549;-8.011436
+1473;fr;BENI MELLAL;Résidence Aïcha. Avenue Mohamed V;BENI MELLAL;05 29 80 11 51 à 55;05 29 80 11 51 à 55;05 29 80 11 50;Agence;;Non;32.332272;-6.363466
+1474;fr;SAFI;5  Rue de la Marne;SAFI;05 29 01 17 49;05 29 01 17 49 à 53;05 29 01 17 48 ;Agence;;Non;32.296665;-9.243332
+1475;fr;FES FLORENCE;Avenue Hassan II  Tour Al Wataniya;FES;05 35 94 16 34;05 35 94 16 34/35;05 35 94 16 36;Agence;;Non;34.042223;-4.999595
+1476;fr;FES MED V;46  boulevard Mohammed V  Résidence Sara;FES;05 35 93 29 39;05 35 93 29 39/42;05 35 62 16 85;Agence;;Non;34.035964;-4.997733
+1479;fr;MEKNES;20  boulevard Idriss II  Résidence Mimosa;MEKNES;05 35 51 18 08;05 35 51 18 08/37;05 35 51 19 25;Agence;;Non;33.89702;-5.548471
+1480;fr;OUJDA;17 rue Jazoulit;OUJDA;05 36 70 31 32;05 36 70 31 32/33;05 36 70 31 28;Agence;;Non;34.681261;-1.919131
+1481;fr;TANGER;137  avenue Prince Héritier;TANGER;05 39 32 54 47;05 39 32 54 47 à 49;05 39 32 52 58;Agence;;Non;35.773762;-5.809214
+1482;fr;LARACHE;9  Place Libération. Larache;LARACHE;05 38 80 08 51;05 38 80 08 51 / 05 38 80 08 55;05 38 80 08 50;Agence;;Non;35.196449;-6.152312
+1483;fr;TETOUAN;73  Avenue des FAR  Tétouan;TETOUAN;05 39 70 90 80;05 39 70 90 80/77;05 39 71 92 32;Agence;;Non;35.595352;-5.340622
+1484;fr;TANGER AL QODS;79 av Al Qods  Hay Al Majd. Lot 73;TANGER;05 38 80 04 04;05 38 80 04 04 /02/03;05 38 80 04 01;Agence;;Non;35.745955;-5.798271
+1485;fr;RABAT HAY RIAD;Rés. Bachiri 1 Lot 30 N° 6 secteur 16 ;RABAT;05 37 56 93 40;05 37 56 93 40 à 43;05 37 56 47 16;Agence;;Non;33.95762;-6.872517
+1487;fr;TEMARA;Lot Marie Idda 15 T192015 Al Alaouiyne Témara ;TEMARA;05 37 61 69 90 ;05 37 61 69 90 ;05 37 61 24 51;Agence;;Non;33.917758;-6.924648
+1488;fr;RABAT IBN SINA;13 bis  14 bis avenue Ibn Sina - Agdal;RABAT;05 37 77 07 06;05 37 77 07 06/14;05 37 77 07 30;Agence;;Non;33.998516;-6.851038
+1489;fr;Allal Ben Abdellah;65  Angle Allal Ben Abdellah et boulevard Hassan II;RABAT;05 37 26 22 16;05 37 26 22 16/20;05 37 26 02 30;Agence;;Non;34.022244;-6.836994
+1490;fr;Rabat Hassan II Auto;408  Résidence Tamesna - Angle Av Hassan II et Madagascar;RABAT;05 38 00 23 10 ;05 38 00 23 10 à 14;;Agence;;Non;34.012364;-6.851091
+1491;fr;RABAT AV de France;29  avenue de France - Agdal;RABAT;05 37 68 28 28;05 37 68 28 28;05 37 68 61 21;Agence;;Non;33.998081;-6.846505
+1492;fr;RABAT MED V;5  Rue Bayt Lahm  Imm Baruk  avenue Mohammed V  1er étage (près de la gare Rabat ville);RABAT;05 37 20 83 83;05 37 20 83 83;05 37 70 62 25;Agence;;Non;34.015508;-6.834869
+1493;fr;KENITRA;1  rue Omar Riffi;KENITRA;05 37 37 33 21;05 37 37 33 21 / 05 37 37 63 68;05 37 37 32 90;Agence;;Non;34.262085;-6.579341
+1494;fr;SALE;Av Mohamed VI  Résidence Diar 3 Immeuble 11  route de Kénitra;SALE;05 37 84 91 00 ;05 37 84 91 00 à 02;05 37 78 14 01;Agence;;Non;34.041707;-6.816888
+2544;fr;AGENCE MARZOUKI;Av. Med V n°1  Lot du centre;OUARZAZATE;024 88 36 19;024 88 36 19 / 061 34 83 23/061 10 54 32;024 88 36 19;Partenaire;;Non;;
+2545;fr;CORRESPONDANT IBN SINA;Rue Ibn Sina Apt n°3 N°176;KHEMISSET;037 55 46 84;037 55 46 84 / 066 17 63 90;037 55 46 84;Partenaire;;Non;;
+2546;fr;RABI NOUR EDDINE;132 Bd Youssef Ibn Tachafine;GUELMIM;028 77 35 95;028 77 35 95 / 060 73 70 45 / 068 32 21 78;0528 77 35 95;Partenaire;;Non;;
+2547;fr;ID SAID AHMED;Kissariat Margen n°20 Av Sidi Abderrahmane;TIZNIT;028.60.14.07;028.60.14.07 / 063 32 65 74;028 60 14 07;Partenaire;;Non;;
+2548;fr;EL MZOURI SERVICE;Rue d'Anoual Imm Lamrabet 2ème étage  aptt 6 ;TAZA; 035 28 50 47; 035 28 50 47 / 0533 14 74 64;035 67 27 64;Partenaire;;Non;;
+2549;fr;EL HARCHI CONSULTING;Résidence Khalid   Rue 129 Avenue des FAR;NADOR;036 60 61 79;036 60 61 79 / 064 99 03 31 / 071 18 84 64;036 60 61 79;Partenaire;;Non;;
+2550;fr;SARA CONSEIL;99 av Hajrat Nekkour;AL HOCEIMA;063 27 36 29;063 27 36 29;039 98 51 29;Partenaire;;Non;;
+2551;fr;ETS EL BAGHAZZAOUI;149 place Mohamed V;BOUJAD;061 18 54 70;061 18 54 70 / 061 53 14 50;023 41 25 48;Partenaire;;Non;;
+2552;fr;ASSURANCES ECHABBI;51 LOTISSEMENT LIMOUNE EL K.DES SRAGNAS;KELAA DES SRAGHNAS;024 41 04 26 ;024 41 04 26 / 024 41 04 45 / 024 41 04 46 / 061 21 38 52;024 41 04 45;Partenaire;;Non;;
+2553;fr;CABINET HEZI;7 AVENUE MOHAMED V ;ERRACHIDIA;061 31 48 55 ;061 31 48 55;035 57 00 56;Partenaire;;Non;;
+2554;fr;CABINET ZEROUAL;RUE 4 BIS ABDELMOUMEN BEN ALI N °3 ;MECHRAA BEL KSIRI;037 90 54 76 ;037 90 54 76 / 072 86 25 80 / 078 08 81 91;037 90 54 76;Partenaire;;Non;;
+2555;fr;CORRESPONDANT AL MASSIRA;RUE AL MASSIRA IMM MAJID;TIFLET;037 51 52 23;037 51 52 23 / 069 36 16 67;;Partenaire;;Non;;
+2556;fr;CABINET ADERDOR;183 CENTRE COMMERCIAL AL QODS;TIZNIT;061 72 33 25;061 72 33 25;028 86 11 47;Partenaire;;Non;;
+2557;fr;CABINET DU SUD;PLACE AL ALAOUIYINE EX ASSARAG;TAROUDANT;074 27 86 67 ;074 27 86 67 ;028 85 46 80;Partenaire;;Non;;
+2558;fr;ETS HASSANIA SNC;81 AVENUE MOULAY EL HASSAN QUARTIER AL JADID;BERRECHID;069 12 11 08;069 12 11 08;;Partenaire;;Non;;
+2559;fr;ETABLISSEMENT NECTAR;AVENUE HASSAN II N° 107;ES SMARA;070 23 78 07 ;070 23 78 07 / 028 89 92 49;028 89 92 49;Partenaire;;Non;;
+2560;fr;CABINET EL GHARB;IMM SAIDI AVENUE HASSAN II N 4;KSAR EL KEBIR;072 86 25 80;072 86 25 80 ;;Partenaire;;Non;;
+2561;fr;ETS BENT JBAIL;BD BIR ANZARANE N °20 1 ER ETAGE;BEN AHMED;063 83 12 07;063 83 12 07 / 079 24 51 00;;Partenaire;;Non;;
+2562;fr;ETS HMIDI KHALID;64 RUE YOUSSEF BEN TACHAFINE;ERRACHIDIA;018 17 37 91;018 17 37 91;035 57 25 54;Partenaire;;Non;;
+2563;fr;BENI AMIR CONSEIL;BD LA MARCHE VERTE BLOC E N 149  1 ER ETAGE ;FKIH BEN SALEH;061 60 30 19;061 60 30 19 / 023 43 13 32;023 48 72 23;Partenaire;;Non;;
+2564;fr;ASSURANCES AZAGHAR;N 42 BLOC D AMICALE DES FONCTIONNAIRES ROUTE SIDI IFNI;TIZNIT;061 36 95 04;061 36 95 04 / 028 60 23 44;028 60 24 39;Partenaire;;Non;;
+2565;fr;ENTREPRISE EL BIYAALI EL MACHKOURI;BD MED V RESIDENCE AL MAGHRIB AL ARABI;TAOUNATE;010 23 25 58;010 23 25 58;;Partenaire;;Non;;
+2566;fr;AFAK SERVICES;43 RUE 9 HAY OUED EDDAHAB;KHENIFRA;035 58 70 90;035 58 70 90 / 064 58 85 21;;Partenaire;;Non;;
+2567;fr;AGENCE MALIKA;58 AVENUE HASSAN II;EL HAJEB;035 54 37 36;035 54 37 36 / 061 25 34 88 / 069 05 24 76;;Partenaire;;Non;;
+2568;fr;ASSURANCES EL MANSOURI;25 AVENUE BEN TACHFINE;AL HOCEIMA;039 98 13 39 ;039 98 13 39 ;039 98 13 40;Partenaire;;Non;;
+2569;fr;ABDELLATIF LAGRAINI;LOT DU CENTRE RUE 10;JORF EL MELHA;075 72 00 52;075 72 00 52 / 067 82 05 46 / 037 99 07 09;037 99 07 09;Partenaire;;Non;;
+2570;fr;KHADAMATE BENGUERIR;MAGASIN N° 5 IM MAATALLAH AVENUE MED V;BENGUERIR;063 13 42 25;063 13 42 25 / 68 41 94 78 / 024 31 68 34;024 31 68 34;Partenaire;;Non;;
+2571;fr;ASSURANCES OUBALHOU;38 BD MLY ABDELLAH;KHENIFRA;061 14 65 58;061 14 65 58 / 035 38 24 72 / 035 58 61 01;035 38 54 62;Partenaire;;Non;;
+2572;fr;OUARZAZATE ASSURANCES;AV MLY RACHID IMM DAOUDI APPT 4;OUARZAZATE;024 88 43 68;024 88 43 68 / 024 88 77 72;024 88 77 71;Partenaire;;Non;;
+2573;fr;CHARAF ZAID ASSURANCES;2 RUE CASABLANCA AHADAF;AZROU;0661 74 85 56;0661 74 85 56 / 0535 56 27 03;0535 56 45 45;Partenaire;;Non;;
+2574;fr;ASSURANCES HINTI;128 LOTISSEMENT DU CENTRE;OUARZAZATE;0524 88 23 03;0524 88 23 03 / 0524 88 47 10 ;0524 88 25 15;Partenaire;;Non;;
+2575;fr;STE ASSURANCES BOUARFA;111 BIS BD MOHAMED VI;BOUARFA;0536 79 88 75;0536 79 88 75;0536 79 88 88;Partenaire;;Non;;
+2576;fr;ASSURANCES BENKHANFAR;27 BD IBNOU SINA BP 103;TAN TAN;0528 87 79 38;0528 87 79 38;0528 76 60 75;Partenaire;;Non;;
+2577;fr;ASSURANCES NABILASSUR;BD DAKHLA N 15 BIS HAY EL MOUHIT;ERRACHIDIA;0661 25 13 27;0661 25 13 27 / 0535 57 46 15 / 0535 57 44 77;0535 79 05 30;Partenaire;;Non;;
+2578;fr;ASSURANCES AIT BAAMRANE;21 LOT AL WAHDA CITE EL YOUSSOUFIA;TIZNIT;0528 60 22 55;0528 60 22 55;0528 60 22 44;Partenaire;;Non;;
+2579;fr;ACHARK ASSURANCES;188 BD AL MAGHRIB AL ARABI 1 ER ETAGE 60800;TAOURIRT;0536 67 94 36;0536 67 94 36;0536 69 49 32;Partenaire;;Non;;
+2580;fr;ID AZZI HAMID;02 RUE 20 AVENUE MEHDI BEN TOUMERT;GUELMIM;0667 23 96 83;0667 23 96 83;;Partenaire;;Non;;
+2581;fr;KAMAL AMARZOUK;17 RUE CITE COMMERCIALE;SEFROU;0661 25 51 85;0661 25 51 85 / 0535 96 92 82;0535 96 92 82;Partenaire;;Non;;
+2582;fr;JALLI KHALID;CENTRE 2000 BOULEVARD MED V N° 64;KELAA DES SRAGHNAS;0662 13 37 94;0662 13 37 94;;Partenaire;;Non;;
+2583;fr;STE EL ATTAOUIA MULTISERVICES;76 LOT BADDOU LOCAL N°1;EL ATTAOUIA;0678 28 05 98;0678 28 05 98;;Partenaire;;Non;;
+2584;fr;SNOUSSI CONSEIL;N°1 APPT N°4 QUARTIER ADMINISTRATIF SIDI MOHAMED OUFARES;TAHANNAOUT;0677 89 05 98;0677 89 05 98;;Partenaire;;Non;;
+2585;fr;CABINET BOUHMALI;99-01 AVENUE EL AAKABA LOT 5;ESSAOUIRA;0669 56 79 40;0669 56 79 40 / 0524 47 44 04;0524 88 77 71;Partenaire;;Non;;
+2586;fr;ABDELGHAFOUR SAHNOUN;RUE IBN ROCHD N°81;NADOR;0665 49 43 35;0665 49 43 35;;Partenaire;;Non;;
+2587;fr;BOUCHAIB LAFHAL;N° 751 ZAHRA II;HAD SOUALEM;0661 61 30 09;0661 61 30 09 / 0669 27 19 18;;Partenaire;;Non;;
+2588;fr;ITEKKANE ABDERRAHMANE;Rue de la  Marche Verte n°46      2ème étage Appt 5 ;ESSAOUIRA;0526 43 46 63;0526 43 46 63 / 0674 95 17 85;;Partenaire;;Non;;
+2589;fr;FIDUCHAF;N°3 ETAGE 2 QUARTIER KOUGHARDA;AIT OURIR;0618 52 53 29;0618 52 53 29;;Partenaire;;Non;;
+2590;fr;ER RAHMANI MY AHMED;63 AVENUE EL MASSIRA EL KHADRA;BOUMIA;0 00 00 00 00;;;Partenaire;;Non;;
+2591;fr;GOURAMI RACHID;44 ROUTE DE MEKNES;MIDELT;0666 12 70 30;0666 12 70 30 / 0535 36 00 81;0535 36 00 81;Partenaire;;Non;;
+2592;fr;AIT MELLOUL SERVICES INTERMEDIATION SARL A U;N°18 RUE N°1 AV EL MOUKAWAMA;AIT MELLOUL;0679 54 55 51;0679 54 55 51;;Partenaire;;Non;;
+2593;fr;KANDILI CONSEIL;55 BD ZELLAKA;KHOURIBGA;0648 82 07 18;0648 82 07 18 / 0523 42 10 08;;Partenaire;;Non;;
+2595;fr;ASSURANCES OULED TEIMA SARL;LOT MOUISSETTE N°78 AVENUE MOHAME V;OULED TEIMA;0666 46 84 00;0666 46 84 00 / 0528 52 19 12;0528 52 19 12;Partenaire;;Non;;
+2596;;;CENTRE DE TAZARINE PROVINCE DE ZAGORA;TAZARINE;0524 83 93 66;0524 83 93 66;;Partenaire;;Non;;
+2598;fr;STE MULTISERVICES ETOILE AL JAWDA;AVENUE MOULAY YOUSSEF;MISSOUR;0535 68 47 16;0535 68 47 16 / 0610 83 18 90;;Partenaire;;Non;;
+2599;fr;BOUGHANAM MAROUANE;N°5 RUE 1 HAY PAM AHADAF;AZROU;0535 56 02 55;0535 56 02 55 / 0668 16 12 30;0535 56 47 52;Partenaire;;Non;;
+2600;fr;ADERDOR MOHAMED;N°52 KISSARIAT EL FATH;SIDI IFNI;0661 72 33 25;0661 72 33 25;;Partenaire;;Non;;
+2601;fr;STE ABBADI MULTI-SERVICE SARL AU;N°41 AV AL AMIR ABDELKADER MKACEM;SEFROU;0535 66 10 68;0535 66 10 68;0535 66 10 68;Partenaire;;Non;;
+2606;fr;STE BOX CHANGES;AVENUE MFADAL CHARKAOUI;SOUK LARBAA;0664 91 70 05;0664 91 70 05;;Partenaire;;Non;;
+2607;fr;ABOULKASIM MOHAMED;04 BIS RUE D'ALGERIE;MIDELT; 0661 23 36 25; 0661 23 36 25;0527 94 85 13;Partenaire;;Non;;
+2608;fr;IHMOUTEN SARL;11 BD CHOUHADA 3eme ETAGE HAY EL HASSANI;BERKANE;0648 43 38 32;0648 43 38 32;;Partenaire;;Non;;
+2609;fr;STE KHALIL ET NIDAL SERVICES;9 BD MELILIYA HAY HADDADINE;OUEZZANE;000 00 00 00;;;Partenaire;;Non;;
+2610;fr;FUTUR MANAGEMENT;APPT 3 AVENUE MOHAMED V ;TINEGHIR;0661 29 89 60;0661 29 89 60 / 0524 83 32 88;0523 83 33 88;Partenaire;;Non;;
+2613;fr;STE AZELF SERVICES;MAGASIN N°792 RUE CASABLANCA LOT AZLEF;ESSAOUIRA;000 00 00 00;;;Partenaire;;Non;;
+18632;ar;وكالة الألفة;شارع أم الربيع مجموعة 1 إقامة حدائق أم الربيع ;الدار البيضاء;522936830;0522936830/39;522934524;Agence;;Non;33.560574;-7.673049
+27289;ar;وكالة البرنوصي ;أمال٬1 شارع بنو حارثة;الدار البيضاء;522763300;522763300;522737778;Agence;;Non;33.608767;-7.512031
+27327;ar;وكالة المشور;زاوية زنقة إفني و ساحة حميدو الوطني ;الدار البيضاء;522451414;522451414;522451424;Agence;;Non;33.582198;-7.602249
+27339;ar; وكالة محمد الخامس;شارع الحسن الثاني رقم 1;الدار البيضاء;522889680;0522889680/89;522486432;Agence;;Non;33.59488;-7.618053
+27347;ar;وكالة عبد المومن; 5 شارع عبد المومن رقم   ;الدار البيضاء;522545105;522545105;522545106;Agence;;Oui;33.582298;-7.623667
+27354;ar;وكالة أنفا;شارع أنفا رقم 155;الدار البيضاء;522957240;<br/>0522957240/41/42/43;522943300;Agence;;Non;33.590858;-7.636201
+27361;ar;وكالة الحي المحمدي;27  بلوك الكدية، بلوك 5 رقم ;الدار البيضاء;522633345;0522633345/0522604414;522630101;Agence;;Non;33.587458;-7.556615
+27362;ar; وكالة سيدي معروف;عمارة  105 برنامج المستقبل ;الدار البيضاء;529 012 221;0529 012 223/24;529 012 220;Agence;;Non;33.535099;-7.646098
+27369;ar;وكالة عين الشق;شارع 2 مارس رقم 771;الدار البيضاء;522529340;0522529340/42;522501834;Agence;;Non;33.553649;-7.604422
+27377;ar;وكالة الفداء ; شارع الفداء  - ساحة سراغنة  رقم 311;الدار البيضاء;522859860;522859860;522810268;Agence;;Non;33.572419;-7.593527
+27380;ar; وكالة سطات;تجزئة حاتم شارع الحسن الثاني رقم 25  ;سطات;523729360;0523729360/62;523722405;Agence;;Non;32.99806;-7.620346
+27381;ar;وكالة المحمدية;شارع المقاومة الحسنية 2  العالية رقم 93   ;المحمدية ;529010684;529010684;529010683;Agence;;Non;33.697101;-7.371499
+27385;ar; وكالة سيدي عثمان;شارع العقيد العلام حي السلامة رقم 3;الدار البيضاء;529011737;0529011737/41;529011736;Agence;;Non;33.564119;-7.555252
+27390;ar;وكالة الجديدة;شارع الحسن الثاني رقم 82  ;الجديدة;523354519;523354519;523354593;Agence;;Non;33.250496;-8.506293
+27401;ar;وكالة إميل زولا;حي المحطة، زاوية  شارع إميل زولا و زنقة دوي و سجلماسة ;الدار البيضاء;529011743;529011743;529011742;Agence;;Non;33.595769;-7.593409
+27402;ar;وكالة الكوكب;زنقة الإمام الشافعي كليز رقم 22    ;مراكش;524433309;0524433309/10;524433315;Agence;;Non;31.627843;-8.007193
+27406;ar;وكالة الحسن الثاني; رواق الإنبعاث، محج الحسن الثاني رقم 1 و 2 ;أكادير;528826753;0528826753/57/54 ;528826752;Agence;;Non;30.414455;-9.593881
+27427;ar;وكالة الداخلة; 149 محج الحسن الأول حي الداخلة٬ رقم ;أكادير;528214965;0528214965/66;528214967;Agence;;Non;30.408135;-9.556845
+27431;ar;وكالة مراكش المدينة;زنقة مولاي إسماعيل إقامة ورثة الكلاوي;مراكش ;524388570;524388570;524391394;Agence;;Non;31.621576;-7.991867
+27436;ar;وكالة إيفرناج;إقامة إيفرناج محج فرنسا ;مراكش;524433942;524433942;524433953;Agence;;Non;31.623549;-8.011436
+27451;ar;وكالة أسفي;5 زنقة لامارن (شارع الاستقلال) رقم       ;أسفي ;529011749;0529011749/53;529011748;Agence;;Non;32.296665;-9.243332
+27454;ar;وكالة العرائش;ساحة التحرير رقم 9;العرائش;538800851;0538800855/0538800851;538800850;Agence;;Non;35.196449;-6.152312
+27472;ar;وكالة محمد الخامس ;4إقامة سارة شارع، محمد الخامس رقم 6  ;فاس;535932939;0535932939/42;535621685;Agence;;Non;34.035964;-4.997733
+27480;ar;وكالة الإسماعلية;20  إقامة ميموزة٬ شارع إدريس الثاني ;مكناس;535511808;0535511808/37;535511925;Agence;;Non;33.89702;-5.548471
+27519;ar;وكالة جازولي ;17 زنقة جازولي٬ أمام ولاية الأمن  ;وجدة ;536703132;0536703132/33;536703128;Agence;;Non;34.681261;-1.919131
+27688;ar;وكالة طنجة;137  محج ولي العهد رقم ;طنجة ;539325447;0539325447/49;539325258;Agence;;Non;35.773762;-5.809214
+27695;ar;وكالة تطوان;73 ،  شارع الجيش الملكي ، تطوان  ;تطوان;539709080;0539709080/77;539719232;Agence;;Non;35.595352;-5.340622
+27705;ar;وكالة فلورانس;برج الوطنية، محج الحسن الثاني ;فاس;535941634;0535941634/35;535941636;Agence;;Non;34.042223;-4.999595
+27718;ar;وكالة طنجة القدس;محج القدس حي المجد محج ولي العهد رقم ٬73  تجزئة المجد رقم 79 ;طنجة;538800404;0538800404/03/02;538800401;Agence;;Non;35.745955;-5.798271
+27727;ar;وكالة حي الرياض ;إقامة بشيري بجانب المجلس الأعلى;الرباط;537569340;0537569340/43;537564716;Agence;;Non;33.95762;-6.872517
+27730;ar;وكالة تمارة;1شارع الحسن الثاني رقم 5 ;تمارة;537616990;537616990;537612451;Agence;;Non;33.917758;-6.924648
+27787;ar;وكالة ابن سينا;1شارع ابن سينا أكدال رقم 3       ;الرباط;537770706;0537770706/14;537770730;Agence;;Non;33.998516;-6.851038
+27790;ar;وكالة علال ابن عبد الله;زاوية علال ابن عبد الله و شارع الحسن الثاني رقم 65  ;الرباط;537262216;0537262216/20;537260230;Agence;;Non;34.022244;-6.836994
+27793;ar;وكالة الحسن الثاني;شارع الحسن الثاني، إقامة تامسنا زاوية شارع الحسن الثاني و مدغشقر رقم 408  ;الرباط;538002310;0538002310/14 ;;Agence;;Non;34.012364;-6.851091
+27801;ar;وكالة شارع فرنسا ;شارع فرنسا أكدال رقم 29         ;الرباط;537682828;537682828;537686121;Agence;;Non;33.998081;-6.846505
+27819;ar;وكالة محمد الخامس;عمارة باروك، زنقة بيت لحم، شارع محمد الخامس ;الرباط;537208383;537208383;537706225;Agence;;Non;34.015508;-6.834869
+27838;ar;وكالة القنيطرة;1 زنقة عمر الريفي رقم  ;القنيطرة ;537373321;0537376368/0537373321 ;537373290;Agence;;Non;34.262085;-6.579341
+27839;ar;وكالة سلا;شارع محمد السادس٬ إقامة ديار 3 عمارة 11 طريق القنيطرة سلا ;سلا;537849100;0537849100/02;537781401;Agence;;Non;34.041707;-6.816888
+27842;ar;وكالة بني ملال;إقامة عائشة، شارع محمد الخامس بني ملال  رقم  9  ;بني ملال;529801151;0529801151/55;529801150;Agence;;Non;32.332272;-6.363466
+40314;ar;شركة أزلف للخدمات ;MAGASIN N°792 RUE CASABLANCA LOT AZLEF;الصويرة;000 00 00 00;;;Partenaire;;Non;;
+35614;ar;تأمينات بنخنفر;شارع ابن سينا رقم 27 صندوق البريد 103;طانطان;528877938;528877938;528766075;Partenaire;;Non;;
+66042;ar;آيت ملول خدمات وساطة;N°18 RUE N°1 AV EL MOUKAWAMA;آيت ملول;0679 54 55 51;0679 54 55 51;;Partenaire;;Non;;
+66048;ar;وكالة مرزوقي;Av. Med V n°1  Lot du centre;ورزازات;024 88 36 19;024 88 36 19 / 061 34 83 23/061 10 54 32;024 88 36 19;Partenaire;;Non;;
+66049;ar;مراسل إبن سينا;Rue Ibn Sina Apt n°3 N°176;الخميسات;037 55 46 84;037 55 46 84 / 066 17 63 90;037 55 46 84;Partenaire;;Non;;
+66055;ar;ربيع نورالدين;132 Bd Youssef Ibn Tachafine;كلميم;028 77 35 95;028 77 35 95 / 060 73 70 45 / 068 32 21 78;0528 77 35 95;Partenaire;;Non;;
+66062;ar;خدمة المزوري;Rue d'Anoual Imm Lamrabet 2ème étage  aptt 6 ;تازة; 035 28 50 47; 035 28 50 47 / 0533 14 74 64;035 67 27 64;Partenaire;;Non;;
+66063;ar;الحرشي إستشارات;Résidence Khalid   Rue 129 Avenue des FAR;الناضور;036 60 61 79;036 60 61 79 / 064 99 03 31 / 071 18 84 64;036 60 61 79;Partenaire;;Non;;
+66066;ar;إستشارات سارة;99 av Hajrat Nekkour;الحسيمة;063 27 36 29;063 27 36 29;039 98 51 29;Partenaire;;Non;;
+66072;ar;مؤسسة البغزاوي;149 place Mohamed V;أبو الجعد;061 18 54 70;061 18 54 70 / 061 53 14 50;023 41 25 48;Partenaire;;Non;;
+66076;ar;وكالة هيزي;7 AVENUE MOHAMED V ;الراشدية;061 31 48 55 ;061 31 48 55;035 57 00 56;Partenaire;;Non;;
+66079;ar;مؤسسة خالد الحميدي;64 RUE YOUSSEF BEN TACHAFINE;الراشدية;018 17 37 91;018 17 37 91;035 57 25 54;Partenaire;;Non;;
+66080;ar;مؤسسة البياعلي المشكوري;;تاونات;;;;Partenaire;;Non;;
+90419;ar;إستشارات بني أمير ;;فقيه بن صالح;;;;Partenaire;;Non;;
+66087;ar;خدمات آفاق;43 RUE 9 HAY OUED EDDAHAB;خنيفرة;035 58 70 90;035 58 70 90 / 064 58 85 21;;Partenaire;;Non;;
+66096;ar;خدمات بنجرير;MAGASIN N° 5 IM MAATALLAH AVENUE MED V;بن كرير;063 13 42 25;063 13 42 25 / 68 41 94 78 / 024 31 68 34;024 31 68 34;Partenaire;;Non;;
+66097;ar;تأمينات شرف زايد;2 RUE CASABLANCA AHADAF;أزرو;0661 74 85 56;0661 74 85 56 / 0535 56 27 03;0535 56 45 45;Partenaire;;Non;;
+66098;ar;تأمينات حنتي;128 LOTISSEMENT DU CENTRE;ورزازات;0524 88 23 03;0524 88 23 03 / 0524 88 47 10 ;0524 88 25 15;Partenaire;;Non;;
+66101;ar;تأمينات نبيلاسور;BD DAKHLA N 15 BIS HAY EL MOUHIT;الراشدية;0661 25 13 27;0661 25 13 27 / 0535 57 46 15 / 0535 57 44 77;0535 79 05 30;Partenaire;;Non;;
+66102;ar;إد عزي حميد;02 RUE 20 AVENUE MEHDI BEN TOUMERT;كلميم;0667 23 96 83;0667 23 96 83;;Partenaire;;Non;;
+66104;ar;جاللي خالد;CENTRE 2000 BOULEVARD MED V N° 64;قلعة السراغنة;0662 13 37 94;0662 13 37 94;;Partenaire;;Non;;
+66110;ar;العطاوية للخدمات المتعددة;76 LOT BADDOU LOCAL N°1;العطاوية;0678 28 05 98;0678 28 05 98;;Partenaire;;Non;;
+66111;ar;عبد الغفورسحنون;RUE IBN ROCHD N°81;الناضور;0665 49 43 35;0665 49 43 35;;Partenaire;;Non;;
+66112;ar;إتقان عبد الرحمان;Rue de la  Marche Verte n°46      2ème étage Appt 5 ;الصويرة;0526 43 46 63;0526 43 46 63 / 0674 95 17 85;;Partenaire;;Non;;
+66113;ar;الرحماني مولاي محمد;63 AVENUE EL MASSIRA EL KHADRA;بومية;0 00 00 00 00;;;Partenaire;;Non;;
+66114;ar;ڭورامي رشيد;44 ROUTE DE MEKNES;ميدلت;0666 12 70 30;0666 12 70 30 / 0535 36 00 81;0535 36 00 81;Partenaire;;Non;;
+66119;ar;تأمينات اولاد تايمة;LOT MOUISSETTE N°78 AVENUE MOHAME V;ولاد تايما;0666 46 84 00;0666 46 84 00 / 0528 52 19 12;0528 52 19 12;Partenaire;;Non;;
+66121;ar;شركة متعددة الخدمات نجمة الجودة;AVENUE MOULAY YOUSSEF;ميسور;0535 68 47 16;0535 68 47 16 / 0610 83 18 90;;Partenaire;;Non;;
+66123;ar;بوغنام مروان;N°5 RUE 1 HAY PAM AHADAF;أزرو;0535 56 02 55;0535 56 02 55 / 0668 16 12 30;0535 56 47 52;Partenaire;;Non;;
+66125;ar;إحموتن;11 BD CHOUHADA 3eme ETAGE HAY EL HASSANI;بركان;0648 43 38 32;0648 43 38 32;;Partenaire;;Non;;
+66126;ar;تسيير المستقبل;APPT 3 AVENUE MOHAMED V ;تينغير;0661 29 89 60;0661 29 89 60 / 0524 83 32 88;0523 83 33 88;Partenaire;;Non;;
+66141;fr;ESSARIRA ESSAID;;SIDI BENNOUR;0672 04 06 58;;;Partenaire;;Non;;
+66142;ar;السريرة آلسعيد;;سيدي بنور;0672 04 06 58;;;Partenaire;;Non;;
+66151;fr;STE SERVICES MOUMADI OUARZAZATE SARL AU;;OUARZAZATE;06 61 77 67 71;05 24 88 21 02;0524 88 21 02;Partenaire;;Non;;
+66154;ar;شركة الخدمات مومادي ورزازات;;ورزازات;06 61 77 67 71;05 24 88 21 02;0524 88 21 02;Partenaire;;Non;;
+67111;fr;TOUMASSUR;11  RUE MOULAY EL HASSAN;KHOURIBGA;-;;;Partenaire;;;;
+67112;ar;تأمينات توما;11  RUE MOULAY EL HASSAN;خريبكة;-;;;Partenaire;;;;
+67113;fr;ASSCESENNACIRI CHERKAOUI ;191  BD. MOHAMED V;OUED ZEM;-;;;Partenaire;;;;
+67114;ar;تأمينات الناصري الشرقاوي;191  BD. MOHAMED V;واد زم;-;;;Partenaire;;;;
+67117;fr;DIRA ASSURANCES S.A.R.L;7  RUE MOULAY YOUSSEF;AL HOCEIMA;-;;;Partenaire;;;;
+67118;ar;تأمينات ديرا;7  RUE MOULAY YOUSSEF;الحسيمة;-;;;Partenaire;;;;
+67119;fr;ASSURANCES TAIBI  SARL;16  BD. YOUSSEF IBN TACHFINE;GUERCIF;-;;;Partenaire;;;;
+67122;ar;تأمينات الطيبي;16  BD. YOUSSEF IBN TACHFINE;كرسيف;-;;;Partenaire;;;;
+67123;fr;OTMANY ASSURANCES;1  HAY NAJAH RUE 3;KHENIFRA;-;;;Partenaire;;;;
+67124;ar;تأمينات العثماني;1  HAY NAJAH RUE 3;خنيفرة;-;;;Partenaire;;;;
+67127;fr;ASSURANCES KASSIMI;76 AV. LA RESISTANCE ET AV .HASSAN II;NADOR;-;;;Partenaire;;;;
+67128;ar;تأمينات قاسمي;76 AV. LA RESISTANCE ET AV .HASSAN II;الناضور;-;;;Partenaire;;;;
+67129;fr;IMANASSURANCES ;51  IMM  ISAAD APPT 1 BD DES F.A.R.;SIDI BENNOUR;-;;;Partenaire;;;;
+67130;ar;تأمينات إيمان;51  IMM  ISAAD APPT 1 BD DES F.A.R.;سيدي بنور;-;;;Partenaire;;;;
+67131;fr;ASSURANCES TIJANI  SARL;322  AVENUE AL MAGHREB EL ARABI  HAY EL WAHDA;OUARZAZATE;-;;;Partenaire;;;;
+67132;ar;تأمينات التيجاني;322  AVENUE AL MAGHREB EL ARABI  HAY EL WAHDA;ورزازات;-;;;Partenaire;;;;
+67133;fr;ASSURANCES BENSLIMANE  S.A.R.L;HAY NEJMA  BLOC 4 N° 29  SUR RUE ZIAIDA;BEN SLIMANE;-;;;Partenaire;;;;
+67134;ar;تأمينات بنسليمان;HAY NEJMA  BLOC 4 N° 29  SUR RUE ZIAIDA;بن سليمان;-;;;Partenaire;;;;
+67135;fr;TORAYA TAZA ASSURANCES ;1   RESIDENCE DRAA ELLOUZ HAY KASSOU OU MEDDAH ;TAZA;-;;;Partenaire;;;;
+67138;ar;تأمينات ثريا تازة;1   RESIDENCE DRAA ELLOUZ HAY KASSOU OU MEDDAH ;تازة;-;;;Partenaire;;;;
+67142;fr;ATLASSUR;105 – 107  RUE OMAR BEN KHATTAB HAY TAKADDOUM;BERRECHID;-;;;Partenaire;;;;
+67143;ar;أطلسأسور;105 – 107  RUE OMAR BEN KHATTAB HAY TAKADDOUM;برشيد;-;;;Partenaire;;;;
+67146;fr;ASSURANCES BOUREGREG;N° 1 Imm H - Res la belle vue  - Av la belle vue  ;SALA EL JADIDA;-;;;Partenaire;;;;
+67147;ar;تأمينات أبو رقراق;N° 1 Imm H - Res la belle vue  - Av la belle vue  ;سلا الجديدة;-;;;Partenaire;;;;
+67149;fr;ASSURANCES BOUZBOUZ;88   BD MOHAMED V;KHEMISSET;-;;;Partenaire;;;;
+67150;ar;تأمينات بوزبوز;88   BD MOHAMED V;الخميسات;-;;;Partenaire;;;;
+75312;fr;ASSURANCES BAHNINE ;;GUELMIM;;;;Partenaire;;;;
+75321;ar;تأمينات باحنين;;كلميم;;;;Partenaire;;;;
+75322;fr;ASSURANCES BENGADA ;;MEDIOUNA;;;;Partenaire;;;;
+75329;ar;تأمينات بنكادة ;;مديونة;;;;Partenaire;;;;
+75331;fr;ASSURANCES BENZIT SUD ;;AIT MELLOUL ;;;;Partenaire;;;;
+75337;ar;تأمينات بنزيت ;;آيت ملول;;;;Partenaire;;;;
+75340;fr;ASSURANCES MAHSOUN ;;BOUZNIKA;;;;Partenaire;;;;
+75345;ar;تأمينات محسون ;;بوزنيقة;;;;Partenaire;;;;
+75346;fr;SAMIRASSUR;;CHEFCHAOUEN;;;;Partenaire;;;;
+75347;ar;ساميرأسور;;شفشاون;;;;Partenaire;;;;
+75353;fr;ASSURANCES EL ANSARI;;ERRACHIDIA ;;;;Partenaire;;;;
+75357;ar;تأمينات الأنصري;;الراشدية;;;;Partenaire;;;;
+75361;fr;ASSURANCES AMHAMEDI ;;FKIH BEN SALAH;;;;Partenaire;;;;
+75382;ar;تأمينات أمحمدي;;فقيه بن صالح;;;;Partenaire;;;;
+75385;fr;ASSURANCES YATHRIB SARL;;MIDAR;;;;Partenaire;;;;
+75386;ar;تأمينات يترب تأمينات يترب ;تأمينات يترب;ميدار;;;;Partenaire;;;;
+75388;fr;ASSURANCES TARGUIST;;TARGUIST;;;;Partenaire;;;;
+75389;ar;تأمينات تاركيست;;تاركيست;;;;Partenaire;;;;
+75396;fr;ST ASSURANCE DIAE;;TIFLET;;;;Partenaire;;;;
+75397;ar;تأمين دياء;;تيفلت;;;;Partenaire;;;;
+75398;fr;MAATALA ASSURANCE SARL;;ZAIO;;;;Partenaire;;;;
+75401;ar;تأمين ماعطلا;;زايوو;;;;Partenaire;;;;
+75402;fr;ASSURANCES EL BERKANIA  SARL;;BERKANE;;;;Partenaire;;;;
+75406;ar;تأمينات البركانية;;بركان;;;;Partenaire;;;;
+75407;fr;ASSURANCE SOUSS MASSA;TAROUDANT;TAROUDANT;;;;Partenaire;;;;
+75408;ar;تأمين سوس ماسة;تارودانت;تارودانت;;;;Partenaire;;;;
+75409;fr;ASSURANCES TAHA;;INZEGANE;;;;Partenaire;;;;
+75411;ar;تأمين طاهة;;إينزكان;;;;Partenaire;;;;
+90257;ar;إستشارات سنوسي ;;تحناوت;;;;Partenaire;;Non;;
+90282;ar;بوشعيب لفحال ;;حد السوالم ;;;;Partenaire;;Non;;
+90285;ar;مكتب بوهمالي;;الصويرة ;;;;Partenaire;;Non;;
+90288;ar;فيدوشاف ;;آيت أورير ;;;;Partenaire;;Non;;
+90289;ar;إستشارات كانديلي ;;خريبكة ;;;;Partenaire;;Non;;
+90292;ar;أدردور محمد ;;سيدي إفني ;;;;Partenaire;;Non;;
+90300;ar;شركة عبادي متعددة الخدمات ;;صفرو;;;;Partenaire;;Non;;
+90310;ar;شركة بوكس للصرف ;;سوق لاربع ;;;;Partenaire;;Non;;
+90313;ar;أبوالقاسم محمد ;;ميدلت ;;;;Partenaire;;Non;;
+90317;ar;شركة خليل و نضال للخدمات ;;وازان ;;;;Partenaire;;Non;;
+90324;ar;كمال أمرزوق ;;صفرو;;;;Partenaire;;Non;;
+90325;ar;تأمينات أشارك ;;تاوريرت ;;;;Partenaire;;Non;;
+90330;ar;تأمينات آيت باعمران ;;تيزنيت ;;;;Partenaire;;Non;;
+90334;ar;شركة التأمينات بوعرفة ;;بوعرفة ;;;0536 79 88 88;Partenaire;;Non;;
+90371;ar;تأمينات ورزازات ;;ورزازات ;;;;Partenaire;;Non;;
+90379;ar;تأمينات أوبالهو ;;خنيفرة ;;;;Partenaire;;Non;;
+90380;ar;تأمينات  عبد اللطيف لكريني ;;جرف المالح ;;;;Partenaire;;Non;;
+90384;ar;تأمينات المنصوري ;;الحسيمة ;;;;Partenaire;;Non;;
+90390;ar;وكالة ملكة ;;الحاجب ;;;;Partenaire;;Non;;
+90427;ar;مؤسسة بنت جبيل ;;بن أحمد ;;;;Partenaire;;Non;;
+90434;ar;مكتب الغرب ;;قصر الكبير ;;;;Partenaire;;Non;;
+90435;ar;مأسسة نكتار ;;السمارة ;;;;Partenaire;;Non;;
+90436;ar;مأسسة الحسنية س ن س ;;برشيد ;;;;Partenaire;;Non;;
+90437;ar;مكتب الجنوب ;;تارودانت ;;;;Partenaire;;Non;;
+90439;ar;مكتب أدردور ;;تيزنيت ;;;;Partenaire;;Non;;
+90443;ar;مراسل المسيرة ;;تيفلت;;;;Partenaire;;Non;;
+90444;ar;مكتب زروال ;;مشرع بلقصيري ;;;;Partenaire;;Non;;
+90448;ar;تأمينات الشعبي ;;قلعة السراغنة ;;;;Partenaire;;Non;;
+90451;ar;سعيد أحمد;;تيزنيت ;;;;Partenaire;;Non;;
+90452;fr;STE AIT OUAZIK SERVICE SARL ;;TAZARINE ;;;;Partenaire;;;;
+90457;ar;شركة آيت وازيك للخدمات ;;تازارين ;;;;Partenaire;;;;
+455213;fr;Mâani EDM + Auto;416  Rue Mustapha El Mâani - Casablanca.;CASABLANCA;;0529 00 93 48 à 51 ;05 22 22 08 03;Agence;;Non;33.588296;-7.617061
+455287;fr;KENITRA MOHAMMED V;200-202  Bd Mohamed V. Kénitra;Kénitra;;05 38 02 34 00 à 03;05 38 02 34 10;Agence;;Non;34.263091;-6.573772
+455328;fr;Agence Nador;N° 90 Boulevard Ibn Tachfine NADOR;NADOR;;05 36 32 91 05/09;05 36 33 60 74 ;Agence;;Non;35.177222;-2.925689
+455354;fr;Agence Laâyoune;Immeuble El Ghilani. Bd Chahid Bouchraya. Place Dcheira. Laayoune;LAAYOUNE;;05 29 90 96 01 à 05;05 29 90 96 00;Agence;;Non;27.152949;-13.202262
+637760;fr;Agence Tanger TFZ;Zone Franche de Tanger - Bd des FAR Lot 46A .;TANGER;;05 38 80 16 31;05 38 80 16 30;Agence;;Non;35.734286;-5.868208

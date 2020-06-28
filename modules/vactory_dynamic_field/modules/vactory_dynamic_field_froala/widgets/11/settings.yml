@@ -1,0 +1,16 @@
+name: '11 - Froala - Content Full Text & Image Thumbnail'
+multiple: FALSE
+category: 'Froala'
+enabled: TRUE
+fields:
+  description:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'full_html'
+  image:
+    type: image
+    label: 'Thumbnail'
+  image_alt:
+    type: text
+    label: 'Text alternatif'

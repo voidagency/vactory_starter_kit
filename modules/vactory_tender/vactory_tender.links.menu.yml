@@ -1,0 +1,5 @@
+vactory_tender.settings:
+  title: "Appel d'offre"
+  description: "Configure Appel d'offre module."
+  parent: system.admin_config_system
+  route_name: vactory_tender.admin_settings

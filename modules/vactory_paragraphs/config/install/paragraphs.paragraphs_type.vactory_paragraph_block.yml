@@ -1,0 +1,8 @@
+langcode: en
+status: true
+dependencies: {  }
+id: vactory_paragraph_block
+label: Block
+icon_uuid: null
+description: ''
+behavior_plugins: {  }

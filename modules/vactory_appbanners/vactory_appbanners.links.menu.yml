@@ -1,0 +1,5 @@
+vactory_appbanners.settings:
+  title: 'App Banners'
+  description: 'Configure App Banners.'
+  parent: system.admin_config_services
+  route_name: vactory_appbanners.admin_settings

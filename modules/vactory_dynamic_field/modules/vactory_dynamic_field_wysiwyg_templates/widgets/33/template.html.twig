@@ -1,0 +1,29 @@
+{% if extra_fields.introduction is not empty %}
+  <div class="introduction mb-3 mb-md-4">
+    <p class="chapo">{{ extra_fields.introduction }}</p>
+  </div>
+{% endif %}
+<div class="t-text-img-tierce">
+  {% for item in content %}
+    {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : '' %}
+    {% set fluid_image = file_url(image_uri) %}
+    {% set lqip_image = image_uri|image_style('lqip') %}
+    {% set classes = (image_src) ? 'col-md-10' : 'col-md-12' %}
+    {% set image_alt = (item.image_alt is not empty) ? item.image_alt : '' %}
+    <div class="row">
+      {% if(image_src) %}
+        <div class="col-12 col-md-2 mb-2 mb-md-0 text-center">
+          <img alt="{{ image_alt }}"
+               class="img-fluid lazyload"
+               src="{{ lqip_image }}"
+               data-src="{{ fluid_image }}"/>
+        </div>
+      {% endif %}
+      {% if item.description.value is not empty %}
+        <div class="col-12 {{ classes }}">
+          {{ item.description.value|raw }}
+        </div>
+      {% endif %}
+    </div>
+  {% endfor %}
+</div>

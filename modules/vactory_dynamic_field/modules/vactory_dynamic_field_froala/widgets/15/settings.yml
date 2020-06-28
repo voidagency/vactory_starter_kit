@@ -1,0 +1,34 @@
+name: '15 - Froala - Content Left Text With CTA & Background Image'
+multiple: FALSE
+category: 'Call to action'
+enabled: TRUE
+fields:
+  image:
+    type: image
+    label: 'Background'
+    options:
+      '#required': TRUE
+  title:
+    type: text
+    label: 'Titre'
+  description:
+    type: textarea
+    label: 'Description'
+  link:
+    type: url_extended
+    label: 'Lien'
+  link_alt:
+    type: text
+    label: 'Titre Lien'
+  link_target:
+    type: checkbox
+    label: 'Ouvrir dans une nouvelle fenêtre'
+  btn:
+    type: checkbox
+    label: 'Activer le style btn-primary'
+  touch:
+    type: checkbox
+    label: 'Ajouter touch decoration a haut de block'
+  mode:
+    type: checkbox
+    label: 'Activer le mode inversé (Description To Right)'

@@ -1,0 +1,77 @@
+{# Header 2 Variant #}
+{{ attach_library('vactory_header/vactory_header.variant2') }}
+
+{% import "MegaMenuMacro.html.twig" as menuStructure %}
+{% set main_navigation_menu = simplify_menu('main') %}
+
+{% import "MenuMacro.html.twig" as secondaryMenu %}
+{% set secondary_navigation_menu = simplify_menu('top-menu') %}
+
+<div id="vh-header" class="vh-header-2 vh-variant-2 vh-sticky">
+  <header class="vh-header">
+    <!-- Start Header Top Ection -->
+    <div class="vh-header__top">
+      <div class="container-fluid">
+        <div class="vh-header__top-wrapper">
+          <div class="vh-header__top-left">
+            <div class="vh-header__branding">
+              {{ vactory_render('block', 'system_branding_block', {use_site_name: false}) }}
+            </div>
+          </div>
+
+          <div class="vh-header__top-center">
+            <div class="vh-header__menu d-none d-lg-block">
+              {{ vactory_render('block', 'system_menu_block:top-navigation') }}
+            </div>
+          </div>
+
+          <div class="vh-header__top-right">
+            <div class="vh-header__hamburger d-lg-none">
+              {% include('vh-hamburger.html.twig') %}
+            </div>
+            <div class="vh-header__contact d-none d-lg-block">
+              <button type="button" name="contact" class="btn btn-outline-primary">Contact Us</button>
+            </div>
+          </div>
+
+
+        </div>
+      </div>
+    </div>
+    <!-- End Header Top Section -->
+
+    <!-- Start Header Scroll Indicator -->
+    <div class="vh-header__scroll-indicator"></div>
+    <!-- End Header Scroll Indicator -->
+  </header>
+</div>
+
+{% import "MobileMenuMacro.html.twig" as MobileMenuStructure %}
+
+<aside class="vhm-header-2 vhm-variant vhm--overlay d-lg-none is-closed" role="complementary" id="vhm">
+  <div class="vhm-header">
+    <div class="vhm-header__top">
+      <div class="vhm-header__top-right">
+        <div class="vhm-header__language-drop-switcher">
+          {{ vactory_render('block', 'language_dropdown_block:language_interface') }}
+        </div>
+      </div>
+      <div class="vhm-header__top-left">
+        <div class="vh-header__search-btn">
+          <button type="button" name="search" aria-label="Search button" class="search icon-search js-btn-search-overlay" data-offcanvas-trigger="search-overlay-v3"></button>
+        </div>
+      </div>
+    </div>
+    <div class="vhm-header__middle">
+
+      <nav class="vhm-header__menu">
+        {{ MobileMenuStructure.MobileMenuMacro(main_navigation_menu.menu_tree) }}
+      </nav>
+    </div>
+    <div class="vhm-header__bottom">
+      <div class="vhm-header__social-link">
+        {{vactory_render('block', 'socialmedialinks')}}
+      </div>
+    </div>
+  </div>
+</aside>

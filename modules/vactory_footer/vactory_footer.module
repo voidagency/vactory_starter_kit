@@ -1,0 +1,74 @@
+<?php
+
+/**
+ * @file
+ * Contain related hooks.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_footer_theme($existing, $type, $theme, $path) {
+  return [
+    "block_vactory_footer1"                        => [
+      "variables" => ["content" => NULL],
+      "template"  => "block--vactory-footer1",
+    ],
+    "block_vactory_footer2"                        => [
+      "variables" => ["content" => NULL],
+      "template"  => "block--vactory-footer2",
+    ],
+    "block_vactory_footer3"                        => [
+      "variables" => ["content" => NULL],
+      "template"  => "block--vactory-footer3",
+    ],
+    "form__block_vactory_footer3__form_newsletter" => [
+      "template"       => "block--vactory-footer3--form-newsletter",
+      'render element' => 'element',
+      'base hook'      => 'form',
+    ],
+    "block_vactory_footer4"                        => [
+      "variables" => ["content" => NULL],
+      "template"  => "block--vactory-footer4",
+    ],
+    "block_vactory_footer5"                        => [
+      "variables" => ["content" => NULL],
+      "template"  => "block--vactory-footer5",
+    ],
+    "block_vactory_footer6"                        => [
+      "variables" => ["content" => NULL],
+      "template"  => "block--vactory-footer6",
+    ],
+    "block_vactory_footer7"                        => [
+      "variables" => ["content" => NULL],
+      "template"  => "block--vactory-footer7",
+    ],
+    "block_vactory_footer8"                        => [
+      "variables" => ["content" => NULL],
+      "template"  => "block--vactory-footer8",
+    ],
+    "block_vactory_footer_amp" => [
+      "template" => "block-vactory-footer-amp",
+    ],
+  ];
+}
+
+/**
+ * Implements hook_theme_suggestions_alter().
+ */
+function vactory_footer_theme_suggestions_alter(array &$suggestions, array $variables, $hook) {
+  $footer_variants = [
+    'block_vactory_footer1',
+    'block_vactory_footer2',
+    'block_vactory_footer3',
+    'block_vactory_footer4',
+    'block_vactory_footer5',
+    'block_vactory_footer6',
+    'block_vactory_footer7',
+    'block_vactory_footer8',
+    'block_vactory_footer_amp',
+  ];
+  if (in_array($hook, $footer_variants)) {
+    $suggestions[] = 'custom_' . $hook;
+  }
+}

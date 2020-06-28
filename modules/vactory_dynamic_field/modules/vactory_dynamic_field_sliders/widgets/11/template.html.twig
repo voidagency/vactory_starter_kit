@@ -1,0 +1,72 @@
+{{ attach_library('vactory_dynamic_field_sliders/variant11') }}
+{% set swip_effect = (extra_fields.group_gonfig.effect is not empty) ? extra_fields.group_gonfig.effect : 'slide' %}
+{% set swip_loop = (extra_fields.group_gonfig.loop > 0) ? extra_fields.group_gonfig.loop : 'TRUE' %}
+{% set swip_arrows = (extra_fields.group_gonfig.arrows > 0) ? extra_fields.group_gonfig.arrows : 'TRUE' %}
+{% set swip_dots = (extra_fields.group_gonfig.dots > 0) ? extra_fields.group_gonfig.dots : 'TRUE' %}
+{% set swip_keyboard = (extra_fields.group_gonfig.keyboard > 0) ? extra_fields.group_gonfig.keyboard : 'TRUE' %}
+{% set swip_animationspeed = (extra_fields.group_gonfig.animationspeed is not empty) ? extra_fields.group_gonfig.animationspeed : '500' %}
+{% set swip_direction = (extra_fields.group_gonfig.direction is not empty) ? extra_fields.group_gonfig.direction : 'vertical' %}
+{% set swip_number_slides = (extra_fields.group_gonfig.numberofslides is not empty) ? extra_fields.group_gonfig.numberofslides : '1' %}
+{% set swip_number_slides_mobile = (extra_fields.group_gonfig.numberofslidesmobile is not empty) ? extra_fields.group_gonfig.numberofslidesmobile : '1' %}
+{% set swip_scrollbar = (extra_fields.group_gonfig.scrollbar > 0) ? 'TRUE' : 'FALSE' %}
+
+<div class="vf-slider-swiper">
+  <div class="swiper-container"
+       data-effect="{{ swip_effect }}"
+       data-loop="{{ swip_loop }}"
+       data-arrows="{{ swip_arrows }}"
+       data-dots="{{ swip_dots }}"
+       data-keyboard="{{ swip_keyboard }}"
+       data-scrollbar="{{ swip_scrollbar }}"
+       data-animationspeed="{{ swip_animationspeed }}"
+       data-numbreslides="{{ swip_number_slides }}"
+       data-numbreslidesmobile="{{ swip_number_slides_mobile }}"
+       data-direction="{{ swip_direction }}">
+    <div class="swiper-wrapper">
+      {% for item in content %}
+        {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : '' %}
+        {% set fluid_img = file_url(image_uri) %}
+        {% set lqip_image = image_uri|image_style('lqip') %}
+
+        <div class="swiper-slide swiper-lazy"
+             data-background="{{ fluid_img }}"
+             style="background-image: url('{{ lqip_image }}');">
+          <div class="swiper-content">
+            {% if item.title is not empty %}
+              <h3 class="swiper-content--title fadeInUp animated">{{ item.title }}</h3>
+            {% endif %}
+            {% if item.description is not empty %}
+              <p class="swiper-content--text fadeInUp animated">
+                {{ item.description }}
+              </p>
+            {% endif %}
+            {% if item.link is not empty and item.link_alt is not empty %}
+              {% set link_targt = (item.link_target > 0) ? '_blank' : '_self' %}
+              <p class="swiper-content--link fadeInUp animated"><a href="{{ item.link }}" target="{{ link_target }}"
+                                                 class="btn btn-outline-light">{{ item.link_alt }}</a></p>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+
+    {% if extra_fields.group_gonfig.dots > 0 %}
+      <div class="swiper-pagination"></div>
+    {% endif %}
+
+    {% if extra_fields.group_gonfig.arrows > 0 and extra_fields.group_gonfig.direction == 'horizontal' %}
+      <div class="swiper-buttons d-lg-block d-none">
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+      </div>
+    {% endif %}
+
+
+    {% if extra_fields.group_gonfig.scrollbar > 0 %}
+      <!-- If we need scrollbar -->
+      <div class="swiper-scrollbar"></div>
+    {% endif %}
+
+  </div>
+</div>

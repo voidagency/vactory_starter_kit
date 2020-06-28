@@ -1,0 +1,32 @@
+<?php
+
+/**
+ * @file
+ * Module hooks.
+ */
+
+/**
+ * Implements hook_toolbar().
+ */
+function vactory_devtools_toolbar() {
+  $items['dev-tools-warning'] = [
+    '#weight' => 999,
+    '#cache' => [
+      'contexts' => ['route'],
+    ],
+  ];
+
+  // Show warning only on administration pages.
+  $admin_context = \Drupal::service('router.admin_context');
+  if ($admin_context->isAdminRoute()) {
+    $items['dev-tools-warning']['#type'] = 'toolbar_item';
+    $items['dev-tools-warning']['tab'] = [
+      '#type' => 'inline_template',
+      '#template' => '<a class="toolbar-warning" href="#.">Mode Développement</a>',
+      '#attached' => [
+        'library' => ['vactory_devtools/toolbar-warning'],
+      ],
+    ];
+  }
+  return $items;
+}

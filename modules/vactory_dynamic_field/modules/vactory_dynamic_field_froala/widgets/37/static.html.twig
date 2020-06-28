@@ -1,0 +1,29 @@
+<div class="fdb-block">
+    <div class="row text-center justify-content-center">
+        <div class="col-8">
+            <h2>Title</h2>
+            <p class="lead">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
+        </div>
+    </div>
+    <div class="row justify-content-center text-left">
+
+        {% for item in 0..3 %}
+            <div class="col-12 col-sm-6 mb-3">
+                <div class="row align-items-center">
+                    <div class="col-12 col-sm-6 col-lg-4 d-flex d-sm-block justify-content-center">
+                        {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/160/160.jpg" %}
+                        <img alt="Image Alt"
+                            class="img-fluid rounded-circle lazyload"
+                            src="{{ content.image_placeholder }}"
+                            data-src="{{ placehold }}">
+                    </div>        
+                    <div class="col-12 col-sm-6 col-lg-8 d-flex d-sm-block justify-content-center flex-column text-center text-sm-left">
+                        <h3><strong>Jhone Doe</strong></h3>
+                        <p class="text-h3">Role</p>
+                        <p>Lorem Ipsum is simply dummy text of the printing.</p>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>

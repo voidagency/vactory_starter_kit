@@ -1,0 +1,29 @@
+name: '17 - Froala - Content Center Thumbnail, Title, Description & CTA'
+multiple: FALSE
+category: 'Call to action'
+enabled: TRUE
+fields:
+  image:
+    type: image
+    label: 'Thumbnail'
+  image_alt:
+    type: text
+    label: 'Text alternatif'
+  title:
+    type: text
+    label: 'Titre'
+  description:
+    type: textarea
+    label: 'Description'
+  link:
+    type: url_extended
+    label: 'Lien'
+  link_alt:
+    type: text
+    label: 'Titre Lien'
+  subtitle:
+    type: text
+    label: 'Subtitle'
+  link_target:
+    type: checkbox
+    label: 'Ouvrir dans une nouvelle fenêtre'

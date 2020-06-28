@@ -1,0 +1,99 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.card_inline
+    - field.field.node.vactory_tender.body
+    - field.field.node.vactory_tender.field_vactory_date
+    - field.field.node.vactory_tender.field_vactory_excerpt
+    - field.field.node.vactory_tender.field_vactory_media_document
+    - field.field.node.vactory_tender.field_vactory_media_file
+    - field.field.node.vactory_tender.field_vactory_reference
+    - node.type.vactory_tender
+  module:
+    - datetime
+    - smart_trim
+    - text
+    - user
+id: node.vactory_tender.card_inline
+targetEntityType: node
+bundle: vactory_tender
+mode: card_inline
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 1
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_vactory_date:
+    weight: 2
+    label: hidden
+    settings:
+      timezone_override: ''
+      date_format: d/m/Y
+    third_party_settings: {  }
+    type: datetime_custom
+    region: content
+  field_vactory_excerpt:
+    type: smart_trim
+    weight: 4
+    region: content
+    label: hidden
+    settings:
+      trim_length: 50
+      trim_type: words
+      trim_suffix: ...
+      wrap_class: trimmed
+      more_text: More
+      more_class: more-link
+      trim_options:
+        text: true
+        trim_zero: false
+      wrap_output: false
+      more_link: false
+      summary_handler: full
+    third_party_settings: {  }
+  field_vactory_media_document:
+    type: entity_reference_label
+    weight: 7
+    region: content
+    label: hidden
+    settings:
+      link: true
+    third_party_settings: {  }
+  field_vactory_media_file:
+    type: entity_reference_label
+    weight: 5
+    region: content
+    label: hidden
+    settings:
+      link: true
+    third_party_settings: {  }
+  field_vactory_reference:
+    weight: 3
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  langcode:
+    type: language
+    weight: 9
+    region: content
+    label: above
+    settings:
+      link_to_entity: false
+      native_language: false
+    third_party_settings: {  }
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  node_banner_image: true
+  search_api_excerpt: true

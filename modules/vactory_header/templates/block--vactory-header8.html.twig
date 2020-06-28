@@ -1,0 +1,101 @@
+{# Header 2 Variant #}
+{{ attach_library('vactory_header/vactory_header.variant8') }}
+
+{% import "MegaMenuMacro.html.twig" as menuStructure %}
+{% set main_navigation_menu = simplify_menu('main') %}
+
+{% import "MenuMacro.html.twig" as secondaryMenu %}
+{% set secondary_navigation_menu = simplify_menu('top-menu') %}
+
+{% import "MobileMenuMacro.html.twig" as MobileMenuStructure %}
+
+<div id="vh-header" class="vh-header-8 vh-variant-8 vh-sticky">
+  <header class="vh-header">
+    <!-- Start Header Top Ection -->
+    <div class="vh-header__top d-none d-lg-block">
+      <div class="container">
+        <div class="vh-header__top-wrapper">
+          <div class="vh-header__top-left">
+            <div class="vh-header__language-drop-switcher transparent">
+              {{ vactory_render('block', 'language_dropdown_block:language_interface') }}
+            </div>
+          </div>
+
+          <div class="vh-header__top-center">
+            <div class="vh-header__branding">
+              {{ vactory_render('block', 'system_branding_block', {use_site_name: false}) }}
+            </div>
+          </div>
+
+          <div class="vh-header__top-right">
+            <div class="vh-header__social-link white">
+              {{vactory_render('block', 'socialmedialinks')}}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End Header Top Section -->
+
+    <!-- Start Header Bottom Section  -->
+    <div class="vh-header__bottom">
+      <div class="container">
+        <div class="vh-header__bottom-wrapper">
+          <div class="vh-header__bottom-left">
+            <div class="vh-header__branding-sticky">
+              <a href="/" class="home-page-link"><i class="icon icon-favorite-star"></i></a>
+              {{ vactory_render('block', 'system_branding_block', {use_site_name: false}) }}
+            </div>
+          </div>
+          <div class="vh-header__bottom-center">
+            <div class="vh-header__menu">
+              <nav class="navbar navbar-expand-lg">
+                <div class="collapse navbar-collapse hover-dropdown d-lg-block" id="navbarNavDropdown">
+
+                  <div class="vhm-header__wrapper d-lg-none">
+                    <div class="vhm-header__branding">
+                      {{ vactory_render('block', 'system_branding_block', {use_site_name: false}) }}
+                    </div>
+                    <div class="vh-header__hamburger">
+                      {% include('vh-hamburger.html.twig') %}
+                    </div>
+                  </div>
+
+                  <div class="vh-header__language-link-switcher white d-lg-none">
+                    {{ vactory_render('block', 'language_block:language_interface') }}
+                  </div>
+
+                  <div class="d-none d-lg-block">
+                    {{ menuStructure.MegaMenuMacro(main_navigation_menu.menu_tree) }}
+                  </div>
+
+                  <div class="vhm-header__menu d-lg-none">
+                    {{ MobileMenuStructure.MobileMenuMacro(main_navigation_menu.menu_tree) }}
+                  </div>
+
+                  <div class="vh-header__social-link white d-lg-none">
+                    {{vactory_render('block', 'socialmedialinks')}}
+                  </div>
+
+                </div>
+              </nav>
+            </div>
+          </div>
+          <div class="vh-header__bottom-right">
+            <div class="vh-header__search-btn white d-none d-lg-block">
+              <button type="button" name="search" aria-label="Search button" class="search icon-search js-btn-search-overlay" data-offcanvas-trigger="search-overlay-v3"></button>
+            </div>
+            <div class="vh-header__hamburger d-lg-none">
+              {% include('vh-hamburger.html.twig') %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End Header Bottom Section  -->
+
+    <!-- Start Header Scroll Indicator -->
+    <div class="vh-header__scroll-indicator"></div>
+    <!-- End Header Scroll Indicator -->
+  </header>
+</div>

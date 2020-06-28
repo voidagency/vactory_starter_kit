@@ -1,0 +1,12 @@
+{% set title = content.type_confirmation == 'create' ? 'Votre rendez-vous à bien été enregistré'|t : 'Votre rendez-vous à bien été modifié'|t %}
+{% set link_title = content.type_confirmation == 'create' ? 'Modifier votre rendez-vous'|t : 'Modifier un autre rendez-vous'|t %}
+<h2 class="text-center mb-4 mt-3">{{ title }}</h2>
+{% if content.type_confirmation == 'create' %}
+  <p class="text-center">
+    {{ 'Vous pouvez modifier votre RDV en renseignant votre numéro de téléphone' }}
+  </p>
+{% endif %}
+<div class="text-center">
+  <a href="{{ url('vactory_appointment.appointment_edit_submit_form') }}" class="btn btn-primary mt-3 mb-4 text-center">{{ 'Modifier votre rendez-vous' }}</a>
+</div>
+

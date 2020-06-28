@@ -1,0 +1,39 @@
+name: '52 - Froala - Pricing Dark Title & Price, Gray SubTitle, Items & CTA'
+multiple: TRUE
+category: 'Tables'
+enabled: TRUE
+limit: 3
+fields:
+  title:
+    type: text
+    label: 'Titre'
+  price:
+    type: text
+    label: 'Price'
+  image:
+    type: image
+    label: 'Image'
+  image_alt:
+      type: text
+      label: 'Text alternatif'
+  subtitle:
+    type: text
+    label: 'Sous titre'
+  lists:
+    type: text_format
+    label: 'Items'
+    options:
+      '#format': 'full_html'
+  link:
+    type: url_extended
+    label: 'Lien'
+  link_alt:
+    type: text
+    label: 'Titre lien'
+  link_target:
+    type: checkbox
+    label: 'Ouvrir dans une nouvelle fenêtre'
+extra_fields:
+  title:
+      type: text
+      label: 'Titre'

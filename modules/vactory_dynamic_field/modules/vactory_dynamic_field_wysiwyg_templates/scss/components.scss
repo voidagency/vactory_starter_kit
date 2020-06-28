@@ -1,0 +1,2044 @@
+// Variables
+$brown-dark: #4E4541;
+$bg-push-default: $white;
+
+// Template 1
+.t-2b-image-video-title-text-button {
+
+  &.block-with-bg {
+    @include bg-shadow(#fff, 0 2px 8px 0 rgba(0, 0, 0, 0.06), 32px, 24px, none, 6px);
+
+    .block-image {
+      text-align: center;
+
+      img {
+        width: auto;
+        //max-width: 90%;
+      }
+    }
+  }
+
+  h2 {
+    @include rem(margin-bottom, 16px);
+    text-transform: none;
+  }
+
+  .text-large {
+    @include rem(margin-bottom, 15px);
+    @include rem(font-size, 16px);
+    @include rem(line-height, 25px);
+    font-weight: normal;
+  }
+
+  .block-image {
+    @include rem(margin-bottom, 15px);
+  }
+
+  .t-2b-buttons {
+    text-align: center;
+  }
+}
+
+// Template 2
+.t-2b-image-videp-bg-title-text {
+
+  .t-2b-image-bg {
+    @include rem(padding, 24px);
+    //@include rem(margin-bottom, 23px);
+    @include rem(margin-top, 23px);
+    @include bg-shadow(#fff, 0 2px 8px 0 rgba(0, 0, 0, 0.06), 24px, 24px, none, 6px);
+    position: relative;
+
+    .t-video-title {
+      position: absolute;
+      z-index: 9999;
+      color: $white;
+      @include rem(font-size, 16px);
+      @include rem(line-height, 18px);
+      font-weight: normal;
+      top: 30px;
+      left: 30px;
+      width: calc(100% - 80px);
+    }
+  }
+
+  .t-description {
+    @include rem(margin-bottom, 20px);
+    width: 100%;
+
+    &:last-child {
+      @include rem(margin-bottom, 15px);
+    }
+  }
+
+  h2 {
+    @include rem(margin-bottom, 20px);
+    width: 100%;
+  }
+}
+
+// Template 3
+.t-3cols-image-title-text-permalinks {
+  .t-block-image-description {
+    height: 100%;
+    background-color: $white;
+    box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.04);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .t-3cols-description {
+    @include rem(padding, 9px 24px 27px 24px);
+    background-color: $white;
+  }
+
+  h2, .h4 {
+    font-weigh: 600;
+    @include rem(margin-bottom, 8px);
+    text-transform: none;
+  }
+
+  .js-img-video .block-image > a:after {
+    background-color: transparent;
+  }
+}
+
+// Template 4
+.t-6-points-indices {
+  .t-item {
+    justify-content: center;
+  }
+
+  .t-box {
+    position: relative;
+    text-align: center;
+
+    img {
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .t-box-description {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+
+      .t-box-description-number {
+        p {
+          font-style: italic;
+          @include rem(font-size, 40px);
+          @include rem(line-height, 36px);
+          @include rem(margin-bottom, 10px);
+        }
+      }
+
+      p {
+        color: $white;
+      }
+    }
+  }
+}
+
+// Template 5
+.t-6blocks-image-desc-button {
+  .t-6blocks-links {
+    @include rem(margin-top, 51px);
+    text-align: center;
+  }
+
+  img {
+    margin: 0 auto 0;
+    height: 85px;
+    width: auto;
+
+    & + p {
+      @include rem(margin, 11px auto 0);
+      max-width: 196px;
+    }
+  }
+
+  h3 {
+    margin-top: 0;
+    @include rem(margin-bottom, 10px);
+    font-weight: 600;
+    @include rem(font-size, 72px);
+    @include rem(line-height, 77px);
+
+    & + p {
+      margin: 0 auto;
+      max-width: 196px;
+    }
+  }
+}
+
+// template 6
+.t-chiffre-and-text {
+  .item {
+    text-align: center;
+  }
+
+  h3 {
+    color: $primary;
+    font-weight: 600;
+    @include rem(font-size, 31px);
+    line-height: 1;
+    display: inline-flex;
+    align-items: flex-end;
+    justify-content: center;
+    height: 87px;
+    @include rem(padding, 20px 20px 5px);
+    margin-top: 0;
+    margin-bottom: 0;
+    position: relative;
+    overflow: hidden;
+    min-width: 126px;
+
+    &:before {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 50%;
+      width: 124px;
+      height: 124px;
+      border: 1px solid #979797;
+      border-radius: 50%;
+      transform: translateX(-50%);
+    }
+  }
+
+  p {
+    @include rem(margin-top, 10px);
+  }
+}
+
+// Template 7
+.t-2b-imageorvideo-bigTitle-text {
+  .block-image {
+    text-align: center;
+
+    img {
+      width: auto;
+      max-width: 80%;
+    }
+  }
+
+  h1 {
+    @include rem(margin-bottom, 10px);
+  }
+
+  .text-description {
+    @include rem(font-size, 22px);
+    @include rem(line-height, 29px);
+    font-weight: normal;
+    color: $brown-dark;
+  }
+}
+
+.t-media-block {
+  .play-video {
+    border: 10px solid #2196f3;
+  }
+}
+
+.t-video-block {
+
+  .video {
+    width:914px;
+    height: 514px;
+  }
+
+  .play-video {
+    border: 10px solid #2196f3;
+  }
+
+  .inline-YTPlayer {
+    max-width: 100% !important;
+  }
+}
+
+.dynamic-field-widget--play [class^="icon-"],
+.dynamic-field-widget--play[class*=" icon-"] {
+  color: #FFF;
+  position: absolute;
+  font-size: 100px;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.dynamic-field-widget--play {
+  position: relative;
+}
+
+.play-video {
+  body:not(.cke_editable) & {
+    &:before {
+      content: $icon-play;
+      font-family: $icomoon-font-family;
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      color: #FFF;
+      font-size: 76px;
+      transform: translate(-50%, -50%);
+      transition: color ease-in .2s;
+      z-index: 2;
+      opacity: .8;
+    }
+    &:hover {
+      &:before {
+        color: $primary;
+      }
+    }
+  }
+}
+
+.media-visu,
+.play-video {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  &:hover{
+    img {
+      transform: scale(1.1);
+    }
+  }
+  img {
+    @include img-fluid;
+    width: 100%;
+    display: block;
+    transition: transform .5s ease-in;
+  }
+}
+
+// Template 8
+.t-video-youtube-with-content {
+  .block-image {
+
+    &:not(:last-child) {
+      @include rem(margin-bottom, 30px);
+    }
+
+    img {
+      width: 100%;
+    }
+  }
+}
+
+// Template 9
+.t-three-card-with-cta {
+  @include bg-shadow(#fff, 0 2px 8px 0 rgba(0, 0, 0, 0.06), 15px, 15px, none, 6px);
+  .t-item {
+    @include rem(margin-bottom, 24px);
+    text-align: center;
+  }
+
+  p.t-title {
+    @include rem(margin-bottom, 12px);
+  }
+}
+
+// Template 10
+.t-boxed-table {
+  @include bg-shadow(#fff, 0 2px 8px 0 rgba(0, 0, 0, 0.06), 15px, 15px, none, 6px);
+
+  .t-box {
+    @include rem(margin-bottom, 16px);
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 1px solid #cbcbcb;
+    @include rem(padding-bottom, 7px);
+  }
+
+  .t-box-title {
+    margin-bottom: 0;
+    @include rem(font-size, 16px);
+    @include rem(line-height, 16px);
+    color: $black;
+    font-weight: normal;
+    @include rem(padding-right, 15px);
+  }
+
+  .t-box-side {
+    p {
+      color: $black;
+      font-weight: normal;
+      @include rem(font-size, 16px);
+      @include rem(line-height, 16px);
+      white-space: nowrap;
+
+      span {
+        color: $primary;
+        font-weight: 600;
+        @include rem(font-size, 16px);
+        @include rem(line-height, 16px);
+      }
+    }
+  }
+}
+
+// Template 11
+.t-three-card-with-image-desc-link {
+  .t-box {
+    @include bg-shadow(#fff, 0 2px 8px 0 rgba(0, 0, 0, 0.06), 30px, 30px, none, 6px);
+    text-align: center;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+
+    img {
+      @include rem(margin, 0 auto 30px);
+      max-width: 160px;
+      width: 160px;
+    }
+
+    .t-box-description-link {
+      border-top: 1px solid #b8b8b8;
+      @include rem(padding-top, 20px);
+    }
+
+    .t-box-description {
+      @include rem(margin-bottom, 18px);
+    }
+  }
+}
+
+// Template 12
+.t-thight-image-text {
+  img {
+    width: 100%;
+  }
+
+  .t-thight-image-text-image-container {
+    //@include aspect-ratio(460, 224);
+  }
+
+  .t-thight-image-text-image {
+    @include rem(margin-bottom, 25px);
+
+    &.block-with-bg {
+      @include bg-shadow(#fff, 0 2px 8px 0 rgba(0, 0, 0, 0.06), 32px, 24px, none, 6px);
+    }
+  }
+}
+
+// Template 13 // Template 14
+.t-slider-cards {
+  > h3 {
+    @include rem(margin-bottom, 24px);
+    text-align: center;
+  }
+
+  > .row {
+    &:not(.slick-initialized) {
+      @include row-make-equal-height();
+    }
+  }
+
+  .t-box {
+    @include bg-shadow(#fff, 0 2px 8px 0 rgba(0, 0, 0, 0.06), 30px, 30px, none, 6px);
+    height: 100%;
+    width: 100%;
+
+    .t-box-img-wrapper {
+      @include rem(margin-bottom, 25px);
+      img {
+        max-width: 70px;
+        width: 70px;
+      }
+    }
+  }
+
+  .t-card-title {
+    color: #7fa4c5;
+    @include rem(margin-bottom, 10px);
+    font-weight: bold;
+    @include rem(font-size, 16px);
+    @include rem(line-height, 22px);
+  }
+
+  .t-box-description {
+    &:not(:last-child) {
+      @include rem(margin-bottom, 20px);
+    }
+  }
+}
+
+// Template 15
+.t-temoignage-box {
+  > .row:not(.slick-initialized) {
+    @include row-make-equal-height();
+  }
+
+  .t-box {
+    @include bg-shadow(#fff, 0 2px 8px 0 rgba(0, 0, 0, 0.06), 40px, 10px, none, 6px);
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+
+    .t-box-description {
+      font-weight: normal;
+      font-style: italic;
+      color: #4e4541;
+      @include rem(font-size, 22px);
+      @include rem(line-height, 26px);
+      @include rem(margin-bottom, 30px);
+    }
+
+    .t-box-temoignage,
+    .t-box-temoignage-operation {
+      margin-bottom: 0;
+    }
+  }
+}
+
+// Template 16
+.t-two-sided-block-with-bg-cta {
+  .t-content {
+    border: 1px solid transparent;
+    border-radius: 6px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    .t-item {
+      background-repeat: no-repeat;
+      background-size: cover;
+      @include rem(padding, 40px 30px);
+      position: relative;
+
+      &:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, .3);
+      }
+
+      .t-box {
+        position: relative;
+        z-index: 2;
+      }
+
+      .t-entete {
+        @include rem(font-size, 16px);
+        font-weight: normal;
+        color: $white;
+        @include rem(margin-bottom, 8px);
+      }
+
+      h2 {
+        @include rem(margin-bottom, 30px);
+        color: $white;
+      }
+
+      .t-box-details {
+        color: $white;
+
+        a:not(.btn):not(.permalink):not(.btn-download):not(.btn-with-icon) {
+          color: $white;
+          text-decoration: underline;
+          @include rem(font-size, 16px);
+          @include rem(line-height, 18px);
+          font-weight: normal;
+          transition: color .3s ease-in;
+
+          &:hover {
+            color: $primary;
+          }
+
+          & + a {
+            @include rem(margin-left, 11px);
+            @include rem(margin-right, 11px);
+            @include rem(margin-bottom, 8px);
+          }
+        }
+
+        ul {
+          list-style-type: none;
+          padding-left: 0;
+          text-align: center;
+
+          li {
+            display: inline-block;
+            @include rem(padding-left, 11px !important);
+            @include rem(padding-right, 11px !important);
+
+            &:before {
+              display: none;
+            }
+
+            &, a {
+              color: $white;
+              @include rem(font-size, 16px);
+              @include rem(line-height, 18px);
+              @include rem(margin-bottom, 8px !important);
+              font-weight: normal;
+            }
+
+            a {
+              text-decoration: underline;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Template 17
+.t-coverflow-full {
+
+  .col-md-6 {
+    width: calc(100vw - 30px);
+    //height: calc(100vw - 30px);
+    height: auto;
+    max-width: 632px;
+    max-height: 486px;
+    min-height: 200px;
+  }
+
+  .t-2b-image-bg {
+    @include rem(padding, 24px);
+    margin-bottom: 0;
+    display: inline-block;
+    @include bg-shadow(#fff, 0 2px 8px 0 rgba(0, 0, 0, 0.06), 24px, 24px, none, 6px);
+    position: relative;
+    width: 100%;
+    > div {
+      height: 100%;
+    }
+
+    .t-video-title {
+      position: absolute;
+      z-index: 9999;
+      color: $white;
+      @include rem(font-size, 16px);
+      @include rem(line-height, 18px);
+      font-weight: normal;
+      top: 30px;
+      left: 30px;
+      width: calc(100% - 80px);
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+}
+
+// Template 18
+.t-boxed-text-with-icon {
+  > h3 {
+    text-align: center;
+    @include rem(margin-bottom, 24px);
+  }
+
+  .t-boxed-parent {
+    &:not(:last-child) {
+      @include rem(margin-bottom, 30px);
+    }
+  }
+
+  .t-item-box {
+    @include bg-shadow(#fff, 0 2px 8px 0 rgba(0, 0, 0, 0.06), 30px, 30px, none, 6px);
+  }
+
+  .t-item-img {
+    @include rem(margin, 0 auto 15px auto);
+
+    img {
+      max-width: 90px;
+      //min-width: 90px;
+      width: 90px;
+    }
+  }
+
+  .t-item-details {
+    overflow: hidden;
+
+    p {
+      color: $black;
+    }
+  }
+
+  .t-item {
+    &:not(:last-child) {
+      @include rem(margin-bottom, 30px);
+    }
+
+    img {
+      width: 100%;
+    }
+  }
+
+  .t-boxed-parent h3 {
+    color: #7fa4c5;
+    font-weight: bold;
+    @include rem(font-size, 18px);
+    @include rem(line-height, 20px);
+    @include rem(margin-bottom, 7px);
+  }
+}
+
+// Template 19
+.t-bloc-partners {
+  .t-block-partners-wrapper {
+    .card-partner {
+      @include rem(margin-bottom, 20px);
+      .t-bloc-item-partner {
+        max-width: 100%;
+        width: 100%;
+        margin-left: 0;
+        margin-right: 0;
+        height: 100%;
+        @include rem(padding, 20px);
+        border: 1px solid $black;
+      }
+
+    }
+    .t-bloc-item-partner {
+      padding: 0 15px;
+      @include if-ie() {
+        flex-basis: 212px;
+      }
+      .t-partner-image {
+        //height: 100%;
+        width: 100%;
+
+        > a {
+          position: absolute;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+        }
+      }
+      a, img {
+        margin: 0 auto;
+        width: 100%;
+      }
+    }
+    .slick-list {
+      @include rem(margin, 0 0 20px 0);
+    }
+    .slick-slide {
+      .t-partner-image {
+        height: auto;
+        margin-bottom: 20px;
+      }
+    }
+    .slick-track {
+      display: flex;
+      align-items: center;
+    }
+  }
+}
+
+// Template 21
+.t-iframe {
+  @include rem(padding, 15px);
+  background-color: $white;
+  @include rem(margin-bottom, 30px);
+  border-radius: 4px;
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.09);
+  margin-left: 0;
+  margin-right: 0;
+}
+
+// template 23
+.t-fiche-image-content {
+  h5 {
+    color: $secondary;
+  }
+
+  .t-fiche-image-content-body {
+    @include rem(padding, 30px 15px);
+    background: $white;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    box-shadow: 0 2px 10px 2px rgba(0, 0, 0, 0.1);
+
+    &:not(:last-child) {
+      @include rem(margin-bottom, 30px)
+    }
+
+    .t-image-wrapper {
+      @include rem(padding, 0 20px);
+      @include rem(margin-bottom, 20px);
+
+      img {
+        max-width: 133px;
+        width: 133px;
+      }
+    }
+  }
+}
+
+// Template 24
+.t-publication-wrapper {
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, .18);
+  background-color: $white;
+  @include rem(padding, 0 15px);
+  border: 1px solid transparent;
+  border-radius: 6px;
+
+  .t-publication-content {
+    @include rem(padding, 15px 0);
+
+    &:not(:last-child) {
+      border-bottom: 1px solid #a29f9c;
+    }
+
+    .t-image-wrapper {
+      @include rem(margin-bottom, 20px);
+
+      img {
+        width: 100px;
+        max-width: 100px;
+        margin: 0 auto;
+      }
+    }
+
+    .t-publication-details-text {
+      @include rem(margin-bottom, 5px);
+
+      h3,
+      .t-publication-authors {
+        @include rem(margin-bottom, 5px);
+      }
+
+      .t-publicatoin-description {
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+// Template 25
+.t-block-chiffres {
+  .chiffre-item {
+    &__description {
+      @include rem(font-size, 18px);
+    }
+  }
+}
+
+// Template 26
+.t-col-illustration {
+  @include rem(margin, 0 0 20px);
+  max-width: 100%;
+  margin: 0 auto;
+
+  .intro {
+    margin: 0 auto 0;
+  }
+  a {
+    color: $black;
+
+    &:hover {
+      color: $primary;
+    }
+  }
+  [class^="col-"] {
+    @include rem(margin-bottom, 30px);
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+}
+.block-illustration {
+  height: 90px;
+  display: block;
+
+  img {
+    max-height: 90px;
+    height: 90px;
+    display: inline-block;
+  }
+}
+
+// Template 27
+img.media-border {
+  border: 20px solid $primary;
+  width: 100%;
+  display: block;
+}
+
+.play-video {
+  position: relative;
+  display: block;
+  overflow: hidden;
+
+  img {
+    max-width: 100%;
+    height: auto;
+    transition: transform .5s ease-in;
+  }
+}
+
+
+// Template 28
+.t-intro-three-push-withtext {
+
+}
+
+.t-slider-two-three-columns {
+  img {
+    width: 100%;
+    margin-bottom: 20px;
+    max-height: 200px;
+  }
+}
+
+.t-three-push-withtext {
+  @include rem(margin-bottom, 20px);
+  @include rem(padding, 10px);
+  //max-width: 280px;
+  .card-image {
+    img {
+      //max-width: 180px;
+    }
+    height: 100%;
+  }
+  .card-body {
+    height: auto;
+    margin-top: auto;
+  }
+}
+.card-level2 {
+  @include bg-shadow(#FFF, 6px 6px 6px 0 rgba(0, 0, 0, 0.1), 10px, 10px, 0, 0);
+  height: 100%;
+
+  .card-image-l2 {
+    @include rem(padding-top, 10px);
+
+    img {
+      max-height: 132px;
+    }
+  }
+}
+
+// Template 31
+.t-key-figures {
+  padding-bottom: 0;
+  .slick-slide {
+    @include rem(padding-bottom, 20px);
+  }
+
+  > [class^="col-"] {
+    @include rem(margin, 0 0 30px 0);
+  }
+
+  .nbr {
+    @include rem(font-size, 40px);
+    @include rem(line-height, 40px);
+    color: transparent;
+    font-weight: 900;
+    -webkit-text-stroke: 1px #317BD2;
+    -moz-text-stroke: 1px #317BD2;
+    -ms-text-stroke-width: 1px #317BD2;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+
+    @include if-ie() {
+      text-shadow:
+        -1px -1px 0 #317BD2,
+        -1px 1px 0 #317BD2,
+        -1px 0 0 #317BD2,
+        1px -1px 0 #317BD2,
+        1px 1px 0 #317BD2,
+        1px 0 0 #317BD2,
+        0 -1px 0 #317BD2,
+        0 1px 0 #317BD2;
+    }
+  }
+
+  img {
+    margin-left: auto;
+    margin-right: auto;
+    &.lazyloaded {
+      width: auto;
+      height: auto;
+    }
+    
+  }
+}
+
+// Template 32
+.t-block-push-small-positionned {
+  [class^="col-"]:nth-last-child(1) {
+    .vf-push {
+      margin-bottom: 0;
+    }
+  }
+  .vf-push-small-positionned {
+    text-align: center;
+    color: $white;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    width: 100%;
+    &:before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      background: $black;
+      opacity: 0.6;
+    }
+
+    .vf-push-body {
+      z-index: 2;
+      position: relative;
+      min-height: 250px;
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .h4 {
+      @include rem(margin-bottom, 20px);
+    }
+  }
+  .vf-push {
+    @include rem(margin, 0 0 15px 0);
+    background: $bg-push-default;
+    position: relative;
+
+    [class^="col-md"] & {
+      height: auto;
+      @include rem(margin-bottom, 15px);
+    }
+
+    .vf-push-body {
+      @include rem(padding, 15px);
+    }
+
+    .vf-push-title {
+      @include rem(margin-bottom, 10px);
+
+      a {
+        color: $black;
+        &:hover {
+          color: $primary;
+        }
+        &:before {
+          content: '';
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 0;
+          bottom: 0;
+        }
+      }
+    }
+
+    &:hover {
+      .vf-push-media {
+        img {
+          transform: scale(1.1);
+        }
+      }
+    }
+  }
+}
+
+// Template  33
+.introduction + .t-text-img-tierce {
+  .row:first-child {
+    border-top: 1px solid #E4E4E4;
+  }
+}
+.t-text-img-tierce {
+  .row {
+    @include rem(padding, 20px 0);
+
+    + .row {
+      border-top: 1px solid #E4E4E4;
+    }
+
+    &:last-child {
+      padding-bottom: 0;
+    }
+  }
+}
+
+// template 35
+.t-box-background-title-description-clickable {
+  .t-box-background-wrapper {
+    position: relative;
+    @include rem(height,212px);
+    overflow: hidden;
+    > a {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 3;
+    }
+    &:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, .2);
+      display: block;
+      z-index: 1;
+    }
+    &:after {
+      content: '';
+      position: absolute;
+      top: 30px;
+      left: 30px;
+      right: 30px;
+      bottom: 30px;
+      border: 1px solid $white;
+      transform: scale(0);
+      opacity: 0;
+      transition: opacity .3s, transform .3s;
+    }
+    img {
+      //position: relative;
+    }
+    &:hover {
+      &:after {
+        transform: scale(1);
+        opacity: 1;
+      }
+      h2 {
+        transform: translate3d(0, 0, 0);
+      }
+      p {
+        opacity: 1;
+        transform: scale(1);
+        display: block;
+      }
+    }
+    h2, p {
+      color: white;
+    }
+    h2 {
+      transform: translate3d(0, 50%, 0);
+      transition: transform .3s;
+    }
+    p {
+      opacity: 0;
+      transform: scale(0);
+      transition: opacity .3s, transform .3s;
+    }
+    .t-box-background-content {
+      position: absolute;
+      top: 40px;
+      left: 40px;
+      width: calc(100% - 80px);
+      height: calc(100% - 80px);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      text-align: center;
+      z-index: 2;
+    }
+
+  }
+}
+
+// template 37
+.t-background-contenu-libre-up {
+  .t-background-image {
+    height: 250px;
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
+
+  .up {
+    @include rem(margin-top, -40px);
+  }
+  > .container {
+    background-color: $white;
+    position: relative;
+  }
+}
+
+// Template 38
+.t-background-with-card {
+  background-size: cover;
+  background-repeat: no-repeat;
+
+  .t-background-with-card-details {
+    background-color: $white;
+  }
+}
+
+// template 39
+.t-pushes-with-icons-titles {
+  .t-box {
+    border-radius: 8px;
+    box-shadow: 0 10px 14px 5px rgba(191, 191, 191, 0.67);
+    min-height: 212px;
+    position: relative;
+
+    i {
+      @include rem(font-size, 40px);
+    }
+    h5 {
+      text-transform: uppercase;
+      @include rem(font-size, 20px);
+      text-align: center;
+      a {
+        color: $gray-800;
+      }
+      a:before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+}
+
+// template 41
+
+.widget-links {
+  a{
+    box-shadow: 7px 7px 23px 0 rgba(0,0,0,0.19);
+    @include rem(padding,25px);
+    height: 100%;
+  }
+
+  .image-link {
+    margin-top: auto;
+    margin-bottom: auto;
+    text-align: center;
+    @include rem(min-width, 75px);
+    @include rem(max-width, 86px);
+    @include rem(min-height, 61px);
+  }
+  .description-link {
+    color: black;
+    @include rem(padding-left, 20px);
+    @include rem(padding-right, 34px);
+    margin-top: auto;
+    margin-bottom: auto;
+    &::after {
+      content: $icon-chevron-right;
+      font-family: $icomoon-font-family;
+      color:$primary;
+      font-size: 25px;
+      font-weight: bold;
+      right: 25px;
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  }
+  &_item {
+    margin-bottom: 30px;
+  }
+}
+
+//Templet 42
+.testimonials-carousel {
+  .carousel-inner {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    width: 80%;
+  }
+  .carousel-indicators {
+    position: relative;
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    .active {
+      background: transparent;
+      img {
+        opacity: 1;
+      }
+    }
+    li {
+      padding: 5px;
+      width: 60px;
+      height: 60px;
+      background-color: transparent;
+      text-indent: 0;
+      &::before,
+      &::after {
+        display: none;
+      }
+      img {
+        border-radius: 50%;
+        opacity: .6;
+      }
+    }
+  }
+}
+
+//Template 43
+
+.testimonial-card {
+  .card {
+    &::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 120px;
+      background: #2196f3;
+      right: 0;
+      z-index: 0;
+      border-top-right-radius: 6px;
+	    border-top-left-radius: 6px;
+    }
+    &.flex-column-reverse {
+      &::after {
+        top: inherit;
+        bottom: 0;
+        border-radius: 0;
+        border-bottom-right-radius: 6px;
+        border-bottom-left-radius: 6px;
+      } 
+    }
+  }
+  .card-image {
+    z-index: 1;
+    border: 6px solid $white;
+    border-radius: 50%;
+    width: 150px;
+    height: 150px;
+  }
+}
+//Template 44
+.testimonial-single {
+  .lazy-small-square {
+    max-width: 100px;
+    max-height: 100px;
+  }
+}
+
+//Template 45
+
+.testimonial-grid {
+  .card {
+    .card-image {
+      width: 100px;
+      border: 5px solid $white;
+      border-radius: 50%;
+      box-shadow: 0px 5px 10px 5px rgba(48, 49, 51, 0.1);
+      margin-top: -40px;
+    }
+    &.flex-column-reverse {
+      .card-image {
+        margin-bottom: -40px;
+        margin-top: inherit;
+      }
+    }
+  }
+}
+
+//Template 46
+
+.toolbox-contact {
+  position: fixed;
+  top: 40%;
+  right: 0;
+  background: $primary;
+  z-index: 1;//99
+  ul {
+    padding: 0;
+  }
+  li {
+    display: flex;
+    color: $white;
+    .text {
+      color: $white;
+      text-decoration: none;
+      text-align: center;
+      @include rem(padding, 10px);
+    }
+
+    .list-itel-inner {
+      display: flex;
+    }
+    
+
+    .icon-wrapper {
+      @include rem(padding, 5px);
+      flex: 0 0 0;
+      display: inline-table;
+
+      &::before {
+        @include rem(font-size, 24px);
+      }
+    }
+
+    &:first-child {
+      border-bottom: 1px solid $white;
+    }
+
+    &:last-child {
+      border-top: 1px solid $white;
+    }
+  }
+  &.description {
+    @include rem(width, 233px);
+    transform: translateX(81%);
+    transition: .3s transform; 
+    &:hover {
+      transform: translateX(0);
+    }
+    li {
+      .icon-wrapper {
+        padding: 20px 10px;
+        background: $secondary;
+        margin-right: 12px;
+  
+        &::before {
+          font-size: 24px;
+        }
+      }
+      .text {
+        padding: 0;
+        font-size: 15px;
+        line-height: 16px;
+        padding-right: 12px;
+        align-items: center;
+        display: flex;
+        text-align: left;
+      }
+    }
+  }
+}
+
+//Template 47
+
+.rapport-card {
+  position: relative;
+  @include rem(padding ,10px);
+  @include rem(height ,326px);
+  * {
+    color: $white;
+  }
+  &_item {
+    background-size: cover;
+    background-position: left bottom;
+    height: 100%;
+    @include rem(padding ,20px);
+  }
+  &_description {
+    margin-bottom: auto;
+    margin-top: auto;
+  }
+  &_video {
+    a {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      i {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        font-size: 33px;
+        background: $primary;
+        padding: 0px 10px;
+        text-align: center;
+        border-radius: 6px;
+        transform: translate(-50%,-50%);
+      }
+    }
+  }
+}
+
+@include media-breakpoint-up(lg) {
+
+  .t-video-block, .t-media-block {
+    .play-video {
+      border: 20px solid #2196f3;
+    }
+  }
+
+  // Template 1
+  .t-2b-image-video-title-text-button {
+    &.block-with-bg {
+      @include bg-shadow(#fff, 0 2px 8px 0 rgba(0, 0, 0, 0.06), 30px, 40px, none, 6px);
+
+      .text-large {
+        @include rem(line-height, 27px);
+      }
+    }
+    .block-image {
+      margin-bottom: 0;
+    }
+    h2 {
+      @include rem(margin-bottom, 10px);
+    }
+
+    .text-large {
+      @include rem(margin-bottom, 25px);
+      @include rem(font-size, 24px);
+      @include rem(line-height, 31px);
+    }
+
+    img {
+      margin-bottom: 0;
+      width: 100%;
+    }
+
+    .t-2b-buttons {
+      text-align: left;
+    }
+  }
+
+  // Template 2
+  .t-2b-image-videp-bg-title-text {
+    .t-2b-image-bg {
+      margin-bottom: 0;
+      margin-top: 0;
+      @include rem(padding, 30px);
+
+      .t-video-title {
+        left: 40px;
+        top: 40px;
+      }
+
+    }
+
+    h2 {
+      @include rem(margin-bottom, 40px);
+    }
+
+    .t-description {
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  // Template 3
+  .t-3cols-image-title-text-permalinks {
+    @include bg-shadow(#fff, 0 2px 8px 0 rgba(0, 0, 0, 0.06), 30px, 30px, none, 6px);
+
+    .t-block-image-description {
+      box-shadow: none;
+      background-color: transparent;
+      border-radius: unset;
+    }
+
+    .t-3b-image.block-image {
+      @include rem(margin-bottom, 10px);
+    }
+
+    .t-3cols-description {
+      background-color: transparent;
+      padding: 0;
+    }
+  }
+
+  // Template 4
+  .t-6-points-indices {
+    @include row-make-equal-height();
+
+    .t-item {
+      &:nth-child(-n+3) {
+        @include rem(margin-bottom, 50px);
+      }
+    }
+
+    .t-box {
+      width: 100%;//max-width:207px;
+      height: 100%;
+
+      img {
+        width: auto;
+      }
+    }
+  }
+
+  // Template 5
+  .t-6blocks-image-desc-button {
+    .item {
+      &:nth-child(-n+3) {
+        @include rem(margin-bottom, 56px);
+      }
+    }
+
+    img {
+      @include rem(margin-bottom, 10px);
+    }
+
+    h3 {
+      @include rem(font-size, 34px);
+      @include rem(letter-spacing, 2.3px);
+      line-height: 1;
+    }
+  }
+
+  // template 6
+  .t-chiffre-and-text {
+    h3 {
+      @include rem(font-size, 22px);
+      @include rem(line-height, 40px);
+      display: inline-block;
+      min-width: 93px;
+      height: auto;
+
+      &:before {
+        width: 91px;
+        height: 91px;
+      }
+    }
+
+    p {
+      margin-top: 0;
+    }
+  }
+
+  // Template 7
+  .t-2b-imageorvideo-bigTitle-text {
+    .t-template-bigtitle-desc {
+      .paragraph--type--vactory-component:first-child & {
+        @include rem(padding-top, 46px);
+        @include rem(padding-bottom, 38px);
+      }
+    }
+
+  }
+
+  // Template 8
+  .t-video-youtube-with-content {
+    .block-image {
+      &:not(:last-child) {
+        @include rem(margin-bottom, 50px);
+      }
+    }
+  }
+
+  // Template 9
+  .t-three-card-with-cta {
+    @include bg-shadow(#fff, 0 2px 8px 0 rgba(0, 0, 0, 0.06), 40px, 51px, none, 6px);
+
+    .t-item {
+      margin-bottom: 0;
+    }
+  }
+
+  // Template 10
+  .t-boxed-table {
+    @include bg-shadow(#fff, 0 2px 8px 0 rgba(0, 0, 0, 0.06), 40px, 30px, none, 6px);
+
+    .accordion_tempate_wysiwyg & {
+      box-shadow: none;
+      padding: 0;
+      border: 0;
+      border-radius: 0;
+      background-color: transparent;
+    }
+
+    > .row {
+      margin-left: 0;
+      margin-right: 0;
+    }
+
+    &.price-small {
+      .t-box-side span {
+        font-weight: 600;
+        @include rem(font-size, 22px);
+        line-height: 1;
+      }
+
+      .row ~ .text-small {
+        @include rem(margin-bottom, 20px);
+      }
+    }
+
+    .t-box {
+      @include rem(padding, 4px 12px 14px 12px);
+      //border-bottom: 1px solid #cbcbcb;
+      margin-bottom: 0;
+
+      .accordion_tempate_wysiwyg & {
+        @include rem(padding-top, 6px);
+        @include rem(padding-bottom, 12px);
+
+        &:last-child {
+          border-bottom: 0;
+        }
+      }
+
+      .accordion_tempate_wysiwyg & {
+        padding-left: 0;
+        padding-right: 0;
+      }
+    }
+
+    .t-box-title {
+      margin-bottom: 0;
+      @include rem(font-size, 18px);
+      @include rem(line-height, 23px);
+    }
+
+    .t-box-side {
+      p {
+        color: $black;
+        @include rem(font-size, 16px);
+        @include rem(line-height, 19px);
+
+        span {
+          color: $primary;
+          @include rem(font-size, 36px);
+          @include rem(line-height, 39px);
+          @include rem(margin-right, 9px);
+        }
+      }
+    }
+  }
+
+  // Template 11
+  .t-three-card-with-image-desc-link {
+    .row:not(.slick-initialized) {
+      @include row-make-equal-height();
+    }
+  }
+
+  // Template 12
+  .t-thight-image-text {
+    .t-thight-image-text-image.block-with-bg {
+      margin-bottom: 0;
+
+      &.block-with-bg {
+        @include bg-shadow(#fff, 0 2px 8px 0 rgba(0, 0, 0, 0.06), 30px, 40px, none, 6px);
+      }
+    }
+  }
+
+  // Template 13 // Template 14
+  .t-slider-cards {
+    .t-card-title {
+      @include rem(font-size, 18px);
+      @include rem(line-height, 25px);
+      font-weight: bold;
+    }
+
+    > h3 {
+      @include rem(margin-bottom, 30px);
+      text-align: left;
+    }
+  }
+
+  // Template 15
+  .t-temoignage-box {
+    .t-box {
+      @include rem(padding, 65px 30px);
+    }
+  }
+
+  // Template 16
+  .t-two-sided-block-with-bg-cta {
+    .t-content {
+      flex-direction: row;
+
+      .t-item {
+        @include rem(padding, 30px 60px 70px 60px);
+        flex: 1;
+
+        &:first-child {
+          border-right: 1px solid #fff;
+        }
+
+        .t-entete {
+          @include rem(font-size, 24px);
+          @include rem(margin-bottom, 12px);
+        }
+      }
+    }
+  }
+
+  // Template 17
+  .t-coverflow-full {
+    .col-md-6 {
+      max-width: 632px;
+      height: 100%;
+    }
+    .slick-slide {
+      @include rem(padding, 0 35px);
+    }
+    .t-2b-image-bg {
+      @include rem(padding, 30px 30px 80px);
+      margin-bottom: 0;
+      width: 100%;
+      height: 100%;
+      .t-video-title {
+        top: 40px;
+        left: 40px;
+      }
+      img {
+        max-width: 100%;
+      }
+    }
+  }
+
+  // template 18
+  .t-boxed-text-with-icon {
+    > h3 {
+      @include rem(margin-bottom, 30px);
+      text-align: left;
+    }
+
+    .t-item-img {
+      @include rem(margin, 0 30px 0 0);
+    }
+  }
+
+  // Template 19
+  .t-bloc-partners {
+    .t-bloc-item-partner {
+      flex: 1;
+      @include if-ie() {
+        a {
+          flex: 1;
+        }
+      }
+    }
+    .t-block-partners-wrapper {
+      .slick-list {
+        @include rem(margin, 0 74px 20px 74px);
+      }
+    }
+    img {
+      @include if-ie() {
+        flex-basis: 100%;
+      }
+    }
+  }
+
+  // Template 21
+  .t-iframe {
+    @include rem(padding, 30px);
+  }
+
+  // template 23
+  .t-fiche-image-content {
+    .t-fiche-image-content-body {
+      @include rem(padding, 30px);
+
+      &:not(:last-child) {
+        @include rem(margin-bottom, 30px);
+      }
+
+      .t-image-wrapper {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  // Template 24
+  .t-publication-wrapper {
+    @include rem(padding, 0 30px);
+
+    .t-publication-content {
+      .t-image-wrapper {
+        margin-bottom: 0;
+      }
+
+      .t-publication-details-text {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  // Template 26
+  .t-col-illustration {
+    @include rem(margin, 0 0 20px);
+
+    [class^="col-"] {
+      @include rem(margin-bottom, 30px);
+      margin-bottom: 0;
+    }
+
+  }
+  .block-illustration {
+    height: 90px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    &:before {
+      content: '';
+      position: absolute;
+      left: 0;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      background: transparent;
+      z-index: 2;
+    }
+  }
+
+// Template 28
+  .t-three-push-withtext {
+    @include rem(margin-bottom, 40px);
+    max-width: 100%;
+  }
+  .card-level2 {
+    @include rem(padding, 30px);
+  }
+
+  //Template 31
+  .t-key-figures {
+    .nbr {
+      @include rem(font-size, 80px);
+      @include rem(line-height, 64px);
+    }
+  }
+
+  // Template 32
+  .t-block-push-small-positionned {
+    [class^="col-"]:nth-last-child(1) {
+      .vf-push {
+        @include rem(margin-bottom, 30px);
+      }
+    }
+    .vf-push {
+      @include rem(margin, 0 0 30px 0);
+
+      [class^="col-md"] & {
+        margin-bottom: 0;
+      }
+
+      .vf-push-body {
+        @include rem(padding, 38px 40px);
+      }
+
+      .vf-push-title {
+        @include rem(margin-bottom, 21px);
+      }
+    }
+  }
+
+  //Template 33
+  .t-text-img-tierce {
+    .row {
+      @include rem(padding, 40px 0);
+    }
+  }
+  // Template 36
+  .t-card-inline-inversed-parent {
+    .card--inline {
+      .card-image--inline,
+      .card-body--inline {
+        flex-basis: 50%;
+      }
+    }
+  }
+
+  // template 37
+  .t-background-contenu-libre-up {
+    .t-background-image {
+      height: 402px;
+    }
+    > .up {
+      @include rem(margin-top, -70px);
+    }
+  }
+  // template 41
+  .widget-links {
+    .description-link {
+      font-weight: bold;
+      @include rem(padding-left, 34px);
+      &::before {
+        content: '';
+        @include rem(padding, 56px);
+        position: absolute;
+        top: 0;
+        right: 0;
+        height: 100%;
+        border-left: 1px solid $gray-200;
+        transition: 500ms background;
+      }
+      &::after {
+        right: 50px;
+      }
+    }
+    a {
+      @include rem(padding,38px 113px 38px 38px);
+      &:hover {
+        box-shadow: 10px 10px 30px 10px rgba(0,0,0,0.19);
+        .description-link {
+          &::before {
+            content: '';
+            background: $primary;
+          }
+          &::after {
+            content: $icon-more;
+            color: $white;
+            right: 45px;
+          }
+        }
+      }
+    }
+  }
+  // template 46
+
+  .toolbox-contact {
+    li {
+      position: relative;
+    }
+    &.description {
+      li {
+        .text {
+          &:after {
+            transition: width .4s;
+            width: 0;
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            z-index: -1;
+            background: $secondary;
+          }
+  
+          &:hover {
+            &:after {
+              width: 100%;
+            }
+          }
+  
+          @media only screen
+          and (min-device-width: 768px)
+          and (max-device-width: 1024px)
+          and (-webkit-min-device-pixel-ratio: 1) {
+              position: initial;
+              &:after {
+                display: none;
+              }
+          }
+        }
+      }
+    }
+  }
+}
+

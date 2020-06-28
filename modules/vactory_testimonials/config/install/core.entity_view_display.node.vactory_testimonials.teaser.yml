@@ -1,0 +1,58 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.vactory_testimonials.body
+    - field.field.node.vactory_testimonials.field_vactory_address
+    - field.field.node.vactory_testimonials.field_vactory_date
+    - field.field.node.vactory_testimonials.field_vactory_excerpt
+    - field.field.node.vactory_testimonials.field_vactory_media
+    - field.field.node.vactory_testimonials.field_vactory_profils
+    - field.field.node.vactory_testimonials.field_vactory_role
+    - field.field.node.vactory_testimonials.field_vactory_seo_status
+    - node.type.vactory_testimonials
+  module:
+    - smart_trim
+    - user
+id: node.vactory_testimonials.teaser
+targetEntityType: node
+bundle: vactory_testimonials
+mode: teaser
+content:
+  body:
+    label: hidden
+    type: smart_trim
+    weight: 1
+    settings:
+      trim_length: 50
+      trim_type: words
+      trim_suffix: ...
+      wrap_class: trimmed
+      more_text: More
+      more_class: more-link
+      summary_handler: full
+      trim_options:
+        text: true
+        trim_zero: false
+      wrap_output: false
+      more_link: false
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  field_vactory_address: true
+  field_vactory_date: true
+  field_vactory_excerpt: true
+  field_vactory_media: true
+  field_vactory_profils: true
+  field_vactory_role: true
+  field_vactory_seo_status: true
+  langcode: true
+  node_banner_image: true
+  search_api_excerpt: true

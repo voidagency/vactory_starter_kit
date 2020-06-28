@@ -1,0 +1,201 @@
+<?php
+
+/**
+ * @file
+ * This is the Banner module for adding banners.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\vactory_banner\Exceptions\BlockCreationException;
+use Drupal\vactory_core\Vactory;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_banner_theme($existing, $type, $theme, $path) {
+  return [
+    'block__block_content__vactory_banner' => [
+      'base hook' => 'block',
+      'template'  => 'banner',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_preprocess_block().
+ */
+function vactory_banner_preprocess_block(&$variables) {
+  if (
+    isset($variables['elements']['content']['#block_content']) &&
+    $variables['elements']['content']['#block_content']->bundle() == 'vactory_banner'
+  ) {
+    // Master.
+    $block_content = $variables['elements']['content']['#block_content'];
+    // Get fields.
+    $field_dynamic_title = $block_content->get('field_vactory_flag')
+      ->getValue();
+    $dynamic_title = $block_content->get('field_vactory_title')->getValue();
+    $current_route_name = \Drupal::routeMatch()->getRouteName();
+
+    // Get current page title.
+    $variables['content']['page_title'] = ((isset($field_dynamic_title)) && $field_dynamic_title[0]['value'] == 1) ? Vactory::getCurrentTitle() : '';
+    // Get page title if current page not checked.
+    $variables['content']['page_title'] = ((isset($dynamic_title[0]['value'])) && !empty($dynamic_title[0]['value'])) ? $dynamic_title[0]['value'] : $variables['content']['page_title'];
+
+    if ($current_route_name === 'entity.node.canonical') {
+      $node = \Drupal::routeMatch()->getParameter('node');
+      $banner_image = $node->get('node_banner_image')->getValue();
+      $banner_image_mobile = $node->get('node_banner_mobile_image')->getValue();
+      $banner_title = $node->get('node_banner_title')->getValue();
+      $variables['content']['field_vactory_media'] = isset($banner_image[0]['target_id']) ? $banner_image : $variables['content']['field_vactory_media'];
+      $variables['content']['field_vactory_media_mobile'] = isset($banner_image_mobile[0]['target_id']) ? $banner_image_mobile : $variables['content']['field_banner_image_mobile'];
+      $field_dynamic_title = (isset($banner_title[0]['value']) && !empty($banner_title[0]['value'])) ? $banner_title[0]['value'] : $variables['content']['page_title'];
+      $variables['content']['page_title'] = $field_dynamic_title;
+    }
+
+    $variables['content']['video_id'] = '';
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function vactory_banner_form_node_form_alter(&$form) {
+  $form['node_banner_group'] = [
+    '#type'        => 'details',
+    '#title'       => t('Banner settings'),
+    '#description' => t('Create banner for this node.'),
+    '#group'       => 'advanced',
+    '#open'        => FALSE,
+    '#access'      => \Drupal::currentUser()
+      ->hasPermission('administer fields node banner'),
+    '#attributes'  => ['class' => ['node-class-form']],
+  ];
+
+  $form['node_banner_title']['#group'] = 'node_banner_group';
+  $form['node_banner_image']['#group'] = 'node_banner_group';
+  $form['node_banner_mobile_image']['#group'] = 'node_banner_group';
+  $form['node_banner_video']['#group'] = 'node_banner_group';
+}
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function vactory_banner_entity_base_field_info(EntityTypeInterface $entity_type) {
+
+  if ($entity_type->id() === 'node') {
+    $fields['node_banner_image'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Banner Image'))
+      ->setDescription(t('The banner image of this node.'))
+      ->setSetting('target_type', 'media')
+      ->setSetting('handler_settings', ['target_bundles' => ['image' => 'image']])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', FALSE)
+      // This is important for content translation module.
+      // Otherwise setTranslatable doesn't work.
+      // @see https://api.drupal.org/comment/65263#comment-65263
+      ->setTargetEntityTypeId('node')
+      ->setTranslatable(TRUE)
+      ->setDisplayOptions('form', [
+        'type'   => 'media_library_widget',
+        'weight' => 0,
+      ]);
+
+    $fields['node_banner_mobile_image'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Banner Mobile Image'))
+      ->setDescription(t('The banner image of this node.'))
+      ->setSetting('target_type', 'media')
+      ->setSetting('handler_settings', ['target_bundles' => ['image' => 'image']])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', FALSE)
+      // This is important for content translation module.
+      // Otherwise setTranslatable doesn't work.
+      // @see https://api.drupal.org/comment/65263#comment-65263
+      ->setTargetEntityTypeId('node')
+      ->setTranslatable(TRUE)
+      ->setDisplayOptions('form', [
+        'type'   => 'media_library_widget',
+        'weight' => 0,
+      ]);
+
+    $fields['node_banner_title'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Banner Title'))
+      ->setDescription(t('Set you custom title for banner'))
+      ->setDisplayOptions('form', [
+        'label'  => 'hidden',
+        'weight' => 32,
+      ])
+      ->setDisplayOptions('view', [
+        'region' => 'hidden',
+      ])
+      // This is important for content translation module.
+      // Otherwise setTranslatable doesn't work.
+      // @see https://api.drupal.org/comment/65263#comment-65263
+      ->setTargetEntityTypeId('node')
+      ->setTranslatable(TRUE)
+      ->setDisplayConfigurable('form', FALSE);
+
+    return $fields;
+  }
+
+  return [];
+}
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function vactory_banner_preprocess_node(&$variables) {
+  if (!empty($variables['node'])) {
+    /** @var \Drupal\node\Entity\Node $entity */
+    $entity = $variables['node'];
+    $banner_title = $entity->get('node_banner_title')->getValue();
+    $banner_image = $entity->get('node_banner_image')->getValue();
+    $banner_image_mobile = $entity->get('node_banner_mobile_image')->getValue();
+    $variables['banner']['banner_title'] = isset($banner_title) ? $banner_title : '';
+    $variables['banner']['banner_image'] = isset($banner_image) ? $banner_image : '';
+    $variables['banner']['banner_image_mobile'] = isset($banner_image_mobile) ? $banner_image_mobile : '';
+  }
+}
+
+/**
+ * Implements hook_entity_insert().
+ */
+function vactory_banner_entity_insert(EntityInterface $block) {
+  if ($block->bundle() !== 'vactory_banner') {
+    return;
+  }
+
+  // Block id.
+  $block_machine_name = $block->get('block_machine_name')
+    ->getValue()[0]['value'];
+  $block_id = str_replace(' ', '_', $block_machine_name);
+
+  // Get default theme.
+  $config = \Drupal::config('system.theme');
+  $default_theme = $config->get('default');
+  /* @var Drupal\Core\Config\Entity\ConfigEntityStorage $blockEntityManager */
+  $entity_manager = \Drupal::service('entity.manager')->getStorage('block');
+
+  /* @var $bannerBlock \Drupal\block\BlockInterface */
+  $banner_block = $entity_manager->create(
+    [
+      'id'     => $block_id,
+      'plugin' => 'block_content:' . $block->uuid(),
+      'theme'  => $default_theme,
+    ]
+  );
+
+  $banner_block->setRegion('bridge');
+  try {
+    $banner_block->save();
+  }
+  catch (BlockCreationException $e) {
+    $message = t('Something went wrong while creating the banner @banner_name.', [
+      '@banner_name' => $block_machine_name,
+    ]);
+    \Drupal::logger('vactory_banner')->error($message);
+    \Drupal::service('messenger')->addError($message);
+  }
+}

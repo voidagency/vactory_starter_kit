@@ -1,0 +1,10 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - node.type.vactory_governance
+id: node.vactory_governance
+target_entity_type_id: node
+target_bundle: vactory_governance
+default_langcode: current_interface
+language_alterable: true

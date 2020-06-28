@@ -1,0 +1,59 @@
+{#
+/**
+ * @file
+ * Theme implementation for a 'webform' element.
+ *
+ * This is an copy of the webform.html.twig theme_wrapper which includes the
+ * 'title_prefix' and 'title_suffix' variables needed for
+ * contextual links to appear.
+ *
+ * Available variables
+ * - attributes: A list of HTML attributes for the wrapper element.
+ * - children: The child elements of the webform.
+ * - title_prefix: Additional output populated by modules, intended to be
+ *   displayed in front of the main title tag that appears in the template.
+ * - title_suffix: Additional output populated by modules, intended to be
+ *   displayed after the main title tag that appears in the template.
+ *
+ * @see template_preprocess_webform()
+ * @see _webform_form_after_build()
+ *
+ * @ingroup themeable
+ */
+#}
+<form{{ attributes }}>
+    {{ element.form_build_id }}
+    {{ element.form_id }}
+    {{ element.form_token }}
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            {{ element.elements.vactory_tender_nom }}
+        </div>
+        <div class="form-group col-md-6">
+            {{ element.elements.vactory_tender_prenom }}
+        </div>
+        <div class="form-group col-md-6">
+            {{ element.elements.vactory_tender_telephone }}
+        </div>
+        <div class="form-group col-md-6">
+            {{ element.elements.vactory_tender_adresse }}
+        </div>
+    </div>
+    <div class="form-group">
+        {{ element.elements.vactory_tender_email }}
+    </div>
+    <div class="form-group">
+        {{ element.elements.vactory_tender_raison_sociale }}
+    </div>
+    <div class="form-group">
+        {{ element.elements.vactory_tender_ville }}
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            {{ element.elements.captcha }}
+        </div>
+        <div class="form-group col-md-6 text-left">
+            {{ element.actions }}
+        </div>
+    </div>
+</form>

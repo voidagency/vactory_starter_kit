@@ -1,0 +1,15 @@
+<?php
+
+/**
+ * @file
+ * Install file.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function vactory_paragraphs_install() {
+//  // Ensure the translation fields are created in the database.
+//  \Drupal::service('content_translation.manager')->setEnabled('paragraph', 'vactory_paragraph_block', TRUE);
+//  \Drupal::service('entity.definition_update_manager')->applyUpdates();
+}

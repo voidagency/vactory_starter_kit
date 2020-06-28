@@ -1,0 +1,57 @@
+<div class="fdb-block">
+  {% if extra_fields.title is not empty %}
+    <div class="row justify-content-center pb-5">
+      <div class="col-12 text-center">
+        <h2>{{ extra_fields.title }}</h2>
+      </div>
+    </div>
+  {% endif %}
+  {% set x = false %}
+  {% set wrapper_img = '' %}
+  {% set wrapper_class = '' %}
+  {% for item in content %}
+
+  {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : '' %}
+  {% set picto = image_uri|image_style('large') %}
+  {% set lqip_image = image_uri|image_style('lqip') %}
+
+  {% if x %}
+    {% set x = false %}
+    {% set wrapper_class = 'm-md-auto order-md-5' %}
+    {% set wrapper_img = '' %}
+  {% else %}
+    {% set x = true %}
+    {% set wrapper_class = '' %}
+    {% set wrapper_img = 'm-md-auto order-md-5' %}
+  {% endif %}
+
+  {% if loop.last %}
+  <div class="row text-left align-items-center pt-4">
+    {% else %}
+    <div class="row text-left align-items-center pt-4 pb-md-4">
+      {% endif %}
+      {% if item.image.0 is not empty %}
+        <div class="col-md-5 {{ wrapper_img }}">
+          <div class="lazy-wrapper">
+            <img alt="{{ item.image_alt }}"
+                 class="lazyload img-fluid"
+                 src="{{ lqip_image }}"
+                 data-src="{{ picto }}">
+          </div>
+        </div>
+      {% endif %}
+      <div class="col-12 col-md-5 {{ wrapper_class }}">
+        {% if item.title is not empty %}
+          <h2><strong>{{ item.title }}</strong></h2>
+        {% endif %}
+        {% if item.description is not empty %}
+          <p class="text-h3">{{ item.description }}</p>
+        {% endif %}
+        {% if item.link is not empty and item.link_alt is not empty %}
+          {% set link_target = (item.0.link_target > 0) ? '_blank' : '_self' %}
+          <p><a href="{{ item.link }}" target="{{ link_target }}">{{ item.link_alt }}</a></p>
+        {% endif %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>

@@ -1,0 +1,12 @@
+name: 'Cross Content'
+type: module
+core: 8.x
+description: 'Contenu similaire.'
+package: Vactory
+dependencies:
+  - improved_multi_select
+  - node
+  - taxonomy
+  - user
+  - vactory_field
+  - vactory_views

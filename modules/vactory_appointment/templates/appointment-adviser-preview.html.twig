@@ -1,0 +1,8 @@
+{% set image_uri = file_object(user.user_picture.target_id).uri.value %}
+{% set image_url = file_url(image_uri) %}
+<div class="select-adviser-item mr-3">
+  <img src="{{ image_url }}" alt="{{ user.name.value }}" width="250" height="250">
+  <h3>{{ user.field_first_name.value }} {{ user.field_last_name.value }}</h3>
+</div>
+
+

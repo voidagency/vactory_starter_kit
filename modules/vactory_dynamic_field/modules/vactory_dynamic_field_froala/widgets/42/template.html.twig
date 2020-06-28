@@ -1,0 +1,66 @@
+{% set reverse_mode = (extra_fields.reverse_mode == 1)? 'd-flex flex-row-reverse' : ' ' %}
+{% set qoute = (extra_fields.reverse_mode == 1)? 'qoute-left' : 'qoute-right' %}
+
+{% if extra_fields.intro is not empty %}
+    <div class="row text-center justify-content-center mb-3">
+        <div class="col-md-10 col-lg-8">
+        {% if extra_fields.intro is not empty %}
+            <p>{{ extra_fields.intro }}</p>
+        {% endif %}
+        </div>
+    </div>
+{% endif %}
+<div class="fdb-block">
+    <div class="container">
+        <div class="row vf-slick-slider" 
+            data-toshow="2"
+            data-dots="false"
+            data-arrows="true"
+            data-mobile-centermode="false">
+
+            {% for item in content %}
+
+                <div class="col-lg-9 col-xl-6">
+
+                {% set image_uri =(item.image.0 is defined) ? get_image(item.image.0) : '' %}
+                {% set image_profile = image_uri|image_style('medium') %}
+                {% set lqip_image = image_uri|image_style('lqip') %}
+                    <div class="fdb-box shadow-sm {{qoute}}">
+                            {% if extra_fields.mode_top == 1 %}
+                                <div class="d-flex flex-column">
+                                    <div class="ml-auto mr-auto w-50">
+                            {% else %}   
+                                <div class="row {{ reverse_mode }}">
+                                    <div class="col-8 col-sm-6 col-md-4">
+                            {% endif %} 
+                                {% if item.image.0 is not empty %}
+                                    <img alt="{{ item.image_alt }}"
+                                        class="img-fluid lazyload rounded-circle"
+                                        src="{{ lqip_image }}"
+                                        data-src="{{ image_profile }}">
+                                {% endif %}
+                            </div>
+
+                            {% if extra_fields.mode_top == 1 %}
+                                <div class="mt-4">
+                            {% else %}   
+                                <div class="col-md-8 mt-4 mt-md-0">
+                            {% endif %} 
+                                {% if item.description is not empty %}
+                                    <p class="text-h3">{{ item.description }}</p>
+                                {% endif %}
+                                {% if item.name is not empty %}
+                                     <p class="text-h3 mt-4 mt-xl-5"><strong>{{ item.name }}</strong></p>
+                                {% endif %}
+                                {% if item.role is not empty %}
+                                     <p><em>{{ item.role }}</em></p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>

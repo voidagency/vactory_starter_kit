@@ -1,0 +1,24 @@
+<div class="container">
+    <div class="row pt-3">
+        <div class="col-md-8">
+            <h2>{{ content.title }}</h2>
+        </div>
+        <div class="col-md-4">
+            <h4 class="text-muted">{{ content.reference }}</h4>
+        </div>
+    </div>
+    <div class="row pt-3">
+        <div class="col-md-12">
+            <p>{{ 'Download of your document  will start in 5 seconds.'|t }}</p>
+            <p>
+                {{ "If it's not started in 5 seconds, Please" }}
+                <a href="{{ file_url(content.file_uri) }}" download>{{ 'click here'|t }}</a> {{ 'to download your document.'|t }}
+            </p>
+        </div>
+        <div class="col-md-12 pt-4 pb-4">
+            <p style="text-align:center">
+                <a href="{{ url('view.vactory_tenders.page_listing_one_column') }}" class="btn btn-primary" >{{ 'Come back to offers list' }}</a>
+            </p>
+        </div>
+    </div>
+</div>

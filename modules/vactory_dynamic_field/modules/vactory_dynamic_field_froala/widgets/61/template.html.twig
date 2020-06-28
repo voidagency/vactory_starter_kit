@@ -1,0 +1,17 @@
+{% set reverse = (content.0.mode == 1)? 'd-flex flex-row-reverse'  : '' %}
+
+<div class="fdb-block ">
+    <div class="row align-items-center {{ reverse }}">
+        <div class="col-12 col-sm-9 text-left">
+            {% if content.0.title is not empty %}
+                 <h2>{{ content.0.title }}</h2>
+            {% endif %}
+        </div>
+        {% if content.0.link is not empty and content.0.link_alt is not empty %}
+            {% set link_target = (content.link_target > 0) ? '_blank' : '_self' %}
+            <div class="col-12 col-sm-3 text-left text-sm-center mt-4 mt-sm-0">
+                <a class="btn btn-primary" href="{{ content.0.link }}" target="{{ link_target }}">{{ content.0.link_alt }}</a>
+            </div>
+        {% endif %}
+    </div>
+</div>

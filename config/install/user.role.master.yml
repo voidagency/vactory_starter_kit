@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies: {  }
+id: master
+label: Master
+weight: 4
+is_admin: null
+permissions:
+  - 'access administration pages'
+  - 'access toolbar'
+  - 'create content translations'
+  - 'delete content translations'
+  - 'display eu cookie compliance popup'
+  - 'translate paragraph'
+  - 'translate vactory_page node'
+  - 'update content translations'
+  - 'view files'
+  - 'view the administration theme'

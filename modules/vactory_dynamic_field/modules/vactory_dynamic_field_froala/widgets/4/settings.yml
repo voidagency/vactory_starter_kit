@@ -1,0 +1,13 @@
+name: '4 - Froala - Content Description To Left Or Right'
+multiple: FALSE
+category: 'Froala'
+enabled: TRUE
+fields:
+  description:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'full_html'
+  mode:
+    type: checkbox
+    label: 'Activer le mode inversé (Description To Right)'

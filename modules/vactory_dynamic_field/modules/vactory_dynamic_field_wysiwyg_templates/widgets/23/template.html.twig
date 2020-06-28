@@ -1,0 +1,29 @@
+<div class="t-fiche-image-content">
+  {% for item in content %}
+    {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : "" %}
+    {% set fluid_image = file_url(image_uri) %}
+    {% set lqip_image = image_uri|image_style('lqip') %}
+    {% set imageAlt = (item.image_alt is not empty) ? item.image_alt : "Image" %}
+    <div class="t-fiche-image-content-body">
+      <div class="row align-items-lg-center">
+        <div class="col-lg-3">
+          {% if item.image is not empty %}
+            <div class="t-image-wrapper d-flex align-items-center justify-content-center lazy-wrapper">
+              <img data-src="{{ fluid_image }}"
+                   src="{{ lqip_image }}"
+                   class="img-fluid lazyload"
+                   alt="{{ imageAlt }}">
+            </div>
+          {% endif %}
+        </div>
+        <div class="col-lg-9">
+          {% if item.details.value is not empty %}
+            <div class="t-content">
+              {{ item.details.value|raw }}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>

@@ -1,0 +1,31 @@
+$bg-footer-top: $gray-800;
+$bg-footer-middle: $gray-700;
+$bg-footer-bootm: $gray-800;
+$footer-text-color: $white;
+
+.vf-footer--variant8 {
+  * {
+    color: $footer-text-color;
+    text-align: center;
+  }
+  .block-social-media {
+    .fa {
+      color: $footer-text-color;
+    }
+  }
+  .block--menu ul,
+  .block-social-media {
+    justify-content: center;
+  }
+  .vf-footer__top {
+    background: $bg-footer-top;
+  }
+
+  .vf-footer__middle {
+    @include rem(padding, 30px 0);
+    background: $bg-footer-middle;
+  }
+  .vf-footer__bottom {
+    background: $bg-footer-bootm;
+  }
+}

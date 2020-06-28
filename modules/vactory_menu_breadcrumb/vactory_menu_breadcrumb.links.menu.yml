@@ -1,0 +1,5 @@
+vactory_menu_breadcrumb.settings:
+  title: Vactory Menu Breadcrumb
+  description: 'Configure Vactory Menu Breadcrumb settings'
+  route_name: vactory_menu_breadcrumb.settings
+  parent: system.admin_config_ui

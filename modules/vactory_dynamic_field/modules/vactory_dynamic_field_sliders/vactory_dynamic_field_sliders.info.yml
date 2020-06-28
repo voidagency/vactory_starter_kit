@@ -1,0 +1,8 @@
+name: 'Vactory Dynamic Sliders'
+type: module
+description: 'Custom Sliders.'
+package: Vactory Dynamic
+core: 8.x
+dependencies:
+  - focal_point
+  - vactory_dynamic_field

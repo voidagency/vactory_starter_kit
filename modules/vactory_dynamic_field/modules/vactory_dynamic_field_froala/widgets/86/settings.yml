@@ -1,0 +1,32 @@
+name: '86 - Froala - Features 4 Blocks Image With Title'
+multiple: TRUE
+category: 'Froala'
+enabled: TRUE
+limit: 4
+fields:
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': TRUE
+  image_alt:
+    type: text
+    label: 'Text alternatif'
+  title:
+    type: text
+    label: 'Titre'
+    options:
+      '#required': TRUE
+extra_fields:
+  title:
+    type: text
+    label: 'Titre'
+  link:
+    type: url_extended
+    label: 'Lien'
+  link_alt:
+    type: text
+    label: 'Titre lien'
+  link_target:
+    type: checkbox
+    label: 'Ouvrir dans une nouvelle fenêtre'

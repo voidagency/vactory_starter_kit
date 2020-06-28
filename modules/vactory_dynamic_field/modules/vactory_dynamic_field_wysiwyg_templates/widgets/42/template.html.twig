@@ -1,0 +1,55 @@
+{% if extra_fields.intro is not empty %}
+    <div class="row text-center justify-content-center mb-3">
+        <div class="col-md-10 col-lg-8">
+        {% if extra_fields.intro is not empty %}
+            <p>{{ extra_fields.intro }}</p>
+        {% endif %}
+        </div>
+    </div>
+{% endif %}
+<div class='testimonials-carousel'>
+    <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+        <div class="carousel-inner">
+            {% for item in content %}
+                {% if loop.first %}
+                    {% set activeItem = 'active' %}
+                {% else %}  
+                    {% set activeItem = ' ' %}  
+                {% endif %}     
+                
+                <div class="carousel-item mb-4 {{ activeItem }}">
+                    <div class="text-h3">{{ item.description.value|raw }}</div>
+                    <p class="text-h3"><strong>{{ item.name }}</strong>&nbsp; &nbsp;&nbsp;<em>{{ item.role }}</em></p>
+                </div>
+            {% endfor %}
+        </div>
+        <ol class="carousel-indicators">
+            {% for item in content %}
+                {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : '' %}
+                {% set profile_image = image_uri|image_style('medium') %}
+                {% set lqip_image = image_uri|image_style('lqip') %}
+                {% if loop.first %}
+                    {% set activeItem = 'active' %}
+                {% else %}  
+                    {% set activeItem = ' ' %}  
+                {% endif %}    
+    
+                <li data-target="#carouselExampleIndicators" data-slide-to="{{ loop.index - 1 }}" class='lazy-wrapper {{ activeItem }}'>
+                    <img alt="{{ item.image_alt }}"
+                        class="lazyload img-fluid"
+                        src="{{ lqip_image }}"
+                        data-src="{{ profile_image }}">
+                </li>
+                
+            {% endfor %}
+        </ol>
+        <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+            <span class="icon-chevron-left" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+            <span class="icon-chevron-right" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+</div>

@@ -1,0 +1,33 @@
+name: 'C18 - Bloc de texte avec icône'
+multiple: TRUE
+category: 'Content'
+enabled: TRUE
+fields:
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': true
+      '#description': 'Image size largeur:140px hauteur:146px'
+  image_alt:
+    type: text
+    label: 'Image alt'
+  title:
+    type: text
+    label: 'Titre'
+    options:
+      '#required': TRUE
+  description:
+    type: textarea
+    label: 'Description'
+    options:
+      '#required': true
+  details:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'full_html'
+extra_fields:
+  bigtitle:
+    type: text
+    label: 'Titre du block'

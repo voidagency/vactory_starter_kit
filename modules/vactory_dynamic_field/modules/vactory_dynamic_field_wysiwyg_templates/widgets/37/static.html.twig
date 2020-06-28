@@ -1,0 +1,28 @@
+{% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/1200/600.jpg" %}
+
+<div class="t-background-contenu-libre-up">
+  <div class="container">
+    <div class="t-background-image-intro py-lg-5 px-lg-4 py-3">
+      <p>Vestibulum suscipit nulla quis orci. Donec vitae sapien ut libero venenatis faucibus. Duis vel nibh at velit
+        scelerisque suscipit. Donec posuere vulputate arcu. Vivamus euismod mauris.</p>
+      <p>Donec interdum, metus et hendrerit aliquet, dolor diam sagittis ligula, eget egestas libero turpis vel mi.
+        Nullam sagittis. Vestibulum ullamcorper mauris at ligula. Vivamus euismod mauris. Mauris turpis nunc, blandit
+        et, volutpat molestie, porta ut, ligula.</p>
+      <p>Phasellus nec sem in justo pellentesque facilisis. Cras dapibus. Sed cursus turpis vitae tortor. Etiam feugiat
+        lorem non metus. Aenean posuere, tortor sed cursus feugiat, nunc augue blandit nunc, eu sollicitudin urna dolor
+        sagittis lacus.</p>
+
+    </div>
+  </div>
+  <div class="t-background-image lazyload parallax-bg up"
+       data-bg="{{ placehold }}"
+       style="background-image: url({{ content.image_placeholder }})"></div>
+  <div class="container up">
+    <div class="t-background-content-libre py-lg-5 px-lg-4 py-3">
+      <p class="text-align-center">Nam ipsum risus, rutrum vitae, vestibulum eu, molestie vel, lacus. Etiam
+        sollicitudin, ipsum eu pulvinar rutrum, tellus ipsum laoreet sapien, quis venenatis ante odio sit amet eros.
+        Duis arcu tortor, suscipit eget, imperdiet nec, imperdiet iaculis, ipsum. Integer ante arcu, accumsan a,
+        consectetuer eget, posuere ut, mauris. Mauris turpis nunc, blandit et, volutpat molestie, porta ut, ligula.</p>
+    </div>
+  </div>
+</div>

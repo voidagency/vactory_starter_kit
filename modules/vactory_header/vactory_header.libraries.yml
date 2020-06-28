@@ -1,0 +1,59 @@
+vactory_header.variant1:
+  js:
+    js/variant1.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
+
+vactory_header.variant2:
+  js:
+    js/variant2.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
+
+vactory_header.variant3:
+  js:
+    js/variant3.js: {}
+
+vactory_header.variant4:
+  js:
+    js/variant4.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
+
+vactory_header.variant5:
+  js:
+    js/variant5.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
+
+vactory_header.variant6:
+  js:
+    js/variant6.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
+
+vactory_header.variant7:
+  js:
+    js/variant7.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
+
+vactory_header.variant8:
+  js:
+    js/variant8.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
+
+vactory_header.header-helper:
+  js:
+    js/header-helpers.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings

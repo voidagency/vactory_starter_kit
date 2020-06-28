@@ -1,0 +1,18 @@
+{% set toolbox_mode = (extra_fields.mode == 1)? 'toolbox-contact description' : 'toolbox-contact' %}
+
+<div class='{{ toolbox_mode }}'>
+    <ul>
+        {% for item in content %}
+            <li class="d-block">
+                <div class="list-itel-inner">
+                    <a href="{{ item.url }}" class="text">
+                        <span class="{{ item.icon }} icon-wrapper"></span>
+                        <p>
+                            {{ item.description }}
+                        </p>    
+                    </a>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+</div>

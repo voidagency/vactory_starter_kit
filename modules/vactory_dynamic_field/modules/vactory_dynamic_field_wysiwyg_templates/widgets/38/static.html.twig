@@ -1,0 +1,23 @@
+{% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/1140/350.jpg" %}
+
+<div class="t-background-with-card py-5 lazyload"
+     data-bg="//place-hold.it/1140x350"
+     style="background-image: url('{{ content.image_placeholder }}')">
+  <div class="container">
+    <div class="row text-left">
+      <div class="col-12 col-md-7 col-lg-5 col-sm-9 ml-sm-auto mr-sm-0 m-auto">
+        <div class="p-4 shadow t-background-with-card-details">
+          <h2>Title</h2>
+          <p>
+            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the
+            industry's standard dummy text ever since the 1500s.
+          </p>
+          <div>
+            <a class="btn btn-primary" href="#"
+            >View More</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

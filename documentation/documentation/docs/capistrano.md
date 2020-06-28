@@ -1,0 +1,31 @@
+## Premier déploiement
+
+- Créer la base de données et importer la db local de la `Factory`
+- Générer une clé SSH sur le serveur consérné (no passphrase)
+- Authoriser la clé sur le serveur
+- Ajouter la clé plublique au dépôt GIT consérné
+- Configurer un des fichiers sur : capistrano/config/deploy
+    - stage: Le nom stagging (**NOMSTAGING**)
+    - branch: La branch à déploiyer
+    - tmp_dir: Chemin vers le dossiers tmp
+    - deploy_to: Chemin vers le dossier racine utilisateur
+    - `IP address`: Adresse IP du serveur
+    - user: Nom utilisateur SSH ou cPanel
+- Configurer le fichier capistrano/config/deploy.rb
+    - repo_url: URI Git vers le dépôt consérné
+- Se connecter via SSH au serveur
+    - Créer un répertoire avec cette structure:
+        - shared
+            - sites
+                - default
+                    - files
+                    - settings.local.php
+    - Copier le contenu du fichier `docs_factory/resources/settings/settings.local.php` dans `shared/sites/default/settings.local.php`
+    - Supprimer le dossier `public_html`
+    - Créer une alias `public_html` > `tmp`
+        - `ln -s tmp public_html`
+- Vérifier la version PHP (7.1)
+- Lancer le déploiment:
+    - `cd capistrano` (depuis la racine du projet)
+    - `bundle exec cap` **NOMSTAGING** `deploy`
+

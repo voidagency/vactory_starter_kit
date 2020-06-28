@@ -1,0 +1,45 @@
+<div class="fdb-block">
+
+          <div class="row text-center py-5">
+                <div class="col">
+                        <h2>Pricing Table</h2>
+                    </div>
+              </div>
+
+
+    <div class="row mt-5 align-items-top">
+
+            {% for item in 0..2 %}
+
+                {% if loop.index >= 2 %}
+                    <div class="col-12 col-sm-10 col-md-8 m-auto col-lg-4 text-left pt-4 pt-lg-0">
+                    {% else %}
+                        <div class="col-12 col-sm-10 col-md-8 m-auto col-lg-4 text-left">
+                        {% endif %}
+
+                            <div class="bg-gray pb-5 pt-5 pl-4 pr-4 br">
+
+                                        <h2 class="font-weight-light">Title</h2>
+
+                                    <hr>
+
+                                        <p class="text-h2"><strong>99€</strong></p>
+
+
+                                        <p class="text-h4">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
+
+                                    <hr>
+
+                                        <div class="text-right"><em>Value</em></div>
+
+
+                                        <p class="text-center pt-4"><a class="btn btn-outline-primary" href="#" >Read More</a></p>
+
+                                </div>
+
+                        </div>
+
+                {% endfor %}
+
+            </div>
+    </div>

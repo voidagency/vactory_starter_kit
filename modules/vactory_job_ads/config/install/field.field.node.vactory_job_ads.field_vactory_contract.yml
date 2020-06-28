@@ -1,0 +1,28 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_vactory_contract
+    - node.type.vactory_job_ads
+    - taxonomy.vocabulary.vactory_job_ads_contract
+id: node.vactory_job_ads.field_vactory_contract
+field_name: field_vactory_contract
+entity_type: node
+bundle: vactory_job_ads
+label: Contract
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      vactory_job_ads_contract: vactory_job_ads_contract
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

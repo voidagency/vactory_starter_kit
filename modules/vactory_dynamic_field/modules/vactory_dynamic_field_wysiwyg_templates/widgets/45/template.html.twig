@@ -1,0 +1,43 @@
+{% set reverse_mode = (extra_fields.mode == 1)? 'd-flex flex-column-reverse' : ' ' %}
+{% set margin_image = (extra_fields.mode == 1)? 'mt-0' : 'mb-0' %}
+
+<div class="testimonial-grid my-5 p-1">
+    {% if extra_fields.intro is not empty %}
+        <div class="row text-center justify-content-center mb-3">
+            <div class="col-md-10 col-lg-8">
+            {% if extra_fields.intro is not empty %}
+                <p>{{ extra_fields.intro }}</p>
+            {% endif %}
+            </div>
+        </div>
+    {% endif %}
+    <div class="row vf-slick-slider" 
+        data-toshow="3"
+        data-dots="false"
+        data-arrows="true"
+        data-mobile-centermode="false">
+        {% for item in content %}
+            {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : '' %}
+            {% set profile_image = image_uri|image_style('medium') %}
+            {% set lqip_image = image_uri|image_style('lqip') %}
+            <div class="col-lg-4 col-md-6 pt-5 pb-5">
+                <div class="card {{ reverse_mode }}">
+                    <div class="card-image mx-auto lazy-small-square">
+                        <img alt="{{ item.image_alt }}"
+                            class="lazyload rounded-circle img-fluid no-effect"
+                            src="{{ lqip_image }}"
+                            data-src="{{ profile_image }}">
+                    </div>
+                    <div class="card-body {{ reverse_mode }}">
+                        <div class='info'>
+                            <p><i class='icon-quote-left mr-1'></i>{{ item.description }}</p>
+                            <strong>{{ item.name }}</strong>
+                            <p>{{ item.role }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+

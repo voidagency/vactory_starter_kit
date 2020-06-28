@@ -1,0 +1,4 @@
+#AuthType Basic
+#AuthName "Vactory Docs"
+#AuthUserFile /home/vactory8/www/docs_factory/.htpasswd
+#Require valid-user

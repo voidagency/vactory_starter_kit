@@ -1,0 +1,59 @@
+{{ attach_library('vactory_dynamic_field_sliders/variant9') }}
+
+<div>
+  <div class="mb-5">
+    <h2 class="title">Slider timeline Vertical </h2>
+    <div class="vf-slider--timeline vf-slider--timeline-vertical">
+      <div class="swiper-container" data-direction="vertical">
+        <div class="swiper-wrapper">
+          {% for item in 0..6 %}
+            {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/1600/600.jpg" %}
+            {% set year = (2014 + loop.index) %}
+            <div class="swiper-slide swiper-lazy" data-background="{{ placehold }}"
+                 style="background-image: url({{ content.image_placeholder }})" data-year="{{ year }}">
+              <div class="swiper-slide-content"><span class="timeline-year">{{ year }}</span>
+                <h4 class="timeline-title">Our nice super title {{ loop.index }}</h4>
+                <p class="timeline-text">Lorem ipsum dolor site amet, consectetur adipscing elit, sed
+                  do eisumod tempor incididut ut labore et dolore magna aliqua. Ut enim ad mimim venjam,
+                  quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                </p>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-pagination"></div>
+      </div>
+    </div>
+  </div>
+
+
+  <div>
+    <h2 class="title">Slider timeline horizontal </h2>
+    <div class="vf-slider--timeline vf-slider--timeline-horizontal">
+      <div class="swiper-container" data-direction="horizontal">
+        <div class="swiper-wrapper">
+          {% for item in 0..6 %}
+            {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/1600/600.jpg" %}
+            {% set year = (2014 + loop.index) %}
+            <div class="swiper-slide swiper-lazy" data-background="{{ placehold }}"
+                 style="background-image: url({{ content.image_placeholder }})" data-year="{{ year }}">
+              <div class="swiper-slide-content"><span class="timeline-year">{{ year }}</span>
+                <h4 class="timeline-title">Our nice super title {{ loop.index }}</h4>
+                <p class="timeline-text">Lorem ipsum dolor site amet, consectetur adipscing elit, sed
+                  do eisumod tempor incididut ut labore et dolore magna aliqua. Ut enim ad mimim venjam,
+                  quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                </p>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+        <div class="swiper-pagination"></div>
+      </div>
+    </div>
+  </div>
+
+</div>

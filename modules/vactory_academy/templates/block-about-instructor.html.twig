@@ -1,0 +1,92 @@
+
+{#
+/**
+ * @file
+ * Default theme implementation to present all user data.
+ *
+ * This template is used when viewing a registered user's page,
+ * e.g., example.com/user/123. 123 being the user's ID.
+ *
+ * Available variables:
+ * - content: A list of content items. Use 'content' to print all content, or
+ *   print a subset such as 'content.field_example'. Fields attached to a user
+ *   such as 'user_picture' are available as 'content.user_picture'.
+ * - attributes: HTML attributes for the container element.
+ * - user: A Drupal User entity.
+ *
+ * @see template_preprocess_user()
+ *
+ * @ingroup themeable
+ */
+#}
+
+{% set first_name = user.field_first_name.value is defined ? user.field_first_name.value : '' %}
+{% set last_name = user.field_last_name.value is defined ? user.field_last_name.value : '' %}
+{% set full_name = [first_name|capitalize ~ ' ', last_name|capitalize]|join %}
+{% set about = user.field_about_the_author.value is defined ? user.field_about_the_author.value : '' %}
+{% set profession = user.field_user_profession.value is defined ? user.field_user_profession.value : '' %}
+{% set user_picture = user.user_picture.value.0.target_id is defined ? file_object(user.user_picture.value.0.target_id) : '' %}
+
+
+<div class="row mt-4 block-about-instructor">
+    <div class="col-md-12 m-auto">
+        <div class="row">
+            <div class="col-12 d-md-none d-block mb-2">
+                <h3 class="only-bottom-margin mb-0">
+                    <a href="{{ url('entity.user.canonical', {'user': user.uid.value}) }}">{{ full_name }}</a>
+                </h3>
+                <p>{{ profession }}</p>
+            </div>
+            <div class="col-md-3 d-flex d-md-block mb-2">
+                <div class="mr-4">
+                    {% if user_picture is not empty %}
+                        {% set user_picture_uri = user_picture.uri.0.value|image_style('medium') %}
+                        <img src="{{ file_url(user_picture_uri) }}"
+                                class="rounded-circle avatar"/>
+                    {% else %}
+                        <img src="{{ base_path ~ directory }}/assets/img/user-avatar.svg"
+                                class="rounded-circle avatar"/>
+                    {% endif %}
+                </div>
+                <div class="pt-3">
+                    <p class="pr-2">
+                       <span class='icon-comment'></span> <strong class="pr-1">{{ content.nb_avis }}</strong>{{ 'Avis'|t }}
+                    </p>
+                    <p>
+                        <span class="icon-file-text-o"></span> <strong class="pr-1">{{ content.nb_courses }}</strong>{{ 'Cours'|t }}
+                    </p>
+                </div>
+
+            </div>
+            <div class="col-md-9">
+                <div class="row">
+                    <div class="col-md-12 d-md-block d-none">
+                        <h2 class="only-bottom-margin">
+                            <a href="{{ url('entity.user.canonical', {'user': user.uid.value}) }}">{{ full_name }}</a>
+                        </h2>
+                        <p>{{ profession }}</p>
+                    </div>
+                    {% if about is not empty %}
+                        <div class="col-md-12 d-md-block d-none">
+                            <blockquote>
+                                <p class="mb-0">{{ about|raw }}</p>
+                            </blockquote>
+                        </div>
+                        <div class="col-12 d-md-none d-block">
+                            <p>
+                                <a data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+                                    Voir Plus
+                                </a>
+                            </p>
+                            <div class="collapse" id="collapseExample">
+                                <blockquote>
+                                    <p class="mb-0">{{ about|raw }}</p>
+                                </blockquote>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

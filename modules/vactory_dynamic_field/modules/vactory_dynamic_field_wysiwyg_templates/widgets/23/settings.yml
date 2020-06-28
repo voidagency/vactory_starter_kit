@@ -1,0 +1,20 @@
+name: 'C23 - block with image and content'
+multiple: TRUE
+category: 'Content'
+enabled: TRUE
+fields:
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': true
+      '#description': 'Image size largeur:246px hauteur:236px'
+  image_alt:
+    type: text
+    label: 'Image alt'
+  details:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'full_html'
+      '#required': true

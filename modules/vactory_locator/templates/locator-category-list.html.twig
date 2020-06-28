@@ -1,0 +1,23 @@
+<div class="location-list p-3" style="display: block; max-height: none">
+    <h3>{{ 'Nos Catégories de présence' }}</h3>
+    <div class="agences-box" style="overflow: auto;">
+        <ul>
+            <li>
+                <h5>
+                    <a class="locator-category" href="" data-term-id="all">
+                        {{ 'Toutes les catégories'|t }}
+                    </a>
+                </h5>
+            </li>
+            {% for item in content.terms %}
+                <li>
+                    <h5>
+                        <a class="locator-category" href="" data-term-id="{{ item.tid }}">
+                            {{ item.name }}
+                        </a>
+                    </h5>
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>

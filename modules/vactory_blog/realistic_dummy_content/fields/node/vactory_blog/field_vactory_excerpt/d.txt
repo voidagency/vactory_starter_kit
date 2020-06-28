@@ -1,0 +1,1 @@
+In the first article of this series, we walked through how to put together the hardware board and all of its additional components into a single rig. I also gave you a glimpse of the decision-making process behind the selection of the board.

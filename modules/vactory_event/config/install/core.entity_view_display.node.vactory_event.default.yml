@@ -1,0 +1,106 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_display.comment.comment.default
+    - field.field.node.vactory_event.body
+    - field.field.node.vactory_event.comment
+    - field.field.node.vactory_event.field_vactory_date_interval
+    - field.field.node.vactory_event.field_vactory_excerpt
+    - field.field.node.vactory_event.field_vactory_image
+    - field.field.node.vactory_event.field_vactory_media
+    - field.field.node.vactory_event.field_vactory_meta_tags
+    - field.field.node.vactory_event.field_vactory_seo_status
+    - field.field.node.vactory_event.field_vactory_taxonomy_1
+    - field.field.node.vactory_event.field_vactory_taxonomy_2
+    - node.type.vactory_event
+  module:
+    - comment
+    - datetime_range
+    - metatag
+    - user
+    - vactory_core
+    - vactory_field
+id: node.vactory_event.default
+targetEntityType: node
+bundle: vactory_event
+mode: default
+content:
+  comment:
+    weight: 7
+    label: above
+    settings:
+      view_mode: default
+      pager_id: 0
+    third_party_settings: {  }
+    type: comment_default
+    region: content
+  field_vactory_date_interval:
+    weight: 2
+    label: hidden
+    settings:
+      separator: '-'
+      format_type: medium
+      timezone_override: ''
+    third_party_settings: {  }
+    type: daterange_default
+    region: content
+  field_vactory_excerpt:
+    weight: 5
+    label: hidden
+    settings:
+      trim_length: 350
+    third_party_settings: {  }
+    type: vactory_field_excerpt_formatter
+    region: content
+  field_vactory_media:
+    weight: 6
+    label: hidden
+    settings:
+      desktop_1x: vactory_two_cols_x1
+      desktop_2x: vactory_two_cols_x2
+      laptop_1x: vactory_two_cols_x1
+      laptop_2x: vactory_two_cols_x2
+      tablet_1x: vactory_two_cols_x1
+      tablet_2x: vactory_two_cols_x2
+      mobile_1x: vactory_two_cols_x1
+      mobile_2x: vactory_two_cols_x2
+      lqip: lqip
+    third_party_settings: {  }
+    type: lazy_image
+    region: content
+  field_vactory_meta_tags:
+    weight: 8
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: metatag_empty_formatter
+    region: content
+  field_vactory_taxonomy_1:
+    weight: 3
+    label: hidden
+    settings:
+      link: false
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_vactory_taxonomy_2:
+    weight: 4
+    label: hidden
+    settings:
+      link: false
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  body: true
+  field_vactory_image: true
+  field_vactory_seo_status: true
+  langcode: true
+  search_api_excerpt: true

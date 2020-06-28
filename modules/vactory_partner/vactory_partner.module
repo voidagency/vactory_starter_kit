@@ -1,0 +1,29 @@
+<?php
+
+/**
+ * @file
+ * Contain related hooks.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_partner_theme($existing, $type, $theme, $path) {
+  return [
+    // View > partner.
+    'views_view_unformatted__vactory_partner__partner_block_list' => [
+      'base hook' => 'views_view_unformatted',
+      'template'  => 'block-list',
+    ],
+    // Node > partner.
+    'node__vactory_partner__vactory_logo'                         => [
+      'base hook' => 'node',
+      'template'  => 'partner',
+    ],
+    // Node > full.
+    'node__vactory_partner__full'                                 => [
+      'base hook' => 'node',
+      'template'  => 'full',
+    ],
+  ];
+}

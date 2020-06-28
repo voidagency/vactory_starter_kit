@@ -1,0 +1,92 @@
+{% macro MegaMenuMacro(menu, level) -%}
+
+  <ul class="navbar-nav menu-level--1">
+    {% for key, menu_item in menu %}
+
+      {# Check if this is the active item. #}
+      {% set active = (menu_item.active) ? ' active' : '' %}
+      {# Check if this item is in the active trail. #}
+      {% set active = active ~ ((menu_item.active_trail) ? ' active-trail' : '') %}
+
+      {# Check if this item has childs. #}
+      {% set has_sub = ((menu_item.submenu) ? 'has-sub dropdown' : '') %}
+
+      {# Check if the link item has injected block to hide their parent menu link. #}
+      {% set megaMenu = (menu_item.fields.field_injected_block|render|trim is not empty) ? "has-sub dropdown mega-dropdown" : "" %}
+
+      {# Generate ID for dropdown menu item #}
+      {% set drop_item_id = 'dropdown_' ~ loop.index ~ '_' ~ random(1, 20) %}
+
+
+      <li class="nav-item menu__item--1 {{ has_sub }} {{megaMenu}} {{ menu_item.options.attributes.class }}">
+
+        {# Call the block injected menu if exist. #}
+        {% if menu_item.fields.field_injected_block | render | trim is not empty %}
+          <a href="{{ menu_item.url }}" class="nav-link dropdown-toggle menu__link{{ active }}" id="{{drop_item_id}}" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ menu_item.text }}</a>
+          <div class="dropdown-menu menu-wrapper b-none animated fadeInUp" aria-labelledby="{{drop_item_id}}">
+            {{ menu_item.fields.field_injected_block }}
+          </div>
+        {# End Injected Block #}
+
+        {# Check if the Menu have a SubMenu level 2 #}
+        {% elseif menu_item.submenu %}
+
+          {# Print dropdown toggle & menu for the Level 2 #}
+          <a href="{{ menu_item.url }}" class="nav-link dropdown-toggle menu__link{{ active }}" id="{{drop_item_id}}" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ menu_item.text }}</a>
+          <ul class="dropdown-menu menu__level--2 menu-wrapper animated fadeInUp" aria-labelledby="{{drop_item_id}}">
+            {# dropdown menu Level 2 #}
+
+            {% for submenu_1 in menu_item.submenu %}
+
+              {# Check if this is the active item. #}
+              {% set sub_active = (submenu_1.active) ? ' active' : '' %}
+              {# Check if this item is in the active trail. #}
+              {% set sub_active = sub_active ~ ((submenu_1.active_trail) ? ' active-trail' : '') %}
+
+              {# Check if the menu Level 2 has a Level 3 menu add class to trigger dropdown #}
+              {% set drop_sub = ((submenu_1.submenu) ? 'dropdown-submenu' : '') %}
+
+              <li class="nav-item menu__item--2 {{drop_sub}} {{ submenu_1.options.attributes.class }}">
+
+                {# Check if the the menu Level 2 has a Level 3 menu #}
+                {% if submenu_1.submenu %}
+                  <a href="javascript:void(0)" class="nav-link menu__link dropdown-item {{sub_active}}" aria-haspopup="true" aria-expanded="false">{{submenu_1.text}}</a>
+                  <ul class="menu__level--3 dropdown-menu b-none animated flipInY">
+
+                    {# Print menu Level 3 #}
+                    {% for submenu_2 in submenu_1.submenu %}
+
+                      {# Check if this is the active item. #}
+                      {% set sub_2_active = (submenu_2.active) ? ' active' : '' %}
+                      {# Check if this item is in the active trail. #}
+                      {% set sub_2_active = sub_2_active ~ ((submenu_2.active_trail) ? ' active-trail' : '') %}
+
+                      <li class="nav-item menu__item--3 {{ submenu_2.options.attributes.class }}">
+                        <a href="{{submenu_2.url}}" class="dropdown-item {{sub_2_active}}">{{submenu_2.text}}</a>
+                      </li>
+                    {% endfor %}
+
+                  </ul>
+                {% else %}
+
+                  {# Print the Level 2 menu item #}
+                  <a href="{{submenu_1.url}}" class="nav-link menu__link dropdown-item {{sub_active}}">{{submenu_1.text}}</a>
+                {% endif %}
+
+              </li>
+            {% endfor %}
+
+            {# End dropdown menu Level 2 #}
+          </ul>
+        {# End SubMenu level 2 #}
+        {% else %}
+
+        {# Print the Menu Link Level 1 #}
+          <a href="{{ menu_item.url }}" class="nav-link menu__link{{ active }}">{{ menu_item.text }}</a>
+        {% endif %}
+        {# End If #}
+
+    </li>
+  {% endfor %}
+</ul>
+{%- endmacro %}

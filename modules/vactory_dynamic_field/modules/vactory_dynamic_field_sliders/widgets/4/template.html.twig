@@ -1,0 +1,65 @@
+{{ attach_library('vactory_dynamic_field_sliders/variant4') }}
+
+<div class="vf-slider vf-slider--full-background">
+  <div class="slider vf-slick-slider"
+       data-arrows="true"
+       data-mobile-arrows="true"
+       data-dots="true"
+       data-mobile-dots="true"
+       data-mobile-autoplay="true"
+  >
+
+    {% for item in content %}
+      {% set is_visible = (loop.first) ? 'is-visible' : '' %}
+      {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : '' %}
+      {% set image = file_url(image_uri) %}
+
+      {% set imageMobile_uri = (item.image_mobile.0 is defined) ? get_image(item.image_mobile.0) : '' %}
+      {% set imageMobile = (imageMobile_uri is not empty) ? file_url(imageMobile_uri) : image %}
+
+      {% set autoLoad = (loop.index == 1) ? TRUE : FALSE %}
+
+      <div class="image" {#% if item.cta_url is not empty %} onclick="location.href='{{ item.cta_url }}'" {% endif %#}>
+        {% if item.video is not empty %}
+          <div id="slider-background-video{{ loop.index }}" data-desktop="{{ image }}" data-mobile="{{ imageMobile }}"
+               class="background loading is-video {{ is_active }}"
+               data-item="{{ loop.index }}"></div>
+          <div class="ytplayer"
+               data-property="{
+                 videoURL:'http://youtu.be/{{ item.video }}',
+                 containment:'#slider-background-video{{ loop.index }}',
+                 showYTLogo: false,
+                 ratio:'16/9',
+                 autoPlay: '{{ autoLoad }}',
+                 showControls: false,
+                 quality: 'large',
+                 mute:true,
+                 startAt:0,
+                 loop: 100,
+                 opacity:1
+                 }">
+          </div>
+        {% else %}
+          <div class="background loading" data-desktop="{{ image }}" data-mobile="{{ imageMobile }}" data-item="{{ loop.index }}"></div>
+        {% endif %}
+        <div class="content">
+          <div class="slider-content container">
+            {% if item.title is not empty %}
+              <h1 class="vf-slider--full-background-title">{{ item.title }}</h1>
+            {% endif %}
+            {% if item.content is not empty %}
+              <p class="vf-slider--full-background-description">
+                {{ item.content }}
+              </p>
+            {% endif %}
+            {% if item.cta_url is not empty and item.cta_alt is not empty %}
+              {% set link_target = (item.link_target > 0) ? '_blank' : '_self' %}
+              <a href="{{ item.cta_url }}" class="btn btn-white" target="{{ link_target }}">{{ item.cta_alt }}</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  <div class="slick-controls d-lg-none"></div>
+</div>

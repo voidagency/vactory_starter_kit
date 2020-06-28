@@ -1,0 +1,13 @@
+vactory_blog.slider_small:
+  js:
+    js/slider-small.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
+
+vactory_blog.slider_large:
+  js:
+    js/slider-large.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings

@@ -1,0 +1,33 @@
+<div class="fdb-block">
+    <div class="row justify-content-center">
+        <div class="col-12 text-left">
+            <h2>Froala Design Blocks</h2>
+            <p class="lead"> Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has
+                been the industry's standard dummy text ever since the 1500s. </p>
+        </div>
+    </div>
+    <div class="row text-left mt-5">
+        {% for item in 0..2 %}
+
+        {% if loop.index == 1 %}
+        <div class="col-12 col-sm-8 col-md-4 col-lg-3 m-sm-auto mr-md-auto ml-md-0">
+            {% elseif loop.index == 2 %}
+            <div class="col-12 col-sm-8 col-md-4 col-lg-3 m-sm-auto pt-5 pt-md-0">
+                {% else %}
+                <div class="col-12 col-sm-8 col-md-4 col-lg-3 m-sm-auto ml-md-auto mr-md-0 pt-5 pt-md-0">
+                    {% endif %}
+
+                    {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/250/250.jpg" %}
+                    <img alt="Image Alt"
+                        class="lazyload img-fluid"
+                        src="{{ content.image_placeholder }}"
+                        data-src="{{ placehold }}">
+
+                    <h3><strong>Feature</strong></h3>
+                    <p>Far from the countries Vokalia and Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the Semantics, a large language ocean.</p>
+                </div>
+
+                {% endfor %}
+
+            </div>
+        </div>

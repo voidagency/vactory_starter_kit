@@ -1,0 +1,106 @@
+<!-- @todo: twig hamburger -->
+<!-- @todo: twig menuMacro -->
+
+{% macro menuMacro(menu, level) -%}
+
+    {# Set our default level as an integer. #}
+    {% set default_level = 1 %}
+
+    <ul class="menu-level--{{ level|default(default_level) }}">
+        {% for menu_item in menu %}
+            {# Check if this is the active item. #}
+            {% set active = (menu_item.active) ? ' is-active' : '' %}
+
+            {# Check if this item is in the active trail. #}
+            {% set active = active ~ ((menu_item.active_trail) ? ' is-active-trail' : '') %}
+
+            {# Check if this item has childs. #}
+            {% set has_sub = ((menu_item.submenu or menu_item.fields.field_injected_block | render | trim is not empty) ? 'has-sub' : '') %}
+
+            <li class="menu__item{{ active }} menu__item--{{ level|default(default_level) }} {{ has_sub }} {{ menu_item.options.attributes.class }}">
+                <a href="{{ menu_item.url }}" class="menu__link{{ active }}">{{ menu_item.text }}</a>
+                {# Call the block injected menu if exist. #}
+                {% if menu_item.fields.field_injected_block | render | trim is not empty %}
+                  <div class="menu-sub--{{ level|default(default_level) }}">
+                    <div class="menu-sub-inner--{{ level|default(default_level) }}">
+                      {{ menu_item.fields.field_injected_block }}
+                    </div>
+                  </div>
+                {# End Injected Block #}
+                {% elseif menu_item.submenu %}
+                    <div class="menu-sub--{{ level|default(default_level) }}">
+                        <div class="menu-sub-inner--{{ level|default(default_level) }}">
+                            {# Since this menu item has a submenu, recall function and increment counter. #}
+                            {{ _self.menuMacro(menu_item.submenu, level|default(default_level) + 1) }}
+                        </div>
+                    </div>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+{%- endmacro %}
+
+
+    {{ attach_library('vactory_header/vactory_header.variant1') }}
+    {% set main_navigation_menu = simplify_menu('main') %}
+
+<div id="vh-header" class="vh-header vh-variant1 vh-sticky">
+    <div class="container">
+        <div class="vh-layout">
+
+            <div class="vh-header--branding">
+                {{ vactory_render('block', 'system_branding_block', {use_site_name: false}) }}
+            </div>
+
+            <nav id="cbp-hrmenu" class="vh-header--menu cbp-hrmenu d-none d-lg-block">
+                {{ _self.menuMacro(main_navigation_menu.menu_tree) }}
+            </nav>
+
+            {% if is_academy_enabled %}
+              {{ vactory_render('block', 'authenticated_user_header') }}
+            {% endif %}
+
+            <div class="vh-header--search-button d-none d-lg-block px-2">
+              <a href="#" class="icon-search icon js-btn-search-overlay" aria-label="Search button"></a>
+            </div>
+
+            <div class="vh-header--language-switcher d-none d-lg-block">
+                {{ vactory_render('block', 'language_dropdown_block:language_interface') }}
+            </div>
+
+            <div class="vh-hamburger d-lg-none">
+                <!-- @todo: twig this -->
+                <button id="vhm-hamburger-btn" class="hamburger hamburger--collapse js-offcanvas-trigger"
+                        type="button" aria-label="Menu" role="button"
+                        data-offcanvas-trigger="vhm"
+                        aria-controls="navigation" aria-expanded="true/false">
+                      <span class="hamburger-box">
+                        <span class="hamburger-inner"></span>
+                      </span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<aside
+        class="vhm-variant1 js-offcanvas c-offcanvas c-offcanvas--overlay c-offcanvas--left is-closed"
+        data-offcanvas-options='{ "modifiers": "left,overlay" }'
+        role="complementary"
+        id="vhm">
+    {{ vactory_render('block', 'system_branding_block', {use_site_name: false}) }}
+
+    {#<div class="vhm__search-form">#}
+        {#{{ vactory_render('block', 'search_form_block') }}#}
+    {#</div>#}
+
+    <nav class="vhm__menu">
+        {{ _self.menuMacro(main_navigation_menu.menu_tree) }}
+    </nav>
+
+    <hr>
+
+    <div class="vhm__language-switcher">
+        {{ vactory_render('block', 'language_dropdown_block:language_interface') }}
+    </div>
+
+</aside>

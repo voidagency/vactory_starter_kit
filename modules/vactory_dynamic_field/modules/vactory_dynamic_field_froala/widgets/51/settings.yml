@@ -1,0 +1,30 @@
+name: '51 - Froala - Pricing Title, Price, Items & CTA With Background'
+multiple: TRUE
+category: 'Tables'
+enabled: TRUE
+limit: 3
+fields:
+  title:
+    type: text
+    label: 'Titre'
+  price:
+    type: text
+    label: 'Price'
+  lists:
+    type: text_format
+    label: 'Items'
+    options:
+      '#format': 'full_html'
+  link:
+    type: url_extended
+    label: 'Lien'
+  link_alt:
+    type: text
+    label: 'Titre lien'
+  link_target:
+    type: checkbox
+    label: 'Ouvrir dans une nouvelle fenêtre'
+extra_fields:
+  title:
+      type: text
+      label: 'Titre'

@@ -1,0 +1,46 @@
+name: 'C02 - 1 Image ou vidéo sur fond blanc avec description et bouton'
+multiple: FALSE
+category: 'Content'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: 'Title'
+    options:
+      '#required': TRUE
+  description:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'full_html'
+  link:
+    type: url_extended
+    label: 'Lien du bouton'
+  link_alt:
+    type: text
+    label: 'Texte du bouton'
+  link_icon:
+    type: text
+    label: 'Icône du bouton (Optionnel)'
+  link_target:
+    type: checkbox
+    label: 'Ouvrir dans une nouvelle fenêtre'
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': TRUE
+  image_alt:
+    type: text
+    label: 'Image alt'
+  video:
+    type: text
+    label: 'Video ID'
+    options:
+      '#description': '<b><i class="link">How ?</i></b><br><b>URL Example</b>: https://www.youtube.com/watch?v=BZDyr2OpWBU <br> <b>Value to insert</b>: BZDyr2OpWBU'
+  titleVideo:
+    type: text
+    label: 'titre de video'
+  mode:
+    type: checkbox
+    label: 'Activate inversed mode'

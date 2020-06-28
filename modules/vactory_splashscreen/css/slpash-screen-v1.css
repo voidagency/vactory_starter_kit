@@ -1,0 +1,32 @@
+.splash-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1000;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.8);
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+
+.splash-screen.variant1 .close {
+  position: absolute;
+  top: 5%;
+  right: 3%;
+  color: white;
+  text-shadow: none;
+  opacity: 1;
+}
+.splash-screen .splash-screen--content {
+  display: flex;
+  justify-content: center;
+  height: 100vh;
+  vertical-align: middle;
+  align-items: center;
+}
+
+.splash-screen .paragraph.paragraph--type--vactory-component {
+  margin: 0;
+}

@@ -1,0 +1,38 @@
+<div class="t-coverflow-full js-img-video">
+  <div class="row vf-slick-slider full-slider"
+       data-toshow="1"
+       data-arrows="false"
+       data-variablewidth="true"
+       data-centermode="true"
+       data-mobile-variablewidth="false"
+       data-mobile-centermode="true"
+       data-mobile-centerpadding="20px">
+    {% for item in content %}
+      <div class="col-md-6">
+        {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : "" %}
+        {% set lqip_image = image_uri|image_style('lqip') %}
+        {% set fluid_image = image_uri %}
+        {% set _imgVideo = (item.video is not empty) ? 'js-img-video' : null %}
+        {% set imageAlt = (item.image_alt is not empty) ? item.image_alt : "Image" %}
+
+        <div class="t-item t-2b-image-bg block-image {{ _imgVideo }}">
+          {% if item.titleVideo is not empty %}
+            <p class="t-video-title"> {{ item.titleVideo }}</p>
+          {% endif %}
+          {% if item.video is not empty %}
+            <a class="image-scale" data-fancybox href="{{ "https://www.youtube-nocookie.com/embed/" ~ item.video }}">
+              <div class="lazy-wrapper">
+                <img data-src="{{ file_url(fluid_image) }}"
+                     src="{{ lqip_image }}"
+                     alt="{{ imageAlt }}"
+                     class="img-fluid lazyload">
+              </div>
+            </a>
+          {% else %}
+            <img src="{{ file_url(fluid_image) }}" alt="{{ imageAlt }}" class="img-fluid">
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>

@@ -1,0 +1,34 @@
+name: 'S01 - Default Slider'
+multiple: TRUE
+category: 'Sliders'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: 'Title'
+    placeholder_value: 'Dummy title'
+    options:
+      '#required': TRUE
+  image:
+    type: image
+    label: 'Image'
+    placeholder_value: 'test-image.jpg'
+    options:
+      '#required': TRUE
+      '#description': 'Image size largeur: 768px hauteur 480px'
+  image_alt:
+    type: text
+    placeholder_value: 'Dummy alt'
+    label: 'Image description'
+  content:
+    type: textarea
+    label: 'Description'
+    placeholder_value: 'Dummy description'
+  cta_url:
+    type: url_extended
+    label: 'Read More Link'
+    placeholder_value: 'https://www.google.com'
+  cta_alt:
+    type: text
+    label: 'Read More Text'
+    placeholder_value: 'Dummy cta alt'

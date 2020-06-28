@@ -1,0 +1,52 @@
+name: 'U07 - UniteGallery - Grid'
+multiple: TRUE
+category: 'UniteGallery'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: 'Title'
+    options:
+      '#required': TRUE
+  description:
+    type: textarea
+    label: 'Description'
+    options:
+      '#required': TRUE
+  thumbnail:
+    type: image
+    label: 'Thumbnail'
+    options:
+      '#required': TRUE
+      '#description': 'Image size largeur: 400px'
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': TRUE
+extra_fields:
+  position:
+    type: select
+    label: 'Panel Position'
+    options:
+      '#required': TRUE
+      '#options':
+        - 'right': 'Right'
+        - 'left': 'Left'
+        - 'bottom': 'Bottom'
+        - 'top': 'Top'
+  numberCols:
+    type: number
+    label: 'Nombre de thumbnail sur une ligne'
+  zoom:
+    type: checkbox
+    label: 'Activer le zoom'
+  scrollVertical:
+    type: checkbox
+    label: 'Disable scroll vertical'
+  EnableArrows:
+    type: checkbox
+    label: 'Enable Arrows of slides'
+  disableText:
+    type: checkbox
+    label: 'Disabl show of description and title'

@@ -1,0 +1,11 @@
+langcode: fr
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_appointment
+id: dam_adviser
+label: Conseiller
+weight: 6
+is_admin: null
+permissions: {  }

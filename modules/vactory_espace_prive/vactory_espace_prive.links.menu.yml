@@ -1,0 +1,5 @@
+vactory_espace_prive_settings:
+  title: Vactory Espace Privé Settings
+  description: Configuration de module personnalisé Vactory Espace Privé
+  route_name: vactory_espace_prive.settings_form
+  parent: user.admin_index

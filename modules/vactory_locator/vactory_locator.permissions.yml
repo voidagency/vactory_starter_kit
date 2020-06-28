@@ -1,0 +1,30 @@
+add locator entity entities:
+  title: 'Create new Locator Entity entities'
+
+administer locator entity entities:
+  title: 'Administer Locator Entity entities'
+  description: 'Allow to access the administration form to configure Locator Entity entities.'
+  restrict access: true
+
+delete locator entity entities:
+  title: 'Delete Locator Entity entities'
+
+edit locator entity entities:
+  title: 'Edit Locator Entity entities'
+
+view published locator entity entities:
+  title: 'View published Locator Entity entities'
+
+view unpublished locator entity entities:
+  title: 'View unpublished Locator Entity entities'
+
+view all locator entity revisions:
+  title: 'View all Locator Entity revisions'
+
+revert all locator entity revisions:
+  title: 'Revert all Locator Entity revisions'
+  description: 'Role requires permission <em>view Locator Entity revisions</em> and <em>edit rights</em> for locator entity entities in question or <em>administer locator entity entities</em>.'
+
+delete all locator entity revisions:
+  title: 'Delete all revisions'
+  description: 'Role requires permission to <em>view Locator Entity revisions</em> and <em>delete rights</em> for locator entity entities in question or <em>administer locator entity entities</em>.'

@@ -1,0 +1,18 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_titre_ancre
+    - paragraphs.paragraphs_type.vactory_paragraph_block
+id: paragraph.vactory_paragraph_block.field_titre_ancre
+field_name: field_titre_ancre
+entity_type: paragraph
+bundle: vactory_paragraph_block
+label: 'Titre de l''ancre'
+description: 'Titre de paragraphe personnalisé dans le menu d''ancre (Laissez vide pour utiliser le titre de paragraphe par défaut).'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

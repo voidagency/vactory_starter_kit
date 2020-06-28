@@ -1,0 +1,170 @@
+<!-- @todo: twig hamburger -->
+<!-- @todo: twig menuMacro -->
+
+{% macro menuMacro(menu, level) -%}
+  {# Set our default level as an integer. #}
+  {% set default_level = 1 %}
+  {# check it is the second level to add bootstrap row and class to fixed on mobile #}
+  {% set rows = (level >= 2) ? "row fixed-mobile menu-item-wrapper" : "" %}
+
+  <ul class="menu-level--{{ level|default(default_level) }} {{ rows }}">
+    {% for key, menu_item in menu %}
+      {# Check if this is the active item. #}
+      {% set active = (menu_item.active) ? ' is-active' : '' %}
+
+      {# Check if this item is in the active trail. #}
+      {% set active = active ~ ((menu_item.active_trail) ? ' is-active-trail' : '') %}
+
+      {# Check if the link item has injected block to hide their parent menu link. #}
+      {% set block_menu_rows = (menu_item.fields.field_injected_block|render|trim is not empty) ? "row fixed-mobile menu-item-wrapper" : "" %}
+
+      {# Check if this is the second level to add bootstrap class #}
+      {#% set cols = (level == 2 ) ? "col-4" : "" %#}
+
+
+      {# Check if this item has childs. #}
+      {% set has_sub = ((menu_item.submenu) or (menu_item.fields.field_injected_block|render|trim is not empty) ? 'has-sub' : '') %}
+
+      {# check menu level to show close button #}
+      {% if (key == 0) and (level == 2) %}
+        <div class="vh-mega-menu-close d-none d-lg-flex">
+          <a href="#" class="icon icon-close">{{ "Close" | t }}</a>
+        </div>
+        <div class="vh-menu-mobile-controll-wrapper d-lg-none">
+          <div class="vh-mega-menu-mobile-back">
+            <a href="#" class="icon icon-arrow-left">{{ "Back" | t }}</a>
+          </div>
+        </div>
+      {% endif %}
+      <li
+        class="menu__item{{ active }} {{ cols }} menu__item--{{ level|default(default_level) }} {{ has_sub }} {{ menu_item.options.attributes.class }}">
+        <a href="{{ menu_item.url }}" class="menu__link{{ active }}"
+           target="{{ menu_item.options.attributes.target }}">{{ menu_item.text }}</a>
+        {# Call the block injected the menu if exist. #}
+
+        {% if menu_item.fields.field_injected_block|render|trim is not empty %}
+          <div class="menu-wrapper">
+            <div class="menu-sub--{{ level|default(default_level) }}">
+              <div class="menu-sub-inner--{{ level|default(default_level) }}">
+                <div class="block-menu-injected {{block_menu_rows}}">
+                  <div class="vh-mega-menu-close d-none d-lg-flex">
+                    <a href="#" class="icon icon-close">{{ "Close" | t }}</a>
+                  </div>
+                  <div class="vh-menu-mobile-controll-wrapper d-lg-none">
+                    <div class="vh-mega-menu-mobile-back">
+                      <a href="#" class="icon icon-arrow-left">{{ "Back" | t }}</a>
+                    </div>
+                  </div>
+                  {{ menu_item.fields.field_injected_block }}
+                </div>
+              </div>
+            </div>
+          </div>
+        {% else %}
+          {# Render the next level of menu if exist. #}
+          {% if menu_item.submenu %}
+            <div class="menu-wrapper">
+              {% set current_level = key + 1 %}
+              <div class="menu-sub--{{ level|default(default_level) }}">
+                <div class="menu-sub-inner--{{ level|default(default_level) }}">
+                  {# Since this menu item has a submenu, recall function and increment counter. #}
+                  {{ _self.menuMacro(menu_item.submenu, level|default(default_level) + 1) }}
+                </div>
+              </div>
+            </div>
+          {% endif %}
+        {% endif %}
+
+      </li>
+    {% endfor %}
+  </ul>
+{%- endmacro %}
+  {{ attach_library('vactory_header/vactory_header.variant3') }}
+  {% set main_navigation_menu = simplify_menu('main') %}
+
+<header class="header" id="header">
+  <div id="vh-header" class="vh-header vh-variant3 vh-sticky">
+    <div class="vh-header__top">
+      <div class="container">
+        <div class="vh-layout">
+          <div class="vh-secondary-menu">
+            {{ vactory_render('block', 'system_menu_block:top-navigation') }}
+          </div>
+        </div>
+      </div>
+      <div class="scroll-indicator"><span class="scroll-bg"></span></div>
+    </div>
+    <div class="vh-header__middle hidden-md-down">
+      <div class="container">
+        <div class="vh-header--language-switcher d-none d-lg-flex align-items-center justify-content-between">
+          {{ vactory_render('block', 'language_block:language_interface') }}
+        </div>
+      </div>
+    </div>
+    <div class="vh-header__bottom">
+      <div class="container">
+        <div class="vh-layout">
+          <div class="vh-hamburger d-lg-none">
+            <!-- @todo: twig this -->
+            <button id="vhm-hamburger-btn" class="hamburger hamburger--collapse js-offcanvas-trigger" type="button"
+                    aria-label="Menu" role="button" data-offcanvas-trigger="vhm" aria-controls="navigation"
+                    aria-expanded="true/false">
+              <div class="hamburger-box">
+                <span class="hamburger-inner"></span>
+              </div>
+            </button>
+          </div>
+          <div class="vh-header--branding">
+            {{ vactory_render('block', 'system_branding_block', {use_site_name: false}) }}
+          </div>
+          <nav id="cbp-hrmenu" class="vh-header--menu cbp-hrmenu d-none d-lg-block">
+            {{ _self.menuMacro(main_navigation_menu.menu_tree) }}
+          </nav>
+
+            <div class="nav-item vh-header--user-controll user-connected d-none d-lg-block">
+              <a class="nav-link user-icon" href="#">
+                <span>{{ "Mon compte" |t }}</span>
+              </a>
+            </div>
+            <div class="nav-item dropdown vh-header--user-controll user-connected d-lg-none">
+              <a class="nav-link dropdown-toggle user-icon" href="#" id="navbarDropdownMenuLink" data-toggle="dropdown"
+                 aria-haspopup="true" aria-expanded="false">
+                <span>{{ "Mon compte" |t }}</span></a>
+            </div>
+        </div>
+      </div>
+    </div>
+    <div class="scroll-indicator fixed"><span class="scroll-bg"></span></div>
+  </div>
+
+  <aside class="vhm-variant3 is-closed" data-offcanvas-options='{ "modifiers": "left,overlay" }' role="complementary"
+         id="vhm" style="visibility:hidden;">
+    <div class="vhm-branding-hamburger">
+      <div class="vh-hamburger d-lg-none">
+        <button id="mmenu-close-btn" class="hamburger hamburger--collapse" type="button" aria-label="Menu" role="button"
+                aria-controls="navigation" aria-expanded="true/false">
+          <div class="hamburger-box">
+            <span class="hamburger-inner"></span>
+          </div>
+        </button>
+      </div>
+      <div class="vhm-header--branding">
+        {{ vactory_render('block', 'system_branding_block', {use_site_name: false}) }}
+      </div>
+    </div>
+    <div class="vhm-body">
+      <div class="vhm__language-switcher">
+        {{ vactory_render('block', 'language_block:language_interface') }}
+      </div>
+      <div class="vhm__search-form">
+        <div class="container">
+          {{ vactory_render('block', 'search_form_block') }}
+        </div>
+      </div>
+      <nav class="vhm__menu">
+        {{ _self.menuMacro(main_navigation_menu.menu_tree) }}
+      </nav>
+    </div>
+  </aside>
+
+</header>

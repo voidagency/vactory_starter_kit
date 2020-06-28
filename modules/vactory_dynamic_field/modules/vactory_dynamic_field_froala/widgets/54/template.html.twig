@@ -1,0 +1,41 @@
+<div class="fdb-block">
+            {% if extra_fields.title is not empty %}
+            <div class="row text-center">
+              <div class="col">
+                <h2>{{ extra_fields.title }}</h2>
+              </div>
+            </div>
+            {% endif %}
+    <div class="row mt-5 align-items-top">
+
+        {% for item in content %}
+                <div class="col-12 col-md-8 mx-auto mb-3 mb-lg-0 col-lg-4 text-center">
+                {% set image_uri =(item.image.0 is defined) ?  get_image(item.image.0) : '' %}
+                {% set picto = image_uri|image_style('thumbnail') %}
+                {% set lqip_image = image_uri|image_style('lqip') %}
+
+                {% if item.image.0 is not empty %}
+                    <img alt="{{ item.image_alt }}" height="80"
+                        class="lazyload"
+                        src="{{ lqip_image }}"
+                        data-src="{{ picto }}">
+                {% endif %}
+                {% if item.title is not empty %}
+                    <h2><strong>{{ item.title }}</strong></h2>
+                {% endif %}
+                {% if item.price is not empty %}
+                    <p class="text-h3 mb-4 mb-lg-5"><em>{{ item.price }}</em></p>
+                {% endif %}
+                {% if item.lists  is not empty %}
+                    <div>{{ item.lists.value | raw }}</div>
+                {% endif %}
+                {% if item.link is not empty and item.link_alt is not empty %}
+                    {% set link_target = (item.link_target > 0) ? '_blank' : '_self' %}
+                    <p class="text-center mt-4 mt-lg-5"><a  class="btn btn-primary" href="{{ item.link }}" target="{{ link_target }}">{{ item.link_alt }}</a></p>
+                {% endif %}
+            </div>
+
+        {% endfor %}
+
+    </div>
+</div>

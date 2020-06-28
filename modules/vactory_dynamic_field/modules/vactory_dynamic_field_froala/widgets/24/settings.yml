@@ -1,0 +1,41 @@
+name: '24 - Froala - Content Left Block Images, Right Block Thumbnail & Text'
+multiple: FALSE
+category: 'Froala'
+enabled: TRUE
+fields:
+  image_1:
+    type: image
+    label: 'Image Large'
+    options:
+      '#required': TRUE
+  image_alt_1:
+    type: text
+    label: 'Text alternatif'
+  image_2:
+    type: image
+    label: 'Image Medium'
+    options:
+      '#required': TRUE
+  image_alt_2:
+    type: text
+    label: 'Text alternatif'
+  image_3:
+    type: image
+    label: 'Image Medium'
+    options:
+      '#required': TRUE
+  image_alt_3:
+    type: text
+    label: 'Text alternatif'
+  image_4:
+    type: image
+    label: 'Thumbnail'
+  image_alt_4:
+    type: text
+    label: 'Text alternatif'
+  title:
+    type: text
+    label: 'Titre'
+  description:
+    type: textarea
+    label: 'Description'

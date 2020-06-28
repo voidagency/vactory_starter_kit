@@ -1,0 +1,35 @@
+<div class="row justify-content-center t-intro-three-push-withtext">
+  <div class="col-12 text-center mb-3 mb-md-5 intro">
+    <p class="text-h3 m-auto font-24">
+      CDG Capital fonde sa stratégie sur trois orientations structurantes qui sont au coeur de son engagement.
+    </p>
+  </div>
+</div>
+
+<div class="row text-center t-three-push-withtext justify-content-center">
+  {% for item in 0..2 %}
+    {% set classes = loop.first ? '' : 'pt-3 pt-lg-0' %}
+    {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/248/124.jpg" %}
+    <div class="col-12 col-lg-3 {{ classes }}">
+      <div class="card shadow">
+        <div class="card-image card-image-l2 lazy-wrapper">
+          <img alt="#"
+               class="img-fluid lazyload"
+               src="{{ content.image_placeholder }}"
+               data-src="{{ placehold }}"/>
+        </div>
+        <div class="card-body pt-3">
+          <p>
+            <strong>Lorem Ipsum is simply</strong>
+          </p>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+<div class="text-center">
+  <a href="#" class="btn btn-outline-primary"
+  >View More</a>
+</div>
+

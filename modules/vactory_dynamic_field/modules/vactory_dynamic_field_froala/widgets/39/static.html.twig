@@ -1,0 +1,74 @@
+{% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/142/142.jpg" %}
+<div class="fdb-block">
+    <div class="container">
+        <div class="fdb-box">
+            <div class="row align-items-center justify-content-center d-flex flex-row-reverse">
+                <div class="col-10 col-sm-6 col-md-4 col-lg-3 col-xl-2 m-auto">
+                  <div class="lazy-small-square">
+                    <img alt="Image Alt"
+                         class="img-fluid rounded-circle lazyload"
+                         src="{{ content.image_placeholder }}"
+                         data-src="{{ placehold }}">
+                  </div>
+                </div>
+                <div class="col-12 col-md-8 ml-auto mr-auto mt-4 mt-md-0">
+                    <div class="text-h3">Curabitur nisi. Mauris sollicitudin fermentum libero. Praesent egestas neque eu enim. Duis lobortis massa imperdiet quam. Donec mollis hendrerit risus Cras non dolor. Donec elit libero, sodales nec, volutpat a, suscipit non, turpis. Morbi ac felis. Proin magna. Suspendisse potenti.</div>
+                    <p class="text-h3 mt-4 mt-lg-5"><strong>Jhon Doe</strong></p>
+                    <p><em>Role</em></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="fdb-box vf-slick-slider" 
+        data-toshow="1"
+        data-dots="false"
+        data-arrows="true"
+        data-mobile-centermode="false">
+        {% for item in 0..3 %}
+        <div class='p-3'>
+            <div class="row align-items-center justify-content-center d-flex flex-row-reverse shadow-sm qoute-left pt-5 pb-5">
+                <div class="col-10 col-sm-6 col-md-4 col-lg-3 col-xl-2 m-auto">
+                  <div class="lazy-small-square">
+                    <img alt="Image Alt"
+                         class="img-fluid rounded-circle lazyload"
+                         src="{{ content.image_placeholder }}"
+                         data-src="{{ placehold }}">
+                  </div>
+                </div>
+                <div class="col-12 col-md-8 ml-auto mr-auto mt-4 mt-md-0">
+                    <div class="text-h3">Curabitur nisi. Mauris sollicitudin fermentum libero. Praesent egestas neque eu enim. Duis lobortis massa imperdiet quam. Donec mollis hendrerit risus Cras non dolor. Donec elit libero, sodales nec, volutpat a, suscipit non, turpis. Morbi ac felis. Proin magna. Suspendisse potenti.</div>
+                    <p class="text-h3 mt-3 mt-lg-3"><strong>Jhon Doe</strong></p>
+                    <p><em>Role</em></p>
+                </div>
+            </div>
+        </div>    
+        {% endfor %}     
+        </div>
+
+        <div class="fdb-box vf-slick-slider" 
+        data-toshow="1"
+        data-dots="false"
+        data-arrows="true"
+        data-mobile-centermode="false">
+        {% for item in 0..3 %}
+        <div class='p-3'>
+            <div class="row align-items-center justify-content-center d-flex shadow-sm qoute-right pt-5 pb-5">
+                <div class="col-10 col-sm-6 col-md-4 col-lg-3 col-xl-2 m-auto">
+                  <div class="lazy-small-square">
+                    <img alt="Image Alt"
+                         class="img-fluid rounded-circle lazyload"
+                         src="{{ content.image_placeholder }}"
+                         data-src="{{ placehold }}">
+                  </div>
+                </div>
+                <div class="col-12 col-md-8 ml-auto mr-auto mt-4 mt-md-0">
+                    <div class="text-h3">Curabitur nisi. Mauris sollicitudin fermentum libero. Praesent egestas neque eu enim. Duis lobortis massa imperdiet quam. Donec mollis hendrerit risus Cras non dolor. Donec elit libero, sodales nec, volutpat a, suscipit non, turpis. Morbi ac felis. Proin magna. Suspendisse potenti.</div>
+                    <p class="text-h3 mt-3 mt-lg-3"><strong>Jhon Doe</strong></p>
+                    <p><em>Role</em></p>
+                </div>
+            </div>
+        </div>    
+        {% endfor %}     
+        </div>
+    </div>
+</div>

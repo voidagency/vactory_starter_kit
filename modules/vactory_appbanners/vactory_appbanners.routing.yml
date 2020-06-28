@@ -1,0 +1,7 @@
+vactory_appbanners.admin_settings:
+  path: '/admin/config/vactory_appbanners'
+  defaults:
+    _form: '\Drupal\vactory_appbanners\Form\SettingsForm'
+    _title: 'App Banners settings'
+  requirements:
+    _permission: 'administer vactory_app banners'

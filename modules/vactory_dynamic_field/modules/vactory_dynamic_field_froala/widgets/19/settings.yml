@@ -1,0 +1,43 @@
+name: '19 - Froala - Content Block Text With Thumbnails & Image To Right'
+multiple: FALSE
+category: 'Froala'
+enabled: TRUE
+fields:
+  image_1:
+    type: image
+    label: 'Image'
+    option:
+      '#required': TRUE
+  image_alt_1:
+    type: text
+    label: 'Text alternatif'
+  image_2:
+    type: image
+    label: 'Thumbnail 1'
+    option:
+      '#required': TRUE
+  image_alt_2:
+    type: text
+    label: 'Text alternatif'
+  image_3:
+    type: image
+    label: 'Thumbnail 2'
+    option:
+      '#required': TRUE
+  image_alt_3:
+    type: text
+    label: 'Text alternatif'
+  image_4:
+    type: image
+    label: 'Thumbnail 3'
+    option:
+      '#required': TRUE
+  image_alt_4:
+    type: text
+    label: 'Text alternatif'
+  title:
+    type: text
+    label: 'Titre'
+  description:
+    type: textarea
+    label: 'Description'

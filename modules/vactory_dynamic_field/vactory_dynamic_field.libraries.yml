@@ -1,0 +1,65 @@
+vactory_widgets:
+  version: 1.x
+  css:
+    theme:
+      css/app.css: {}
+  js:
+    js/app.js: {}
+
+dynamic.modal:
+  version: 1.x
+  css:
+    theme:
+      css/modal.css: {}
+  js:
+    js/selection.min.js: {}
+    js/modal.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
+    - core/jquery.ui.accordion
+#    - simonwep.selection
+#
+#simonwep.selection:
+#  remote: https://simonwep.github.io/selection/
+#  version: 0.2.1
+#  license:
+#    name: MIT
+#    url: https://github.com/Simonwep/selection/blob/master/LICENSE
+#    gpl-compatible: true
+#  js:
+#    https://cdn.jsdelivr.net/npm/@simonwep/selection-js/dist/selection.min.js: { type: external, minified: true }
+
+dynamic.libraries.jquery.select2:
+  remote: https://select2.github.io/
+  version: '4.0.5'
+  license:
+    name: MIT
+    url: http://opensource.org/licenses/mit-license.php
+    gpl-compatible: true
+  cdn:
+    /libraries/jquery.select2/dist/: https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.5/
+  css:
+    component:
+      /libraries/jquery.select2/dist/css/select2.min.css: { minified: true }
+  js:
+    /libraries/jquery.select2/dist/js/select2.min.js: { minified: true }
+  dependencies:
+    - core/jquery
+
+dynamic.form_modal:
+  js:
+    js/form-modal.js: {}
+  css:
+    theme:
+      css/form-modal.css: {}
+  dependencies:
+    - vactory_dynamic_field/dynamic.libraries.jquery.select2
+
+pop_in:
+  js:
+    js/pop-in.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettingss
+    - core/jquery.cookie

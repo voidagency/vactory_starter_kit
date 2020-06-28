@@ -1,0 +1,7 @@
+vactory_content_collector.settings_form:
+  path: '/admin/config/system/vactory-content-collector'
+  defaults:
+    _title: 'Content Collector settings'
+    _form: 'Drupal\vactory_content_collector\Form\SettingsForm'
+  requirements:
+    _permission: 'administer vactory_content_collector configuration'

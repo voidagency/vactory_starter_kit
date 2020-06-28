@@ -1,0 +1,32 @@
+{% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/50/50.jpg" %}
+<div class="fdb-block">
+    <div class="row align-items-center">
+        <div class="col-12 col-md-7 col-lg-5 ml-md-auto">
+            <h2>Title</h2>
+            <p class="text-h3">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum
+                has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley
+                of type and scrambled it to make a type specimen book.</p>
+            <p class="mt-5">
+                <img alt="Image Alt" 
+                    class="mr-4 fdb-icon lazyload"
+                    src="{{ content.image_placeholder }}"
+                    data-src="{{ placehold }}">
+                <img alt="Image Alt" 
+                    class="mr-4 fdb-icon lazyload"
+                    src="{{ content.image_placeholder }}"
+                    data-src="{{ placehold }}">   
+                <img alt="Image Alt" 
+                    class="fdb-icon lazyload"
+                    src="{{ content.image_placeholder }}"
+                    data-src="{{ placehold }}">              
+            </p>
+        </div>
+        {% set placehold_1 = "https://picsum.photos/id/" ~ random(1, 200) ~ "/252/155.jpg" %}
+        <div class="col-10 col-sm-6 col-md-5 col-lg-4 m-auto pt-5 pt-md-0">
+            <img alt="Image Alt"
+                class="img-fluid br-0 lazyload"
+                src="{{ content.image_placeholder }}"
+                data-src="{{ placehold_1 }}">     
+        </div>
+    </div>
+</div>

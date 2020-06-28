@@ -1,0 +1,49 @@
+name: 'C47 - Rapport Annuel'
+multiple: TRUE
+category: 'Rapport Annuel'
+enabled: TRUE
+fields:
+  tag:
+    type: text
+    label: 'Tag'
+    options:
+      '#required': TRUE
+  titre:
+    type: text
+    label: 'Titre'  
+  description:
+    type: text_format
+    label: 'Description'
+    options:
+      '#required': true
+      '#format': 'full_html'
+  link:
+    type: url_extended
+    label: 'Lien'
+  link_target:
+    type: checkbox
+    label: 'Ouvrir dans une nouvelle fenêtre'   
+  mode:
+    type: checkbox
+    label: 'Active vidéo play'  
+  file:
+    type: file
+    label: 'Télécharger un fichier'           
+  background_img: 
+    type: image
+    label: 'Background image'   
+  background_color:
+    type: jquery_colorpicker
+    label: 'Color de fond'
+  col:  
+    type: select
+    label: 'Largeur de push'
+    options:
+      '#required': TRUE
+      '#options':
+        - 'col-md-8': '2/3'
+        - 'col-md-6': '1/2'
+        - 'col-md-4': '1/3'
+        - 'col-md-3': '1/4'
+        
+          

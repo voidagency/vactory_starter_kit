@@ -1,0 +1,15 @@
+{% if content.0.iframe is not empty %}
+  {% set heightIframe = (content.0.iframe_height is not empty) ? content.0.iframe_height : 550 %}
+  <div class="row">
+    <div class="col">
+      <div class="t-iframe">
+        <iframe width="100%"
+                height="{{ heightIframe }}"
+                data-src="{{ content.0.iframe }}"
+                class="lazyload"
+                frameborder="0"
+                allowfullscreen></iframe>
+      </div>
+    </div>
+  </div>
+{% endif %}

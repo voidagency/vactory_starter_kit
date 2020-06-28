@@ -1,0 +1,9 @@
+langcode: en
+status: true
+name: FAQ
+type: vactory_faq
+description: 'Manage your FAQ content.'
+help: ''
+new_revision: true
+preview_mode: 1
+display_submitted: true

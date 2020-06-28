@@ -1,0 +1,418 @@
+{{ attach_library('vactory_dynamic_field_sliders/variant11') }}
+
+<div class="swiper-slider-exemples">
+
+  <div class="vf-slider-swiper-wrapper mb-4">
+    <h1 class="text-center mb-4">Template Cube Horizontal</h1>
+    <div class="vf-slider-swiper">
+      <div class="swiper-container"
+           data-effect="cube"
+           data-loop="true"
+           data-arrows="true"
+           data-dots="true"
+           data-keyboard="true"
+           data-animationspeed="500"
+           data-numbreslides="1"
+           data-numbreslidesmobile="1"
+           data-direction="horizontal">
+        <div class="swiper-wrapper">
+          {% for item in 0..3 %}
+
+            {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/2000/600.jpg" %}
+
+            <div class="swiper-slide swiper-lazy"
+                 data-background="{{ placehold }}" style="background-image: url({{ content.image_placeholder }});">
+              <div class="swiper-content">
+                <h3 class="swiper-content--title fadeInUp animated">This is the title {{ loop.index }}</h3>
+                <p class="swiper-content--text fadeInUp animated">
+                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci doloribus earum
+                  exercitationem, fugiat iste perspiciatis quis quisquam saepe? Consectetur cupiditate debitis dolore
+                  ipsam necessitatibus odio repellendus velit. Adipisci eveniet, pariatur.
+                </p>
+                <p class="swiper-content--link fadeInUp animated">
+                  <a href="#" target="_self" class="btn btn-outline-light">En savoir plus</a>
+                </p>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="swiper-pagination"></div>
+      <div class="swiper-buttons d-lg-block d-none">
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="vf-slider-swiper-wrapper mb-4">
+    <h1 class="text-center mb-4">Template Cube Vertical</h1>
+    <div class="vf-slider-swiper">
+      <div class="swiper-container"
+           data-effect="cube"
+           data-loop="true"
+           data-arrows="true"
+           data-dots="true"
+           data-keyboard="true"
+           data-animationspeed="500"
+           data-numbreslides="1"
+           data-numbreslidesmobile="1"
+           data-direction="vertical">
+        <div class="swiper-wrapper">
+          {% for item in 0..3 %}
+
+            {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/2000/600.jpg" %}
+
+            <div class="swiper-slide swiper-lazy"
+                 data-background="{{ placehold }}" style="background-image: url({{ content.image_placeholder }});">
+              <div class="swiper-content">
+                <h3 class="swiper-content--title fadeInUp animated">This is the title {{ loop.index }}</h3>
+                <p class="swiper-content--text fadeInUp animated">
+                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci doloribus earum
+                  exercitationem, fugiat iste perspiciatis quis quisquam saepe? Consectetur cupiditate debitis dolore
+                  ipsam necessitatibus odio repellendus velit. Adipisci eveniet, pariatur.
+                </p>
+                <p class="swiper-content--link fadeInUp animated">
+                  <a href="#" target="_self" class="btn btn-outline-light">En savoir plus</a>
+                </p>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="swiper-pagination"></div>
+    </div>
+  </div>
+
+  <div class="vf-slider-swiper-wrapper mb-4">
+    <h1 class="text-center mb-4">Template Flip Vertical</h1>
+    <div class="vf-slider-swiper">
+      <div class="swiper-container"
+           data-effect="flip"
+           data-loop="true"
+           data-arrows="true"
+           data-dots="true"
+           data-keyboard="true"
+           data-animationspeed="500"
+           data-numbreslides="1"
+           data-numbreslidesmobile="1"
+           data-direction="vertical">
+        <div class="swiper-wrapper">
+          {% for item in 0..3 %}
+
+            {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/2000/600.jpg" %}
+
+
+            <div class="swiper-slide swiper-lazy"
+                 data-background="{{ placehold }}" style="background-image: url({{ content.image_placeholder }});">
+              <div class="swiper-content">
+                <h3 class="swiper-content--title fadeInUp animated">This is the title {{ loop.index }}</h3>
+                <p class="swiper-content--text fadeInUp animated">
+                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci doloribus earum
+                  exercitationem, fugiat iste perspiciatis quis quisquam saepe? Consectetur cupiditate debitis dolore
+                  ipsam necessitatibus odio repellendus velit. Adipisci eveniet, pariatur.
+                </p>
+                <p class="swiper-content--link fadeInUp animated">
+                  <a href="#" target="_self" class="btn btn-outline-light">En savoir plus</a>
+                </p>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="swiper-pagination"></div>
+    </div>
+  </div>
+
+  <div class="vf-slider-swiper-wrapper mb-4">
+    <h1 class="text-center mb-4">Template Flip Horizontal</h1>
+    <div class="vf-slider-swiper">
+      <div class="swiper-container"
+           data-effect="flip"
+           data-loop="true"
+           data-arrows="true"
+           data-dots="true"
+           data-keyboard="true"
+           data-animationspeed="500"
+           data-numbreslides="1"
+           data-numbreslidesmobile="1"
+           data-direction="horizontal">
+        <div class="swiper-wrapper">
+          {% for item in 0..3 %}
+
+            {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/2000/600.jpg" %}
+
+
+            <div class="swiper-slide swiper-lazy"
+                 data-background="{{ placehold }}" style="background-image: url({{ content.image_placeholder }});">
+              <div class="swiper-content">
+                <h3 class="swiper-content--title fadeInUp animated">This is the title {{ loop.index }}</h3>
+                <p class="swiper-content--text fadeInUp animated">
+                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci doloribus earum
+                  exercitationem, fugiat iste perspiciatis quis quisquam saepe? Consectetur cupiditate debitis dolore
+                  ipsam necessitatibus odio repellendus velit. Adipisci eveniet, pariatur.
+                </p>
+                <p class="swiper-content--link fadeInUp animated">
+                  <a href="#" target="_self" class="btn btn-outline-light">En savoir plus</a>
+                </p>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="swiper-pagination"></div>
+
+      <div class="swiper-buttons d-lg-block d-none">
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="vf-slider-swiper-wrapper mb-4">
+    <h1 class="text-center mb-4">Template Slide Horizontal</h1>
+    <div class="vf-slider-swiper">
+      <div class="swiper-container"
+           data-effect="slide"
+           data-loop="true"
+           data-arrows="true"
+           data-dots="true"
+           data-keyboard="true"
+           data-animationspeed="500"
+           data-numbreslides="1"
+           data-numbreslidesmobile="1"
+           data-direction="horizontal">
+        <div class="swiper-wrapper">
+          {% for item in 0..3 %}
+
+            {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/2000/600.jpg" %}
+
+
+            <div class="swiper-slide swiper-lazy"
+                 data-background="{{ placehold }}" style="background-image: url({{ content.image_placeholder }});">
+              <div class="swiper-content">
+                <h3 class="swiper-content--title fadeInUp animated">This is the title {{ loop.index }}</h3>
+                <p class="swiper-content--text fadeInUp animated">
+                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci doloribus earum
+                  exercitationem, fugiat iste perspiciatis quis quisquam saepe? Consectetur cupiditate debitis dolore
+                  ipsam necessitatibus odio repellendus velit. Adipisci eveniet, pariatur.
+                </p>
+                <p class="swiper-content--link fadeInUp animated">
+                  <a href="#" target="_self" class="btn btn-outline-light">En savoir plus</a>
+                </p>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="swiper-pagination"></div>
+
+      <div class="swiper-buttons d-lg-block d-none">
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="vf-slider-swiper-wrapper mb-4">
+    <h1 class="text-center mb-4">Template Slide Vertical</h1>
+    <div class="vf-slider-swiper">
+      <div class="swiper-container"
+           data-effect="slide"
+           data-loop="true"
+           data-arrows="true"
+           data-dots="true"
+           data-keyboard="true"
+           data-animationspeed="500"
+           data-numbreslides="1"
+           data-numbreslidesmobile="1"
+           data-direction="vertical">
+        <div class="swiper-wrapper">
+          {% for item in 0..3 %}
+
+            {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/2000/600.jpg" %}
+
+
+            <div class="swiper-slide swiper-lazy"
+                 data-background="{{ placehold }}" style="background-image: url({{ content.image_placeholder }});">
+              <div class="swiper-content">
+                <h3 class="swiper-content--title fadeInUp animated">This is the title {{ loop.index }}</h3>
+                <p class="swiper-content--text fadeInUp animated">
+                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci doloribus earum
+                  exercitationem, fugiat iste perspiciatis quis quisquam saepe? Consectetur cupiditate debitis dolore
+                  ipsam necessitatibus odio repellendus velit. Adipisci eveniet, pariatur.
+                </p>
+                <p class="swiper-content--link fadeInUp animated">
+                  <a href="#" target="_self" class="btn btn-outline-light">En savoir plus</a>
+                </p>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="swiper-pagination"></div>
+    </div>
+  </div>
+
+  <div class="vf-slider-swiper-wrapper mb-4">
+    <h1 class="text-center mb-4">Template Coverflow Horizontal</h1>
+    <div class="vf-slider-swiper">
+      <div class="swiper-container"
+           data-effect="coverflow"
+           data-loop="true"
+           data-arrows="true"
+           data-dots="true"
+           data-keyboard="true"
+           data-animationspeed="500"
+           data-numbreslides="3"
+           data-numbreslidesmobile="1"
+           data-direction="horizontal">
+        <div class="swiper-wrapper">
+          {% for item in 0..3 %}
+
+            {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/2000/600.jpg" %}
+            <div class="swiper-slide swiper-lazy"
+                 data-background="{{ placehold }}" style="background-image: url({{ content.image_placeholder }});">
+              <div class="swiper-content">
+                <h3 class="swiper-content--title fadeInUp animated">This is the title {{ loop.index }}</h3>
+                <p class="swiper-content--text fadeInUp animated">
+                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci doloribus earum
+                  exercitationem, fugiat iste perspiciatis quis quisquam saepe? Consectetur cupiditate debitis dolore
+                  ipsam necessitatibus odio repellendus velit. Adipisci eveniet, pariatur.
+                </p>
+                <p class="swiper-content--link fadeInUp animated">
+                  <a href="#" target="_self" class="btn btn-outline-light">En savoir plus</a>
+                </p>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="swiper-pagination"></div>
+
+      <div class="swiper-buttons d-lg-block d-none">
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="vf-slider-swiper-wrapper mb-4">
+    <h1 class="text-center mb-4">Template Coverflow Vertical</h1>
+    <div class="vf-slider-swiper">
+      <div class="swiper-container"
+           data-effect="coverflow"
+           data-loop="true"
+           data-arrows="true"
+           data-dots="true"
+           data-keyboard="true"
+           data-animationspeed="500"
+           data-numbreslides="1"
+           data-numbreslidesmobile="1"
+           data-direction="vertical">
+        <div class="swiper-wrapper">
+          {% for item in 0..3 %}
+
+            {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/2000/600.jpg" %}
+            <div class="swiper-slide swiper-lazy"
+                 data-background="{{ placehold }}" style="background-image: url({{ content.image_placeholder }});">
+              <div class="swiper-content">
+                <h3 class="swiper-content--title fadeInUp animated">This is the title {{ loop.index }}</h3>
+                <p class="swiper-content--text fadeInUp animated">
+                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci doloribus earum
+                  exercitationem, fugiat iste perspiciatis quis quisquam saepe? Consectetur cupiditate debitis dolore
+                  ipsam necessitatibus odio repellendus velit. Adipisci eveniet, pariatur.
+                </p>
+                <p class="swiper-content--link fadeInUp animated">
+                  <a href="#" target="_self" class="btn btn-outline-light">En savoir plus</a>
+                </p>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="swiper-pagination"></div>
+    </div>
+  </div>
+
+  <div class="vf-slider-swiper-wrapper mb-4">
+    <h1 class="text-center mb-4">Template Fade Horizontal</h1>
+    <div class="vf-slider-swiper">
+      <div class="swiper-container"
+           data-effect="fade"
+           data-loop="true"
+           data-arrows="true"
+           data-dots="true"
+           data-keyboard="true"
+           data-animationspeed="500"
+           data-numbreslides="1"
+           data-numbreslidesmobile="1"
+           data-direction="horizontal">
+        <div class="swiper-wrapper">
+          {% for item in 0..3 %}
+
+            {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/2000/600.jpg" %}
+            <div class="swiper-slide swiper-lazy"
+                 data-background="{{ placehold }}" style="background-image: url({{ content.image_placeholder }});">
+              <div class="swiper-content">
+                <h3 class="swiper-content--title fadeInUp animated">This is the title {{ loop.index }}</h3>
+                <p class="swiper-content--text fadeInUp animated">
+                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci doloribus earum
+                  exercitationem, fugiat iste perspiciatis quis quisquam saepe? Consectetur cupiditate debitis dolore
+                  ipsam necessitatibus odio repellendus velit. Adipisci eveniet, pariatur.
+                </p>
+                <p class="swiper-content--link fadeInUp animated">
+                  <a href="#" target="_self" class="btn btn-outline-light">En savoir plus</a>
+                </p>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="swiper-pagination"></div>
+
+      <div class="swiper-buttons d-lg-block d-none">
+        <div class="swiper-button-prev"></div>
+        <div class="swiper-button-next"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="vf-slider-swiper-wrapper mb-4">
+    <h1 class="text-center mb-4">Template Fade Vertical</h1>
+    <div class="vf-slider-swiper">
+      <div class="swiper-container"
+           data-effect="fade"
+           data-loop="true"
+           data-arrows="true"
+           data-dots="true"
+           data-keyboard="true"
+           data-animationspeed="500"
+           data-numbreslides="1"
+           data-numbreslidesmobile="1"
+           data-direction="vertical">
+        <div class="swiper-wrapper">
+          {% for item in 0..3 %}
+
+            {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/2000/600.jpg" %}
+            <div class="swiper-slide swiper-lazy"
+                 data-background="{{ placehold }}" style="background-image: url({{ content.image_placeholder }});">
+              <div class="swiper-content">
+                <h3 class="swiper-content--title fadeInUp animated">This is the title {{ loop.index }}</h3>
+                <p class="swiper-content--text fadeInUp animated">
+                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Adipisci doloribus earum
+                  exercitationem, fugiat iste perspiciatis quis quisquam saepe? Consectetur cupiditate debitis dolore
+                  ipsam necessitatibus odio repellendus velit. Adipisci eveniet, pariatur.
+                </p>
+                <p class="swiper-content--link fadeInUp animated">
+                  <a href="#" target="_self" class="btn btn-outline-light">En savoir plus</a>
+                </p>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+      <div class="swiper-pagination"></div>
+    </div>
+  </div>
+</div>

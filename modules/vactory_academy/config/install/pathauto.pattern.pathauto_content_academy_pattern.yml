@@ -1,0 +1,24 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+  enforced:
+    module:
+      - vactory_academy
+id: pathauto_content_academy_pattern
+label: 'Pathauto Content Academy Pattern'
+type: 'canonical_entities:node'
+pattern: '/academy-courses/[node:title]'
+selection_criteria:
+  c4f8931b-33b3-45dc-8be1-e4407b2f7b9d:
+    id: node_type
+    bundles:
+      vactory_academy: vactory_academy
+    negate: false
+    context_mapping:
+      node: node
+    uuid: c4f8931b-33b3-45dc-8be1-e4407b2f7b9d
+selection_logic: and
+weight: -5
+relationships: {  }

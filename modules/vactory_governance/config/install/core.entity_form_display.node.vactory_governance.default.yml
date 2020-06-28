@@ -1,0 +1,224 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.vactory_governance.body
+    - field.field.node.vactory_governance.field_gov_address
+    - field.field.node.vactory_governance.field_gov_social_media
+    - field.field.node.vactory_governance.field_vactory_email
+    - field.field.node.vactory_governance.field_vactory_fax
+    - field.field.node.vactory_governance.field_vactory_media
+    - field.field.node.vactory_governance.field_vactory_name
+    - field.field.node.vactory_governance.field_vactory_seo_status
+    - field.field.node.vactory_governance.field_vactory_taxonomy_1
+    - field.field.node.vactory_governance.field_vactory_telephone
+    - image.style.thumbnail
+    - node.type.vactory_governance
+  module:
+    - address
+    - field_group
+    - media_library
+    - path
+    - social_media_links_field
+    - text
+    - yoast_seo
+third_party_settings:
+  field_group:
+    group_personal:
+      children:
+        - title
+        - field_vactory_taxonomy_1
+        - field_vactory_name
+        - field_vactory_media
+      parent_name: ''
+      weight: 2
+      format_type: tab
+      format_settings:
+        label: Personal
+        formatter: open
+        description: ''
+        id: ''
+        classes: ''
+        required_fields: false
+      label: Personal
+      region: content
+    group_coordinate:
+      children:
+        - field_vactory_email
+        - field_gov_address
+        - field_vactory_telephone
+        - field_vactory_fax
+        - field_gov_social_media
+      parent_name: ''
+      weight: 3
+      format_type: tab
+      format_settings:
+        id: ''
+        classes: ''
+        formatter: open
+        description: ''
+        required_fields: false
+      label: Coordinate
+      region: content
+id: node.vactory_governance.default
+targetEntityType: node
+bundle: vactory_governance
+mode: default
+content:
+  body:
+    type: text_textarea_with_summary
+    weight: 8
+    settings:
+      rows: 9
+      summary_rows: 3
+      placeholder: ''
+    third_party_settings: {  }
+    region: content
+  created:
+    type: datetime_timestamp
+    weight: 11
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_gov_address:
+    weight: 5
+    settings:
+      default_country: null
+    third_party_settings: {  }
+    type: address_default
+    region: content
+  field_gov_social_media:
+    weight: 8
+    settings: {  }
+    third_party_settings: {  }
+    type: social_media_links_field_default
+    region: content
+  field_image:
+    weight: 9
+    settings:
+      progress_indicator: throbber
+      preview_image_style: thumbnail
+    third_party_settings: {  }
+    type: image_image
+    region: content
+  field_vactory_email:
+    weight: 4
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: email_default
+    region: content
+  field_vactory_fax:
+    weight: 7
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_vactory_media:
+    weight: 9
+    settings: {  }
+    third_party_settings: {  }
+    type: media_library_widget
+    region: content
+  field_vactory_name:
+    weight: 8
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_vactory_seo_status:
+    weight: 51
+    settings:
+      edit_title: false
+      edit_description: false
+    third_party_settings: {  }
+    type: yoast_seo_widget
+    region: content
+  field_vactory_taxonomy_1:
+    weight: 7
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_vactory_telephone:
+    weight: 6
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  langcode:
+    type: language_select
+    weight: 1
+    region: content
+    settings:
+      include_locked: true
+    third_party_settings: {  }
+  path:
+    type: path
+    weight: 14
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  promote:
+    type: boolean_checkbox
+    settings:
+      display_label: true
+    weight: 12
+    region: content
+    third_party_settings: {  }
+  publish_on:
+    type: datetime_timestamp_no_default
+    weight: 15
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  status:
+    type: boolean_checkbox
+    settings:
+      display_label: true
+    weight: 22
+    region: content
+    third_party_settings: {  }
+  sticky:
+    type: boolean_checkbox
+    settings:
+      display_label: true
+    weight: 13
+    region: content
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: 6
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  uid:
+    type: entity_reference_autocomplete
+    weight: 10
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    region: content
+    third_party_settings: {  }
+  unpublish_on:
+    type: datetime_timestamp_no_default
+    weight: 16
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  url_redirects:
+    weight: 50
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden: {  }

@@ -1,0 +1,127 @@
+<?php
+
+/**
+ * @file
+ * Module related hooks.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
+use Drupal\views\Plugin\views\query\QueryPluginBase;
+use Drupal\views\ViewExecutable;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_appointment_theme($existing, $type, $theme, $path) {
+  return [
+    'appointment_types_listing' => [
+      'template' => 'appointment-types-listing',
+      'variables' => [
+        'content' => NULL,
+      ],
+    ],
+    'agency_services_listing' => [
+    'template' => 'agency-services-listing',
+    'variables' => [
+      'content' => NULL,
+    ],
+  ],
+    'appointment_adviser_preview' => [
+      'template' => 'appointment-adviser-preview',
+      'variables' => [
+        'user' => NULL,
+      ],
+    ],
+    'appointment_confirmation_page' => [
+      'template' => 'appointment-confirmation-page',
+      'variables' => [
+        'content' => NULL,
+      ],
+    ],
+    'appointment_deletion_page' => [
+      'template' => 'appointment-deletion-page',
+      'variables' => [
+        'content' => NULL,
+      ],
+    ],
+    'views_view_unformatted__appointments_edit__my_appointments_listing' => [
+      'base hook' => 'views_view_unformatted',
+      'template' => 'appointments-edit-submission-card'
+    ],
+  ];
+}
+
+/**
+ * Implements hook_views_query_alter().
+ */
+function vactory_appointment_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
+  if ($view->id() == 'appointments_edit' && $view->current_display == 'my_appointments_listing') {
+    $params = Drupal::request()->query->all();
+    if (isset($params['phone']) && !empty($params['phone'])) {
+      $phone = decrypt($params['phone']);
+      $query->where[1]['conditions'][0]['value'] = $phone;
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_appointment_preprocess_views_view_unformatted__appointments_edit__my_appointments_listing(&$variables) {
+  foreach ($variables['rows'] as &$row) {
+    $aid = encrypt($row['content']['#row']->id);
+    $row['content']['appointment_id'] = $aid;
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_appointment_form_views_exposed_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if ($form['#id'] == 'views-exposed-form-appointments-edit-my-appointments-listing') {
+    $form['appointment_day']['#type'] = 'date';
+    $params = Drupal::request()->query->all();
+    if (isset($params['phone']) && !empty($params['phone'])) {
+      $phone = $params['phone'];
+      $form['phone'] = [
+        '#type' => 'hidden',
+        '#value' => $phone,
+      ];
+      $form['actions']['reset']['#submit'] = ['custom_exposed_filter_form_reset_submit'];
+    }
+  }
+}
+
+/**
+ * Exposed filter custom reset submit.
+ */
+function custom_exposed_filter_form_reset_submit(&$form, FormStateInterface $form_state) {
+  $phone = $form_state->getValue('phone');
+  $url = Url::fromRoute('view.appointments_edit.my_appointments_listing', ['phone' => $phone]);
+  $reponse = new RedirectResponse($url->toString());
+  $reponse->send();
+}
+
+/**
+ * Appointment data encryption.
+ */
+function encrypt($data) {
+  $key = '7O9KM8O44nO9cmZL';
+  return base64_encode(openssl_encrypt($data, "aes-128-ecb", $key, OPENSSL_RAW_DATA));
+}
+
+/**
+ * Appointment data decryption.
+ */
+function decrypt($data) {
+  $key = '7O9KM8O44nO9cmZL';
+  return openssl_decrypt(base64_decode($data), "aes-128-ecb", $key, OPENSSL_RAW_DATA);
+}
+
+function redirect_to_notfound() {
+  $url = Url::fromRoute('system.404');
+  $response = new RedirectResponse($url->toString());
+  $response->send();
+}

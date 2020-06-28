@@ -1,0 +1,30 @@
+{% set image_uri_2 =(content.0.image_1.0 is defined) ? get_image(content.0.image_1.0) : '' %}
+{% set picto = image_uri_2|image_style('thumbnail') %}
+{% set lqip_image = image_uri_2|image_style('lqip') %}
+
+<div class="fdb-block fdb-viewport fdb-block-hasbackground">
+    <div class="justify-content-center align-items-center d-flex">
+        <div class="row justify-content-center text-center">
+            <div class="col-12 col-md-8">
+                {% if content.0.image_1.0 is not empty %}
+                    <img alt="{{ content.0.image_alt }}"
+                        class="lazyload fdb-icon"
+                        src="{{ lqip_image }}"
+                        data-src="{{ picto }}">
+                {% endif %}
+                {% if content.0.title is not empty %}
+                    <h2>{{ content.0.title }}</h2>
+                {% endif %}
+                {% if content.0.description is not empty %}
+                     <p class="text-h3">{{ content.0.description }}</p>
+                {% endif %}
+                {% if content.0.link is not empty and content.0.link_alt is not empty %}
+                    {% set link_target = (content.0.link_target > 0) ? '_blank' : '_self' %}
+                    <p class="mt-5">
+                        <a class="btn btn-primary" href="{{ content.0.link }}" target="{{ link_target }}">{{ content.0.link_alt }}</a>
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

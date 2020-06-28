@@ -1,0 +1,4 @@
+services:
+  vactory_appointment.appointments.manage:
+    class: Drupal\vactory_appointment\Services\AppointmentsManagerService
+    arguments: ['@logger.factory']

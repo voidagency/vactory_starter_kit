@@ -1,0 +1,47 @@
+<div class="fdb-block">
+  {% if extra_fields.title is not empty or extra_fields.description is not empty %}
+    <div class="row text-center justify-content-center">
+      <div class="col-8">
+        {% if  extra_fields.title is not empty %}
+          <h2>{{  extra_fields.title }}</h2>
+        {% endif %}
+        {% if  extra_fields.description is not empty %}
+          <p class="lead">{{  extra_fields.description }}</p>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+    <div class="row justify-content-center text-left">
+
+    {% for item in content %}
+
+        {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : '' %}
+        {% set profile_image = image_uri|image_style('medium') %}
+        {% set lqip_image = image_uri|image_style('lqip') %}
+        <div class="col-12 col-sm-6 mb-3">
+            <div class="row align-items-center">
+                <div class="col-12 col-sm-6 col-lg-4 d-flex d-sm-block justify-content-center">
+                    {% if  item.image.0 is not empty %}
+                        <img alt="{{ item.image_alt }}"
+                            class="img-fluid rounded-circle lazyload"
+                            src="{{ lqip_image }}"
+                            data-src="{{ profile_image }}">
+                    {% endif %}
+                <div class="col-12 col-sm-6 col-lg-8 d-flex d-sm-block justify-content-center flex-column text-center text-sm-left">
+                    {% if  item.name is not empty %}
+                        <h3><strong>{{ item.name }}</strong></h3>
+                    {% endif %}
+                    {% if  item.role is not empty %}
+                        <p class="text-h3">{{ item.role }}</p>
+                    {% endif %}
+                    {% if  item.description is not empty %}
+                        <p>{{ item.description }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+    {% endfor %}
+
+    </div>
+</div>

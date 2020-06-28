@@ -1,0 +1,18 @@
+<div class="container">
+  {% if content.page_type == 'delete_form' %}
+    <div class="confirmation-wrapper text-center mb-4">
+      <h2>{{ 'Êtes vous sûr de vouloire supprimer ce rendez-vous?'|t }}</h2>
+      <div class="text-center">
+        <a href="{{ url('vactory_appointment.appointment_edit_submit_form') }}" class="btn">{{ 'Annuler'|t }}</a>
+        <a href="{{ url('vactory_appointment.appointment_confirm_deletion_message', {'appointment_id': content.appointment_id}) }}" class="btn btn-primary">{{ "Supprimer"|t }}</a>
+      </div>
+    </div>
+  {% endif %}
+  {% if content.page_type == 'delete_confirmation' %}
+    {% set message = content.error_message is defined ? content.error_message : 'Votre rendez-vous a bien été annulé'|t %}
+    <div class="text-center mb-4">
+      <h2>{{ message }}</h2>
+        <a href="{{ url('vactory_appointment.appointment_edit_submit_form') }}" class="btn btn-primary mt-3 mb-4 text-center">{{ 'Supprimer un autre rendez-vous' }}</a>
+    </div>
+  {% endif %}
+</div>

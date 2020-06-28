@@ -1,0 +1,4 @@
+vccollector_paragraphs:
+  css:
+    theme:
+      css/paragraphs.css: {}

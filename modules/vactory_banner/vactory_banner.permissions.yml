@@ -1,0 +1,5 @@
+# Custom permission to add banner for nodes.
+administer fields node banner:
+  title: 'Administer fields node banner'
+  description: 'Permission to add banner for nodes.'
+  restrict access: TRUE

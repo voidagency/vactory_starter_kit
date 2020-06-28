@@ -1,0 +1,88 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.vactory_card_minimal_secondary
+    - field.field.node.vactory_testimonials.body
+    - field.field.node.vactory_testimonials.field_vactory_address
+    - field.field.node.vactory_testimonials.field_vactory_date
+    - field.field.node.vactory_testimonials.field_vactory_excerpt
+    - field.field.node.vactory_testimonials.field_vactory_media
+    - field.field.node.vactory_testimonials.field_vactory_profils
+    - field.field.node.vactory_testimonials.field_vactory_role
+    - field.field.node.vactory_testimonials.field_vactory_seo_status
+    - node.type.vactory_testimonials
+  module:
+    - smart_trim
+    - user
+    - vactory_core
+id: node.vactory_testimonials.vactory_card_minimal_secondary
+targetEntityType: node
+bundle: vactory_testimonials
+mode: vactory_card_minimal_secondary
+content:
+  field_vactory_excerpt:
+    weight: 3
+    label: hidden
+    settings:
+      trim_length: 50
+      trim_type: words
+      trim_suffix: ...
+      wrap_class: trimmed
+      more_text: More
+      more_class: more-link
+      trim_options:
+        text: true
+        trim_zero: false
+      wrap_output: false
+      more_link: false
+      summary_handler: full
+    third_party_settings: {  }
+    type: smart_trim
+    region: content
+  field_vactory_media:
+    type: lazy_image
+    weight: 1
+    region: content
+    label: hidden
+    settings:
+      desktop_1x: testimonials_reversed_3col_x1
+      desktop_2x: testimonials_reversed_3col_x2
+      laptop_1x: testimonials_reversed_3col_x1
+      laptop_2x: testimonials_reversed_3col_x2
+      tablet_1x: testimonials_reversed_3col_x1
+      tablet_2x: testimonials_reversed_3col_x2
+      mobile_1x: testimonials_reversed_3col_x1
+      mobile_2x: testimonials_reversed_3col_x2
+      lqip: lqip
+    third_party_settings: {  }
+  field_vactory_profils:
+    weight: 4
+    label: hidden
+    settings:
+      link: false
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_vactory_role:
+    weight: 5
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  body: true
+  field_vactory_address: true
+  field_vactory_date: true
+  field_vactory_seo_status: true
+  langcode: true
+  node_banner_image: true
+  search_api_excerpt: true

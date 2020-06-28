@@ -1,0 +1,90 @@
+{{ attach_library('vactory_dynamic_field_sliders/variant3') }}
+
+<style>
+  {% for i in 0..2 %}
+  .vf-slider--tabs-slider .tab-content > .tab-pane-{{ loop.index }} {
+    background: #4CA1E4
+  }
+
+  @media (max-width: 768px) {
+    .tab-pane-{{ loop.index }} {
+      background-color: transparent !important;
+      background-image: linear-gradient(to top, #4CA1E4, transparent) !important;
+    }
+  }
+
+  .vf-slider--tabs-slider .nav-tabs .nav-item-{{ loop.index }}.active {
+    background: #4CA1E4;
+  }
+  {% endfor %}
+</style>
+
+<div class="vf-slider--tabs-slider onload">
+
+  <div class="backgrounds">
+    {% for i in 0..2 %}
+      {% set is_active = (loop.first) ? 'is-active' : '' %}
+      {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/1200/600.jpg" %}
+
+      {% if item.video is not empty %}
+        <div id="slider-background-video{{ loop.index }}" class="background is-video {{ is_active }}"
+             data-item="{{ loop.index }}"></div>
+        <div class="ytplayer"
+             data-property="{
+                 videoURL:'http://youtu.be/HZUTTbTe3uQ',
+                 containment:'#slider-background-video{{ loop.index }}',
+                 showYTLogo: false,
+                 ratio:'16/9',
+                 autoPlay:false,
+                 showControls: false,
+                 quality: 'large',
+                 mute:true,
+                 startAt:0,
+                 loop: 10,
+                 opacity:1
+                 }">
+        </div>
+      {% else %}
+        <div class="background is-image {{ is_active }}"
+             data-item="{{ loop.index }}"
+             data-media="{{ placehold }}"></div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+
+  <div class="tabs-container">
+    <ul class="nav nav-tabs" id="sliderTab" role="tablist">
+        {% for i in 0..2 %}
+        {% set is_active = (loop.first) ? 'active' : '' %}
+        <li class="nav-item">
+          <a class="nav-link {{ is_active }} nav-item-{{ loop.index }}"
+             id="slider-tab-{{ loop.index }}" data-item="{{ loop.index }}" data-toggle="tab"
+             href="#slider-content-{{ loop.index }}" role="tab" aria-selected="true" data-color="#4CA1E4">
+
+              <span class="d-none d-md-block">Title</span>
+
+            <span class="d-md-none">{{ loop.index }}</span>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+
+    <div class="tab-content" id="sliderTabContent">
+      {% for i in 0..2 %}
+        {% set is_active = (loop.first) ? 'show active' : '' %}
+        <div class="tab-pane fade {{ is_active }} tab-pane-{{ loop.index }}"
+             id="slider-content-{{ loop.index }}" role="tabpanel" data-color="#4CA1E4">
+
+            <p class="d-md-none subtitle-tab">Title
+            </p>
+            <h2 class="h2">Lorem Ipsum is simply dummy text of u</h2>
+            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s</p>
+            <a href="#" class="permalink">Read more</a>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+    <button class="scroll-bottom d-none d-lg-block"><span class="text-hide">{{ 'Descendre vers le bas' | t }}</span></button>
+</div>

@@ -1,0 +1,43 @@
+<?php
+
+/**
+ * @file
+ * Contains vactory_google_map_field.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function vactory_google_map_field_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the vactory_google_map_field module.
+    case 'help.page.vactory_google_map_field':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('field type extend from contrib module google map field') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_google_map_field_theme($existing, $type, $theme, $path) {
+  return [
+      'vactory_google_map_field' => [
+          'variables' => [
+              'lat' => NULL,
+              'lon' => NULL,
+              'zoom' => NULL,
+              'type' => NULL,
+          ],
+          'template' => 'vactory_google_map_field',
+      ],
+  ];
+}
+

@@ -1,0 +1,380 @@
+<?php
+
+/**
+ * @file
+ * Contain related hooks.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Template\Attribute;
+use Drupal\Core\Url;
+use Drupal\views\Entity\View;
+use Drupal\views\Plugin\views\query\QueryPluginBase;
+use Drupal\views\ResultRow;
+use Drupal\views\ViewExecutable;
+use Drupal\block_content\Entity\BlockContent;
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_glossary_theme() {
+  return [
+    // Node > full.
+    'views_view_unformatted__vactory_glossary__page_1'  => [
+      'base hook' => 'views',
+      'template'  => 'views-glossary-unformatted',
+    ],
+    'views_view__vactory_glossary'                      => [
+      'base hook' => 'views',
+      'template'  => 'views-glossary',
+    ],
+    'views_view__vactory_glossary__attachment'          => [
+      'base hook' => 'views',
+      'template'  => 'views-glossary-attachment',
+    ],
+    'views_view_field__vactory_glossary__page_1__body'  => [
+      'base hook' => 'views',
+      'template'  => 'views-glossary-field-body',
+    ],
+    'views_view_field__vactory_glossary__page_1__title' => [
+      'base hook' => 'views',
+      'template'  => 'views-glossary-field-title',
+    ],
+    'views_view_summary_unformatted__vactory_glossary'  => [
+      'base hook' => 'views',
+      'template'  => 'views-glossary-summary-unformatted',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_glossary_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if ($form_id == 'views_exposed_form' && $form['#id'] == 'views-exposed-form-vactory-glossary-page-1') {
+    $form['field_vactory_taxonomy_1_target_id']['#options']['All'] = t('Secteur');
+
+    $view = View::load('vactory_glossary');
+    $display =& $view->getDisplay('page_1');
+    $url = Url::fromUri('internal:/' . $display['display_options']['path'])
+      ->toString();
+    $form['#action'] = $url;
+  }
+}
+
+/**
+ * Bool function to sort frensh letters.
+ */
+function fr_sort($a, $b) {
+  if (isset($a->link) && isset($b->link)) {
+    return strcmp($a->link, $b->link);
+  }
+  elseif (isset($a->link)) {
+    return strcmp($a->link, $b['link']);
+  }
+  elseif (isset($b->link)) {
+    return strcmp($a['link'], $b->link);
+  }
+  else {
+    return strcmp($a['link'], $b['link']);
+  }
+}
+
+/**
+ * Bool function to sort arabic letters.
+ */
+function ar_sort($a, $b) {
+  $letters = ['أ', 'ب', 'ت', 'ث', 'ج', 'ح', 'خ', 'د', 'ذ', 'ر', 'ز', 'س',
+    'ش', 'ص', 'ض', 'ط', 'ظ', 'ع', 'غ', 'ف', 'ق', 'ک', 'ل', 'م', 'ن', 'ه',
+    'و', 'ي',
+  ];
+
+  if (isset($a->link) && isset($b->link)) {
+    return array_search($a->link, $letters) > array_search($b->link, $letters);
+  }
+  elseif (isset($a->link)) {
+    return array_search($a->link, $letters) > array_search($b['link'], $letters);
+  }
+  elseif (isset($b->link)) {
+    return array_search($a['link'], $letters) > array_search($b->link, $letters);
+  }
+  else {
+    return array_search($a['link'], $letters) > array_search($b['link'], $letters);
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_glossary_preprocess_views_view_summary_unformatted(&$variables) {
+  /** @var \Drupal\views\ViewExecutable $view */
+  $view = $variables['view'];
+  if ($view->id() == 'vactory_glossary') {
+    // Get lagId.
+    $lang = \Drupal::languageManager()->getCurrentLanguage()->getId();
+    // Get current uri.
+    $current_uri = \Drupal::request()->getRequestUri();
+    $current_uri_exploded = explode('/', $current_uri);
+    // Get route object.
+    $route = \Drupal::routeMatch()->getRouteObject();
+    // Get View page display_id.
+    $display_id = $route->getDefault('display_id');
+    // Get view url.
+    $url = Url::fromRoute('view.' . $view->id() . '.' . $display_id)
+      ->toString();
+    $rowLetters = [];
+    $specialChars_E = ['É', 'È', 'Ê', 'Ë'];
+    $specialChars_A = ['À', 'Á', 'Â', 'Ã', 'Ä', 'Å'];
+    $specialChars_O = ['Ò', 'Ó', 'Ô', 'Õ', 'Ö', 'Œ'];
+    $specialChars_U = ['Ù', 'Ú', 'Û', 'Ü'];
+    $specialChars_I = ['Ì', 'Í', 'Î', 'Ï'];
+    $specialChars_ALIF = ['إ', 'أ', 'ا'];
+    $specialChars_K = ['ک', 'ك'];
+
+    foreach ($variables['rows'] as $key => $row) {
+      if (in_array($row->link, $specialChars_E)) {
+        $row->link = 'E';
+        $url_array = explode('/', $row->url);
+        $url_array[count($url_array) - 1] = 'e';
+        $row->url = implode('/', $url_array);
+        $row->active = ($url != $current_uri && strtoupper(substr(end($current_uri_exploded), -1)) == 'E') ? TRUE : FALSE;
+      }
+      elseif (in_array($row->link, $specialChars_A)) {
+        $row->link = 'A';
+        $url_array = explode('/', $row->url);
+        $url_array[count($url_array) - 1] = 'a';
+        $row->url = implode('/', $url_array);
+        $row->active = ($url != $current_uri && strtoupper(substr(end($current_uri_exploded), -1)) == 'A') ? TRUE : FALSE;
+      }
+      elseif (in_array($row->link, $specialChars_O)) {
+        $row->link = 'O';
+        $url_array = explode('/', $row->url);
+        $url_array[count($url_array) - 1] = 'o';
+        $row->url = implode('/', $url_array);
+        $row->active = ($url != $current_uri && strtoupper(substr(end($current_uri_exploded), -1)) == 'O') ? TRUE : FALSE;
+      }
+      elseif (in_array($row->link, $specialChars_U)) {
+        $row->link = 'U';
+        $url_array = explode('/', $row->url);
+        $url_array[count($url_array) - 1] = 'u';
+        $row->url = implode('/', $url_array);
+        $row->active = ($url != $current_uri && strtoupper(substr(end($current_uri_exploded), -1)) == 'U') ? TRUE : FALSE;
+      }
+      elseif (in_array($row->link, $specialChars_I)) {
+        $row->link = 'I';
+        $url_array = explode('/', $row->url);
+        $url_array[count($url_array) - 1] = 'i';
+        $row->url = implode('/', $url_array);
+        $row->active = ($url != $current_uri && strtoupper(substr(end($current_uri_exploded), -1)) == 'I') ? TRUE : FALSE;
+
+      }
+      elseif (in_array($row->link, $specialChars_ALIF)) {
+        $row->link = 'أ';
+        $url_array = explode('/', $row->url);
+        $url_array[count($url_array) - 1] = 'أ';
+        $row->url = implode('/', $url_array);
+        $row->active = ($url != $current_uri && in_array(end($current_uri_exploded), array_map('urlencode', $specialChars_ALIF))) ? TRUE : FALSE;
+      }
+      elseif (in_array($row->link, $specialChars_K)) {
+        $row->link = 'ک';
+        $url_array = explode('/', $row->url);
+        $url_array[count($url_array) - 1] = 'ک';
+        $row->url = implode('/', $url_array);
+        $row->active = ($url != $current_uri && in_array(end($current_uri_exploded), array_map('urlencode', $specialChars_K))) ? TRUE : FALSE;
+      }
+
+      $rowLetters[] = $row->link;
+    }
+
+    if ($lang != 'ar') {
+      $letters = [
+        'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+      ];
+      foreach ($letters as $letter) {
+        if (!in_array($letter, $rowLetters)) {
+          $attributes = new Attribute([
+            'id'    => 'empty_glossary_element',
+            'class' => [],
+          ]);
+          $new_row = [
+            'link'            => $letter,
+            'count'           => 0,
+            'active'          => ($url != $current_uri && strtoupper(substr($current_uri, -1)) == strtoupper($letter)) ? TRUE : FALSE,
+            'title_truncated' => $letter,
+            'num_records'     => 0,
+            'url'             => $url . "/" . strtoupper($letter),
+            'attributes'      => $attributes,
+          ];
+          $new_resultRow = new resultRow($new_row);
+          array_push($variables['rows'], $new_resultRow);
+        }
+      }
+      usort($variables['rows'], "fr_sort");
+    }
+    else {
+      $letters = ['أ', 'ب', 'ت', 'ث', 'ج', 'ح', 'خ', 'د', 'ذ', 'ر', 'ز', 'س',
+        'ش', 'ص', 'ض', 'ط', 'ظ', 'ع', 'غ', 'ف', 'ق', 'ک', 'ل', 'م', 'ن', 'ه',
+        'و', 'ي',
+      ];
+      $current_uri_exploded = explode('/', $current_uri);
+      foreach ($letters as $letter) {
+        if (!in_array($letter, $rowLetters)) {
+          $attributes = new Attribute([
+            'id'    => 'empty_glossary_element',
+            'class' => [],
+          ]);
+          $new_row = [
+            'link'            => $letter,
+            'count'           => 0,
+            'active'          => ($url != $current_uri && end($current_uri_exploded) == urlencode($letter)) ? TRUE : FALSE,
+            'title_truncated' => $letter,
+            'num_records'     => 0,
+            'url'             => $url . '/' . $letter,
+            'attributes'      => $attributes,
+          ];
+          $new_resultRow = new resultRow($new_row);
+          array_push($variables['rows'], $new_resultRow);
+        }
+      }
+      // Unique glossary letters.
+      $tmp = [];
+      foreach ($variables['rows'] as $item) {
+        $letter = isset($item->link) ? $item->link : $item['link'];
+        $tmp[$letter] = $item;
+      }
+      $variables['rows'] = array_values($tmp);
+
+      usort($variables['rows'], "ar_sort");
+    }
+
+    // Check if a row is active. If not, we need to put letter A as active.
+    if (!_check_for_active_row($variables['rows'])) {
+      // Put letter A as active.
+      // _initialize_active_row($variables['rows']);.
+    }
+  }
+
+}
+
+/**
+ * Implements hook_views_query_alter().
+ */
+function vactory_glossary_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
+  $lang = \Drupal::languageManager()->getCurrentLanguage()->getId();
+
+  if ($view->id() == 'vactory_glossary' && $view->getDisplay()
+    ->getBaseId() == 'page') {
+    $letter = '';
+    // Remove title filter from query && save current letter.
+    foreach ($query->where as &$condition_group) {
+      foreach ($condition_group['conditions'] as $key => &$condition) {
+        if ($condition['field'] == 'node_field_data.title') {
+          $letter = $condition['value'];
+          unset($condition_group['conditions'][$key]);
+        }
+      }
+    }
+
+    // If the letter exists.
+    if (!empty($letter) && $letter != 'أ' && $letter != 'ک') {
+      $field = 'SUBSTRING(node_field_data.title, 1, 1) = :node_field_data_title';
+      $value = [':node_field_data_title' => $letter];
+      $query->addWhereExpression(0, $field, $value);
+    }
+    // If it doesn't, give a letter by default depending on language.
+    else {
+      if ($lang != 'ar') {
+        $field = 'SUBSTRING(node_field_data.title, 1, 1) = :node_field_data_title';
+        $value = [':node_field_data_title' => 'A'];
+        $query->addWhereExpression(0, $field, $value);
+      }
+      else {
+        if ($letter == 'ک') {
+          $field = 'SUBSTRING(node_field_data.title, 1, 1) = :node_field_data_title OR ' .
+            'SUBSTRING(node_field_data.title, 1, 1) = :node_field_data_title_2';
+          $value = [
+            ':node_field_data_title'   => 'ک',
+            ':node_field_data_title_2' => 'ك',
+          ];
+        }
+        else {
+          $field = 'SUBSTRING(node_field_data.title, 1, 1) = :node_field_data_title OR ' .
+            'SUBSTRING(node_field_data.title, 1, 1) = :node_field_data_title_2 OR ' .
+            'SUBSTRING(node_field_data.title, 1, 1) = :node_field_data_title_3';
+          $value = [
+            ':node_field_data_title'   => 'أ',
+            ':node_field_data_title_2' => 'إ',
+            ':node_field_data_title_3' => 'ا',
+          ];
+        }
+        $query->addWhereExpression(0, $field, $value);
+      }
+    }
+  }
+}
+
+/**
+ * Function to check if there is an active row.
+ */
+function _check_for_active_row($rows) {
+  foreach ($rows as $key => $row) {
+    if ($row->active) {
+      return TRUE;
+    }
+  }
+  return FALSE;
+}
+
+/**
+ * Function to set the default active row.
+ */
+function _initialize_active_row(&$rows) {
+  $lang = \Drupal::languageManager()->getCurrentLanguage()->getId();
+
+  $letter = 'A';
+  if ($lang == 'ar') {
+    $letter = 'أ';
+  }
+  foreach ($rows as $key => $row) {
+    if ($row->link == $letter) {
+      $row->active = TRUE;
+    }
+  }
+}
+
+/**
+ * Implements hook_views_pre_view().
+ */
+function vactory_glossary_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
+  // Check if header is enabled.
+  $is_header_enabled = !empty($view->display_handler->options['header']) ? TRUE : FALSE;
+  if ($view->id() == 'vactory_glossary' && $is_header_enabled) {
+    // Get the header block machine name.
+    $block_machine_name = $view->display_handler->options['header']['entity_block_content']['target'];
+    $entity_manager = \Drupal::service('entity_type.manager');
+    // Load Block by machine name.
+    $block = $entity_manager->getStorage('block_content')
+      ->loadByProperties(['block_machine_name' => $block_machine_name]);
+
+    if (is_array($block) && reset($block) instanceof BlockContent) {
+      // Get block view display.
+      $block_content = $entity_manager->getViewBuilder('block_content')
+        ->view(reset($block));
+      // Override the view header for the current display.
+      $item = [
+        'id' => 'area_text_custom',
+        'table' => 'views',
+        'field' => 'area_text_custom',
+        'relationship' => 'none',
+        'group_type' => 'none',
+        'admin_label' => '',
+        'empty' => TRUE,
+        'tokenize' => FALSE,
+        'content' => \Drupal::service('renderer')
+          ->render($block_content),
+        'plugin_id' => 'text_custom',
+      ];
+      $view->setHandler($display_id, 'header', 'area_text_custom', $item);
+    }
+  }
+}

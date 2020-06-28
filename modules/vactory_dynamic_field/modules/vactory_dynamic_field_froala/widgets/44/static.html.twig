@@ -1,0 +1,50 @@
+<div class="fdb-block">
+
+    <div class="row mt-5 justify-content-center">
+
+        {% for item in 0..2 %}
+        {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/50/50.jpg" %}
+        {% if loop.index >= 2 %}
+        <div class="col-md-8 col-lg-4 col-xl-3 pt-5 pt-lg-0 m-auto text-center">
+            {% else %}
+            <div class="col-md-8 col-lg-4 col-xl-3 m-auto text-center">
+                {% endif %}
+
+                <img alt="Image Alt" height="50"
+                    class="lazyload rounded-circle"
+                    src="{{ content.image_placeholder }}"
+                    data-src="{{ placehold }}">
+                <p class="text-h3 mt-3">"Far far away, behind the word mountains, far from the countries Vokalia and Consonantia."
+
+                </p>
+                <p class="text-h3 mt-4 mt-xl-5"><strong>Person Name</strong></p>
+                <p>Co-founder at Company</p>
+            </div>
+
+            {% endfor %}
+
+        </div>
+
+    <div class="mt-5 justify-content-center vf-slick-slider" 
+        data-toshow="3"
+        data-dots="false"
+        data-arrows="true"
+        data-mobile-centermode="false">
+
+        {% for item in 0..6 %}
+        {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/50/50.jpg" %}
+            <div class='p-3'>
+                <div class="shadow-sm qoute-right p-3 text-center">
+                    <img alt="Image Alt" height="50"
+                        class="lazyload rounded-circle ml-auto mr-auto"
+                        src="{{ content.image_placeholder }}"
+                        data-src="{{ placehold }}">
+                    <p class="text-h3 mt-3">"Far far away, behind the word mountains, far from the countries Vokalia and Consonantia."</p>
+                    <p class="text-h3 mt-4 mt-xl-5"><strong>Person Name</strong></p>
+                    <p>Co-founder at Company</p>                
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+</div>

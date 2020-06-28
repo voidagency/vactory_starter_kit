@@ -1,0 +1,24 @@
+name: '64 - Froala - CTA Block Left Title, Description With Background'
+multiple: FALSE
+category: 'Call to action'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: 'Titre'
+    options:
+      '#required': TRUE
+  description:
+    type: textarea
+    label: 'Description'
+    options:
+      '#required': TRUE
+  link:
+    type: url_extended
+    label: 'Lien'
+  link_alt:
+    type: text
+    label: 'Titre lien'
+  link_target:
+    type: checkbox
+    label: 'Ouvrir dans une nouvelle fenêtre'

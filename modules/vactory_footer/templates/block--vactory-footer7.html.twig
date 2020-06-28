@@ -1,0 +1,59 @@
+
+<footer class="vf-footer vf-footer--variant7">
+    <div class="vf-footer-items">
+        <div class="vf-footer__top">
+            <div class='container'>
+                <div class='vf-footer__top--items'>
+                    <div class="block-footer-menu-separate sm-menu-center">
+                        {{ vactory_render('block', 'system_branding_block', {use_site_name: false}) }}
+                    </div> 
+                    <div class="block-social-media icon-shadow">
+                        {{ vactory_render('block', 'socialmedialinks') }}
+                    </div> 
+                </div>
+            </div>
+        </div>  
+        <div class="vf-footer__middle">
+            <div class="container">
+                <div class="row">
+                    <div class="col-md-4 mb-2">
+                        <h3 class='title-underline text-uppercase'>{{ "Company name" | t }}</h3>
+                        {{ vactory_render('block', 'block-footer-text') }}
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <h3 class='title-underline text-uppercase'>{{ "Products" | t }}</h3>
+                        {{ vactory_render('block', 'system_menu_block:footer') }}
+                    </div>
+                    <div class="col-md-2 mb-2">
+                        <h3 class='title-underline text-uppercase'>{{ "links" | t }}</h3>
+                        {{ vactory_render('block', 'system_menu_block:footer') }}
+                    </div>
+                    <div class="col-md-4 mb-2">
+                        <div class="block-footer-contacter_nous">
+                            <h3 class='title-underline text-uppercase'>{{ "Contact Us" | t }}</h3>
+                            {{ vactory_render('block', 'block-footer-contact-v2') }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="vf-footer__bottom">
+            <div class="container">
+                <div class="block--footer-mailchimp py-2">
+                    {{ content.form }}
+                </div>
+                <div class="vf-footer__bottom--items flex-lg-row justify-content-lg-between">
+                    <div class="block-footer-copyright">
+                        <p>{{ "Vactory 2017 © All rights reserved" | t }}</p>
+                    </div>
+                    <div class="block-footer-realisation_void">
+                        <p>
+                            {{ "Design and development by VOID Agency" | t }}
+                            <img alt="Void logo" src="//place-hold.it/52x14">
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>

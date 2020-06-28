@@ -1,0 +1,37 @@
+langcode: en
+status: false
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.vactory_press_kit.field_press_kit_theme
+    - field.field.node.vactory_press_kit.field_vactory_date
+    - field.field.node.vactory_press_kit.field_vactory_document
+    - field.field.node.vactory_press_kit.field_vactory_excerpt
+    - field.field.node.vactory_press_kit.field_vactory_media
+    - field.field.node.vactory_press_kit.field_vactory_meta_tags
+    - field.field.node.vactory_press_kit.field_vactory_seo_status
+    - node.type.vactory_press_kit
+  module:
+    - user
+id: node.vactory_press_kit.teaser
+targetEntityType: node
+bundle: vactory_press_kit
+mode: teaser
+content:
+  links:
+    weight: 100
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  field_press_kit_theme: true
+  field_vactory_date: true
+  field_vactory_document: true
+  field_vactory_excerpt: true
+  field_vactory_media: true
+  field_vactory_meta_tags: true
+  field_vactory_seo_status: true
+  langcode: true
+  node_banner_image: true
+  search_api_excerpt: true

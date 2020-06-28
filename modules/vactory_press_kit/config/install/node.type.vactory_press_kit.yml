@@ -1,0 +1,9 @@
+langcode: en
+status: true
+name: 'Press Kit'
+type: vactory_press_kit
+description: 'Manage your Press Kit content.'
+help: ''
+new_revision: true
+preview_mode: 1
+display_submitted: false

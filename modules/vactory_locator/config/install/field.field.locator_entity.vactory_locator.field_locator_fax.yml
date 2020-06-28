@@ -1,0 +1,20 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.storage.locator_entity.field_locator_fax
+    - vactory_locator.locator_entity_type.vactory_locator
+  module:
+    - telephone
+id: locator_entity.vactory_locator.field_locator_fax
+field_name: field_locator_fax
+entity_type: locator_entity
+bundle: vactory_locator
+label: Fax
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: telephone

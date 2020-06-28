@@ -1,0 +1,24 @@
+<div class="fdb-block">
+    <div class="row text-left justify-content-sm-center">
+        {% for item in 0..3 %}
+
+        {% if loop.index == 5 %}
+
+    </div>
+    <div class="row text-left justify-content-sm-center pt-3 pt-lg-5">
+
+        {% endif %}
+
+        {% if loop.index == 1 or loop.index == 5 %}
+        <div class="col-12 col-sm-6 col-lg-3 col-xl-2 ml-xl-auto mr-xl-auto">
+            {% else %}
+            <div class="col-12 col-sm-6 col-lg-3 col-xl-2 ml-xl-auto mr-xl-auto pt-3 pt-md-0 pt-lg-0">
+                {% endif %}
+                <h3><strong>Title</strong></h3>
+                <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
+            </div>
+
+            {% endfor %}
+
+        </div>
+    </div>

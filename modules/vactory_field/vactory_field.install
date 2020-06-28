@@ -1,0 +1,30 @@
+<?php
+
+/**
+ * @file
+ * Vactory field module installation logics.
+ */
+
+use Drupal\Core\Field\BaseFieldDefinition;
+
+/**
+ * Install Body CSS Classe(s) field storage for existing projects.
+ */
+function vactory_field_update_8101(&$sandbox) {
+  $entityUpdateManager = \Drupal::entityDefinitionUpdateManager();
+  $newBodyClassDefinition = BaseFieldDefinition::create('string')
+    ->setLabel(t('Body CSS class(es)'))
+    ->setDescription(t('Enter a set of classes (<b>separated with spaces</b>) to add it to body class attribute.'))
+    ->setDisplayOptions('form', [
+      'type'   => 'string_textfield',
+      'weight' => 36,
+    ])
+    ->setDisplayConfigurable('form', FALSE)
+    ->setDisplayConfigurable('view', FALSE)
+    ->setRevisionable(TRUE)
+    ->setTranslatable(TRUE);
+
+  $entityUpdateManager->installFieldStorageDefinition(
+    'node_body_class', 'node', 'vactory_field', $newBodyClassDefinition
+  );
+}

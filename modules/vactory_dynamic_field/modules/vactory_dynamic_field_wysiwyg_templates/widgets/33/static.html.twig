@@ -1,0 +1,23 @@
+<div class="introduction mb-3 mb-md-4">
+  <p class="chapo">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the
+    industry's standard dummy text ever since the 1500s</p>
+</div>
+
+<div class="t-text-img-tierce">
+  {% for item in 0..1 %}
+    {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/160/80.jpg" %}
+    <div class="row">
+      <div class="col-12 col-md-2 mb-2 mb-md-0 text-center">
+        <img alt="#"
+             class="img-fluid lazyload"
+             src="{{ content.image_placeholder }}"
+             data-src="{{ placehold }}"/>
+      </div>
+      <div class="col-12 col-md-12">
+        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys
+        standard dummy text ever since the 1500s
+      </div>
+
+    </div>
+  {% endfor %}
+</div>

@@ -1,0 +1,82 @@
+<?php
+
+/**
+ * @file
+ * Install file.
+ */
+
+use Drupal\user\Entity\Role;
+
+/**
+ * Implements hook_install().
+ */
+function vactory_academy_install() {
+  // Ensure the translation fields are created in the database.
+  \Drupal::service('entity.definition_update_manager')->applyUpdates();
+
+  $anonymous = Role::load('anonymous');
+  $authenticated = Role::load('authenticated');
+
+  $anonymous->grantPermission('access user profiles');
+  $authenticated->grantPermission('access user profiles');
+  $authenticated->grantPermission('cast rate vote on node of vactory_academy');
+  $authenticated->grantPermission('flag favorite_academy');
+  $authenticated->grantPermission('unflag favorite_academy');
+  try {
+    $anonymous->save();
+    $authenticated->save();
+  }
+  catch (Exception $e) {
+    \Drupal::logger('vactory_academy')
+      ->notice("Problems has been detected while grant necessary permissions to the given roles: anonymous, authenticated.");
+  }
+
+  // Enable rating on vactory_academy content type.
+  $config = Drupal::configFactory()->getEditable('rate.settings');
+  $data = [
+    'enabled_types_widgets' => [
+      'node' => [
+        'vactory_academy' => [
+          'widget_type' => 'fivestar',
+          'use_ajax' => TRUE,
+        ],
+      ],
+    ],
+    'bot_minute_threshold' => "0",
+    'bot_hour_threshold' => "0",
+    'botscout_key' => "",
+  ];
+  $data = array_merge($config->getRawData(), $data);
+  $config->setData($data);
+  $config->save();
+}
+
+/**
+ * Implements hook_install().
+ */
+function vactory_academy_uninstall() {
+  $anonymous = Role::load('anonymous');
+  $authenticated = Role::load('authenticated');
+
+  $anonymous->revokePermission('access user profiles');
+  $authenticated->revokePermission('access user profiles');
+  $authenticated->revokePermission('cast rate vote on node of vactory_academy');
+  $authenticated->revokePermission('flag favorite_academy');
+  $authenticated->revokePermission('unflag favorite_academy');
+
+  try {
+    $anonymous->save();
+    $authenticated->save();
+  }
+  catch (Exception $e) {
+    \Drupal::logger('vactory_academy')
+      ->notice("Before uninstalling vactory_academy, a problem has been detected while revoke unused permissions from the given roles: anonymous, authenticated.");
+  }
+
+  // Delete rating on vactory_academy content type.
+  $config = Drupal::configFactory()->getEditable('rate.settings');
+  $data = $config->getRawData();
+  unset($data['enabled_types_widgets']['node']['vactory_academy']);
+  $config->setData($data);
+  $config->save();
+}

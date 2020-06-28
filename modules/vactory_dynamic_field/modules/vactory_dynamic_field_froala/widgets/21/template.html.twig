@@ -1,0 +1,28 @@
+{% set image_uri = (content.0.image.0 is defined) ? get_image(content.0.image.0) : '' %}
+{% set fluid_image = image_uri|image_style('max_1300x1300') %}
+
+{% set floatedimg = (content.0.mode == 1)? 'left' : 'right' %}
+{% set floated = (content.0.mode == 1)? 'justify-content-end' : '' %}
+
+<div class="fdb-block fdb-block-hasbackground">
+    <div class="col-fill-{{ floatedimg }}" style="background-image: url({{ fluid_image }});">
+    </div>
+    <div class="container">
+        <div class="row {{ floated }}">
+            <div class="col-12 col-md-5 text-center">
+                {% if content.0.title is not empty %}
+                     <h2>{{ content.0.title }}</h2>
+                {% endif %}
+                {% if content.0.description is not empty %}
+                    <p class="text-h3">{{ content.0.description }}</p>
+                {% endif %}
+                {% if content.0.link is not empty and content.0.link_alt is not empty %}
+                    {% set link_target = (content.0.link_target > 0) ? '_blank' : '_self' %}
+                <p class="mt-4">
+                    <a class="btn btn-primary" href="{{ content.0.link }}" target="{{ link_target }}">{{ content.0.link_alt }}</a>
+                </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

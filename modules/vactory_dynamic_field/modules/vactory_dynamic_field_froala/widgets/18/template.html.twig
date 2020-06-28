@@ -1,0 +1,43 @@
+{% set image_uri_1 = (content.0.image_1.0 is defined) ? get_image(content.0.image_1.0) : '' %}
+{% set fluid_image = image_uri_1|image_style('max_650x650') %}
+{% set lqip_image_1 = image_uri_1|image_style('lqip') %}
+
+{% set image_uri_2 = (content.0.image_2.0 is defined) ? get_image(content.0.image_2.0) : '' %}
+{% set thumb = image_uri_2|image_style('thumbnail') %}
+{% set lqip_image_2 = image_uri_2|image_style('lqip') %}
+
+<div class="fdb-block">
+    <div class="row align-items-center">
+        <div class="col-10 col-sm-6 col-md-5 col-lg-4 m-auto pb-5 pb-md-0">
+            <div class="img-ratio">
+                {% if content.0.image_1.0 is not empty %}
+                    <img alt="{{ content.0.image_alt_1.0 }}"
+                            class="img-fluid br-0 lazyload"
+                            src="{{ lqip_image_1 }}"
+                            data-src="{{ fluid_image }}">
+                {% endif %}
+            </div>   
+        </div>
+
+        <div class="col-12 ml-md-auto col-md-7 col-lg-5 pb-5 pb-md-0">
+            {% if content.0.image_2.0 is not empty %}
+                <img alt="{{ content.0.image_alt_2.0 }}"
+                    class="fdb-icon lazyload"
+                    src="{{ lqip_image_2 }}"
+                    data-src="{{ thumb }}">
+            {% endif %}
+            {% if content.0.title is not empty %}
+                <h2>{{ content.0.title }}</h2>
+            {% endif %}
+            {% if content.0.description is not empty %}
+                <p class="text-h3">{{ content.0.description }}</p>
+            {% endif %}
+            <p class="mt-4">
+                {% set link_target_1 = (content.0.link_target_1 > 0) ? '_blank' : '_self' %}
+                {% set link_target_2 = (content.0.link_target_2 > 0) ? '_blank' : '_self' %}
+                <a class="btn btn-primary" target="{{ link_target_1 }}" href="{{ content.0.link_1 }}">{{ content.0.link_alt_1 }}</a>
+                <a class="btn btn-outline-primary ml-3" target="{{ link_target_2 }}" href="{{ content.0.link_2 }}">{{ content.0.link_alt_2 }}</a>
+            </p>
+        </div>
+    </div>
+</div>

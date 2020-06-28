@@ -1,0 +1,31 @@
+name: '85 - Froala - Features 3 Blocks Reversed Image With Title, Description & CTA'
+multiple: TRUE
+category: 'Froala'
+enabled: TRUE
+limit: 3
+fields:
+  image:
+    type: image
+    label: 'Image'
+  image_alt:
+    type: text
+    label: 'Text alternatif'
+  title:
+    type: text
+    label: 'Titre'
+  description:
+    type: textarea
+    label: 'Description'
+  link:
+    type: url_extended
+    label: 'Lien'
+  link_alt:
+    type: text
+    label: 'Titre lien'
+  link_target:
+    type: checkbox
+    label: 'Ouvrir dans une nouvelle fenêtre'
+extra_fields:
+  title:
+    type: text
+    label: 'Titre'

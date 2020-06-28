@@ -1,0 +1,20 @@
+name: 'C15 - Témoignage écrit '
+multiple: TRUE
+category: 'Sliders'
+enabled: TRUE
+fields:
+  temoignage:
+    type: text
+    label: 'Auteur'
+    options:
+      '#required': TRUE
+  temoignage_operation:
+    type: text
+    label: "Type d'operations"
+    options:
+      '#required': TRUE
+  temoignage_opinion:
+    type: textarea
+    label: 'Point de vue du patient'
+    options:
+      '#required': TRUE

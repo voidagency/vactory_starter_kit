@@ -1,0 +1,41 @@
+<div class="row text-center t-col-illustration">
+  {% if extra_fields.introduction %}
+    <div class="col-12">
+      <div class="intro text-center font-20">
+        <p>{{ extra_fields.introduction }}</p>
+      </div>
+    </div>
+  {% endif %}
+  <div class="col-12 p-0">
+    <div class="vf-slick-slider vf-slick-mobile row justify-content-center">
+      {% for item in content %}
+        <div class="col has-icon">
+          {% if item.link %} <a href="{{ item.link }}"> {% endif %}
+            <div class="block-illustration mb-2 mb-md-3">
+              {% if item.image.0 is defined %}
+                {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : "" %}
+                {% set fluid_img = file_url(image_uri) %}
+                {% set lqip_image = image_uri|image_style('lqip') %}
+                {% set image_alt = (item.image_alt is not empty) ? item.image_alt : '' %}
+                {% if 'svg' in fluid_img |render|render %}
+                  <object data="{{ fluid_img  }}" type="image/svg+xml" height="90">
+                {% endif %}
+                <img alt="{{ image_alt }}"
+                     class="img-fluid lazyload"
+                     src="{{ lqip_image }}"
+                     data-src="{{ fluid_img }}"/>
+                {% if 'svg' in fluid_img |render|render %}
+                  </object>
+                {% endif %}
+              {% endif %}
+            </div>
+            {% if item.title is not empty %}
+              <p class="font-18 font-medium">{{ item.title }}</p>
+            {% endif %}
+            {% if item.link %} </a> {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</div>

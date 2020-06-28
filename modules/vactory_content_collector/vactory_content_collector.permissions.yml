@@ -1,0 +1,4 @@
+administer vactory_content_collector configuration:
+  title: 'Administer vactory_content_collector configuration'
+  description: 'Optional description.'
+  restrict access: true

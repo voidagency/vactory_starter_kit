@@ -1,0 +1,5 @@
+services:
+  vactory_dynamic_field.vactory_provider_manager:
+    class: Drupal\vactory_dynamic_field\WidgetsManager
+    parent: default_plugin_manager
+

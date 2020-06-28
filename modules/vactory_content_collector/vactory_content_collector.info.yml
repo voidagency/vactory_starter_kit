@@ -1,0 +1,5 @@
+name: Content Collector
+type: module
+description: Keep track of your content, this module allows you to mark content as completed or incomplete with a views list to see incomplete content.
+package: Vactory
+core: 8.x

@@ -1,0 +1,6 @@
+appointment_hours_string: "8h00|08H00 - 09H00\r\n9h00|09H00 - 10H00\r\n10h00|10H00 - 11H00\r\n11h00|11H00 - 12H00\r\n12h00|12H00 - 13H00\r\n13h00|13H00 - 14H00\r\n14h00|14H00 - 15H00\r\n15h00|15H00 - 16H00\r\n16h00|16H00 - 17H00\r\n17h00|17H00 - 18H00"
+appointment_hours: []
+dependencies:
+  enforced:
+    module:
+      - vactory_appointment

@@ -1,0 +1,33 @@
+langcode: en
+status: true
+dependencies: {  }
+id: locator_category
+class: null
+field_plugin_method: null
+cck_plugin_method: null
+migration_tags: null
+migration_group: default
+label: 'Import locator category'
+source:
+  plugin: csv
+  delimiter: ','
+  path: profiles/vactory_starter_kit/modules/vactory_locator/locator_migrate/locator_category.csv
+  header_row_count: 1
+  ids:
+    - id
+  fields:
+    0:
+      name: id
+      label: 'Unique ID'
+    1:
+      name: label
+      label: 'Label'
+process:
+  name: label
+  type:
+    plugin: default_value
+    default_value: published_spec
+destination:
+  plugin: 'entity:taxonomy_term'
+  default_bundle: locator_category
+migration_dependencies: {  }

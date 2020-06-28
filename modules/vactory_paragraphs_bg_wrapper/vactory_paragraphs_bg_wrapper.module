@@ -1,0 +1,151 @@
+<?php
+
+/**
+ * @file
+ * Vactory paragraphs background wrapper module.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\file\Entity\File;
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_paragraphs_bg_wrapper_theme($existing, $type, $theme, $path) {
+  return [
+    'field__node__field_vactory_paragraphs' => [
+      'base hook' => 'field',
+      'template'  => 'field--node--field-paragraphs',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_preprocess_field().
+ */
+function vactory_paragraphs_bg_wrapper_preprocess_field(&$variables, $hook) {
+  foreach ($variables['items'] as $item_id => $item) {
+    $paragraph = $item['content']['#paragraph'] ?? NULL;
+    if ($paragraph && $paragraph->bundle() == 'paragraph_background_wrapper') {
+
+      $variables['items'][$item_id]['paragraph_type'] = $paragraph->field_paragraph_type->getValue()[0]['value'] ?? '';
+
+      if ($paragraph->field_paragraph_type->getValue()[0]['value'] == 'opener') {
+
+        $css_classes = $paragraph->paragraph_css_class->getValue()[0]['value'] ?? '';
+        $variables['items'][$item_id]['paragraph']['classes'] = $css_classes;
+
+        $bg_type = $paragraph->field_background_type->getValue()[0]['value'] ?? '';
+        $variables['items'][$item_id]['background']['type'] = $bg_type;
+
+        $bg_color = $paragraph->paragraph_background_color->getValue()[0]['value'] ?? '';
+        $variables['items'][$item_id]['background']['color'] = $bg_color;
+
+        $img_id = $paragraph->paragraph_background_image->getValue()[0]['target_id'] ?? NULL;
+        $variables['items'][$item_id]['background']['image'] = NULL;
+        if ($img_id) {
+          $img_uri = File::load($img_id)->getFileUri();
+          $variables['items'][$item_id]['background']['image'] = $img_uri;
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_form_paragraphs_subform_alter().
+ */
+function vactory_paragraphs_bg_wrapper_form_paragraphs_subform_alter(array &$subform, FormStateInterface $form_state, $delta) {
+  // Hide background_image in case of closer paragraph.
+  if (isset($subform['paragraph_background_image'])) {
+    $subform['paragraph_background_image']['#states'] = [
+      'visible'   => [
+        [
+          "input[name='field_vactory_paragraphs[" . $delta . "][subform][field_paragraph_type]']" => ['value' => 'opener'],
+        ],
+        [
+          "input[name='field_vactory_paragraphs[" . $delta . "][subform][field_background_type]']" => ['value' => 'image'],
+        ],
+        [
+          "input[name='field_vactory_paragraphs[" . $delta . "][subform][field_background_type]']" => ['value' => 'both'],
+        ],
+      ],
+      'invisible' => [
+        [
+          "input[name='field_vactory_paragraphs[" . $delta . "][subform][field_paragraph_type]']" => ['value' => 'closer'],
+        ],
+        [
+          "input[name='field_vactory_paragraphs[" . $delta . "][subform][field_background_type]']" => ['value' => 'solid'],
+        ],
+        'required' => [
+          "input[name='field_vactory_paragraphs[" . $delta . "][subform][field_background_type]']" => ['value' => 'image'],
+        ],
+      ],
+    ];
+    // Make image filed required.
+    if (isset($subform['paragraph_background_image']['widget'][0])) {
+      $subform['paragraph_background_image']['widget'][0]['#states']['required'] = [
+        "input[name='field_vactory_paragraphs[" . $delta . "][subform][field_background_type]']" => ['value' => 'image'],
+      ];
+    }
+  }
+  // Hide paragraph_background_color in case of closer paragraph.
+  if (isset($subform['paragraph_background_color'])) {
+    $subform['paragraph_background_color']['#states'] = [
+      'visible'   => [
+        [
+          "input[name='field_vactory_paragraphs[" . $delta . "][subform][field_paragraph_type]']" => ['value' => 'opener'],
+        ],
+        [
+          "input[name='field_vactory_paragraphs[" . $delta . "][subform][field_background_type]']" => ['value' => 'solid'],
+        ],
+        [
+          "input[name='field_vactory_paragraphs[" . $delta . "][subform][field_background_type]']" => ['value' => 'both'],
+        ],
+      ],
+      'invisible' => [
+        [
+          "input[name='field_vactory_paragraphs[" . $delta . "][subform][field_paragraph_type]']" => ['value' => 'closer'],
+        ],
+        [
+          "input[name='field_vactory_paragraphs[" . $delta . "][subform][field_background_type]']" => ['value' => 'image'],
+        ],
+      ],
+    ];
+    // Make color filed required.
+    $subform['paragraph_background_color']['widget'][0]['value']['#states']['required'] = [
+      "input[name='field_vactory_paragraphs[" . $delta . "][subform][field_background_type]']" => ['value' => 'solid'],
+    ];
+  }
+  // Hide background_type in case of closer paragraph.
+  if (isset($subform['field_background_type'])) {
+    $subform['field_background_type']['#states'] = [
+      'visible'   => [
+        "input[name='field_vactory_paragraphs[" . $delta . "][subform][field_paragraph_type]']" => ['value' => 'opener'],
+      ],
+      'invisible' => [
+        "input[name='field_vactory_paragraphs[" . $delta . "][subform][field_paragraph_type]']" => ['value' => 'closer'],
+      ],
+    ];
+  }
+  // Hide paragraph_css_class in case of closer paragraph.
+  if (isset($subform['paragraph_css_class'])) {
+    $subform['paragraph_css_class']['#states'] = [
+      'visible'   => [
+        "input[name='field_vactory_paragraphs[" . $delta . "][subform][field_paragraph_type]']" => ['value' => 'opener'],
+      ],
+      'invisible' => [
+        "input[name='field_vactory_paragraphs[" . $delta . "][subform][field_paragraph_type]']" => ['value' => 'closer'],
+      ],
+    ];
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter().
+ */
+function vactory_paragraphs_bg_wrapper_theme_suggestions_field_alter(array &$suggestions, array $variables) {
+  // Build a variable with field information.
+  $element = $variables['element'];
+  $suggestions[] = 'field__' . $element['#entity_type'] . '__' . $element['#field_name'];
+}

@@ -1,0 +1,115 @@
+<?php
+
+/**
+ * @file
+ * Primary hooks.
+ */
+
+/**
+ * Implements hook_page_attachments().
+ */
+function vactory_appbanners_page_attachments(array &$attachments) {
+  $config = \Drupal::config('vactory_appbanners.settings');
+  $ios_app_id = $config->get('ios_app_id');
+  $android_app_id = $config->get('android_app_id');
+  $icon = $config->get('icon');
+
+  // No app id or not route match.
+  if (!$ios_app_id || !$android_app_id || !vactory_appbanners_include_tags()) {
+    return;
+  }
+
+  // Get all config values.
+  // Remove unused values.
+  $js_settings = array_diff_key($config->get(), array_flip([
+    'admin',
+    'visibility',
+    'pages',
+    '_core',
+  ]));
+
+  $attachments['#attached']['library'][] = 'vactory_appbanners/app';
+  $attachments['#attached']['drupalSettings']['appbanners'] = $js_settings;
+
+  if ($icon) {
+    $file = \Drupal\file\Entity\File::load($icon);
+    $icon_url = file_create_url($file->getFileUri());
+
+    $element = [
+      '#tag'        => 'link',
+      '#attributes' => [
+        'rel'  => 'apple-touch-icon',
+        'href' => $icon_url,
+      ],
+    ];
+
+    $attachments['#attached']['html_head'][] = [
+      $element,
+      'appbanners_apple_touch_icon',
+    ];
+  }
+
+  $element = [
+    '#tag'        => 'meta',
+    '#attributes' => [
+      'name'    => 'google-play-app',
+      'content' => 'app-id=' . $android_app_id,
+    ],
+  ];
+
+  $attachments['#attached']['html_head'][] = [$element, 'appbanners_android'];
+
+  $element = [
+    '#tag'        => 'meta',
+    '#attributes' => [
+      'name'    => 'apple-itunes-app',
+      'content' => 'app-id=' . $ios_app_id,
+    ],
+  ];
+
+  $attachments['#attached']['html_head'][] = [$element, 'appbanners_ios'];
+
+}
+
+/**
+ * Check whether the app banners tags should be included on the current page.
+ *
+ * @return bool
+ *   TRUE if the tags should be included.
+ */
+function vactory_appbanners_include_tags() {
+
+  $config = \Drupal::config('vactory_appbanners.settings');
+  // Should the script be included on admin pages?
+  $show_on_admin = (bool) $config->get('admin');
+  $is_admin = \Drupal::service('router.admin_context')->isAdminRoute();
+  if ($is_admin && !$show_on_admin) {
+    return FALSE;
+  }
+
+  $pages = $config->get('pages');
+  $match_type = $config->get('visibility');
+
+  if (empty($pages) && $match_type == 'exclude') {
+    return TRUE;
+  }
+
+  $path_matcher = \Drupal::service('path.matcher');
+  $current_path = \Drupal::service('path.current')->getPath();
+  $current_alias = \Drupal::service('path.alias_manager')
+    ->getAliasByPath($current_path);
+
+  // Search matches with internal path.
+  $page_match = $path_matcher->matchPath($current_path, $pages);
+  // Otherwise, try with path alias.
+  if (!$page_match) {
+    $page_match = $path_matcher->matchPath($current_alias, $pages);
+  }
+
+  if ($match_type == 'include') {
+    return $page_match;
+  }
+
+  return !$page_match;
+
+}

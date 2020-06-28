@@ -1,0 +1,9 @@
+name: 'Annual report'
+type: module
+core: 8.x
+version: 8.x-1.0
+package: Vactory
+dependencies:
+  - vactory_core
+  - vactory_field
+  - vactory_views

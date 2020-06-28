@@ -1,0 +1,124 @@
+<?php
+
+/**
+ * @file
+ * Contain related hooks.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\node\NodeTypeInterface;
+use Drupal\vactory_core\Vactory;
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_cross_content_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if ($form_id <> "node_type_edit_form") {
+    return;
+  }
+
+  /** @var \Drupal\node\NodeTypeInterface $type */
+  $type = $form_state->getFormObject()->getEntity();
+
+  $form['vcc'] = [
+    '#type' => 'details',
+    '#title' => t('Cross content configuration'),
+    '#group' => 'additional_settings',
+  ];
+  $form['vcc']['enabling'] = [
+    '#title' => t('Enable Cross Content'),
+    '#type' => 'checkbox',
+    '#default_value' => $type->getThirdPartySetting('vactory_cross_content', 'enabling', ''),
+  ];
+
+  $taxonomies_list = Vactory::getTaxonomyList($type->get('type'));
+  $taxonomy_field = ['none' => t('-- Select a taxonomy --')];
+  foreach ($taxonomies_list as $key => $value) {
+    $taxonomy_field[$value[1]] = $value[0];
+  }
+
+  $form['vcc']['taxonomy_field'] = [
+    '#title' => t('Taxonomy field'),
+    '#type' => 'select',
+    '#description' => t('Taxonomy field to select cross content'),
+    '#options' => $taxonomy_field,
+    '#states' => [
+      "visible" => [
+        "input[name='enabling']" => ["checked" => TRUE],
+      ] ,
+    ] ,
+    '#default_value' => $type->getThirdPartySetting('vactory_cross_content', 'taxonomy_field', 'none'),
+  ];
+
+  $terms_options = [];
+  foreach ($taxonomies_list as $taxonomy) {
+    $terms_options[$taxonomy[0]] = Vactory::getTermsFromTaxonomy($taxonomy[0], $type->get('type'));
+  }
+
+  $form['vcc']['terms'] = [
+    '#type' => 'select',
+    '#multiple' => TRUE,
+    '#title' => t('Taxonomy terms'),
+    '#options' => $terms_options,
+    '#states' => [
+      "visible" => [
+        "input[name='enabling']" => ["checked" => TRUE],
+      ] ,
+    ] ,
+    '#default_value' => $type->getThirdPartySetting('vactory_cross_content', 'terms', 'none'),
+  ];
+
+  $form['vcc']['nombre_elements'] = [
+    '#type'          => 'textfield',
+    '#title'         => t('Number of nodes to display'),
+    '#description'   => t('Select the number of node to display in the cross content block'),
+    '#states' => [
+      "visible" => [
+        "input[name='enabling']" => ["checked" => TRUE],
+      ] ,
+    ] ,
+    '#default_value' => $type->getThirdPartySetting('vactory_cross_content', 'nombre_elements', 3),
+  ];
+
+  $form['vcc']["more_link"] = [
+    '#type' => 'textfield',
+    '#title' => t('Choose the redirection link for the more Link , leave it empty to disable it'),
+    '#description' => t('Choose the redirection link for the more Link , leave it empty to disable it'),
+    '#states' => [
+      "visible" => [
+        "input[name='enabling']" => ["checked" => TRUE],
+      ] ,
+    ] ,
+    '#default_value' => $type->getThirdPartySetting('vactory_cross_content', 'more_link', ''),
+  ];
+
+  $form['vcc']["more_link_label"] = [
+    '#type' => 'textfield',
+    '#title' => t('More Link title'),
+    '#description' => t('Choose the title to display for the more Link'),
+    '#states' => [
+      "visible" => [
+        "input[name='enabling']" => ["checked" => TRUE],
+      ] ,
+    ] ,
+    '#default_value' => $type->getThirdPartySetting('vactory_cross_content', 'more_link_label', ''),
+  ];
+
+  $form['#entity_builders'][] = 'vactory_cross_content_form_node_type_form_builder';
+}
+
+/**
+ * Entity builder for the node type form with scheduler options.
+ */
+function vactory_cross_content_form_node_type_form_builder($entity_type, NodeTypeInterface $type, &$form, FormStateInterface $form_state) {
+  if ($form_state->getValue('enabling') == 1) {
+    Vactory::createVccField($form_state->getFormObject()->getEntity()->id(),
+      'field_contenu_lie');
+  }
+  $type->setThirdPartySetting('vactory_cross_content', 'enabling', $form_state->getValue('enabling'));
+  $type->setThirdPartySetting('vactory_cross_content', 'taxonomy_field', $form_state->getValue('taxonomy_field'));
+  $type->setThirdPartySetting('vactory_cross_content', 'terms', $form_state->getValue('terms'));
+  $type->setThirdPartySetting('vactory_cross_content', 'nombre_elements', $form_state->getValue('nombre_elements'));
+  $type->setThirdPartySetting('vactory_cross_content', 'more_link', $form_state->getValue('more_link'));
+  $type->setThirdPartySetting('vactory_cross_content', 'more_link_label', $form_state->getValue('more_link_label'));
+}

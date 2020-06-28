@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - block_content.type.vactory_banner
+    - field.storage.block_content.field_vactory_title
+id: block_content.vactory_banner.field_vactory_title
+field_name: field_vactory_title
+entity_type: block_content
+bundle: vactory_banner
+label: 'Custom Title'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

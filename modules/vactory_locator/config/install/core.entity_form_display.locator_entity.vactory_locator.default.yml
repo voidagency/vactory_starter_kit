@@ -1,0 +1,166 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.field.locator_entity.vactory_locator.field_locator_adress
+    - field.field.locator_entity.vactory_locator.field_locator_autre
+    - field.field.locator_entity.vactory_locator.field_locator_autre_2
+    - field.field.locator_entity.vactory_locator.field_locator_autre_3
+    - field.field.locator_entity.vactory_locator.field_locator_autre_4
+    - field.field.locator_entity.vactory_locator.field_locator_autre_5
+    - field.field.locator_entity.vactory_locator.field_locator_category
+    - field.field.locator_entity.vactory_locator.field_locator_description
+    - field.field.locator_entity.vactory_locator.field_locator_email
+    - field.field.locator_entity.vactory_locator.field_locator_fax
+    - field.field.locator_entity.vactory_locator.field_locator_image
+    - field.field.locator_entity.vactory_locator.field_locator_info
+    - field.field.locator_entity.vactory_locator.field_locator_phone
+    - field.field.locator_entity.vactory_locator.field_locator_zoom
+    - image.style.locator_infowindow
+    - vactory_locator.locator_entity_type.vactory_locator
+  module:
+    - address
+    - focal_point
+    - telephone
+    - vactory_google_map_field
+id: locator_entity.vactory_locator.default
+targetEntityType: locator_entity
+bundle: vactory_locator
+mode: default
+content:
+  field_locator_adress:
+    weight: 3
+    settings: {  }
+    third_party_settings: {  }
+    type: address_default
+    region: content
+  field_locator_autre:
+    weight: 12
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_locator_autre_2:
+    weight: 13
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_locator_autre_3:
+    weight: 14
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_locator_autre_4:
+    weight: 15
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_locator_autre_5:
+    weight: 16
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_locator_category:
+    type: options_select
+    weight: 5
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_locator_description:
+    weight: 10
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textarea
+    region: content
+  field_locator_email:
+    weight: 9
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: email_default
+    region: content
+  field_locator_fax:
+    weight: 8
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+    type: telephone_default
+    region: content
+  field_locator_image:
+    weight: 6
+    settings:
+      preview_image_style: locator_infowindow
+      preview_link: true
+      offsets: '50,50'
+      progress_indicator: throbber
+    third_party_settings: {  }
+    type: image_focal_point
+    region: content
+  field_locator_info:
+    weight: 0
+    settings: {  }
+    third_party_settings: {  }
+    type: vactory_google_map_field_default
+    region: content
+  field_locator_phone:
+    weight: 7
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+    type: telephone_default
+    region: content
+  field_locator_zoom:
+    weight: 4
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  langcode:
+    type: language_select
+    weight: 2
+    region: content
+    settings:
+      include_locked: true
+    third_party_settings: {  }
+  name:
+    type: string_textfield
+    weight: 1
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  translation:
+    weight: 11
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  user_id:
+    type: entity_reference_autocomplete
+    weight: 17
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+    region: content
+    third_party_settings: {  }
+hidden: {  }

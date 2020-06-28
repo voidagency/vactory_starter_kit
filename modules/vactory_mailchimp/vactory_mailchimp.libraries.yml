@@ -1,0 +1,5 @@
+vactory_mailchimp:
+  title: 'Vactory MailChimp'
+  css:
+    component:
+      css/vactory_mailchimp.css: {}

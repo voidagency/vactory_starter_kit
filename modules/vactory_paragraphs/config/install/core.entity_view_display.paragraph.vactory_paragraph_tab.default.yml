@@ -1,0 +1,26 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.vactory_paragraph_tab.field_tab_templates
+    - field.field.paragraph.vactory_paragraph_tab.field_vactory_title
+    - paragraphs.paragraphs_type.vactory_paragraph_tab
+  module:
+    - vactory_dynamic_field
+id: paragraph.vactory_paragraph_tab.default
+targetEntityType: paragraph
+bundle: vactory_paragraph_tab
+mode: default
+content:
+  field_tab_templates:
+    weight: 1
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: field_wysiwyg_dynamic_formatter
+    region: content
+hidden:
+  field_vactory_title: true
+  paragraph_background_image: true
+  paragraph_container: true
+  search_api_excerpt: true

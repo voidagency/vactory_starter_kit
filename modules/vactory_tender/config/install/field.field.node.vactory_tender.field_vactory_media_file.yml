@@ -1,0 +1,27 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_vactory_media_file
+    - media.type.file
+    - node.type.vactory_tender
+id: node.vactory_tender.field_vactory_media_file
+field_name: field_vactory_media_file
+entity_type: node
+bundle: vactory_tender
+label: 'Fichier Appel d''offre'
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:media'
+  handler_settings:
+    target_bundles:
+      file: file
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

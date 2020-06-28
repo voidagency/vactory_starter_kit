@@ -1,0 +1,25 @@
+{{ attach_library('vactory_dynamic_field_wysiwyg_templates/widget7') }}
+
+
+{% set image_uri = (content.0.image.0 is defined) ? get_image(content.0.image.0) : '' %}
+{% set lqip_image = image_uri|image_style('lqip') %}
+{% set fluid_img = file_url(image_uri) %}
+{% set image_alt = (content.0.image_alt is not empty) ? content.0.image_alt : "image alt" %}
+
+<div class="t-video-block">
+  <div class="row">
+    <div class="col-md-12">
+      <p>
+        {% if content.0.video is not empty %}
+        <a href="{{ 'https://www.youtube-nocookie.com/embed/' ~ content.0.video }}" rel="nofollow" class="play-video lazy-wrapper" data-fancybox>
+          {% endif %}
+          <img data-src="{{ fluid_img }}"
+               src="{{ lqip_image }}"
+               class="img-fluid media-border lazyload"
+               alt={{ image_alt }}""/>
+          {% if content.0.video is not empty %} </a> {% endif %}
+      </p>
+      {{ content.0.content.value|raw }}
+    </div>
+  </div>
+</div>

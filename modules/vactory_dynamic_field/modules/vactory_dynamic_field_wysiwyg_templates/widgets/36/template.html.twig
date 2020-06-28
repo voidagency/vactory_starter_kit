@@ -1,0 +1,44 @@
+<div class="t-card-inline-inversed-parent">
+  {% for item in content %}
+    {% set Inversed2 = ((loop.index is odd) == 1) ? "flex-lg-row-reverse text-lg-right" : "" %}
+    {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : "" %}
+    {% set lqip_image = image_uri|image_style('lqip') %}
+    {% set fluid_image = file_url(image_uri) %}
+    {% set image_alt = (item.image_alt is not empty) ? item.image_alt : 'Image' %}
+    {% set link_target = (item.link_target > 0) ? '_blank' : '_self' %}
+
+    <div class="card card--inline d-flex flex-lg-row flex-column align-items-center {{ Inversed2 }}">
+      <div class="card-image--inline">
+        {% if item.link is not empty %} <a href="{{ item.link }}" target="{{ link_target }}"> {% endif %}
+          <div class="lazy-wrapper">
+            <img class="lazyload"
+                 src="{{ lqip_image }}"
+                 data-src="{{ fluid_image }}"
+                 alt="{{ image_alt }}">
+          </div>
+          {% if item.link is not empty %} </a> {% endif %}
+      </div>
+      <div class="card-body--inline p-lg-4">
+        <div class="card-body">
+          {% if item.title is not empty %}
+            <h4 class="card-title">{{ item.title }}
+              {% if item.title2 is not empty %}
+                <br> {{ item.title2 }}
+              {% endif %}
+            </h4>
+          {% endif %}
+          {% if item.description is not empty %}
+            <p class="card-text">
+              {{ item.description }}
+            </p>
+          {% endif %}
+          {% if item.link is not empty and item.link_alt is not empty %}
+            <div class="card-read-more">
+              <a href="{{ item.link }}" class="permalink" target="{{ link_target }}">{{ item.link_alt }}</a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>

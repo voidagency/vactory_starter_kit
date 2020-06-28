@@ -1,0 +1,48 @@
+.form-type-search-api-autocomplete {
+  width:100%;
+}
+.search-api-autocomplete-search {
+  z-index: 10000;
+}
+
+.variant2_suggestion input {
+  background-color: transparent!important;
+  border: none!important;
+  box-shadow: none!important;
+  border-bottom: 1px solid #666!important;
+  width: 100%!important;
+  padding: 10px 20px 5px 0!important;
+  color: white!important;
+  font-size: 24px!important;
+}
+
+
+
+.search-api-autocomplete-suggestion {
+  padding: 3px 5px;
+  position: relative;
+}
+
+.search-api-autocomplete-search .ui-menu-item-wrapper,
+.search-api-autocomplete-search .ui-menu-item-wrapper .ui-state-active {
+  border: 0;
+  color: #333;
+  margin: 0;
+  padding: 0;
+}
+
+.search-api-autocomplete-search .ui-menu-item {
+  list-style-image: none;
+}
+
+.search-api-autocomplete-search .ui-menu-item:hover {
+  background: #eee;
+}
+
+.search-api-autocomplete-search .ui-menu-item a {
+  text-decoration: none;
+}
+
+.search-api-autocomplete-suggestion .autocomplete-suggestion-note {
+  font-size: 90%;
+}

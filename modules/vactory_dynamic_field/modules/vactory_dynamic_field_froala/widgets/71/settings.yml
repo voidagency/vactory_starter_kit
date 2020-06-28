@@ -1,0 +1,31 @@
+name: '71 - Froala - CTA 2 Cols Image, Title & Description'
+multiple: FALSE
+category: 'Froala'
+enabled: TRUE
+fields:
+  image:
+    type: image
+    label: 'Image'
+  image_alt:
+    type: text
+    label: 'Text alternatif'
+  title:
+    type: text
+    label: 'Titre'
+  description:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'full_html'
+  link:
+    type: url_extended
+    label: 'Lien'
+  link_alt:
+    type: text
+    label: 'Titre lien'
+  link_target:
+    type: checkbox
+    label: 'Ouvrir dans une nouvelle fenêtre'
+  mode:
+    type: checkbox
+    label: 'Activer le mode inversé '

@@ -1,0 +1,41 @@
+{% set image_uri = (content.0.image.0 is defined) ? get_image(content.0.image.0) : '' %}
+{% set picto = image_uri|image_style('max_650x650') %}
+{% set reverse = (content.0.mode == 1)? 'd-flex flex-row-reverse'  : '' %}
+{% set lqip_image = image_uri|image_style('lqip') %}
+
+<div class="fdb-block">
+    <div class="row">
+        <div class="col-12 text-center">
+            {% if content.0.titleglobal is not empty %}
+                 <h2>{{ content.0.titleglobal }}</h2>
+            {% endif %}
+            {% if content.0.introduction is not empty %}
+                <p class="h2">
+                    {{ content.0.introduction }}
+                </p>
+            {% endif %}
+        </div>
+    </div>
+    <div class="row align-items-center pt-2 pt-lg-5  {{ reverse }}">
+        <div class="col-12 col-md-8 col-lg-7">
+            {% if content.0.title is not empty %}
+                <h2>{{ content.0.title }}</h2>
+            {% endif %}
+            {% if content.0.description is not empty %}
+                 <div class="text-h3">{{ content.0.description.value|raw }}</div>
+            {% endif %}
+            {% if content.0.link is not empty and content.0.link_alt is not empty %}
+                {% set link_target = (content.0.link_target > 0) ? '_blank' : '_self' %}
+                <p class="mt-4"><a class="btn btn-primary" href="{{ content.0.link }}" target="{{ link_target }}">{{ content.0.link_alt }}</a></p>
+            {% endif %}
+        </div>
+        {% if content.0.image.0 is not empty %}
+            <div class="col-8 col-md-4 m-auto m-md-0 ml-md-auto pt-5 lazy-wrapper">
+                <img alt="{{ content.0.image_alt }}"
+                    class="lazyload img-fluid"
+                    src="{{ lqip_image }}"
+                    data-src="{{ picto }}">
+            </div>
+        {% endif %}
+    </div>
+</div>

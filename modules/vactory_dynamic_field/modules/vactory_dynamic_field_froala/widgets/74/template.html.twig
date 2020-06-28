@@ -1,0 +1,20 @@
+<div class="fdb-block">
+    <div class="row text-center justify-content-sm-center no-gutters">
+        {% for item in content %}
+                <div class="col-12 col-sm-8 col-md-4 m-auto pt-3 pt-md-0">
+                <div class="row justify-content-center">
+                  <div class="col-12 col-lg-8 col-md-10 mx-auto">
+                    {% if content.0.title is not empty %}
+                      <h3><strong>{{ item.title }}</strong></h3>
+                    {% endif %}
+                    {% if content.0.title is not empty %}
+                      <p>{{ item.description }}</p>
+                    {% endif %}
+                  </div>
+                </div>
+            </div>
+
+        {% endfor %}
+
+    </div>
+</div>

@@ -1,0 +1,42 @@
+name: 'C31 - Chiffres clés with grand chiffres'
+multiple: TRUE
+category: 'Key figures'
+enabled: TRUE
+fields:
+  image:
+    type: image
+    label: 'Image'
+  image_alt:
+    type: text
+    label: 'text image alternative'
+  chiffre:
+    type: text
+    label: 'Numéro Chiffre'
+    options:
+      '#required': TRUE   
+  textchiffre:
+    type: text
+    label: 'Text Chiffre'
+  reverse:
+    type: checkbox
+    label: 'Afficher le texte après le chiffre ( ex: % )'   
+  description:
+    type: text
+    label: 'Description'
+    options:
+      '#required': TRUE
+extra_fields:
+  extra_description:
+    type: text_format
+    label: 'Details'
+    options:
+      '#format': 'full_html'
+  link:
+    type: url_extended
+    label: 'Lien du bouton'
+  link_alt:
+    type: text
+    label: 'Texte du bouton'
+  link_target:
+    type: checkbox
+    label: 'Ouvrir dans une nouvelle fenêtre'

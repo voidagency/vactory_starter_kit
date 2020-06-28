@@ -1,0 +1,16 @@
+name: 'Vactory - Pop IN'
+category: 'Content'
+enabled: FALSE
+fields:
+  link_to_cookie:
+    type: checkbox
+    label: 'Afficher cette pop-in une fois par semaine'
+  cta_text:
+    type: text
+    label: 'Text du bouton'
+  description:
+    type: text_format
+    label: 'Description'
+    options:
+      '#required': true
+      '#format': 'full_html'

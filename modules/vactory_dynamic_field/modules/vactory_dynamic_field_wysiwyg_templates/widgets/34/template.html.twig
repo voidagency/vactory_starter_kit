@@ -1,0 +1,32 @@
+<div class="row t-box-background-title-description-clickable">
+  {% for item in content %}
+    {% set col = (item.full > 0) ? '' : 'col-md-6' %}
+    <div class="{{ col }} col-12 mb-3">
+      <div class="t-box-background-wrapper">
+        {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : '' %}
+        {% set lqip_image = image_uri|image_style('lqip') %}
+        {% set fluid_image = file_url(image_uri) %}
+        {% set image_alt = (item.image_alt is not empty) ? item.image_alt : 'vactory image' %}
+
+        <div class="lazy-wrapper">
+          <img class="lazyload"
+               src="{{ lqip_image }}"
+               data-src="{{ fluid_image }}" alt="{{ image_alt }}">
+        </div>
+
+        <div class="t-box-background-content">
+          {% if item.title is not empty %}
+            <h2>{{ item.title }}</h2>
+          {% endif %}
+          {% if item.description is not empty %}
+            <p>{{ item.description }}</p>
+          {% endif %}
+        </div>
+        {% if item.link is not empty %}
+          {% set link_target = (item.link_target > 0) ? '_target' : '_self' %}
+          <a href="{{ item.link }}" target="{{ link_target }}"><!----></a>
+        {% endif %}
+      </div>
+    </div>
+  {% endfor %}
+</div>

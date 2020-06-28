@@ -1,0 +1,30 @@
+name: 'U09 - UniteGallery - Slider'
+multiple: TRUE
+category: 'UniteGallery'
+enabled: TRUE
+fields:
+  thumbnail:
+    type: image
+    label: 'Thumbnail'
+    options:
+      '#required': TRUE
+      '#description': 'Image size largeur: 400px'
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': TRUE
+  videoId:
+    type: text
+    label: 'VideoId Youtube'
+    options:
+      '#description': 'Youtube ID: l1g0fn5Nm_g, crIaEzXgqto, MVt32qoyhi0, 7SlILk2WMTI'
+  cta_url:
+    type: url_extended
+    label: 'Link'
+    placeholder_value: 'https://www.google.com'
+extra_filds:
+  zoom:
+    type: checkbox
+    label: 'Activer le zoom'
+

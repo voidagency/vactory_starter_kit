@@ -1,0 +1,25 @@
+diff --git a/modules/contrib/simplify_menu/src/MenuItems.php b/modules/contrib/simplify_menu/src/MenuItems.php
+index 4d9d643..25cbdaa 100644
+--- a/modules/contrib/simplify_menu/src/MenuItems.php
++++ b/modules/contrib/simplify_menu/src/MenuItems.php
+@@ -50,13 +50,20 @@ public function __construct(MenuLinkTree $menu_link_tree) {
+   protected function simplifyLinks(array $links, $submenuKey = 'submenu') {
+     $result = [];
+     foreach ($links as $item) {
++      $url_object = $item->link->getUrlObject();
++
+       $simplifiedLink = [
+         'text' => $item->link->getTitle(),
+         'url' => $item->link->getUrlObject()->toString(),
++        'options'      => [],
+         'active_trail' => FALSE,
+         'active' => FALSE,
+       ];
+ 
++      if ($options = $url_object->getOptions()) {
++        $simplifiedLink['options'] = $options;
++      }
++
+       $current_path = \Drupal::request()->getRequestUri();
+       if ($current_path == $simplifiedLink['url']) {
+         $simplifiedLink['active'] = TRUE;

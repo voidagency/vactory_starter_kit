@@ -1,0 +1,17 @@
+name: 'Footer'
+type: module
+description: 'Manage site footer.'
+package: Vactory Core
+core: 8.x
+dependencies:
+  - block
+  - block_class
+#  - content_translation
+#  - default_content
+#  - language
+#  - mailchimp_signup
+  - simplify_menu
+#  - social_media_links
+#  - system
+  - vactory_core
+#  - vactory_mailchimp

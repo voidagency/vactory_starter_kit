@@ -1,0 +1,5 @@
+name: Vactory Espace Privé
+description: Customize drupal default user pages (Login, register, profile...)
+type: module
+core: 8.x
+configure: vactory_espace_prive.settings_form

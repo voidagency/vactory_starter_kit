@@ -1,0 +1,18 @@
+langcode: fr
+status: true
+dependencies:
+  module:
+    - telephone
+    - vactory_locator
+id: locator_entity.field_locator_fax
+field_name: field_locator_fax
+entity_type: locator_entity
+type: telephone
+settings: {  }
+module: telephone
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

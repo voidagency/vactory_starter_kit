@@ -1,0 +1,21 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: pathauto_content_publication_pattern
+label: 'Pathauto Content publication Pattern'
+type: 'canonical_entities:node'
+pattern: '/publications/[node:title]'
+selection_criteria:
+  834bf669-dfaf-44ae-bd0c-5154d6ab65f1:
+    id: node_type
+    bundles:
+      vactory_publication: vactory_publication
+    negate: false
+    context_mapping:
+      node: node
+    uuid: 834bf669-dfaf-44ae-bd0c-5154d6ab65f1
+selection_logic: and
+weight: -9
+relationships: {  }

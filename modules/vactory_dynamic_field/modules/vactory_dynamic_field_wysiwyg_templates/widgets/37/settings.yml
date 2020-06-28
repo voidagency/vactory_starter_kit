@@ -1,0 +1,20 @@
+name: 'C37 - background image with content up'
+multiple: FALSE
+enabled: TRUE
+category: Content
+fields:
+  intro:
+    type: text_format
+    label: 'Intro contenu libre'
+    options:
+      '#format': full_html
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': TRUE
+  description:
+    type: text_format
+    label: 'contenu libre'
+    options:
+      '#format': full_html

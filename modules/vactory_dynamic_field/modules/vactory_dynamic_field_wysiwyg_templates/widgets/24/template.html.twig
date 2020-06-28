@@ -1,0 +1,44 @@
+<div class="t-publication-wrapper">
+  {% for item in content %}
+    {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : "" %}
+    {% set fluid_image = file_url(image_uri) %}
+    {% set lqip_image = image_uri|image_style('lqip') %}
+    {% set imageAlt = (item.image_alt is not empty) ? item.image_alt : item.title %}
+    <div class="t-publication-content">
+      <div class="row align-items-lg-center">
+        <div class="col-lg-2 col-md-3 col-12">
+          {% if item.image is not empty %}
+            <div class="t-image-wrapper d-flex align-items-center justify-content-center justify-content-lg-start">
+              <img data-src="{{ fluid_image }}"
+                   src="{{ lqip_image }}"
+                   class="img-fluid lazyload"
+                   alt="{{ imageAlt }}">
+            </div>
+          {% endif %}
+        </div>
+        <div class="col-lg-10 col-md-9 col-12">
+          <div
+            class="t-publication-details d-flex flex-lg-row flex-column align-items-lg-center justify-content-lg-between">
+            <div class="t-publication-details-text">
+              {% if item.title is not empty %}
+                <h3 class="text-large">{{ item.title }}</h3>
+              {% endif %}
+              {% if item.authors is not empty %}
+                <p class="text-small t-publication-authors">{{ item.authors }}</p>
+              {% endif %}
+              {% if item.description is not empty %}
+                <p class="t-publicatoin-description">{{ item.description }}</p>
+              {% endif %}
+            </div>
+            {% if item.link is not empty and item.link_alt is not empty %}
+              {% set link_target = (item.link_target > 0) ? '_blank' : '_self' %}
+              <div>
+                <a class="permalink" href="{{ item.link }}" target="{{ link_target }}">{{ item.link_alt }}</a>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>

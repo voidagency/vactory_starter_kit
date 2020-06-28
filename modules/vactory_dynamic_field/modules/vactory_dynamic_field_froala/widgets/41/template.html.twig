@@ -1,0 +1,52 @@
+{% set reverse_mode = (extra_fields.reverse_mode == 1)? 'd-flex flex-column-reverse' : ' ' %}
+{% if extra_fields.intro is not empty %}
+    <div class="row text-center justify-content-center mb-3">
+        <div class="col-md-10 col-lg-8">
+        {% if extra_fields.intro is not empty %}
+            <p>{{ extra_fields.intro }}</p>
+        {% endif %}
+        </div>
+    </div>
+{% endif %}
+<div class="fdb-block">
+    <div class="row vf-slick-slider" 
+        data-toshow="2"
+        data-dots="false"
+        data-arrows="true"
+        data-mobile-centermode="false">
+
+        {% for item in content %}
+
+            
+            <div class="col-md-6">
+
+            {% set image_uri =(item.image.0 is defined) ? get_image(item.image.0) : '' %}
+            {% set image_profile = image_uri|image_style('thumbnail') %}
+            {% set lqip_image = image_uri|image_style('lqip') %}
+
+                <div class="fdb-box fdb-touch {{reverse_mode }}">
+                    {% if item.description is not empty %}
+                        <div class="text-h3 mb-4">{{ item.description.value|raw }}</div>
+                    {% endif %}
+                    <div class='mb-4 text-center'>
+                        {% if item.image.0 is not empty %}
+                        <img alt="{{ item.image_alt }}" height="50"
+                            class="rounded-circle lazyload"
+                            src="{{ lqip_image }}"
+                            data-src="{{ image_profile }}">
+                        {% endif %}
+                        <p>
+                            {% if item.name is not empty %}
+                                <strong class="d-block">{{ item.name }}</strong>
+                            {% endif %}
+                        </p>
+
+                    </div>
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+</div>

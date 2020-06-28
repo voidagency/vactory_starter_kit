@@ -1,0 +1,23 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_vactory_component
+    - paragraphs.paragraphs_type.vactory_component
+  module:
+    - vactory_dynamic_field
+id: paragraph.vactory_component.field_vactory_component
+field_name: field_vactory_component
+entity_type: paragraph
+bundle: vactory_component
+label: Template
+description: ''
+required: false
+translatable: true
+default_value:
+  -
+    value:
+      template: -1
+default_value_callback: ''
+settings: {  }
+field_type: field_wysiwyg_dynamic

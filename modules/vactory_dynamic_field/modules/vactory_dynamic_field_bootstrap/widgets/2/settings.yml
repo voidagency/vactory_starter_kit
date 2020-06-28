@@ -1,0 +1,14 @@
+name: 'Bootstrap - Block quote'
+multiple: FALSE
+category: 'Content'
+enabled: FALSE
+fields:
+  quote_text:
+      type: textarea
+      label: 'Quote text'
+  quote_author:
+        type: text
+        label: 'Author'
+  quote_nbr_like:
+        type: number
+        label: 'Number of likes'

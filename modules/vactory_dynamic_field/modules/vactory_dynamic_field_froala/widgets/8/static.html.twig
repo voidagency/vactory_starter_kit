@@ -1,0 +1,17 @@
+{% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/1110/486.jpg" %}
+<div class="fdb-block">
+    <div class="row">
+        <div class="col text-center">
+                <h2>Title</h2>
+                <h2>Subtitle</h2>
+            <p class="text-h3">
+                    <a href="#" target="_self">Link 1</a>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <a href="#" target="_self">Link 2</a>
+            </p>
+            <img alt="Image Alt"
+                class="img-fluid lazyload mb-4"
+                src="{{ content.image_placeholder }}"
+                data-src="{{ placehold }}">
+        </div>
+    </div>
+</div>

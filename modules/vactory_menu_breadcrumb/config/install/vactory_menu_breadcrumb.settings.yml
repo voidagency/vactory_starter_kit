@@ -1,0 +1,21 @@
+determine_menu: true
+disable_admin_page: true
+append_current_page: true
+current_page_as_link: false
+append_member_page: false
+member_page_as_link: false
+remove_home: false
+add_home: false
+home_as_site_name: false
+# as of Beta, this option is obsolete:
+# hide_on_single_item: false
+vactory_menu_breadcrumb_menus:
+  main:
+    enabled: 1
+    weight: -10
+include_home_segment: TRUE
+home_segment_title: 'Home'
+include_title_segment: TRUE
+language_path_prefix_as_segment: FALSE
+use_menu_title_as_fallback: FALSE
+remove_repeated_segments: TRUE

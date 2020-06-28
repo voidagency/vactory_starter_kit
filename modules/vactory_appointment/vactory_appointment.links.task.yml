@@ -1,0 +1,12 @@
+entity.vactory_appointment.canonical:
+  route_name: entity.vactory_appointment.canonical
+  base_route: entity.vactory_appointment.canonical
+  title: View
+entity.vactory_appointment.edit_form:
+  route_name: entity.vactory_appointment.edit_form
+  base_route: entity.vactory_appointment.canonical
+  title: Edit
+entity.vactory_appointment.delete_form:
+  route_name:  entity.vactory_appointment.delete_form
+  base_route:  entity.vactory_appointment.canonical
+  title: Delete

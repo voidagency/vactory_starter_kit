@@ -1,0 +1,44 @@
+{% set mode = 0 %}
+{% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/480/240.jpg" %}
+
+<div class="t-2b-image-videp-bg-title-text">
+  <div class="row inversed">
+    {% if mode > 0 %}
+      <div class="col-12 col-md-6 d-flex flex-column justify-content-center align-items-center">
+        <h2>Title</h2>
+        <div class="t-description">
+          Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+          Lorem Ipsum has been the industry's standard dummy text ever since the 1500s
+        </div>
+        <p><a class="btn btn-with-icon icon-arrow_forward"
+              href="#">Read More</a></p>
+      </div>
+      <div class="col-12 col-md-6">
+        <div class="t-2b-image-bg block-image mb-3 mb-lg-3">
+          <img alt="Image Alt"
+               class="img-fluid lazyload"
+               src=" {{ content.image_placeholder }} "
+               data-src="{{ placehold }}">
+        </div>
+      </div>
+    {% else %}
+      <div class="col-12 col-md-6">
+        <div class="t-2b-image-bg block-image mb-3 mb-lg-3">
+          <img alt="Image Alt"
+               class="img-fluid lazyload"
+               src=" {{ content.image_placeholder }} "
+               data-src="{{ placehold }}">
+        </div>
+      </div>
+      <div class="col-12 col-md-6 d-flex flex-column justify-content-center align-items-center">
+        <h2>Title</h2>
+        <div class="t-description">
+          Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+          Lorem Ipsum has been the industry's standard dummy text ever since the 1500s
+        </div>
+        <p><a class="btn btn-with-icon icon-arrow_forward"
+              href="#">Read More</a></p>
+      </div>
+    {% endif %}
+  </div>
+</div>

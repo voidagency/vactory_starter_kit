@@ -1,0 +1,34 @@
+<div class="t-Four-card-title-image-button-view-more">
+  <div class="row">
+    <div class="col-12">
+      <div class="intro">
+        Lorem Ipsum is simply dummy text of the printing and
+        typesetting industry. Lorem Ipsum is simply dummy...
+      </div>
+    </div>
+  </div>
+  <div class="row row-eq-height vf-slick-slider vf-slick-mobile justify-content-center">
+    {% for item in 0..3 %}
+      {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/215/205.jpg" %}
+      <div class="col-sm-6 col-md-4 col-lg-3 pb-3">
+        <div class="shadow text-center h-100 py-3 px-3">
+          <div class="mb-4 lazy-wrapper">
+            <img class="lazyload"
+                 src="{{ content.image_placeholder }}"
+                 data-src="{{ placehold }}"
+                 alt="Image Alt">
+          </div>
+          <p><strong>Title</strong></p>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  <div class="row">
+    <div class="col-12 text-center mt-4">
+      <a class="btn btn-outline-primary" href="#"
+      >View More</a>
+    </div>
+  </div>
+</div>
+
+

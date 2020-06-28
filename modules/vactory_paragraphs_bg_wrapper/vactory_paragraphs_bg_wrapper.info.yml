@@ -1,0 +1,12 @@
+name: 'Paragraphs background'
+type: module
+description: 'Manage pargaraphs backgrounds wrapper.'
+package: Vactory
+core: 8.x
+dependencies:
+  - field
+  - image
+  - jquery_colorpicker
+  - media_library
+  - options
+  - paragraphs

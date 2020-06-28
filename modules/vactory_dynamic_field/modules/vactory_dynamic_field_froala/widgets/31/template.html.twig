@@ -1,0 +1,33 @@
+<div class="fdb-block">
+    <div class="row text-center justify-content-center">
+        <div class="col-8">
+            {% if extra_fields.title is not empty %}
+                <h2>{{ extra_fields.title }}</h2>
+            {% endif %}
+        </div>
+    </div>
+    <div class="row text-center justify-content-center">
+        {% for item in content %}
+
+            {% set image_uri =(item.image.0 is defined) ?  get_image(item.image.0) : '' %}
+            {% set profile_image = image_uri|image_style('medium') %}
+            {% set lqip_image = image_uri|image_style('lqip') %}
+            
+            <div class="col-sm-3 m-sm-auto">
+                <img alt="{{ item.image_alt }}"
+                    class="img-fluid rounded-circle lazyload"
+                    src="{{ lqip_image }}"
+                    data-src="{{ profile_image }}">
+                {% if item.name is not empty %}
+                    <h2>{{ item.name }}</h2>
+                {% endif %}
+                {% if item.role is not empty %}
+                    <p>{{ item.role }}</p>
+                {% endif %}
+            </div>
+
+        {% endfor %}
+
+    </div>
+
+</div>

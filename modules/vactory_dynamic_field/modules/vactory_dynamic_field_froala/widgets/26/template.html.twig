@@ -1,0 +1,34 @@
+{% set image_uri_1 = (extra_fields.image.0 is defined) ? get_image(extra_fields.image.0) : '' %}
+{% set image_1 = image_uri_1|image_style('thumbnail') %}
+{% set lqip_image = image_uri_1|image_style('lqip') %}
+
+<div class="fdb-block">
+  <div class="row text-left align-items-center">
+    {% for item in content %}
+      <div class="col-12 col-md-6 col-lg-4">
+        {% if item.title is not empty %}
+          <h2>{{ item.title }}</h2>
+        {% endif %}
+        {% if item.description is not empty %}
+          <p class="text-h3">{{ item.description }}</p>
+        {% endif %}
+        {% if item.link is not empty and item.link_alt is not empty %}
+          {% set link_target = (content.0.link_target > 0) ? '_blank' : '_self' %}
+          <p class="text-h3">
+            <a href="{{ item.link }}" target="{{ link_target }}">{{ item.link_alt }}</a>
+          </p>
+        {% endif %}
+      </div>
+    {% endfor %}
+    {% if extra_fields.image.0 is not empty %}
+      <div class="col-12 col-md-8 m-auto m-lg-0 col-lg-4 pt-5 pt-lg-0">
+        <div class="lazy-wrapper">
+          <img alt="{{ extra_fields.image_alt }}"
+              class="img-fluid lazyload"
+              src="{{ lqip_image }}"
+              data-src="{{ image_1 }}">
+        </div>
+      </div>
+    {% endif %}
+  </div>
+</div>

@@ -1,0 +1,42 @@
+<div class="fdb-block fdb-block-hasbackground">
+
+    <div class="row text-center">
+        <div class="col">
+            <h2 class="text-white">Title</h2>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="row mt-5 align-items-center no-gutters">
+
+            {% for item in 0..2 %}
+
+            {% if loop.index == 2 %}
+            <div class="col-12 col-sm-10 col-md-8 ml-auto mr-auto col-lg-4 text-center mt-4 mt-lg-0 sl-1 pt-0 pt-lg-3 pb-0 pb-lg-3 bg-gray fdb-touch">
+                <div class="pb-5 pt-5 pl-4 pr-4">
+                    {% elseif loop.index == 3 %}
+                    <div class="col-12 col-sm-10 col-md-8 ml-auto mr-auto col-lg-4 text-center mt-4 mt-lg-0">
+                        <div class="bg-gray pb-5 pt-5 pl-4 pr-4">
+                            {% else %}
+                            <div class="col-12 col-sm-10 col-md-8 m-auto col-lg-4 text-center">
+                                <div class="bg-gray pb-5 pt-5 pl-4 pr-4">
+                                    {% endif %}
+                                    <h2 class="font-weight-light">Item Title</h2>
+                                    <p class="text-h1 mt-5 mb-5"><strong>99€</strong></p>
+                                    <div class="text-left">Values</div>
+                                    {% if loop.index == 2 %}
+                                        <p class="text-center pt-4"><a class="btn btn-primary" href="#">Read More</a>
+                                        </p>
+                                    {% else %}
+                                        <p class="text-center pt-4"><a class="btn btn-outline-primary" href="#">Read
+                                                More</a></p>
+                                    {% endif %}
+
+                                </div>
+                            </div>
+
+                            {% endfor %}
+
+                        </div>
+                    </div>
+                </div>

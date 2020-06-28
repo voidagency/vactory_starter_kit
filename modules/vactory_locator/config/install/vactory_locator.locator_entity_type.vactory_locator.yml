@@ -1,0 +1,5 @@
+langcode: fr
+status: true
+dependencies: {  }
+id: vactory_locator
+label: Locator

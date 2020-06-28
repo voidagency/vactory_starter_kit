@@ -1,0 +1,113 @@
+langcode: en
+status: true
+dependencies: {  }
+id: locator_items
+class: null
+field_plugin_method: null
+cck_plugin_method: null
+migration_tags: null
+migration_group: default
+label: 'Import locator items'
+source:
+  plugin: csv
+  delimiter: ;
+  path: profiles/vactory_starter_kit/modules/vactory_locator/locator_migrate/locator_items.csv
+  header_row_count: 1
+  ids:
+    - ID
+  fields:
+    0:
+      name: ID
+      label: 'Id category'
+    1:
+      name: LATITUDE,
+      label: 'LATITUDE'
+    2:
+      name: LONGITUDE
+      label: 'LONGITUDE'
+    3:
+      name: 'NOM DE L''AGENCE'
+      label: 'NOM DE L''AGENCE'
+    4:
+      name: 'CATEGORI D''AGENCE'
+      label: 'CATEGORI D''AGENCE'
+    5:
+      name: 'PAYS CODE'
+      label: 'PAYS CODE'
+    6:
+      name: ADRESSE
+      label: 'ADRESSE'
+    7:
+      name: 'CODE POSTALE'
+      label: 'CODE POSTALE'
+    8:
+      name: VILLE
+      label: 'VILLE'
+    9:
+      name: TELEPHONE
+      label: 'TELEPHONE'
+    10:
+      name: Fax
+      label: 'Fax'
+    11:
+      name: Email
+      label: 'Email'
+    12:
+      name: DESCRIPTION
+      label: 'DESCRIPTION'
+    13:
+      name: AUTRE1
+      label: 'AUTRE1'
+    14:
+      name: AUTRE2
+      label: 'AUTRE2'
+    15:
+       name: AUTRE3
+       label: 'AUTRE3'
+    16:
+        name: AUTRE4
+        label: 'AUTRE4'
+    17:
+      name: AUTRE5
+      label: 'AUTRE5'
+process:
+  id: ID
+  field_locator_info:
+    -
+      plugin: locator_geaography_info
+      source:
+        - LATITUDE
+        - LONGITUDE
+  name: 'NOM DE L''AGENCE'
+  field_locator_category:
+    -
+      plugin: entity_lookup
+      entity_type: taxonomy_term
+      bundle_key: vid
+      bundle: locator_category
+      value_key: name
+      source: 'CATEGORI D''AGENCE'
+  field_locator_adress/country_code:
+    plugin: default_value
+    source: 'PAYS CODE'
+  field_locator_adress/langcode:
+    plugin: default_value
+    default_value: en
+  field_locator_adress/address_line1: ADRESSE
+  field_locator_adress/locality: VILLE
+  field_locator_adress/postal_code: 'CODE POSTALE'
+  field_locator_phone: TELEPHONE
+  field_locator_fax: Fax
+  field_locator_email: Email
+  field_locator_description: DESCRIPTION
+  field_locator_autre: AUTRE1
+  field_locator_autre_2: AUTRE2
+  field_locator_autre_3: AUTRE3
+  field_locator_autre_4: AUTRE4
+  field_locator_autre_5: AUTRE5
+  type:
+    plugin: default_value
+    default_value: vactory_locator
+destination:
+  plugin: 'entity:locator_entity'
+migration_dependencies: {  }

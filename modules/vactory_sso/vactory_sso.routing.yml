@@ -1,0 +1,7 @@
+vactory_sso.settings:
+  path: '/admin/config/vactory_sso'
+  defaults:
+    _form: 'Drupal\vactory_sso\Form\VactorySSOConfigForm'
+    _title: 'Vactory SSO Settings'
+  requirements:
+    _permission: 'administer site configuration'

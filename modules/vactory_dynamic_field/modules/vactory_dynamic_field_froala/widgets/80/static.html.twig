@@ -1,0 +1,46 @@
+<div class="fdb-block">
+        <div class="row text-center">
+            <div class="col-12">
+                <h2>Title</h2>
+            </div>
+        </div>
+    <div class="row text-left mt-5">
+        {% for item in 0..5 %}
+            {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/50/50.jpg" %}
+            {% if loop.index == 4 %}
+
+                </div><div class="row text-left pt-3 pt-sm-4 pt-md-5">
+
+            {% endif %}
+
+            {% if loop.index == 1 or loop.index == 4 %}
+                <div class="col-12 col-md-4">
+            {% else %}
+                <div class="col-12 col-md-4 pt-3 pt-sm-4 pt-md-0">
+            {% endif %}
+
+
+                <div class="row">
+
+                        <div class="col-3">
+                            <img alt="Image Alt"
+                                class="lazyload img-fluid"
+                                src="{{ content.image_placeholder }}"
+                                data-src="{{ placehold }}">
+                        </div>
+
+                    <div class="col-9">
+
+                            <h3><strong>Title</strong></h3>
+
+                             <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
+
+                    </div>
+                </div>
+
+            </div>
+
+        {% endfor %}
+
+    </div>
+</div>

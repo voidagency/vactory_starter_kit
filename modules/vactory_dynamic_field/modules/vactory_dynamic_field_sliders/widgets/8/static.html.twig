@@ -1,0 +1,33 @@
+<div class="vf-slider-content-avec-background">
+  {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/1600/600.jpg" %}
+
+  <div class="vf-slider-content-bg py-5 lazyload"
+       data-bg="{{ placehold }}"
+       style="background-image: url({{ content.image_placeholder }})">
+    <div class="container">
+      <div class="vf-content-bg-slides vf-slick-slider"
+           data-arrows="true"
+           data-dots="false">
+        {% for item in content %}
+          <div class="vf-content-bg-slide d-flex align-items-center justify-content-center text-center">
+            <div class="vf-bg-content">
+                <h3 class="vf-bg-content--title">This is a title</h3>
+                <p class="vf-bg-content--text">
+                  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ad animi asperiores aut earum ipsum
+                  magnam minima natus, necessitatibus porro provident quo recusandae rem repellat tempore unde ut
+                  voluptate. Ex, maiores.
+                </p>
+                <p class="vf-bg-content--link">
+                  <a class="btn btn-outline-light"
+                     target="_self"
+                     href="#">
+                    En savoir plus
+                  </a>
+                </p>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>

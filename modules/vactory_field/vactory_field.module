@@ -1,0 +1,123 @@
+<?php
+
+/**
+ * @file
+ * Contain related hooks.
+ */
+
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\node\NodeInterface;
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function vactory_field_form_node_form_alter(&$form) {
+  // Node CSS class.
+  $form['node_class_group'] = [
+    '#type'        => 'details',
+    '#title'       => t('CSS Class settings'),
+    '#description' => t('Assign CSS classes to the node.'),
+    '#group'       => 'advanced',
+    '#open'        => FALSE,
+    '#access'      => \Drupal::currentUser()
+      ->hasPermission('administer field css class'),
+    '#attributes'  => ['class' => ['node-class-form']],
+  ];
+  $form['node_class']['#group'] = 'node_class_group';
+  $form['node_body_class']['#group'] = 'node_class_group';
+
+  // SEO field status.
+  if (isset($form['field_vactory_seo_status'])) {
+    unset($form['field_vactory_seo_status']);
+  }
+
+  // Path field.
+  if (isset($form['path']['widget'][0])) {
+    $form['path']['widget'][0]['#open'] = FALSE;
+  }
+}
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function vactory_field_entity_base_field_info(EntityTypeInterface $entity_type) {
+  $fields = [];
+  if ($entity_type->id() === 'node') {
+
+    $fields['node_class'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('CSS class(es)'))
+      ->setDisplayOptions('form', [
+        'type'   => 'string_textfield',
+        'weight' => 35,
+      ])
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE)
+      ->setRevisionable(TRUE)
+      ->setTranslatable(TRUE);
+
+    $fields['node_summary'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Page description'))
+      ->setDescription(t('Briefly describe your page.'))
+      ->setRevisionable(TRUE)
+      ->setTranslatable(TRUE)
+      ->setDefaultValue('')
+      ->setRequired(TRUE)
+      ->setDisplayOptions('form', [
+        'type'     => 'string_textarea',
+        'weight'   => 1,
+        'settings' => [
+          'rows' => 4,
+        ],
+      ])
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE);
+
+    $fields['node_body_class'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Body CSS class(es)'))
+      ->setDescription(t('Enter a set of classes (<b>separated with spaces</b>) to add it to body class attribute.'))
+      ->setDisplayOptions('form', [
+        'type'   => 'string_textfield',
+        'weight' => 36,
+      ])
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE)
+      ->setRevisionable(TRUE)
+      ->setTranslatable(TRUE);
+  }
+
+  return $fields;
+}
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function vactory_field_preprocess_node(&$variables) {
+  if (!empty($variables['node'])) {
+    /** @var \Drupal\node\Entity\Node $entity */
+    $entity = $variables['node'];
+    $classes = $entity->get('node_class')->getValue();
+    if (isset($classes[0]['value'])) {
+      $variables['attributes']['class'][] = $classes[0]['value'];
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_html().
+ */
+function vactory_field_preprocess_html(&$variables) {
+  $route_match = \Drupal::routeMatch();
+  $node = $route_match->getParameter('node');
+
+  if (!$node instanceof NodeInterface) {
+    return;
+  }
+
+  if (
+    $node->hasField('node_body_class') &&
+    $css = $node->get('node_body_class')->getString()
+  ) {
+    $variables['node_body_class'] = $css;
+  }
+}

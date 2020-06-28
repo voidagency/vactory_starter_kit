@@ -1,0 +1,96 @@
+<?php
+
+/**
+ * @file
+ * Vactory Search module file.
+ */
+
+use Drupal\Core\Url;
+use Drupal\Core\Render\Markup;
+use Drupal\Component\Utility\Unicode;
+
+/**
+ * Search excerpt length.
+ */
+const VACTORY_SEARCH_EXCERPT_LENGTH = 270;
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_search_theme($existing, $type, $theme, $path) {
+  return [
+    'views_view__vactory_search'                     => [
+      'base hook' => 'views_view',
+      'template'  => 'search-layout',
+    ],
+    'views_view_unformatted__vactory_search__global' => [
+      'base hook' => 'views_view_unformatted',
+      'template'  => 'search-rows',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_preprocess_views_view_field().
+ */
+function vactory_search_preprocess_views_view_field(&$variables) {
+
+  if ($variables['view']->id() == 'vactory_search') {
+    // Get Vactory search settings.
+    $use_node_summary = Drupal::config('vactory_search.settings')->get('use_node_summary');
+
+    if ($variables['field']->realField == 'search_api_url') {
+      $path = $variables['row']->search_api_url[0];
+      $path = \Drupal::request()->getSchemeAndHttpHost() . $path;
+      $layout = \Drupal::request()->get('layout');
+      $url_object = Url::fromUri($path);
+
+      // Local links should have ?layout.
+      if (!empty($layout)) {
+        $url_object = Url::fromUri($path, ['query' => ['layout' => $layout]]);
+      }
+
+      $variables['row']->url = $url_object->toString();
+    }
+
+    if ($variables['field']->realField == 'search_api_excerpt') {
+      if (isset($use_node_summary) && $use_node_summary) {
+        $node_summary_item_key = 'entity:node/node_summary';
+        if (isset($variables['row']->{$node_summary_item_key}[0])) {
+          $excerpt = $variables['row']->{$node_summary_item_key}[0];
+          $excerpt = html_entity_decode($excerpt);
+          $excerpt = strip_tags($excerpt);
+          $excerpt = Unicode::truncate($excerpt, VACTORY_SEARCH_EXCERPT_LENGTH, TRUE, TRUE);
+          $excerpt = Markup::create($excerpt);
+          $variables['row']->excerpt = $excerpt;
+        }
+        else {
+          $variables['row']->excerpt = '';
+        }
+      }
+      else {
+        $excerpt = $variables['row']->search_api_excerpt;
+        if (!empty($excerpt)) {
+          $excerpt = html_entity_decode($excerpt);
+          $excerpt = strip_tags($excerpt, '<strong>');
+          if (preg_match('#^...#', $excerpt) === 1) {
+            $excerpt = substr($excerpt, 4);
+          }
+          $excerpt = Markup::create($excerpt);
+          $variables['row']->excerpt = $excerpt;
+        }
+        else {
+          $variables['row']->excerpt = '';
+        }
+      }
+    }
+
+    if ($variables['field']->realField == 'entity:node/title') {
+      $prop = 'entity:node/_object';
+      // https://www.drupal.org/node/2981627
+      $variables['row']->label = $variables['row']->$prop[0]->getValue()
+        ->label();
+    }
+
+  }
+}

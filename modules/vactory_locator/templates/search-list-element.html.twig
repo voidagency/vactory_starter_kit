@@ -1,0 +1,34 @@
+{#
+/**
+ * @file
+ * Default theme implementation for locator pin.
+ *
+ * Available variables:
+ * - name : the item name.
+ * - field_locator_info : array contain item localisation info (lat & lon).
+ * - field_locator_adress_address_line1 : item adresse .
+ * - field_locator_adress_address_line2 : the second item adresse.
+ * - field_locator_category : item category.
+ * - field_locator_adress_country_code :  item country (this return the full country name).
+ * - field_locator_adress_locality : item city.
+ * - field_locator_adress_postal_code :  item postal code.
+ * - field_locator_email : item E-mail.
+ * - field_locator_description : description about item.
+ * - field_locator_image : uri item image.
+ * - field_locator_fax : item fax.
+ * - field_locator_phone : item phone number.
+ * - field_locator_autre : other information about item (we have 4 other available information juste add
+ *   item number (_number) in the end like this field_locator_autre_2, field_locator_autre_3, ... ).
+ */
+#}
+
+<div class="d-flex p-1 flex-column">
+    <div>
+        <p class="text-dark font-weight-bold">{{ name }}</p>
+    </div>
+    <div>
+        <p class="font-weight-light text-secondary">{{ field_locator_adress_address_line1 }} </p>
+    </div>
+
+</div>
+

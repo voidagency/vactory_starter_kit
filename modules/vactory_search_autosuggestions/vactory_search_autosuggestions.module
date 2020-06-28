@@ -1,0 +1,52 @@
+<?php
+
+/**
+ * @file
+ * Primary hooks for vactory search autoSuggest.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_search_autosuggestions_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if ($form_id == 'vactory_search_overlay.form') {
+    $search = \Drupal::entityTypeManager()
+      ->getStorage('search_api_autocomplete_search')
+      ->load('vactory_search');
+    if ($search && $search->status()) {
+      \Drupal::getContainer()
+        ->get('search_api_autocomplete.helper')
+        ->alterElement($form['search_api_fulltext'], $search);
+    }
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_alter().
+ */
+function vactory_search_autosuggestions_theme_suggestions_alter(array &$suggestions, array $variables, $hook) {
+  $layout = ['vactory_search_overlay_form_variant1',
+    'vactory_search_overlay_form_variant2',
+  ];
+  if (in_array($hook, $layout)) {
+    $suggestions[] = $hook . '_autosuggestion';
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_search_autosuggestions_theme($existing, $type, $theme, $path) {
+  return [
+    'vactory_search_overlay_form_variant1_autosuggestion'  => [
+      'render element' => 'form',
+      'template'       => 'search-overlay-form-variant1',
+    ],
+    'vactory_search_overlay_form_variant2_autosuggestion' => [
+      'render element' => 'form',
+      'template'       => 'search-overlay-form-variant2',
+    ],
+  ];
+}

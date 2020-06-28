@@ -1,0 +1,38 @@
+name: 'S09 - Slider des années'
+multiple: TRUE
+category: 'Sliders'
+enabled: TRUE
+fields:
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': TRUE
+  title:
+    type: text
+    label: 'Titre'
+    options:
+      '#required': TRUE
+  description:
+    type: textarea
+    label: 'Descriptioin'
+    options:
+      '#required': TRUE
+  year:
+    type: number
+    label: 'Année'
+    options:
+      '#required': TRUE
+extra_fields:
+  arrows:
+    type: checkbox
+    label: 'Afficher les bouttons de navigations'
+    options:
+      '#checked': TRUE
+  direction:
+    type: select
+    label: 'Direction'
+    options:
+      '#options':
+        - 'horizontal': 'horizontal'
+        - 'vertical': 'vertical'

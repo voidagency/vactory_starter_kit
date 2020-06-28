@@ -1,0 +1,8 @@
+vactory_search.settings:
+  path: 'admin/config/search/vactory_search'
+  defaults:
+    _form: 'Drupal\vactory_search\Form\VactorySearchSettingsForm'
+    _title: 'Vactory search Settings'
+  requirements:
+    _permission: 'administer site configuration'
+

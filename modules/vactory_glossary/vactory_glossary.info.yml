@@ -1,0 +1,10 @@
+name: 'Glossary'
+description: 'Provide Glossary content type and views listing.'
+type: module
+core: 8.x
+dependencies:
+  - vactory_core
+  - vactory_field
+  - vactory_views
+version: 8.x-1.0
+package: Vactory

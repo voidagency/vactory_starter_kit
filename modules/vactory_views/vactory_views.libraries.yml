@@ -1,0 +1,17 @@
+slider:
+  version: 1.x
+  js:
+    js/slider.js: {}
+  dependencies:
+    - core/jquery
+    - core/jquery.once
+    - core/drupal
+
+masonry:
+  version: 1.x
+  js:
+    js/masonry.js: {}
+  dependencies:
+    - core/jquery
+    - core/jquery.once
+    - core/drupal

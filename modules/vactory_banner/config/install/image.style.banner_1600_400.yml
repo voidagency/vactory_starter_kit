@@ -1,0 +1,13 @@
+langcode: en
+status: true
+dependencies: {  }
+name: banner_1600_400
+label: Banner_1600_400
+effects:
+  d26b26a1-a267-477f-b60b-eb14e3eea33a:
+    uuid: d26b26a1-a267-477f-b60b-eb14e3eea33a
+    id: image_resize
+    weight: 1
+    data:
+      width: 1600
+      height: 400

@@ -1,0 +1,22 @@
+{{ attach_library('vactory_dynamic_field_wysiwyg_templates/widget7') }}
+{% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/1200/600.jpg" %}
+<div class="t-video-block">
+  <div class="row">
+    <div class="col-md-12">
+      <p>
+        <a href="https://youtu.be/VOrX_vhxZQM" rel="nofollow" class="play-video lazy-wrapper" data-fancybox>
+          <div class="lazy-wrapper">
+            <img data-src="{{ placehold }}"
+                 src="{{ content.image_placeholder }}"
+                 class="img-fluid media-border lazyload"
+                 alt="alternative text"/>
+          </div>
+        </a>
+      </p>
+      <p>
+        Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et
+        dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum.
+      </p>
+    </div>
+  </div>
+</div>

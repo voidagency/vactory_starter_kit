@@ -1,0 +1,29 @@
+.df-accrodion-heading .ui-accordion-header-icon {
+  display: none;
+}
+
+.df-accrodion-image {
+  width: 200px; height: 200px;
+  border: 2px solid #a2a2a2 !important;
+}
+
+.select-template-item {
+  max-width: 400px;
+  margin: 20px;
+  border: 1px solid #eeeeee;
+  padding: 10px
+}
+.select-template-wrapper .form-radios > .form-item{
+  width: 33%;
+}
+.select-template-wrapper .form-radios {
+  display: flex;
+  flex-wrap: wrap;
+}
+.select-template-radio {
+  display: none;
+}
+.select-template-radio:checked + label .select-template-item {
+  border: 3px solid #058ff2;
+  box-shadow: 0px 0px 10px 6px #c9eeff;
+}

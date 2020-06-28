@@ -1,0 +1,13 @@
+diff --git a/modules/contrib/social_auth_microsoft/src/MicrosoftAuthManager.php b/modules/contrib/social_auth_microsoft/src/MicrosoftAuthManager.php
+index e2ef3e7f8..b45c1ef91 100644
+--- a/modules/contrib/social_auth_microsoft/src/MicrosoftAuthManager.php
++++ b/modules/contrib/social_auth_microsoft/src/MicrosoftAuthManager.php
+@@ -38,7 +38,7 @@ public function __construct(ConfigFactory $config_factory,
+   public function authenticate() {
+     try {
+       $this->setAccessToken($this->client->getAccessToken('authorization_code',
+-        ['code' => $this->request->query->get('code')]));
++        ['code' => $_GET['code']]));
+     }
+     catch (IdentityProviderException $e) {
+       $this->loggerFactory->get('social_auth_microsoft')

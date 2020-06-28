@@ -1,0 +1,77 @@
+vactory_appbanners.settings:
+  type: config_object
+  label: 'App Banners settings'
+  mapping:
+    title:
+      type: string
+      label: 'What the title of the app should be in the banner (defaults to <title>)'
+    author:
+      type: string
+      label: 'What the author of the app should be in the banner (defaults to <meta name="author"> or hostname)'
+    price:
+      type: string
+      label: 'Price of the app'
+    icon:
+      type: integer
+      label: 'App Icon'
+    app_store_language:
+      type: string
+      label: 'Language code for App Store'
+    in_app_store:
+      type: string
+      label: 'Text of price for iOS'
+    in_google_play:
+      type: string
+      label: 'Text of price for Android'
+    url:
+      type: string
+      label: 'The URL for the button. Keep null if you want the button to link to the app store.'
+    button:
+      type: string
+      label: 'Text for the install button'
+    scale:
+      type: string
+      label: 'Scale based on viewport size (set to 1 to disable)'
+    speed_in:
+      type: integer
+      label: 'Show animation speed of the banner'
+    speed_out:
+      type: integer
+      label: 'Close animation speed of the banner'
+    days_hidden:
+      type: integer
+      label: 'Duration to hide the banner after being closed (0 = always show banner)'
+    days_reminder:
+      type: integer
+      label: 'Duration to hide the banner after "VIEW" is clicked *separate from when the close button is clicked* (0 = always show banner)'
+    force:
+      type: string
+      label: "Choose 'ios', 'android' or 'windows'. Don't do a browser check, just always show this banner"
+    hide_on_install:
+      type: boolean
+      label: 'Hide the banner after "VIEW" is clicked.'
+    layer:
+      type: boolean
+      label: 'Display as overlay layer or slide down the page'
+    iOS_universal_app:
+      type: boolean
+      label: 'If the iOS App is a universal app for both iPad and iPhone, display Smart Banner to iPad users, too.'
+    append_to_selector:
+      type: string
+      label: 'Append the banner to a specific selector'
+    android_app_id:
+      type: string
+      label: 'Android App ID'
+    ios_app_id:
+      type: string
+      label: 'iOS App ID'
+
+    admin:
+      type: boolean
+      label: 'Include app banners tags on admin pages?'
+    visibility:
+      type: string
+      label: 'Whether to include or exclude pages listed in "pages" field'
+    pages:
+      type: text
+      label: 'Include script on specific pages'

@@ -1,0 +1,134 @@
+$vf3-bg-top: $white;
+$vh3-text-color: $gray-500;
+$vf3-bg-bottom: $gray-300;
+$vh3-border-input-mailchimp: 1px solid $vh3-text-color;
+$vh3-border-input-radius: 0;
+$vh3-border-footer: 2px solid $gray-300;
+$vh-border-dashed: 2px dashed $vh3-text-color;
+$vh-footer-bottom-text-color: $black;
+
+@include nav-color(vf-footer--variant3 , $vh3-text-color);
+
+.vf-footer.vf-footer--variant3 {
+  border-top: $vh3-border-footer;
+
+  .vf-footer__top {
+    background-color: $vf3-bg-top;
+
+    .first-footer-block {
+      align-items: center;
+    }
+
+
+    .block--footer-mailchimp {
+      .mailchimp-input {
+        border-bottom: $vh3-border-input-mailchimp;
+      }
+      .mailchimp-submit {
+        &:before {
+          color: $vh3-text-color;
+        }
+      }
+    }
+
+    .block-contact-menu, .last-block {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .block-contact-menu {
+      .block-contactez-nous {
+        p {
+          font-size: 1.3rem;
+
+          a {
+            display: inline-block;
+            @include rem(margin-left, 10px);
+            color: $primary;
+            font-weight: 600;
+          }
+        }
+      }
+
+      .block-footer-menu {
+        @include rem(margin-bottom, 30px);
+      }
+    }
+
+    .block-footer-realisation_void,
+    .block-footer-copyright {
+      .field__item {
+        display: flex;
+        flex-direction: row;
+
+        p {
+          margin-bottom: 0;
+
+          &, a {
+            color: $vh3-text-color;
+          }
+        }
+      }
+    }
+
+    .block-footer-realisation_void {
+      img {
+        display: inline-block;
+        @include rem(margin-left, 10px);
+      }
+    }
+
+  }
+
+  .vf-footer__bottom {
+    background-color: $vf3-bg-bottom;
+    @include rem(padding-top, 30px);
+    @include rem(padding-bottom, 30px);
+
+    p {
+      font-size: .9rem;
+      line-height: 1.2;
+      text-align: center;
+      font-weight: 600;
+      color: $vh-footer-bottom-text-color;
+    }
+  }
+}
+
+@include media-breakpoint-up(lg) {
+  .vf-footer.vf-footer--variant3 {
+    .vf-footer__top {
+      .first-footer-block {
+        @include rem(padding-top, 20px);
+        @include rem(padding-bottom, 20px);
+      }
+
+      .block-contact-menu {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        @include rem(padding-top, 20px);
+        @include rem(padding-bottom, 20px);
+
+        .block-footer-menu {
+          margin-bottom: 0;
+        }
+      }
+
+      .last-block {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        @include rem(padding-top, 20px);
+        @include rem(padding-bottom, 20px);
+        border-top: $vh-border-dashed;
+      }
+    }
+
+    .vf-footer__bottom {
+      p {
+        @include rem(font-size, 13px);
+      }
+    }
+  }
+}

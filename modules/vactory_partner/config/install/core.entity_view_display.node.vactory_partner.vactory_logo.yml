@@ -1,0 +1,58 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.vactory_logo
+    - field.field.node.vactory_partner.body
+    - field.field.node.vactory_partner.field_vactory_call_to_action
+    - field.field.node.vactory_partner.field_vactory_media
+    - field.field.node.vactory_partner.field_vactory_seo_status
+    - node.type.vactory_partner
+  module:
+    - link
+    - user
+    - vactory_core
+id: node.vactory_partner.vactory_logo
+targetEntityType: node
+bundle: vactory_partner
+mode: vactory_logo
+content:
+  field_vactory_call_to_action:
+    type: link
+    weight: 0
+    region: content
+    label: hidden
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+  field_vactory_media:
+    type: lazy_image
+    weight: 3
+    region: content
+    label: hidden
+    settings:
+      desktop_1x: partner_image_style
+      desktop_2x: partner_image_style_x2
+      laptop_1x: partner_image_style
+      laptop_2x: partner_image_style_x2
+      tablet_1x: partner_image_style
+      tablet_2x: partner_image_style_x2
+      mobile_1x: partner_image_style
+      mobile_2x: partner_image_style_x2
+      lqip: lqip
+    third_party_settings: {  }
+  links:
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  body: true
+  field_vactory_seo_status: true
+  langcode: true
+  search_api_excerpt: true

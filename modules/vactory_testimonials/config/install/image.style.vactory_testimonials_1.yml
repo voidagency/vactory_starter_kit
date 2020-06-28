@@ -1,0 +1,16 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - focal_point
+name: vactory_testimonials_1
+label: 'Testimonials @x1'
+effects:
+  a1f476a1-fa9a-4b53-bb7a-980ef4f09a8f:
+    uuid: a1f476a1-fa9a-4b53-bb7a-980ef4f09a8f
+    id: focal_point_scale_and_crop
+    weight: 1
+    data:
+      width: 120
+      height: 120
+      crop_type: focal_point

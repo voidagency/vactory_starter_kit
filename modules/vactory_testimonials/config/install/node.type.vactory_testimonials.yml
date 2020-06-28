@@ -1,0 +1,9 @@
+langcode: en
+status: true
+name: Testimonials
+type: vactory_testimonials
+description: 'Manage your testimonials content.'
+help: ''
+new_revision: true
+preview_mode: 1
+display_submitted: false

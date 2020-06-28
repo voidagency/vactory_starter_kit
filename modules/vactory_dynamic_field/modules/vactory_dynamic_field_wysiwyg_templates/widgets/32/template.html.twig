@@ -1,0 +1,32 @@
+<div class="row t-block-push-small-positionned">
+  {% for item in content %}
+    {% set column = (item.mode) ? 'col-12' : 'col-md-6' %}
+    <div class="{{ column }} d-flex">
+        {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : '' %}
+        {% set lqip_image = image_uri|image_style('lqip') %}
+        {% set fluid_image = file_url(image_uri) %}
+      <div
+        class="vf-push vf-push-small-positionned lazyload"
+        data-bg="{{ fluid_image }}"
+        style="background-image:url('{{ lqip_image }}')" >
+        <div class="vf-push-body">
+          <div class="inner">
+            {% if item.titre is not empty %}
+              <h4 class="h4">{{ item.titre }}</h4>
+            {% endif %}
+            {% if item.description is not empty %}
+              <p>
+                {{ item.description }}
+              </p>
+            {% endif %}
+            {% if (item.link is not empty and item.label_link is not empty) %}
+              {% set link_target = (item.link_target > 0) ? '_blank' : '_self' %}
+              <a href="{{ item.link }}" class="btn btn-primary" target="{{ link_target }}">{{ item.label_link }}</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+
+</div>

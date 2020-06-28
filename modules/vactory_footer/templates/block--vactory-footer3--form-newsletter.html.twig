@@ -1,0 +1,9 @@
+<h3 class="mailchimp-title">{{ "Stay connected" | t }}</h3>
+<form {{ attributes }}>
+    {{ element.form_build_id }}
+    {{ element.form_token }}
+    {{ element.form_id }}
+
+    <input type="email" class="form-control mailchimp-input" name="mergevars[EMAIL]" placeholder="{{ 'Enter your email address' | t }}">
+    <div class="input-group-btn mailchimp-submit icon icon-arrow-right"> {{ element.actions.submit }} </div>
+</form>

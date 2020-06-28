@@ -1,0 +1,7 @@
+name: Vactory Dynamic Field Map
+type: module
+description: Dynamic Field Map.
+package: Vactory Dynamic
+core: 8.x
+dependencies:
+  - vactory_dynamic_field

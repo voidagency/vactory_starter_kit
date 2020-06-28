@@ -1,0 +1,29 @@
+{{ attach_library('vactory_mailchimp/vactory_mailchimp') }}
+
+<form {{ attributes }}>
+  {{ element.form_build_id }}
+  {{ element.form_token }}
+  {{ element.form_id }}
+
+  <section class="vf-mailchimp--newsleter">
+    <div class="container">
+      <div class="py-5">
+        <div class="row justify-content-center align-items-center">
+          <div class="col-12 col-lg-6">
+            <h2>{{ element.form_title }}</h2>
+            <p class="text-h3">{{ element.description }} </p>
+          </div>
+          <div class="col-12 col-lg-5 text-center">
+            <div class="input-group">
+              <input type="email" class="form-control" name="mergevars[EMAIL]"
+                     placeholder="{{ 'Enter your email address' | t }}">
+              <span class="input-group-btn">
+                {{ element.actions.submit }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</form>

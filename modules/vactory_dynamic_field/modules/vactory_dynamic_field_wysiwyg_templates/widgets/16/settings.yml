@@ -1,0 +1,21 @@
+name: 'C16 - 2 blocs avec background et boutons'
+multiple: TRUE
+limit: 2
+category: 'Content'
+enabled: TRUE
+fields:
+  image:
+    type: image
+    label: 'image'
+  entete:
+    type: text
+    label: "entete"
+  title:
+    type: text
+    label: 'Titre'
+  details:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'full_html'
+      '#required': TRUE

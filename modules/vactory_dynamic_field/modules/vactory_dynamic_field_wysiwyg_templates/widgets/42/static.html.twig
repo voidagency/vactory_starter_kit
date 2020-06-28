@@ -1,0 +1,40 @@
+<div class='testimonials-carousel'>
+    <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+        <div class="carousel-inner">
+            {% for item in 0..3 %}
+                {% if item == 0 %}
+                    {% set activeItem = 'active' %}
+                {% else %}  
+                    {% set activeItem = ' ' %}  
+                {% endif %}     
+                
+                <div class="carousel-item mb-4 {{ activeItem }}">
+                    <div class="text-h3">Curabitur nisi. Mauris sollicitudin fermentum libero. Praesent egestas neque eu enim. Duis lobortis massa imperdiet quam. Donec mollis hendrerit risus Cras non dolor. Donec elit libero, sodales nec, volutpat a, suscipit non, turpis. Morbi ac felis. Proin magna. Suspendisse potenti.</div>
+                    <p class="text-h3"><strong>Jhon Doe</strong>&nbsp; &nbsp;&nbsp;<em>Role</em></p>
+                </div>
+            {% endfor %}
+        </div>
+        <ol class="carousel-indicators_items carousel-indicators">
+            {% for item in 0..3 %}
+                {% if item == 0 %}
+                    {% set activeItem = 'active' %}
+                {% else %}  
+                    {% set activeItem = ' ' %}  
+                {% endif %}    
+                {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/86/86.jpg" %}
+                <li data-target="#carouselExampleIndicators" data-slide-to="{{ item }}" class='{{ activeItem }}'>
+                    <img src="{{ placehold }}" alt="First slide" style="height: 50px;">
+                </li>
+                
+            {% endfor %}
+        </ol>
+        <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+            <span class="icon-chevron-left" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+            <span class="icon-chevron-right" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+</div>

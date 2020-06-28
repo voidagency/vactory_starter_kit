@@ -1,0 +1,4 @@
+services:
+  vactory_splashscreen.splashscreen.manage:
+    class: Drupal\vactory_splashscreen\Services\SplashScreenService
+    arguments: ['@logger.factory']

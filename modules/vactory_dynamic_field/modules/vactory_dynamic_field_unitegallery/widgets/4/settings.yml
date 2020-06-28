@@ -1,0 +1,21 @@
+name: 'U04 - UniteGallery - Tiles Justified'
+multiple: TRUE
+category: 'UniteGallery'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: 'Title'
+    options:
+      '#required': TRUE
+  thumbnail:
+    type: image
+    label: 'Thumbnail'
+    options:
+      '#required': TRUE
+      '#description': 'Image size largeur: 400px'
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': TRUE

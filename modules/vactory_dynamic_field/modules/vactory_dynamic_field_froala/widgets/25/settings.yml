@@ -1,0 +1,27 @@
+name: '25 - Froala - Content Left Block 2 Images & Right Block Text, CTA'
+multiple: FALSE
+category: 'Froala'
+enabled: TRUE
+fields:
+  image_1:
+    type: image
+    label: 'Image 1'
+    options:
+      '#required': TRUE
+  image_alt_1:
+    type: text
+    label: 'Text alternatif'
+  image_2:
+    type: image
+    label: 'Image 2'
+    options:
+      '#required': TRUE
+  image_alt_2:
+    type: text
+    label: 'Text alternatif'
+  description:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'full_html'
+      '#required': TRUE

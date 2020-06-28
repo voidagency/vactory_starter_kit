@@ -1,0 +1,19 @@
+diff --git a/core/modules/system/src/Plugin/Condition/RequestPath.php b/core/modules/system/src/Plugin/Condition/RequestPath.php
+index 1f73624..829ed7f 100644
+--- a/core/modules/system/src/Plugin/Condition/RequestPath.php
++++ b/core/modules/system/src/Plugin/Condition/RequestPath.php
+@@ -150,7 +150,13 @@ public function evaluate() {
+     $path = $path === '/' ? $path : rtrim($path, '/');
+     $path_alias = mb_strtolower($this->aliasManager->getAliasByPath($path));
+
+-    return $this->pathMatcher->matchPath($path_alias, $pages) || (($path != $path_alias) && $this->pathMatcher->matchPath($path, $pages));
++    // Get the current path from current page route (not the request).
++    $current_route = \Drupal\Core\Url::fromRoute('<current>');
++    $internal_path = '/' . $current_route->getInternalPath();
++    $internal_path = $internal_path === '/' ? $internal_path : rtrim($internal_path, '/');
++    $internal_path_alias = mb_strtolower($current_route->toString());
++
++    return (($this->pathMatcher->matchPath($path_alias, $pages) || (($path != $path_alias) && $this->pathMatcher->matchPath($path, $pages))) || ($this->pathMatcher->matchPath($internal_path_alias, $pages) || (($internal_path != $internal_path_alias) && $this->pathMatcher->matchPath($internal_path, $pages))));
+   }
+
+   /**

@@ -1,0 +1,84 @@
+{#
+/**
+ * @file
+ * Default theme implementation to present all user data.
+ *
+ * This template is used when viewing a registered user's page,
+ * e.g., example.com/user/123. 123 being the user's ID.
+ *
+ * Available variables:
+ * - content: A list of content items. Use 'content' to print all content, or
+ *   print a subset such as 'content.field_example'. Fields attached to a user
+ *   such as 'user_picture' are available as 'content.user_picture'.
+ * - attributes: HTML attributes for the container element.
+ * - user: A Drupal User entity.
+ *
+ * @see template_preprocess_user()
+ *
+ * @ingroup themeable
+ */
+#}
+
+{% set first_name = content.field_first_name.0['#context'] is defined ? content.field_first_name.0['#context'].value : '' %}
+{% set last_name = content.field_last_name[0]['#context'] is defined ? content.field_last_name[0]['#context'].value : '' %}
+{% set full_name = [first_name|capitalize ~ ' ', last_name|capitalize]|join %}
+{% set user_date = user.createdtime | date("d/m/Y") %}
+{% set about = content.field_about_the_author[0]['#text'] is defined ? content.field_about_the_author[0]['#text'] : '' %}
+{% set profession = content.field_user_profession[0]['#context'] is defined ? content.field_user_profession[0]['#context'].value : '' %}
+{% set user_picture = content.user_picture.0['#item'] is defined ? file_object(content.user_picture.0['#item'].value.target_id) : '' %}
+
+<div class="tab-content has-border p-4">
+    <div class="row mt-4">
+        <div class="col-md-9 m-auto">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            {% if user_picture is not empty %}
+                                {% set user_picture_uri = user_picture.uri.0.value|image_style('medium') %}
+                                <img src="{{ file_url(user_picture_uri) }}"
+                                     class="rounded-circle avatar"/>
+                            {% else %}
+                                <img src="{{ base_path ~ directory }}/assets/img/user-avatar.svg"
+                                     class="rounded-circle avatar"/>
+                            {% endif %}
+
+                            {% if content.field_social_media_links['#platforms'] is defined %}
+                                <div class="pt-3">
+                                    {{ content.field_social_media_links }}
+                                </div>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-8">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h1 class="only-bottom-margin">{{ full_name }}</h1>
+                                    <p class="badge badge-primary">{{ profession }}</p>
+                                </div>
+                                {% if about is not empty %}
+                                    <div class="col-md-12">
+                                        <hr>
+                                        <blockquote class="blockquote mr-auto ml-auto">
+                                            <p class="mb-0">{{ about|raw }}</p>
+                                        </blockquote>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="pt-3 d-flex text-center">
+                                        <p>
+                                            <span class="prefix-icon-comment pr-2">{{ instructor_statistics.nb_avis }} {{ 'Avis'|t }}</span>
+                                            |
+                                            <span class="prefix-icon-file-text-o pl-2">{{ instructor_statistics.nb_courses }} {{ 'Cours'|t }}</span>
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

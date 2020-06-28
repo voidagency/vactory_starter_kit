@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_vactory_reference
+    - node.type.vactory_tender
+id: node.vactory_tender.field_vactory_reference
+field_name: field_vactory_reference
+entity_type: node
+bundle: vactory_tender
+label: Référence
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

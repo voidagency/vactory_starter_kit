@@ -1,0 +1,6 @@
+banner.loader:
+  js:
+    js/app.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings

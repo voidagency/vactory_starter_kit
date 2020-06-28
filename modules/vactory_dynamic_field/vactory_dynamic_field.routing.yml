@@ -1,0 +1,34 @@
+vactory_dynamic_field.open_modal_form:
+  path: '/admin/config/modal_form'
+  defaults:
+    _title: 'Modal Form'
+    _controller: '\Drupal\vactory_dynamic_field\Controller\ModalFormController::openModalForm'
+  requirements:
+    _access: 'TRUE'
+  options:
+    _admin_route: TRUE
+
+vactory_dynamic_field.widgets_list:
+  path: '/vactory/templates/list/{cid}'
+  defaults:
+    _title: 'Templates'
+    _controller: '\Drupal\vactory_dynamic_field\Controller\StaticWidgetsListController::widgetsList'
+    cid: ''
+  requirements:
+    _permission: 'access content'
+
+vactory_dynamic_field.widget_view:
+  path: '/vactory/templates/view/{wid}'
+  defaults:
+    _title: 'Template'
+    _controller: '\Drupal\vactory_dynamic_field\Controller\StaticWidgetsListController::widgetView'
+  requirements:
+    _permission: 'access content'
+
+vactory_dynamic_field.settings_form:
+  path: '/admin/config/system/dynamic-field-configuration'
+  defaults:
+    _title: 'Dynamic field settings'
+    _form: '\Drupal\vactory_dynamic_field\Form\DynamicFieldSettingsForm'
+  requirements:
+    _permission: 'administer site configuration'

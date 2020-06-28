@@ -1,0 +1,242 @@
+
+.vf-footer {
+  //Block media links
+  .block-social-media {
+    display: flex;
+    flex-direction: column;
+  	align-self: center;
+    .social-media-links--platforms {
+      li {
+        padding: 0;
+        &:first-child {
+          a {
+            padding-left: 0;
+          }
+        }
+        a {
+          @include rem(padding-left,6px);
+          display: inline-block;
+        }
+      }  
+    }
+  }
+  // Social media title
+  .social-media-title ,
+  .app-store-title {
+    @include rem(font-size,15px);
+    line-height: 15px;
+    font-weight: 600;
+  }
+  // Block nav menu
+  [class*="block-footer-menu"] {
+    li {
+      position: relative;
+
+      &:not(:first-child) {
+        @include rem(padding-left, 6px);
+      }
+      &:not(:last-child) {
+        @include rem(padding-right, 6px);
+      }
+
+      a {
+        @include rem(font-size, 14px);
+        transition: all 300ms ease-in;
+
+        &:hover {
+          color: $primary;
+        }
+      }
+    }
+  }
+  .block-footer-menu{
+    &-separate {
+      li {
+        &:not(:first-child) {
+          &:after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 1px;
+            height: 12px;
+            transform: translateY(-50%);
+          }
+        }
+      } 
+    }  
+  }
+  // Block Footer Logo
+  .block-footer-logo {
+    display: flex;
+    justify-content: center;
+    @include rem(margin-bottom, 10px);
+    img {
+      max-width: 200px;
+    }
+    .navbar-brand {
+      margin-right: 0;
+    }
+  }
+
+  .block--footer-mailchimp {
+    .mailchimp-title {
+      @include rem(font-size, 15px);
+      @include rem(margin-right, 20px);
+      margin-bottom: 0;
+    }
+
+    .mailchimp-input {
+      background-color: transparent;
+      border: 0;
+      padding-left: 0;
+      @include rem(padding-right, 43px);
+
+      &, &:focus {
+        outline: none;
+        box-shadow: none;
+      }
+    }
+
+    .mailchimp-signup-subscribe-form {
+      position: relative;
+    }
+
+    .mailchimp-submit {
+      position: absolute;
+      top: 50%;
+      right: 0;
+      transform: translateY(-50%);
+      width: 50px;
+      height: 50px;
+
+      &:before {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1;
+      }
+
+      input[type=submit] {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        background-color: transparent;
+        border: 0;
+        font-size: 0;
+      }
+    }
+  }
+}
+
+//shadow
+.icon-shadow {
+  .fa {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    box-shadow: 0 5px 11px 0 rgba(0,0,0,.18), 0 4px 15px 0 rgba(0,0,0,.15);
+  }
+}
+
+.bg-icon {
+  @include media-color(fa,background);
+}
+
+.icon-shadow ,
+.bg-icon {
+  .fa {
+    position: relative;
+    text-align: center;
+    &:before{
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  }
+}
+
+//footer copyright
+.block-footer-copyright,
+.block-footer-realisation_void {
+  p {
+    &, a {
+      @include rem(font-size, 14px);
+      margin-bottom: 0;
+      opacity: .6;
+      img {
+        @include rem(max-width, 40px);
+        @include rem(margin-left, 10px);
+      }
+    }
+  }
+}
+
+
+
+@include media-breakpoint-up(lg) {
+  .vf-footer {  
+    //Block media links
+    .block-social-media {
+      flex-direction:row;
+
+      .social-media-links--platforms {
+        li {
+          &:last-child {
+            a {
+              padding-right: 0;
+            }
+          }
+        }
+      }
+    }
+    .social-media-title ,
+    .app-store-title {
+      @include rem( margin-right, 20px);
+    }
+    // Block Footer Logo
+    .block-footer-logo {
+      justify-content: flex-start;
+      margin-bottom: 0;
+    }
+    .block--footer-mailchimp {
+      margin-bottom: 0;
+    }
+  }  
+}
+
+@include media-breakpoint-down(md) {
+  .vf-footer { 
+  // Block nav menu mobile
+    .sm-menu-center ,
+    .sm-menu-block-center{
+      ul.nav {
+        align-items: center;
+        justify-content: center;
+      }
+    }
+    [class*="sm-menu-block"] {
+      ul.nav {
+        display: flex;
+        flex-direction: column;
+  
+        li {
+          @include rem(margin-bottom, 10px);
+          padding-left: 0;
+          padding-right: 0;
+  
+          &:last-child {
+            margin-bottom: 0;
+          }
+          &::after{
+            display: none;
+          }
+        }
+      }
+    }
+  }
+}

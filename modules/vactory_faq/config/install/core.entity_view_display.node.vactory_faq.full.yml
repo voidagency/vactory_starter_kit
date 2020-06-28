@@ -1,0 +1,46 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.full
+    - field.field.node.vactory_faq.body
+    - field.field.node.vactory_faq.field_faq
+    - node.type.vactory_faq
+  module:
+    - faqfield
+    - text
+    - user
+id: node.vactory_faq.full
+targetEntityType: node
+bundle: vactory_faq
+mode: full
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 101
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_faq:
+    weight: 102
+    label: hidden
+    settings:
+      active: 0
+      heightStyle: auto
+      collapsible: false
+      event: click
+      animate:
+        easing: linear
+        duration: 200
+    third_party_settings: {  }
+    type: faqfield_accordion
+    region: content
+  links:
+    weight: 100
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  langcode: true

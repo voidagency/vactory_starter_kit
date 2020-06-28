@@ -1,0 +1,141 @@
+<?php
+
+/**
+ * @file
+ * Contain related hooks.
+ */
+
+define('VACTORY_JOB_ADS_CANDIDATE_VIA_EMAIL', 0);
+define('VACTORY_JOB_ADS_CANDIDATE_VIA_FORM', 1);
+define('VACTORY_JOB_ADS_CANDIDATE_VIA_USER_SPACE', 2);
+
+use Drupal\Core\Url;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\node\Entity\Node;
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_job_ads_theme() {
+  return [
+    // Node > Vactory Job Ads.
+    'node__vactory_job_ads__card_inline'                       => [
+      'base hook' => 'node',
+      'template'  => 'card-inline',
+    ],
+
+    // Node > Full Page.
+    'node__vactory_job_ads__full'                              => [
+      'base hook' => 'node',
+      'template'  => 'full',
+    ],
+
+    // View > Job Ads.
+    'views_view_unformatted__vactory_job_ads__vactory_job_ads' => [
+      'base hook' => 'views_view_unformatted',
+      'template'  => 'page-list',
+    ],
+    // webform--vactory-job-application
+    // Webform > Job Ads.
+    'webform__vactory_job_application'                         => [
+      'base hook' => 'webform',
+      'template'  => 'application-form',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_job_ads_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if ($form_id == 'webform_submission_vactory_job_application_add_form') {
+    $nid = (int) \Drupal::request()->query->get('nid');
+    $node = Node::load($nid);
+    if ($node) {
+      foreach (array_keys($form['actions']) as $action) {
+        if ($action != 'preview' && isset($form['actions'][$action]['#type']) && $form['actions'][$action]['#type'] === 'submit') {
+          $form['actions'][$action]['#submit'][] = 'vactory_job_ads_form_submit';
+        }
+      }
+
+      $form['elements']['job_ad']['#default_value'] = (!$node instanceof Node) ?: $node->label();
+      $form['elements']['job_ad']['#disabled'] = FALSE;
+      $form['elements']['job_ad']['#type'] = 'hidden';
+    }
+  }
+}
+
+/**
+ * Vactory job_ads Form Submit.
+ */
+function vactory_job_ads_form_submit(array $form, FormStateInterface $form_state) {
+  /* if( $form_state->getStorage()['langcode'] != 'en'){
+  drupal_set_message(
+  t('Votre candidature a été transmise avec succès.')
+  );
+  }
+  else{
+  drupal_set_message(
+  t('Your application has been successfully submitted.')
+  );
+  }*/
+}
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function vactory_job_ads_preprocess_node(&$variables) {
+  /** @var \Drupal\node\Entity\Node $node */
+  $node = $variables['node'];
+  if ($node->getType() != 'vactory_job_ads') {
+    return;
+  }
+
+  // User login states.
+  $user_is_logged_in = \Drupal::currentUser()->isAuthenticated();
+  $user_is_anonymous = \Drupal::currentUser()->isAnonymous();
+
+  // Module configuration.
+  $config = \Drupal::config('vactory_job_ads.admin_settings');
+  $candidate_mode = $config->get('vactory_job_ads_candidate_mode');
+
+  // Get node fields.
+  $recruiter_email = $node->get('field_vactory_email')->getString();
+  $nid = $node->get('nid')->getValue()[0]['value'];
+
+  // Get candidate form.
+  /** @var \Drupal\webform\Entity\Webform $webform */
+  $candidate_form = \Drupal::entityTypeManager()
+    ->getStorage('webform')
+    ->load('vactory_job_application');
+  // Get the candidate url.
+  /** @var \Drupal\Core\Url $candiate_form_url */
+  $candidate_form_url = $candidate_form->toUrl();
+
+  // Setup apply link based on candidate mode.
+  $apply_link = FALSE;
+
+  if ($candidate_mode == VACTORY_JOB_ADS_CANDIDATE_VIA_EMAIL && $recruiter_email) {
+    $node_title = $node->get('title')->getString();
+    $apply_link = 'mailto:' . $recruiter_email . '?subject=' . $node_title;
+  }
+  elseif ($candidate_mode == VACTORY_JOB_ADS_CANDIDATE_VIA_FORM ||
+    ($candidate_mode == VACTORY_JOB_ADS_CANDIDATE_VIA_USER_SPACE && $user_is_logged_in)) {
+    $apply_link = $candidate_form_url->setOption('query', [
+      'nid' => $nid,
+    ]);
+  }
+  elseif ($candidate_mode == VACTORY_JOB_ADS_CANDIDATE_VIA_USER_SPACE && $user_is_anonymous) {
+    // Get the destination.
+    $destination = $candidate_form_url->setOption('query', [
+      'nid' => $nid,
+    ])->toString();
+    $apply_link = Url::fromUri('internal:/user/login', [
+      'query' => [
+        'destination' => $destination,
+        'ja_msg'      => 1,
+      ],
+    ]);
+  }
+  $variables['apply_link'] = $apply_link;
+}

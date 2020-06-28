@@ -1,0 +1,16 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - focal_point
+name: vactory_slider3_image
+label: 'Slider 3 Image 1600x779'
+effects:
+  vactory_sliders_variant3_image:
+    uuid: vactory_sliders_variant3_image
+    id: focal_point_scale_and_crop
+    weight: 2
+    data:
+      width: 1600
+      height: 779
+      crop_type: focal_point

@@ -1,0 +1,49 @@
+langcode: en
+status: false
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.vactory_governance.body
+    - field.field.node.vactory_governance.field_gov_address
+    - field.field.node.vactory_governance.field_gov_social_media
+    - field.field.node.vactory_governance.field_vactory_email
+    - field.field.node.vactory_governance.field_vactory_fax
+    - field.field.node.vactory_governance.field_vactory_media
+    - field.field.node.vactory_governance.field_vactory_name
+    - field.field.node.vactory_governance.field_vactory_taxonomy_1
+    - field.field.node.vactory_governance.field_vactory_telephone
+    - node.type.vactory_governance
+  module:
+    - text
+    - user
+id: node.vactory_governance.teaser
+targetEntityType: node
+bundle: vactory_governance
+mode: teaser
+content:
+  body:
+    label: hidden
+    type: text_summary_or_trimmed
+    weight: 101
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  field_gov_address: true
+  field_gov_social_media: true
+  field_image: true
+  field_vactory_email: true
+  field_vactory_fax: true
+  field_vactory_media: true
+  field_vactory_name: true
+  field_vactory_taxonomy_1: true
+  field_vactory_telephone: true
+  langcode: true
+  search_api_excerpt: true

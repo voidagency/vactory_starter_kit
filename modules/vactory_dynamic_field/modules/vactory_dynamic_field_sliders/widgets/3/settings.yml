@@ -1,0 +1,36 @@
+name: 'S03 - Tabs Slider'
+multiple: TRUE
+category: 'Sliders'
+enabled: TRUE
+limit: 3
+fields:
+  title:
+    type: text
+    label: 'Title'
+    options:
+      '#required': TRUE
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': TRUE
+      '#description': 'Image size largeur:xxx px hauteur:xxx px'
+  video:
+    type: text
+    label: 'Video'
+    options:
+      '#description': '<b><i class="link">How ?</i></b><br><b>URL Example</b>: https://www.youtube.com/watch?v=BZDyr2OpWBU <br> <b>Value to insert</b>: BZDyr2OpWBU'
+  title_description:
+    type: text
+    label: 'Title Description'
+  content:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'full_html'
+  cta_url:
+    type: url_extended
+    label: 'Read More Link'
+  slider_bg:
+    type: jquery_colorpicker
+    label: 'Background color'

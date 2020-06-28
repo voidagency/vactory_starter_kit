@@ -1,0 +1,19 @@
+name: Locator
+type: module
+description: 'Map locator.'
+core: 8.x
+package: Vactory
+dependencies:
+  - vactory_field
+  - vactory_views
+  - content_translation
+  - focal_point
+  - language
+  - migrate_plus
+  - migrate_tools
+  - migrate_source_csv
+  - rest
+  - serialization
+  - taxonomy
+  - telephone
+  - vactory_google_map_field

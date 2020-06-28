@@ -1,0 +1,27 @@
+name: Banner
+description: 'Provides banner content type and related configuration. '
+type: module
+core: 8.x
+package: Vactory
+dependencies:
+  - block
+  - block_class
+  - block_content
+  - block_field
+  - content_translation
+  - field
+  - focal_point
+  - image
+  - jquery_colorpicker
+  - language
+  - media
+  - media_library
+  - media_responsive_thumbnail
+  - responsive_image
+  - system
+  - text
+  - user
+  - vactory_core
+  - vactory_field
+  - vactory_login_token
+core_incompatible: false

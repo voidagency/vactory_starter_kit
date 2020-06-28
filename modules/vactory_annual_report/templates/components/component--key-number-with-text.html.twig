@@ -1,0 +1,24 @@
+{% set widget_class = content.field_ar_element_width[0]['#markup'] %}
+{% set class_media_type = content.field_ar_media_type[0]['#plain_text']|clean_class %}
+{% set image_uri = (content.field_vactory_media) ? get_image(content.field_vactory_media) : ' ' %}
+{% set fluid_image = file_url(image_uri) %}
+
+<article class="item bk-white awb-chiffre-img {{ widget_class }}">
+  <div class="item-wrap">
+    <div class="header-content">
+      <ul class="filtres">
+        <li>
+          <a href="{{ content.thematic_link }}" class="tag"># {{ content.field_ar_thematic[0]['#plain_text'] }}</a>
+        </li>
+        <li><span class="media"><i class="icon icon-{{ class_media_type }}"></i></span></li>
+      </ul>
+    </div>
+    <div class="item-content">
+      {{ content.body }}
+
+      {% if content.field_vactory_media %}
+        <img src="{{ fluid_image }}" alt=""/>
+      {% endif %}
+    </div>
+  </div>
+</article>

@@ -1,0 +1,36 @@
+<div class="fdb-block">
+  {% if extra_fields.title is not empty or extra_fields.description is not empty %}
+    <div class="row text-center">
+      <div class="col-12">
+        {% if extra_fields.title is not empty %}
+          <h2>{{ extra_fields.title }}</h2>
+        {% endif %}
+        {% if extra_fields.description is not empty %}
+          <p class="h2"><em>{{ extra_fields.description }}</em></p>
+        {% endif %}
+      </div>
+    </div>
+  {% endif %}
+  <div class="row text-center pt-3 pt-xl-5">
+    {% for item in content %}
+      {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : '' %}
+      {% set image = image_uri|image_style('max_650x650') %}
+      {% set lqip_image = image_uri|image_style('lqip') %}
+
+      <div class="col-12 col-sm-10 m-auto m-md-0 col-md-6">
+        {% if item.image.0 is not empty %}
+          <div class="lazy-wrapper">
+            <img alt="{{ item.image_alt }}"
+                class="img-fluid lazyload "
+                src="{{ lqip_image }}"
+                data-src="{{ image }}">
+          </div>
+        {% endif %}
+        {% if item.description is not empty %}
+          <p class="text-h3">{{ item.description }}</p>
+        {% endif %}
+      </div>
+
+    {% endfor %}
+  </div>
+</div>

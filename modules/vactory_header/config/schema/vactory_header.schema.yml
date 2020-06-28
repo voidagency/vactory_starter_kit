@@ -1,0 +1,7 @@
+vactory_header.config:
+  type: config_object
+  label: 'config for save vactory header variantes class'
+  mapping:
+    message:
+      type: text
+      label: 'Header variante class'

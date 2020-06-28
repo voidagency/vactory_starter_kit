@@ -1,0 +1,22 @@
+{% set image_uri = (content.0.image.0 is defined) ? get_image(content.0.image.0) : "" %}
+{% set lqip_image = image_uri|image_style('lqip') %}
+{% set fluid_image = file_url(image_uri) %}
+{% set _imgVideo = (content.0.video is not empty) ? 'js-img-video' : null %}
+{% set imageAlt = (content.0.image_alt is not empty) ? content.0.image_alt : "Image" %}
+{% set zoomClass = (content.0.zoom_image > 0) ? 'js-zoom' : '' %}
+
+
+<div class="t-full-image-zoomer-description">
+  <div class="t-full-image-description mb-3">
+    {% if content.0.description is not empty %}
+      {{ content.0.description.value|raw }}
+    {% endif %}
+  </div>
+  <div class="{{ zoomClass }} lazy-wrapper">
+    <img alt="{{ imageAlt }}"
+         class="img-fluid lazyload"
+         src="{{ lqip_image }}"
+         data-src="{{ fluid_image }}">
+  </div>
+</div>
+

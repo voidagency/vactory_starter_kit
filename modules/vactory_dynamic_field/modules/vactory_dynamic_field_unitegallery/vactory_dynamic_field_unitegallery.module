@@ -1,0 +1,19 @@
+<?php
+
+/**
+ * @file
+ * Primary Hooks..
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_dynamic_field_unitegallery_theme($existing, $type, $theme, $path) {
+  return [
+    // Node > full.
+    'node__vactory_gallery__full'        => [
+      'base hook' => 'node',
+      'template'  => 'full',
+    ],
+  ];
+}

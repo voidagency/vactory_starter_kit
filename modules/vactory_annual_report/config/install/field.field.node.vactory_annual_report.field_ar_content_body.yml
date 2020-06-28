@@ -1,0 +1,20 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_ar_content_body
+    - node.type.vactory_annual_report
+  module:
+    - vactory_dynamic_field
+id: node.vactory_annual_report.field_ar_content_body
+field_name: field_ar_content_body
+entity_type: node
+bundle: vactory_annual_report
+label: 'Content body'
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: field_wysiwyg_dynamic

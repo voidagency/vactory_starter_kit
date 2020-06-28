@@ -1,0 +1,1 @@
+Today, CSS preprocessors are a standard for web development. One of the main advantages of preprocessors is that they enable you to use variables. This helps you to avoid copying and pasting code, and it simplifies development and refactoring.

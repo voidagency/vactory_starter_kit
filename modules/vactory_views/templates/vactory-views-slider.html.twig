@@ -1,0 +1,21 @@
+{% set item_classes = [
+'d-flex',
+'p-3',
+] %}
+
+{% if attributes -%}
+<div{{ attributes }}>
+    {% endif %}
+    {% if title %}
+        <h3>{{ title }}</h3>
+    {% endif %}
+
+    {% for row in rows %}
+        <div{{ row.attributes.addClass(item_classes) }}>{{ row.content }}</div>
+    {% endfor %}
+
+
+    {% if attributes -%}
+</div>
+    <div class="slider-dots"></div>
+{% endif %}

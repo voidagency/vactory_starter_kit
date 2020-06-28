@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - block_field
+    - paragraphs
+id: paragraph.field_vactory_blocks_multiple
+field_name: field_vactory_blocks_multiple
+entity_type: paragraph
+type: block_field
+settings: {  }
+module: block_field
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

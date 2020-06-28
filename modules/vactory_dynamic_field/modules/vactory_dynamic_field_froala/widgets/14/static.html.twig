@@ -1,0 +1,18 @@
+<div class="fdb-block">
+    <div class="row text-left">
+        {% for i in 0..1 %}
+            {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/50/50.jpg" %}
+            <div class="col-12 col-md-6">
+                <img alt="Image Alt"
+                    class="lazyload fdb-icon"
+                    src="{{ content.image_placeholder }}"
+                    data-src="{{ placehold }}">
+                <h3><strong>Title</strong></h3>
+                <div class="text-h3">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem
+                    Ipsum
+                    has been the industry's standard dummy text ever since the 1500s.
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>

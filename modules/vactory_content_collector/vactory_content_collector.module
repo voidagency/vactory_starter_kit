@@ -1,0 +1,120 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Content Collector module.
+ */
+
+use Drupal\Component\Render\FormattableMarkup;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\node\Entity\Node;
+use Drupal\paragraphs\Entity\Paragraph;
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function vactory_content_collector_entity_base_field_info(EntityTypeInterface $entity_type) {
+  $fields = [];
+
+  if ($entity_type->id() === 'paragraph') {
+    $fields['paragraph_need_review'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Need Review'))
+      ->setSetting('on_label', 'Incomplete')
+      ->setSetting('off_label', 'Complete')
+      ->setDisplayOptions('form', [
+        'type'     => 'options_buttons',
+        'settings' => [
+          'on_label'  => 'Incomplete',
+          'off_label' => 'Complete',
+        ],
+        'weight'   => 45,
+      ])
+      ->setDisplayConfigurable('form', TRUE);
+  }
+
+  return $fields;
+}
+
+/**
+ * Implements hook_element_info_alter().
+ */
+function vactory_content_collector_element_info_alter(array &$types) {
+  if (isset($types['radios'])) {
+    $types['radios']['#process'][] = '_vactory_content_collector_remove_radio_na';
+  }
+}
+
+/**
+ * Callback for removing N/A from radio buttons.
+ *
+ * This is used for paragraph_need_review field.
+ */
+function _vactory_content_collector_remove_radio_na(array $element) {
+  if (
+    isset($element['#field_name']) &&
+    $element['#field_name'] === 'paragraph_need_review'
+  ) {
+    unset($element['_none']);
+  }
+  return $element;
+}
+
+/**
+ * Implements template_preprocess_views_view_table().
+ */
+function vactory_content_collector_preprocess_views_view_table(&$variables) {
+  $view = $variables['view'];
+
+  if ($view->id() !== 'content_review') {
+    return;
+  }
+
+  $results = $view->result;
+
+  foreach ($variables['rows'] as $id => &$row) {
+    $nid = (int) $results[$id]->nid;
+    $node = Node::load($nid);
+    /* @var \Drupal\entity_reference_revisions\EntityReferenceRevisionsFieldItemList $paragraphs */
+    $paragraphs = $node->get('field_vactory_paragraphs');
+
+    // Find incomplete paragraphs.
+    $paragraphs_incomplete = (clone $paragraphs)->filter(function ($item) {
+      $pid = (int) $item->get('target_id')->getValue();
+      $paragraph = Paragraph::load($pid);
+      $need_review = (bool) $paragraph->get('paragraph_need_review')
+        ->first()
+        ->getValue()['value'];
+      return $need_review === TRUE;
+    });
+
+    // Find completed paragraphs.
+    $paragraphs_complete = (clone $paragraphs)->filter(function ($item) {
+      $pid = (int) $item->get('target_id')->getValue();
+      $paragraph = Paragraph::load($pid);
+      $need_review = (bool) $paragraph->get('paragraph_need_review')
+        ->first()
+        ->getValue()['value'];
+      return $need_review !== TRUE;
+    });
+
+    // Get total.
+    $total_paragraphs = $paragraphs->count();
+    $total_paragraphs_incomplete = $paragraphs_incomplete->count();
+    $total_paragraphs_complete = $paragraphs_complete->count();
+
+    // Calculate percent.
+    $status = ($total_paragraphs_complete / $total_paragraphs) * 100;
+    $status = number_format((float) $status, 2, '.', '');
+
+    // Markup.
+    $markup = new FormattableMarkup('Total <b>@total</b> <br />Completed <b>@total_completed</b> <br />Incomplete <b>@total_incomplete</b> <br />Status <b><i>@status</i></b>', [
+      '@total'            => $total_paragraphs,
+      '@total_completed'  => $total_paragraphs_complete,
+      '@total_incomplete' => $total_paragraphs_incomplete,
+      '@status'           => $status,
+    ]);
+
+    $row['columns']['nid']['content'][0]['field_output']['#markup'] = $markup;
+  }
+}

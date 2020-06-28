@@ -1,0 +1,80 @@
+name: 'S11 - fluid slider'
+multiple: TRUE
+category: 'Sliders'
+enabled: TRUE
+fields:
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': TRUE
+  title:
+    type: text
+    label: 'Titre'
+    options:
+      '#required': TRUE
+  description:
+    type: textarea
+    label: 'Description'
+    options:
+      '#required': TRUE
+  link:
+    type: url_extended
+    label: 'Lien'
+    placeholder_value: 'https://www.google.com'
+  link_alt:
+    type: text
+    label: 'Texte du lien'
+  link_target:
+    type: checkbox
+    label: "Ouvrir le lien dans une nouvelle fenétres"
+extra_fields:
+  weight: 999
+  group_gonfig:
+    g_title: 'Configuration Slider'
+    arrows:
+      type: checkbox
+      label: 'Afficher navigation boutons'
+      options:
+        '#checked': TRUE
+    dots:
+      type: checkbox
+      label: 'Afficher paginations'
+      options:
+        '#checked': TRUE
+    loop:
+      type: checkbox
+      label: 'Infinite slide'
+    slidekeyboard:
+      type: checkbox
+      label: 'Activer slider avec le clavier'
+    numberofslides:
+      type: number
+      label: 'Nombre du slides à afficher'
+    numberofslidesmobile:
+      type: number
+      label: 'Nombre du slides à afficher sur Mobile'
+    animationspeed:
+      type: number
+      label: 'Animation speed'
+    scrollbar:
+      type: checkbox
+      label: 'Afficher le Scroll-Bar'
+    effect:
+      type: select
+      label: 'Effect of slider'
+      options:
+        '#options':
+          - 'slide': 'slide'
+          - 'fade': 'fade'
+          - 'cube': 'cube'
+          - 'coverflow': 'coverflow'
+          - 'flip': 'flip'
+    direction:
+      type: select
+      label: 'Direction'
+      options:
+        '#options':
+          - 'horizontal': 'horizontal'
+          - 'vertical': 'vertical'
+

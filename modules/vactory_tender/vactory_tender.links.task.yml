@@ -1,0 +1,4 @@
+vactory_tender.admin_settings_tab:
+  route_name: vactory_tender.admin_settings
+  title: Settings
+  base_route: vactory_tender.admin_settings

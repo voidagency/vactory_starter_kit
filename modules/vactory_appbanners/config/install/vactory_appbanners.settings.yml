@@ -1,0 +1,18 @@
+admin: FALSE
+visibility: exclude
+price: 'FREE'
+app_store_language: 'us'
+in_app_store: 'On the App Store'
+in_google_play: 'In Google Play'
+in_amazon_app_store: 'In the Amazon Appstore'
+in_windows_store: 'In the Windows Store'
+button: 'VIEW'
+scale: 'auto'
+speed_in: 300
+speed_out: 400
+days_hidden: 15
+days_reminder: 90
+hide_on_install: TRUE
+layer: FALSE
+iOS_universal_app: TRUE
+append_to_selector: 'body'

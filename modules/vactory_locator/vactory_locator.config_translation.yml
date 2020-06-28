@@ -1,0 +1,5 @@
+vactory_locator.config:
+  title: 'Locator settings translation'
+  base_route_name: vactory_locator.settings_form
+  names:
+    - vactory_locator.settings

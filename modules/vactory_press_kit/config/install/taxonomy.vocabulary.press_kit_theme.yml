@@ -1,0 +1,8 @@
+langcode: en
+status: true
+dependencies: {  }
+name: 'Press kit - Theme'
+vid: press_kit_theme
+description: 'Press kit vocabulary.'
+hierarchy: 0
+weight: 0

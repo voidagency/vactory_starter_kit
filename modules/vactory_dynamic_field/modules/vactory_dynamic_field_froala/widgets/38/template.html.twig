@@ -1,0 +1,46 @@
+{% if extra_fields.intro is not empty %}
+    <div class="row text-center justify-content-center">
+        <div class="col-md-10 col-lg-8">
+        {% if extra_fields.intro is not empty %}
+            <p>{{ extra_fields.intro }}</p>
+        {% endif %}
+        </div>
+    </div>
+{% endif %}
+<div class="fdb-block vf-slick-slider" 
+    data-toshow="1"
+    data-dots="false"
+    data-arrows="true"
+    data-mobile-centermode="false">
+    {% for item in content %}
+        {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : '' %}
+        {% set profile_image = image_uri|image_style('medium') %}
+        {% set lqip_image = image_uri|image_style('lqip') %}
+
+        {% set reverce = (item.mode == 1)? 'd-flex flex-row-reverse' : 'd-flex' %}
+        {% set reversedImage = (item.mode == 0) ? "mr-auto ml-auto" : "ml-auto mr-auto" %}
+        {% set qoute = (item.mode == 1)? 'qoute-left' : 'qoute-right' %}
+        <div class="container">
+            <div class="fdb-box shadow-sm {{ qoute }}">
+                <div class="row align-items-center {{ reverce }}">
+                    <div class="col-12 col-md-10 col-lg-8">
+                        {% if  item.description is not empty %}
+                            <div class="text-h3">{{ item.description.value|raw }}</div>
+                        {% endif %}
+                        {% if  item.name is not empty and item.role is not empty %}
+                            <p class="text-h3"><strong>{{ item.name }}</strong>&nbsp; &nbsp;&nbsp;<em>{{ item.role }}</em></p>
+                        {% endif %}
+                    </div>
+                    {% if  item.image.0 is not empty %}
+                    <div class="col-8 col-sm-6 col-md-2 col-lg-3 col-xl-2 mt-4 mt-md-0  {{ reversedImage }}">
+                        <img alt="{{ item.image_alt }}"
+                            class="lazyload img-fluid rounded-circle"
+                            src="{{ lqip_image }}"
+                            data-src="{{ profile_image }}">
+                    </div>
+                    {% endif %}
+                </div>
+            </div>  
+        </div>      
+    {% endfor %}     
+</div>

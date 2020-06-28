@@ -1,0 +1,8 @@
+langcode: en
+status: true
+dependencies: {  }
+name: 'Governance - Roles'
+vid: vactory_governance_role
+description: 'Roles of the government member.'
+hierarchy: 0
+weight: 0

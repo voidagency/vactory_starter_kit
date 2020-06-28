@@ -1,0 +1,5 @@
+vactory_dynamic_field.config:
+  title: 'Dynamic Field Settings'
+  route_name: vactory_dynamic_field.settings_form
+  description: 'Manage dynamic fields mode display.'
+  parent: system.admin_config_ui

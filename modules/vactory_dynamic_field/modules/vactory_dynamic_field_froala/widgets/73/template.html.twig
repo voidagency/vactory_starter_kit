@@ -1,0 +1,27 @@
+<div class="fdb-block fdb-viewport fdb-block-hasbackground">
+    <div class="container">
+        <div class="align-items-center justify-content-center d-flex">
+            <div class="row align-items-center text-left">
+                <div class="col-12 col-sm-10 col-md-8 col-lg-6">
+                    {% if content.0.title is not empty %}
+                        <h2>{{ content.0.title }}</h2>
+                    {% endif %}
+                    {% if content.0.description is not empty %}
+                        <p class="text-h3">{{ content.0.description }}</p>
+                    {% endif %}
+                    <p class="mt-5">
+                        {% if content.0.link_1 is not empty and content.0.link_alt_1 is not empty %}
+                            {% set link_target_1 = (content.0.link_target_1 > 0) ? '_blank' : '_self' %}
+                            <a class="btn btn-primary btn-shadow" href="{{ content.0.link_1 }}" target="{{ link_target_1 }}">{{ content.0.link_alt_1 }}</a>
+                        {% endif %}
+                        {% if content.0.link_2 is not empty and content.0.link_alt_2 is not empty %}
+                            {% set link_target_2 = (content.0.link_target_2 > 0) ? '_blank' : '_self' %}
+                            <a class="btn btn-white btn-shadow ml-4" href="{{ content.0.link_2 }}" target="{{ link_target_2 }}">{{ content.0.link_alt_2 }}</a>
+                        {% endif %}
+                    </p>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

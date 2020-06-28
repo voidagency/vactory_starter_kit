@@ -1,0 +1,40 @@
+<?php
+
+/**
+ * @file
+ * Primary hooks for vactory_login_token module.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Url;
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_login_token_theme($existing, $type, $theme, $path) {
+  return [
+    'token_details' => [
+      'variables' => [
+        'content' => NULL,
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_entity_operation().
+ */
+function vactory_login_token_entity_operation(EntityInterface $entity) {
+  $route_name = Drupal::routeMatch()->getRouteName();
+  if ($route_name == 'entity.user.collection') {
+    $userId = $entity->id();
+    $operations = [];
+    $link = Drupal::urlGenerator()->generateFromRoute('vactory_login_token.generate_token', ['user' => $userId], ['absolute' => TRUE]);
+    $operations['generateToken'] = [
+      'title' => t('Generate Token'),
+      'url' => Url::fromUri($link),
+      'weight' => 150,
+    ];
+    return $operations;
+  }
+}

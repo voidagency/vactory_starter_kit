@@ -1,0 +1,20 @@
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    {% for term in content.terms %}
+        {% set active = (loop.first) ? ' active' : '' %}
+
+        <li class="nav-item">
+            <a class="nav-link {{ active }}" id="solution-credit-{{ term.tid }}-tab" data-toggle="tab" href="#solution-credit-{{ term.tid }}" role="tab" aria-controls="home"
+               aria-selected="true">{{ term.name }}</a>
+        </li>
+    {% endfor %}
+</ul>
+
+<div class="tab-content" id="myTabContent">
+    {% for term in content.terms %}
+        {% set active = (loop.first) ? ' show active ' : '' %}
+
+        <div class="tab-pane fade {{ active }}" id="solution-credit-{{ term.tid }}" role="tabpanel" aria-labelledby="home-tab">
+            {{ drupal_view('vactory_governance', 'block_three_columns_navbar', term.tid) }}
+        </div>
+    {% endfor %}
+</div>

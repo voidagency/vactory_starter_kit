@@ -1,0 +1,35 @@
+<div class="t-key-figures-wrapper">
+  <div class="row  row-eq-height t-key-figures vf-slick-slider vf-slick-mobile">
+    {% for item in 0..4 %}
+      {% set random_text = random(50, 100) %}
+      {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/310/155.jpg" %}
+      <div class="col-sm-6 col-lg-4">
+        <div class="shadow text-center h-100 py-5 px-3">
+          <div class="t-key-figures-img mb-4 lazy-wrapper">
+            <img class="lazyload"
+                 src="{{ content.image_placeholder }}"
+                 data-src="{{ placehold }}"
+                 alt="Image Alt">
+          </div>
+          <p class="nbr stroke-style mb-4 wow">
+            <span class="js-number-animate" data-number="{{ random_text }}">{{ random_text }}</span> $
+          </p>
+          <p><strong>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has
+              been the industry's standard dummy text ever since the 1500s</strong></p>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  <div class="row">
+    <div class="t-key-figures-details mt-lg-4 mt-3 mb-3 col-12">
+      <p>
+        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's
+        standard dummy text ever since the 1500s
+      </p>
+    </div>
+    <p class="mx-auto">
+      <a href="#"
+         class="btn btn-lgbtn-outline-primary">Read More</a>
+    </p>
+  </div>
+</div>

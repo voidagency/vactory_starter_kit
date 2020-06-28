@@ -1,0 +1,74 @@
+{# UI components : Search, list ...#}
+<div class="block-location">
+
+    <div class="block-location-wrapper ">
+
+        {# Search input  #}
+        <div class="location-search">
+            <input type="button" class="btn-search">
+            <label>{{ 'Tapez une adresse' | t }}</label>
+            <input type="text" class="form-control input-search" id="vactory_locator_search_input" placeholder="{{ 'Saisissez votre adresse' | t }}">
+             <div class="close-button">
+                <a id="btn_clear_search" class="">
+                    <i class="icon-close"></i>
+                </a>
+             </div>
+            <input type="button" class="btn-gps">
+        </div>
+
+        {# Locations list #}
+        <div id="vactory_locator_locations_list_container" class="location-list mb-3">
+            <div class="agences-box">
+                <ul id="vactory_locator_locations_list">
+                </ul>
+            </div>
+            <div id="vactory_locator_pagination" class="nav-address ">
+                <div class="counting-result">
+                    <span id="vactory_locator_pagination_status" class="results"></span>
+                </div>
+                <div class="navigation">
+                    <a id="btn_pagination_prev">
+                        <i class="icon-chevron-left"></i>
+                    </a>
+                    <a id="btn_pagination_next">
+                        <i class="icon-chevron-right"></i>
+                    </a>
+
+                </div>
+            </div>
+        </div>
+
+        {% if enable_filter %}
+            {% if content.terms is not empty %}
+                {% include '@vactory_locator/locator-category-list.html.twig' with {
+                    'content': content,
+                } %}
+            {% endif %}
+        {% endif %}
+
+    </div>
+</div>
+
+{# Map #}
+<div class="location-map-wrapper">
+    <div id="vactory_locator_map" class="location-map loading"></div>
+</div>
+{# style="position: absolute; top: 25px; left: 25px; width:300px;" #}
+
+<div id="ModalGps" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header text-center">
+                <h4 class="modal-title">Error</h4>
+            </div>
+            <div class="modal-body">
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-sm btn-primary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>

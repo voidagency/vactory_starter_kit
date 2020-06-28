@@ -1,0 +1,18 @@
+<div class="fdb-block fdb-block-hasbackground">
+    <div class="container">
+        <div class="row">
+            <div class="col-12 col-sm-10 col-md-8 col-lg-6 text-left">
+                {% if content.0.title is not empty %}
+                     <h2>{{ content.0.title }}</h2>
+                {% endif %}
+                {% if content.0.description is not empty %}
+                     <p class="text-h3">{{ content.0.description }}</p>
+                {% endif %}
+                {% if content.0.link is not empty  and content.0.link_alt is not empty %}
+                    {% set link_target = (content.0.link_target > 0) ? '_blank' : '_self' %}
+                    <p class="mt-4"><a class="btn btn-primary" href="{{ content.0.link }}" target="{{ link_target }}">{{ content.0.link_alt }}</a></p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,88 @@
+<?php
+
+/**
+ * @file
+ * Primary hooks for vactory publication.
+ */
+
+use Drupal\views\ViewExecutable;
+use Drupal\block_content\Entity\BlockContent;
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_publication_theme() {
+  return [
+    // Node > card.
+    'node__vactory_publication__card'        => [
+      'base hook' => 'node',
+      'template'  => 'card',
+    ],
+    // Node > card inline.
+    'node__vactory_publication__card_inline' => [
+      'base hook' => 'node',
+      'template'  => 'card-inline',
+    ],
+    // Node > Masonry.
+    'node__vactory_publication__masonry'     => [
+      'base hook' => 'node',
+      'template'  => 'masonry',
+    ],
+    // Node > full.
+    'node__vactory_publication__full'        => [
+      'base hook' => 'node',
+      'template'  => 'full',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function vactory_publication_preprocess_node(&$variables) {
+  /** @var \Drupal\node\Entity\Node $node */
+  $node = $variables['node'];
+
+  if ($node->getType() == 'vactory_publication') {
+    if (isset($node->field_vactory_image)) {
+      $node->field_vactory_image[0]->title = $node->label();
+    }
+  }
+}
+
+/**
+ * Implements hook_views_pre_view().
+ */
+function vactory_publication_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
+  // Check if header is enabled.
+  $is_header_enabled = !empty($view->display_handler->options['header']) ? TRUE : FALSE;
+  if ($view->id() == 'vactory_publication' && $is_header_enabled) {
+    // Get the header block machine name.
+    $block_machine_name = $view->display_handler->options['header']['entity_block_content']['target'];
+    $entity_manager = \Drupal::service('entity_type.manager');
+    // Load Block by machine name.
+    $block = $entity_manager->getStorage('block_content')
+      ->loadByProperties(['block_machine_name' => $block_machine_name]);
+
+    if (is_array($block) && reset($block) instanceof BlockContent) {
+      // Get block view display.
+      $block_content = $entity_manager->getViewBuilder('block_content')
+        ->view(reset($block));
+      // Override the view header for the current display.
+      $item = [
+        'id' => 'area_text_custom',
+        'table' => 'views',
+        'field' => 'area_text_custom',
+        'relationship' => 'none',
+        'group_type' => 'none',
+        'admin_label' => '',
+        'empty' => TRUE,
+        'tokenize' => FALSE,
+        'content' => \Drupal::service('renderer')
+          ->render($block_content),
+        'plugin_id' => 'text_custom',
+      ];
+      $view->setHandler($display_id, 'header', 'area_text_custom', $item);
+    }
+  }
+}

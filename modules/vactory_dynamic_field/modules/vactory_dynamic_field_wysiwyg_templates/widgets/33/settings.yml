@@ -1,0 +1,21 @@
+name: "C33 - Template Texte et Image sur deux colonnes (image 20%)"
+multiple: TRUE
+category: 'Content'
+enabled: TRUE
+extra_fields:
+  introduction:
+    type: textarea
+    label: 'Introduction'
+fields:
+  image:
+    type: image
+    label: 'Thumbnail'
+  image_alt:
+    type: text
+    label: 'Image alt'
+  description:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'full_html'
+      '#required': TRUE

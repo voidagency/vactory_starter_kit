@@ -1,0 +1,26 @@
+google-map-field-renderer:
+  version: 1.x
+  js:
+    js/google-map-field-renderer.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/jquery.once
+
+google-map-field-widget-renderer:
+  version: 1.x
+  css:
+    theme:
+      css/google-map-field-widget-renderer.css: {}
+  js:
+    js/google-map-field-widget-renderer.js: {}
+    js/google-map-field-widget-renderer-previews.js: {}
+    js/google-map-field-widget-renderer-setter.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupal.dialog
+
+google-map-apis:
+  js:
+    //maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyAJgWnaxO5HqBSYjDGD0paJ1RGve2yaiuU&sensor=false: { type: external }

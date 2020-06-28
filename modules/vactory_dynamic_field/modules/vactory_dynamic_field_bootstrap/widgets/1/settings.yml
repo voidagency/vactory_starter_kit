@@ -1,0 +1,15 @@
+name: 'Bootstrap - Services Blocks'
+multiple: TRUE
+category: 'Content'
+enabled: TRUE
+fields:
+  title:
+      type: text
+      label: 'Title'
+      required: TRUE
+  description:
+        type: textarea
+        label: 'Description'
+  cta:
+      type: url_extended
+      label: 'Read More Link'

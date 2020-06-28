@@ -1,0 +1,28 @@
+name: '26 - Froala - Content 2 Blocks Title, Description With CTA'
+multiple: TRUE
+category: 'Froala'
+enabled: TRUE
+limit: 2
+fields:
+  title:
+    type: text
+    label: 'Titre'
+  description:
+    type: textarea
+    label: 'Description'
+  link:
+    type: url_extended
+    label: 'Lien'
+  link_alt:
+    type: text
+    label: 'Titre Lien'
+  link_target:
+    type: checkbox
+    label: 'Ouvrir dans une nouvelle fenêtre'
+extra_fields:
+  image:
+      type: image
+      label: 'Thumbnail'
+  image_alt:
+      type: text
+      label: 'Text alternatif'

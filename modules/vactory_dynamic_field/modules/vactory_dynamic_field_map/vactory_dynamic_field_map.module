@@ -1,0 +1,44 @@
+<?php
+
+/**
+ * @file
+ * Contain related hooks.
+ */
+
+use Drupal\media\Entity\Media;
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_dynamic_field_map_preprocess_vactory_dynamic_main(&$variables) {
+  if (
+    $variables['platform'] === 'vactory_dynamic_field_map' &&
+    $variables['content']['template'] == 1
+  ) {
+
+    $data = [];
+
+    if (is_array($variables['content']['components'])) {
+      foreach ($variables['content']['components'] as $item) {
+        /* @var \Drupal\media\Entity\Media $file */
+        $file = (isset($item['pin'][0])) ? Media::load((int) $item['pin'][0]) : NULL;
+        $pin_url = (isset($file->get('thumbnail')->entity)) ? file_create_url($file->get('thumbnail')->entity->getFileUri()) : '';
+
+        $data['locations'][] = [
+          'title'       => $item['title'] ?? '',
+          'description' => $item['description']['value']['#text'] ?? '',
+          'location'    => $item['location'],
+          'icon'        => $pin_url,
+        ];
+      }
+    }
+
+    $data['options'] = [
+      'center' => $variables['content']['extra_field']['map_center'],
+      'zoom'   => (int) $variables['content']['extra_field']['map_zoom'] ?? 4,
+      'style'  => $variables['content']['extra_field']['style'] ?? '[]',
+    ];
+
+    $variables['#attached']['drupalSettings']['vactory_map']['variant1'] = $data;
+  }
+}

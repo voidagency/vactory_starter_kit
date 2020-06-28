@@ -1,0 +1,30 @@
+<div class="t-two-sided-block-with-bg-cta">
+  <div class="row">
+    <div class="col-12">
+      <div class="t-content">
+        {% for item in content %}
+          {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : "" %}
+          {% set lqip_image = image_uri|image_style('lqip') %}
+          {% set fluid_image = file_url(image_uri) %}
+          <div class="t-item lazyload"
+               data-bg="{{ fluid_image }}"
+               style="background-image: url({{ lqip_image }})">
+            <div class="t-box text-center">
+              {% if item.entete is not empty %}
+                <span class="t-entete">{{ item.entete }}</span>
+              {% endif %}
+              {% if item.title is not empty %}
+                <h2>{{ item.title }}</h2>
+              {% endif %}
+              {% if item.details is not empty %}
+                <div class="t-box-details text-center">
+                  {{ item.details.value|raw }}
+                </div>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>

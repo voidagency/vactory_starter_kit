@@ -1,0 +1,28 @@
+<div class="fdb-block">
+    <div class="row text-center">
+        <div class="col-12">
+            <h2>There is a feature for everyone</h2>
+            <p><a href="#">Read More<i class="fas fa-angle-right"></i></a></p>
+        </div>
+    </div>
+    <div class="row text-center justify-content-center mt-5">
+        {% for item in 0..3 %}
+
+        {% if loop.index == 1 %}
+        <div class="col-10 col-sm-3">
+            {% else %}
+            <div class="col-10 col-sm-3 pt-5 pt-sm-0">
+                {% endif %}
+                {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/255/255.jpg" %}
+                <img alt="Image Alt"
+                    class="lazyload img-fluid"
+                    src="{{ content.image_placeholder }}"
+                    data-src="{{ placehold }}">
+                <h3><strong>Title</strong></h3>
+
+            </div>
+
+            {% endfor %}
+
+        </div>
+    </div>

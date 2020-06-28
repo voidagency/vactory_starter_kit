@@ -1,0 +1,16 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - focal_point
+name: testimonials_reversed_3col_x2
+label: 'Testimonials reversed 3col @x2'
+effects:
+  03f0572c-d003-4f8e-b668-3abc874303f2:
+    uuid: 03f0572c-d003-4f8e-b668-3abc874303f2
+    id: focal_point_scale_and_crop
+    weight: 1
+    data:
+      width: 100
+      height: 100
+      crop_type: focal_point

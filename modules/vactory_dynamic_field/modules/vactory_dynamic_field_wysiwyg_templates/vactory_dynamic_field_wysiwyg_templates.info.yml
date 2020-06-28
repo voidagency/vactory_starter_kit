@@ -1,0 +1,7 @@
+name: Vactory Dynamic Field Wysiwyg Templates
+type: module
+description: Wysiwyg Dynamic Field Templates.
+package: Vactory Dynamic
+core: 8.x
+dependencies:
+  - vactory_dynamic_field

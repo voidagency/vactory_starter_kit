@@ -1,0 +1,65 @@
+name: '1 - Map'
+multiple: TRUE
+category: 'Map'
+enabled: TRUE
+fields:
+  title:
+      type: text
+      label: 'Label'
+  description:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'full_html'
+  location:
+    type: text
+    label: 'Position'
+    options:
+      '#description': '<b>Exemple</b>: -25.363882, 131.044922 (lat, lng) - <a href="https://www.latlong.net/" target="_blank"><span class="ui-icon ui-icon-search page-title"></span> <span class="page-title">Trouver une position</span></a>'
+      '#required': TRUE
+      '#attributes':
+        'placeholder': '-25.363882, 131.044922'
+  pin:
+    type: image
+    label: 'Pin Icon'
+extra_fields:
+  map_center:
+    type: text
+    label: 'Centre initial de la carte'
+    options:
+      '#description': '<b>Exemple</b>: -25.363882, 131.044922 (lat, lng) - <a href="https://www.latlong.net/" target="_blank"><span class="ui-icon ui-icon-search page-title"></span> <span class="page-title">Trouver une position</span></a>'
+      '#required': TRUE
+      '#required': TRUE
+      '#attributes':
+        'placeholder': '-25.363882, 131.044922'
+  map_zoom:
+    type: select
+    label: 'Niveau de zoom de la carte'
+    options:
+      '#options':
+        - 0
+        - 1
+        - 2
+        - 3
+        - 4
+        - 5
+        - 6
+        - 7
+        - 8
+        - 9
+        - 10
+        - 11
+        - 12
+        - 13
+        - 14
+        - 15
+        - 16
+        - 17
+        - 18
+        - 19
+        - 20
+#  style:
+#    type: textarea
+#    label: 'Custom Style'
+#    options:
+#      '#description': '<a href="https://snazzymaps.com/explore" target="_blank"><span class="ui-icon ui-icon-search page-title"></span> <span class="page-title">Trouver un style</span></a>'

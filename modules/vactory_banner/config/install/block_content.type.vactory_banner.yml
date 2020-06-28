@@ -1,0 +1,7 @@
+langcode: en
+status: true
+dependencies: {  }
+id: vactory_banner
+label: Banner
+revision: 0
+description: 'Create <i>banners</i> for your pages.'

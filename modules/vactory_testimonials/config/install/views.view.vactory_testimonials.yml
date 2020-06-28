@@ -1,0 +1,720 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.vactory_card_minimal
+    - core.entity_view_mode.node.vactory_card_minimal_secondary
+    - entityqueue.entity_queue.vactory_testimonials_block_list
+    - entityqueue.entity_queue.vactory_testimonials_reversed
+    - entityqueue.entity_queue.vactory_testimonials_slider
+    - node.type.vactory_testimonials
+    - taxonomy.vocabulary.vactory_testimonials_profils
+  module:
+    - better_exposed_filters
+    - entityqueue
+    - node
+    - taxonomy
+    - user
+    - vactory_views
+id: vactory_testimonials
+label: 'Vactory Testimonials'
+module: views
+description: 'Find and manage testimonials.'
+tag: ''
+base_table: node_field_data
+base_field: nid
+core: 8.x
+display:
+  default:
+    display_plugin: default
+    id: default
+    display_title: Master
+    position: 0
+    display_options:
+      access:
+        type: perm
+        options:
+          perm: 'access content'
+      cache:
+        type: tag
+        options: {  }
+      query:
+        type: views_query
+        options:
+          disable_sql_rewrite: false
+          distinct: false
+          replica: false
+          query_comment: ''
+          query_tags: {  }
+      exposed_form:
+        type: basic
+        options:
+          submit_button: Appliquer
+          reset_button: false
+          reset_button_label: Réinitialiser
+          exposed_sorts_label: 'Sort by'
+          expose_sort_order: true
+          sort_asc_label: Ascendant
+          sort_desc_label: Descendant
+      pager:
+        type: some
+        options:
+          items_per_page: 3
+          offset: 0
+      style:
+        type: default
+      row:
+        type: 'entity:node'
+        options:
+          relationship: none
+          view_mode: vactory_card_minimal_secondary
+      fields:
+        title:
+          id: title
+          table: node_field_data
+          field: title
+          entity_type: node
+          entity_field: title
+          label: ''
+          alter:
+            alter_text: false
+            make_link: false
+            absolute: false
+            trim: false
+            word_boundary: false
+            ellipsis: false
+            strip_tags: false
+            html: false
+          hide_empty: false
+          empty_zero: false
+          settings:
+            link_to_entity: true
+          plugin_id: field
+          relationship: none
+          group_type: group
+          admin_label: ''
+          exclude: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: true
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_alter_empty: true
+          click_sort_column: value
+          type: string
+          group_column: value
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+      filters:
+        status:
+          value: '1'
+          table: node_field_data
+          field: status
+          plugin_id: boolean
+          entity_type: node
+          entity_field: status
+          id: status
+          expose:
+            operator: ''
+          group: 1
+        type:
+          id: type
+          table: node_field_data
+          field: type
+          value:
+            vactory_testimonials: vactory_testimonials
+          entity_type: node
+          entity_field: type
+          plugin_id: bundle
+      sorts: {  }
+      title: 'Vactory Testimonials'
+      header: {  }
+      footer: {  }
+      empty: {  }
+      relationships: {  }
+      arguments: {  }
+      display_extenders: {  }
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_content'
+        - 'languages:language_interface'
+        - 'user.node_grants:view'
+        - user.permissions
+      tags: {  }
+  block_list:
+    display_plugin: block
+    id: block_list
+    display_title: 'Block List'
+    position: 1
+    display_options:
+      display_extenders: {  }
+      title: 'Block List'
+      defaults:
+        title: false
+        pager: false
+        style: false
+        row: false
+        relationships: false
+        sorts: false
+        filters: false
+        filter_groups: false
+      display_description: ''
+      pager:
+        type: some
+        options:
+          items_per_page: 3
+          offset: 0
+      style:
+        type: default
+        options: {  }
+      row:
+        type: 'entity:node'
+        options:
+          relationship: none
+          view_mode: vactory_card_minimal
+      block_description: 'Testimonials > Block list'
+      relationships:
+        entityqueue_relationship:
+          id: entityqueue_relationship
+          table: node_field_data
+          field: entityqueue_relationship
+          relationship: none
+          group_type: group
+          admin_label: 'Content queue'
+          required: false
+          limit_queue: vactory_testimonials_block_list
+          entity_type: node
+          plugin_id: entity_queue
+      sorts:
+        entityqueue_relationship:
+          id: entityqueue_relationship
+          table: node_field_data
+          field: entityqueue_relationship
+          relationship: none
+          group_type: group
+          admin_label: ''
+          order: ASC
+          exposed: false
+          expose:
+            label: ''
+          entity_type: node
+          plugin_id: entity_queue_position
+      filters:
+        status:
+          value: '1'
+          table: node_field_data
+          field: status
+          plugin_id: boolean
+          entity_type: node
+          entity_field: status
+          id: status
+          expose:
+            operator: ''
+          group: 1
+        type:
+          id: type
+          table: node_field_data
+          field: type
+          value:
+            vactory_testimonials: vactory_testimonials
+          entity_type: node
+          entity_field: type
+          plugin_id: bundle
+        entityqueue_relationship:
+          id: entityqueue_relationship
+          table: node_field_data
+          field: entityqueue_relationship
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: '='
+          value: '1'
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          entity_type: node
+          plugin_id: entity_queue_in_queue
+      filter_groups:
+        operator: AND
+        groups:
+          1: AND
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_content'
+        - 'languages:language_interface'
+        - 'user.node_grants:view'
+        - user.permissions
+      tags:
+        - 'config:entityqueue.entity_queue.vactory_testimonials_block_list'
+        - entity_field_info
+        - views_data
+  block_list_customized:
+    display_plugin: block
+    id: block_list_customized
+    display_title: 'Block List reversed'
+    position: 4
+    display_options:
+      display_extenders: {  }
+      display_description: ''
+      block_description: 'Testimonials > Block list reversed'
+      relationships:
+        entityqueue_relationship:
+          id: entityqueue_relationship
+          table: node_field_data
+          field: entityqueue_relationship
+          relationship: none
+          group_type: group
+          admin_label: 'Content queue'
+          required: false
+          limit_queue: vactory_testimonials_reversed
+          entity_type: node
+          plugin_id: entity_queue
+      defaults:
+        relationships: false
+        filters: false
+        filter_groups: false
+        sorts: false
+      filters:
+        status:
+          value: '1'
+          table: node_field_data
+          field: status
+          plugin_id: boolean
+          entity_type: node
+          entity_field: status
+          id: status
+          expose:
+            operator: ''
+          group: 1
+        type:
+          id: type
+          table: node_field_data
+          field: type
+          value:
+            vactory_testimonials: vactory_testimonials
+          entity_type: node
+          entity_field: type
+          plugin_id: bundle
+        entityqueue_relationship:
+          id: entityqueue_relationship
+          table: node_field_data
+          field: entityqueue_relationship
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: '='
+          value: '1'
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          entity_type: node
+          plugin_id: entity_queue_in_queue
+      filter_groups:
+        operator: AND
+        groups:
+          1: AND
+      sorts:
+        entityqueue_relationship:
+          id: entityqueue_relationship
+          table: node_field_data
+          field: entityqueue_relationship
+          relationship: none
+          group_type: group
+          admin_label: ''
+          order: ASC
+          exposed: false
+          expose:
+            label: ''
+          entity_type: node
+          plugin_id: entity_queue_position
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_content'
+        - 'languages:language_interface'
+        - 'user.node_grants:view'
+        - user.permissions
+      tags:
+        - 'config:entityqueue.entity_queue.vactory_testimonials_reversed'
+        - entity_field_info
+        - views_data
+  block_slider:
+    display_plugin: block
+    id: block_slider
+    display_title: 'Block Slider'
+    position: 2
+    display_options:
+      display_extenders: {  }
+      style:
+        type: vactory_views_slider
+        options:
+          row_class: ''
+          default_row_class: true
+          uses_fields: false
+          slidesToShow: '3'
+          slidesToScroll: '3'
+          speed: '800'
+          infinite: 1
+          dots: 1
+          cssEase: 'cubic-bezier(0.585, -0.005, 0.635, 0.920)'
+      defaults:
+        style: false
+        row: false
+        title: false
+        pager: false
+        relationships: false
+        filters: false
+        filter_groups: false
+        sorts: false
+      row:
+        type: 'entity:node'
+        options:
+          relationship: none
+          view_mode: vactory_card_minimal
+      title: 'Block Slider'
+      pager:
+        type: some
+        options:
+          items_per_page: 12
+          offset: 0
+      display_description: ''
+      block_description: 'Testimonials > Block Slider'
+      relationships:
+        entityqueue_relationship:
+          id: entityqueue_relationship
+          table: node_field_data
+          field: entityqueue_relationship
+          relationship: none
+          group_type: group
+          admin_label: 'Content queue'
+          required: false
+          limit_queue: vactory_testimonials_slider
+          entity_type: node
+          plugin_id: entity_queue
+      filters:
+        status:
+          value: '1'
+          table: node_field_data
+          field: status
+          plugin_id: boolean
+          entity_type: node
+          entity_field: status
+          id: status
+          expose:
+            operator: ''
+          group: 1
+        type:
+          id: type
+          table: node_field_data
+          field: type
+          value:
+            vactory_testimonials: vactory_testimonials
+          entity_type: node
+          entity_field: type
+          plugin_id: bundle
+        entityqueue_relationship:
+          id: entityqueue_relationship
+          table: node_field_data
+          field: entityqueue_relationship
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: '='
+          value: '1'
+          group: 1
+          exposed: false
+          expose:
+            operator_id: ''
+            label: ''
+            description: ''
+            use_operator: false
+            operator: ''
+            identifier: ''
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          entity_type: node
+          plugin_id: entity_queue_in_queue
+      filter_groups:
+        operator: AND
+        groups:
+          1: AND
+      sorts:
+        entityqueue_relationship:
+          id: entityqueue_relationship
+          table: node_field_data
+          field: entityqueue_relationship
+          relationship: none
+          group_type: group
+          admin_label: ''
+          order: ASC
+          exposed: false
+          expose:
+            label: ''
+          entity_type: node
+          plugin_id: entity_queue_position
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_content'
+        - 'languages:language_interface'
+        - 'user.node_grants:view'
+        - user.permissions
+      tags:
+        - 'config:entityqueue.entity_queue.vactory_testimonials_slider'
+        - entity_field_info
+        - views_data
+  listing:
+    display_plugin: page
+    id: listing
+    display_title: Page
+    position: 3
+    display_options:
+      display_extenders: {  }
+      style:
+        type: vactory_views_grid
+        options:
+          uses_fields: false
+          xs: col-xs-12
+          sm: col-sm-6
+          md: col-md-4
+          lg: col-lg-4
+          wrapper_class_custom: eq-height
+          row_class_default: 1
+          row_class_custom: ''
+      defaults:
+        style: false
+        row: false
+        filters: false
+        filter_groups: false
+        sorts: false
+        title: false
+        pager: false
+        exposed_form: false
+        relationships: false
+      row:
+        type: 'entity:node'
+        options:
+          relationship: none
+          view_mode: vactory_card_minimal
+      path: testimonials
+      filters:
+        status:
+          value: '1'
+          table: node_field_data
+          field: status
+          plugin_id: boolean
+          entity_type: node
+          entity_field: status
+          id: status
+          expose:
+            operator: ''
+          group: 1
+        type:
+          id: type
+          table: node_field_data
+          field: type
+          value:
+            vactory_testimonials: vactory_testimonials
+          entity_type: node
+          entity_field: type
+          plugin_id: bundle
+        field_vactory_profils_target_id:
+          id: field_vactory_profils_target_id
+          table: node__field_vactory_profils
+          field: field_vactory_profils_target_id
+          relationship: none
+          group_type: group
+          admin_label: ''
+          operator: or
+          value: {  }
+          group: 1
+          exposed: true
+          expose:
+            operator_id: field_vactory_profils_target_id_op
+            label: Profils
+            description: ''
+            use_operator: false
+            operator: field_vactory_profils_target_id_op
+            identifier: field_vactory_profils_target_id
+            required: false
+            remember: false
+            multiple: false
+            remember_roles:
+              authenticated: authenticated
+              anonymous: '0'
+              administrator: '0'
+            reduce: false
+          is_grouped: false
+          group_info:
+            label: ''
+            description: ''
+            identifier: ''
+            optional: true
+            widget: select
+            multiple: false
+            remember: false
+            default_group: All
+            default_group_multiple: {  }
+            group_items: {  }
+          reduce_duplicates: false
+          type: select
+          limit: true
+          vid: vactory_testimonials_profils
+          hierarchy: false
+          error_message: true
+          plugin_id: taxonomy_index_tid
+      filter_groups:
+        operator: AND
+        groups:
+          1: AND
+      sorts:
+        created:
+          id: created
+          table: node_field_data
+          field: created
+          relationship: none
+          group_type: group
+          admin_label: ''
+          order: DESC
+          exposed: false
+          expose:
+            label: ''
+          granularity: second
+          entity_type: node
+          entity_field: created
+          plugin_id: date
+      title: Testimonials
+      pager:
+        type: full
+        options:
+          items_per_page: 9
+          offset: 0
+          id: 0
+          total_pages: null
+          tags:
+            previous: '‹ Previous'
+            next: 'Next ›'
+            first: '«'
+            last: '»'
+          expose:
+            items_per_page: false
+            items_per_page_label: 'Items per page'
+            items_per_page_options: '5, 10, 25, 50'
+            items_per_page_options_all: false
+            items_per_page_options_all_label: '- All -'
+            offset: false
+            offset_label: Offset
+          quantity: 9
+      exposed_form:
+        type: bef
+        options:
+          submit_button: Appliquer
+          reset_button: true
+          reset_button_label: Réinitialiser
+          exposed_sorts_label: 'Sort by'
+          expose_sort_order: true
+          sort_asc_label: Ascendant
+          sort_desc_label: Descendant
+          input_required: false
+          text_input_required: 'Sélectionnez n''importe quel filtre et cliquez sur Appliquer pour voir les résultats'
+          bef:
+            general:
+              allow_secondary: false
+              secondary_label: 'Options avancées'
+              autosubmit: false
+              autosubmit_hide: false
+            field_vactory_profils_target_id:
+              bef_format: default
+              more_options:
+                bef_select_all_none: false
+                bef_collapsible: false
+                is_secondary: false
+                rewrite:
+                  filter_rewrite_values: ''
+          text_input_required_format: basic_html
+      relationships: {  }
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_content'
+        - 'languages:language_interface'
+        - url
+        - url.query_args
+        - user
+        - 'user.node_grants:view'
+        - user.permissions
+      tags: {  }

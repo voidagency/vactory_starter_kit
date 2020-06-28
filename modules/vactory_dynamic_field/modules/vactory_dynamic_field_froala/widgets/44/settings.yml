@@ -1,0 +1,30 @@
+name: '44 - Froala - Testimonials 3 Cols Image, Description, Name & Role'
+multiple: TRUE
+category: 'Testimonials'
+enabled: TRUE
+fields:
+  image:
+    type: image
+    label: 'Image Profile'
+    options:
+      '#required': TRUE
+  image_alt:
+      type: text
+      label: 'Text alternatif'
+  description:
+    type: textarea
+    label: 'Description'
+    options:
+      '#required': TRUE
+  name:
+    type: text
+    label: 'Name'
+    options:
+      '#required': TRUE
+  role:
+    type: text
+    label: 'Role'
+extra_fields:
+  intro:
+    type: textarea
+    lable: 'Introduction'

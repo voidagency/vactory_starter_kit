@@ -1,0 +1,5 @@
+services:
+  vactory_espace_prive.route_subscriber:
+    class: Drupal\vactory_espace_prive\Routing\EspacePriveRouteSubscriber
+    tags:
+      - { name: event_subscriber }

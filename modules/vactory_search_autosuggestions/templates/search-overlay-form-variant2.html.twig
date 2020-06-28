@@ -1,0 +1,26 @@
+<div class="form-search-wrapper w-100">
+  <button class="close-search-overlay icon-close-spaced"></button>
+  <div class="form-search-input variant2_suggestion">
+    {% set search = form.search_api_fulltext %}
+    {% set attr = form.search_api_fulltext['#attributes'] %}
+    {% set attr = attr|merge({'placeholder': 'Que recherchez-vous ?'|t, 'name': 'search_api_fulltext', 'title': 'Veuillez tapez quelque chose'|t
+      }) %}
+    {% set search = search|merge({'#attributes': attr}) %}
+    {{ search }}
+    <div class="icon-search form-search-submit d-flex justify-content-center align-items-center">
+      {% set form_submit = form.submit %}
+      {% set attrib = form.submit['#attributes'] %}
+      {% set attrib = attrib|merge({'class': ['form-search-submit-input']}) %}
+      {% set form_submit = form_submit|merge({'#attributes': attrib}) %}
+      {{ form_submit }}
+    </div>
+  </div>
+  <div class="search__info pt-2 text-right">
+    <p>{{ 'Appuyer sur la touche " Entrée" du clavier pour lancer la recherche' | t }}
+      <i class="icon icon-enter"></i>
+    </p>
+  </div>
+</div>
+{{ form.form_build_id }}
+{{ form.form_token }}
+{{ form.form_id }}

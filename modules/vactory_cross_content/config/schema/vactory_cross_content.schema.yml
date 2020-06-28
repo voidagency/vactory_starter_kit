@@ -1,0 +1,10 @@
+block.settings.vactory_cross_content:
+  type: block_settings
+  label: 'Cross content basic settings'
+  mapping:
+    more_link:
+      type: text
+      label: 'More Link'
+    more_link_label:
+      type: text
+      label: 'More Link title'

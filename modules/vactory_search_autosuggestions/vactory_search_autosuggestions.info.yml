@@ -1,0 +1,7 @@
+name: search vactory autosuggest
+description: 'search vactory autosuggestions'
+type: module
+core: 8.x
+dependencies:
+  - vactory_search_overlay
+  - search_api_autocomplete

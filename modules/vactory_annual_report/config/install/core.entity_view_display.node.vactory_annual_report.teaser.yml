@@ -1,0 +1,31 @@
+langcode: en
+status: false
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.vactory_annual_report.field_ar_content_body
+    - field.field.node.vactory_annual_report.field_ar_media_type
+    - field.field.node.vactory_annual_report.field_ar_thematic
+    - field.field.node.vactory_annual_report.field_vactory_paragraphs
+    - node.type.vactory_annual_report
+  module:
+    - user
+id: node.vactory_annual_report.teaser
+targetEntityType: node
+bundle: vactory_annual_report
+mode: teaser
+content:
+  links:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  addtoany: true
+  field_ar_content_body: true
+  field_ar_media_type: true
+  field_ar_thematic: true
+  field_vactory_image: true
+  field_vactory_paragraphs: true
+  langcode: true
+  search_api_excerpt: true

@@ -1,0 +1,21 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: pathauto_content_press_releas_pattern
+label: 'Pathauto Content press release Pattern'
+type: 'canonical_entities:node'
+pattern: '/press_release/[node:title]'
+selection_criteria:
+  250445d2-822e-48d7-a69a-614c7b21ce41:
+    id: node_type
+    bundles:
+      vactory_press_release: vactory_press_release
+    negate: false
+    context_mapping:
+      node: node
+    uuid: 250445d2-822e-48d7-a69a-614c7b21ce41
+selection_logic: and
+weight: -9
+relationships: {  }

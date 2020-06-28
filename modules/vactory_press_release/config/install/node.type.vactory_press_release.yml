@@ -1,0 +1,9 @@
+langcode: en
+status: true
+name: 'Press Release'
+type: vactory_press_release
+description: 'Manage your Press Release content.'
+help: ''
+new_revision: true
+preview_mode: 1
+display_submitted: false

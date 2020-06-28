@@ -1,0 +1,32 @@
+langcode: en
+status: false
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.vactory_faq.body
+    - field.field.node.vactory_faq.field_faq
+    - node.type.vactory_faq
+  module:
+    - text
+    - user
+id: node.vactory_faq.teaser
+targetEntityType: node
+bundle: vactory_faq
+mode: teaser
+content:
+  body:
+    label: hidden
+    type: text_summary_or_trimmed
+    weight: 101
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    region: content
+hidden:
+  addtoany: true
+  field_faq: true
+  langcode: true
+  node_banner_image: true

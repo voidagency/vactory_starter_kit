@@ -1,0 +1,28 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_vactory_taxonomy_1
+    - node.type.vactory_governance
+    - taxonomy.vocabulary.vactory_governance_role
+id: node.vactory_governance.field_vactory_taxonomy_1
+field_name: field_vactory_taxonomy_1
+entity_type: node
+bundle: vactory_governance
+label: Role
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      vactory_governance_role: vactory_governance_role
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

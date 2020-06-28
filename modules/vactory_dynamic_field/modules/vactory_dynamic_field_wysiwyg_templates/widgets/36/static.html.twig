@@ -1,0 +1,31 @@
+<div class="t-card-inline-inversed-parent">
+  {% for item in 0..1 %}
+    {% set Inversed2 = ((loop.index is odd) == 1) ? "flex-lg-row-reverse text-lg-right" : "" %}
+    {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/555/277.jpg" %}
+
+    <div class="card card--inline d-flex flex-lg-row flex-column align-items-center {{ Inversed2 }}">
+      <div class="card-image--inline">
+        <a href="#">
+          <img class="lazyload"
+               src="{{ content.image_placeholder }}"
+               data-src="{{ placehold }}"
+               alt="Image Alt">
+        </a>
+      </div>
+      <div class="card-body--inline p-lg-4">
+        <div class="card-body">
+          <h4 class="card-title">Title 1
+            <br> Title 2
+          </h4>
+          <p class="card-text">
+            Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been
+            the industry's standard dummy text ever since the 1500s
+          </p>
+          <div class="card-read-more">
+            <a href="#" class="permalink">View More</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>

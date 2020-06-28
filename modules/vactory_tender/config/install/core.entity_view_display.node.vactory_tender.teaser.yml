@@ -1,0 +1,42 @@
+langcode: en
+status: false
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.vactory_tender.body
+    - field.field.node.vactory_tender.field_vactory_date
+    - field.field.node.vactory_tender.field_vactory_excerpt
+    - field.field.node.vactory_tender.field_vactory_media_document
+    - field.field.node.vactory_tender.field_vactory_media_file
+    - field.field.node.vactory_tender.field_vactory_reference
+    - node.type.vactory_tender
+  module:
+    - text
+    - user
+id: node.vactory_tender.teaser
+targetEntityType: node
+bundle: vactory_tender
+mode: teaser
+content:
+  body:
+    label: hidden
+    type: text_summary_or_trimmed
+    weight: 101
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  addtoany: true
+  field_vactory_date: true
+  field_vactory_excerpt: true
+  field_vactory_media_document: true
+  field_vactory_media_file: true
+  field_vactory_reference: true
+  langcode: true
+  node_banner_image: true

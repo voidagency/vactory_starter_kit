@@ -1,0 +1,65 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.vactory_paragraph_tab.field_tab_templates
+    - field.field.paragraph.vactory_paragraph_tab.field_vactory_title
+    - paragraphs.paragraphs_type.vactory_paragraph_tab
+  module:
+    - field_group
+    - vactory_dynamic_field
+third_party_settings:
+  field_group:
+    group_apparence:
+      children:
+        - paragraph_container
+        - paragraph_css_class
+        - paragraph_background_color
+        - paragraph_background_image
+        - paragraph_background_parallax
+      parent_name: ''
+      weight: 5
+      format_type: details
+      format_settings:
+        id: ''
+        classes: ''
+        description: ''
+        open: false
+        required_fields: true
+      label: Apparence
+      region: hidden
+id: paragraph.vactory_paragraph_tab.default
+targetEntityType: paragraph
+bundle: vactory_paragraph_tab
+mode: default
+content:
+  field_tab_templates:
+    weight: 2
+    settings: {  }
+    third_party_settings: {  }
+    type: field_wysiwyg_dynamic_widget
+    region: content
+  field_vactory_title:
+    weight: 0
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  paragraph_identifier:
+    type: string_textfield
+    weight: 1
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+hidden:
+  created: true
+  paragraph_background_color: true
+  paragraph_background_image: true
+  paragraph_background_parallax: true
+  paragraph_container: true
+  paragraph_css_class: true
+  status: true

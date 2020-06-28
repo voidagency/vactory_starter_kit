@@ -1,0 +1,18 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for vactory toolbox module.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_toolbox_theme() {
+  return [
+    'block_toolbox' => [
+      "variables" => ["content" => []],
+      "template"  => 'block-toolbox',
+    ],
+  ];
+}

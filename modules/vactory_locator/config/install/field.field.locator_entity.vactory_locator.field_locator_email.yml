@@ -1,0 +1,18 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.storage.locator_entity.field_locator_email
+    - vactory_locator.locator_entity_type.vactory_locator
+id: locator_entity.vactory_locator.field_locator_email
+field_name: field_locator_email
+entity_type: locator_entity
+bundle: vactory_locator
+label: Email
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: email

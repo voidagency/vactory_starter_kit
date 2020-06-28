@@ -1,0 +1,28 @@
+name: 'C22 - boxes with image and title with introduction'
+multiple: TRUE
+category: 'Content'
+enabled: TRUE
+fields:
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': TRUE
+  image_alt:
+    type: text
+    label: "Text alternative de l'image"
+  title:
+    type: text
+    label: 'Titre'
+    options:
+      '#required': TRUE
+  link:
+    type: url_extended
+    label: 'Lien'
+  link_target:
+    type: checkbox
+    label: "ouvrir le lien dans une nouvelle onglet"
+extra_fields:
+  intro:
+    type: textarea
+    label: 'Introduction'

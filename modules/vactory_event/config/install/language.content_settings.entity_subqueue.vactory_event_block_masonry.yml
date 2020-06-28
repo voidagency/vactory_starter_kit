@@ -1,0 +1,10 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - entityqueue.entity_queue.vactory_event_block_masonry
+id: entity_subqueue.vactory_event_block_masonry
+target_entity_type_id: entity_subqueue
+target_bundle: vactory_event_block_masonry
+default_langcode: current_interface
+language_alterable: false

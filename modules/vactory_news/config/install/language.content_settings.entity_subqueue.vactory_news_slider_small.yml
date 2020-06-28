@@ -1,0 +1,10 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - entityqueue.entity_queue.vactory_news_slider_small
+id: entity_subqueue.vactory_news_slider_small
+target_entity_type_id: entity_subqueue
+target_bundle: vactory_news_slider_small
+default_langcode: site_default
+language_alterable: false

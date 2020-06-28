@@ -1,0 +1,40 @@
+{% set image_uri = (content.0.image.0 is defined) ? get_image(content.0.image.0) : '' %}
+{% set fluid_image = image_uri|image_style('max_650x650') %}
+
+{% set floatedimg = (content.0.mode == 1)? 'left' : 'right' %}
+{% set floated = (content.0.mode == 1)? 'justify-content-end' : '' %}
+
+{% set link_target = (content.0.link_target > 0) ? '_blank' : '_self' %}
+{% set link_target_1 = (content.0.link_target_1 > 0) ? '_blank' : '_self' %}
+{% set link_target_2 = (content.0.link_target_2 > 0) ? '_blank' : '_self' %}
+{% set link_target_3 = (content.0.link_target_3 > 0) ? '_blank' : '_self' %}
+
+<div class="fdb-block pt-0 pb-0">
+    <div class="col-fill-{{ floatedimg }}" style="background-image: url({{ fluid_image }});"><!--#--></div>
+
+    <div class="pt-5 pb-5">
+        <div class="row {{ floated }}">
+            <div class="col-12 col-md-5 text-center">
+                {% if content.0.title is not empty %}
+                    <h2>{{ content.0.title }}</h2>
+                {% endif %}
+                {% if content.0.description is not empty %}
+                    <p class="text-h3">{{ content.0.description }}</p>
+                {% endif %}
+                {% if content.0.link is not empty and content.0.link_alt is not empty %}
+                    <p class="mt-4 mb-5">
+                        <a class="btn btn-primary" href="{{ content.0.link }}" target="{{ link_target_1 }}">{{ content.0.link_alt }}</a>
+                    </p>
+                {% endif %}
+                {% if content.0.social_url_1 is not empty or content.0.social_url_2 is not empty or content.0.social_url_3 is not empty %}
+                <p>Follow us on</p>
+                    <p>
+                        <a class="mx-2 text-secondary" href="{{ content.0.social_url_1 }}" target="{{ link_target_1 }}"><i aria-hidden="true" class="icon-{{ content.0.social_1 }}"><!--#--></i></a>
+                        <a class="mx-2 text-secondary" href="{{ content.0.social_url_2 }}" target="{{ link_target_2 }}"><i aria-hidden="true" class="icon-{{ content.0.social_2 }}"><!--#--></i></a>
+                        <a class="mx-2 text-secondary" href="{{ content.0.social_url_3 }}" target="{{ link_target_3 }}"><i aria-hidden="true" class="icon-{{ content.0.social_3 }}"><!--#--></i></a>
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,20 @@
+name: '14 - Froala - Content 2 Cols Thumbnail, Title & Description'
+multiple: TRUE
+category: 'Froala'
+enabled: TRUE
+limit: 2
+fields:
+  image:
+    type: image
+    label: 'Thumbnail'
+  image_alt:
+    type: text
+    label: 'Text alternatif'
+  title:
+    type: text
+    label: 'Titre'
+  description:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'full_html'

@@ -1,0 +1,10 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.vactory_ar_media_type
+id: taxonomy_term.vactory_ar_media_type
+target_entity_type_id: taxonomy_term
+target_bundle: vactory_ar_media_type
+default_langcode: site_default
+language_alterable: false

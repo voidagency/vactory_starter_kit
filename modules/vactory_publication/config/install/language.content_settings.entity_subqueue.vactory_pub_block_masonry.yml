@@ -1,0 +1,10 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - entityqueue.entity_queue.vactory_pub_block_masonry
+id: entity_subqueue.vactory_pub_block_masonry
+target_entity_type_id: entity_subqueue
+target_bundle: vactory_pub_block_masonry
+default_langcode: site_default
+language_alterable: false

@@ -1,0 +1,36 @@
+<div class="t-three-card-with-image-desc-link">
+  <div class="row vf-slick-slider vf-slick-mobile slick-padding justify-content-lg-center slick-arrows-mobile"
+       data-arrows="true"
+       data-mobile-arrows="true"
+  >
+    {% for item in content %}
+      {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : "" %}
+      {% set lqip_image = image_uri|image_style('lqip') %}
+      {% set fluid_image = file_url(image_uri) %}
+      {% set imageAlt = (item.image_alt is not empty) ? item.image_alt : "Image" %}
+
+      <div class="col-md-4">
+        <div class="t-box">
+          {% if item.image is not empty %}
+            <img alt="{{ imageAlt }}"
+                 class="img-fluid lazyload"
+                 src="{{ lqip_image }}"
+                 data-src="{{ fluid_image }}"/>
+          {% endif %}
+          <div class="t-box-description-link">
+            {% if item.description is not empty %}
+              <div class="t-box-description">
+                {{ item.description.value|raw }}
+              </div>
+            {% endif %}
+            {% if item.link is not empty and item.link_alt is not empty %}
+              {% set link_target = (item.link_target > 0) ? '_blank' : '_self' %}
+              <a href="{{ item.link }}" target="{{ link_target }}"
+                 class="permalink">{{ item.link_alt }}</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>

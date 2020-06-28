@@ -1,0 +1,170 @@
+display:
+  listing_one_column:
+    title: 'Blogs - Listing One Column'
+    path: vactory/blogs/listing-one-column
+    pager:
+      type: full
+      options:
+        items_per_page: 9
+    filters:
+      field_blog_category:
+        vid: vactory_blog_categories
+        exposed: true
+        type: select
+        expose:
+          label: 'Filter by category'
+          identifier: 'category'
+          required: false
+      created:
+        exposed: true
+        expose:
+          label: 'Filter by date'
+          identifier: 'date'
+          required: false
+    sorts:
+      created:
+        order: DESC
+        granularity: second
+  listing_two_columns:
+    title: 'Blogs - Listing Two Columns'
+    path: vactory/blogs/listing-two-columns
+    pager:
+      type: full
+      options:
+        items_per_page: 8
+    filters:
+      field_blog_category:
+        vid: vactory_blog_categories
+        exposed: true
+        type: select
+        expose:
+          label: 'Filter by category'
+          identifier: 'category'
+          required: false
+      created:
+        exposed: true
+        expose:
+          label: 'Filter by date'
+          identifier: 'date'
+          required: false
+    sorts:
+      created:
+        order: DESC
+        granularity: second
+  listing_three_columns:
+    title: 'Blogs - Listing Three Columns'
+    path: vactory/blogs/listing-three-columns
+    pager:
+      type: full
+      options:
+        items_per_page: 9
+    filters:
+      field_blog_category:
+        vid: vactory_blog_categories
+        exposed: true
+        type: select
+        expose:
+          label: 'Filter by category'
+          identifier: 'category'
+          required: false
+      created:
+        exposed: true
+        expose:
+          label: 'Filter by date'
+          identifier: 'date'
+          required: false
+    sorts:
+      created:
+        order: DESC
+        granularity: second
+  listing_masonry:
+    title: 'Blogs - Masonry'
+    path: vactory/blogs/listing-masonry
+    pager:
+      type: full
+      options:
+        items_per_page: 9
+    filters:
+      field_blog_category:
+        vid: vactory_blog_categories
+        exposed: true
+        type: select
+        expose:
+          label: 'Filter by category'
+          identifier: 'category'
+          required: false
+      created:
+        exposed: true
+        expose:
+          label: 'Filter by date'
+          identifier: 'date'
+          required: false
+    sorts:
+      created:
+        order: DESC
+        granularity: second
+  block_two_columns:
+    title: 'Block two columns'
+    see_more:
+      text: See more
+      url: vactory/blogs/listing-one-column
+    pager:
+      type: some
+      options:
+        items_per_page: 2
+    sorts:
+      created:
+        order: DESC
+        granularity: second
+  block_three_columns:
+    title: 'Block three columns'
+    see_more:
+      text: See more
+      url: vactory/blogs/listing-one-column
+    pager:
+      type: some
+      options:
+        items_per_page: 3
+    sorts:
+      created:
+        order: DESC
+        granularity: second
+  block_slider_small:
+    title: 'Block slider small'
+    see_more:
+      text: See more
+      url: vactory/blogs/listing-one-column
+    pager:
+      type: some
+      options:
+        items_per_page: 6
+    sorts:
+      created:
+        order: DESC
+        granularity: second
+  block_slider_large:
+    title: 'Block slider large'
+    see_more:
+      text: See more
+      url: vactory/blogs/listing-one-column
+    pager:
+      type: some
+      options:
+        items_per_page: 6
+    sorts:
+      created:
+        order: DESC
+        granularity: second
+  block_masonry:
+    title: 'Block Masonry'
+    see_more:
+      text: See more
+      url: vactory/blogs/listing-masonry
+    pager:
+      type: some
+      options:
+        items_per_page: 6
+    sorts:
+      created:
+        order: DESC
+        granularity: second

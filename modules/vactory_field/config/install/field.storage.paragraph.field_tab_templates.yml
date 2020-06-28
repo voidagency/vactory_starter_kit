@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - paragraphs
+    - vactory_dynamic_field
+id: paragraph.field_tab_templates
+field_name: field_tab_templates
+entity_type: paragraph
+type: field_wysiwyg_dynamic
+settings: {  }
+module: vactory_dynamic_field
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

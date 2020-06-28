@@ -1,0 +1,8 @@
+langcode: en
+status: true
+dependencies: {  }
+id: vactory_paragraph_tab
+label: 'Paragraph tab'
+icon_uuid: null
+description: 'Created to serve Multiple templates paragraph type.'
+behavior_plugins: {  }

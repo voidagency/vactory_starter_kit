@@ -1,0 +1,29 @@
+name: '30 - Froala - Team 4 Block Picto, Name & Role'
+multiple: TRUE
+category: 'Teams'
+enabled: TRUE
+limit: 4
+fields:
+  image:
+    type: image
+    label: 'Image Profile'
+    options:
+      '#required': TRUE
+  image_alt:
+      type: text
+      label: 'Text alternatif'
+  name:
+    type: text
+    label: 'Name'
+    options:
+      '#required': TRUE
+  role:
+    type: text
+    label: 'Role'
+extra_fields:
+  title:
+      type: text
+      label: 'Titre'
+  introduction:
+      type: textarea
+      label: 'Introduction'

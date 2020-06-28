@@ -1,0 +1,34 @@
+{% set image_uri = (content.0.image.0 is defined) ? get_image(content.0.image.0) : '' %}
+{% set image_fluid = image_uri|image_style('max_1300x1300') %}
+{% set lqip_image = image_uri|image_style('lqip') %}
+
+<div class="fdb-block pb-0">
+    <div class="row align-items-center text-left">
+        <div class="col-12 col-md-8">
+            {% if content.0.title is not empty %}
+                <h2>{{ content.0.title }}</h2>
+            {% endif %}
+            {% if content.0.description is not empty %}
+                <div class="text-h3">{{ content.0.description.value|raw }}</div>
+            {% endif %}
+        </div>
+        {% if content.0.link is not empty and content.0.link_alt is not empty %}
+            {% set link_target = (content.0.link_target > 0) ? '_blank' : '_self' %}
+            <div class="col-12 col-md-3 ml-auto text-left text-md-right">
+                <p><a class="btn btn-primary" href="{{ content.0.link }}" target="{{ link_target }}">{{ content.0.link_alt }}</a></p>
+            </div>
+        {% endif %}
+    </div>
+    {% if content.0.image.0 is not empty %}
+        <div class="row pt-5">
+            <div class="col-12">
+                <div class="lazy-wrapper">
+                    <img alt="{{ content.0.image_alt }}"
+                        class="lazyload img-fluid"
+                        src="{{ lqip_image }}"
+                        data-src="{{ image_fluid }}">
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>

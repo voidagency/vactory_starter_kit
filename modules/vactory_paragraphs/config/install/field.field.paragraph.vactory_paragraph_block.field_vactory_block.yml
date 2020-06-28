@@ -1,0 +1,21 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_vactory_block
+    - paragraphs.paragraphs_type.vactory_paragraph_block
+  module:
+    - block_field
+id: paragraph.vactory_paragraph_block.field_vactory_block
+field_name: field_vactory_block
+entity_type: paragraph
+bundle: vactory_paragraph_block
+label: Block
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  plugin_ids: {  }
+field_type: block_field

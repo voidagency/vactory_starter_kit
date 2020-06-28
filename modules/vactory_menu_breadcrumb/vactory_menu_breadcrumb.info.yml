@@ -1,0 +1,6 @@
+name: 'Menu Breadcrumb'
+type: module
+description: 'Create breadcrumbs from nested menu titles and/or taxonomy membership.'
+core: '8.x'
+package: Vactory Core
+configure: vactory_menu_breadcrumb.settings

@@ -1,0 +1,28 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_vactory_profils
+    - node.type.vactory_testimonials
+    - taxonomy.vocabulary.vactory_testimonials_profils
+id: node.vactory_testimonials.field_vactory_profils
+field_name: field_vactory_profils
+entity_type: node
+bundle: vactory_testimonials
+label: Profils
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      vactory_testimonials_profils: vactory_testimonials_profils
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

@@ -1,0 +1,14 @@
+name: "43 - Froala - Testimonials Listing 6 Company's With Background"
+multiple: TRUE
+category: 'Content'
+enabled: TRUE
+limit: 6
+fields:
+  logo:
+    type: image
+    label: 'Logo company'
+    option:
+     '#required': TRUE
+  image_alt:
+      type: text
+      label: 'Text alternatif'

@@ -1,0 +1,143 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.field.locator_entity.vactory_locator.field_locator_adress
+    - field.field.locator_entity.vactory_locator.field_locator_autre
+    - field.field.locator_entity.vactory_locator.field_locator_autre_2
+    - field.field.locator_entity.vactory_locator.field_locator_autre_3
+    - field.field.locator_entity.vactory_locator.field_locator_autre_4
+    - field.field.locator_entity.vactory_locator.field_locator_autre_5
+    - field.field.locator_entity.vactory_locator.field_locator_category
+    - field.field.locator_entity.vactory_locator.field_locator_description
+    - field.field.locator_entity.vactory_locator.field_locator_email
+    - field.field.locator_entity.vactory_locator.field_locator_fax
+    - field.field.locator_entity.vactory_locator.field_locator_image
+    - field.field.locator_entity.vactory_locator.field_locator_info
+    - field.field.locator_entity.vactory_locator.field_locator_phone
+    - field.field.locator_entity.vactory_locator.field_locator_zoom
+    - vactory_locator.locator_entity_type.vactory_locator
+  module:
+    - address
+    - image
+    - telephone
+    - vactory_google_map_field
+id: locator_entity.vactory_locator.default
+targetEntityType: locator_entity
+bundle: vactory_locator
+mode: default
+content:
+  field_locator_adress:
+    weight: 11
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: address_default
+    region: content
+  field_locator_autre:
+    weight: 3
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_locator_autre_2:
+    weight: 4
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_locator_autre_3:
+    weight: 5
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_locator_autre_4:
+    weight: 6
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_locator_autre_5:
+    weight: 7
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_locator_description:
+    weight: 2
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: basic_string
+    region: content
+  field_locator_email:
+    weight: 8
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: basic_string
+    region: content
+  field_locator_fax:
+    weight: 10
+    label: above
+    settings:
+      title: ''
+    third_party_settings: {  }
+    type: telephone_link
+    region: content
+  field_locator_image:
+    weight: 1
+    label: above
+    settings:
+      image_style: ''
+      image_link: ''
+    third_party_settings: {  }
+    type: image
+    region: content
+  field_locator_info:
+    weight: 12
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: vactory_google_map_field_default
+    region: content
+  field_locator_phone:
+    weight: 9
+    label: above
+    settings:
+      title: ''
+    third_party_settings: {  }
+    type: telephone_link
+    region: content
+  field_locator_zoom:
+    weight: 13
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  name:
+    label: above
+    type: string
+    weight: 0
+    region: content
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+hidden:
+  field_locator_category: true
+  langcode: true
+  search_api_excerpt: true
+  user_id: true

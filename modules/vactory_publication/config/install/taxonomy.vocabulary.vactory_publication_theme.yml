@@ -1,0 +1,8 @@
+langcode: en
+status: true
+dependencies: {  }
+name: 'Publication - Theme'
+vid: vactory_publication_theme
+description: 'Publication vocabulary.'
+hierarchy: 0
+weight: 0

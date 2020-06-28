@@ -1,0 +1,21 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.user.field_token_experation_date
+  module:
+    - user
+id: user.user.field_token_experation_date
+field_name: field_token_experation_date
+entity_type: user
+bundle: user
+label: 'Token Experation Date'
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    value: 1586508085
+default_value_callback: ''
+settings: {  }
+field_type: timestamp

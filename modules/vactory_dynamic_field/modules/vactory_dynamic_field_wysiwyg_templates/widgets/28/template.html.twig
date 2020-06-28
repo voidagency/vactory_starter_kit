@@ -1,0 +1,44 @@
+{% if extra_fields.intro is not empty %}
+  <div class="row justify-content-center t-intro-three-push-withtext">
+    <div class="col-12 text-center mb-3 mb-md-5 intro">
+      <p class="text-h3 m-auto font-24">
+        {{ extra_fields.intro }}
+      </p>
+    </div>
+  </div>
+{% endif %}
+<div class="row text-center t-three-push-withtext justify-content-center">
+  {% for item in content %}
+    {% set classes = loop.first ? '' : 'pt-3 pt-lg-0' %}
+    <div class="col-12 col-lg-3 {{ classes }}">
+      <div class="card shadow">
+        {% if item.image.0 is not empty %}
+          {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : '' %}
+          {% set lqip_image = image_uri|image_style('lqip') %}
+          {% set fluid_image = file_url(image_uri) %}
+          {% set image_alt = (item.image_alt is not empty) ? item.image_alt : '' %}
+          <div class="card-image card-image-l2 lazy-wrapper">
+            <img alt="{{ image_alt }}"
+                 class="img-fluid lazyload"
+                 src="{{ lqip_image }}"
+                 data-src="{{ fluid_image }}"/>
+          </div>
+        {% endif %}
+        {% if item.text_description is not empty %}
+          <div class="card-body pt-3">
+            <p>
+              <strong>{{ item.text_description }}</strong>
+            </p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  {% endfor %}
+</div>
+{% if extra_fields.link is not empty and extra_fields.link_alt %}
+  {% set link_target = (extra_fields.link_target > 0) ? '_blank' : '_self' %}
+  <div class="text-center">
+    <a href="{{ extra_fields.link }}" class="btn btn-outline-primary"
+       target="{{ link_target }}">{{ extra_fields.link_alt }}</a>
+  </div>
+{% endif %}

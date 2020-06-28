@@ -1,0 +1,53 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mt-2">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      {% for group, widgets in content.templates %}
+        {% set class_active = (content.current_cid == group) ? 'active' : '' %}
+        <li class="nav-item {{ class_active }}">
+          <a class="nav-link" href="{{ path('vactory_dynamic_field.widgets_list', {'cid': group}, {'query': {
+            'layout': 'preview',
+          }}) }}">{{ group }}</a>
+        </li>
+      {% endfor %}
+    </ul>
+    {#<form class="form-inline my-2 my-lg-0">#}
+      {#<input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search">#}
+      {#<button class="btn btn-outline-primary my-2 my-sm-0" type="submit">Search</button>#}
+    {#</form>#}
+  </div>
+</nav>
+
+{% for group, widgets in content.templates_filtered %}
+  <div id="templates-group--{{ loop.index }}">
+    {#<div class="p-5 mt-5 mb-5 bg-dark text-white rounded" style="background-color: #2196F3 !important;">#}
+      {#<h2 class="h2 text-center text-white mb-0"># {{ group|upper }} - TEMPLATES</h2>#}
+    {#</div>#}
+
+    {% for widget in widgets %}
+      <div class="template-df pt-3 pb-3">
+        <h2 class="h3 mt-3 pb-4 pt-5"><span class="badge badge-info float-right" style="background-color: #2196F3 !important;">{{ widget.uuid }}</span> # {{ widget.name }}</h2>
+        <hr class="mb-5">
+
+        {% if widget.static_widget %}
+          {% include widget.static_widget %}
+        {% else %}
+          <div class="alert alert-warning" role="alert">
+            {{ 'Template non disponible' }}
+          </div>
+        {% endif %}
+      </div>
+
+    {% endfor %}
+
+  </div>
+  <hr>
+{% endfor %}
+
+
+
+

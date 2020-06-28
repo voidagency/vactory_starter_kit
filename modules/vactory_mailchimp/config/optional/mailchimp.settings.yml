@@ -1,0 +1,6 @@
+api_key: aa0011a13a6538b4272277558e9884ff-us18
+cron: false
+batch_limit: 100
+api_classname: Mailchimp\Mailchimp
+test_mode: false
+langcode: fr

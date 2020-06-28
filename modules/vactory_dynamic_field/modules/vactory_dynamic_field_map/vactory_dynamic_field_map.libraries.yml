@@ -1,0 +1,7 @@
+variant1:
+  js:
+    https://maps.google.com/maps/api/js: {type: external}
+    js/variant1.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings

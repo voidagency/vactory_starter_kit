@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_titre_ancre
+    - paragraphs.paragraphs_type.vactory_paragraph_multi_template
+id: paragraph.vactory_paragraph_multi_template.field_titre_ancre
+field_name: field_titre_ancre
+entity_type: paragraph
+bundle: vactory_paragraph_multi_template
+label: 'Titre de l''ancre'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

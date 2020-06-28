@@ -1,0 +1,10 @@
+langcode: en
+status: true
+dependencies: {  }
+name: 'Appel d''offre'
+type: vactory_tender
+description: 'Manage your call for tenders content.'
+help: ''
+new_revision: true
+preview_mode: 0
+display_submitted: false

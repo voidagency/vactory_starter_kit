@@ -1,0 +1,48 @@
+<div class="fdb-block">
+
+  <div class="row justify-content-center pb-5">
+    <div class="col-12 text-center">
+      <h2>The big title of the block</h2>
+    </div>
+  </div>
+
+
+  {% set x = false %}
+  {% set wrapper_img = '' %}
+  {% set wrapper_class = '' %}
+  {% for item in content %}
+  {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/250/250.jpg" %}
+
+  {% if x %}
+    {% set x = false %}
+    {% set wrapper_class = 'm-md-auto order-md-5' %}
+    {% set wrapper_img = '' %}
+  {% else %}
+    {% set x = true %}
+    {% set wrapper_class = '' %}
+    {% set wrapper_img = 'm-md-auto order-md-5' %}
+  {% endif %}
+
+  {% if loop.last %}
+  <div class="row text-left align-items-center pt-4">
+    {% else %}
+    <div class="row text-left align-items-center pt-4 pb-md-4">
+      {% endif %}
+      <div class="col-md-5 {{ wrapper_img }}">
+        <div class="lazy-wrapper">
+          <img alt="Image Alt"
+               class="lazyload img-fluid"
+               src="{{ content.image_placeholder }}"
+               data-src="{{ placehold }}">
+        </div>
+      </div>
+      <div class="col-12 col-md-5 {{ wrapper_class }}">
+        <h2><strong>The title of the item</strong></h2>
+        <p class="text-h3">Maecenas tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit amet
+          adipiscing sem neque sed ipsum. Aenean viverra rhoncus pede. Etiam ut purus mattis mauris sodales
+          aliquam. Aliquam lobortis. Curabitur vestibulum aliquam leo.</p>
+        <p><a href="#" target="_blank">En savoir plus</a></p>
+      </div>
+    </div>
+    {% endfor %}
+  </div>

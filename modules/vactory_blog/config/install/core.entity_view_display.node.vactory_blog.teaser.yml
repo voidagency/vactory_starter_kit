@@ -1,0 +1,43 @@
+langcode: en
+status: false
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.vactory_blog.body
+    - field.field.node.vactory_blog.field_blog_category
+    - field.field.node.vactory_blog.field_blog_tags
+    - field.field.node.vactory_blog.field_vactory_excerpt
+    - field.field.node.vactory_blog.field_vactory_media
+    - field.field.node.vactory_blog.field_vactory_meta_tags
+    - node.type.vactory_blog
+  module:
+    - text
+    - user
+id: node.vactory_blog.teaser
+targetEntityType: node
+bundle: vactory_blog
+mode: teaser
+content:
+  body:
+    label: hidden
+    type: text_summary_or_trimmed
+    weight: 101
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  field_blog_category: true
+  field_blog_tags: true
+  field_vactory_excerpt: true
+  field_vactory_media: true
+  field_vactory_meta_tags: true
+  langcode: true
+  node_banner_image: true
+  search_api_excerpt: true

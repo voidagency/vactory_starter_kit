@@ -1,0 +1,28 @@
+<div class="fdb-block">
+            <div class="row">
+              <div class="col-12 text-center">
+                  <h2>{{ extra_fields.title }}</h2>
+              </div>
+            </div>
+    <div class="row text-left justify-content-center pt-5">
+        {% for item in 0..3 %}
+
+            {% if loop.index == 3 %}
+
+                </div><div class="row text-left justify-content-center pt-lg-4">
+
+            {% endif %}
+
+            {% if loop.index == 1 or loop.index == 3 %}
+                <div class="col-12 col-md-6 col-lg-5 m-auto">
+            {% else %}
+                <div class="col-12 col-md-6 col-lg-5 m-auto pt-3 pt-md-0">
+            {% endif %}
+                    <h3><strong>Title</strong></h3>
+                    <p class="text-h3">Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
+            </div>
+
+        {% endfor %}
+
+    </div>
+</div>

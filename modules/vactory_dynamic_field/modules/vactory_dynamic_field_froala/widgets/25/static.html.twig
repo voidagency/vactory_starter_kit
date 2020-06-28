@@ -1,0 +1,22 @@
+{% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/1300/1300.jpg" %}
+<div class="fdb-block">
+    <div class="row align-items-center">
+        <div class="col-6 col-lg-3">
+            <img alt="Image Alt"
+                class="img-fluid lazyload"
+                src="{{ content.image_placeholder }}"
+                data-src="{{ placehold }}">
+        </div>
+        <div class="col-6 col-lg-3">
+            <img alt="Image Alt"
+                class="img-fluid lazyload"
+                src="{{ content.image_placeholder }}"
+                data-src="{{ placehold }}">        
+        </div>
+        <div class="col-12 col-lg-6 pt-5 pt-lg-0">
+            <div class="text-h3 text-left">Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+                Lorem Ipsum has been the industry's standard dummy text ever since the 1500s.
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,5 @@
+vactory_search.admin:
+  title: Vactory search
+  description: "Manage vactory search settings."
+  route_name: vactory_search.settings
+  parent: system.admin_config_search

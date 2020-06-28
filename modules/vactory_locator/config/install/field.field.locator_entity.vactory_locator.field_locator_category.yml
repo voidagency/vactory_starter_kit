@@ -1,0 +1,28 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.locator_entity.field_locator_category
+    - taxonomy.vocabulary.locator_category
+    - vactory_locator.locator_entity_type.vactory_locator
+id: locator_entity.vactory_locator.field_locator_category
+field_name: field_locator_category
+entity_type: locator_entity
+bundle: vactory_locator
+label: Category
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      locator_category: locator_category
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

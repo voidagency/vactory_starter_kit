@@ -1,0 +1,34 @@
+langcode: en
+status: false
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.vactory_press_release.field_press_release_theme
+    - field.field.node.vactory_press_release.field_vactory_date
+    - field.field.node.vactory_press_release.field_vactory_document
+    - field.field.node.vactory_press_release.field_vactory_excerpt
+    - field.field.node.vactory_press_release.field_vactory_media
+    - field.field.node.vactory_press_release.field_vactory_meta_tags
+    - node.type.vactory_press_release
+  module:
+    - user
+id: node.vactory_press_release.teaser
+targetEntityType: node
+bundle: vactory_press_release
+mode: teaser
+content:
+  links:
+    weight: 100
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  field_press_release_theme: true
+  field_vactory_date: true
+  field_vactory_document: true
+  field_vactory_excerpt: true
+  field_vactory_media: true
+  field_vactory_meta_tags: true
+  langcode: true
+  search_api_excerpt: true

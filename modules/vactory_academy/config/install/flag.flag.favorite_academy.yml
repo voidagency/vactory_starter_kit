@@ -1,0 +1,35 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+  enforced:
+    module:
+      - vactory_academy
+id: favorite_academy
+label: 'Favorite academy'
+bundles:
+  - vactory_academy
+entity_type: node
+global: false
+weight: 0
+flag_short: 'Flag this item'
+flag_long: ''
+flag_message: ''
+unflag_short: 'Unflag this item'
+unflag_long: ''
+unflag_message: ''
+unflag_denied_text: ''
+flag_type: 'entity:node'
+link_type: reload
+flagTypeConfig:
+  show_in_links:
+    card: card
+    card_inline: card_inline
+    full: full
+  show_as_field: true
+  show_on_form: false
+  show_contextual_link: false
+  extra_permissions:
+    owner: '0'
+linkTypeConfig: {  }

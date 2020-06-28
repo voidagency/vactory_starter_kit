@@ -1,0 +1,40 @@
+<div class="vf-slider-content-avec-background">
+  {% set image_uri = (extra_fields.image.0 is defined) ? get_image(extra_fields.image.0) : '' %}
+  {% set fluid_img = file_url(image_uri) %}
+  {% set lqip_img = image_uri|image_style('lqip') %}
+  {% set arrows = (extra_fields.arrows > 0) ? 'true' : 'false' %}
+  {% set dots = (extra_fields.dots > 0) ? 'true' : 'false' %}
+
+  <div class="vf-slider-content-bg py-5 lazyload"
+       data-bg="{{ fluid_img }}"
+       style="background-image: url({{ lqip_img }})">
+    <div class="container">
+      <div class="vf-content-bg-slides vf-slick-slider"
+           data-arrows="{{ arrows }}"
+           data-dots="{{ dots }}">
+        {% for item in content %}
+          <div class="vf-content-bg-slide d-flex align-items-center justify-content-center text-center">
+            <div class="vf-bg-content">
+              {% if item.title is not empty %}
+                <h3 class="vf-bg-content--title">{{ item.title }}</h3>
+              {% endif %}
+              {% if item.description is not empty %}
+                <p class="vf-bg-content--text">{{ item.description }}</p>
+              {% endif %}
+              {% if item.link is not empty and item.link_alt is not empty %}
+                {% set link_target = (item.link_target > 0) ? '_blank' : '_self' %}
+                <p class="vf-bg-content--link">
+                  <a class="btn btn-outline-light"
+                     target="{{ link_target }}"
+                     href="{{ item.link }}">
+                    {{ item.link_alt }}
+                  </a>
+                </p>
+              {% endif %}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>

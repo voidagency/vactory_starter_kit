@@ -1,0 +1,46 @@
+vactory_login_token.generate_token:
+  path: 'admin/people/tokenGenerate/{user}'
+  defaults:
+    _controller: '\Drupal\vactory_login_token\Controller\TokenGenerateController::content'
+    _title: 'generate token'
+  requirements:
+    _permission: 'Administrer Token Login'
+vactory_login_token.regenerate_token:
+  path: 'admin/people/tokenRegenerate/{user}'
+  defaults:
+    _controller: '\Drupal\vactory_login_token\Controller\TokenGenerateController::regenerer'
+    _title: 'generate token'
+  requirements:
+    _permission: 'Administrer Token Login'
+vactory_login_token.login_with_token:
+  path: 'tokengenerate/login/{id}/{token}'
+  defaults:
+    _controller: '\Drupal\vactory_login_token\Controller\TokenGenerateController::login'
+    _title: 'login'
+  requirements:
+    _permission: 'access content'
+vactory_login_token.authentication_profile:
+  path: 'user/'
+  requirements:
+    _role: 'authenticated'
+vactory_login_token.settings:
+  path: 'admin/people/tokenLogin/settings'
+  defaults:
+    _controller: '\Drupal\vactory_login_token\Form\configTokenForm'
+    _title: 'settings Token login'
+  requirements:
+    _permission: 'Administrer Token Login'
+auto_login_url.settings:
+  path: '/admin/people/autologinurl'
+  defaults:
+    _form: '\Drupal\vactory_login_token\Form\ConfigForm'
+    _title: 'Settings'
+  requirements:
+    _permission: 'Administrer Token Login'
+auto_login_url.generation_en_masse:
+  path: '/admin/people/generationEnMasseToken'
+  defaults:
+    _form: '\Drupal\vactory_login_token\Form\ConfigFormGenerationEnMasse'
+    _title: 'Token: Generation en masse'
+  requirements:
+    _permission: 'Administrer Token Login'

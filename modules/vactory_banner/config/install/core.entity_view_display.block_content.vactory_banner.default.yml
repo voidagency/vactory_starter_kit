@@ -1,0 +1,81 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - block_content.type.vactory_banner
+    - field.field.block_content.vactory_banner.body
+    - field.field.block_content.vactory_banner.field_background_color
+    - field.field.block_content.vactory_banner.field_banner_image_mobile
+    - field.field.block_content.vactory_banner.field_vactory_blocks_multiple
+    - field.field.block_content.vactory_banner.field_vactory_flag
+    - field.field.block_content.vactory_banner.field_vactory_media
+    - field.field.block_content.vactory_banner.field_vactory_title
+  module:
+    - block_field
+    - jquery_colorpicker
+    - text
+id: block_content.vactory_banner.default
+targetEntityType: block_content
+bundle: vactory_banner
+mode: default
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 0
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_background_color:
+    type: jquery_colorpicker_raw_hex_display
+    weight: 4
+    region: content
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+  field_banner_image_mobile:
+    type: entity_reference_entity_view
+    weight: 6
+    label: above
+    settings:
+      view_mode: default
+      link: false
+    third_party_settings: {  }
+    region: content
+  field_vactory_blocks_multiple:
+    weight: 2
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: block_field
+    region: content
+  field_vactory_flag:
+    weight: 1
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    type: boolean
+    region: content
+  field_vactory_media:
+    type: entity_reference_entity_view
+    weight: 5
+    label: above
+    settings:
+      view_mode: default
+      link: false
+    third_party_settings: {  }
+    region: content
+  field_vactory_title:
+    weight: 3
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden:
+  langcode: true
+  search_api_excerpt: true

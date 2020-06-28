@@ -1,0 +1,10 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - entityqueue.entity_queue.vactory_blog_slider_small
+id: entity_subqueue.vactory_blog_slider_small
+target_entity_type_id: entity_subqueue
+target_bundle: vactory_blog_slider_small
+default_langcode: current_interface
+language_alterable: false

@@ -1,0 +1,103 @@
+/*******************
+Header 6
+*******************/
+$vh6-link-color: #FFFFFF !default;
+$vh6-link-size: 18px !default;
+$vh6-link-padding: 15px 15px !default;
+
+.vh-header-6 {
+  @include media-breakpoint-up(lg) {
+    &.bottom {
+      top: -160px;
+    }
+
+    &.top {
+      top: -93px;
+    }
+  }
+  @include media-breakpoint-down(md) {
+    &.bottom {
+      top: -173px;
+    }
+
+    &.top {
+      top: -93px;
+    }
+  }
+
+  .vh-header {
+    &__top {
+      background: black;
+    }
+
+    &__top-wrapper {
+      display        : flex;
+      align-items    : center;
+      flex-direction : row;
+      justify-content: space-between;
+    }
+
+    &__middle-wrapper {
+      display        : flex;
+      align-items    : center;
+      justify-content: space-between;
+      padding        : 10px;
+    }
+
+    &__bottom-wrapper {
+      position       : relative;
+      display        : flex;
+      align-items    : center;
+      justify-content: flex-end;
+      padding        : 0 10px;
+      background     : $gray-500;
+    }
+
+    &__bottom-right {
+      display: flex;
+      flex   : 1;
+    }
+
+    &__branding {
+      margin-right: auto;
+    }
+
+    &__menu {
+      margin-left: auto;
+      // .navbar-nav {
+      //   > .dropdown {
+      //     &,
+      //     &:hover {
+      //       .dropdown-menu {
+      //         margin-top: 10px;
+      //       }
+      //     }
+      //   }
+      // }
+    }
+
+    &__social-link {
+      span.fa {
+        color: $white;
+      }
+    }
+  }
+}
+/*
+* Mobile Layer Style
+*/
+.vhm-header-6 {
+  .vhm-header {
+    &__branding {
+      margin-bottom: 20px;
+    }
+
+    &__language-drop-switcher {
+      margin-bottom: 20px;
+    }
+
+    &__menu {
+      margin-bottom: 20px;
+    }
+  }
+}

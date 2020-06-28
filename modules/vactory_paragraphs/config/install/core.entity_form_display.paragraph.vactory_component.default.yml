@@ -1,0 +1,134 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.vactory_component.field_titre_ancre
+    - field.field.paragraph.vactory_component.field_vactory_component
+    - field.field.paragraph.vactory_component.field_vactory_flag
+    - field.field.paragraph.vactory_component.field_vactory_flag_2
+    - field.field.paragraph.vactory_component.field_vactory_title
+    - paragraphs.paragraphs_type.vactory_component
+  module:
+    - field_group
+    - jquery_colorpicker
+    - media_library
+    - vactory_dynamic_field
+third_party_settings:
+  field_group:
+    group_appearance:
+      children:
+        - paragraph_identifier
+        - paragraph_container
+        - paragraph_css_class
+        - paragraph_background_color
+        - paragraph_background_image
+        - paragraph_background_parallax
+      parent_name: ''
+      weight: 5
+      format_type: details
+      format_settings:
+        id: ''
+        classes: ''
+        open: false
+        required_fields: true
+      label: Appearance
+      region: content
+id: paragraph.vactory_component.default
+targetEntityType: paragraph
+bundle: vactory_component
+mode: default
+content:
+  field_titre_ancre:
+    weight: 3
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_vactory_component:
+    weight: 4
+    settings: {  }
+    third_party_settings: {  }
+    type: field_wysiwyg_dynamic_widget
+    region: content
+  field_vactory_flag:
+    weight: 1
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    type: boolean_checkbox
+    region: content
+  field_vactory_flag_2:
+    weight: 2
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    type: boolean_checkbox
+    region: content
+  field_vactory_title:
+    weight: 0
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  moderation_state:
+    type: moderation_state_default
+    weight: 4
+    settings: {  }
+    region: content
+    third_party_settings: {  }
+  paragraph_background_color:
+    type: jquery_colorpicker
+    weight: 3
+    region: content
+    settings:
+      color: null
+    third_party_settings: {  }
+  paragraph_background_image:
+    type: media_library_widget
+    weight: 4
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  paragraph_background_parallax:
+    type: boolean_checkbox
+    settings:
+      display_label: true
+    weight: 5
+    region: content
+    third_party_settings: {  }
+  paragraph_container:
+    type: options_select
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  paragraph_css_class:
+    type: string_textfield
+    weight: 2
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  paragraph_identifier:
+    type: string_textfield
+    settings:
+      size: 60
+      placeholder: ''
+    weight: 0
+    region: content
+    third_party_settings: {  }
+  translation:
+    weight: 6
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  created: true
+  metatag: true
+  status: true
+  uid: true

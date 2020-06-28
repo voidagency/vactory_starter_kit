@@ -1,0 +1,29 @@
+{% set image_uri = (content.0.image.0 is defined) ? get_image(content.0.image.0) : "" %}
+{% set lqip_image = image_uri|image_style('lqip') %}
+{% set fluid_image = file_url(image_uri) %}
+{% set _imgVideo = (content.0.video is not empty) ? 'js-img-video' : null %}
+{% set imageAlt = (content.0.image_alt is not empty) ? content.0.image_alt : "Image" %}
+
+<div class="t-video-youtube-with-content js-img-video">
+  <div class="row">
+    <div class="col-12">
+      <div class="block-image">
+        {% if content.0.video is not empty %}
+          <a class="image-scale" data-fancybox href="{{ "https://www.youtube-nocookie.com/embed/" ~ content.0.video }}">
+        {% endif %}
+            <div class="lazy-wrapper">
+              <img alt="{{ imageAlt }}"
+                   class="img-fluid lazyload"
+                   src="{{ lqip_image }}"
+                   data-src="{{ fluid_image }}">
+            </div>
+        {% if content.0.video is not empty %} </a> {% endif %}
+      </div>
+      {% if content.0.description is not empty %}
+        <div class="t-video-youtube-description">
+          {{ content.0.description.value | raw }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>

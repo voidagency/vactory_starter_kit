@@ -1,0 +1,21 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: pathauto_content_partner_pattern
+label: 'Pathauto Content Partner Pattern'
+type: 'canonical_entities:node'
+pattern: '/partner/[node:title]'
+selection_criteria:
+  bdf293c2-204f-48d1-991a-85f2599c4bbc:
+    id: node_type
+    bundles:
+      vactory_partner: vactory_partner
+    negate: false
+    context_mapping:
+      node: node
+    uuid: bdf293c2-204f-48d1-991a-85f2599c4bbc
+selection_logic: and
+weight: -5
+relationships: {  }

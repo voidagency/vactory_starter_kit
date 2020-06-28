@@ -1,0 +1,27 @@
+name: 'S06 - FadeIn Slider'
+multiple: TRUE
+category: 'Sliders'
+enabled: TRUE
+fields:
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': TRUE
+  image_alt:
+    type: text
+    label: "texte alternative de l'image"
+  title:
+    type: text
+    label: 'Titre'
+    options:
+      '#required': TRUE
+  description:
+    type: textarea
+    label: 'Description'
+    options:
+      '#required': TRUE
+extra_fields:
+  reverse:
+    type: checkbox
+    label: 'Version inverser'

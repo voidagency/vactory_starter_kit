@@ -1,0 +1,8 @@
+langcode: en
+status: true
+dependencies: {  }
+name: 'News - Theme'
+vid: vactory_news_theme
+description: 'News vocabulary.'
+hierarchy: 0
+weight: 0

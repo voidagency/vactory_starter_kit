@@ -1,0 +1,44 @@
+name: 'S08 - Slider content avec background'
+multiple: TRUE
+category: 'Sliders'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: 'Titre'
+    options:
+      '#required': TRUE
+  description:
+    type: textarea
+    label: 'Description'
+    options:
+      '#required': TRUE
+  link:
+    type: url_extended
+    label: 'Lien'
+    placeholder_value: 'https://www.google.com'
+    options:
+      '#required': TRUE
+  link_alt:
+    type: text
+    label: 'Texte du lien'
+    options:
+      '#required': TRUE
+  link_target:
+    type: checkbox
+    label: 'Ouvrir le lien dans une nouvelle tabs'
+extra_fields:
+  image:
+    type: image
+    label: 'background'
+    options:
+      '#required': TRUE
+  arrows:
+    type: checkbox
+    label: 'Afficher buttons de navigation'
+  dots:
+    type: checkbox
+    label: 'Afficher paginations'
+    options:
+      '#checked': 'checked'
+

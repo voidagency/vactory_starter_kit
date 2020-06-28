@@ -1,0 +1,41 @@
+name: '66 - Froala - CTA Title, Description With Image Right'
+multiple: FALSE
+category: 'Call to action'
+enabled: TRUE
+fields:
+  titleglobal:
+    type: text
+    label: 'Titre Global'
+    options:
+      '#required': TRUE
+  introduction:
+    type: textarea
+    label: 'Introduction'
+    options:
+      '#required': TRUE
+  title:
+    type: text
+    label: 'Titre'
+  description:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'full_html'
+  link:
+    type: url_extended
+    label: 'Lien'
+  link_alt:
+    type: text
+    label: 'Titre lien'
+  link_target:
+    type: checkbox
+    label: 'Ouvrir dans une nouvelle fenêtre'
+  image:
+    type: image
+    label: 'Image'
+  image_alt:
+      type: text
+      label: 'Text alternatif'
+  mode:
+    type: checkbox
+    label: 'Activer le mode inversé '

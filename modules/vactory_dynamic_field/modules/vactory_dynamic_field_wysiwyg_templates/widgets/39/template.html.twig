@@ -1,0 +1,20 @@
+<div class="t-pushes-with-icons-titles row justify-content-center">
+  {% for item in content %}
+    {% set bg_color = (item.box_color is not empty) ? item.box_color : ' ' %}
+    {% set link_target = (item.link_target > 0) ? '_blank' : '_self' %}
+    <div class="col-lg-3 col-md-6 col-12">
+      <div class="t-box d-flex justify-content-center align-items-center flex-column mb-3">
+        {% if item.box_icon is not empty %}
+          <i class="mb-4 {{ item.box_icon }}"></i>
+        {% endif %}
+        {% if item.title is not empty %}
+          <h5>
+            {% if item.link is not empty %} <a href="{{ item.link }}" target="{{ link_target }}"> {% endif %}
+              {{ item.title }}
+              {% if item.link is not empty %} </a>{% endif %}
+          </h5>
+        {% endif %}
+      </div>
+    </div>
+  {% endfor %}
+</div>

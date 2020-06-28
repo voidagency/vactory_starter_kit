@@ -1,0 +1,135 @@
+$so2-background: rgba(0, 0, 0, .85);
+$so2-height-desktop: 220px;
+$so2-input-border: 2px solid #666;
+$so2-font-size: 16px;
+$so2-text-color: $white;
+$so2-close-button-font-size: 18px;
+$so2-search-wrapper-padding: 100px 0 0;
+$so2-search-wrapper-padding-mobile: 100px 0;
+$so2-info-font-size: 13px;
+$so2-info-text-color: $white;
+
+.search-overlay-variant2 {
+  background-color: $so2-background;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  opacity: 0;
+  height: 0;
+  overflow: hidden;
+  transition: all .5s ease;
+  z-index: 9999;
+  &.open {
+    opacity: 1;
+    height: 100%;
+  }
+  .container {
+    height: 100%;
+  }
+  .search-block-form {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+  .form-search-wrapper {
+    position: relative;
+    @include rem(padding, $so2-search-wrapper-padding-mobile);
+  }
+  .form-search-input {
+    width: 100%;
+    position: relative;
+  }
+  .form-search-input-text {
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    border-bottom: 1px solid #666;
+    width: 100%;
+    @include rem(padding, 10px 20px 5px 0);
+    color: white;
+    @include rem(font-size, 24px);
+  }
+  .form-search-submit {
+    width: 40px;
+    height: 100%;
+    position: absolute;
+    top: 0;
+    right: 0;
+    overflow: hidden;
+    cursor: pointer;
+    &:before {
+      @include rem(font-size, 27px);
+      color: white;
+      text-align: center;
+      margin: 0 auto;
+      display: inline-block;
+    }
+    input {
+      opacity: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      position: absolute;
+    }
+  }
+  .close-search-overlay {
+    position: absolute;
+    right: 0;
+    top: 0;
+    border: none;
+    transition: transform .3s ease;
+    @include rem(font-size, $so2-close-button-font-size);
+    @include rem(padding, 8px);
+    background-color: transparent;
+    color: white;
+
+    &:hover {
+      transform: rotate(180deg);
+    }
+  }
+  .search__info {
+    @include rem(font-size, $so2-info-font-size);
+    color: $so2-info-text-color;
+  }
+}
+
+
+@include media-breakpoint-up(lg) {
+  .search-overlay-variant2 {
+    &.open {
+      opacity: 1;
+      height: $so2-height-desktop;
+    }
+    > .container {
+      height: 100%;
+    }
+    .search-block-form {
+      height: auto;
+      display: block;
+    }
+    .form-search-wrapper {
+      @include rem(padding, $so2-search-wrapper-padding);
+    }
+    .form-search-input-text {
+      border-bottom: $so2-input-border;
+      color: $so2-text-color;
+      width: 100%;
+      @include rem(font-size, $so2-font-size);
+      @include rem(padding, 10px 20px 5px 0);
+
+    }
+    .form-search-submit {
+      &:before {
+        @include rem(font-size, 20px);
+      }
+    }
+    .close-search-overlay {
+      top: 30px;
+      &:hover {
+        transform: rotate(180deg);
+      }
+    }
+  }
+}
