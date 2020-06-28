@@ -118,7 +118,6 @@
     "drupal/minifyhtml": "^1.8",
     "drupal/flag": "^4.0-beta1",
     "drupal/rate": "^1.0",
-    "masterminds/html5":"2.3.1",
     "drupal/easy_install":"^10.1",
     "drupal/link_attributes": "^1.9",
     "drupal/smart_trim": "^1.1",
