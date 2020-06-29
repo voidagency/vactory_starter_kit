@@ -142,6 +142,28 @@
           "has": "^(Add|Fix|Change|Update|Documentation):|^Merged|^merged"
         }
       }
+    },
+    "enable-patching": true,
+    "patches": {
+      "drupal/simplify_menu": {
+        "Add support for active menu trails.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/19e54a007837537dd7de97456ab0e1ad0b9d3cf6/simplify_menu-adds-active-trail-parameter-2882867-5.patch",
+        "Add support for options.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/19e54a007837537dd7de97456ab0e1ad0b9d3cf6/simplify_menu-support-options.patch"
+      },
+      "drupal/features": {
+        "Export config translation": "https://www.drupal.org/files/issues/features_export-config-translation-2869336-2.patch"
+      },
+      "drupal/core": {
+        "Add internal path check to blocks visibility pages evaluation.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/19e54a007837537dd7de97456ab0e1ad0b9d3cf6/block-visibility-pages-paths-evaluate.patch"
+      },
+      "drupal/rate": {
+        "Make rate available for all node display mode.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/19e54a007837537dd7de97456ab0e1ad0b9d3cf6/rate-add-rate-to-all-node-display-mode.patch"
+      },
+      "drupal/oauth_login_oauth2": {
+        "Store ressourceOwner into a session variable.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/19e54a007837537dd7de97456ab0e1ad0b9d3cf6/oauth-login-oauth2-add-resource-owner-to-session.patch"
+      },
+      "drupal/social_auth_microsoft": {
+        "Fixing call to function on null.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/19e54a007837537dd7de97456ab0e1ad0b9d3cf6/microsoft_social_auth.patch"
+      }
     }
   },
   "repositories": [
