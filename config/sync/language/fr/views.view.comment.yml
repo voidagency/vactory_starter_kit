@@ -1,0 +1,105 @@
+label: Commentaires
+description: 'Trouver et gérer les commentaires.'
+display:
+  default:
+    display_title: Maître
+    display_options:
+      exposed_form:
+        options:
+          submit_button: Appliquer
+          reset_button_label: Réinitialiser
+          exposed_sorts_label: 'Trier par'
+          sort_asc_label: Asc
+          sort_desc_label: Desc
+      pager:
+        options:
+          tags:
+            previous: "‹\_précédent"
+            next: "suivant\_›"
+            first: "«\_premier"
+            last: "dernier\_»"
+          expose:
+            items_per_page_label: 'Éléments par page'
+            items_per_page_options_all_label: '- Tout -'
+            offset_label: Décalage
+      fields:
+        comment_bulk_form:
+          action_title: Action
+        subject:
+          label: Objet
+          separator: ', '
+        uid:
+          separator: ', '
+        name:
+          label: Auteur
+          separator: ', '
+        entity_id:
+          label: 'Posté sur'
+          separator: ', '
+        changed:
+          label: 'Mis à jour'
+          separator: ', '
+        operations:
+          label: Actions
+        name_1:
+          separator: ', '
+      filters:
+        subject:
+          expose:
+            label: Objet
+        combine:
+          expose:
+            label: 'Nom de l''auteur'
+        langcode:
+          expose:
+            label: Langue
+      title: Commentaires
+      empty:
+        area_text_custom:
+          content: 'Aucun commentaire disponible.'
+      use_more_text: plus
+  page_published:
+    display_title: 'Commentaires publiés'
+    display_options:
+      menu:
+        title: Commentaires
+        description: 'Commentaires publiés'
+      display_description: 'La liste des commentaires approuvés.'
+  page_unapproved:
+    display_title: 'Commentaires non aprouvés'
+    display_options:
+      menu:
+        title: 'Commentaires non aprouvés'
+        description: 'Commentaires non-approuvés'
+      display_description: 'La liste des commentaires non-approuvés.'
+      filters:
+        subject:
+          expose:
+            label: Objet
+        combine:
+          expose:
+            label: 'Nom de l''auteur'
+        langcode:
+          expose:
+            label: Langue
+      fields:
+        comment_bulk_form:
+          action_title: Action
+        subject:
+          label: Objet
+          separator: ', '
+        uid:
+          separator: ', '
+        name:
+          label: Auteur
+          separator: ', '
+        entity_id:
+          label: 'Posté sur'
+          separator: ', '
+        changed:
+          label: 'Mis à jour'
+          separator: ', '
+        operations:
+          label: Actions
+        name_1:
+          separator: ', '

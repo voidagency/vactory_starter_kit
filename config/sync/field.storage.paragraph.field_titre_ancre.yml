@@ -1,0 +1,21 @@
+uuid: 7dbc31e0-1084-4261-a69e-37fbc1305f78
+langcode: en
+status: true
+dependencies:
+  module:
+    - paragraphs
+id: paragraph.field_titre_ancre
+field_name: field_titre_ancre
+entity_type: paragraph
+type: string
+settings:
+  max_length: 255
+  is_ascii: false
+  case_sensitive: false
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

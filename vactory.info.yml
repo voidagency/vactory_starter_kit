@@ -1,0 +1,13 @@
+name: La Factory
+type: profile
+description: 'Install with commonly used features pre-configured.'
+core: 8.x
+themes:
+  - vactory_theme
+  - seven
+exclusive: TRUE
+distribution:
+  name: La Factory
+  install:
+    theme: seven
+config_install: true

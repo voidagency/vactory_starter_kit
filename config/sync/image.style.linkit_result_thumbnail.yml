@@ -1,0 +1,15 @@
+uuid: 44b25c9b-bc41-4f04-b1e1-8e7ef2a3b52a
+langcode: en
+status: true
+dependencies: {  }
+name: linkit_result_thumbnail
+label: 'Linkit result thumbnail'
+effects:
+  2943df29-38ea-459c-ba1d-290489bb1807:
+    uuid: 2943df29-38ea-459c-ba1d-290489bb1807
+    id: image_scale_and_crop
+    weight: 1
+    data:
+      width: 50
+      height: 50
+      anchor: center-center

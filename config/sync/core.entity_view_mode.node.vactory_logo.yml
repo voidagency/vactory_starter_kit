@@ -1,0 +1,10 @@
+uuid: f5fb2f8e-732a-4db4-9cb0-73508dfa29f9
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.vactory_logo
+label: Logo
+targetEntityType: node
+cache: true

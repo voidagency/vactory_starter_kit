@@ -1,0 +1,18 @@
+uuid: d33739b2-82e4-43da-bd48-be6ddc40a6dd
+langcode: en
+status: true
+dependencies:
+  config:
+    - node.type.vactory_page
+  module:
+    - content_translation
+third_party_settings:
+  content_translation:
+    enabled: true
+    bundle_settings:
+      untranslatable_fields_hide: '0'
+id: node.vactory_page
+target_entity_type_id: node
+target_bundle: vactory_page
+default_langcode: site_default
+language_alterable: true

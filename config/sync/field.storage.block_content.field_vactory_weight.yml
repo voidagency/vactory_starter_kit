@@ -1,0 +1,20 @@
+uuid: dbbccd45-57cf-496e-bdbc-1b6c19eb14df
+langcode: en
+status: true
+dependencies:
+  module:
+    - block_content
+id: block_content.field_vactory_weight
+field_name: field_vactory_weight
+entity_type: block_content
+type: integer
+settings:
+  unsigned: false
+  size: normal
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

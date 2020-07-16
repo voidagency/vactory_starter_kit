@@ -1,0 +1,13 @@
+uuid: ec7af47a-1c05-4e8c-87b3-c45683ddc975
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - file_entity
+  module:
+    - file
+id: file.thumbnail
+label: Thumbnail
+targetEntityType: file
+cache: true

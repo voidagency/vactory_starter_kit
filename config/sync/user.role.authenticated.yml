@@ -1,0 +1,17 @@
+uuid: 17584edb-c0c0-427f-9477-576bdeed36e9
+langcode: en
+status: true
+dependencies: {  }
+id: authenticated
+label: 'Authenticated user'
+weight: 1
+is_admin: false
+permissions:
+  - 'access comments'
+  - 'access content'
+  - 'access shortcuts'
+  - 'display eu cookie compliance popup'
+  - 'edit own comments'
+  - 'post comments'
+  - 'view files'
+  - 'view media'

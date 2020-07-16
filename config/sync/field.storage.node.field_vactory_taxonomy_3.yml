@@ -1,0 +1,20 @@
+uuid: e8aed5e9-7214-43b6-8930-f77f75af146f
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - taxonomy
+id: node.field_vactory_taxonomy_3
+field_name: field_vactory_taxonomy_3
+entity_type: node
+type: entity_reference
+settings:
+  target_type: taxonomy_term
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

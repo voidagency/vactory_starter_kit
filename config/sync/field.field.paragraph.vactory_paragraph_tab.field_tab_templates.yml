@@ -1,0 +1,22 @@
+uuid: 0302bd1e-8f50-42f5-8e8c-b7b7e81c8bb3
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_tab_templates
+    - paragraphs.paragraphs_type.vactory_paragraph_tab
+  module:
+    - vactory_dynamic_field
+id: paragraph.vactory_paragraph_tab.field_tab_templates
+field_name: field_tab_templates
+entity_type: paragraph
+bundle: vactory_paragraph_tab
+label: Templates
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  allowed_providers: {  }
+field_type: field_wysiwyg_dynamic

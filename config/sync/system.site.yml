@@ -1,0 +1,12 @@
+uuid: 26ecc430-38fa-40f8-bed4-50f220e52ab6
+name: Vactory
+mail: admin@void.fr
+slogan: ''
+page:
+  403: ''
+  404: ''
+  front: /node/1
+admin_compact_mode: false
+weight_select_max: 100
+langcode: en
+default_langcode: en

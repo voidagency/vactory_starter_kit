@@ -1,0 +1,11 @@
+uuid: 5196abe0-7438-4065-afad-0de1eac7967e
+langcode: en
+status: true
+dependencies:
+  module:
+    - media
+id: media_publish_action
+label: 'Publish media'
+type: media
+plugin: 'entity:publish_action:media'
+configuration: {  }

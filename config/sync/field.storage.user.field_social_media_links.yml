@@ -1,0 +1,19 @@
+uuid: 23cea4b5-5a58-4141-9697-b05e037dede4
+langcode: en
+status: true
+dependencies:
+  module:
+    - social_media_links_field
+    - user
+id: user.field_social_media_links
+field_name: field_social_media_links
+entity_type: user
+type: social_media_links_field
+settings: {  }
+module: social_media_links_field
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

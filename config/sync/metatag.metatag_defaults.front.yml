@@ -1,0 +1,10 @@
+uuid: 4a77ecd5-5f9c-45b5-a945-7ef08d63c1aa
+langcode: en
+status: true
+dependencies: {  }
+id: front
+label: 'Front page'
+tags:
+  description: '[vactory:node_summary]'
+  canonical_url: '[site:url]'
+  shortlink: '[site:url]'

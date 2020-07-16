@@ -1,0 +1,10 @@
+uuid: 075715d3-e716-45d3-8ad1-b5d839dd7d3b
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.card_inline
+label: 'Card (Inline)'
+targetEntityType: node
+cache: true

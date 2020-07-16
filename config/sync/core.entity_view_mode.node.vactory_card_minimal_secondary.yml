@@ -1,0 +1,10 @@
+uuid: 776c7568-3098-4ad3-bc5e-df13aed55b3c
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.vactory_card_minimal_secondary
+label: 'Card Minimal Secondary'
+targetEntityType: node
+cache: true

@@ -1,0 +1,8 @@
+uuid: 73b72a4e-612a-49e8-9a5b-7c40cb0286df
+langcode: en
+status: true
+dependencies: {  }
+id: vactory_block_component
+label: Template
+revision: 1
+description: 'Template block type'

@@ -1,0 +1,10 @@
+uuid: 47a7985d-bb40-4140-b153-69586d289581
+langcode: en
+status: true
+dependencies: {  }
+id: vactory_component
+label: Template
+icon_uuid: null
+icon_default: null
+description: 'Template Dynamic field'
+behavior_plugins: {  }

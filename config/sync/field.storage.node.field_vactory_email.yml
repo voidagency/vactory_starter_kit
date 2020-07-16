@@ -1,0 +1,18 @@
+uuid: 1f6dcb0d-e570-40d2-bdba-22f0e1e0712b
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.field_vactory_email
+field_name: field_vactory_email
+entity_type: node
+type: email
+settings: {  }
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

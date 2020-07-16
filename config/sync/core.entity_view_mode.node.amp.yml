@@ -1,0 +1,13 @@
+uuid: dabd12b6-9e14-4431-b111-67f9d710ff4c
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - amp
+  module:
+    - node
+id: node.amp
+label: AMP
+targetEntityType: node
+cache: true

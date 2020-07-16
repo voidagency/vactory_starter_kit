@@ -1,0 +1,9 @@
+uuid: 5535cb75-a4f6-458c-bfe8-1cc132082e74
+langcode: en
+status: true
+dependencies: {  }
+id: image
+label: Image
+description: 'An <em>Image</em> file is a still visual.'
+mimetypes:
+  - 'image/*'

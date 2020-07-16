@@ -1,0 +1,19 @@
+uuid: ae2b18c6-4998-4581-9ec7-07b3035da70f
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+    - text
+id: node.field_vactory_address
+field_name: field_vactory_address
+entity_type: node
+type: text_long
+settings: {  }
+module: text
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

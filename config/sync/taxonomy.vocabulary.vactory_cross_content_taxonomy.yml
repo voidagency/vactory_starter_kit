@@ -1,0 +1,8 @@
+uuid: 3fbba372-0ea8-4940-9dac-9ac764953281
+langcode: en
+status: true
+dependencies: {  }
+name: 'VCC taxonomy'
+vid: vactory_cross_content_taxonomy
+description: 'This Vocabulary is used for Cross Content Block config'
+weight: 0

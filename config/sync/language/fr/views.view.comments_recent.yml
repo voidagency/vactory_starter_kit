@@ -1,0 +1,15 @@
+label: 'Commentaires récents'
+description: 'Commentaires récents.'
+display:
+  default:
+    display_title: Maître
+    display_options:
+      title: 'Commentaires récents'
+      empty:
+        area_text_custom:
+          content: 'Aucun commentaire disponible.'
+  block_1:
+    display_title: Bloc
+    display_options:
+      block_description: 'Commentaires récents'
+      block_category: 'Listes (Views)'

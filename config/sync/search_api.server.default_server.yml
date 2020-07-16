@@ -1,0 +1,17 @@
+uuid: 97c0a77a-ad5b-4a0f-9364-82e30f17b780
+langcode: en
+status: true
+dependencies:
+  module:
+    - search_api_db
+id: default_server
+name: 'Database Server'
+description: 'Default database server created for Vactory'
+backend: search_api_db
+backend_config:
+  database: 'default:default'
+  min_chars: 3
+  matching: partial
+  autocomplete:
+    suggest_suffix: true
+    suggest_words: true

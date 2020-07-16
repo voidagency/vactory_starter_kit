@@ -1,0 +1,19 @@
+uuid: 6e2bf2b9-c91d-44bf-b37e-c9ed201820f3
+langcode: en
+status: true
+dependencies: {  }
+id: webmaster
+label: Webmaster
+weight: 5
+is_admin: null
+permissions:
+  - 'access administration pages'
+  - 'access toolbar'
+  - 'create content translations'
+  - 'delete content translations'
+  - 'display eu cookie compliance popup'
+  - 'translate paragraph'
+  - 'translate vactory_page node'
+  - 'update content translations'
+  - 'view files'
+  - 'view the administration theme'

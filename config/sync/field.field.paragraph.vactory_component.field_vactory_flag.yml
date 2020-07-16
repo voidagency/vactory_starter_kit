@@ -1,0 +1,23 @@
+uuid: 6b2ec863-37e9-4ec5-82a2-3a9e5eaa618d
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_vactory_flag
+    - paragraphs.paragraphs_type.vactory_component
+id: paragraph.vactory_component.field_vactory_flag
+field_name: field_vactory_flag
+entity_type: paragraph
+bundle: vactory_component
+label: 'Afficher le titre'
+description: ''
+required: false
+translatable: true
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

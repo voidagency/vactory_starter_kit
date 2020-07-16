@@ -1,0 +1,10 @@
+uuid: fc59eb3f-b64e-4c5d-aaa8-31757e476bcb
+langcode: en
+status: true
+dependencies: {  }
+id: vactory_paragraph_multi_template
+label: 'Multiple template'
+icon_uuid: null
+icon_default: null
+description: 'Use this paragraph type in cases you have "Tabs" and "Accordion" with multiple templates.'
+behavior_plugins: {  }

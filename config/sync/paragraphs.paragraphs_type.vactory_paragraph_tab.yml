@@ -1,0 +1,10 @@
+uuid: 3df12246-5565-4f61-90b0-b706eb0f73cc
+langcode: en
+status: true
+dependencies: {  }
+id: vactory_paragraph_tab
+label: 'Paragraph tab'
+icon_uuid: null
+icon_default: null
+description: 'Created to serve Multiple templates paragraph type.'
+behavior_plugins: {  }

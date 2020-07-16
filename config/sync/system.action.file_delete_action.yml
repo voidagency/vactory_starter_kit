@@ -1,0 +1,11 @@
+uuid: 608daa0a-d47d-4d2d-942a-6643db5e8741
+langcode: en
+status: true
+dependencies:
+  module:
+    - file_entity
+id: file_delete_action
+label: 'Delete file'
+type: file
+plugin: file_delete_action
+configuration: {  }

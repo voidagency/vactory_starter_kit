@@ -1,0 +1,10 @@
+uuid: 5fdbc2e5-496a-49d1-aa34-2fe74855cc3f
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.vactory_card_minimal
+label: 'Card Minimal'
+targetEntityType: node
+cache: true

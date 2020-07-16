@@ -1,0 +1,21 @@
+uuid: 04187d3f-03cf-480f-9b37-5dceeefaa5c9
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.field_vactory_fax
+field_name: field_vactory_fax
+entity_type: node
+type: string
+settings:
+  max_length: 255
+  is_ascii: false
+  case_sensitive: false
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

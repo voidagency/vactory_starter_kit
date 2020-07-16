@@ -1,0 +1,11 @@
+uuid: d6298c47-4996-4461-884e-3f4339f9cc18
+langcode: en
+status: true
+dependencies: {  }
+id: super_administrator
+label: 'Super Admin'
+weight: 3
+is_admin: null
+permissions:
+  - 'display eu cookie compliance popup'
+  - 'view files'

@@ -1,0 +1,27 @@
+uuid: 15b88be3-e77d-44c8-be0e-2bdfedffdee8
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.file.thumbnail
+    - file_entity.type.video
+id: file.video.thumbnail
+targetEntityType: file
+bundle: video
+mode: thumbnail
+content:
+  filename:
+    type: string
+    weight: 1
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    region: content
+hidden:
+  filemime: true
+  filesize: true
+  langcode: true
+  search_api_excerpt: true
+  uid: true
+  uri: true

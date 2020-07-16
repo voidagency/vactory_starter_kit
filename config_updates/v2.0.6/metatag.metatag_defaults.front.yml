@@ -1,9 +1,0 @@
-langcode: fr
-status: true
-dependencies: {  }
-id: front
-label: 'Front page'
-tags:
-  description: '[vactory:node_summary]'
-  canonical_url: '[site:url]'
-  shortlink: '[site:url]'

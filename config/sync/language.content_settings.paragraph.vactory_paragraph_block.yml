@@ -1,0 +1,18 @@
+uuid: 072709b7-a0f7-47e4-9c26-f6598d14f197
+langcode: en
+status: true
+dependencies:
+  config:
+    - paragraphs.paragraphs_type.vactory_paragraph_block
+  module:
+    - content_translation
+third_party_settings:
+  content_translation:
+    enabled: true
+    bundle_settings:
+      untranslatable_fields_hide: '1'
+id: paragraph.vactory_paragraph_block
+target_entity_type_id: paragraph
+target_bundle: vactory_paragraph_block
+default_langcode: current_interface
+language_alterable: false

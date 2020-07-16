@@ -1,0 +1,21 @@
+uuid: 3fd56d3c-1907-4e61-91b5-3ace79b08700
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.field_vactory_first_name
+field_name: field_vactory_first_name
+entity_type: node
+type: string
+settings:
+  max_length: 255
+  is_ascii: false
+  case_sensitive: false
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

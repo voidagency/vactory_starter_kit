@@ -1,0 +1,19 @@
+uuid: 123c5d66-840e-4a97-80bb-ae5e839d3234
+langcode: en
+status: true
+dependencies:
+  module:
+    - paragraphs
+    - vactory_dynamic_field
+id: paragraph.field_vactory_component
+field_name: field_vactory_component
+entity_type: paragraph
+type: field_wysiwyg_dynamic
+settings: {  }
+module: vactory_dynamic_field
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

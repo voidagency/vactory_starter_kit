@@ -1,0 +1,9 @@
+uuid: a28c9c3c-6fe2-435c-8f42-082e8e8abbfa
+langcode: en
+status: true
+dependencies: {  }
+id: '404'
+label: '404 page not found'
+tags:
+  canonical_url: '[site:url]'
+  shortlink: '[site:url]'
