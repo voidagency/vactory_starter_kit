@@ -1,7 +1,9 @@
-uuid: c886f383-24dd-4d87-820f-9c21c9bed941
+uuid: dcb38442-15c1-46be-805e-ac20eebbcbc1
 langcode: en
 status: true
 dependencies: {  }
+_core:
+  default_config_hash: Eu8CvZYqHh4Zx02qu1Xf9a7QC3JnDQTOZmSWkD8h4ic
 name: Default
 machine_name: default
 description: ''

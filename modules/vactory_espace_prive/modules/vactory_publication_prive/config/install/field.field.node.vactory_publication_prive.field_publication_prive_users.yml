@@ -1,0 +1,31 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_publication_prive
+  config:
+    - field.storage.node.field_publication_prive_users
+    - node.type.vactory_publication_prive
+id: node.vactory_publication_prive.field_publication_prive_users
+field_name: field_publication_prive_users
+entity_type: node
+bundle: vactory_publication_prive
+label: 'Utilisateurs supplémentaires'
+description: 'Choisissez des utilisateurs supplémentaires, Example: Le contenu concerne le <strong>groupe A</strong>, l''utilisateur "<strong>John</strong>" est aussi concerné malgré qu''il ne fait pas partie de <strong>groupe A</strong>, <strong>John</strong> est considéré alors un utilisateur supplémentaire.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:user'
+  handler_settings:
+    include_anonymous: false
+    filter:
+      type: _none
+    target_bundles: null
+    sort:
+      field: name
+      direction: ASC
+    auto_create: false
+field_type: entity_reference

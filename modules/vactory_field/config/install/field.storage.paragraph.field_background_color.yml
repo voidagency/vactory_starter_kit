@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - colorapi
+    - paragraphs
+id: paragraph.field_background_color
+field_name: field_background_color
+entity_type: paragraph
+type: colorapi_color_field
+settings: {  }
+module: colorapi
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

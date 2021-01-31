@@ -51,3 +51,5 @@ seckit_various:
   referrer_policy: false
   referrer_policy_policy: no-referrer-when-downgrade
   disable_autocomplete: false
+_core:
+  default_config_hash: x6bhN6WZwfVUI_LLMvRJIUW_2c26VTaBozbfXmJWmro

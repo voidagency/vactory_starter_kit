@@ -1,0 +1,7 @@
+name: Vactory Webform Custom
+description: Provide webform options
+type: module
+dependencies:
+  - webform
+core: 8.x
+core_version_requirement: ^8 || ^9

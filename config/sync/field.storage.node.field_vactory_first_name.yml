@@ -1,9 +1,11 @@
-uuid: 3fd56d3c-1907-4e61-91b5-3ace79b08700
+uuid: ba46ed55-2c6c-491b-a387-fe61171a3d84
 langcode: en
 status: true
 dependencies:
   module:
     - node
+_core:
+  default_config_hash: 6FrKyWnpPwVjJD6m-7H3qGs6z3VwgRQr1c_43LPqMW8
 id: node.field_vactory_first_name
 field_name: field_vactory_first_name
 entity_type: node

@@ -1,0 +1,137 @@
+$juicer-link-color: $primary !default;
+$juicer-text-color: $white !default;
+$juicer-icon-color: $primary !default;
+$juicer-gutters-width: 15px !default;
+$juicer-feed-bg-color: $white !default;
+$juicer-item-bg-color: $white !default;
+$juicer-loading-color: $primary !default;
+
+
+.juicer-container {
+  border-radius: 10px;
+  background-color: rgba(#FFFFFF, .89);
+  box-shadow: 5px 5px 10px 0 rgba(222,226,230,0.5);
+  padding: 20px 10px 20px;
+  @include media-breakpoint-up(md) {
+    padding: 40px 20px 40px;
+  }
+  @include media-breakpoint-up(lg) {
+    padding: 40px 35px 40px;
+  }
+}
+.juicer-container .juicer-feed {
+  background-color: $white !important;
+
+  .j-overlay {
+    display: flex;
+    align-items: center;
+  }
+
+  .j-loading {
+    border-color: $juicer-loading-color !important;
+    &::before {
+      background-color: $juicer-loading-color !important;
+    }
+  }
+
+  .referral {
+    display: none !important;
+  }
+
+  li.feed-item {
+    background-color: $juicer-item-bg-color !important;
+    list-style: none;
+    margin-left: $juicer-gutters-width !important;
+    margin-right: $juicer-gutters-width !important;
+
+    .j-message,
+    .j-message p {
+      color: $juicer-text-color !important;
+    }
+    .j-read-more {
+      color: $juicer-link-color !important;
+    }
+    .j-meta {
+      color: $juicer-icon-color !important;
+    }
+  }
+
+  .is-not-youTube {
+    a,
+    .j-poster h3 {
+      color: $juicer-link-color !important;
+    }
+  }
+
+
+  &.slider {
+    padding: 0 40px;
+    @include media-breakpoint-up(lg) {
+      padding: 0 77px;
+    }
+
+    .slick-arrow {
+      &.slick-prev,
+      &.slick-next {
+        font-size: 0;
+        line-height: 0;
+        position: absolute;
+        top: 50%;
+        bottom: auto;
+        display: block;
+        padding: 0;
+        transform: translate(0, -50%);
+        cursor: pointer;
+        color: $black;
+        border: 1px solid $primary;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        outline: none;
+        background: $primary;
+        transition: background .3s, color .3s, border .3s;
+      }
+
+      &.slick-disabled {
+        pointer-events: none;
+        opacity: .5;
+      }
+
+      &.prev,
+      &.slick-prev {
+        left: 0;
+        &::before {
+          opacity: 1;
+          content: $icon-chevron-left;
+          font-family: 'vactory';
+          color: $slick-arrow-color;
+          font-size: 16px;
+          line-height: 1;
+        }
+      }
+
+      &.next,
+      &.slick-next {
+        right: 0;
+        &::before {
+          opacity: 1;
+          content: $icon-chevron-right;
+          font-family: 'vactory';
+          color: $slick-arrow-color;
+          font-size: 16px;
+          line-height: 1;
+        }
+      }
+
+      &:hover {
+        color: $black !important;
+        background: transparent !important;
+        border-color: $primary !important;
+        &::before {
+          color: $black !important;
+        }
+      }
+    }
+
+  }
+}

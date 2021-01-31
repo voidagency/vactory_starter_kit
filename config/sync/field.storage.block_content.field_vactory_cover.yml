@@ -1,4 +1,4 @@
-uuid: 1faa7c80-062f-4310-9479-7a1b1abeb6bf
+uuid: 2ac1fae6-2667-4eb1-9dea-41c66a729197
 langcode: en
 status: true
 dependencies:
@@ -6,6 +6,8 @@ dependencies:
     - block_content
     - file
     - image
+_core:
+  default_config_hash: 910mEzUgdF3YY3k1ytIxEEVJSuMCiCCx35UFCaIjUhQ
 id: block_content.field_vactory_cover
 field_name: field_vactory_cover
 entity_type: block_content

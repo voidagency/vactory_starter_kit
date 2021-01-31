@@ -1,12 +1,21 @@
+{% set link_attributes = create_attribute() %}
+{% set link_attributes = extra_fields.link.attributes.id is not empty ? link_attributes.setAttribute('id', extra_fields.link.attributes.id ) : link_attributes %}
+{% set link_attributes = extra_fields.link.attributes.class is not empty ? link_attributes.setAttribute('class', extra_fields.link.attributes.class ) : link_attributes %}
+{% set link_attributes = extra_fields.link.attributes.target is not empty ? link_attributes.setAttribute('target', extra_fields.link.attributes.target ) : link_attributes %}
+{% set link_attributes = extra_fields.link.attributes.rel is not empty ? link_attributes.setAttribute('rel', extra_fields.link.attributes.rel ) : link_attributes %}
+
 <div class="fdb-block">
     <div class="row text-center">
         <div class="col-12">
             {% if extra_fields.title is not empty %}
                 <h2>{{ extra_fields.title }}</h2>
             {% endif %}
-            {% if extra_fields.link is not empty and extra_fields.link_alt is not empty %}
-                {% set link_target = (extra_fields.0.link_target > 0) ? '_blank' : '_self' %}
-                <p><a href="{{ extra_fields.link }}" target="{{ link_target }}">{{ extra_fields.link_alt }}<i class="fas fa-angle-right"></i></a></p>
+            {% if extra_fields.link.url is not empty and extra_fields.link.title is not empty %}
+                <p>
+                    <a href="{{ extra_fields.link.url }}" {{ link_attributes }} > {{ extra_fields.link.title }} </a> 
+                    <i class="fas fa-angle-right"></i>
+                    </a>
+                </p>
             {% endif %}
         </div>
     </div>
@@ -22,10 +31,11 @@
                 {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : ''%}
                 {% set picto = image_uri|image_style('large') %}
                 {% set lqip_image = image_uri|image_style('lqip') %}
+                {% set alt_image = (item.image_alt) ? item.image_alt : item.image.alt_image %}
 
                 {% if item.image.0 is not empty %}
                     <div class="lazy-wrapper">
-                        <img alt="{{ item.image_alt }}"
+                        <img alt="{{ alt_image }}"
                             class="lazyload img-fluid"
                             src="{{ lqip_image }}"
                             data-src="{{ picto }}">

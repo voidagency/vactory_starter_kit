@@ -1,0 +1,7 @@
+name: Vactory Timeout
+description: 'Set a timeout to return to the path configured after no reactions'
+type: module
+core: 8.x
+core_version_requirement: ^8 || ^9
+package: Vactory
+configure: vactory_timeout.settings

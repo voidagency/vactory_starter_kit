@@ -2,6 +2,11 @@ langcode: fr
 status: true
 dependencies:
   config:
+    - field.field.paragraph.vactory_component.field_paragraph_hide_lg
+    - field.field.paragraph.vactory_component.field_paragraph_hide_sm
+    - field.field.paragraph.vactory_component.field_position_image_x
+    - field.field.paragraph.vactory_component.field_position_image_y
+    - field.field.paragraph.vactory_component.field_size_image
     - field.field.paragraph.vactory_component.field_titre_ancre
     - field.field.paragraph.vactory_component.field_vactory_component
     - field.field.paragraph.vactory_component.field_vactory_flag
@@ -9,12 +14,54 @@ dependencies:
     - field.field.paragraph.vactory_component.field_vactory_title
     - paragraphs.paragraphs_type.vactory_component
   module:
+    - options
     - vactory_dynamic_field
 id: paragraph.vactory_component.default
 targetEntityType: paragraph
 bundle: vactory_component
 mode: default
 content:
+  field_paragraph_hide_lg:
+    weight: 8
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    type: boolean
+    region: content
+  field_paragraph_hide_sm:
+    weight: 9
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    type: boolean
+    region: content
+  field_position_image_x:
+    weight: 14
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_position_image_y:
+    weight: 13
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_size_image:
+    weight: 16
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
   field_titre_ancre:
     weight: 4
     label: above
@@ -59,4 +106,6 @@ content:
     type: string
     region: content
 hidden:
+  paragraph_background_image: true
   paragraph_container: true
+  search_api_excerpt: true

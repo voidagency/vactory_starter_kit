@@ -20,10 +20,11 @@
             {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : '' %}
             {% set profile_image = image_uri|image_style('medium') %}
             {% set lqip_image = image_uri|image_style('lqip') %}
+            {% set image_alt = (item.image_alt is not empty) ? item.image_alt : item.image.alt_image %}
             <div class="col-lg-4 col-md-6 pt-5 pb-5">
                 <div class="card {{ reverse_mode }}">
                     <div class="card-image mx-auto lazy-small-square">
-                        <img alt="{{ item.image_alt }}"
+                        <img alt="{{ image_alt }}"
                             class="lazyload rounded-circle img-fluid no-effect"
                             src="{{ lqip_image }}"
                             data-src="{{ profile_image }}">

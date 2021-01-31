@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_publication_prive
+  config:
+    - node.type.vactory_publication_prive
+  module:
+    - content_translation
+third_party_settings:
+  content_translation:
+    enabled: true
+id: node.vactory_publication_prive
+target_entity_type_id: node
+target_bundle: vactory_publication_prive
+default_langcode: site_default
+language_alterable: true

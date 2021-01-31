@@ -17,26 +17,34 @@ dependencies:
   module:
     - comment
     - datetime_range
+    - media_responsive_thumbnail
     - metatag
+    - text
     - user
-    - vactory_core
     - vactory_field
 id: node.vactory_event.default
 targetEntityType: node
 bundle: vactory_event
 mode: default
 content:
+  body:
+    type: text_default
+    weight: 6
+    region: content
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
   comment:
+    type: comment_default
     weight: 7
+    region: content
     label: above
     settings:
       view_mode: default
       pager_id: 0
     third_party_settings: {  }
-    type: comment_default
-    region: content
   field_vactory_date_interval:
-    weight: 2
+    weight: 1
     label: hidden
     settings:
       separator: '-'
@@ -46,7 +54,7 @@ content:
     type: daterange_default
     region: content
   field_vactory_excerpt:
-    weight: 5
+    weight: 4
     label: hidden
     settings:
       trim_length: 350
@@ -54,30 +62,23 @@ content:
     type: vactory_field_excerpt_formatter
     region: content
   field_vactory_media:
-    weight: 6
+    weight: 5
     label: hidden
     settings:
-      desktop_1x: vactory_two_cols_x1
-      desktop_2x: vactory_two_cols_x2
-      laptop_1x: vactory_two_cols_x1
-      laptop_2x: vactory_two_cols_x2
-      tablet_1x: vactory_two_cols_x1
-      tablet_2x: vactory_two_cols_x2
-      mobile_1x: vactory_two_cols_x1
-      mobile_2x: vactory_two_cols_x2
-      lqip: lqip
+      responsive_image_style: ''
+      image_link: ''
     third_party_settings: {  }
-    type: lazy_image
+    type: media_responsive_thumbnail
     region: content
   field_vactory_meta_tags:
+    type: metatag_empty_formatter
     weight: 8
-    label: above
+    region: content
+    label: hidden
     settings: {  }
     third_party_settings: {  }
-    type: metatag_empty_formatter
-    region: content
   field_vactory_taxonomy_1:
-    weight: 3
+    weight: 2
     label: hidden
     settings:
       link: false
@@ -85,7 +86,7 @@ content:
     type: entity_reference_label
     region: content
   field_vactory_taxonomy_2:
-    weight: 4
+    weight: 3
     label: hidden
     settings:
       link: false
@@ -99,7 +100,6 @@ content:
     third_party_settings: {  }
 hidden:
   addtoany: true
-  body: true
   field_vactory_image: true
   field_vactory_seo_status: true
   langcode: true

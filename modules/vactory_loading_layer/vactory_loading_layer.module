@@ -1,0 +1,13 @@
+<?php
+
+/**
+ * @file
+ * Vactory loading layer related hooks.
+ */
+
+/**
+ *
+ */
+function vactory_loading_layer_preprocess_html(&$variables) {
+  $variables['is_loading_layer_enabled'] = \Drupal::service('module_handler')->moduleExists('vactory_loading_layer');
+}

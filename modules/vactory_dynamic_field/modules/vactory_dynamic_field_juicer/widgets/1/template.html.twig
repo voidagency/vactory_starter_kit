@@ -1,0 +1,24 @@
+{{ attach_library('vactory_dynamic_field_juicer/juicer') }}
+
+<div class="juicer-container">
+  <div class="template-intro--wrapper">
+    <div class="template-intro text-center">
+      {% if extra_fields.title is not empty %}
+        <h3 class="template-intro__title">{{ extra_fields.title }}</h3>
+      {% endif %}
+      {% if extra_fields.introduction.value is not empty %}
+        <div class="template-intro__description">
+          {{ extra_fields.introduction.value | raw }}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <ul
+    class="juicer-feed"
+    data-feed-id={{extra_fields.feed_id}}
+    {% for item in content %}
+      {{item.feed_data_attr}}={{item.feed_data_val}}
+    {% endfor %}
+  ></ul>
+</div>

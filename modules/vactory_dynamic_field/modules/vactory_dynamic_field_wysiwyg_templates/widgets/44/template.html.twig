@@ -17,9 +17,10 @@
             {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : '' %}
             {% set profile_image = image_uri|image_style('medium') %}
             {% set lqip_image = image_uri|image_style('lqip') %}
+            {% set image_alt = (item.image_alt is not empty) ? item.image_alt : item.image.alt_image %}
             <div class="pt-3 pb-3">
                 <div class="mx-auto mb-2 lazy-small-square">
-                    <img alt="{{ item.image_alt }}"
+                    <img alt="{{ image_alt }}"
                         class="lazyload rounded-circle d-inline"
                         src="{{ lqip_image }}"
                         data-src="{{ profile_image }}">

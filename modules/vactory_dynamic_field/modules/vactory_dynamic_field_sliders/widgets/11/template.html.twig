@@ -6,9 +6,8 @@
 {% set swip_keyboard = (extra_fields.group_gonfig.keyboard > 0) ? extra_fields.group_gonfig.keyboard : 'TRUE' %}
 {% set swip_animationspeed = (extra_fields.group_gonfig.animationspeed is not empty) ? extra_fields.group_gonfig.animationspeed : '500' %}
 {% set swip_direction = (extra_fields.group_gonfig.direction is not empty) ? extra_fields.group_gonfig.direction : 'vertical' %}
-{% set swip_number_slides = (extra_fields.group_gonfig.numberofslides is not empty) ? extra_fields.group_gonfig.numberofslides : '1' %}
-{% set swip_number_slides_mobile = (extra_fields.group_gonfig.numberofslidesmobile is not empty) ? extra_fields.group_gonfig.numberofslidesmobile : '1' %}
-{% set swip_scrollbar = (extra_fields.group_gonfig.scrollbar > 0) ? 'TRUE' : 'FALSE' %}
+{% set swip_autoLoop = (extra_fields.group_gonfig.autoLoop > 0) ? extra_fields.group_gonfig.autoLoop : 0 %}
+{% set swip_loopSpeed = (extra_fields.group_gonfig.loopSpeed is not empty) ? extra_fields.group_gonfig.loopSpeed : '2500' %}
 
 <div class="vf-slider-swiper">
   <div class="swiper-container"
@@ -17,16 +16,21 @@
        data-arrows="{{ swip_arrows }}"
        data-dots="{{ swip_dots }}"
        data-keyboard="{{ swip_keyboard }}"
-       data-scrollbar="{{ swip_scrollbar }}"
        data-animationspeed="{{ swip_animationspeed }}"
-       data-numbreslides="{{ swip_number_slides }}"
-       data-numbreslidesmobile="{{ swip_number_slides_mobile }}"
-       data-direction="{{ swip_direction }}">
+       data-direction="{{ swip_direction }}"
+       data-autoplay="{{ swip_autoLoop }}"
+       data-autoplayspeed="{{ swip_loopSpeed }}">
     <div class="swiper-wrapper">
       {% for item in content %}
         {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : '' %}
         {% set fluid_img = file_url(image_uri) %}
         {% set lqip_image = image_uri|image_style('lqip') %}
+
+        {% set link_attributes = create_attribute() %}
+        {% set link_attributes = item.link.attributes.id is not empty ? link_attributes.setAttribute('id', item.link.attributes.id ) : link_attributes %}
+        {% set link_attributes = item.link.attributes.class is not empty ? link_attributes.setAttribute('class', item.link.attributes.class ~ ' btn btn-outline-light') : link_attributes.setAttribute('class','btn btn-outline-light') %}
+        {% set link_attributes = item.link.attributes.target is not empty ? link_attributes.setAttribute('target', item.link.attributes.target ) : link_attributes %}
+        {% set link_attributes = item.link.attributes.rel is not empty ? link_attributes.setAttribute('rel', item.link.attributes.rel ) : link_attributes %}
 
         <div class="swiper-slide swiper-lazy"
              data-background="{{ fluid_img }}"
@@ -40,10 +44,10 @@
                 {{ item.description }}
               </p>
             {% endif %}
-            {% if item.link is not empty and item.link_alt is not empty %}
-              {% set link_targt = (item.link_target > 0) ? '_blank' : '_self' %}
-              <p class="swiper-content--link fadeInUp animated"><a href="{{ item.link }}" target="{{ link_target }}"
-                                                 class="btn btn-outline-light">{{ item.link_alt }}</a></p>
+            {% if item.link.url is not empty and item.link.title  is not empty %}
+              <p class="swiper-content--link fadeInUp animated">
+                <a href="{{ item.link.url }}" {{ link_attributes }} > {{ item.link.title }} </a>
+              </p>
             {% endif %}
           </div>
         </div>

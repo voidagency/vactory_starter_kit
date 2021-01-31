@@ -1,0 +1,31 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_publication_prive
+  config:
+    - field.storage.node.field_publication_prive_thematic
+    - node.type.vactory_publication_prive
+    - taxonomy.vocabulary.publication_prive_thematic
+id: node.vactory_publication_prive.field_publication_prive_thematic
+field_name: field_publication_prive_thematic
+entity_type: node
+bundle: vactory_publication_prive
+label: Thématique
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      publication_prive_thematic: publication_prive_thematic
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

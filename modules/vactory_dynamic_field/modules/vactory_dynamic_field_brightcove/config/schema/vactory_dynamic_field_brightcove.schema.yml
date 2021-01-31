@@ -1,0 +1,7 @@
+vactory_dynamic_field_brightcove.settings:
+  type: config_object
+  label: 'Brightcove Video settings'
+  mapping:
+    account_id:
+      type: string
+      label: 'Account Id'

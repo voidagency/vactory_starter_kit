@@ -1,0 +1,10 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_publication_prive
+name: 'Publications privées - Thématiques'
+vid: publication_prive_thematic
+description: 'Utiliser ce vocabulaire pour ajouter de nouvelles thématiques des publications privées'
+weight: 0

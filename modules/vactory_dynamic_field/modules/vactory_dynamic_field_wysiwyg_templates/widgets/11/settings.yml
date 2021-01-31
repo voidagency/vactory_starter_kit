@@ -21,9 +21,3 @@ fields:
   link:
     type: url_extended
     label: 'link url'
-  link_alt:
-    type: text
-    label: 'Lien text'
-  link_target:
-    type: checkbox
-    label: 'Ouvrir dans une nouvelle fenêtre'

@@ -1,6 +1,9 @@
 langcode: en
 status: true
 dependencies:
+  enforced:
+    module:
+      - vactory_annual_report
   config:
     - field.storage.node.field_ar_media_type
     - node.type.vactory_annual_report

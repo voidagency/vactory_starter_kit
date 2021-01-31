@@ -1,0 +1,14 @@
+entity.notifications_entity.canonical:
+  route_name: entity.notifications_entity.canonical
+  base_route: entity.notifications_entity.canonical
+  title: View
+
+entity.notifications_entity.edit_form:
+  route_name: entity.notifications_entity.edit_form
+  base_route: entity.notifications_entity.canonical
+  title: Edit
+
+entity.notifications_entity.delete_form:
+  route_name:  entity.notifications_entity.delete_form
+  base_route:  entity.notifications_entity.canonical
+  title: Delete

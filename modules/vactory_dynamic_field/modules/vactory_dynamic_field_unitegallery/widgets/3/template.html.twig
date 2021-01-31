@@ -2,8 +2,9 @@
 <div id="gallery--tiles-columns-videos" data-provider="unitegallery" data-template="3" style="display:none;">
   {% for item in content %}
     {% set thumbnail_src = (item.thumbnail.0 is defined) ? get_image_url(item.thumbnail.0) : '' %}
+    {% set alt_image = (item.title) ? item.title : item.image.alt_image %}
 
-    <img alt="{{ item.title }}"
+    <img alt="{{ alt_image }}"
          data-type="youtube"  src="{{ thumbnail_src }}"
          data-image="{{ thumbnail_src }}"
          {#data-description="{{ item.description }}"#}

@@ -1,0 +1,43 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_forums
+  config:
+    - taxonomy.vocabulary.vactory_forum_room
+id: taxonomy_term.vactory_forum_room.default
+targetEntityType: taxonomy_term
+bundle: vactory_forum_room
+mode: default
+content:
+  langcode:
+    type: language_select
+    weight: 1
+    region: content
+    settings:
+      include_locked: true
+    third_party_settings: {  }
+  name:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  status:
+    type: boolean_checkbox
+    settings:
+      display_label: true
+    weight: 3
+    region: content
+    third_party_settings: {  }
+  translation:
+    weight: 2
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  description: true
+  path: true

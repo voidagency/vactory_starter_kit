@@ -4,7 +4,7 @@
       <h2>{{ 'Êtes vous sûr de vouloire supprimer ce rendez-vous?'|t }}</h2>
       <div class="text-center">
         <a href="{{ url('vactory_appointment.appointment_edit_submit_form') }}" class="btn">{{ 'Annuler'|t }}</a>
-        <a href="{{ url('vactory_appointment.appointment_confirm_deletion_message', {'appointment_id': content.appointment_id}) }}" class="btn btn-primary">{{ "Supprimer"|t }}</a>
+        <a href="{{ url('vactory_appointment.appointment_confirm_deletion_message', { 'appointment_id': content.appointment_id }) }}" class="btn btn-primary">{{ "Supprimer"|t }}</a>
       </div>
     </div>
   {% endif %}

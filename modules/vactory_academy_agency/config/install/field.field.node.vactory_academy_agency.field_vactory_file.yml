@@ -1,0 +1,29 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_academy_agency
+  config:
+    - field.storage.node.field_vactory_file
+    - node.type.vactory_academy_agency
+  module:
+    - file
+id: node.vactory_academy_agency.field_vactory_file
+field_name: field_vactory_file
+entity_type: node
+bundle: vactory_academy_agency
+label: 'Support du cours'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  file_directory: '[date:custom:Y]-[date:custom:m]'
+  file_extensions: 'pdf ppt pptm pptx'
+  max_filesize: ''
+  description_field: false
+  handler: 'default:file'
+  handler_settings: {  }
+field_type: file

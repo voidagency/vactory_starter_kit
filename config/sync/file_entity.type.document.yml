@@ -1,7 +1,9 @@
-uuid: b61c9d64-84f1-4a1c-9b72-288cdd0c5f7c
+uuid: 49b5635f-a626-4cc3-864f-6ff947e5bd85
 langcode: en
 status: true
 dependencies: {  }
+_core:
+  default_config_hash: OtIlBdCep0qNwWmVmUZ-V-DwDbyyPqMvCYxa590IsxY
 id: document
 label: Document
 description: 'A <em>Document</em> file is written information.'

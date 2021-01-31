@@ -19,7 +19,7 @@ fields:
     label: 'Image'
     options:
       '#required': TRUE
-  cta_url:
+  link:
     type: url_extended
     label: 'Link'
     placeholder_value: 'https://www.google.com'

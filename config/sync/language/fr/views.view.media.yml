@@ -1,4 +1,5 @@
 label: Média
+description: 'Trouver et gérer des media.'
 display:
   default:
     display_title: Maître

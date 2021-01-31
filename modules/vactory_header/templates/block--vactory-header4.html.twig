@@ -1,7 +1,6 @@
 {{ attach_library('vactory_header/vactory_header.variant4') }}
 
 {% set navigation_main = simplify_menu('main') %}
-{% set navigation_secondaire = simplify_menu('top-navigation') %}
 
 {% macro navigationMainMacro(menu, level) -%}
   {# Set our default level as an integer. #}
@@ -15,14 +14,17 @@
     {% set active = active ~ ((menu_item.active_trail) ? ' is-active-trail' : '') %}
     {# Check if this item has childs. #}
     {% set has_sub = ((menu_item.submenu) ? 'has-sub' : '') %}
-
+    {# Attribtes #}
+    {% set wrapper_class = menu_item.options.attributes.wrapper_class %}
+    {% set item_class = menu_item.options.attributes.class %}
+    
     {% if level is null %}
-      <li class="nav-item {{ has_sub }}">
+      <li class="nav-item {{ has_sub }} {{ wrapper_class }}">
     {% endif %}
 
     {% if level is null %}
       <a href="{{ menu_item.url }}"
-         class="nav-link menu__link{{ active }} menu__link__title">{{ menu_item.text }}</a>
+         class="nav-link menu__link{{ active }} menu__link__title {{ item_class }}">{{ menu_item.text }}</a>
 
       {% if menu_item.submenu %}
         <div class="vh-header--menu-wrapper is-closed">
@@ -37,9 +39,9 @@
 
     {# Submenu #}
     {% if level is not null %}
-      <li>
+      <li class='{{ wrapper_class }}'>
         <a href="{{ menu_item.url }}"
-           class="menu__link{{ active }}">{{ menu_item.text }}</a>
+           class="menu__link{{ active }} {{ item_class }}">{{ menu_item.text }}</a>
       </li>
     {% endif %}
 
@@ -50,32 +52,6 @@
 
   {% endfor %}
 {%- endmacro %}
-
-{% macro navigationSecondaireMacro(menu, level) -%}
-  {# Set our default level as an integer. #}
-  {% set default_level = 1 %}
-
-  <ul class="menu-level--{{ level|default(default_level) }} d-lg-flex m-0 pl-2">
-    {% for key, menu_item in menu %}
-      {# Check if this is the active item. #}
-      {% set active = (menu_item.active) ? ' is-active' : '' %}
-      {# Check if this item is in the active trail. #}
-      {% set active = active ~ ((menu_item.active_trail) ? ' is-active-trail' : '') %}
-      {# Get Icon. #}
-      {% set icon = menu_item.options.attributes.class %}
-
-      <li class="menu__item{{ active }} mr-2 menu__item--{{ level|default(default_level) }}">
-        <a href="{{ menu_item.url }}" class="btn btn-outline-light btn-sm  menu__link{{ active }}">
-          {% if icon|trim is not empty %}
-            <i class="{{ icon }}"></i>
-          {% endif %}
-          {{ menu_item.text }}
-        </a>
-      </li>
-    {% endfor %}
-  </ul>
-{%- endmacro %}
-
 
 <div id="vh-header" class="vh-header vh-variant4 vh-sticky">
   <div class="vh-header-inner">
@@ -95,12 +71,7 @@
         {# End search #}
         {# Burger Menu #}
         <div class="vh-hamburger pl-1 d-lg-none">
-          <button class="hamburger hamburger--collapse js-offcanvas-trigger p-1" type="button" aria-label="Menu"
-                  role="button" data-toggle="offcanvas" aria-controls="navigation" aria-expanded="true/false">
-                        <span class="hamburger-box">
-                            <span class="hamburger-inner"></span>
-                        </span>
-          </button>
+          {% include('vh-hamburger.html.twig') %}
         </div>
         {# End Burger Menu #}
 
@@ -115,13 +86,7 @@
 
             {# Burger Menu #}
             <div class="vh-hamburger">
-              <button class="hamburger hamburger--collapse js-offcanvas-trigger" type="button"
-                      aria-label="Menu" role="button" data-toggle="offcanvas" aria-controls="navigation"
-                      aria-expanded="true/false">
-                                <span class="hamburger-box">
-                                    <span class="hamburger-inner"></span>
-                                </span>
-              </button>
+              {% include('vh-hamburger.html.twig') %}
             </div>
 
           </div>
@@ -129,13 +94,14 @@
 
           {# Navigatioon Secondaire - TOP #}
           <div class="d-flex align-items-center justify-content-end vh-header-top-right">
-            <div class="vh-header-social-media">
-              {{ vactory_render('block', 'socialmedialinks') }}
-            </div>
+            {% if is_espace_prive_enabled %}
+              {{ vactory_render('block', 'vactory_espace_prive_user_menu') }}
+            {% endif %}
+
             <div class="navigation-secondary">
-              {{ _self.navigationSecondaireMacro(navigation_secondaire.menu_tree) }}
+              {{ vactory_render('block', 'system_menu_block:top-navigation') }}
             </div>
-            <div class="search d-none d-md-block">
+            <div class="search">
               <button class="icon-search icon btn-search-overlay js-btn-search-overlay"></button>
             </div>
           </div>

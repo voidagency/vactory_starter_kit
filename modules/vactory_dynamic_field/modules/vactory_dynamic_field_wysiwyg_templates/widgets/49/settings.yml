@@ -1,0 +1,35 @@
+name: 'C49 - Youtube Video Sticky on Scroll'
+multiple: FALSE
+category: 'floated'
+enabled: TRUE
+fields:
+  mode:
+    type: checkbox
+    label: 'Activate sticky player with Youtube iframe'
+    options:
+      '#description': '<b><i class="link">How ?</i></b><br><b>Sticky YouTube iframe</b><br><b>if not checked will use the inserted image us a thumbnail for the video with the sticky behaviours</b>'
+  image:
+    type: image
+    label: 'Image (Banner)'
+    options:
+      '#required': TRUE
+  image_alt:
+    type: text
+    label: 'Text alternatif'    
+  video:
+    type: text
+    label: 'Youtube Video URL'
+    options:
+      '#description': '<b><i class="link">How ?</i></b><br><b>URL Example</b>: https://www.youtube.com/watch?v=BZDyr2OpWBU <br> <b>insert youtube video link</b>: BZDyr2OpWBU'
+      '#required': TRUE
+  video_id:
+    type: text
+    label: 'Youtube Video ID'
+    options:
+      '#description': '<b><i class="link">How ?</i></b><br><b>URL Example</b>: https://www.youtube.com/watch?v=BZDyr2OpWBU <br> <b>Value to insert</b>: BZDyr2OpWBU'
+      '#required': TRUE
+  description:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'full_html'

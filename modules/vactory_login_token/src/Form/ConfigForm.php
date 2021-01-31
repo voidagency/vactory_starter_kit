@@ -21,7 +21,7 @@ class ConfigForm extends ConfigFormBase {
    * Function build Form.
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $config = $this->config('token_login.settings');
+    $config = $this->config('vactory_login_token.settings');
     if ($config->get('expiration') == '') {
       $config->set('expiration', 40000)->save();
     }
@@ -52,7 +52,7 @@ class ConfigForm extends ConfigFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
-    $config = $this->config('token_login.settings');
+    $config = $this->config('vactory_login_token.settings');
     $config->set('expiration_time', $values['expiration_time'])->save();
     $config->set('expirationStatus', $values['expiration_status'])->save();
     $config->set('destination', $values['destination'])->save();
@@ -64,7 +64,7 @@ class ConfigForm extends ConfigFormBase {
    */
   public function getEditableConfigNames() {
     return [
-      'token_login.settings',
+      'vactory_login_token.settings',
     ];
   }
 

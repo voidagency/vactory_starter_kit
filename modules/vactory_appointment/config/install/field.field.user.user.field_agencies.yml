@@ -1,0 +1,31 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.user.field_agencies
+    - vactory_locator.locator_entity_type.vactory_locator
+  module:
+    - user
+  enforced:
+    module:
+      - vactory_appointment
+id: user.user.field_agencies
+field_name: field_agencies
+entity_type: user
+bundle: user
+label: Agences
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:locator_entity'
+  handler_settings:
+    target_bundles:
+      vactory_locator: vactory_locator
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

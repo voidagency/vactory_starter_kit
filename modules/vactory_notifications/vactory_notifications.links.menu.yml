@@ -1,0 +1,10 @@
+entity.notifications_entity.collection:
+  title: 'Notifications'
+  route_name: entity.notifications_entity.collection
+  description: 'List Notifications'
+  parent: system.admin_structure
+vactory_notifications.admin.settings:
+  title: Notifications Settings
+  description: 'Configure Notifications entity'
+  route_name:  vactory_notifications.notifications_settings
+  parent: system.admin_config_system

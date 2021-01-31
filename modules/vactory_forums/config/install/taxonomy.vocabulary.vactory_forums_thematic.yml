@@ -1,0 +1,10 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_forums
+name: 'Forums - Thématique'
+vid: vactory_forums_thematic
+description: 'Utiliser ce vocabulaire pour ajouter des nouveaux thématiques de forums.'
+weight: 0

@@ -1,4 +1,4 @@
-uuid: 9a500413-1e3c-4ae8-b5bd-d04c08246cc6
+uuid: 8e81f729-3c8e-4f2e-879f-eb8a842071b2
 langcode: en
 status: false
 dependencies:
@@ -6,6 +6,8 @@ dependencies:
     - social_media_links
   theme:
     - vactory_theme
+_core:
+  default_config_hash: 8o885phxSZyFW4GYjMWxkgMMU3HLXOPV5rPMU76_x8w
 id: socialmedialinks
 theme: vactory_theme
 region: bottom
@@ -43,11 +45,11 @@ settings:
       description: ''
       weight: '-5'
     bitbucket:
-      value: adminvoid
+      value: ''
       description: ''
       weight: '-4'
     drupal:
-      value: void
+      value: ''
       description: ''
       weight: '-3'
     tumblr:
@@ -71,7 +73,7 @@ settings:
       description: ''
       weight: '2'
     twitter:
-      value: ''
+      value: void-maroc
       description: ''
       weight: '3'
     youtube:

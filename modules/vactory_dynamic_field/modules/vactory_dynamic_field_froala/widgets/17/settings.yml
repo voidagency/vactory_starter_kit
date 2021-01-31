@@ -18,12 +18,6 @@ fields:
   link:
     type: url_extended
     label: 'Lien'
-  link_alt:
-    type: text
-    label: 'Titre Lien'
   subtitle:
     type: text
     label: 'Subtitle'
-  link_target:
-    type: checkbox
-    label: 'Ouvrir dans une nouvelle fenêtre'

@@ -1,0 +1,5 @@
+vactory_views_pretty_path.settings:
+  title: Vactory Views Pretty Path Settings
+  description: 'Configure Vactory Views Pretty Path custom module'
+  route_name:  vactory_views_pretty_path.views_pretty_path_admin_form
+  parent: system.admin_config_search

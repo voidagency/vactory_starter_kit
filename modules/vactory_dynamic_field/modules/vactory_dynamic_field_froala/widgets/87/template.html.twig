@@ -1,6 +1,7 @@
 {% set image_uri = (extra_fields.image.0 is defined) ? get_image(extra_fields.image.0) : ''%}
 {% set picto = image_uri|image_style('large') %}
 {% set lqip_image = image_uri|image_style('lqip') %}
+{% set alt_image_ex = (extra_fields.image_alt) ? extra_fields.image_alt : extra_fields.image.alt_image %}
 
 <div class="fdb-block">
     <div class="row justify-content-center pb-xl-5">
@@ -10,7 +11,7 @@
             {% endif %}
             {% if extra_fields.image.0 is not empty %}
                 <div class="img-ratio">
-                    <img alt="{{ extra_fields.image_alt }}"
+                    <img alt="{{ alt_image_ex }}"
                         class="lazyload img-fluid mt-5"
                         src="{{ lqip_image }}"
                         data-src="{{ picto }}">
@@ -30,10 +31,12 @@
                 {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : '' %}
                 {% set picto = image_uri|image_style('thumbnail') %}
                 {% set lqip_image_1 = image_uri|image_style('lqip') %}
+                {% set alt_image = (item.image_alt) ? item.image_alt : item.image.alt_image %}
+
                 <div class="row">
                     {% if item.image.0 is not empty %}
                         <div class="col-3 lazy-wrapper">
-                            <img alt="{{ item.image_alt }}"
+                            <img alt="{{ alt_image }}"
                                 class="lazyload img-fluid"
                                 src="{{ lqip_image_1 }}"
                                 data-src="{{ picto }}">

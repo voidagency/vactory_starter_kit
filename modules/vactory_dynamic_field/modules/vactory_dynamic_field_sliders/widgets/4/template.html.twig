@@ -1,4 +1,6 @@
 {{ attach_library('vactory_dynamic_field_sliders/variant4') }}
+{% set swip_autoLoop = (extra_fields.group_gonfig.autoLoop > 0) ? extra_fields.group_gonfig.autoLoop : 0 %}
+{% set swip_loopSpeed = (extra_fields.group_gonfig.loopSpeed is not empty) ? extra_fields.group_gonfig.loopSpeed : '2500' %}
 
 <div class="vf-slider vf-slider--full-background">
   <div class="slider vf-slick-slider"
@@ -6,7 +8,8 @@
        data-mobile-arrows="true"
        data-dots="true"
        data-mobile-dots="true"
-       data-mobile-autoplay="true"
+       data-autoplay="{{ swip_autoLoop }}"
+       data-autoplayspeed="{{ swip_loopSpeed }}"
   >
 
     {% for item in content %}
@@ -18,6 +21,12 @@
       {% set imageMobile = (imageMobile_uri is not empty) ? file_url(imageMobile_uri) : image %}
 
       {% set autoLoad = (loop.index == 1) ? TRUE : FALSE %}
+
+      {% set link_attributes = create_attribute() %}
+      {% set link_attributes = item.link.attributes.id is not empty ? link_attributes.setAttribute('id', item.link.attributes.id ) : link_attributes %}
+      {% set link_attributes = item.link.attributes.class is not empty ? link_attributes.setAttribute('class', item.link.attributes.class ~ 'btn btn-white') : link_attributes.setAttribute('class', 'btn btn-white') %}
+      {% set link_attributes = item.link.attributes.target is not empty ? link_attributes.setAttribute('target', item.link.attributes.target ) : link_attributes %}
+      {% set link_attributes = item.link.attributes.rel is not empty ? link_attributes.setAttribute('rel', item.link.attributes.rel ) : link_attributes %}
 
       <div class="image" {#% if item.cta_url is not empty %} onclick="location.href='{{ item.cta_url }}'" {% endif %#}>
         {% if item.video is not empty %}
@@ -52,9 +61,8 @@
                 {{ item.content }}
               </p>
             {% endif %}
-            {% if item.cta_url is not empty and item.cta_alt is not empty %}
-              {% set link_target = (item.link_target > 0) ? '_blank' : '_self' %}
-              <a href="{{ item.cta_url }}" class="btn btn-white" target="{{ link_target }}">{{ item.cta_alt }}</a>
+            {% if item.link.url is not empty and item.link.title is not empty %}
+              <a href="{{ item.link.url  }}" {{ link_attributes }}>{{ item.link.title }}</a>
             {% endif %}
           </div>
         </div>

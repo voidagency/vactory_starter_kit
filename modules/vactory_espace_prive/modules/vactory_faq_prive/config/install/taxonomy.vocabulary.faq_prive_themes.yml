@@ -1,0 +1,10 @@
+langcode: fr
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_faq_prive
+name: 'FAQ privé - Themes'
+vid: faq_prive_themes
+description: 'Utiliser ce vocabulaire pour ajouter des nouveaux thématiques de FAQ privé'
+weight: 0

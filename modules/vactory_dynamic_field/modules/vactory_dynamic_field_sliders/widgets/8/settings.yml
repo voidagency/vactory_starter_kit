@@ -19,26 +19,26 @@ fields:
     placeholder_value: 'https://www.google.com'
     options:
       '#required': TRUE
-  link_alt:
-    type: text
-    label: 'Texte du lien'
-    options:
-      '#required': TRUE
-  link_target:
-    type: checkbox
-    label: 'Ouvrir le lien dans une nouvelle tabs'
 extra_fields:
+  weight: 999
   image:
     type: image
     label: 'background'
     options:
       '#required': TRUE
-  arrows:
-    type: checkbox
-    label: 'Afficher buttons de navigation'
-  dots:
-    type: checkbox
-    label: 'Afficher paginations'
-    options:
-      '#checked': 'checked'
-
+  group_gonfig:
+    g_title: 'Configuration Slider'
+    arrows:
+      type: checkbox
+      label: 'Afficher buttons de navigation'
+    dots:
+      type: checkbox
+      label: 'Afficher paginations'
+      options:
+        '#checked': 'checked'
+    autoLoop:
+      type: checkbox
+      label: 'Auto Slide'
+    loopSpeed:
+      type: number
+      label: 'Slide Speed'

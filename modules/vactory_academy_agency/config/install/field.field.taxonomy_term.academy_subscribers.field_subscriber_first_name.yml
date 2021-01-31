@@ -1,0 +1,21 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_academy_agency
+  config:
+    - field.storage.taxonomy_term.field_subscriber_first_name
+    - taxonomy.vocabulary.academy_subscribers
+id: taxonomy_term.academy_subscribers.field_subscriber_first_name
+field_name: field_subscriber_first_name
+entity_type: taxonomy_term
+bundle: academy_subscribers
+label: Prénom
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

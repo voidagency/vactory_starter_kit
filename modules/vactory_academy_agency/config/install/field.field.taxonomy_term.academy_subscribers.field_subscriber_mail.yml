@@ -1,0 +1,21 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_academy_agency
+  config:
+    - field.storage.taxonomy_term.field_subscriber_mail
+    - taxonomy.vocabulary.academy_subscribers
+id: taxonomy_term.academy_subscribers.field_subscriber_mail
+field_name: field_subscriber_mail
+entity_type: taxonomy_term
+bundle: academy_subscribers
+label: 'Adresse e-mail'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: email

@@ -1,4 +1,4 @@
-uuid: 5e2c69c9-8159-41d1-9fde-1d5d75b508b1
+uuid: 96a09d16-4eb2-4726-b6ed-9f5da3fefd8f
 langcode: en
 status: true
 dependencies:
@@ -6,6 +6,8 @@ dependencies:
     - file
     - image
     - node
+_core:
+  default_config_hash: eLS1DmgNkstV2_CCmUdzuuiiIkg7oJYk9eQTvcb8__U
 id: node.field_vactory_cover
 field_name: field_vactory_cover
 entity_type: node

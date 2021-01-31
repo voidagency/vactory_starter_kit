@@ -1,0 +1,25 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.storage.locator_entity.field_is_appointment_enabled
+    - vactory_locator.locator_entity_type.vactory_locator
+  enforced:
+    module:
+      - vactory_appointment
+id: locator_entity.vactory_locator.field_is_appointment_enabled
+field_name: field_is_appointment_enabled
+entity_type: locator_entity
+bundle: vactory_locator
+label: 'Activer la prise de rendez-vous'
+description: 'Si cochée l''agence remonte sur le formulaire de prise de rendez-vous.'
+required: false
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

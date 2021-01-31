@@ -1,4 +1,4 @@
-uuid: 330c2746-a1ba-4415-8096-63fb56349653
+uuid: 13916ede-cf5e-460c-8597-0d06b2d75352
 langcode: en
 status: true
 dependencies:
@@ -7,6 +7,8 @@ dependencies:
     - image.style.vactory_two_cols_x2
   theme:
     - vactory_theme
+_core:
+  default_config_hash: WOcCl3fmfYnXXXXpZ4vEhgEK15HfaY0fQD9MqqqfRy0
 id: vactory_two_cols
 label: 'Two Cols'
 image_style_mappings:

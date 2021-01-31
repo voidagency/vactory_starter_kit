@@ -1,0 +1,24 @@
+langcode: fr
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_faq_prive
+  module:
+    - node
+id: pathauto_faq_prive
+label: 'Pathauto Content FAQ privé'
+type: 'canonical_entities:node'
+pattern: 'espace-privé/faq/[node:title]'
+selection_criteria:
+  240a8c37-65cb-4011-9425-243c216fb5c6:
+    id: node_type
+    bundles:
+      vactory_faq_prive: vactory_faq_prive
+    negate: false
+    context_mapping:
+      node: node
+    uuid: 240a8c37-65cb-4011-9425-243c216fb5c6
+selection_logic: and
+weight: -5
+relationships: {  }

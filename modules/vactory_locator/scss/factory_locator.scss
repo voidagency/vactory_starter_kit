@@ -1,7 +1,42 @@
+.container_map {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  @include rem(height, 640px);
+  width: 100%;
+  position: relative;
+  &.background_image {
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
+  .map-overlay {
+    background-size: cover;
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .btn.btn-secondary.js-loadmap {
+    z-index: 3;
+    transition: all .3s ease-in;
+    &:hover ,
+    &:focus ,
+    &:active,
+    &:active:focus {
+      background: darken($secondary, 5%);
+      border-color: darken($secondary, 5%);
+    }
+  }
+}
+.location-map-wrapper{
+  position: relative;
+  display: none;
+}
 .block-location {
   max-width: 100%;
   position: relative;
-
+  display:none;
   .block-location-wrapper {
     @include rem(margin-top,19px);
     position: absolute;

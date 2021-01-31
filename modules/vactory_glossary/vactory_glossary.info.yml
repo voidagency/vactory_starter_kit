@@ -2,6 +2,7 @@ name: 'Glossary'
 description: 'Provide Glossary content type and views listing.'
 type: module
 core: 8.x
+core_version_requirement: ^8 || ^9
 dependencies:
   - vactory_core
   - vactory_field

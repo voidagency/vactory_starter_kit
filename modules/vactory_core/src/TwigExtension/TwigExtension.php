@@ -2,7 +2,10 @@
 
 namespace Drupal\vactory_core\TwigExtension;
 
+use Drupal\block\Entity\Block;
 use Drupal\Core\Template\Attribute;
+use Drupal\file\Entity\File;
+use Drupal\image\Entity\ImageStyle;
 use Drupal\vactory_core\Vactory;
 
 /**
@@ -39,6 +42,22 @@ class TwigExtension extends \Twig_Extension {
 
       new \Twig_SimpleFunction('file_object',
         [$this, 'fileObject'],
+        ['is_safe' => ['html']]),
+
+      new \Twig_SimpleFunction('is_notifications_enabled',
+        [$this, 'isNotificationsEnabled'],
+        ['is_safe' => ['html']]),
+
+      new \Twig_SimpleFunction('get_media',
+        [$this, 'getMedia'],
+        ['is_safe' => ['html']]),
+
+      new \Twig_SimpleFunction('get_image_info',
+        [$this, 'getImageInfo'],
+        ['is_safe' => ['html']]),
+
+      new \Twig_SimpleFunction('successive_image_styles',
+        [$this, 'successiveImageStyles'],
         ['is_safe' => ['html']]),
     ];
   }
@@ -126,7 +145,7 @@ class TwigExtension extends \Twig_Extension {
    * @return string|false
    */
   public function drupalBlockDelta($delta) {
-    $block = \Drupal\block\Entity\Block::load($delta);
+    $block = Block::load($delta);
     if ($block) {
       $variables = \Drupal::entityTypeManager()
         ->getViewBuilder('block')
@@ -180,12 +199,95 @@ class TwigExtension extends \Twig_Extension {
    * @return bool|\Drupal\Core\Entity\EntityInterface|null|static
    */
   public function fileObject($fid) {
-    $file = \Drupal\file\Entity\File::load($fid);
+    $file = File::load($fid);
     if (isset($file)) {
       return $file;
     }
 
     return FALSE;
+  }
+
+  /**
+   * Check either the vactory notifications module is enabled or not.
+   *
+   * @return boolean
+   */
+  public function isNotificationsEnabled() {
+    $moduleHandler = \Drupal::service('module_handler');
+    return $moduleHandler->moduleExists('vactory_notifications');
+  }
+
+  /**
+   * Load media twig extension callback.
+   *
+   * @usage: {% set media = get_media(mid) %}
+   *
+   * @param $mid
+   *   The media ID.
+   *
+   * @return \Drupal\media\Entity\Media|NULL
+   */
+  public function getMedia($mid) {
+    $media = \Drupal::service('entity_type.manager')->getStorage('media')
+      ->load($mid);
+    return $media;
+  }
+
+  /**
+   * Get Image Info twig extension callback.
+   *
+   * @usage: {% set media = get_image_info(fid) %}
+   *
+   * @param $image_id
+   *   The image file ID.
+   *
+   * @return array|NULL
+   */
+  public function getImageInfo($image_id) {
+    $image =  File::load($image_id);
+    if ($image) {
+      $image_meta_data = $image->getAllMetaData();
+      $file_info = [
+        'fid' => $image->id(),
+        'uuid' => $image->get('uuid')->value,
+        'uid' => $image->get('uid')->target_id,
+        'created' => $image->get('created')->value,
+        'status' => $image->get('status')->value,
+        'type' => $image->get('type')->target_id,
+        'filename' => $image->label(),
+        'filemime' => $image->get('filemime')->value,
+        'uri' => $image->get('uri')->value,
+        'url' => file_create_url($image->get('uri')->value),
+        'alt' => !empty($image->get('field_image_alt_text')->value) ? $image->get('field_image_alt_text')->value : '',
+        'title' => !empty($image->get('field_image_title_text')->value) ? $image->get('field_image_title_text')->value : '',
+      ];
+      return array_merge($file_info, $image_meta_data);
+    }
+    return NULL;
+  }
+
+  /**
+   * Apply successive image styles twig extension callback.
+   *
+   * @param $image_uri
+   *   The image uri.
+   * @param $styles
+   *   Ordered list of styles to apply.
+   *
+   * @return string|null
+   */
+  public function successiveImageStyles($image_uri, $styles) {
+    if (empty($styles)) {
+      return NULL;
+    }
+    $image_style = ImageStyle::load(array_values($styles)[0]);
+    if ($image_style) {
+      unset($styles[array_keys($styles)[0]]);
+      $destination_uri = $image_style->buildUri($image_uri);
+      $image_style->createDerivative($image_uri, $destination_uri);
+      return empty($styles) ? $image_style->buildUrl($destination_uri) : $this->successiveImageStyles($destination_uri, $styles) ;
+    }
+    return NULL;
   }
 
 }

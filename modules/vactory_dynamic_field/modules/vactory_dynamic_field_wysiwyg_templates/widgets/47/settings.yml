@@ -19,10 +19,7 @@ fields:
       '#format': 'full_html'
   link:
     type: url_extended
-    label: 'Lien'
-  link_target:
-    type: checkbox
-    label: 'Ouvrir dans une nouvelle fenêtre'   
+    label: 'Lien' 
   mode:
     type: checkbox
     label: 'Active vidéo play'  

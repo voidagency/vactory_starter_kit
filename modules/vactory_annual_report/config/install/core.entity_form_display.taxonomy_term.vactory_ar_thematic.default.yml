@@ -1,0 +1,62 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_annual_report
+  config:
+    - field.field.taxonomy_term.vactory_ar_thematic.field_color
+    - taxonomy.vocabulary.vactory_ar_thematic
+  module:
+    - jquery_colorpicker
+    - path
+    - text
+id: taxonomy_term.vactory_ar_thematic.default
+targetEntityType: taxonomy_term
+bundle: vactory_ar_thematic
+mode: default
+content:
+  description:
+    type: text_textarea
+    weight: 1
+    region: content
+    settings:
+      placeholder: ''
+      rows: 5
+    third_party_settings: {  }
+  field_color:
+    type: jquery_colorpicker
+    weight: 5
+    region: content
+    settings:
+      color: FFFFFF
+    third_party_settings: {  }
+  langcode:
+    type: language_select
+    weight: 2
+    region: content
+    settings:
+      include_locked: true
+    third_party_settings: {  }
+  name:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  path:
+    type: path
+    weight: 3
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  status:
+    type: boolean_checkbox
+    settings:
+      display_label: true
+    weight: 4
+    region: content
+    third_party_settings: {  }
+hidden: {  }

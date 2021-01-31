@@ -1,4 +1,4 @@
-uuid: 7f15771b-26c6-460e-83b4-d7f146f9cc29
+uuid: 861ca227-a069-47d0-9903-1fa1388cca7c
 langcode: en
 status: true
 dependencies:
@@ -6,6 +6,9 @@ dependencies:
     - search_api.index.default_content_index
   module:
     - search_api
+    - user
+_core:
+  default_config_hash: pLXi4uk7Y0_Hv0I_HhfQljjax853Q9-ITXbyLAlujr8
 id: vactory_search
 label: 'Vactory Search'
 module: views
@@ -21,10 +24,11 @@ display:
     position: 0
     display_options:
       access:
-        type: none
-        options: {  }
+        type: perm
+        options:
+          perm: 'access content'
       cache:
-        type: none
+        type: search_api_tag
         options: {  }
       query:
         type: views_query
@@ -38,7 +42,7 @@ display:
           submit_button: Rechercher
           reset_button: false
           reset_button_label: Reset
-          exposed_sorts_label: 'Trier par'
+          exposed_sorts_label: 'Sort by'
           expose_sort_order: false
           sort_asc_label: Asc
           sort_desc_label: Desc
@@ -54,14 +58,14 @@ display:
           tags:
             previous: ‹‹
             next: ››
-            first: «
-            last: »
+            first: '« First'
+            last: 'Last »'
           expose:
             items_per_page: false
-            items_per_page_label: 'Éléments par page'
+            items_per_page_label: 'Items per page'
             items_per_page_options: '5, 10, 25, 50'
             items_per_page_options_all: false
-            items_per_page_options_all_label: '- Tout -'
+            items_per_page_options_all_label: '- All -'
             offset: false
             offset_label: Offset
           quantity: 9
@@ -516,7 +520,18 @@ display:
           content: 'Total résultats trouvés (@total)'
           plugin_id: result
       footer: {  }
-      empty: {  }
+      empty:
+        area_text_custom:
+          id: area_text_custom
+          table: views
+          field: area_text_custom
+          relationship: none
+          group_type: group
+          admin_label: ''
+          empty: true
+          tokenize: false
+          content: 'Aucun résultat n''a été trouvé !'
+          plugin_id: text_custom
       relationships: {  }
       arguments: {  }
       display_extenders: {  }
@@ -531,7 +546,10 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
-      tags: {  }
+        - 'user.node_grants:view'
+        - user.permissions
+      tags:
+        - 'config:search_api.index.default_content_index'
   global:
     display_plugin: page
     id: global
@@ -548,4 +566,7 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
-      tags: {  }
+        - 'user.node_grants:view'
+        - user.permissions
+      tags:
+        - 'config:search_api.index.default_content_index'

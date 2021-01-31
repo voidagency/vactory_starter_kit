@@ -1,0 +1,25 @@
+uuid: b6711dfd-3440-49b6-8a25-b165bd5fbf46
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_position_image_y
+    - paragraphs.paragraphs_type.views_reference
+  module:
+    - options
+_core:
+  default_config_hash: TB3hI76FHbaBSBf0BKxlSySJrTtFXHvBkI53-S0WnCA
+id: paragraph.views_reference.field_position_image_y
+field_name: field_position_image_y
+entity_type: paragraph
+bundle: views_reference
+label: 'Positionner l''image - verticalement'
+description: ''
+required: false
+translatable: true
+default_value:
+  -
+    value: centrer
+default_value_callback: ''
+settings: {  }
+field_type: list_string

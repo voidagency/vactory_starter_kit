@@ -15,14 +15,18 @@ dependencies:
     - field.storage.locator_entity.field_locator_info
     - field.storage.locator_entity.field_locator_phone
     - field.storage.locator_entity.field_locator_zoom
-    - image.style.locator_infowindow
     - taxonomy.vocabulary.locator_category
+    - user.role.administrator
+    - user.role.master
+    - user.role.super_administrator
+    - user.role.webmaster
     - vactory_locator.locator_entity_type.vactory_locator
   module:
     - address
     - image
     - rest
     - serialization
+    - user
     - vactory_google_map_field
     - vactory_locator
 id: vactory_locator
@@ -32,7 +36,6 @@ description: ''
 tag: ''
 base_table: locator_entity_field_data
 base_field: id
-core: 8.x
 display:
   default:
     display_plugin: default
@@ -41,8 +44,13 @@ display:
     position: 0
     display_options:
       access:
-        type: none
-        options: {  }
+        type: role
+        options:
+          role:
+            administrator: administrator
+            super_administrator: super_administrator
+            master: master
+            webmaster: webmaster
       cache:
         type: tag
         options: {  }
@@ -1216,6 +1224,68 @@ display:
           separator: ', '
           field_api_classes: false
           plugin_id: field
+        field_locator_category_1:
+          id: field_locator_category_1
+          table: locator_entity__field_locator_category
+          field: field_locator_category
+          relationship: none
+          group_type: group
+          admin_label: ''
+          label: ''
+          exclude: false
+          alter:
+            alter_text: false
+            text: ''
+            make_link: false
+            path: ''
+            absolute: false
+            external: false
+            replace_spaces: false
+            path_case: none
+            trim_whitespace: false
+            alt: ''
+            rel: ''
+            link_class: ''
+            prefix: ''
+            suffix: ''
+            target: ''
+            nl2br: false
+            max_length: 0
+            word_boundary: true
+            ellipsis: true
+            more_link: false
+            more_link_text: ''
+            more_link_path: ''
+            strip_tags: false
+            trim: false
+            preserve_tags: ''
+            html: false
+          element_type: ''
+          element_class: ''
+          element_label_type: ''
+          element_label_class: ''
+          element_label_colon: false
+          element_wrapper_type: ''
+          element_wrapper_class: ''
+          element_default_classes: true
+          empty: ''
+          hide_empty: false
+          empty_zero: false
+          hide_alter_empty: true
+          click_sort_column: target_id
+          type: entity_reference_entity_id
+          settings: {  }
+          group_column: target_id
+          group_columns: {  }
+          group_rows: true
+          delta_limit: 0
+          delta_offset: 0
+          delta_reversed: false
+          delta_first_last: false
+          multi_type: separator
+          separator: ', '
+          field_api_classes: false
+          plugin_id: field
       filters:
         type:
           id: type
@@ -1226,6 +1296,9 @@ display:
           entity_type: locator_entity
           entity_field: type
           plugin_id: bundle
+          expose:
+            operator_limit_selection: false
+            operator_list: {  }
         langcode:
           id: langcode
           table: locator_entity_field_data
@@ -1251,6 +1324,8 @@ display:
             remember_roles:
               authenticated: authenticated
             reduce: false
+            operator_limit_selection: false
+            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -1326,6 +1401,7 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
+        - user.roles
       tags:
         - 'config:field.storage.locator_entity.field_locator_autre'
         - 'config:field.storage.locator_entity.field_locator_autre_2'
@@ -1346,7 +1422,8 @@ display:
     display_title: 'Export REST'
     position: 2
     display_options:
-      display_extenders: {  }
+      display_extenders:
+        metatag_display_extender: {  }
       path: vactory/locator/list/%
       style:
         type: serializer
@@ -1372,6 +1449,96 @@ display:
         - 'languages:language_interface'
         - request_format
         - url
+        - user.roles
+      tags:
+        - 'config:field.storage.locator_entity.field_locator_autre'
+        - 'config:field.storage.locator_entity.field_locator_autre_2'
+        - 'config:field.storage.locator_entity.field_locator_autre_3'
+        - 'config:field.storage.locator_entity.field_locator_autre_4'
+        - 'config:field.storage.locator_entity.field_locator_autre_5'
+        - 'config:field.storage.locator_entity.field_locator_category'
+        - 'config:field.storage.locator_entity.field_locator_description'
+        - 'config:field.storage.locator_entity.field_locator_email'
+        - 'config:field.storage.locator_entity.field_locator_fax'
+        - 'config:field.storage.locator_entity.field_locator_image'
+        - 'config:field.storage.locator_entity.field_locator_info'
+        - 'config:field.storage.locator_entity.field_locator_phone'
+        - 'config:field.storage.locator_entity.field_locator_zoom'
+  vactory_locator_listing_agence:
+    display_plugin: rest_export
+    id: vactory_locator_listing_agence
+    display_title: 'Export REST Agence'
+    position: 2
+    display_options:
+      display_extenders:
+        metatag_display_extender: {  }
+      path: vactory/locator/agence/%
+      style:
+        type: serializer
+        options:
+          uses_fields: false
+          formats:
+            json: json
+      pager:
+        type: none
+        options:
+          offset: 0
+      rendering_language: '***LANGUAGE_language_interface***'
+      row:
+        type: data_field
+        options:
+          field_options:
+            name:
+              alias: ''
+              raw_output: false
+      display_description: ''
+      arguments:
+        id:
+          id: id
+          table: locator_entity_field_data
+          field: id
+          relationship: none
+          group_type: group
+          admin_label: ''
+          default_action: ignore
+          exception:
+            value: all
+            title_enable: false
+            title: All
+          title_enable: true
+          title: ''
+          default_argument_type: fixed
+          default_argument_options:
+            argument: ''
+          default_argument_skip_url: false
+          summary_options:
+            base_path: ''
+            count: true
+            items_per_page: 25
+            override: false
+          summary:
+            sort_order: asc
+            number_of_records: 0
+            format: default_summary
+          specify_validation: false
+          validate:
+            type: none
+            fail: 'not found'
+          validate_options: {  }
+          break_phrase: true
+          not: false
+          entity_type: locator_entity
+          entity_field: id
+          plugin_id: numeric
+      defaults:
+        arguments: false
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_interface'
+        - request_format
+        - url
+        - user.roles
       tags:
         - 'config:field.storage.locator_entity.field_locator_autre'
         - 'config:field.storage.locator_entity.field_locator_autre_2'

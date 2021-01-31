@@ -40,7 +40,7 @@ function vactory_search_preprocess_views_view_field(&$variables) {
     $use_node_summary = Drupal::config('vactory_search.settings')->get('use_node_summary');
 
     if ($variables['field']->realField == 'search_api_url') {
-      $path = $variables['row']->search_api_url[0];
+      $path = $variables['row']->__get("search_api_url|url")[0];
       $path = \Drupal::request()->getSchemeAndHttpHost() . $path;
       $layout = \Drupal::request()->get('layout');
       $url_object = Url::fromUri($path);

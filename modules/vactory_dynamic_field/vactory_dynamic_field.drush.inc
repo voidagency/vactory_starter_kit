@@ -36,7 +36,7 @@ function _vdf_delete_files() {
     }
   }
 
-  $file_storage = \Drupal::service('entity.manager')->getStorage('file');
+  $file_storage = \Drupal::service('entity_type.manager')->getStorage('file');
   $fids = Drupal::entityQuery('file')->execute();
   $files = $file_storage->loadMultiple($fids);
 

@@ -2,3 +2,5 @@ add_license: false
 minifier: 5
 ratio_max: 0.9
 ratio_min: 0.1
+_core:
+  default_config_hash: prI9W3_5Vu9PMpExCeQfSVBS4ctq-X9EO15g37flr90

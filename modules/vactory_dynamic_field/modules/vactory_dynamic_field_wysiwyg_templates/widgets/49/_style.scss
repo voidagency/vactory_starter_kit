@@ -1,0 +1,37 @@
+.content-media--video {
+  background-color: #ddd;
+  display: block;
+  position: relative;
+  padding: 0 0 56.25% 0;
+}
+.content-media--video iframe {
+   position: absolute;
+   bottom: 0;
+   left: 0;
+   width: 100%;
+   height: 100%;
+   z-index: 2;
+}
+
+#featured-video {
+  transition: width .2s ease-in-out, height .2s ease-in-out, transform .38s ease-in-out;
+}
+/** Use .sticky */
+#featured-video.is-sticky {
+  position: fixed;
+  bottom: 20px;
+  left: auto;
+  right: 20px;
+  max-width: 354px;
+  max-height: 200px;
+  width: 354px;
+  height: 200px;
+  box-shadow: 3px 5px 13px 0 rgba(0,0,0,0.12);
+  transform: translateY(100%);
+    animation: sticky-up .5s ease forwards;
+}
+
+@keyframes sticky-up {
+  0% { opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}

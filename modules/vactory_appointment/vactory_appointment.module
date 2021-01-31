@@ -5,11 +5,14 @@
  * Module related hooks.
  */
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
+use Drupal\vactory_appointment\Entity\AppointmentEntity;
 use Drupal\views\Plugin\views\query\QueryPluginBase;
 use Drupal\views\ViewExecutable;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Implements hook_theme().
@@ -23,11 +26,11 @@ function vactory_appointment_theme($existing, $type, $theme, $path) {
       ],
     ],
     'agency_services_listing' => [
-    'template' => 'agency-services-listing',
-    'variables' => [
-      'content' => NULL,
+      'template' => 'agency-services-listing',
+      'variables' => [
+        'content' => NULL,
+      ],
     ],
-  ],
     'appointment_adviser_preview' => [
       'template' => 'appointment-adviser-preview',
       'variables' => [
@@ -46,9 +49,43 @@ function vactory_appointment_theme($existing, $type, $theme, $path) {
         'content' => NULL,
       ],
     ],
+    'appointment_date' => [
+      'template' => 'appointment-date',
+      'variables' => [
+        'content' => NULL,
+      ],
+    ],
     'views_view_unformatted__appointments_edit__my_appointments_listing' => [
       'base hook' => 'views_view_unformatted',
-      'template' => 'appointments-edit-submission-card'
+      'template' => 'appointments-edit-submission-card',
+    ],
+    'views_view__appointments_edit__my_appointments_listing' => [
+      'base hook' => 'views_view',
+      'template' => 'appointments-edit-submission-view',
+    ],
+    'appointment_create_mail_notifications' => [
+      'template' => 'appointment-create-mail-notifications',
+      'variables' => [
+        'content' => NULL,
+      ],
+    ],
+    'views_mini_pager__appointments_edit' => [
+      'base hook' => 'views_mini_pager',
+      'template' => 'appointment-edit-view-pager',
+    ],
+    'appointment_agencies_listing' => [
+      'template' => 'appointment-agencies-listing',
+      'variables' => [
+        'content' => NULL,
+      ],
+    ],
+    'appointment_require_authentication_message' => [
+      'template' => 'appointment-require-authentication-message',
+      'variables' => [
+        'title' => NULL,
+        'url_login' => NULL,
+        'url_register' => NULL,
+      ],
     ],
   ];
 }
@@ -58,10 +95,19 @@ function vactory_appointment_theme($existing, $type, $theme, $path) {
  */
 function vactory_appointment_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
   if ($view->id() == 'appointments_edit' && $view->current_display == 'my_appointments_listing') {
+    $config = \Drupal::config('vactory_appointment.settings');
+    if (!$config->get('user_can_edit_appointment')) {
+      // If edit appointment is disabled from module settings then
+      // redirect to 404 page.
+      redirect_to_notfound();
+    }
     $params = Drupal::request()->query->all();
     if (isset($params['phone']) && !empty($params['phone'])) {
-      $phone = decrypt($params['phone']);
-      $query->where[1]['conditions'][0]['value'] = $phone;
+        $phone = decrypt($params['phone']);
+        $query->where[1]['conditions'][0]['value'] = $phone;
+    }
+    else {
+      throw new NotFoundHttpException();
     }
   }
 }
@@ -70,18 +116,22 @@ function vactory_appointment_views_query_alter(ViewExecutable $view, QueryPlugin
  * Implements hook_preprocess_HOOK().
  */
 function vactory_appointment_preprocess_views_view_unformatted__appointments_edit__my_appointments_listing(&$variables) {
+  $config = Drupal::config('vactory_appointment.settings');
   foreach ($variables['rows'] as &$row) {
     $aid = encrypt($row['content']['#row']->id);
     $row['content']['appointment_id'] = $aid;
   }
+  $variables['user_can_delete_appointment'] = $config->get('user_can_delete_appointment');
 }
 
 /**
  * Implements hook_form_alter().
  */
 function vactory_appointment_form_views_exposed_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  if ($form['#id'] == 'views-exposed-form-appointments-edit-my-appointments-listing') {
-    $form['appointment_day']['#type'] = 'date';
+  $route_name = Drupal::routeMatch()->getRouteName();
+  $current_user = Drupal::currentUser();
+  if ($route_name == 'view.appointments_edit.my_appointments_listing') {
+    $form['appointment_date']['#type'] = 'date';
     $params = Drupal::request()->query->all();
     if (isset($params['phone']) && !empty($params['phone'])) {
       $phone = $params['phone'];
@@ -90,6 +140,51 @@ function vactory_appointment_form_views_exposed_form_alter(&$form, FormStateInte
         '#value' => $phone,
       ];
       $form['actions']['reset']['#submit'] = ['custom_exposed_filter_form_reset_submit'];
+    }
+  }
+  if ($route_name == 'entity.vactory_appointment.collection') {
+    // Get existing agencies.
+    $agencies = Drupal::entityTypeManager()->getStorage('locator_entity')
+      ->loadMultiple();
+    $agencies = array_map(function ($agency) {
+      return $agency->get('name')->value;
+    }, $agencies);
+    // Get existing appointment type.
+    $appointment_types = Drupal::entityTypeManager()->getStorage('taxonomy_term')
+      ->loadByProperties(['vid' => 'vactory_appointment_motifs']);
+    $appointment_types = array_map(function ($agency) {
+      return $agency->get('name')->value;
+    }, $appointment_types);
+    // Change date field type to date.
+    $form['appointment_date']['#type'] = 'date';
+    // Use select form api widget to select agencies.
+    $form['agency'] = [
+      '#type' => 'select',
+      '#title' => t('Agence'),
+      '#options' => $agencies,
+      '#empty_option' => '- Toutes les agences -',
+    ];
+    // Use select form api widget to select appointment types.
+    $form['appointment_type'] = [
+      '#type' => 'select',
+      '#title' => t('Type de rendez-vous'),
+      '#options' => $appointment_types,
+      '#empty_option' => '- Tout -',
+    ];
+    if ($current_user->hasPermission('export appointments')) {
+      // Add filters to appointment export link.
+      $params = Drupal::request()->query->all();
+      if (!empty($params)) {
+        $export_url = Url::fromRoute('view.appointments_edit.appointment_data_export', $params);
+      }
+      else {
+        $export_url = Url::fromRoute('view.appointments_edit.appointment_data_export');
+      }
+      $form['actions']['export'] = [
+        '#type' => 'markup',
+        '#markup' => '<a href="' . $export_url->toString() . '" class="button" download>Exporter en CSV</a>',
+        '#weight' => 99,
+      ];
     }
   }
 }
@@ -109,7 +204,7 @@ function custom_exposed_filter_form_reset_submit(&$form, FormStateInterface $for
  */
 function encrypt($data) {
   $key = '7O9KM8O44nO9cmZL';
-  return base64_encode(openssl_encrypt($data, "aes-128-ecb", $key, OPENSSL_RAW_DATA));
+  return bin2hex(openssl_encrypt($data, "aes-128-ecb", $key, OPENSSL_RAW_DATA));
 }
 
 /**
@@ -117,11 +212,333 @@ function encrypt($data) {
  */
 function decrypt($data) {
   $key = '7O9KM8O44nO9cmZL';
-  return openssl_decrypt(base64_decode($data), "aes-128-ecb", $key, OPENSSL_RAW_DATA);
+  return openssl_decrypt(pack("H*", $data), "aes-128-ecb", $key, OPENSSL_RAW_DATA);
 }
 
+/**
+ * Redirect to not foud function.
+ */
 function redirect_to_notfound() {
-  $url = Url::fromRoute('system.404');
-  $response = new RedirectResponse($url->toString());
-  $response->send();
+  throw new NotFoundHttpException();
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_appointment_preprocess_form__user_form(&$variables) {
+  $modified_account = Drupal::currentUser();
+  $is_adviser = FALSE;
+  if (in_array('adviser', $modified_account->getRoles())) {
+    $is_adviser = TRUE;
+  }
+  $is_appointment_enabled = \Drupal::service('module_handler')->moduleExists('vactory_appointment');
+  $variables['is_appointment_enabled'] = $is_appointment_enabled;
+  $variables['is_adviser'] = $is_adviser;
+  $variables['account_object'] = $modified_account;
+}
+
+/**
+ * Implements hook_entity_presave().
+ */
+function vactory_appointment_entity_presave(EntityInterface $entity) {
+  if ($entity->getEntityTypeId() == 'vactory_appointment') {
+    // Update only when appointment already exist.
+    if ($entity->original) {
+      $original_appointment = $entity->original;
+      $new_appointment = $entity;
+      $appointment_manager = \Drupal::service('vactory_appointment.appointments.manage');
+      $appointment_id = $entity->id();
+      $adviser = $new_appointment->getAdviser();
+      if ($original_appointment->getAdviser()->id() !== $new_appointment->getAdviser()->id()) {
+        $old_adviser = $original_appointment->getAdviser();
+        $adviser_appointment = $appointment_manager->removeAdviserAppointment($old_adviser, $appointment_id);
+      }
+      else {
+        $adviser_appointment = $appointment_manager->removeAdviserAppointment($adviser, $appointment_id);
+      }
+      if ($new_appointment->getAppointmentDate() !== $original_appointment->getAppointmentDate()) {
+        $adviser_appointment['start'] = $new_appointment->getAppointmentDate();
+        $date = new DateTime($new_appointment->getAppointmentDate());
+        $new_title = 'Rendez-vous le' . ' ' . $date->format('d/m/Y') . ' à ' . $date->format('H:i');
+        $entity->setTitle($new_title);
+      }
+      $appointment_manager->addAdviserAppointment($adviser, $adviser_appointment);
+    }
+  }
+  if ($entity->getEntityTypeId() == 'user' && $entity->isNew()) {
+    $entity->set('field_adviser_appointments', '[]');
+    $entity->set('field_adviser_holiday', '[]');
+  }
+  if ($entity->getEntityTypeId() == 'user' && !$entity->isNew()) {
+    if (empty($entity->get('field_adviser_appointments')->value)) {
+      $entity->set('field_adviser_appointments', '[]');
+    }
+    if (empty($entity->get('field_adviser_holiday')->value)) {
+      $entity->set('field_adviser_holiday', '[]');
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_insert().
+ */
+function vactory_appointment_entity_insert(EntityInterface $entity) {
+  if ($entity->getEntityTypeId() !== 'vactory_appointment') {
+    return;
+  }
+  $appointment_manager = \Drupal::service('vactory_appointment.appointments.manage');
+  $adviser = $entity->getAdviser();
+  $appointment_manager->updateAdviserAppointments($adviser, $entity);
+}
+
+/**
+ * Implements hook_entity_delete().
+ */
+function vactory_appointment_entity_delete(EntityInterface $entity) {
+  if ($entity->getEntityTypeId() == 'vactory_appointment') {
+    $adviser = $entity->getAdviser();
+    $appointment_id = $entity->id();
+    $appointment_manager = \Drupal::service('vactory_appointment.appointments.manage');
+    $appointment_manager->removeAdviserAppointment($adviser, $appointment_id);
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_appointment_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if (in_array($form_id, ['vactory_appointment_edit_form', 'vactory_appointment_add_form'])) {
+    $form['#validate'][] = 'edit_or_add_appointment_from_bo_validator';
+  }
+  $theme_name = \Drupal::service('theme.manager')->getActiveTheme()->getName();
+  if (in_array($form_id, ['user_form', 'user_register_form']) && $theme_name == 'seven') {
+    $form['field_adviser_holiday']['#access'] = FALSE;
+    $form['field_adviser_appointments']['#access'] = FALSE;
+  }
+}
+
+/**
+ * Edit/Add appointment from BO validator.
+ */
+function edit_or_add_appointment_from_bo_validator(&$form, FormStateInterface $form_state) {
+  $appointment_manager = \Drupal::service('vactory_appointment.appointments.manage');
+  $route_name = Drupal::routeMatch()->getRouteName();
+  $values = $form_state->getValues();
+  $adviser_id = $values['adviser_id'][0]['target_id'];
+  $adviser = Drupal::entityTypeManager()->getStorage('user')
+    ->load($adviser_id);
+  $appointment_date = $values['appointment_date'][0]['value']->getPhpDateTime();
+  $is_valid_date = TRUE;
+  if ($route_name == 'entity.vactory_appointment.edit_form') {
+    $appointment_id = Drupal::routeMatch()->getParameter('vactory_appointment')->id();
+    if (!$appointment_manager->isAdviserAvailable($adviser, $appointment_date->getTimestamp(), TRUE, $appointment_id)) {
+      $is_valid_date = FALSE;
+    }
+  }
+  else {
+    if (!$appointment_manager->isAdviserAvailable($adviser, $appointment_date->getTimestamp(), FALSE)) {
+      $is_valid_date = FALSE;
+    }
+  }
+  if (!$is_valid_date) {
+    $form_state->setErrorByName('appointment_date', t("La date que vous avez choisi n'est plus disponible, merci de réessayez avec autre jour, heure et/ou conseiller."));
+  }
+}
+
+/**
+ * Implements hook_mail().
+ */
+function vactory_appointment_mail($key, &$message, $params) {
+  $langcode = Drupal::languageManager()->getCurrentLanguage()->getId();
+  $site_name = \Drupal::config('system.site')->get('name');
+  switch ($key) {
+    case 'create_appointment':
+      // Get appointment adviser.
+      $adviser = Drupal::entityTypeManager()
+        ->getStorage('user')
+        ->load($params['adviser_id']);
+      // Get appointment agency.
+      $agency = Drupal::entityTypeManager()
+        ->getStorage('locator_entity')
+        ->load($params['agency']);
+      $agency = \Drupal::service('entity.repository')->getTranslationFromContext($agency, $langcode);
+      // Get appointment type.
+      $appointment_type = Drupal::entityTypeManager()
+        ->getStorage('taxonomy_term')
+        ->load($params['appointment_type']);
+      $appointment_type = \Drupal::service('entity.repository')->getTranslationFromContext($appointment_type, $langcode);
+      // Get appointment Date.
+      $date = $params['date'];
+      $timestamp = $date->getTimestamp();
+      $appointment_day = \Drupal::service('date.formatter')
+        ->format($timestamp, 'custom', 'l d F Y', NULL, $langcode);
+      $appointment_hour = $date->format('H\hi');
+      $appointment_date = t('@day à @hour', [
+        '@day' => $appointment_day,
+        '@hour' => $appointment_hour,
+      ]);
+      // Get sender email from module configuration.
+      $email_from = Drupal::config('vactory_appointment.settings')->get('appointment_email_from');
+      if (!empty($email_from)) {
+        $message['from'] = $site_name . ' <' . $email_from . '>';
+        $message['headers']['From'] = $site_name . ' <' . $email_from . '>';
+        $message['headers']['Sender'] = $email_from;
+      }
+      else {
+        $site_mail = \Drupal::config('system.site')->get('mail');
+        $message['from'] = $site_name . '<' . $site_mail . '>';
+        $message['headers']['From'] = $site_name . '<' . $site_mail . '>';
+      }
+      // Format appointment date start and end.
+      $date_start_copie = clone $date;
+      $date_start = $date->format('Ymd\THis');
+      $date_end = $date_start_copie->add(new DateInterval('PT' . 30 . 'M'))->format('Ymd\THis');
+      // Prepare params for google calendar URL.
+      $options = [
+        'query' => [
+          'action' => 'TEMPLATE',
+          'text' => t('Prise de rendez-vous chez @site_name - @title', [
+            '@title' => $appointment_type->getName(),
+            '@site_name' => $site_name,
+          ]),
+          'dates' => $date_start . '/' . $date_end,
+          'location' => t('Agence') . ' ' . $agency->get('name')->value,
+          'sf' => TRUE,
+          'output' => 'xml',
+        ],
+      ];
+      $add_to_google_calendar = Url::fromUri("https://www.google.com/calendar/render", $options);
+      $mail_body = [
+        '#theme' => 'appointment_create_mail_notifications',
+        '#content' => [
+          'agency_name' => $agency->get('name')->value,
+          'agency_path' => $agency->get('field_agency_path')->value,
+          'first_name' => $params['appointment_first_name'],
+          'last_name' => $params['appointment_last_name'],
+          'adviser' => $adviser,
+          'appointment_date' => $appointment_date,
+          'google_calendar_url' => $add_to_google_calendar->toString(),
+          'create_account_url' => get_create_account_link($params['account_infos']),
+        ],
+      ];
+      // Email subject.
+      $message['subject'] = t('Prise de Rendez-vous chez') . ' ' . $site_name . ' - ' . $appointment_type->getName();
+      // Email body content.
+      $message['body'][] = render($mail_body);
+      break;
+
+    default:
+      break;
+  }
+}
+
+/**
+ * Generate create account URL.
+ */
+function get_create_account_link($account_infos) {
+  $is_anonymous = Drupal::currentUser()->isAnonymous();
+  if ($is_anonymous) {
+    $is_espace_prive_enabled = Drupal::moduleHandler()->moduleExists('vactory_espace_prive');
+    $route_name = $is_espace_prive_enabled ? 'vactory_espace_prive.register' : 'user.register';
+    $url = Url::fromRoute($route_name, $account_infos);
+    return $url->toString();
+  }
+  return NULL;
+}
+
+/**
+ * Implements hook_theme_suggestions_alter().
+ */
+function vactory_appointment_theme_suggestions_alter(array &$suggestions, array $variables, $hook) {
+  $route_name = Drupal::routeMatch()->getRouteName();
+  if ($hook == 'views_mini_pager' && $route_name == 'view.appointments_edit.my_appointments_listing') {
+    $suggestions[] = 'views_mini_pager__appointments_edit';
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function vactory_appointment_form_user_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $route_name = Drupal::routeMatch()->getRouteName();
+  if ($route_name == 'vactory_espace_prive.profile' || $route_name == 'entity.user.edit_form') {
+    $current_user_id = Drupal::currentUser()->id();
+    $modified_account = Drupal::entityTypeManager()->getStorage('user')
+      ->load($current_user_id);
+    // Current Date.
+    $date = new \DateTime('now');
+    if (in_array('adviser', $modified_account->getRoles())) {
+      $adviser_appointments_string = $modified_account->get('field_adviser_appointments')->value;
+      $adviser_holidays = $modified_account->get('field_adviser_holiday')->value;
+      $adviser_appointments = json_decode($adviser_appointments_string);
+      $appointment_infos = [];
+      foreach ($adviser_appointments as $adviser_appointment) {
+        $appointment = AppointmentEntity::load($adviser_appointment->id);
+        if ($appointment) {
+          $appointment_infos[] = [
+            'id' => $adviser_appointment->id,
+            'full_name' => ucfirst($appointment->getAppointmentFirstName()) . ' ' . strtoupper($appointment->getAppointmentLastName()),
+            'telephone' => $appointment->getAppointmentPhone(),
+            'email' => $appointment->getAppointmentEmail(),
+          ];
+        }
+      }
+      $form['#attached']['library'][] = 'vactory_appointment/adviser.calendar';
+      $form['#attached']['drupalSettings']['vactory_appointment'] = [
+        'adviser_appointments' => $adviser_appointments_string,
+        'adviser_holidays' => $adviser_holidays,
+        'adviser_appointment_infos' => $appointment_infos,
+        'current_date' => $date->format('Y-m-d'),
+        'server_timezone_ofsset' => $date->format('P'),
+      ];
+    }
+    if (in_array('vactory_academy_instructor', $modified_account->getRoles())) {
+      $form['field_about_the_author']['widget'][0]['#type'] = 'textarea';
+      $form['field_about_the_author']['widget'][0]['#resizable'] = FALSE;
+      unset($form['field_about_the_author']['widget'][0]['#base_type']);
+      unset($form['field_about_the_author']['widget'][0]['#format']);
+    }
+    else {
+      $form['field_about_the_author']['#access'] = FALSE;
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_appointment_preprocess_views_view__appointments_edit__my_appointments_listing(&$variables) {
+  $langcode = Drupal::languageManager()->getCurrentLanguage()->getId();
+  $variables['user_has_access'] = Drupal::service('vactory_appointment.appointments.manage')->isCurrentUserCanSubmitAppointment();
+  $config = \Drupal::config('vactory_appointment.settings');
+  if ($config->get('is_authentication_required')) {
+    $destination = '/' . $langcode . '/modifier-un-rendez-vous';
+    $variables['url_login'] = Url::fromRoute('vactory_espace_prive.login', ['destination' => $destination])->toString();
+    $variables['url_register'] = Url::fromRoute('vactory_espace_prive.register', ['destination' => $destination])->toString();
+  }
+}
+
+/**
+ * Register Form.
+ *
+ * Implements hook_form_FORM_ID_alter().
+ */
+function vactory_appointment_form_user_register_form_alter(&$form, FormStateInterface $form_state) {
+  /** @var \Drupal\Core\Routing\AdminContext $admin_context */
+  $admin_context = \Drupal::service('router.admin_context');
+  if ($admin_context->isAdminRoute()) {
+    return;
+  }
+  $route_name = Drupal::routeMatch()->getRouteName();
+  if ($route_name == 'vactory_espace_prive.register') {
+    $params = Drupal::request()->query->all();
+    $email = isset($params['email']) ? decrypt($params['email']) : '';
+    $phone = isset($params['email']) ? decrypt($params['phone']) : '';
+    $first_name = isset($params['first_name']) ? $params['first_name'] : '';
+    $last_name = isset($params['last_name']) ? $params['last_name'] : '';
+    $form['field_first_name']['widget'][0]['value']['#default_value'] = $first_name;
+    $form['field_last_name']['widget'][0]['value']['#default_value'] = $last_name;
+    $form['field_telephone']['widget'][0]['value']['#default_value'] = $phone;
+    $form['account']['mail']['#default_value'] = $email;
+  }
 }

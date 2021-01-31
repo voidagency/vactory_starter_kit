@@ -1,9 +1,11 @@
-uuid: 7dbc31e0-1084-4261-a69e-37fbc1305f78
-langcode: en
+uuid: 3f9304a0-9ddb-43c5-8a87-cfd0e3aa5f79
+langcode: fr
 status: true
 dependencies:
   module:
     - paragraphs
+_core:
+  default_config_hash: 4nvxyLvDu594xyzZhsU5yM9WoQ9spfzXWgpYaWKAKaY
 id: paragraph.field_titre_ancre
 field_name: field_titre_ancre
 entity_type: paragraph

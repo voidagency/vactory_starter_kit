@@ -1,6 +1,9 @@
 langcode: en
 status: true
 dependencies:
+  enforced:
+    module:
+      - vactory_annual_report
   config:
     - field.field.node.vactory_annual_report.field_ar_content_body
     - field.field.node.vactory_annual_report.field_ar_media_type
@@ -12,6 +15,7 @@ dependencies:
     - user
     - vactory_dynamic_field
 id: node.vactory_annual_report.default
+
 targetEntityType: node
 bundle: vactory_annual_report
 mode: default

@@ -1,10 +1,12 @@
-uuid: ae2b18c6-4998-4581-9ec7-07b3035da70f
+uuid: a8094efd-57f2-4704-ac55-a97487c2ca2f
 langcode: en
 status: true
 dependencies:
   module:
     - node
     - text
+_core:
+  default_config_hash: _4SYjqCuVy0n08jXMvuz6vGI2r11RElbTb2VRzf9ae8
 id: node.field_vactory_address
 field_name: field_vactory_address
 entity_type: node

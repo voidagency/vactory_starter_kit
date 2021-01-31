@@ -1,0 +1,10 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_academy_agency
+name: 'Formations en agence - Types client'
+vid: types_client
+description: 'Utiliser ce vocabulaire pour ajouter des nouveaux types de client'
+weight: 0

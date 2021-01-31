@@ -1,0 +1,38 @@
+name: 'AWB CORPORATE - Image & Description & cta colapse'
+multiple: TRUE
+category: 'AWB CORPORATE'
+enabled: TRUE
+fields:
+  nameConseiller:
+    type: text
+    label: 'Nom'
+  telephone:
+    type: text
+    label: 'Téléphone'
+  contact:
+    type: url_extended
+    label: 'Contact'
+extra_fields:
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': TRUE
+  image_alt:
+    type: text
+    label: 'Text alternatif'
+  description:
+    type: text_format
+    label: 'Description'
+    options:
+      '#required': TRUE
+      '#format': full_html
+  link:
+    type: url_extended
+    label: 'Lien 1'
+  link1:
+    type: url_extended
+    label: 'Lien 2'
+  link2:
+    type: url_extended
+    label: 'Lien 3'

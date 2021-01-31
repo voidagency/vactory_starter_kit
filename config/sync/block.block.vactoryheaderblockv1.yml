@@ -1,4 +1,4 @@
-uuid: cf1f37c5-c614-49f4-b1af-ddfc739dd024
+uuid: 49346fe9-548d-49f5-b209-e301bf1f140a
 langcode: en
 status: true
 dependencies:
@@ -6,6 +6,8 @@ dependencies:
     - vactory_header
   theme:
     - vactory_theme
+_core:
+  default_config_hash: 5hQ5LK_sXW24OGpTS3elduqqAMZ8NgD5tnHAjY9twTI
 id: vactoryheaderblockv1
 theme: vactory_theme
 region: header

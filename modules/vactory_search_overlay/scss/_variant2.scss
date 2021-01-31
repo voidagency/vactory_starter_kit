@@ -93,6 +93,10 @@ $so2-info-text-color: $white;
     @include rem(font-size, $so2-info-font-size);
     color: $so2-info-text-color;
   }
+
+  + .search-overlay-backdropShadow {
+    display: none !important;
+  }
 }
 
 
@@ -131,5 +135,26 @@ $so2-info-text-color: $white;
         transform: rotate(180deg);
       }
     }
+
+  }
+  .search-overlay-variant2 + .search-overlay-backdropShadow {
+    display: block !important;
+    opacity: 0;
+    position: fixed;
+    z-index: 1;
+    background: rgba(12,12,12,.4);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    width: 100vw;
+    height: 100vh;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: -99999px;
+    transition: opacity cubic-bezier(.51,.005,0,1) 750ms
+  }
+  .search-overlay-variant2.open + .search-overlay-backdropShadow {
+    opacity: 1;
+    left: 0px;
   }
 }

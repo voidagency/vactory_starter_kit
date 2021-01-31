@@ -1,7 +1,9 @@
-uuid: d6298c47-4996-4461-884e-3f4339f9cc18
+uuid: ed7fb3c4-852f-43a0-957e-588480685cd2
 langcode: en
 status: true
 dependencies: {  }
+_core:
+  default_config_hash: TS72ykP83Lms5LhFe7RWmlbvBVwVM6GZCBMa-MRdke8
 id: super_administrator
 label: 'Super Admin'
 weight: 3

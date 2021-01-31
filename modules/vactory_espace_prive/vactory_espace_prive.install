@@ -1,0 +1,15 @@
+<?php
+
+/**
+ * @file
+ * Module related install/uninstall hooks.
+ */
+
+/**
+ * Implements hook_uninstall().
+ */
+function vactory_espace_prive_uninstall($is_syncing) {
+  // Delete field_user_groups field storage config.
+  $config = Drupal::configFactory()->getEditable('field.storage.user.field_user_groups');
+  $config->delete();
+}

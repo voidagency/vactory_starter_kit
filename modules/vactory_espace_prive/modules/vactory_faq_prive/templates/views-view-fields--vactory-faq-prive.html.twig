@@ -1,0 +1,62 @@
+{#
+/**
+ * @file
+ * Article Component.
+ * themes/interface/src/scss/stylesheets/components/article/_article.scss
+ */
+#}
+{% if classes is not defined %}
+  {% set classes = [] %}
+{% endif %}
+{% set classes = classes|merge(['card']) %}
+
+{#<article {{ attributes.addClass(classes) }}>
+  <div class="card-body">
+    <h4 class="card-title">
+        <span class="link font-semibold text-uppercase font-20">{{ fields.title.content }}</span>
+    </h4>
+
+    <div class="card-text">{{ fields.body.content }}</div>
+
+    {% if row._entity.nid is not null %}
+      <div class="card-read-more">
+        <a href="{{ url('entity.node.canonical', {'node': row._entity.nid.value}) }}" class="btn btn-primary">{{ 'En savoir plus' }}</a>
+      </div>
+    {% endif %}
+  </div>
+</article>#}
+{# Sets Unique ID for Accordion. #}
+{#<div class="accordion w-100" id="{{ accordion_id }}">
+    {% set collapsed = 'collapsed' %}
+    <div class="card">
+      <div class="card-header" id="heading{{ accordion_id }}">
+        <h5 class="mb-0">
+          <button class="btn btn-link {{ collapsed }}"
+                  type="button"
+                  data-toggle="collapse"
+                  data-target="#collapse{{ accordion_id }}" aria-expanded="{#% if loop.first %} true {% else %} false {% endif %#}{#" aria-controls="collapse{{ accordion_id }}">{{ row._entity.title.value }}</button>
+       {# </h5>
+      </div>
+
+      <div id="collapse{{ accordion_id }}" class="collapse {#% if loop.first %} show {% endif %#}{#" aria-labelledby="heading{{ accordion_id }}" data-parent="#{{ accordion_id }}">
+ {#       <div class="card-body">{{ fields.body.content|raw }}</div>
+      </div>
+    </div>
+</div>#}
+
+<div class="card panel">
+  <div class="card-header panel-heading" id="heading{{ row.index }}">
+    <h5 class="mb-0">
+      <button type="button" data-toggle="collapse" data-target="#collapse{{ row.index }}" aria-expanded="true" aria-controls="collapse{{ row.index }}">{{ row._entity.title.value }}</button>
+    </h5>
+  </div>
+
+  <div id="collapse{{ row.index }}" class="collapse panel-collapse" aria-labelledby="heading{{ row.index }}" data-parent="#accordion-faq">
+    <div class="card-body">
+      <h6 class="card-subtitle">
+        <span class="badge badge-primary">{{ fields.field_faq_prive_thematique.content }}</span>
+      </h6>
+      {{ fields.body.content }}
+    </div>
+  </div>
+</div>

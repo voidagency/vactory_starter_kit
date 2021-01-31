@@ -93,7 +93,7 @@ $vh1-heading-color: #afdefa !default;
   .cbp-hrmenu > ul > li > a {
     font-weight: 700;
     padding: 2em 1em;
-    color: $vh1-primary-links-color;
+    color: $vh1-primary-color;
     display: inline-block;
     &.is-active-trail {
       color: $vh1-primary-links-active-color;
@@ -174,29 +174,6 @@ $vh1-heading-color: #afdefa !default;
 //    box-shadow: inset 0 1px 1px rgba(0, 0, 0, .075), 0 0 8px $color-rgba;
 //  }
 //}
-
-// Hamburger.
-// -----------------------------------------------------------------------------
-.vh-variant1 {
-  .vh-hamburger {
-    button:focus {
-      outline: 0;
-    }
-  }
-
-  .hamburger {
-    padding: 0;
-  }
-
-  .hamburger-box {
-    width: 30px;
-  }
-
-  .hamburger-inner, .hamburger-inner::before, .hamburger-inner::after {
-    width: 30px;
-    height: 2px;
-  }
-}
 
 // Mobile > Off canvas layer.
 // -----------------------------------------------------------------------------

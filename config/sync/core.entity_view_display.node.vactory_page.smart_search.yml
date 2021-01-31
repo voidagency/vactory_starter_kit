@@ -1,0 +1,41 @@
+uuid: 5c5a1eb6-4682-4569-b121-60ccfb3acd14
+langcode: fr
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.smart_search
+    - field.field.node.vactory_page.comment
+    - field.field.node.vactory_page.field_exclude_from_search
+    - field.field.node.vactory_page.field_vactory_meta_tags
+    - field.field.node.vactory_page.field_vactory_paragraphs
+    - field.field.node.vactory_page.field_vactory_seo_status
+    - node.type.vactory_page
+  module:
+    - user
+_core:
+  default_config_hash: 7jHwN2wQX6ptUonlY-sb5bOtXQDU2UuGbY5M2vHGVwI
+id: node.vactory_page.smart_search
+targetEntityType: node
+bundle: vactory_page
+mode: smart_search
+content:
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  search_api_excerpt:
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  comment: true
+  field_exclude_from_search: true
+  field_vactory_meta_tags: true
+  field_vactory_paragraphs: true
+  field_vactory_seo_status: true
+  langcode: true
+  notification_message: true
+  notification_title: true

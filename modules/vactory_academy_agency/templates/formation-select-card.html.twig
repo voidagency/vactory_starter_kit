@@ -1,0 +1,54 @@
+{%
+  set classes = [
+    'card',
+    'card--select-formation',
+    'w-100',
+    'h-auto',
+    'shadow-sm',
+    'formation-select-item',
+    'p-2',
+    'px-md-3'
+  ]
+%}
+
+{#% set collapseId = content.title | replace({' ': '', 'á':'a', 'é':'e', 'í':'i', 'ó':'o', 'ú':'u'}) | lower %#}
+{% set collapseId = 'formation-card-' ~ content.node_id %}
+
+<article {{ attributes.addClass(classes) }}>
+	<span class="checked">
+		<i class="icon-check"></i>
+	</span>
+	<h3 {{ title_attributes }} class="card-title font-30 text-primary">
+		<a class="title-collapse-triger" data-toggle="collapse" href="#{{collapseId}}" role="button" aria-expanded="false" aria-controls="{{collapseId}}">
+			<i class="icon-chevrons-down"></i>
+      {% if content.module_name %}
+        {{ content.module_name }} -
+      {% endif %}
+			{{ content.title }}
+		</a>
+	</h3>
+	<hr>
+	<div class="d-flex flex-column flex-md-row justify-content-md-between">
+		<div class="mb-xs mb-md-0">
+			<span class="text-gray font-22">{{ 'Date'|t }}</span>
+			<strong class="ml-1 ml-md-16 font-22">{{ content.date }}</strong>
+		</div>
+		<div>
+			<span class="text-gray font-22">{{ 'Places restantes'|t }}</span>
+			<strong class="ml-1 ml-md-16 font-22">{{ content.nb_place }}</strong>
+		</div>
+	</div>
+
+	<div class="collapse" id="{{collapseId}}">
+		<div class="mt-1">
+			<span class="text-gray font-22">{{ 'Animé par'|t }}</span>
+      {% if content.enseignant_full_name %}
+        <strong class="ml-16 font-22">{{ content.enseignant_full_name }}</strong>
+      {% endif %}
+		</div>
+
+		<div class="mt-2 mb-1 font-normal font-20 formation-description">
+			{{ content.description|raw }}
+		</div>
+	</div>
+</article>

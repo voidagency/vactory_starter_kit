@@ -1,0 +1,474 @@
+<?php
+
+/**
+ * @file
+ * DAM Formations related hooks.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityStorageException;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
+use Drupal\node\NodeInterface;
+use Drupal\views\Plugin\views\query\QueryPluginBase;
+use Drupal\views\ViewExecutable;
+use Drupal\views\Views;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_academy_agency_theme($existing, $type, $theme, $path) {
+  return [
+    'vactory_academy_agency_types' => [
+      'template' => 'formation-type-preview',
+      'variables' => [
+        'content' => NULL,
+      ],
+    ],
+    'formation_confirmation_page' => [
+      'template' => 'formation-confirmation-message',
+      'variables' => [
+        'content' => NULL,
+      ],
+    ],
+    'formation_select_card' => [
+      'template' => 'formation-select-card',
+      'variables' => [
+        'content' => NULL,
+      ],
+    ],
+    'node__vactory_academy_agency__full' => [
+      'base hook' => 'node',
+      'template' => 'academy-agence-full',
+    ],
+    'node__vactory_academy_agency__card_inline' => [
+      'base hook' => 'node',
+      'template' => 'academy-agence-card-inline',
+    ],
+    'inscription_formations_mail_notifications' => [
+      'template' => 'inscription-formations-mail-notifications',
+      'variables' => [
+        'content' => NULL,
+      ],
+    ],
+    'views_view__formations_agence' => [
+      'template' => 'views-view-formations-agence',
+      'base hook' => 'views_view',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_entity_presave().
+ */
+function vactory_academy_agency_entity_presave(EntityInterface $entity) {
+  if ($entity->getEntityTypeId() == 'taxonomy_term' && $entity->bundle() == 'academy_subscribers' && $entity->isNew()) {
+    $academy_id = $entity->get('field_subscriber_course')->target_id;
+    $academy_node = Drupal::entityTypeManager()->getStorage('node')
+      ->load($academy_id);
+    $agency_id = $entity->get('field_agence_formation')->target_id;
+    $available_places = get_available_nb_place($academy_node, $agency_id);
+    if ($available_places > 0) {
+
+      // Mail notifications.
+      $langcode = Drupal::languageManager()->getCurrentLanguage()->getId();
+      $formation = \Drupal::service('entity.repository')
+        ->getTranslationFromContext($academy_node, $langcode);
+      $date = $formation->get('field_vactory_datetime')->value;
+      $date = !empty($date) ? new \DateTime($date) : NULL;
+      $prenom = $entity->get('field_subscriber_first_name')->value;
+      $nom = $entity->get('field_subscriber_last_name')->value;
+      $email = $entity->get('field_subscriber_mail')->value;
+      $phone = $entity->get('field_subscriber_telephone')->value;
+      $params = [
+        'agency_id' => $agency_id,
+        'formation' => [
+          'title' => $formation->label(),
+          'date' => $date,
+          'url' => $formation->toUrl(),
+        ],
+        'first_name' => $prenom,
+        'last_name' => $nom,
+        'account_infos' => [
+          'email' => encrypt($email),
+          'phone' => encrypt($phone),
+          'first_name' => $prenom,
+          'last_name' => $nom,
+        ],
+      ];
+      // Send notification to client if notification feature is enabled.
+      $notifications_enabled = \Drupal::config('vactory_academy_agency.settings')->get('enable_email_notifications');
+      if ($notifications_enabled) {
+        \Drupal::service('plugin.manager.mail')
+          ->mail('vactory_academy_agency', 'formations_inscription', $email, $langcode, $params);
+      }
+      \Drupal::service('page_cache_kill_switch')->trigger();
+    }
+    else {
+      throw new EntityStorageException(t("Il n'y a plus de places disponibles dans cette formation"), 0001);
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_academy_agency_preprocess_radios(&$variables) {
+  if (isset($variables['element']['#name']) && $variables['element']['#name'] == 'agency_academies') {
+    $variables['attributes']['class'] = ['items'];
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_academy_agency_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $taxonomies_form_ids = [
+    'taxonomy_term_academy_subscribers_form',
+    'taxonomy_term_academy_types_formation_form',
+    'taxonomy_term_dam_motifs_form',
+    'taxonomy_term_vactory_academy_themes_form',
+    'taxonomy_term_types_client_form',
+  ];
+  if (in_array($form_id, $taxonomies_form_ids)) {
+    $form['relations']['#attributes']['class'][] = 'hidden';
+  }
+  $current_user = Drupal::currentUser();
+  $is_agency_and_not_admin = in_array('agence', $current_user->getRoles()) && !in_array('administrator', $current_user->getRoles());
+  if ($form_id == 'node_vactory_academy_agency_edit_form' && $is_agency_and_not_admin) {
+    $form['field_academy_agence']['#access'] = FALSE;
+  }
+  if ($form_id == 'node_vactory_academy_agency_form' && $is_agency_and_not_admin) {
+    $user = Drupal::entityTypeManager()->getStorage('user')
+      ->load($current_user->id());
+    $user_agency = $user->get('field_adviser_agencies')->target_id;
+    $form['field_academy_agence']['widget']['#default_value'] = $user_agency;
+    $form['field_academy_agence']['widget']['#access'] = FALSE;
+  }
+}
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ */
+function vactory_academy_agency_form_views_exposed_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $route_name = Drupal::routeMatch()->getRouteName();
+  $langcode = Drupal::languageManager()->getCurrentLanguage()->getId();
+  $current_user = Drupal::currentUser();
+  $is_agency_and_not_admin = in_array('agence', $current_user->getRoles()) && !in_array('administrator', $current_user->getRoles());
+  if ($route_name == 'system.admin_content' && $is_agency_and_not_admin) {
+    $form['type']['#default_value'] = 'vactory_academy_agency';
+    $form['type']['#access'] = FALSE;
+  }
+  $routes = [
+    'view.formation_agence_subscribers.formation_inscriptions_listing',
+    'view.formations_agence.site_academy_agence_listing',
+    'entity.node.canonical',
+  ];
+  if (in_array($route_name, $routes)) {
+    if (isset($form['agency'])) {
+      $agencies = Drupal::entityTypeManager()->getStorage('locator_entity')
+        ->loadByProperties([
+          'status' => 1,
+        ]);
+      $agencies = array_map(function ($agency) {
+        $langcode = Drupal::languageManager()->getCurrentLanguage()->getId();
+        $translated_agency = \Drupal::service('entity.repository')
+          ->getTranslationFromContext($agency, $langcode);
+        return $translated_agency->get('name')->value;
+      }, $agencies);
+      $form['agency'] = [
+        '#type' => 'select',
+        '#options' => $agencies,
+        '#empty_option' => t('Agences'),
+      ];
+      if ($route_name == 'view.formations_agence.site_academy_agence_listing') {
+        $form['agency']['#weight'] = 0;
+      }
+    }
+    if (isset($form['date_formation'])) {
+      $form['date_formation']['#attributes']['data-date-format'] = 'mm/yyyy';
+      $form['date_formation']['#attributes']['data-date-view-mode'] = 'months';
+      $form['date_formation']['#attributes']['data-date-min-view-mode'] = 'months';
+      $form['date_formation']['#attributes']['data-date-autoclose'] = 'true';
+      $form['date_formation']['#attributes']['data-date-language'] = $langcode;
+      $form['date_formation']['#attributes']['class'] = [
+        'js-date-month-filter',
+        'bg-white',
+        'prefix-icon-calendar',
+      ];
+      $form['date_formation']['#attributes']['readonly'] = 'readonly';
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_academy_agency_preprocess_breadcrumb(&$variables) {
+  $current_theme = Drupal::theme()->getActiveTheme()->getName();
+  if (isset($variables['breadcrumb']) && $current_theme == 'awbtunisie') {
+    foreach ($variables['breadcrumb'] as $key => $breadcrumb) {
+      // Only home page breadcrumb link should be clickable.
+      if ($key > 0) {
+        $variables['breadcrumb'][$key]['url'] = '';
+      }
+    }
+    $route_name = Drupal::routeMatch()->getRouteName();
+    foreach ($variables['breadcrumb'] as $index => &$breadcrumb) {
+      if (isset($breadcrumb['text'])) {
+        if (gettype($breadcrumb['text']) == 'string') {
+          $breadcrumb['text'] = strip_tags($breadcrumb['text']);
+          $breadcrumb['text'] = t(ucfirst($breadcrumb['text']));
+          if ($route_name == 'vactory_appointment.site_appointment_submit_form') {
+            if ($index == count($variables['breadcrumb']) - 1) {
+              $breadcrumb['text'] = t(ucwords($breadcrumb['text']));
+            }
+            if ($index == 1) {
+              $breadcrumb['text'] = t('Prendre un rendez-vous');
+            }
+          }
+          if ($route_name == 'vactory_appointment.site_appointment_types_select') {
+            if ($index == 1) {
+              $breadcrumb['text'] = t('Prendre un rendez-vous');
+            }
+          }
+          if ($route_name == 'vactory_academy_agency.inscription.confirmation' && $index == count($variables['breadcrumb']) - 1) {
+            $breadcrumb['text'] = t('Formations en présentiel');
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_mail().
+ */
+function vactory_academy_agency_mail($key, &$message, $params) {
+  $langcode = Drupal::languageManager()->getCurrentLanguage()->getId();
+  $site_config = \Drupal::config('system.site');
+  switch ($key) {
+    case 'formations_inscription':
+      // Get formation agency.
+      $agency = Drupal::entityTypeManager()
+        ->getStorage('locator_entity')
+        ->load($params['agency_id']);
+      $agency = \Drupal::service('entity.repository')->getTranslationFromContext($agency, $langcode);
+      // Get sender email from module configuration.
+      $email_from = Drupal::config('vactory_academy_agency.settings')->get('formations_email_from');
+      if (!empty($email_from)) {
+        $message['from'] = $site_config->get('name') . '<' . $email_from . '>';
+        $message['headers']['From'] = $site_config->get('name') . '<' . $email_from . '>';
+        $message['headers']['Sender'] = $email_from;
+      }
+      else {
+        $site_mail = \Drupal::config('system.site')->get('mail');
+        $message['from'] = $site_config->get('name') . '<' . $site_mail . '>';
+        $message['headers']['From'] = $site_config->get('name') . '<' . $site_mail . '>';
+      }
+      $date = $params['formation']['date'];
+      $add_to_google_calendar = '';
+      if ($date) {
+        $formation_day = \Drupal::service('date.formatter')
+          ->format($date->getTimestamp(), 'custom', 'l d F Y', NULL, $langcode);
+        $formation_hour = $date->format('H\hi');
+        $formation_date = t('@day à @hour', [
+          '@day' => $formation_day,
+          '@hour' => $formation_hour,
+        ]);
+        $date_start_copie = clone $date;
+        $date_start = $date->format('Ymd\THis');
+        $date_end = $date_start_copie->add(new DateInterval('PT' . 60 . 'M'))->format('Ymd\THis');
+        // Prepare params for google calendar URL.
+        $options = [
+          'query' => [
+            'action' => 'TEMPLATE',
+            'text' => t('@site_name - @title', ['@site_name' => $site_config->get('name'), '@title' => $params['formation']['title']]),
+            'dates' => $date_start . '/' . $date_end,
+            'location' => t('Agence') . ' ' . $agency->get('name')->value,
+            'sf' => TRUE,
+            'output' => 'xml',
+          ],
+        ];
+        $add_to_google_calendar = Url::fromUri("https://www.google.com/calendar/render", $options);
+      }
+
+      $mail_body = [
+        '#theme' => 'inscription_formations_mail_notifications',
+        '#content' => [
+          'agency_name' => $agency->get('name')->value,
+          'agency_path' => $agency->get('field_agency_path')->value,
+          'formation_date' => $formation_date,
+          'first_name' => $params['first_name'],
+          'last_name' => $params['last_name'],
+          'formation' => [
+            'title' => $params['formation']['title'],
+            'url' => $params['formation']['url'],
+          ],
+          'google_calendar_url' => $add_to_google_calendar->toString(),
+          'create_account_url' => get_create_account_link($params['account_infos']),
+          'site_name' => $site_config->get('name'),
+        ],
+      ];
+      // Email subject.
+      $message['subject'] = $site_config->get('name') . ' - ' . $params['formation']['title'] . ' - ' . $agency->get('name')->value;
+      // Email body content.
+      $message['body'][] = render($mail_body);
+      break;
+
+    default:
+      break;
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_academy_agency_preprocess_views_view__formations_agence(&$variables) {
+  $view = isset($variables['view']) ? $variables['view'] : NULL;
+  $current_user = Drupal::currentUser();
+  $langcode = Drupal::languageManager()->getCurrentLanguage()->getId();
+  $user_has_access = TRUE;
+  if (isset($view) && $view->id() == 'formations_agence' && in_array('anonymous', $current_user->getRoles())) {
+    $user_has_access = FALSE;
+    $view = Views::getView('formations_agence');
+    $academy_listing_path = $view->getDisplay()->getPath();
+    $destination = '/' . $langcode . '/' . $academy_listing_path;
+    $url_login = Url::fromRoute('vactory_espace_prive.login', ['destination' => $destination]);
+    $url_register = Url::fromRoute('vactory_espace_prive.register', ['destination' => $destination]);
+    $variables['url_login'] = $url_login->toString();
+    $variables['url_register'] = $url_register->toString();
+  }
+  $variables['user_has_access'] = $user_has_access;
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_academy_agency_preprocess_node__vactory_academy_agency__card_inline(&$variables) {
+  $node = isset($variables['node']) ? $variables['node'] : NULL;
+  if (isset($node) && $node instanceof NodeInterface) {
+    $langcode = Drupal::languageManager()->getCurrentLanguage()->getId();
+    $current_user = Drupal::currentUser();
+    $agency_id = $node->get('field_academy_agence')->target_id;
+    $agence = Drupal::entityTypeManager()->getStorage('locator_entity')
+      ->load($agency_id);
+    if ($agence) {
+      $agency_translation = Drupal::service('entity.repository')->getTranslationFromContext($agence, $langcode);
+      $agency_name = $agency_translation->get('name')->value;
+      $formation_date = $node->get('field_vactory_datetime')->value;
+      $date = new \DateTime($formation_date);
+      $timestamp = $date->getTimestamp();
+      $formation_day = \Drupal::service('date.formatter')
+        ->format($timestamp, 'custom', 'l d F Y', NULL, $langcode);
+      $formation_hour = $date->format('H\hi');
+      $formation_date = [
+        'day' => $formation_day,
+        'hour' => $formation_hour,
+      ];
+      $disponible_place = get_available_nb_place($node, $agency_id);
+      $is_disponible = $disponible_place > 0;
+      $variables['agency_name'] = $agency_name;
+      $variables['formation_date'] = $formation_date;
+      $variables['encrypted_nid'] = encrypt($node->id());
+      $variables['is_disponible'] = $is_disponible;
+      $variables['is_subscribed_to_formation'] = is_user_subscribed_to_formation($node, $current_user->id());
+      $variables['#cache'] = ['max-age' => 0];
+    }
+  }
+}
+
+/**
+ * Get avaiable nb place of a given academy course.
+ */
+function get_available_nb_place($course, $agency_id) {
+  $properties = [
+    'vid' => 'academy_subscribers',
+    'field_agence_formation' => $agency_id,
+    'field_subscriber_course' => $course->id(),
+  ];
+  $existing_inscriptions = \Drupal::entityTypeManager()->getStorage('taxonomy_term')
+    ->loadByProperties($properties);
+  $nb_place = $course->get('field_nombre_places')->value;
+  return $nb_place - count($existing_inscriptions);
+}
+
+/**
+ * Get avaiable nb place of a given academy course.
+ */
+function is_user_subscribed_to_formation($course, $user_id) {
+  $user = Drupal::entityTypeManager()->getStorage('user')
+    ->load($user_id);
+  $properties = [
+    'vid' => 'academy_subscribers',
+    'field_subscriber_course' => $course->id(),
+    'field_subscriber_mail' => $user->get('mail')->value,
+    'field_subscriber_telephone' => $user->get('field_telephone')->value,
+  ];
+  $existing_inscriptions = \Drupal::entityTypeManager()->getStorage('taxonomy_term')
+    ->loadByProperties($properties);
+  return !empty($existing_inscriptions);
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_academy_agency_preprocess_node(&$variables) {
+  $node = isset($variables['node']) ? $variables['node'] : NULL;
+  if (isset($node) && $node instanceof NodeInterface && $node->bundle() == 'vactory_academy_agency' && $variables['view_mode'] == 'full') {
+    throw new NotFoundHttpException();
+  }
+}
+
+/**
+ * Implements hook_views_pre_render().
+ */
+function vactory_academy_agency_views_pre_render(ViewExecutable $view) {
+  $current_user = Drupal::currentUser();
+  // Only instructors can edit or delete theirs own course.
+  $is_agency_and_not_admin = in_array('agence', $current_user->getRoles()) && !in_array('administrator', $current_user->getRoles());
+  if ($view->id() == 'content' && $is_agency_and_not_admin) {
+    $current_user = Drupal::entityTypeManager()->getStorage('user')
+      ->load($current_user->id());
+    $user_agencies = $current_user->get('field_adviser_agencies')->getValue();
+    $user_agencies = array_map(function ($el) {
+      return $el['target_id'];
+    }, $user_agencies);
+    $results = $view->result;
+    if (!empty($results)) {
+      foreach ($results as $key => $result) {
+        $node = $result->_entity;
+        $agency_id = $node->get('field_academy_agence')->target_id;
+        if (!in_array($agency_id, $user_agencies)) {
+          unset($results[$key]);
+        }
+      }
+    }
+    $view->result = $results;
+  }
+}
+
+/**
+ * Implements hook_views_query_alter().
+ */
+function vactory_academy_agency_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
+  if ($view->id() == 'formations_agence' && $view->current_display == 'site_academy_agence_listing') {
+    $params = Drupal::request()->query->all();
+    if (isset($params['date_formation']) && !empty($params['date_formation'])) {
+      $conditions = $query->where[1]['conditions'];
+      $conditions = array_filter($conditions, function ($condition) {
+        return strpos($condition['field'], 'field_vactory_date') > 0;
+      });
+      if (!empty($conditions)) {
+        $date_index = array_keys($conditions)[0];
+        $date_start = DateTime::createFromFormat('d/m/Y H:i:s', '01/' . $params['date_formation'] . ' 00:00:00');
+        $nb_month_days = $date_start->format('t');
+        $date_end = DateTime::createFromFormat('d/m/Y H:i:s', $nb_month_days . '/' . $params['date_formation'] . ' 23:59:59');
+        $query->where[1]['conditions'][$date_index]['field'] = 'node__field_vactory_datetime.field_vactory_datetime_value';
+        $query->where[1]['conditions'][$date_index]['value'] = [$date_start->format('Y-m-d'), $date_end->format('Y-m-d')];
+        $query->where[1]['conditions'][$date_index]['operator'] = 'BETWEEN';
+      }
+    }
+  }
+}

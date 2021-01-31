@@ -1,0 +1,20 @@
+{% set content = content.0 %}
+
+{% set image = (content.image.0 is defined) ? get_image_url(content.image.0) : '' %}
+{% set image_alt = (content.image_alt is not empty) ? content.image_alt : content.image.alt_image %}
+
+<h3>{{content.title}}</h3>
+
+<div class="stcky-bloc-wrapper">
+  <div class="sticky-bloc">
+    <div class="js-img-video">
+      <a href="{{content.video}}" class="play-video">
+        <img src="{{image}}" alt="{{image_alt}}" class="img-fluid">
+      </a>
+    </div>
+  </div>
+</div>
+
+<div>
+  {{content.description|raw}}
+</div>

@@ -1,9 +1,11 @@
-uuid: 773f3a55-9f4b-4954-bbfc-d6d1e992a035
+uuid: 7cc4602c-264d-4845-b8f7-98b5754793c9
 langcode: en
 status: true
 dependencies:
   theme:
     - vactory_theme
+_core:
+  default_config_hash: uEHJePp3kgF-isBJU7JApW9Y-4nbAGvKxl0W_9PxnQQ
 id: vactory_tabs
 theme: vactory_theme
 region: content

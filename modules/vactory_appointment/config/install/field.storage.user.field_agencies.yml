@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - user
+    - vactory_locator
+  enforced:
+    module:
+      - vactory_appointment
+id: user.field_agencies
+field_name: field_agencies
+entity_type: user
+type: entity_reference
+settings:
+  target_type: locator_entity
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

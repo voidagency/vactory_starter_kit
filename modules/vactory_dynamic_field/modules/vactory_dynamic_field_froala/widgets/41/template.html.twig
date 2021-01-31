@@ -23,6 +23,7 @@
             {% set image_uri =(item.image.0 is defined) ? get_image(item.image.0) : '' %}
             {% set image_profile = image_uri|image_style('thumbnail') %}
             {% set lqip_image = image_uri|image_style('lqip') %}
+            {% set alt_image = (item.image_alt) ? item.image_alt : item.image.alt_image %}
 
                 <div class="fdb-box fdb-touch {{reverse_mode }}">
                     {% if item.description is not empty %}
@@ -30,7 +31,7 @@
                     {% endif %}
                     <div class='mb-4 text-center'>
                         {% if item.image.0 is not empty %}
-                        <img alt="{{ item.image_alt }}" height="50"
+                        <img alt="{{ alt_image }}" height="50"
                             class="rounded-circle lazyload"
                             src="{{ lqip_image }}"
                             data-src="{{ image_profile }}">

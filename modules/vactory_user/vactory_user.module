@@ -6,6 +6,9 @@
  */
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Site\Settings;
+use Drupal\Core\Url;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * Implements hook_preprocess_HOOK().
@@ -92,13 +95,16 @@ function vactory_user_form_user_register_form_alter(&$form, FormStateInterface $
     $form['field_last_name']['widget'][0]['#title'],
     $form['field_last_name']['widget']['#title'],
     $form['field_last_name']['widget'][0]['value']['#title'],
+    $form['field_telephone']['widget']['#title'],
+    $form['field_telephone']['widget'][0]['value']['#title'],
     $form['account']['mail']['#title']
   );
 
   // Setup placeholders.
   $form['field_first_name']['widget'][0]['value']['#attributes']['placeholder'] = t('First name');
   $form['field_last_name']['widget'][0]['value']['#attributes']['placeholder'] = t('Last name');
-  $form['account']['mail']['#attributes']['placeholder'] = t('Enter your e-mail address.');
+  $form['field_telephone']['widget'][0]['value']['#attributes']['placeholder'] = t('Enter your phone number');
+  $form['account']['mail']['#attributes']['placeholder'] = t('Enter your e-mail address');
 }
 
 /**
@@ -122,4 +128,34 @@ function _vactory_user_login_validate($form, FormStateInterface $form_state) {
   }
 
   return FALSE;
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function vactory_user_form_user_pass_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $prevent_user_enumeration = Settings::get('prevent_reset_password_user_enumeration', FALSE);
+  $form['name']['#attributes']['placeholder'] = t('Email');
+  if ($prevent_user_enumeration) {
+    $form['#validate'][] = '_vactory_user_pass_validate';
+  }
+}
+
+/**
+ * Reset password form custom validate.
+ */
+function _vactory_user_pass_validate($form, FormStateInterface $form_state) {
+  $form_errors = $form_state->getErrors();
+  if (isset($form_errors['name'])) {
+    unset($form_errors['name']);
+    $form_state->clearErrors();
+    if (!empty($form_errors)) {
+      foreach ($form_errors as $name => $message) {
+        $form_state->setErrorByName($name, $message);
+      }
+    }
+    $url = Url::fromRoute('vactory_user.reset');
+    $response = new RedirectResponse($url->toString());
+    $response->send();
+  }
 }

@@ -3,3 +3,58 @@
     display: none;
   }
 }
+.vp_anchor ,
+.vactory-ancre.cloned{
+  background-color: $white;
+  box-shadow: 0 3px 3px 0 rgba(0,0,0,0.08), 0 3px 4px 0 rgba(0,0,0,0.06), 0 1px 8px 0 rgba(0,0,0,0.1);
+  margin-bottom: $paragraph-sm;
+}
+.vactory-ancre {
+  @include media-breakpoint-up(md) {
+    display: flex;
+    &.cloned {
+      padding-left: 85px;
+      padding-right: 85px;
+      opacity: 0;
+      visibility: hidden;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 4;
+      transition: top 500ms ease-in;
+    }
+    &.fixed {
+      opacity: 1;
+      visibility: visible;
+
+      &.top {
+        top: -60px;
+      }
+      &.bottom {
+        top: 0;
+        .toolbar-horizontal.toolbar-tray-open & {
+          top: 78px;
+        }
+        .toolbar-horizontal & {
+          top: 38px;
+        }
+      }
+    }
+    .anchor-link {
+      padding-top: 12px;
+      padding-bottom: 12px;
+      &:hover,
+      &.active {
+        background: $primary;
+        color: $white;
+      }
+    }
+  }
+}
+
+.vp_anchor {
+  @include media-breakpoint-down(md) {
+    display: none;
+  }
+}

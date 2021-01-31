@@ -10,8 +10,10 @@
   $(document).ready(function () {
 
     var _searchOverlay = $('.search-overlay-variant2'),
-      search_overlay_button = $('.vh-header--search-button > a, a.vh--search-button, .btn-search-overlay, .close-search-overlay'),
-      inputSearch = _searchOverlay.find('.search_input');
+      search_overlay_button = $('.js-btn-search-overlay,.close-search-overlay'),
+      inputSearch = _searchOverlay.find('.search_input'),
+      search_overlay_shadow = $('.search-overlay-backdropShadow');
+
     $('.search-block-form').each(function () {
       inputSearch.keypress(function (e) {
         // Enter pressed submit the form.
@@ -21,6 +23,7 @@
         }
       });
     });
+
     $(document).on('keyup', function (key) {
       if (key.keyCode === 27 && _searchOverlay.hasClass('open')) {
         _searchOverlay.removeClass('open');
@@ -29,6 +32,7 @@
         }
       }
     });
+
     search_overlay_button.on('click', function (event) {
       event.preventDefault();
       if (!_searchOverlay.hasClass('open')) {
@@ -59,5 +63,10 @@
         }
       }
     });
+
+    search_overlay_shadow.on('click', function (e) {
+      $('.close-search-overlay').trigger( "click" );
+    });
+
   });
 }(jQuery, Drupal));

@@ -33,10 +33,21 @@ function vactory_news_theme($existing, $type, $theme, $path) {
       'base hook' => 'node',
       'template'  => 'full',
     ],
+    // Node > Smart search.
+    'node__vactory_news__smart_search'        => [
+      'base hook' => 'node',
+      'template'  => 'smart-search',
+    ],
     // Node > full.
-    'node__view__vactory_news__block_mosaique'        => [
+    'node__view__vactory_news__mosaique'        => [
       'base hook' => 'node',
       'template'  => 'block-mosaique',
+    ],
+    'vactory_news_block_filtred_by_taxonomy' => [
+      'template' => 'block-filtred-by-taxonomy',
+      "variables" => [
+        "content" => [],
+      ],
     ],
   ];
 }

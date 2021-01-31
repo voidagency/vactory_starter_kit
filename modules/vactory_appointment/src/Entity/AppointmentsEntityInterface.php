@@ -6,34 +6,31 @@ use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\user\EntityOwnerInterface;
 use Drupal\user\UserInterface;
+use Drupal\vactory_locator\Entity\LocatorEntity;
 
 /**
  * Provides an interface defining an Appointment entity.
  *
  * @ingroup vactory_appointment
  */
-interface AppointmentsEntityInterface extends  ContentEntityInterface, EntityOwnerInterface {
-
-  /**
-   * Check if current appointment is available.
-   *
-   * @return boolean
-   */
-  public function isAvailable();
+interface AppointmentsEntityInterface extends ContentEntityInterface, EntityOwnerInterface {
 
   /**
    * Get current appointment title.
    *
-   * @return String
+   * @return string
+   *   Returns the appointment title.
    */
   public function getTitle();
 
   /**
    * Set current appointment title.
    *
-   * @param $title
+   * @param string $title
+   *   The new appointment title.
    *
    * @return \Drupal\vactory_appointment\Entity\AppointmentEntity
+   *   Return the appointment entity.
    */
   public function setTitle($title);
 
@@ -66,12 +63,12 @@ interface AppointmentsEntityInterface extends  ContentEntityInterface, EntityOwn
   /**
    * Sets the appointment agency.
    *
-   * @param \Drupal\taxonomy\Entity\Term $term
+   * @param \Drupal\vactory_locator\Entity\LocatorEntity $agency
    *   The appointment agency.
    *
    * @return $this
    */
-  public function setAgency(Term $agency);
+  public function setAgency(LocatorEntity $agency);
 
   /**
    * Returns the appointment type.
@@ -84,7 +81,7 @@ interface AppointmentsEntityInterface extends  ContentEntityInterface, EntityOwn
   /**
    * Sets the appointment type.
    *
-   * @param \Drupal\taxonomy\Entity\Term $term
+   * @param \Drupal\taxonomy\Entity\Term $type
    *   The appointment type.
    *
    * @return $this
@@ -164,39 +161,21 @@ interface AppointmentsEntityInterface extends  ContentEntityInterface, EntityOwn
   public function setAppointmentEmail($email);
 
   /**
-   * Returns the appointment day.
+   * Returns the appointment date.
    *
    * @return \DateTime
-   *   The appointment day.
+   *   The appointment date.
    */
-  public function getAppointmentDay();
+  public function getAppointmentDate();
 
   /**
-   * Sets the appointment day.
+   * Sets the appointment date.
    *
    * @param \DateTime $date
-   *   The appointment day.
+   *   The appointment date.
    *
    * @return $this
    */
-  public function setAppointmentDay(\DateTime $date);
-
-  /**
-   * Returns the appointment hour.
-   *
-   * @return string
-   *   The appointment hour.
-   */
-  public function getAppointmentHour();
-
-  /**
-   * Sets the appointment hour.
-   *
-   * @param string $hour
-   *   The appointment hour.
-   *
-   * @return $this
-   */
-  public function setAppointmentHour($hour);
+  public function setAppointmentDate(\DateTime $date);
 
 }

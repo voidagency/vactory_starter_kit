@@ -1,0 +1,10 @@
+name: 'Brightcove video'
+multiple: FALSE
+category: 'Brightcove'
+enabled: TRUE
+fields:
+  video_id:
+    type: text
+    label: 'Video Id'
+    options:
+      '#required': TRUE

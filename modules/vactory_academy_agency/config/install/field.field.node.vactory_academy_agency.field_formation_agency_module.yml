@@ -1,0 +1,28 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_formation_agency_module
+    - node.type.vactory_academy_agency
+    - taxonomy.vocabulary.formations_agence_modules
+id: node.vactory_academy_agency.field_formation_agency_module
+field_name: field_formation_agency_module
+entity_type: node
+bundle: vactory_academy_agency
+label: Module
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      formations_agence_modules: formations_agence_modules
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

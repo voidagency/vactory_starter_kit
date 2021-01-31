@@ -1,0 +1,194 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_academy_agency
+  config:
+    - core.entity_view_display.comment.comment.default
+    - field.field.node.vactory_academy_agency.body
+    - field.field.node.vactory_academy_agency.comment
+    - field.field.node.vactory_academy_agency.field_academy_agence
+    - field.field.node.vactory_academy_agency.field_academy_duree
+    - field.field.node.vactory_academy_agency.field_formation_agency_module
+    - field.field.node.vactory_academy_agency.field_nombre_places
+    - field.field.node.vactory_academy_agency.field_vactory_academy_langue
+    - field.field.node.vactory_academy_agency.field_vactory_datetime
+    - field.field.node.vactory_academy_agency.field_vactory_excerpt
+    - field.field.node.vactory_academy_agency.field_vactory_file
+    - field.field.node.vactory_academy_agency.field_vactory_file_multiple
+    - field.field.node.vactory_academy_agency.field_vactory_instructor
+    - field.field.node.vactory_academy_agency.field_vactory_media
+    - field.field.node.vactory_academy_agency.field_vactory_meta_tags
+    - field.field.node.vactory_academy_agency.field_vactory_paragraphs
+    - field.field.node.vactory_academy_agency.field_vactory_seo_status
+    - field.field.node.vactory_academy_agency.field_vactory_theme
+    - field.field.node.vactory_academy_agency.field_vactory_youtube_videos
+    - node.type.vactory_academy_agency
+  module:
+    - comment
+    - datetime
+    - entity_reference_revisions
+    - file
+    - metatag
+    - text
+    - user
+    - yoast_seo
+id: node.vactory_academy_agency.default
+targetEntityType: node
+bundle: vactory_academy_agency
+mode: default
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 101
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  comment:
+    weight: 103
+    label: above
+    settings:
+      view_mode: default
+      pager_id: 0
+    third_party_settings: {  }
+    type: comment_default
+    region: content
+  field_academy_agence:
+    weight: 102
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_academy_duree:
+    weight: 106
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_formation_agency_module:
+    weight: 118
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_nombre_places:
+    weight: 111
+    label: above
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    type: number_integer
+    region: content
+  field_vactory_academy_langue:
+    weight: 109
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_vactory_datetime:
+    weight: 104
+    label: above
+    settings:
+      format_type: medium
+      timezone_override: ''
+    third_party_settings: {  }
+    type: datetime_default
+    region: content
+  field_vactory_excerpt:
+    weight: 105
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_vactory_file:
+    weight: 114
+    label: above
+    settings:
+      use_description_as_link_text: true
+    third_party_settings: {  }
+    type: file_default
+    region: content
+  field_vactory_file_multiple:
+    weight: 116
+    label: above
+    settings:
+      use_description_as_link_text: true
+    third_party_settings: {  }
+    type: file_default
+    region: content
+  field_vactory_instructor:
+    weight: 107
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_vactory_media:
+    weight: 108
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_vactory_meta_tags:
+    weight: 110
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: metatag_empty_formatter
+    region: content
+  field_vactory_paragraphs:
+    weight: 112
+    label: above
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    type: entity_reference_revisions_entity_view
+    region: content
+  field_vactory_seo_status:
+    weight: 113
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: yoastseo_formatter
+    region: content
+  field_vactory_theme:
+    weight: 115
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_vactory_youtube_videos:
+    weight: 117
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  links:
+    weight: 100
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  langcode: true
+  search_api_excerpt: true

@@ -1,0 +1,5 @@
+vactory_otp.settings:
+  title: 'Vactory OTP settings'
+  description: 'Vactory OTP settings.'
+  route_name: vactory_otp.settings
+  parent: 'system.admin_config_development'

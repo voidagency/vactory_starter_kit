@@ -1,9 +1,11 @@
-uuid: fb24a407-31de-4ecf-b75b-a8c3d7f61695
+uuid: f2095c69-29d9-41ee-ba0d-1f5793728cbf
 langcode: en
 status: true
 dependencies:
   module:
     - block_content
+_core:
+  default_config_hash: AdHDRIRKPw9yVRVCHkxUsYu1YBLwI-i2x_55uV0Y_Pg
 id: block_content.field_vactory_email
 field_name: field_vactory_email
 entity_type: block_content

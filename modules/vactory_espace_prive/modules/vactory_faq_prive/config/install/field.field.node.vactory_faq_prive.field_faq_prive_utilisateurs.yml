@@ -1,0 +1,31 @@
+langcode: fr
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_faq_prive
+  config:
+    - field.storage.node.field_faq_prive_utilisateurs
+    - node.type.vactory_faq_prive
+id: node.vactory_faq_prive.field_faq_prive_utilisateurs
+field_name: field_faq_prive_utilisateurs
+entity_type: node
+bundle: vactory_faq_prive
+label: 'Utilisateurs supplémentaires'
+description: 'Choisissez des utilisateurs supplémentaires, Example: Le contenu concerne le <strong>groupe A</strong>, l''utilisateur "<strong>John</strong>" est aussi concerné malgré qu''il ne fait pas partie de <strong>groupe A</strong>, <strong>John</strong> est considéré alors un utilisateur supplémentaire.'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:user'
+  handler_settings:
+    include_anonymous: false
+    filter:
+      type: _none
+    target_bundles: null
+    sort:
+      field: name
+      direction: ASC
+    auto_create: false
+field_type: entity_reference

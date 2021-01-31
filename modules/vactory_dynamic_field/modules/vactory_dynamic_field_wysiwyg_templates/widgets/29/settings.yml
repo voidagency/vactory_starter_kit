@@ -18,12 +18,6 @@ fields:
   link:
     type: url_extended
     label: 'lien'
-  link_alt:
-    type: text
-    label: 'texte du lien'
-  link_target:
-    type: checkbox
-    label: "Ouvrir le lien dans une nouvelle onglet"
 extra_fields:
   intro:
     type: textarea

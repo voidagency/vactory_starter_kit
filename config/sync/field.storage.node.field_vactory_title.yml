@@ -1,9 +1,11 @@
-uuid: 93a4c569-4bd7-47b6-95eb-4b9a83c4b55e
+uuid: e809f440-5d68-40f2-a819-4cffc607a0a5
 langcode: en
 status: true
 dependencies:
   module:
     - node
+_core:
+  default_config_hash: KMgTbp_CdFzeokinVwlw8Y46riPdWPXtxXLKH9bO30A
 id: node.field_vactory_title
 field_name: field_vactory_title
 entity_type: node

@@ -26,12 +26,6 @@ fields:
   link:
     type: url_extended
     label: 'Button lien'
-  link_alt:
-    type: text
-    label: 'button text'
-  link_target:
-    type: checkbox
-    label: 'Ouvrir dans une nouvelle fenêtre'
 extra_fields:
   intro:
     type: textarea

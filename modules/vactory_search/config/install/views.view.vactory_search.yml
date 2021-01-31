@@ -1,10 +1,13 @@
-langcode: fr
+langcode: en
 status: true
 dependencies:
   config:
     - search_api.index.default_content_index
   module:
     - search_api
+    - user
+_core:
+  default_config_hash: UEJ4I2wz22cso1mV1k8fSLU-eemrP0Q_QE6dt_3Pmvo
 id: vactory_search
 label: 'Vactory Search'
 module: views
@@ -12,7 +15,6 @@ description: 'Search using Search API'
 tag: ''
 base_table: search_api_index_default_content_index
 base_field: search_api_id
-core: 8.x
 display:
   default:
     display_plugin: default
@@ -21,10 +23,11 @@ display:
     position: 0
     display_options:
       access:
-        type: none
-        options: {  }
+        type: perm
+        options:
+          perm: 'access content'
       cache:
-        type: none
+        type: search_api_tag
         options: {  }
       query:
         type: views_query
@@ -38,7 +41,7 @@ display:
           submit_button: Rechercher
           reset_button: false
           reset_button_label: Reset
-          exposed_sorts_label: 'Trier par'
+          exposed_sorts_label: 'Sort by'
           expose_sort_order: false
           sort_asc_label: Asc
           sort_desc_label: Desc
@@ -54,14 +57,14 @@ display:
           tags:
             previous: ‹‹
             next: ››
-            first: «
-            last: »
+            first: '« First'
+            last: 'Last »'
           expose:
             items_per_page: false
-            items_per_page_label: 'Éléments par page'
+            items_per_page_label: 'Items per page'
             items_per_page_options: '5, 10, 25, 50'
             items_per_page_options_all: false
-            items_per_page_options_all_label: '- Tout -'
+            items_per_page_options_all_label: '- All -'
             offset: false
             offset_label: Offset
           quantity: 9
@@ -429,6 +432,8 @@ display:
               master: '0'
               webmaster: '0'
             placeholder: ''
+            operator_limit_selection: false
+            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -473,6 +478,8 @@ display:
             remember_roles:
               authenticated: authenticated
             reduce: false
+            operator_limit_selection: false
+            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -512,7 +519,18 @@ display:
           content: 'Total résultats trouvés (@total)'
           plugin_id: result
       footer: {  }
-      empty: {  }
+      empty:
+        area_text_custom:
+          id: area_text_custom
+          table: views
+          field: area_text_custom
+          relationship: none
+          group_type: group
+          admin_label: ''
+          empty: true
+          tokenize: false
+          content: 'Aucun résultat n''a été trouvé !'
+          plugin_id: text_custom
       relationships: {  }
       arguments: {  }
       display_extenders: {  }
@@ -527,7 +545,10 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
-      tags: {  }
+        - 'user.node_grants:view'
+        - user.permissions
+      tags:
+        - 'config:search_api.index.default_content_index'
   global:
     display_plugin: page
     id: global
@@ -544,4 +565,7 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
-      tags: {  }
+        - 'user.node_grants:view'
+        - user.permissions
+      tags:
+        - 'config:search_api.index.default_content_index'

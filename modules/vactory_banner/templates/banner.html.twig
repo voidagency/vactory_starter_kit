@@ -44,28 +44,36 @@
       </div>
     {% elseif content.field_vactory_media.0.target_id is not null %}
       {% set image_uri = get_image(content.field_vactory_media.0.target_id) %}
+      {% set banner_image = image_uri|image_style('banner_1280_155') %}
     {% elseif content.field_vactory_media['#items'][0].target_id is not null %}
       {% set image_uri = get_image(content.field_vactory_media['#items'][0].target_id) %}
+      {% set banner_image = image_uri|image_style('banner_1280_155') %}
     {% endif %}
 
 
-    {% if content.field_vactory_media_mobile.0.target_id is not null %}
-      {% set image_uri_mobile = get_image(content.field_vactory_media_mobile.0.target_id) %}
-    {% elseif content.field_banner_image_mobile.0['#item'].target_id is not null %}
-      {% set image_uri_mobile = get_image(content.field_banner_image_mobile.0['#item'].target_id) %}
-    {% elseif content.field_background_color.0['#markup'] is not null %}
-      {% set background_color = content.field_background_color.0['#markup']  %}
+    {% if content.field_banner_image_mobile.0.target_id is not null %}
+      {% set image_uri_mobile = get_image(content.field_banner_image_mobile.0.target_id) %}
+      {% set banner_image_mobile = (image_uri_mobile is not empty) ? file_url(image_uri_mobile) : file_url(image_uri) %}
+    {% elseif content.field_banner_image_mobile['#items'][0].target_id is not null %}
+      {% set image_uri_mobile = get_image(content.field_banner_image_mobile['#items'][0].target_id) %}
+      {% set banner_image_mobile = (image_uri_mobile is not empty) ? file_url(image_uri_mobile) : file_url(image_uri) %}
     {% endif %}
 
+    {% if content.field_background_color.0.color['#hexadecimal_color'] is not empty %}
+      {% set background_color = content.field_background_color.0.color['#hexadecimal_color']  %}
+    {% endif %}
 
-
-    {% set banner_image = image_uri|image_style('banner_1280_155') %}
+    {#{% set banner_image = image_uri|image_style('banner_1280_155') %}
     {% set banner_image_mobile = (image_uri_mobile is not empty) ? file_url(image_uri_mobile) : file_url(image_uri) %}
-    {# <div class="vf-banner__image loading" data-desktop="{{banner_image}}" data-mobile="{{banner_image_mobile}}"></div> #}
+     <div class="vf-banner__image loading" data-desktop="{{banner_image}}" data-mobile="{{banner_image_mobile}}"></div> #}
     {% if banner_image is not null or (banner_image_mobile is not null and banner_image_mobile != '/') %}
-      <div class="vf-banner__image loading" data-desktop="{{banner_image}}" data-mobile="{{banner_image_mobile}}" ></div>
+      {% if background_color is not null %}
+        <div style="background-color: {{ background_color }}" class="vf-banner__image loading" data-desktop="{{banner_image}}" data-mobile="{{banner_image_mobile}}"  ></div>
+      {% else %}
+        <div class="vf-banner__image loading" data-desktop="{{banner_image}}" data-mobile="{{banner_image_mobile}}" ></div>
+      {% endif %}
     {% elseif  background_color is not null %}
-      <div style="background-color: #{{ background_color }} !important" class="vf-banner__image"></div>
+      <div style="background-color: {{ background_color }} !important" class="vf-banner__image"></div>
     {% endif %}
     <div class="container vf-banner__container">
       <div class="row">

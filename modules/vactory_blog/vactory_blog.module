@@ -30,5 +30,10 @@ function vactory_blog_theme($existing, $type, $theme, $path) {
       'base hook' => 'node',
       'template'  => 'full',
     ],
+    // Node > Smart search.
+    'node__vactory_blog__smart_search'        => [
+      'base hook' => 'node',
+      'template'  => 'smart-search',
+    ],
   ];
 }

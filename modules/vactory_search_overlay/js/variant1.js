@@ -10,7 +10,7 @@
   $(document).ready(function () {
 
     var _searchOverlay = $('.search-overlay-variant1'),
-      search_overlay_button = $('.vh-header--search-button > a, a.vh--search-button, .btn-search-overlay, .close-search-overlay'),
+      search_overlay_button = $('.js-btn-search-overlay,.close-search-overlay'),
       inputSearch = _searchOverlay.find('.search_input');
 
     $('.search-block-form').each(function () {

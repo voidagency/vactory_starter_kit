@@ -1,0 +1,63 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.mosaic
+    - field.field.node.vactory_news.body
+    - field.field.node.vactory_news.field_vactory_date
+    - field.field.node.vactory_news.field_vactory_excerpt
+    - field.field.node.vactory_news.field_vactory_media
+    - field.field.node.vactory_news.field_vactory_meta_tags
+    - field.field.node.vactory_news.field_vactory_news_theme
+    - field.field.node.vactory_news.field_vactory_seo_status
+    - node.type.vactory_news
+    - responsive_image.styles.vactory_one_col
+  module:
+    - media_responsive_thumbnail
+    - user
+    - vactory_field
+id: node.vactory_news.mosaic
+targetEntityType: node
+bundle: vactory_news
+mode: mosaic
+content:
+  field_vactory_excerpt:
+    weight: 1
+    label: hidden
+    settings:
+      trim_length: '350'
+    third_party_settings: {  }
+    type: vactory_field_excerpt_formatter
+    region: content
+  field_vactory_media:
+    type: media_responsive_thumbnail
+    weight: 3
+    label: hidden
+    settings:
+      responsive_image_style: vactory_one_col
+      image_link: ''
+    third_party_settings: {  }
+    region: content
+  field_vactory_news_theme:
+    weight: 2
+    label: hidden
+    settings:
+      link: false
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  body: true
+  field_vactory_date: true
+  field_vactory_meta_tags: true
+  field_vactory_seo_status: true
+  langcode: true
+  notification_message: true
+  notification_title: true
+  search_api_excerpt: true

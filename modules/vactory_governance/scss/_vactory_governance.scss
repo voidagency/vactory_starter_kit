@@ -16,3 +16,57 @@
     }
   }
 }
+
+.page--vactory-governance {
+  background-color:#f7f7f7;
+  .social-media {
+    a {
+      color: $black;
+      font-size: 20px;
+    }
+  }
+}
+
+.governance-member {
+  .nav-tabs {
+    border: none;
+    .nav-link {
+      font-size: 18px;
+    }
+    .nav-item {
+      flex: auto;
+      text-align: center;
+    }
+  }
+  .vf-card__body {
+    flex: 1 1 auto;
+  }
+}
+
+@include media-breakpoint-down(md) {
+  .governance-member {
+    position: relative;
+    .nav-tabs {
+      overflow-x: auto;
+      overflow-y: hidden;
+      &:after {
+        content: '';
+        z-index: 1;
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        right: 0;
+        width: 58px;
+        height: 54px;
+        background: linear-gradient(90deg, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, .4) 100%);
+      }
+    }
+    .nav-item {
+      white-space: nowrap;
+      a {
+        padding: 17px 24px;
+      }
+    }
+  }
+}
+

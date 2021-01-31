@@ -2,6 +2,7 @@
  * Header 8 *
  ************/
 .vh-header-8 {
+  position: relative;
   @include media-breakpoint-up(lg) {
     &.bottom {
       top: -180px;
@@ -53,10 +54,6 @@
 
     &__top-right {
       margin-left: auto;
-    }
-
-    &__social-link {
-      margin-left : 20px;
     }
 
     &__language-drop-switcher {

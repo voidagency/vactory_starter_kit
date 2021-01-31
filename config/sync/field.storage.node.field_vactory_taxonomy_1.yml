@@ -1,10 +1,12 @@
-uuid: ce345962-88cf-4825-ba17-e402f1aded6c
+uuid: cf2e7f1a-6e92-43a0-aa4d-53cf238c5a94
 langcode: en
 status: true
 dependencies:
   module:
     - node
     - taxonomy
+_core:
+  default_config_hash: kUbm6WbHP6nqJAP2-kLTHGcrZKq4pnnYPshDdjXESHA
 id: node.field_vactory_taxonomy_1
 field_name: field_vactory_taxonomy_1
 entity_type: node
@@ -13,7 +15,7 @@ settings:
   target_type: taxonomy_term
 module: core
 locked: false
-cardinality: 1
+cardinality: -1
 translatable: true
 indexes: {  }
 persist_with_no_fields: false

@@ -1,0 +1,4 @@
+services:
+  vactory_smart_search.manager:
+    class: Drupal\vactory_smart_search\Services\VactorySmartSearchManager
+    arguments: ['@entity_type.manager']

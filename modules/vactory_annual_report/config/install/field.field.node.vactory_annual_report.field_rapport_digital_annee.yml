@@ -1,0 +1,31 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_annual_report
+  config:
+    - field.storage.node.field_rapport_digital_annee
+    - node.type.vactory_annual_report
+    - taxonomy.vocabulary.rapport_digital_annees
+id: node.vactory_annual_report.field_rapport_digital_annee
+field_name: field_rapport_digital_annee
+entity_type: node
+bundle: vactory_annual_report
+label: Année
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      rapport_digital_annees: rapport_digital_annees
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

@@ -1,11 +1,14 @@
+uuid: e9575254-f91f-4405-93a7-4abc93068ea7
+langcode: en
+status: 1
+dependencies: {  }
+_core:
+  default_config_hash: V43zV7NyPfWk4lz5eHwoFZ2vspZORs4V8_pkx0BPPgo
 id: iphone_xs
-uuid: b30fa034-0163-4d2e-9ede-5f74a6c1cf0b
 label: 'iPhone XS'
 weight: -9
-status: 1
 orientation: portrait
 dimensions:
   width: 1125
   height: 2436
   dppx: !!float 3
-langcode: en

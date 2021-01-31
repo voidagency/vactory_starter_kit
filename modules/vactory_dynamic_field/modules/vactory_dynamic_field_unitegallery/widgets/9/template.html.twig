@@ -8,14 +8,20 @@
   {% for item in content %}
     {% set thumbnail_src = (item.thumbnail.0 is defined) ? get_image_url(item.thumbnail.0) : '' %}
     {% set image_src = (item.image.0 is defined) ? get_image_url(item.image.0) : '' %}
-    {% set item_link = (item.cta_url is not empty) ? item.cta_url : '#.' %}
+    {% set alt_image = (item.image_alt) ? item.image_alt : item.image.alt_image %}
 
-    <a href="{{ item_link }}">
+    {% set link_attributes = create_attribute() %}
+    {% set link_attributes = item.link.attributes.id is not empty ? link_attributes.setAttribute('id', item.link.attributes.id ) : link_attributes %}
+    {% set link_attributes = item.link.attributes.class is not empty ? link_attributes.setAttribute('class', item.link.attributes.class ) : link_attributes %}
+    {% set link_attributes = item.link.attributes.target is not empty ? link_attributes.setAttribute('target', item.link.attributes.target ) : link_attributes %}
+    {% set link_attributes = item.link.attributes.rel is not empty ? link_attributes.setAttribute('rel', item.link.attributes.rel ) : link_attributes %}
+
+    <a href="{{ item.link.url }}" {{ link_attributes }} >
       <img
         {#% if item.description is not empty %} data-description="{{ item.description }}" {% endif %#}
         src="{{ thumbnail_src }}"
         data-image="{{ image_src }}"
-
+        alt="{{ alt_image }}"
         {% if item.videoId is not empty %}
           data-type="youtube"
           data-videoid="{{ item.videoId }}"

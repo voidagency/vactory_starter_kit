@@ -1,0 +1,88 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.paragraph.views_reference.field_paragraph_hide_lg
+    - field.field.paragraph.views_reference.field_paragraph_hide_sm
+    - field.field.paragraph.views_reference.field_position_image_x
+    - field.field.paragraph.views_reference.field_position_image_y
+    - field.field.paragraph.views_reference.field_size_image
+    - field.field.paragraph.views_reference.field_vactory_title
+    - field.field.paragraph.views_reference.field_views_reference
+    - paragraphs.paragraphs_type.views_reference
+  module:
+    - options
+    - viewsreference
+id: paragraph.views_reference.default
+targetEntityType: paragraph
+bundle: views_reference
+mode: default
+content:
+  field_paragraph_hide_lg:
+    weight: 5
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    type: boolean
+    region: content
+  field_paragraph_hide_sm:
+    weight: 6
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    type: boolean
+    region: content
+  field_position_image_x:
+    weight: 2
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_position_image_y:
+    weight: 3
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_size_image:
+    weight: 4
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_vactory_title:
+    weight: 0
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_views_reference:
+    weight: 1
+    label: hidden
+    settings:
+      plugin_types:
+        page: page
+        default: 0
+        block: 0
+        feed: 0
+        attachment: 0
+        rest_export: 0
+        embed: 0
+    third_party_settings: {  }
+    type: viewsreference_formatter
+    region: content
+hidden:
+  paragraph_background_image: true
+  paragraph_container: true
+  search_api_excerpt: true

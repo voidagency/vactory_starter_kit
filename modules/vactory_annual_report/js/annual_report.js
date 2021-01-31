@@ -11,7 +11,7 @@
           dragEnabled: false,
           layout: {
             fillGaps: true,
-            alignRight: is_rtl,
+            alignRight: false,
             rounding: true
           }
         });

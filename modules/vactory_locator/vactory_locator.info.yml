@@ -2,6 +2,7 @@ name: Locator
 type: module
 description: 'Map locator.'
 core: 8.x
+core_version_requirement: ^8 || ^9
 package: Vactory
 dependencies:
   - vactory_field
@@ -17,3 +18,4 @@ dependencies:
   - taxonomy
   - telephone
   - vactory_google_map_field
+  - media_library_form_element

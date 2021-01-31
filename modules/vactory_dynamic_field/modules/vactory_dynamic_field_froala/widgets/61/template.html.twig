@@ -1,5 +1,9 @@
 {% set reverse = (content.0.mode == 1)? 'd-flex flex-row-reverse'  : '' %}
-
+{% set link_attributes = create_attribute() %}
+{% set link_attributes = content.0.link.attributes.id is not empty ? link_attributes.setAttribute('id', content.0.link.attributes.id ) : link_attributes %}
+{% set link_attributes = content.0.link.attributes.class is not empty ? link_attributes.setAttribute('class', content.0.link.attributes.class ~ ' btn btn-primary') : link_attributes.setAttribute('class','btn btn-primary') %}
+{% set link_attributes = content.0.link.attributes.target is not empty ? link_attributes.setAttribute('target', content.0.link.attributes.target ) : link_attributes %}
+{% set link_attributes = content.0.link.attributes.rel is not empty ? link_attributes.setAttribute('rel', content.0.link.attributes.rel ) : link_attributes %}
 <div class="fdb-block ">
     <div class="row align-items-center {{ reverse }}">
         <div class="col-12 col-sm-9 text-left">
@@ -7,10 +11,9 @@
                  <h2>{{ content.0.title }}</h2>
             {% endif %}
         </div>
-        {% if content.0.link is not empty and content.0.link_alt is not empty %}
-            {% set link_target = (content.link_target > 0) ? '_blank' : '_self' %}
+        {% if content.0.link.url is not empty and content.0.link.title is not empty %}
             <div class="col-12 col-sm-3 text-left text-sm-center mt-4 mt-sm-0">
-                <a class="btn btn-primary" href="{{ content.0.link }}" target="{{ link_target }}">{{ content.0.link_alt }}</a>
+                <a href="{{ content.0.link.url }}" {{ link_attributes }} > {{ content.0.link.title }} </a>
             </div>
         {% endif %}
     </div>

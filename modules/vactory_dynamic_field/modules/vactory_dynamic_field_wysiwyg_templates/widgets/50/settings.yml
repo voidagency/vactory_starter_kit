@@ -1,0 +1,24 @@
+name: 'C49 - Sticky Bloc with a youtube video'
+multiple: FALSE
+category: 'floated'
+enabled: TRUE
+fields:
+  image:
+    type: image
+    label: 'Image (Banner)'
+  image_alt:
+    type: text
+    label: 'Text alternatif'  
+  video:
+    type: text
+    label: 'video url'
+    options:
+      '#description': '<b><i class="link">How ?</i></b><br><b>URL Example</b>: https://www.youtube.com/watch?v=BZDyr2OpWBU'
+  title:
+    type: text
+    label: 'title'
+  description:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'full_html'

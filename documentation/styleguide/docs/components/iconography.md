@@ -705,6 +705,24 @@
         <span class="class-name">icon-youtube</span>
       </div>
     </div>
+    <div class="col-12 col-sm-6 col-md-3 mb-3">
+      <div class="icon-card">
+        <i class="icon icon-lock"></i>
+        <span class="class-name">icon-lock</span>
+      </div>
+    </div>
+    <div class="col-12 col-sm-6 col-md-3 mb-3">
+      <div class="icon-card">
+        <i class="icon icon-at"></i>
+        <span class="class-name">icon-at</span>
+      </div>
+    </div>
+    <div class="col-12 col-sm-6 col-md-3 mb-3">
+      <div class="icon-card">
+        <i class="icon icon-facebook-carre"></i>
+        <span class="class-name">icon-facebook-carre</span>
+      </div>
+    </div>
   </div>
 </div>
 

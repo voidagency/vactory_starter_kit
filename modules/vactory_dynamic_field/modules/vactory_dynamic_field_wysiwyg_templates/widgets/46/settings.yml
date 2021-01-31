@@ -8,8 +8,8 @@ fields:
     label: 'Icon'
     options:
       '#required': TRUE
-  url:
-    type: text
+  link:
+    type: url_extended
     label: 'Link'  
   description:
     type: text

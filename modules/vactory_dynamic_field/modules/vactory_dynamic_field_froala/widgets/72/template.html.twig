@@ -1,6 +1,13 @@
 {% set image_uri = (content.0.image.0 is defined) ? get_image(content.0.image.0) : '' %}
 {% set image_fluid = image_uri|image_style('max_1300x1300') %}
 {% set lqip_image = image_uri|image_style('lqip') %}
+{% set alt_image = (content.0.image_alt) ? content.0.image_alt : content.0.image.alt_image %}
+
+{% set link_attributes = create_attribute() %}
+{% set link_attributes = content.0.link.attributes.id is not empty ? link_attributes.setAttribute('id', content.0.link.attributes.id ) : link_attributes %}
+{% set link_attributes = content.0.link.attributes.class is not empty ? link_attributes.setAttribute('class', content.0.link.attributes.class ~ ' btn btn-primary') : link_attributes.setAttribute('class','btn btn-primary') %}
+{% set link_attributes = content.0.link.attributes.target is not empty ? link_attributes.setAttribute('target', content.0.link.attributes.target ) : link_attributes %}
+{% set link_attributes = content.0.link.attributes.rel is not empty ? link_attributes.setAttribute('rel', content.0.link.attributes.rel ) : link_attributes %}
 
 <div class="fdb-block pb-0">
     <div class="row align-items-center text-left">
@@ -12,10 +19,9 @@
                 <div class="text-h3">{{ content.0.description.value|raw }}</div>
             {% endif %}
         </div>
-        {% if content.0.link is not empty and content.0.link_alt is not empty %}
-            {% set link_target = (content.0.link_target > 0) ? '_blank' : '_self' %}
+        {% if content.0.link.url is not empty and content.0.link.title is not empty %}
             <div class="col-12 col-md-3 ml-auto text-left text-md-right">
-                <p><a class="btn btn-primary" href="{{ content.0.link }}" target="{{ link_target }}">{{ content.0.link_alt }}</a></p>
+                <p><a href="{{ content.0.link.url }}" {{ link_attributes }} > {{ content.0.link.title }} </a></p>
             </div>
         {% endif %}
     </div>
@@ -23,7 +29,7 @@
         <div class="row pt-5">
             <div class="col-12">
                 <div class="lazy-wrapper">
-                    <img alt="{{ content.0.image_alt }}"
+                    <img alt="{{ alt_image }}"
                         class="lazyload img-fluid"
                         src="{{ lqip_image }}"
                         data-src="{{ image_fluid }}">

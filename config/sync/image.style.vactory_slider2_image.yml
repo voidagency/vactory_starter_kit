@@ -1,9 +1,11 @@
-uuid: 8caaaef4-ecee-439a-9709-4f72e2a84772
+uuid: d3878c75-f979-4db3-a200-a1804c107f91
 langcode: en
 status: true
 dependencies:
   module:
     - focal_point
+_core:
+  default_config_hash: aPku6nNhO1WBfF4k5-QaL3cZ0u2hWTSteUyzuVTbOTI
 name: vactory_slider2_image
 label: 'Slider 1 Image 400x250'
 effects:

@@ -1,7 +1,7 @@
-uuid: a1cfe8b6-1ea8-4056-a8ba-9b6207105956
+uuid: 01431988-73bc-48e6-9314-a6feca680612
 langcode: en
 status: true
 dependencies: {  }
 id: NXhscRe0440PFpI5dSznEVgmauL25KojD7u4e9aZwOM
-label: 'http://vactory.local/core/install.php'
+label: 'http://vactory8.dd:8083/core/install.php'
 context: {  }

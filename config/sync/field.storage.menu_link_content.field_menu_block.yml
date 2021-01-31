@@ -1,10 +1,12 @@
-uuid: 9006af4f-aef8-4fe6-9bd1-c5da71c54471
+uuid: 7a64fbdd-76dc-4acb-9d1a-6b3b8af3a5ff
 langcode: en
 status: true
 dependencies:
   module:
     - block_field
     - menu_link_content
+_core:
+  default_config_hash: bbMGcDjehbgBqjWFqdRufNI7Qqp5cYB0_9ynND-Uh04
 id: menu_link_content.field_menu_block
 field_name: field_menu_block
 entity_type: menu_link_content

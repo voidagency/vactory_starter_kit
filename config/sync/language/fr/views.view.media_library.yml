@@ -1,4 +1,5 @@
-label: 'Bibliothèque Media'
+label: 'Media library'
+description: 'Trouver et gérer des media.'
 display:
   default:
     display_title: Maître

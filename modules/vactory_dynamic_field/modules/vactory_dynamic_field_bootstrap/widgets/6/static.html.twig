@@ -1,0 +1,51 @@
+{% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/2500/250.jpg" %}
+
+<div class="row justify-content-center">
+  <div class="col-lg-10 col-12">
+    <div class="row">
+      <div class="col-md-4 d-none">
+        <div class="lazy-wrapper">
+          <img alt=""
+               class="lazyload img-fluid"
+               src="{{ content.image_placeholder }}"
+               data-src="{{ placehold }}"/>
+        </div>
+      </div>
+      <div class="col-12 col-md-12 order-md-12">
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab blanditiis,
+          cumque deserunt dolore, eum facilis fuga fugiat id molestiae neque nobis
+          quaerat repellendus sit soluta tempora vel voluptatem voluptates voluptatum!
+        </p>
+      </div>
+    </div>
+    <div class="row">
+      {% set random_number = random(1, 200) %}
+      <div class="media-collapse">
+        <a aria-controls="collapse-media-1" aria-expanded="false"
+           class="btn__collapse collapsed" data-toggle="collapse"
+           href="#collapse-media-"
+           role="button">Echangez avec un conseiller</a>
+        <div class="collapse" id="collapse-media-{{ random_number }}">
+          {% for item in 0..3 %}
+            <div class="collapse__info-single">
+              <ul>
+                <li><i class="icon-user"></i>
+                  new conseiller
+                </li>
+                <li><i class="icon-phone"></i> 06 00 00 00 00</li>
+                <li class="btn-mail"><a href="#"><i class="icon-mail-to"></i>
+                    <span>Contact</span> </a></li>
+              </ul>
+            </div>
+          {% endfor %}
+        </div>
+        <div>
+          <div><a href="#" target="_blank">Consulter</a></div>
+          <div><a href="#" target="_blank">Consulter</a></div>
+          <div><a href="#" target="_blank">Consulter</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

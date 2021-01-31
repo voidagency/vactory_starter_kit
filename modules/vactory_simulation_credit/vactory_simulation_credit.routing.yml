@@ -1,0 +1,9 @@
+vactory_simulation_credit.vactory_simulation_credit_admin_form:
+  path: /admin/config/vactory-simulation-credit
+  defaults:
+    _form: \Drupal\vactory_simulation_credit\Form\VactorySimulationCreditAdminForm
+    _title: Vactory Simulation Credit
+  requirements:
+    _permission: access administration pages
+  options:
+    _admin_route: TRUE

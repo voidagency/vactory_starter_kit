@@ -6,9 +6,16 @@
             {% endif %}
             <p class="text-h2">
                 {% for item in content %}
-                    {% if item.link is not empty and item.name is not empty %}
-                        {% set link_target = (item.link_target > 0) ? '_blank' : '_self' %}
-                        <a href="{{ item.link }}" target="{{ link_target }}" class="mx-2"><i class="icon-{{ item.name }}"><!-- # --></i></a>
+                    {% set link_attributes = create_attribute() %}
+                    {% set link_attributes = item.link.attributes.id is not empty ? link_attributes.setAttribute('id', item.link.attributes.id ) : link_attributes %}
+                    {% set link_attributes = item.link.attributes.class is not empty ? link_attributes.setAttribute('class', item.link.attributes.class ~ ' mx-2') : link_attributes.setAttribute('class','mx-2') %}
+                    {% set link_attributes = item.link.attributes.target is not empty ? link_attributes.setAttribute('target', item.link.attributes.target ) : link_attributes %}
+                    {% set link_attributes = item.link.attributes.rel is not empty ? link_attributes.setAttribute('rel', item.link.attributes.rel ) : link_attributes %}
+
+                    {% if item.link.url is not empty and item.link.title is not empty %}
+                        <a  href="{{ item.link.url }}" {{ link_attributes }} > 
+                            <i class="icon-{{ item.link.title }}"><!-- # --></i>
+                        </a>
                     {% endif %}
                 {% endfor %}
             </p>

@@ -15,6 +15,3 @@ fields:
   link:
     type: url_extended
     label: 'Lien'
-  link_target:
-    type: checkbox
-    label: 'Ouvrir dans une nouvelle fenêtre'  

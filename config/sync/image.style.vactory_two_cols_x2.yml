@@ -1,9 +1,11 @@
-uuid: eacf4680-6d5c-4f93-a981-7fee6dca8fab
+uuid: 2118a5f4-f7cc-48cd-ae2c-7642f7f5a7cf
 langcode: en
 status: true
 dependencies:
   module:
     - focal_point
+_core:
+  default_config_hash: KNhjiSurW2--2i0Q93vBvkXrhvV4gdRw9Ycxqh2hCQM
 name: vactory_two_cols_x2
 label: 'Two Cols @x2'
 effects:

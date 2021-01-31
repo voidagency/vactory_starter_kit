@@ -1,0 +1,10 @@
+administer notifications:
+  title: 'Administer notifications'
+add notifications:
+  title: 'Add notifications'
+edit notifications:
+  title: 'Edit notifications'
+delete notifications:
+  title: 'Delete notifications'
+view notifications:
+  title: 'View notifications'

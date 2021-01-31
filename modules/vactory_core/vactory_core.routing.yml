@@ -7,6 +7,22 @@ block.vactory_admin_library:
     _access_theme: 'TRUE'
     _permission: 'administer blocks params'
 
+vactory_core.upload_documents_form:
+  path: '/admin/config/upload-documents'
+  defaults:
+    _title: 'Import de documents en masse'
+    _form: '\Drupal\vactory_core\Form\DocumentsEnMasseForm'
+  requirements:
+    _permission: 'upload documents en masse'
+
+vactory_metatag_opengraph.defaults:
+  path: 'admin/config/search/metatag/node/vactory-metatag-opengraph-default-image'
+  defaults:
+    _title: 'Vactory Metatag OpenGraph Default Image'
+    _form: '\Drupal\vactory_core\Form\OpenGraphMetaDefaultImage'
+  requirements:
+    _permission: 'administer site configuration'
+
 #node.add_page:
 #  path: '/node/add'
 #  defaults:

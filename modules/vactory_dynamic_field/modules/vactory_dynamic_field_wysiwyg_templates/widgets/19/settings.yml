@@ -11,7 +11,7 @@ fields:
   image_alt:
     type: text
     label: 'Image alt text'
-  site:
+  link:
     type: url_extended
     label: 'Lien du Site'
   title:

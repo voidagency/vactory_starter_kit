@@ -1,4 +1,4 @@
-uuid: 763d4d2b-1d4b-4922-818d-69ef67bf799b
+uuid: 6018816b-4512-423b-b6f3-f04f527a4744
 langcode: en
 status: true
 dependencies:
@@ -7,6 +7,8 @@ dependencies:
     - node.type.vactory_page
   module:
     - yoast_seo
+_core:
+  default_config_hash: _pIr0ZuXwGBSti4dfS9-obxySxFZFi5bjFrN35hi7bw
 id: node.vactory_page.field_vactory_seo_status
 field_name: field_vactory_seo_status
 entity_type: node

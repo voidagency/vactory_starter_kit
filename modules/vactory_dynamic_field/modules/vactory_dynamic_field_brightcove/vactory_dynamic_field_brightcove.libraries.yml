@@ -1,0 +1,8 @@
+video:
+  js:
+    js/video.js: {}
+  dependencies:
+    - vactory_dynamic_field_brightcove/video_script
+video_script:
+  js:
+    https://players.brightcove.net/1752604059001/B1xXFuBodW_default/index.min.js

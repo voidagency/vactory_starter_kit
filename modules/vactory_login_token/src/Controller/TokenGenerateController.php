@@ -53,7 +53,7 @@ class TokenGenerateController extends ControllerBase {
    * Function to generate Token.
    */
   public function generateToken($userId, $from) {
-    $config = $this->config('token_login.settings');
+    $config = $this->config('vactory_login_token.settings');
     $expirationTime = $config->get('expiration_time');
     $entity = User::load($userId);
     $token = base64_encode(random_bytes(64));
@@ -82,7 +82,7 @@ class TokenGenerateController extends ControllerBase {
       return new RedirectResponse($profile_url->toString());
     }
     else {
-      $config = $this->config('token_login.settings');
+      $config = $this->config('vactory_login_token.settings');
       $experationStatus = $config->get('expirationStatus');
       \Drupal::service('page_cache_kill_switch')->trigger();
       $account = User::load($id);

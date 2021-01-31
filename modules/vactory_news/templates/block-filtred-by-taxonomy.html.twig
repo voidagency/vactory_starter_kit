@@ -1,0 +1,3 @@
+{% set news_id = content.news_id %}
+{% set news_block_id = content.news_block_id %}
+{{ drupal_view('vactory_news', news_block_id, news_id) }}

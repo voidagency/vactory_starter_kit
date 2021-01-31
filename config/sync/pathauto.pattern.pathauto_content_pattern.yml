@@ -1,9 +1,11 @@
-uuid: ebabd1ab-cc66-4bc4-aace-10095a609fb4
+uuid: 64f4ff1c-a5b8-4887-b5a9-fa892320fb54
 langcode: en
 status: true
 dependencies:
   module:
     - node
+_core:
+  default_config_hash: vam73QWAl89iTZiihwiSnf6YmTZC-4_KFMRtO_WuzoA
 id: pathauto_content_pattern
 label: 'Pathauto Content Pattern'
 type: 'canonical_entities:node'

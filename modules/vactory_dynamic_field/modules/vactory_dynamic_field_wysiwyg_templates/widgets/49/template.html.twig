@@ -1,0 +1,34 @@
+{% set content = content.0 %}
+
+{% if content.mode == 1 %}
+  {{ attach_library('vactory_dynamic_field_wysiwyg_templates/sticky_video') }}
+{% endif %}
+
+{% if content.image.0 is defined %}
+  {% set image_uri = get_image(content.image.0) %}
+  {% set thumbnail = file_url(image_uri) %}
+  {% set lqip_image = image_uri|image_style('lqip') %}
+  {% set image_alt = (content.image_alt is not empty) ? content.image_alt : content.image.alt_image %}
+{% endif %}
+
+{% if content.mode == 1 %}
+  <figure class="content-media content-media--video" id="featured-media">
+    <iframe class="content-media__object" id="featured-video" src="https://www.youtube.com/embed/{{content.video_id}}?enablejsapi=1&rel=0&showinfo=0&controls=0&autoplay=1" frameborder="0"></iframe>
+  </figure>
+{% else %}
+<div class="stcky-bloc-wrapper">
+  <div class="sticky-bloc">
+  <div class="js-img-video">
+    <a href="{{content.video}}" class="play-video">
+      {% if content.image.0 is defined %}
+        <img src="{{lqip_image}}" data-src="{{thumbnail}}" alt="{{image_alt}}" class="img-fluid lazyload">
+      {% endif %}
+    </a>
+  </div>
+</div>
+</div>
+{% endif %}
+
+<div>
+  {{content.description|raw}}
+</div>

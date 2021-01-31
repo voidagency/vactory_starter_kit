@@ -1,0 +1,96 @@
+<?php
+
+/**
+ * @file
+ * Module related hooks.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\file\Entity\File;
+
+/**
+ * Implements hook_webform_element_default_properties_alter().
+ */
+function vactory_webform_storage_webform_element_default_properties_alter(array &$properties, array &$definition) {
+  // Makes the corresponding element automatically visible.
+  $properties['store'] = '';
+}
+
+/**
+ * Implements hook_webform_element_translatable_properties_alter().
+ */
+function vactory_webform_storage_webform_element_translatable_properties_alter(array &$properties, array &$definition) {
+  // Make the custom data property translatable.
+  $properties[] = 'store';
+}
+
+/**
+ * Implements hook_webform_element_configuration_form_alter().
+ */
+function vactory_webform_storage_webform_element_configuration_form_alter(&$form, FormStateInterface $form_state) {
+  // Append custom properties details container and textfield element.
+  $form['custom_properties'] = [
+    '#type' => 'details',
+    '#title' => t('Custom properties'),
+    '#description' => t('The below custom properties are provided and managed by the vactory_webform_storage module.'),
+    '#open' => TRUE,
+    '#weight' => -10,
+  ];
+  $form['custom_properties']['store'] = [
+    '#type' => 'checkbox',
+    '#title' => t('Prevent this field from being stored'),
+  ];
+}
+
+/**
+ * Implements hook_post_handler_webform_submission_alter().
+ */
+function vactory_webform_storage_post_handler_submission_alter(&$entity) {
+
+  if (!$entity) {
+    return;
+  }
+  /** @var \Drupal\webform\Entity\WebformSubmission $submission */
+  $submission = $entity;
+  $webform_managed_files = $submission->getWebform()->getElementsManagedFiles();
+
+  $data = $submission->getData();
+  $webform_id = $submission->get('webform_id')->getValue()[0]['target_id'];
+  $flag = FALSE;
+
+  $storage = \Drupal::service('entity.manager')->getStorage('webform');
+  $webform = $storage->loadByProperties([
+    'id' => $webform_id,
+  ]);
+
+  if (isset($webform[$webform_id])) {
+    $webform_elements = $webform[$webform_id]->getElementsDecoded();
+
+    foreach ($webform_elements as $key => $element) {
+      if (isset($element['#store']) && $element['#store'] === 1 && isset($data[$key])) {
+        unset($data[$key]);
+
+        // If the field is a managed file, we delete the file as well.
+        if (in_array($key, $webform_managed_files)) {
+          $fid = $submission->getData()[$key];
+          try {
+            $file = File::load($fid);
+            $file->setPermanent();
+            $file->delete();
+          }
+          catch (\Exception $e) {
+            \Drupal::logger('vactory_webform_storage')->error('Something went wrong while deleting the file ' . $fid . '.');
+          }
+        }
+
+        $flag = TRUE;
+      }
+    }
+  }
+
+  if ($flag) {
+    $submission->setData($data);
+    $submission->resave();
+  }
+
+}

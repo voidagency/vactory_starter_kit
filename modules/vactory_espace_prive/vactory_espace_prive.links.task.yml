@@ -1,0 +1,4 @@
+vactory_espace_prive.settings_form:
+  route_name: vactory_espace_prive.settings_form
+  title: Settings
+  base_route: vactory_espace_prive.settings_form

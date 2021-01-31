@@ -15,3 +15,11 @@ masonry:
     - core/jquery
     - core/jquery.once
     - core/drupal
+
+datepicker:
+  version: 1.x
+  js:
+    js/datepicker.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal

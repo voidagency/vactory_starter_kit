@@ -1,0 +1,74 @@
+<?php
+
+/**
+ * @file
+ * Module related hooks.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_forums_theme($existing, $type, $theme, $path) {
+  return [
+    'node__vactory_forum__full' => [
+      'base hook' => 'node',
+      'template' => 'full',
+    ],
+    'node__vactory_forum__card_inline' => [
+      'base hook' => 'node',
+      'template' => 'card-inline',
+    ],
+    'node__vactory_forum__smart_search' => [
+      'base hook' => 'node',
+      'template' => 'smart-search',
+    ],
+    'views_view_table__vactory_forums' => [
+      'base hook' => 'views_view_table',
+      'template' => 'vactory-forums-view-table',
+    ],
+    'views_view_field__last_comment_name' => [
+      'base hook' => 'views_view_field',
+      'template' => 'vactory-forums-last-comment-author',
+    ],
+    'views_view_field__field_vactory_forum_status' => [
+      'base hook' => 'views_view_field',
+      'template' => 'vactory-forums-status',
+    ],
+    'views_view_field__field_vactory_forum_room' => [
+      'base hook' => 'views_view_field',
+      'template' => 'vactory-forums-room',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ */
+function vactory_forums_node_presave(EntityInterface $entity) {
+  if ($entity->bundle() == 'vactory_forum') {
+    $comment = $entity->get('comment')->getValue();
+    if ($entity->get('field_vactory_forum_status')->value == "1") {
+      $comment[0]['status'] = 2;
+    }
+    else {
+      $comment[0]['status'] = 1;
+    }
+    $entity->set('comment', $comment);
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter().
+ */
+function vactory_forums_theme_suggestions_views_view_table_alter(array &$suggestions, array $variables) {
+  $suggestions[] = 'views_view_table__' . $variables['view']->id();
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter().
+ */
+function vactory_forums_theme_suggestions_views_view_field_alter(array &$suggestions, array $variables) {
+  $suggestions[] = 'views_view_field__' . $variables['field']->field;
+}

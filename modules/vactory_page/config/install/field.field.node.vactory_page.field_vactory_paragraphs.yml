@@ -7,6 +7,7 @@ dependencies:
     - paragraphs.paragraphs_type.vactory_component
     - paragraphs.paragraphs_type.vactory_paragraph_block
     - paragraphs.paragraphs_type.vactory_paragraph_multi_template
+    - paragraphs.paragraphs_type.views_reference
   module:
     - entity_reference_revisions
 id: node.vactory_page.field_vactory_paragraphs
@@ -27,6 +28,7 @@ settings:
       vactory_component: vactory_component
       vactory_paragraph_block: vactory_paragraph_block
       vactory_paragraph_multi_template: vactory_paragraph_multi_template
+      views_reference: views_reference
     target_bundles_drag_drop:
       vactory_component:
         enabled: true
@@ -40,7 +42,7 @@ settings:
       vactory_paragraph_tab:
         weight: 9
         enabled: false
-      vactory_paragraph_template:
+      views_reference:
+        enabled: true
         weight: 10
-        enabled: false
 field_type: entity_reference_revisions

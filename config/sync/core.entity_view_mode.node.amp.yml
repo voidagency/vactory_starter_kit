@@ -1,4 +1,4 @@
-uuid: dabd12b6-9e14-4431-b111-67f9d710ff4c
+uuid: 2cc2be77-9401-4762-af89-b30cb2feb7a3
 langcode: en
 status: true
 dependencies:
@@ -7,6 +7,8 @@ dependencies:
       - amp
   module:
     - node
+_core:
+  default_config_hash: jwz6mIS1UN65x5-pQ4hpLguWSwuhZq62hXOoW_W5ysA
 id: node.amp
 label: AMP
 targetEntityType: node

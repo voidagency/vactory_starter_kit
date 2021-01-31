@@ -63,3 +63,11 @@ pop_in:
     - core/jquery
     - core/drupalSettingss
     - core/jquery.cookie
+
+drag_and_drop:
+  js:
+    libraries/sortable/Sortable.min.js: { }
+    js/drag_and_drop.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettingss

@@ -48,9 +48,18 @@ class EspacePriveSettingsForm extends ConfigFormBase {
       '#type' => 'fieldset',
       '#title' => t("Chemins Espace Privée"),
     ];
-    $form['espace_prive_redirect'] = [
+    $form['espace_prive_metatag'] = [
+      '#type' => 'details',
+      '#title' => t("Espace privé Metatag"),
+      '#collapsed' => TRUE,
+    ];
+    $form['espace_prive_metatag']['register_page'] = [
       '#type' => 'fieldset',
-      '#title' => t("Redirections de chemins natifs de Drupal"),
+      '#title' => t("Page de création d'un compte"),
+    ];
+    $form['espace_prive_metatag']['login_page'] = [
+      '#type' => 'fieldset',
+      '#title' => t("Page d'authentification"),
     ];
 
     $form['espace_prive_paths']['path_login'] = [
@@ -84,14 +93,25 @@ class EspacePriveSettingsForm extends ConfigFormBase {
       '#description' => "Par défaut le chemin utilisé pour la page bienvenue est <strong>/espace-prive/welcome</strong>",
     ];
 
-    $form['espace_prive_redirect']['redirect_mode'] = [
-      '#type' => 'radios',
-      '#options' => [
-        'to_not_found' => t('Redirection 404 (Page non trouvée)'),
-        'to_new_path' => t('Redirection vers les nouveaux chemins du module espace privée'),
-      ],
-      '#default_value' => $config->get('redirect_mode'),
-      '#description' => 'Vous pouvez choisir le mode de redirection qui vous convient pour les chemins natifs de Drupal: <strong>/user/login, /user/register /user/UID/edit /user /user/password</strong>.',
+    $form['espace_prive_metatag']['register_page']['metatag_register_title'] = [
+      '#type' => 'textfield',
+      '#title' => t('Titre de la page'),
+      '#default_value' => $config->get('metatag_register_title'),
+    ];
+    $form['espace_prive_metatag']['register_page']['metatag_register_description'] = [
+      '#type' => 'textarea',
+      '#title' => t('Description de la page'),
+      '#default_value' => $config->get('metatag_register_description'),
+    ];
+    $form['espace_prive_metatag']['login_page']['metatag_login_title'] = [
+      '#type' => 'textfield',
+      '#title' => t('Titre de la page'),
+      '#default_value' => $config->get('metatag_login_title'),
+    ];
+    $form['espace_prive_metatag']['login_page']['metatag_login_description'] = [
+      '#type' => 'textarea',
+      '#title' => t('Description de la page'),
+      '#default_value' => $config->get('metatag_login_description'),
     ];
 
     return $form;
@@ -108,7 +128,10 @@ class EspacePriveSettingsForm extends ConfigFormBase {
       ->set('path_profile', $form_state->getValue('path_profile'))
       ->set('path_password', $form_state->getValue('path_password'))
       ->set('path_welcome', $form_state->getValue('path_welcome'))
-      ->set('redirect_mode', $form_state->getValue('redirect_mode'))
+      ->set('metatag_register_title', $form_state->getValue('metatag_register_title'))
+      ->set('metatag_register_description', $form_state->getValue('metatag_register_description'))
+      ->set('metatag_login_title', $form_state->getValue('metatag_login_title'))
+      ->set('metatag_login_description', $form_state->getValue('metatag_login_description'))
       ->save();
     parent::submitForm($form, $form_state);
     drupal_flush_all_caches();

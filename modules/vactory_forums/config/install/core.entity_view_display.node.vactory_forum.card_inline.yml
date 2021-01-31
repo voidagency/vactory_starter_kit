@@ -1,0 +1,107 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_forums
+  config:
+    - core.entity_view_mode.node.card_inline
+    - field.field.node.vactory_forum.body
+    - field.field.node.vactory_forum.comment
+    - field.field.node.vactory_forum.field_vactory_date
+    - field.field.node.vactory_forum.field_vactory_excerpt
+    - field.field.node.vactory_forum.field_vactory_forum_room
+    - field.field.node.vactory_forum.field_vactory_forum_status
+    - field.field.node.vactory_forum.field_vactory_forums_thematic
+    - field.field.node.vactory_forum.field_vactory_media
+    - field.field.node.vactory_forum.field_vactory_meta_tags
+    - node.type.vactory_forum
+    - responsive_image.styles.vactory_three_cols
+  module:
+    - datetime
+    - media_responsive_thumbnail
+    - options
+    - user
+    - vactory_field
+id: node.vactory_forum.card_inline
+targetEntityType: node
+bundle: vactory_forum
+mode: card_inline
+content:
+  field_vactory_date:
+    weight: 2
+    label: hidden
+    settings:
+      timezone_override: ''
+      date_format: d/m/Y
+    third_party_settings: {  }
+    type: datetime_custom
+    region: content
+  field_vactory_excerpt:
+    weight: 3
+    label: hidden
+    settings:
+      trim_length: '270'
+    third_party_settings: {  }
+    type: vactory_field_excerpt_formatter
+    region: content
+  field_vactory_forum_room:
+    type: entity_reference_label
+    weight: 7
+    region: content
+    label: hidden
+    settings:
+      link: false
+    third_party_settings: {  }
+  field_vactory_forum_status:
+    weight: 4
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: list_key
+    region: content
+  field_vactory_forums_thematic:
+    type: entity_reference_label
+    weight: 6
+    region: content
+    label: hidden
+    settings:
+      link: false
+    third_party_settings: {  }
+  field_vactory_media:
+    weight: 1
+    label: hidden
+    settings:
+      responsive_image_style: vactory_three_cols
+      image_link: ''
+    third_party_settings: {  }
+    type: media_responsive_thumbnail
+    region: content
+  langcode:
+    type: language
+    weight: 5
+    region: content
+    label: hidden
+    settings:
+      link_to_entity: false
+      native_language: false
+    third_party_settings: {  }
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  taxonomy_forums:
+    type: entity_reference_label
+    weight: 0
+    region: content
+    label: hidden
+    settings:
+      link: false
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  body: true
+  comment: true
+  field_vactory_meta_tags: true
+  search_api_excerpt: true

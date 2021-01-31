@@ -1,10 +1,12 @@
-uuid: 8b72d797-966f-4420-a55d-172242f11ab0
+uuid: 249d3159-7e03-4711-b681-b7da0016fbaf
 langcode: en
 status: true
 dependencies:
   config:
     - field.storage.paragraph.field_paragraph_introduction
     - paragraphs.paragraphs_type.vactory_paragraph_multi_template
+_core:
+  default_config_hash: 4khFluATafig5uVbKiZKtMWB-2fDg-gfzjaZfYjF4AE
 id: paragraph.vactory_paragraph_multi_template.field_paragraph_introduction
 field_name: field_paragraph_introduction
 entity_type: paragraph

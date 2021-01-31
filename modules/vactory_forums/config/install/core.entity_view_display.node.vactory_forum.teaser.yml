@@ -1,0 +1,51 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_forums
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.vactory_forum.body
+    - field.field.node.vactory_forum.comment
+    - field.field.node.vactory_forum.field_vactory_date
+    - field.field.node.vactory_forum.field_vactory_excerpt
+    - field.field.node.vactory_forum.field_vactory_forum_room
+    - field.field.node.vactory_forum.field_vactory_forum_status
+    - field.field.node.vactory_forum.field_vactory_forums_thematic
+    - field.field.node.vactory_forum.field_vactory_media
+    - field.field.node.vactory_forum.field_vactory_meta_tags
+    - node.type.vactory_forum
+  module:
+    - text
+    - user
+id: node.vactory_forum.teaser
+targetEntityType: node
+bundle: vactory_forum
+mode: teaser
+content:
+  body:
+    label: hidden
+    type: text_summary_or_trimmed
+    weight: 101
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  addtoany: true
+  comment: true
+  field_vactory_date: true
+  field_vactory_excerpt: true
+  field_vactory_forum_room: true
+  field_vactory_forum_status: true
+  field_vactory_forums_thematic: true
+  field_vactory_media: true
+  field_vactory_meta_tags: true
+  langcode: true
+  search_api_excerpt: true

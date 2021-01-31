@@ -1,0 +1,31 @@
+langcode: fr
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_faq_prive
+  module:
+    - menu_ui
+    - vactory_cross_content
+    - wysiwyg_template
+third_party_settings:
+  menu_ui:
+    available_menus:
+      - main
+    parent: 'main:'
+  wysiwyg_template:
+    default_template: ''
+  vactory_cross_content:
+    enabling: 0
+    taxonomy_field: none
+    terms: {  }
+    nombre_elements: '3'
+    more_link: ''
+    more_link_label: ''
+name: 'FAQ privé'
+type: vactory_faq_prive
+description: 'Utiliser ce type de contenu pour créer des FAQ de l''espace privé.'
+help: ''
+new_revision: true
+preview_mode: 1
+display_submitted: false

@@ -1,10 +1,12 @@
-uuid: 768a37dc-04cc-415f-8ff6-e79cf5c91bea
+uuid: 099eb71a-5cb0-491c-9fb8-be634b45d097
 langcode: en
 status: true
 dependencies:
   module:
     - block_field
     - menu_link_content
+_core:
+  default_config_hash: KxbZdMTk_NEeMI30Ktk7wBA-aWr8RZSgHZeZnOsI71A
 id: menu_link_content.field_injected_block
 field_name: field_injected_block
 entity_type: menu_link_content

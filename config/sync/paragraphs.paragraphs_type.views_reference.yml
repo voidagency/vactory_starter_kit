@@ -1,0 +1,12 @@
+uuid: 865ec5c5-3c24-47ef-84ef-6dce1e70fbb6
+langcode: en
+status: true
+dependencies: {  }
+_core:
+  default_config_hash: euTKR3WU-dXuHzZfAoJnZpzZA5kLwal1n5H8UwMWMfc
+id: views_reference
+label: 'Views reference'
+icon_uuid: null
+icon_default: null
+description: 'Utiliser ce type de paragraph pour injecter des vues.'
+behavior_plugins: {  }

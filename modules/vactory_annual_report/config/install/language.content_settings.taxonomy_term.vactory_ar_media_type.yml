@@ -1,6 +1,9 @@
 langcode: en
 status: true
 dependencies:
+  enforced:
+    module:
+      - vactory_annual_report
   config:
     - taxonomy.vocabulary.vactory_ar_media_type
 id: taxonomy_term.vactory_ar_media_type

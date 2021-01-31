@@ -1,7 +1,9 @@
-uuid: c713b831-ab0c-4dcc-b945-d6514cdb7ecf
-langcode: en
+uuid: ff65e534-06c3-4a10-b292-475ee004196c
+langcode: fr
 status: true
 dependencies: {  }
+_core:
+  default_config_hash: VaBWkSr7tRWhfPi_2vCcblIiok8z2YGI8SsMow4weJ8
 name: 'Texte brut'
 format: plain_text
 weight: -8

@@ -1,4 +1,4 @@
-uuid: e976c82b-2fc9-4235-abde-7b5f89f33287
+uuid: 24d5285e-a74a-427e-a9ff-7376bdb27a15
 langcode: en
 status: true
 dependencies:
@@ -7,6 +7,8 @@ dependencies:
       - file_entity
   module:
     - file
+_core:
+  default_config_hash: 1662XH078oY7N3ywSPw3NQnzTRvcbFr76bgz9IIZ5DY
 id: file.field_image_alt_text
 field_name: field_image_alt_text
 entity_type: file

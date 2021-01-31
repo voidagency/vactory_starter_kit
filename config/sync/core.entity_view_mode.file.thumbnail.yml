@@ -1,4 +1,4 @@
-uuid: ec7af47a-1c05-4e8c-87b3-c45683ddc975
+uuid: 05d1eeb1-660e-496d-8c6b-20036c121fcc
 langcode: en
 status: true
 dependencies:
@@ -7,6 +7,8 @@ dependencies:
       - file_entity
   module:
     - file
+_core:
+  default_config_hash: fuTFvTm2wH_wVi3iK4BWiCAHE2nwnljQgh6BTyBoyfs
 id: file.thumbnail
 label: Thumbnail
 targetEntityType: file

@@ -1,10 +1,12 @@
-uuid: c3190797-a4b4-465f-bc8b-847eb7d0f1eb
+uuid: 773ea7ea-f05b-4781-82d3-ae3003e088f5
 langcode: en
 status: true
 dependencies:
   config:
     - field.storage.paragraph.field_vactory_title
     - paragraphs.paragraphs_type.vactory_paragraph_multi_template
+_core:
+  default_config_hash: LKhh1jBUFsl-Oz6LWxIjW1YTDzcEoCtK7IxICGv68bk
 id: paragraph.vactory_paragraph_multi_template.field_vactory_title
 field_name: field_vactory_title
 entity_type: paragraph

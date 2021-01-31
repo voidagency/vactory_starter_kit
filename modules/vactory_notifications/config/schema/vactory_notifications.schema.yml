@@ -1,0 +1,12 @@
+vactory_notifications.settings:
+  type: config_object
+  mapping:
+    notifications_default_title:
+      type: text
+      label: 'Notifications default title'
+    notifications_default_message:
+      type: text
+      label: 'Notifications default message'
+    langcode:
+      type: string
+      label: 'Language code'

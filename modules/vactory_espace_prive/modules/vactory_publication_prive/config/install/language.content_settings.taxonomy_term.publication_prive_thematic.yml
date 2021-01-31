@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_publication_prive
+  config:
+    - taxonomy.vocabulary.publication_prive_thematic
+  module:
+    - content_translation
+third_party_settings:
+  content_translation:
+    enabled: true
+id: taxonomy_term.publication_prive_thematic
+target_entity_type_id: taxonomy_term
+target_bundle: publication_prive_thematic
+default_langcode: site_default
+language_alterable: true

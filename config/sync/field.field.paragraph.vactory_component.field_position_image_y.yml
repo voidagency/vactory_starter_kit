@@ -1,0 +1,25 @@
+uuid: f0fcbf93-2d19-4c01-8c91-0173ce5e1318
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_position_image_y
+    - paragraphs.paragraphs_type.vactory_component
+  module:
+    - options
+_core:
+  default_config_hash: oAzEtLPztPV3myJflHMO1RwOCI7rrTUY7eu_OlU50X0
+id: paragraph.vactory_component.field_position_image_y
+field_name: field_position_image_y
+entity_type: paragraph
+bundle: vactory_component
+label: 'Positionner l''image - verticalement'
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    value: centrer
+default_value_callback: ''
+settings: {  }
+field_type: list_string

@@ -2,6 +2,7 @@ langcode: fr
 status: true
 dependencies:
   config:
+    - field.field.locator_entity.vactory_locator.field_agency_path
     - field.field.locator_entity.vactory_locator.field_locator_adress
     - field.field.locator_entity.vactory_locator.field_locator_autre
     - field.field.locator_entity.vactory_locator.field_locator_autre_2
@@ -20,7 +21,7 @@ dependencies:
     - vactory_locator.locator_entity_type.vactory_locator
   module:
     - address
-    - focal_point
+    - media_library
     - telephone
     - vactory_google_map_field
 id: locator_entity.vactory_locator.default
@@ -28,13 +29,7 @@ targetEntityType: locator_entity
 bundle: vactory_locator
 mode: default
 content:
-  field_locator_adress:
-    weight: 3
-    settings: {  }
-    third_party_settings: {  }
-    type: address_default
-    region: content
-  field_locator_autre:
+  field_agency_path:
     weight: 12
     settings:
       size: 60
@@ -42,7 +37,20 @@ content:
     third_party_settings: {  }
     type: string_textfield
     region: content
-  field_locator_autre_2:
+  field_is_appointment_enabled:
+    weight: 11
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    type: boolean_checkbox
+    region: content
+  field_locator_adress:
+    weight: 3
+    settings: {  }
+    third_party_settings: {  }
+    type: address_default
+    region: content
+  field_locator_autre:
     weight: 13
     settings:
       size: 60
@@ -50,7 +58,7 @@ content:
     third_party_settings: {  }
     type: string_textfield
     region: content
-  field_locator_autre_3:
+  field_locator_autre_2:
     weight: 14
     settings:
       size: 60
@@ -58,7 +66,7 @@ content:
     third_party_settings: {  }
     type: string_textfield
     region: content
-  field_locator_autre_4:
+  field_locator_autre_3:
     weight: 15
     settings:
       size: 60
@@ -66,8 +74,16 @@ content:
     third_party_settings: {  }
     type: string_textfield
     region: content
-  field_locator_autre_5:
+  field_locator_autre_4:
     weight: 16
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_locator_autre_5:
+    weight: 17
     settings:
       size: 60
       placeholder: ''
@@ -76,12 +92,12 @@ content:
     region: content
   field_locator_category:
     type: options_select
-    weight: 5
+    weight: 4
     region: content
     settings: {  }
     third_party_settings: {  }
   field_locator_description:
-    weight: 10
+    weight: 8
     settings:
       rows: 5
       placeholder: ''
@@ -89,7 +105,7 @@ content:
     type: string_textarea
     region: content
   field_locator_email:
-    weight: 9
+    weight: 7
     settings:
       size: 60
       placeholder: ''
@@ -97,21 +113,18 @@ content:
     type: email_default
     region: content
   field_locator_fax:
-    weight: 8
+    weight: 6
     settings:
       placeholder: ''
     third_party_settings: {  }
     type: telephone_default
     region: content
   field_locator_image:
-    weight: 6
+    type: media_library_widget
+    weight: 10
     settings:
-      preview_image_style: locator_infowindow
-      preview_link: true
-      offsets: '50,50'
-      progress_indicator: throbber
+      media_types: {  }
     third_party_settings: {  }
-    type: image_focal_point
     region: content
   field_locator_info:
     weight: 0
@@ -120,19 +133,11 @@ content:
     type: vactory_google_map_field_default
     region: content
   field_locator_phone:
-    weight: 7
+    weight: 5
     settings:
       placeholder: ''
     third_party_settings: {  }
     type: telephone_default
-    region: content
-  field_locator_zoom:
-    weight: 4
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-    type: string_textfield
     region: content
   langcode:
     type: language_select
@@ -150,17 +155,18 @@ content:
       placeholder: ''
     third_party_settings: {  }
   translation:
-    weight: 11
+    weight: 9
     region: content
     settings: {  }
     third_party_settings: {  }
   user_id:
     type: entity_reference_autocomplete
-    weight: 17
+    weight: 18
     settings:
       match_operator: CONTAINS
       size: 60
       placeholder: ''
+      match_limit: 10
     region: content
     third_party_settings: {  }
 hidden: {  }

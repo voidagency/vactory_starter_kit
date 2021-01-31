@@ -1,0 +1,9 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.smart_search
+label: 'Smart Search'
+targetEntityType: node
+cache: true

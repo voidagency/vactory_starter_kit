@@ -1,0 +1,16 @@
+name: 'FAQ Privé'
+description: 'Provide FAQ content type and views listing for private space.'
+type: module
+core: 8.x
+core_version_requirement: ^8 || ^9
+dependencies:
+  - faqfield
+  - vactory_core
+  - vactory_field
+  - vactory_faq
+  - vactory_views
+  - search_api
+  - search_api_exclude_entity
+  - vactory_espace_prive
+  - views_autocomplete_filters
+package: Vactory

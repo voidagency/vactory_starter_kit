@@ -1,0 +1,32 @@
+uuid: 77d9c5ed-16d1-4bd1-a01b-e8b8f984c913
+langcode: en
+status: true
+dependencies:
+  module:
+    - options
+    - paragraphs
+_core:
+  default_config_hash: 2zqEvd6EUnMeqs5gcF7NLA3QDRSnsTlG0d4oYtk3wx4
+id: paragraph.field_position_image_x
+field_name: field_position_image_x
+entity_type: paragraph
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: centrer
+      label: Centrer
+    -
+      value: left
+      label: 'A Gauche'
+    -
+      value: right
+      label: 'A Droite'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

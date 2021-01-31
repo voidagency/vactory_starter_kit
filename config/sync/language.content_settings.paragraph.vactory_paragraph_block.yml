@@ -1,5 +1,5 @@
-uuid: 072709b7-a0f7-47e4-9c26-f6598d14f197
-langcode: en
+uuid: ea576e57-733f-42f1-bcfe-76abc301d5b8
+langcode: fr
 status: true
 dependencies:
   config:
@@ -11,6 +11,8 @@ third_party_settings:
     enabled: true
     bundle_settings:
       untranslatable_fields_hide: '1'
+_core:
+  default_config_hash: XYlqEHAf9yA0Jp6uJR6ArxDMsfqyN03NSg4z4_Zb064
 id: paragraph.vactory_paragraph_block
 target_entity_type_id: paragraph
 target_bundle: vactory_paragraph_block

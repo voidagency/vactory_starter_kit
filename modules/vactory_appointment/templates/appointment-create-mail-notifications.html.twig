@@ -1,0 +1,105 @@
+{% set site_name = drupal_config('system.site', 'name') %}
+<table style="width: 100%;" border="0" cellspacing="0" cellpadding="0" bgcolor="#e4e4e4">
+<tbody>
+  <tr>
+    <td valign="top" height="72"></td>
+  </tr>
+
+  <tr>
+    <td align="center">
+      <table border="0" width="600" cellspacing="0" cellpadding="0">
+        <tbody>
+          <tr>
+            <td width="20"></td>
+            <td>
+              <table border="0" cellspacing="0" cellpadding="0" bgcolor="#ffffff">
+                <tbody>
+                  <tr>
+                    <td width="20"  cellspacing="0" cellpadding="0"></td>
+                    <td>
+                      <table border="0" cellspacing="0" cellpadding="0">
+                        <tbody>
+                          <tr>
+                            <td height="34"></td>
+                          </tr>
+                          <tr>
+                            <td><a href="{{ url('<front>') }}"><img src="{{ base_url }}/themes/vactory/logo.png" alt="{{ site_name }}" border="0" width="120" style="width:120px"></a></td>
+                          </tr>
+                          <tr>
+                            <td height="64"></td>
+                          </tr>
+                          <tr>
+                            <td style="font-family: Arial, Helvetica, sans-serif; color: #000000; font-size: 15px; line-height: 20px;" align="left">
+                              <span style="color: #000000; font-size: 18px; font-family: Arial, Helvetica, sans-serif;">
+                              {{ 'Bonjour'|t }} {{ content.first_name|capitalize }} {{ content.last_name|upper }},
+                              </span>
+                              <br /><br />
+                              <span style="color: #000000; font-size: 15px; line-height: 20px; font-family: Arial, Helvetica, sans-serif;">
+                                {{ 'Nous vous remercions pour votre prise de RDV avec'|t }} {{ content.adviser.field_first_name.value|capitalize }} {{ content.adviser.field_last_name.value|upper }},
+                                {{ 'qui aura lieu le'|t }}
+                                <strong>{{ content.appointment_date }}</strong> {{ "à l'agence"|t }}
+                                <strong>{{ content.agency_name }}</strong>.
+                              </span>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td align="left">
+                              <br />
+                                <span style="color: #000000; font-size: 15px; line-height: 20px; font-family: Arial, Helvetica, sans-serif;">
+                                {{ 'Ajouter à :' }} <a href="{{ content.google_calendar_url }}">{{ 'Google Calendar'|t }}</a>
+                                </span>
+                                <br><br>
+
+                                <span style="color: #000000; font-size: 15px; line-height: 20px; font-family: Arial, Helvetica, sans-serif;">
+
+                                {{ "Si vous avez des questions, n'hésitez pas à contacter le conseiller: "|t }}
+                                <a href="mailto:{{ content.adviser.mail.value }}" style="color: #E64E1C; font-size: 15px; line-height: 20px; font-family: Arial, Helvetica, sans-serif; text-decoration: underline;">{{ content.adviser.mail.value }}</a>
+                                </span>
+
+                              <br><br>
+                              {% if content.create_account_url %}
+                                <span style="color: #000000; font-size: 15px; line-height: 20px; font-family: Arial, Helvetica, sans-serif;">
+                                  {{ "Prenez quelques secondes pour créer votre compte sur"|t }} <strong>{{ site_name }}</strong>
+                                  <br/><a href="{{ content.create_account_url }}"  style="color: #E64E1C; font-size: 15px; line-height: 20px; font-family: Arial, Helvetica, sans-serif; text-decoration: underline;">{{ 'Créer mon compte'|t }}</a>
+                                </span>
+                                <br><br>
+                              {% endif %}
+                              <span style="color: #000000; font-size: 15px; line-height: 20px; font-family: Arial, Helvetica, sans-serif;">
+                                {{ "Si aucun rendez-vous n'a été pris de votre part, veuillez ignorer ce message."|t }}
+                              </span>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td align="left">
+                              <br />
+                              <span style="color: #000000; font-size: 15px; line-height: 20px; font-family: Arial, Helvetica, sans-serif;">-- <br>
+
+                                  {{ "Cordialement,"|t }}<br>
+                                  {{ "L'équipe"|t }} <strong>{{  site_name }}</strong>
+
+                              </span>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td height="60">&nbsp;</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </td>
+                    <td width="20" cellspacing="0" cellpadding="0">&nbsp;</td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+            <td width="20"></td>
+          </tr>
+        </tbody>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td valign="top" height="72">&nbsp;</td>
+  </tr>
+
+</tbody>
+</table>

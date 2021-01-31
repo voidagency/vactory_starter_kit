@@ -1,0 +1,6 @@
+vactory_core.import_docs_en_masse:
+  route_name: vactory_core.upload_documents_form
+  title: 'Importer plusieurs documents en masse'
+  appears_on:
+    - entity.file.collection
+    - entity.media.collection

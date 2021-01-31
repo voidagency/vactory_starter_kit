@@ -1,10 +1,12 @@
-uuid: 69e47988-a08f-4e14-888f-de5cdc5090ce
+uuid: 54b294a8-de1c-467d-9b09-1bd9567bd389
 langcode: en
 status: true
 dependencies:
   enforced:
     module:
       - amp
+_core:
+  default_config_hash: yqfJ7ZQuahsen4jVaXHM7sY3VBdeYdRXLAxFKHH-A4w
 name: amp_metadata_logo_600x60
 label: 'AMP Metadata: Logo (600x60)'
 effects:

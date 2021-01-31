@@ -1,8 +1,10 @@
 <?php
 
 namespace Drupal\vactory_appointment\Form;
+
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
+
 /**
  * Provide the appointment setting form.
  *
@@ -41,11 +43,65 @@ class SettingsForm extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('vactory_appointment.settings');
     $form = parent::buildForm($form, $form_state);
-    $form['appointment_hours_string'] = [
-      '#type' => 'textarea',
-      '#title' => t('Appointment hours'),
-      '#description' => t('List of <strong>Key|Value</strong> for authorized hours to use within an appointment, Exple: 8h_9h|8H - 9H'),
-      '#default_value' => $config->get('appointment_hours_string'),
+    $form['is_authentication_required'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Seuls les utilisateurs authentifiés peuvent prendre des rendez-vous'),
+      '#description' => $this->t("Si cochée les utilisateurs anonymes n'ont plus pu prise des rendez-vous"),
+      '#default_value' => $config->get('is_authentication_required'),
+    ];
+    $form['user_can_edit_appointment'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Activer la modification des rendez-vous'),
+      '#description' => $this->t("Si cochée les utilisateurs peuvent modifier leurs rendez-vous"),
+      '#default_value' => $config->get('user_can_edit_appointment'),
+    ];
+    $form['user_can_delete_appointment'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Activer la suppression des rendez-vous'),
+      '#description' => $this->t("Si cochée les utilisateurs peuvent supprimer leurs rendez-vous"),
+      '#default_value' => $config->get('user_can_delete_appointment'),
+    ];
+    $form['enable_email_notifications'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Activer les notifications par mail'),
+      '#description' => $this->t('Uncheck it to disable sending email notifications.'),
+      '#default_value' => $config->get('enable_email_notifications'),
+    ];
+    $form['appointment_email_from'] = [
+      '#type' => 'textfield',
+      '#title' => t("Adresse mail expéditeur"),
+      '#description' => $this->t('Leave empty to use default site email addresse.'),
+      '#default_value' => $config->get('appointment_email_from'),
+      '#states' => [
+        'invisible' => [
+          ':input[name="enable_email_notifications"]' => ['checked' => FALSE],
+        ],
+      ],
+    ];
+    $form['appointment_datalayer'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Google Data layer settings'),
+    ];
+    $default_value = [
+      'adviser' => 0,
+      'first_name' => 0,
+      'last_name' => 0,
+      'phone' => 0,
+      'email' => 0,
+      'appointment_date' => 0,
+    ];
+    $form['appointment_datalayer']['datalayer_concerned_fields'] = [
+      '#type' => 'checkboxes',
+      '#title' => 'Select the concerned fields.',
+      '#options' => [
+        'adviser' => $this->t('Conseiller'),
+        'first_name' => $this->t('Prénom du client'),
+        'last_name' => $this->t('Nom du client'),
+        'phone' => $this->t('Téléphone du client'),
+        'email' => $this->t('Email du client'),
+        'appointment_date' => $this->t('Date du rendez-vous'),
+      ],
+      '#default_value' => !empty($config->get('datalayer_concerned_fields')) ? $config->get('datalayer_concerned_fields') : $default_value,
     ];
 
     return $form;
@@ -54,21 +110,31 @@ class SettingsForm extends ConfigFormBase {
   /**
    * {@inheritDoc}
    */
-  public function submitForm(array &$form, FormStateInterface $form_state) {
-    $hours_string = $form_state->getValue('appointment_hours_string');
-    $hours_string = preg_split('/\n|\r\n?/', $hours_string);
-    $appointment_hours = [];
-    if (!empty($hours_string)) {
-      foreach ($hours_string as $appointment_hour) {
-        $appointment_hour = explode('|', $appointment_hour);
-        $appointment_hours[$appointment_hour[0]] = $appointment_hour[1];
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    parent::validateForm($form, $form_state);
+    $is_authentication_required = $form_state->getValue('is_authentication_required');
+    if ($is_authentication_required) {
+      $is_espace_prive_module_enabled = \Drupal::moduleHandler()->moduleExists('vactory_espace_prive');
+      if (!$is_espace_prive_module_enabled) {
+        $form_state->setErrorByName('is_authentication_required', t("Pour que l'authentification soit requise pour la prise de rendez-vous, il faut tout d'abord activer le module Vactory Espace Privé (vactory_espace_prive)"));
       }
     }
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state) {
     $config = $this->config('vactory_appointment.settings');
-    $config->set('appointment_hours_string', $form_state->getValue('appointment_hours_string'))
-      ->set('appointment_hours', $appointment_hours)
+    $config->set('enable_email_notifications', $form_state->getValue('enable_email_notifications'))
+      ->set('appointment_email_from', $form_state->getValue('appointment_email_from'))
+      ->set('is_authentication_required', $form_state->getValue('is_authentication_required'))
+      ->set('user_can_edit_appointment', $form_state->getValue('user_can_edit_appointment'))
+      ->set('user_can_delete_appointment', $form_state->getValue('user_can_delete_appointment'))
+      ->set('datalayer_concerned_fields', $form_state->getValue('datalayer_concerned_fields'))
       ->save();
     parent::submitForm($form, $form_state);
+    drupal_flush_all_caches();
   }
 
 }

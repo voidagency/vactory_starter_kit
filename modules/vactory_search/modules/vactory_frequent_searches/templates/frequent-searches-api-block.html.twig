@@ -1,0 +1,12 @@
+{% if stats is not empty %}
+  <h6 class="font-weight-bold">{{ 'Recherches populaires'|t }}</h6>
+  <ul class="row ml-1 mb-2 frequent-search-wrapper" role="group" aria-label="{{ 'Recherches populaires'|t }}">
+    {% for keyword, num in stats %}
+      <li>
+        <a id="frequent-searches-{{ keyword|replace({' ': '-'}) }}" class="badge badge-primary p-1 pl-2 pr-2 mr-1" href="{{ path }}?{{ param_name }}={{ keyword }}">
+          {{ keyword|capitalize }} ({{ num }})
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+{% endif %}

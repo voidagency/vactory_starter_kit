@@ -1,0 +1,45 @@
+langcode: fr
+status: false
+dependencies:
+  enforced:
+    module:
+      - vactory_faq_prive
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.vactory_faq_prive.body
+    - field.field.node.vactory_faq_prive.field_faq_prive_thematique
+    - field.field.node.vactory_faq_prive.field_faq_prive_utilisateurs
+    - field.field.node.vactory_faq_prive.field_groupes_utilisateurs
+    - field.field.node.vactory_faq_prive.field_vactory_seo_status
+    - node.type.vactory_faq_prive
+  module:
+    - text
+    - user
+id: node.vactory_faq_prive.teaser
+targetEntityType: node
+bundle: vactory_faq_prive
+mode: teaser
+content:
+  body:
+    label: hidden
+    type: text_summary_or_trimmed
+    weight: 101
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  addtoany: true
+  field_faq_prive_thematique: true
+  field_faq_prive_utilisateurs: true
+  field_groupes_utilisateurs: true
+  field_vactory_seo_status: true
+  langcode: true
+  notification_message: true
+  notification_title: true
+  search_api_excerpt: true

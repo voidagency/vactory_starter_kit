@@ -1,11 +1,13 @@
-uuid: f2c4c6b5-9037-473e-b6f1-dd8c8fc03830
-langcode: en
+uuid: ea30d920-2a68-430a-92fa-849846a20900
+langcode: fr
 status: true
 dependencies:
   module:
     - vactory_footer
   theme:
     - vactory_theme
+_core:
+  default_config_hash: gHWWia7Vr2Mc0uPJsJnYcIXjXS4DDufGBNq5gmw3x7s
 id: vactoryfooterblockv1
 theme: vactory_theme
 region: footer

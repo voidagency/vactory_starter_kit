@@ -1,0 +1,80 @@
+<?php
+
+/**
+ * @file.
+ * Frequent searches hooks.
+ */
+
+use Drupal\Core\Database\Database;
+use Drupal\views\ViewExecutable;
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_frequent_searches_theme($existing, $type, $theme, $path) {
+  return [
+    'frequent_searches_api_block' => [
+      'template' => 'frequent-searches-api-block',
+      'variables' => [
+        'path' => '',
+        'param_name' => '',
+        'stats' => [],
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_views_pre_render().
+ */
+function vactory_frequent_searches_views_pre_render(ViewExecutable $view) {
+  $search_views = [
+    "vactory_search",
+    "vactory_smart_search",
+  ];
+  if (in_array($view->id(), $search_views)) {
+    $search_limit = 1000;
+    if (is_array($view->result)) {
+      $language = Drupal::languageManager()->getCurrentLanguage();
+      $database = Database::getConnection();
+      $search_controller = \Drupal::service('vactory_frequent_searches.frequent_searches_controller');
+      $query = $view->getQuery();
+      $index = $query->getIndex();
+      if (!empty($index)) {
+        $server = $index->get('server');
+      }
+      if (empty($index) || empty($server)) {
+        return;
+      }
+      $originalKeys = $query->getOriginalKeys();
+      $lowerOriginalKeys = mb_strtolower($originalKeys);
+      // Delete white spaces.
+      $keywords = trim($lowerOriginalKeys);
+      // Delete double with spaces.
+      $output = preg_replace('!\s+!', ' ', $keywords);
+      // To avoid to insert empty keywords value into database.
+      if (!empty($output)) {
+        // Check if we have already this keywords at db.
+        $is_exist_keyword = $search_controller->isExistsKeyword($output, $index->id(), $language->getId());
+        if (!$is_exist_keyword) {
+          if ((int) $view->total_rows > 0) {
+            if ($search_controller->getCountOfKeywords() >= $search_limit) {
+              return;
+            }
+          }
+          else {
+            if ($search_controller->getCountOfKeywordsWithoutResults() >= $search_limit) {
+              return;
+            }
+          }
+          $count = (count($view->result) > 0) ? 1 : 0;
+          $search_controller->addKeywordToDatabasa($output, $count, $language->getId(), $index->id(), (int) $view->total_rows);
+        }
+        else {
+          // In case of the existing of the keywords, we update the count.
+          $search_controller->updateKeyword($output, $language->getId(), (int) $view->total_rows, $index->id());
+        }
+      }
+    }
+  }
+}

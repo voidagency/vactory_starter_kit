@@ -1,0 +1,23 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_forums
+  config:
+    - field.storage.node.field_vactory_excerpt
+    - node.type.vactory_forum
+  module:
+    - text
+id: node.vactory_forum.field_vactory_excerpt
+field_name: field_vactory_excerpt
+entity_type: node
+bundle: vactory_forum
+label: Description
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: text_long

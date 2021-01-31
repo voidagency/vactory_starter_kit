@@ -49,11 +49,15 @@ display:
     display_options:
       menu:
         title: التعليقات
+        description: 'تم نشر التعليقات'
+      display_description: 'قائمة التعليقات المعتمدة.'
   page_unapproved:
     display_title: 'التعليقات الغير موافق عليها'
     display_options:
       menu:
         title: 'التعليقات الغير موافق عليها'
+        description: 'التعليقات غير معتمدة'
+      display_description: 'قائمة التعليقات الغير معتمدة.'
       filters:
         subject:
           expose:

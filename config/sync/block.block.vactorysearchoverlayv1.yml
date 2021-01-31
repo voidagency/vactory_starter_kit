@@ -1,4 +1,4 @@
-uuid: 47454f00-c0f5-4bfd-b7f2-b2df0b40f103
+uuid: 1f4267f9-02e0-4ce5-b718-54799f3cf49f
 langcode: en
 status: true
 dependencies:
@@ -6,6 +6,8 @@ dependencies:
     - vactory_search_overlay
   theme:
     - vactory_theme
+_core:
+  default_config_hash: wDS73Sn4UZCbPIvaHkx0aBSOwZwT1Wt4BszvfyVup0s
 id: vactorysearchoverlayv1
 theme: vactory_theme
 region: bottom

@@ -1,0 +1,7 @@
+vactory_timeout.settings:
+  path: '/admin/config/development/vactory_timeout'
+  defaults:
+    _form: '\Drupal\vactory_timeout\Form\SettingsForm'
+    _title: 'Timeout settings'
+  requirements:
+    _permission: 'active settings timeout'

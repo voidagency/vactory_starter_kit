@@ -12,6 +12,6 @@ fields:
   lead:
         type: textarea
         label: 'Lead Text'
-  cta:
+  link:
       type: url_extended
       label: 'Read More Link'

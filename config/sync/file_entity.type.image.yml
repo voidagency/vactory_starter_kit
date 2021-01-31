@@ -1,7 +1,9 @@
-uuid: 5535cb75-a4f6-458c-bfe8-1cc132082e74
+uuid: 83215949-c591-478a-a273-a9bcb0cdf969
 langcode: en
 status: true
 dependencies: {  }
+_core:
+  default_config_hash: Cnm8jai7mUWRJe41uZo5lyvpDJcbdkbGutMFhqPDUys
 id: image
 label: Image
 description: 'An <em>Image</em> file is a still visual.'

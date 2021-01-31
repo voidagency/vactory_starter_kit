@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_position_image_y
+    - paragraphs.paragraphs_type.vactory_paragraph_multi_template
+  module:
+    - options
+id: paragraph.vactory_paragraph_multi_template.field_position_image_y
+field_name: field_position_image_y
+entity_type: paragraph
+bundle: vactory_paragraph_multi_template
+label: 'Positionner l''image - verticalement'
+description: ''
+required: false
+translatable: true
+default_value:
+  -
+    value: centrer
+default_value_callback: ''
+settings: {  }
+field_type: list_string

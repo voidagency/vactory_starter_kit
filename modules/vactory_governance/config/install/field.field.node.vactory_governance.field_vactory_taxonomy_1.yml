@@ -9,7 +9,7 @@ id: node.vactory_governance.field_vactory_taxonomy_1
 field_name: field_vactory_taxonomy_1
 entity_type: node
 bundle: vactory_governance
-label: Role
+label: Roles
 description: ''
 required: false
 translatable: true

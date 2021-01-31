@@ -1,4 +1,4 @@
-uuid: 1c4e5488-19c3-4af7-83b5-32144165e5b9
+uuid: 63b7201e-6a5f-4f5d-8c13-19c5c6ce76c8
 langcode: en
 status: true
 dependencies:
@@ -7,6 +7,8 @@ dependencies:
     - paragraphs.paragraphs_type.vactory_paragraph_block
   module:
     - block_field
+_core:
+  default_config_hash: KW8cbqSImC0c88vX8r5CNbnK3QdnZ3dfVRqLr4Xr4rI
 id: paragraph.vactory_paragraph_block.field_vactory_block
 field_name: field_vactory_block
 entity_type: paragraph
@@ -19,5 +21,10 @@ default_value: {  }
 default_value_callback: ''
 settings:
   selection: blocks
-  selection_settings: {  }
+  selection_settings:
+    plugin_ids:
+      addtoany_block: addtoany_block
+      user_login_block: user_login_block
+      'views_block:vactory_cross_content-block_list': 'views_block:vactory_cross_content-block_list'
+      social_media_links_block: social_media_links_block
 field_type: block_field

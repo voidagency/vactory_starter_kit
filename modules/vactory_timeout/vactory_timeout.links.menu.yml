@@ -1,0 +1,5 @@
+vactory_timeout.settings:
+  title: 'Vactory TimeOut settings'
+  description: 'Configure settings for the Vactory TimeOut module.'
+  route_name: vactory_timeout.settings
+  parent: 'system.admin_config_development'

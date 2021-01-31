@@ -20,6 +20,7 @@ class MenuRoleLinkTreeManipulator extends DefaultMenuLinkTreeManipulators {
    */
   protected function menuLinkCheckAccess(MenuLinkInterface $instance) {
     $result = parent::menuLinkCheckAccess($instance);
+    $admin_context = Drupal::service('router.admin_context');
 
     if ($instance instanceof MenuLinkContent) {
       // Sadly ::getEntity() is protected at the moment.
@@ -35,7 +36,7 @@ class MenuRoleLinkTreeManipulator extends DefaultMenuLinkTreeManipulators {
         $show_role = array_column($show_role, 'target_id');
 
         // Check whether this role has visibility access (must be present).
-        if ($show_role && count(array_intersect($show_role, $this->account->getRoles())) == 0) {
+        if ($show_role && count(array_intersect($show_role, $this->account->getRoles())) == 0 && !$admin_context->isAdminRoute()) {
           $result = $result->andIf(AccessResult::forbidden()
             ->addCacheContexts(['user.roles']));
         }

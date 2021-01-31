@@ -1,10 +1,12 @@
-uuid: e0800985-5d33-433d-ae21-e330346928ca
-langcode: en
+uuid: af47e15f-f331-45e4-82ca-cc920f1bac9d
+langcode: fr
 status: true
 dependencies:
   config:
     - field.storage.paragraph.field_titre_ancre
     - paragraphs.paragraphs_type.vactory_paragraph_block
+_core:
+  default_config_hash: N6w75rWVPVPwOMeBEWbJncbhSLUG3hqUJq1L-QdggFA
 id: paragraph.vactory_paragraph_block.field_titre_ancre
 field_name: field_titre_ancre
 entity_type: paragraph

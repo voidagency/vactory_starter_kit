@@ -1,4 +1,4 @@
-uuid: cb4dbff8-7944-4a5c-a85f-b87a760bb875
+uuid: 2e9cfe60-f0b6-4fd1-8769-e430b7fd3d23
 langcode: en
 status: true
 dependencies:
@@ -8,6 +8,8 @@ dependencies:
     - file_entity.type.image
   module:
     - file_entity
+_core:
+  default_config_hash: _Bf428kqU4oErwcNNTL2Wj4HQfES94Bs4usKnK3iL2Q
 id: file.image.default
 targetEntityType: file
 bundle: image

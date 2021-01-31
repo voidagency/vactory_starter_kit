@@ -1,0 +1,23 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_forums
+  config:
+    - field.storage.node.field_vactory_meta_tags
+    - node.type.vactory_forum
+  module:
+    - metatag
+id: node.vactory_forum.field_vactory_meta_tags
+field_name: field_vactory_meta_tags
+entity_type: node
+bundle: vactory_forum
+label: 'Meta Tags'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: metatag

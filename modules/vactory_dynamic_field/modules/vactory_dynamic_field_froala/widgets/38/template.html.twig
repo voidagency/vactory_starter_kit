@@ -16,6 +16,7 @@
         {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : '' %}
         {% set profile_image = image_uri|image_style('medium') %}
         {% set lqip_image = image_uri|image_style('lqip') %}
+        {% set alt_image = (item.image_alt) ? item.image_alt : item.image.alt_image %}
 
         {% set reverce = (item.mode == 1)? 'd-flex flex-row-reverse' : 'd-flex' %}
         {% set reversedImage = (item.mode == 0) ? "mr-auto ml-auto" : "ml-auto mr-auto" %}
@@ -33,7 +34,7 @@
                     </div>
                     {% if  item.image.0 is not empty %}
                     <div class="col-8 col-sm-6 col-md-2 col-lg-3 col-xl-2 mt-4 mt-md-0  {{ reversedImage }}">
-                        <img alt="{{ item.image_alt }}"
+                        <img alt="{{ alt_image }}"
                             class="lazyload img-fluid rounded-circle"
                             src="{{ lqip_image }}"
                             data-src="{{ profile_image }}">

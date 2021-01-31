@@ -1,0 +1,12 @@
+vactory_notifications.notification_add:
+  route_name: entity.notifications_entity.add_page
+  title: 'Add Notification'
+  appears_on:
+    - entity.notifications_entity.collection
+    - entity.notifications_entity.canonical
+
+vactory_notifications.notification_delete_all:
+  route_name: entity.notifications_entity.delete_all
+  title: 'Delete All Existing Notifications'
+  appears_on:
+    - entity.notifications_entity.collection

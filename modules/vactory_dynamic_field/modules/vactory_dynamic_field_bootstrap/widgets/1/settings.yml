@@ -10,6 +10,6 @@ fields:
   description:
         type: textarea
         label: 'Description'
-  cta:
+  link:
       type: url_extended
       label: 'Read More Link'

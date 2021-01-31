@@ -1,4 +1,4 @@
-uuid: cfa86432-d31e-46ba-875c-8927ded0a903
+uuid: 4b680c6d-3cc3-4a2b-85e9-874e5b69bb18
 langcode: en
 status: true
 dependencies:
@@ -7,6 +7,8 @@ dependencies:
     - field.storage.block_content.field_dynamic_block_components
   module:
     - vactory_dynamic_field
+_core:
+  default_config_hash: mkzDwtTOkfXruvopWcEmeBbVJejZuIPVp0mUQ9PWxFU
 id: block_content.vactory_block_component.field_dynamic_block_components
 field_name: field_dynamic_block_components
 entity_type: block_content

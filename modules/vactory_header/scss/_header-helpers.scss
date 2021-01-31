@@ -22,6 +22,7 @@ body {
   right   : 0;
   width   : 100%;
   z-index : 5;
+  transition   : top 500ms ease-in;
   // this class's added by JavaScript
   // when the sticky beheviors is activated
   &.vh-fixed {
@@ -77,9 +78,14 @@ body {
         color: $white;
       }
       .dropdown-toggle {
+        display: flex;
+        align-items: center;
         background: transparent;
-        padding: 0;
-        color: $white;
+        padding-left: 0;
+        color: $primary;
+        &:focus {
+          outline: none !important;
+        }
         &::after {
           margin: 0;
         }
@@ -87,11 +93,14 @@ body {
       .dropdown-menu {
         border: none;
         padding: 0;
-        background: transparent;
-
         li {
           a {
-            color: $white;
+            font-weight: 400;
+            color: $gray-900;
+            font-size: 15px;
+          }
+          &:hover {
+            background: $gray-100;
           }
         }
       }
@@ -127,7 +136,53 @@ body {
       }
     }
   }
+  // language switcher inline
+  &__language-link-switcher--inline {
+    .language-switcher-language-url {
+      list-style: none;
+      line-height: 0;
+      display: flex;
+      align-items: center;
+      padding: 0;
+    }
+    .language-link {
+      display: inline-block;
+      position: relative;
+      font-size: 14px;
+      line-height: 1;
+      font-weight: 600;
+      font-family: $font-family-opensans;
+      color: $primary;
+      padding: 3px 4px;
+      margin: 0 4px;
+      &.is-active {
+        color: $body-color;
+        pointer-events: none;
+      }
+    }
+    li:not(:last-child) {
+      a {
+        &::before {
+          content: '';
+          position: absolute;
+          top: 1px;
+          height: 18px;
+          width: 1px;
+          background-color: $body-color;
+          right: -4px;
+        }
+      }
+    }
+  }
   // search button
+  button.js-btn-search-overlay {
+    background: transparent;
+    color: $primary;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    outline: none;
+  }
   &__search-btn {
     button {
       height          : 100%;
@@ -156,7 +211,6 @@ body {
       display  : inline-block;
       padding  : 4px 8px;
       color    : $white;
-      font-size: 18px;
 
       &:hover {
         color: $primary;
@@ -218,7 +272,9 @@ body {
       border       : 0;
       box-shadow   : 0 0 30px rgba(115, 128, 157, 0.4);
       border-radius: 0.25rem;
-
+      &.menu__level--1 {
+        top: inherit !important;
+      }
       &.animated {
         &:not(.menu__level--1):not(.mega-menu) {
           animation-name: fadeIn;
@@ -258,7 +314,9 @@ body {
         background-color: $primary;
       }
     }
-
+    .menu-level--1 {
+      display: flex;
+    }
     .menu__item--1 {
       .nav-link {
         color    : $white;
@@ -368,6 +426,13 @@ body {
     position        : absolute;
     left            : 0;
     bottom          : 0;
+  }
+}
+.vh-header {
+  ul{
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 0;
   }
 }
 // vhm-header mobile component style

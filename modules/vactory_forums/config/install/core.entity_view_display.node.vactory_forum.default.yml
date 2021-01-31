@@ -1,0 +1,128 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_forums
+  config:
+    - core.entity_view_display.comment.comment.default
+    - field.field.node.vactory_forum.body
+    - field.field.node.vactory_forum.comment
+    - field.field.node.vactory_forum.field_vactory_date
+    - field.field.node.vactory_forum.field_vactory_excerpt
+    - field.field.node.vactory_forum.field_vactory_forum_room
+    - field.field.node.vactory_forum.field_vactory_forum_status
+    - field.field.node.vactory_forum.field_vactory_forums_thematic
+    - field.field.node.vactory_forum.field_vactory_media
+    - field.field.node.vactory_forum.field_vactory_meta_tags
+    - node.type.vactory_forum
+    - responsive_image.styles.vactory_one_col
+  module:
+    - comment
+    - datetime
+    - media_responsive_thumbnail
+    - metatag
+    - options
+    - text
+    - user
+id: node.vactory_forum.default
+targetEntityType: node
+bundle: vactory_forum
+mode: default
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  comment:
+    weight: 11
+    label: hidden
+    settings:
+      view_mode: default
+      pager_id: 0
+    third_party_settings: {  }
+    type: comment_default
+    region: content
+  field_vactory_date:
+    weight: 5
+    label: hidden
+    settings:
+      timezone_override: ''
+      date_format: d/m/Y
+    third_party_settings: {  }
+    type: datetime_custom
+    region: content
+  field_vactory_excerpt:
+    weight: 6
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_vactory_forum_room:
+    weight: 12
+    label: hidden
+    settings:
+      link: false
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_vactory_forum_status:
+    weight: 7
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: list_key
+    region: content
+  field_vactory_forums_thematic:
+    weight: 10
+    label: hidden
+    settings:
+      link: false
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_vactory_media:
+    weight: 4
+    label: hidden
+    settings:
+      responsive_image_style: vactory_one_col
+      image_link: ''
+    third_party_settings: {  }
+    type: media_responsive_thumbnail
+    region: content
+  field_vactory_meta_tags:
+    weight: 8
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: metatag_empty_formatter
+    region: content
+  langcode:
+    type: language
+    weight: 9
+    region: content
+    label: hidden
+    settings:
+      link_to_entity: false
+      native_language: false
+    third_party_settings: {  }
+  links:
+    weight: 3
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  taxonomy_forums:
+    type: entity_reference_label
+    weight: 0
+    region: content
+    label: hidden
+    settings:
+      link: false
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  search_api_excerpt: true

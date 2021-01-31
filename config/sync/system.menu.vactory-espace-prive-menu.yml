@@ -1,0 +1,13 @@
+uuid: a3ac29b1-fb3c-4baf-a085-6e2b3abd2c98
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_espace_prive
+_core:
+  default_config_hash: lK5Nf25RTp53tLERA_TXGvAHospb1K7nsn6ny9qGWfA
+id: vactory-espace-prive-menu
+label: 'Espace Privé Menu'
+description: 'Utiliser ce menu pour ajouter les liens menus utilisateurs'
+locked: false

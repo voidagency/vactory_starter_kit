@@ -5,7 +5,7 @@
   {# Set our default level as an integer. #}
   {% set default_level = 1 %}
 
-  <ul class="navbar-nav menu-level--{{ level|default(default_level) }}">
+  <ul class="menu-level--{{ level|default(default_level) }}">
     {% for key, menu_item in menu %}
 
       {# Check if this is the active item. #}
@@ -25,12 +25,15 @@
       {# Generate ID for dropdown menu item #}
       {% set drop_item_id = 'dropdown_' ~ loop.index ~ '_' ~ random(1, 20) %}
 
+      {# Attributes Class #}
+      {% set wrapper_class = menu_item.options.attributes.wrapper_class %}
+      {% set item_class = menu_item.options.attributes.class %}
 
-      <li class="nav-item menu__item--{{ level|default(default_level) }}{{ has_sub }}{{megaMenu}}{{dropdown_sub}} {{ menu_item.options.attributes.class }}">
+      <li class="menu__item--{{ level|default(default_level) }}{{ has_sub }}{{megaMenu}}{{dropdown_sub}} {{ wrapper_class }}">
 
         {# Call the block injected menu if exist. #}
         {% if menu_item.fields.field_injected_block | render | trim is not empty %}
-          <a href="{{ menu_item.url }}" class="nav-link dropdown-toggle menu__link{{ active }}" id="{{drop_item_id}}" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ menu_item.text }}</a>
+          <a href="{{ menu_item.url }}" class="nav-link dropdown-toggle menu__link{{ active }} {{ item_class }}" id="{{drop_item_id}}" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ menu_item.text }}</a>
           <div class="dropdown-menu mega-menu menu-wrapper b-none animated fadeInUp" aria-labelledby="{{drop_item_id}}">
             {{ menu_item.fields.field_injected_block }}
           </div>
@@ -40,7 +43,7 @@
         {% elseif menu_item.submenu %}
 
           {# Print dropdown toggle & menu #}
-          <a href="{{ menu_item.url }}" class="nav-link dropdown-toggle menu__link{{ active }}" id="{{drop_item_id}}" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ menu_item.text }}</a>
+          <a href="{{ menu_item.url }}" class="nav-link dropdown-toggle menu__link{{ active }} {{ item_class }}" id="{{drop_item_id}}" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ menu_item.text }}</a>
           <div class="dropdown-menu menu__level--{{ level|default(default_level) }} menu-wrapper animated fadeInUp" aria-labelledby="{{drop_item_id}}">
 
             {# Since this menu item has a submenu, recall function and increment counter. #}
@@ -51,7 +54,7 @@
         {% else %}
 
         {# Print the Menu Link Level 1 #}
-          <a href="{{ menu_item.url }}" class="nav-link menu__link{{ active }}">{{ menu_item.text }}</a>
+          <a href="{{ menu_item.url }}" class="nav-link menu__link{{ active }} {{ item_class }}">{{ menu_item.text }}</a>
         {% endif %}
         {# End If #}
 

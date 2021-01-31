@@ -1,10 +1,12 @@
-uuid: 8850a3d1-215f-4cae-98fb-5b7eaf215455
+uuid: 8a48c832-c141-40f5-b063-974bf65f8d28
 langcode: en
 status: true
 dependencies:
   module:
     - block_content
     - text
+_core:
+  default_config_hash: EG8e6tDFMzmzOFAyBbPeknqJ38_P-fiNoAveQe5qsiM
 id: block_content.field_vactory_description
 field_name: field_vactory_description
 entity_type: block_content

@@ -3,7 +3,7 @@
     {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : "" %}
     {% set fluid_image = file_url(image_uri) %}
     {% set lqip_image = image_uri|image_style('lqip') %}
-    {% set imageAlt = (item.image_alt is not empty) ? item.image_alt : "Image" %}
+    {% set imageAlt = (item.image_alt) ? item.image_alt : item.image.alt_image %}
     <div class="t-fiche-image-content-body">
       <div class="row align-items-lg-center">
         <div class="col-lg-3">

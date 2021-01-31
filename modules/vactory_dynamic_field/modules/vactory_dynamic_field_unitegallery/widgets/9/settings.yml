@@ -14,12 +14,15 @@ fields:
     label: 'Image'
     options:
       '#required': TRUE
+  image_alt:
+    type: text
+    label: "texte alternative de l'image"     
   videoId:
     type: text
     label: 'VideoId Youtube'
     options:
       '#description': 'Youtube ID: l1g0fn5Nm_g, crIaEzXgqto, MVt32qoyhi0, 7SlILk2WMTI'
-  cta_url:
+  link:
     type: url_extended
     label: 'Link'
     placeholder_value: 'https://www.google.com'

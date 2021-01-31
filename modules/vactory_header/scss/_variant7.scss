@@ -3,6 +3,7 @@
  ************/
 .vh-header-7 {
   background-color: darkgrey;
+  position: relative;
   @include media-breakpoint-up(lg) {
     &.bottom {
       top: -160px;

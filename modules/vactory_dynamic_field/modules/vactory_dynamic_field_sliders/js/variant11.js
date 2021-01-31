@@ -41,6 +41,10 @@
             el: '.swiper-pagination-' + index,
             clickable: true,
           },
+          autoplay: ($item.data('autoplay') !== undefined) ? true : false,
+          autoplay: {
+            delay: ($item.data('autoplayspeed') !== undefined) ? $item.data('autoplayspeed') :3000,
+          },
           //slideClass: 'swiper-slide',
           //slideActiveClass: 'swiper-slide-active',
           //slideVisibleClass: 'swiper-slide-visible',

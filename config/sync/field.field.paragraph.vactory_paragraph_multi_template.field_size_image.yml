@@ -1,0 +1,25 @@
+uuid: ec22423e-7af3-4abe-a97d-7b247dca9504
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_size_image
+    - paragraphs.paragraphs_type.vactory_paragraph_multi_template
+  module:
+    - options
+_core:
+  default_config_hash: WQ2kje7TXoT1Wmk2y5cqjS3bbirxdJ8-Gxif4y_AGQQ
+id: paragraph.vactory_paragraph_multi_template.field_size_image
+field_name: field_size_image
+entity_type: paragraph
+bundle: vactory_paragraph_multi_template
+label: 'Size de l''image de fond'
+description: ''
+required: false
+translatable: true
+default_value:
+  -
+    value: cover
+default_value_callback: ''
+settings: {  }
+field_type: list_string

@@ -11,9 +11,9 @@ module:
   amp: 0
   auto_entityqueue: 0
   automated_cron: 0
+  backup_migrate: 0
   ban: 0
   better_exposed_filters: 0
-  better_passwords: 0
   block: 0
   block_blacklist: 0
   block_class: 0
@@ -23,11 +23,10 @@ module:
   captcha: 0
   ckeditor: 0
   coffee: 0
+  colorapi: 0
   comment: 0
   components: 0
   config: 0
-  config_exclude: 0
-  config_filter: 0
   config_translation: 0
   config_update: 0
   contextual: 0
@@ -36,6 +35,7 @@ module:
   datetime: 0
   datetime_range: 0
   dblog: 0
+  dropzonejs: 0
   dynamic_page_cache: 0
   editor: 0
   editor_advanced_link: 0
@@ -46,6 +46,7 @@ module:
   features: 0
   field: 0
   field_group: 0
+  field_ui: 0
   file: 0
   file_entity: 0
   filter: 0
@@ -55,6 +56,11 @@ module:
   image: 0
   improved_multi_select: 0
   jquery_colorpicker: 0
+  jquery_ui: 0
+  jquery_ui_accordion: 0
+  jquery_ui_datepicker: 0
+  jquery_ui_slider: 0
+  jquery_ui_touch_punch: 0
   lang_dropdown: 0
   language: 0
   link: 0
@@ -65,9 +71,11 @@ module:
   mailsystem: 0
   media: 0
   media_library: 0
+  media_library_form_element: 0
   media_responsive_thumbnail: 0
   menu_item_extras: 0
   menu_link_attributes: 0
+  menu_link_content: 0
   menu_ui: 0
   merge_translations: 0
   metatag: 0
@@ -80,6 +88,7 @@ module:
   node: 0
   options: 0
   page_cache: 0
+  password_policy: 0
   path: 0
   path_alias: 0
   persistent_login: 0
@@ -89,6 +98,7 @@ module:
   responsive_favicons: 0
   responsive_image: 0
   responsive_preview: 0
+  schema_metatag: 0
   search_api: 0
   search_api_db: 0
   search_api_exclude_entity: 0
@@ -120,6 +130,7 @@ module:
   vactory_dynamic_field_froala: 0
   vactory_dynamic_field_sliders: 0
   vactory_dynamic_field_wysiwyg_templates: 0
+  vactory_espace_prive: 0
   vactory_field: 0
   vactory_footer: 0
   vactory_header: 0
@@ -129,21 +140,24 @@ module:
   vactory_search_overlay: 0
   vactory_user: 0
   vactory_views: 0
+  vendor_stream_wrapper: 0
   viewsreference: 0
   wysiwyg_template: 0
   wysiwyg_template_core: 0
   yoast_seo: 0
-  menu_link_content: 1
   pathauto: 1
   xmlsitemap: 1
   content_translation: 10
   views: 10
   eu_cookie_compliance: 11
   paragraphs: 11
-  vactory: 1000
+  vactory_starter_kit: 1000
 theme:
   stable: 0
   classy: 0
   seven: 0
-  vactory_theme: 0
-profile: vactory
+  amptheme: 0
+  vactory: 0
+profile: vactory_starter_kit
+_core:
+  default_config_hash: R4IF-ClDHXxblLcG0L7MgsLvfBIMAvi_skumNFQwkDc

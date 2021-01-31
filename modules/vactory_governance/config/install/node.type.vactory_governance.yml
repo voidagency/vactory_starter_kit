@@ -1,5 +1,6 @@
 langcode: en
 status: true
+dependencies: {  }
 name: 'Government Member'
 type: vactory_governance
 description: 'Manage your government member content.'

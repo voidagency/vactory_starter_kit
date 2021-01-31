@@ -1,0 +1,8 @@
+
+  <a href="{{ url }}" class="dropdown-item">
+    {{ 'Notifications'|t }}
+    {% if nb_new_notifications != 0 %}
+      <span class='badge badge-success ml-1'>{{ nb_new_notifications }}</span>
+    {% endif %}
+  </a>
+

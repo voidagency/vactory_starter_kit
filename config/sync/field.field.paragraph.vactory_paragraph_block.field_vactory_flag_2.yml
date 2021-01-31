@@ -1,10 +1,12 @@
-uuid: b9a28991-b887-4846-9a6d-a78e8b189481
+uuid: c6ba2483-9b22-4876-b896-b59d26114bd8
 langcode: en
 status: true
 dependencies:
   config:
     - field.storage.paragraph.field_vactory_flag_2
     - paragraphs.paragraphs_type.vactory_paragraph_block
+_core:
+  default_config_hash: dYwrhP9nJdoYHauM__8EaYB0O87L9ANY9ZMMS6JUvEo
 id: paragraph.vactory_paragraph_block.field_vactory_flag_2
 field_name: field_vactory_flag_2
 entity_type: paragraph

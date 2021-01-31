@@ -1,9 +1,11 @@
-uuid: 2c82c659-6f2d-483b-be2f-aaca081e847f
+uuid: 479d6b21-bfeb-4558-b7aa-7593e036b29e
 langcode: en
 status: true
 dependencies:
   module:
     - focal_point
+_core:
+  default_config_hash: 7ws3_SRKV_D3t0qk_hTIFcw7zQ6LzJOZUFXy_p1U2_4
 name: vactory_slider3_image
 label: 'Slider 3 Image 1600x779'
 effects:

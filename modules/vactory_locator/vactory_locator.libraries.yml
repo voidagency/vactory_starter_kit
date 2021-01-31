@@ -5,3 +5,9 @@ vactory_locator.locator:
   dependencies:
     - core/jquery
     - core/drupalSettings
+backgroundLoader:
+  js:
+    js/bg_loader.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings

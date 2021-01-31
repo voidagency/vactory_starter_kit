@@ -1,10 +1,19 @@
-name: 'Governance'
-description: 'Provide Government Member content type and views listing.'
+name: 'Government Member'
+description: 'Provides Government Member content type and related configuration. Manage your government member content.'
 type: module
 core: 8.x
+core_version_requirement: '^8 || ^9'
 dependencies:
+  - better_exposed_filters
+  - entityqueue
+  - field
+  - file
+  - node
+  - taxonomy
+  - user
   - vactory_core
   - vactory_field
   - vactory_views
+  - views
 version: 8.x-1.0
 package: Vactory

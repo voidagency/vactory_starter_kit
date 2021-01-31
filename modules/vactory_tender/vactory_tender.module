@@ -22,6 +22,12 @@ function vactory_tender_theme($existing, $type, $theme, $path) {
       'base hook' => 'node',
     ],
 
+    // Node > Smart search.
+    'node__vactory_tender__smart_search'        => [
+      'base hook' => 'node',
+      'template'  => 'smart-search',
+    ],
+
     'webform__vactory_tender_form' => [
       'base hook' => 'webform',
       'template'  => 'webform--vactory-tender-form',

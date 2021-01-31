@@ -1,0 +1,5 @@
+vactoy_notifications_translation.settings:
+  title: 'Vactory Notifications Settings'
+  base_route_name: vactory_notifications.notifications_settings
+  names:
+    - vactory_notifications.settings

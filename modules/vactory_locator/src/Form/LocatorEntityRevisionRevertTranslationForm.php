@@ -50,7 +50,7 @@ class LocatorEntityRevisionRevertTranslationForm extends LocatorEntityRevisionRe
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity.manager')->getStorage('locator_entity'),
+      $container->get('entity_type.manager')->getStorage('locator_entity'),
       $container->get('date.formatter'),
       $container->get('language_manager')
     );
@@ -106,7 +106,7 @@ class LocatorEntityRevisionRevertTranslationForm extends LocatorEntityRevisionRe
 
     $latest_revision_translation->setNewRevision();
     $latest_revision_translation->isDefaultRevision(TRUE);
-    $revision->setRevisionCreationTime(REQUEST_TIME);
+    $revision->setRevisionCreationTime(\Drupal::time()->getRequestTime());
 
     return $latest_revision_translation;
   }

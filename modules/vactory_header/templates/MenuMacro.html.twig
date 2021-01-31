@@ -5,7 +5,7 @@
   {# Set our default level as an integer. #}
   {% set default_level = 1 %}
 
-  <ul class="navbar-nav menu-level--{{ level|default(default_level) }}">
+  <ul class="menu-level--{{ level|default(default_level) }}">
     {% for menu_item in menu %}
     {# Check if this is the active item. #}
     {% set active = (menu_item.active) ? ' is-active' : '' %}
@@ -18,19 +18,22 @@
 
     {% set drop_item_id = 'dropdown_' ~ loop.index ~ '_' ~ random(1, 20) %}
 
+    {# Attributes Class #}
+    {% set wrapper_class = menu_item.options.attributes.wrapper_class %}
+    {% set item_class = menu_item.options.attributes.class %}
 
-    <li class="nav-item menu__item{{ active }} menu__item--{{ level|default(default_level) }} {{ has_sub }} {{ menu_item.options.attributes.class }}">
+    <li class="menu__item{{ active }} menu__item--{{ level|default(default_level) }} {{ has_sub }} {{ wrapper_class }}">
 
       {% if menu_item.submenu %}
-        <a href="{{ menu_item.url }}" class="nav-link dropdown-toggle menu__link{{ active }}" id="{{drop_item_id}}"
+        <a href="{{ menu_item.url }}" class="nav-link dropdown-toggle menu__link{{ active }} {{ item_class }}" id="{{drop_item_id}}"
           role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{ menu_item.text }}</a>
         <div class="dropdown-menu menu-sub--{{ level|default(default_level) }} menu-wrapper" aria-labelledby="{{drop_item_id}}">
           {% for submenu in menu_item.submenu %}
-            <a href="{{submenu.url}}" class="dropdown-item">{{submenu.text}}</a>
+            <a href="{{submenu.url}}" class="dropdown-item {{ submenu.options.attributes.class }}">{{submenu.text}}</a>
           {% endfor %}
         </div>
       {% else %}
-        <a href="{{ menu_item.url }}" class="nav-link menu__link{{ active }}">{{ menu_item.text }}</a>
+        <a href="{{ menu_item.url }}" class="nav-link menu__link{{ active }} {{ item_class }}">{{ menu_item.text }}</a>
       {% endif %}
     </li>
     {% endfor %}

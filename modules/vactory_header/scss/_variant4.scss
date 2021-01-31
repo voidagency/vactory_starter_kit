@@ -2,12 +2,6 @@ $bg-stcky-nav: #307BD2;
 $bg-color-subemnu: #1F5CA3;
 
 .vh-variant4 {
-  position  : absolute;
-  top       : 0;
-  right     : 0;
-  left      : 0;
-  z-index   : 9999;
-  width     : 100%;
   height    : 125px;
   transition: top 500ms ease-in;
 
@@ -19,7 +13,6 @@ $bg-color-subemnu: #1F5CA3;
 
   .vh-header-inner {
     position  : relative;
-    background: $gray-500;
     @include rem(padding, 17px 0 0);
 
     &:after {
@@ -121,7 +114,7 @@ $bg-color-subemnu: #1F5CA3;
     z-index   : 2;
     display   : none;
     padding   : 0;
-    background: $gray-500;
+    background: $white;
 
     .menu-sub {
       margin    : 0;
@@ -451,6 +444,9 @@ $bg-color-subemnu: #1F5CA3;
     .vh-header-top-right {
       flex-direction: column-reverse !important;
       margin-left   : 0;
+      * {
+        color: $white;
+      }
     }
   }
 
@@ -461,7 +457,12 @@ $bg-color-subemnu: #1F5CA3;
     .menu__item {
       @include rem(margin, 0 0 12px);
     }
-
+    .block--menu ul,
+    .block--menu ul li a {
+      display: block;
+      width: 100%;
+      text-align: center;
+    }
     .menu__link {
       display: block;
 

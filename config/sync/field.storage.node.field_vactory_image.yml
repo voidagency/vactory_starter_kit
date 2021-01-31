@@ -1,4 +1,4 @@
-uuid: d1202231-4ca4-4358-ae55-5fb1989c2967
+uuid: c137f1b2-e1a2-424c-aeb6-8fc7aa106c3d
 langcode: en
 status: true
 dependencies:
@@ -6,6 +6,8 @@ dependencies:
     - file
     - image
     - node
+_core:
+  default_config_hash: jMh25X_iG_SHHYAKJOXDFJHZrqwbZlLQBpbQTdj4kpM
 id: node.field_vactory_image
 field_name: field_vactory_image
 entity_type: node

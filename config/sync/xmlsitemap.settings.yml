@@ -13,4 +13,6 @@ cron_threshold_error: 1209600
 cron_threshold_warning: 172800
 disable_cron_regeneration: true
 i18n_selection_mode: simple
-langcode: en
+langcode: fr
+_core:
+  default_config_hash: aHj-A-QhI8HYceR4NeHzDtg4eyxzIIYxCnf20qWwIrg

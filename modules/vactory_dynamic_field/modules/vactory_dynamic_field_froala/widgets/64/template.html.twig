@@ -1,3 +1,9 @@
+{% set link_attributes = create_attribute() %}
+{% set link_attributes = content.0.link.attributes.id is not empty ? link_attributes.setAttribute('id', content.0.link.attributes.id ) : link_attributes %}
+{% set link_attributes = content.0.link.attributes.class is not empty ? link_attributes.setAttribute('class', content.0.link.attributes.class ~ ' btn btn-primary') : link_attributes.setAttribute('class','btn btn-primary') %}
+{% set link_attributes = content.0.link.attributes.target is not empty ? link_attributes.setAttribute('target', content.0.link.attributes.target ) : link_attributes %}
+{% set link_attributes = content.0.link.attributes.rel is not empty ? link_attributes.setAttribute('rel', content.0.link.attributes.rel ) : link_attributes %}
+
 <div class="fdb-block fdb-block-hasbackground">
     <div class="container">
         <div class="row">
@@ -8,9 +14,10 @@
                 {% if content.0.description is not empty %}
                      <p class="text-h3">{{ content.0.description }}</p>
                 {% endif %}
-                {% if content.0.link is not empty  and content.0.link_alt is not empty %}
-                    {% set link_target = (content.0.link_target > 0) ? '_blank' : '_self' %}
-                    <p class="mt-4"><a class="btn btn-primary" href="{{ content.0.link }}" target="{{ link_target }}">{{ content.0.link_alt }}</a></p>
+                {% if content.0.link.url is not empty  and content.0.link.title is not empty %}
+                    <p class="mt-4">
+                        <a  href="{{ content.0.link.url }}" {{ link_attributes }} > {{ content.0.link.title }} </a>
+                    </p>
                 {% endif %}
             </div>
         </div>

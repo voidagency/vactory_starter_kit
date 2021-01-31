@@ -1,6 +1,9 @@
-langcode: fr
+langcode: en
 status: true
 dependencies:
+  enforced:
+    module:
+      - vactory_annual_report
   config:
     - field.storage.taxonomy_term.field_media_type_css_class
     - taxonomy.vocabulary.vactory_ar_media_type

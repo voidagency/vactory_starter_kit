@@ -1,0 +1,32 @@
+
+
+{{ attach_library('vactory_dynamic_field_brightcove/video') }}
+{% if content.0.data_account is not empty and content.0.video_id is not empty %}
+
+  {% set data_account = content.0.data_account  %}
+  {% set video_id = content.0.video_id  %}
+    <div style="position: relative; display: block; max-width: 100%;">
+
+      <div style="padding-top: 56.25%;">
+        <!-- The autoplay and muted attributes have been added to the video element. Also, the controls attribute has been removed. If you want the video to loop continually, you can add the loop attribute.-->
+        <video-js id="myPlayerID"
+                  data-video-id="{{ video_id }}"
+                  data-account="{{ data_account }}"
+                  data-player="default"
+                  data-embed="default"
+                  data-application-id
+                  class="video-js"
+                  autoplay muted
+                  style="position: absolute; top: 0px; right: 0px; bottom: 0px; left: 0px; width: 100%; height: 100%;">
+        </video-js>
+      </div>
+    </div>
+
+    <!-- This article text block will be displayed over the video background -->
+    <div id="article">
+      <button>Pause</button>
+    </div>
+
+{% else %}
+  Video Not Found ! please verify the url.
+{% endif %}

@@ -1,0 +1,49 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.card
+    - field.field.node.vactory_faq.body
+    - field.field.node.vactory_faq.field_faq
+    - field.field.node.vactory_faq.field_vactory_seo_status
+    - node.type.vactory_faq
+  module:
+    - text
+    - user
+    - yoast_seo
+  enforced:
+    module:
+      - vactory_faq
+id: node.vactory_faq.card
+targetEntityType: node
+bundle: vactory_faq
+mode: card
+content:
+  body:
+    type: text_default
+    weight: 3
+    region: content
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+  field_vactory_seo_status:
+    weight: 1
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: yoastseo_formatter
+    region: content
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  search_api_excerpt:
+    weight: 2
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  field_faq: true
+  langcode: true

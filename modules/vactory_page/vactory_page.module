@@ -1,0 +1,19 @@
+<?php
+
+/**
+ * @file
+ * Module related hooks.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_page_theme($existing, $type, $theme, $path) {
+  return [
+    // Node > Smart search.
+    'node__vactory_page__smart_search'        => [
+      'base hook' => 'node',
+      'template'  => 'smart-search',
+    ],
+  ];
+}

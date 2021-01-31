@@ -1,3 +1,10 @@
+
+{% set link_attributes = create_attribute() %}
+{% set link_attributes = content.0.link.attributes.id is not empty ? link_attributes.setAttribute('id', content.0.link.attributes.id ) : link_attributes %}
+{% set link_attributes = content.0.link.attributes.class is not empty ? link_attributes.setAttribute('class', content.0.link.attributes.class ~ ' btn btn-primary btn-lg') : link_attributes.setAttribute('class','btn btn-primary btn-lg') %}
+{% set link_attributes = content.0.link.attributes.target is not empty ? link_attributes.setAttribute('target', content.0.link.attributes.target ) : link_attributes %}
+{% set link_attributes = content.0.link.attributes.rel is not empty ? link_attributes.setAttribute('rel', content.0.link.attributes.rel ) : link_attributes %}
+
 <div class="jumbotron">
     <h1 class="display-4">{{ content.0.title }}</h1>
     <p class="lead">
@@ -8,6 +15,6 @@
         {{ content.0.description }}
     </p>
     <p class="lead">
-        <a class="btn btn-primary btn-lg" href="{{ content.0.cta }}" role="button">{{ 'Learn more' | t }}</a>
+        <a href="{{ content.0.link.url }}" {{ link_attributes }} > {{ content.0.link.title }} </a>
     </p>
 </div>

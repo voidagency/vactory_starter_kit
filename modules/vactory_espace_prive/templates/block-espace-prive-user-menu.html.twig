@@ -1,0 +1,31 @@
+{% set espace_prive_menu = simplify_menu('vactory-espace-prive-menu') %}
+{% if content.user.is_authenticated %}
+  {% set display_name = (content.user.display_name is not empty) ? content.user.display_name : '' %}
+  <div class="vh-header--account">
+    <div class="dropdown show">
+      <a class="dropdown-toggle d-flex align-items-center nav-link" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        <span class='icon-user mr-2'></span>
+         <span>{{ display_name }}</span>
+      </a>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+        <a class="dropdown-item" id="link-user-profile" href="{{ path('vactory_espace_prive.profile', {'user': content.user.user_id}) }}">{{ 'Mon Compte'|t }}</a>
+        {% if is_notifications_enabled() %}
+          {{ vactory_render('block', 'vactory_notifications_link') }}
+        {% endif %}
+        {% for menu_item in espace_prive_menu.menu_tree %}
+          {% set active = (menu_item.active) ? ' is-active' : '' %}
+          {% set active = active ~ ((menu_item.active_trail) ? ' is-active-trail' : '') %}
+          <a class="dropdown-item {{ active }}" id="{{ menu_item.options.attributes.id }}" href="{{ menu_item.url }}">{{ menu_item.text }}</a>
+        {% endfor %}
+        <a class="dropdown-item" id="link-user-logout" href="{{ path('user.logout') }}">{{ 'Déconnexion'|t }}</a>
+      </div>
+    </div>
+  </div>
+{% else %}
+  <div class="vh-header--account">
+    <a href="{{ url('vactory_espace_prive.login') }}" class='nav-link'>
+      <span class='icon-user mr-1'></span>
+      <span>{{ 'Espace privé' | t }}</span>
+    </a>
+  </div>
+{% endif %}

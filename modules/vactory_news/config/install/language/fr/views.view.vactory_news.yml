@@ -1,0 +1,73 @@
+display:
+  default:
+    display_title: Master
+    display_options:
+      exposed_form:
+        options:
+          submit_button: Apply
+          reset_button_label: Reset
+          exposed_sorts_label: 'Sort by'
+          sort_asc_label: Asc
+          sort_desc_label: Desc
+      pager:
+        options:
+          expose:
+            items_per_page_label: 'Items per page'
+            items_per_page_options_all_label: '- All -'
+            offset_label: Offset
+          tags:
+            previous: ‹‹
+            next: ››
+      fields:
+        title:
+          separator: ', '
+      empty:
+        area_text_custom:
+          content: 'Aucun résultat n''a été trouvé !'
+  listing_masonry:
+    display_options:
+      use_more_text: more
+      filters:
+        field_vactory_news_theme_target_id:
+          expose:
+            label: Theme
+        field_vactory_date_value:
+          expose:
+            label: 'Authored on'
+  listing_one_column:
+    display_options:
+      filters:
+        field_vactory_news_theme_target_id:
+          expose:
+            label: Theme
+        field_vactory_date_value:
+          expose:
+            label: 'Authored on'
+      exposed_form:
+        options:
+          submit_button: Apply
+          reset_button_label: Reset
+          exposed_sorts_label: 'Sort by'
+          sort_asc_label: Asc
+          sort_desc_label: Desc
+      use_more_text: more
+  listing_three_columns:
+    display_options:
+      use_more_text: more
+      filters:
+        field_vactory_news_theme_target_id:
+          expose:
+            label: Theme
+        field_vactory_date_value:
+          expose:
+            label: 'Authored on'
+  listing_two_columns:
+    display_options:
+      use_more_text: more
+      filters:
+        field_vactory_news_theme_target_id:
+          expose:
+            label: Theme
+        field_vactory_date_value:
+          expose:
+            label: 'Authored on'

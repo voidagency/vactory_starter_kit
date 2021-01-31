@@ -1,0 +1,20 @@
+uuid: 18c03f3d-d20c-44de-8d9e-df6345f2a0f9
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - amp
+_core:
+  default_config_hash: A_l2EXUJdC7jALmUBwpEvGmojvxbr0GCEGkKo0O9Woo
+name: amp_1200x900_4_3
+label: 'AMP 1200x900 - 4:3'
+effects:
+  349aa8c5-b4cd-44ea-beeb-7d2932603eae:
+    uuid: 349aa8c5-b4cd-44ea-beeb-7d2932603eae
+    id: image_scale
+    weight: 1
+    data:
+      width: 1200
+      height: 900
+      upscale: true

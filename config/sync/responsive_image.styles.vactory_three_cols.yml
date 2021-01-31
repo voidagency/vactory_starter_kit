@@ -1,4 +1,4 @@
-uuid: f92153bc-58be-4293-9539-80f3e502a197
+uuid: 6050ab1e-08cc-4e0f-8b2a-d96b13482867
 langcode: en
 status: true
 dependencies:
@@ -7,6 +7,8 @@ dependencies:
     - image.style.vactory_three_cols_x2
   theme:
     - vactory_theme
+_core:
+  default_config_hash: PpMndxlp6DeebvCl_ZUXRAlWl63PZbtyY2e-NuHA5Yk
 id: vactory_three_cols
 label: 'Three Cols'
 image_style_mappings:

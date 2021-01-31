@@ -1,0 +1,69 @@
+<?php
+
+/**
+ * @file
+ * Default template for block.
+ */
+
+use Drupal\Core\Url;
+
+/**
+ * Implements hook_page_attachements().
+ */
+function vactory_timeout_page_attachments(array &$page) {
+  $config = \Drupal::config('vactory_timeout.settings');
+  $paths = $config->get('paths');
+  $paths_authorisation = $config->get('paths_authorisation');
+  $requestStack = \Drupal::service('request_stack');
+  $currentPath = \Drupal::service('path.current');
+  $aliasManager = \Drupal::service('path.alias_manager');
+  $pathMatcher = \Drupal::service('path.matcher');
+  // Convert path to lowercase. This allows comparison of the same path.
+  // With different case. Ex: /Page, /page, /PAGE.
+  $pages = mb_strtolower($paths);
+  /*  if (!$pages) {
+  return TRUE;
+  }*/
+  $request = $requestStack->getCurrentRequest();
+  // Compare the lowercase path alias (if any) and internal path.
+  $path = $currentPath->getPath($request);
+  // Do not trim a trailing slash if that is the complete path.
+  $path = $path === '/' ? $path : rtrim($path, '/');
+  $path_alias = mb_strtolower($aliasManager->getAliasByPath($path));
+
+  $evaluate = $pathMatcher->matchPath($path_alias, $pages) || (($path != $path_alias) && $pathMatcher->matchPath($path, $pages));
+  if (($evaluate && $paths_authorisation) || (!$evaluate && !$paths_authorisation) || $paths == '') {
+    $landing_page = $config->get('landing_page');
+    // Récupérer le path de l'agence depuis la route courante.
+    $agence = Drupal::routeMatch()->getParameter('agency');
+    $agence = empty($agence) ? Drupal::routeMatch()
+      ->getParameter('agency_path') : $agence;
+    $agence = empty($agence) ? Drupal::routeMatch()
+      ->getParameter('agence_path') : $agence;
+    $landing_page = str_replace('%', $agence, $landing_page);
+    // Check if there are some query params.
+    // If so, pass them to the landing page.
+    // Get all query parameters.
+    /* $params = \Drupal::request()->query->all(); */
+    $language = \Drupal::languageManager()->getCurrentLanguage();
+    $landing_page = Url::fromUserInput('/' . $language->getId() . $landing_page)->toString();
+    $user = Drupal::currentUser();
+    $user_roles = $user->getRoles();
+    $roles_permissions = user_role_permissions($user_roles);
+
+    // We attach the library to the page.
+    $page['#attached']['library'][] = 'vactory_timeout/timeout';
+    $page['#attached']['drupalSettings']['vactory']['timeout_active'] = FALSE;
+    $page['#attached']['drupalSettings']['vactory']['timeout'] = $config->get('timeout');
+    $page['#attached']['drupalSettings']['vactory']['landing_page'] = $landing_page;
+    $page['#attached']['drupalSettings']['vactory']['current_page'] = \Drupal::service('path.alias_manager')
+      ->getAliasByPath($path);
+
+    foreach ($roles_permissions as $role_permissions) {
+      if (in_array('active timeout', $role_permissions)) {
+        $page['#attached']['drupalSettings']['vactory']['timeout_active'] = TRUE;
+        break;
+      }
+    }
+  }
+}

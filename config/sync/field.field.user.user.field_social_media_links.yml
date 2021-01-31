@@ -1,4 +1,4 @@
-uuid: c6492b5d-1d78-4fd5-ae11-7368c3d8f4e3
+uuid: ed2854b9-2f25-4062-9350-3537a92cd411
 langcode: en
 status: true
 dependencies:
@@ -7,6 +7,8 @@ dependencies:
   module:
     - social_media_links_field
     - user
+_core:
+  default_config_hash: aSYo17Z9lJFw8ykITydHfv2vEfprYXcV8J_SHVFwRJQ
 id: user.user.field_social_media_links
 field_name: field_social_media_links
 entity_type: user

@@ -1,5 +1,5 @@
-uuid: 59a44b00-bb29-4c7e-95a1-c244b1ec5589
-langcode: en
+uuid: 838cbffa-cf1b-40ac-a8aa-532149327a27
+langcode: fr
 status: true
 dependencies:
   config:
@@ -11,11 +11,14 @@ dependencies:
     - node.type.vactory_page
   module:
     - comment
+    - media_library
     - metatag
     - paragraphs
     - path
     - search_api_exclude_entity
     - yoast_seo
+_core:
+  default_config_hash: VW3MX6C_DcSGYdA7AvX3FE_PqX3frgoyGwMfJbj83z8
 id: node.vactory_page.default
 targetEntityType: node
 bundle: vactory_page
@@ -72,6 +75,13 @@ content:
     region: content
     settings:
       include_locked: true
+    third_party_settings: {  }
+  node_bg_image:
+    type: media_library_widget
+    weight: 0
+    region: content
+    settings:
+      media_types: {  }
     third_party_settings: {  }
   path:
     type: path

@@ -1,0 +1,38 @@
+.formation-items-wrapper {
+  height: 450px;
+  overflow: scroll;
+  top: -15px;
+  padding: 0 10px;
+  margin-top: -20px;
+  div#edit-type-formation {
+    display: inline-flex;
+  }
+  .select-formation-radio {
+    display: none;
+    & ~ label {
+      .formation-type-item, .formations-select-item {
+        border: 2px solid #ccc;
+        box-shadow: none;
+      }
+    }
+    &:checked ~ label {
+      .formation-type-item, .formations-select-item {
+        border: 3px solid $primary;
+        box-shadow: 0 0 10px #ff874f;
+      }
+    }
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+.view-filters.formation-agence-filter {
+  .form-row div:not(.form-actions) {
+    min-width: 200px;
+    flex-shrink: 0;
+    flex-grow: 1;
+  }
+  .form-actions {
+    flex-basis: 100%;
+    justify-content: flex-start;
+  }
+}

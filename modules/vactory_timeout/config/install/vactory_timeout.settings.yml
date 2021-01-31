@@ -1,0 +1,4 @@
+timeout: 30
+landing_page: '/sample/%'
+paths: ''
+paths_authorisation: ''

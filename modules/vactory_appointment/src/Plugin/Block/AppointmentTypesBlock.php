@@ -31,7 +31,8 @@ class AppointmentTypesBlock extends BlockBase {
    * @see \Drupal\block\BlockViewBuilder
    */
   public function build() {
-    $appointment_types = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('dam_motifs');
+    $appointment_types = \Drupal::entityTypeManager()->getStorage('taxonomy_term')
+      ->loadTree('vactory_appointment_motifs');
     $content = [];
     foreach ($appointment_types as $key => $type) {
       $tid = $type->tid;

@@ -1,0 +1,23 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_academy_agency
+  config:
+    - field.storage.node.field_vactory_datetime
+    - node.type.vactory_academy_agency
+  module:
+    - datetime
+id: node.vactory_academy_agency.field_vactory_datetime
+field_name: field_vactory_datetime
+entity_type: node
+bundle: vactory_academy_agency
+label: Date
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: datetime

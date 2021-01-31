@@ -176,7 +176,7 @@ function vactory_banner_entity_insert(EntityInterface $block) {
   $config = \Drupal::config('system.theme');
   $default_theme = $config->get('default');
   /* @var Drupal\Core\Config\Entity\ConfigEntityStorage $blockEntityManager */
-  $entity_manager = \Drupal::service('entity.manager')->getStorage('block');
+  $entity_manager = \Drupal::service('entity_type.manager')->getStorage('block');
 
   /* @var $bannerBlock \Drupal\block\BlockInterface */
   $banner_block = $entity_manager->create(

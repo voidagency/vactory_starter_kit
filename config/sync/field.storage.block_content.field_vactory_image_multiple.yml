@@ -1,4 +1,4 @@
-uuid: 90a32ad6-9ea2-4d29-bc96-abf1fcae2797
+uuid: 69830f37-da56-4213-b8ad-0f25e6211d58
 langcode: en
 status: true
 dependencies:
@@ -6,6 +6,8 @@ dependencies:
     - block_content
     - file
     - image
+_core:
+  default_config_hash: aTo9nwWE5BOaNxLyvXRgxa0S1o-26fSnEqe8X7P15d4
 id: block_content.field_vactory_image_multiple
 field_name: field_vactory_image_multiple
 entity_type: block_content

@@ -1,0 +1,25 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_publication_prive
+  config:
+    - field.storage.node.body
+    - node.type.vactory_publication_prive
+  module:
+    - text
+id: node.vactory_publication_prive.body
+field_name: body
+entity_type: node
+bundle: vactory_publication_prive
+label: Body
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  display_summary: true
+  required_summary: false
+field_type: text_with_summary

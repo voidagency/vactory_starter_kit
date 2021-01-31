@@ -1,0 +1,78 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_academy_agency
+  config:
+    - field.field.taxonomy_term.academy_subscribers.field_agence_formation
+    - field.field.taxonomy_term.academy_subscribers.field_subscriber_course
+    - field.field.taxonomy_term.academy_subscribers.field_subscriber_first_name
+    - field.field.taxonomy_term.academy_subscribers.field_subscriber_last_name
+    - field.field.taxonomy_term.academy_subscribers.field_subscriber_mail
+    - field.field.taxonomy_term.academy_subscribers.field_subscriber_telephone
+    - taxonomy.vocabulary.academy_subscribers
+  module:
+    - text
+id: taxonomy_term.academy_subscribers.default
+targetEntityType: taxonomy_term
+bundle: academy_subscribers
+mode: default
+content:
+  description:
+    label: hidden
+    type: text_default
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_agence_formation:
+    weight: 2
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_subscriber_course:
+    weight: 3
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_subscriber_first_name:
+    weight: 4
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_subscriber_last_name:
+    weight: 5
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_subscriber_mail:
+    weight: 1
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: basic_string
+    region: content
+  field_subscriber_telephone:
+    weight: 6
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+hidden:
+  langcode: true
+  search_api_excerpt: true

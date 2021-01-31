@@ -1,0 +1,13 @@
+name: Vactory Forums
+description: Manage forum topic content type.
+type: module
+core: 8.x
+core_version_requirement: ^8 || ^9
+package: Vactory
+dependencies:
+  - vactory_core
+  - better_exposed_filters
+  - comment
+  - vactory_cross_content
+  - vactory_field
+

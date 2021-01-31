@@ -1,0 +1,31 @@
+langcode: fr
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_faq_prive
+  config:
+    - field.storage.node.field_faq_prive_thematique
+    - node.type.vactory_faq_prive
+    - taxonomy.vocabulary.faq_prive_themes
+id: node.vactory_faq_prive.field_faq_prive_thematique
+field_name: field_faq_prive_thematique
+entity_type: node
+bundle: vactory_faq_prive
+label: Thématique
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      faq_prive_themes: faq_prive_themes
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

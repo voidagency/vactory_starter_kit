@@ -1,0 +1,38 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.smart_search
+    - field.field.node.vactory_glossary.body
+    - field.field.node.vactory_glossary.field_vactory_seo_status
+    - field.field.node.vactory_glossary.field_vactory_taxonomy_1
+    - node.type.vactory_glossary
+  module:
+    - user
+    - vactory_field
+id: node.vactory_glossary.smart_search
+targetEntityType: node
+bundle: vactory_glossary
+mode: smart_search
+content:
+  body:
+    label: hidden
+    type: vactory_field_excerpt_formatter
+    weight: 1
+    settings:
+      trim_length: '170'
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  field_vactory_seo_status: true
+  field_vactory_taxonomy_1: true
+  langcode: true
+  notification_message: true
+  notification_title: true
+  search_api_excerpt: true

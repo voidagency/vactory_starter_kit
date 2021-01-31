@@ -2,9 +2,7 @@
 <div class="splash-screen variant1 effect-flip-h">
   <a href="" class="close"><i class="icon-close"></i></a>
   <div class="splash-screen--content container">
-    {% for pid in content.content %}
-      {{ drupal_entity('paragraph', pid) }}
-    {% endfor %}
+    {{ content }}
   </div>
 </div>
 

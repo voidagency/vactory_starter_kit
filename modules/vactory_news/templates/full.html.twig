@@ -95,12 +95,15 @@
   </div>
 
   <hr/>
-
-  {#<div class="featured-img">#}
-  {#<a href="{{ url }}" rel="bookmark">#}
-  {#{{ hideLabel(addAttributes(content.field_vactory_media, {'class': ['img-fluid', 'thumbnail']})) }}#}
-  {#</a>#}
-  {#</div>#}
+  {% if content.field_vactory_media.0 is defined %}
+    {% set image_alt = content.field_vactory_media.0['#item'].alt %}
+    {% set image_title = content.field_vactory_media.0['#item'].title %}
+    {% set image_uri = get_image(content.field_vactory_media.0['#item'].target_id) %}
+    {% set image_url = image_uri is not empty ? file_url(image_uri) %}
+    <div class="featured-img text-center mb-4">
+      <img src="{{ image_url }}" alt="{{ image_alt }}" title="{{ image_title }}" width="940">
+    </div>
+  {% endif %}
 
   <div class="content">
     {{ hideLabel(addAttributes(content.body)) }}

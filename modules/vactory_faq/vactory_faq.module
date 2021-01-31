@@ -5,6 +5,8 @@
  * Primary module hooks for vactory FAQ module.
  */
 
+use Drupal\Core\Form\FormStateInterface;
+
 /**
  * Implements hook_theme().
  */
@@ -15,5 +17,25 @@ function vactory_faq_theme() {
       'base hook' => 'node',
       'template'  => 'full',
     ],
+    // Node > Smart search.
+    'node__vactory_faq__smart_search'        => [
+      'base hook' => 'node',
+      'template'  => 'smart-search',
+    ],
+    // Node > card.
+    'node__vactory_faq__card' => [
+      'base hook' => 'node',
+      'template'  => 'card',
+    ],
   ];
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function vactory_faq_form_views_exposed_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if (isset($form['search_api_fulltext']) && isset($form['#info']['filter-search_api_fulltext']['label'])) {
+    $form['search_api_fulltext']['#attributes']['placeholder'] = $form['#info']['filter-search_api_fulltext']['label'];
+    unset($form['#info']['filter-search_api_fulltext']['label']);
+  }
 }

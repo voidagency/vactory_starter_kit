@@ -1,0 +1,23 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_annual_report
+  config:
+    - field.storage.node.field_has_corner
+    - node.type.vactory_annual_report
+id: node.vactory_annual_report.field_has_corner
+field_name: field_has_corner
+entity_type: node
+bundle: vactory_annual_report
+label: 'Has corner'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

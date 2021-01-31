@@ -1,0 +1,24 @@
+langcode: fr
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_forums
+  module:
+    - node
+id: pathauto_content_forums
+label: 'Pathauto Content Forums'
+type: 'canonical_entities:node'
+pattern: '/forums/[node:title]'
+selection_criteria:
+  31147433-bafa-49e4-aafe-0eda7464683b:
+    id: node_type
+    bundles:
+      vactory_forum: vactory_forum
+    negate: false
+    context_mapping:
+      node: node
+    uuid: 31147433-bafa-49e4-aafe-0eda7464683b
+selection_logic: and
+weight: -5
+relationships: {  }

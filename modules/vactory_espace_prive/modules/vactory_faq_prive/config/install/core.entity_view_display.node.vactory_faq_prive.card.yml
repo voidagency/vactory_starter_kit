@@ -1,0 +1,76 @@
+langcode: fr
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_faq_prive
+  config:
+    - core.entity_view_mode.node.card
+    - field.field.node.vactory_faq_prive.body
+    - field.field.node.vactory_faq_prive.field_faq_prive_thematique
+    - field.field.node.vactory_faq_prive.field_faq_prive_utilisateurs
+    - field.field.node.vactory_faq_prive.field_groupes_utilisateurs
+    - field.field.node.vactory_faq_prive.field_vactory_seo_status
+    - node.type.vactory_faq_prive
+  module:
+    - text
+    - user
+    - yoast_seo
+id: node.vactory_faq_prive.card
+targetEntityType: node
+bundle: vactory_faq_prive
+mode: card
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 3
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_faq_prive_thematique:
+    type: entity_reference_label
+    weight: 4
+    region: content
+    label: hidden
+    settings:
+      link: false
+    third_party_settings: {  }
+  field_faq_prive_utilisateurs:
+    type: entity_reference_label
+    weight: 6
+    region: content
+    label: hidden
+    settings:
+      link: true
+    third_party_settings: {  }
+  field_groupes_utilisateurs:
+    type: entity_reference_label
+    weight: 5
+    region: content
+    label: hidden
+    settings:
+      link: true
+    third_party_settings: {  }
+  field_vactory_seo_status:
+    weight: 1
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: yoastseo_formatter
+    region: content
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  search_api_excerpt:
+    weight: 2
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  langcode: true
+  notification_message: true
+  notification_title: true

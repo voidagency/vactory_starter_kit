@@ -49,13 +49,25 @@
     </div>
 </div>
 
+{{ attach_library('vactory_locator/backgroundLoader') }}
+
+{# Background image plus button #}
+{% if content.vactory_locator.isOverlayActivated == 1 %}
+    {% set bg_desktop = (content.vactory_locator.picture_overlay is not empty) ? content.vactory_locator.picture_overlay : ''  %}
+    {% set bg_mobile = (content.vactory_locator.picture_overlay_mobile is not empty) ?  content.vactory_locator.picture_overlay_mobile : '' %}
+    {% set btn_overlay = (content.vactory_locator.btn_overlay is not empty) ? content.vactory_locator.btn_overlay : 'Découvrir' %}
+<div class="container_map background_image loading" data-desktop="{{ bg_desktop }}" data-mobile="{{ bg_mobile }}">
+  <div class='map-overlay'></div>
+  <button class="btn btn-secondary js-loadmap">{{ btn_overlay }}</button>
+</div>
+{% endif %}
 {# Map #}
 <div class="location-map-wrapper">
     <div id="vactory_locator_map" class="location-map loading"></div>
 </div>
 {# style="position: absolute; top: 25px; left: 25px; width:300px;" #}
 
-<div id="ModalGps" class="modal fade" role="dialog">
+<div style="display:none" id="ModalGps" class="modal fade" role="dialog">
     <div class="modal-dialog">
         <!-- Modal content-->
         <div class="modal-content">

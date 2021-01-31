@@ -1,0 +1,5 @@
+vactory_espace_prive.settings_form:
+  title: 'Vactory Espace Privé'
+  base_route_name: vactory_espace_prive.settings_form
+  names:
+    - vactory_espace_prive.settings

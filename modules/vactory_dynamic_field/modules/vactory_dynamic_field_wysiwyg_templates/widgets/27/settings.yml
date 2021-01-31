@@ -17,22 +17,10 @@ fields:
     label: 'Titre'
     options:
       '#required': TRUE
-  link:
-    type: url_extended
-    label: 'Lien'
-  link_target:
-    type: checkbox
-    label: "Ouvrir le lien dans une nouvelle onglet"
 extra_fields:
   introduction:
     type: textarea
     label: 'Introduction'
-  link2:
+  link:
     type: url_extended
     label: 'Lien'
-  link2_alt:
-    type: text
-    label: 'text du lien'
-  link2_target:
-    type: checkbox
-    label: "Ouvrir le lien dans une nouvelle onglet"

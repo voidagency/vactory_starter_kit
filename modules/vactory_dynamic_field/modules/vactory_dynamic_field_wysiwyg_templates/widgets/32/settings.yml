@@ -16,15 +16,9 @@ fields:
   description:
     type: textarea
     label: 'Description'
-  label_link:
-    type: text
-    label: 'Libelle lien'
   link:
     type: url_extended
     label: 'Lien'
-  link_target:
-    type: checkbox
-    label: 'Ouvrir dans une nouvelle fenêtre'
   mode:
     type: checkbox
     label: "Afficher l'image en Full"

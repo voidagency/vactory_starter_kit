@@ -1,0 +1,10 @@
+name: Vactory Frequent Searches
+description: "Vactory frequent searches."
+type: module
+core: 8.x
+dependencies:
+  - search_api
+package: Vactory
+core_version_requirement: ^8 || ^9
+categorie: Vactory
+configure: vactory_frequent_searches.frequent_searches_admin_form

@@ -1,0 +1,18 @@
+<?php
+
+/**
+ * @file
+ * Vactory flash news related hooks.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_flash_news_theme($existing, $type, $theme, $path) {
+  return [
+    'views_view_unformatted__vactory_flash_news' => [
+      'template' => 'views-view-unformatted-flash-news',
+      'base hook' => 'views_view_unformatted',
+    ],
+  ];
+}

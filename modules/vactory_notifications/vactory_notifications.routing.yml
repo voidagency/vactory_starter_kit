@@ -1,0 +1,49 @@
+vactory_notifications.notifications_settings:
+  path: '/admin/config/system/notifications-configuration'
+  defaults:
+    _title: 'Notifications settings'
+    _form: '\Drupal\vactory_notifications\Form\SettingsForm'
+  requirements:
+    _permission: 'administer notifications'
+entity.notifications_entity.collection:
+  path: '/admin/structure/notifications_entity/list'
+  defaults:
+    _entity_list: 'notifications_entity'
+    _title: 'Notifications List'
+  requirements:
+    _permission: 'view notifications'
+entity.notifications_entity.canonical:
+  path: '/admin/structure/notifications_entity/{notifications_entity}'
+  defaults:
+    _entity_view: 'notifications_entity'
+    _title: 'Notification Content'
+  requirements:
+    _entity_access: 'notifications_entity.view'
+entity.notifications_entity.add_page:
+  path: '/admin/structure/notifications_entity/add'
+  defaults:
+    _entity_form: notifications_entity.add
+    _title: 'Add Notification'
+  requirements:
+    _entity_create_access: 'notifications_entity'
+entity.notifications_entity.edit_form:
+  path: '/admin/structure/notifications_entity/{notifications_entity}/edit'
+  defaults:
+    _entity_form: notifications_entity.edit
+    _title: 'Edit Notification'
+  requirements:
+    _entity_access: 'notifications_entity.edit'
+entity.notifications_entity.delete_form:
+  path: '/admin/structure/notifications_entity/{notifications_entity}/delete'
+  defaults:
+    _entity_form: notifications_entity.delete
+    _title: 'Delete Notification'
+  requirements:
+    _entity_access: 'notifications_entity.delete'
+entity.notifications_entity.delete_all:
+  path: '/admin/structure/notifications_entity/delete-all'
+  defaults:
+    _form: 'Drupal\vactory_notifications\Form\NotificationsDeleteAll'
+    _title: 'Are you sure you want to delete all existing notifications ?'
+  requirements:
+    _permission: 'delete notifications'

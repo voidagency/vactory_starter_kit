@@ -12,6 +12,7 @@ use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Render\Markup;
 use Drupal\Core\Url;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -176,16 +177,46 @@ function vactory_core_form_alter(&$form, FormStateInterface &$form_state, $form_
     $current_url = Url::fromRoute('<current>')->toString();
     $form['#action'] = Xss::filter($current_url);
   }
-}
 
-/**
- * Implements hook_form_BASE_FORM_ID_alter().
- */
-function vactory_core_form_node_form_alter(&$form, FormStateInterface $form_state) {
-  unset($form['promote']);
-  unset($form['sticky']);
-  if (isset($form['revision_log'])) {
-    $form['revision_log']['widget'][0]['value']['#required'] = TRUE;
+  // Set default OpenGraph image url token.
+  $route_match = Drupal::service('current_route_match');
+  if (in_array($route_match->getRouteName(), ['entity.node.edit_form', 'node.add'])) {
+    $route_params = $route_match->getParameters();
+    $node_type = !empty($route_params->get('node')) ? $route_params->get('node')->bundle() : $route_params->get('node_type')->get('type');
+    $opengraph_default_images = Drupal::service('config.factory')
+      ->get('vactory_core.opengraph_default_image.settings')
+      ->get('default_content_opengraph_images');
+    if (isset($form['field_vactory_meta_tags']) && isset($opengraph_default_images[$node_type])) {
+      $form['field_vactory_meta_tags']['widget'][0]['open_graph']['og_image']['#default_value'] = $opengraph_default_images[$node_type]['default_opengraph_image'];
+      $form['field_vactory_meta_tags']['widget'][0]['open_graph']['og_image_url']['#default_value'] = $opengraph_default_images[$node_type]['default_opengraph_image'];
+      $form['field_vactory_meta_tags']['widget'][0]['open_graph']['og_image_secure_url']['#default_value'] = $opengraph_default_images[$node_type]['default_opengraph_image'];
+    }
+  }
+
+  // Make revision log message optional.
+  $route_name = Drupal::service('current_route_match')->getRouteName();
+  if ($route_name == 'entity.node.edit_form') {
+    if (isset($form['revision'])) {
+      $form['revision']['#default_value'] = TRUE;
+      $form['revision']['#access'] = FALSE;
+    }
+    unset($form['promote'], $form['sticky']);
+  }
+
+  if (in_array($route_name, ['entity.menu.add_link_form', 'entity.menu_link_content.canonical'])) {
+    // Auto generate css ID for menu links.
+    if (isset($form['options']['attributes']['id']) && empty($form['options']['attributes']['id']['#default_value'])) {
+      $timestamp = (new DateTime())->getTimestamp();
+      $timestamp = base64_encode($timestamp);
+      $timestamp = str_replace('=', '', strtolower($timestamp));
+      $css_id = 'menu-link-' . $timestamp;
+      $form['options']['attributes']['id']['#default_value'] = $css_id;
+    }
+
+    // Remove attributes widget provided by link_attributes module if exist.
+    if (isset($form['link']['widget'][0]['options']['attributes'])) {
+      unset($form['link']['widget'][0]['options']['attributes']);
+    }
   }
 }
 
@@ -278,5 +309,64 @@ function vactory_core_page_attachments_alter(array &$attachments) {
     if ($attachment[1] == 'system_meta_generator') {
       unset($attachments['#attached']['html_head'][$key]);
     }
+    if ($attachment[1] == 'addtoany-js') {
+      unset($attachments['#attached']['html_head'][$key]);
+    }
+  }
+  $addtoany_lib = array_search('addtoany/addtoany', $attachments['#attached']['library']);
+  if ($addtoany_lib !== FALSE) {
+    unset($attachments['#attached']['library'][$addtoany_lib]);
+  }
+}
+
+/**
+ * Implements hook_xmlsitemap_link_alter().
+ */
+function vactory_core_xmlsitemap_link_alter(array &$link, array $context) {
+  // Prevent homepage from being figured on xml sitemap twice.
+  $front_page = Drupal::config('system.site')->get('page')['front'];
+  if ($link['loc'] === $front_page) {
+    $link['status'] = 0;
+    $link['acccess'] = FALSE;
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_core_preprocess_block(&$variables) {
+  if (isset($variables['plugin_id']) && $variables['plugin_id'] === 'addtoany_block') {
+    $config = \Drupal::config('addtoany.settings');
+    // Initial JavaScript.
+    $additional_js = $config->get('additional_js');
+    if (\Drupal::moduleHandler()->moduleExists('token')) {
+      $node = \Drupal::routeMatch()->getParameter('node');
+      $data = [];
+      if ($node) {
+        if (is_numeric($node)) {
+          $node = Drupal::service('entity_type.manager')->getStorage('node')
+            ->load($node);
+        }
+        $data = ['node' => $node];
+        $additional_js = \Drupal::token()->replace($additional_js, $data);
+      }
+    }
+    $javascript_header = 'window.a2a_config=window.a2a_config||{};a2a_config.callbacks=[];a2a_config.overlays=[];a2a_config.templates={};'
+      . (($config->get('no_3p')) ? 'a2a_config.no_3p=1;' : '')
+      . $additional_js;
+    $variables['#attached']['html_head'][] = [
+      // The data.
+      [
+        // Add a <script> tag.
+        '#tag' => 'script',
+        // Add JavaScript to the <script> tag.
+        '#value' => Markup::create($javascript_header),
+        // Give weight so it appears after meta tags, etc.
+        '#weight' => 10,
+      ],
+      // Assign a key to reference this HTML <HEAD> element when altering.
+      'addtoany-js',
+    ];
+    $variables['#attached']['library'][] = 'addtoany/addtoany';
   }
 }

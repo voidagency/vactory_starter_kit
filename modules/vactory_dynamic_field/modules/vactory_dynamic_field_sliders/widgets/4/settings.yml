@@ -25,13 +25,17 @@ fields:
     type: textarea
     label: 'Description'
     options:
-  cta_url:
+  link:
     type: url_extended
     label: 'Read More Link'
     placeholder_value: 'https://www.google.com'
-  cta_alt:
-    type: text
-    label: 'Read More Text'
-  link_target:
-    type: checkbox
-    label: "Ouvrir le lien dans une nouvelle fenetre"
+extra_fields:
+  weight: 999
+  group_gonfig:
+    g_title: 'Configuration Slider'
+    autoLoop:
+      type: checkbox
+      label: 'Auto Slide'
+    loopSpeed:
+      type: number
+      label: 'Slide Speed'

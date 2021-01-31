@@ -1,10 +1,12 @@
-uuid: 7507cff8-a372-43c7-962a-e376f5bbb678
+uuid: 4d9b95f6-9c49-477e-bd16-f28eeed92b75
 langcode: en
 status: true
 dependencies:
   module:
     - block_content
     - file
+_core:
+  default_config_hash: ULCFedkPqYVlzBSiboyeoN8s9OeQYT6Oyr59KTiYTts
 id: block_content.field_vactory_document
 field_name: field_vactory_document
 entity_type: block_content

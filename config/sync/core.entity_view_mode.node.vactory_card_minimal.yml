@@ -1,9 +1,11 @@
-uuid: 5fdbc2e5-496a-49d1-aa34-2fe74855cc3f
+uuid: 4a2d9bc3-d832-45b5-9448-53a039ae8cfb
 langcode: en
 status: true
 dependencies:
   module:
     - node
+_core:
+  default_config_hash: DOYOD4KYlu8g5xm6I7e2Ay-im9A_ki61mbuCYO8V4T8
 id: node.vactory_card_minimal
 label: 'Card Minimal'
 targetEntityType: node

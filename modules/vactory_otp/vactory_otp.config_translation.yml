@@ -1,0 +1,5 @@
+vactory_otp.settings:
+  title: 'Vactory OTP settings'
+  base_route_name: vactory_otp.settings
+  names:
+    - vactory_otp.settings

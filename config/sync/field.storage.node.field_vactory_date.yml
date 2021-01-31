@@ -1,10 +1,12 @@
-uuid: faf7d243-74e8-4288-8f05-60dd5244617e
+uuid: 3f94094c-58ea-4f84-982a-402d9c643771
 langcode: en
 status: true
 dependencies:
   module:
     - datetime
     - node
+_core:
+  default_config_hash: GoR74kvMrW5yv9Jhc5tImk_QtN6POS98JLpjXeZnP5w
 id: node.field_vactory_date
 field_name: field_vactory_date
 entity_type: node

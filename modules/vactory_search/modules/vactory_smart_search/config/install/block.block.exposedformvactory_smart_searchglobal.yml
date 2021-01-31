@@ -1,0 +1,25 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - views.view.vactory_smart_search
+  module:
+    - views
+  theme:
+    - vactory
+  enforced:
+    module:
+      - vactory_smart_search
+id: exposedformvactory_smart_searchglobal
+theme: vactory
+region: sidebar
+weight: -10
+provider: null
+plugin: 'views_exposed_filter_block:vactory_smart_search-global'
+settings:
+  id: 'views_exposed_filter_block:vactory_smart_search-global'
+  label: ''
+  provider: views
+  label_display: '0'
+  views_label: ''
+visibility: {  }

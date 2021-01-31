@@ -251,10 +251,10 @@
       $.getScript('https://maps.googleapis.com/maps/api/js?region=MA&key=' + settings.googleApiKey, function () {
         app.map = new google.maps.Map(element, {
           center: {
-            lat: 31,
-            lng: -7.36133
+            lat: (settings.defaultPosition.latitude != '') ? Number(settings.defaultPosition.latitude) : 31,
+            lng: (settings.defaultPosition.longitude != '') ? Number(settings.defaultPosition.longitude) : -7.36133
           },
-          zoom: 6,
+          zoom: (settings.defaultPosition.zoom != 'nothing') ? Number(settings.defaultPosition.zoom) : 6,
           minZoom: 4,
           maxZoom: 17,
           mapTypeControl: false,
@@ -901,7 +901,7 @@
         app.data = Object.assign({}, app.allData);
         if (tid !== "all") {
           app.data.results = app.data.results.filter(function(el) {
-            return el.category_id === tid;
+            return el.field_locator_category_1 == tid;
           });
           app.data.total_rows = app.data.results.length;
         }
@@ -967,21 +967,39 @@
         },
         markerOptions: {
           defaultMarkerUrl: (drupalSettings.vactory_locator.url_marker !== '') ? drupalSettings.vactory_locator.url_marker : '/themes/vactory/assets/img/marker.png',
-          width: 44,
-          height: 53,
+          height: (drupalSettings.vactory_locator.marker_height !== false) ? drupalSettings.vactory_locator.marker_height : 53,
+          width: (drupalSettings.vactory_locator.marker_width !== false) ? drupalSettings.vactory_locator.marker_width : 44,
         },
         clusterStyles: [{
           url: (drupalSettings.vactory_locator.url_cluster !== '') ? drupalSettings.vactory_locator.url_cluster : '', // '/themes/vactory/assets/img/cluster.png'
-          height: 53,
-          width: 44,
+          height: (drupalSettings.vactory_locator.cluster_height !== false) ? drupalSettings.vactory_locator.cluster_height : 53,
+          width: (drupalSettings.vactory_locator.cluster_width !== false) ? drupalSettings.vactory_locator.cluster_width : 44,
           textColor: "#671F5B",
           textSize: 16,
           cssClass: "custom-pinnn"
         }],
         style: (drupalSettings.vactory_locator.map_style !== '') ? JSON.parse( drupalSettings.vactory_locator.map_style ) : '',
+        defaultPosition: {
+          latitude: drupalSettings.vactory_locator.lat,
+          longitude: drupalSettings.vactory_locator.lon,
+          zoom: drupalSettings.vactory_locator.zoom,
+        },
+        isOverlayActivated: drupalSettings.vactory_locator.isOverlayActivated,
       };
-
-      $('#vactory_locator_map').VactoryLocator(options);
+      if (options.isOverlayActivated == 1) {
+        $(".js-loadmap").click(function (e) {
+          $(".container_map").hide();
+          $(".location-map-wrapper").show();
+          $('.block-location').show();
+          $('#vactory_locator_map').VactoryLocator(options);
+          $(".block-location-wrapper").show();
+        });
+      }
+      else {
+        $('#vactory_locator_map').VactoryLocator(options);
+        $(".location-map-wrapper").show();
+        $('.block-location').show();
+      }
     }
 
   };

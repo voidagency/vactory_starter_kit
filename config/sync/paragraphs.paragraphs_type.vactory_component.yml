@@ -1,7 +1,9 @@
-uuid: 47a7985d-bb40-4140-b153-69586d289581
-langcode: en
+uuid: 3727bf01-965b-439e-ad40-d7c9757ee06d
+langcode: fr
 status: true
 dependencies: {  }
+_core:
+  default_config_hash: 0byauHseHMApe8Q0VzUsmrk6D_tYQdIpi8cP_rkjVWI
 id: vactory_component
 label: Template
 icon_uuid: null

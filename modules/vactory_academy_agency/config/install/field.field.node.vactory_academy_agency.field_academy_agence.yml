@@ -1,0 +1,23 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_academy_agency
+  config:
+    - field.storage.node.field_academy_agence
+    - node.type.vactory_academy_agency
+id: node.vactory_academy_agency.field_academy_agence
+field_name: field_academy_agence
+entity_type: node
+bundle: vactory_academy_agency
+label: Agence
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:locator_entity'
+  handler_settings: {  }
+field_type: entity_reference

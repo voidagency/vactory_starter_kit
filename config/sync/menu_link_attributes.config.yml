@@ -2,9 +2,17 @@ attributes:
   class:
     label: ''
     description: ''
+  wrapper_class:
+    label: 'Wrapper Class'
+    description: ''
+  id:
+    label: ''
+    description: ''
   target:
     label: ''
     description: ''
     options:
       _blank: 'New window (_blank)'
       _self: 'Same window (_self)'
+_core:
+  default_config_hash: vhartJTOzeSPl4Qme0F42Ac5Ow-LmHlQoCoOCMt9r0w

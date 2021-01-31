@@ -1,9 +1,11 @@
-uuid: 0ba19095-caa1-4597-94fd-3af67e2ef77b
+uuid: 05ab35a6-bf6b-47e4-979e-90795c72328c
 langcode: en
 status: true
 dependencies:
   module:
     - node
+_core:
+  default_config_hash: A-NY_msxviDFr27Y1vK6WiSsggidKlZu9apsMmGTimI
 id: node.masonry
 label: Masonry
 targetEntityType: node

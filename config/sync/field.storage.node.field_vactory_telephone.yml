@@ -1,9 +1,11 @@
-uuid: d43e72c1-4832-4918-9a2a-e2e9f06c168a
+uuid: 852318ed-a045-447e-8e06-b7c9d2d357f1
 langcode: en
 status: true
 dependencies:
   module:
     - node
+_core:
+  default_config_hash: ku9J83uEhrdclOoE8TZTuXBiYrFvaxFPFYfcxh7r7eM
 id: node.field_vactory_telephone
 field_name: field_vactory_telephone
 entity_type: node

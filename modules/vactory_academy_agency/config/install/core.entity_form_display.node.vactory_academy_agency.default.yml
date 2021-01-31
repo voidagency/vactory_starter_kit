@@ -1,0 +1,199 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_academy_agency
+  config:
+    - field.field.node.vactory_academy_agency.body
+    - field.field.node.vactory_academy_agency.comment
+    - field.field.node.vactory_academy_agency.field_academy_agence
+    - field.field.node.vactory_academy_agency.field_academy_duree
+    - field.field.node.vactory_academy_agency.field_formation_agency_module
+    - field.field.node.vactory_academy_agency.field_nombre_places
+    - field.field.node.vactory_academy_agency.field_vactory_academy_langue
+    - field.field.node.vactory_academy_agency.field_vactory_datetime
+    - field.field.node.vactory_academy_agency.field_vactory_excerpt
+    - field.field.node.vactory_academy_agency.field_vactory_file
+    - field.field.node.vactory_academy_agency.field_vactory_file_multiple
+    - field.field.node.vactory_academy_agency.field_vactory_instructor
+    - field.field.node.vactory_academy_agency.field_vactory_media
+    - field.field.node.vactory_academy_agency.field_vactory_meta_tags
+    - field.field.node.vactory_academy_agency.field_vactory_paragraphs
+    - field.field.node.vactory_academy_agency.field_vactory_seo_status
+    - field.field.node.vactory_academy_agency.field_vactory_theme
+    - field.field.node.vactory_academy_agency.field_vactory_youtube_videos
+    - node.type.vactory_academy_agency
+  module:
+    - datetime
+    - media_library
+    - metatag
+    - path
+    - text
+    - yoast_seo
+id: node.vactory_academy_agency.default
+targetEntityType: node
+bundle: vactory_academy_agency
+mode: default
+content:
+  created:
+    type: datetime_timestamp
+    weight: 4
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_academy_agence:
+    weight: 15
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_academy_duree:
+    weight: 20
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_formation_agency_module:
+    weight: 12
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_nombre_places:
+    weight: 14
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+    type: number
+    region: content
+  field_vactory_academy_langue:
+    weight: 13
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_vactory_datetime:
+    weight: 16
+    settings: {  }
+    third_party_settings: {  }
+    type: datetime_default
+    region: content
+  field_vactory_excerpt:
+    weight: 17
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  field_vactory_instructor:
+    weight: 11
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_vactory_meta_tags:
+    weight: 18
+    settings:
+      sidebar: true
+    third_party_settings: {  }
+    type: metatag_firehose
+    region: content
+  field_vactory_seo_status:
+    weight: 19
+    settings:
+      edit_title: false
+      edit_description: false
+    third_party_settings: {  }
+    type: yoast_seo_widget
+    region: content
+  langcode:
+    type: language_select
+    weight: 1
+    region: content
+    settings:
+      include_locked: true
+    third_party_settings: {  }
+  node_banner_image:
+    type: media_library_widget
+    weight: 7
+    region: content
+    settings:
+      media_types: {  }
+    third_party_settings: {  }
+  node_banner_mobile_image:
+    type: media_library_widget
+    weight: 8
+    region: content
+    settings:
+      media_types: {  }
+    third_party_settings: {  }
+  path:
+    type: path
+    weight: 9
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  promote:
+    type: boolean_checkbox
+    settings:
+      display_label: true
+    weight: 5
+    region: content
+    third_party_settings: {  }
+  status:
+    type: boolean_checkbox
+    settings:
+      display_label: true
+    weight: 21
+    region: content
+    third_party_settings: {  }
+  sticky:
+    type: boolean_checkbox
+    settings:
+      display_label: true
+    weight: 6
+    region: content
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  translation:
+    weight: 3
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  uid:
+    type: entity_reference_autocomplete
+    weight: 2
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+      match_limit: 10
+    region: content
+    third_party_settings: {  }
+  url_redirects:
+    weight: 10
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  body: true
+  comment: true
+  field_vactory_file: true
+  field_vactory_file_multiple: true
+  field_vactory_media: true
+  field_vactory_paragraphs: true
+  field_vactory_theme: true
+  field_vactory_youtube_videos: true

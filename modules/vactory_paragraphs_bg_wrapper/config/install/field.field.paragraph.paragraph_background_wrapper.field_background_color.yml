@@ -1,0 +1,23 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_background_color
+    - paragraphs.paragraphs_type.paragraph_background_wrapper
+  module:
+    - colorapi
+id: paragraph.paragraph_background_wrapper.field_background_color
+field_name: field_background_color
+entity_type: paragraph
+bundle: paragraph_background_wrapper
+label: 'Background color'
+description: ''
+required: false
+translatable: true
+default_value:
+  -
+    name: ''
+    color: '#FF0000'
+default_value_callback: ''
+settings: {  }
+field_type: colorapi_color_field

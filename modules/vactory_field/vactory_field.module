@@ -7,7 +7,9 @@
 
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\media\Entity\Media;
 use Drupal\node\NodeInterface;
+use Drupal\file\Entity\File;
 
 /**
  * Implements hook_form_FORM_ID_alter().
@@ -16,8 +18,8 @@ function vactory_field_form_node_form_alter(&$form) {
   // Node CSS class.
   $form['node_class_group'] = [
     '#type'        => 'details',
-    '#title'       => t('CSS Class settings'),
-    '#description' => t('Assign CSS classes to the node.'),
+    '#title'       => t('CSS Class settings & Background image'),
+    '#description' => t('Assign CSS classes and image background to the node.'),
     '#group'       => 'advanced',
     '#open'        => FALSE,
     '#access'      => \Drupal::currentUser()
@@ -25,6 +27,7 @@ function vactory_field_form_node_form_alter(&$form) {
     '#attributes'  => ['class' => ['node-class-form']],
   ];
   $form['node_class']['#group'] = 'node_class_group';
+  $form['node_bg_image']['#group'] = 'node_class_group';
   $form['node_body_class']['#group'] = 'node_class_group';
 
   // SEO field status.
@@ -44,6 +47,20 @@ function vactory_field_form_node_form_alter(&$form) {
 function vactory_field_entity_base_field_info(EntityTypeInterface $entity_type) {
   $fields = [];
   if ($entity_type->id() === 'node') {
+
+    $fields['node_bg_image'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Background Image'))
+      ->setDescription(t('The background image of this node.'))
+      ->setSetting('target_type', 'media')
+      ->setSetting('handler_settings', ['target_bundles' => ['image' => 'image']])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', FALSE)
+      ->setTargetEntityTypeId('node')
+      ->setTranslatable(TRUE)
+      ->setDisplayOptions('form', [
+        'type'   => 'media_library_widget',
+        'weight' => 0,
+      ]);
 
     $fields['node_class'] = BaseFieldDefinition::create('string')
       ->setLabel(t('CSS class(es)'))
@@ -120,4 +137,20 @@ function vactory_field_preprocess_html(&$variables) {
   ) {
     $variables['node_body_class'] = $css;
   }
+
+  if ($node->hasField(('node_bg_image')) &&
+      $bg_image = $node->get('node_bg_image')->getValue()
+  ) {
+    if (isset($bg_image)) {
+      $target_id = $bg_image[0]['target_id'];
+      $media = Media::load($target_id);
+      if (isset($media) && !empty($media)) {
+        $fid = $media->field_media_image->target_id;
+        $file = File::load($fid);
+        $image_url = file_url_transform_relative(\Drupal::service('stream_wrapper_manager')->getViaUri($file->getFileUri())->getExternalUrl());
+        $variables['node_bg_image'] = $image_url;
+      }
+    }
+  }
+
 }

@@ -1,11 +1,13 @@
 {% if content.0.link is not empty and content.0.link_alt is not empty %}
   <div class="row">
     <div class="col-12">
-      {% set _icon = (content.0.icon is not empty) ? content.0.icon : 'icon-arrow_forward' %}
-      {% set link_target = (content.0.link_target > 0) ? '_blank' : '_self' %}
+      {% set link_attributes = create_attribute() %}
+      {% set link_attributes = content.0.link.attributes.id is not empty ? link_attributes.setAttribute('id', content.0.link.attributes.id ) : link_attributes %}
+      {% set link_attributes = content.0.link.attributes.class is not empty ? link_attributes.setAttribute('class', content.0.link.attributes.class ~ ' icon-arrow_forward') :  link_attributes.setAttribute('class', 'icon-arrow_forward') %}
+      {% set link_attributes = content.0.link.attributes.target is not empty ? link_attributes.setAttribute('target', content.0.link.attributes.target ) : link_attributes %}
+      {% set link_attributes = content.0.link.attributes.rel is not empty ? link_attributes.setAttribute('rel', content.0.link.attributes.rel ) : link_attributes %}
       <div class="btn-see-more--wrapper text-center">
-        <a class="btn-with-icon {{ _icon }}" target="{{ link_target }}"
-           href="{{ content.0.link }}">{{ content.0.link_alt }}</a>
+        <a  href="{{ content.0.link.url }}" {{ link_attributes }} > {{ content.0.link.title }} </a>
       </div>
     </div>
   </div>

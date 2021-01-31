@@ -1,7 +1,9 @@
-uuid: cf85dda5-e9cd-4322-ad13-a067100e4ad8
+uuid: 572e1776-64de-4f25-8512-cd2098d92d52
 langcode: en
 status: true
 dependencies: {  }
+_core:
+  default_config_hash: s6qJnINiq7zI-ZoQOXM_gtiDpIsHT3fm7RySP1F_BE0
 id: file
 label: File
 description: 'Use local files for reusable media.'

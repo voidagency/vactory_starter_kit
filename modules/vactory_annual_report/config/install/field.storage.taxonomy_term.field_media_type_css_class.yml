@@ -1,6 +1,9 @@
-langcode: fr
+langcode: en
 status: true
 dependencies:
+  enforced:
+    module:
+      - vactory_annual_report
   module:
     - taxonomy
 id: taxonomy_term.field_media_type_css_class

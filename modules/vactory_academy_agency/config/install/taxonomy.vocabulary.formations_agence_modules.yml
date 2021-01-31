@@ -1,0 +1,10 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_academy_agency
+name: 'Formations en agence - modules'
+vid: formations_agence_modules
+description: 'Utiliser ce vocabulaire pour ajouter des nouveau modules'
+weight: 0

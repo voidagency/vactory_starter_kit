@@ -1,0 +1,278 @@
+<?php
+
+/**
+ * @file
+ * Vactory notifications custom module logic here.
+ */
+
+use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\node\Entity\Node;
+use Drupal\vactory_notifications\Entity\NotificationsEntity;
+use Drupal\views\ViewExecutable;
+use Drupal\user\Entity\User;
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_notifications_theme($existing, $type, $theme, $path) {
+  return [
+    'views_view_fields__notifications' => [
+      'template' => 'notification-card',
+      'base hook' => 'views_view_fields',
+    ],
+    'vactory_notifications_link' => [
+      'template' => 'notifications-link',
+      'variables' => [
+        'url' => NULL,
+        'nb_new_notifications' => NULL,
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_entity_insert().
+ */
+function vactory_notifications_entity_insert(EntityInterface $entity) {
+  $notification_config = Drupal::config('vactory_notifications.settings');
+  $token = Drupal::token();
+  if ($entity->getEntityTypeId() === 'node') {
+    $node_notification_title = !empty($entity->get('notification_title')->value) ? $entity->get('notification_title')->value : $notification_config->get('notifications_default_title');
+    $node_notification_message = !empty($entity->get('notification_message')->value) ? $entity->get('notification_message')->value : $notification_config->get('notifications_default_message');
+    // Generate a notification.
+    $current_user_id = Drupal::currentUser()->id();
+    $notification_data = [
+      'type' => 'notification_entity',
+      'name' => $token->replace($node_notification_title, ['entity' => $entity]),
+      'user_id' => $current_user_id,
+      'notification_related_content' => $entity->id(),
+      'notification_message' => $token->replace($node_notification_message, ['entity' => $entity]),
+      'status' => TRUE,
+      'notification_concerned_users' => json_encode(vactory_notifications_users_ids($entity->bundle(), $notification_config)),
+      'notification_viewers' => json_encode([]),
+    ];
+    $notification = Drupal::entityTypeManager()
+      ->getStorage('notifications_entity')
+      ->create($notification_data);
+    $notification->save();
+    // Notifications auto translation feature.
+    $is_auto_translated = (boolean) $notification_config->get('auto_translation');
+    if ($is_auto_translated) {
+      notifications_auto_translate($notification, $notification_config);
+    }
+  }
+
+  if ($entity->getEntityTypeId() === 'notifications_entity') {
+    $current_route_name = Drupal::routeMatch()->getRouteName();
+    // Manually created notifications case.
+    if ($current_route_name === 'entity.notifications_entity.add_page') {
+      $related_content_id = $entity->getRelatedContent();
+      $related_content = Node::load($related_content_id);
+      $concerned_users = vactory_notifications_users_ids($related_content->bundle(), $notification_config);
+      $entity->setTitle($token->replace($entity->getTitle(), ['entity' => $entity]));
+      $entity->setMessage($token->replace($entity->getMessage(), ['entity' => $entity]));
+      $entity->setConcernedUsers($concerned_users);
+      $entity->setViewers([]);
+      $entity->save();
+      // Notifications auto translation feature.
+      $is_auto_translated = (boolean) $notification_config->get('auto_translation');
+      if ($is_auto_translated) {
+        notifications_auto_translate($entity, $notification_config);
+      }
+    }
+
+  }
+}
+
+/**
+ * Auto translate a notification function for enabled languages.
+ */
+function notifications_auto_translate($notification, $default_config) {
+  $enabled_languages = Drupal::languageManager()->getLanguages();
+  $token = Drupal::token();
+
+  foreach ($enabled_languages as $langcode => $language) {
+    if (!$language->isDefault()) {
+      $notification_config_translation = \Drupal::languageManager()->getLanguageConfigOverride($langcode, 'vactory_notifications.settings');
+      $translated_notification_title = $notification_config_translation->get('notifications_default_title');
+      $translated_notification_message = $notification_config_translation->get('notifications_default_message');
+      $translated_notification = $notification->addTranslation($langcode);
+      $translated_notification_title = isset($translated_notification_title) ? $translated_notification_title : $default_config->get('notifications_default_title');
+      $translated_notification_message = isset($translated_notification_message) ? $translated_notification_message : $default_config->get('notifications_default_message');
+      // Tokens replacement.
+      $translated_notification->name = $token->replace($translated_notification_title, ['entity' => $notification]);
+      $translated_notification->notification_message = $token->replace($translated_notification_message, ['entity' => $notification]);
+      $translated_notification->save();
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function vactory_notifications_entity_base_field_info(EntityTypeInterface $entity_type) {
+  $fields = [];
+  if ($entity_type->id() === 'node') {
+    // The notification entity title.
+    $fields['notification_title'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Notifications title'))
+      ->setDescription(t('Set the noifications title of current node.'))
+      ->setSettings([
+        'max_length' => 255,
+        'text_processing' => 0,
+      ])
+      ->setTranslatable(TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => -6,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayConfigurable('field', TRUE);
+
+    // Notification details/message.
+    $fields['notification_message'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Notifications message'))
+      ->setDescription(t('Set the notification message of current node'))
+      ->setSettings([
+        'default_value' => '',
+        'text_processing' => 0,
+      ])
+      ->setTranslatable(TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textarea',
+        'weight' => -1,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
+  }
+  return $fields;
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function vactory_notifications_form_node_form_alter(&$form) {
+  $notifications_config = Drupal::config('vactory_notifications.settings');
+  $form['node_notifications'] = [
+    '#type'        => 'details',
+    '#title'       => t('Notifications settings'),
+    '#description' => t('Override current node notifications title and message.'),
+    '#group'       => 'advanced',
+    '#open'        => FALSE,
+    '#access'      => \Drupal::currentUser()
+      ->hasPermission('administer notifications'),
+  ];
+  $form['node_notifications']['notifications_tokens_tree'] = get_token_tree();
+  $form['notification_title']['#group'] = 'node_notifications';
+  $form['notification_message']['#group'] = 'node_notifications';
+
+  if (!isset($form['notification_title']['widget'][0]['value']['#default_value'])) {
+    $form['notification_title']['widget'][0]['value']['#default_value'] = $notifications_config->get('notifications_default_title');
+  }
+  if (!isset($form['notification_message']['widget'][0]['value']['#default_value'])) {
+    $form['notification_message']['widget'][0]['value']['#default_value'] = $notifications_config->get('notifications_default_message');
+  }
+}
+
+/**
+ * Implements hook_views_pre_render().
+ */
+function vactory_notifications_views_pre_render(ViewExecutable $view) {
+  if ($view->id() == 'notifications' && $view->current_display == 'listing') {
+    $results = $view->result;
+    $current_user = Drupal::currentUser();
+    foreach ($results as $key => $result) {
+      $notification_object = $result->_entity;
+      if ($result->_entity->isUserConcerned($current_user->id())) {
+        $notification_viewers = $notification_object->getViewers();
+        // Add current user to the notification viewers.
+        if (!in_array($current_user->id(), $notification_viewers)) {
+          $notification_viewers[] = $current_user->id();
+          $notification_object->setViewers($notification_viewers);
+          $notification_object->save();
+        }
+      }
+      else {
+        // The current is not concerned by the notification.
+        unset($results[$key]);
+      }
+    }
+    $view->result = $results;
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_notifications_preprocess_views_view_fields__notifications(&$variables) {
+  $nid = $variables['row']->_entity->getRelatedContent();
+  $node = Node::load($nid);
+  $variables['related_content_url'] = $node->toUrl()->toString();
+}
+
+/**
+ * Function which returns bundle concerned users IDs after getting it from
+ * the module configurations.
+ */
+function vactory_notifications_users_ids($bundle, $config) {
+  $users = User::loadMultiple();
+  $users_ids = [];
+  foreach ($users as $user) {
+    $user_roles = $user->getRoles();
+    foreach ($user_roles as $role_name) {
+      $role_content_types = $config->get($role_name . '_content_types');
+      if (!empty($role_content_types) && in_array($bundle, $role_content_types)) {
+        $users_ids[] = $user->id();
+      }
+    }
+  }
+
+  return $users_ids;
+}
+
+/**
+ * Function providing the site token tree link.
+ */
+function get_token_tree() {
+  $token_tree = [
+    '#theme' => 'token_tree_link',
+    '#show_restricted' => TRUE,
+    '#weight' => 90,
+  ];
+  return [
+    '#type' => 'markup',
+    '#markup' => \Drupal::service('renderer')->render($token_tree),
+  ];
+}
+
+/**
+ * Implements hook_cron().
+ */
+function vactory_notifications_cron() {
+  $notifications = NotificationsEntity::loadMultiple();
+  $languages = \Drupal::languageManager()->getLanguages();
+  foreach ($notifications as $notification) {
+    $created = DrupalDateTime::createFromTimestamp($notification->get('created')->value);
+    $current_date = DrupalDateTime::createFromTimestamp(time(), new \DateTimeZone('UTC'));
+    $date_diff = $created->getPhpDateTime()->diff($current_date->getPhpDateTime())->days;
+    $config = Drupal::configFactory()->get('vactory_notifications.settings');
+    // Check if the current notification lifetime is finish then delete it.
+    if ($date_diff > $config->get('notifications_lifetime')) {
+      // Delete notification translations if exist.
+      foreach ($languages as $language) {
+        try {
+          $notification->removeTranslation($language->getId());
+        }
+        catch (\InvalidArgumentException $e) {
+        }
+      }
+      // Delete the notification entity.
+      $notification->delete();
+    }
+  }
+}

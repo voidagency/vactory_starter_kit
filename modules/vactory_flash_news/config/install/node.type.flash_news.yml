@@ -1,0 +1,23 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_flash_news
+  module:
+    - menu_ui
+    - wysiwyg_template
+third_party_settings:
+  menu_ui:
+    available_menus:
+      - main
+    parent: 'main:'
+  wysiwyg_template:
+    default_template: ''
+name: 'Flash News'
+type: flash_news
+description: 'Utiliser ce type de contenu pour créer des flash news.'
+help: ''
+new_revision: true
+preview_mode: 1
+display_submitted: false

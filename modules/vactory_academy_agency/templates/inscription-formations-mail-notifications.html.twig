@@ -1,0 +1,98 @@
+<table style="width: 100%;" border="0" cellspacing="0" cellpadding="0" bgcolor="#e4e4e4">
+<tbody>
+  <tr>
+    <td valign="top" height="72"></td>
+  </tr>
+
+  <tr>
+    <td align="center">
+      <table border="0" width="600" cellspacing="0" cellpadding="0">
+        <tbody>
+          <tr>
+            <td width="20"></td>
+            <td>
+              <table border="0" cellspacing="0" cellpadding="0" bgcolor="#ffffff">
+                <tbody>
+                  <tr>
+                    <td width="20"  cellspacing="0" cellpadding="0"></td>
+                    <td>
+                      <table border="0" cellspacing="0" cellpadding="0">
+                        <tbody>
+                          <tr>
+                            <td height="34"></td>
+                          </tr>
+                          <tr>
+                            <td><a href="{{ url('<front>') }}"><img src="{{ base_url }}/themes/awbtunisie/logo.png" / alt="Dar Al Macharii" border="0" width="120" style="width:120px"></a></td>
+                          </tr>
+                          <tr>
+                            <td height="64"></td>
+                          </tr>
+                          <tr>
+                            <td style="font-family: Arial, Helvetica, sans-serif; color: #000000; font-size: 15px; line-height: 20px;" align="left">
+                              <span style="color: #000000; font-size: 18px; font-family: Arial, Helvetica, sans-serif;">{{ 'Bonjour'|t }} {{ content.first_name|capitalize }} {{ content.last_name|upper }},</span>
+                              <br /><br />
+                              <span style="color: #000000; font-size: 15px; line-height: 20px; font-family: Arial, Helvetica, sans-serif;">
+
+                                {{ 'Nous vous remercions pour votre inscription à la formation'|t }}
+                                <strong>{{ content.formation.title}}</strong>,
+                                {{ 'qui aura lieu le'|t }}
+                                <strong>{{ content.formation_date }}</strong> {{ "à l'agence"|t }}
+                                <strong>{{ content.agency_name }}</strong>.
+
+                              </span>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td align="left">
+                              <br />
+                                {% if content.google_calendar_url is not empty %}
+                                <span style="color: #000000; font-size: 15px; line-height: 20px; font-family: Arial, Helvetica, sans-serif;">
+                                  {{ 'Ajouter à :'|t  }} <a href="{{ content.google_calendar_url }}" style="color: #E64E1C; font-size: 15px; line-height: 20px; font-family: Arial, Helvetica, sans-serif; text-decoration: underline;">{{ 'Google Calendar'|t }}</a>
+                                </span>
+                                {% endif %}
+                                {% if content.create_account_url %}
+                                <span style="font-family: Arial, Helvetica, sans-serif; color: #000000; font-size: 15px; line-height: 20px;" >
+                                  {{ "Prenez quelques secondes pour créer votre compte sur"|t }} <strong>{{ site_name }}</strong>
+                                  <a href="{{ content.create_account_url }}" class="btn btn-primary ml-3"  style="color: #E64E1C; font-size: 15px; line-height: 20px; font-family: Arial, Helvetica, sans-serif; text-decoration: underline;">{{ 'Créer mon compte'|t }}</a>
+                                </span>
+                                {% endif %}
+                              <br><br>
+                              <span style="font-family: Arial, Helvetica, sans-serif; color: #000000; font-size: 15px; line-height: 20px;" >
+                              {{ "Si vous ne vous êtes pas inscris à cette formation, veuillez ignorer ce message." }}
+                              </span>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td align="left">
+                              <br />
+                              <span style="color: #000000; font-size: 15px; line-height: 20px; font-family: Arial, Helvetica, sans-serif;">-- <br>
+
+                                  {{ "Cordialement,"|t }}<br>
+                                  {{ "L'équipe"|t }} <strong>{{ site_name }}</strong>
+
+                              </span>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td height="60">&nbsp;</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </td>
+                    <td width="20" cellspacing="0" cellpadding="0">&nbsp;</td>
+                  </tr>
+                </tbody>
+              </table>
+            </td>
+            <td width="20"></td>
+          </tr>
+        </tbody>
+      </table>
+    </td>
+  </tr>
+  <tr>
+    <td valign="top" height="72">&nbsp;</td>
+  </tr>
+
+</tbody>
+</table>

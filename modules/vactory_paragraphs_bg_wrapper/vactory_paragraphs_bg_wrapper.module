@@ -37,8 +37,7 @@ function vactory_paragraphs_bg_wrapper_preprocess_field(&$variables, $hook) {
 
         $bg_type = $paragraph->field_background_type->getValue()[0]['value'] ?? '';
         $variables['items'][$item_id]['background']['type'] = $bg_type;
-
-        $bg_color = $paragraph->paragraph_background_color->getValue()[0]['value'] ?? '';
+        $bg_color = $paragraph->field_background_color->color ?? '';
         $variables['items'][$item_id]['background']['color'] = $bg_color;
 
         $img_id = $paragraph->paragraph_background_image->getValue()[0]['target_id'] ?? NULL;

@@ -1,9 +1,11 @@
-uuid: f5fb2f8e-732a-4db4-9cb0-73508dfa29f9
+uuid: 2d8c42f0-f598-4766-b882-f0a9a811c0d7
 langcode: en
 status: true
 dependencies:
   module:
     - node
+_core:
+  default_config_hash: a1bid4idZsZjoKrLIyRkoPIHqScCJmW130Vs7Nu7eow
 id: node.vactory_logo
 label: Logo
 targetEntityType: node

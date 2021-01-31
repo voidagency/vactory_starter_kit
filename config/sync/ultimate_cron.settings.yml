@@ -31,3 +31,5 @@ scheduler:
       - '*/10+@ * * * *'
   simple:
     rule: '*/15+@ * * * *'
+_core:
+  default_config_hash: xNvhVNcCJsZiYwYTw9TTnRv1SjLVO7H5BCK1U8Brvfo

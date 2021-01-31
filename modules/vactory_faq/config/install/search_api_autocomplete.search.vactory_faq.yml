@@ -1,0 +1,26 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - search_api.index.vactory_faq_index
+    - views.view.vactory_faq
+  module:
+    - views
+    - search_api_autocomplete
+  enforced:
+    module:
+      - vactory_faq
+id: vactory_faq
+label: FAQ
+index_id: vactory_faq_index
+suggester_settings:
+  server:
+    fields: {  }
+suggester_weights: {  }
+suggester_limits: {  }
+search_settings:
+  'views:vactory_faq':
+    displays:
+      default: true
+      selected: {  }
+options: {  }

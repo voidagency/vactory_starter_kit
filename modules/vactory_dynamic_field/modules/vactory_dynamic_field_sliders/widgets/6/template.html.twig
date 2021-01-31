@@ -14,13 +14,13 @@
         <div class="vf-slider--fadein-item d-flex flex-lg-row flex-column {{ activeClass }}"
              data-item="{{ loop.index }}">
           {% if item.image.0 is defined %}
-            {% set image_alt = (item.image_alt is not empty) ? item.image_alt : 'Image' %}
+            {% set alt_image = (item.image_alt) ? item.image_alt : item.image.alt_image %}
             <div class="item-image-wrapper">
               <div class="item-image lazy-wrapper">
                 <img src="{{ lqip_image }}"
                      data-src="{{ fluid_image }}"
                      class="lazyload"
-                     alt="{{ image_alt }}">
+                     alt="{{ alt_image }}">
               </div>
             </div>
           {% endif %}

@@ -1,0 +1,5 @@
+vactory_metatag_opengraph_defaults:
+  route_name: 'vactory_metatag_opengraph.defaults'
+  base_route: 'entity.metatag_defaults.collection'
+  title: 'Vactory OpenGraph default Image'
+  weight: 3

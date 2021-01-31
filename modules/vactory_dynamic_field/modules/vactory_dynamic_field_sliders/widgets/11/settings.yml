@@ -22,12 +22,6 @@ fields:
     type: url_extended
     label: 'Lien'
     placeholder_value: 'https://www.google.com'
-  link_alt:
-    type: text
-    label: 'Texte du lien'
-  link_target:
-    type: checkbox
-    label: "Ouvrir le lien dans une nouvelle fenétres"
 extra_fields:
   weight: 999
   group_gonfig:
@@ -45,21 +39,18 @@ extra_fields:
     loop:
       type: checkbox
       label: 'Infinite slide'
+    autoLoop:
+      type: checkbox
+      label: 'Auto Slide'
+    loopSpeed:
+      type: number
+      label: 'Slide Speed'
     slidekeyboard:
       type: checkbox
       label: 'Activer slider avec le clavier'
-    numberofslides:
-      type: number
-      label: 'Nombre du slides à afficher'
-    numberofslidesmobile:
-      type: number
-      label: 'Nombre du slides à afficher sur Mobile'
     animationspeed:
       type: number
       label: 'Animation speed'
-    scrollbar:
-      type: checkbox
-      label: 'Afficher le Scroll-Bar'
     effect:
       type: select
       label: 'Effect of slider'

@@ -1,3 +1,10 @@
 .dynamic-field-item {
     margin-bottom: 0.75em !important;
 }
+.df-components-sortable-handler {
+  position: absolute;
+  top: 20px;
+  left: 97%;
+  cursor: move;
+  transform: translate(0, -50%);
+}

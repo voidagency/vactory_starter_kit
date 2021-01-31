@@ -19,13 +19,15 @@
         {% set lqip_image = image_uri|image_style('lqip') %}
         {% set reverce = (item.mode == 1)? 'd-flex flex-row-reverse' : ' ' %}
         {% set qoute = (item.mode == 1)? 'qoute-right' : 'qoute-left' %}
+        {% set alt_image = (item.image_alt) ? item.image_alt : item.image.alt_image %}
+
         <div class="container">
             <div class="fdb-box shadow-sm {{ qoute }}">
                 <div class="row align-items-center {{ reverce }}">
                     <div class="col-10 col-sm-6 col-md-4 col-lg-3 col-xl-2 m-auto">
                         <div class='lazy-small-square'>
                             {% if  item.image.0 is not empty %}
-                                <img alt="{{ item.image_alt }}"
+                                <img alt="{{ alt_image }}"
                                     class="img-fluid rounded-circle lazyload"
                                     src="{{ lqip_image }}"
                                     data-src="{{ profile_image }}">

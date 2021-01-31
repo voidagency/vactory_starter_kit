@@ -1,6 +1,9 @@
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  enforced:
+    module:
+      - vactory_annual_report
 name: 'Annual report'
 type: vactory_annual_report
 description: 'Manage your Annual Reports content.'

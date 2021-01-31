@@ -2,6 +2,11 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.paragraph.vactory_paragraph_block.field_paragraph_hide_lg
+    - field.field.paragraph.vactory_paragraph_block.field_paragraph_hide_sm
+    - field.field.paragraph.vactory_paragraph_block.field_position_image_x
+    - field.field.paragraph.vactory_paragraph_block.field_position_image_y
+    - field.field.paragraph.vactory_paragraph_block.field_size_image
     - field.field.paragraph.vactory_paragraph_block.field_titre_ancre
     - field.field.paragraph.vactory_paragraph_block.field_vactory_block
     - field.field.paragraph.vactory_paragraph_block.field_vactory_body
@@ -11,12 +16,54 @@ dependencies:
     - paragraphs.paragraphs_type.vactory_paragraph_block
   module:
     - block_field
+    - options
     - text
 id: paragraph.vactory_paragraph_block.default
 targetEntityType: paragraph
 bundle: vactory_paragraph_block
 mode: default
 content:
+  field_paragraph_hide_lg:
+    weight: 6
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    type: boolean
+    region: content
+  field_paragraph_hide_sm:
+    weight: 7
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    type: boolean
+    region: content
+  field_position_image_x:
+    weight: 8
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_position_image_y:
+    weight: 9
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_size_image:
+    weight: 10
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
   field_titre_ancre:
     weight: 5
     label: above
@@ -68,4 +115,6 @@ content:
     type: string
     region: content
 hidden:
+  paragraph_background_image: true
   paragraph_container: true
+  search_api_excerpt: true

@@ -6,6 +6,8 @@ dependencies:
     - image.style.max_1300x1300
     - image.style.max_325x325
     - image.style.max_650x650
+_core:
+  default_config_hash: xAduWBNBoi9WKBMCoVIKSueNYqPK84SiiZwQYKPbkaE
 id: narrow
 label: Narrow
 image_style_mappings:

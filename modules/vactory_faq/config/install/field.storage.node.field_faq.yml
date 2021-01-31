@@ -4,6 +4,9 @@ dependencies:
   module:
     - faqfield
     - node
+  enforced:
+    module:
+      - vactory_faq
 id: node.field_faq
 field_name: field_faq
 entity_type: node

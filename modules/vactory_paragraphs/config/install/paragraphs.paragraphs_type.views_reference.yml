@@ -1,0 +1,9 @@
+langcode: en
+status: true
+dependencies: {  }
+id: views_reference
+label: 'Views reference'
+icon_uuid: null
+icon_default: null
+description: 'Utiliser ce type de paragraph pour injecter des vues.'
+behavior_plugins: {  }

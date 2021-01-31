@@ -1,9 +1,11 @@
-uuid: 28f98595-1f53-4704-bc08-c043beaeaa8a
+uuid: 5ae80a0b-0038-4ae3-86ce-e5f4057a830c
 langcode: en
 status: true
 dependencies:
   module:
     - block_content
+_core:
+  default_config_hash: py-Zp3rUJRFjfesVrptxjp8KtafULO3j71xYECx50AQ
 id: block_content.field_vactory_telephone
 field_name: field_vactory_telephone
 entity_type: block_content

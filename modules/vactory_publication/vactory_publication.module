@@ -33,6 +33,11 @@ function vactory_publication_theme() {
       'base hook' => 'node',
       'template'  => 'full',
     ],
+    // Node > Smart search.
+    'node__vactory_publication__smart_search'        => [
+      'base hook' => 'node',
+      'template'  => 'smart-search',
+    ],
   ];
 }
 

@@ -15,16 +15,20 @@ if (jQuery.ui && jQuery.ui.dialog && jQuery.ui.dialog.prototype._allowInteractio
 (function ($, Drupal) {
   Drupal.behaviors.DynamicFieldFormModal = {
     attach: function attach(context) {
-      // Alter ckeditor wrapper CSS style after maximize event.
-      CKEDITOR.on('instanceReady',
-        function( evt ) {
-          var editor = evt.editor;
-          editor.on( 'afterCommandExec', function( evt ) {
-            if ( evt.data.name == 'maximize' && evt.editor.mode == 'wysiwyg' ) {
-              $('#dynamic-field-text-format[class=""]').attr('style', "position: fixed; overflow: visible; z-index: 9995; top: 0px; left: 0px;");
-            }
-          } );
-        });
+      $(document).ajaxStop(function () {
+          if (typeof CKEDITOR !== 'undefined' ) {
+            // Alter ckeditor wrapper CSS style after maximize event.
+            CKEDITOR.on('instanceReady',
+              function( evt ) {
+                var editor = evt.editor;
+                editor.on( 'afterCommandExec', function( evt ) {
+                  if ( evt.data.name == 'maximize' && evt.editor.mode == 'wysiwyg' ) {
+                    $('#dynamic-field-text-format[class=""]').attr('style', "position: fixed; overflow: visible; z-index: 9995; top: 0px; left: 0px;");
+                  }
+                });
+              });
+          }
+      });
       $('.js-df-template-basic-single').select2();
       $('.template-filter').on('input', function () {
         userInput = $(this).val();

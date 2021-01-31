@@ -186,12 +186,14 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
 
     foreach ($widgets_alter as $catgeory => &$items) {
       $id = 1;
-      foreach ($items as &$item) {
-        $old_name = $item['name'];
-        $new_name = preg_replace('/([0-9]+) - /', '', $old_name);
+      if (is_array($items) || is_object($items)) {
+        foreach ($items as &$item) {
+          $old_name = $item['name'];
+          $new_name = preg_replace('/([0-9]+) - /', '', $old_name);
 
-        $item['name'] = $id . ' - ' . $new_name;
-        $id++;
+          $item['name'] = $id . ' - ' . $new_name;
+          $id++;
+        }
       }
     }
 

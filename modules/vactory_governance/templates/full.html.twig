@@ -74,9 +74,35 @@ view_mode ? bundle ~ '--' ~ view_mode|clean_class,
 ] %}
 {{ attach_library('classy/node') }}
 <article{{ attributes.addClass(classes) }}>
-
-    <div{{ content_attributes.addClass('node__content') }}>
-        {{ content }}
+  <div>
+    <div class="text-center">
+      <h4>{{ label }}</h4>
+      {% if content.field_vactory_media.0 is defined %}
+        {% set image_uri = (content.field_vactory_media['#items'][0].target_id is defined) ? get_image(content.field_vactory_media['#items'][0].target_id) : '' %}
+        {% set image = image_uri|image_style('medium') %}
+        <img src="{{ image }}" class="img-fluid" />
+      {% endif %}
+      <p>
+        {{ hideLabel(addAttributes(content.body)) }}
+      </p>
     </div>
-
+    <hr>
+    {% set file_url = (content.field_vactory_document.0 is not empty) ? file_url(content.field_vactory_document.0['#file'].uri.value) : '' %}
+    {% if file_url is not empty %}
+      <div class="d-flex bd-highlight mb-3">
+        <div class="p-2 bd-highlight">
+          <a class="btn btn-outline-primary" href="{{ file_url }}" download>{{ 'Télécharger le CV'|t }}</a>
+        </div>
+        <div class="ml-auto p-2 bd-highlight">
+          <div class="social-media">
+            {% if content.field_gov_social_media['#platforms']['linkedin']['url'] is not empty %}
+              <a href="{{ content.field_gov_social_media['#platforms']['linkedin']['url'] }}">
+                <span class="icon icon-linkedin"></span>
+              </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endif %}
+  </div>
 </article>

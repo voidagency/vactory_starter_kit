@@ -1,0 +1,47 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.flash_news.body
+    - field.field.node.flash_news.field_vactory_call_to_action
+    - node.type.flash_news
+  enforced:
+    module:
+      - vactory_flash_news
+  module:
+    - link
+    - text
+    - user
+id: node.flash_news.default
+targetEntityType: node
+bundle: flash_news
+mode: default
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 101
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_vactory_call_to_action:
+    weight: 102
+    label: above
+    settings:
+      trim_length: 80
+      url_only: false
+      url_plain: false
+      rel: ''
+      target: ''
+    third_party_settings: {  }
+    type: link
+    region: content
+  links:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  addtoany: true
+  langcode: true
+  search_api_excerpt: true

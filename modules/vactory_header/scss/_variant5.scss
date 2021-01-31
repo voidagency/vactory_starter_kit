@@ -22,11 +22,6 @@ $brown-lighter: brown;
   background-color: $white;
 
   .fixed-sticky-header {
-    position        : absolute;
-    top             : 0;
-    left            : 0;
-    width           : 100%;
-    z-index         : 1099;
     transition      : top 500ms ease-in;
     background-color: rgba(255, 255, 255, .1);
     box-shadow      : 0 2px 8px 0 rgba(0, 0, 0, 0.1);
@@ -143,11 +138,11 @@ $brown-lighter: brown;
       @include rem(font-size, 16px);
       @include rem(line-height, 20px);
       font-weight     : 600;
-      color           : $black;
+      color           : $white;
       position        : relative;
 
       &:hover {
-        color: $black;
+        color: $primary;
       }
 
       &.active {
@@ -164,13 +159,13 @@ $brown-lighter: brown;
         }
       }
 
-      &:first-child {
+      /*&:first-child {
         padding-left: 0;
       }
 
       &:last-child {
         padding-right: 0;
-      }
+      }*/
     }
   }
 
@@ -362,6 +357,16 @@ $brown-lighter: brown;
       }
     }
   }
+
+  .vh-header--account {
+    font-size: 0;
+    a {
+      color: $black;
+    }
+    .icon-user {
+      font-size: 20px;
+    }
+  }
 }
 @include media-breakpoint-down(md) {
   .vh-header.vh-variant5 {
@@ -424,49 +429,6 @@ $brown-lighter: brown;
       a {
         padding     : 0;
         margin-right: 0;
-      }
-
-      .hamburger {
-        padding   : 0;
-        box-shadow: none;
-        outline   : none;
-
-        &:hover {
-          opacity: 1;
-        }
-
-        &.is-active {
-          .hamburger-box {
-            width : 35px;
-            height: 35px;
-
-            .hamburger-inner {
-              bottom: 3px;
-
-              &,
-              &:after,
-              &:before {
-                width : 35px;
-                height: 2px;
-              }
-            }
-          }
-        }
-
-        &:not(.is-active) {
-          .hamburger-box {
-            width: 25px;
-
-            .hamburger-inner {
-              &,
-              &:after,
-              &:before {
-                width : 25px;
-                height: 3px;
-              }
-            }
-          }
-        }
       }
     }
 

@@ -1,0 +1,9 @@
+<div class="select-formation-item push-card push-card--formation overflow-hidden h-100 bg-white border border--active rounded shadow">
+  {% if content.image_uri is defined %}
+    <div class="push-card__icon">
+      <img src="{{ content.image_uri }}" class="img-fluid">
+    </div>
+  {% endif %}
+  <hr>
+  <h3 class="push-card__title">{{ content.title }}</h3>
+</div>

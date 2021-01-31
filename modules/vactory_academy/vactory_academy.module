@@ -31,6 +31,11 @@ function vactory_academy_theme() {
       'base hook' => 'node',
       'template'  => 'card',
     ],
+    // Node > Smart search.
+    'node__vactory_academy__smart_search'        => [
+      'base hook' => 'node',
+      'template'  => 'smart-search',
+    ],
     'user__vactory_academy__full' => [
       'base hook' => 'user',
       'template' => 'user--full',
@@ -40,12 +45,6 @@ function vactory_academy_theme() {
       'variables' => [
         'user' => NULL,
         'content' => NULL,
-      ],
-    ],
-    'block_authenticated_user_header' => [
-      'template' => 'block-authenticated-user-header',
-      'variables' => [
-        'user' => NULL,
       ],
     ],
     'flag__favorite_academy' => [
@@ -163,8 +162,6 @@ function vactory_academy_form_user_form_alter(&$form, FormStateInterface $form_s
     $form['field_about_the_author']['#access'] = FALSE;
     $form['field_user_profession']['#access'] = FALSE;
     $form['field_social_media_links']['#access'] = FALSE;
-    $form['field_first_name']['#access'] = FALSE;
-    $form['field_last_name']['#access'] = FALSE;
   }
 }
 

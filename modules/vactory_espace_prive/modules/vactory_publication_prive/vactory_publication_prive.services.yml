@@ -1,0 +1,4 @@
+services:
+  vactory_publication_prive.access_manager:
+    class: Drupal\vactory_publication_prive\Services\PublicationPriveAccessCheck
+    arguments: ['@current_user', '@entity_type.manager']

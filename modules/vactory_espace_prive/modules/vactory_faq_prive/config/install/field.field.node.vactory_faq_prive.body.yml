@@ -1,0 +1,25 @@
+langcode: fr
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_faq_prive
+  config:
+    - field.storage.node.body
+    - node.type.vactory_faq_prive
+  module:
+    - text
+id: node.vactory_faq_prive.body
+field_name: body
+entity_type: node
+bundle: vactory_faq_prive
+label: Réponse
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  display_summary: true
+  required_summary: false
+field_type: text_with_summary

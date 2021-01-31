@@ -25,6 +25,8 @@
                 {% set image_uri =(item.image.0 is defined) ? get_image(item.image.0) : '' %}
                 {% set image_profile = image_uri|image_style('medium') %}
                 {% set lqip_image = image_uri|image_style('lqip') %}
+                {% set alt_image = (item.image_alt) ? item.image_alt : item.image.alt_image %}
+                
                     <div class="fdb-box shadow-sm {{qoute}}">
                             {% if extra_fields.mode_top == 1 %}
                                 <div class="d-flex flex-column">
@@ -34,7 +36,7 @@
                                     <div class="col-8 col-sm-6 col-md-4">
                             {% endif %} 
                                 {% if item.image.0 is not empty %}
-                                    <img alt="{{ item.image_alt }}"
+                                    <img alt="{{ alt_image }}"
                                         class="img-fluid lazyload rounded-circle"
                                         src="{{ lqip_image }}"
                                         data-src="{{ image_profile }}">

@@ -2,31 +2,89 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.node.vactory_annual_report.body
+    - field.field.node.vactory_annual_report.field_ar_background_color
     - field.field.node.vactory_annual_report.field_ar_content_body
+    - field.field.node.vactory_annual_report.field_ar_element_width
+    - field.field.node.vactory_annual_report.field_ar_layout
     - field.field.node.vactory_annual_report.field_ar_media_type
     - field.field.node.vactory_annual_report.field_ar_thematic
+    - field.field.node.vactory_annual_report.field_border_color
+    - field.field.node.vactory_annual_report.field_has_corner
+    - field.field.node.vactory_annual_report.field_rapport_digital_annee
+    - field.field.node.vactory_annual_report.field_vactory_excerpt
+    - field.field.node.vactory_annual_report.field_vactory_media
     - field.field.node.vactory_annual_report.field_vactory_paragraphs
     - node.type.vactory_annual_report
+  enforced:
+    module:
+      - vactory_annual_report
   module:
+    - field_group
+    - jquery_colorpicker
+    - media_library
     - paragraphs
     - path
-    - vactory_dynamic_field
+    - text
+third_party_settings:
+  field_group:
+    group_annual_report_layout:
+      children:
+        - field_ar_layout
+        - field_ar_background_color
+        - field_border_color
+        - field_ar_element_width
+        - field_has_corner
+      parent_name: ''
+      weight: 14
+      format_type: details
+      format_settings:
+        id: ''
+        classes: ''
+        description: ''
+        open: false
+        required_fields: true
+      label: Layout
+      region: content
 id: node.vactory_annual_report.default
 targetEntityType: node
 bundle: vactory_annual_report
 mode: default
 content:
+  body:
+    type: text_textarea_with_summary
+    weight: 12
+    region: content
+    settings:
+      rows: 9
+      placeholder: ''
+      summary_rows: 3
+      show_summary: false
+    third_party_settings: {  }
   created:
     type: datetime_timestamp
     weight: 3
     region: content
     settings: {  }
     third_party_settings: {  }
-  field_ar_content_body:
-    weight: 11
+  field_ar_background_color:
+    weight: 37
+    settings:
+      color: FFFFFF
+    third_party_settings: {  }
+    type: jquery_colorpicker
+    region: content
+  field_ar_element_width:
+    weight: 39
     settings: {  }
     third_party_settings: {  }
-    type: field_wysiwyg_dynamic_widget
+    type: options_select
+    region: content
+  field_ar_layout:
+    weight: 36
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
     region: content
   field_ar_media_type:
     weight: 9
@@ -40,8 +98,35 @@ content:
     third_party_settings: {  }
     type: options_select
     region: content
+  field_border_color:
+    type: jquery_colorpicker
+    weight: 38
+    region: content
+    settings:
+      color: FFFFFF
+    third_party_settings: {  }
+  field_has_corner:
+    type: boolean_checkbox
+    weight: 40
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  field_rapport_digital_annee:
+    type: options_select
+    weight: 13
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_vactory_media:
+    weight: 11
+    settings:
+      media_types: {  }
+    third_party_settings: {  }
+    type: media_library_widget
+    region: content
   field_vactory_paragraphs:
-    weight: 12
+    weight: 15
     settings:
       title: Paragraph
       title_plural: Paragraphs
@@ -58,6 +143,36 @@ content:
     region: content
     settings:
       include_locked: true
+    third_party_settings: {  }
+  node_banner_image:
+    type: media_library_widget
+    weight: 0
+    region: content
+    settings:
+      media_types: {  }
+    third_party_settings: {  }
+  node_banner_mobile_image:
+    type: media_library_widget
+    weight: 0
+    region: content
+    settings:
+      media_types: {  }
+    third_party_settings: {  }
+  notification_message:
+    type: string_textarea
+    weight: -1
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+  notification_title:
+    type: string_textfield
+    weight: -6
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
     third_party_settings: {  }
   path:
     type: path
@@ -101,6 +216,7 @@ content:
       match_operator: CONTAINS
       size: 60
       placeholder: ''
+      match_limit: 10
     region: content
     third_party_settings: {  }
   url_redirects:
@@ -108,4 +224,6 @@ content:
     region: content
     settings: {  }
     third_party_settings: {  }
-hidden: {  }
+hidden:
+  field_ar_content_body: true
+  field_vactory_excerpt: true

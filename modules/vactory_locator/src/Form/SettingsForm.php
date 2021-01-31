@@ -5,6 +5,7 @@ namespace Drupal\vactory_locator\Form;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\file\Entity\File;
+use Drupal\media\Entity\Media;
 
 /**
  * Configure Locator Settings.
@@ -29,6 +30,11 @@ class SettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
+    $zooms = [];
+    $zooms['nothing'] = '--Nothing--';
+    foreach (range(1, 20) as $i) {
+      $zooms[$i] = $i;
+    }
 
     // Get the form configuration object to set default value for each field.
     $config = $this->config('vactory_locator.settings');
@@ -54,18 +60,25 @@ class SettingsForm extends ConfigFormBase {
 
     ];
 
+    $default_image = $config->get('locator_default_marker');
+    if (isset($default_image) && $default_image != NULL) {
+      $is_it_media_library = Media::load($default_image);
+    }
+    else {
+      $is_it_media_library = NULL;
+    }
+
     $form['marker']['locator_default_marker'] = [
-      '#type'                => 'managed_file',
+      '#type'                => 'media_library',
       '#title'               => t('Default Map marker'),
+      '#allowed_bundles' => ['image'],
       '#upload_validators'   => [
         'file_validate_extensions' => ['png svg'],
         'file_validate_size'       => [25600000],
       ],
-      '#theme'               => 'image_widget',
-      '#preview_image_style' => 'medium',
       '#upload_location'     => 'public://locator/marker',
       '#required'            => TRUE,
-      '#default_value'       => !empty($config->get('locator_default_marker')) ? $config->get('locator_default_marker') : '',
+      '#default_value'       => $is_it_media_library ? $config->get('locator_default_marker') : '',
     ];
 
     $form['marker']['use_geolocation'] = [
@@ -126,6 +139,33 @@ class SettingsForm extends ConfigFormBase {
       '#default_value' => !empty($config->get('map_style')) ? $config->get('map_style') : '',
     ];
 
+    $form['place'] = [
+      '#type'  => 'details',
+      '#title' => t('Maps Position Setting'),
+      '#group' => 'tabs',
+    ];
+
+    $form['place']['lat'] = [
+      '#title' => $this->t('Latitude'),
+      '#type' => 'textfield',
+      '#size' => 18,
+      '#default_value' => !empty($config->get('lat')) ? $config->get('lat') : '',
+    ];
+
+    $form['place']['lon'] = [
+      '#title' => $this->t('Longitude'),
+      '#type' => 'textfield',
+      '#size' => 18,
+      '#default_value' => !empty($config->get('lon')) ? $config->get('lon') : '',
+    ];
+
+    $form['place']['zoom'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Zoom'),
+      '#options' => $zooms,
+      '#default_value' => !empty($config->get('zoom')) ? $config->get('zoom') : $zooms['nothing'],
+    ];
+
     return parent::buildForm($form, $form_state);
   }
 
@@ -137,18 +177,27 @@ class SettingsForm extends ConfigFormBase {
     /* Fetch the array of the file stored temporarily in database */
     $image = $form_state->getValue('locator_default_marker');
 
-    /* Load the object of the file by it's fid */
-    $file = File::load($image[0]);
+    /* Load image from the media library */
+    $media = Media::load($image);
 
-    /* Set the status flag permanent of the file object */
-    $file->setPermanent();
+    if (isset($media) && !empty($media)) {
 
-    /* Save the file in database */
-    $file->save();
+      /* Getting the file id */
+      $fid = $media->field_media_image->target_id;
 
-    $marker_url = \Drupal::service('stream_wrapper_manager')
-      ->getViaUri($file->getFileUri())
-      ->getExternalUrl();
+      /* Load the object of the file by it's fid */
+      $file = File::load($fid);
+
+      /* Set the status flag permanent of the file object */
+      $file->setPermanent();
+
+      /* Save the file in database */
+      $file->save();
+
+      $marker_url = \Drupal::service('stream_wrapper_manager')
+        ->getViaUri($file->getFileUri())
+        ->getExternalUrl();
+    }
 
     $geolocation_marker = $form_state->getValue('geolocation_marker');
     $url_geolocation_marker = NULL;
@@ -173,6 +222,9 @@ class SettingsForm extends ConfigFormBase {
       ->set('url_geolocation_marker', $url_geolocation_marker)
       ->set('map_style', $form_state->getValue('map_style'))
       ->set('enable_filter', $form_state->getValue('enable_filter'))
+      ->set('lat', $form_state->getValue('lat'))
+      ->set('lon', $form_state->getValue('lon'))
+      ->set('zoom', $form_state->getValue('zoom'))
       ->save();
     parent::submitForm($form, $form_state);
   }

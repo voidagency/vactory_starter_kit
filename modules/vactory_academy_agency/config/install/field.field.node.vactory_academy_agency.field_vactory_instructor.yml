@@ -1,0 +1,30 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_academy_agency
+  config:
+    - field.storage.node.field_vactory_instructor
+    - node.type.vactory_academy_agency
+id: node.vactory_academy_agency.field_vactory_instructor
+field_name: field_vactory_instructor
+entity_type: node
+bundle: vactory_academy_agency
+label: Enseignant
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:user'
+  handler_settings:
+    include_anonymous: true
+    filter:
+      type: _none
+    target_bundles: null
+    sort:
+      field: _none
+    auto_create: false
+field_type: entity_reference

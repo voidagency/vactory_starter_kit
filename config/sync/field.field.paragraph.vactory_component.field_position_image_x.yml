@@ -1,0 +1,25 @@
+uuid: 6fd62a85-ccb5-481c-9221-cbde61196017
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_position_image_x
+    - paragraphs.paragraphs_type.vactory_component
+  module:
+    - options
+_core:
+  default_config_hash: DIF1C59O4Qq1N9aq3vOek3cg6LxgyZshMKWciQw1auU
+id: paragraph.vactory_component.field_position_image_x
+field_name: field_position_image_x
+entity_type: paragraph
+bundle: vactory_component
+label: 'Positionner l''image - Horizontalement '
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    value: centrer
+default_value_callback: ''
+settings: {  }
+field_type: list_string

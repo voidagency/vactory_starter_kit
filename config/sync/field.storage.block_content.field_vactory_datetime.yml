@@ -1,10 +1,12 @@
-uuid: eb744f12-ffd1-4126-b527-c1cf853cd120
+uuid: dd0551dd-ae6a-4924-9abc-49005e772302
 langcode: en
 status: true
 dependencies:
   module:
     - block_content
     - datetime
+_core:
+  default_config_hash: F25DimvxS3xB2G2XCIghWRlMvP3vGrWsl86qQS9QYX8
 id: block_content.field_vactory_datetime
 field_name: field_vactory_datetime
 entity_type: block_content

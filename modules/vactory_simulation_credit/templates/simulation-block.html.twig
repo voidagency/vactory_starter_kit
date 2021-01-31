@@ -1,0 +1,19 @@
+{{ attach_library('vactory_simulation_credit/vactory_simulation_credit.tabs') }}
+<div class="container">
+  <ul class="nav nav-tabs">
+    <li class="nav-item" id="myTab">
+      <a href="#sectionA" class="nav-link active" data-toggle="tab">{{ 'Simulateur crédit'|t }}</a>
+    </li>
+    <li class="nav-item" id="myTab">
+      <a href="#sectionB" class="nav-link" data-toggle="tab">{{ "Capacité d'emprunt"|t }}</a>
+    </li>
+  </ul>
+  <div class="tab-content">
+    <div id="sectionA" class="tab-pane fade show active">
+      {{ vactory_render('block', 'vactory_simulation_credit') }}
+    </div>
+    <div id="sectionB" class="tab-pane fade">
+      {{ vactory_render('block', 'vactory_simulation_credit_capacite_emprunt') }}
+    </div>
+  </div>
+</div>

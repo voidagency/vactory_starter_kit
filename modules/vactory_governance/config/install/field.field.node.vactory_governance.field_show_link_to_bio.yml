@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_show_link_to_bio
+    - node.type.vactory_governance
+id: node.vactory_governance.field_show_link_to_bio
+field_name: field_show_link_to_bio
+entity_type: node
+bundle: vactory_governance
+label: 'Afficher la bio du membre'
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: '1'
+  off_label: '0'
+field_type: boolean

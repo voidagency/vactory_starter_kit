@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.locator_entity.field_agency_path
+    - vactory_locator.locator_entity_type.vactory_locator
+id: locator_entity.vactory_locator.field_agency_path
+field_name: field_agency_path
+entity_type: locator_entity
+bundle: vactory_locator
+label: 'Agency path'
+description: "Nom de l'agence sur un chemin URL, des alphanumériques en remplaçant les espaces par \"<strong>-</strong>\" (tirets de 6), Exemple: Si le nom de l'agence est <strong>Bar toto</strong> alors le nom de l'agence dans le chemin URL sera <strong>bar-toto</strong>\r\n<br>\r\nCe champ peut être exploité par les modules: <br>\r\n  - Prise de rendez-vous s'il existe <br>\r\n  - Gestion borne s'il existe <br>\r\n  - Inscription à une formation sur agence si le module existe <br>\r\n  - Autre..."
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

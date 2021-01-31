@@ -5,10 +5,10 @@ eu_only: null
 exclude_paths: "/admin\r\n/admin/*\r\n/batch\r\n/node/add*\r\n/node/*/*\r\n/user/*/*"
 export:
   folder: custom
-langcode: en
+langcode: fr
 popup_agreed:
   value: '<h2>Thank you for accepting cookies</h2><p>You can now hide this message or find out more about cookies.</p>'
-  format: restricted_html
+  format: plain_text
 popup_agree_button_message: 'OK, I agree'
 popup_agreed_enabled: false
 popup_bg_hex: '000000'
@@ -21,8 +21,8 @@ popup_height: null
 popup_hide_agreed: false
 popup_hide_button_message: Hide
 popup_info:
-  value: '<h2>We use cookies on this site to enhance your user experience</h2><p>By clicking any link on this page you are giving your consent for us to set cookies.</p>'
-  format: restricted_html
+  value: '<h2>We use cookies on this site to enhance your user experience</h2><p>By clicking the Accept button, you agree to us doing so.</p>'
+  format: plain_text
 popup_link: 'http://vactory8.lapreprod.com/en/privacy-policy-0'
 popup_link_new_window: true
 popup_position: false
@@ -30,8 +30,8 @@ popup_text_hex: ffffff
 popup_width: 100%
 cookie_lifetime: 100
 mobile_popup_info:
-  value: ''
-  format: basic_html
+  value: '<h2>We use cookies on this site to enhance your user experience</h2><p>By tapping the Accept button, you agree to us doing so.</p>'
+  format: plain_text
 show_disagree_button: true
 popup_scrolling_confirmation: false
 use_mobile_message: false
@@ -58,3 +58,6 @@ withdraw_action_button_label: 'Withdraw consent'
 withdraw_tab_button_label: 'Privacy settings'
 withdraw_enabled: false
 popup_info_template: legacy
+_core:
+  default_config_hash: 3FUw63PRV2txiexKtbORwPKPQzikJ-AeSj-fgydBof0
+uuid: a65522d8-4711-48e0-a5c8-8550bd81556e

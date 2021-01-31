@@ -1,7 +1,9 @@
-uuid: b214d701-486c-4c2f-9d65-681e484600d7
+uuid: aa2caea9-01ad-414f-9231-7183cfe7030f
 langcode: en
 status: true
 dependencies: {  }
+_core:
+  default_config_hash: f3N-359IY4-7gIfsYTJjM11SGMZpZs-wWBVRErruT_8
 name: lqip
 label: LQIP
 effects:

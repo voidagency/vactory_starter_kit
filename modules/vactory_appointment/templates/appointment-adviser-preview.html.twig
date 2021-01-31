@@ -1,8 +1,9 @@
-{% set image_uri = file_object(user.user_picture.target_id).uri.value %}
-{% set image_url = file_url(image_uri) %}
-<div class="select-adviser-item mr-3">
-  <img src="{{ image_url }}" alt="{{ user.name.value }}" width="250" height="250">
-  <h3>{{ user.field_first_name.value }} {{ user.field_last_name.value }}</h3>
+{% set image_uri = user.user_picture.target_id is defined ? file_object(user.user_picture.target_id).uri.value : '' %}
+{% set image_url = image_uri is not empty ? file_url(image_uri) : '/themes/vactory/assets/img/adviser.png' %}
+<div class="select-adviser-item push-card push-card--adviser overflow-hidden h-100 bg-white border border--active rounded shadow">
+  <div class="push-card__icon">
+    <img src="{{ image_url }}" alt="{{ user.name.value }}" class="img-fluid">
+  </div>
+  <hr>
+  <h3 class="push-card__title">{{ user.field_first_name.value }} {{ user.field_last_name.value }}</h3>
 </div>
-
-

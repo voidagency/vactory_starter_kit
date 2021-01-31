@@ -1,6 +1,9 @@
 langcode: en
 status: true
 dependencies:
+  enforced:
+    module:
+      - vactory_annual_report
   config:
     - core.entity_view_mode.node.full
     - field.field.node.vactory_annual_report.field_ar_media_type

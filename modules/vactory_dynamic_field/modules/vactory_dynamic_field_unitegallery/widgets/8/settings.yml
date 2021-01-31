@@ -19,6 +19,9 @@ fields:
     label: 'Image'
     options:
       '#required': TRUE
+  image_alt:
+    type: text
+    label: "texte alternative de l'image"    
   videoId:
     type: text
     label: 'VideoId Youtube'

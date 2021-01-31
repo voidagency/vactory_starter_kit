@@ -1,0 +1,12 @@
+services:
+  vactory_views_pretty_path.path_processor:
+    class: Drupal\vactory_views_pretty_path\PathProcessor\VactoryViewsPrettyPathProcessor
+    arguments:
+      - '@entity_type.manager'
+      - '@entity.repository'
+      - '@config.factory'
+      - '@current_route_match'
+      - '@language_manager'
+    tags:
+      - { name: 'path_processor_inbound', priority: -10000 }
+      - { name: 'path_processor_outbound', priority: -10 }

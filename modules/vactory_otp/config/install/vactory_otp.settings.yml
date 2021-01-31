@@ -1,0 +1,7 @@
+from: ''
+url: ''
+api_key: ''
+default_sms_body: ''
+default_mail_body: ''
+langcode: en
+default_langcode: en

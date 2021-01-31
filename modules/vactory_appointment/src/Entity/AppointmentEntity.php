@@ -4,19 +4,20 @@ namespace Drupal\vactory_appointment\Entity;
 
 
 use Drupal\Core\Entity\ContentEntityBase;
+use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\Core\Entity\RevisionableInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\user\UserInterface;
-use Drupal\webform\Plugin\WebformElement\DateTime;
+use Drupal\vactory_locator\Entity\LocatorEntity;
 
 /**
  * Class AppointmentEntity
  *
- * @ingroup vactory_appointment
+ *  * @ingroup vactory_appointment
+ *
  * @ContentEntityType(
  *   id = "vactory_appointment",
  *   label = @Translation("Appointment"),
@@ -26,12 +27,14 @@ use Drupal\webform\Plugin\WebformElement\DateTime;
  *     "views_data" = "Drupal\vactory_appointment\Entity\AppointmentsEntityViewsData",
  *     "translation" = "Drupal\vactory_appointment\AppointmentsEntityTranslationHandler",
  *     "form" = {
- *       "default" = "Drupal\vactory_appointment\Form\AppointmentsForm",
- *       "add" = "Drupal\vactory_appointment\Form\AppointmentsForm",
- *       "edit" = "Drupal\vactory_appointment\Form\AppointmentsForm",
- *       "delete" = "Drupal\vactory_appointment\Form\AppointmentsDeleteForm",
+ *       "default" = "Drupal\Core\Entity\ContentEntityForm",
+ *       "add" = "Drupal\Core\Entity\ContentEntityForm",
+ *       "edit" = "Drupal\Core\Entity\ContentEntityForm",
+ *       "delete" = "Drupal\Core\Entity\ContentEntityDeleteForm",
  *     },
- *     "access" = "Drupal\vactory_appointment\AppointmentsAccessControlHandler",
+ *     "route_provider" = {
+ *       "html" = "Drupal\Core\Entity\Routing\AdminHtmlRouteProvider",
+ *     },
  *   },
  *   list_cache_contexts = { "user" },
  *   base_table = "vactory_appointment",
@@ -44,20 +47,22 @@ use Drupal\webform\Plugin\WebformElement\DateTime;
  *     "uuid" = "uuid",
  *     "uid" = "user_id",
  *     "langcode" = "langcode",
- *     "status" = "status",
  *   },
  *   links = {
  *     "canonical" = "/admin/structure/vactory_appointment/{vactory_appointment}",
  *     "edit-form" = "/admin/structure/vactory_appointment/{vactory_appointment}/edit",
+ *     "add-form" = "/admin/structure/vactory_appointment/add",
  *     "delete-form" = "/admin/structure/vactory_appointment/{vactory_appointment}/delete",
- *     "collection" = "/admin/structure/vactory_appointment/list",
+ *     "collection" = "/admin/structure/vactory_appointment",
  *   },
- *   field_ui_base_route = "vactory_appointment.appointments_settings",
  * )
  */
-class AppointmentEntity extends ContentEntityBase implements AppointmentsEntityInterface {
+class AppointmentEntity extends ContentEntityBase implements ContentEntityInterface {
   use EntityChangedTrait;
 
+  /**
+   * {@inheritDoc}
+   */
   public static function preCreate(EntityStorageInterface $storage, array &$values) {
     parent::preCreate($storage, $values);
     $values += [
@@ -65,6 +70,9 @@ class AppointmentEntity extends ContentEntityBase implements AppointmentsEntityI
     ];
   }
 
+  /**
+   * {@inheritDoc}
+   */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     $config = \Drupal::configFactory()->get('vactory_appointment.settings');
     // Standard field, used as unique if primary index.
@@ -83,20 +91,20 @@ class AppointmentEntity extends ContentEntityBase implements AppointmentsEntityI
     $fields['title'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Title'))
       ->setDescription(t('The title of the Appointment entity.'))
-      ->setSettings(array(
+      ->setSettings([
         'default_value' => '',
         'max_length' => 255,
         'text_processing' => 0,
-      ))
-      ->setDisplayOptions('view', array(
+      ])
+      ->setDisplayOptions('view', [
         'label' => 'above',
         'type' => 'string',
         'weight' => -6,
-      ))
-      ->setDisplayOptions('form', array(
+      ])
+      ->setDisplayOptions('form', [
         'type' => 'string_textfield',
         'weight' => -6,
-      ))
+      ])
       ->setTranslatable(TRUE)
       ->setRequired(TRUE)
       ->setDisplayConfigurable('form', TRUE)
@@ -127,7 +135,6 @@ class AppointmentEntity extends ContentEntityBase implements AppointmentsEntityI
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-
     // The appointment adviser.
     $fields['adviser_id'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Appointment adviser'))
@@ -135,56 +142,62 @@ class AppointmentEntity extends ContentEntityBase implements AppointmentsEntityI
       ->setSetting('target_type', 'user')
       ->setRequired(TRUE)
       ->setSetting('handler', 'default')
-      ->setDisplayOptions('view', array(
+      ->setSetting('handler_settings', [
+        'filter' => [
+          'type' => 'role',
+          'role' => 'adviser',
+        ],
+      ])
+      ->setDisplayOptions('view', [
         'label' => 'above',
         'type' => 'author',
         'weight' => -3,
-      ))
-      ->setDisplayOptions('form', array(
+      ])
+      ->setDisplayOptions('form', [
         'type' => 'options_select',
         'weight' => 1,
-      ))
+      ])
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
     // The appointment type.
     $fields['appointment_type'] = BaseFieldDefinition::create('entity_reference')
-        ->setLabel(t('Appointment type'))
-        ->setRevisionable(TRUE)
-        ->setSetting('target_type', 'taxonomy_term')
-        ->setSetting('handler_settings', ['target_bundles' => ['dam_motifs' => 'dam_motifs']])
-        ->setSetting('handler', 'default')
-        ->setTranslatable(TRUE)
-        ->setDisplayOptions('view', array(
-          'label' => 'hidden',
-          'type' => 'author',
-          'weight' => 0,
-        ))
-        ->setDisplayOptions('form', array(
-          'type' => 'options_select',
-          'weight' => 2,
-        ))
+      ->setLabel(t('Appointment type'))
+      ->setRevisionable(TRUE)
+      ->setSetting('target_type', 'taxonomy_term')
+      ->setSetting('handler_settings', ['target_bundles' => ['vactory_appointment_motifs' => 'vactory_appointment_motifs']])
+      ->setSetting('handler', 'default')
+      ->setTranslatable(TRUE)
+      ->setDisplayOptions('view', [
+        'label' => 'hidden',
+        'type' => 'author',
+        'weight' => 0,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => 2,
+      ])
       ->setRequired(TRUE)
       ->setDisplayConfigurable('form', TRUE)
-        ->setDisplayConfigurable('view', TRUE);
+      ->setDisplayConfigurable('view', TRUE);
 
     // The appointment Agency.
     $fields['appointment_agency'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Appointment Agency'))
       ->setRevisionable(TRUE)
-      ->setSetting('target_type', 'taxonomy_term')
-      ->setSetting('handler_settings', ['target_bundles' => ['dam_agencies' => 'dam_agencies']])
+      ->setSetting('target_type', 'locator_entity')
+      ->setSetting('handler_settings', ['target_bundles' => ['vactory_locator' => 'vactory_locator']])
       ->setSetting('handler', 'default')
       ->setTranslatable(TRUE)
-      ->setDisplayOptions('view', array(
+      ->setDisplayOptions('view', [
         'label' => 'hidden',
         'type' => 'author',
         'weight' => 0,
-      ))
-      ->setDisplayOptions('form', array(
+      ])
+      ->setDisplayOptions('form', [
         'type' => 'options_select',
         'weight' => 2,
-      ))
+      ])
       ->setRequired(TRUE)
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
@@ -192,20 +205,20 @@ class AppointmentEntity extends ContentEntityBase implements AppointmentsEntityI
     // The appointment First name.
     $fields['appointment_first_name'] = BaseFieldDefinition::create('string')
       ->setLabel(t('First name'))
-      ->setSettings(array(
+      ->setSettings([
         'default_value' => '',
         'max_length' => 255,
         'text_processing' => 0,
-      ))
-      ->setDisplayOptions('view', array(
+      ])
+      ->setDisplayOptions('view', [
         'label' => 'above',
         'type' => 'string',
         'weight' => -6,
-      ))
-      ->setDisplayOptions('form', array(
+      ])
+      ->setDisplayOptions('form', [
         'type' => 'string_textfield',
         'weight' => 3,
-      ))
+      ])
       ->setRequired(TRUE)
       ->setTranslatable(TRUE)
       ->setDisplayConfigurable('form', TRUE)
@@ -214,20 +227,20 @@ class AppointmentEntity extends ContentEntityBase implements AppointmentsEntityI
     // The appointment Last name.
     $fields['appointment_last_name'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Last name'))
-      ->setSettings(array(
+      ->setSettings([
         'default_value' => '',
         'max_length' => 255,
         'text_processing' => 0,
-      ))
-      ->setDisplayOptions('view', array(
+      ])
+      ->setDisplayOptions('view', [
         'label' => 'above',
         'type' => 'string',
         'weight' => -6,
-      ))
-      ->setDisplayOptions('form', array(
+      ])
+      ->setDisplayOptions('form', [
         'type' => 'string_textfield',
         'weight' => 4,
-      ))
+      ])
       ->setRequired(TRUE)
       ->setTranslatable(TRUE)
       ->setDisplayConfigurable('form', TRUE)
@@ -236,20 +249,20 @@ class AppointmentEntity extends ContentEntityBase implements AppointmentsEntityI
     // The appointment Phone.
     $fields['appointment_phone'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Phone'))
-      ->setSettings(array(
+      ->setSettings([
         'default_value' => '',
         'max_length' => 255,
         'text_processing' => 0,
-      ))
-      ->setDisplayOptions('view', array(
+      ])
+      ->setDisplayOptions('view', [
         'label' => 'above',
         'type' => 'string',
         'weight' => -6,
-      ))
-      ->setDisplayOptions('form', array(
+      ])
+      ->setDisplayOptions('form', [
         'type' => 'string_textfield',
         'weight' => 5,
-      ))
+      ])
       ->setRequired(TRUE)
       ->setTranslatable(TRUE)
       ->setDisplayConfigurable('form', TRUE)
@@ -258,35 +271,34 @@ class AppointmentEntity extends ContentEntityBase implements AppointmentsEntityI
     // The appointment Email.
     $fields['appointment_email'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Email'))
-      ->setSettings(array(
+      ->setSettings([
         'default_value' => '',
         'max_length' => 255,
         'text_processing' => 0,
-      ))
-      ->setDisplayOptions('view', array(
+      ])
+      ->setDisplayOptions('view', [
         'label' => 'above',
         'type' => 'string',
         'weight' => -6,
-      ))
-      ->setDisplayOptions('form', array(
+      ])
+      ->setDisplayOptions('form', [
         'type' => 'string_textfield',
         'weight' => 6,
-      ))
+      ])
       ->setRequired(TRUE)
       ->setTranslatable(TRUE)
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
-
     // The appointment day.
-    $fields['appointment_day'] = BaseFieldDefinition::create('datetime')
-      ->setLabel(t('Day'))
-      ->setDescription(t('The appointment day.'))
+    $fields['appointment_date'] = BaseFieldDefinition::create('datetime')
+      ->setLabel(t('Date'))
+      ->setDescription(t('The appointment date.'))
       ->setRevisionable(TRUE)
       ->setRequired(TRUE)
       ->setTranslatable(TRUE)
       ->setSettings([
-        'datetime_type' => 'date'
+        'datetime_type' => 'datetime',
       ])
       ->setDisplayOptions('view', [
         'label' => 'hidden',
@@ -299,31 +311,6 @@ class AppointmentEntity extends ContentEntityBase implements AppointmentsEntityI
       ->setDisplayOptions('form', [
         'type' => 'datetime_default',
         'weight' => 7,
-      ]);
-
-    // The appointment hour.
-    $fields['appointment_hour'] = BaseFieldDefinition::create('list_string')
-      ->setLabel(t('Appointment hour'))
-      ->setDescription(t('The appointment hour.'))
-      ->setTranslatable(TRUE)
-      ->setRequired(TRUE)
-      ->setSettings([
-        'allowed_values' => $config->get('appointment_hours'),
-      ])
-      ->setDisplayOptions('form', [
-        'type' => 'options_select',
-        'weight' => 8,
-      ]);
-
-    // Appointments status (is it published or not).
-    $fields['status'] = BaseFieldDefinition::create('boolean')
-      ->setLabel(t('Available'))
-      ->setDescription(t('A boolean indicating whether the appointments is available yet.'))
-      ->setRevisionable(TRUE)
-      ->setDefaultValue(TRUE)
-      ->setDisplayOptions('form', [
-        'type' => 'boolean_checkbox',
-        'weight' => 9,
       ]);
 
     $fields['langcode'] = BaseFieldDefinition::create('language')
@@ -340,18 +327,10 @@ class AppointmentEntity extends ContentEntityBase implements AppointmentsEntityI
   }
 
   /**
-   * Check if current appointment is available.
-   *
-   * @return boolean
-   */
-  public function isAvailable() {
-    return (boolean) $this->get('status')->value;
-  }
-
-  /**
    * Get current appointment title.
    *
-   * @return String
+   * @return string
+   *   Returns the appointment title.
    */
   public function getTitle() {
     return $this->get('title')->value;
@@ -360,9 +339,11 @@ class AppointmentEntity extends ContentEntityBase implements AppointmentsEntityI
   /**
    * Set current appointment title.
    *
-   * @param $title
+   * @param string $title
+   *   The new appointment title.
    *
    * @return \Drupal\vactory_appointment\Entity\AppointmentEntity
+   *   Return the appointment entity.
    */
   public function setTitle($title) {
     $this->set('title', $title);
@@ -452,12 +433,12 @@ class AppointmentEntity extends ContentEntityBase implements AppointmentsEntityI
   /**
    * Sets the appointment agency.
    *
-   * @param \Drupal\taxonomy\Entity\Term $term
+   * @param \Drupal\vactory_locator\Entity\LocatorEntity $agency
    *   The appointment agency.
    *
    * @return $this
    */
-  public function setAgency(Term $agency) {
+  public function setAgency(LocatorEntity $agency) {
     $this->set('appointment_agency', $agency->id());
     return $this;
   }
@@ -475,7 +456,7 @@ class AppointmentEntity extends ContentEntityBase implements AppointmentsEntityI
   /**
    * Sets the appointment type.
    *
-   * @param \Drupal\taxonomy\Entity\Term $term
+   * @param \Drupal\taxonomy\Entity\Term $type
    *   The appointment type.
    *
    * @return $this
@@ -577,44 +558,27 @@ class AppointmentEntity extends ContentEntityBase implements AppointmentsEntityI
     return $this;
   }
 
-  public function getAppointmentDay() {
-    $date_string = $this->get('appointment_day')->value;
-    return \DateTime::createFromFormat('Y-m-d', $date_string);
+  /**
+   * Returns the appointment date.
+   *
+   * @return \DateTime
+   *   The appointment date.
+   */
+  public function getAppointmentDate() {
+    return $this->get('appointment_date')->value;
   }
 
   /**
-   * Sets the appointment day.
+   * Sets the appointment date.
    *
    * @param \DateTime $date
-   *   The appointment day.
+   *   The appointment date.
    *
    * @return $this
    */
-  public function setAppointmentDay(\DateTime $date) {
-    $this->set('appointment_day', $date->format('Y-m-d'));
+  public function setAppointmentDate(\DateTime $date) {
+    $this->set('appointment_date', $date->format('Y-m-d\TH:i:s'));
     return $this;
   }
 
-  /**
-   * Returns the appointment hour.
-   *
-   * @return string
-   *   The appointment hour.
-   */
-  public function getAppointmentHour() {
-    return $this->get('appointment_hour')->value;
-  }
-
-  /**
-   * Sets the appointment hour.
-   *
-   * @param string $hour
-   *   The appointment hour.
-   *
-   * @return $this
-   */
-  public function setAppointmentHour($hour) {
-    $this->set('appointment_hour', $hour);
-    return $this;
-  }
 }

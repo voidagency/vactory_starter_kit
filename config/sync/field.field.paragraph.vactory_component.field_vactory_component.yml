@@ -1,5 +1,5 @@
-uuid: 04fdde6f-824c-458b-b0de-f79f59606d1a
-langcode: en
+uuid: 3a8772bc-b1c2-443e-940d-ddad6fd9b7cd
+langcode: fr
 status: true
 dependencies:
   config:
@@ -7,6 +7,8 @@ dependencies:
     - paragraphs.paragraphs_type.vactory_component
   module:
     - vactory_dynamic_field
+_core:
+  default_config_hash: YwE27raunkMdXfFKY7zz0KNsrkrRp3uvRLQvMMxge4E
 id: paragraph.vactory_component.field_vactory_component
 field_name: field_vactory_component
 entity_type: paragraph

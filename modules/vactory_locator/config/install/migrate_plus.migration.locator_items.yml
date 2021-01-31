@@ -11,7 +11,7 @@ label: 'Import locator items'
 source:
   plugin: csv
   delimiter: ;
-  path: profiles/vactory/modules/vactory_locator/locator_migrate/locator_items.csv
+  path: profiles/vactory_starter_kit/modules/vactory_locator/locator_migrate/locator_items.csv
   header_row_count: 1
   ids:
     - ID
@@ -20,7 +20,7 @@ source:
       name: ID
       label: 'Id category'
     1:
-      name: LATITUDE,
+      name: LATITUDE
       label: 'LATITUDE'
     2:
       name: LONGITUDE

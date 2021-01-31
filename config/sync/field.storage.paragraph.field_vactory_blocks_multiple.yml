@@ -1,10 +1,12 @@
-uuid: a1555ddf-d50a-4b6c-a0ef-bedb42188e26
+uuid: 5793bef4-4a1d-46b0-80ad-97df5ac2ae17
 langcode: en
 status: true
 dependencies:
   module:
     - block_field
     - paragraphs
+_core:
+  default_config_hash: azGJNQEOIfB_f2VbNZS4FIwt8jP9kbETZZE4HcFxB4U
 id: paragraph.field_vactory_blocks_multiple
 field_name: field_vactory_blocks_multiple
 entity_type: paragraph

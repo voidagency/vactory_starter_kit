@@ -267,7 +267,7 @@ class ModalForm extends FormBase {
               $ds_field_name = 'm' . substr(md5($ds_field_name), 0, -1);
             }
 
-            $form['components']['extra_field'][$field_id][$field_key] = $this->getFormElement($element_type, $element_label, $element_default_value, $element_options, $form, $form_state, $ds_field_name);
+            $form['components']['extra_field'][$field_id][$field_key] = $this->getFormElement($element_type, $element_label, $element_default_value, $element_options, $form, $form_state, $ds_field_name, $field_id, $field_key);
 
             if ($element_type == 'image') {
               // Restore parent for other fields.
@@ -295,7 +295,7 @@ class ModalForm extends FormBase {
             $ds_field_name = 'm' . substr(md5($ds_field_name), 0, -1);
           }
 
-          $form['components']['extra_field'][$field_id] = $this->getFormElement($element_type, $element_label, $element_default_value, $element_options, $form, $form_state, $ds_field_name);
+          $form['components']['extra_field'][$field_id] = $this->getFormElement($element_type, $element_label, $element_default_value, $element_options, $form, $form_state, $ds_field_name, $field_id);
 
           if ($element_type == 'image') {
             // Restore parent for other fields.
@@ -305,17 +305,39 @@ class ModalForm extends FormBase {
       }
     }
 
+    $is_multiple = FALSE;
+    $component_wrapper_type = 'fieldset';
+    if (isset($settings['multiple']) && (bool) $settings['multiple'] === TRUE) {
+      global $base_url;
+      $drag_icon = $base_url . '/' . drupal_get_path('module', 'vactory_dynamic_field') . '/icons/icon-drag-move.svg';
+      $icon_drag = '<img src="' . $drag_icon . '" class="df-components-sortable-handler"/>';
+      $component_wrapper_type = 'details';
+      $is_multiple = TRUE;
+    }
+
     // Add component fields.
     for ($i = 0; $i < $this->widgetRows; $i++) {
       // Components wrapper.
       $form['components'][$i] = [
-        '#type'          => 'fieldset',
+        '#type'          => $component_wrapper_type,
         '#title'         => $this->t('Component'),
         '#title_display' => 'invisible',
         '#attributes'    => [
-          'style' => 'margin-bottom: 3px;',
+          'style' => 'margin-bottom: 3px; position: relative;',
         ],
       ];
+
+      if ($is_multiple) {
+        // If multiple components case then add drag icon.
+        $form['components'][$i]['#title'] = $this->t('Component') . ' ' . ($i + 1) . ' ' . $icon_drag;;
+        $form['components'][$i]['#open'] = TRUE;
+        if ($i === 0) {
+          $form['components'][$i]['#prefix'] = '<div id="sortable-components">';
+        }
+        if ($i === $this->widgetRows - 1) {
+          $form['components'][$i]['#suffix'] = '</div>';
+        }
+      }
 
       // Form elements.
       foreach ($settings['fields'] as $field_id => $field) {
@@ -384,7 +406,7 @@ class ModalForm extends FormBase {
             $ds_field_name = 'f' . substr(md5($ds_field_name), 0, -1);
           }
 
-          $form['components'][$i][$field_id] = $this->getFormElement($element_type, $element_label, $element_default_value, $element_options, $form, $form_state, $ds_field_name);
+          $form['components'][$i][$field_id] = $this->getFormElement($element_type, $element_label, $element_default_value, $element_options, $form, $form_state, $ds_field_name, $field_id, $i);
 
           if ($element_type == 'image') {
             // Restore parent for other fields.
@@ -406,6 +428,9 @@ class ModalForm extends FormBase {
           '#min'           => 1,
           '#size'          => 5,
           '#default_value' => $weight_value,
+          '#attributes' => [
+            'class' => ['df-components-weight'],
+          ],
         ];
       }
 
@@ -454,6 +479,8 @@ class ModalForm extends FormBase {
           ],
         ];
       }
+      // Attach drag and drop DF module library in multiple components case.
+      $form['#attached']['library'][] = 'vactory_dynamic_field/drag_and_drop';
     }
 
     $form['actions'] = ['#type' => 'actions'];
@@ -497,9 +524,12 @@ class ModalForm extends FormBase {
     /** @var \Drupal\field\Entity\FieldConfig $fieldConfig */
     $fieldConfig = $fields[$fieldName] ?? NULL;
     // Get list of allowed providers selected in the field settings.
-    $allowedProviders = array_filter($fieldConfig->getSetting('allowed_providers'), function ($value) {
-      return $value !== 0;
-    });
+    $allowedProviders = [];
+    if (is_array($fieldConfig->getSetting('allowed_providers'))) {
+      $allowedProviders = array_filter($fieldConfig->getSetting('allowed_providers'), function ($value) {
+        return $value !== 0;
+      });
+    }
     // List of widgets.
     $widgets_list = $this->widgetsManager->getModalWidgetsList($allowedProviders);
 
@@ -579,17 +609,19 @@ class ModalForm extends FormBase {
             ],
           ];
           $options = [];
-          foreach ($widgets as $widget_id => $widget) {
-            $undefined_screenshot = drupal_get_path('module', 'vactory_dynamic_field') . '/images/undefined-screenshot.jpg';
-            $widget_preview = [
-              '#theme' => 'vactory_dynamic_select_template',
-              '#content' => [
-                'screenshot_url' => !empty($widget['screenshot']) ? $widget['screenshot'] : file_create_url($undefined_screenshot),
-                'name' => $widget['name'],
-              ],
-            ];
-            $options[$widget['uuid']] = \Drupal::service('renderer')
-              ->render($widget_preview);
+          if (is_array($widgets) || is_object($widgets)) {
+            foreach ($widgets as $widget_id => $widget) {
+              $undefined_screenshot = drupal_get_path('module', 'vactory_dynamic_field') . '/images/undefined-screenshot.jpg';
+              $widget_preview = [
+                '#theme' => 'vactory_dynamic_select_template',
+                '#content' => [
+                  'screenshot_url' => !empty($widget['screenshot']) ? $widget['screenshot'] : file_create_url($undefined_screenshot),
+                  'name' => $widget['name'],
+                ],
+              ];
+              $options[$widget['uuid']] = \Drupal::service('renderer')
+                ->render($widget_preview);
+            }
           }
           $form['templates_tabs'][$category]['template'] = [
             '#type' => 'radios',

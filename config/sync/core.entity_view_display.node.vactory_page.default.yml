@@ -1,5 +1,5 @@
-uuid: e87d59ee-8e30-4cb1-9a58-1f376ff50ed2
-langcode: en
+uuid: dd1f289b-5f78-499b-b726-1cfbfe8a71e6
+langcode: fr
 status: true
 dependencies:
   config:
@@ -15,6 +15,8 @@ dependencies:
     - entity_reference_revisions
     - metatag
     - user
+_core:
+  default_config_hash: C8Eg61CMDMbcOI4OkMLPP49yL-filRCs8KyZVfK1uI4
 id: node.vactory_page.default
 targetEntityType: node
 bundle: vactory_page

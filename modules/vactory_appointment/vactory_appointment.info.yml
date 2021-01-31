@@ -1,6 +1,11 @@
 name: Vactory Appointment (Rendez-vous)
 description: A custom module which manage users Appointments.
 core: 8.x
+core_version_requirement: ^8 || ^9
 type: module
+package: Vactory
+configure: vactory_appointment.appointments_settings
 dependencies:
   - vactory_user
+  - vactory_locator
+  - views_data_export

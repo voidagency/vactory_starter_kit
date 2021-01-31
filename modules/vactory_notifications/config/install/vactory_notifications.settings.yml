@@ -1,0 +1,5 @@
+notifications_default_title: 'New content from [notification:owner_first_name]'
+notifications_default_message: 'New content « [notification:content_type:node_title] » of type [notification:content_type] has been added by [notification:owner_first_name] [notification:owner_last_name].'
+auto_translation: TRUE
+notifications_lifetime: 6
+langcode: en

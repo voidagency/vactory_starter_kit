@@ -1,9 +1,11 @@
-uuid: e6961b1e-ee0d-4d87-8991-6fedd468421e
+uuid: e545e0f7-3a8f-461c-9b9f-c5778a292684
 langcode: en
 status: true
 dependencies:
   module:
     - focal_point
+_core:
+  default_config_hash: IW6zgwamo7vVSHxRdZoI93u1SqE4CL9-nqTuMM40nXc
 name: vactory_one_col_x2
 label: 'One Col @x2'
 effects:

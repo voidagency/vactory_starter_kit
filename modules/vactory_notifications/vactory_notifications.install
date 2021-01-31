@@ -1,0 +1,82 @@
+<?php
+
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\user\Entity\Role;
+use Drupal\vactory_notifications\Entity\NotificationsEntity;
+
+/**
+ * Implements hook_install().
+ */
+function vactory_notifications_install() {
+  $existing_roles = Role::loadMultiple();
+  $notifications_config = Drupal::configFactory()->getEditable('vactory_notifications.settings');
+  foreach ($existing_roles as $key => $role) {
+    if ($key == 'administrator') {
+      $notifications_config->set($key . '_content_types', ['vactory_page']);
+    }
+    else {
+      $notifications_config->set($key . '_content_types', []);
+    }
+  }
+  $notifications_config->save();
+
+  $improved_multi_select_config = Drupal::configFactory()->getEditable('improved_multi_select.settings');
+  $urls = $improved_multi_select_config->get('url');
+  $urls .= PHP_EOL . '*/admin/config/system/notifications-configuration';
+  $improved_multi_select_config->set('url', $urls)->save();
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function vactory_notifications_uninstall() {
+  // Delete vactory notifications config.
+  $notifications_config = Drupal::configFactory()->getEditable('vactory_notifications.settings');
+  $notifications_config->delete();
+}
+
+/**
+ * Install notifications title and message node fields.
+ */
+function vactory_notifications_update_8102(&$sandbox) {
+  $entityUpdateManager = \Drupal::entityDefinitionUpdateManager();
+  // The notification entity title.
+  $notification_title_field = BaseFieldDefinition::create('string')
+    ->setLabel(t('Notifications title'))
+    ->setDescription(t('Set the noifications title of current node.'))
+    ->setSettings(array(
+      'max_length' => 255,
+      'text_processing' => 0,
+    ))
+    ->setTranslatable(TRUE)
+    ->setDisplayOptions('form', array(
+      'type' => 'string_textfield',
+      'weight' => -6,
+    ))
+    ->setDisplayConfigurable('form', TRUE)
+    ->setDisplayConfigurable('view', TRUE);
+
+  $entityUpdateManager->installFieldStorageDefinition(
+    'notification_title', 'node', 'vactory_notifications', $notification_title_field
+  );
+
+  // Notification details/message.
+  $notification_message_field = BaseFieldDefinition::create('string_long')
+    ->setLabel(t('Notifications message'))
+    ->setDescription(t('Set the notification message of current node'))
+    ->setSettings([
+      'default_value' => '',
+      'text_processing' => 0,
+    ])
+    ->setTranslatable(TRUE)
+    ->setDisplayOptions('form', array(
+      'type' => 'string_textarea',
+      'weight' => -1,
+    ))
+    ->setDisplayConfigurable('form', TRUE)
+    ->setDisplayConfigurable('view', TRUE);
+
+  $entityUpdateManager->installFieldStorageDefinition(
+    'notification_message', 'node', 'vactory_notifications', $notification_message_field
+  );
+}

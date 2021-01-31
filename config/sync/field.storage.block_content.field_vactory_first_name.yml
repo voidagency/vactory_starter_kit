@@ -1,9 +1,11 @@
-uuid: c9250198-bad8-43a5-9fb5-91e91b7d690c
+uuid: 8ec226a9-3719-43b7-8050-741ebd46683b
 langcode: en
 status: true
 dependencies:
   module:
     - block_content
+_core:
+  default_config_hash: AYCzKW7MDZOl0B9x5cbdsZrKFcsDxWIc6kZabvRO1w4
 id: block_content.field_vactory_first_name
 field_name: field_vactory_first_name
 entity_type: block_content

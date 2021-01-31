@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_forums
+  config:
+    - taxonomy.vocabulary.vactory_forum_room
+  module:
+    - content_translation
+third_party_settings:
+  content_translation:
+    enabled: true
+id: taxonomy_term.vactory_forum_room
+target_entity_type_id: taxonomy_term
+target_bundle: vactory_forum_room
+default_langcode: site_default
+language_alterable: true

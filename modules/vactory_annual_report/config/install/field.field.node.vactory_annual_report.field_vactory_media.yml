@@ -1,0 +1,30 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_annual_report
+  config:
+    - field.storage.node.field_vactory_media
+    - media.type.image
+    - node.type.vactory_annual_report
+id: node.vactory_annual_report.field_vactory_media
+field_name: field_vactory_media
+entity_type: node
+bundle: vactory_annual_report
+label: Image
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:media'
+  handler_settings:
+    target_bundles:
+      image: image
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

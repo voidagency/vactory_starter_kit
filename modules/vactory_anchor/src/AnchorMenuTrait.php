@@ -24,7 +24,7 @@ trait AnchorMenuTrait {
    */
   public function getNodeParagraphs(NodeInterface $node) {
     $menu_links = [];
-    $field_definitions = \Drupal::service('entity.manager')
+    $field_definitions = \Drupal::service('entity_field.manager')
       ->getFieldDefinitions('node', $node->bundle());
 
     foreach (array_keys($field_definitions) as $field_name) {
@@ -35,12 +35,16 @@ trait AnchorMenuTrait {
           foreach ($paragraph as $element) {
             $p = Paragraph::load($element['target_id'])
               ->getTranslation($node->language()->getId());
-            $display = (bool) $p->field_vactory_flag_2->value;
-            // phpcs:disable
-            $title = ($p->hasField('field_titre_ancre') && !empty($p->get('field_titre_ancre')
-                ->getValue())) ? $p->get('field_titre_ancre')->value : $p->field_vactory_title->value;
-            // phpcs:enable
-
+            if ($p->hasField('field_titre_ancre')) {
+              $display = (bool) $p->field_vactory_flag_2->value;
+              // phpcs:disable
+              $title = ($p->hasField('field_titre_ancre') && !empty($p->get('field_titre_ancre')
+                  ->getValue())) ? $p->get('field_titre_ancre')->value : $p->field_vactory_title->value;
+              // phpcs:enable
+            }
+            else {
+              $display = (bool) FALSE;
+            }
             if ($p->get('paragraph_identifier')->value != NULL) {
               $identifier = $p->get('paragraph_identifier')->value;
             }

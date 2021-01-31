@@ -13,6 +13,7 @@ use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Render\Element;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Language\Language;
+use Drupal\media\Entity\Media;
 
 /**
  * Implements hook_theme().
@@ -52,14 +53,14 @@ function vactory_dynamic_field_theme() {
       ],
       'template'  => 'main-demo-detail',
     ],
-    'vactory_dynamic_select_template' => [
+    'vactory_dynamic_select_template'      => [
       'variables' => [
         'content' => [],
       ],
       'template'  => 'select-template-item',
     ],
-    'custom_text_format_wrapper' => [
-      'template' => 'dynamic-field-text-format-wrapper',
+    'custom_text_format_wrapper'           => [
+      'template'  => 'dynamic-field-text-format-wrapper',
       'base hook' => 'text_format_wrapper',
     ],
   ];
@@ -70,6 +71,10 @@ function vactory_dynamic_field_theme() {
  */
 function vactory_dynamic_field_preprocess_vactory_dynamic_main(&$variables) {
   $template = $variables['content']['template'];
+  if (isset($variables['content']['components'][0]['image'][0])) {
+    $media = Media::load($variables['content']['components']['0']['image']['0']);
+    $variables['content']['components'][0]['image']['alt_image'] = $media->thumbnail->alt;
+  }
   if ($template == 40 && isset($variables['content']['components'][0]['link_to_cookie'])) {
     $cookie_usage = $variables['content']['components'][0]['link_to_cookie'];
     $path = \Drupal::request()->getRequestUri();
@@ -117,15 +122,15 @@ function vactory_dynamic_field_field_widget_form_alter(&$element, FormStateInter
       ]);
       $remove_btn_name = implode('_', $parents) . '_remove_button';
       $element['remove_button'] = [
-        '#delta' => $delta,
-        '#name' => $remove_btn_name,
-        '#type' => 'submit',
-        '#button_type' => 'danger',
-        '#value' => t('Remove'),
-        '#validate' => [],
-        '#submit' => ['remove_template_submit'],
+        '#delta'                   => $delta,
+        '#name'                    => $remove_btn_name,
+        '#type'                    => 'submit',
+        '#button_type'             => 'danger',
+        '#value'                   => t('Remove'),
+        '#validate'                => [],
+        '#submit'                  => ['remove_template_submit'],
         '#limit_validation_errors' => [],
-        '#ajax' => [
+        '#ajax'                    => [
           'callback' => 'remove_template_callback',
         ],
       ];

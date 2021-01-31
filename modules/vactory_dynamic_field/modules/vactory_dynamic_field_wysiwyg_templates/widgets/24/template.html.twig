@@ -3,7 +3,14 @@
     {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : "" %}
     {% set fluid_image = file_url(image_uri) %}
     {% set lqip_image = image_uri|image_style('lqip') %}
-    {% set imageAlt = (item.image_alt is not empty) ? item.image_alt : item.title %}
+    {% set imageAlt = (item.image_alt) ? item.image_alt : item.image.alt_image %}
+
+    {% set link_attributes = create_attribute() %}
+    {% set link_attributes = item.link.attributes.id is not empty ? link_attributes.setAttribute('id', item.link.attributes.id ) : link_attributes %}
+    {% set link_attributes = item.link.attributes.class is not empty ? link_attributes.setAttribute('class', item.link.attributes.class  ~ ' permalink') : link_attributes.setAttribute('class','permalink') %}
+    {% set link_attributes = item.link.attributes.target is not empty ? link_attributes.setAttribute('target', item.link.attributes.target ) : link_attributes %}
+    {% set link_attributes = item.link.attributes.rel is not empty ? link_attributes.setAttribute('rel', item.link.attributes.rel ) : link_attributes %}
+
     <div class="t-publication-content">
       <div class="row align-items-lg-center">
         <div class="col-lg-2 col-md-3 col-12">
@@ -30,10 +37,9 @@
                 <p class="t-publicatoin-description">{{ item.description }}</p>
               {% endif %}
             </div>
-            {% if item.link is not empty and item.link_alt is not empty %}
-              {% set link_target = (item.link_target > 0) ? '_blank' : '_self' %}
+            {% if item.link.url is not empty and item.link.title is not empty %}
               <div>
-                <a class="permalink" href="{{ item.link }}" target="{{ link_target }}">{{ item.link_alt }}</a>
+                <a href="{{ item.link.url }}" {{ link_attributes }} > {{ item.link.title }} </a>
               </div>
             {% endif %}
           </div>

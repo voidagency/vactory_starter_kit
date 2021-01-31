@@ -6,7 +6,7 @@
    */
   Drupal.behaviors.exposedfilter_buttons = {
     attach: function (context, settings) {
-      $('.filter-tab a').on('click', function (e) {
+      $('.filter-tab').on('click', function (e) {
         e.preventDefault();
         // Get ID of clicked item.
         var id = $(e.target).attr('id');

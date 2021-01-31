@@ -1,0 +1,25 @@
+uuid: 89a51e3c-373f-461a-a201-ee5860f2de28
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_background_color
+    - paragraphs.paragraphs_type.vactory_paragraph_tab
+  module:
+    - colorapi
+_core:
+  default_config_hash: 5cJkBKBNTVpAJ80nl2Xqvse2oC87K80zNwvmlLG5Qtc
+id: paragraph.vactory_paragraph_tab.field_background_color
+field_name: field_background_color
+entity_type: paragraph
+bundle: vactory_paragraph_tab
+label: 'Background color'
+description: ''
+required: false
+translatable: true
+default_value:
+  -
+    color: '#FFFFFF'
+default_value_callback: ''
+settings: {  }
+field_type: colorapi_color_field

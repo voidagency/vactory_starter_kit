@@ -1,7 +1,9 @@
-uuid: dee4f8af-2ae6-4e2a-90f5-faecfdf4186d
+uuid: 3fdf04a6-5ca2-4c31-9075-58c852bea581
 langcode: en
 status: true
 dependencies: {  }
+_core:
+  default_config_hash: EOQltUQPmgc6UQ2rcJ4Xi_leCEJj5ui0TR-12duS-Tk
 id: html_date
 label: 'HTML Date'
 locked: true

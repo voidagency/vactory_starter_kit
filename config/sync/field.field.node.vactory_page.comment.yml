@@ -1,4 +1,4 @@
-uuid: df00ac47-e0b6-4a32-bfc1-11437cf06c6e
+uuid: 6c87adde-cfdb-4c3d-8887-a4b31f49aadd
 langcode: en
 status: true
 dependencies:
@@ -7,6 +7,8 @@ dependencies:
     - node.type.vactory_page
   module:
     - comment
+_core:
+  default_config_hash: QxYEiNBozmxgfhigFsGixBcLkWGrhiYlRj1ZqdV1OOs
 id: node.vactory_page.comment
 field_name: comment
 entity_type: node

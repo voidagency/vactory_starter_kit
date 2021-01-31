@@ -1,8 +1,9 @@
-uuid: 6e91d978-0165-4a28-b657-635458bf5ef7
+uuid: 3fd169b4-331d-4770-be04-46e25b2228e4
 langcode: en
 status: true
 dependencies:
   config:
+    - field.field.paragraph.vactory_paragraph_tab.field_background_color
     - field.field.paragraph.vactory_paragraph_tab.field_tab_templates
     - field.field.paragraph.vactory_paragraph_tab.field_vactory_title
     - paragraphs.paragraphs_type.vactory_paragraph_tab
@@ -15,7 +16,7 @@ third_party_settings:
       children:
         - paragraph_container
         - paragraph_css_class
-        - paragraph_background_color
+        - field_background_color
         - paragraph_background_image
         - paragraph_background_parallax
       parent_name: ''
@@ -29,6 +30,8 @@ third_party_settings:
         required_fields: true
       label: Apparence
       region: hidden
+_core:
+  default_config_hash: KXZfWtLMZMGX9V_sxqzEnC82-kq_ElgcYqsqn_iTeyI
 id: paragraph.vactory_paragraph_tab.default
 targetEntityType: paragraph
 bundle: vactory_paragraph_tab
@@ -58,6 +61,7 @@ content:
     third_party_settings: {  }
 hidden:
   created: true
+  field_background_color: true
   paragraph_background_color: true
   paragraph_background_image: true
   paragraph_background_parallax: true

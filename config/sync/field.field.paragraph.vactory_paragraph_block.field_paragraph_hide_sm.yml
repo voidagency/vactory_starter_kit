@@ -1,0 +1,25 @@
+uuid: 795f0ec0-7d1f-4915-ad74-856f1439faff
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_paragraph_hide_sm
+    - paragraphs.paragraphs_type.vactory_paragraph_block
+_core:
+  default_config_hash: e--8Eukx46A2vsQ7fFy-il-tE8vxXHgIfXUyy-nrlVo
+id: paragraph.vactory_paragraph_block.field_paragraph_hide_sm
+field_name: field_paragraph_hide_sm
+entity_type: paragraph
+bundle: vactory_paragraph_block
+label: 'Cacher sur Mobile'
+description: ''
+required: false
+translatable: true
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: '1'
+  off_label: '0'
+field_type: boolean

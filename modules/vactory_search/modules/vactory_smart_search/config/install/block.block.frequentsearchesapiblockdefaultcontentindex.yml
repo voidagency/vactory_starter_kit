@@ -1,0 +1,25 @@
+langcode: en
+status: false
+dependencies:
+  module:
+    - vactory_frequent_searches
+  theme:
+    - vactory
+  enforced:
+    module:
+      - vactory_smart_search
+id: frequentsearchesapiblockdefaultcontentindex
+theme: vactory
+region: sidebar
+weight: 0
+provider: null
+plugin: 'frequent_search_api_block:default_content_index'
+settings:
+  id: 'frequent_search_api_block:default_content_index'
+  label: 'Frequent Searches API block: Default content index'
+  provider: vactory_frequent_searches
+  label_display: '0'
+  num_phrases: '6'
+  path: smart-search
+  param_name: search_api_fulltext
+visibility: {  }

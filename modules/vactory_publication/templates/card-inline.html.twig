@@ -69,16 +69,24 @@
 'title': label,
 'url': null,
 'image': addAttributes(content.field_vactory_media, {'class': ['vf-card__image', 'img-fluid']}),
-'subtitle': content.field_vactory_publication_theme.0,
+'subtitle': content.field_vactory_publication_theme,
 'intro': content.field_vactory_excerpt,
 'read_more': 'Read more'|t
 } %}
 
-    {% block intro_after %}
-        <p class="card-text">
-            <a href="{{ file_url(node.field_vactory_document.entity.uri.value) }}" class="btn btn-outline-primary" download><i class="icon-download_link"></i> {{ 'Download'|t }}</a>
-        </p>
-        <p class="card-text"><small class="text-muted">{{ content.field_vactory_date }}</small></p>
-    {% endblock %}
+  {% block intro_after %}
+    <p class="card-text">
+      <a href="{{ file_url(node.field_vactory_document.entity.uri.value) }}" class="btn btn-outline-primary" download><i class="icon-download_link"></i> {{ 'Download'|t }}</a>
+    </p>
+    <p class="card-text"><small class="text-muted">{{ content.field_vactory_date }}</small></p>
+  {% endblock %}
+
+  {% block subtitle %}
+    {% for key,thematic in subtitle %}
+      {% if key matches '/^\\d+$/' %}
+        <span class="badge badge-primary">{{ subtitle[key] }}</span>
+      {% endif %}
+    {% endfor %}
+  {% endblock %}
 
 {% endembed %}

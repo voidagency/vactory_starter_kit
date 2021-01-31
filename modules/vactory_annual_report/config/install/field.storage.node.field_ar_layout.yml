@@ -1,0 +1,35 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_annual_report
+  module:
+    - node
+    - options
+id: node.field_ar_layout
+field_name: field_ar_layout
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: background
+      label: Background
+    -
+      value: background_with_content
+      label: 'Background with content'
+    -
+      value: key_number
+      label: 'Chiffre clè'
+    -
+      value: key_number_with_text
+      label: 'Chiffre clè with text'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

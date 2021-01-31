@@ -1,0 +1,15 @@
+vactory_otp.settings:
+  path: '/admin/config/development/vactory_otp_settings_form'
+  defaults:
+    _form: '\Drupal\vactory_otp\Form\VactoryOtpConfigForm'
+    _title: 'Vactory OTP settings'
+  requirements:
+    _role: 'administrator + master'
+
+vactory_otp.test_form:
+  path: '/admin/config/development/vactory_otp_test_form'
+  defaults:
+    _form: '\Drupal\vactory_otp\Form\TestOtpForm'
+    _title: 'Vactory OTP test'
+  requirements:
+    _role: 'administrator + master'

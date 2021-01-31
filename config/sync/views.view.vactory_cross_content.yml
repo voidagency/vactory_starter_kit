@@ -1,5 +1,5 @@
-uuid: 811ad4a2-bdbd-4398-ac17-a2369ccf364a
-langcode: en
+uuid: fbef51fb-8493-4fa1-a2df-30cd30cf4667
+langcode: fr
 status: true
 dependencies:
   config:
@@ -10,6 +10,8 @@ dependencies:
     - taxonomy
     - user
     - vactory_views
+_core:
+  default_config_hash: K86Kf5xPreC44DphZiBiy717-Y2CapA-ZFv_G7QZ_pc
 id: vactory_cross_content
 label: 'Cross Content'
 module: views

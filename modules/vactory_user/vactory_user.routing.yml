@@ -1,0 +1,6 @@
+vactory_user.reset:
+  path: '/reset-check'
+  defaults:
+    _controller: '\Drupal\vactory_user\Controller\ResetCheckController::checkReset'
+  requirements:
+    _permission: 'access content'

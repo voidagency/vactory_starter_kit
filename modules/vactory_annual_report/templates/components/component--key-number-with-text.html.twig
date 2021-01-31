@@ -1,24 +1,37 @@
-{% set widget_class = content.field_ar_element_width[0]['#markup'] %}
-{% set class_media_type = content.field_ar_media_type[0]['#plain_text']|clean_class %}
-{% set image_uri = (content.field_vactory_media) ? get_image(content.field_vactory_media) : ' ' %}
-{% set fluid_image = file_url(image_uri) %}
+{# with of the element : 1/2 ... #}
+{% set widget_class = content.field_ar_element_width['#items'].0.value %}
+{# if the element has corner or not values {has-corner,''} #}
+{% set has_corner_class = (content.field_has_corner.0['#markup'] == 'On') ? 'has-corner' : '' %}
+{# theme label #}
+{% set thematic = content.field_ar_thematic[0]['#plain_text'] %}
+{# picture #}
+{% set image_id = (content.field_vactory_media is not empty) ? content.field_vactory_media['#items'].entity.id : '' %}
+{% set image_uri = (image_id is defined and image_id is not empty) ?  get_image(image_id) : '' %}
+{% set image = (image_uri is not empty) ? image_uri|image_style('media_library') : '' %}
+{% set lqip_image = (image_uri is not empty) ? image_uri|image_style('medium') : '' %}
+{# body #}
+{% set body = (content.body is not empty) ? content.body : '' %}
+{# bg color without # #}
+{% set bg_color = (content.field_ar_background_color is not empty) ? content.field_ar_background_color.0['#color'] : '' %}
+{# border color without # #}
+{% set border_color = (content.field_border_color is not empty) ? content.field_border_color.0['#color'] : '' %}
+{# Annee #}
+{% set rapport_year = (content.field_rapport_digital_annee is defined and content.field_rapport_digital_annee is not empty ) ? content.field_rapport_digital_annee.0['#title'] ? '' %}
+{# thematic id #}
+{% set thematic_id = content.field_ar_thematic['#items'].value.0.target_id %}
 
-<article class="item bk-white awb-chiffre-img {{ widget_class }}">
-  <div class="item-wrap">
-    <div class="header-content">
-      <ul class="filtres">
+<div class="t-rapport t-rapport--chiffre has-corner {{ widget_class }}">
+  <div class="t-rapport--parent {{ has_corner_class }} " style="background-color: {{ '#' ~ bg_color }}; border-color: {{ '#' ~ border_color }}">
+    <div class="t-rapport--header">
+      <ul class="t-rapport--header-filtres no-style">
         <li>
-          <a href="{{ content.thematic_link }}" class="tag"># {{ content.field_ar_thematic[0]['#plain_text'] }}</a>
+          <a href="{{ rapport_year }}?field_ar_thematic_target_id={{ thematic_id }}" class="tag"># {{ thematic }}</a>
         </li>
-        <li><span class="media"><i class="icon icon-{{ class_media_type }}"></i></span></li>
       </ul>
     </div>
-    <div class="item-content">
+    <div class="t-rapport--content">
+      <img src="{{ image }}" alt="">
       {{ content.body }}
-
-      {% if content.field_vactory_media %}
-        <img src="{{ fluid_image }}" alt=""/>
-      {% endif %}
     </div>
   </div>
-</article>
+</div>

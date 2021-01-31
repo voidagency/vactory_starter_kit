@@ -1,4 +1,4 @@
-uuid: 4abf0e3c-4fd1-4d9b-baf0-85fce6b8e199
+uuid: 3a32beae-1003-4917-9e23-78a0486c3816
 langcode: en
 status: true
 dependencies:
@@ -6,6 +6,8 @@ dependencies:
     - file
     - file_entity
     - user
+_core:
+  default_config_hash: FipUVUsXXSwu9jxVqDkqLq5tEMNYQMXMgCyxltWUExU
 id: file_entity_files
 label: 'File Entity Files'
 module: file_entity

@@ -1,10 +1,12 @@
-uuid: ce8435da-637f-4059-902f-2c736f980b9c
+uuid: b24f0f32-c5ef-462e-a4e3-4885def96725
 langcode: en
 status: true
 dependencies:
   module:
     - media
     - node
+_core:
+  default_config_hash: mRgWHUnpTJMBMmsETXlX64iCQ3NYLWP83HmhY2h02ME
 id: node.field_vactory_media
 field_name: field_vactory_media
 entity_type: node

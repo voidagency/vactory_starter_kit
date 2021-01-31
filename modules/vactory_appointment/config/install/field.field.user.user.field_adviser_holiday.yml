@@ -1,0 +1,24 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.storage.user.field_adviser_holiday
+  module:
+    - user
+  enforced:
+    module:
+      - vactory_appointment
+id: user.user.field_adviser_holiday
+field_name: field_adviser_holiday
+entity_type: user
+bundle: user
+label: 'Vacances conseiller'
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    value: '[]'
+default_value_callback: ''
+settings: {  }
+field_type: string_long

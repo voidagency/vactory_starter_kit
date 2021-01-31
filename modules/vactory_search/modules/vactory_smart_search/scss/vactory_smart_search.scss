@@ -1,0 +1,30 @@
+.smart-search-exposed-form {
+  form {
+    legend {
+      font-weight: bold;
+    }
+    .form-type-textfield.form-item-search-api-fulltext {
+      padding: 0;
+      margin-bottom: 0.5rem;
+    }
+    .form-checkboxes {
+      .form-group.form-type-checkbox {
+        justify-content: unset;
+        align-items: center;
+        label {
+          padding-left: 0.4rem;
+          position: static;
+          width: auto;
+          height: auto;
+          clip: unset;
+        }
+      }
+    }
+  }
+}
+.view--vactory-smart-search {
+  .view__header {
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+  }
+}

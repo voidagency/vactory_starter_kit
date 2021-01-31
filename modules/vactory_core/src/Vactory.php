@@ -5,10 +5,10 @@ namespace Drupal\vactory_core;
 use Drupal;
 use Drupal\block\Entity\Block;
 use Drupal\block_content\Entity\BlockContent;
+use Drupal\Core\Entity\EntityBase;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\file\Entity\File;
-use Drupal\Core\Entity\Entity;
 use Drupal\node\NodeInterface;
 use Drupal\twig_tweak\TwigExtension;
 
@@ -56,12 +56,14 @@ class Vactory {
     $block = Block::load($delta);
 
     if ($block) {
-      $variables = \Drupal::entityTypeManager()
-        ->getViewBuilder('block')
-        ->view($block);
+      if (self::isBlockVisible($block)) {
+        $variables = \Drupal::entityTypeManager()
+          ->getViewBuilder('block')
+          ->view($block);
 
-      if ($variables) {
-        return render($variables);
+        if ($variables) {
+          return render($variables);
+        }
       }
     }
     return FALSE;
@@ -90,7 +92,7 @@ class Vactory {
   /**
    * Get the set or default image uri for a file image field (if either exist).
    *
-   * @param \Drupal\Core\Entity\Entity $entity
+   * @param \Drupal\Core\Entity\EntityBase $entity
    *   Entity Object.
    * @param string $fieldName
    *   Entity Field name.
@@ -98,7 +100,7 @@ class Vactory {
    * @return null|string
    *   Image URI if it exists.
    */
-  public static function getImageUri(Entity $entity, string $fieldName) {
+  public static function getImageUri(EntityBase $entity, string $fieldName) {
     $image_uri = NULL;
     if ($entity->hasField($fieldName)) {
       try {
@@ -253,7 +255,7 @@ class Vactory {
    * @param string $field_name
    *   The name of the field you wanna create.
    *
-   * @throws Drupal\Core\Entity\EntityStorageException
+   * @throws \Drupal\Core\Entity\EntityStorageException
    */
   public static function createVccField(string $content_type, string $field_name) {
     $field = FieldConfig::loadByName('node', $content_type, $field_name);
@@ -460,6 +462,70 @@ class Vactory {
       throw new \InvalidArgumentException(sprintf('For Entity you need to specify the ID -- example (entity, node, 1) (at 3 param)'));
     }
     return $function->drupalEntity($type, $id, $view_mode);
+  }
+
+  /**
+   * Check block visibility from block admin settings.
+   */
+  public static function isBlockVisible($block) {
+    $langcode = Drupal::service('language_manager')
+      ->getCurrentLanguage()
+      ->getId();
+    $current_path = \Drupal::service('path.current')->getPath();
+    $alias = \Drupal::service('path.alias_manager')
+      ->getAliasByPath($current_path);
+    $current_path_formats = [
+      $current_path,
+      '/' . $langcode . $current_path,
+      $current_path . '/',
+      $alias,
+      '/' . $langcode . $alias,
+      $alias . '/',
+    ];
+    $is_front_page = \Drupal::service('path.matcher')->isFrontPage();
+    $block_visibility = $block->getVisibility();
+    $show_block = empty($block_visibility);
+    if (!empty($block_visibility)) {
+      $is_hide = $block_visibility['request_path']['negate'];
+      $show_block = $is_hide;
+      $pages_paths = $block_visibility['request_path']['pages'];
+      $front_page_default_paths = [
+        '<front>',
+        '/',
+        '/' . $langcode,
+        '/' . $langcode . '/',
+      ];
+
+      if (!empty($pages_paths)) {
+        $pages_paths = str_replace(["\r\n", "\n", "\r"], ' ', $pages_paths);
+        $pages_paths = explode(' ', $pages_paths);
+        foreach ($pages_paths as $page_path) {
+          $page_path_pattern = '/' . str_replace(['/', '*'], ['\/', '(.)*'], $page_path) . '/';
+          if (strpos($page_path_pattern, '*') !== FALSE) {
+            if (
+              preg_match($page_path_pattern, '/' . $langcode . $current_path . '/') ||
+              preg_match($page_path_pattern, '/' . $langcode . $alias . '/')
+            ) {
+              $show_block = !$is_hide;
+              break;
+            }
+          }
+          else {
+            if (in_array($page_path, $current_path_formats)) {
+              $show_block = !$is_hide;
+              break;
+            }
+          }
+
+          if ($is_front_page && in_array($page_path, $front_page_default_paths)) {
+            $show_block = !$is_hide;
+            break;
+          }
+        }
+      }
+    }
+
+    return $show_block;
   }
 
 }

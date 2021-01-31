@@ -1,0 +1,179 @@
+<?php
+
+/**
+ * @file
+ * Module related hooks.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\taxonomy\Entity\Term;
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_simulation_credit_theme($existing, $type, $theme, $path) {
+  return [
+    "simulation_block" => [
+      'template' => 'simulation-block',
+      'variables' => [
+        'content' => NULL,
+      ],
+    ],
+    "simulation_credit_block" => [
+      'template' => 'simulation-credit-block',
+      'variables' => [
+        'content' => NULL,
+      ],
+    ],
+    "simulation_credit_summary_infos" => [
+      'template' => 'simulateur-credit-summary',
+      'variables' => [
+        'content' => NULL,
+      ],
+    ],
+    "webform__simulateur_de_credit" => [
+      'template' => 'simulateur-credit-form',
+      'base hook' => 'webform',
+    ],
+    "simulation_credit_capacite_emprunt_block" => [
+      'template' => 'simulation-credit-capacite-emprunt-block',
+      'variables' => [
+        'content' => NULL,
+      ],
+    ],
+    "webform__vactory_simulation_capacite_empr" => [
+      'template' => 'simulateur-credit-capacite-emprunt-form',
+      'base hook' => 'webform',
+    ],
+    "simulation_credit_capacite_emprunt_summary_infos" => [
+      'template' => 'simulateur-credit-capacite-emprunt-summary',
+      'variables' => [
+        'content' => NULL,
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_simulation_credit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if (isset($form['#webform_id']) && ($form['#webform_id'] == 'simulateur_de_credit' || $form['#webform_id'] == 'vactory_simulation_capacite_empr')) {
+    $config = \Drupal::config('vactory_simulation_credit.settings');
+    $mode_profile = $config->get('v_simulateur_cf_mode_profile');
+    $mode_simulateur = $config->get('v_simulateur_cf_mode_simulateur');
+    $profiles = $config->get('profiles');
+    if ($mode_simulateur == 1) {
+      unset($form['elements']['actions']);
+      unset($form['progress']);
+    }
+    $form['elements']['simuler_mon_credit']['vactory_simulateur_credit_cout_total']['#access'] = FALSE;
+    if (isset($form['elements']['simuler_mon_credit']['vactory_capacite_de_credit'])) {
+      $form['elements']['simuler_mon_credit']['vactory_capacite_de_credit']['#access'] = FALSE;
+    }
+    array_unshift($form['actions']['submit']['#submit'], "submit_form_simulation_credit");
+    if ($mode_profile == 1) {
+      $profiles_options = (!empty(load_taxonomy_by_id($profiles))) ? load_taxonomy_by_id($profiles) : [];
+      $form['elements']['simuler_mon_credit']['vactory_simulateur_credit_profile']['#options'] = $profiles_options;
+      $form['elements']['simuler_mon_credit']['vactory_simulateur_credit_taux']['#access'] = FALSE;
+      $form['elements']['simuler_mon_credit']['vactory_simulateur_credit_taux_range']['#access'] = FALSE;
+    }
+    elseif ($mode_profile == 0) {
+      $form['elements']['simuler_mon_credit']['vactory_simulateur_credit_profile']['#access'] = FALSE;
+    }
+    $montant = NULL;
+    $mensualites = NULL;
+    $taux = NULL;
+    $duree = NULL;
+    $cout_total = NULL;
+    if ($form_state->get('current_page') == 'mes_coordonnees') {
+      $mensualites = $form_state->getValue('vactory_simulateur_credit_mensualite');
+      $taux = $form_state->getValue('vactory_simulateur_credit_taux');
+      if ($mode_profile == 1) {
+        $taux = search_profile_by_term_id($config->get('profiles'), $form_state->getValue('vactory_simulateur_credit_profile'))['simulateur_taux']['v_simulateur_cf_taux'];
+      }
+      $duree = $form_state->getValue('vactory_simulateur_credit_duree');
+      $montant = $form_state->getValue('vactory_simulateur_credit_montant');
+      if ($form['#webform_id'] == 'vactory_simulation_capacite_empr') {
+        $montant = ((12 * $mensualites) / ($taux / 100)) * (1 - pow(1 + ($taux / 100) / 12, -1 * $duree));
+        $montant = number_format((float) $montant, 2, '.', '');
+      }
+      $cout_total = $form_state->getValue('vactory_simulateur_credit_mensualite') * $form_state->getValue('vactory_simulateur_credit_duree');
+    }
+    if ($form['#webform_id'] == 'simulateur_de_credit') {
+      $form['summary'] = [
+        '#theme' => 'simulation_credit_summary_infos',
+        '#content' => [
+          'montant' => $montant,
+          'mensualites' => $mensualites,
+          'taux' => $taux,
+          'duree' => $duree,
+          'cout_total' => $cout_total,
+        ],
+      ];
+    }
+    if ($form['#webform_id'] == 'vactory_simulation_capacite_empr') {
+      $form['summary'] = [
+        '#theme' => 'simulation_credit_capacite_emprunt_summary_infos',
+        '#content' => [
+          'montant' => $montant,
+          'mensualites' => $mensualites,
+          'taux' => $taux,
+          'duree' => $duree,
+          'cout_total' => $cout_total,
+        ],
+      ];
+    }
+  }
+}
+
+/**
+ * Search profile by th term id.
+ */
+function search_profile_by_term_id($data, $id) {
+  foreach ($data as $key => $item) {
+    if ($key > 0) {
+      if ($item['v_simulateur_cf_profile'] === $id) {
+        return $item;
+      }
+    }
+  }
+}
+
+/**
+ * Load taxonomy by id.
+ */
+function load_taxonomy_by_id($profiles) {
+  $data = [];
+  foreach ($profiles as $key => $profile) {
+    if ($key > 0) {
+      $term = Term::load($profile['v_simulateur_cf_profile']);
+      $data[$profile['v_simulateur_cf_profile']] = $term->get('name')->value;
+    }
+  }
+  return $data;
+}
+
+/**
+ * Submit function Simulation credit.
+ */
+function submit_form_simulation_credit(&$form, FormStateInterface $form_state) {
+  // Set Coût total du crédit.
+  $cout_total = $form_state->getValue('vactory_simulateur_credit_duree') * $form_state->getValue('vactory_simulateur_credit_mensualite');
+  $form_state->setValue('vactory_simulateur_credit_cout_total', $cout_total);
+  // Set Taux if empty.
+  $taux = $form_state->getValue('vactory_simulateur_credit_taux');
+  if ($taux == "") {
+    $config = \Drupal::config('vactory_simulation_credit.settings');
+    $profiles = $config->get('profiles');
+    $profile_id = $form_state->getValue('vactory_simulateur_credit_profile');
+    $taux = search_profile_by_term_id($profiles, $profile_id)['simulateur_taux']['v_simulateur_cf_taux'];
+    $form_state->setValue('vactory_simulateur_credit_taux', $taux);
+  }
+  // Set capacité d'emprunt (Montant à crédit).
+  $mensualite = $form_state->getValue('vactory_simulateur_credit_mensualite');
+  $duree = $form_state->getValue('vactory_simulateur_credit_duree');
+  $taux = $taux / 100;
+  $capacite_emprunt = ((12 * $mensualite) / $taux) * (1 - pow(1 + $taux / 12, -1 * $duree));
+  $form_state->setValue('vactory_capacite_de_credit', number_format((float) $capacite_emprunt, 2, '.', ''));
+}

@@ -1,0 +1,53 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.smart_search
+    - field.field.node.vactory_tender.body
+    - field.field.node.vactory_tender.field_vactory_date
+    - field.field.node.vactory_tender.field_vactory_excerpt
+    - field.field.node.vactory_tender.field_vactory_media_document
+    - field.field.node.vactory_tender.field_vactory_media_file
+    - field.field.node.vactory_tender.field_vactory_reference
+    - node.type.vactory_tender
+  module:
+    - datetime
+    - user
+    - vactory_field
+id: node.vactory_tender.smart_search
+targetEntityType: node
+bundle: vactory_tender
+mode: smart_search
+content:
+  field_vactory_date:
+    weight: 1
+    label: hidden
+    settings:
+      timezone_override: ''
+      date_format: 'd | M | Y'
+    third_party_settings: {  }
+    type: datetime_custom
+    region: content
+  field_vactory_excerpt:
+    type: vactory_field_excerpt_formatter
+    weight: 2
+    region: content
+    label: hidden
+    settings:
+      trim_length: '170'
+    third_party_settings: {  }
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  body: true
+  field_vactory_media_document: true
+  field_vactory_media_file: true
+  field_vactory_reference: true
+  langcode: true
+  notification_message: true
+  notification_title: true
+  search_api_excerpt: true

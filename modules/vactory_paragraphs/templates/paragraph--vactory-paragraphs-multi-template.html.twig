@@ -41,68 +41,68 @@
 
 {% set tabs_links = [] %}
 {% for key, tab in content.field_vactory_paragraph_tab %}
-    {% if key|first != '#' %}
-        {% set tabs_links = tabs_links|merge([tab['#paragraph'].field_vactory_title.value]) %}
-    {% endif %}
+  {% if key|first != '#' %}
+    {% set tabs_links = tabs_links|merge([tab['#paragraph'].field_vactory_title.value]) %}
+  {% endif %}
 {% endfor %}
 
 {% embed "@vactory_paragraphs/paragraph--vactory-component.html.twig" %}
-    {% block paragraphContent %}
+  {% block paragraphContent %}
+    {% if paragraph.field_vactory_flag.value == true %}
+      {% if content.field_vactory_title.0['#context'].value is defined %}
+        <h3 class="accordion-title title">{{ content.field_vactory_title.0['#context'].value }}</h3>
+      {% endif %}
+    {% endif %}
+    {{ title_suffix }}
+    {% if content.field_paragraph_introduction.0['#context'].value is defined %}
+      <p class="intro accordion-intro">
+        {{ content.field_paragraph_introduction.0['#context'].value }}
+      </p>
+    {% endif %}
 
-        {% if paragraph.field_vactory_flag.value == true %}
-            {% if content.field_vactory_title.0['#context'].value is defined %}
-                <h3 class="accordion-title title">{{ content.field_vactory_title.0['#context'].value }}</h3>
-            {% endif %}
-        {% endif %}
-        {% if content.field_paragraph_introduction.0['#context'].value is defined %}
-            <p class="intro accordion-intro">
-                {{ content.field_paragraph_introduction.0['#context'].value }}
-            </p>
-        {% endif %}
+    {#--- Tabs Display ---#}
+    {% if content.field_multi_paragraph_type.0['#markup'] == 'Tab display' %}
+      {# Sets Unique ID for Tabs. #}
+      {% set tab_id = 'nav-tab-' ~ random(999) %}
+      <nav>
+        <div class="nav nav-tabs" id="{{ tab_id }}" role="tablist">
+          {% for key, item in tabs_links if key|first != '#' %}
+            <a class="nav-item nav-link {% if loop.first %} active {% endif %}" data-toggle="tab" href="#{{ tab_id }}-{{ key + 1 }}" role="tab" aria-controls="{{ tab_id }}-{{ key + 1 }}" aria-selected="{% if loop.first %} true {% else %} false {% endif %}">{{ item }}</a>
+          {% endfor %}
+        </div>
+      </nav>
+      <div class="tab-content" id="{{ tab_id }}-Content">
+        {% for key, item in content.field_vactory_paragraph_tab if key|first != '#' %}
+          <div class="tab-pane fade {% if loop.first %} active show {% endif %}" id="{{ tab_id }}-{{ key + 1 }}" role="tabpanel" aria-labelledby="{{ tab_id }}-{{ key + 1 }}">{{ item }}</div>
+        {% endfor %}
+      </div>
+    {#--- Accordion Display ---#}
+    {% else %}
 
-        {#--- Tabs Display ---#}
-        {% if content.field_multi_paragraph_type.0['#markup'] == 'Tab display' %}
-            {# Sets Unique ID for Tabs. #}
-            {% set tab_id = 'nav-tab-' ~ random(999) %}
-            <nav>
-                <div class="nav nav-tabs" id="{{ tab_id }}" role="tablist">
-                    {% for key, item in tabs_links if key|first != '#' %}
-                        <a class="nav-item nav-link {% if loop.first %} active {% endif %}" data-toggle="tab" href="#{{ tab_id }}-{{ key + 1 }}" role="tab" aria-controls="{{ tab_id }}-{{ key + 1 }}" aria-selected="{% if loop.first %} true {% else %} false {% endif %}">{{ item }}</a>
-                    {% endfor %}
-                </div>
-            </nav>
-            <div class="tab-content" id="{{ tab_id }}-Content">
-                {% for key, item in content.field_vactory_paragraph_tab if key|first != '#' %}
-                    <div class="tab-pane fade {% if loop.first %} active show {% endif %}" id="{{ tab_id }}-{{ key + 1 }}" role="tabpanel" aria-labelledby="{{ tab_id }}-{{ key + 1 }}">{{ item }}</div>
-                {% endfor %}
+      {# Sets Unique ID for Accordion. #}
+      {% set accordion_id = 'accordion-' ~ random(999) %}
+
+      <div class="accordion" id="{{ accordion_id }}">
+        {% for key, item in tabs_links if key|first != '#' %}
+          {% set collapsed = (key != 0) ? 'collapsed' : 'collapsed' %}
+          <div class="card">
+            <div class="card-header" id="heading{{ accordion_id }}-{{ key + 1 }}">
+              <h5 class="mb-0">
+                <button class="btn btn-link {{ collapsed }}"
+                        type="button"
+                        data-toggle="collapse"
+                        data-target="#collapse{{ accordion_id }}-{{ key + 1 }}" aria-expanded="{#% if loop.first %} true {% else %} false {% endif %#}" aria-controls="collapse{{ accordion_id }}-{{ key + 1 }}">{{ item }}</button>
+              </h5>
             </div>
-        {#--- Accordion Display ---#}
-        {% else %}
 
-            {# Sets Unique ID for Accordion. #}
-            {% set accordion_id = 'accordion-' ~ random(999) %}
-
-            <div class="accordion" id="{{ accordion_id }}">
-                {% for key, item in tabs_links if key|first != '#' %}
-                    {% set collapsed = (key != 0) ? 'collapsed' : 'collapsed' %}
-                    <div class="card">
-                        <div class="card-header" id="heading{{ accordion_id }}-{{ key + 1 }}">
-                            <h5 class="mb-0">
-                                <button class="btn btn-link {{ collapsed }}"
-                                        type="button"
-                                        data-toggle="collapse"
-                                        data-target="#collapse{{ accordion_id }}-{{ key + 1 }}" aria-expanded="{#% if loop.first %} true {% else %} false {% endif %#}" aria-controls="collapse{{ accordion_id }}-{{ key + 1 }}">{{ item }}</button>
-                            </h5>
-                        </div>
-
-                        <div id="collapse{{ accordion_id }}-{{ key + 1 }}" class="collapse {#% if loop.first %} show {% endif %#}" aria-labelledby="heading{{ accordion_id }}-{{ key + 1 }}" data-parent="#{{ accordion_id }}">
-                            <div class="card-body">{{ content.field_vactory_paragraph_tab[key] }}</div>
-                        </div>
-                    </div>
-                {% endfor %}
+            <div id="collapse{{ accordion_id }}-{{ key + 1 }}" class="collapse {#% if loop.first %} show {% endif %#}" aria-labelledby="heading{{ accordion_id }}-{{ key + 1 }}" data-parent="#{{ accordion_id }}">
+              <div class="card-body">{{ content.field_vactory_paragraph_tab[key] }}</div>
             </div>
-        {% endif %}
-    {% endblock paragraphContent %}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endblock paragraphContent %}
 {% endembed %}
 
 

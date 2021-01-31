@@ -14,6 +14,11 @@ $vh6-link-padding: 15px 15px !default;
     &.top {
       top: -93px;
     }
+    .menu__item--1:last-child {
+      .menu__level--2 {
+        left: -100%;
+      }
+    }
   }
   @include media-breakpoint-down(md) {
     &.bottom {
@@ -50,7 +55,6 @@ $vh6-link-padding: 15px 15px !default;
       align-items    : center;
       justify-content: flex-end;
       padding        : 0 10px;
-      background     : $gray-500;
     }
 
     &__bottom-right {

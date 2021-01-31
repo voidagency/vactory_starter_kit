@@ -1,0 +1,23 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_annual_report
+  config:
+    - field.storage.node.field_ar_element_width
+    - node.type.vactory_annual_report
+  module:
+    - options
+id: node.vactory_annual_report.field_ar_element_width
+field_name: field_ar_element_width
+entity_type: node
+bundle: vactory_annual_report
+label: 'Element width'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: list_string

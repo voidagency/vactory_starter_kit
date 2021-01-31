@@ -94,8 +94,8 @@ class LazyImageFormatter extends ResponsiveImageFormatter {
       $configuration['label'],
       $configuration['view_mode'],
       $configuration['third_party_settings'],
-      $container->get('entity.manager')->getStorage('responsive_image_style'),
-      $container->get('entity.manager')->getStorage('image_style'),
+      $container->get('entity_type.manager')->getStorage('responsive_image_style'),
+      $container->get('entity_type.manager')->getStorage('image_style'),
       $container->get('link_generator'),
       $container->get('current_user'),
       $container->get('renderer')

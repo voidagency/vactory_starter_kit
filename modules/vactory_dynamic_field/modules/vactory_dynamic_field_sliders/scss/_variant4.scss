@@ -159,6 +159,7 @@ $full-slider-active-state: $primary;
 @include media-breakpoint-up(lg) {
   .vf-slider--full-background {
     position: relative;
+    width: 100%;
     height: $full-slider-height-desktop;
     z-index: 0;
     overflow: hidden;

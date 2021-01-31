@@ -12,18 +12,6 @@ fields:
   link_1:
     type: url_extended
     label: 'Lien 1'
-  link_alt_1:
-    type: text
-    label: 'Titre lien 1'
-  link_target_1:
-    type: checkbox
-    label: 'Ouvrir dans une nouvelle fenêtre'
   link_2:
     type: url_extended
     label: 'Lien 2'
-  link_alt_2:
-    type: text
-    label: 'Titre lien 2'
-  link_target_2:
-    type: checkbox
-    label: 'Ouvrir dans une nouvelle fenêtre'

@@ -2,6 +2,7 @@
 
 namespace Drupal\vactory_core;
 
+use Drupal\menu_link_content\Entity\MenuLinkContent;
 use Drupal\simplify_menu\MenuItems as MenuItemsBase;
 
 /**
@@ -36,7 +37,7 @@ class MenuItems extends MenuItemsBase {
    * @return array
    *   The simplified menu tree array.
    */
-  protected function simplifyLinks(array $links, $submenuKey = 'submenu') {
+  protected function simplifyLinks(array $links, string $submenuKey = 'submenu'): array {
     $result = [];
     $current_user_roles = \Drupal::currentUser()->getRoles();
     foreach ($links as $item) {
@@ -64,7 +65,7 @@ class MenuItems extends MenuItemsBase {
       $simplifiedLink = [
         'text'         => (isset($entity) && !empty($entity->get('title'))) ? $entity->get('title')->first()->getValue()['value'] : $item->link->getTitle(),
         'url'          => (isset($entity) && !empty($entity->getUrlObject()
-            ->toString())) ? $entity->getUrlObject()
+          ->toString())) ? $entity->getUrlObject()
           ->toString() : $item->link->getUrlObject()->toString(),
         'options'      => [],
         'fields'       => [],
@@ -101,7 +102,6 @@ class MenuItems extends MenuItemsBase {
       $result[] = $simplifiedLink;
     }
 
-//    dpm($result);
     return $result;
   }
 
@@ -114,7 +114,7 @@ class MenuItems extends MenuItemsBase {
    * @return array
    *   Render array of menu items.
    */
-  public function getMenuTree($menuId = 'main') {
+  public function getMenuTree(string $menuId = 'main'): array {
     $entityFieldManager = \Drupal::service('entity_field.manager');
     $this->menuId = $menuId;
     $this->menuFields = $entityFieldManager->getFieldDefinitions('menu_link_content', $menuId);
@@ -125,11 +125,15 @@ class MenuItems extends MenuItemsBase {
   /**
    * Check if user have a role access or not.
    *
-   * @param $menu_item
+   * @param \Drupal\menu_link_content\Entity\MenuLinkContent $menu_item
+   *   The menu item.
+   * @param array $current_user_roles
+   *   Current user roles.
    *
    * @return bool
+   *   The menu access.
    */
-  public function checkMenuRole($menu_item, $current_user_roles) {
+  public function checkMenuRole(MenuLinkContent $menu_item, array $current_user_roles) {
     $menu_show_roles = $menu_item->get('menu_role_show_role')->getValue();
     $validate = TRUE;
     if (!empty($menu_show_roles) && empty(self::searchMultidimensionalArray($current_user_roles, $menu_show_roles))) {
@@ -140,14 +144,15 @@ class MenuItems extends MenuItemsBase {
   }
 
   /**
-   * Search array in array Multidimensionaly
+   * Search array in array Multidimensionaly.
    *
    * @param array $array_data
-   *  The array sought.
+   *   The array sought.
    * @param array $array_base
-   *  The array search in.
+   *   The array search in.
    *
    * @return array
+   *   The data array.
    */
   protected function searchMultidimensionalArray(array $array_data, array $array_base) {
     $array_base = array_column($array_base, 'target_id');
@@ -159,4 +164,5 @@ class MenuItems extends MenuItemsBase {
     }
     return $data;
   }
+
 }

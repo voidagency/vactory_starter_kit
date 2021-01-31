@@ -72,6 +72,13 @@
     <div class="tab-content" id="sliderTabContent">
       {% for item in content %}
         {% set is_active = (loop.first) ? 'show active' : '' %}
+
+        {% set link_attributes = create_attribute() %}
+        {% set link_attributes = item.link.attributes.id is not empty ? link_attributes.setAttribute('id', item.link.attributes.id ) : link_attributes %}
+        {% set link_attributes = item.link.attributes.class is not empty ? link_attributes.setAttribute('class', item.link.attributes.class ~ 'permalink') : link_attributes.setAttribute('class', 'permalink') %}
+        {% set link_attributes = item.link.attributes.target is not empty ? link_attributes.setAttribute('target', item.link.attributes.target ) : link_attributes %}
+        {% set link_attributes = item.link.attributes.rel is not empty ? link_attributes.setAttribute('rel', item.link.attributes.rel ) : link_attributes %}
+
         <div class="tab-pane fade {{ is_active }} tab-pane-{{ loop.index }}"
              id="slider-content-{{ loop.index }}" role="tabpanel" data-color="#{{ item.slider_bg }}">
           {% if item.title is not empty %}
@@ -85,8 +92,8 @@
           {% if item.content.value is not empty %}
             {{ item.content.value | raw }}
           {% endif %}
-          {% if item.cta_url is not empty %}
-            <a href="{{ item.cta_url }}" class="permalink">{{ 'Découvrir' | t }}</a>
+          {% if item.link.url is not empty and item.link.title is not empty %}
+            <a  href="{{ item.link.url }}" {{ link_attributes }} > {{  item.link.title }} </a>
           {% endif %}
         </div>
       {% endfor %}

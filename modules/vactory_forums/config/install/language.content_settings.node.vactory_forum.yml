@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_forums
+  config:
+    - node.type.vactory_forum
+  module:
+    - content_translation
+third_party_settings:
+  content_translation:
+    enabled: true
+id: node.vactory_forum
+target_entity_type_id: node
+target_bundle: vactory_forum
+default_langcode: site_default
+language_alterable: true

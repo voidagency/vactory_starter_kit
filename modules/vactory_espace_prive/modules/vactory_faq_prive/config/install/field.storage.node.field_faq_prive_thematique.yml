@@ -1,0 +1,22 @@
+langcode: fr
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_faq_prive
+  module:
+    - node
+    - taxonomy
+id: node.field_faq_prive_thematique
+field_name: field_faq_prive_thematique
+entity_type: node
+type: entity_reference
+settings:
+  target_type: taxonomy_term
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

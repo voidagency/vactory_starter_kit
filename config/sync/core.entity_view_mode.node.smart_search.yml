@@ -1,0 +1,12 @@
+uuid: 315dd2e8-9612-4467-8729-a81cc5e2409c
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+_core:
+  default_config_hash: FtfFFwyHueFJJw1ZGlWf_YN0t5g0lRPROQW51VogxBc
+id: node.smart_search
+label: 'Smart Search'
+targetEntityType: node
+cache: true

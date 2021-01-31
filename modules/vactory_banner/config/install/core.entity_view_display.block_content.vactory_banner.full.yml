@@ -30,15 +30,15 @@ content:
     third_party_settings: {  }
     region: content
   field_background_color:
-    type: jquery_colorpicker_raw_hex_display
-    weight: 3
+    type: jquery_colorpicker_color_display
+    weight: 5
     region: content
     label: above
     settings: {  }
     third_party_settings: {  }
   field_banner_image_mobile:
     type: media_responsive_thumbnail
-    weight: 5
+    weight: 4
     region: content
     label: hidden
     settings:
@@ -64,7 +64,7 @@ content:
     third_party_settings: {  }
   field_vactory_media:
     type: media_responsive_thumbnail
-    weight: 4
+    weight: 3
     region: content
     label: hidden
     settings:

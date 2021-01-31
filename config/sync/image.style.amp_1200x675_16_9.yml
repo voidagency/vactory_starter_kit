@@ -1,0 +1,20 @@
+uuid: 470d9756-ac00-4073-8cec-214841442107
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - amp
+_core:
+  default_config_hash: FC6N-uqZVGPIlwvXVq3b68iEeCRzEosXtrLS2QcHWRI
+name: amp_1200x675_16_9
+label: 'AMP 1200x675 - 16:9'
+effects:
+  84272b79-449d-42ee-8d15-ce28067adf9d:
+    uuid: 84272b79-449d-42ee-8d15-ce28067adf9d
+    id: image_scale
+    weight: 1
+    data:
+      width: 1200
+      height: 675
+      upscale: true

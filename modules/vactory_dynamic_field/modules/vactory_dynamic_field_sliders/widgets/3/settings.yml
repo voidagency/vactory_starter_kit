@@ -28,7 +28,7 @@ fields:
     label: 'Description'
     options:
       '#format': 'full_html'
-  cta_url:
+  link:
     type: url_extended
     label: 'Read More Link'
   slider_bg:

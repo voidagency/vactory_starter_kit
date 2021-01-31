@@ -1,0 +1,9 @@
+vactory_views_pretty_path.views_pretty_path_admin_form:
+  path: /admin/config/vactory-views-pretty-path
+  defaults:
+    _form: \Drupal\vactory_views_pretty_path\Form\VactoryViewsPrettyPathAdminForm
+    _title: Vactory Views Pretty Path
+  requirements:
+    _permission: access administration pages
+  options:
+    _admin_route: TRUE

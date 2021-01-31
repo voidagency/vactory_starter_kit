@@ -1,22 +1,27 @@
 <div class='row rapport-wrapper'>
     {% for item in content %}
-        {% set image_uri = (item.background_img.0 is defined) ? get_image(item.background_img.0) : '' %} 
+        {% set image_uri = (item.background_img.0 is defined) ? get_image(item.background_img.0) : '' %}
         {% set fluid_image = file_url(image_uri) %}
         {% set margin = (item.mode == 1)? 'm-0' : ' ' %}
 
+        {% set link_attributes = create_attribute() %}
+        {% set link_attributes = item.link.attributes.id is not empty ? link_attributes.setAttribute('id', item.link.attributes.id ) : link_attributes %}
+        {% set link_attributes = item.link.attributes.class is not empty ? link_attributes.setAttribute('class', item.link.attributes.class  ~ ' icon-arrow_forward') : link_attributes.setAttribute('class','icon-arrow_forward') %}
+        {% set link_attributes = item.link.attributes.target is not empty ? link_attributes.setAttribute('target', item.link.attributes.target ) : link_attributes %}
+        {% set link_attributes = item.link.attributes.rel is not empty ? link_attributes.setAttribute('rel', item.link.attributes.rel ) : link_attributes %}
+
         <div class='col-12 {{item.col}} rapport-card'>
-            {% if item.link is not empty and item.mode == 0 %}
-                {% set link_target = (item.link_target > 0) ? '_blank' : '_self' %}
-                <a href='{{item.link}}' target="{{ link_target }}" >
-            {% endif %}  
-                <div class='rapport-card_item d-flex flex-column justify-content-between' style="background-image: url('{{ fluid_image }}');background:#{{ item.background_color }};">
+            {% if item.link.url is not empty and item.mode == 0 %}
+                <a href="{{ item.link.url }}" {{ link_attributes }} >
+            {% endif %}
+                <div class='rapport-card_item d-flex flex-column justify-content-between' style="background-image: url('{{ fluid_image }}');background: {{ item.background_color }};">
                     <div>{{item.tag}}</div>
                     {% if item.mode == 1 %}
                         <div class='rapport-card_video'>
-                            <a data-fancybox href='{{item.link}}' >
+                            <a data-fancybox href="{{ item.link.url }}" >
                                 <i class='icon-play'></i>
                             </a>
-                        </div>  
+                        </div>
                     {% endif %}
                     <div class='rapport-card_description {{ margin }}'>
                         <h2>{{item.titre}}</h2>
@@ -24,14 +29,14 @@
                     </div>
                     {% if item.file is not empty %}
                         <a href='{{item.file}}' > {{ 'Télécharger '|t }} <i class='icon-download'></i></a>
-                    {% endif %}    
+                    {% endif %}
                 </div>
-            {% if item.link is not empty and item.mode == 0 %}
-                <a href='{{item.link}}' >
-            {% endif %} 
+            {% if item.link.url is not empty and item.mode == 0 %}
+                <a href="{{ item.link.url }}" {{ link_attributes }} >
+            {% endif %}
             {% if item.link is not empty and item.mode == 0 %}
                 </a>
-            {% endif %}       
+            {% endif %}
         </div>
     {% endfor %}
 </div>

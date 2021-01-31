@@ -1,0 +1,10 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_annual_report
+name: 'Annual report - Années'
+vid: rapport_digital_annees
+description: 'Utiliser ce vocabulaire pour ajouter les années de rapport annuel'
+weight: 0

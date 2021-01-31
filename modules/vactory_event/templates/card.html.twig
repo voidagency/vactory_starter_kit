@@ -64,13 +64,13 @@
  */
 #}
 
-{% include "@twigComponents/article/article-event.twig" with {
+{% embed "@twigComponents/article/article-event.twig" with {
   'classes': ['vf-card--event'],
   'title': label,
   'url': url,
   'image': addAttributes(content.field_vactory_media, {'class': ['vf-card__image', 'img-fluid']}),
   'subtitle': {
-    'category': content.field_vactory_taxonomy_1.0,
+    'category': content.field_vactory_taxonomy_1,
     'city': content.field_vactory_taxonomy_2.0,
   },
   'intro': content.field_vactory_excerpt,
@@ -79,3 +79,14 @@
   'date_start': content.field_vactory_date_interval.date_start_raw,
   'date_end': content.field_vactory_date_interval.date_end_raw,
 } %}
+
+  {% block subtitle %}
+    <span class="badge badge-danger">{{ subtitle.city }}</span>
+    {% for key,thematic in subtitle.category %}
+      {% if key matches '/^\\d+$/' %}
+        <span class="badge badge-primary">{{ subtitle.category[key] }}</span>
+      {% endif %}
+    {% endfor %}
+  {% endblock %}
+
+{% endembed %}

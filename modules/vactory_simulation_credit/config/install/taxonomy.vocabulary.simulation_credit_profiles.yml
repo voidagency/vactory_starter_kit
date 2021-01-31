@@ -1,0 +1,10 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_simulation_credit
+name: 'Simulation Credit - Profiles'
+vid: simulation_credit_profiles
+description: ''
+weight: 0

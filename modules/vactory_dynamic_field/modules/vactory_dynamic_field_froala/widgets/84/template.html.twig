@@ -21,10 +21,11 @@
                 {% set image_uri =(item.image.0 is defined) ?  get_image(item.image.0) : '' %}
                 {% set picto = image_uri|image_style('max_650x650') %}
                 {% set lqip_image = image_uri|image_style('lqip') %}
+                {% set alt_image = (item.image_alt) ? item.image_alt : item.image.alt_image %}
 
                 {% if item.image.0 is not empty %}
                     <div class="lazy-wrapper">
-                        <img alt="{{ item.image_alt }}"
+                        <img alt="{{ alt_image }}"
                             class="lazyload img-fluid"
                             src="{{ lqip_image }}"
                             data-src="{{ picto }}">

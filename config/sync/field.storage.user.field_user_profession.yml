@@ -1,9 +1,11 @@
-uuid: f197e224-16f9-4065-aa3b-bd299b6ae615
+uuid: c83a58a0-cf93-485d-ba3c-e58197c386b2
 langcode: en
 status: true
 dependencies:
   module:
     - user
+_core:
+  default_config_hash: EAivyugqYeP438ICYaumPBKgky91PzVOgV8VMGYlffU
 id: user.field_user_profession
 field_name: field_user_profession
 entity_type: user

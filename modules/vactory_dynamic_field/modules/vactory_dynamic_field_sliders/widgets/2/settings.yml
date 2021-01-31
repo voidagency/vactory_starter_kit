@@ -19,10 +19,7 @@ fields:
     label: 'Description'
     options:
       '#format': 'full_html'
-  cta_url:
+  link:
     type: url_extended
     label: 'Read More Link'
     placeholder_value: 'https://www.google.com'
-  cta_alt:
-    type: text
-    label: 'Read More Text'

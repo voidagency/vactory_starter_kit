@@ -1,0 +1,35 @@
+{#
+/**
+ * @file
+ * Theme override to display a view of unformatted rows.
+ *
+ * Available variables:
+ * - title: The title of this group of rows. May be empty.
+ * - rows: A list of the view's row items.
+ *   - attributes: The row's HTML attributes.
+ *   - content: The row's content.
+ * - view: The view object.
+ * - default_row_class: A flag indicating whether default classes should be
+ *   used on rows.
+ *
+ * @see template_preprocess_views_view_unformatted()
+ */
+#}
+{{ attach_library('vactory_flash_news/scripts') }}
+{% if title %}
+  <h3>{{ title }}</h3>
+{% endif %}
+<div class="flash-news-items-wrapper">
+  {% for row in rows %}
+    {% if row.content['#row']._entity.field_vactory_call_to_action.uri is defined %}
+      <a href="{{ row.content['#row']._entity.field_vactory_call_to_action.uri }}" class="text-dark">
+    {% endif %}
+    <div class="prefix-icon-dribbble item {{ loop.first ? 'active' : '' }}">
+      <strong>{{ row.content['#row']._entity.title.value }}</strong> :
+      {{ row.content['#row']._entity.body.value|striptags }}
+    </div>
+    {% if row.content['#row']._entity.field_vactory_call_to_action is defined %}
+      </a>
+    {% endif %}
+  {% endfor %}
+</div>

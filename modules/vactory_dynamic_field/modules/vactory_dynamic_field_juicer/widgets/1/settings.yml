@@ -1,0 +1,25 @@
+name: 'Social Media Juicer'
+multiple: TRUE
+category: 'Juicer'
+enabled: TRUE
+fields:
+  feed_data_attr:
+    type: text
+    label: 'Feed data attributes'
+  feed_data_val:
+    type: text
+    label: 'Feed data value'
+extra_fields:
+  feed_id:
+    type: text
+    label: 'Feed id'
+    options:
+      '#required': TRUE
+  title:
+    type: text
+    label: 'Title'
+  introduction:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'basic_html'

@@ -1,4 +1,4 @@
-uuid: 070d44e0-457f-4d06-8de3-423b9a5b6aa6
+uuid: 57af1003-16ce-446a-8997-7722232ce66e
 langcode: en
 status: true
 dependencies:
@@ -9,6 +9,8 @@ dependencies:
 third_party_settings:
   content_translation:
     enabled: true
+_core:
+  default_config_hash: D2tSJXapZO1oiNuoDv2ntM86UxteExEi2mF2b_DxdF0
 id: block_content.vactory_block_component
 target_entity_type_id: block_content
 target_bundle: vactory_block_component

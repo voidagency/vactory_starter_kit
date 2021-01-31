@@ -1,4 +1,4 @@
-uuid: a4d2efa7-eda8-49ac-b267-e3b9cb484c40
+uuid: a3a0b880-16cf-45b1-8d6f-736ac38ae444
 langcode: en
 status: true
 dependencies:
@@ -6,7 +6,11 @@ dependencies:
     - field.field.user.user.field_about_the_author
     - field.field.user.user.field_first_name
     - field.field.user.user.field_last_name
+    - field.field.user.user.field_last_password_reset
+    - field.field.user.user.field_password_expiration
     - field.field.user.user.field_social_media_links
+    - field.field.user.user.field_telephone
+    - field.field.user.user.field_user_groups
     - field.field.user.user.field_user_profession
     - field.field.user.user.user_picture
   module:
@@ -14,6 +18,8 @@ dependencies:
     - social_media_links_field
     - text
     - user
+_core:
+  default_config_hash: NzTA7tFq2N5mjvyaiyxlPjiF7j4dW3NvlJgyDZ1cQfw
 id: user.user.default
 targetEntityType: user
 bundle: user
@@ -55,6 +61,14 @@ content:
     third_party_settings: {  }
     type: social_media_links_field_default
     region: content
+  field_telephone:
+    type: string
+    weight: 7
+    region: content
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
   field_user_profession:
     weight: 5
     label: above
@@ -78,5 +92,8 @@ content:
       image_link: ''
     third_party_settings: {  }
 hidden:
+  field_last_password_reset: true
+  field_password_expiration: true
+  field_user_groups: true
   langcode: true
   search_api_excerpt: true

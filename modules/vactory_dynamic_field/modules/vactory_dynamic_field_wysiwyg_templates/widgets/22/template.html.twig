@@ -10,25 +10,34 @@
       {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : ' ' %}
       {% set fluid_image = file_url(image_uri) %}
       {% set lqip_image = image_uri|image_style('lqip') %}
-      {% set image_alt = (item.image_alt is not empty) ? item.image_alt : 'Image alt' %}
-      {% set link_target = (item.link_target > 0) ? '_blank' : '_self' %}
+      {% set image_alt = (item.image_alt) ? item.image_alt : item.image.alt_image %}
+      
+      {% set link_attributes = create_attribute() %}
+      {% set link_attributes = item.link.attributes.id is not empty ? link_attributes.setAttribute('id', item.link.attributes.id ) : link_attributes %}
+      {% set link_attributes = item.link.attributes.class is not empty ? link_attributes.setAttribute('class', item.link.attributes.class ) : link_attributes %}
+      {% set link_attributes = item.link.attributes.target is not empty ? link_attributes.setAttribute('target', item.link.attributes.target ) : link_attributes %}
+      {% set link_attributes = item.link.attributes.rel is not empty ? link_attributes.setAttribute('rel', item.link.attributes.rel ) : link_attributes %}
 
       <div class="col-lg-3 text-center">
         <div class="t-box-image">
-          {% if item.link is not empty %} <a href="{{ item.link }}" target="{{ link_target }}"> {% endif %}
+          {% if item.link.url is not empty %} 
+            <a href="{{ item.link.url }}" {{ link_attributes }} > 
+          {% endif %}
             <div class="lazy-wrapper">
               <img class="lazyload"
                    alt="{{ image_alt }}"
                    src="{{ lqip_image }}"
                    data-src="{{ fluid_image }}">
             </div>
-            {% if item.link is not empty %} </a> {% endif %}
+            {% if item.link.url is not empty %} </a> {% endif %}
         </div>
         {% if item.title is not empty %}
           <div class="t-box-title p-3">
-            {% if item.link is not empty %} <a href="{{ item.link }}" target="{{ link_target }}"> {% endif %}
+            {% if item.link.url is not empty %} 
+              <a href="{{ item.link.url }}" {{ link_attributes }} > 
+            {% endif %}
               <h5>{{ item.title }}</h5>
-              {% if item.link is not empty %} </a> {% endif %}
+              {% if item.link.url is not empty %} </a> {% endif %}
           </div>
         {% endif %}
       </div>

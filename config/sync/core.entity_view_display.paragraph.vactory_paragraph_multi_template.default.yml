@@ -1,10 +1,16 @@
-uuid: f143e875-4b1f-49ea-be44-bedd1d7f5c7f
+uuid: 66370085-d4af-485a-a06a-152a9fdbc2c9
 langcode: en
 status: true
 dependencies:
   config:
+    - field.field.paragraph.vactory_paragraph_multi_template.field_background_color
     - field.field.paragraph.vactory_paragraph_multi_template.field_multi_paragraph_type
+    - field.field.paragraph.vactory_paragraph_multi_template.field_paragraph_hide_lg
+    - field.field.paragraph.vactory_paragraph_multi_template.field_paragraph_hide_sm
     - field.field.paragraph.vactory_paragraph_multi_template.field_paragraph_introduction
+    - field.field.paragraph.vactory_paragraph_multi_template.field_position_image_x
+    - field.field.paragraph.vactory_paragraph_multi_template.field_position_image_y
+    - field.field.paragraph.vactory_paragraph_multi_template.field_size_image
     - field.field.paragraph.vactory_paragraph_multi_template.field_titre_ancre
     - field.field.paragraph.vactory_paragraph_multi_template.field_vactory_flag
     - field.field.paragraph.vactory_paragraph_multi_template.field_vactory_flag_2
@@ -14,6 +20,8 @@ dependencies:
   module:
     - entity_reference_revisions
     - options
+_core:
+  default_config_hash: Um3PTjmBpzmMzdR5UbHMhSCT3cT6s3V60tsNbjRFaGs
 id: paragraph.vactory_paragraph_multi_template.default
 targetEntityType: paragraph
 bundle: vactory_paragraph_multi_template
@@ -26,12 +34,53 @@ content:
     third_party_settings: {  }
     type: list_default
     region: content
+  field_paragraph_hide_lg:
+    weight: 6
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    type: boolean
+    region: content
+  field_paragraph_hide_sm:
+    weight: 7
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    type: boolean
+    region: content
   field_paragraph_introduction:
     weight: 5
     label: above
     settings: {  }
     third_party_settings: {  }
     type: basic_string
+    region: content
+  field_position_image_x:
+    weight: 8
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_position_image_y:
+    weight: 9
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
+    region: content
+  field_size_image:
+    weight: 10
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: list_default
     region: content
   field_vactory_paragraph_tab:
     type: entity_reference_revisions_entity_view
@@ -51,6 +100,7 @@ content:
     type: string
     region: content
 hidden:
+  field_background_color: true
   field_titre_ancre: true
   field_vactory_flag: true
   field_vactory_flag_2: true

@@ -1,0 +1,38 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.smart_search
+    - field.field.node.vactory_faq.body
+    - field.field.node.vactory_faq.field_faq
+    - field.field.node.vactory_faq.field_vactory_seo_status
+    - node.type.vactory_faq
+  module:
+    - user
+    - vactory_field
+id: node.vactory_faq.smart_search
+targetEntityType: node
+bundle: vactory_faq
+mode: smart_search
+content:
+  body:
+    type: vactory_field_excerpt_formatter
+    weight: 1
+    region: content
+    label: hidden
+    settings:
+      trim_length: '170'
+    third_party_settings: {  }
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  field_faq: true
+  field_vactory_seo_status: true
+  langcode: true
+  notification_message: true
+  notification_title: true
+  search_api_excerpt: true

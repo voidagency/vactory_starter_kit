@@ -1,9 +1,11 @@
-uuid: 44868fd2-0710-4397-9ff1-a30d03d934b2
+uuid: 9b579b44-d64e-42d3-b9d4-6a1966accbea
 langcode: en
 status: true
 dependencies:
   module:
     - paragraphs
+_core:
+  default_config_hash: Xr2DXNhjpZd1KzF49RxbipgctJza4nrKTrqcHrhKyTg
 id: paragraph.field_vactory_flag
 field_name: field_vactory_flag
 entity_type: paragraph

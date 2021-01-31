@@ -1,0 +1,84 @@
+<div class="row justify-content-center t-image-content-links">
+  <div class="col-lg-10 col-12">
+    {% set wrapper_img = '' %}
+    {% set wrapper_class = '' %}
+    {% set image_uri = (extra_fields.image.0 is defined) ? get_image(extra_fields.image.0) : '' %}
+    {% set picto = image_uri|image_style('medium') %}
+    {% set lqip_image = image_uri|image_style('lqip') %}
+    <div class="row">
+      {% if extra_fields.image.0 is not empty %}
+        <div class="col-md-4 col-12">
+            <div class="card-img-corner">
+            <img alt="{{ extra_fields.image_alt }}"
+                 class="lazyload img-fluid no-effect"
+                 src="{{ lqip_image }}"
+                 data-src="{{ picto }}">
+            </div>
+        </div>
+      {% endif %}
+      <div class="col-12 col-md-8">
+        {% if extra_fields.description is not empty %}
+          <p>{{ extra_fields.description.value|raw }}</p>
+        {% endif %}
+      </div>
+    </div>
+    <div class="row">
+      {% set random_number = random(1, 200) %}
+      {{ dump(content) }}
+      <h1>{{ content|length }}</h1>
+      {% set content_length = content|length %}
+
+      {% if content_length > 0 and item[0].nameConseiller is not empty%}
+
+      {% endif %}
+      <div class="media-collapse col-12 mt-3">
+        <a aria-controls="collapse-media-1" aria-expanded="false"
+           class="btn__collapse collapsed" data-toggle="collapse"
+           href="#collapse-media-{{ random_number }}"
+           role="button">
+          {{ "Echangez avec un conseiller"|t }}
+          <i class="icon-chevron-right"></i>
+        </a>
+        <div class="collapse" id="collapse-media-{{ random_number }}">
+          {% for item in content %}
+            <div class="collapse__info-single">
+              <ul class="no-style t-image-content-links--list">
+                {% if item.nameConseiller is not empty %}
+                  <li><i class="icon-user"></i>
+                    <span>{{ item.nameConseiller }}</span>
+                  </li>
+                {% endif %}
+                {% if item.telephone is not empty %}
+                  <li><i class="icon-phone"></i>
+                  <span>{{ item.telephone }}</span>
+                  </li>
+                {% endif %}
+                {% if item.contact.url is not empty %}
+                  <li class="btn-mail"><a href="{{ item.contact.url }}">
+                      <i class="icon-newsletter"></i>
+                      <span>{{ 'Contact'|t }}</span> </a></li>
+                {% endif %}
+              </ul>
+            </div>
+          {% endfor %}
+        </div>
+        <div class="mt-2">
+          {% if extra_fields.link.url is not empty %}
+            {% set link_title = (extra_fields.link.title is not empty) ? extra_fields.link.title : 'Consultez' %}
+            <div class="mb-2"><a class="permalink" href="{{ extra_fields.link.url }}" target="_blank">{{ link_title }}</a></div>
+          {% endif %}
+          {% if extra_fields.link1.url is not empty %}
+            {% set link_title = (extra_fields.link1.title is not empty) ? extra_fields.link1.title : 'Consultez' %}
+            <div class="mb-2"><a class="permalink" href="{{ extra_fields.link1.url }}" target="_blank">{{ link_title }}</a></div>
+          {% endif %}
+          {% if extra_fields.link2.url is not empty %}
+            {% set link_title = (extra_fields.link2.title is not empty) ? extra_fields.link2.title : 'Consultez' %}
+            <a class="permalink" href="{{ extra_fields.link2.url }}" target="_blank">{{ link_title }}</a>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+
+  </div>
+</div>

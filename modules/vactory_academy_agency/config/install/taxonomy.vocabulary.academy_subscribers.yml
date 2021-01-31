@@ -1,0 +1,10 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_academy_agency
+name: 'Formation en agence - Liste des inscrits'
+vid: academy_subscribers
+description: 'Utiliser ce term de taxonomie pour ajouter des nouvelles inscriptions aux formations.'
+weight: 0

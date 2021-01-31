@@ -1,14 +1,19 @@
 <div class="t-three-card-with-cta">
   <div class="row">
     {% for item in content %}
-      {% set _icon = (item.link_icon is not empty) ? item.link_icon : 'icon-arrow_forward' %}
+
+      {% set link_attributes = create_attribute() %}
+      {% set link_attributes = item.link.attributes.id is not empty ? link_attributes.setAttribute('id', item.link.attributes.id ) : link_attributes %}
+      {% set link_attributes = item.link.attributes.class is not empty ? link_attributes.setAttribute('class', item.link.attributes.class  ~ ' icon-arrow_forward') : link_attributes.setAttribute('class','icon-arrow_forward') %}
+      {% set link_attributes = item.link.attributes.target is not empty ? link_attributes.setAttribute('target', item.link.attributes.target ) : link_attributes %}
+      {% set link_attributes = item.link.attributes.rel is not empty ? link_attributes.setAttribute('rel', item.link.attributes.rel ) : link_attributes %}
+
       <div class="col-md-4 t-item">
         {% if item.title is not empty %}
           <p class="t-title">{{ item.title }}</p>
         {% endif %}
-        {% if item.link is not empty and item.link_alt is not empty %}
-          {% set link_target = (item.link_target > 0) ? '_blank' : '_self' %}
-          <a href="{{ item.link }}" target="{{ link_target }}" class="btn-with-icon {{ _icon }}">{{ item.link_alt }}</a>
+        {% if item.link.url is not empty and item.link.title is not empty %}
+          <a  href="{{ item.link.url }}" {{ link_attributes }} > {{ item.link.title }} </a>
         {% endif %}
       </div>
     {% endfor %}

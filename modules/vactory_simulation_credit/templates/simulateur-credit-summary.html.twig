@@ -1,0 +1,54 @@
+  <p>
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+    Videmus igitur ut conquiescere ne infantes quidem possint.
+    Quamquam tu hanc copiosiorem etiam soles dicere.
+    Nunc agendum est subtilius. Simus igitur contenti his.
+    Cur post Tarentum ad Archytam?
+  </p>
+  <ul class="list-group list-group-flush ">
+    <li class="list-group-item" style="border: none;">
+      <strong>{{ 'Montant du crédit'|t }}</strong> :
+      {% if content.montant is not empty %}
+        <span>{{ content.montant }} DH</span>
+      {% else %}
+        <span id="simulateur-montant-credit"></span>
+      {% endif %}
+      DH
+    </li>
+    <li class="list-group-item" style="border: none">
+      <strong>{{ 'Mensualités'|t }}</strong>:
+      {% if content.mensualites is not empty %}
+        <span>{{ content.mensualites }}</span>
+      {% else %}
+        <span id="simulateur-mensualites"></span>
+      {% endif %}
+      DH
+    </li>
+    <li class="list-group-item" style="border: none">
+      <strong>{{ 'taux'|t }}</strong>:
+      {% if content.taux is not empty %}
+        <span>{{ content.taux }}</span>
+      {% else %}
+        <span id="simulateur-taux"></span>
+      {% endif %}
+      %
+    </li>
+    <li class="list-group-item" style="border: none">
+      <strong>{{ 'Durée'|t }}</strong>:
+      {% if content.duree is not empty %}
+        <span>{{ content.duree }}</span>
+      {% else %}
+        <span id="simulateur-duree"></span>
+      {% endif %}
+      Mois
+    </li>
+    <li class="list-group-item" style="border: none">
+      <strong>{{ 'Coût total du crédit'|t }}</strong>:
+      {% if content.cout_total is not empty %}
+        <span>{{ content.cout_total }}</span>
+      {% else %}
+        <span id="simulateur-cout-total-credit"></span>
+      {% endif %}
+      DH
+    </li>
+  </ul>

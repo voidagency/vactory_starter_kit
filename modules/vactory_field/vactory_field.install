@@ -28,3 +28,27 @@ function vactory_field_update_8101(&$sandbox) {
     'node_body_class', 'node', 'vactory_field', $newBodyClassDefinition
   );
 }
+
+/**
+ * Install Background image field storage.
+ */
+function vactory_field_update_8102(&$sandbox) {
+  $entityUpdateManager = \Drupal::entityDefinitionUpdateManager();
+  $newBgImageDefinition = BaseFieldDefinition::create('entity_reference')
+    ->setLabel(t('Background Image'))
+    ->setDescription(t('The background image of this node.'))
+    ->setSetting('target_type', 'media')
+    ->setSetting('handler_settings', ['target_bundles' => ['image' => 'image']])
+    ->setDisplayConfigurable('form', TRUE)
+    ->setDisplayConfigurable('view', FALSE)
+    ->setTargetEntityTypeId('node')
+    ->setTranslatable(TRUE)
+    ->setDisplayOptions('form', [
+      'type'   => 'media_library_widget',
+      'weight' => 0,
+    ]);
+
+  $entityUpdateManager->installFieldStorageDefinition(
+    'node_bg_image', 'node', 'vactory_field', $newBgImageDefinition
+  );
+}

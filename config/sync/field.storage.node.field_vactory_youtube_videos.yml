@@ -1,9 +1,11 @@
-uuid: 0a3a999e-8259-405e-9720-0444960ed5b5
+uuid: 2b817a42-136b-4c79-99f9-537a26c2c58b
 langcode: en
 status: true
 dependencies:
   module:
     - node
+_core:
+  default_config_hash: GHh6J4MGI5tAfP3icrLCc86OlBd4BlfQ4eoSr-QECBk
 id: node.field_vactory_youtube_videos
 field_name: field_vactory_youtube_videos
 entity_type: node

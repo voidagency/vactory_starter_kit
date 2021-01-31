@@ -38,64 +38,72 @@
  * @ingroup themeable
  */
 #}
+
+{#  Paragraph display #}
+
+{% set paragraph_hide = paragraph.field_paragraph_hide_sm.0.value > 0  and paragraph.field_paragraph_hide_lg.0.value > 0 ? 'd-none' : '' %}
+{% set paragraph_hide = paragraph_hide is empty and paragraph.field_paragraph_hide_lg.0.value > 0 ? 'd-md-none' : '' %}
+{% set paragraph_hide = paragraph_hide is empty and paragraph.field_paragraph_hide_sm.0.value > 0 ? 'd-none d-md-block' : ''%}
+
+{# Background image position #}
+
+{% set bg_x = (paragraph.field_position_image_x.0.value != null and paragraph.field_position_image_x.0.value != 'centrer') ? "bg-align-" ~ paragraph.field_position_image_x.0.value : '' %}
+{% set bg_y = (paragraph.field_position_image_y.0.value != null and paragraph.field_position_image_y.0.value != 'centrer') ? " bg-align-" ~ paragraph.field_position_image_y.0.value : '' %}
+{% set bg_size = (paragraph.field_size_image.0.value != null and paragraph.field_size_image.0.value != 'cover') ? " bg-size-" ~ paragraph.field_size_image.0.value : '' %}
+{% set bg_position_classes = bg_x ~ bg_y ~ bg_size %}
+
+{# Paragraph classes #}
+
 {% set classes = [
 'paragraph',
 'paragraph--type--' ~ paragraph.bundle|clean_class,
 view_mode ? 'paragraph--view-mode--' ~ view_mode|clean_class,
+paragraph_hide
 ] %}
 
 {% set title_classes = [
 'title',
 ] %}
 
-{# Renders Width field. #}
-{# Sets class name from values in database. #}
+{# Paragraph container #}
+
 {% if paragraph.paragraph_container %}
   {% set layout_width = paragraph.paragraph_container.getString() %}
-
-  {# set layout_width_classes = [
-    'narrow_width' == layout_width ? 'container',
-    'full_width' == layout_width ? 'container-fluid',
-  ] #}
-
-  {% set parallax_class = (paragraph.paragraph_background_parallax.0.value > 0) ? "paragraph_parallax" : 0 %}
-
-  {# Merges Width field with classes. #}
-  {# set classes = classes|merge(layout_width_classes) #}
-
-  {% if layout_width == 'narrow_width' %}
-    {% set containerClasses = 'container' %}
-  {% elseif layout_width == 'full_width' %}
-    {% set containerClasses = 'container-fluid' %}
-  {% else %}
-    {% set containerClasses = 'no-container' %}
-  {% endif %}
-
+  {% set parallax_class = (paragraph.paragraph_background_parallax.0.value > 0) ? "paragraph_parallax" : '' %}
+  {% set containerClasses = layout_width == 'narrow_width' ? 'container' : '' %}
+  {% set containerClasses = layout_width == 'full_width' ? 'container-fluid' : containerClasses %}
+  {% set containerClasses = containerClasses is empty ? 'no-container' : containerClasses %}
 {% endif %}
 
+{# Paragraph background opener #}
+
 {% set background_attribute = create_attribute() %}
-{% if paragraph.paragraph_background_image and paragraph.paragraph_background_image.0.value.target_id is not empty and paragraph.paragraph_background_color.getString() is empty %}
-     {% set image_url = get_image_url(paragraph.paragraph_background_image.0.value.target_id) %}
-<div {{ background_attribute.addClass('has-background--image').addClass('bg-custom--' ~ paragraph.paragraph_css_class.getString() ~ ' ' ~ parallax_class) }} style="background-image: url('{{ image_url }}')">
-    {% endif %}
+{# Set background color if exist #}
+{% set background_color = paragraph.field_background_color and paragraph.field_background_color.color is not empty ? paragraph.field_background_color.color|lower : '' %}
+{# Set background image if exist #}
+{% set background_image_url = paragraph.paragraph_background_image and paragraph.paragraph_background_image.0.value.target_id is not empty ? get_image_url(paragraph.paragraph_background_image.0.value.target_id) : '' %}
+{% set bg_classes = [
+  paragraph_hide,
+  bg_position_classes
+] %}
 
-    {% if paragraph.paragraph_background_color and paragraph.paragraph_background_color.getString() is not empty and paragraph.paragraph_background_color.getString() != "ff0000" and paragraph.paragraph_background_image.0.value.target_id is empty %}
-    {% set background_color = paragraph.paragraph_background_color.getString() %}
-    <div {{ background_attribute.addClass('has-background--solid').addClass('bg-custom--' ~ paragraph.paragraph_css_class.getString()) }} style="background-color: {{ '#' ~ background_color }}">
-        {% endif %}
+{% if background_image_url is not empty and background_color is empty %}
+  {% set bg_classes = bg_classes|merge(['has-background--image', parallax_class]) %}
+  {% set style = 'background-image: url(' ~ background_image_url ~ ')' %}
+{% elseif background_color is not empty and background_color != "#ff0000" and background_image_url is empty %}
+  {% set bg_classes = bg_classes|merge(['has-background--solid']) %}
+  {% set style = 'background-color: ' ~ background_color %}
+{% elseif background_color is not empty and background_image_url is not empty %}
+  {#  In Case background_color and background_image both set#}
+  {% set bg_classes = bg_classes|merge(['has-background--image', 'has-background--solid', parallax_class]) %}
+  {% set style = background_color != "#ff0000" ? 'background-color: ' ~ background_color ~ '; background-image: url(' ~ background_image_url ~ ')' : 'background-image: url(' ~ background_image_url ~ ')' %}
+{% endif %}
 
-        {#  In Case background_color and background_image both set#}
-        {% if paragraph.paragraph_background_color and paragraph.paragraph_background_color.getString() is not empty and paragraph.paragraph_background_image and paragraph.paragraph_background_image.getString() is not empty %}
-        {% set background_color = paragraph.paragraph_background_color.getString() %}
-        {% set image_url = get_image_url(paragraph.paragraph_background_image.0.value.target_id) %}
-        {% if  paragraph.paragraph_background_color.getString() != "ff0000" %}
-        <div {{ background_attribute.addClass('has-background--image', 'has-background--solid').addClass('bg-custom--' ~ paragraph.paragraph_css_class.getString() ~ '' ~ parallax_class) }}
-                style="background-color: {{ '#' ~ background_color }}; background-image: url('{{ image_url }}')">
-            {% else %}
-            <div {{ background_attribute.addClass('has-background--image', 'has-background--solid').addClass('bg-custom--' ~ paragraph.paragraph_css_class.getString() ~ ' ' ~ parallax_class) }}
-                    style="background-image: url('{{ image_url }}')">
-                {% endif %}
-                {% endif %}
+{% if background_image_url is not empty or (background_color is not empty and background_color != "#ff0000") %}
+  <div {{ background_attribute.addClass(bg_classes) }} style="{{ style }}">
+{% endif %}
+
+{# Paragraph content #}
 
 {% block paragraph %}
     <div{{ attributes.addClass(classes) }}>
@@ -106,26 +114,15 @@ view_mode ? 'paragraph--view-mode--' ~ view_mode|clean_class,
                     {{ noWrapper(hideLabel(addAttributes(content.field_vactory_title))) }}
                     </h2>
                 {% endif %}
+              {{ title_suffix }}
             {% endblock paragraphContent %}
             {{ noWrapper(hideLabel(addAttributes(content.field_vactory_component))) }}
         </div>
     </div>
 {% endblock paragraph %}
 
-    {% if paragraph.paragraph_background_image and paragraph.paragraph_background_image.0.value.target_id is not empty and paragraph.paragraph_background_color.getString() is empty %}
-        </div>
-    {% endif %}
+{# Paragraph background closer #}
 
-        {% if paragraph.paragraph_background_color and paragraph.paragraph_background_color.getString() is not empty and paragraph.paragraph_background_color.getString() != "ff0000" and paragraph.paragraph_background_image.0.value.target_id is empty %}
-            </div>
-        {% endif %}
-
-        {#  In Case background_color and background_image both set#}
-        {% if paragraph.paragraph_background_color and paragraph.paragraph_background_color.getString() is not empty and paragraph.paragraph_background_image and paragraph.paragraph_background_image.getString() is not empty %}
-
-            {% if  paragraph.paragraph_background_color.getString() != "ff0000" %}
-                </div>
-            {% else %}
-            </div>
-            {% endif %}
-        {% endif %}
+{% if background_image_url is not empty or (background_color is not empty and background_color != "#ff0000") %}
+  </div>
+{% endif %}

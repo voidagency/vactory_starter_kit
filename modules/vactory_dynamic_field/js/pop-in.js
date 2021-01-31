@@ -14,6 +14,11 @@
             let backDrop = $('.modal-backdrop');
             $(backDrop).removeClass('modal-backdrop');
         });
+        $(element).find('.close').on('click', function (e) {
+          $(element).find('.modal-body iframe').each(function(index) {
+            $(this).attr('src', $(this).attr('src'));
+          });
+        });
        $(element).modal('show');
 
     });

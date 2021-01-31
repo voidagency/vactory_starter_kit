@@ -20,6 +20,8 @@ use Drupal\Core\Menu\MenuTreeParameters;
 use Drupal\Core\Routing\AdminContext;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
+use Drupal\node\Entity\Node;
+use Drupal\node\Entity\NodeType;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Access\AccessManagerInterface;
@@ -258,17 +260,18 @@ class MenuBasedBreadcrumbBuilder implements BreadcrumbBuilderInterface {
 
         $trail_ids = $this->menuActiveTrail->getActiveTrailIds($menu_name);
         $trail_ids = array_filter($trail_ids);
-        if($node_object && !$trail_ids){
-          $nodeObj = entity_load('node',$node_object->get('nid')->value);
+        if ($node_object && !$trail_ids) {
+          $nodeObj = Node::load($node_object->get('nid')->value);
           $bundle = $nodeObj->bundle();
-          $content_type = \Drupal\node\Entity\NodeType::load($bundle);
+          $content_type = NodeType::load($bundle);
           $parent_menu = $content_type->getThirdPartySetting('menu_ui', 'parent', '');
-          if($parent_menu){
-            $parent_menu_infos = explode(':',$parent_menu, 2)[1];
+          if ($parent_menu) {
+            $parent_menu_infos = explode(':', $parent_menu, 2)[1];
             $parentIds = $this->menuLinkManager->getParentIds($parent_menu_infos);
           }
-          else
-          $parentIds = $this->menuLinkManager->getParentIds($parent_menu);
+          else {
+            $parentIds = $this->menuLinkManager->getParentIds($parent_menu);
+          }
           $this->menuName = $menu_name;
           $this->menuTrail = $parentIds;
           $this->taxonomyAttachment = NULL;
@@ -355,7 +358,7 @@ class MenuBasedBreadcrumbBuilder implements BreadcrumbBuilderInterface {
             $entities = $this->entityTypeManager->getStorage('menu_link_content')
               ->loadByProperties(['uuid' => $uuid]);
             if (array_keys($entities)[0] == 2) {
-               continue;
+              continue;
             }
             if ($entity = reset($entities)) {
               $breadcrumb->addCacheableDependency($entity);
@@ -653,7 +656,7 @@ class MenuBasedBreadcrumbBuilder implements BreadcrumbBuilderInterface {
     }
   }
 
-/**
+  /**
    * Test correspondence between url and menu item link.
    *
    * @param Drupal\Core\Menu\MenuLinkTreeElement $item
@@ -665,24 +668,24 @@ class MenuBasedBreadcrumbBuilder implements BreadcrumbBuilderInterface {
    *   A menu item title.
    */
   public function testUrlsItem(MenuLinkTreeElement $item, $url) {
-     $title = '';
-      if ($item->link->getRouteName() !== '') {
-          $item_url = (new Url($item->link->getRouteName(), $item->link->getRouteParameters(), ['set_active_class' => TRUE]))->toString();
-        }
-   else {
-          $item_url = '';
-        }
+    $title = '';
+    if ($item->link->getRouteName() !== '') {
+      $item_url = (new Url($item->link->getRouteName(), $item->link->getRouteParameters(), ['set_active_class' => TRUE]))->toString();
+    }
+    else {
+      $item_url = '';
+    }
     if ($item_url == $url) {
-          return $item->link->getTitle();
+      return $item->link->getTitle();
     }
     elseif ($item->subtree) {
-       foreach ($item->subtree as $child) {
-            $title = $title . $this->testUrlsItem($child, $url);
-          }
+      foreach ($item->subtree as $child) {
+        $title = $title . $this->testUrlsItem($child, $url);
+      }
       return $title;
     }
     else {
-          return '';
+      return '';
     }
   }
 

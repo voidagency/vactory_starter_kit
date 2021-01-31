@@ -13,3 +13,20 @@ function vactory_paragraphs_install() {
 //  \Drupal::service('content_translation.manager')->setEnabled('paragraph', 'vactory_paragraph_block', TRUE);
 //  \Drupal::service('entity.definition_update_manager')->applyUpdates();
 }
+
+/**
+ * Implements vactory_paragraphs: Copy paragraph background color values.
+ */
+function vactory_paragraphs_update_8100(&$sandbox) {
+  $paragraphs = Drupal::entityTypeManager()->getStorage('paragraph')->loadMultiple();
+  foreach ($paragraphs as $paragraph) {
+    $old_value = $paragraph->get('paragraph_background_color') ? $paragraph->get('paragraph_background_color')->value : '';
+    if (!empty($old_value)) {
+      $paragraph->set('field_background_color', ['value' => $old_value]);
+      $paragraph->save();
+    }
+  }
+
+  $field_storage_definitions = Drupal::entityDefinitionUpdateManager()->getFieldStorageDefinition('paragraph_background_color', 'paragraph');
+  Drupal::entityDefinitionUpdateManager()->uninstallFieldStorageDefinition($field_storage_definitions);
+}

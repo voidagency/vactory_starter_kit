@@ -1,0 +1,31 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_academy_agency
+  config:
+    - field.storage.node.field_vactory_theme
+    - node.type.vactory_academy_agency
+    - taxonomy.vocabulary.vactory_academy_themes
+id: node.vactory_academy_agency.field_vactory_theme
+field_name: field_vactory_theme
+entity_type: node
+bundle: vactory_academy_agency
+label: Theme
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      vactory_academy_themes: vactory_academy_themes
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

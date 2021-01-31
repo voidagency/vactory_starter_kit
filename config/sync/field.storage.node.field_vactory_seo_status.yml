@@ -1,10 +1,12 @@
-uuid: 41745a12-214e-4648-b688-3882532548d1
+uuid: d6cc7fd2-6bd8-4881-b52d-a93f0382f1e1
 langcode: en
 status: true
 dependencies:
   module:
     - node
     - yoast_seo
+_core:
+  default_config_hash: WQ1aRVhfm4Md3E59vHen__xr6oQf-buZ7o2i-hqNm0g
 id: node.field_vactory_seo_status
 field_name: field_vactory_seo_status
 entity_type: node

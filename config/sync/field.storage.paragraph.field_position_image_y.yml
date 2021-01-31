@@ -1,0 +1,32 @@
+uuid: 22955a48-2182-41e8-9ac4-3e2bdf97a17f
+langcode: en
+status: true
+dependencies:
+  module:
+    - options
+    - paragraphs
+_core:
+  default_config_hash: uWtZzI8shQE4zOJWWfGzNLyAIaEXuSQE1rBQyTCkU5Y
+id: paragraph.field_position_image_y
+field_name: field_position_image_y
+entity_type: paragraph
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: centrer
+      label: Centrer
+    -
+      value: top
+      label: Haut
+    -
+      value: bottom
+      label: Bas
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

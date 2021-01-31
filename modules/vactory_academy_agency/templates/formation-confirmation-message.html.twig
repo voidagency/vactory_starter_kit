@@ -1,0 +1,29 @@
+{% if content.type_confirmation == 'online' %}
+  <h3 class="form-title text-uppercase mb-5 h4">{{ content.title }}</h3>
+  <div class="p-2 card-qrcode bg-white border border-primary rounded shadow">
+    <div class="qrcode-icon mr-3">
+      <img src="{{ base_path ~ directory }}/assets/img/icons/qr-code.png" class="img-fluid">
+    </div>
+    <div>
+      <h4 class="mb-14 text-uppercase">{{ 'Rendez-vous sur le site Dar Al Macharii Academy'|t }}</h4>
+      <span class="h3 text-primary mb-0">www.daralmacharii.com/fr/academy</span>
+    </div>
+  </div>
+{% else %}
+  <div class="confirmation-page">
+    {% if content.datalayer_snippet is defined %}
+      {{ content.datalayer_snippet|raw }}
+    {% endif %}
+    <div class="text-center">
+      <div class="smile-icon mb-3">
+        <img src="{{ base_path ~ directory }}/assets/img/smile.png" class="img-fluid">
+      </div>
+      <h1 class="mb-6 text-uppercase">{{ 'Félicitations, votre inscription a bien été enregistrée'|t }}</h1>
+      {% if content.type_confirmation == 'local' %}
+        <a href="{{ url('dam_formation.subscribe_form', {'agency_path': content.agency_path}) }}" class="btn btn-primary suffix-icon-chevrons-right">{{ "S'inscrire à une autre formation"|t }}</a>
+      {% else %}
+        <a href="{{ url('view.formations_agence.site_academy_agence_listing') }}" class="btn btn-primary suffix-icon-chevrons-right">{{ "S'inscrire à une autre formation"|t }}</a>
+      {% endif %}
+    </div>
+  </div>
+{% endif %}

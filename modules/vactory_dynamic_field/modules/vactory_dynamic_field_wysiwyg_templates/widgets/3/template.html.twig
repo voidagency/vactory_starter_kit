@@ -8,17 +8,23 @@
       {% set lqip_image = image_uri|image_style('lqip') %}
       {% set fluid_image = file_url(image_uri) %}
       {% set _imgVideo = (item.video is not empty) ? 'js-img-video' : null %}
-      {% set imageAlt = (item.image_alt is not empty) ? item.image_alt : item.title %}
+      {% set imageAlt = (content.0.image_alt) ? content.0.image_alt : content.0.image.alt_image %}
       {% set link_target = (item.link_target > 0) ? '_blank' : '_self' %}
       {% set lazyClass = (item.video is empty and item.link is empty) ? 'lazy-wrapper' : '' %}
+
+      {% set link_attributes = create_attribute() %}
+      {% set link_attributes = item.link.attributes.id is not empty ? link_attributes.setAttribute('id', item.link.attributes.id ) : link.attributes %}
+      {% set link_attributes = item.link.attributes.target is not empty ? link_attributes.setAttribute('target', item.link.attributes.target ) : link.attributes %}
+      {% set link_attributes = item.link.attributes.rel is not empty ? link_attributes.setAttribute('rel', item.link.attributes.rel ) : link.attributes %}
 
       <div class="col-md-4 {{ _imgVideo }}">
         <div class="t-block-image-description">
           <div class="t-3b-image block-image {{ lazyClass }}">
             {% if item.video is not empty %}
               <a class="image-scale lazy-wrapper" data-fancybox href="{{ "https://www.youtube-nocookie.com/embed/" ~ item.video }}">
-            {% elseif item.link is not empty %}
-                <a class="image-scale lazy-wrapper" href="{{ item.link }}" target="{{ link_target }}">
+            {% elseif  item.link.url is not empty %}
+                {% set link_attributes = item.link.attributes.class is not empty ? link_attributes.setAttribute('class', item.link.attributes.class ~ ' image-scale lazy-wrapper' ) : link_attributes.setAttribute('class','image-scale lazy-wrapper' ) %}
+                <a href="{{  item.link.url }}"  {{ link_attributes }}>
             {% endif %}
                 <img data-src="{{ fluid_image }}"
                      src="{{ lqip_image }}"
@@ -35,8 +41,9 @@
             {% endif %}
             {% if item.video is not empty %}
               <a class="permalink" data-fancybox href="{{ "https://www.youtube-nocookie.com/embed/" ~ item.video }}">{{ 'Voir la video' | t }}</a>
-            {% elseif item.link is not empty and item.link_alt is not empty %}
-              <a class="permalink" target="{{ link_target }}" href="{{ item.link }}">{{ item.link_alt }}</a>
+            {% elseif item.link.url is not empty and item.link.title is not empty %}
+              {% set link_attributes = item.link.attributes.class is not empty ? link_attributes.setAttribute('class', item.link.attributes.class ~ ' permalink' ) : link_attributes.setAttribute('class','permalink' ) %}
+              <a href="{{  item.link.url }}"  {{ link_attributes }}> {{ item.link.title }} </a>
             {% endif %}
           </div>
         </div>

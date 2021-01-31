@@ -1,0 +1,29 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_academy_agency
+  config:
+    - field.storage.node.field_vactory_file_multiple
+    - node.type.vactory_academy_agency
+  module:
+    - file
+id: node.vactory_academy_agency.field_vactory_file_multiple
+field_name: field_vactory_file_multiple
+entity_type: node
+bundle: vactory_academy_agency
+label: Videos
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  file_directory: '[date:custom:Y]-[date:custom:m]'
+  file_extensions: 'mp4 flv mov'
+  max_filesize: ''
+  description_field: true
+  handler: 'default:file'
+  handler_settings: {  }
+field_type: file

@@ -2,8 +2,10 @@
   {% set image_uri = (extra_fields.image.0 is defined) ? get_image(extra_fields.image.0) : '' %}
   {% set fluid_img = file_url(image_uri) %}
   {% set lqip_img = image_uri|image_style('lqip') %}
-  {% set arrows = (extra_fields.arrows > 0) ? 'true' : 'false' %}
-  {% set dots = (extra_fields.dots > 0) ? 'true' : 'false' %}
+  {% set arrows = (extra_fields.group_gonfig.arrows > 0) ? 'true' : 'false' %}
+  {% set dots = (extra_fields.group_gonfig.dots > 0) ? 'true' : 'false' %}
+  {% set swip_autoLoop = (extra_fields.group_gonfig.autoLoop > 0) ? extra_fields.group_gonfig.autoLoop : 0 %}
+  {% set swip_loopSpeed = (extra_fields.group_gonfig.loopSpeed is not empty) ? extra_fields.group_gonfig.loopSpeed : '2500' %}
 
   <div class="vf-slider-content-bg py-5 lazyload"
        data-bg="{{ fluid_img }}"
@@ -11,8 +13,18 @@
     <div class="container">
       <div class="vf-content-bg-slides vf-slick-slider"
            data-arrows="{{ arrows }}"
-           data-dots="{{ dots }}">
+           data-dots="{{ dots }}"
+           data-autoplay="{{ swip_autoLoop }}"
+           data-autoplayspeed="{{ swip_loopSpeed }}"
+           >
         {% for item in content %}
+
+          {% set link_attributes = create_attribute() %}
+          {% set link_attributes = item.link.attributes.id is not empty ? link_attributes.setAttribute('id', item.link.attributes.id ) : link_attributes %}
+          {% set link_attributes = item.link.attributes.class is not empty ? link_attributes.setAttribute('class', item.link.attributes.class  ~ ' btn btn-outline-light') : link_attributes.setAttribute('class',' btn btn-outline-light') %}
+          {% set link_attributes = item.link.attributes.target is not empty ? link_attributes.setAttribute('target', item.link.attributes.target ) : link_attributes %}
+          {% set link_attributes = item.link.attributes.rel is not empty ? link_attributes.setAttribute('rel', item.link.attributes.rel ) : link_attributes %}
+
           <div class="vf-content-bg-slide d-flex align-items-center justify-content-center text-center">
             <div class="vf-bg-content">
               {% if item.title is not empty %}
@@ -21,14 +33,9 @@
               {% if item.description is not empty %}
                 <p class="vf-bg-content--text">{{ item.description }}</p>
               {% endif %}
-              {% if item.link is not empty and item.link_alt is not empty %}
-                {% set link_target = (item.link_target > 0) ? '_blank' : '_self' %}
+              {% if item.link.url is not empty and item.link.title is not empty %}
                 <p class="vf-bg-content--link">
-                  <a class="btn btn-outline-light"
-                     target="{{ link_target }}"
-                     href="{{ item.link }}">
-                    {{ item.link_alt }}
-                  </a>
+                  <a  href="{{ item.link.url }}" {{ link_attributes }} > {{  item.link.title }} </a>
                 </p>
               {% endif %}
             </div>

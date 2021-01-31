@@ -1,4 +1,4 @@
-langcode: fr
+langcode: en
 status: true
 dependencies:
   config:
@@ -16,6 +16,8 @@ dependencies:
     - taxonomy
     - user
     - vactory_views
+_core:
+  default_config_hash: 1ICFDK6HKrrxtsy0HiuItZyxWcMSj9rz-KDrFjsgego
 id: vactory_testimonials
 label: 'Vactory Testimonials'
 module: views
@@ -23,7 +25,6 @@ description: 'Find and manage testimonials.'
 tag: ''
 base_table: node_field_data
 base_field: nid
-core: 8.x
 display:
   default:
     display_plugin: default
@@ -49,13 +50,13 @@ display:
       exposed_form:
         type: basic
         options:
-          submit_button: Appliquer
+          submit_button: Apply
           reset_button: false
-          reset_button_label: Réinitialiser
+          reset_button_label: Reset
           exposed_sorts_label: 'Sort by'
           expose_sort_order: true
-          sort_asc_label: Ascendant
-          sort_desc_label: Descendant
+          sort_asc_label: Asc
+          sort_desc_label: Desc
       pager:
         type: some
         options:
@@ -127,6 +128,8 @@ display:
           id: status
           expose:
             operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
           group: 1
         type:
           id: type
@@ -137,11 +140,25 @@ display:
           entity_type: node
           entity_field: type
           plugin_id: bundle
+          expose:
+            operator_limit_selection: false
+            operator_list: {  }
       sorts: {  }
       title: 'Vactory Testimonials'
       header: {  }
       footer: {  }
-      empty: {  }
+      empty:
+        area_text_custom:
+          id: area_text_custom
+          table: views
+          field: area_text_custom
+          relationship: none
+          group_type: group
+          admin_label: ''
+          empty: true
+          tokenize: false
+          content: 'Aucun résultat n''a été trouvé !'
+          plugin_id: text_custom
       relationships: {  }
       arguments: {  }
       display_extenders: {  }
@@ -159,7 +176,8 @@ display:
     display_title: 'Block List'
     position: 1
     display_options:
-      display_extenders: {  }
+      display_extenders:
+        metatag_display_extender: {  }
       title: 'Block List'
       defaults:
         title: false
@@ -170,6 +188,7 @@ display:
         sorts: false
         filters: false
         filter_groups: false
+        empty: false
       display_description: ''
       pager:
         type: some
@@ -222,6 +241,8 @@ display:
           id: status
           expose:
             operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
           group: 1
         type:
           id: type
@@ -232,6 +253,9 @@ display:
           entity_type: node
           entity_field: type
           plugin_id: bundle
+          expose:
+            operator_limit_selection: false
+            operator_list: {  }
         entityqueue_relationship:
           id: entityqueue_relationship
           table: node_field_data
@@ -240,7 +264,7 @@ display:
           group_type: group
           admin_label: ''
           operator: '='
-          value: '1'
+          value: '0'
           group: 1
           exposed: false
           expose:
@@ -255,6 +279,8 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
+            operator_limit_selection: false
+            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -273,6 +299,7 @@ display:
         operator: AND
         groups:
           1: AND
+      empty: {  }
     cache_metadata:
       max-age: -1
       contexts:
@@ -310,6 +337,7 @@ display:
         filters: false
         filter_groups: false
         sorts: false
+        empty: false
       filters:
         status:
           value: '1'
@@ -321,6 +349,8 @@ display:
           id: status
           expose:
             operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
           group: 1
         type:
           id: type
@@ -331,6 +361,9 @@ display:
           entity_type: node
           entity_field: type
           plugin_id: bundle
+          expose:
+            operator_limit_selection: false
+            operator_list: {  }
         entityqueue_relationship:
           id: entityqueue_relationship
           table: node_field_data
@@ -339,7 +372,7 @@ display:
           group_type: group
           admin_label: ''
           operator: '='
-          value: '1'
+          value: '0'
           group: 1
           exposed: false
           expose:
@@ -354,6 +387,8 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
+            operator_limit_selection: false
+            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -386,6 +421,7 @@ display:
             label: ''
           entity_type: node
           plugin_id: entity_queue_position
+      empty: {  }
     cache_metadata:
       max-age: -1
       contexts:
@@ -403,7 +439,8 @@ display:
     display_title: 'Block Slider'
     position: 2
     display_options:
-      display_extenders: {  }
+      display_extenders:
+        metatag_display_extender: {  }
       style:
         type: vactory_views_slider
         options:
@@ -425,6 +462,7 @@ display:
         filters: false
         filter_groups: false
         sorts: false
+        empty: false
       row:
         type: 'entity:node'
         options:
@@ -461,6 +499,8 @@ display:
           id: status
           expose:
             operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
           group: 1
         type:
           id: type
@@ -471,6 +511,9 @@ display:
           entity_type: node
           entity_field: type
           plugin_id: bundle
+          expose:
+            operator_limit_selection: false
+            operator_list: {  }
         entityqueue_relationship:
           id: entityqueue_relationship
           table: node_field_data
@@ -479,7 +522,7 @@ display:
           group_type: group
           admin_label: ''
           operator: '='
-          value: '1'
+          value: '0'
           group: 1
           exposed: false
           expose:
@@ -494,6 +537,8 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
+            operator_limit_selection: false
+            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -526,6 +571,7 @@ display:
             label: ''
           entity_type: node
           plugin_id: entity_queue_position
+      empty: {  }
     cache_metadata:
       max-age: -1
       contexts:
@@ -582,6 +628,8 @@ display:
           id: status
           expose:
             operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
           group: 1
         type:
           id: type
@@ -592,6 +640,9 @@ display:
           entity_type: node
           entity_field: type
           plugin_id: bundle
+          expose:
+            operator_limit_selection: false
+            operator_list: {  }
         field_vactory_profils_target_id:
           id: field_vactory_profils_target_id
           table: node__field_vactory_profils
@@ -618,6 +669,8 @@ display:
               anonymous: '0'
               administrator: '0'
             reduce: false
+            operator_limit_selection: false
+            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -668,8 +721,8 @@ display:
           tags:
             previous: '‹ Previous'
             next: 'Next ›'
-            first: '«'
-            last: '»'
+            first: '« First'
+            last: 'Last »'
           expose:
             items_per_page: false
             items_per_page_label: 'Items per page'
@@ -682,19 +735,19 @@ display:
       exposed_form:
         type: bef
         options:
-          submit_button: Appliquer
+          submit_button: Apply
           reset_button: true
-          reset_button_label: Réinitialiser
+          reset_button_label: Reset
           exposed_sorts_label: 'Sort by'
           expose_sort_order: true
-          sort_asc_label: Ascendant
-          sort_desc_label: Descendant
+          sort_asc_label: Asc
+          sort_desc_label: Desc
           input_required: false
-          text_input_required: 'Sélectionnez n''importe quel filtre et cliquez sur Appliquer pour voir les résultats'
+          text_input_required: 'Select any filter and click on Apply to see results'
           bef:
             general:
               allow_secondary: false
-              secondary_label: 'Options avancées'
+              secondary_label: 'Advanced options'
               autosubmit: false
               autosubmit_hide: false
             field_vactory_profils_target_id:

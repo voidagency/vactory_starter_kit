@@ -1,4 +1,4 @@
-uuid: e8ed0f94-8e61-4767-978d-a0b6e3ac15b5
+uuid: 97d09b6d-86c0-4f5d-b427-2aa20c977d70
 langcode: en
 status: true
 dependencies:
@@ -8,6 +8,8 @@ dependencies:
     - paragraphs.paragraphs_type.vactory_paragraph_tab
   module:
     - entity_reference_revisions
+_core:
+  default_config_hash: EjEiCoG44lj1z9xBD7WaHqKkJXfidx_suTjhQXyjNdw
 id: paragraph.vactory_paragraph_multi_template.field_vactory_paragraph_tab
 field_name: field_vactory_paragraph_tab
 entity_type: paragraph

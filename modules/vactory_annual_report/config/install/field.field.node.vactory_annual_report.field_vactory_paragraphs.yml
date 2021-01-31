@@ -1,6 +1,9 @@
 langcode: en
 status: true
 dependencies:
+  enforced:
+    module:
+      - vactory_annual_report
   config:
     - field.storage.node.field_vactory_paragraphs
     - node.type.vactory_annual_report

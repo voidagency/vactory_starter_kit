@@ -24,11 +24,7 @@ fields:
     type: textarea
     label: 'Description'
     placeholder_value: 'Dummy description'
-  cta_url:
+  link:
     type: url_extended
     label: 'Read More Link'
     placeholder_value: 'https://www.google.com'
-  cta_alt:
-    type: text
-    label: 'Read More Text'
-    placeholder_value: 'Dummy cta alt'

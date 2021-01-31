@@ -2,17 +2,24 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.paragraph.paragraph_background_wrapper.field_background_color
     - field.field.paragraph.paragraph_background_wrapper.field_background_type
     - field.field.paragraph.paragraph_background_wrapper.field_paragraph_type
     - paragraphs.paragraphs_type.paragraph_background_wrapper
   module:
-    - jquery_colorpicker
+    - colorapi
     - media_library
 id: paragraph.paragraph_background_wrapper.default
 targetEntityType: paragraph
 bundle: paragraph_background_wrapper
 mode: default
 content:
+  field_background_color:
+    weight: 48
+    settings: {  }
+    third_party_settings: {  }
+    type: colorapi_color_widget
+    region: content
   field_background_type:
     weight: 1
     settings: {  }

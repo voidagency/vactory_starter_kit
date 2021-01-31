@@ -11,6 +11,9 @@ dependencies:
     - path
     - text
     - yoast_seo
+  enforced:
+    module:
+      - vactory_faq
 id: node.vactory_faq.default
 targetEntityType: node
 bundle: vactory_faq

@@ -24,6 +24,11 @@ function vactory_glossary_theme() {
       'base hook' => 'views',
       'template'  => 'views-glossary-unformatted',
     ],
+    // Node > Smart search.
+    'node__vactory_glossary__smart_search'        => [
+      'base hook' => 'node',
+      'template'  => 'smart-search',
+    ],
     'views_view__vactory_glossary'                      => [
       'base hook' => 'views',
       'template'  => 'views-glossary',

@@ -5,7 +5,7 @@ dependencies:
     - block_content.type.vactory_banner
     - field.storage.block_content.field_background_color
   module:
-    - jquery_colorpicker
+    - colorapi
 id: block_content.vactory_banner.field_background_color
 field_name: field_background_color
 entity_type: block_content
@@ -16,7 +16,7 @@ required: false
 translatable: false
 default_value:
   -
-    value: FFFFFF
+    color: '#FFFFFF'
 default_value_callback: ''
 settings: {  }
-field_type: jquery_colorpicker
+field_type: colorapi_color_field

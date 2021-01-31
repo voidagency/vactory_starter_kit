@@ -13,7 +13,7 @@
         {% set lqip_image = image_uri|image_style('lqip') %}
         {% set fluid_image = image_uri %}
         {% set _imgVideo = (item.video is not empty) ? 'js-img-video' : null %}
-        {% set imageAlt = (item.image_alt is not empty) ? item.image_alt : "Image" %}
+        {% set imageAlt = (item.image_alt) ? item.image_alt : item.image.alt_image %}
 
         <div class="t-item t-2b-image-bg block-image {{ _imgVideo }}">
           {% if item.titleVideo is not empty %}

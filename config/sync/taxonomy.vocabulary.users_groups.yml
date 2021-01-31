@@ -1,0 +1,13 @@
+uuid: abe67a92-4bb0-4334-ac95-093509dda4ee
+langcode: fr
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_espace_prive
+_core:
+  default_config_hash: hQ_CpyhfxwMGM7WLKl85ehjPZ_g247iuINghWVTvGXY
+name: 'Groupe d''utilisateurs'
+vid: users_groups
+description: 'Utiliser ce vocabulaire pour créer des groupes d''utilisateurs'
+weight: 0

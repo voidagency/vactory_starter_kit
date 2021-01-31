@@ -1,9 +1,11 @@
-uuid: dc14bbe5-c468-4df5-84dd-19c830ba0d8d
+uuid: b1245fbc-89c3-4153-9a19-e375d5a83612
 langcode: en
 status: true
 dependencies:
   module:
     - focal_point
+_core:
+  default_config_hash: 39EhG-mcfvdR8sY0IQW0NKj74PzWaHe28kuROdsn9lo
 name: vactory_three_cols_x1
 label: 'Three Cols @x1'
 effects:

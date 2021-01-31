@@ -1,0 +1,5 @@
+vactory_simulateur_credit.settings:
+  title: "Simulateur Crédit Settings"
+  description: "Configure simulateur crédit module."
+  parent: system.admin_config_system
+  route_name: vactory_simulation_credit.vactory_simulation_credit_admin_form

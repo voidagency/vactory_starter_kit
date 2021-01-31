@@ -1,7 +1,10 @@
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  enforced:
+    module:
+      - vactory_annual_report
 name: 'Annual report - Media type'
 vid: vactory_ar_media_type
-description: ''
+description: 'Utiliser ce vocabulaire pour ajouter des nouveaux type de document rapport annuel'
 weight: 0

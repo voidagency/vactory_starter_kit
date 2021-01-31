@@ -4,8 +4,6 @@ dependencies:
   config:
     - core.entity_form_mode.user.register
     - field.field.user.user.field_about_the_author
-    - field.field.user.user.field_adviser_agencies
-    - field.field.user.user.field_adviser_appointments
     - field.field.user.user.field_first_name
     - field.field.user.user.field_last_name
     - field.field.user.user.field_social_media_links
@@ -63,8 +61,6 @@ content:
     third_party_settings: {  }
 hidden:
   field_about_the_author: true
-  field_adviser_agencies: true
-  field_adviser_appointments: true
   field_social_media_links: true
   field_token: true
   field_token_experation_date: true

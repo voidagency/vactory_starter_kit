@@ -92,6 +92,7 @@ function vactory_locator_theme() {
   ];
   $theme['map_block'] = [
     'variables' => [
+      'content' => NULL,
       'url' => NULL,
       'enable_filter' => NULL,
     ],
@@ -153,7 +154,7 @@ function vactory_locator_migration_plugins_alter(array &$migrations) {
  * Implements hook_views_post_render().
  */
 function vactory_locator_views_post_render(ViewExecutable $view, &$output, CachePluginBase $cache) {
-  if ($view->id() === 'vactory_locator' && $view->current_display === 'vactory_locator_listing') {
+  if ($view->id() === 'vactory_locator' && ($view->current_display === 'vactory_locator_listing' || $view->current_display === 'vactory_locator_listing_agence')) {
     $stream_wrapper_manager = \Drupal::service('stream_wrapper_manager');
     $entity_manager = \Drupal::service('entity_type.manager');
     $file_storage = $entity_manager->getStorage('file');
@@ -181,20 +182,6 @@ function vactory_locator_views_post_render(ViewExecutable $view, &$output, Cache
         // Add pin, rendered item.
         $decode_data[$key]['pin'] = _rendered_pin($decode_data[$key], 'locator_pin');
         $decode_data[$key]['search_list_element'] = _rendered_pin($decode_data[$key], 'locator_search_list_element');
-
-        // Add field Term ID.
-        $term_info = [
-          'vid' => 'locator_category',
-          'name' => $item['field_locator_category'],
-        ];
-        $term = Drupal::entityManager()->getStorage('taxonomy_term')->loadByProperties($term_info);
-        if (count($term) == 1) {
-          $tid = array_keys($term)[0];
-        }
-        else {
-          $tid = NULL;
-        }
-        $decode_data[$key]['category_id'] = $tid;
 
       }
     }

@@ -75,22 +75,9 @@ $vh3-connected-bg: #ABD037;
 }
 
 .vh-header.vh-variant3 {
-  position     : fixed;
-  top          : 0;
-  right        : 0;
-  left         : 0;
-  z-index      : 2;
   margin-bottom: 15px;
-  width        : 100%;
-  transition   : top 500ms ease-in;
   // **** sticky behaviours in desktop **** //
   @include media-breakpoint-up(lg) {
-    position: absolute;
-
-    body.toolbar-fixed & {
-      top: 0;
-    }
-
     &.top {
       position: fixed;
       top     : 0;
@@ -142,10 +129,6 @@ $vh3-connected-bg: #ABD037;
         }
       }
     }
-  }
-
-  body.toolbar-fixed & {
-    top: 39px;
   }
 
   .vh-header__top {
@@ -451,16 +434,12 @@ $vh3-connected-bg: #ABD037;
         > .menu__item--2 {
           float: left;
           width: 33.3333%;
-          text-align: center;
+          //text-align: center;
           padding: 20px;
           @include if-ie() {
             width: 100%;
           }
 
-          > .menu-wrapper {
-            @include rem(margin-left, -15px);
-            @include rem(margin-right, -15px);
-          }
         }
 
         .block-menu-close {
@@ -539,7 +518,12 @@ $vh3-connected-bg: #ABD037;
     // if user is connected
     .vh-header--user-controll {
       background-color: $vh3-connected-bg;
-
+      .block ,
+      .block__content,
+      .vh-header--account,
+      .dropdown {
+        height: 100%;
+      }
       .nav-link {
         z-index      : 2;
         overflow     : hidden;
@@ -552,15 +536,11 @@ $vh3-connected-bg: #ABD037;
         font-weight  : 400;
         @include rem(padding, 8px);
         @include rem(font-size, 14px);
-
-        &::before {
-          content: $icon-user; //$icon-account-connected;
+        display      : flex;
+        flex-wrap    : wrap;
+        span[class^="icon"]  {
+          font-size: 22px;
         }
-
-        &:after {
-          display: none;
-        }
-
         span {
           display      : block;
           overflow     : hidden;
@@ -637,17 +617,6 @@ $vh3-connected-bg: #ABD037;
       box-shadow: 0 2px 8px 0 rgba(48, 49, 51, 0.1);
     }
 
-    .hamburger {
-      height: 100%;
-      @include rem(padding, 16px 16px);
-
-      &,
-      &:focus {
-        outline   : none;
-        box-shadow: none;
-      }
-    }
-
     .vh-hamburger.d-lg-none {
       margin-top   : auto;
       margin-right : auto;
@@ -655,20 +624,6 @@ $vh3-connected-bg: #ABD037;
       @include rtl() {
         margin-right: 0;
         margin-left : auto;
-      }
-
-      .hamburger-box {
-        width : 20px;
-        height: 20px;
-
-        .hamburger-inner {
-          &,
-          &:after,
-          &:before {
-            width : 100%;
-            height: 2px;
-          }
-        }
       }
     }
 
@@ -844,14 +799,6 @@ aside#vhm.vhm-variant3 {
   // The branding + Humber
   .vhm-branding-hamburger {
     display: none;
-  }
-
-  .hamburger {
-    &,
-    &:focus {
-      outline   : none;
-      box-shadow: none;
-    }
   }
 
   .vhm-body {

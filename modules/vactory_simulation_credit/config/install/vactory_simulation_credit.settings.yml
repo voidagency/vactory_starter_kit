@@ -1,0 +1,24 @@
+dependencies:
+  enforced:
+    module:
+      - vactory_simulation_credit
+v_simulateur_cf_mode_profile: 0
+v_simulateur_cf_mode_simulateur: 0
+profiles:
+  -
+    simulateur_taux:
+      v_simulateur_cf_taux: '15'
+      v_simulateur_cf_taux_min: '0'
+      v_simulateur_cf_taux_max: '100'
+    simulateur_montant:
+      v_simulateur_cf_montant: '1000'
+      v_simulateur_cf_montant_min: '500'
+      v_simulateur_cf_montant_max: '2000'
+    simulateur_duree:
+      v_simulateur_cf_duree: '12'
+      v_simulateur_cf_duree_min: '6'
+      v_simulateur_cf_duree_max: '43'
+    capacite_emprunt:
+      v_simulateur_cf_mensualite: '20000'
+      v_simulateur_cf_mensualite_min: '10000'
+      v_simulateur_cf_mensualite_max: '50000'

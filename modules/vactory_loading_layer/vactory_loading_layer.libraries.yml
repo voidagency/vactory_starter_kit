@@ -1,0 +1,11 @@
+loading_layer_libs:
+  version: VERSION
+  css:
+    theme:
+      css/style.css: {}
+  js:
+    js/script.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
+

@@ -30,6 +30,12 @@ function vactory_job_ads_theme() {
       'template'  => 'full',
     ],
 
+    // Node > Smart search.
+    'node__vactory_job_ads__smart_search'        => [
+      'base hook' => 'node',
+      'template'  => 'smart-search',
+    ],
+
     // View > Job Ads.
     'views_view_unformatted__vactory_job_ads__vactory_job_ads' => [
       'base hook' => 'views_view_unformatted',

@@ -1,0 +1,22 @@
+{% set links = content.links %}
+{% if links is defined and links is not empty %}
+<div class="t-rapport--listing-filtres--wrapper" role="group" aria-label="{{ 'Filter Thematic'|t }}">
+  <h3>{{ "Filtrer par thématiques :" | t }}</h3>
+  <ul class="t-rapport--listing-filtres no-style" role="group" aria-label="{{ 'Filter Thematic'|t }}">
+    {% for link in links %}
+      {% set color = (link.color is not empty) ? link.color : '#fff' %}
+      {% if link.tid == 'All' %}
+        <li>
+          <a href="" class="active" id="{{ link.tid }}" class="tag">#{{ 'Accueil'|t }}</a>
+        </li>
+      {% else %}
+        <li>
+          <a style="border-color: #{{ color }}; color: #{{ color }}" href="rapport-digital/{{ content.rapport_year }}?field_ar_thematic_target_id={{ link.tid }}" data-filter-name="{{ filter_name }}"
+             id="{{ tid }}"
+             class="tag filter-tab"># {{ link.name }}</a>
+        </li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}

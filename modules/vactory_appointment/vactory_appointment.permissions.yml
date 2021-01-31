@@ -8,3 +8,5 @@ delete appointments:
   title: 'Delete appointments'
 view appointments:
   title: 'View appointments'
+export appointments:
+  title: 'Export appointments'

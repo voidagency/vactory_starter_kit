@@ -7,6 +7,8 @@ use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Url;
+use Drupal\file\Entity\File;
+use Drupal\media\Entity\Media;
 
 /**
  * Plugin implementation of the 'field_wysiwyg_dynamic_formatter' formatter.
@@ -41,7 +43,6 @@ class VactoryDynamicFormatter extends FormatterBase {
         // Text Preprocessor.
         if ($info['type'] === 'text_format') {
           $format = $info['options']['#format'] ?? 'full_html';
-
           $build = [
             '#type'   => 'processed_text',
             '#text'   => isset($value['value']) ? $value['value'] : '',
@@ -63,6 +64,20 @@ class VactoryDynamicFormatter extends FormatterBase {
           $value = $image_data;
         }
 
+        // File media.
+        if ($info['type'] === 'file' && !empty($value)) {
+          $file_link = NULL;
+          $media = Media::load($value);
+          if (isset($media) && !empty($media) && isset($media->field_media_file->target_id) && !empty($media->field_media_file->target_id)) {
+            $fid = $media->field_media_file->target_id;
+            $file = File::load($fid);
+            if (isset($file) && !empty($file)) {
+              $absolute_url = file_create_url($file->getFileUri());
+              $file_link = file_url_transform_relative($absolute_url);
+            }
+          }
+          $value = $file_link;
+        }
       }
       elseif (is_array($value)) {
         // Go deeper.

@@ -6,6 +6,7 @@ dependencies:
     - field.field.user.user.field_first_name
     - field.field.user.user.field_last_name
     - field.field.user.user.field_social_media_links
+    - field.field.user.user.field_telephone
     - field.field.user.user.field_user_profession
     - field.field.user.user.user_picture
   module:
@@ -54,6 +55,14 @@ content:
     third_party_settings: {  }
     type: social_media_links_field_default
     region: content
+  field_telephone:
+    type: string
+    weight: 7
+    region: content
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
   field_user_profession:
     weight: 5
     label: above

@@ -1,0 +1,10 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_forums
+name: 'Forums - Room'
+vid: vactory_forum_room
+description: 'Utiliser ce vocabulaire pour ajouter une nouvelle room forum'
+weight: 0

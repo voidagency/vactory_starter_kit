@@ -1,0 +1,4 @@
+services:
+  vactory_annual_report.manager:
+    class: Drupal\vactory_annual_report\Services\VactoryAnnualReportManager
+    arguments: ['@entity_type.manager']

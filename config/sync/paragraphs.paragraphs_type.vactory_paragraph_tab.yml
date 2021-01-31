@@ -1,7 +1,9 @@
-uuid: 3df12246-5565-4f61-90b0-b706eb0f73cc
+uuid: abcf2d21-1a8f-4369-8a2d-287a326a3432
 langcode: en
 status: true
 dependencies: {  }
+_core:
+  default_config_hash: DdTDQh7bJZoitocbIafnn-Fj5stRfKHMqxdVwpvXAHs
 id: vactory_paragraph_tab
 label: 'Paragraph tab'
 icon_uuid: null

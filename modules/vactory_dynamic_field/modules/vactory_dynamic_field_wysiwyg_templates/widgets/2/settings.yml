@@ -16,15 +16,6 @@ fields:
   link:
     type: url_extended
     label: 'Lien du bouton'
-  link_alt:
-    type: text
-    label: 'Texte du bouton'
-  link_icon:
-    type: text
-    label: 'Icône du bouton (Optionnel)'
-  link_target:
-    type: checkbox
-    label: 'Ouvrir dans une nouvelle fenêtre'
   image:
     type: image
     label: 'Image'

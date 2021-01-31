@@ -39,7 +39,7 @@
       else {
         $item.addClass('cbp-hropen');
         current = idx;
-       // $body.off('click').on('click', close);
+        $body.off('click').on('click', close);
       }
 
       // Has sub-menu.
@@ -96,6 +96,7 @@
   $(document).ready(function () {
     cbpHorizontalMenu.init();
     mobileMenu.init();
+    headerHelpers.stickyHeader();
   });
 
 }(jQuery, Drupal));

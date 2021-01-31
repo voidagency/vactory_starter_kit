@@ -4,6 +4,7 @@ display:
     display_options:
       exposed_form:
         options:
+          submit_button: 'عمل تصفية'
           reset_button_label: 'إعادة الضبط'
           exposed_sorts_label: 'الترتيب حسب'
           sort_asc_label: تصاعدي

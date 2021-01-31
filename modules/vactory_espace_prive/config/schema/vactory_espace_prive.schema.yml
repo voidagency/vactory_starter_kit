@@ -1,0 +1,16 @@
+vactory_espace_prive.settings:
+  type: config_object
+  label: 'Espace Privé Settings'
+  mapping:
+    metatag_register_title:
+      type: text
+      label: "Titre Metatag de la page crétion d'un compte"
+    metatag_register_description:
+      type: text
+      label: "Description Metatag de la page création d'un compte"
+    metatag_login_title:
+      type: text
+      label: "Titre Metatag de la page d'authentification"
+    metatag_login_description:
+      type: text
+      label: "Description Metatag de la page d'authentification"

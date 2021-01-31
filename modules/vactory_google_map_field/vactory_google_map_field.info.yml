@@ -2,6 +2,7 @@ name: 'Google Map Field'
 type: module
 description: 'field type extend from contrib module google map field'
 core: 8.x
+core_version_requirement: ^8 || ^9
 dependencies:
   - field
 package: 'Vactory'

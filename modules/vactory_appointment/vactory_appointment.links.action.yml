@@ -1,5 +1,5 @@
 vactory_appointment.appointment_add:
-  route_name: entity.vactory_appointment.add_page
+  route_name: entity.vactory_appointment.add_form
   title: 'Add Appointment'
   appears_on:
     - entity.vactory_appointment.collection

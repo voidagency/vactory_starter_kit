@@ -1,7 +1,9 @@
-uuid: ab515a84-2958-4485-986a-65699e38f3a4
+uuid: c2d68384-771b-4bfe-a5cd-8632551d7c55
 langcode: en
 status: true
 dependencies: {  }
+_core:
+  default_config_hash: 2piXWOEePay54jRRbflLmyIDgpizRktr2ddNgK6fLN0
 id: audio
 label: Audio
 description: 'An <em>Audio</em> file is a sound recording.'

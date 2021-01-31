@@ -1,4 +1,4 @@
-uuid: 0302bd1e-8f50-42f5-8e8c-b7b7e81c8bb3
+uuid: cffa2afe-54f7-4c3b-92c6-ab68fb566376
 langcode: en
 status: true
 dependencies:
@@ -7,6 +7,8 @@ dependencies:
     - paragraphs.paragraphs_type.vactory_paragraph_tab
   module:
     - vactory_dynamic_field
+_core:
+  default_config_hash: lVgFWYksRy4Q1rEJK-807XoVJLDAo3n4mZmnyJ6UEZk
 id: paragraph.vactory_paragraph_tab.field_tab_templates
 field_name: field_tab_templates
 entity_type: paragraph

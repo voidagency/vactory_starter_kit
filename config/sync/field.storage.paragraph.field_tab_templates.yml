@@ -1,10 +1,12 @@
-uuid: ef0182e1-1fc0-464c-a4a1-1f6153d37ccc
+uuid: 185f8f80-77c8-4a35-a7f3-ec5dab9eec4e
 langcode: en
 status: true
 dependencies:
   module:
     - paragraphs
     - vactory_dynamic_field
+_core:
+  default_config_hash: KRWl3rWWVkau39dlhNSaciiEtU7jFirUvqjU7onOI2U
 id: paragraph.field_tab_templates
 field_name: field_tab_templates
 entity_type: paragraph

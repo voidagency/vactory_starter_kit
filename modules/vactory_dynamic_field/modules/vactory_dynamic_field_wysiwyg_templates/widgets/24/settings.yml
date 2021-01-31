@@ -32,11 +32,3 @@ fields:
     label: 'Lien'
     options:
       '#required': true
-  link_alt:
-    type: text
-    label: 'Lien text'
-    options:
-      '#required': true
-  link_target:
-    type: checkbox
-    label: 'Ouvrir dans une nouvelle fenêtre'

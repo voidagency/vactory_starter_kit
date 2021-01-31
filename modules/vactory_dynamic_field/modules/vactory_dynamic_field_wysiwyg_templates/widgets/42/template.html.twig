@@ -28,6 +28,7 @@
                 {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : '' %}
                 {% set profile_image = image_uri|image_style('medium') %}
                 {% set lqip_image = image_uri|image_style('lqip') %}
+                {% set image_alt = (item.image_alt is not empty) ? item.image_alt : item.image.alt_image %}
                 {% if loop.first %}
                     {% set activeItem = 'active' %}
                 {% else %}  
@@ -35,7 +36,7 @@
                 {% endif %}    
     
                 <li data-target="#carouselExampleIndicators" data-slide-to="{{ loop.index - 1 }}" class='lazy-wrapper {{ activeItem }}'>
-                    <img alt="{{ item.image_alt }}"
+                    <img alt="{{ image_alt }}"
                         class="lazyload img-fluid"
                         src="{{ lqip_image }}"
                         data-src="{{ profile_image }}">

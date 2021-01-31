@@ -21,13 +21,13 @@
       {% if  item.paragraph_type == 'opener' %}
       {#background of type image #}
       {% if item.background.type == 'image' %}
-      <div {{ item.attributes.addClass(item.paragraph.classes) }} style="background-image: url({{ file_url(item.background.image) }})">
+      <div {{ item.attributes.addClass(item.paragraph.classes) }} style="background-image: url({{ file_url(item.background.image) }}); background-size: 100%; background-repeat: no-repeat;">
         {#background of type color #}
         {% elseif item.background.type == 'solid' %}
-        <div {{ item.attributes.addClass(item.paragraph.classes) }} style="background-color: {{ '#' ~item.background.color }}">
+        <div {{ item.attributes.addClass(item.paragraph.classes) }} style="background-color: {{ item.background.color }}">
           {#background of type both image and color#}
           {% else %}
-          <div {{ item.attributes.addClass(item.paragraph.classes) }} style="background: {{ '#' ~item.background.color }} url({{ file_url(item.background.image) }})">
+          <div {{ item.attributes.addClass(item.paragraph.classes) }} style="background: {{ item.background.color }} url({{ file_url(item.background.image) }}); background-size: 100%; background-repeat: no-repeat;">
             {% endif %}
             {#case of closer#}
             {% else %}
@@ -48,13 +48,13 @@
     {% if  item.paragraph_type == 'opener' %}
     {#background of type image #}
     {% if item.background.type == 'image' %}
-<div {{ item.attributes.addClass(item.paragraph.classes) }} style="background-image: url({{ file_url(item.background.image) }})">
+<div {{ item.attributes.addClass(item.paragraph.classes) }} style="background-image: url({{ file_url(item.background.image) }}); background-size: 100%; background-repeat: no-repeat;">
   {#background of type color #}
   {% elseif item.background.type == 'solid' %}
-  <div {{ item.attributes.addClass(item.paragraph.classes) }} style="background-color: {{ '#' ~item.background.color }}">
+  <div {{ item.attributes.addClass(item.paragraph.classes) }} style="background-color: {{ item.background.color }}">
     {#background of type both image and color#}
     {% else %}
-    <div {{ item.attributes.addClass(item.paragraph.classes) }} style="background: {{ '#' ~item.background.color }} url({{ file_url(item.background.image) }})">
+    <div {{ item.attributes.addClass(item.paragraph.classes) }} style="background: {{ item.background.color }} url({{ file_url(item.background.image) }}); background-size: 100%; background-repeat: no-repeat;">
       {% endif %}
       {#case of closer#}
       {% else %}
@@ -80,13 +80,13 @@
     {% if  item.paragraph_type == 'opener' %}
     {#background of type image #}
     {% if item.background.type == 'image' %}
-    <div {{ item.attributes.addClass(item.paragraph.classes) }} style="background-image: url({{ file_url(item.background.image) }})">
+    <div {{ item.attributes.addClass(item.paragraph.classes) }} style="background-image: url({{ file_url(item.background.image) }}); background-size: 100%; background-repeat: no-repeat;">
       {#background of type color #}
       {% elseif item.background.type == 'solid' %}
-      <div {{ item.attributes.addClass(item.paragraph.classes) }} style="background-color: {{ '#' ~item.background.color }}">
+      <div {{ item.attributes.addClass(item.paragraph.classes) }} style="background-color: {{ item.background.color }}">
         {#background of type both image and color#}
         {% else %}
-        <div {{ item.attributes.addClass(item.paragraph.classes) }} style="background: {{ '#' ~item.background.color }} url({{ file_url(item.background.image) }})">
+        <div {{ item.attributes.addClass(item.paragraph.classes) }} style="background: {{ item.background.color }} url({{ file_url(item.background.image) }}); background-size: 100%; background-repeat: no-repeat;">
           {% endif %}
           {#case of closer#}
           {% else %}

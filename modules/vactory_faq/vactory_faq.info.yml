@@ -2,9 +2,13 @@ name: 'FAQ'
 description: 'Provide FAQ content type and views listing.'
 type: module
 core: 8.x
+core_version_requirement: ^8 || ^9
 dependencies:
   - faqfield
   - vactory_core
   - vactory_field
   - vactory_views
+  - search_api_autocomplete
+  - search_api
+  - search_api_exclude_entity
 package: Vactory

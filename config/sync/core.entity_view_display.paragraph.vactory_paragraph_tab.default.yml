@@ -1,13 +1,16 @@
-uuid: 4ac97e94-07e8-477b-b10d-65227ea8dde6
+uuid: f4e84abe-4a70-4a2b-82da-751bac286525
 langcode: en
 status: true
 dependencies:
   config:
+    - field.field.paragraph.vactory_paragraph_tab.field_background_color
     - field.field.paragraph.vactory_paragraph_tab.field_tab_templates
     - field.field.paragraph.vactory_paragraph_tab.field_vactory_title
     - paragraphs.paragraphs_type.vactory_paragraph_tab
   module:
     - vactory_dynamic_field
+_core:
+  default_config_hash: Hgbb2BJ4mwjIvTJJt7UHTWWUDxX5VMhcIBjWU4fK3z8
 id: paragraph.vactory_paragraph_tab.default
 targetEntityType: paragraph
 bundle: vactory_paragraph_tab
@@ -21,6 +24,7 @@ content:
     type: field_wysiwyg_dynamic_formatter
     region: content
 hidden:
+  field_background_color: true
   field_vactory_title: true
   paragraph_background_image: true
   paragraph_container: true

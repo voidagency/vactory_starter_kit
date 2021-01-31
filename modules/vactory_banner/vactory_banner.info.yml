@@ -2,6 +2,7 @@ name: Banner
 description: 'Provides banner content type and related configuration. '
 type: module
 core: 8.x
+core_version_requirement: ^8 || ^9
 package: Vactory
 dependencies:
   - block
@@ -23,5 +24,3 @@ dependencies:
   - user
   - vactory_core
   - vactory_field
-  - vactory_login_token
-core_incompatible: false

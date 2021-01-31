@@ -1,8 +1,14 @@
-uuid: 0ca78758-c408-4bc3-949f-a91b86f588b0
+uuid: b5903328-0f41-4e79-95cc-f717db151d21
 langcode: en
 status: true
 dependencies:
   config:
+    - field.field.paragraph.vactory_paragraph_block.field_background_color
+    - field.field.paragraph.vactory_paragraph_block.field_paragraph_hide_lg
+    - field.field.paragraph.vactory_paragraph_block.field_paragraph_hide_sm
+    - field.field.paragraph.vactory_paragraph_block.field_position_image_x
+    - field.field.paragraph.vactory_paragraph_block.field_position_image_y
+    - field.field.paragraph.vactory_paragraph_block.field_size_image
     - field.field.paragraph.vactory_paragraph_block.field_titre_ancre
     - field.field.paragraph.vactory_paragraph_block.field_vactory_block
     - field.field.paragraph.vactory_paragraph_block.field_vactory_body
@@ -23,9 +29,7 @@ third_party_settings:
         - paragraph_identifier
         - paragraph_container
         - paragraph_css_class
-        - paragraph_background_color
-        - paragraph_background_image
-        - paragraph_background_parallax
+        - group_fond
       parent_name: ''
       weight: 6
       format_type: details
@@ -34,13 +38,102 @@ third_party_settings:
         classes: ''
         open: false
         required_fields: true
-      label: Appearance
+      label: Apparence
       region: content
+    group_fond:
+      children:
+        - field_background_color
+        - paragraph_background_image
+        - group_positionner_l_image
+        - group_display
+        - paragraph_background_parallax
+      parent_name: group_appearance
+      weight: 3
+      format_type: details
+      region: content
+      format_settings:
+        id: ''
+        classes: ''
+        description: ''
+        open: false
+        required_fields: false
+      label: 'Couleur/Image de Fond'
+    group_display:
+      children:
+        - field_paragraph_hide_sm
+        - field_paragraph_hide_lg
+      parent_name: group_fond
+      weight: 3
+      format_type: details
+      region: content
+      format_settings:
+        id: ''
+        classes: ''
+        description: ''
+        required_fields: false
+        open: false
+      label: Display
+    group_positionner_l_image:
+      children:
+        - field_position_image_x
+        - field_position_image_y
+        - field_size_image
+      parent_name: group_fond
+      weight: 2
+      format_type: details
+      region: content
+      format_settings:
+        description: ''
+        required_fields: true
+        id: ''
+        classes: ''
+        open: false
+      label: 'Positionner l''image'
+_core:
+  default_config_hash: oyzQRz7s98JM-ikm2Su0GJUvw6Ma1D9QoKU4X9uxoS8
 id: paragraph.vactory_paragraph_block.default
 targetEntityType: paragraph
 bundle: vactory_paragraph_block
 mode: default
 content:
+  field_background_color:
+    settings: {  }
+    type: jquery_colorpicker
+    weight: 0
+    region: content
+    third_party_settings: {  }
+  field_paragraph_hide_lg:
+    weight: 10
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    type: boolean_checkbox
+    region: content
+  field_paragraph_hide_sm:
+    weight: 9
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    type: boolean_checkbox
+    region: content
+  field_position_image_x:
+    weight: 10
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_position_image_y:
+    weight: 12
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_size_image:
+    weight: 13
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
   field_titre_ancre:
     weight: 3
     settings:
@@ -90,22 +183,23 @@ content:
     region: content
   paragraph_background_color:
     type: jquery_colorpicker
-    weight: 3
+    weight: 4
     region: content
     settings:
       color: FFFFFF
     third_party_settings: {  }
   paragraph_background_image:
     type: media_library_widget
-    weight: 4
+    weight: 1
     region: content
-    settings: {  }
+    settings:
+      media_types: {  }
     third_party_settings: {  }
   paragraph_background_parallax:
     type: boolean_checkbox
     settings:
       display_label: true
-    weight: 5
+    weight: 4
     region: content
     third_party_settings: {  }
   paragraph_container:
@@ -131,7 +225,7 @@ content:
     region: content
     third_party_settings: {  }
   translation:
-    weight: 7
+    weight: 9
     region: content
     settings: {  }
     third_party_settings: {  }

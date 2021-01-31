@@ -5,6 +5,7 @@ dependencies:
     - core.entity_view_mode.node.card
     - core.entity_view_mode.node.card_inline
     - core.entity_view_mode.node.masonry
+    - core.entity_view_mode.node.mosaic
     - entityqueue.entity_queue.vactory_news_block_masonry
     - entityqueue.entity_queue.vactory_news_block_three_columns
     - entityqueue.entity_queue.vactory_news_block_two_columns
@@ -26,7 +27,6 @@ description: 'Find and manage news.'
 tag: ''
 base_table: node_field_data
 base_field: nid
-core: 8.x
 display:
   default:
     display_plugin: default
@@ -88,7 +88,7 @@ display:
         type: 'entity:node'
         options:
           relationship: none
-          view_mode: card
+          view_mode: mosaic
       fields:
         title:
           id: title
@@ -148,6 +148,8 @@ display:
           id: status
           expose:
             operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
           group: 1
       sorts: {  }
       title: 'Listing One Column'
@@ -223,6 +225,8 @@ display:
           id: status
           expose:
             operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
           group: 1
         type:
           id: type
@@ -235,6 +239,9 @@ display:
           entity_type: node
           entity_field: type
           plugin_id: bundle
+          expose:
+            operator_limit_selection: false
+            operator_list: {  }
         langcode:
           id: langcode
           table: node_field_data
@@ -246,6 +253,9 @@ display:
           entity_type: node
           entity_field: langcode
           plugin_id: language
+          expose:
+            operator_limit_selection: false
+            operator_list: {  }
         entityqueue_relationship:
           id: entityqueue_relationship
           table: node_field_data
@@ -269,6 +279,8 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
+            operator_limit_selection: false
+            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -390,6 +402,8 @@ display:
           id: status
           expose:
             operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
           group: 1
         type:
           id: type
@@ -402,6 +416,9 @@ display:
           entity_type: node
           entity_field: type
           plugin_id: bundle
+          expose:
+            operator_limit_selection: false
+            operator_list: {  }
         langcode:
           id: langcode
           table: node_field_data
@@ -413,6 +430,9 @@ display:
           entity_type: node
           entity_field: langcode
           plugin_id: language
+          expose:
+            operator_limit_selection: false
+            operator_list: {  }
         entityqueue_relationship:
           id: entityqueue_relationship
           table: node_field_data
@@ -436,6 +456,8 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
+            operator_limit_selection: false
+            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -557,6 +579,8 @@ display:
           id: status
           expose:
             operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
           group: 1
         type:
           id: type
@@ -569,6 +593,9 @@ display:
           entity_type: node
           entity_field: type
           plugin_id: bundle
+          expose:
+            operator_limit_selection: false
+            operator_list: {  }
         langcode:
           id: langcode
           table: node_field_data
@@ -580,6 +607,9 @@ display:
           entity_type: node
           entity_field: langcode
           plugin_id: language
+          expose:
+            operator_limit_selection: false
+            operator_list: {  }
         entityqueue_relationship:
           id: entityqueue_relationship
           table: node_field_data
@@ -603,6 +633,8 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
+            operator_limit_selection: false
+            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -724,6 +756,8 @@ display:
           id: status
           expose:
             operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
           group: 1
         type:
           id: type
@@ -736,6 +770,9 @@ display:
           entity_type: node
           entity_field: type
           plugin_id: bundle
+          expose:
+            operator_limit_selection: false
+            operator_list: {  }
         langcode:
           id: langcode
           table: node_field_data
@@ -747,6 +784,9 @@ display:
           entity_type: node
           entity_field: langcode
           plugin_id: language
+          expose:
+            operator_limit_selection: false
+            operator_list: {  }
         entityqueue_relationship:
           id: entityqueue_relationship
           table: node_field_data
@@ -770,6 +810,8 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
+            operator_limit_selection: false
+            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -890,6 +932,8 @@ display:
           id: status
           expose:
             operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
           group: 1
         type:
           id: type
@@ -902,6 +946,9 @@ display:
           entity_type: node
           entity_field: type
           plugin_id: bundle
+          expose:
+            operator_limit_selection: false
+            operator_list: {  }
         langcode:
           id: langcode
           table: node_field_data
@@ -913,6 +960,9 @@ display:
           entity_type: node
           entity_field: langcode
           plugin_id: language
+          expose:
+            operator_limit_selection: false
+            operator_list: {  }
         entityqueue_relationship:
           id: entityqueue_relationship
           table: node_field_data
@@ -936,6 +986,8 @@ display:
             multiple: false
             remember_roles:
               authenticated: authenticated
+            operator_limit_selection: false
+            operator_list: {  }
           is_grouped: false
           group_info:
             label: ''
@@ -1050,6 +1102,8 @@ display:
           id: status
           expose:
             operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
           group: 1
         field_vactory_news_theme_target_id:
           id: field_vactory_news_theme_target_id
@@ -1062,6 +1116,8 @@ display:
             label: Thème
             identifier: theme
             required: false
+            operator_limit_selection: false
+            operator_list: {  }
           plugin_id: taxonomy_index_tid
         field_vactory_date_value:
           id: field_vactory_date_value
@@ -1075,6 +1131,8 @@ display:
             placeholder: ''
             min_placeholder: ''
             max_placeholder: ''
+            operator_limit_selection: false
+            operator_list: {  }
           plugin_id: datetime
         type:
           id: type
@@ -1087,6 +1145,9 @@ display:
           entity_type: node
           entity_field: type
           plugin_id: bundle
+          expose:
+            operator_limit_selection: false
+            operator_list: {  }
         langcode:
           id: langcode
           table: node_field_data
@@ -1098,6 +1159,9 @@ display:
           entity_type: node
           entity_field: langcode
           plugin_id: language
+          expose:
+            operator_limit_selection: false
+            operator_list: {  }
       filter_groups:
         operator: AND
         groups:
@@ -1181,6 +1245,8 @@ display:
           id: status
           expose:
             operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
           group: 1
         field_vactory_news_theme_target_id:
           id: field_vactory_news_theme_target_id
@@ -1193,6 +1259,8 @@ display:
             label: Thème
             identifier: theme
             required: false
+            operator_limit_selection: false
+            operator_list: {  }
           plugin_id: taxonomy_index_tid
         field_vactory_date_value:
           id: field_vactory_date_value
@@ -1206,6 +1274,8 @@ display:
             placeholder: ''
             min_placeholder: ''
             max_placeholder: ''
+            operator_limit_selection: false
+            operator_list: {  }
           plugin_id: datetime
         type:
           id: type
@@ -1218,6 +1288,9 @@ display:
           entity_type: node
           entity_field: type
           plugin_id: bundle
+          expose:
+            operator_limit_selection: false
+            operator_list: {  }
         langcode:
           id: langcode
           table: node_field_data
@@ -1229,6 +1302,9 @@ display:
           entity_type: node
           entity_field: langcode
           plugin_id: language
+          expose:
+            operator_limit_selection: false
+            operator_list: {  }
       defaults:
         filters: false
         filter_groups: false
@@ -1389,6 +1465,8 @@ display:
           id: status
           expose:
             operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
           group: 1
         field_vactory_news_theme_target_id:
           id: field_vactory_news_theme_target_id
@@ -1401,6 +1479,8 @@ display:
             label: Thème
             identifier: theme
             required: false
+            operator_limit_selection: false
+            operator_list: {  }
           plugin_id: taxonomy_index_tid
         field_vactory_date_value:
           id: field_vactory_date_value
@@ -1414,6 +1494,8 @@ display:
             placeholder: ''
             min_placeholder: ''
             max_placeholder: ''
+            operator_limit_selection: false
+            operator_list: {  }
           plugin_id: datetime
         type:
           id: type
@@ -1426,6 +1508,9 @@ display:
           entity_type: node
           entity_field: type
           plugin_id: bundle
+          expose:
+            operator_limit_selection: false
+            operator_list: {  }
         langcode:
           id: langcode
           table: node_field_data
@@ -1437,6 +1522,9 @@ display:
           entity_type: node
           entity_field: langcode
           plugin_id: language
+          expose:
+            operator_limit_selection: false
+            operator_list: {  }
       filter_groups:
         operator: AND
         groups:
@@ -1543,6 +1631,8 @@ display:
           id: status
           expose:
             operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
           group: 1
         field_vactory_news_theme_target_id:
           id: field_vactory_news_theme_target_id
@@ -1555,6 +1645,8 @@ display:
             label: Thème
             identifier: theme
             required: false
+            operator_limit_selection: false
+            operator_list: {  }
           plugin_id: taxonomy_index_tid
         field_vactory_date_value:
           id: field_vactory_date_value
@@ -1568,6 +1660,8 @@ display:
             placeholder: ''
             min_placeholder: ''
             max_placeholder: ''
+            operator_limit_selection: false
+            operator_list: {  }
           plugin_id: datetime
         type:
           id: type
@@ -1580,6 +1674,9 @@ display:
           entity_type: node
           entity_field: type
           plugin_id: bundle
+          expose:
+            operator_limit_selection: false
+            operator_list: {  }
         langcode:
           id: langcode
           table: node_field_data
@@ -1591,6 +1688,9 @@ display:
           entity_type: node
           entity_field: langcode
           plugin_id: language
+          expose:
+            operator_limit_selection: false
+            operator_list: {  }
       filter_groups:
         operator: AND
         groups:
@@ -1650,6 +1750,124 @@ display:
         - url
         - url.query_args
         - user
+        - 'user.node_grants:view'
+        - user.permissions
+      tags: {  }
+  mosaique:
+    display_plugin: block
+    id: mosaique
+    display_title: 'Block Mosaique'
+    position: 2
+    display_options:
+      display_extenders:
+        metatag_display_extender: {  }
+      title: 'Block Mosaique'
+      defaults:
+        title: false
+        pager: false
+        css_class: false
+        use_more: false
+        use_more_always: false
+        use_more_text: false
+        link_display: false
+        link_url: false
+        filters: false
+        filter_groups: false
+        sorts: false
+        style: false
+        row: false
+        relationships: false
+      pager:
+        type: some
+        options:
+          items_per_page: 6
+      display_description: ''
+      block_description: 'Block Mosaique'
+      enabled: true
+      css_class: block-slider-large-vactory-news
+      use_more: true
+      use_more_always: true
+      use_more_text: 'Voir plus d''actualités'
+      link_display: listing_one_column
+      link_url: vactory/news/listing-one-column
+      filters:
+        status:
+          value: '1'
+          table: node_field_data
+          field: status
+          plugin_id: boolean
+          entity_type: node
+          entity_field: status
+          id: status
+          expose:
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+          group: 1
+        type:
+          id: type
+          table: node_field_data
+          field: type
+          operator: in
+          value:
+            - vactory_news
+          exposed: false
+          entity_type: node
+          entity_field: type
+          plugin_id: bundle
+          expose:
+            operator_limit_selection: false
+            operator_list: {  }
+        langcode:
+          id: langcode
+          table: node_field_data
+          field: langcode
+          operator: in
+          value:
+            '***LANGUAGE_language_interface***': '***LANGUAGE_language_interface***'
+          exposed: false
+          entity_type: node
+          entity_field: langcode
+          plugin_id: language
+          expose:
+            operator_limit_selection: false
+            operator_list: {  }
+      filter_groups:
+        operator: AND
+        groups:
+          1: AND
+      rendering_language: '***LANGUAGE_language_interface***'
+      sorts:
+        field_vactory_date_value:
+          id: field_vactory_date_value
+          table: node__field_vactory_date
+          field: field_vactory_date_value
+          relationship: none
+          group_type: group
+          admin_label: ''
+          order: DESC
+          exposed: false
+          expose:
+            label: ''
+          granularity: second
+          plugin_id: datetime
+      style:
+        type: default
+        options:
+          row_class: ''
+          default_row_class: true
+          uses_fields: false
+      row:
+        type: 'entity:node'
+        options:
+          relationship: none
+          view_mode: mosaic
+      relationships: {  }
+      block_category: News
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_interface'
         - 'user.node_grants:view'
         - user.permissions
       tags: {  }

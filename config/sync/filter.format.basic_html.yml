@@ -1,10 +1,12 @@
-uuid: d947ca13-7e54-42d2-ac3f-6784403f5a14
-langcode: en
+uuid: 09a64686-de0e-4b0d-b276-1ffb1912b44f
+langcode: fr
 status: true
 dependencies:
   module:
     - editor
     - linkit
+_core:
+  default_config_hash: PpQ7JSLUySSHJ7hcasTbgSJeGaZ9XEf6vBkcMDtk8PE
 name: 'HTML simple'
 format: basic_html
 weight: -10

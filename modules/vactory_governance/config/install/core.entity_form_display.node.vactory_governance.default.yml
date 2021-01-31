@@ -5,6 +5,10 @@ dependencies:
     - field.field.node.vactory_governance.body
     - field.field.node.vactory_governance.field_gov_address
     - field.field.node.vactory_governance.field_gov_social_media
+    - field.field.node.vactory_governance.field_show_in_one_row
+    - field.field.node.vactory_governance.field_show_link_to_bio
+    - field.field.node.vactory_governance.field_show_on_roles
+    - field.field.node.vactory_governance.field_vactory_document
     - field.field.node.vactory_governance.field_vactory_email
     - field.field.node.vactory_governance.field_vactory_fax
     - field.field.node.vactory_governance.field_vactory_media
@@ -12,11 +16,11 @@ dependencies:
     - field.field.node.vactory_governance.field_vactory_seo_status
     - field.field.node.vactory_governance.field_vactory_taxonomy_1
     - field.field.node.vactory_governance.field_vactory_telephone
-    - image.style.thumbnail
     - node.type.vactory_governance
   module:
     - address
     - field_group
+    - file
     - media_library
     - path
     - social_media_links_field
@@ -30,11 +34,12 @@ third_party_settings:
         - field_vactory_taxonomy_1
         - field_vactory_name
         - field_vactory_media
+        - field_vactory_document
+        - field_show_link_to_bio
       parent_name: ''
-      weight: 2
+      weight: 5
       format_type: tab
       format_settings:
-        label: Personal
         formatter: open
         description: ''
         id: ''
@@ -50,7 +55,7 @@ third_party_settings:
         - field_vactory_fax
         - field_gov_social_media
       parent_name: ''
-      weight: 3
+      weight: 6
       format_type: tab
       format_settings:
         id: ''
@@ -60,6 +65,21 @@ third_party_settings:
         required_fields: false
       label: Coordinate
       region: content
+    group_controle_d_affichage:
+      children:
+        - field_show_in_one_row
+        - field_show_on_roles
+      parent_name: ''
+      weight: 7
+      format_type: tab
+      region: content
+      format_settings:
+        description: ''
+        formatter: open
+        required_fields: true
+        id: ''
+        classes: ''
+      label: 'Controle d''affichage'
 id: node.vactory_governance.default
 targetEntityType: node
 bundle: vactory_governance
@@ -72,18 +92,18 @@ content:
       rows: 9
       summary_rows: 3
       placeholder: ''
+      show_summary: false
     third_party_settings: {  }
     region: content
   created:
     type: datetime_timestamp
-    weight: 11
+    weight: 10
     region: content
     settings: {  }
     third_party_settings: {  }
   field_gov_address:
     weight: 5
-    settings:
-      default_country: null
+    settings: {  }
     third_party_settings: {  }
     type: address_default
     region: content
@@ -100,6 +120,33 @@ content:
       preview_image_style: thumbnail
     third_party_settings: {  }
     type: image_image
+    region: content
+  field_show_in_one_row:
+    weight: 17
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    type: boolean_checkbox
+    region: content
+  field_show_link_to_bio:
+    weight: 11
+    settings:
+      display_label: true
+    third_party_settings: {  }
+    type: boolean_checkbox
+    region: content
+  field_show_on_roles:
+    weight: 18
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_vactory_document:
+    weight: 10
+    settings:
+      progress_indicator: throbber
+    third_party_settings: {  }
+    type: file_generic
     region: content
   field_vactory_email:
     weight: 4
@@ -119,7 +166,8 @@ content:
     region: content
   field_vactory_media:
     weight: 9
-    settings: {  }
+    settings:
+      media_types: {  }
     third_party_settings: {  }
     type: media_library_widget
     region: content
@@ -132,7 +180,7 @@ content:
     type: string_textfield
     region: content
   field_vactory_seo_status:
-    weight: 51
+    weight: 17
     settings:
       edit_title: false
       edit_description: false
@@ -155,10 +203,40 @@ content:
     region: content
   langcode:
     type: language_select
-    weight: 1
+    weight: 4
     region: content
     settings:
       include_locked: true
+    third_party_settings: {  }
+  node_banner_image:
+    type: media_library_widget
+    weight: 2
+    region: content
+    settings:
+      media_types: {  }
+    third_party_settings: {  }
+  node_banner_mobile_image:
+    type: media_library_widget
+    weight: 3
+    region: content
+    settings:
+      media_types: {  }
+    third_party_settings: {  }
+  notification_message:
+    type: string_textarea
+    weight: 1
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+  notification_title:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
     third_party_settings: {  }
   path:
     type: path
@@ -170,7 +248,7 @@ content:
     type: boolean_checkbox
     settings:
       display_label: true
-    weight: 12
+    weight: 11
     region: content
     third_party_settings: {  }
   publish_on:
@@ -183,7 +261,7 @@ content:
     type: boolean_checkbox
     settings:
       display_label: true
-    weight: 22
+    weight: 15
     region: content
     third_party_settings: {  }
   sticky:
@@ -203,11 +281,12 @@ content:
     third_party_settings: {  }
   uid:
     type: entity_reference_autocomplete
-    weight: 10
+    weight: 9
     settings:
       match_operator: CONTAINS
       size: 60
       placeholder: ''
+      match_limit: 10
     region: content
     third_party_settings: {  }
   unpublish_on:
@@ -217,7 +296,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 50
+    weight: 16
     region: content
     settings: {  }
     third_party_settings: {  }

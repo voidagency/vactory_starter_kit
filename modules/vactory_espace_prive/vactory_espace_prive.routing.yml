@@ -13,9 +13,21 @@ vactory_espace_prive.register:
   requirements:
     _permission: 'access content'
 vactory_espace_prive.profile:
-  path: '/espace-prive/profile'
+  path: '/espace-prive/profile/{user}'
   defaults:
     _controller: '\Drupal\vactory_espace_prive\Controller\EspacePriveController::profile'
+    _title: 'Mon profil'
+  requirements:
+    _access: 'TRUE'
+  options:
+    no_cache: 'TRUE'
+    parameters:
+      user:
+        type: entity:user
+vactory_espace_prive.cleaned_profile:
+  path: '/espace-prive/profile'
+  defaults:
+    _controller: '\Drupal\vactory_espace_prive\Controller\EspacePriveController::cleanedProfile'
     _title: 'Mon profil'
   requirements:
     _role: 'authenticated'
@@ -28,6 +40,18 @@ vactory_espace_prive.password:
     _title: 'Réinitialisation du mot de passe'
   requirements:
     _permission: 'access content'
+vactory_espace_prive.user_view:
+  path: '/espace-prive/welcome/{user}'
+  defaults:
+    _controller: '\Drupal\vactory_espace_prive\Controller\EspacePriveController::userView'
+    _title: 'Détails de profil'
+  requirements:
+    _access: 'TRUE'
+  options:
+    no_cache: 'TRUE'
+    parameters:
+      user:
+        type: entity:user
 vactory_espace_prive.welcome:
   path: '/espace-prive/welcome'
   defaults:

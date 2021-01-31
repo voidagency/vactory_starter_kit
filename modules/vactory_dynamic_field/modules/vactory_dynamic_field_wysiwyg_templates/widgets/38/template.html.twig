@@ -2,6 +2,13 @@
 {% set lqip_image = image_uri|image_style('lqip') %}
 {% set fluid_image = file_url(image_uri) %}
 {% set modeInverse = (content.0.mode > 0) ? 'ml-sm-auto mr-sm-0 m-auto' : 'm-auto m-md-0' %}
+
+{% set link_attributes = create_attribute() %}
+{% set link_attributes = content.0.link.attributes.id is not empty ? link_attributes.setAttribute('id', content.0.link.attributes.id ) : link_attributes %}
+{% set link_attributes = content.0.link.attributes.class is not empty ? link_attributes.setAttribute('class', content.0.link.attributes.class  ~ ' btn btn-primary') : link_attributes.setAttribute('class','btn btn-primary') %}
+{% set link_attributes = content.0.link.attributes.target is not empty ? link_attributes.setAttribute('target', content.0.link.attributes.target ) : link_attributes %}
+{% set link_attributes = content.0.link.attributes.rel is not empty ? link_attributes.setAttribute('rel', content.0.link.attributes.rel ) : link_attributes %}
+
 <div class="t-background-with-card py-5 lazyload"
      data-bg="{{ fluid_image }}"
      style="background-image: url({{ lqip_image }})">
@@ -17,11 +24,9 @@
               {{ content.0.description }}
             </p>
           {% endif %}
-          {% if content.0.link is not empty and content.0.link_alt is not empty %}
-            {% set link_target = (content.0.link_target > 0) ? '_blank' : '_self' %}
+          {% if content.0.link.url is not empty and content.0.link.title is not empty %}
             <div>
-              <a class="btn btn-primary" href="{{ content.0.link }}"
-                 target="{{ link_target }}">{{ content.0.link_alt }}</a>
+              <a  href="{{ content.0.link.url }}" {{ link_attributes }} > {{ content.0.link.title }} </a>
             </div>
           {% endif %}
         </div>

@@ -1,0 +1,10 @@
+juicer:
+  remote: https://www.juicer.io/
+  version: VERSION
+  license:
+    name: GPLv2
+  js:
+    https://assets.juicer.io/embed-no-jquery.js: { type: external }
+  css:
+    theme:
+      https://assets.juicer.io/embed.css: { type: external }

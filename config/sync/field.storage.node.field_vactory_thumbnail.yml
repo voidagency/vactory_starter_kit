@@ -1,4 +1,4 @@
-uuid: 14bf4b7d-c818-49ad-8685-03dfcdb25950
+uuid: 4cc5486d-c5b3-427f-9597-d430ba23fbfe
 langcode: en
 status: true
 dependencies:
@@ -6,6 +6,8 @@ dependencies:
     - file
     - image
     - node
+_core:
+  default_config_hash: XqLP4WwIiLMuhqkv6_tQyFXxFit2kC1phXn1vW6wWbg
 id: node.field_vactory_thumbnail
 field_name: field_vactory_thumbnail
 entity_type: node

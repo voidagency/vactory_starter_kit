@@ -2,7 +2,7 @@
 {% set lqip_image = image_uri|image_style('lqip') %}
 {% set fluid_image = file_url(image_uri) %}
 {% set _imgVideo = (content.0.video is not empty) ? 'js-img-video' : null %}
-{% set imageAlt = (content.0.image_alt is not empty) ? content.0.image_alt : "Image" %}
+{% set imageAlt = (content.0.image_alt) ? content.0.image_alt : content.0.image.alt_image %}
 
 <div class="t-video-youtube-with-content js-img-video">
   <div class="row">

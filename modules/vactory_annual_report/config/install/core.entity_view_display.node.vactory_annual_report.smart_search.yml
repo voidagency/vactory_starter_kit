@@ -1,0 +1,71 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.smart_search
+    - field.field.node.vactory_annual_report.body
+    - field.field.node.vactory_annual_report.field_ar_background_color
+    - field.field.node.vactory_annual_report.field_ar_content_body
+    - field.field.node.vactory_annual_report.field_ar_element_width
+    - field.field.node.vactory_annual_report.field_ar_layout
+    - field.field.node.vactory_annual_report.field_ar_media_type
+    - field.field.node.vactory_annual_report.field_ar_thematic
+    - field.field.node.vactory_annual_report.field_border_color
+    - field.field.node.vactory_annual_report.field_has_corner
+    - field.field.node.vactory_annual_report.field_rapport_digital_annee
+    - field.field.node.vactory_annual_report.field_vactory_excerpt
+    - field.field.node.vactory_annual_report.field_vactory_media
+    - field.field.node.vactory_annual_report.field_vactory_paragraphs
+    - node.type.vactory_annual_report
+    - responsive_image.styles.vactory_three_cols
+  enforced:
+    module:
+      - vactory_annual_report
+  module:
+    - media_responsive_thumbnail
+    - user
+    - vactory_field
+id: node.vactory_annual_report.smart_search
+targetEntityType: node
+bundle: vactory_annual_report
+mode: smart_search
+content:
+  field_vactory_excerpt:
+    type: vactory_field_excerpt_formatter
+    weight: 1
+    region: content
+    label: hidden
+    settings:
+      trim_length: '170'
+    third_party_settings: {  }
+  field_vactory_media:
+    type: media_responsive_thumbnail
+    weight: 2
+    region: content
+    label: hidden
+    settings:
+      responsive_image_style: vactory_three_cols
+      image_link: ''
+    third_party_settings: {  }
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  body: true
+  field_ar_background_color: true
+  field_ar_content_body: true
+  field_ar_element_width: true
+  field_ar_layout: true
+  field_ar_media_type: true
+  field_ar_thematic: true
+  field_border_color: true
+  field_has_corner: true
+  field_rapport_digital_annee: true
+  field_vactory_paragraphs: true
+  langcode: true
+  notification_message: true
+  notification_title: true
+  search_api_excerpt: true

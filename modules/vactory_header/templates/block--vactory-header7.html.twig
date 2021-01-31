@@ -4,9 +4,6 @@
 {% import "MegaMenuMacro.html.twig" as menuStructure %}
 {% set main_navigation_menu = simplify_menu('main') %}
 
-{% import "MenuMacro.html.twig" as secondaryMenu %}
-{% set secondary_navigation_menu = simplify_menu('top-menu') %}
-
 <div id="vh-header" class="vh-header-7 vh-variant-7 vh-sticky">
   <header class="vh-header">
 
@@ -22,18 +19,17 @@
               {% include('vh-hamburger.html.twig') %}
             </div>
           </div>
-          <div class="vh-header__middle-right d-none d-lg-flex">
-            <div class="vh-header__language-drop-switcher">
-              {{ vactory_render('block', 'language_dropdown_block:language_interface') }}
-            </div>
+          <div class="vh-header__middle-right d-none d-lg-flex justify-content-lg-between w-100">
             <div class="vh-header__language-link-switcher">
               {{ vactory_render('block', 'language_block:language_interface') }}
             </div>
-            <div class="vh-header__search-btn">
-              <button type="button" name="search" aria-label="Search button" class="search icon-search js-btn-search-overlay" data-offcanvas-trigger="search-overlay-v3"></button>
-            </div>
-            <div class="vh-header__social-link">
-              {{vactory_render('block', 'socialmedialinks')}}
+            <div class='d-flex'>
+              <div class="vh-header__search-btn">
+                <button type="button" name="search" aria-label="Search button" class="search icon-search js-btn-search-overlay" data-offcanvas-trigger="search-overlay-v3"></button>
+              </div>
+              {% if is_espace_prive_enabled %}
+                {{ vactory_render('block', 'vactory_espace_prive_user_menu') }}
+              {% endif %}
             </div>
             <div class="vh-header__menu">
               <nav class="navbar navbar-expand-lg">

@@ -1,0 +1,22 @@
+uuid: 81434976-eef9-46e2-82c0-d910ff55900f
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.user.field_telephone
+  module:
+    - user
+_core:
+  default_config_hash: OYPFbDwB8Aho6raTnUa6FJiME-9JIiQWyM_ob4F2XHo
+id: user.user.field_telephone
+field_name: field_telephone
+entity_type: user
+bundle: user
+label: Téléphone
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

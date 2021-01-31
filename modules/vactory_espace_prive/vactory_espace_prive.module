@@ -5,8 +5,6 @@
  * Vactory Espace prive custom module related hooks.
  */
 
-use Drupal\Core\Url;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -38,6 +36,12 @@ function vactory_espace_prive_theme($existing, $type, $theme, $path) {
         'password_form' => NULL,
       ],
     ],
+    'block_espace_prive_user_menu' => [
+      'template' => 'block-espace-prive-user-menu',
+      'variables' => [
+        'content' => NULL,
+      ],
+    ],
   ];
 }
 
@@ -45,42 +49,29 @@ function vactory_espace_prive_theme($existing, $type, $theme, $path) {
  * Implements hook_preprocess_HOOK().
  */
 function vactory_espace_prive_preprocess_page(&$variables) {
-  $active_theme_name = \Drupal::service('theme.manager')->getActiveTheme()
-    ->getName();
-  $default_theme_name = \Drupal::config('system.theme')->get('default');
   $current_path = Drupal::service('path.current')->getPath();
   $route_name = \Drupal::routeMatch()->getRouteName();
-  if ($active_theme_name == $default_theme_name && is_default_user_path()) {
+  if (is_default_user_path()) {
     $espace_prive_settings = \Drupal::config('vactory_espace_prive.settings');
-    $is_redirect_to_notfound = $espace_prive_settings->get('redirect_mode') == 'to_not_found';
-    if ($is_redirect_to_notfound && $route_name != 'system.404') {
+    $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
+    $espace_prive_path_login = $espace_prive_settings->get('path_login');
+    $espace_prive_path_login = strpos($espace_prive_path_login, '/') !== 0 ? '/' . $espace_prive_path_login : $espace_prive_path_login;
+    $espace_prive_path_password = $espace_prive_settings->get('path_password');
+    $espace_prive_path_password = strpos($espace_prive_path_password, '/') !== 0 ? '/' . $espace_prive_path_password : $espace_prive_path_password;
+    $espace_prive_paths = [
+      $espace_prive_path_login,
+      '/' . $langcode . $espace_prive_path_login,
+      $espace_prive_path_password,
+      '/' . $langcode . $espace_prive_path_password,
+    ];
+    $user_paths = get_user_paths();
+    $user_paths = array_merge(
+      $user_paths['login_paths'],
+      $user_paths['password_paths']
+    );
+    if (in_array($current_path, $user_paths) && !in_array($current_path, $espace_prive_paths) && $route_name != 'system.404') {
       throw new NotFoundHttpException();
     }
-    if (!$is_redirect_to_notfound) {
-      $new_route = '';
-      if ($route_name === 'entity.user.canonical') {
-        $new_route = 'vactory_espace_prive.welcome';
-      }
-      if ($route_name === 'entity.user.edit_form') {
-        $new_route = 'vactory_espace_prive.profile';
-      }
-      $user_paths = get_user_paths();
-      if (in_array($current_path, $user_paths['login_paths'])) {
-        $new_route = 'vactory_espace_prive.login';
-      }
-      if (in_array($current_path, $user_paths['register_paths'])) {
-        $new_route = 'vactory_espace_prive.register';
-      }
-      if (in_array($current_path, $user_paths['password_paths'])) {
-        $new_route = 'vactory_espace_prive.password';
-      }
-      if (!empty($new_route)) {
-        $url = Url::fromRoute($new_route);
-        $response = new RedirectResponse($url->toString());
-        $response->send();
-      }
-    }
-    \Drupal::service('page_cache_kill_switch')->trigger();
   }
 }
 
@@ -100,14 +91,13 @@ function vactory_espace_prive_preprocess_input__password(&$variables) {
  */
 function is_default_user_path() {
   $current_path = Drupal::service('path.current')->getPath();
-  $route_name = \Drupal::routeMatch()->getRouteName();
-  $drupal_user_routes = [
-    'entity.user.canonical',
-    'entity.user.edit_form',
-  ];
   $user_paths = get_user_paths();
-  $is_default_user_path = in_array($route_name, $drupal_user_routes);
-  if (in_array($current_path, array_merge($user_paths['login_paths'], $user_paths['register_paths'], $user_paths['password_paths']))) {
+  $user_paths = array_merge(
+    $user_paths['login_paths'],
+    $user_paths['password_paths']
+  );
+  $is_default_user_path = FALSE;
+  if (in_array($current_path, $user_paths)) {
     $is_default_user_path = TRUE;
   }
   return $is_default_user_path;
@@ -123,13 +113,57 @@ function get_user_paths() {
       '/user/login',
       '/' . $langcode . '/user/login',
     ],
-    'register_paths' => [
-      '/user/register',
-      '/' . $langcode . '/user/register',
-    ],
     'password_paths' => [
       '/user/password',
       '/' . $langcode . '/user/password',
     ],
   ];
+}
+
+/**
+ * Implements hook_page_attachments().
+ */
+function vactory_espace_prive_page_attachments(array &$attachments) {
+  $current_route = Drupal::routeMatch()->getRouteName();
+  $rout_names = [
+    'user.login',
+    'user.register',
+    'vactory_espace_prive.register',
+    'vactory_espace_prive.login',
+  ];
+  $espace_prive_config = Drupal::config('vactory_espace_prive.settings');
+  if (in_array($current_route, $rout_names)) {
+    if (in_array($current_route, ['user.login', 'vactory_espace_prive.login'])) {
+      $meta_title = $espace_prive_config->get('metatag_register_title');
+      $meta_description = $espace_prive_config->get('metatag_register_description');
+    }
+    if (in_array($current_route, ['user.register', 'vactory_espace_prive.register'])) {
+      $meta_title = $espace_prive_config->get('metatag_login_title');
+      $meta_description = $espace_prive_config->get('metatag_login_description');
+    }
+    if (!empty($meta_title)) {
+      $attachments['#attached']['html_head'][] = [
+        [
+          '#tag' => 'meta',
+          '#attributes' => [
+            'name' => 'title',
+            'content' => $meta_title,
+          ],
+        ],
+        'title',
+      ];
+    }
+    if (!empty($meta_description)) {
+      $attachments['#attached']['html_head'][] = [
+        [
+          '#tag' => 'meta',
+          '#attributes' => [
+            'name' => 'description',
+            'content' => $meta_description,
+          ],
+        ],
+        'description',
+      ];
+    }
+  }
 }

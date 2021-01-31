@@ -7,6 +7,9 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
+/**
+ * Provide form to edit/delete an appointment using phone number.
+ */
 class AppointmentEditSubmitForm extends FormBase {
 
   /**
@@ -35,18 +38,47 @@ class AppointmentEditSubmitForm extends FormBase {
    *   The form structure.
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
+    $config = \Drupal::config('vactory_appointment.settings');
+    if (!$config->get('user_can_edit_appointment')) {
+      // If edit appointment is disabled from module settings then
+      // redirect to 404 page.
+      redirect_to_notfound();
+    }
     $form['title'] = [
       '#type' => 'markup',
-      '#markup' => '<h1 class="mb-4 mt-3">' . t('Renseignez votre numéro de téléphone pour modifier votre rendez-vous') . '</h1>',
+      '#markup' => '<h4 class="form-title mb-4 text-uppercase">' . $this->t('Renseignez votre numéro de téléphone pour modifier votre rendez-vous') . '</h4>',
+    ];
+    $form['form_wrapper_opner'] = [
+      '#type' => 'markup',
+      '#markup' => '<div class="user-info-wrapper change-rdv-form shadow"><div class="user-informations bg-white border border-primary rounded h-100">',
     ];
     $form['phone'] = [
       '#type' => 'textfield',
-      '#title' => t('Phone'),
+      '#title' => $this->t('Phone'),
       '#required' => TRUE,
+      '#attributes' => [
+        'class' => [
+          'prefix-icon-mobile',
+        ],
+        'placeholder' => $this->t('Mobile'),
+        'autocomplete' => 'off',
+      ],
     ];
     $form['submit'] = [
       '#type' => 'submit',
-      '#value' => t('Valider'),
+      '#value' => $this->t('Valider'),
+      '#attributes' => [
+        'class' => [
+          'ml-auto',
+          'suffix-icon-chevrons-right',
+        ],
+      ],
+      '#prefix' => '<div class="submit-wrapper d-flex">',
+      '#suffix' => '</div>',
+    ];
+    $form['form_wrapper_closer'] = [
+      '#type' => 'markup',
+      '#markup' => '</div></div>',
     ];
     return $form;
   }
@@ -66,4 +98,5 @@ class AppointmentEditSubmitForm extends FormBase {
     $reponse = new RedirectResponse($url->toString());
     $reponse->send();
   }
+
 }

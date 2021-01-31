@@ -24,9 +24,3 @@ extra_fields:
   link:
     type: url_extended
     label: 'lien'
-  link_alt:
-    type: text
-    label: 'text du lien'
-  link_target:
-    type: checkbox
-    label: 'Ouvrir dans une nouvelle fenêtre'

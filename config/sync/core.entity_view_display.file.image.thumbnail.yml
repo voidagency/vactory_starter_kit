@@ -1,4 +1,4 @@
-uuid: e3645c7c-d936-4dbd-bfc0-86869a4c2f6c
+uuid: 1b4dbba8-f64a-450d-973e-578316ec862b
 langcode: en
 status: true
 dependencies:
@@ -10,6 +10,8 @@ dependencies:
     - image.style.thumbnail
   module:
     - file_entity
+_core:
+  default_config_hash: 8trPid18Dj2TjH8c4n0Eb1KrYcJR0xYIyNlgYlGk2XI
 id: file.image.thumbnail
 targetEntityType: file
 bundle: image

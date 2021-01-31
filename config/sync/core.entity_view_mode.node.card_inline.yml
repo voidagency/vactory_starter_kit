@@ -1,9 +1,11 @@
-uuid: 075715d3-e716-45d3-8ad1-b5d839dd7d3b
+uuid: bb61e9e9-0d15-485e-ab49-65a8604abda5
 langcode: en
 status: true
 dependencies:
   module:
     - node
+_core:
+  default_config_hash: _tFS7hqaQQOs9O6ih7Iz6P2pkFD_N1Cgp_9C9a1TO_I
 id: node.card_inline
 label: 'Card (Inline)'
 targetEntityType: node

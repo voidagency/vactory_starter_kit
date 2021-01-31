@@ -1,0 +1,5 @@
+enable_email_notifications: 1
+dependencies:
+  enforced:
+    module:
+      - vactory_academy_agency

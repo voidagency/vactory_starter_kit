@@ -12,9 +12,28 @@ dependencies:
     - field.field.block_content.vactory_banner.field_vactory_title
   module:
     - block_field
+    - field_group
     - jquery_colorpicker
     - media_library
     - text
+third_party_settings:
+  field_group:
+    group_background_settings:
+      children:
+        - field_vactory_media
+        - field_banner_image_mobile
+        - field_background_color
+      parent_name: ''
+      weight: 5
+      format_type: details
+      region: content
+      format_settings:
+        description: ''
+        required_fields: true
+        id: ''
+        classes: ''
+        open: false
+      label: 'Background image & Couleur de fond'
 id: block_content.vactory_banner.default
 targetEntityType: block_content
 bundle: vactory_banner
@@ -40,7 +59,7 @@ content:
     region: content
   field_background_color:
     type: jquery_colorpicker
-    weight: 5
+    weight: 8
     region: content
     settings:
       color: FFFFFF
@@ -99,7 +118,7 @@ content:
       include_locked: true
     third_party_settings: {  }
   translation:
-    weight: 10
+    weight: 11
     region: content
     settings: {  }
     third_party_settings: {  }

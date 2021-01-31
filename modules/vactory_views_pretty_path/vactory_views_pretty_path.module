@@ -1,0 +1,64 @@
+<?php
+
+/**
+ * @file
+ * Module related hooks.
+ */
+
+use Drupal\views\ViewExecutable;
+
+/**
+ * Implements hook_views_pre_view().
+ */
+function vactory_views_pretty_path_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
+  $config = \Drupal::config('vactory_views_pretty_path.settings');
+  $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
+  $paths_infos = $config->get('paths');
+  if (isset($paths_infos) && is_array($paths_infos)) {
+    // Get concerned path from module settings.
+    $concerned_paths = array_map(function ($el) {
+      return $el['path'];
+    }, $paths_infos);
+    $current_path = \Drupal::service('path.current')->getPath();
+    if (in_array($current_path, $concerned_paths)) {
+      $view_filters = $view->display_handler->getOption('filters');
+      $current_path_index = array_search($current_path, $concerned_paths);
+      $view_filter_name_map_str = $paths_infos[$current_path_index]['filter_map_container'][$langcode]['views_filter_name_map'];
+      $view_filter_name_map = get_view_filter_name_map($view_filter_name_map_str);
+      $request_params = Drupal::request()->request->all();
+      if (!empty($request_params)) {
+        foreach ($view_filter_name_map as $filter_id => $filter_name) {
+          if (isset($view_filters[$filter_id])) {
+            $filter_identifier = $view_filters[$filter_id]['expose']['identifier'];
+            if (in_array($filter_identifier, array_keys($request_params))) {
+              if (is_array($request_params[$filter_identifier])) {
+                foreach ($request_params[$filter_identifier] as $index => $tid) {
+                  $view_filters[$filter_id]['value'][$tid] = $tid;
+                }
+              }
+              else {
+                $view_filters[$filter_id]['value'] = ['target_id' => $request_params[$filter_identifier]];
+              }
+              $view->display_handler->overrideOption('filters', $view_filters);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Get view filter name mapping.
+ */
+function get_view_filter_name_map($view_filter_map_str) {
+  $view_filter_map = [];
+  $view_filter_rows = explode(PHP_EOL, $view_filter_map_str);
+  foreach ($view_filter_rows as $view_filter_row) {
+    if (!empty($view_filter_row)) {
+      $filter_infos = explode('|', $view_filter_row);
+      $view_filter_map[$filter_infos[0]] = str_replace("\r", '', $filter_infos[1]);
+    }
+  }
+  return $view_filter_map;
+}

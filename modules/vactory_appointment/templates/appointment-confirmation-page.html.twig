@@ -1,12 +1,35 @@
-{% set title = content.type_confirmation == 'create' ? 'Votre rendez-vous à bien été enregistré'|t : 'Votre rendez-vous à bien été modifié'|t %}
+{% set title = content.type_confirmation == 'create' ? 'Votre rendez-vous a bien été enregistré'|t : 'Votre rendez-vous a bien été modifié'|t %}
 {% set link_title = content.type_confirmation == 'create' ? 'Modifier votre rendez-vous'|t : 'Modifier un autre rendez-vous'|t %}
-<h2 class="text-center mb-4 mt-3">{{ title }}</h2>
-{% if content.type_confirmation == 'create' %}
-  <p class="text-center">
-    {{ 'Vous pouvez modifier votre RDV en renseignant votre numéro de téléphone' }}
-  </p>
-{% endif %}
-<div class="text-center">
-  <a href="{{ url('vactory_appointment.appointment_edit_submit_form') }}" class="btn btn-primary mt-3 mb-4 text-center">{{ 'Modifier votre rendez-vous' }}</a>
-</div>
 
+
+<div class="confirmation-page">
+  {% if content.datalayer_snippet is defined %}
+    {{ content.datalayer_snippet|raw }}
+  {% endif %}
+  <div class="smile-icon text-center mb-34">
+    <img src="{{ base_path ~ directory }}/assets/img/agenda-check.png" class="img-fluid">
+  </div>
+  <h1 class="text-center text-uppercase mb-25">{{ title }}</h1>
+  {% if content.user_can_edit_appointment %}
+    {% if content.type_confirmation == 'create' %}
+      <p class="text-center text-primary font-30">
+        {{ 'Vous pouvez modifier votre RDV en renseignant votre numéro de téléphone' }}
+      </p>
+    {% else %}
+      <p class="text-center text-primary font-30">
+        {{ 'Souhaitez-vous modifier un autre rendez-vous?' }}
+      </p>
+    {% endif %}
+    <div class="text-center mt-4">
+      {% if content.type_confirmation == 'edit' %}
+        <a href="{{ url('<front>') }}" class="btn btn-secondary mr-2">{{ 'Terminer'|t }}</a>
+      {% endif %}
+      <a href="{{ url('vactory_appointment.appointment_edit_submit_form', { 'agency': content.agence }) }}" class="btn btn-primary suffix-icon-chevrons-right">{{ link_title }}</a>
+    </div>
+  {% else %}
+    <div class="text-center">
+      <a href="{{ url('<front>') }}" class="btn btn-secondary mr-2">{{ 'Terminer'|t }}</a>
+      <a href="{{ url('vactory_appointment.site_agency_select') }}" class="btn btn-primary mr-2">{{ 'Prendre un autre rendez-vous'|t }}</a>
+    </div>
+  {% endif %}
+</div>

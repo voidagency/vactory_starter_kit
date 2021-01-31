@@ -2,6 +2,7 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.paragraph.vactory_paragraph_tab.field_background_color
     - field.field.paragraph.vactory_paragraph_tab.field_tab_templates
     - field.field.paragraph.vactory_paragraph_tab.field_vactory_title
     - paragraphs.paragraphs_type.vactory_paragraph_tab
@@ -14,7 +15,7 @@ third_party_settings:
       children:
         - paragraph_container
         - paragraph_css_class
-        - paragraph_background_color
+        - field_background_color
         - paragraph_background_image
         - paragraph_background_parallax
       parent_name: ''
@@ -57,6 +58,7 @@ content:
     third_party_settings: {  }
 hidden:
   created: true
+  field_background_color: true
   paragraph_background_color: true
   paragraph_background_image: true
   paragraph_background_parallax: true

@@ -1,9 +1,11 @@
-uuid: 770a9387-b234-4a19-85b5-83ad2ede4032
+uuid: 6671b5a0-0de9-41b2-937a-2328c21bccf2
 langcode: en
 status: true
 dependencies:
   module:
     - node
+_core:
+  default_config_hash: xotJj2XyDgdCFNmDl1gCx_zxedzXNlhaYFQsUFHW3p8
 id: node.field_vactory_flag
 field_name: field_vactory_flag
 entity_type: node

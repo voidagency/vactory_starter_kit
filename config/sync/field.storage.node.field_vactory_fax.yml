@@ -1,9 +1,11 @@
-uuid: 04187d3f-03cf-480f-9b37-5dceeefaa5c9
+uuid: 24602a4b-3bf6-4576-8c18-99e93fe3d83b
 langcode: en
 status: true
 dependencies:
   module:
     - node
+_core:
+  default_config_hash: 1_SXQaTkxzgPtVBa7Bwuzl4YjtW9dSx23NbjTAAQULk
 id: node.field_vactory_fax
 field_name: field_vactory_fax
 entity_type: node

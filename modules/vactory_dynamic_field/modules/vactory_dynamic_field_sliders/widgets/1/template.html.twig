@@ -13,7 +13,14 @@
             {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : '' %}
             {% set lqip_image = image_uri|image_style('lqip') %}
             {% set image = image_uri|image_style('vactory_slider1_image') %}
-            {% set image_alt = (item.image_alt is not empty) ? item.image_alt : 'image' %}
+            {% set image_alt = (item.image_alt) ? item.image_alt : item.image.alt_image %}
+
+            {% set link_attributes = create_attribute() %}
+            {% set link_attributes = item.link.attributes.id is not empty ? link_attributes.setAttribute('id', item.link.attributes.id ) : link_attributes %}
+            {% set link_attributes = item.link.attributes.class is not empty ? link_attributes.setAttribute('class', item.link.attributes.class ~ 'btn btn-outline-primary') : link_attributes.setAttribute('class', 'btn btn-outline-primary') %}
+            {% set link_attributes = item.link.attributes.target is not empty ? link_attributes.setAttribute('target', item.link.attributes.target ) : link_attributes %}
+            {% set link_attributes = item.link.attributes.rel is not empty ? link_attributes.setAttribute('rel', item.link.attributes.rel ) : link_attributes %}
+
             <div class="vf-slider__image lazy-wrapper">
               <img alt="{{ image_alt }}"
                    class="img-fluid lazyload"
@@ -34,9 +41,9 @@
               </div>
             {% endif %}
 
-            {% if item.cta_url is not empty and item.cta_alt is not empty %}
+            {% if item.link.url is not empty and item.link.title is not empty %}
               <div class="vf-slider__cta">
-                {{ link(item.cta_alt, item.cta_url ) }}
+                <a href="{{ item.link.url  }}" {{ link_attributes }}>{{ item.link.title }}</a>
               </div>
             {% endif %}
           </div>

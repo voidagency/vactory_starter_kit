@@ -9,7 +9,7 @@
     {% set fluid_image = file_url(image_uri) %}
     {% set lqip_image = image_uri|image_style('lqip') %}
     {% set classes = (image_src) ? 'col-md-10' : 'col-md-12' %}
-    {% set image_alt = (item.image_alt is not empty) ? item.image_alt : '' %}
+    {% set image_alt = (item.image_alt is not empty) ? item.image_alt : item.image.alt_image %}
     <div class="row">
       {% if(image_src) %}
         <div class="col-12 col-md-2 mb-2 mb-md-0 text-center">

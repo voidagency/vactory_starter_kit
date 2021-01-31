@@ -2,12 +2,9 @@
 {{ attach_library('vactory_header/vactory_header.variant8') }}
 
 {% import "MegaMenuMacro.html.twig" as menuStructure %}
-{% set main_navigation_menu = simplify_menu('main') %}
-
-{% import "MenuMacro.html.twig" as secondaryMenu %}
-{% set secondary_navigation_menu = simplify_menu('top-menu') %}
-
 {% import "MobileMenuMacro.html.twig" as MobileMenuStructure %}
+
+{% set main_navigation_menu = simplify_menu('main') %}
 
 <div id="vh-header" class="vh-header-8 vh-variant-8 vh-sticky">
   <header class="vh-header">
@@ -28,9 +25,9 @@
           </div>
 
           <div class="vh-header__top-right">
-            <div class="vh-header__social-link white">
-              {{vactory_render('block', 'socialmedialinks')}}
-            </div>
+            {% if is_espace_prive_enabled %}
+              {{ vactory_render('block', 'vactory_espace_prive_user_menu') }}
+            {% endif %}
           </div>
         </div>
       </div>
@@ -42,12 +39,14 @@
       <div class="container">
         <div class="vh-header__bottom-wrapper">
           <div class="vh-header__bottom-left">
-            <div class="vh-header__branding-sticky">
-              <a href="/" class="home-page-link"><i class="icon icon-favorite-star"></i></a>
+            <div class="vh-header__branding d-lg-none">
               {{ vactory_render('block', 'system_branding_block', {use_site_name: false}) }}
             </div>
+            <div class="vh-header__social-link white d-none d-lg-block">
+              {{vactory_render('block', 'socialmedialinks')}}
+            </div>
           </div>
-          <div class="vh-header__bottom-center">
+          <div class="vh-header__bottom-center ">
             <div class="vh-header__menu">
               <nav class="navbar navbar-expand-lg">
                 <div class="collapse navbar-collapse hover-dropdown d-lg-block" id="navbarNavDropdown">

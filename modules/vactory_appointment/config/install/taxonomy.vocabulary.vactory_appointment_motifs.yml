@@ -1,0 +1,10 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_appointment
+name: 'RDV - Motifs'
+vid: vactory_appointment_motifs
+description: 'Utiliser ce vocabulaire pour ajouter des nouveaux motifs'
+weight: 0

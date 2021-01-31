@@ -1,0 +1,20 @@
+uuid: 5112166f-94fb-4ed0-9ffa-0874b86efd28
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - amp
+_core:
+  default_config_hash: AbpkDoyeaTO1gRvmVmo0VIa7x791jVo3FyvMPq-PO5g
+name: amp_1200x1200_1_1
+label: 'AMP 1200x1200 - 1:1'
+effects:
+  4fefaecd-617a-4fd5-8230-70d246550bdf:
+    uuid: 4fefaecd-617a-4fd5-8230-70d246550bdf
+    id: image_scale
+    weight: 1
+    data:
+      width: 1200
+      height: 1200
+      upscale: true

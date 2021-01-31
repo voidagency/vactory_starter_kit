@@ -1,0 +1,5 @@
+vactory_frequent_searches.settings:
+  title: "Frequent Searches Settings"
+  description: "Configure Frequent Searches module."
+  parent: system.admin_config_system
+  route_name: vactory_frequent_searches.frequent_searches_admin_form

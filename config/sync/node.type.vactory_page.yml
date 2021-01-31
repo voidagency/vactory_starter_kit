@@ -1,7 +1,9 @@
-uuid: 2db39890-b082-47aa-991d-9d99db841b3d
-langcode: en
+uuid: f6187b1b-065f-4aca-921c-dd0288ee253a
+langcode: fr
 status: true
 dependencies: {  }
+_core:
+  default_config_hash: EuozIDxfQ-2NhE963bcdCLW1zCc3gOpWifLnHXg2zFw
 name: Page
 type: vactory_page
 description: 'Manage your pages content.'

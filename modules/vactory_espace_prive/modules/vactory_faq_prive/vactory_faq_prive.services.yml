@@ -1,0 +1,4 @@
+services:
+  vactory_faq_prive.access_manager:
+    class: Drupal\vactory_faq_prive\Services\FAQPriveAccessCheck
+    arguments: ['@current_user', '@entity_type.manager']

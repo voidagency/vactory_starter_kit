@@ -1,3 +1,15 @@
+{% set link_attributes = create_attribute() %}
+{% set link_attributes = content.0.link_1.attributes.id is not empty ? link_attributes.setAttribute('id', content.0.link_1.attributes.id ) : link_attributes %}
+{% set link_attributes = content.0.link_1.attributes.class is not empty ? link_attributes.setAttribute('class', content.0.link_1.attributes.class ~ ' btn btn-primary btn-shadow') : link_attributes.setAttribute('class','btn btn-primary btn-shadow') %}
+{% set link_attributes = content.0.link_1.attributes.target is not empty ? link_attributes.setAttribute('target', content.0.lilink_1nk.attributes.target ) : link_attributes %}
+{% set link_attributes = content.0.link_1.attributes.rel is not empty ? link_attributes.setAttribute('rel', content.0.link_1.attributes.rel ) : link_attributes %}
+
+{% set link_attributes_1 = create_attribute() %}
+{% set link_attributes_1 = content.0.link_2.attributes.id is not empty ? link_attributes_1.setAttribute('id', content.0.link_2.attributes.id ) : link_attributes_1 %}
+{% set link_attributes_1 = content.0.link_2.attributes.class is not empty ? link_attributes_1.setAttribute('class', content.0.link_2.attributes.class ~ ' btn btn-white btn-shadow ml-4') : link_attributes_1.setAttribute('class','btn btn-white btn-shadow ml-4') %}
+{% set link_attributes_1 = content.0.link_2.attributes.target is not empty ? link_attributes_1.setAttribute('target', content.0.lilink_2nk.attributes.target ) : link_attributes_1 %}
+{% set link_attributes_1 = content.0.link_2.attributes.rel is not empty ? link_attributes_1.setAttribute('rel', content.0.link_2.attributes.rel ) : link_attributes_1 %}
+
 <div class="fdb-block fdb-viewport fdb-block-hasbackground">
     <div class="container">
         <div class="align-items-center justify-content-center d-flex">
@@ -10,13 +22,11 @@
                         <p class="text-h3">{{ content.0.description }}</p>
                     {% endif %}
                     <p class="mt-5">
-                        {% if content.0.link_1 is not empty and content.0.link_alt_1 is not empty %}
-                            {% set link_target_1 = (content.0.link_target_1 > 0) ? '_blank' : '_self' %}
-                            <a class="btn btn-primary btn-shadow" href="{{ content.0.link_1 }}" target="{{ link_target_1 }}">{{ content.0.link_alt_1 }}</a>
+                        {% if content.0.link_1.url is not empty and content.0.link_1.title is not empty %}
+                            <a  href="{{ content.0.link_1.url }}" {{ link_attributes }} > {{ content.0.link_1.title }} </a>
                         {% endif %}
-                        {% if content.0.link_2 is not empty and content.0.link_alt_2 is not empty %}
-                            {% set link_target_2 = (content.0.link_target_2 > 0) ? '_blank' : '_self' %}
-                            <a class="btn btn-white btn-shadow ml-4" href="{{ content.0.link_2 }}" target="{{ link_target_2 }}">{{ content.0.link_alt_2 }}</a>
+                        {% if content.0.link_2.url is not empty and content.0.link_2.title is not empty %}
+                            <a  href="{{ content.0.link_2.url }}" {{ link_attributes }} > {{ content.0.link_2.title }} </a>
                         {% endif %}
                     </p>
 

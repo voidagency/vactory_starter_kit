@@ -1,10 +1,12 @@
-uuid: 00b8faa6-4cdd-4e23-8e87-ebbf5e510958
+uuid: 93f9b141-4373-4627-934e-c87ed9d035ed
 langcode: en
 status: true
 dependencies:
   module:
     - node
     - taxonomy
+_core:
+  default_config_hash: QacWKMlYRZF6NBGtm1mpl-qCyokJLsD-0fSVqruoOLQ
 id: node.field_vactory_taxonomy_multipl_3
 field_name: field_vactory_taxonomy_multipl_3
 entity_type: node

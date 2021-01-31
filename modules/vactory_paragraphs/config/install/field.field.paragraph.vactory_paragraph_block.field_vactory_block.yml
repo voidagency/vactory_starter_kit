@@ -17,5 +17,11 @@ translatable: true
 default_value: {  }
 default_value_callback: ''
 settings:
-  plugin_ids: {  }
+  selection: blocks
+  selection_settings:
+    plugin_ids:
+      addtoany_block: addtoany_block
+      user_login_block: user_login_block
+      'views_block:vactory_cross_content-block_list': 'views_block:vactory_cross_content-block_list'
+      social_media_links_block: social_media_links_block
 field_type: block_field

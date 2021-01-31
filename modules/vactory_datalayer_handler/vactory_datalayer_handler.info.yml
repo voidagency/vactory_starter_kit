@@ -1,0 +1,7 @@
+name: Vactory Data Layer Handler
+description: Ce module ajoute un Handler Webform pour Data Layer.
+core_version_requirement: ^8 || ^9
+type: module
+core: 8.x
+dependencies:
+  - webform

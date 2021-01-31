@@ -1,5 +1,5 @@
-uuid: 65e8bf3a-9c0f-46ff-a294-c0b99c325349
-langcode: en
+uuid: dbe2c3f3-e42c-4596-92ea-33dcac9c676b
+langcode: fr
 status: true
 dependencies:
   module:
@@ -10,6 +10,8 @@ dependencies:
   config:
     - search_api.server.default_server
     - core.entity_view_mode.node.full
+_core:
+  default_config_hash: v9IHidK-MYkb9hSiAAoEBWu9v1XVNMIzu1gmU79zPjQ
 id: default_content_index
 name: 'Default content index'
 description: 'Default content index created for Vactory'

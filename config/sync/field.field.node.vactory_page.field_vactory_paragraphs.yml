@@ -1,5 +1,5 @@
-uuid: a2832e20-cb36-4230-ac32-a5060600c069
-langcode: en
+uuid: 28a6cf71-efc8-44cf-8d20-1b566ae14d98
+langcode: fr
 status: true
 dependencies:
   config:
@@ -8,8 +8,11 @@ dependencies:
     - paragraphs.paragraphs_type.vactory_component
     - paragraphs.paragraphs_type.vactory_paragraph_block
     - paragraphs.paragraphs_type.vactory_paragraph_multi_template
+    - paragraphs.paragraphs_type.views_reference
   module:
     - entity_reference_revisions
+_core:
+  default_config_hash: FfiZyyO0h99b56Zd1CynWp-8DS-gTXvnSbHI0lqom7E
 id: node.vactory_page.field_vactory_paragraphs
 field_name: field_vactory_paragraphs
 entity_type: node
@@ -28,6 +31,7 @@ settings:
       vactory_component: vactory_component
       vactory_paragraph_block: vactory_paragraph_block
       vactory_paragraph_multi_template: vactory_paragraph_multi_template
+      views_reference: views_reference
     target_bundles_drag_drop:
       vactory_component:
         enabled: true
@@ -41,7 +45,7 @@ settings:
       vactory_paragraph_tab:
         weight: 9
         enabled: false
-      vactory_paragraph_template:
+      views_reference:
+        enabled: true
         weight: 10
-        enabled: false
 field_type: entity_reference_revisions

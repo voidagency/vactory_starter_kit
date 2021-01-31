@@ -1,17 +1,24 @@
-<div class="btn-group flex-wrap" role="group" aria-label="{{ 'Filter Thematic'|t }}">
-  {% for tid, tname in links %}
-    {% if filter_current == tid %}
-      {% set active = 'active' %}
-    {% else %}
-      {% set active = '' %}
-    {% endif %}
-
-    {% if tid == 'All' %}
-      <span class="filter-tab"><a href="#." class="btn btn-primary {{ active }}" data-filter-name="{{ filter_name }}"
-                                  id="{{ tid }}">{{ 'All'|t }}</a></span>
-    {% else %}
-      <span class="filter-tab"><a href="#." class="btn btn-primary {{ active }}" data-filter-name="{{ filter_name }}"
-                                  id="{{ tid }}"># {{ tname }}</a></span>
-    {% endif %}
-  {% endfor %}
+<div class="t-rapport--listing-filtres--wrapper" role="group" aria-label="{{ 'Filter Thematic'|t }}">
+  <h3>{{ "Filtrer par thématiques :" | t }}</h3>
+  <ul class="t-rapport--listing-filtres no-style" role="group" aria-label="{{ 'Filter Thematic'|t }}">
+    {% for tid, link in links %}
+      {% if filter_current == tid %}
+        {% set active = 'active' %}
+      {% else %}
+        {% set active = '' %}
+      {% endif %}
+      {% set color = (link.bg_color is not empty) ? link.bg_color : '#fff' %}
+      {% if tid == 'All' %}
+        <li>
+          <a href="#" class="{{ active }}" id="{{ tid }}" class="tag">{{ 'Accueil'|t }}</a>
+        </li>
+      {% else %}
+        <li>
+          <a style="border-color:#{{ color }}; color:#{{ color }}" href="#." data-filter-name="{{ filter_name }}"
+             id="{{ tid }}"
+             class="tag filter-tab"># {{ link.name }}</a>
+        </li>
+      {% endif %}
+    {% endfor %}
+  </ul>
 </div>

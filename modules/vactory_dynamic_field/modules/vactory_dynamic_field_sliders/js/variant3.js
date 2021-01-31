@@ -71,7 +71,7 @@ jQuery(document).ready(function ($) {
   function enableAutoPlayHpSlider() {
     var tabsSliderItem = $('.vf-slider--tabs-slider .nav-tabs .nav-item');
     currentIndx = (currentIndx >= tabsSliderItem.length - 1) ? 0 : currentIndx + 1;
-    tabsSliderItem.eq(currentIndx).find('.nav-link').trigger('click');
+    tabsSliderItem.eq(currentIndx).find('.nav-link').tab('show');
   }
 
   $('.vf-slider--tabs-slider .nav-tabs .nav-link').on('click', function () {

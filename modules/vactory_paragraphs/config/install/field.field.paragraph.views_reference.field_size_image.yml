@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_size_image
+    - paragraphs.paragraphs_type.views_reference
+  module:
+    - options
+id: paragraph.views_reference.field_size_image
+field_name: field_size_image
+entity_type: paragraph
+bundle: views_reference
+label: 'Size de l''image de fond'
+description: ''
+required: false
+translatable: true
+default_value:
+  -
+    value: cover
+default_value_callback: ''
+settings: {  }
+field_type: list_string

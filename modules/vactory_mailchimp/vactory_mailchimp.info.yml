@@ -2,6 +2,7 @@ name: 'Vactory Mailchimp'
 description: 'Inscription à la newsletter MailChimp'
 type: module
 core: 8.x
+core_version_requirement: ^8 || ^9
 dependencies:
   - mailchimp
   - mailchimp_campaign

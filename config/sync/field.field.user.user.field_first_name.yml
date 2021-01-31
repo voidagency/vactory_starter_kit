@@ -1,4 +1,4 @@
-uuid: e1be4b9f-984f-44e3-a928-e9ec7080d69b
+uuid: 9a6a6a90-5110-46cc-9278-6c05d0a0b8a6
 langcode: en
 status: true
 dependencies:
@@ -6,6 +6,8 @@ dependencies:
     - field.storage.user.field_first_name
   module:
     - user
+_core:
+  default_config_hash: vMDMXdXqA8ENF9WlStFUmQs3zsoFwDu2n4f1IcL_b2Y
 id: user.user.field_first_name
 field_name: field_first_name
 entity_type: user

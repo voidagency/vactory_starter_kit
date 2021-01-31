@@ -1,10 +1,12 @@
-uuid: 2703424c-d689-4aa1-ac1b-d04d5d96f8c0
+uuid: 2c3945de-0348-48a4-955e-37452def9b59
 langcode: en
 status: true
 dependencies:
   module:
     - node
     - text
+_core:
+  default_config_hash: z15cXfj2TRT5wj8KBOY7ZF9D8szww9j0xMT3ZlsVp4M
 id: node.field_vactory_excerpt
 field_name: field_vactory_excerpt
 entity_type: node

@@ -1,5 +1,5 @@
-uuid: d33739b2-82e4-43da-bd48-be6ddc40a6dd
-langcode: en
+uuid: aa497685-04f5-4cb4-80fb-7a059d44fc1b
+langcode: fr
 status: true
 dependencies:
   config:
@@ -11,6 +11,8 @@ third_party_settings:
     enabled: true
     bundle_settings:
       untranslatable_fields_hide: '0'
+_core:
+  default_config_hash: fNBWEhxDOQiZ5A0TK3ns7FPfQ2iExQsCupfGa6YTsPU
 id: node.vactory_page
 target_entity_type_id: node
 target_bundle: vactory_page

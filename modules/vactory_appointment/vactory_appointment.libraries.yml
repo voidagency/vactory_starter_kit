@@ -1,0 +1,26 @@
+fullcalendar:
+  version: VERSION
+  css:
+    theme:
+      ../../../../libraries/fullcalendar/packages/core/main.min.css: {}
+      ../../../../libraries/fullcalendar/packages/timegrid/main.min.css: {}
+  js:
+    ../../../../libraries/fullcalendar/packages/core/main.min.js: {}
+    ../../../../libraries/fullcalendar/packages/daygrid/main.min.js: {}
+    ../../../../libraries/fullcalendar/packages/interaction/main.min.js: {}
+    ../../../../libraries/fullcalendar/packages/timegrid/main.min.js: {}
+    js/adviser-holiday.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+submit_appointment.calendar:
+  js:
+    js/app.js: {}
+  dependencies:
+    - vactory_appointment/fullcalendar
+adviser.calendar:
+  js:
+    js/adviser-holiday.js: {}
+  dependencies:
+    - vactory_appointment/fullcalendar
+

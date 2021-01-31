@@ -25,5 +25,10 @@ function vactory_partner_theme($existing, $type, $theme, $path) {
       'base hook' => 'node',
       'template'  => 'full',
     ],
+    // Node > Smart search.
+    'node__vactory_partner__smart_search'        => [
+      'base hook' => 'node',
+      'template'  => 'smart-search',
+    ],
   ];
 }

@@ -3,7 +3,10 @@ path_register: '/espace-prive/register'
 path_profile: '/espace-prive/profile'
 path_welcome: '/espace-prive/welcome'
 path_password: '/espace-prive/password'
-redirect_mode: 'to_new_path'
+metatag_register_title: ''
+metatag_register_description: ''
+metatag_login_title: ''
+metatag_login_description: ''
 dependencies:
   enforced:
     module:

@@ -24,9 +24,6 @@ fields:
   link:
     type: url_extended
     label: 'link'
-  link_target:
-    type: checkbox
-    label: 'Ouvrir le lien dans une nouvelle fenetre'
   full:
     type: checkbox
     label: 'Active full whidth'  

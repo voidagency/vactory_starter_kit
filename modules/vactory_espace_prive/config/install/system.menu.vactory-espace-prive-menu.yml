@@ -1,0 +1,10 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_espace_prive
+id: vactory-espace-prive-menu
+label: 'Espace Privé Menu'
+description: 'Utiliser ce menu pour ajouter les liens menus utilisateurs'
+locked: false

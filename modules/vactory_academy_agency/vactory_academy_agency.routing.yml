@@ -1,0 +1,30 @@
+#vactory_academy_agency.subscribe_form:
+#  path: '/borne/{agency_path}/services/inscription-formation'
+#  defaults:
+#    _title: 'Inscription aux Formations'
+#    _form: '\Drupal\vactory_academy_agencys\Form\SubscribeToFormationDAM'
+#  requirements:
+#    _permission: 'access content'
+#  options:
+#    no_cache: 'TRUE'
+vactory_academy_agency.vactory_academy_agency_settings:
+  path: '/admin/config/system/formations-configuration'
+  defaults:
+    _title: 'Formations settings'
+    _form: '\Drupal\vactory_academy_agency\Form\SettingsForm'
+  requirements:
+    _permission: 'access formations settings'
+vactory_academy_agency.inscription:
+  path: '/formations-en-presentiel/inscription/{nid}'
+  defaults:
+    _controller: '\Drupal\vactory_academy_agency\Controller\FormationInscriptionController::subscribeToFormation'
+    _title: 'Inscription à une formation en présentiel'
+  requirements:
+    _role: 'authenticated'
+vactory_academy_agency.inscription.confirmation:
+  path: '/formations-en-presentiel/inscription'
+  defaults:
+    _controller: '\Drupal\vactory_academy_agency\Controller\FormationInscriptionController::subscribeToFormationConfirmation'
+    _title: 'Inscription à une formation en présentiel'
+  requirements:
+    _role: 'authenticated'

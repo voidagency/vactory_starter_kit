@@ -1,10 +1,12 @@
-uuid: 300db60f-56a5-415a-b0ea-8be3cb4cfdbb
+uuid: 871e1142-69c3-4469-8d83-074c91e155ed
 langcode: en
 status: true
 dependencies:
   module:
     - file
     - node
+_core:
+  default_config_hash: oPB2bf4na-4ILdPffqMc2maNYmL2rRqyn7XL6i16kDA
 id: node.field_vactory_document
 field_name: field_vactory_document
 entity_type: node

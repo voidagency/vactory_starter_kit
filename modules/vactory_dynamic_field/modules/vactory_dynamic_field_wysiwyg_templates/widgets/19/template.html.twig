@@ -15,13 +15,18 @@
       {% set image_uri = (item.image.0 is defined) ?  get_image(item.image.0) : "" %}
       {% set lqip_image = image_uri|image_style('lqip') %}
       {% set fluid_image = file_url(image_uri) %}
-      {% set image_alt = (item.image_alt is not empty) ? item.image_alt  : 'Image' %}
+      {% set image_alt = (item.image_alt) ? item.image_alt : item.image.alt_image %}
 
+      {% set link_attributes = create_attribute() %}
+      {% set link_attributes = item.link.attributes.id is not empty ? link_attributes.setAttribute('id', item.link.attributes.id ) : link_attributes %}
+      {% set link_attributes = item.link.attributes.class is not empty ? link_attributes.setAttribute('class', item.link.attributes.class ) : link_attributes %}
+      {% set link_attributes = item.link.attributes.target is not empty ? link_attributes.setAttribute('target', item.link.attributes.target ) : link_attributes %}
+      {% set link_attributes = item.link.attributes.rel is not empty ? link_attributes.setAttribute('rel', item.link.attributes.rel ) : link_attributes %}
 
       {% if extra_fields.mode > 0 %} <div class="col-lg-3 col-md-4 col-sm-6 col-12 card-partner"> {% endif %}
       <div class="t-bloc-item-partner d-flex align-items-center flex-wrap justify-content-center">
         <div class="t-partner-image d-flex justify-content-center align-items-center lazy-wrapper {% if extra_fields.mode > 0 %} mb-3 {% endif %}">
-          {% if item.site is not empty %} <a href="{{ item.site }}" target="_blank"> {% endif %}
+          {% if item.site is not empty %} <a  href="{{  item.link.url }}" {{ link_attributes }} >{% endif %}
               <img class="img-fluid mb-3 lazyload"
                    src="{{ lqip_image }}"
                    data-src="{{ fluid_image }}"

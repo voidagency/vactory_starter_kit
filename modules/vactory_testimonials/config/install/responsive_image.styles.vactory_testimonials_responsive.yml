@@ -5,7 +5,7 @@ dependencies:
     - image.style.vactory_testimonials_1
     - image.style.vactory_testimonials_2
   theme:
-    - vactory
+    - vactory_theme
 id: vactory_testimonials_responsive
 label: 'Testimonials responsive'
 image_style_mappings:

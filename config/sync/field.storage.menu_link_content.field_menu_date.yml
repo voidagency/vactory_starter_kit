@@ -1,10 +1,12 @@
-uuid: e2fc8ee9-6c71-44e0-b088-34c753266a32
+uuid: 289e167d-6e2f-496e-af55-e94d92e22fb7
 langcode: en
 status: true
 dependencies:
   module:
     - datetime
     - menu_link_content
+_core:
+  default_config_hash: XhYxDAXp-vW7QnakEYcLCKbfKCiR_c_pqBoXKvXzmrE
 id: menu_link_content.field_menu_date
 field_name: field_menu_date
 entity_type: menu_link_content

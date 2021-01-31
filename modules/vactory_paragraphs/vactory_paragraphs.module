@@ -5,6 +5,9 @@
  * Contain related hooks.
  */
 
+use Drupal\Component\Utility\NestedArray;
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Form\FormStateInterface;
@@ -27,6 +30,10 @@ function vactory_paragraphs_theme($existing, $type, $theme, $path) {
     'paragraph__vactory_paragraph_multi_template'       => [
       'base hook' => 'paragraph',
       'template'  => 'paragraph--vactory-paragraphs-multi-template',
+    ],
+    'paragraph__views_reference' => [
+      'base hook' => 'paragraph',
+      'template'  => 'paragraph--views-reference',
     ],
   ];
 }
@@ -71,6 +78,12 @@ function vactory_paragraphs_entity_base_field_info(EntityTypeInterface $entity_t
         'weight' => -10,
       ]);
 
+    $css_class_description = '<br> <strong> my-X  </strong> : ( marges varticles ) <br>';
+    $css_class_description .= '<strong> py-X </strong> :  ( paddings verticales ) <br>';
+    $css_class_description .= '<strong> NB: </strong> : A noter X peut prendre une valeur de 0 à 5 <br><br>';
+    $css_class_description .= '<strong> bg-custom-filter-X </strong> : la classe pour filter opaque  <br>';
+    $css_class_description .= '<strong> NB: </strong> : A noter X peut prendre une valeur de 0 à 100 par un pas de 10 <br>';
+
     $fields['paragraph_css_class'] = BaseFieldDefinition::create('string')
       ->setLabel(t('CSS class(es)'))
       ->setDisplayOptions('form', [
@@ -78,7 +91,8 @@ function vactory_paragraphs_entity_base_field_info(EntityTypeInterface $entity_t
         'weight' => 35,
       ])
       ->setDisplayConfigurable('form', TRUE)
-      ->setTranslatable(TRUE);
+      ->setTranslatable(TRUE)
+      ->setDescription($css_class_description);
 
     $fields['paragraph_background_image'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Image'))
@@ -93,17 +107,6 @@ function vactory_paragraphs_entity_base_field_info(EntityTypeInterface $entity_t
         'type'   => 'media_library_widget',
         'weight' => 45,
       ]);
-
-    $fields['paragraph_background_color'] = BaseFieldDefinition::create('jquery_colorpicker')
-      ->setLabel(t('Color'))
-      ->setDescription(t('Set a background color.'))
-      ->setRevisionable(TRUE)
-      ->setTranslatable(TRUE)
-      ->setDisplayOptions('form', [
-        'type'   => 'jquery_colorpicker',
-        'weight' => 45,
-      ])->setDefaultValue('ff0000')
-      ->setDisplayConfigurable('form', TRUE);
 
     $fields['paragraph_background_parallax'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Activer parallax'))
@@ -170,9 +173,13 @@ function vactory_paragraphs_field_widget_entity_reference_paragraphs_form_alter(
  */
 function vactory_paragraphs_field_widget_form_alter(&$element, FormStateInterface $form_state, $context) {
   $field_name = !empty($context['items']->getName()) ? $context['items']->getName() : '';
-  if (!empty($field_name) && $field_name == 'paragraph_background_color') {
-    $value = $element['value']['#default_value'];
-    $element['value']['#default_value'] = (isset($value) && !empty($value) && $value != 'FFFFFF') ? $value : 'ff0000';
+  if (!empty($field_name) && $field_name == 'field_views_reference') {
+    views_reference_remove_disabled_views($element['target_id']['#options']);
+    $element['target_id']['#ajax']['callback'] = 'views_reference_get_enabled_displays';
+  }
+  if (!empty($field_name) && $field_name == 'field_background_color') {
+    $color = $element['color']['#default_value'];
+    $element['color']['#default_value'] = isset($color) && !empty($color) && $color != '#FFFFFF' ? $color : '#FF0000';
   }
   if (isset($context['form']['#entity_type']) && $context['form']['#entity_type'] == 'paragraph') {
     if (in_array('field_vactory_paragraph_tab', $element['#field_parents'], TRUE)) {
@@ -190,4 +197,68 @@ function vactory_paragraphs_field_widget_form_alter(&$element, FormStateInterfac
       }
     }
   }
+  if (!empty($field_name) && $field_name == 'field_vactory_paragraphs') {
+    if (isset($element['top']['paragraph_summary'])) {
+      $content = $element['top']['paragraph_summary']['fields_info']['#summary']['content'];
+      $element['top']['paragraph_summary']['fields_info']['#summary']['content'] = isset($content[0]) ? [$content[0]] : [];
+    }
+  }
+}
+
+/**
+ * Remove disabled views from views reference select options.
+ */
+function views_reference_remove_disabled_views(&$views_list) {
+  $views_ids = array_keys($views_list);
+  $views = Drupal::service('entity_type.manager')->getStorage('view')
+    ->loadMultiple($views_ids);
+  if (!empty($views)) {
+    foreach ($views as $view_id => $view) {
+      if (!$view->status()) {
+        unset($views_list[$view_id]);
+      }
+    }
+  }
+}
+
+/**
+ * Get enabled display views reference custom ajax submit.
+ */
+function views_reference_get_enabled_displays(array &$form, FormStateInterface $form_state) {
+  $trigger = $form_state->getTriggeringElement();
+  $field_value = NestedArray::getValue($form_state->getValues(), $trigger['#parents']);
+
+  // Get the value for the target id of the View.
+  switch ($trigger['#type']) {
+    case 'select':
+      $view_id = $field_value[$trigger['#delta']][$trigger['#key_column']];
+      break;
+
+    default:
+      $view_id = $field_value;
+      break;
+  }
+
+  // Obtain the display ids for the given View.
+  // We recreate the same unique class as in the parent function.
+  $element_class_selector = '#' . implode('-', $trigger['#parents']) . '-display';
+
+  // Change the display_id field options.
+  $display_id_field_path = array_slice($trigger['#array_parents'], 0, -1);
+  array_push($display_id_field_path, 'display_id');
+  $display_id_field = NestedArray::getValue($form, $display_id_field_path);
+  $view = Drupal::service('entity_type.manager')->getStorage('view')
+    ->load($view_id);
+  $options = [];
+  if ($view) {
+    foreach ($view->get('display') as $display) {
+      if ($display['display_options']['enabled'] && $display['display_plugin'] == 'page') {
+        $options[$display['id']] = $display['display_title'];
+      }
+    }
+  }
+  $display_id_field['#options'] = $options;
+  $response = new AjaxResponse();
+  $response->addCommand(new ReplaceCommand($element_class_selector, render($display_id_field)));
+  return $response;
 }

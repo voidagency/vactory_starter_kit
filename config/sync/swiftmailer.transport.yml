@@ -13,3 +13,5 @@ smtp_credentials:
 sendmail_path: /usr/sbin/sendmail
 sendmail_mode: bs
 spool_directory: ''
+_core:
+  default_config_hash: 0dJfQivKgyEp-S8D6gSRTBbpRFApE3VkpltnPMBQ5OY

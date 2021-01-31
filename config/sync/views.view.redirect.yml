@@ -1,4 +1,4 @@
-uuid: a6c3d7fa-d0f3-4ee2-86f4-243ed7791fde
+uuid: c714144b-e0af-4674-8a97-ba76bcdae621
 langcode: en
 status: true
 dependencies:
@@ -6,6 +6,8 @@ dependencies:
     - link
     - redirect
     - user
+_core:
+  default_config_hash: 7-f_3ASk-Ly7MqcUiwREHB0r0l-jkq7bKwjRLTMhDEs
 id: redirect
 label: Redirect
 module: views

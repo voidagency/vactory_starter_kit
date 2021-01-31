@@ -1,0 +1,7 @@
+vactory_dynamic_field_brightcove.admin_settings:
+  path: '/admin/config/vactory_brightcove'
+  defaults:
+    _form: '\Drupal\vactory_dynamic_field_brightcove\Form\SettingsForm'
+    _title: 'Brightcove Video settings'
+  requirements:
+    _permission: 'administer vactory_brightcove video'

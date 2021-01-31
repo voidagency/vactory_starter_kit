@@ -1,0 +1,69 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.smart_search
+    - field.field.node.vactory_event.body
+    - field.field.node.vactory_event.field_vactory_date_interval
+    - field.field.node.vactory_event.field_vactory_excerpt
+    - field.field.node.vactory_event.field_vactory_image
+    - field.field.node.vactory_event.field_vactory_media
+    - field.field.node.vactory_event.field_vactory_seo_status
+    - field.field.node.vactory_event.field_vactory_taxonomy_1
+    - field.field.node.vactory_event.field_vactory_taxonomy_2
+    - node.type.vactory_event
+  module:
+    - datetime_range
+    - media_responsive_thumbnail
+    - user
+    - vactory_field
+_core:
+  default_config_hash: KGrLpgN1SXN7ErjBciaZuzGBBERi5-u6CnSNPUNlMHA
+id: node.vactory_event.smart_search
+targetEntityType: node
+bundle: vactory_event
+mode: smart_search
+content:
+  field_vactory_date_interval:
+    weight: 1
+    label: hidden
+    settings:
+      timezone_override: ''
+      date_format: 'd | M | Y'
+      separator: ''
+    third_party_settings: {  }
+    type: daterange_custom
+    region: content
+  field_vactory_excerpt:
+    weight: 2
+    label: hidden
+    settings:
+      trim_length: '170'
+    third_party_settings: {  }
+    type: vactory_field_excerpt_formatter
+    region: content
+  field_vactory_media:
+    weight: 3
+    label: hidden
+    settings:
+      responsive_image_style: ''
+      image_link: ''
+    third_party_settings: {  }
+    type: media_responsive_thumbnail
+    region: content
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  body: true
+  field_vactory_image: true
+  field_vactory_seo_status: true
+  field_vactory_taxonomy_1: true
+  field_vactory_taxonomy_2: true
+  langcode: true
+  notification_message: true
+  notification_title: true
+  search_api_excerpt: true

@@ -30,16 +30,7 @@ fields:
     label: 'Description'
     options:
       '#format': 'full_html'
-  cta_url:
+  link:
     type: url_extended
     label: 'Read More Link'
     placeholder_value: 'https://www.google.com'
-  cta_label:
-    type: text
-    label: 'URL label'
-  cta_icon:
-    type: text
-    label: 'Icon'
-  link_target:
-    type: checkbox
-    label: 'Ouvrir dans une nouvelle fenêtre'

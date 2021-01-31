@@ -5,6 +5,8 @@
  * Primary hook.
  */
 
+use Drupal\Core\Form\FormStateInterface;
+
 /**
  * Implements hook_theme().
  */
@@ -30,6 +32,11 @@ function vactory_governance_theme($existing, $type, $theme, $path) {
       'base hook' => 'node',
       'template'  => 'full',
     ],
+    // Node > Smart search.
+    'node__vactory_governance__smart_search'        => [
+      'base hook' => 'node',
+      'template'  => 'smart-search',
+    ],
     'governance_member_block'               => [
       "variables" => ["content" => []],
       "template"  => 'block--governance-member',
@@ -38,5 +45,32 @@ function vactory_governance_theme($existing, $type, $theme, $path) {
       'base hook' => 'views_view',
       'template' => 'block-slider-full',
     ],
+    'vactory_views_grid__vactory_governance__block_three_columns_navbar' => [
+      'base hook' => 'vactory_views_grid',
+      'template' => 'governance-view-grid',
+    ],
   ];
+}
+
+/**
+ * Implements hook_theme_suggestions_alter().
+ */
+function vactory_governance_theme_suggestions_alter(array &$suggestions, array $variables, $hook) {
+  if ($hook == 'vactory_views_grid') {
+    $suggestions[] = $hook . '__' . $variables['view']->storage->id();
+    $suggestions[] = $hook . '__' . $variables['view']->storage->id() . '__' . $variables['view']->current_display;
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_governance_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if (in_array($form_id, ['node_vactory_governance_edit_form', 'node_vactory_governance_form'])) {
+    $form['field_show_on_roles']['#states'] = [
+      'visible' => [
+        ':input[name="field_show_in_one_row[value]"]' => ['checked' => TRUE],
+      ],
+    ];
+  }
 }

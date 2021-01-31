@@ -1,0 +1,9 @@
+vactory_frequent_searches.frequent_searches_admin_form:
+  path: /admin/config/vactory-frequent-searches
+  defaults:
+    _form: \Drupal\vactory_frequent_searches\Form\FrequentSearchesAdminForm
+    _title: Vactory Frequent Searches
+  requirements:
+    _permission: access administration pages
+  options:
+    _admin_route: TRUE

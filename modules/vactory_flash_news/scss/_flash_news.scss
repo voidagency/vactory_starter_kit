@@ -1,0 +1,19 @@
+
+.flash-news-items-wrapper {
+  position: relative;
+  .item {
+    position: absolute;
+    opacity: 0;
+    transform: translate(0, 200%);
+    &.prev {
+      transform: translate(0, -200%);
+      opacity: 0;
+      transition: transform 500ms ease-in, opacity 300ms ease-in;
+    }
+    &.active {
+      opacity: 1;
+      transform: translate(0, 0);
+      transition: transform 500ms ease-in;
+    }
+  }
+}

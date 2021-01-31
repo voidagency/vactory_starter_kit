@@ -13,17 +13,11 @@ fields:
   link:
     type: url_extended
     label: 'Lien'
-  link_alt:
-    type: text
-    label: 'Titre lien'
   lists:
     type: text_format
     label: 'Items'
     options:
       '#format': 'full_html'
-  link_target:
-    type: checkbox
-    label: 'Ouvrir dans une nouvelle fenêtre'
 extra_fields:
   title:
       type: text

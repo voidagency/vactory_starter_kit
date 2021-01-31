@@ -22,33 +22,43 @@
   {%
     set row_classes = [
       default_row_class ? 'view__row',
-      'card card--inline',
+      'card-rdv-edit',
+      'bg-white',
+      'border',
+      'border-primary',
+      'shadow',
+      'rounded',
+      'p-2',
       'mb-3',
     ]
   %}
+
+  {% set appointment = row.content['#row'] %}
+  {% set first_name = appointment._entity.adviser_id.entity.field_first_name.value %}
+  {% set last_name = appointment._entity.adviser_id.entity.field_last_name.value %}
+  {% set agency_object = appointment._entity.appointment_agency.entity %}
+  {% set motif_object = appointment._entity.appointment_type.entity %}
+  {% set edit_url_params = {'agency': agency_object.field_agency_path.value, 'appointment_type': motif_object.field_path_motif_name.value} %}
+  {% set edit_appointment_id = row.content.appointment_id|url_encode %}
+  {% set edit_url = path('vactory_appointment.site_appointment_submit_form', edit_url_params) ~ '?aid=' ~ edit_appointment_id  %}
+
   <article{{ row.attributes.addClass(row_classes) }}>
-    <div class="card-col position-relative card-body--inline">
+    <a href="{{ edit_url }}" class="btn btn-empty btn-edit suffix-icon-calendar-v2"><span>{{ 'Modifier'|t }}</span></a>
+    {% if user_can_delete_appointment %}
+      <a href="{{ url('vactory_appointment.appointment_delete_submit_form', {'appointment_id': row.content.appointment_id|url_encode}) }}"
+         class="btn btn-empty btn-edit suffix-icon-close-circle mt-4 text-danger">
+        {{ 'Supprimer'|t }}
+      </a>
+    {% endif %}
+    <div class="card-col position-relative">
+      <div class="card-picto">
+        <img src="{{ base_path ~ directory }}/assets/img/agenda-check.png" class="img-fluid">
+      </div>
       <div class="card-body">
-        {% set appointment = row.content['#row'] %}
-        {% set first_name = appointment._entity.adviser_id.entity.field_first_name.value %}
-        {% set last_name = appointment._entity.adviser_id.entity.field_last_name.value %}
-        {% set agency_object = appointment._entity.appointment_agency.entity %}
-        {% set motif_object = appointment._entity.appointment_type.entity %}
-        {% set edit_url_params = {'agency': agency_object.field_path_agency.value, 'appointment_type': motif_object.field_path_motif_name.value} %}
-        {% set edit_appointment_id = row.content.appointment_id|url_encode %}
-        {% set edit_url = path('vactory_appointment.appointment_submit_form', edit_url_params) ~ '?aid=' ~ edit_appointment_id  %}
-        <h4 class="card-title">
-          {{ appointment._entity.title.value }}
-        </h4>
-        <div class="card-text">
-          <p>{{ 'Avec'|t }} {{ first_name|capitalize }} {{ last_name|upper }}</p>
-          <p>{{ 'Agence de rendez-vous' }} : {{ agency_object.name.value }}</p>
-          <p>{{ 'Type de rendez-vous' }} : {{ motif_object.name.value }}</p>
-        </div>
-        <div>
-          <a href="{{ edit_url }}" class="btn btn-primary">{{ 'Modifier'|t }}</a>
-          <a href="{{ url('vactory_appointment.appointment_delete_submit_form', {'appointment_id': row.content.appointment_id|url_encode}) }}" class="btn btn-danger">{{ 'Supprimer'|t }}</a>
-        </div>
+        <h4 class="text-primary mb-2">{{ appointment._entity.title.value }}</h4>
+        <span class="d-block h3 mb-0">{{ 'Avec'|t }} {{ first_name|capitalize }} {{ last_name|upper }}</span>
+        <span class="d-block">{{ 'Agence de rendez-vous' }} : {{ agency_object.name.value }}</span>
+        <span class="d-block">{{ 'Type de rendez-vous' }} : {{ motif_object.name.value }}</span>
       </div>
     </div>
   </article>

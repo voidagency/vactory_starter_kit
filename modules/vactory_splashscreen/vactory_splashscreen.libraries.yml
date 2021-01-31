@@ -1,7 +1,4 @@
 splash_screen.v1:
-  css:
-    theme:
-      css/slpash-screen-v1.css: {}
   js:
     js/splash-screen-v1.js: {}
   dependencies:

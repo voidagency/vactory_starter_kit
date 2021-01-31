@@ -1,4 +1,4 @@
-uuid: a61ac247-6142-4422-9207-95d40f0734da
+uuid: ae2cbae6-2b23-454d-bde3-7bebab105f26
 langcode: en
 status: true
 dependencies:
@@ -6,6 +6,8 @@ dependencies:
     - field.storage.user.field_user_profession
   module:
     - user
+_core:
+  default_config_hash: 05rrmlyg2E1pJcsYlTBJG-QA67LbS43LUKWepLYDkD8
 id: user.user.field_user_profession
 field_name: field_user_profession
 entity_type: user

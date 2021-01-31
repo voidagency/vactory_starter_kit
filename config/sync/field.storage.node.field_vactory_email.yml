@@ -1,9 +1,11 @@
-uuid: 1f6dcb0d-e570-40d2-bdba-22f0e1e0712b
+uuid: 709cb059-529e-4971-b768-0a2a3d7ac529
 langcode: en
 status: true
 dependencies:
   module:
     - node
+_core:
+  default_config_hash: 4R0a0rax7I4gQDP1x3YL-hLAfzZfIp44Pu2b31vB7oU
 id: node.field_vactory_email
 field_name: field_vactory_email
 entity_type: node

@@ -56,7 +56,7 @@ class LocatorEntityRevisionRevertForm extends ConfirmFormBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity.manager')->getStorage('locator_entity'),
+      $container->get('entity_type.manager')->getStorage('locator_entity'),
       $container->get('date.formatter')
     );
   }
@@ -140,7 +140,7 @@ class LocatorEntityRevisionRevertForm extends ConfirmFormBase {
   protected function prepareRevertedRevision(LocatorEntityInterface $revision, FormStateInterface $form_state) {
     $revision->setNewRevision();
     $revision->isDefaultRevision(TRUE);
-    $revision->setRevisionCreationTime(REQUEST_TIME);
+    $revision->setRevisionCreationTime(\Drupal::time()->getRequestTime());
 
     return $revision;
   }

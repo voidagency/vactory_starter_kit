@@ -1,0 +1,11 @@
+name: 'Vactory Smart Search'
+description: 'Enhence vactory search module with search result filter possibility'
+type: module
+core: 8.x
+core_version_requirement: ^8 || ^9
+dependencies:
+  - vactory_search
+  - vactory_frequent_searches
+  - views_autocomplete_filters
+version: 8.x-1.0
+package: Vactory Core

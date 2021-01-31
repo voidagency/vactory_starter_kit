@@ -45,12 +45,12 @@ trait FormWidgetTrait {
 
     if (in_array($type, ['image', 'file'])) {
       $default_options = [
-        '#type' => 'managed_file',
+        '#type' => 'media_library',
       ];
 
-      $element_info = \Drupal::service('element_info')->getInfo('managed_file');
-      $default_options['#process'] = $element_info['#process'];
-      $default_options['#process'][] = [get_class($this), 'processFile'];
+      /* $element_info = \Drupal::service('element_info')->getInfo('media_library');*/
+      /* $default_options['#process'] = $element_info['#process']; */
+      /* $default_options['#process'][] = [get_class($this), 'processFile']; */
     }
 
     if ($type === 'image') {
@@ -66,6 +66,7 @@ trait FormWidgetTrait {
     if ($type === 'file') {
       $default_options =
         [
+          '#allowed_bundles' => ['file'],
           '#upload_location'   => 'public://widgets/files',
           '#upload_validators' => [
             'file_validate_extensions' => ['pdf doc docx txt'],
@@ -97,7 +98,7 @@ trait FormWidgetTrait {
    *   The Form API renderable array.
    */
   // phpcs:disable
-  protected function getFormElement($type, MarkupInterface $label, $default_value, array $options, array $form, FormStateInterface $form_state, $field_name) {
+  protected function getFormElement($type, MarkupInterface $label, $default_value, array $options, array $form, FormStateInterface $form_state, $field_name, $field_id = '', $index = '') {
     // phpcs:enable
     $element = [
       '#type'          => $type,
@@ -141,6 +142,16 @@ trait FormWidgetTrait {
         'required'      => FALSE,
         'cardinality'   => 1,
       ], $form, $form_state);
+    }
+
+    if ($type == 'url_extended') {
+      if (!isset($default_value['attributes']['id']) || (isset($default_value['attributes']['id']) && empty($default_value['attributes']['id']))) {
+        $timestamp = (new \DateTime())->getTimestamp();
+        $field_id = str_replace('_', '-', strtolower($field_id));
+        $suffix = base64_encode($index . $timestamp);
+        $suffix = str_replace('=', '', strtolower($suffix));
+        $element['#default_value']['attributes']['id'] = $field_id . '-' . $suffix;
+      }
     }
 
     return $element_defaults + $element;

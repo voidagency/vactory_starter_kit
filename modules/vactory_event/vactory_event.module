@@ -30,6 +30,11 @@ function vactory_event_theme($existing, $type, $theme, $path) {
       'base hook' => 'node',
       'template'  => 'full',
     ],
+    // Node > Smart search.
+    'node__vactory_event__smart_search'        => [
+      'base hook' => 'node',
+      'template'  => 'smart-search',
+    ],
   ];
 }
 

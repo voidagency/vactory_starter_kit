@@ -1,0 +1,81 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_academy_agency
+  config:
+    - field.field.taxonomy_term.academy_subscribers.field_agence_formation
+    - field.field.taxonomy_term.academy_subscribers.field_subscriber_course
+    - field.field.taxonomy_term.academy_subscribers.field_subscriber_first_name
+    - field.field.taxonomy_term.academy_subscribers.field_subscriber_last_name
+    - field.field.taxonomy_term.academy_subscribers.field_subscriber_mail
+    - field.field.taxonomy_term.academy_subscribers.field_subscriber_telephone
+    - taxonomy.vocabulary.academy_subscribers
+id: taxonomy_term.academy_subscribers.default
+targetEntityType: taxonomy_term
+bundle: academy_subscribers
+mode: default
+content:
+  field_agence_formation:
+    weight: 7
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_subscriber_course:
+    weight: 6
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_subscriber_first_name:
+    weight: 3
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_subscriber_last_name:
+    weight: 2
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_subscriber_mail:
+    weight: 4
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: email_default
+    region: content
+  field_subscriber_telephone:
+    weight: 5
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  name:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  translation:
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  description: true
+  langcode: true
+  path: true
+  status: true

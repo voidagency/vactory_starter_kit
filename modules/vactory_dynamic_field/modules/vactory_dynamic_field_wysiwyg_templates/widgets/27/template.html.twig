@@ -13,7 +13,7 @@
       {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : "" %}
       {% set lqip_image = image_uri|image_style('lqip') %}
       {% set fluid_image = file_url(image_uri) %}
-      {% set image_alt = (item.image_alt is not empty) ? item.image_alt : "Image" %}
+      {% set image_alt = (item.image_alt) ? item.image_alt : item.image.alt_image %}
       <div class="col-sm-6 col-md-4 col-lg-3 pb-3">
         <div class="shadow text-center h-100 py-3 px-3">
           {% if item.image.0 is not empty %}
@@ -33,11 +33,16 @@
   </div>
 
   {% if extra_fields.link2 is not empty and extra_fields.link2_alt is not empty %}
-    {% set link_target2 = (extra_fields.link2_target > 0) ? '_blank' : '_self' %}
+
+    {% set link_attributes = create_attribute() %}
+    {% set link_attributes = extra_fields.link.attributes.id is not empty ? link_attributes.setAttribute('id', extra_fields.link.attributes.id ) : link_attributes %}
+    {% set link_attributes = extra_fields.link.attributes.class is not empty ? link_attributes.setAttribute('class', extra_fields.link.attributes.class  ~ ' btn btn-outline-primary') : link_attributes.setAttribute('class','btn btn-outline-primary') %}
+    {% set link_attributes = extra_fields.link.attributes.target is not empty ? link_attributes.setAttribute('target', extra_fields.link.attributes.target ) : link_attributes %}
+    {% set link_attributes = extra_fields.link.attributes.rel is not empty ? link_attributes.setAttribute('rel', extra_fields.link.attributes.rel ) : link_attributes %}
+      
     <div class="row">
       <div class="col-12 text-center mt-4">
-        <a class="btn btn-outline-primary" href="{{ extra_fields.link2 }}"
-           target="{{ link_target2 }}">{{ extra_fields.link2_alt }}</a>
+        <a  href="{{ extra_fields.link.url }}" {{ link_attributes }} > {{ extra_fields.link.title }} </a>
       </div>
     </div>
   {% endif %}

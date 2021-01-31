@@ -1,0 +1,25 @@
+uuid: 7223e59a-4b34-48bd-8acc-edcf3437d4f9
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_paragraph_hide_lg
+    - paragraphs.paragraphs_type.vactory_component
+_core:
+  default_config_hash: yaFYOdA_LO4rkeva0fMMulqO8DdpkixBFIjIthTO67s
+id: paragraph.vactory_component.field_paragraph_hide_lg
+field_name: field_paragraph_hide_lg
+entity_type: paragraph
+bundle: vactory_component
+label: 'Cacher sur Desktop'
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: '1'
+  off_label: '0'
+field_type: boolean

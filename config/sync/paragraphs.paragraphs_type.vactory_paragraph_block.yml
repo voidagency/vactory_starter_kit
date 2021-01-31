@@ -1,7 +1,9 @@
-uuid: 3e59dd68-9f88-40b6-b3ce-e5cc0fe5c7c2
+uuid: 75b42b58-af66-4778-a81f-f121a5cbe5b9
 langcode: en
 status: true
 dependencies: {  }
+_core:
+  default_config_hash: fPXjkr7NzbGzYQvgKYKm3xEg_hTXXYd-a9YpcSB22GQ
 id: vactory_paragraph_block
 label: Block
 icon_uuid: null

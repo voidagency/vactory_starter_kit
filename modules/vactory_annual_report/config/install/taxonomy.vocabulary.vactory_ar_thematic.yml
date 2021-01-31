@@ -1,7 +1,10 @@
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  enforced:
+    module:
+      - vactory_annual_report
 name: 'Annual report - Thematic'
 vid: vactory_ar_thematic
-description: ''
+description: 'Utiliser ce vocabulaire pour ajouter des nouveaux thématiques de rapport annuel'
 weight: 0

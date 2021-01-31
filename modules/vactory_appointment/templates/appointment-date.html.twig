@@ -1,0 +1,10 @@
+<div class="appointment-date-resume date-resume bg-white border rounded h-100">
+  <div class="date-resume__icon">
+    <img src="{{ base_path ~ directory }}/assets/img/agenda-check.png" class="img-fluid">
+  </div>
+  <h3 class="date-resume__title text-primary">{{ 'Votre rendez-vous'|t }}</h3>
+  <span class="date-resume__span text-gray">{{ 'Jour'|t }} :</span>
+  <h3 class="date-resume__date">{{ content.day }}</h3>
+  <span class="date-resume__span text-gray">{{ 'Heure'|t }} :</span>
+  <h3 class="date-resume__hour">{{ content.hour }}</h3>
+</div>

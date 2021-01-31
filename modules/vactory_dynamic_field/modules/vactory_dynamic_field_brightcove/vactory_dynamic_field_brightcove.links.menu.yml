@@ -1,0 +1,5 @@
+vactory_dynamic_field_brightcove.admin_settings:
+  title: 'Brightcove Video'
+  description: 'Configure Brightcove Video.'
+  parent: system.admin_config_media
+  route_name: vactory_dynamic_field_brightcove.admin_settings

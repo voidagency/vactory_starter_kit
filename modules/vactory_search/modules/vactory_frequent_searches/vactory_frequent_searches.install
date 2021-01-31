@@ -1,0 +1,88 @@
+<?php
+
+/**
+ * @file
+ * Install hooks.
+ */
+
+/**
+ * Implements hook_uninstall().
+ */
+function vactory_frequent_searches_uninstall() {
+  \Drupal::database()->schema()->dropTable('vactory_frequent_searches');
+}
+
+/**
+ * Implements hook_schema().
+ */
+function vactory_frequent_searches_schema() {
+  $schema['vactory_frequent_searches'] = [
+    'description' => 'Table that contains a log of Search API queries and performance.',
+    'fields' => [
+      'qid' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'Primary Key: Unique log ID.',
+      ],
+      's_name' => [
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => TRUE,
+        'description' => 'Search API server machine_name',
+      ],
+      'i_name' => [
+        'type' => 'varchar',
+        'length' => 50,
+        'not null' => TRUE,
+        'description' => 'Search API index machine_name',
+      ],
+      'timestamp' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Unix timestamp of when query occurred.',
+      ],
+      'numfound' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Number of results.',
+      ],
+      'total_time' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Total query time (miliseconds).',
+      ],
+      'uid' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'The {users}.uid of the user who triggered the query.',
+      ],
+      'keywords' => [
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => FALSE,
+        'default' => '',
+        'description' => 'Query keywords arguments.',
+      ],
+      'total_results' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Number of search results.',
+      ],
+      'language' => [
+        'description' => 'The site languages of keywords when search was executed.',
+        'type' => 'varchar',
+        'length' => 12,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+    ],
+    'primary key' => ['qid'],
+  ];
+
+  return $schema;
+}

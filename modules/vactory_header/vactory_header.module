@@ -110,14 +110,6 @@ function vactory_header_preprocess_links__language_block(&$variables) {
 /**
  * Implements hook_preprocess_HOOK().
  */
-function vactory_header_preprocess_block_vactory_header1(&$variables) {
-  $module_handler = Drupal::service('module_handler');
-  $variables['is_academy_enabled'] = $module_handler->moduleExists('vactory_academy');
-}
-
-/**
- * Implements hook_preprocess_HOOK().
- */
 function vactory_header_preprocess_page(&$variables) {
 
   if (!\Drupal::service('router.admin_context')->isAdminRoute()) {
@@ -143,5 +135,26 @@ function vactory_header_theme_suggestions_alter(array &$suggestions, array $vari
   ];
   if (in_array($hook, $header_variants)) {
     $suggestions[] = 'custom_' . $hook;
+  }
+}
+
+/**
+ * Implements hook_preprocess().
+ */
+function vactory_header_preprocess(&$variables, $hook) {
+  $header_hooks = [
+    'block_vactory_header1',
+    'block_vactory_header2',
+    'block_vactory_header3',
+    'block_vactory_header4',
+    'block_vactory_header5',
+    'block_vactory_header6',
+    'block_vactory_header7',
+    'block_vactory_header8',
+    'block_vactory_header9',
+    'block_vactory_header_amp',
+  ];
+  if (in_array($hook, $header_hooks)) {
+    $variables['is_espace_prive_enabled'] = \Drupal::moduleHandler()->moduleExists('vactory_espace_prive');
   }
 }

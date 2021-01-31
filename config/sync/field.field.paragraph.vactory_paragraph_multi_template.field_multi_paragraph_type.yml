@@ -1,4 +1,4 @@
-uuid: 53443242-1be3-4e6b-9909-5bfd28831256
+uuid: e6352d59-ba6c-482b-8e43-de50faf9f1e8
 langcode: en
 status: true
 dependencies:
@@ -7,6 +7,8 @@ dependencies:
     - paragraphs.paragraphs_type.vactory_paragraph_multi_template
   module:
     - options
+_core:
+  default_config_hash: nwCbzE2AOomDb5x5puzwiI6O5hw5lmVKQ2zlTapr-6Y
 id: paragraph.vactory_paragraph_multi_template.field_multi_paragraph_type
 field_name: field_multi_paragraph_type
 entity_type: paragraph

@@ -1,9 +1,11 @@
-uuid: eaa4bb83-c80c-4258-803b-4e9628795e46
+uuid: 21a22931-31f2-4e6a-a842-d37b48ffdac7
 langcode: en
 status: true
 dependencies:
   module:
     - user
+_core:
+  default_config_hash: jt6bpG2h-2Irwp-sE85_VBLMoG3EAMFVvVISIyQk1xY
 id: user.field_last_name
 field_name: field_last_name
 entity_type: user

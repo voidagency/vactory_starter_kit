@@ -1,2 +1,4 @@
 strip_comments: true
 minify: false
+_core:
+  default_config_hash: i11s4HvVDeH3KWoeOa1U9SDU2NPEoU59YyQwPZyQfsE

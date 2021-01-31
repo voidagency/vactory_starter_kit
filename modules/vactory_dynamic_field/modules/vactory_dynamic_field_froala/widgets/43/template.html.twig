@@ -7,8 +7,10 @@
                 {% set image_uri =(item.logo.0 is defined) ? get_image(item.logo.0) : '' %}
                 {% set logo_company = image_uri|image_style('thumbnail') %}
                 {% set lqip_image = image_uri|image_style('lqip') %}
+                {% set alt_image = (item.image_alt) ? item.image_alt : item.image.alt_image %}
+
                 {% if item.logo.0 is not empty %}
-                    <img alt="{{ item.image_alt }}" height="40"
+                    <img alt="{{ alt_image }}" height="40"
                         class="ml-3 mr-3 mb-2 mt-2 lazyload"
                         src="{{ lqip_image }}"
                         data-src="{{ logo_company }}">
