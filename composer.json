@@ -207,6 +207,9 @@
       },
       "drupal/webform": {
         "Invoke alter hook after webform handlers execution": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/9e6eca9bcbd95e7bed7859d54a0c4623a6112e5a/webform-post-handlers-hook.patch"
+      },
+      "drupal/password_policy" : {
+        "Fix Field field_last_password_reset is unknown": "https://www.drupal.org/files/issues/2020-07-03/2771129-114.patch"
       }
     }
   },
