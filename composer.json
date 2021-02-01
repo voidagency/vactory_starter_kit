@@ -153,7 +153,7 @@
     "enable-patching": true,
     "patches": {
       "drupal/simplify_menu": {
-        "Add support for options.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/19e54a007837537dd7de97456ab0e1ad0b9d3cf6/simplify_menu-support-options.patch"
+        "Add support for options.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/fd5550d45f742ac17fd6d833ef33c0e02e73a57d/simplify_menu-support-options.patch"
       },
       "drupal/features": {
         "Export config translation": "https://www.drupal.org/files/issues/features_export-config-translation-2869336-2.patch"
