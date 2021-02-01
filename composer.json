@@ -92,7 +92,7 @@
     "drupal/minifyhtml": "^1.8",
     "drupal/flag": "^4.0@beta",
     "drupal/rate": "^1.0",
-    "masterminds/html5":"2.3.1",
+    "masterminds/html5":"^2.3.0",
     "drupal/link_attributes": "^1.9",
     "drupal/entity_embed": "^1.0",
     "drupal/search_api_autocomplete": "^1.4",
