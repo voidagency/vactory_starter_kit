@@ -193,9 +193,6 @@
       "drupal/advagg": {
         "Remove version comments from minified files.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/9e6eca9bcbd95e7bed7859d54a0c4623a6112e5a/advagg-remove-version-comment-from-minified-js.patch"
       },
-      "drupal/search_api": {
-        "Fix conflic with webprofiler: instance of EntityManagerWrapper given.": "https://www.drupal.org/files/issues/2020-10-26/search_api-use-entity-type-manager-interface-790418-1.patch"
-      },
       "drupal/colorapi": {
         "Enable colorapi field type by default": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/9e6eca9bcbd95e7bed7859d54a0c4623a6112e5a/colorapi-enable-colorapi-field-type-by-default.patch"
       },
