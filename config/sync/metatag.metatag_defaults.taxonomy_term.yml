@@ -5,7 +5,7 @@ dependencies: {  }
 _core:
   default_config_hash: 0ub2UHBvFXLPkeAgiPBoCBKWX3SG_fXbf0oXDGiTGg8
 id: taxonomy_term
-label: 'Taxonomy term'
+label: 'Terme de taxonomie'
 tags:
   canonical_url: '[term:url]'
   description: '[term:description]'

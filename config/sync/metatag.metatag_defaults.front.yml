@@ -5,7 +5,7 @@ dependencies: {  }
 _core:
   default_config_hash: XxhFcciNRnNXGideiRGKifL05ruFZ6ylEV8SPyjQXGA
 id: front
-label: 'Front page'
+label: 'Page d''accueil'
 tags:
   description: '[vactory:node_summary]'
   canonical_url: '[site:url]'

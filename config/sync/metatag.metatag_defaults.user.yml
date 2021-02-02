@@ -5,8 +5,8 @@ dependencies: {  }
 _core:
   default_config_hash: LE3YPGZizeyz1yHTewQORo08wb0relAjwps7BkNkJiE
 id: user
-label: User
+label: Utilisateur
 tags:
   canonical_url: '[user:url]'
   description: '[site:name]'
-  title: '[user:name] | [site:name]'
+  title: '[user:display-name] | [site:name]'

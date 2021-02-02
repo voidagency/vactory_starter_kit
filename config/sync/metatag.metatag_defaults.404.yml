@@ -5,7 +5,7 @@ dependencies: {  }
 _core:
   default_config_hash: iXkhFIYqMRUakL6BLD299FgQY_4e3nG_gHdRdj4bGfs
 id: '404'
-label: '404 page not found'
+label: 'Page 404 non trouvée'
 tags:
   canonical_url: '[site:url]'
   shortlink: '[site:url]'

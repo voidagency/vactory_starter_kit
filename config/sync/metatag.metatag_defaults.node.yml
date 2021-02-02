@@ -5,8 +5,8 @@ dependencies: {  }
 _core:
   default_config_hash: JfcO3cp_wz4-8PVVuQwl-ui-Hyusp7_YKAXOBX77og4
 id: node
-label: Content
+label: Contenu
 tags:
   title: '[node:title] | [site:name]'
-  description: '[vactory:node_summary]'
+  description: '[node:summary]'
   canonical_url: '[node:url]'
