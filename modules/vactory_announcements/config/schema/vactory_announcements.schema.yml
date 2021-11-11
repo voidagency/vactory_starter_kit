@@ -1,0 +1,17 @@
+vactory_announcements.settings:
+  type: config_object
+  mapping:
+    notification_title:
+      type: label
+      label: 'Notification title'
+    notification_message:
+      type: text
+      label: 'Notification message'
+      translatable: true
+    v_notification_title:
+      type: label
+      label: 'Notification title'
+    v_notification_message:
+      type: text
+      label: 'Notifications default message'
+      translatable: true

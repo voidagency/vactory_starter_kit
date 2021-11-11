@@ -1,0 +1,22 @@
+{# Sets Unique ID for Accordion. #}
+{% set accordion_id = 'accordion-99-' %}
+<div class="accordion accordion-form" id="{{ accordion_id }}">
+    <div class="card no-shadow">
+      <div class="card-headeru" id="heading{{ accordion_id }}-">
+        <h5 class="mb-0">
+          <button class="btn form-collapse btn-primary collapsed"
+                  type="button"
+                  data-toggle="collapse"
+                  data-target="#collapse{{ accordion_id }}-" aria-expanded="{#% if loop.first %} true {% else %} false {% endif %#}" aria-controls="collapse{{ accordion_id }}-">{{ "Ajouter Post" }}</button>
+        </h5>
+      </div>
+      <div id="collapse{{ accordion_id }}-" class="collapse {#% if loop.first %} show {% endif %#}" aria-labelledby="heading{{ accordion_id }}-" data-parent="#{{ accordion_id }}">
+        <div class="p-4">
+          {{ content.form }}
+        </div>
+      </div>
+    </div>
+</div>
+
+
+

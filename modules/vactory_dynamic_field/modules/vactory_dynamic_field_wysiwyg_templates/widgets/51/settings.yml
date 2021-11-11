@@ -1,0 +1,25 @@
+name: 'C51 - Toolbox contact / hover on element'
+multiple: TRUE
+category: 'Toolbox'
+enabled: TRUE
+fields:
+  cta:
+    type: url_extended
+    label: 'toolbox link'
+  icon:
+    type: select
+    label: 'icon'
+    options:
+      '#required': TRUE
+      '#options':
+        - 'icon-linkedin': 'linkedin icon'
+        - 'icon-twitter': 'twitter icon'
+        - 'icon-facebook': 'facebook icon'
+        - 'icon-youtube': 'youtube icon'
+        - 'icon-mail': 'e-mail icon'
+        - 'icon-edit': 'contact icon'
+        - 'icon-phone': 'telephone icon'
+        - 'icon-messages': 'messages icon'
+  icon_name:
+    type: text
+    label: 'icon class name if does not exist in the select'

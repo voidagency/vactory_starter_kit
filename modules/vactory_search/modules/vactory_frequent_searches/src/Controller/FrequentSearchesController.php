@@ -52,6 +52,7 @@ class FrequentSearchesController extends ControllerBase {
       $result = [];
       foreach ($searches as $key => $search) {
         $result[$key]['id'] = $search->qid;
+        $result[$key]['published'] = $search->published;
         $result[$key]['s_name'] = $search->s_name;
         $result[$key]['numfound'] = $search->numfound;
         $result[$key]['keywords'] = $search->keywords;
@@ -80,6 +81,7 @@ class FrequentSearchesController extends ControllerBase {
       $result = [];
       foreach ($searches as $key => $search) {
         $result[$key]['id'] = $search->qid;
+        $result[$key]['published'] = $search->published;
         $result[$key]['s_name'] = $search->s_name;
         $result[$key]['numfound'] = $search->numfound;
         $result[$key]['keywords'] = $search->keywords;
@@ -124,12 +126,14 @@ class FrequentSearchesController extends ControllerBase {
     return $row_numbers;
   }
 
+
   /**
-   * Clear all Unuseless Keywords.
+   * Delete all Unuseless Keywords.
    */
-  public function clearDatabaseFromUnuselessKeywords() {
+  public function deleteAllUnuselessKeywords() {
     $this->database->delete('vactory_frequent_searches')
-      ->condition('numfound', 1, '<=')
+      ->condition('total_results', 0, '=')
+      ->condition('language', $this->langcode , '=' )
       ->execute();
   }
 
@@ -145,11 +149,12 @@ class FrequentSearchesController extends ControllerBase {
   /**
    * Update keywords in database.
    */
-  public function updateKeywordById($id, $keyword, $num) {
+  public function updateKeywordById($id, $keyword, $num, $published ) {
     $this->database->update('vactory_frequent_searches')
       ->fields([
         'keywords' => $keyword,
         'numfound' => $num,
+        'published' => $published,
       ])
       ->condition('qid', (int) $id, '=')
       ->execute();
@@ -175,16 +180,18 @@ class FrequentSearchesController extends ControllerBase {
   /**
    * Add keyword to database.
    */
-  public function addKeywordToDatabasa($keyword, $count, $lang, $index, $total) {
+  public function addKeywordToDatabase($keyword, $count, $lang, $index, $total_rows) {
+    if($count == 0) $count++;
     $this->database->insert('vactory_frequent_searches')
       ->fields([
+        'published' => '0',
         'keywords' => $keyword,
         'numfound' => $count,
         'language' => $lang,
         'i_name' => $index,
         's_name' => '',
         'timestamp' => time(),
-        'total_results' => $total,
+        'total_results' => $total_rows,
       ])
       ->execute();
     Cache::invalidateTags(['vactory_frequent_searches']);
@@ -206,5 +213,7 @@ class FrequentSearchesController extends ControllerBase {
       return FALSE;
     }
   }
+
+
 
 }

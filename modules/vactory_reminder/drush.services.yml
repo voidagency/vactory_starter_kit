@@ -1,0 +1,12 @@
+services:
+  vactory_reminder.commands:
+    class: \Drupal\vactory_reminder\Commands\VactoryRunReminderQueueCommand
+    arguments:
+      - '@config.factory'
+      - '@account_switcher'
+      - '@queue'
+      - '@plugin.manager.queue_worker'
+      - '@lock'
+      - '@logger.factory'
+    tags:
+      - { name: drush.command }

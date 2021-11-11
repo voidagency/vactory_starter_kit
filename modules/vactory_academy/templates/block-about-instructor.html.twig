@@ -20,8 +20,8 @@
  */
 #}
 
-{% set first_name = user.field_first_name.value is defined ? user.field_first_name.value : '' %}
-{% set last_name = user.field_last_name.value is defined ? user.field_last_name.value : '' %}
+{% set first_name = user.field_first_name.value is not empty ? user.field_first_name.value : '' %}
+{% set last_name = user.field_last_name.value is not empty ? user.field_last_name.value : '' %}
 {% set full_name = [first_name|capitalize ~ ' ', last_name|capitalize]|join %}
 {% set about = user.field_about_the_author.value is defined ? user.field_about_the_author.value : '' %}
 {% set profession = user.field_user_profession.value is defined ? user.field_user_profession.value : '' %}

@@ -1,0 +1,21 @@
+langcode: fr
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_quiz
+  module:
+    - node
+    - vactory_quiz
+id: node.field_quiz_questions
+field_name: field_quiz_questions
+entity_type: node
+type: vactory_quiz_question
+settings: {  }
+module: vactory_quiz
+locked: false
+cardinality: -1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

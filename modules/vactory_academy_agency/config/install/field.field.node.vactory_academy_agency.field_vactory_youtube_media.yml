@@ -1,0 +1,20 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_vactory_youtube_media
+    - node.type.vactory_academy_agency
+id: node.vactory_academy_agency.field_vactory_youtube_media
+field_name: field_vactory_youtube_media
+entity_type: node
+bundle: vactory_academy_agency
+label: 'Youtube videos media'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:media'
+  handler_settings: {  }
+field_type: entity_reference

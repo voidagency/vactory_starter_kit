@@ -52,4 +52,12 @@ class AppointmentTypesBlock extends BlockBase {
       '#content' => $content,
     ];
   }
+
+  /**
+   * {@inheritDoc}
+   */
+  public function getCacheTags() {
+    return ['taxonomy_term_list:vactory_appointment_motifs'];
+  }
+
 }

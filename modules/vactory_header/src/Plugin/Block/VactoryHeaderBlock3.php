@@ -3,6 +3,7 @@
 namespace Drupal\vactory_header\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
@@ -20,16 +21,13 @@ class VactoryHeaderBlock3 extends BlockBase {
    * {@inheritdoc}
    */
   public function build() {
-
-    return array(
-      "#cache" => array("max-age" => 0),
+    return [
       "#theme" => "block_vactory_header3",
-    );
-
+    ];
   }
 
   /**
-   * {@inheritdoc}
+   * {@inheritDoc}
    */
   public function blockSubmit($form, FormStateInterface $form_state) {
     $config = \Drupal::service('config.factory')->getEditable('vactory_header.settings');
@@ -40,16 +38,23 @@ class VactoryHeaderBlock3 extends BlockBase {
   }
 
   /**
-   * {@inheritdoc}
+   * {@inheritDoc}
    */
   public function blockForm($form, FormStateInterface $form_state) {
-      $form = parent::blockForm($form, $form_state);
-      $form['use_lang_code'] = [
-          '#type' => 'checkbox',
-          '#title' => $this->t('Use language code as language switcher.'),
-          '#default_value' => isset($this->configuration['use_lang_code']) ? $this->configuration['use_lang_code'] : \Drupal::config('vactory_header.settings')->get('use_lang_code'),
-      ];
-      return $form;
+    $form = parent::blockForm($form, $form_state);
+    $form['use_lang_code'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Use language code as language switcher.'),
+      '#default_value' => isset($this->configuration['use_lang_code']) ? $this->configuration['use_lang_code'] : \Drupal::config('vactory_header.settings')->get('use_lang_code'),
+    ];
+    return $form;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  public function getCacheMaxAge() {
+    return Cache::PERMANENT;
   }
 
 }

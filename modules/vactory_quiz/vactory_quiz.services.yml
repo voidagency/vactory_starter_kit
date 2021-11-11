@@ -1,0 +1,4 @@
+services:
+  vactory_quiz.manager:
+    class: Drupal\vactory_quiz\Services\VactoryQuizManager
+    arguments: ['@entity_type.manager', '@database']

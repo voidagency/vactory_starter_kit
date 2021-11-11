@@ -1,0 +1,21 @@
+langcode: fr
+status: true
+dependencies:
+  module:
+    - node
+id: announcement_pattern
+label: 'Announcement Pattern'
+type: 'canonical_entities:node'
+pattern: '[node:title]'
+selection_criteria:
+  0053d302-61be-4c69-950a-bbd8c99cf787:
+    id: node_type
+    bundles:
+      announcement: announcement
+    negate: false
+    context_mapping:
+      node: node
+    uuid: 0053d302-61be-4c69-950a-bbd8c99cf787
+selection_logic: and
+weight: -5
+relationships: {  }

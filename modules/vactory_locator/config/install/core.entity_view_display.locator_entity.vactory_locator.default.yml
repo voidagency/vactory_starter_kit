@@ -2,37 +2,40 @@ langcode: fr
 status: true
 dependencies:
   config:
+    - field.field.locator_entity.vactory_locator.field_agency_path
+    - field.field.locator_entity.vactory_locator.field_locator_additional_adress
     - field.field.locator_entity.vactory_locator.field_locator_adress
     - field.field.locator_entity.vactory_locator.field_locator_autre
     - field.field.locator_entity.vactory_locator.field_locator_autre_2
     - field.field.locator_entity.vactory_locator.field_locator_autre_3
-    - field.field.locator_entity.vactory_locator.field_locator_autre_4
-    - field.field.locator_entity.vactory_locator.field_locator_autre_5
     - field.field.locator_entity.vactory_locator.field_locator_category
+    - field.field.locator_entity.vactory_locator.field_locator_city
+    - field.field.locator_entity.vactory_locator.field_locator_country
     - field.field.locator_entity.vactory_locator.field_locator_description
     - field.field.locator_entity.vactory_locator.field_locator_email
     - field.field.locator_entity.vactory_locator.field_locator_fax
     - field.field.locator_entity.vactory_locator.field_locator_image
     - field.field.locator_entity.vactory_locator.field_locator_info
     - field.field.locator_entity.vactory_locator.field_locator_phone
+    - field.field.locator_entity.vactory_locator.field_locator_zipcode
     - field.field.locator_entity.vactory_locator.field_locator_zoom
     - vactory_locator.locator_entity_type.vactory_locator
   module:
-    - address
-    - image
+    - media_responsive_thumbnail
     - telephone
+    - text
     - vactory_google_map_field
 id: locator_entity.vactory_locator.default
 targetEntityType: locator_entity
 bundle: vactory_locator
 mode: default
 content:
-  field_locator_adress:
-    weight: 11
+  field_locator_additional_adress:
+    weight: 15
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: address_default
+    type: text_default
     region: content
   field_locator_autre:
     weight: 3
@@ -58,21 +61,21 @@ content:
     third_party_settings: {  }
     type: string
     region: content
-  field_locator_autre_4:
-    weight: 6
+  field_locator_city:
+    weight: 9
     label: above
     settings:
-      link_to_entity: false
+      link: true
     third_party_settings: {  }
-    type: string
+    type: entity_reference_label
     region: content
-  field_locator_autre_5:
-    weight: 7
+  field_locator_country:
+    weight: 8
     label: above
     settings:
-      link_to_entity: false
+      link: true
     third_party_settings: {  }
-    type: string
+    type: entity_reference_label
     region: content
   field_locator_description:
     weight: 2
@@ -82,14 +85,14 @@ content:
     type: basic_string
     region: content
   field_locator_email:
-    weight: 8
+    weight: 10
     label: above
     settings: {  }
     third_party_settings: {  }
     type: basic_string
     region: content
   field_locator_fax:
-    weight: 10
+    weight: 12
     label: above
     settings:
       title: ''
@@ -100,28 +103,37 @@ content:
     weight: 1
     label: above
     settings:
-      image_style: ''
       image_link: ''
+      responsive_image_style: ''
     third_party_settings: {  }
-    type: image
+    type: media_responsive_thumbnail
     region: content
   field_locator_info:
-    weight: 12
+    weight: 13
     label: above
     settings: {  }
     third_party_settings: {  }
     type: vactory_google_map_field_default
     region: content
   field_locator_phone:
-    weight: 9
+    weight: 11
     label: above
     settings:
       title: ''
     third_party_settings: {  }
     type: telephone_link
     region: content
+  field_locator_zipcode:
+    weight: 16
+    label: above
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    type: number_integer
+    region: content
   field_locator_zoom:
-    weight: 13
+    weight: 14
     label: above
     settings:
       link_to_entity: false
@@ -137,6 +149,9 @@ content:
       link_to_entity: false
     third_party_settings: {  }
 hidden:
+  field_agency_path: true
+  field_is_appointment_enabled: true
+  field_locator_adress: true
   field_locator_category: true
   langcode: true
   search_api_excerpt: true

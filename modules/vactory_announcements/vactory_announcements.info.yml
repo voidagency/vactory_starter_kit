@@ -1,0 +1,11 @@
+name: Announcements
+type: module
+description: 'Provide Announcement content type and views listing.'
+package: Vactory
+core: 8.x
+core_version_requirement: ^8 || ^9
+configure: vactory_announcements.admin_settings
+dependencies:
+  - media_library
+  - scheduler
+  - smart_trim

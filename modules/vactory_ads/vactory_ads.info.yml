@@ -1,0 +1,13 @@
+name: Ads
+description: 'A module to manage ads banners'
+type: module
+core: 8.x
+core_version_requirement: '^8 || ^9'
+dependencies:
+  - block_content
+  - content_translation
+  - field
+  - language
+  - shortcode
+  - vactory_dynamic_field
+package: Vactory

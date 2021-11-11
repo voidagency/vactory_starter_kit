@@ -1,0 +1,14 @@
+vactory_keycloak.user_login:
+  label: 'User has logged in via Keycloak login'
+  category: 'User'
+  context:
+    account:
+      type: 'entity:user'
+      label: 'Logged in user'
+vactory_keycloak.user_created:
+  label: 'User has been created via Keycloak login'
+  category: 'User'
+  context:
+    account:
+      type: 'entity:user'
+      label: 'Logged in user'

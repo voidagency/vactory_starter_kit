@@ -12,7 +12,7 @@ field_name: field_path_motif_name
 entity_type: taxonomy_term
 bundle: vactory_appointment_motifs
 label: 'Path motif name'
-description: ''
+description: 'Nom de l''agence sur un chemin URL, des alphanumériques en remplaçant les espaces par <strong>-</strong> (tirets de 6), Exemple: Si le nom de l''agence est <strong>Bar toto</strong> alors le nom de l''agence dans le chemin URL sera <strong>bar-toto</strong>'
 required: true
 translatable: false
 default_value: {  }

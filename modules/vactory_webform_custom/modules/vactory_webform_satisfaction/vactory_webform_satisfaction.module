@@ -1,0 +1,133 @@
+<?php
+
+/**
+ * @file
+ * Module related hooks.
+ */
+
+use Drupal\Core\Entity\EntityStorageException;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\webform\Entity\Webform;
+use Drupal\webform\Entity\WebformSubmission;
+use Drupal\webform\WebformSubmissionForm;
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_webform_satisfaction_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if ($form_id == 'webform_submission_vactory_webform_satisfaction_add_form') {
+    $form['elements']['step_1']['#element_validate'][] = 'satisfaction_custom_validate_callback';
+    $form['elements']['step_2']['#element_validate'][] = 'contact_custom_validate_callback';
+    unset($form['progress']);
+    if ($form_state->get('current_page') == 'step_3') {
+      unset($form['actions']['wizard_prev'], $form['actions']['submit']);
+    }
+    if ($form_state->get('current_page') == 'step_2') {
+      $form['actions']['wizard_prev']['#submit'][0] = '::next';
+    }
+  }
+
+}
+
+/**
+ * Satisfcation custom callback.
+ */
+function satisfaction_custom_validate_callback($form, FormStateInterface $form_state) {
+  $webform = Webform::load('vactory_webform_satisfaction');
+  $is_open = WebformSubmissionForm::isOpen($webform);
+  if ($is_open && empty($form_state->get('webform_submission_id'))) {
+    $unique_key = 'skey_' . (new DateTime())->getTimestamp();
+    $values = [
+      'webform_id' => 'vactory_webform_satisfaction',
+      'entity_type' => NULL,
+      'entity_id' => NULL,
+      'in_draft' => FALSE,
+      'uid' => '1',
+      'langcode' => 'en',
+      'token' => 'pgmJREX2l4geg2RGFp0p78Qdfm1ksLxe6IlZ-mN9GZI',
+      'uri' => '/webform/vactory_webform_satisfaction/api',
+      'remote_addr' => '',
+      'data' => [
+        'satisfaction' => $form_state->getValue('satisfaction'),
+        'commentaire' => $form_state->getValue('commentaire'),
+        'nom' => '-',
+        'prenom' => '-',
+        'telephone' => '-',
+        'cgu' => '1',
+        'unique_key' => $unique_key,
+      ],
+    ];
+    try {
+      $webform_submission = WebformSubmission::create($values)
+        ->setRemoteAddr(Drupal::request()->getClientIp())
+        ->setOwnerId(Drupal::currentUser()->id())
+        ->save();
+      $sid = satisfaction_submission_by_key($unique_key);
+      $form_state->set('webform_submission_id', $sid);
+    }
+    catch (EntityStorageException $e) {
+      Drupal::logger('vactory_webform_satisfaction')->error($e->getMessage());
+      $form_state->setError($form, t('une erreur est survenue veuillez réessayer ultérieurement'));
+    }
+  }
+}
+
+/**
+ * Contact custom callback.
+ */
+function contact_custom_validate_callback($form, FormStateInterface $form_state) {
+  $element = $form_state->getTriggeringElement();
+  if ($form_state->get('current_page') == 'step_2' && !in_array('wizard_prev', $element['#parents'])) {
+    $submission_id = $form_state->get('webform_submission_id');
+    if (!empty($submission_id)) {
+      $webform_submission = WebformSubmission::load($submission_id);
+      $webform_submission->setElementData('nom', !empty($form_state->getValue('nom')) ? $form_state->getValue('nom') : '-');
+      $webform_submission->setElementData('prenom', !empty($form_state->getValue('prenom')) ? $form_state->getValue('prenom') : '-');
+      $webform_submission->setElementData('telephone', !empty($form_state->getValue('telephone')) ? $form_state->getValue('telephone') : '-');
+      $webform_submission->setElementData('mail', $form_state->getValue('mail'));
+      $webform_submission->setElementData('cgu', $form_state->getValue('cgu'));
+      try {
+        $webform_submission->save();
+      }
+      catch (EntityStorageException $e) {
+        Drupal::logger('vactory_webform_satisfaction')->error($e->getMessage());
+        $form_state->setError($form, t('une erreur est survenue veuillez réessayer ultérieurement'));
+      }
+    }
+    else {
+      Drupal::messenger()->addError(t('une erreur est survenue veuillez réessayer ultérieurement'));
+      $form_state->setRedirect('entity.webform.canonical', ['webfom' => 'vactory_webform_satisfaction']);
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_webform_satisfaction_preprocess_webform_progress_tracker(&$variables) {
+  $route_matcher = Drupal::routeMatch();
+  if ($route_matcher->getRouteName() == 'entity.webform.confirmation') {
+    $webform_id = $route_matcher->getRawParameter('webform');
+    if ($webform_id == 'vactory_webform_satisfaction') {
+      unset($variables['progress']);
+    }
+  }
+}
+
+/**
+ * Get Satisfaction submission by key.
+ */
+function satisfaction_submission_by_key($key) {
+  $submissions = Drupal::entityTypeManager()
+    ->getStorage('webform_submission')
+    ->loadByProperties(['webform_id' => 'vactory_webform_satisfaction']);
+  if (!empty($submissions)) {
+    $submissions = array_reverse($submissions);
+    foreach ($submissions as $sid => $submission) {
+      if ($submission->getData()['unique_key'] == $key) {
+        return $submission->id();
+      }
+    }
+  }
+  return NULL;
+}

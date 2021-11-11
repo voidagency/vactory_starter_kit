@@ -16,12 +16,12 @@ source:
   ids:
     - id
   fields:
-    0:
+    -
       name: id
       label: 'Unique ID'
-    1:
+    -
       name: label
-      label: 'Label'
+      label: Label
 process:
   name: label
   type:

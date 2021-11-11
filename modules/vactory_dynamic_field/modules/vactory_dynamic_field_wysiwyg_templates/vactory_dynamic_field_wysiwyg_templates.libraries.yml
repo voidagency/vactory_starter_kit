@@ -4,7 +4,13 @@ widget7:
   dependencies:
     - core/jquery
     - core/drupalSettings
-sticky_video:
+
+youtube_api:
   js:
     //www.youtube.com/iframe_api: { type: external }
+
+sticky_video:
+  js:
     js/sticky-video.js: {}
+  dependencies:
+    - vactory_dynamic_field_wysiwyg_templates/youtube_api

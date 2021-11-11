@@ -18,7 +18,7 @@
             {% set has_sub = ((menu_item.submenu or menu_item.fields.field_injected_block | render | trim is not empty) ? 'has-sub' : '') %}
 
             <li class="menu__item{{ active }} menu__item--{{ level|default(default_level) }} {{ has_sub }} {{ menu_item.options.attributes.wrapper_class }}">
-                <a href="{{ menu_item.url }}" id="{{ menu_item.options.attributes.id }}" class="menu__link{{ active }} {{ menu_item.options.attributes.class }}">{{ menu_item.text }}</a>
+                <a href="{{ menu_item.url }}" id="{{ menu_item.options.attributes.id }}" class="menu__link{{ active }} {{ menu_item.options.attributes.class|join(' ') }}">{{ menu_item.text }}</a>
                 {# Call the block injected menu if exist. #}
                 {% if menu_item.fields.field_injected_block | render | trim is not empty %}
                   <div class="menu-sub--{{ level|default(default_level) }}">
@@ -61,9 +61,9 @@
             <nav id="cbp-hrmenu" class="vh-header--menu cbp-hrmenu d-none d-lg-block">
                 {{ _self.menuMacro(main_navigation_menu.menu_tree) }}
             </nav>
-            {#{% if is_notifications_enabled() %}
+            {% if is_notifications_enabled() %}
               {{ vactory_render('block', 'vactory_notifications_link') }}
-            {% endif %}#}
+            {% endif %}
 
             {% if is_espace_prive_enabled %}
               {{ vactory_render('block', 'vactory_espace_prive_user_menu') }}
@@ -71,7 +71,7 @@
 
              <div class="vh-header__language-drop-switcher transparent d-none d-lg-block mr-4">
                 {{ vactory_render('block', 'language_dropdown_block:language_interface') }}
-            </div> 
+            </div>
 
             <div class="vh-header--search-button d-none d-lg-block px-2">
               <button class="icon-search icon js-btn-search-overlay" aria-label="Search button"></button>

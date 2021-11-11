@@ -1,0 +1,127 @@
+<?php
+
+/**
+ * @file
+ * Contain related hooks.
+ */
+
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Field\FieldStorageDefinitionInterface;
+
+/**
+ * Implements hook_uninstall().
+ */
+function vactory_content_access_uninstall() {
+  // Delete vactory content access config.
+  $notifications_config = Drupal::configFactory()->getEditable('vactory_content_access.settings');
+  $notifications_config->delete();
+}
+
+/**
+ * Install content access groups users, users sup and roles node fields.
+ */
+function vactory_content_access_update_8903(&$sandbox) {
+  $entityUpdateManager = \Drupal::entityDefinitionUpdateManager();
+  // Field Utilisateurs supplémentaires.
+  $field_content_access_users = BaseFieldDefinition::create('entity_reference')
+    ->setLabel(t('Utilisateurs supplémentaires'))
+    ->setSettings([
+      'target_type' => 'user',
+    ])
+    ->setTranslatable(TRUE)
+    ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
+    ->setDisplayOptions('form', [
+      'type' => 'entity_autocomplete',
+      'weight' => -6,
+      'settings' => [],
+    ])
+    ->setDisplayConfigurable('form', TRUE)
+    ->setDisplayConfigurable('view', TRUE)
+    ->setDisplayConfigurable('field', TRUE);
+
+  $entityUpdateManager->installFieldStorageDefinition(
+    'field_content_access_users', 'node', 'vactory_content_access', $field_content_access_users
+  );
+
+  $field_content_access_roles = BaseFieldDefinition::create('entity_reference')
+    ->setLabel(t('Utilisateurs supplémentaires'))
+    ->setSettings([
+      'target_type' => 'user_role',
+    ])
+    ->setTranslatable(TRUE)
+    ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
+    ->setDisplayOptions('form', [
+      'type' => 'options_select',
+      'weight' => -6,
+      'settings' => [],
+    ])
+    ->setDisplayConfigurable('form', TRUE)
+    ->setDisplayConfigurable('view', TRUE)
+    ->setDisplayConfigurable('field', TRUE);
+
+  $entityUpdateManager->installFieldStorageDefinition(
+    'field_content_access_roles', 'node', 'vactory_content_access', $field_content_access_roles
+  );
+
+  $field_content_access_groups = BaseFieldDefinition::create('entity_reference')
+    ->setLabel(t('Groupe utilisateurs'))
+    ->setSettings([
+      'target_type' => 'taxonomy_term',
+      'handler_settings' => ['target_bundles' => ['taxonomy_term' => 'users_groups']],
+    ])
+    ->setTranslatable(TRUE)
+    ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
+    ->setDisplayOptions('form', [
+      'type' => 'options_select',
+      'weight' => -6,
+      'settings' => [],
+    ])
+    ->setDisplayConfigurable('form', TRUE)
+    ->setDisplayConfigurable('view', TRUE)
+    ->setDisplayConfigurable('field', TRUE);
+
+  $entityUpdateManager->installFieldStorageDefinition(
+    'field_content_access_groups', 'node', 'vactory_content_access', $field_content_access_groups
+  );
+
+}
+
+/**
+ * Implements hook_update_N().
+ */
+function vactory_content_access_update_8904(&$sandbox) {
+  $entityUpdateManager = \Drupal::entityDefinitionUpdateManager();
+  // Field Utilisateurs supplémentaires.
+  $field_content_access_groups = BaseFieldDefinition::create('entity_reference')
+    ->setSetting('target_type', 'taxonomy_term')
+    ->setSetting('handler', 'default:taxonomy_term')
+    ->setSetting('handler_settings',
+      [
+        'target_bundles' => [
+          'taxonomy_term' => 'users_groups',
+        ],
+      ])
+    ->setDisplayOptions('view', [
+      'label' => 'hidden',
+      'type' => 'author',
+      'weight' => 0,
+    ])
+    ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
+    ->setDisplayOptions('form', [
+      'type' => 'options_select',
+      'weight' => 3,
+      'settings' => [
+        'match_operator' => 'CONTAINS',
+        'size' => '10',
+        'autocomplete_type' => 'tags',
+        'placeholder' => '',
+      ],
+    ])
+    ->setDisplayConfigurable('form', TRUE)
+    ->setDisplayConfigurable('view', TRUE);
+
+  $entityUpdateManager->installFieldStorageDefinition(
+    'field_content_access_groups', 'node', 'vactory_content_access', $field_content_access_groups
+  );
+
+}

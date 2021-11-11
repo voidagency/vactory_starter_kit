@@ -3,6 +3,7 @@
 namespace Drupal\vactory_footer\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
+use Drupal\Core\Cache\Cache;
 use Drupal\mailchimp_signup\Form\MailchimpSignupPageForm;
 
 /**
@@ -40,11 +41,17 @@ class VactoryFooterBlock7 extends BlockBase {
     }
 
     return [
-      "#cache"   => ["max-age" => 0],
       "#theme"   => "block_vactory_footer7",
       "#content" => ['form' => $content],
     ];
 
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheMaxAge() {
+    return Cache::PERMANENT;
   }
 
 }

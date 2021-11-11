@@ -80,3 +80,50 @@ function vactory_notifications_update_8102(&$sandbox) {
     'notification_message', 'node', 'vactory_notifications', $notification_message_field
   );
 }
+
+
+/**
+ * Install Mail notifications subject and message node fields.
+ */
+function vactory_notifications_update_8103(&$sandbox) {
+  $entityUpdateManager = \Drupal::entityDefinitionUpdateManager();
+  // Mail subject.
+  $mail_subject_field = BaseFieldDefinition::create('string')
+    ->setLabel(t('Mail Notifications subject'))
+    ->setDescription(t('Set the mail noifications subject of current node.'))
+    ->setSettings(array(
+      'max_length' => 255,
+      'text_processing' => 0,
+    ))
+    ->setTranslatable(TRUE)
+    ->setDisplayOptions('form', array(
+      'type' => 'string_textfield',
+      'weight' => -6,
+    ))
+    ->setDisplayConfigurable('form', TRUE)
+    ->setDisplayConfigurable('view', TRUE);
+
+  $entityUpdateManager->installFieldStorageDefinition(
+    'mail_subject', 'node', 'vactory_notifications', $mail_subject_field
+  );
+
+  // Mail details/message.
+  $mail_message_field = BaseFieldDefinition::create('string_long')
+    ->setLabel(t('Mail Notifications message'))
+    ->setDescription(t('Set the mail notification message of current node'))
+    ->setSettings([
+      'default_value' => '',
+      'text_processing' => 0,
+    ])
+    ->setTranslatable(TRUE)
+    ->setDisplayOptions('form', array(
+      'type' => 'string_textarea',
+      'weight' => -1,
+    ))
+    ->setDisplayConfigurable('form', TRUE)
+    ->setDisplayConfigurable('view', TRUE);
+
+  $entityUpdateManager->installFieldStorageDefinition(
+    'mail_message', 'node', 'vactory_notifications', $mail_message_field
+  );
+}

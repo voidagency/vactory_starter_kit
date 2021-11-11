@@ -1,0 +1,7 @@
+vactory_social_network.settings_form:
+  path: '/admin/config/system/social-network-configuration'
+  defaults:
+    _title: 'Vactory Socail Network Settings'
+    _form: '\Drupal\vactory_social_network\Form\SettingsForm'
+  requirements:
+    _permission: 'administer vactory social network'

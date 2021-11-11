@@ -1,0 +1,28 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_vactory_post_thematique
+    - node.type.vactory_post
+    - taxonomy.vocabulary.vactory_post_thematique
+id: node.vactory_post.field_vactory_post_thematique
+field_name: field_vactory_post_thematique
+entity_type: node
+bundle: vactory_post
+label: Thématique
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      vactory_post_thematique: vactory_post_thematique
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

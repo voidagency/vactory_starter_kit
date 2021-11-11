@@ -73,6 +73,12 @@ function vactory_frequent_searches_schema() {
         'default' => 0,
         'description' => 'Number of search results.',
       ],
+      'published' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Keyword published or not.',
+      ],
       'language' => [
         'description' => 'The site languages of keywords when search was executed.',
         'type' => 'varchar',
@@ -85,4 +91,19 @@ function vactory_frequent_searches_schema() {
   ];
 
   return $schema;
+}
+
+
+/**
+ * Implements hook_update_8901().
+ * Add published field to vactory_frequent_searches.
+ */
+function vactory_frequent_searches_update_8901() {
+  db_add_field('vactory_frequent_searches', 'published', [
+    'type' => 'int',
+    'not null' => TRUE,
+    'default' => 0,
+    'description' => 'Keyword published or not.',
+    ]
+  );
 }

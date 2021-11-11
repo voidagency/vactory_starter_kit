@@ -1,0 +1,6 @@
+vactory_news.sticky_sharing:
+  js:
+    js/sticky-sharing.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings

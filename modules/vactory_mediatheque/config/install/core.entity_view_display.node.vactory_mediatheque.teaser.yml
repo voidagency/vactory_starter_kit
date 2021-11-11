@@ -1,0 +1,39 @@
+uuid: 4f5e04b2-840a-442e-b44a-9b7ccbd132c4
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.vactory_mediatheque.field_mediatheque_theme
+    - field.field.node.vactory_mediatheque.field_mediatheque_video
+    - field.field.node.vactory_mediatheque.field_vactory_excerpt
+    - field.field.node.vactory_mediatheque.field_vactory_media
+    - field.field.node.vactory_mediatheque.field_vactory_media_document
+    - field.field.node.vactory_mediatheque.field_vactory_paragraphs
+    - node.type.vactory_mediatheque
+  module:
+    - user
+_core:
+  default_config_hash: XvPvzlSnPFk3p5icI--86Dj-tDA5EGxkhhOinxs5biE
+id: node.vactory_mediatheque.teaser
+targetEntityType: node
+bundle: vactory_mediatheque
+mode: teaser
+content:
+  links:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  addtoany: true
+  field_mediatheque_theme: true
+  field_mediatheque_video: true
+  field_vactory_excerpt: true
+  field_vactory_media: true
+  field_vactory_media_document: true
+  field_vactory_paragraphs: true
+  langcode: true
+  notification_message: true
+  notification_title: true
+  search_api_excerpt: true

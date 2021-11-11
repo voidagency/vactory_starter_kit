@@ -1,0 +1,10 @@
+.agency-card{
+  flex-basis: 15% !important;
+}
+
+@media (min-width: 992px){
+  .card--inline .inline--agency {
+    -ms-flex-preferred-size: 85%;
+    flex-basis: 85%;
+  }
+}

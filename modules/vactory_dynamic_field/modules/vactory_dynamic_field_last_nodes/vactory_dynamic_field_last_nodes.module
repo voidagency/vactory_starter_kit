@@ -1,0 +1,119 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Vactory Last Nodes module.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_dynamic_field_content_alter().
+ */
+function vactory_dynamic_field_last_nodes_dynamic_field_content_alter(&$content) {
+  if (isset($content['components'][0]['key'])) {
+    $key = $content['components'][0]['key'];
+    if ($key == 'last_nodes_listing') {
+      $query = \Drupal::entityQuery('node');
+      $content_type = $content['components'][0]['group_content_type']['content_type'];
+      $node_ids = [];
+      if (!empty($content_type)) {
+        $entity_queue = $content['components'][0]['group_entity_queue']['entity_queue'];
+        $use_entity_queue_or_content = $content['components'][0]['content_type_or_entity_queue'];
+        if (!empty($entity_queue) && $use_entity_queue_or_content == 1) {
+          $entity_subqueue = \Drupal::entityTypeManager()->getStorage('entity_subqueue')->load($entity_queue);
+          if (isset($entity_subqueue) && !empty($entity_subqueue)) {
+            if (!empty($entity_subqueue->get('items')->getValue())) {
+              $items = $entity_subqueue->get('items')->getValue();
+              foreach ($items as $item) {
+                array_push($node_ids, $item['target_id']);
+              }
+            }
+          }
+        }
+        else {
+          $query->condition('type', $content_type);
+          $total_items_to_show = !empty($content['components'][0]['group_content_type']['total_items_to_show']) ? $content['components'][0]['group_content_type']['total_items_to_show'] : 3;
+          if (isset($content['components'][0]['group_taxonomy']['taxonomy_field_name']) && !empty($content['components'][0]['group_taxonomy']['taxonomy_field_name'])) {
+            if (!empty($content['components'][0]['group_taxonomy']['taxonomy_item'])) {
+              $taxonomy_field_name = $content['components'][0]['group_taxonomy']['taxonomy_field_name'];
+              $terms_ids = $content['components'][0]['group_taxonomy']['taxonomy_item'];
+              if (!empty($terms_ids)) {
+                $query->condition($taxonomy_field_name, $terms_ids, 'IN');
+              }
+            }
+            $current_lang = \Drupal::languageManager()->getCurrentLanguage()->getId();
+            $query->condition('langcode', $current_lang);
+            $query->sort('created', 'DESC');
+            $query->range(0, $total_items_to_show);
+          }
+        }
+        $resultats = $query->execute();
+        foreach ($resultats as $key => $value) {
+          array_push($node_ids, $value);
+        }
+      }
+      $content['components'][0]['node_ids'] = $node_ids;
+    }
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_dynamic_field_last_nodes_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if ($form_id == "dynamic_field_modal_form") {
+    $state = [
+      'invisible' => [
+        ':input[name="components[0][content_type_or_entity_queue]"]' => ['value' => 1],
+      ],
+    ];
+    $form['components'][0]['group_content_type']['#states'] = $form['components'][0]['group_taxonomy']['#states'] = $state;
+    $form['components'][0]['group_entity_queue']['#states'] = [
+      'visible' => [
+        ':input[name="components[0][content_type_or_entity_queue]"]' => ['value' => 1],
+      ],
+    ];
+    $slider_state = [
+      'visible' => [
+        ':input[name="components[0][group_display_mode][display_mode]"]' => ['value' => 'slider'],
+      ],
+    ];
+    $form['components'][0]['group_display_mode']['data_to_show']['#states'] = $slider_state;
+    $form['components'][0]['group_display_mode']['data_to_scroll']['#states'] = $slider_state;
+    $form['components'][0]['group_display_mode']['auto_play']['#states'] = $slider_state;
+
+    $form['#validate'][] = '_node_types_form_validate';
+  }
+}
+
+/**
+ * Custom Form validation.
+ */
+function _node_types_form_validate(&$form, FormStateInterface $form_state) {
+  $taxonomy_field = $form_state->getValues()['components'][0]['group_taxonomy']['taxonomy_field_name'];
+  if (!empty($taxonomy_field)) {
+    $content_type = $form_state->getValues()['components'][0]['group_content_type']['content_type'];
+    // Check if content type has the taxonomy field.
+    $has_field = does_bundle_have_field($content_type, $taxonomy_field, 'node');
+    if (!($has_field)) {
+      $form_state->setErrorByName('taxonomy_field_name', t("Taxonomy field name doesn't exist."));
+    }
+  }
+  // Check if entity queue exist.
+  $entity_queue = $form_state->getValues()['components'][0]['group_entity_queue']['entity_queue'];
+  if (!empty($entity_queue)) {
+    $queues = \Drupal::entityQuery('entity_queue')->execute();
+    if (!in_array($entity_queue, $queues)) {
+      $form_state->setErrorByName('entity_queue', t("Entity queue doesn't exist."));
+    }
+  }
+}
+
+/**
+ * Function to check if bundle have field.
+ */
+function does_bundle_have_field($bundle, $field_name, $entity_type = 'node') {
+  $all_bundle_fields = \Drupal::service('entity_field.manager')->getFieldDefinitions($entity_type, $bundle);
+  return isset($all_bundle_fields[$field_name]);
+}

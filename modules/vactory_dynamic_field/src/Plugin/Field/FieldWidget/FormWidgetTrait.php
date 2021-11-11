@@ -7,7 +7,6 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\file\Entity\File;
-use Drupal\node\Entity\Node;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\Core\Entity\Entity\EntityFormDisplay;
@@ -43,7 +42,7 @@ trait FormWidgetTrait {
       ];
     }
 
-    if (in_array($type, ['image', 'file'])) {
+    if (in_array($type, ['image', 'file', 'remote_video'])) {
       $default_options = [
         '#type' => 'media_library',
       ];
@@ -71,6 +70,14 @@ trait FormWidgetTrait {
           '#upload_validators' => [
             'file_validate_extensions' => ['pdf doc docx txt'],
           ],
+        ] + $default_options;
+    }
+
+    if ($type === 'remote_video') {
+      $default_options =
+        [
+          '#allowed_bundles' => 'remote_video',
+          '#title' => t('Remote video'),
         ] + $default_options;
     }
 
@@ -114,7 +121,7 @@ trait FormWidgetTrait {
 
     // Entity autocomplete default value.
     if ($type === 'entity_autocomplete') {
-      $default_value = !empty($default_value) ? Node::load($default_value) : NULL;
+      $default_value = !empty($default_value) ? \Drupal::entityTypeManager()->getStorage($options['#target_type'])->load($default_value) : NULL;
       $element['#default_value'] = $default_value;
     }
 
@@ -144,12 +151,41 @@ trait FormWidgetTrait {
       ], $form, $form_state);
     }
 
+    if ($type == 'remote_video') {
+      $remote_video_default_value = [];
+      if (!empty($default_value)) {
+        if (!is_array($default_value)) {
+          $remote_video_default_value[] = $default_value;
+        }
+        else {
+          $key = array_keys($default_value)[0];
+          if (isset($default_value[$key]['selection'])) {
+            foreach ($default_value[$key]['selection'] as $media) {
+              $remote_video_default_value[] = $media['target_id'];
+            }
+          }
+        }
+      }
+
+      return $this->getRemoteVideoFieldForm($field_name, [
+        'label'         => $label,
+        'required'      => FALSE,
+        'default_value' => $remote_video_default_value,
+        'cardinality'   => 1,
+      ], $form, $form_state);
+    }
+
     if ($type == 'url_extended') {
       if (!isset($default_value['attributes']['id']) || (isset($default_value['attributes']['id']) && empty($default_value['attributes']['id']))) {
         $timestamp = (new \DateTime())->getTimestamp();
         $field_id = str_replace('_', '-', strtolower($field_id));
         $suffix = base64_encode($index . $timestamp);
         $suffix = str_replace('=', '', strtolower($suffix));
+        if (!is_array($element['#default_value'])) {
+          $url = $element['#default_value'];
+          $element['#default_value'] = [];
+          $element['#default_value']['url'] = $url;
+        }
         $element['#default_value']['attributes']['id'] = $field_id . '-' . $suffix;
       }
     }
@@ -381,10 +417,14 @@ trait FormWidgetTrait {
       'type' => 'media_library_widget',
     ]);
 
-    /* @var \Drupal\media_library\Plugin\Field\FieldWidget\MediaLibraryWidget $widget */
+    /**
+     * @var \Drupal\media_library\Plugin\Field\FieldWidget\MediaLibraryWidget $widget
+     */
     $widget = $form_display->getRenderer($field_name);
 
-    /* @var \Drupal\vactory_dynamic_field\Entity\VactoryDynamicField $entity */
+    /**
+     * @var \Drupal\vactory_dynamic_field\Entity\VactoryDynamicField $entity
+     */
     $entity = \Drupal::service('entity_type.manager')
       ->getStorage('vactory_dynamic_field')
       ->create([
@@ -392,7 +432,9 @@ trait FormWidgetTrait {
         'langcode' => LanguageInterface::LANGCODE_NOT_SPECIFIED,
       ]);
 
-    /* @var \Drupal\Core\Field\EntityReferenceFieldItemList $items */
+    /**
+     * @var \Drupal\Core\Field\EntityReferenceFieldItemList $items
+     */
     $items = $entity->get($field_name);
 
     // Default value.

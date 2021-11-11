@@ -1,4 +1,8 @@
 vactory_locator.locator:
+  css:
+    theme:
+      scss/agencies.css: {}
+
   js:
     https://cdn.rawgit.com/googlemaps/js-marker-clusterer/gh-pages/src/markerclusterer.js: {type: external }
     js/locator.js: {}

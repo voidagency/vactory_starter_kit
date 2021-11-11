@@ -1,0 +1,93 @@
+name: 'Nodes types - Last nodes Based on Content Type Filtered By Taxonomy Or Entity Queue.'
+multiple: FALSE
+category: 'Nodes'
+enabled: TRUE
+fields:
+  key:
+    type: text
+    label: 'key'
+    options:
+      '#default_value': 'last_nodes_listing'
+      '#access': false
+  group_introduction:
+    g_title: 'Introduction'
+    title:
+      type: text
+      label: 'Titre'
+    description:
+      type: text_format
+      label: 'Description'
+      options:
+        '#format': 'full_html'
+    cta:
+      type: url_extended
+      label: 'Call to action'
+  group_display_mode:
+    g_title: 'Display Mode'
+    view_mode:
+      type: select
+      label: 'View Mode'
+      options:
+        '#empty_option': '- Select View Mode -'
+        '#options':
+          - 'card': 'Card'
+          - 'card_inline': 'Card Inline'
+          - 'mosaique': 'Mosaique'
+    display_mode:
+      type: select
+      label: 'Display Mode'
+      options:
+        '#empty_option': '- Select a Display Mode -'
+        '#options':
+          - 'col_2': 'Two Columns'
+          - 'col_3': 'Three Columns'
+          - 'slider': 'Slider'
+    data_to_show:
+      type: number
+      label: 'Nombre des élémenets à afficher'
+    data_to_scroll:
+      type: number
+      label: 'Nombre des éléments à scroller'
+    auto_play:
+      type: checkbox
+      label: 'Auto Slide'
+  content_type_or_entity_queue:
+    type: radios
+    options:
+      '#options':
+        - 'Utiliser Content type filtré par taxonomie.'
+        - 'Utiliser entity queue.'
+  group_content_type:
+    g_title: 'Content type'
+    content_type:
+      type: entity_autocomplete
+      label: 'Content Type'
+      options:
+        '#target_type': node_type
+        '#required': TRUE
+
+    total_items_to_show:
+      type: number
+      label: 'Total of items to show'
+  group_taxonomy:
+    g_title: 'Filtered by taxonomy'
+    taxonomy_field_name:
+      type: textfield
+      label: 'Taxonomy Field name'
+    taxonomy_item:
+      type: entity_autocomplete
+      label: 'Taxonomy term'
+      options:
+        '#target_type': taxonomy_term
+  group_entity_queue:
+    g_title: 'Entity Queue'
+    entity_queue:
+      type: text
+      label: 'Entity Queue - Machine Name'
+  group_empty_message:
+    g_title: 'empty message'
+    empty_msg:
+      type: text_format
+      label: 'Description'
+      options:
+        '#format': 'full_html'

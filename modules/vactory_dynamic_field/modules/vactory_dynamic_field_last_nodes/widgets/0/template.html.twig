@@ -1,0 +1,65 @@
+{% set item = content.0 %}
+{% if item.node_ids is not empty %}
+  {% if item.group_introduction.title is not empty %}
+    <h2>{{ item.group_introduction.title }}</h2>
+  {% endif %}
+  {% if item.group_introduction.description is not empty %}
+    {{ item.group_introduction.description|raw }}
+  {% endif %}
+  {% set display_mode = item.group_display_mode.display_mode is not empty ? item.group_display_mode.display_mode : '' %}
+  {% set view_mode = item.group_display_mode.view_mode is defined and item.group_display_mode.view_mode is not empty ? item.group_display_mode.view_mode : '' %}
+  {% if display_mode is not empty %}
+    {% if display_mode == 'col_2' or display_mode == 'col_3' %}
+      {% set col = display_mode == 'col_2' ? 6 : 4 %}
+      <div class="container">
+        <div class="row">
+          {% for node in item.node_ids %}
+            <div class="col-{{ col }} mt-2">
+              {{ vactory_render('entity', 'node', node, '', view_mode) }}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% elseif display_mode == 'slider' %}
+      {% set data_to_show = item.group_display_mode.data_to_show is defined and item.group_display_mode.data_to_show is not empty ? item.group_display_mode.data_to_show : 1 %}
+      {% set data_to_scroll = item.group_display_mode.data_to_scroll is defined and item.group_display_mode.data_to_scroll is not empty ? item.group_display_mode.data_to_scroll : 1 %}
+      {% set auto_play = item.group_display_mode.data_to_scroll is defined and item.group_display_mode.auto_play > 0 ? 'true' : 'false' %}
+      <div class="vf-slider vf-slider--variant1">
+        <div class="vf-slider__items items vf-slick-slider slick-arrows-mobile"
+             data-toshow="{{ data_to_show }}"
+             data-toscroll="{{ data_to_scroll }}"
+             data-autoplay="{{ auto_play }}"
+             data-arrows="true"
+             data-mobile-arrows="true"
+        >
+          {% for node in item.node_ids %}
+            <div class="slick-item">
+              <div class="vf-slider__item">
+                {{ vactory_render('entity', 'node', node, '', view_mode) }}
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+        <div class="slick-controls d-lg-none"></div>
+      </div>
+    {% endif %}
+  {% endif %}
+  {% set link_attributes = create_attribute() %}
+  {% set link_attributes = item.group_introduction.cta.attributes.id is not empty ? link_attributes.setAttribute('id', item.group_introduction.cta.attributes.id ) : link_attributes %}
+  {% set link_attributes = item.group_introduction.cta.attributes.class is not empty ? link_attributes.setAttribute('class', item.group_introduction.cta.attributes.class ~ 'btn btn-white') : link_attributes.setAttribute('class', 'btn btn-white') %}
+  {% set link_attributes = item.group_introduction.cta.attributes.target is not empty ? link_attributes.setAttribute('target', item.group_introduction.cta.attributes.target ) : link_attributes %}
+  {% set link_attributes = item.group_introduction.cta.attributes.rel is not empty ? link_attributes.setAttribute('rel', item.group_introduction.cta.attributes.rel ) : link_attributes %}
+  {% if item.group_introduction.cta.url is not empty and item.group_introduction.cta.title is not empty %}
+    <div class="text-center mt-2">
+      <a
+        class="btn btn-primary"
+        href="{{ item.group_introduction.cta.url  }}" {{ link_attributes }}>
+        {{ item.group_introduction.cta.title }}
+      </a>
+    </div>
+  {% endif %}
+{% else %}
+  {% if item.group_empty_message.empty_msg is not empty %}
+    {{ item.group_empty_message.empty_msg|raw }}
+  {% endif %}
+{% endif %}

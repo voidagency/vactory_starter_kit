@@ -1,0 +1,26 @@
+<?php
+
+/**
+ * @file
+ * Module related hooks.
+ */
+
+/**
+ * Implements hook_page_attachments().
+ *
+ * Fix jquery colorpicker css.
+ */
+function vactory_jquerycolorpicker_css_fix_page_attachments(array &$attachments) {
+  $current_theme = \Drupal::theme()->getActiveTheme()->getName();
+  $admin_theme = \Drupal::config('system.theme')->get('admin');
+  if ($current_theme == $admin_theme) {
+    $attachments['#attached']['library'][] = 'vactory_jquerycolorpicker_css_fix/colorpicker-fix-css';
+  }
+}
+
+function vactory_jquerycolorpicker_css_fix_js_library_info_alter(&$libraries,$extension){
+  //We need to add this module as a dependency of the flot module.
+  if ($extension == "core") {
+    $libraries['drupal']['dependencies'][] = 'jquery_colorpicker/element';
+  }
+}

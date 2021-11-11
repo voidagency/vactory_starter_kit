@@ -3,6 +3,7 @@
 namespace Drupal\vactory_header\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Form\FormStateInterface;
 
@@ -44,7 +45,6 @@ class VactoryHeaderBlock6 extends BlockBase {
     ];
 
     $build = [
-      "#cache" => ["max-age" => 0],
       "#theme" => "block_vactory_header6",
       "#user"  => [
         'id'   => $user->id(),
@@ -67,6 +67,13 @@ class VactoryHeaderBlock6 extends BlockBase {
     $config = \Drupal::service('config.factory')
       ->getEditable('vactory_header.settings');
     $config->set('variante_number', 6)->save();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheMaxAge() {
+    return Cache::PERMANENT;
   }
 
 }

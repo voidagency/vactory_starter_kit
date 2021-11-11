@@ -1,0 +1,97 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.card_inline
+    - field.field.node.announcement.field_ad_content
+    - field.field.node.announcement.field_ad_display
+    - field.field.node.announcement.field_already_approved
+    - field.field.node.announcement.field_city
+    - field.field.node.announcement.field_country
+    - field.field.node.announcement.field_discipline
+    - field.field.node.announcement.field_event_date_end
+    - field.field.node.announcement.field_event_date_start
+    - field.field.node.announcement.field_facebook_account
+    - field.field.node.announcement.field_site
+    - field.field.node.announcement.field_twitter_account
+    - field.field.node.announcement.field_typology
+    - field.field.node.announcement.field_vactory_email
+    - field.field.node.announcement.field_vactory_media
+    - field.field.node.announcement.field_vactory_name
+    - field.field.node.announcement.field_vactory_phone
+    - image.style.media_library
+    - node.type.announcement
+  module:
+    - media
+    - smart_trim
+    - user
+id: node.announcement.card_inline
+targetEntityType: node
+bundle: announcement
+mode: card_inline
+content:
+  field_ad_content:
+    type: smart_trim
+    weight: 5
+    region: content
+    label: hidden
+    settings:
+      trim_length: 15
+      trim_type: words
+      trim_suffix: ...
+      wrap_class: trimmed
+      more_text: More
+      more_class: more-link
+      wrap_output: false
+      more_link: false
+      trim_options:
+        text: false
+        trim_zero: false
+      summary_handler: full
+    third_party_settings: {  }
+  field_discipline:
+    type: entity_reference_label
+    weight: 1
+    region: content
+    label: hidden
+    settings:
+      link: true
+    third_party_settings: {  }
+  field_typology:
+    type: entity_reference_label
+    weight: 2
+    region: content
+    label: hidden
+    settings:
+      link: true
+    third_party_settings: {  }
+  field_vactory_media:
+    weight: 4
+    label: hidden
+    settings:
+      image_style: media_library
+      image_link: content
+    third_party_settings: {  }
+    type: media_thumbnail
+    region: content
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  field_ad_display: true
+  field_already_approved: true
+  field_city: true
+  field_country: true
+  field_event_date_end: true
+  field_event_date_start: true
+  field_facebook_account: true
+  field_site: true
+  field_twitter_account: true
+  field_vactory_email: true
+  field_vactory_name: true
+  field_vactory_phone: true
+  langcode: true
+  search_api_excerpt: true

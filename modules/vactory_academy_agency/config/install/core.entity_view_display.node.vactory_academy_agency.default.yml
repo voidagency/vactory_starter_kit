@@ -1,9 +1,6 @@
 langcode: en
 status: true
 dependencies:
-  enforced:
-    module:
-      - vactory_academy_agency
   config:
     - core.entity_view_display.comment.comment.default
     - field.field.node.vactory_academy_agency.body
@@ -23,8 +20,11 @@ dependencies:
     - field.field.node.vactory_academy_agency.field_vactory_paragraphs
     - field.field.node.vactory_academy_agency.field_vactory_seo_status
     - field.field.node.vactory_academy_agency.field_vactory_theme
-    - field.field.node.vactory_academy_agency.field_vactory_youtube_videos
+    - field.field.node.vactory_academy_agency.field_vactory_youtube_media
     - node.type.vactory_academy_agency
+  enforced:
+    module:
+      - vactory_academy_agency
   module:
     - comment
     - datetime
@@ -175,13 +175,13 @@ content:
     third_party_settings: {  }
     type: entity_reference_label
     region: content
-  field_vactory_youtube_videos:
-    weight: 117
+  field_vactory_youtube_media:
+    weight: 119
     label: above
     settings:
-      link_to_entity: false
+      link: true
     third_party_settings: {  }
-    type: string
+    type: entity_reference_label
     region: content
   links:
     weight: 100
@@ -191,4 +191,6 @@ content:
 hidden:
   addtoany: true
   langcode: true
+  notification_message: true
+  notification_title: true
   search_api_excerpt: true

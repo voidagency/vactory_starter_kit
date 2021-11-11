@@ -1,0 +1,7 @@
+langcode: en
+status: true
+dependencies: {  }
+name: 'Locator - City'
+vid: locator_city
+description: 'City for locator items'
+weight: 0

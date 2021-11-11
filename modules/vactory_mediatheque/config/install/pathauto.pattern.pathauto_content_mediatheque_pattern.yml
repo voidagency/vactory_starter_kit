@@ -1,0 +1,34 @@
+langcode: fr
+status: true
+dependencies:
+  module:
+    - language
+    - node
+id: pathauto_content_mediatheque_pattern
+label: 'Pathauto Content mediatheque Pattern'
+type: 'canonical_entities:node'
+pattern: '/mediatheque/[node:title]'
+selection_criteria:
+  6d0ce17e-ce56-4e61-8661-dd073f249d04:
+    id: node_type
+    bundles:
+      vactory_mediatheque: vactory_mediatheque
+    negate: false
+    context_mapping:
+      node: node
+    uuid: 6d0ce17e-ce56-4e61-8661-dd073f249d04
+  45d37c06-f680-4f5f-a02e-6db65367e84f:
+    id: language
+    langcodes:
+      ar: ar
+      en: en
+      fr: fr
+    negate: false
+    context_mapping:
+      language: 'node:langcode:language'
+    uuid: 45d37c06-f680-4f5f-a02e-6db65367e84f
+selection_logic: and
+weight: -10
+relationships:
+  'node:langcode:language':
+    label: Language

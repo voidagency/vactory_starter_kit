@@ -1,4 +1,4 @@
-name: 'C49 - Youtube Video Sticky on Scroll'
+name: 'C49 - Video sticky on scroll'
 multiple: FALSE
 category: 'floated'
 enabled: TRUE
@@ -15,13 +15,13 @@ fields:
       '#required': TRUE
   image_alt:
     type: text
-    label: 'Text alternatif'    
-  video:
-    type: text
-    label: 'Youtube Video URL'
-    options:
-      '#description': '<b><i class="link">How ?</i></b><br><b>URL Example</b>: https://www.youtube.com/watch?v=BZDyr2OpWBU <br> <b>insert youtube video link</b>: BZDyr2OpWBU'
-      '#required': TRUE
+    label: 'Text alternatif'
+  # video:
+  #   type: text
+  #   label: 'Youtube Video URL'
+  #   options:
+  #     '#description': '<b><i class="link">How ?</i></b><br><b>URL Example</b>: https://www.youtube.com/watch?v=BZDyr2OpWBU <br> <b>insert the full  youtube video link</b>'
+  #     '#required': TRUE
   video_id:
     type: text
     label: 'Youtube Video ID'

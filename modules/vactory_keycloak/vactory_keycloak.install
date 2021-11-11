@@ -1,0 +1,22 @@
+<?php
+
+/**
+ * @file
+ * Install, update, and uninstall functions for the Social Auth Keycloak module.
+ */
+
+use Drupal\social_auth\Controller\SocialAuthController;
+
+/**
+ * Implements hook_install().
+ */
+function vactory_keycloak_install() {
+  SocialAuthController::setLoginButtonSettings('vactory_keycloak', 'vactory_keycloak.redirect_to_kc', 'img/keycloak_logo.svg');
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function vactory_keycloak_uninstall() {
+  SocialAuthController::deleteLoginButtonSettings('vactory_keycloak');
+}

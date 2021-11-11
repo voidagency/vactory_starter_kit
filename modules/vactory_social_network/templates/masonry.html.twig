@@ -1,0 +1,96 @@
+
+{% set intro = (content.field_vactory_excerpt.0 is not empty) ? content.field_vactory_excerpt.0 : '' %}
+{% set image = addAttributes(content.field_vactory_media_image.0, {'class': ['vf-card__image', 'img-fluid']}) %}
+{% set video = content.field_vactory_media.0 is defined ? content.field_vactory_media.0['#media'].field_media_oembed_video.0.value : null %}
+{% set is_gif_image =  image.0['#meta'].target_id is not empty and file_object(image.0['#meta'].target_id).filemime.value == 'image/gif' %}
+{% set gif_url = is_gif_image ? image.0['#srcset'].original : '' %}
+{% set lqip_image = image.0['#srcset'].lqip %}
+{% set title = label %}
+{% if classes is not defined %}
+  {% set classes = [] %}
+{% endif %}
+{% set classes = classes|merge(['card']) %}
+{% set has_body = (content.body.0 is defined and content.body.0 is not empty) ? 1 : 0 %}
+{% set total_comments = elements.comment.0.comments|length - 3 %}
+{% set comment_to_show = 4 %}
+<article {{ attributes.addClass(classes) }}>
+  <div class="card-image__wrapper">
+    {% if not is_gif_image %}
+      {% if video is not empty %}
+        <a href='{{ video }}' data-fancybox class='video-play'>
+          {{ image }}
+        </a>
+      {% else %}
+        {{ image }}
+      {% endif %}
+    {% else %}
+      <picture class='lazy-wrapper'>
+        <img class="vf-card__image img-fluid lazyload" src="{{ lqip_image }}" data-src="{{ gif_url }}" alt="{{ image.0['#meta'].alt }}">
+      </picture>
+    {% endif %}
+  </div>
+  <div class="card-body">
+    {{ contextual_links }}
+    <div class="card-text">
+      <h6 class="card-title title_blue">
+        <span class="link font-semibold text-uppercase font-20">{{ title }}</span>
+      </h6>
+      {% if content.field_vactory_date is not empty %}
+        <i class="badge badge-light font-12">{{ content.field_vactory_date  }}</i>
+      {% endif %}
+        {% if has_body > 0 %}
+          {% if intro is not empty %}
+          {% set text = intro|render %}
+            {% set excerpt = text|length > 200 ? text|slice(0, 200) ~ '...' : text %}
+            {{ excerpt|raw }}
+          {% endif %}
+        {% else %}
+          <div class="{{ has_body > 0 ? '' : 'more-less-link' }}">
+            {% if intro is not empty %}
+              {{ noWrapper(intro) }}
+            {% endif %}
+          </div>
+        {% endif %}
+      <h6 class="card-subtitle mt-2">
+        {% for key,thematic in content.field_vactory_tags %}
+          {% if key matches '/^\\d+$/' %}
+            <span class="badge badge-primary">#{{ content.field_vactory_tags[key]['#title'] }}</span>
+          {% endif %}
+        {% endfor %}
+      </h6>
+    </div>
+    <div class='card-flag_wrapper d-sm-flex d-block justify-content-between align-items-center'>
+      <div class="d-flex align-items-center mb-2 mb-sm-0">
+        {{ content.flag_liked_content }}
+      </div>
+      {% if enable_comments > 0 %}
+        <div>
+          <a href="{{ url ~ '#comment-form' }}"><i class="icon-comment"></i> {{ 'Commenter'|t }}</a>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+  {% if enable_comments > 0 %}
+    {% if total_comments > 0 %}
+      <hr>
+    {% endif %}
+    <div class="pt-4 p-2 comment-container">
+      <div class="contents">
+        {% if content.comment.0 is defined  %}
+          {{ content.comment }}
+        {% endif %}
+      </div>
+      {% if total_comments > comment_to_show %}
+        <div class="gradient">
+        </div>
+      {% endif %}
+    </div>
+    <div>
+      {% if total_comments > comment_to_show %}
+        <div class="text-center mb-2">
+          <a href="{{ url ~ '#comments-section' }}"><i>{{ 'Plus de commentaires ...' }}</i></a>
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
+</article>

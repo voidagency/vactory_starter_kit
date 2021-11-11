@@ -1,5 +1,5 @@
 name: Vactory Webform Custom
-description: Provide webform options
+description: Provide webform options & different submodules that enhence webform contrib module.
 type: module
 dependencies:
   - webform

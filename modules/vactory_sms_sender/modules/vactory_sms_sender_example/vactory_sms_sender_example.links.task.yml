@@ -1,0 +1,4 @@
+vactory_sms_sender_example:
+  route_name: vactory_sms_sender_example
+  title: Vactory SMS Sender Example
+  base_route: vactory_sms_sender

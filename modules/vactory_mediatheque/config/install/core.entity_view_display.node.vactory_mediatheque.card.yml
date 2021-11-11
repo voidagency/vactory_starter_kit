@@ -1,0 +1,78 @@
+uuid: 5c236ba2-eb4e-4fd9-83fe-176e2433bee3
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.card
+    - field.field.node.vactory_mediatheque.field_mediatheque_theme
+    - field.field.node.vactory_mediatheque.field_mediatheque_video
+    - field.field.node.vactory_mediatheque.field_vactory_excerpt
+    - field.field.node.vactory_mediatheque.field_vactory_media
+    - field.field.node.vactory_mediatheque.field_vactory_media_document
+    - field.field.node.vactory_mediatheque.field_vactory_paragraphs
+    - node.type.vactory_mediatheque
+  module:
+    - media_responsive_thumbnail
+    - text
+    - user
+_core:
+  default_config_hash: B6k96itzqfCFkaIRchm8N9YIAsAT602zsNkO15byotY
+id: node.vactory_mediatheque.card
+targetEntityType: node
+bundle: vactory_mediatheque
+mode: card
+content:
+  field_mediatheque_theme:
+    weight: 1
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_mediatheque_video:
+    type: entity_reference_entity_view
+    weight: 4
+    region: content
+    label: hidden
+    settings:
+      link: true
+      view_mode: default
+    third_party_settings: {  }
+  field_vactory_excerpt:
+    weight: 2
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_vactory_media:
+    weight: 3
+    label: hidden
+    settings:
+      responsive_image_style: ''
+      image_link: ''
+    third_party_settings: {  }
+    type: media_responsive_thumbnail
+    region: content
+  field_vactory_media_document:
+    type: entity_reference_entity_view
+    weight: 5
+    region: content
+    label: hidden
+    settings:
+      link: true
+      view_mode: default
+    third_party_settings: {  }
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  field_vactory_paragraphs: true
+  langcode: true
+  notification_message: true
+  notification_title: true
+  search_api_excerpt: true

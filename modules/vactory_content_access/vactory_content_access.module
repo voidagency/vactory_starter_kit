@@ -1,0 +1,235 @@
+<?php
+
+/**
+ * @file
+ * Contain related hooks.
+ */
+
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Field\FieldStorageDefinitionInterface;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\node\Entity\Node;
+use Drupal\node\Entity\NodeType;
+use Drupal\node\NodeInterface;
+use Drupal\user\Entity\User;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function vactory_content_access_entity_base_field_info(EntityTypeInterface $entity_type) {
+  $fields = [];
+  if ($entity_type->id() == 'node') {
+    $fields['field_content_access_users'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Utilisateurs supplémentaires'))
+      ->setSettings([
+        'target_type' => 'user',
+      ])
+      ->setTranslatable(TRUE)
+      ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
+      ->setDisplayOptions('form', [
+        'type' => 'entity_reference_autocomplete',
+        'weight' => -6,
+        'settings' => [],
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayConfigurable('field', TRUE);
+
+    $fields['field_content_access_roles'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Roles'))
+      ->setSettings([
+        'target_type' => 'user_role',
+      ])
+      ->setTranslatable(TRUE)
+      ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => -6,
+        'settings' => [],
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayConfigurable('field', TRUE);
+
+    $fields['field_content_access_groups'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Groupe utilisateurs'))
+      ->setSettings([
+        'target_type' => 'taxonomy_term',
+        'handler_settings' => ['target_bundles' => ['taxonomy_term' => 'users_groups']],
+      ])
+      ->setTranslatable(TRUE)
+      ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => -6,
+        'settings' => [],
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayConfigurable('field', TRUE);
+  }
+  return $fields;
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function vactory_content_access_form_node_form_alter(&$form) {
+  $config = \Drupal::config('vactory_content_access.settings');
+  $bundle = \Drupal::routeMatch()->getRawParameters()->get('node_type');
+  if (!isset($bundle)) {
+    $node = \Drupal::routeMatch()->getParameter('node');
+    if (isset($node) && $node instanceof NodeInterface) {
+      $bundle = $node->bundle();
+    }
+  }
+  $style = 'display: none';
+  if (isset($bundle) && !empty($bundle)) {
+    $is_access_content = $config->get($bundle . '_content_type');
+    if (isset($is_access_content) && $is_access_content == 1) {
+      $style = '';
+    }
+  }
+  $form['node_content_access'] = [
+    '#type'        => 'details',
+    '#title'       => t('Content Access settings'),
+    '#group'       => 'advanced',
+    '#attributes' => [
+      'style' => $style,
+    ],
+    '#open'        => FALSE,
+    '#access'      => \Drupal::currentUser()
+      ->hasPermission('administer content access'),
+  ];
+  $form['field_content_access_users']['#group'] = 'node_content_access';
+  $form['field_content_access_roles']['#group'] = 'node_content_access';
+  $form['field_content_access_groups']['#group'] = 'node_content_access';
+}
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function vactory_content_access_preprocess_node(&$variables) {
+  $node = $variables['node'];
+  if (!empty($node) && isset($node)) {
+    $config = \Drupal::config('vactory_content_access.settings');
+    $node_types = NodeType::loadMultiple();
+    $types = [];
+    foreach ($node_types as $key => $value) {
+      $is_access_content = $config->get($key . '_content_type');
+      if (isset($is_access_content) && $is_access_content == 1) {
+        array_push($types, $key);
+      }
+    }
+    if (in_array($node->bundle(), $types)) {
+      $is_accessible_services = \Drupal::service('vactory_content_access.access_manager');
+      $is_accessible = $is_accessible_services->isAccessible($node, $types, 'field_content_access_groups', 'field_content_access_users', 'field_content_access_roles', NULL);
+      if ($variables['view_mode'] == 'full') {
+        if (!$is_accessible) {
+          $redirect_to = $config->get($node->bundle() . '_redirect_to');
+          if (isset($redirect_to) && !empty($redirect_to)) {
+            if ($redirect_to == 403) {
+              throw new AccessDeniedHttpException();
+            }
+            else {
+              throw new NotFoundHttpException();
+            }
+          }
+          else {
+            throw new NotFoundHttpException();
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_node_access_records().
+ */
+function vactory_content_access_node_access_records(NodeInterface $node) {
+  $grants = [];
+  $config = \Drupal::config('vactory_content_access.settings');
+  $node_types = NodeType::loadMultiple();
+  $types = [];
+  foreach ($node_types as $key => $value) {
+    $is_access_listing = $config->get($key . '_listing_access');
+    if (isset($is_access_listing) && $is_access_listing == 1) {
+      array_push($types, $key);
+    }
+  }
+  if (in_array($node->bundle(), $types)) {
+    $users = User::loadMultiple();
+    $is_accessible_services = \Drupal::service('vactory_content_access.access_manager');
+    foreach ($users as $user) {
+      $is_accessible = $is_accessible_services->isAccessible($node, $types, 'field_content_access_groups', 'field_content_access_users', 'field_content_access_roles', $user);
+      if (!$is_accessible) {
+        $grants[] = [
+          'realm' => 'vactory_content_access',
+          'gid' => $user->id(),
+          'grant_view' => 0,
+          'grant_update' => 0,
+          'grant_delete' => 0,
+        ];
+      }
+      else {
+        $grants[] = [
+          'realm' => 'vactory_content_access',
+          'gid' => $user->id(),
+          'grant_view' => 1,
+          'grant_update' => 0,
+          'grant_delete' => 0,
+        ];
+      }
+    }
+  }
+  return $grants;
+}
+
+/**
+ * Implements hook_node_grants().
+ */
+function vactory_content_access_node_grants(AccountInterface $account, $op) {
+  $grants = [];
+  if ($op == 'view') {
+    $grants['vactory_content_access'][] = $account->id();
+  }
+  return $grants;
+}
+
+/**
+ * Rebuild nodes access function.
+ */
+function rebuild_nodes_access($nids, &$context) {
+  $message = 'Rebuild access ALL Nodes ...';
+  $results = [];
+  if (!empty($nids)) {
+    foreach ($nids as $nid) {
+      $node = Node::load($nid);
+      if (isset($node)) {
+        $results[] = $node->save();
+      }
+    }
+  }
+  $context['message'] = $message;
+  $context['results'] = $results;
+}
+
+/**
+ * Rebuild nodes access function finished.
+ */
+function rebuild_nodes_access_finished($success, $results, $operations) {
+  if ($success) {
+    $message = \Drupal::translation()->formatPlural(
+      count($results),
+      'One node processed.', '@count node processed.'
+    );
+  }
+  else {
+    $message = t('Finished with an error.');
+  }
+  \Drupal::messenger()->addStatus($message);
+}

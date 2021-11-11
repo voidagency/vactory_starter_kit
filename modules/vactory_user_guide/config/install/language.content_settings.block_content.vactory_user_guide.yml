@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - block_content.type.vactory_user_guide
+  enforced:
+    module:
+      - vactory_user_guide
+  module:
+    - content_translation
+third_party_settings:
+  content_translation:
+    enabled: true
+id: block_content.vactory_user_guide
+target_entity_type_id: block_content
+target_bundle: vactory_user_guide
+default_langcode: site_default
+language_alterable: true

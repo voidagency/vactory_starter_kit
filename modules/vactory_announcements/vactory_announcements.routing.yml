@@ -1,0 +1,31 @@
+vactory_announcements.add_announcement:
+  path: '/ajouter-annonce'
+  defaults:
+    _form: '\Drupal\vactory_announcements\Form\AddAnnouncementsForm'
+    _title: 'Add announcement form'
+  requirements:
+    _access: 'TRUE'
+vactory_announcements.admin_settings:
+  path: '/admin/config/vactory_announcements'
+  defaults:
+    _form: '\Drupal\vactory_announcements\Form\ModuleConfigurationForm'
+    _title: 'vactory_announcements configuration screen'
+  requirements:
+    _permission: 'administer site configuration'
+# Delete a node on the remote server.
+#vactory_announcements.annonce_delete:
+#  path: '/ad-delete/{nid}'
+#  defaults:
+#    _title: 'Ad delete'
+#    _controller: '\Drupal\vactory_announcements\Controller\AdController::ad_delete'
+#  requirements:
+#   _access: 'TRUE'
+# Delete a node on the remote server.
+vactory_announcements.annonce_delete:
+  path: '/vactory_announcements/confirm_delete/{id}'
+  defaults:
+    _form: '\Drupal\vactory_announcements\Form\ConfirmAnnouncementsDeleteForm'
+    _title: 'Ad Confirm Deletion'
+  requirements:
+    _access: 'TRUE'
+    id: ^\d+$

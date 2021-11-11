@@ -1,0 +1,20 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_mediatheque_date
+    - node.type.vactory_mediatheque
+  module:
+    - datetime
+id: node.vactory_mediatheque.field_mediatheque_date
+field_name: field_mediatheque_date
+entity_type: node
+bundle: vactory_mediatheque
+label: Date
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: datetime

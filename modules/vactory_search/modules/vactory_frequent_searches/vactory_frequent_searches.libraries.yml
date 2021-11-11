@@ -1,0 +1,5 @@
+vactory_frequent_searches.settings_form:
+  css:
+    theme:
+      css/frequent-searches.css: {}
+

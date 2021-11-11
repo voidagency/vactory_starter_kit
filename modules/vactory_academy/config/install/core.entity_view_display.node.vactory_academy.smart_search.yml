@@ -17,7 +17,7 @@ dependencies:
     - field.field.node.vactory_academy.field_vactory_paragraphs
     - field.field.node.vactory_academy.field_vactory_seo_status
     - field.field.node.vactory_academy.field_vactory_theme
-    - field.field.node.vactory_academy.field_vactory_youtube_videos
+    - field.field.node.vactory_academy.field_vactory_youtube_media
     - node.type.vactory_academy
     - responsive_image.styles.vactory_three_cols
   enforced:
@@ -78,7 +78,7 @@ hidden:
   field_vactory_paragraphs: true
   field_vactory_seo_status: true
   field_vactory_theme: true
-  field_vactory_youtube_videos: true
+  field_vactory_youtube_media: true
   flag_favorite_academy: true
   langcode: true
   notification_message: true

@@ -1,0 +1,25 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - block_content.type.vactory_sondage
+    - field.storage.block_content.body
+  enforced:
+    module:
+      - vactory_sondage
+  module:
+    - text
+id: block_content.vactory_sondage.body
+field_name: body
+entity_type: block_content
+bundle: vactory_sondage
+label: Description
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  display_summary: false
+  required_summary: false
+field_type: text_with_summary

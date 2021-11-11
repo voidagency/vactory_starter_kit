@@ -1,0 +1,14 @@
+vactory_two_factors_auth.otp_form:
+  path: '/espace-prive/verify-user/{uid}'
+  defaults:
+    _form: '\Drupal\vactory_two_factors_auth\Form\TwoFactorsOTPForm'
+    _title: 'Verification of identity'
+  requirements:
+    _permission: 'access content'
+vactory_two_factors_auth.settings:
+  path: '/admin/config/people/vactory_espace_prive/two-factors-auth'
+  defaults:
+    _form: '\Drupal\vactory_two_factors_auth\Form\TwoFactorsOTPSettings'
+    _title: 'Vactory Two Factors Auth Settings'
+  requirements:
+    _permission: 'administer site configurationt'

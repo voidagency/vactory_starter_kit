@@ -54,14 +54,23 @@
 
 {# Paragraph classes #}
 
-{% set classes = [
+{% set paragraph_classes = [
   'paragraph',
+  'paragraph--block',
   'paragraph--type--' ~ paragraph.bundle|clean_class,
   view_mode ? 'paragraph--view-mode--' ~ view_mode|clean_class,
   paragraph_hide
 ] %}
 
+{% set paragraph_background_classes = [
+  'paragraph__background-inner',
+  paragraph_hide,
+  bg_position_classes,
+] %}
+
 {% set title_classes = [
+  'paragraph__title',
+  'paragraph--block__title',
   'title',
 ] %}
 
@@ -82,31 +91,28 @@
 {% set background_color = paragraph.field_background_color and paragraph.field_background_color.color is not empty ? paragraph.field_background_color.color|lower : '' %}
 {# Set background image if exist #}
 {% set background_image_url = paragraph.paragraph_background_image and paragraph.paragraph_background_image.0.value.target_id is not empty ? get_image_url(paragraph.paragraph_background_image.0.value.target_id) : '' %}
-{% set bg_classes = [
-  paragraph_hide,
-  bg_position_classes
-] %}
+
 
 {% if background_image_url is not empty and background_color is empty %}
-  {% set bg_classes = bg_classes|merge(['has-background--image', parallax_class]) %}
+  {% set paragraph_background_classes = paragraph_background_classes|merge(['has-background--image', parallax_class]) %}
   {% set style = 'background-image: url(' ~ background_image_url ~ ')' %}
 {% elseif background_color is not empty and background_color != "#ff0000" and background_image_url is empty %}
-  {% set bg_classes = bg_classes|merge(['has-background--solid']) %}
+  {% set paragraph_background_classes = paragraph_background_classes|merge(['has-background--solid']) %}
   {% set style = 'background-color: ' ~ background_color %}
 {% elseif background_color is not empty and background_image_url is not empty %}
   {#  In Case background_color and background_image both set#}
-  {% set bg_classes = bg_classes|merge(['has-background--image', 'has-background--solid', parallax_class]) %}
+  {% set paragraph_background_classes = paragraph_background_classes|merge(['has-background--image', 'has-background--solid', parallax_class]) %}
   {% set style = background_color != "#ff0000" ? 'background-color: ' ~ background_color ~ '; background-image: url(' ~ background_image_url ~ ')' : 'background-image: url(' ~ background_image_url ~ ')' %}
 {% endif %}
 
 {% if background_image_url is not empty or (background_color is not empty and background_color != "#ff0000") %}
-  <div {{ background_attribute.addClass(bg_classes) }} style="{{ style }}">
+  <div {{ background_attribute.addClass(paragraph_background_classes) }} style="{{ style }}">
 {% endif %}
 
 {# Paragraph content #}
 
 {% block paragraph %}
-  <div{{ attributes.addClass(classes) }}>
+  <div{{ attributes.addClass(paragraph_classes) }}>
     <div class="{{ containerClasses }}">
       {% if content.field_vactory_flag.0['#markup'] == 1 %}
         <h2{{ title_attributes.addClass(title_classes) }}>
@@ -115,12 +121,12 @@
       {% endif %}
       {{ title_suffix }}
       {% if content.field_vactory_body.0 is defined %}
-        <div class="block-intro">
+        <div class="paragraph--block__intro">
           {{ noWrapper(hideLabel(addAttributes(content.field_vactory_body))) }}
         </div>
       {% endif %}
       {% if content.field_vactory_block|default %}
-        <div class="">
+        <div class="paragraph--block__content">
           {{ content.field_vactory_block }}
         </div>
       {% endif %}

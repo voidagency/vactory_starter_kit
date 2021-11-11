@@ -1,0 +1,36 @@
+vactory_quiz.answers_modal_form:
+  path: '/admin/config/quiz-answers-modal-form'
+  defaults:
+    _title: 'Quiz Answers Modal Form'
+    _controller: '\Drupal\vactory_quiz\Controller\QuizAnswersModalFormController::openAnswersModalForm'
+  requirements:
+    _access: 'TRUE'
+  options:
+    _admin_route: TRUE
+vactory_quiz.get:
+  path: '/api/quiz_history/get'
+  defaults:
+    _controller: '\Drupal\vactory_quiz\Controller\QuizApiController::getQuizHistory'
+  methods:  [GET]
+  requirements:
+    _permission: 'access content'
+  options:
+    _auth: ['oauth2']
+    _is_jsonapi: 1
+vactory_quiz.post:
+  path: 'quiz_history/post'
+  defaults:
+    _controller: '\Drupal\vactory_quiz\Controller\QuizApiController::postQuiz'
+  methods:  [POST]
+  requirements:
+    _permission: 'access content'
+  options:
+    _auth: ['oauth2']
+    _is_jsonapi: 1
+vactory_quiz.settings:
+  path: 'admin/config/vactory_quiz'
+  defaults:
+    _form: '\Drupal\vactory_quiz\Form\QuizSettingsForm'
+    _title: 'Vactory Quiz Settings'
+  requirements:
+    _permission: 'administer site configuration'

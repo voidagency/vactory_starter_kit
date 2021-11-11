@@ -1,0 +1,28 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_medium_year
+    - node.type.vactory_mediatheque
+    - taxonomy.vocabulary.medium_year
+id: node.vactory_mediatheque.field_medium_year
+field_name: field_medium_year
+entity_type: node
+bundle: vactory_mediatheque
+label: 'Médiathèque Année'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      medium_year: medium_year
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

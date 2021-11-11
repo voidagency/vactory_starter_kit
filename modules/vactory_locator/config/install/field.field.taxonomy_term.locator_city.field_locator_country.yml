@@ -1,0 +1,28 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_locator_country
+    - taxonomy.vocabulary.locator_city
+    - taxonomy.vocabulary.locator_country
+id: taxonomy_term.locator_city.field_locator_country
+field_name: field_locator_country
+entity_type: taxonomy_term
+bundle: locator_city
+label: Country
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      locator_country: locator_country
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: locator_city
+field_type: entity_reference

@@ -1,0 +1,6 @@
+announcementsLib:
+  js:
+    assets/js/contact.js: {}
+  dependencies:
+    - core/jquery
+

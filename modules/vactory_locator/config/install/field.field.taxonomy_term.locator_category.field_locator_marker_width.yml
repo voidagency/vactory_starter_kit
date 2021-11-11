@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_locator_marker_width
+    - taxonomy.vocabulary.locator_category
+id: taxonomy_term.locator_category.field_locator_marker_width
+field_name: field_locator_marker_width
+entity_type: taxonomy_term
+bundle: locator_category
+label: 'Map marker width'
+description: 'Map marker width'
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: 'Size should be written in px'
+field_type: integer

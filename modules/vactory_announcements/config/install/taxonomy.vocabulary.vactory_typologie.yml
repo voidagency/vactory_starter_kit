@@ -1,0 +1,7 @@
+langcode: en
+status: true
+dependencies: {  }
+name: Typologie
+vid: vactory_typologie
+description: 'This Vocabulary is used for Announcements'
+weight: 0

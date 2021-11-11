@@ -115,19 +115,6 @@ class SettingsForm extends ConfigFormBase {
       ],
     ];
 
-    // Removed option "hide_on_single_item" - makes no sense when the taxonomy
-    // attachment feature is added, especially now that this module reverts to
-    // other breadcrumb builders (e.g., the path-based system breadcrumb) when
-    // it doesn't apply (can be reconsidered if there is a valid use case).
-    // $form['hide_on_single_item'] ...
-    //
-    $form['remove_home'] = [
-      '#type' => 'checkbox',
-      '#title' => $this->t('Remove "Home" link'),
-      '#default_value' => $config->get('remove_home'),
-      '#description' => $this->t('Regardless of option settings, this module always checks if the first breadcrumb is also the &lt;front&gt; page. Without this option set, it will always replace the link for that node- or view- based path of the &lt;front&gt; page (e.g., /node/1 or /node) with a link to the site home. Set this option TRUE to <i>delete</i> the &lt;front&gt; breadcrumb rather than replacing it.'),
-    ];
-
     $form['add_home'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Add "Home" link'),
@@ -242,25 +229,11 @@ class SettingsForm extends ConfigFormBase {
       '#default_value' => $config->get(VactoryBreadcrumbConstants::HOME_SEGMENT_TITLE),
     );
 
-    $fieldset_general[VactoryBreadcrumbConstants::INCLUDE_TITLE_SEGMENT] = array(
-      '#type' => 'checkbox',
-      '#title' => $this->t('Include the current page as a segment in the breadcrumb'),
-      '#description' => $this->t('Include the current page as the last segment in the breacrumb.'),
-      '#default_value' => $config->get(VactoryBreadcrumbConstants::INCLUDE_TITLE_SEGMENT),
-    );
-
     $fieldset_general[VactoryBreadcrumbConstants::TITLE_FROM_PAGE_WHEN_AVAILABLE] = array(
       '#type' => 'checkbox',
       '#title' => $this->t('Use the real page title when available'),
       '#description' => $this->t('Use the real page title when it is available instead of always deducing it from the URL.'),
       '#default_value' => $config->get(VactoryBreadcrumbConstants::TITLE_FROM_PAGE_WHEN_AVAILABLE),
-    );
-
-    $fieldset_general[VactoryBreadcrumbConstants::TITLE_SEGMENT_AS_LINK] = array(
-      '#type' => 'checkbox',
-      '#title' => $this->t('Make the page title segment a link'),
-      '#description' => $this->t('Prints the page title segment as a link.'),
-      '#default_value' => $config->get(VactoryBreadcrumbConstants::TITLE_SEGMENT_AS_LINK),
     );
 
     $fieldset_general[VactoryBreadcrumbConstants::LANGUAGE_PATH_PREFIX_AS_SEGMENT] = array(
@@ -306,7 +279,6 @@ class SettingsForm extends ConfigFormBase {
       ->set('append_member_page', (boolean) $form_state->getValue('append_member_page'))
       ->set('member_page_as_link', (boolean) $form_state->getValue('member_page_as_link'))
       ->set('home_as_site_name', (boolean) $form_state->getValue('home_as_site_name'))
-      ->set('remove_home', (boolean) $form_state->getValue('remove_home'))
       ->set('add_home', (boolean) $form_state->getValue('add_home'))
       ->set('vactory_menu_breadcrumb_menus', $form_state->getValue('vactory_menu_breadcrumb_menus'))
       ->set(VactoryBreadcrumbConstants::INCLUDE_INVALID_PATHS, $form_state->getValue(VactoryBreadcrumbConstants::INCLUDE_INVALID_PATHS))
@@ -314,8 +286,6 @@ class SettingsForm extends ConfigFormBase {
       ->set(VactoryBreadcrumbConstants::SEGMENTS_SEPARATOR, $form_state->getValue(VactoryBreadcrumbConstants::SEGMENTS_SEPARATOR))
       ->set(VactoryBreadcrumbConstants::INCLUDE_HOME_SEGMENT, $form_state->getValue(VactoryBreadcrumbConstants::INCLUDE_HOME_SEGMENT))
       ->set(VactoryBreadcrumbConstants::HOME_SEGMENT_TITLE, $form_state->getValue(VactoryBreadcrumbConstants::HOME_SEGMENT_TITLE))
-      ->set(VactoryBreadcrumbConstants::INCLUDE_TITLE_SEGMENT, $form_state->getValue(VactoryBreadcrumbConstants::INCLUDE_TITLE_SEGMENT))
-      ->set(VactoryBreadcrumbConstants::TITLE_SEGMENT_AS_LINK, $form_state->getValue(VactoryBreadcrumbConstants::TITLE_SEGMENT_AS_LINK))
       ->set(VactoryBreadcrumbConstants::TITLE_FROM_PAGE_WHEN_AVAILABLE, $form_state->getValue(VactoryBreadcrumbConstants::TITLE_FROM_PAGE_WHEN_AVAILABLE))
       ->set(VactoryBreadcrumbConstants::LANGUAGE_PATH_PREFIX_AS_SEGMENT, $form_state->getValue(VactoryBreadcrumbConstants::LANGUAGE_PATH_PREFIX_AS_SEGMENT))
       ->set(VactoryBreadcrumbConstants::USE_MENU_TITLE_AS_FALLBACK, $form_state->getValue(VactoryBreadcrumbConstants::USE_MENU_TITLE_AS_FALLBACK))

@@ -1,0 +1,7 @@
+vactory_wisepops.script:
+  js:
+    js/wisepops.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupalSettings

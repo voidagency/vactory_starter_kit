@@ -1,0 +1,59 @@
+{% if extra_fields.title is not empty %}
+  <h2>{{ extra_fields.title }}</h2>
+{% endif %}
+{% if extra_fields.description is not empty %}
+  {{ extra_fields.description|raw }}
+{% endif %}
+{% set display_mode = extra_fields.display_mode is not empty ? extra_fields.display_mode : '' %}
+{% if display_mode is not empty %}
+  {% if display_mode == 'col_2' or display_mode == 'col_3' %}
+    {% set col = display_mode == 'col_2' ? 6 : 4 %}
+    <div class="container">
+    <div class="row">
+    {% for item in content %}
+      {% set view_mode = item.view_mode is defined and item.view_mode is not empty ? item.view_mode : '' %}
+          <div class="col-{{ col }} mt-2">
+            {{ vactory_render('entity', 'node', item.node, '', view_mode) }}
+          </div>
+    {% endfor %}
+    </div>
+    </div>
+  {% elseif display_mode == 'slider' %}
+    {% set data_to_show = extra_fields.group_slider_config.data_to_show is defined and extra_fields.group_slider_config.data_to_show is not empty ? extra_fields.group_slider_config.data_to_show : 1 %}
+    {% set data_to_scroll = extra_fields.group_slider_config.data_to_scroll is defined and extra_fields.group_slider_config.data_to_scroll is not empty ? extra_fields.group_slider_config.data_to_scroll : 1 %}
+    {% set auto_play = extra_fields.group_slider_config.data_to_scroll is defined and extra_fields.group_slider_config.auto_play > 0 ? 'true' : 'false' %}
+    <div class="vf-slider vf-slider--variant1">
+      <div class="vf-slider__items items vf-slick-slider slick-arrows-mobile"
+           data-toshow="{{ data_to_show }}"
+           data-toscroll="{{ data_to_scroll }}"
+           data-autoplay="{{ auto_play }}"
+           data-arrows="true"
+           data-mobile-arrows="true"
+      >
+        {% for item in content %}
+          {% set view_mode = item.view_mode is defined and item.view_mode is not empty ? item.view_mode : '' %}
+          <div class="slick-item">
+            <div class="vf-slider__item">
+              {{ vactory_render('entity', 'node', item.node, '', view_mode) }}
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      <div class="slick-controls d-lg-none"></div>
+    </div>
+  {% endif %}
+{% endif %}
+{% set link_attributes = create_attribute() %}
+{% set link_attributes = extra_fields.cta.attributes.id is not empty ? link_attributes.setAttribute('id', extra_fields.cta.attributes.id ) : link_attributes %}
+{% set link_attributes = extra_fields.cta.attributes.class is not empty ? link_attributes.setAttribute('class', extra_fields.cta.attributes.class ~ 'btn btn-white') : link_attributes.setAttribute('class', 'btn btn-white') %}
+{% set link_attributes = extra_fields.cta.attributes.target is not empty ? link_attributes.setAttribute('target', extra_fields.cta.attributes.target ) : link_attributes %}
+{% set link_attributes = extra_fields.cta.attributes.rel is not empty ? link_attributes.setAttribute('rel', extra_fields.cta.attributes.rel ) : link_attributes %}
+{% if extra_fields.cta.url is not empty and extra_fields.cta.title is not empty %}
+  <div class="text-center mt-2">
+    <a
+      class="btn btn-primary"
+      href="{{ extra_fields.cta.url  }}" {{ link_attributes }}>
+      {{ extra_fields.cta.title }}
+    </a>
+  </div>
+{% endif %}

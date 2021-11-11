@@ -1,0 +1,3 @@
+services:
+  vactory_migrate_ui.generate_csv:
+    class: Drupal\vactory_migrate_ui\Services\GenerateCsvService

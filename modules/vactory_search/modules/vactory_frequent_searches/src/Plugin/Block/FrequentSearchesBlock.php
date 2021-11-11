@@ -94,7 +94,7 @@ class FrequentSearchesBlock extends BlockBase  {
     $config = $this->getConfiguration();
     $indexName = $this->getDerivativeId();
     $stats = $database->queryRange(
-      "SELECT keywords, numfound as num FROM vactory_frequent_searches WHERE language = :lang AND i_name=:i_name AND keywords != '' AND total_results != 0 ORDER BY num DESC",
+      "SELECT keywords, numfound as num FROM vactory_frequent_searches WHERE language = :lang AND i_name=:i_name AND keywords != '' AND total_results != 0 AND published = 1 ORDER BY num DESC",
       0,
       $config['num_phrases'],
       [

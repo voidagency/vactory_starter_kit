@@ -68,7 +68,7 @@ function vactory_frequent_searches_views_pre_render(ViewExecutable $view) {
             }
           }
           $count = (count($view->result) > 0) ? 1 : 0;
-          $search_controller->addKeywordToDatabasa($output, $count, $language->getId(), $index->id(), (int) $view->total_rows);
+          $search_controller->addKeywordToDatabase($output, $count, $language->getId(), $index->id(), (int) $view->total_rows);
         }
         else {
           // In case of the existing of the keywords, we update the count.

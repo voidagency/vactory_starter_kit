@@ -1,0 +1,83 @@
+.vf-slider-tab {
+  $this: &;
+  $_tab_color: #000 !default;
+  $_tab_bb_color: $gray !default; // bb=border-bottom
+
+  /* ------------------------- Style for the TAB items ------------------------ */
+  &__tab-wrapper {
+    position: relative;
+    margin-bottom: 30px;
+    border-bottom: 4px solid $_tab_bb_color;
+  }
+  &__tab-items {
+    position: relative;
+    padding: 0 40px;
+    overflow:hidden;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    white-space: nowrap;
+    display: flex;
+    justify-content: center;
+    list-style: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+  &__tab-item {
+    display: inline-block;
+    position: relative;
+    width: auto;
+    flex: 0 0 auto;
+    padding: 15px 10px;
+    background-color: transparent;
+    border: 0;
+    text-align: center;
+    font-size: 18px;
+    font-weight: bold;
+    color: $_tab_color;
+    opacity: .4;
+    transition: opacity linear .2s;
+    cursor: pointer;
+
+    &.is-active,
+    &:hover {
+      opacity: 1;
+    }
+  }
+  &__tab-indicator {
+    height: 4px;
+    background-color: $red;
+    display: inline-block;
+    position: absolute;
+    bottom: -4px;
+    transition: all linear .3s;
+    margin: 0 auto;
+    &.is-mobile {
+      left: 50% !important;
+      transform: translateX(-50%);
+    }
+  }
+
+  &__slider {
+    .slick-list {
+      margin: 0;
+    }
+  }
+}
+
+@include media-breakpoint-down(md) {
+  .vf-slider-tab {
+    &__tab-wrapper {
+      padding: 0 20px;
+    }
+    &__tab-items {
+      padding: 0;
+      justify-content: flex-start;
+    }
+    &__tab-indicator {
+      max-width: 180px;
+      left: 50% !important;
+      transform: translateX(-50%);
+    }
+  }
+}

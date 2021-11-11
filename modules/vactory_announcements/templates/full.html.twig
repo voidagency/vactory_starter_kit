@@ -1,0 +1,100 @@
+{{ attach_library('vactory_announcements/announcementsLib') }}
+{% set title = label %}
+{% set image = addAttributes(content.field_vactory_media, {'class': ['img-fluid']}) %}
+{% set contenu = content.field_ad_content.0 is defined ? content.field_ad_content : ''  %}
+{% set typologie  = content.field_typology.0 is defined and content.field_typology.0 is not empty ? content.field_typology.0['#title'] :'' %}
+{% set discipline  = content.field_discipline.0 is defined and content.field_discipline.0 is not empty ? content.field_discipline.0['#title'] :'' %}
+{% set date = node.created is defined and node.created is not empty ? node.created.value|date("d M Y") :'' %}
+{% set date_event_start = content.field_typology['#object'].field_event_date_start is defined and content.field_typology['#object'].field_event_date_start.0 is not empty ? content.field_typology['#object'].field_event_date_start.0.value|date("d M Y") :'' %}
+{% set date_event_end = content.field_typology['#object'].field_event_date_end is defined and content.field_typology['#object'].field_event_date_end.0 is not empty ? content.field_typology['#object'].field_event_date_end.0.value|date("d M Y") :'' %}
+{% set nom = content.field_vactory_name.0 is defined and content.field_vactory_name.0 is not empty ? content.field_vactory_name.0['#context'].value :'' %}
+{% set email = content.encryptedMail is defined and content.encryptedMail is not empty ? content.encryptedMail : ''%}
+{% set telephone = content.encryptedPhone is defined and content.encryptedPhone is not empty ? content.encryptedPhone :'' %}
+{% set site = content.field_site.0 is defined and content.field_site.0 is not empty ? content.field_site.0['#context'].value :'' %}
+{% set compte_twitter = content.field_twitter_account.0 is defined and content.field_twitter_account.0 is not empty ? content.field_twitter_account.0['#context'].value:'' %}
+{% set compte_facebook = content.field_facebook_account.0 is defined and content.field_facebook_account.0 is not empty ? content.field_facebook_account.0['#context'].value :'' %}
+{% set ville = content.field_city.0 is defined and content.field_city.0 is not empty ? content.field_city.0['#context'].value:'' %}
+{% set pays = content.field_country.0 is defined and content.field_country.0 is not empty ? content.field_country.0['#context'].value :'' %}
+{% set contact = 'Contact utile' |t %}
+{% set lieu = 'Lieu de manifestation' |t %}
+
+<div class="container">
+  <article class="row mt-5 no-gutters">
+    <div class="p-1">
+      <h2 class="font-weight-bold text-center">{{ title }}</h2>
+      <div class="d-flex p-2">
+        {% if typologie is not empty %}
+          <span class="badge badge-pill badge-light p-2 mr-md-2">{{ typologie }}</span>
+        {% endif %}
+        {% if discipline is not empty %}
+          <span class="badge badge-pill badge-light p-2 mr-md-2">{{ discipline }}</span>
+        {% endif %}
+        {% if date is not empty %}
+          <span class="text-muted">{{ date }}</span>
+        {% endif %}
+      </div>
+      <div class=" text-center pr-3 pb-3">
+        {% if image.0 is defined and image.0 is not empty %}
+         {{ image }}
+        {% else %}
+          <img alt="defaut-annonces" class="img-fluid" src="/profiles/vactory_starter_kit/modules/vactory_announcements/assets/images/defaut_announces.jpg">
+        {% endif %}
+      </div>
+      {% if date_event_start is not empty and date_event_end is not empty %}
+        <div>
+            <span class="text-muted">{{ date_event_start }} - {{ date_event_end }}</span>
+        </div>
+      {% endif %}
+      <div>
+        {% if contenu is not empty %}
+          {{ contenu }}
+        {% endif %}
+      </div>
+      {% if nom is not empty or email is not empty or telephone is not empty or site is not empty or compte_twitter is not empty or compte_facebook is not empty %}
+        <h4>{{ contact }}</h4>
+        <div class="row">
+          {% if nom is not empty %}
+            <div class="col-md-6"> {{ 'Nom'|t ~' : '~ nom }}</div>
+          {% endif %}
+          {% if email is not empty %}
+            <div class="col-md-6">{{ 'Email'|t ~' : '}}
+              <span id="showMail">
+                 <a href="#" >{{ 'Voir Contact'|t }}</a>
+              </span>
+              <span id="mail" class="contact">{{ email }}</span>
+            </div>
+          {% endif %}
+          {% if telephone is not empty %}
+            <div class="col-md-6"> {{ 'Téléphone' |t~' : ' }}
+              <span id="showPhone">
+                 <a href="#" >{{ 'Voir Contact'|t }}</a>
+              </span>
+              <span id="phone" class="contact">{{ telephone }}</span>
+            </div>
+          {% endif %}
+          {% if site is not empty %}
+            <div class="col-md-6">{{ 'Site'|t ~' : '~ site }}</div>
+          {% endif %}
+          {% if compte_twitter is not empty %}
+            <div class="col-md-6">{{ 'Twitter'|t ~' : '~ compte_twitter }}</div>
+          {% endif %}
+          {% if compte_facebook is not empty %}
+            <div class="col-md-6">{{ 'Facebook'|t ~' : '~ compte_facebook }}</div>
+          {% endif %}
+        </div>
+      {% endif %}
+      {% if ville is not empty or pays is not empty %}
+        <h4>{{ lieu }}</h4>
+        <div class="row">
+          {% if ville is not empty %}
+            <div class="col-md-6"> {{ 'Ville'|t ~' : '~ ville }}</div>
+          {% endif %}
+          {% if pays is not empty %}
+           <div class="col-md-6">{{ 'Pays'|t ~' : '~ pays }}</div>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  </article>
+</div>
+

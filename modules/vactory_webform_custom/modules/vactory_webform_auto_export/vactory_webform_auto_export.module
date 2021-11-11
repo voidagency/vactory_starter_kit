@@ -1,0 +1,1029 @@
+<?php
+
+/**
+ * @file
+ * Contains vactory_webform_auto_export.module.
+ */
+
+use Drupal\Core\Database\Database;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Markup;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\webform\Entity\Webform;
+use Drupal\webform\Entity\WebformSubmission;
+use Drupal\vactory_webform_auto_export\Controller\SFTPController;
+
+/**
+ * Implements hook_help().
+ *
+ * @param $route_name
+ * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+ * @return string
+ */
+function vactory_webform_auto_export_help($route_name, RouteMatchInterface $route_match) {
+    switch ($route_name) {
+        // main module help for the vactory_webform_auto_export module.
+        case 'help.page.vactory_webform':
+            $output = '';
+            $output .= '<h3>' . t('About') . '</h3>';
+            $output .= '<p>' . t('Casey Forms Module') . '</p>';
+            return $output;
+
+        default:
+    }
+}
+
+/**
+ * Implements hook_form_alter().
+ *
+ * @param $form
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ * @param $form_id
+ */
+function vactory_webform_auto_export_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+    if ($form_id == 'webform_results_export'){
+        $url_array = explode('/',\Drupal::request()->getRequestUri());
+        $webform_id = $url_array[array_search('manage', $url_array) + 1];
+
+        $config = \Drupal::service('config.factory')->getEditable('vactory_webform_auto_export.config.'.$webform_id);
+
+        $form['auto_csv_export'] = [
+            '#type' => 'details',
+            '#title' => t('Automatic CSV Export'),
+            '#open' => TRUE,
+        ];
+
+        $connection = Database::getConnection();
+        $query = $connection->select('webform_auto_exports','wex');
+        $query->fields('wex', ['name','schedule_config', 'search_config', 'next_run', 'last_run', 'enable_auto_export', 'enable_sftp', 'enable_email', 'email']);
+        $query->condition('name', $webform_id);
+        $results = $query->execute()->fetchAll();
+        foreach($results as $result) {
+            if($result->enable_auto_export){
+                $search_config = json_decode($result->search_config);
+                $search_config_array = json_decode($result->search_config, true);
+                $selection_criteria = ($search_config->start_date != 'all') ? $search_config->start_date . ' to ' . $search_config->end_date : 'All';
+                $selection_criteria = ($search_config->start_date == 'initial') ? 'Calculated during first run' : $selection_criteria;
+                $form['auto_csv_export']['export_details'] = array(
+                    '#markup' => "<p><strong>Next run scheduled to be happened at:</strong> ". date( 'Y-m-d H:i:s', $result->next_run) . "<br/>
+                        <strong>Last run was at:</strong> ". date( 'Y-m-d H:i:s', $result->last_run) . "<br/>
+                        <strong>Selection criteria for the results will be:</strong> ". $selection_criteria . "<br/>
+                        <strong>Excluded columns:</strong> ". implode(", ",$search_config_array['excluded_columns']) . "<br/>
+                        </p>",
+                );
+            }
+        }
+
+        $form['auto_csv_export']['enable_auto_export'] = array(
+            '#type' => 'checkbox',
+            '#title' => t("Enable Automatic Export"),
+            '#default_value' => (!empty($config->get('enable_auto_export')) ? $config->get('enable_auto_export') : 0),
+        );
+
+        $form['auto_csv_export']['enable_sftp'] = array(
+            '#type' => 'checkbox',
+            '#title' => t("Enable SFTP"),
+            '#default_value' => (!empty($config->get('enable_sftp')) ? $config->get('enable_sftp') : 0),
+            '#states' => [
+                'visible' => [
+                    ':input[name="enable_auto_export"]' => ['checked' => TRUE],
+                ],
+            ],
+        );
+
+        $form['auto_csv_export']['sftp_host'] = [
+            '#type' => 'textfield',
+            '#title' => t('Host'),
+            '#description' => t('Host name of the SFTP server.'),
+            '#default_value' => (!empty($config->get('sftp_host')) ? $config->get('sftp_host') : ''),
+            '#states' => [
+                'visible' => [
+                    ':input[name="enable_sftp"]' => ['checked' => TRUE],
+                ],
+                'required' => [
+                    ':input[name="enable_sftp"]' => ['checked' => TRUE],
+                ],
+            ],
+        ];
+
+        $form['auto_csv_export']['sftp_username'] = [
+            '#type' => 'textfield',
+            '#title' => t('Username'),
+            '#description' => t('Username for the SFTP account login.'),
+            '#default_value' => (!empty($config->get('sftp_username')) ? $config->get('sftp_username') : ''),
+            '#states' => [
+                'visible' => [
+                    ':input[name="enable_sftp"]' => ['checked' => TRUE],
+                ],
+                'required' => [
+                    ':input[name="enable_sftp"]' => ['checked' => TRUE],
+                ],
+            ],
+        ];
+
+        if($config->get('sftp_password')) {
+            $form['auto_csv_export']['sftp_password'] = [
+                '#type' => 'password',
+                '#title' => t('Password'),
+                '#description' => t('Password for the SFTP account login. If you have set the password already and don\'t need to update it now, just keep it blank.'),
+                '#default_value' => (!empty($config->get('sftp_password')) ? $config->get('sftp_password') : ''),
+                '#states' => [
+                    'visible' => [
+                        ':input[name="enable_sftp"]' => ['checked' => TRUE],
+                    ],
+                ],
+            ];
+        } else {
+            $form['auto_csv_export']['sftp_password'] = [
+                '#type' => 'password',
+                '#title' => t('Password'),
+                '#description' => t('Password for the SFTP account login.'),
+                '#default_value' => (!empty($config->get('sftp_password')) ? $config->get('sftp_password') : ''),
+                '#states' => [
+                    'visible' => [
+                        ':input[name="enable_sftp"]' => ['checked' => TRUE],
+                    ],
+                    'required' => [
+                        ':input[name="enable_sftp"]' => ['checked' => TRUE],
+                    ],
+                ],
+            ];
+        }
+
+
+        $form['auto_csv_export']['sftp_destination'] = [
+            '#type' => 'textfield',
+            '#title' => t('Destination'),
+            '#description' => t('Destination path to store the exported file. If destination is root folder of FTP account, please use ".".'),
+            '#default_value' => (!empty($config->get('sftp_destination')) ? $config->get('sftp_destination') : '.'),
+            '#states' => [
+                'visible' => [
+                    ':input[name="enable_sftp"]' => ['checked' => TRUE],
+                ],
+                'required' => [
+                    ':input[name="enable_sftp"]' => ['checked' => TRUE],
+                ],
+            ],
+        ];
+
+        $form['auto_csv_export']['enable_email'] = array(
+            '#type' => 'checkbox',
+            '#title' => t("Enable Email"),
+            '#default_value' => (!empty($config->get('enable_email')) ? $config->get('enable_email') : 0),
+            '#states' => [
+                'visible' => [
+                    ':input[name="enable_auto_export"]' => ['checked' => TRUE],
+                ],
+            ],
+        );
+
+        $form['auto_csv_export']['email'] = [
+            '#type' => 'email',
+            '#title' => t('Email Address'),
+            '#description' => t('Generated CSV will be emailing to this email.'),
+            '#default_value' => (!empty($config->get('email')) ? $config->get('email') : ''),
+            '#states' => [
+                'visible' => [
+                    ':input[name="enable_email"]' => ['checked' => TRUE],
+                ],
+                'required' => [
+                    ':input[name="enable_email"]' => ['checked' => TRUE],
+                ],
+            ],
+        ];
+
+        $form['auto_csv_export']['email_subject'] = [
+            '#type' => 'textfield',
+            '#title' => t('Subject'),
+            '#description' => t('Subject of the email. Module will add " - \<Form_Name\>" at the end of the subject.'),
+            '#default_value' => (!empty($config->get('email_subject')) ? $config->get('email_subject') : ''),
+            '#states' => [
+                'visible' => [
+                    ':input[name="enable_email"]' => ['checked' => TRUE],
+                ],
+                'required' => [
+                    ':input[name="enable_email"]' => ['checked' => TRUE],
+                ],
+            ],
+        ];
+
+        $form['auto_csv_export']['email_body'] = array(
+            '#type' => 'text_format',
+            '#title' => 'Body',
+            '#description' => t('Body of the email. You can use [Form_Name], [Date_Range] tokens to replace with form specific configurations when sending the email.'),
+            '#format' => (!empty($config->get('email_body')) ? $config->get('email_body')['format'] : 'full_html'),
+            '#default_value' => (!empty($config->get('email_body')) ? $config->get('email_body')['value'] : ''),
+            '#states' => [
+                'visible' => [
+                    ':input[name="enable_email"]' => ['checked' => TRUE],
+                ],
+            ],
+        );
+
+        $form['auto_csv_export']['search'] = [
+            '#type' => 'details',
+            '#title' => t('Search Criteria'),
+            '#open' => TRUE,
+            '#states' => [
+                'visible' => [
+                    ':input[name="enable_auto_export"]' => ['checked' => TRUE],
+                ],
+            ],
+        ];
+
+        $form['auto_csv_export']['search']['records_from'] = [
+            '#type' => 'select',
+            '#title' => t('Results From'),
+            '#description' => t('Export will include results in CSV file according to the selection.'),
+            '#options' => [
+                'previous_day' => t('Previous Day'),
+                'previous_week' => t('Previous Week (MON to SUN)'),
+                'previous_month' => t('Previous Month (1st to 28th/29th/30th/31th)'),
+                'everything' => t('Everything'),
+            ],
+            '#default_value' => (!empty($config->get('records_from')) ? $config->get('records_from') : 'previous_day'),
+        ];
+
+        $form['auto_csv_export']['search']['cutoff_time'] = [
+            '#type' => 'select',
+            '#title' => t('Cutoff Time'),
+            '#description' => t('Export will include results for 24 hours in CSV file until selected cutoff time of previous day.'),
+            '#options' => [
+                '00:00:00' => t('12 AM'),
+                '01:00:00' => t('1 AM'),
+                '02:00:00' => t('2 AM'),
+                '03:00:00' => t('3 AM'),
+                '04:00:00' => t('4 AM'),
+                '05:00:00' => t('5 AM'),
+                '06:00:00' => t('6 AM'),
+                '07:00:00' => t('7 AM'),
+                '08:00:00' => t('8 AM'),
+                '09:00:00' => t('9 AM'),
+                '10:00:00' => t('10 AM'),
+                '11:00:00' => t('11 AM'),
+                '12:00:00' => t('12 PM'),
+                '13:00:00' => t('1 PM'),
+                '14:00:00' => t('2 PM'),
+                '15:00:00' => t('3 PM'),
+                '16:00:00' => t('4 PM'),
+                '17:00:00' => t('5 PM'),
+                '18:00:00' => t('6 PM'),
+                '19:00:00' => t('7 PM'),
+                '20:00:00' => t('8 PM'),
+                '21:00:00' => t('9 PM'),
+                '22:00:00' => t('10 PM'),
+                '23:00:00' => t('11 PM'),
+            ],
+            '#default_value' => (!empty($config->get('cutoff_time')) ? $config->get('cutoff_time') : '12 am') ,
+            '#states' => [
+                'visible' => [
+                    ':input[name="records_from"]' => ['value' => 'previous_day'],
+                ],
+            ],
+        ];
+
+        $form['auto_csv_export']['frequency'] = [
+            '#type' => 'select',
+            '#title' => t('CSV Export Frequency'),
+            '#description' => t('Export will run according to the selected frequency. Above search criteria should align with selected frequency properly to avoid duplicates on exported results. Of course your cron should run frequently enough to make this happen.'),
+            '#options' => [
+                'hourly' => t('Hourly'),
+                'daily' => t('Daily'),
+                'weekly' => t('Weekly'),
+                'monthly' => t('Monthly'),
+            ],
+            '#default_value' => (!empty($config->get('frequency')) ? $config->get('frequency') : 'hourly'),
+            '#states' => [
+                'visible' => [
+                    ':input[name="enable_auto_export"]' => ['checked' => TRUE],
+                ],
+            ],
+        ];
+
+        $form['auto_csv_export']['start_schedule'] = [
+            '#type' => 'details',
+            '#title' => t('Start Schedule'),
+            '#open' => TRUE,
+            '#states' => [
+                'visible' => [
+                    ':input[name="enable_auto_export"]' => ['checked' => TRUE],
+                ],
+            ],
+        ];
+
+        $form['auto_csv_export']['start_schedule']['start_now'] = array(
+            '#type' => 'checkbox',
+            '#title' => t("Start Now"),
+            '#default_value' => (strlen($config->get('start_now')) ? $config->get('start_now') : 1),
+        );
+
+        $form['auto_csv_export']['start_schedule']['first_run_date'] = [
+            '#type' => 'date',
+            '#title' => t('Start Export On'),
+            '#description' => t('First export will run according to the selected date and time. System will follow above defined frequency to schedule Subsequent exports from the selected date and time.'),
+            '#default_value' => (!empty($config->get('first_run_date')) ? $config->get('first_run_date') : ''),
+            '#states' => [
+                'visible' => [
+                    ':input[name="start_now"]' => ['checked' => FALSE],
+                ],
+            ],
+        ];
+
+        $form['auto_csv_export']['start_schedule']['first_run_time_h'] = [
+            '#type' => 'select',
+            '#title' => t('Hours'),
+            '#description' => t('First export will run according to the selected date and time. System will follow above defined frequency to schedule Subsequent exports from the selected date and time.'),
+            '#options' => [
+                '00' => t('00'),
+                '01' => t('01'),
+                '02' => t('02'),
+                '03' => t('03'),
+                '04' => t('04'),
+                '05' => t('05'),
+                '06' => t('06'),
+                '07' => t('07'),
+                '08' => t('08'),
+                '09' => t('09'),
+                '10' => t('10'),
+                '11' => t('11'),
+                '12' => t('12'),
+                '13' => t('13'),
+                '14' => t('14'),
+                '15' => t('15'),
+                '16' => t('16'),
+                '17' => t('17'),
+                '18' => t('18'),
+                '19' => t('19'),
+                '20' => t('20'),
+                '21' => t('21'),
+                '22' => t('22'),
+                '23' => t('23'),
+            ],
+            '#default_value' => (!empty($config->get('first_run_time_h')) ? $config->get('first_run_time_h') : '00') ,
+            '#states' => [
+                'visible' => [
+                    ':input[name="start_now"]' => ['checked' => FALSE],
+                ],
+            ],
+        ];
+
+        $form['auto_csv_export']['start_schedule']['first_run_time_m'] = [
+            '#type' => 'select',
+            '#title' => t('Minutes'),
+            '#description' => t('First export will run according to the selected date and time. System will follow above defined frequency to schedule Subsequent exports from the selected date and time.'),
+            '#options' => [
+                '00' => t('00'),
+                '05' => t('05'),
+                '10' => t('10'),
+                '15' => t('15'),
+                '20' => t('20'),
+                '25' => t('25'),
+                '30' => t('30'),
+                '35' => t('35'),
+                '40' => t('40'),
+                '45' => t('45'),
+                '50' => t('50'),
+                '55' => t('55'),
+            ],
+            '#default_value' => (!empty($config->get('first_run_time_m')) ? $config->get('first_run_time_m') : '00') ,
+            '#states' => [
+                'visible' => [
+                    ':input[name="start_now"]' => ['checked' => FALSE],
+                ],
+            ],
+        ];
+
+        $form['auto_csv_export']['stop_schedule'] = [
+            '#type' => 'details',
+            '#title' => t('Stop Schedule'),
+            '#open' => TRUE,
+            '#states' => [
+                'visible' => [
+                    ':input[name="enable_auto_export"]' => ['checked' => TRUE],
+                ],
+            ],
+        ];
+
+        $form['auto_csv_export']['stop_schedule']['never_end'] = array(
+            '#type' => 'checkbox',
+            '#title' => t("Run Forever"),
+            '#default_value' => (strlen($config->get('never_end')) ? $config->get('never_end') : 1),
+        );
+
+        $form['auto_csv_export']['stop_schedule']['no_runs_after_date'] = [
+            '#type' => 'date',
+            '#title' => t('No Exports After'),
+            '#description' => t('Automatic export will be disabled according to the selection.'),
+            '#default_value' => (!empty($config->get('no_runs_after_date')) ? $config->get('no_runs_after_date') : ''),
+            '#states' => [
+                'visible' => [
+                    ':input[name="never_end"]' => ['checked' => FALSE],
+                ],
+            ],
+        ];
+
+        $form['auto_csv_export']['stop_schedule']['no_runs_after_time_h'] = [
+            '#type' => 'select',
+            '#title' => t('Hours'),
+            '#description' => t('Automatic export will be disabled according to the selection.'),
+            '#options' => [
+                '00' => t('00'),
+                '01' => t('01'),
+                '02' => t('02'),
+                '03' => t('03'),
+                '04' => t('04'),
+                '05' => t('05'),
+                '06' => t('06'),
+                '07' => t('07'),
+                '08' => t('08'),
+                '09' => t('09'),
+                '10' => t('10'),
+                '11' => t('11'),
+                '12' => t('12'),
+                '13' => t('13'),
+                '14' => t('14'),
+                '15' => t('15'),
+                '16' => t('16'),
+                '17' => t('17'),
+                '18' => t('18'),
+                '19' => t('19'),
+                '20' => t('20'),
+                '21' => t('21'),
+                '22' => t('22'),
+                '23' => t('23'),
+            ],
+            '#default_value' => (!empty($config->get('no_runs_after_time_h')) ? $config->get('no_runs_after_time_h') : '00') ,
+            '#states' => [
+                'visible' => [
+                    ':input[name="never_end"]' => ['checked' => FALSE],
+                ],
+            ],
+        ];
+
+        $form['auto_csv_export']['stop_schedule']['no_runs_after_time_m'] = [
+            '#type' => 'select',
+            '#title' => t('Minutes'),
+            '#description' => t('Automatic export will be disabled according to the selection.'),
+            '#options' => [
+                '00' => t('00'),
+                '05' => t('05'),
+                '10' => t('10'),
+                '15' => t('15'),
+                '20' => t('20'),
+                '25' => t('25'),
+                '30' => t('30'),
+                '35' => t('35'),
+                '40' => t('40'),
+                '45' => t('45'),
+                '50' => t('50'),
+                '55' => t('55'),
+            ],
+            '#default_value' => (!empty($config->get('no_runs_after_time_m')) ? $config->get('no_runs_after_time_m') : '00') ,
+            '#states' => [
+                'visible' => [
+                    ':input[name="never_end"]' => ['checked' => FALSE],
+                ],
+            ],
+        ];
+
+        $form['auto_csv_export']['delimiter_single'] = [
+            '#type' => 'select',
+            '#title' => t('Delimiter for Single Values'),
+            '#description' => t('This is the delimiter used in the CSV/TSV file when exporting webform results. Using tabs in the export is the most reliable method for preserving non-latin characters. You may want to change this to another character depending on the program with which you anticipate importing results.'),
+            '#options' => [
+                ',' => t('Comma (,)'),
+                '\t' => t('Tab (\t)'),
+                ';' => t('Semicolon (;)'),
+                ':' => t('Colon (:)'),
+                '|' => t('Pipe (|)'),
+                '.' => t('Period (.)'),
+                ' ' => t('Space ( )'),
+            ],
+            '#default_value' => (!empty($config->get('delimiter_single')) ? $config->get('delimiter_single') : ',') ,
+            '#states' => [
+                'visible' => [
+                    ':input[name="enable_auto_export"]' => ['checked' => TRUE],
+                ],
+            ],
+        ];
+
+        $form['auto_csv_export']['delimiter_multiple'] = [
+            '#type' => 'select',
+            '#title' => t('Delimiter for Multiple Values'),
+            '#description' => t('The delimiter used when an element has multiple values.'),
+            '#options' => [
+                ';' => t('Semicolon (;)'),
+                ',' => t('Comma (,)'),
+                '|' => t('Pipe (|)'),
+                '.' => t('Period (.)'),
+                ' ' => t('Space ( )'),
+            ],
+            '#default_value' => (!empty($config->get('delimiter_multiple')) ? $config->get('delimiter_multiple') : ';') ,
+            '#states' => [
+                'visible' => [
+                    ':input[name="enable_auto_export"]' => ['checked' => TRUE],
+                ],
+            ],
+        ];
+
+        $form['auto_csv_export']['excluded_cols'] = array(
+            '#markup' => '<strong>Excluded Columns</strong><br/>Please update columns selection in above "COLUMN OPTIONS" area.'
+        );
+
+        if($config->get('enable_auto_export')) {
+            $form['auto_csv_export']['update_auto_export_configs'] = array(
+                '#type' => 'checkbox',
+                '#title' => t("Update Automatic Export Configurations"),
+                '#description' => t('Please enable this if you wish to update the Automatic CSV Export configurations with this submit.'),
+                '#default_value' => 0,
+            );
+        }
+
+        $form['actions']['save']['#submit'][] = "update_csv_export_settings";
+    }
+}
+
+/**
+ * Handling submit for the search and schedule configurations of Automatic CSV Export
+ *
+ * @param $form
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ */
+function update_csv_export_settings(&$form, FormStateInterface $form_state) {
+    $webform_id = $form['export']['columns']['excluded_columns']['#webform_id'];
+    $config = \Drupal::service('config.factory')->getEditable('vactory_webform_auto_export.config.' . $webform_id);
+
+    $update_auto_export_configs = (!is_null($form_state->getValue('update_auto_export_configs')) ? $form_state->getValue('update_auto_export_configs') : 0);
+    $enable_auto_export = (!is_null($form_state->getValue('enable_auto_export')) ? $form_state->getValue('enable_auto_export') : 0);
+    $enable_auto_export_old = $config->get('enable_auto_export');
+
+    if(($enable_auto_export && $enable_auto_export_old == NULL) || ($enable_auto_export && !$enable_auto_export_old) || ($enable_auto_export && $update_auto_export_configs) || (!$enable_auto_export && $enable_auto_export_old)) {
+        $enable_sftp = (!is_null($form_state->getValue('enable_sftp')) ? $form_state->getValue('enable_sftp') : 0);
+        $enable_email = (!is_null($form_state->getValue('enable_email')) ? $form_state->getValue('enable_email') : 0);
+
+        $config->set('enable_auto_export', $enable_auto_export);
+
+        $config->set('enable_sftp', $enable_sftp);
+        $config->set('sftp_host', $form_state->getValue('sftp_host'));
+        $config->set('sftp_username', $form_state->getValue('sftp_username'));
+        $password = (!empty($form_state->getValue('sftp_password')) ? $form_state->getValue('sftp_password') : $config->get('sftp_password'));
+        $config->set('sftp_password', $password);
+        $config->set('sftp_destination', $form_state->getValue('sftp_destination'));
+
+        $config->set('enable_email', $enable_email);
+        $config->set('email', $form_state->getValue('email'));
+        $config->set('email_subject', $form_state->getValue('email_subject'));
+        $config->set('email_body', $form_state->getValue('email_body'));
+
+        $config->set('records_from', $form_state->getValue('records_from'));
+        $config->set('cutoff_time', $form_state->getValue('cutoff_time'));
+        $config->set('frequency', $form_state->getValue('frequency'));
+
+        $start_now = (!is_null($form_state->getValue('start_now')) ? $form_state->getValue('start_now') : 0);
+        $never_end = (!is_null($form_state->getValue('never_end')) ? $form_state->getValue('never_end') : 0);
+
+        $config->set('start_now', $start_now);
+        $config->set('first_run_date', $form_state->getValue('first_run_date'));
+        $config->set('first_run_time_h', $form_state->getValue('first_run_time_h'));
+        $config->set('first_run_time_m', $form_state->getValue('first_run_time_m'));
+        $config->set('never_end', $never_end);
+        $config->set('no_runs_after_date', $form_state->getValue('no_runs_after_date'));
+        $config->set('no_runs_after_time_h', $form_state->getValue('no_runs_after_time_h'));
+        $config->set('no_runs_after_time_m', $form_state->getValue('no_runs_after_time_m'));
+
+        $config->set('delimiter_single', $form_state->getValue('delimiter_single'));
+        $config->set('delimiter_multiple', $form_state->getValue('delimiter_multiple'));
+
+        $dependencies = $config->get('dependencies');
+        $dependencies['enforced']['module'][] = 'vactory_webform_auto_export';
+        $config->set('dependencies', $dependencies)->save(TRUE);
+
+        $connection = Database::getConnection();
+        $query = $connection->select('webform_auto_exports', 'wex');
+        $query->fields('wex', ['name']);
+        $query->condition('name', $webform_id);
+
+        $date = get_date_range($form_state);
+        $unit = get_frequency_unit($form_state->getValue('frequency'));
+
+        if($form_state->getValue('start_now')) {
+            $next_run = date('Y-m-d H:i:s', strtotime('now'));
+        } else {
+            $now = strtotime("now");
+            $first_run = strtotime($form_state->getValue('first_run_date') . ' ' . $form_state->getValue('first_run_time_h') . ':' . $form_state->getValue('first_run_time_m') . ':00');
+            $next_run = date('Y-m-d H:i:s', $first_run);
+
+            if($now > $first_run) {
+                $next_run = strtotime($next_run);
+                do {
+                    $next_run = strtotime(date('Y-m-d H:i:s', $next_run) . ' +1 ' . $unit);
+                } while ($now > $next_run);
+                $next_run = date('Y-m-d H:i:s', $next_run);
+            }
+        }
+
+        $fields = [
+            'name' => $webform_id,
+            'path' => \Drupal::request()->getRequestUri(),
+            'schedule_config' => json_encode(['cron_schedule' => get_schedule($form_state),
+                'frequency' => $form_state->getValue('frequency'),
+                'start_now' => $form_state->getValue('start_now'),
+                'first_run' => $form_state->getValue('first_run_date') . ' ' . $form_state->getValue('first_run_time_h') . ':' . $form_state->getValue('first_run_time_m') . ':00',
+                'next_run' => $next_run,
+                'never_end' => $form_state->getValue('never_end'),
+                'no_runs_after' => $form_state->getValue('no_runs_after_date') . ' ' . $form_state->getValue('no_runs_after_time_h') . ':' . $form_state->getValue('no_runs_after_time_m') . ':00',]),
+            'search_config' => json_encode(['records_from' => $form_state->getValue('records_from'),
+                'start_date' => $date['start_date'],
+                'end_date' => $date['end_date'],
+                'end_time' => $form_state->getValue('cutoff_time'),
+                'excluded_columns' => $form_state->getValue('excluded_columns'),]),
+            'next_run' => strtotime($next_run),
+            'enable_auto_export' => $enable_auto_export,
+            'enable_sftp' => $enable_sftp,
+            'enable_email' => $enable_email,
+            'email' => $form_state->getValue('email'),
+        ];
+
+        if (count($query->execute()->fetchAll()) > 0) {
+            //update if record already exists and asked to update
+            if ($update_auto_export_configs || (!$enable_auto_export && $enable_auto_export_old) || ($enable_auto_export && !$enable_auto_export_old)) {
+                $result = $connection->update('webform_auto_exports')
+                    ->fields($fields)
+                    ->condition('name', $webform_id)
+                    ->execute();
+            }
+        } else {
+            //add new record
+            $result = $connection->insert('webform_auto_exports')
+                ->fields($fields)
+                ->execute();
+        }
+
+        if ($result) {
+            \Drupal::messenger()->addStatus(t('Automatic CSV Export configurations have been updated.'));
+        } else {
+            \Drupal::messenger()->addError(t('There were one or more errors while updating Automatic CSV export configurations, please try again.'));
+        }
+    } else if ($enable_auto_export && !$update_auto_export_configs){
+        \Drupal::messenger()->addWarning(t('Automatic CSV Export configurations didn\'t update. If this is not intended, please check whether you have enabled updates for these configurations or try a gain.'));
+    }
+}
+
+/**
+ * Get cron schedule time based on selection
+ *
+ * @param $form_state
+ * @return string
+ */
+function get_schedule($form_state){
+    //by default run daily
+    $scheduled_time = "0 0 * * *";
+
+    $start_now = $form_state->getValue('start_now');
+    if($start_now){
+        $hours = date('H');
+        $mins = date('i');
+    }else{
+        $hours = $form_state->getValue('first_run_time_h');
+        $mins = $form_state->getValue('first_run_time_m');
+    }
+
+    $frequency = $form_state->getValue('frequency');
+    if($frequency == 'yearly') {
+        $scheduled_time = "$mins $hours 1 1 *";
+    } else if($frequency == 'monthly') {
+        $scheduled_time = "$mins $hours 1 * *";
+    } else if($frequency == 'weekly') {
+        $scheduled_time = "$mins $hours * * 0";
+    } else if($frequency == 'daily') {
+        $scheduled_time = "$mins $hours * * *";
+    } else if($frequency == 'hourly') {
+        $scheduled_time = "$mins * * * *";
+    }
+
+    return $scheduled_time;
+}
+
+/**
+ * Get start date, end date from the search criteria
+ *
+ * @param $form_state
+ * @return mixed
+ */
+function get_date_range($form_state){
+    $records_from = $form_state->getValue('records_from');
+    $start_now = $form_state->getValue('start_now');
+    $result['start_date'] = $result['end_date'] = 'initial';
+
+    if($start_now) {
+        $result['start_date'] = $result['end_date'] = 'all';
+
+        switch ($records_from) {
+            case 'previous_day':
+                $cutoff_time = $form_state->getValue('cutoff_time');
+                $today = date('Y-m-d', strtotime("today"));
+                $result['end_date'] = date('Y-m-d H:i:s', strtotime($today . ' ' . $cutoff_time . ' -1 second'));
+                $result['start_date'] = date('Y-m-d H:i:s', strtotime($result['end_date'] . ' -23 hours -59 minutes -59 seconds'));
+                break;
+            case 'previous_week':
+                $result['start_date'] = date('Y-m-d', strtotime("last week monday"));
+                $result['end_date'] = date('Y-m-d', strtotime("last week sunday"));
+                break;
+            case 'previous_month':
+                $result['start_date'] = date('Y-m-d', strtotime("first day of last month"));
+                $result['end_date'] = date('Y-m-d', strtotime("last day of last month"));
+                break;
+            case 'previous_year':
+                $result['start_date'] = date('Y-m-d', strtotime(' last year January 1st'));
+                $result['end_date'] = date('Y-m-d', strtotime('last year December 31st'));
+                break;
+        }
+    }
+
+    return $result;
+}
+
+/**
+ * Implements hook_cron().
+ */
+function vactory_webform_auto_export_cron()
+{
+    $now = strtotime('now');
+    $connection = Database::getConnection();
+    $query = $connection->select('webform_auto_exports','wex');
+    $query->fields('wex', ['name','schedule_config', 'search_config', 'next_run', 'last_run', 'enable_auto_export', 'enable_sftp', 'enable_email', 'email']);
+    $and = $query->andConditionGroup();
+    $and->condition('enable_auto_export', 1);
+    $and->condition('next_run', $now, '<=');
+    $query->condition($and);
+    $results = $query->execute()->fetchAll();
+
+    foreach($results as $result) {
+        $webform_id = $result->name;
+        $schedule_config = json_decode($result->schedule_config);
+
+        If(!$schedule_config->never_end){
+            $no_runs_after = strtotime($schedule_config->no_runs_after);
+            if($now > $no_runs_after){
+                $update_query = $connection->update('webform_auto_exports');
+                $fields = [
+                    'enable_auto_export' => 0,
+                ];
+                $update_query->fields($fields);
+                $update_query->condition('name', $webform_id);
+                $output = $update_query->execute();
+
+                if($output) {
+                    \Drupal::logger('webform_auto_exports')->notice("Disabling Webform Auto Export was successful - " . $webform_id);
+                } else {
+                    \Drupal::logger('webform_auto_exports')->error("Disabling Webform Auto Export was not successful - " . $webform_id . " - " . print_r($output));
+                }
+
+                $config = \Drupal::configFactory()->getEditable('vactory_webform_auto_export.config.' . $webform_id);
+                $config->set('enable_auto_export', 0);
+                $config->save(TRUE);
+
+                return;
+            }
+        }
+
+        $webform = Webform::load($webform_id);
+        $config = \Drupal::service('config.factory')->getEditable('vactory_webform_auto_export.config.' . $webform_id);
+
+        $submission_exporter = \Drupal::service('webform_submission.exporter');
+        $export_options = $submission_exporter->getDefaultExportOptions();
+        $search_config = json_decode($result->search_config);
+
+        $export_options['delimiter'] = $config->get('delimiter_single');
+        $export_options['multiple_delimiter'] = $config->get('delimiter_multiple');
+
+        if($search_config->start_date != 'all' && $search_config->start_date != 'initial') {
+            $export_options['range_type'] = 'date';
+            $export_options['range_start'] = $search_config->start_date;
+            $export_options['range_end'] = $search_config->end_date;
+        } else if($search_config->start_date != 'all') {
+            // calculate initial start and end dates
+            $initial_dates = get_new_date_range($search_config->start_date, $search_config->end_date, $search_config->records_from, $search_config->end_time, TRUE);
+            $export_options['range_type'] = 'date';
+            $export_options['range_start'] = $initial_dates['start_date'];
+            $export_options['range_end'] = $initial_dates['end_date'];
+        } else {
+            $export_options['range_type'] = 'all';
+            $export_options['range_start'] = $search_config->start_date;
+            $export_options['range_end'] = $search_config->end_date;
+        }
+
+        $search_config_array = json_decode($result->search_config, true);
+        $export_options['excluded_columns'] = $search_config_array['excluded_columns'];
+        if (!empty($export_options['excluded_columns']) && is_string($export_options['excluded_columns'])) {
+            $excluded_columns = explode(',', $export_options['excluded_columns']);
+            $export_options['excluded_columns'] = array_combine($excluded_columns, $excluded_columns);
+        }
+
+        $submission_exporter->setWebform($webform);
+        $submission_exporter->setExporter($export_options);
+
+        $query = $submission_exporter->getQuery();
+        $entity_ids = $query->execute();
+        $webform_submissions = WebformSubmission::loadMultiple($entity_ids);
+        $results_count = count($webform_submissions);
+
+        if($results_count > 0) {
+            $submission_exporter->generate();
+            \Drupal::logger('webform_auto_exports')->notice("Webform results export was successful - " . $webform_id);
+
+            if ($result->enable_sftp) {
+                $file_path = $submission_exporter->getExportFilePath();
+                $file_name = $webform_id . '-' . $now . '.csv';
+
+                $sftp['host'] = $config->get('sftp_host');
+                $sftp['username'] = $config->get('sftp_username');
+                $sftp['password'] = $config->get('sftp_password');
+                $sftp['destination'] = $config->get('sftp_destination');
+
+                $output = SFTPController::send_file($sftp, $file_path, $file_name);
+                if($output) {
+                    \Drupal::logger('webform_auto_exports')->notice("Webform results SFTP was successful - " . $webform_id);
+                } else {
+                    \Drupal::logger('webform_auto_exports')->error("Webform results SFTP was not successful - " . $webform_id . " - " . print_r($output));
+                }
+            }
+
+            if ($result->enable_email) {
+                $file_path = $submission_exporter->getExportFilePath();
+                $file_name = $webform_id . '.csv';
+
+                $attachment = new stdClass();
+                $attachment->uri = $file_path;
+                $attachment->filename = $file_name;
+                $attachment->filemime = 'text/csv';
+                $attachment->formname = $webform->label();
+                $attachment->date_range = (($search_config->start_date != 'all') ? "Date range between :" . $export_options['range_start'] . " - " . $export_options['range_end'] : "Date range : All ");
+                $attachment->subject = $config->get('email_subject');
+                $attachment->body = $config->get('email_body')['value'];
+
+                $to_email = $result->email;
+                $files = array();
+                $files['files'][] = $attachment;
+                $mail_manager = Drupal::service('plugin.manager.mail');
+                $mail_manager->mail('vactory_webform_auto_export', 'basic', $to_email, \Drupal::service("language.default")->get()->getId(), $files);
+
+                \Drupal::logger('webform_auto_exports')->notice("Webform results email was successful - " . $webform_id);
+            }
+        } else {
+            \Drupal::logger('webform_auto_exports')->warning("No results for the specified period - " . $webform_id);
+        }
+
+        // TODO: delete entry if it passed the last run specified
+
+        // calculate next run
+        $unit = get_frequency_unit($schedule_config->frequency);
+        $next_run_old = $result->next_run;
+        do {
+            $next_run_old = strtotime(date('Y-m-d H:i:s', $next_run_old) . ' +1 ' . $unit);
+        } while ($now > $next_run_old);
+        $next_run = date('Y-m-d H:i:s', $next_run_old);
+
+        // calculate next start and end dates
+        $date = get_new_date_range($export_options['range_start'], $export_options['range_end'], $search_config->records_from);
+
+        // update the entry with next run, last run and search dates
+        $update_query = $connection->update('webform_auto_exports');
+        $fields = [
+            'schedule_config' => json_encode(['cron_schedule' => $schedule_config->cron_schedule,
+                'frequency' => $schedule_config->frequency,
+                'start_now' => $schedule_config->start_now,
+                'first_run' => $schedule_config->first_run,
+                'next_run' => $next_run,
+                'never_end' => $schedule_config->never_end,
+                'no_runs_after' => $schedule_config->no_runs_after,]),
+            'search_config' => json_encode(['records_from' => $search_config->records_from,
+                'start_date' => $date['start_date'],
+                'end_date' => $date['end_date'],
+                'end_time' => $search_config->end_time,
+                'excluded_columns' => $search_config->excluded_columns,]),
+            'next_run' => strtotime($next_run),
+            'last_run' => $now,
+        ];
+        $update_query->fields($fields);
+        $update_query->condition('name', $webform_id);
+        $output = $update_query->execute();
+
+        if ($output) {
+            \Drupal::logger('webform_auto_exports')->notice("Webform results next export update was successful - " . $webform_id);
+        }
+    }
+}
+
+/**
+ * Implements hook_mail().
+ *
+ * This function completes the email, allowing for placeholder substitution.
+ *
+ * @param $key
+ * @param $message
+ * @param $params
+ */
+function vactory_webform_auto_export_mail($key, &$message, $params) {
+    $form_name = $params['files'][0]->formname;
+    $date_range = $params['files'][0]->date_range;
+    $subject = $params['files'][0]->subject;
+    $body = $params['files'][0]->body;
+    switch ($key) {
+        case 'basic':
+            $message['headers']['Content-Type'] = 'text/html; charset=UTF-8;';
+            $message['subject'] = t($subject . ' - ' . $form_name);
+            $text[] = str_replace('[Date_Range]', $date_range, str_replace('[Form_Name]', $form_name, $body));
+            $message['body'] = array_map(function ($text) {
+                return Markup::create($text);
+            }, $text);
+            break;
+    }
+}
+
+/**
+ * Get unit of the frequency
+ *
+ * @param $frequency
+ * @return string
+ */
+function get_frequency_unit($frequency){
+    $unit = 'hour';
+
+    switch ($frequency){
+        case 'hourly':
+            $unit = 'hour';
+            break;
+        case 'daily':
+            $unit = 'day';
+            break;
+        case 'weekly':
+            $unit = 'week';
+            break;
+        case 'monthly':
+            $unit = 'month';
+            break;
+        case 'yearly':
+            $unit = 'year';
+            break;
+    }
+
+    return $unit;
+}
+
+/**
+ * Get new start date, end date for the search criteria before or after a cron run
+ *
+ * @param $start_date
+ * @param $end_date
+ * @param $records_from
+ * @param $cutoff_time
+ * @param $before
+ * @return mixed
+ */
+function get_new_date_range($start_date, $end_date, $records_from, $cutoff_time = '00:00:00', $before = FALSE){
+    $result['start_date'] = $result['end_date'] = 'all';
+
+    if($before) {
+        switch ($records_from) {
+            case 'previous_day':
+                $today = date('Y-m-d', strtotime("today"));
+                $result['end_date'] = date('Y-m-d H:i:s', strtotime($today . ' ' . $cutoff_time . ' -1 second'));
+                $result['start_date'] = date('Y-m-d H:i:s', strtotime($result['end_date'] . ' -23 hours -59 minutes -59 seconds'));
+                break;
+            case 'previous_week':
+                $result['start_date'] = date('Y-m-d', strtotime("last week monday"));
+                $result['end_date'] = date('Y-m-d', strtotime("last week sunday"));
+                break;
+            case 'previous_month':
+                $result['start_date'] = date('Y-m-d', strtotime("first day of last month"));
+                $result['end_date'] = date('Y-m-d', strtotime("last day of last month"));
+                break;
+            case 'previous_year':
+                $result['start_date'] = date('Y-m-d', strtotime(' last year January 1st'));
+                $result['end_date'] = date('Y-m-d', strtotime('last year December 31st'));
+                break;
+        }
+    } else {
+        switch ($records_from) {
+            case 'previous_day':
+                $result['start_date'] = date('Y-m-d H:i:s', strtotime($start_date . ' +1 day'));
+                $result['end_date'] = date('Y-m-d H:i:s', strtotime($end_date . ' +1 day'));
+                break;
+            case 'previous_week':
+                $result['start_date'] = date('Y-m-d', strtotime($start_date . " +1 week"));
+                $result['end_date'] = date('Y-m-d', strtotime($end_date . " +1 week"));
+                break;
+            case 'previous_month':
+                $result['start_date'] = date('Y-m-d', strtotime($start_date . " +1 month"));
+                $result['end_date'] = date('Y-m-d', strtotime($end_date . " +1 month"));
+                break;
+            case 'previous_year':
+                $result['start_date'] = date('Y-m-d', strtotime($start_date . " +1 year"));
+                $result['end_date'] = date('Y-m-d', strtotime($end_date . " +1 year"));
+                break;
+        }
+    }
+
+    return $result;
+}

@@ -1,0 +1,23 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - block_content.type.vactory_sondage
+    - field.storage.block_content.field_sondage_close_date
+  enforced:
+    module:
+      - vactory_sondage
+  module:
+    - datetime
+id: block_content.vactory_sondage.field_sondage_close_date
+field_name: field_sondage_close_date
+entity_type: block_content
+bundle: vactory_sondage
+label: 'Date de fermeture de sondage'
+description: 'Programmer la fermeture du sondage en renseignant la date de fermeture.'
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: datetime

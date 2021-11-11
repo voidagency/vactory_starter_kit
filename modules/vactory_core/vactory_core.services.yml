@@ -5,7 +5,7 @@ services:
       - { name: twig.extension }
   simplify_menu.menu_items:
     class: Drupal\vactory_core\MenuItems
-    arguments: ['@menu.link_tree']
+    arguments: ['@menu.link_tree', '@entity.repository', '@entity_field.manager', '@entity_type.manager']
   vactory_core.disable_route_subscriber:
     class: Drupal\vactory_core\EventSubscriber\DisableRouteSubscriber
     tags:

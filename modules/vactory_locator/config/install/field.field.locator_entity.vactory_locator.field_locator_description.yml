@@ -8,7 +8,7 @@ id: locator_entity.vactory_locator.field_locator_description
 field_name: field_locator_description
 entity_type: locator_entity
 bundle: vactory_locator
-label: Déscription
+label: Description
 description: ''
 required: false
 translatable: true

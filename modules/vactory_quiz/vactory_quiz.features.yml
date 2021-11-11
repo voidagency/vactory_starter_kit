@@ -1,0 +1,3 @@
+bundle: vactory
+excluded:
+  - core.entity_view_display.node.vactory_quiz.teaser

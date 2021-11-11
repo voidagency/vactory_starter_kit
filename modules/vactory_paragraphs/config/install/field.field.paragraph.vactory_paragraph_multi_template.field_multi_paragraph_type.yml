@@ -13,7 +13,7 @@ bundle: vactory_paragraph_multi_template
 label: Display
 description: 'Select the wished multi paragraph display.'
 required: true
-translatable: false
+translatable: true
 default_value:
   -
     value: tab

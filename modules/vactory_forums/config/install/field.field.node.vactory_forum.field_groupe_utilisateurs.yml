@@ -1,0 +1,28 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_groupe_utilisateurs
+    - node.type.vactory_forum
+    - taxonomy.vocabulary.users_groups
+id: node.vactory_forum.field_groupe_utilisateurs
+field_name: field_groupe_utilisateurs
+entity_type: node
+bundle: vactory_forum
+label: 'Groupe Utilisateurs'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      users_groups: users_groups
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

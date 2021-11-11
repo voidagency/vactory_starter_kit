@@ -1,0 +1,5 @@
+vactory_two_factors_auth.settings:
+  title: 'Vactory Two Factors Auth'
+  base_route_name: vactory_two_factors_auth.settings
+  names:
+    - vactory_two_factors_auth.settings

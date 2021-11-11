@@ -1,0 +1,13 @@
+{% if logged_in %}
+	{% if content.quiz %}
+		<div class="container border rounded border-warning p-3">
+			{{ vactory_render('entity', 'node', content.quiz, '', 'card') }}
+		</div>
+	{% endif %}
+{% else %}
+	<div class="text-center border rounded border-warning p-3">
+		<p class="font-weight-bold">{{ 'Pour passer ce quiz veuillez vous connecter'|t }}</p>
+		<a class="m-1 btn btn-primary" href="{{ url('vactory_espace_prive.login', { destination: content.current_path }) }}">{{ "Se connecter"|t }}</a>
+		<a class="m-1 btn btn-secondary" href="{{ url('vactory_espace_prive.register', { destination: content.current_path }) }}">{{ "Créer un compte"|t }}</a>
+	</div>
+{% endif %}

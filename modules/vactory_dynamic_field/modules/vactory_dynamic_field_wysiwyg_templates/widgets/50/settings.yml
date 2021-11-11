@@ -1,24 +1,28 @@
-name: 'C49 - Sticky Bloc with a youtube video'
-multiple: FALSE
-category: 'floated'
+name: 'C50 - Toolbox contact / Sticky Mobile'
+multiple: TRUE
+category: 'Toolbox'
 enabled: TRUE
 fields:
-  image:
-    type: image
-    label: 'Image (Banner)'
-  image_alt:
-    type: text
-    label: 'Text alternatif'  
-  video:
-    type: text
-    label: 'video url'
+  cta:
+    type: url_extended
+    label: 'toolbox link'
+  icon:
+    type: select
+    label: 'icon'
     options:
-      '#description': '<b><i class="link">How ?</i></b><br><b>URL Example</b>: https://www.youtube.com/watch?v=BZDyr2OpWBU'
-  title:
+      '#required': TRUE
+      '#options':
+        - 'icon-linkedin': 'linkedin icon'
+        - 'icon-twitter': 'twitter icon'
+        - 'icon-facebook': 'facebook icon'
+        - 'icon-youtube': 'youtube icon'
+        - 'icon-mail': 'e-mail icon'
+        - 'icon-edit': 'contact icon'
+        - 'icon-phone': 'telephone icon'
+        - 'icon-messages': 'messages icon'
+  icon_name:
     type: text
-    label: 'title'
-  description:
-    type: text_format
-    label: 'Description'
-    options:
-      '#format': 'full_html'
+    label: 'icon class name if does not exist in the select'
+  mode:
+    type: checkbox
+    label: 'sticky in mobile ?'

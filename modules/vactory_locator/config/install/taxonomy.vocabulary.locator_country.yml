@@ -1,0 +1,7 @@
+langcode: en
+status: true
+dependencies: {  }
+name: Country
+vid: locator_country
+description: 'Countries names'
+weight: 0

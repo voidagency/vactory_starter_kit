@@ -1,0 +1,76 @@
+<?php
+
+/**
+ * @file
+ * Module related hooks.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_quiz_theme($existing, $type, $theme, $path) {
+  return [
+    'node__vactory_quiz__full' => [
+      'template' => 'full',
+      'base hook' => 'node',
+    ],
+    'node__vactory_quiz__card' => [
+      'template' => 'card',
+      'base hook' => 'node',
+    ],
+    'vactory_quiz_block' => [
+      'template' => 'quiz-block',
+      'variables' => [
+        'content' => NULL,
+      ],
+    ],
+    'vactory_quiz_answer_summary' => [
+      'template' => 'vactory-quiz-answer-summary',
+      'variables' => [
+        'content' => NULL,
+      ],
+    ],
+    'vactory_quiz_results' => [
+      'template' => 'quiz-results',
+      'variables' => [
+        'content' => NULL,
+      ],
+    ],
+    'quiz_answer_option' => [
+      'template' => 'quiz-answer-option',
+      'variables' => [
+        'content' => NULL,
+      ],
+    ],
+    'quiz_validate_answer' => [
+      'template' => 'quiz-validate-answer',
+      'variables' => [
+        'content' => NULL,
+      ],
+    ],
+    'quiz_correction' => [
+      'template' => 'quiz-correction',
+      'variables' => [
+        'content' => NULL,
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_multiple_field_remove_button_field_types_alter().
+ */
+function vactory_quiz_multiple_field_remove_button_field_types_alter(array &$fieldTypes) {
+  $fieldTypes[] = "vactory_quiz_question";
+}
+
+/**
+ * Implements hook_field_widget_form_alter().
+ */
+function vactory_quiz_field_widget_form_alter(&$element, FormStateInterface $form_state, $context) {
+  if ($context['widget']->getPluginId() === 'vactory_quiz_question_widget') {
+    $element['#title'] = t('Question @num', ['@num' => $element['#delta'] + 1]);
+  }
+}

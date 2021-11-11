@@ -1,0 +1,47 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_vactory_paragraphs
+    - node.type.vactory_mediatheque
+    - paragraphs.paragraphs_type.paragraph_background_wrapper
+    - paragraphs.paragraphs_type.vactory_component
+  module:
+    - entity_reference_revisions
+id: node.vactory_mediatheque.field_vactory_paragraphs
+field_name: field_vactory_paragraphs
+entity_type: node
+bundle: vactory_mediatheque
+label: Paragraphs
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:paragraph'
+  handler_settings:
+    negate: 0
+    target_bundles:
+      paragraph_background_wrapper: paragraph_background_wrapper
+      vactory_component: vactory_component
+    target_bundles_drag_drop:
+      paragraph_background_wrapper:
+        enabled: true
+        weight: 7
+      vactory_component:
+        enabled: true
+        weight: 8
+      vactory_paragraph_block:
+        weight: 9
+        enabled: false
+      vactory_paragraph_multi_template:
+        weight: 10
+        enabled: false
+      vactory_paragraph_tab:
+        weight: 11
+        enabled: false
+      views_reference:
+        weight: 12
+        enabled: false
+field_type: entity_reference_revisions

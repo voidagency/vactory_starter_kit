@@ -1,0 +1,17 @@
+{
+    "name": "void/vactory_reminder",
+    "description": "vactory reminder custom module..",
+    "type": "drupal-module",
+    "autoload": {
+        "psr-4": {
+            "Drupal\\drush9_example\\": "src/"
+        }
+    },
+    "extra": {
+        "drush": {
+            "services": {
+                "drush.services.yml": "^9"
+            }
+        }
+    }
+}

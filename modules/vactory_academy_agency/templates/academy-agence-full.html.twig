@@ -64,6 +64,7 @@
  */
 #}
 {% set academy_videos = content.field_vactory_file_multiple['#items'].value is defined ? content.field_vactory_file_multiple['#items'].value : '' %}
+{% set videos = content.field_vactory_youtube_media.0 is defined ? content.field_vactory_youtube_media.0['#media'].field_media_oembed_video.0.value : null %}
 
 <div class="block-top bg-secondary text-white position-relative pt-2 pb-4 row">
   <div class='col-md-12 mb-md-3 wrapper-flag_favorite'>
@@ -135,12 +136,13 @@
       {% endif %}#}
       <div class="right-col_content p-0 mr-md-2">
         {% if not is_anonymous %}
-          {% if content.field_vactory_youtube_videos['#items'].value is defined %}
+          {% if videos is defined %}
             <div class="academy-video text-center">
               {#% <h3>{{ 'Contenu du cours'|t }}</h3>#}
               <div class="mb-3">
-                {% for video in content.field_vactory_youtube_videos['#items'] %}
-                  <a data-fancybox href="{{ video.value }}" class='play-videos'>
+                {% for key, item in content.field_vactory_youtube_media if key|first != '#' %}
+                  {% set video = item is defined ? item['#media'].field_media_oembed_video.0.value : null %}
+                  <a data-fancybox href="{{ video }}" class='play-videos'>
                     {{content.field_vactory_media}}
                   </a>
                 {% endfor %}
@@ -152,10 +154,11 @@
             </div>
           {% endif %}
         {% else %}
-          <div class="academy-video">
-            {{content.field_vactory_media}}
-          </div>
+
         {% endif %}
+        <div class="academy-video">
+          {{content.field_vactory_file}}
+        </div>
       </div>
     </div>
   </div>

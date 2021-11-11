@@ -1,0 +1,59 @@
+<?php
+
+/**
+ * @file
+ * Module related hooks.
+ */
+
+use Drupal\Core\Url;
+use Drupal\user\UserInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_two_factors_auth_theme($existing, $type, $theme, $path) {
+  return [
+    'form__vactory_two_factors_auth' => [
+      'base hook' => 'form',
+      'template' => 'vactory-two-factors-auth-form',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_user_login().
+ */
+function vactory_two_factors_auth_user_login(UserInterface $account) {
+  $route_name = Drupal::routeMatch()->getRouteName();
+  $config = Drupal::config('vactory_two_factors_auth.settings');
+  $concerned_roles = $config->get('concerned_roles');
+  $is_user_concerned = empty($concerned_roles) || !empty(array_intersect($concerned_roles, $account->getRoles()));
+  if ($route_name !== 'vactory_two_factors_auth.otp_form' && $is_user_concerned) {
+    $account->id();
+    $uid = vactory_two_factors_encrypt($account->id());
+    $url = Url::fromRoute('vactory_two_factors_auth.otp_form', ['uid' => $uid]);
+    $request = \Drupal::request();
+    $request->getSession()->clear();
+    $response = new RedirectResponse($url->toString());
+    $response->send();
+  }
+}
+
+/**
+ * Data encryption.
+ */
+function vactory_two_factors_encrypt($data) {
+  $date = (new DateTime())->format('dmH');
+  $key = '7O9KM8O44nO9cmZL' . $date;
+  return bin2hex(openssl_encrypt($data, "aes-128-ecb", $key, OPENSSL_RAW_DATA));
+}
+
+/**
+ * Data decryption.
+ */
+function vactory_two_factors_decrypt($data) {
+  $date = (new DateTime())->format('dmH');
+  $key = '7O9KM8O44nO9cmZL' . $date;
+  return openssl_decrypt(pack("H*", $data), "aes-128-ecb", $key, OPENSSL_RAW_DATA);
+}

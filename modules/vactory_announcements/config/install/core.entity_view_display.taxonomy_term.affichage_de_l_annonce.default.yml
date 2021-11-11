@@ -1,0 +1,32 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.taxonomy_term.affichage_de_l_annonce.field_nombre_en_jours
+    - taxonomy.vocabulary.affichage_de_l_annonce
+  module:
+    - text
+id: taxonomy_term.affichage_de_l_annonce.default
+targetEntityType: taxonomy_term
+bundle: affichage_de_l_annonce
+mode: default
+content:
+  description:
+    label: hidden
+    type: text_default
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_nombre_en_jours:
+    weight: 1
+    label: above
+    settings:
+      thousand_separator: ''
+      prefix_suffix: true
+    third_party_settings: {  }
+    type: number_integer
+    region: content
+hidden:
+  langcode: true
+  search_api_excerpt: true

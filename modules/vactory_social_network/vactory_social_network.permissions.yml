@@ -1,0 +1,4 @@
+administer vactory social network:
+  title: 'Administer Social Network.'
+  description: 'Allow to access the administration form to configure Social Network.'
+  restrict access: true

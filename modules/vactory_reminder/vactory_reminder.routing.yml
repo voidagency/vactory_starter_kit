@@ -1,0 +1,7 @@
+vactory_reminder.settings:
+  path: '/admin/config/vactory-reminder'
+  defaults:
+    _form: 'Drupal\vactory_reminder\Form\VactoryReminderSettingsForm'
+    _title: 'Vactory Reminder Settings'
+  requirements:
+    _permission: 'administer site configuration'

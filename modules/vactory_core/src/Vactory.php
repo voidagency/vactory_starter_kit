@@ -194,9 +194,11 @@ class Vactory {
     $terms = [];
     foreach (\Drupal::service('entity_field.manager')->getFieldDefinitions('node', $content_type) as $v => $item) {
       if ($item->getSetting("target_type") === "taxonomy_term") {
-        $field_name = $item->get('field_name');
-        foreach ($item->getSetting("handler_settings")['target_bundles'] as $key => $value) {
-          $terms[$value] = [$value, $field_name];
+        if (method_exists($item, 'get')) {
+          $field_name = $item->get('field_name');
+          foreach ($item->getSetting("handler_settings")['target_bundles'] as $key => $value) {
+            $terms[$value] = [$value, $field_name];
+          }
         }
       }
     }
@@ -334,7 +336,7 @@ class Vactory {
    * @return string|array
    *   Rendered block.
    */
-  public static function renderBlock($machine_name, array $configuration = []) {
+  public static function renderBlock($machine_name, array $configuration = [], array $attributes = []) {
     $twigExtension = \Drupal::service('twig_tweak.twig_extension');
     $entityManager = \Drupal::service('entity_type.manager');
     $block_storage = $entityManager->getStorage('block_content');
@@ -342,7 +344,6 @@ class Vactory {
     // Load block by custom machine_name ID.
     // @see modules/vactory/vactory_core/vactory_core.module
     $block = $block_storage->loadByProperties(['block_machine_name' => $machine_name]);
-
     if (is_array($block) && reset($block) instanceof BlockContent) {
       $block_view = $entityManager->getViewBuilder('block_content')
         ->view(reset($block));
@@ -362,6 +363,9 @@ class Vactory {
 
     $block = $twigExtension->drupalBlock($machine_name, $configuration);
     if ($block && is_array($block) && isset($block['#plugin_id']) && $block['#plugin_id'] !== 'broken') {
+      if (isset($block['#attributes'])) {
+        $block['#attributes'] = array_merge_recursive($block['#attributes'], $attributes);
+      }
       return $block;
     }
 

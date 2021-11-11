@@ -137,6 +137,9 @@ function vactory_glossary_preprocess_views_view_summary_unformatted(&$variables)
     $specialChars_K = ['ک', 'ك'];
 
     foreach ($variables['rows'] as $key => $row) {
+      if (ctype_lower($row->link)) {
+        unset($variables['rows'][$key]);
+      }
       if (in_array($row->link, $specialChars_E)) {
         $row->link = 'E';
         $url_array = explode('/', $row->url);
@@ -287,33 +290,25 @@ function vactory_glossary_views_query_alter(ViewExecutable $view, QueryPluginBas
       $query->addWhereExpression(0, $field, $value);
     }
     // If it doesn't, give a letter by default depending on language.
-    else {
-      if ($lang != 'ar') {
-        $field = 'SUBSTRING(node_field_data.title, 1, 1) = :node_field_data_title';
-        $value = [':node_field_data_title' => 'A'];
-        $query->addWhereExpression(0, $field, $value);
-      }
-      else {
-        if ($letter == 'ک') {
-          $field = 'SUBSTRING(node_field_data.title, 1, 1) = :node_field_data_title OR ' .
-            'SUBSTRING(node_field_data.title, 1, 1) = :node_field_data_title_2';
-          $value = [
-            ':node_field_data_title'   => 'ک',
-            ':node_field_data_title_2' => 'ك',
-          ];
-        }
-        else {
-          $field = 'SUBSTRING(node_field_data.title, 1, 1) = :node_field_data_title OR ' .
-            'SUBSTRING(node_field_data.title, 1, 1) = :node_field_data_title_2 OR ' .
-            'SUBSTRING(node_field_data.title, 1, 1) = :node_field_data_title_3';
-          $value = [
-            ':node_field_data_title'   => 'أ',
-            ':node_field_data_title_2' => 'إ',
-            ':node_field_data_title_3' => 'ا',
-          ];
-        }
-        $query->addWhereExpression(0, $field, $value);
-      }
+    if (!empty($letter) && $letter == 'ک') {
+      $field = 'SUBSTRING(node_field_data.title, 1, 1) = :node_field_data_title OR ' .
+        'SUBSTRING(node_field_data.title, 1, 1) = :node_field_data_title_2';
+      $value = [
+        ':node_field_data_title'   => 'ک',
+        ':node_field_data_title_2' => 'ك',
+      ];
+      $query->addWhereExpression(0, $field, $value);
+    }
+    if (!empty($letter) && $letter == 'أ') {
+      $field = 'SUBSTRING(node_field_data.title, 1, 1) = :node_field_data_title OR ' .
+      'SUBSTRING(node_field_data.title, 1, 1) = :node_field_data_title_2 OR ' .
+      'SUBSTRING(node_field_data.title, 1, 1) = :node_field_data_title_3';
+      $value = [
+        ':node_field_data_title'   => 'أ',
+        ':node_field_data_title_2' => 'إ',
+        ':node_field_data_title_3' => 'ا',
+      ];
+      $query->addWhereExpression(0, $field, $value);
     }
   }
 }

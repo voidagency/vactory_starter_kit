@@ -1,0 +1,7 @@
+langcode: fr
+status: true
+dependencies: {  }
+name: 'Médiathèque - Thème Albums'
+vid: mediatheque_theme_albums
+description: ''
+weight: 0

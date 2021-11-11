@@ -1,0 +1,66 @@
+<?php
+
+/**
+ * @file
+ * Install file.
+ */
+
+use Drupal\taxonomy\Entity\Term;
+
+/**
+ * Implements hook_install().
+ */
+function vactory_mediatheque_install() {
+  // Ensure the translation fields are created in the database.
+  \Drupal::service('entity.definition_update_manager')->applyUpdates();
+
+  // Term names to be added.
+  $parent_items = [
+    'Photothèque',
+    'Vidéothèque',
+    'Bibliothèque',
+  ];
+
+  // Term phototèque children names to be added.
+  $photo_children = [
+    'Album 1 Photothèque',
+    'Album 2 Photothèque',
+  ];
+
+  // Term Vidéothèque children names to be added.
+  $video_children = [
+    'Album 1 Vidéothèque',
+    'Album 2 Vidéothèque',
+  ];
+
+  foreach ($parent_items as $item) {
+    Term::create([
+      'parent' => [],
+      'name'   => $item,
+      'vid'    => 'mediatheque_theme_albums',
+    ])->save();
+  }
+
+  $photo_parent = \Drupal::entityManager()->getStorage('taxonomy_term')->loadByProperties(['name' => 'Photothèque']);
+  $photo_parent = reset($photo_parent);
+
+  foreach ($photo_children as $item) {
+    Term::create([
+      'parent' => [$photo_parent->id()],
+      'name'   => $item,
+      'vid'    => 'mediatheque_theme_albums',
+    ])->save();
+  }
+
+  $video_parent = \Drupal::entityManager()->getStorage('taxonomy_term')->loadByProperties(['name' => 'Vidéothèque']);
+  $video_parent = reset($video_parent);
+
+  foreach ($video_children as $item) {
+    Term::create([
+      'parent' => [$video_parent->id()],
+      'name'   => $item,
+      'vid'    => 'mediatheque_theme_albums',
+    ])->save();
+  }
+
+}

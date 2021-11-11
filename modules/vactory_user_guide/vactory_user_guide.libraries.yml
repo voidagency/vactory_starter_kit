@@ -1,0 +1,19 @@
+guideScripts:
+  js:
+    ../../../../libraries/intro.js/minified/intro.min.js: {}
+    js/user-guide.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
+    - core/jquery.cookie
+guideStyleLtr:
+  version: VERSION
+  css:
+    theme:
+      ../../../../libraries/intro.js/minified/introjs.min.css: {}
+guideStyleRtl:
+  version: VERSION
+  css:
+    theme:
+      ../../../../libraries/intro.js/minified/introjs.min.css: {}
+      ../../../../libraries/intro.js/minified/introjs-rtl.min.css: {}

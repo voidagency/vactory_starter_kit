@@ -1,0 +1,7 @@
+{% if option.type == 'image' %}
+    {% set image = option.uri|image_style('max_325x325') %}
+    <img class="w-100" src="{{ image }}" alt="{{ option.alt }}"/>
+{% endif %}
+{% if option.type == 'text' %}
+    <h6 class="p-2 border border-secondary rounded h-100">{{ option.value }}</h6>
+{% endif %}

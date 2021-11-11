@@ -1,0 +1,41 @@
+{#
+/**
+ * @file
+ * Default template for block.
+ */
+#}
+{% set classes = [
+	'block',
+	'container',
+	bundle ? 'block--' ~ bundle|clean_class,
+	id ? 'block--' ~ id|clean_class,
+] %}
+{% set title_classes = [
+	'title',
+] %}
+
+{% if logged_in %}
+<div{{ attributes.addClass(classes)|without('id') }}>
+	{{ title_prefix }}
+	{% if label %}
+		<h3{{ title_attributes.addClass(title_classes) }}>{{ label }}</h3>
+	{% endif %}
+	{{ title_suffix }}
+	<div class="block__content">
+		{% block content %}
+			{{ content.body }}
+			<div class="d-flex justify-content-center m-auto w-75 p-4">
+				<div class="shadow p-3 mb-5 bg-white text-center rounded p-4" style="min-width: 100%">
+					{% if content.field_sondage_question.0 is defined %}
+						<h4 class="mb-3">{{ content.field_sondage_question }}</h4>
+					{% endif %}
+					{{ content.field_sondage_options }}
+					{% if content.field_sondage_close_date.0['#markup'] is defined and content.field_sondage_status.0['#markup'] %}
+						<span class="text-muted">{{ 'Ce sondage sera automatiquement fermé le'|t }} {{ content.field_sondage_close_date.0['#markup'] }}</span>
+					{% endif %}
+				</div>
+			</div>
+		{% endblock %}
+	</div>
+</div>
+{% endif %}

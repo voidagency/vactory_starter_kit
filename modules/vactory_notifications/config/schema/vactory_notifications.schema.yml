@@ -7,6 +7,12 @@ vactory_notifications.settings:
     notifications_default_message:
       type: text
       label: 'Notifications default message'
+    mail_default_subject:
+      type: text
+      label: 'Mail default title'
+    mail_default_message:
+      type: text
+      label: 'Mail default message'
     langcode:
       type: string
       label: 'Language code'

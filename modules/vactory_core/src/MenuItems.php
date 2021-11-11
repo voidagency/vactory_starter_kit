@@ -2,15 +2,55 @@
 
 namespace Drupal\vactory_core;
 
+use Drupal\Core\Entity\EntityFieldManagerInterface;
+use Drupal\Core\Entity\EntityRepositoryInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Menu\MenuLinkTreeInterface;
 use Drupal\menu_link_content\Entity\MenuLinkContent;
 use Drupal\simplify_menu\MenuItems as MenuItemsBase;
 
 /**
- * Class MenuItems.
+ * Menu Items plugin class.
  *
  * @package \Drupal\simplify_menu
  */
 class MenuItems extends MenuItemsBase {
+
+  /**
+   * Entity repository service.
+   *
+   * @var \Drupal\Core\Entity\EntityRepositoryInterface
+   */
+  protected $entityRepository;
+
+  /**
+   * Entoty field manager service.
+   *
+   * @var \Drupal\Core\Entity\EntityFieldManagerInterface
+   */
+  protected $entityFieldManager;
+
+  /**
+   * Entity type manager service.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
+   * {@inheritDoc}
+   */
+  public function __construct(
+    MenuLinkTreeInterface $menu_link_tree,
+    EntityRepositoryInterface $entityRepository,
+    EntityFieldManagerInterface $entityFieldManager,
+    EntityTypeManagerInterface $entityTypeManager
+  ) {
+    parent::__construct($menu_link_tree);
+    $this->entityRepository = $entityRepository;
+    $this->entityFieldManager = $entityFieldManager;
+    $this->entityTypeManager = $entityTypeManager;
+  }
 
   /**
    * Menu drupal id.
@@ -50,17 +90,14 @@ class MenuItems extends MenuItemsBase {
       if (strpos($menu_plugin_id, 'menu_link_content') === 0) {
         list(, $uuid) = explode(':', $menu_plugin_id, 2);
         /** @var \Drupal\menu_link_content\Entity\MenuLinkContent $entity */
-        $entity = \Drupal::service('entity.repository')
-          ->loadEntityByUuid('menu_link_content', $uuid);
-        $entity = \Drupal::service('entity.repository')
-          ->getTranslationFromContext($entity);
+        $entity = $this->entityRepository->loadEntityByUuid('menu_link_content', $uuid);
+        $entity = $this->entityRepository->getTranslationFromContext($entity);
       }
 
       if ($entity && !self::checkMenuRole($entity, $current_user_roles)) {
         continue;
       }
-      $viewBuilder = \Drupal::entityTypeManager()
-        ->getViewBuilder('menu_link_content');
+      $viewBuilder = $this->entityTypeManager->getViewBuilder('menu_link_content');
 
       $simplifiedLink = [
         'text'         => (isset($entity) && !empty($entity->get('title'))) ? $entity->get('title')->first()->getValue()['value'] : $item->link->getTitle(),
@@ -115,7 +152,7 @@ class MenuItems extends MenuItemsBase {
    *   Render array of menu items.
    */
   public function getMenuTree(string $menuId = 'main'): array {
-    $entityFieldManager = \Drupal::service('entity_field.manager');
+    $entityFieldManager = $this->entityFieldManager;
     $this->menuId = $menuId;
     $this->menuFields = $entityFieldManager->getFieldDefinitions('menu_link_content', $menuId);
 

@@ -4,7 +4,7 @@
     {% for keyword, num in stats %}
       <li>
         <a id="frequent-searches-{{ keyword|replace({' ': '-'}) }}" class="badge badge-primary p-1 pl-2 pr-2 mr-1" href="{{ path }}?{{ param_name }}={{ keyword }}">
-          {{ keyword|capitalize }} ({{ num }})
+          {{ keyword|capitalize }}
         </a>
       </li>
     {% endfor %}

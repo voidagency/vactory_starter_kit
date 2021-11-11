@@ -4,7 +4,7 @@ dependencies:
   module:
     - focal_point
 name: vactory_slider1_image
-label: 'Slider 1 Image 400x250'
+label: 'Slider 1 Image (400x250)'
 effects:
   vactory_sliders_variant1_image:
     uuid: vactory_sliders_variant1_image

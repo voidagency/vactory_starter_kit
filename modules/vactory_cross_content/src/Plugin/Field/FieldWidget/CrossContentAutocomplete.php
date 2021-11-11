@@ -2,10 +2,12 @@
 
 namespace Drupal\vactory_cross_content\Plugin\Field\FieldWidget;
 
+use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\WidgetBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\Node;
+use Drupal\node\Entity\NodeType;
 
 /**
  * Plugin implementation of the 'field_cross_content_widget' widget.
@@ -79,41 +81,163 @@ class CrossContentAutocomplete extends WidgetBase {
    * @see hook_field_widget_WIDGET_TYPE_form_alter()
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
-
     $type = $form_state->getFormObject()->getEntity()->bundle();
-    $default_options = !empty($items->getValue()[0]) ? explode(' ', trim($items->getValue()[0]['value'])) : [];
-    $default_entities = [];
-    foreach ($default_options as $nid) {
-      $default_entities[$nid] = Node::load($nid);
+    $node_type = NodeType::load($type);
+    $bundles = [$type];
+    if ($node_type->getThirdPartySetting('vactory_cross_content', 'enabling', '') == 1) {
+      $content_type_selected = $node_type->getThirdPartySetting('vactory_cross_content', 'content_type', '');
+      $bundles += $content_type_selected;
     }
+    $bundles = array_values($bundles);
+    $node = \Drupal::routeMatch()->getParameter('node');
+    $suffix = $node ? $node->id() : $node_type->id();
+    $tempstore = \Drupal::service('tempstore.private');
+    $store = $tempstore->get('vactpry_cross_content_' . $suffix);
+    if (!\Drupal::request()->isXmlHttpRequest()) {
+      $store->delete('storedValues');
+    }
+    if (empty($store->get('storedValues'))) {
+      $store->set('storedValues', []);
+      $store->set('storedAurocompleteState', []);
+    }
+    $stored_values = $store->get('storedValues');
+    $default_options = !empty($items->getValue()[0]) ? explode(' ', trim($items->getValue()[0]['value'])) : [];
+    $default_options = !empty($stored_values) ? $stored_values : $default_options;
     $element += [
-      '#type' => 'entity_autocomplete',
-      '#target_type' => 'node',
-      '#multiple' => TRUE,
-      '#default_value' => $default_entities,
-      '#selection_settings' => [
-        'target_bundles' => [$type],
-      ],
-      '#title' => $this->t('Cross content nodes'),
-      '#tags' => TRUE,
+      '#type' => 'container',
+      '#attributes' => ['id' => 'cross-content-field-container'],
     ];
-    return ['value' => $element];
+    $element['autocomplete_widgets'] = [
+      '#type' => 'table',
+      '#header' => [
+        $this->t('Contenu lié'),
+        $this->t('Weight'),
+      ],
+      '#empty' => $this->t('No content'),
+      '#tableselect' => FALSE,
+      '#element_validate' => [
+        [$this, 'validate'],
+      ],
+      '#attributes' => [
+        'class' => ['cross-content-sortable-table'],
+      ],
+      '#tabledrag' => [
+        [
+          'action' => 'order',
+          'relationship' => 'sibling',
+          'group' => 'order-weight-element',
+        ],
+      ],
+    ];
+    $cardinality = count($default_options) > 0 ? count($default_options) : 1;
+    for ($i = 0; $i < $cardinality; $i++) {
+      $nid = isset($default_options[$i]) ? $default_options[$i] : '';
+      $default_entity = is_numeric($nid) ? Node::load($nid) : NULL;
+      $element['autocomplete_widgets'][$i]['#attributes']['class'][] = 'draggable';
+      $element['autocomplete_widgets'][$i]['#weight'] = $i;
+      $element['autocomplete_widgets'][$i]['node'] = [
+        '#type' => 'entity_autocomplete',
+        '#target_type' => 'node',
+        '#default_value' => $default_entity,
+        '#selection_handler' => 'default',
+        '#selection_settings' => [
+          'target_bundles' => $bundles,
+        ],
+        '#multiple' => FALSE,
+        '#tag' => FALSE,
+      ];
+      $element['autocomplete_widgets'][$i]['weight'] = [
+        '#type' => 'weight',
+        '#title' => $this->t('Weight for @title'),
+        '#title_display' => 'invisible',
+        '#default_value' => $i,
+        '#value' => $i,
+        '#attributes' => [
+          'class' => ['order-weight-element'],
+        ],
+      ];
+      unset($default_entity);
+    }
+    $element['add_one'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Add one more cross content'),
+      '#submit' => [[$this, 'updateWidgetState']],
+      '#ajax' => [
+        'callback' => [$this, 'updateWidgetForm'],
+        'wrapper' => 'cross-content-field-container',
+      ],
+    ];
+    $element['value'] = [
+      '#type' => 'hidden',
+      '#default_value' => implode(' ', $default_options),
+    ];
+    return $element;
+  }
+
+  /**
+   * Update widget state callback.
+   */
+  public function updateWidgetState(array $form, FormStateInterface $form_state) {
+    // Get triggering element.
+    $user_input = $form_state->getUserInput();
+    $node = \Drupal::routeMatch()->getParameter('node');
+    $node_type = \Drupal::routeMatch()->getParameter('node_type');
+    $suffix = $node ? $node->id() : $node_type->id();
+    $tempstore = \Drupal::service('tempstore.private');
+    $store = $tempstore->get('vactpry_cross_content_' . $suffix);
+    $values = $form_state->getValues();
+    $triggering_element = $form_state->getTriggeringElement();
+    $field_name = reset($triggering_element['#array_parents']);
+    $widget_values = array_map(function ($el) {
+      return $el['node'];
+    }, $values[$field_name]['autocomplete_widgets']);
+    $widget_values = array_values($widget_values);
+    // Add new empty autocomplete input.
+    $widget_values[] = '';
+    $store->set('storedValues', $widget_values);
+    $user_input[$field_name]['value'] = implode(' ', $widget_values);
+    $form_state->setUserInput($user_input);
+    $form_state->setRebuild();
+  }
+
+  /**
+   * Update widget form callback.
+   */
+  public function updateWidgetForm(array $form, FormStateInterface $form_state) {
+    $triggering_element = $form_state->getTriggeringElement();
+    $parents = array_slice($triggering_element['#array_parents'], 0, -1);
+    $element = NestedArray::getValue($form, $parents);
+    return $element;
+  }
+
+  /**
+   * Element validate Callback.
+   */
+  public function validate(&$element, FormStateInterface $form_state, &$complete_form) {
+    $triggering_element = $form_state->getTriggeringElement();
+    $field_name = reset($triggering_element['#array_parents']);
+    $values = $form_state->getValues();
+    if ($field_name !== 'actions') {
+      $widget_values = $values[$field_name]['autocomplete_widgets'];
+      foreach ($widget_values as $key => $value) {
+        if (empty($value['node'])) {
+          $form_state->setError($element['autocomplete_widgets'][$key]['node'], $this->t('Ce champ est requis'));
+        }
+      }
+    }
   }
 
   /**
    * {@inheritdoc}
    */
   public function massageFormValues(array $values, array $form, FormStateInterface $form_state) {
-    $options_to_string = '';
-    if (isset($values['value']) && is_array($values['value'])) {
-      foreach ($values['value'] as $value) {
-        foreach ($value as $nid) {
-          $options_to_string .= $nid . ' ';
-        }
-      }
+    $field_values = [];
+    if (isset($values['autocomplete_widgets']) && is_array($values['autocomplete_widgets'])) {
+      $field_values = array_map(function ($el) {
+        return $el['node'];
+      }, $values['autocomplete_widgets']);
     }
-    $values['value'] = $options_to_string;
-
+    $values['value'] = implode(' ', $field_values);
     return parent::massageFormValues($values, $form, $form_state);
   }
 

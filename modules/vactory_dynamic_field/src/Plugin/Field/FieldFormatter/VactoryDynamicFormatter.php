@@ -4,6 +4,7 @@ namespace Drupal\vactory_dynamic_field\Plugin\Field\FieldFormatter;
 
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Component\Utility\UrlHelper;
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Url;
@@ -78,6 +79,31 @@ class VactoryDynamicFormatter extends FormatterBase {
           }
           $value = $file_link;
         }
+
+        if ($info['type'] === 'remote_video' && !empty($value)) {
+          if (is_array($value) && isset(array_values($value)[0]['selection'][0]['target_id'])) {
+            $media_id = array_values($value)[0]['selection'][0]['target_id'];
+            $media = Media::load($media_id);
+            if (isset($media) && !empty($media)) {
+              $fid = $media->get('thumbnail')->target_id;
+              $uri = '';
+              if (isset($fid) && !empty($fid)) {
+                $uri = File::load($fid)->getFileUri();
+              }
+
+              $content = [
+                'titre'       => $media->get('name')->value,
+                'video_url'   => $media->get('field_media_oembed_video')->value,
+                'thumbnail'   => [
+                  'uri'    => $uri,
+                  'height' => $media->get('thumbnail')->height,
+                  'width'  => $media->get('thumbnail')->width,
+                ],
+              ];
+              $value = $content;
+            }
+          }
+        }
       }
       elseif (is_array($value)) {
         // Go deeper.
@@ -100,7 +126,9 @@ class VactoryDynamicFormatter extends FormatterBase {
     $elements = [];
 
     // Get vactory_provider_manager to get the module name provide the plugin.
-    /* @var \Drupal\vactory_dynamic_field\WidgetsManager $platformProvider */
+    /**
+     * @var \Drupal\vactory_dynamic_field\WidgetsManager $platformProvider
+     */
     $platformProvider = \Drupal::service('vactory_dynamic_field.vactory_provider_manager');
 
     foreach ($items as $delta => $item) {
@@ -181,7 +209,7 @@ class VactoryDynamicFormatter extends FormatterBase {
         '#platform'     => $platform,
         '#widgets_path' => $widgets_path,
         "#cache"        => [
-          "max-age" => 0,
+          "max-age" => Cache::PERMANENT,
         ],
       ];
     }

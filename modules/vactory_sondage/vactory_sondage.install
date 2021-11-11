@@ -1,0 +1,23 @@
+<?php
+
+/**
+ * @file
+ * Module install/uninstall related hooks.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function vactory_sondage_install($is_syncing) {
+  // Add sodage consumer id to reminder settings.
+  $config = \Drupal::configFactory()->getEditable('vactory_reminder.settings');
+  $reminder_consumers = $config->get('reminder_consumers');
+  $reminder_consumers_string = '';
+  $reminder_consumers['vactory_sondage_closer'] = '1 min';
+  foreach ($reminder_consumers as $key => $value) {
+    $reminder_consumers_string .= !empty($reminder_consumers_string) ? PHP_EOL . $key . '|' . $value : $key . '|' . $value;
+  }
+  $config->set('reminder_consumers', $reminder_consumers)
+    ->set('reminder_consumers_string', $reminder_consumers_string)
+    ->save();
+}

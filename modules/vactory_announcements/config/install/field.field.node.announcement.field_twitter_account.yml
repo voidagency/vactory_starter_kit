@@ -1,0 +1,18 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_twitter_account
+    - node.type.announcement
+id: node.announcement.field_twitter_account
+field_name: field_twitter_account
+entity_type: node
+bundle: announcement
+label: 'Compte twitter'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

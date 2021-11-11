@@ -1,0 +1,55 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Vactory Quiz History module.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function vactory_quiz_history_schema() {
+  $schema['vactory_quiz_history'] = [
+    'description' => 'Base table to record data about vactory quiz attempts.',
+    'fields' => [
+      'id' => [
+        'description' => 'The primary identifier for an attempt.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'uid' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'uid of user.',
+      ],
+      'quiz_nid' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'nid of the quiz.',
+      ],
+      'user_mark' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => "user's mark in the quiz attempt",
+      ],
+      'perfect_mark' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => "The quiz's perfect mark",
+      ],
+      'user_answers' => [
+        'type' => 'blob',
+        'not null' => TRUE,
+        'description' => 'User answers',
+      ],
+      'time' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => "Timestamp for user's attempt.",
+      ],
+    ],
+    'primary key' => ['id'],
+  ];
+  return $schema;
+}

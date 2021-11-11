@@ -1,0 +1,79 @@
+.gradient {
+  position: absolute;
+  z-index: 2;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 200px;
+  background: -moz-linear-gradient(top, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 70%);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(255,255,255,0)), color-stop(70%,rgba(255,255,255,1)));
+  background: -o-linear-gradient(top, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 70%);
+  background: -ms-linear-gradient(top, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 70%);
+  background: linear-gradient(to bottom, rgba(255,255,255,0) 0%,rgba(255,255,255,1) 70%);
+}
+.block-comment {
+  padding-bottom: 0px;
+  padding-top: 0px;
+}
+.comment-container {
+  position: relative;
+}
+.wrapper-icone {
+  z-index: 0;
+  height: 49px;
+a {
+  text-decoration: none;
+  height: 100%;
+}
+.favorite-icone {
+&::before {
+   content: $icon-heart;
+   font-family: 'vactory';
+   font-size: 16px;
+   color: $red;
+   transform: scale(1);
+   transition: transform .5s ease-in;
+ }
+&.active {
+&::before {
+   transform: scale(1.1);
+   content: $icon-like;
+ }
+}
+}
+.contact-link {
+&::before {
+   content: $icon-envelope;
+   font-family: 'vactory';
+   font-size: 16px;
+   color: $primary;
+   transform: scale(1);
+   transition: transform .5s ease-in;
+ }
+&:hover {
+&::before {
+   transform: scale(1.1);
+   content: $icon-envelope;
+ }
+}
+}
+.ajax-progress {
+  display: none;
+}
+&:hover ,
+&:focus {
+   cursor: pointer;
+.favorite-icone{
+&::before {
+   transform: scale(1.1);
+ }
+}
+}
+}
+
+.flag-content {
+  z-index: 9;
+}
+.no-shadow {
+  box-shadow: none;
+}

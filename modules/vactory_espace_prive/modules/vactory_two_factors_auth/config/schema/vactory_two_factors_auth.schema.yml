@@ -1,0 +1,19 @@
+vactory_two_factors_auth.settings:
+  type: config_object
+  label: 'Two Factors Auth Settings'
+  mapping:
+    mail_message_subject:
+      type: label
+      label: 'Sujet du mail'
+    mail_message_body:
+      type: text
+      label: 'Corps du mail'
+    sms_message_body:
+      type: text
+      label: 'Message SMS'
+    otp_lifetime:
+      type: integer
+      label: 'Durée de vie OTP'
+    langcode:
+      type: string 
+      label: 'Language code'

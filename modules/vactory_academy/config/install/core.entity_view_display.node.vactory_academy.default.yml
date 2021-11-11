@@ -17,22 +17,23 @@ dependencies:
     - field.field.node.vactory_academy.field_vactory_paragraphs
     - field.field.node.vactory_academy.field_vactory_seo_status
     - field.field.node.vactory_academy.field_vactory_theme
-    - field.field.node.vactory_academy.field_vactory_youtube_videos
+    - field.field.node.vactory_academy.field_vactory_youtube_media
     - node.type.vactory_academy
     - responsive_image.styles.vactory_three_cols
+  enforced:
+    module:
+      - vactory_academy
   module:
     - comment
     - datetime
     - entity_reference_revisions
     - file
+    - image
     - media_responsive_thumbnail
     - metatag
     - text
     - user
     - yoast_seo
-  enforced:
-    module:
-      - vactory_academy
 id: node.vactory_academy.default
 targetEntityType: node
 bundle: vactory_academy
@@ -142,13 +143,14 @@ content:
     third_party_settings: {  }
     type: entity_reference_label
     region: content
-  field_vactory_youtube_videos:
-    weight: 15
+  field_vactory_youtube_media:
+    type: entity_reference_entity_view
+    weight: 19
     label: above
     settings:
-      link_to_entity: false
+      view_mode: default
+      link: false
     third_party_settings: {  }
-    type: string
     region: content
   flag_favorite_academy:
     weight: 9
@@ -167,6 +169,9 @@ content:
     third_party_settings: {  }
 hidden:
   addtoany: true
+  field_contenu_lie: true
   field_vactory_file_multiple: true
   langcode: true
+  notification_message: true
+  notification_title: true
   search_api_excerpt: true

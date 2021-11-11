@@ -1,0 +1,164 @@
+<?php
+
+/**
+ * @file
+ * Module hooks for Vactory Announcements.
+ */
+
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\CssCommand;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\taxonomy\Entity\Term;
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_announcements_theme($existing, $type, $theme, $path) {
+  return [
+    'node__announcement__full' => [
+      'base hook' => 'node',
+      'template' => 'full',
+    ],
+    'node__announcement__card_inline' => [
+      'base hook' => 'node',
+      'template' => 'card-inline',
+    ],
+  ];
+}
+
+/**
+ * Implements hook__form_alter().
+ */
+function vactory_announcements_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if ($form_id <> "node_announcement_edit_form" && $form_id <> "node_announcement_form") {
+    return;
+  }
+  $form['field_typology']['widget']['#ajax'] = [
+    'callback' => 'on_typology_select_change',
+    'event' => 'change',
+  ];
+  $tid = isset($form['field_typology']['widget']['#default_value']) && !empty($form['field_typology']['widget']['#default_value']) ? $form['field_typology']['widget']['#default_value'][0] : NULL;
+  if (isset($tid)) {
+    $term = Term::load($tid);
+    // Hide event dates fields when typology is not an event.
+    if (empty($term->get('field_specify_dates')->getValue()[0]) || $term->get('field_specify_dates')->getValue()[0]['value'] <> 1) {
+      $form['field_event_date_start']['#attributes'] = ['style' => ['display:none;']];
+      $form['field_event_date_end']['#attributes'] = ['style' => ['display:none;']];
+    }
+  }
+  else {
+    $form['field_event_date_start']['#attributes'] = ['style' => ['display:none;']];
+    $form['field_event_date_end']['#attributes'] = ['style' => ['display:none;']];
+  }
+}
+
+/**
+ * Ajax on Typology Select Change.
+ */
+function on_typology_select_change(&$form, FormStateInterface $form_state) {
+  $response = new AjaxResponse();
+  $tid = isset($form_state->getValues()['field_typology']) && !empty($form_state->getValues()['field_typology']) ? $form_state->getValues()['field_typology'][0]['target_id'] : NULL;
+  if (!is_null($tid)) {
+    $term = Term::load($tid);
+    // Hide event dates fields when typology is not an event using ajax.
+    if (!isset($term->get('field_specify_dates')->getValue()[0]) || empty($term->get('field_specify_dates')->getValue()[0]) || $term->get('field_specify_dates')->getValue()[0]['value'] <> 1) {
+      $response->addCommand(new CssCommand("[data-drupal-selector=edit-field-event-date-start-wrapper]", ['display' => 'none']));
+      $response->addCommand(new CssCommand("[data-drupal-selector=edit-field-event-date-end-wrapper]", ['display' => 'none']));
+    }
+    else {
+      $response->addCommand(new CssCommand("[data-drupal-selector=edit-field-event-date-start-wrapper]", ['display' => 'block']));
+      $response->addCommand(new CssCommand("[data-drupal-selector=edit-field-event-date-end-wrapper]", ['display' => 'block']));
+    }
+  }
+  else {
+    $response->addCommand(new CssCommand("[data-drupal-selector=edit-field-event-date-start-wrapper]", ['display' => 'none']));
+    $response->addCommand(new CssCommand("[data-drupal-selector=edit-field-event-date-end-wrapper]", ['display' => 'none']));
+  }
+  return $response;
+}
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function vactory_announcements_preprocess_node(&$variables) {
+  $node = isset($variables['elements']['#node']) ? $variables['elements']['#node'] : NULL;
+  $view_mode = isset($variables['elements']['#view_mode']) ? $variables['elements']['#view_mode'] : '';
+  // Encrypting contact information.
+  if ($node->bundle() === 'announcement' && $view_mode === 'full') {
+    $variables['content']['encryptedPhone'] = base64_encode($node->get('field_vactory_phone')->getValue()[0]['value']);
+    $variables['content']['encryptedMail'] = base64_encode($node->get('field_vactory_email')->getValue()[0]['value']);
+  }
+}
+
+/**
+ * Implements hook_mail().
+ */
+function vactory_announcements_mail($key, &$message, $params) {
+  switch ($key) {
+    case 'vactory_announcements_mail_service':
+      $message['headers']['Content-Type'] = 'text/html; charset=UTF-8; format=flowed; delsp=yes';
+      $message['subject'] = $params['subject'];
+      // In order to parse html markup.
+      $body = ['#markup' => $params['message']];
+      $message['body'][] = \Drupal::service('renderer')->render($body);
+      $message['options'] = $params['options'];
+      break;
+  }
+}
+
+/**
+ * Implements hook_node_presave().
+ */
+function vactory_announcements_node_presave($node) {
+  if ($node->bundle() === 'announcement') {
+    if (isset($node->original)) {
+      $status_original = isset($node->status) ? $node->status->getValue()[0]['value'] : '';
+      $status_current = isset($node->original->status) ? $node->original->status->getValue()[0]['value'] : '';
+      $already_approved = $node->original->get('field_already_approved') <> NULL ? (($node->original->get('field_already_approved')->getValue()[0] <> NULL) ? $node->original->get('field_already_approved')->getValue()[0]['value'] : 0) : 0;
+      // Check if node is been published for the first time.
+      if ($status_original <> $status_current && $already_approved == 0) {
+        // Send notifs to announcer.
+        $owner = $node->getOwner();
+        $email = $owner->getEmail();
+        $config = \Drupal::config('vactory_announcements.settings')->getRawData();
+        $title = isset($config['v_notification_title']) && !empty($config['v_notification_title']) ? $config['v_notification_title'] : t('Votre annonce %title a éte validé', ['%title' => $node->getTitle()]);
+        $message = isset($config['v_notification_message']) && !empty($config['v_notification_message']) ? $config['v_notification_message'] : '';
+        $params = [
+          '!link_annonce',
+          '!link_delete',
+          '!site_name',
+          '!name',
+          '!period_validity',
+          '!date_end',
+          '!date_start',
+          '!title',
+          '!body',
+          '!country',
+          '!site',
+          '!facebook',
+          '!twitter',
+          '!phone',
+          '!mail',
+        ];
+        // Replace parameters in email message.
+        foreach ($params as $param) {
+          if (strpos($message, $param) !== FALSE) {
+            $value = \Drupal::service('vactory_announcements.announcements.manage')->getParamValue($param, $node);
+            $message = str_replace($param, $value, $message);
+          }
+        }
+        \Drupal::service('vactory_announcements.announcements.manage')->sendMail($title, $email, $message);
+        $node->set('field_already_approved', 1);
+      }
+    }
+    // Set scheduler unpublish_on date.
+    if (isset($node->get('created')->getValue()[0]) && !empty($node->get('created')->getValue()[0])) {
+      $tid = $node->get('field_ad_display')->getValue()[0]['target_id'];
+      $term = Term::load($tid);
+      $days = isset($term->get('field_nombre_en_jours')->getValue()[0]) && !empty($term->get('field_nombre_en_jours')->getValue()[0]['value']) ? $term->get('field_nombre_en_jours')->getValue()[0]['value'] * 24 * 3600 : NULL;
+      // Get unpublish_on date based on announcement date.
+      $date_end = $node->get('created')->getValue()[0]['value'] + $days;
+      $node->set('unpublish_on', $date_end);
+    }
+  }
+}

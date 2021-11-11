@@ -9,6 +9,7 @@ use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\node\Entity\Node;
+use Drupal\user\Entity\Role;
 use Drupal\vactory_notifications\Entity\NotificationsEntity;
 use Drupal\views\ViewExecutable;
 use Drupal\user\Entity\User;
@@ -37,9 +38,12 @@ function vactory_notifications_theme($existing, $type, $theme, $path) {
  * Implements hook_entity_insert().
  */
 function vactory_notifications_entity_insert(EntityInterface $entity) {
+
+  $notification_Service = \Drupal::service('vactory_notifications.send_mail');
   $notification_config = Drupal::config('vactory_notifications.settings');
   $token = Drupal::token();
   if ($entity->getEntityTypeId() === 'node') {
+
     $node_notification_title = !empty($entity->get('notification_title')->value) ? $entity->get('notification_title')->value : $notification_config->get('notifications_default_title');
     $node_notification_message = !empty($entity->get('notification_message')->value) ? $entity->get('notification_message')->value : $notification_config->get('notifications_default_message');
     // Generate a notification.
@@ -63,6 +67,53 @@ function vactory_notifications_entity_insert(EntityInterface $entity) {
     if ($is_auto_translated) {
       notifications_auto_translate($notification, $notification_config);
     }
+    // Notification by Mail.
+    $node_mail_subject = !empty($entity->get('mail_subject')->value) ? $entity->get('mail_subject')->value : $notification_config->get('mail_default_subject');
+    $node_mail_message = !empty($entity->get('mail_message')->value) ? $entity->get('mail_message')->value : $notification_config->get('mail_default_message');
+    // Send a mail notification.
+    $is_mail_active = $notification_config->get('mail_active');
+    if ($is_mail_active == 1) {
+      $existing_roles = Role::loadMultiple();
+      $target_roles = [];
+      foreach ($existing_roles as $key => $role) {
+        $mail_roles = $notification_config->get($key . '_content_types_mail');
+        if (isset($mail_roles) && !empty($mail_roles) && in_array($entity->bundle(), $mail_roles)) {
+          array_push($target_roles, $key);
+        }
+      }
+      if (!empty($target_roles) && isset($node_mail_subject) && isset($node_mail_message)) {
+        $subject = $token->replace($node_mail_subject, ['entity' => $entity]);
+        $message = $token->replace($node_mail_message, ['entity' => $entity]);
+        $users = User::loadMultiple();
+        foreach ($users as $user) {
+          if (count(array_intersect($user->getRoles(), $target_roles)) > 0 && !empty($user->getEmail())) {
+            $notification_Service->sendNotificationByMail($subject, $user->getEmail(), $message);
+          }
+        }
+      }
+      // Generate a mail notification.
+      $mail_notification_data = [
+        'type' => 'notification_entity',
+        'mail_subject' => $token->replace($node_mail_subject, ['entity' => $entity]),
+        'user_id' => $current_user_id,
+        'notification_related_content' => $entity->id(),
+        'mail_message' => $token->replace($node_mail_message, ['entity' => $entity]),
+        'status' => TRUE,
+        'notification_concerned_users' => json_encode(vactory_notifications_users_ids($entity->bundle(), $notification_config)),
+        'notification_viewers' => json_encode([]),
+      ];
+
+      $mail_notification = Drupal::entityTypeManager()
+        ->getStorage('notifications_entity')
+        ->create($mail_notification_data);
+      $notification->save();
+      // Notifications auto translation feature.
+      $is_auto_translated = (boolean) $notification_config->get('auto_translation');
+      if ($is_auto_translated) {
+        notifications_auto_translate($mail_notification, $notification_config);
+      }
+    }
+
   }
 
   if ($entity->getEntityTypeId() === 'notifications_entity') {
@@ -99,12 +150,18 @@ function notifications_auto_translate($notification, $default_config) {
       $notification_config_translation = \Drupal::languageManager()->getLanguageConfigOverride($langcode, 'vactory_notifications.settings');
       $translated_notification_title = $notification_config_translation->get('notifications_default_title');
       $translated_notification_message = $notification_config_translation->get('notifications_default_message');
+      $translated_mail_subject = $notification_config_translation->get('mail_default_subject');
+      $translated_mail_message = $notification_config_translation->get('mail_default_message');
       $translated_notification = $notification->addTranslation($langcode);
       $translated_notification_title = isset($translated_notification_title) ? $translated_notification_title : $default_config->get('notifications_default_title');
       $translated_notification_message = isset($translated_notification_message) ? $translated_notification_message : $default_config->get('notifications_default_message');
+      $translated_mail_subject = isset($translated_mail_subject) ? $translated_mail_subject : $default_config->get('mail_default_subject');
+      $translated_mail_message = isset($translated_mail_message) ? $translated_mail_message : $default_config->get('mail_default_message');
       // Tokens replacement.
       $translated_notification->name = $token->replace($translated_notification_title, ['entity' => $notification]);
       $translated_notification->notification_message = $token->replace($translated_notification_message, ['entity' => $notification]);
+      $translated_notification->mail_subject = $token->replace($translated_mail_subject, ['entity' => $notification]);
+      $translated_notification->mail_message = $token->replace($translated_mail_message, ['entity' => $notification]);
       $translated_notification->save();
     }
   }
@@ -149,6 +206,39 @@ function vactory_notifications_entity_base_field_info(EntityTypeInterface $entit
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
+    // The Mail notification entity subject.
+    $fields['mail_subject'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Mail Notifications subject'))
+      ->setDescription(t('Set the noifications subject of current node.'))
+      ->setSettings([
+        'max_length' => 255,
+        'text_processing' => 0,
+      ])
+      ->setTranslatable(TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => -6,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayConfigurable('field', TRUE);
+
+    // Mail details/message.
+    $fields['mail_message'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Mail Notifications message'))
+      ->setDescription(t('Set the mail message of current node'))
+      ->setSettings([
+        'default_value' => '',
+        'text_processing' => 0,
+      ])
+      ->setTranslatable(TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textarea',
+        'weight' => -1,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE);
+
   }
   return $fields;
 }
@@ -176,6 +266,28 @@ function vactory_notifications_form_node_form_alter(&$form) {
   }
   if (!isset($form['notification_message']['widget'][0]['value']['#default_value'])) {
     $form['notification_message']['widget'][0]['value']['#default_value'] = $notifications_config->get('notifications_default_message');
+  }
+
+  // Mail notification
+
+  $form['node_mail'] = [
+    '#type'        => 'details',
+    '#title'       => t('Mail Notifications settings'),
+    '#description' => t('Override current node mail notifications subject and message.'),
+    '#group'       => 'advanced',
+    '#open'        => FALSE,
+    '#access'      => \Drupal::currentUser()
+      ->hasPermission('administer notifications'),
+  ];
+  $form['node_mail']['notifications_tokens_tree'] = get_token_tree();
+  $form['mail_subject']['#group'] = 'node_mail';
+  $form['mail_message']['#group'] = 'node_mail';
+
+  if (!isset($form['mail_subject']['widget'][0]['value']['#default_value'])) {
+    $form['mail_subject']['widget'][0]['value']['#default_value'] = $notifications_config->get('mail_default_subject');
+  }
+  if (!isset($form['mail_message']['widget'][0]['value']['#default_value'])) {
+    $form['mail_message']['widget'][0]['value']['#default_value'] = $notifications_config->get('mail_default_message');
   }
 }
 
@@ -276,3 +388,46 @@ function vactory_notifications_cron() {
     }
   }
 }
+
+/**
+ * Implements hook_mail().
+ */
+function vactory_notifications_mail($key, &$message, $params) {
+  switch ($key) {
+    case 'vactory_notifications_mail_body':
+      $message['headers']['Content-Type'] = 'text/html; charset=UTF-8; format=flowed; delsp=yes';
+      $message['subject'] = $params['subject'];
+      $message['body'][] = $params['message'];
+      $message['options'] = $params['options'];
+      break;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

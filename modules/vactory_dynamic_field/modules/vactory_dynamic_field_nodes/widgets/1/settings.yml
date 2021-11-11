@@ -1,0 +1,54 @@
+name: '1 - Nodes'
+multiple: TRUE
+category: 'Nodes'
+enabled: TRUE
+fields:
+  node:
+    type: entity_autocomplete
+    label: 'Node'
+    options:
+      '#target_type': node
+      '#required': TRUE
+  view_mode:
+    type: select
+    label: 'View Mode'
+    options:
+      '#empty_option': '- Select View Mode -'
+      '#options':
+        - 'card': 'Card'
+        - 'card_inline': 'Card Inline'
+        - 'masonry': 'Masonry'
+        - 'mosaique': 'Mosaique'
+        - 'smart_search': 'Smart Search'
+extra_fields:
+  title:
+    type: text
+    label: 'Titre'
+  description:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'full_html'
+  cta:
+    type: url_extended
+    label: 'Call to action'
+  display_mode:
+    type: select
+    label: 'Display Mode'
+    options:
+      '#empty_option': '- Select a Display Mode -'
+      '#options':
+        - 'col_2': 'Two Columns'
+        - 'col_3': 'Three Columns'
+        - 'slider': 'Slider'
+  group_slider_config:
+    g_title: 'Slider Config'
+    data_to_show:
+      type: number
+      label: 'Nombre des élémenets à afficher'
+    data_to_scroll:
+      type: number
+      label: 'Nombre des éléments à scroller'
+    auto_play:
+      type: checkbox
+      label: 'Auto Slide'

@@ -1,0 +1,4 @@
+services:
+  vactory_content_access.access_manager:
+    class: Drupal\vactory_content_access\Services\VactoryNodeAccessCheck
+    arguments: ['@current_user', '@entity_type.manager']

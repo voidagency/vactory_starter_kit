@@ -6,22 +6,20 @@
  * Available variables:
  * - name : the item name.
  * - field_locator_info : array contain item localisation info (lat & lon).
- * - field_locator_adress_address_line1 : item adresse .
- * - field_locator_adress_address_line2 : the second item adresse.
  * - field_locator_category : item category.
- * - field_locator_adress_country_code :  item country (this return the full country name).
- * - field_locator_adress_locality : item city.
- * - field_locator_adress_postal_code :  item postal code.
+ * - field_locator_country_1 : item country.
+ * - field_locator_city_1 : item city.
+ * - field_locator_additional_adress : additional item adresse.
+ * - field_locator_zipcode : item postal code.
  * - field_locator_email : item E-mail.
  * - field_locator_description : description about item.
  * - field_locator_image : uri item image.
  * - field_locator_fax : item fax.
  * - field_locator_phone : item phone number.
- * - field_locator_autre : other information about item (we have 4 other available information juste add
+ * - field_locator_autre : other information about item (we have 3 other available information juste add
  *   item number (_number) in the end like this field_locator_autre_2, field_locator_autre_3, ... ).
  */
 #}
-
 <div>
   <ul>
     <li>
@@ -47,28 +45,24 @@
       </ul>
     </li>
     <li>
-      <label> {{ 'First adresse' | t }} </label>
-      <p> {{ field_locator_adress_address_line1 }}</br><span id="distance"></span> </p>
-    </li>
-    <li>
-      <label> {{ 'Second adresse' | t }} </label>
-      <p> {{ field_locator_adress_address_line2 }} </p>
-    </li>
-    <li>
       <label> {{ 'Category' | t }} </label>
-      <p> {{ field_locator_category }} </p>
+      <p> {{ field_locator_category_infos.label_category }} </p>
     </li>
     <li>
-      <label> {{ 'Country' | t }} </label>
-      <p> {{ field_locator_adress_country_code }} </p>
+      <label> {{ 'Country' | t }} </br><span id="distance"></span> </label>
+      <p> {{ field_locator_country_1 }} </p>
     </li>
     <li>
       <label> {{ 'City' | t }} </label>
-      <p> {{ field_locator_adress_locality }} </p>
+      <p> {{ field_locator_city_1 }} </p>
+    </li>
+    <li>
+      <label> {{ 'Additional adress' | t }} </label>
+      <p> {{ field_locator_additional_adress|striptags }} </p>
     </li>
     <li>
       <label> {{ 'Postal Code' | t }} </label>
-      <p> {{ field_locator_adress_postal_code }} </p>
+      <p> {{ field_locator_zipcode }} </p>
     </li>
     <li>
       <label> {{ 'Adresse E-mail' | t }} </label>
@@ -101,12 +95,6 @@
         </li>
         <li>
           <p> {{ field_locator_autre_3 }} </p>
-        </li>
-        <li>
-          <p> {{ field_locator_autre_4 }} </p>
-        </li>
-        <li>
-          <p> {{ field_locator_autre_5 }} </p>
         </li>
       </ul>
     </li>

@@ -1,0 +1,5 @@
+vactoy_announcements_translation.settings:
+  title: 'Vactory Announcements Settings'
+  base_route_name: vactory_announcements.admin_settings
+  names:
+    - vactory_announcements.settings

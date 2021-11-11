@@ -1,0 +1,4 @@
+vactory_menu_breadcrumb.settings:
+  route_name: vactory_menu_breadcrumb.settings
+  base_route: vactory_menu_breadcrumb.settings
+  title: Settings

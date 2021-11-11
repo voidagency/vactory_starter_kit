@@ -1,0 +1,11 @@
+{{ attach_library('vactory_mediatheque/vactory_mediatheque.vactory_views_filter_years') }}
+{% if years is defined and years is not empty %}
+  <div>
+    {% for key, year in years|sort %}
+      {% if current_active_year is defined and current_active_year is not empty %}
+        {% set active = current_active_year == key ? 'active' : '' %}
+      {% endif %}
+         <button  type="button" class="{{ active }} filter-tab btn btn-outline-secondary" data-filter-id="{{ key }}">{{ year }}</button>
+    {% endfor %}
+  </div>
+{% endif %}

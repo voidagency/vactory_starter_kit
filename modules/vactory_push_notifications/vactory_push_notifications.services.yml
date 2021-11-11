@@ -1,0 +1,4 @@
+services:
+  vactory_push_notifications.pushnotifications.manage:
+    class: Drupal\vactory_push_notifications\Services\PushNotificationsService
+    arguments: ['@logger.factory']

@@ -1,0 +1,4 @@
+style:
+  css:
+    theme:
+      scss/vactory_quiz.css: { }

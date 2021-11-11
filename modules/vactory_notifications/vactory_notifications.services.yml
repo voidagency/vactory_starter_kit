@@ -1,0 +1,4 @@
+services:
+  vactory_notifications.send_mail:
+    class: Drupal\vactory_notifications\Services\VactoryNotificationsService
+    arguments: ['@plugin.manager.mail', '@language_manager']

@@ -542,3 +542,35 @@ function vactory_appointment_form_user_register_form_alter(&$form, FormStateInte
     $form['account']['mail']['#default_value'] = $email;
   }
 }
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_appointment_preprocess_breadcrumb(&$variables) {
+  $current_theme = Drupal::theme()->getActiveTheme()->getName();
+  $default_theme = \Drupal::config('system.theme')->get('default');
+  if (isset($variables['breadcrumb']) && $current_theme == $default_theme) {
+    $route_name = Drupal::routeMatch()->getRouteName();
+    foreach ($variables['breadcrumb'] as $index => &$breadcrumb) {
+      if (isset($breadcrumb['text'])) {
+        if (gettype($breadcrumb['text']) == 'string') {
+          $breadcrumb['text'] = strip_tags($breadcrumb['text']);
+          $breadcrumb['text'] = t(ucfirst($breadcrumb['text']));
+          if ($route_name == 'vactory_appointment.site_appointment_submit_form') {
+            if ($index == count($variables['breadcrumb']) - 1) {
+              $breadcrumb['text'] = t(ucwords($breadcrumb['text']));
+            }
+            if ($index == 1) {
+              $breadcrumb['text'] = t('Prendre un rendez-vous');
+            }
+          }
+          if ($route_name == 'vactory_appointment.site_appointment_types_select') {
+            if ($index == 1) {
+              $breadcrumb['text'] = t('Prendre un rendez-vous');
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -69,6 +69,12 @@ class CrossContentBlock extends BlockBase implements BlockPluginInterface {
     if ($type->getThirdPartySetting('vactory_cross_content', 'enabling', '') <> 1) {
       return NULL;
     }
+    $content_type_selected = $type->getThirdPartySetting('vactory_cross_content', 'content_type', '');
+    $type_node = '';
+    if ($content_type_selected != '' and $content_type_selected != 'none') {
+      $type_node = $content_type_selected;
+    }
+    $title =  (!empty($this->configuration['title'])) ? $this->configuration['title'] : '';
     $taxonomy_field = $type->getThirdPartySetting('vactory_cross_content', 'taxonomy_field', '');
     $term_id = $type->getThirdPartySetting('vactory_cross_content', 'terms', '');
     $nbr = $type->getThirdPartySetting('vactory_cross_content', 'nombre_elements', 3);
@@ -100,7 +106,8 @@ class CrossContentBlock extends BlockBase implements BlockPluginInterface {
     // Plugin style must be set before preExecute.
     $view->preExecute();
     // Set content type.
-    $view->filter['type']->value = [$node->bundle() => $node->bundle()];
+    $type_node = !empty($type_node) ? $type_node : $node->bundle();
+    $view->filter['type']->value = [$type_node => $type_node];
 
     // Set number of items per page.
     $view->setItemsPerPage($nbr);
@@ -146,27 +153,29 @@ class CrossContentBlock extends BlockBase implements BlockPluginInterface {
 
     }
     // Otherwise we'll use the view's filter.
-    else if (!$ignore ) {
+    elseif (!$ignore) {
       if ($taxonomy_field !== 'none') {
         $target->value = [];
         if (!empty($term_id)) {
           foreach ($term_id as $key => $value) {
             $target->value[$key] = $key;
           }
-        } else {
+        }
+        else {
           $currentTerm = $node->get($taxonomy_field)->getValue();
           foreach ($currentTerm as $value) {
             $_termId = $value['target_id'];
             $target->value[$_termId] = $_termId;
           }
         }
-      } else {
+      }
+      else {
         unset($view->filter[$default_taxo]);
       }
       // Creating a hook to alter the block.
       $data = [
         'view'         => $view,
-        'content_type' => $node->bundle(),
+        'content_type' => !empty($type_node) ? $type_node : $node->bundle(),
         'block'        => 'block_list',
       ];
       Drupal::moduleHandler()->alter('vactory_cross_content_view', $data);
@@ -181,9 +190,13 @@ class CrossContentBlock extends BlockBase implements BlockPluginInterface {
     $view->execute();
     // If no results are available we won't render the block.
     if (count($view->result) == 0) {
-      return NULL;
+      return ['#markup' => ''];
     }
-    return $view->render('block_list');
+    return [
+      '#theme'=>'vcc_block',
+      '#block'=> $view->render('block_list'),
+      '#title'=>$title,
+    ];
   }
 
   /**
@@ -195,9 +208,21 @@ class CrossContentBlock extends BlockBase implements BlockPluginInterface {
     $view->initDisplay();
     $view->setDisplay('block_list');
     $view_modes = Views::fetchPluginNames('style', $view->display_handler->getType(), [$view->storage->get('base_table')]);
-    $form['view_mode'] = [
+
+    $form['title'] = [
+      '#type'          => 'textfield',
+      '#title'         => t('Block Title'),
+      '#description'   => t('the title of the cross content block'),
+      '#default_value' => isset($this->configuration['title']) && !empty($this->configuration['title']) ? $this->configuration['title'] : '',
+    ];
+
+    $form['view_styles_options'] = [
+      '#type'  => 'details',
+      '#title' => t('View Styles'),
+      '#open'  => FALSE,
+    ];
+    $form['view_styles_options']['view_mode'] = [
       '#type'          => 'radios',
-      '#title'         => t('View Styles'),
       '#description'   => '',
       '#options'       => $view_modes,
       '#default_value' => $this->configuration['view_mode'],
@@ -206,13 +231,13 @@ class CrossContentBlock extends BlockBase implements BlockPluginInterface {
     $form['view_options'] = [
       '#type'  => 'details',
       '#title' => t('View style Options'),
-      '#open'  => TRUE,
+      '#open'  => FALSE,
     ];
     foreach ($view_modes as $mode => $value) {
       $form['view_options'][$mode] = [
         '#type'   => 'details',
         '#title'  => $value . ' Options',
-        '#open'   => TRUE,
+        '#open'   => FALSE,
         '#states' => [
           "visible" => [
             "input[name='settings[view_mode]']" => ['value' => $mode],
@@ -238,13 +263,20 @@ class CrossContentBlock extends BlockBase implements BlockPluginInterface {
     foreach (\Drupal::service('entity_display.repository')->getViewModes('node') as $key => $value) {
       $display_modes[$key] = $value['label'];
     }
-    $form['display_mode'] = [
+
+    $form['view_modes'] = [
+      '#type'  => 'details',
+      '#title' => t('View Modes'),
+      '#open'  => FALSE,
+    ];
+
+    $form ['view_modes']['display_mode'] = [
       '#type'          => 'radios',
-      '#title'         => t('View Modes'),
       '#description'   => '',
       '#options'       => $display_modes,
       '#default_value' => $this->configuration['display_mode'],
     ];
+
     $form['nombre_elements'] = [
       '#type'          => 'textfield',
       '#title'         => t('Number of nodes to display'),
@@ -273,6 +305,8 @@ class CrossContentBlock extends BlockBase implements BlockPluginInterface {
    */
   public function blockSubmit($form, FormStateInterface $form_state) {
     parent::blockSubmit($form, $form_state);
+    $this->configuration['title']
+      = $form_state->getValue('title');
     $this->configuration['nombre_elements']
       = $form_state->getValue('nombre_elements');
     $this->configuration['more_link']
@@ -280,11 +314,11 @@ class CrossContentBlock extends BlockBase implements BlockPluginInterface {
     $this->configuration['more_link_label']
       = $form_state->getValue('more_link_label');
     $this->configuration['view_mode']
-      = $form_state->getValue('view_mode');
+      = $form_state->getValue('view_styles_options')['view_mode'];
     $this->configuration['view_options']
-      = $form_state->getValue('view_options')[$form_state->getValue('view_mode')];
+      = $form_state->getValue('view_options')[$form_state->getValue('view_styles_options')['view_mode']];
     $this->configuration['display_mode']
-      = $form_state->getValue('display_mode');
+      = $form_state->getValue('view_modes')['display_mode'];
   }
 
 }

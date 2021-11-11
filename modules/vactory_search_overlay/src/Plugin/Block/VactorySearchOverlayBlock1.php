@@ -3,6 +3,7 @@
 namespace Drupal\vactory_search_overlay\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
+use Drupal\Core\Cache\Cache;
 
 /**
  * Provides a "Vactory Search Overlay Block 1" block.
@@ -23,10 +24,16 @@ class VactorySearchOverlayBlock1 extends BlockBase {
     $searchOverlayForm = \Drupal::formBuilder()
       ->getForm('Drupal\vactory_search_overlay\Form\SearchOverlayForm', 'variant1');
     return [
-      '#cache' => ['max-age' => 0],
       '#theme' => 'block_vactory_search_overlay_variant1',
       '#form'  => $searchOverlayForm,
     ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheMaxAge() {
+    return Cache::PERMANENT;
   }
 
 }

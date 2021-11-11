@@ -171,11 +171,11 @@ class TwigExtension extends \Twig_Extension {
    * @return array|\Drupal\vactory_core\html
    *   HTML output.
    */
-  public function vactoryRender($type, $object, $configuration = NULL, $view_mode = NULL) {
+  public function vactoryRender($type, $object, $configuration = NULL, $attributes = NULL,$view_mode = NULL) {
 
     switch ($type) {
       case 'block':
-        return Vactory::renderBlock($object, (is_array($configuration)) ? $configuration : []);
+        return Vactory::renderBlock($object, (is_array($configuration)) ? $configuration : [], is_array($attributes) ? $attributes : []);
 
       case 'views':
         return Vactory::renderView($object, $configuration);
@@ -275,6 +275,8 @@ class TwigExtension extends \Twig_Extension {
    *   Ordered list of styles to apply.
    *
    * @return string|null
+   *
+   * @deprecated will be removed, use one image style instead.
    */
   public function successiveImageStyles($image_uri, $styles) {
     if (empty($styles)) {

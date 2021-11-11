@@ -1,0 +1,26 @@
+<div class="mt-4">
+	<div class="shadow p-3 mb-3 bg-white rounded">
+		<h3>
+			{{ 'Your score'|t }}: <span class="border rounded-circle border-danger p-2 text-danger font-weight-bold">{{ content.results.user_mark }}/{{ content.perfect_mark }}</span>
+		</h3>
+		{% if content.quiz_history %}
+			<h3>
+				{{ 'Your best score in this quiz'|t }}: <span class="border rounded-circle border-danger p-2 text-danger font-weight-bold">{{ content.results.perfect_mark }}/{{ content.perfect_mark }}</span>
+			</h3>
+		{% endif %}
+	</div>
+
+	{% if content.show_correction %}
+		<p>
+			<a class="btn btn-primary" data-toggle="collapse" href="#collapseQuizCorrection" role="button" aria-expanded="false" aria-controls="collapseQuizCorrection">
+				{{ "Voir la correction"|t }}
+			</a>
+		</p>
+		<div class="collapse shadow p-3 mb-5 bg-white rounded" id="collapseQuizCorrection">
+			<h3>{{ 'Quiz correction'|t }}:</h3>
+			{% include '@vactory_quiz/quiz-correction.html.twig' with {
+				'content': content
+			}%}
+		</div>
+	{% endif %}
+</div>
