@@ -172,7 +172,7 @@
         "fix undefined offset on date form element": "https://www.drupal.org/files/issues/2021-04-07/3189302_11.patch"
       },
       "drupal/rate": {
-        "Make rate available for all node display mode.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/19e54a007837537dd7de97456ab0e1ad0b9d3cf6/rate-add-rate-to-all-node-display-mode.patch",
+        "Make rate available for all node display mode.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/19e54a007837537dd7de97456ab0e1ad0b9d3cf6/rate-add-rate-to-all-node-display-mode.patch"
       },
       "drupal/oauth_login_oauth2": {
         "Store ressourceOwner into a session variable.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/d86aeeb1921f10cc36198efb5f4ac00504e9c2ee/oauth-login-oauth2-add-resource-owner-to-session.patch"
