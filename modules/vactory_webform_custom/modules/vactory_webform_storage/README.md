@@ -16,7 +16,7 @@ Module :
 
 - webform
 
-Ce module dépend aussi du patch `profiles/vactory_starter_kit/patches/webform-post-handlers-hook.patch`
+Ce module dépend aussi du patch `profiles/contrib/vactory/patches/webform-post-handlers-hook.patch`
 
 Ce patch expose un hook qui permet de modifier une soumission d'un webform juste après l'exécution des webform handlers.
 
