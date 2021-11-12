@@ -1,0 +1,14 @@
+name: La Factory Starter Kit
+type: profile
+description: 'Install with commonly used features pre-configured.'
+core: 8.x
+core_version_requirement: ^8 || ^9
+themes:
+  - vactory
+  - seven
+exclusive: TRUE
+distribution:
+  name: La Factory
+  install:
+    theme: seven
+config_install: true
