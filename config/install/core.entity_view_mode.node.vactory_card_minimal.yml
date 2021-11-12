@@ -1,0 +1,9 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - node
+id: node.vactory_card_minimal
+label: Card Minimal
+targetEntityType: node
+cache: true

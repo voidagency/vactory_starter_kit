@@ -1,0 +1,19 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - vactory_header
+  theme:
+    - vactory
+id: vactoryheaderblockv1
+theme: vactory
+region: header
+weight: 0
+provider: null
+plugin: vactory_header_block1
+settings:
+  id: vactory_header_block1
+  label: 'Vactory Header Block V1'
+  provider: vactory_header
+  label_display: '0'
+visibility: {  }

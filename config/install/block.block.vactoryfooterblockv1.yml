@@ -1,0 +1,19 @@
+langcode: fr
+status: true
+dependencies:
+  module:
+    - vactory_footer
+  theme:
+    - vactory
+id: vactoryfooterblockv1
+theme: vactory
+region: footer
+weight: 0
+provider: null
+plugin: vactory_footer_block1
+settings:
+  id: vactory_footer_block1
+  label: 'Vactory Footer Block V1'
+  provider: vactory_footer
+  label_display: '0'
+visibility: {  }

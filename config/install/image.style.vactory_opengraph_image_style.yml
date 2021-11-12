@@ -1,0 +1,17 @@
+langcode: fr
+status: true
+dependencies:
+  module:
+    - focal_point
+name: vactory_opengraph_image_style
+label: 'OpenGraph image style (580x326)'
+effects:
+  vactory_opengraph_image_style:
+    uuid: vactory_opengraph_image_style
+    id: focal_point_scale_and_crop
+    weight: -10
+    data:
+      width: 580
+      height: 326
+      crop_type: focal_point
+

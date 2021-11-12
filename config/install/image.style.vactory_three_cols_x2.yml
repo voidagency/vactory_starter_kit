@@ -1,0 +1,16 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - focal_point
+name: vactory_three_cols_x2
+label: 'Three Cols @x2'
+effects:
+  vactory_three_columns_x2:
+    uuid: vactory_three_columns_x2
+    id: focal_point_scale_and_crop
+    weight: 1
+    data:
+      width: 736
+      height: 414
+      crop_type: focal_point

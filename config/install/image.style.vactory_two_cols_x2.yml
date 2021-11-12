@@ -1,0 +1,16 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - focal_point
+name: vactory_two_cols_x2
+label: 'Two Cols @x2'
+effects:
+  vactory_two_columns_x2:
+    uuid: vactory_two_columns_x2
+    id: focal_point_scale_and_crop
+    weight: 1
+    data:
+      width: 1120
+      height: 630
+      crop_type: focal_point
