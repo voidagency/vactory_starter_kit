@@ -151,6 +151,8 @@ install:
   - smart_trim
   - dropzonejs
   - password_policy
+  - password_policy_length
+  - password_policy_characters
   # Vactory Core
   - vactory_core
   - vactory_field
