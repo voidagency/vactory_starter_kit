@@ -46,6 +46,10 @@ function vactory_academy_agency_theme($existing, $type, $theme, $path) {
       'base hook' => 'node',
       'template' => 'academy-agence-card-inline',
     ],
+    'node__vactory_academy_agency__mur' => [
+      'base hook' => 'node',
+      'template' => 'mur',
+    ],
     'inscription_formations_mail_notifications' => [
       'template' => 'inscription-formations-mail-notifications',
       'variables' => [

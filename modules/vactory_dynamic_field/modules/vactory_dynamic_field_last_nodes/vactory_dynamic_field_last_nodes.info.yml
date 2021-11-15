@@ -2,5 +2,5 @@ name: 'Dynamic Field - Last Nodes.'
 description: "Dynamic field - Display last nodes per content type filtered by taxonomy term && based on entity queue."
 type: module
 core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: '^8 || ^9'
 package: Vactory

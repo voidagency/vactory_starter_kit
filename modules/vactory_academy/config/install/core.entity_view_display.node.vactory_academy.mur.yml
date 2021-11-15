@@ -1,0 +1,120 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_display.comment.comment.default
+    - core.entity_view_mode.node.mur
+    - field.field.node.vactory_academy.body
+    - field.field.node.vactory_academy.comment
+    - field.field.node.vactory_academy.field_academy_duree
+    - field.field.node.vactory_academy.field_contenu_lie
+    - field.field.node.vactory_academy.field_test_image
+    - field.field.node.vactory_academy.field_vactory_academy_langue
+    - field.field.node.vactory_academy.field_vactory_date
+    - field.field.node.vactory_academy.field_vactory_excerpt
+    - field.field.node.vactory_academy.field_vactory_file
+    - field.field.node.vactory_academy.field_vactory_file_multiple
+    - field.field.node.vactory_academy.field_vactory_instructor
+    - field.field.node.vactory_academy.field_vactory_media
+    - field.field.node.vactory_academy.field_vactory_meta_tags
+    - field.field.node.vactory_academy.field_vactory_paragraphs
+    - field.field.node.vactory_academy.field_vactory_seo_status
+    - field.field.node.vactory_academy.field_vactory_theme
+    - field.field.node.vactory_academy.field_vactory_youtube_videos
+    - node.type.vactory_academy
+  enforced:
+    module:
+      - vactory_academy
+  module:
+    - comment
+    - datetime
+    - text
+    - user
+    - vactory_core
+id: node.vactory_academy.mur
+targetEntityType: node
+bundle: vactory_academy
+mode: mur
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 1
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  comment:
+    weight: 6
+    label: hidden
+    settings:
+      view_mode: default
+      pager_id: 0
+    third_party_settings: {  }
+    type: comment_default
+    region: content
+  field_vactory_date:
+    weight: 4
+    label: hidden
+    settings:
+      format_type: medium
+      timezone_override: ''
+    third_party_settings: {  }
+    type: datetime_default
+    region: content
+  field_vactory_excerpt:
+    weight: 2
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_vactory_media:
+    weight: 3
+    label: hidden
+    settings:
+      desktop_1x: vactory_three_cols_x1
+      desktop_2x: vactory_three_cols_x2
+      laptop_1x: vactory_three_cols_x1
+      laptop_2x: vactory_three_cols_x2
+      tablet_1x: vactory_three_cols_x1
+      tablet_2x: vactory_three_cols_x2
+      mobile_1x: vactory_three_cols_x1
+      mobile_2x: vactory_three_cols_x2
+      lqip: lqip
+    third_party_settings: {  }
+    type: lazy_image
+    region: content
+  flag_favorite_academy:
+    weight: 5
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  field_academy_duree: true
+  field_content_access_groups: true
+  field_content_access_roles: true
+  field_content_access_users: true
+  field_contenu_lie: true
+  field_test_image: true
+  field_vactory_academy_langue: true
+  field_vactory_file: true
+  field_vactory_file_multiple: true
+  field_vactory_instructor: true
+  field_vactory_meta_tags: true
+  field_vactory_paragraphs: true
+  field_vactory_seo_status: true
+  field_vactory_theme: true
+  field_vactory_youtube_videos: true
+  langcode: true
+  mail_message: true
+  mail_subject: true
+  notification_message: true
+  notification_title: true
+  rate_vote_widget: true
+  search_api_excerpt: true

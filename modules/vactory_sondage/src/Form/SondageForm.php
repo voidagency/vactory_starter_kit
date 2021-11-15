@@ -2,11 +2,14 @@
 
 namespace Drupal\vactory_sondage\Form;
 
+use Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher;
+use Drupal\Component\Serialization\Json;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\RendererInterface;
+use Drupal\vactory_sondage\Event\VactorySondageVoteEvent;
 use Drupal\vactory_sondage\Services\SondageManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -20,21 +23,29 @@ class SondageForm extends FormBase {
    *
    * @var \Drupal\vactory_sondage\Services\SondageManager
    */
-  private $sondageManager;
+  protected $sondageManager;
 
   /**
    * Renderer service.
    *
    * @var \Drupal\Core\Render\RendererInterface
    */
-  private $renderer;
+  protected $renderer;
+
+  /**
+   * Event dispatcher service.
+   *
+   * @var \Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher
+   */
+  protected $eventDispatcher;
 
   /**
    * {@inheritDoc}
    */
-  public function __construct(SondageManager $sondageManager, RendererInterface $renderer) {
+  public function __construct(SondageManager $sondageManager, RendererInterface $renderer, ContainerAwareEventDispatcher $eventDispatcher) {
     $this->sondageManager = $sondageManager;
     $this->renderer = $renderer;
+    $this->eventDispatcher = $eventDispatcher;
   }
 
   /**
@@ -45,7 +56,8 @@ class SondageForm extends FormBase {
     return new static(
     // Load the service required to construct this class.
       $container->get('vactory_sondage.manager'),
-      $container->get('renderer')
+      $container->get('renderer'),
+      $container->get('event_dispatcher')
     );
   }
 
@@ -69,6 +81,7 @@ class SondageForm extends FormBase {
     $entity = \Drupal::entityTypeManager()->getStorage($entity_type)
       ->load($entity_id);
     if ($entity) {
+      $form['entity'] = $entity;
       $current_user = \Drupal::currentUser();
       $form_state->set('entity', $entity);
       $ajax_wrapper_id = 'vactory_sondage_block_' . $extra_data['entity_id'];
@@ -149,16 +162,20 @@ class SondageForm extends FormBase {
     $form_state->setRebuild();
     if ($form_state->get('validated')) {
       $current_user = \Drupal::currentUser();
+      $user = \Drupal::entityTypeManager()->getStorage('user')
+        ->load($current_user->id());
       $entity = $form_state->get('entity');
       $voted_option_value = $form_state->getValue('sondage_options_' . $entity->id());
       $storage_results = $entity->get('field_sondage_results')->value;
       $storage_results = isset($storage_results) && !empty($storage_results) ? $storage_results : '[]';
-      $storage_results = json_decode($storage_results, TRUE);
+      $storage_results = Json::decode($storage_results);
       $count = isset($storage_results[$voted_option_value]) ? $storage_results[$voted_option_value]['count'] + 1 : 1;
       $storage_results[$voted_option_value]['count'] = $count;
       $storage_results[$voted_option_value]['votters'][] = $current_user->id();
       $storage_results['all_votters'][] = $current_user->id();
-      $entity->set('field_sondage_results', json_encode($storage_results));
+      $event = new VactorySondageVoteEvent($entity, $user);
+      $this->eventDispatcher->dispatch(VactorySondageVoteEvent::EVENT_NAME, $event);
+      $entity->set('field_sondage_results', Json::encode($storage_results));
       $entity->save();
       $response = new AjaxResponse();
       $options_statistics = $this->sondageManager->getStatistics($entity);

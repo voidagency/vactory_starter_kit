@@ -113,8 +113,8 @@ view_mode ? bundle ~ '--' ~ view_mode|clean_class,
     {#{% endif %}#}
 
     <div class="pt-4">
-        {{ content.comment }}
         {% if content.comment.0 is defined  %}
+            {{ content.comment }}
         {% endif %}
     </div>
 

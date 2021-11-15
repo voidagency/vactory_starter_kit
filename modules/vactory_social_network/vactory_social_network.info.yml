@@ -11,4 +11,5 @@ dependencies:
   - flag
   - views
   - vactory_webform_custom
+  - vactory_ntcc
 configure: vactory_social_network.settings_form

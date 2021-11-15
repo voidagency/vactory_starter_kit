@@ -1,0 +1,46 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Nextpre module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function vactory_nextprev_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.vactory_nextprev':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('The Next and previous links module will allow the website visitors to jump on the next or previous post without going back to the main page to see all the posts. The developer can use this module for particular content types and it(s) taxonomy(ies).') . '</p>';
+      $output .= '<h3>' . t('Configuration') . '</h3>';
+      $output .= '<ol>
+				    <li>Install module “Vactory Next and previous links”</li>
+				    <li>Go to the “Block Layout”. Eg:- Admin Menu >> structure >> block layout</li>
+				    <li>Go to your block region. Eg:- Footer</li>
+				    <li>Click the "Place block" button and in the modal dialog click the
+     					"Place block" button next to "Vactory Next Previous links".</li>
+				    <li>On the block configuration form you filter by the content type
+     					with/without it(s) taxonomy(ies) to and you can set the next/previous labels.</li>
+				</ol>';
+      return $output;
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_nextprev_theme($existing, $type, $theme, $path) {
+  return [
+    'block__vactory_nextprev' => [
+      'base hook' => 'block',
+      'template' => 'nextprevious',
+      'variables' => [
+        'content' => NULL,
+      ],
+    ],
+  ];
+}

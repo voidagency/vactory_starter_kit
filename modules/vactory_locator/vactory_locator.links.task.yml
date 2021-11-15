@@ -21,3 +21,7 @@ entity.locator_entity.delete_form:
   title: Delete
   weight: 10
 
+vactory_locator.settings_form:
+  route_name: vactory_locator.settings_form
+  title: 'Locator Settings'
+  base_route: vactory_locator.settings_form

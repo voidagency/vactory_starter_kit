@@ -1,0 +1,25 @@
+services:
+  vactory_points.increment_event:
+    class: '\Drupal\vactory_points\EventSubscriber\PointsEditEventsSubscriber'
+    arguments:
+      - '@current_user'
+      - '@entity_type.manager'
+      - '@entity.repository'
+      - '@language_manager'
+      - '@config.factory'
+      - '@module_handler'
+    tags:
+      - { name: 'event_subscriber' }
+  vactory_points.manager:
+    class: '\Drupal\vactory_points\Services\VactoryPointsManager'
+    arguments: ['@event_dispatcher']
+  vactory_points.flag_subscriber:
+    class: Drupal\vactory_points\EventSubscriber\FlagEventsSubscriber
+    arguments: ['@config.factory', '@vactory_points.manager']
+    tags:
+      - { name: event_subscriber }
+  vactory_points.sondage_vote_subscriber:
+    class: Drupal\vactory_points\EventSubscriber\SondageVoteEventsSubscriber
+    arguments: ['@vactory_points.manager']
+    tags:
+      - { name: event_subscriber }

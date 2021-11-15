@@ -1,0 +1,93 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_display.comment.comment.default
+    - core.entity_view_mode.node.mur
+    - field.field.node.vactory_news.body
+    - field.field.node.vactory_news.comment
+    - field.field.node.vactory_news.field_vactory_date
+    - field.field.node.vactory_news.field_vactory_excerpt
+    - field.field.node.vactory_news.field_vactory_media
+    - field.field.node.vactory_news.field_vactory_meta_tags
+    - field.field.node.vactory_news.field_vactory_news_theme
+    - field.field.node.vactory_news.field_vactory_seo_status
+    - node.type.vactory_news
+  module:
+    - comment
+    - datetime
+    - text
+    - user
+    - vactory_core
+id: node.vactory_news.mur
+targetEntityType: node
+bundle: vactory_news
+mode: mur
+content:
+  body:
+    type: text_default
+    weight: 4
+    region: content
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+  comment:
+    weight: 5
+    label: hidden
+    settings:
+      view_mode: default
+      pager_id: 0
+    third_party_settings: {  }
+    type: comment_default
+    region: content
+  field_vactory_date:
+    weight: 2
+    label: hidden
+    settings:
+      format_type: medium
+      timezone_override: ''
+    third_party_settings: {  }
+    type: datetime_default
+    region: content
+  field_vactory_excerpt:
+    weight: 1
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_vactory_media:
+    type: lazy_image
+    weight: 3
+    label: hidden
+    settings:
+      desktop_1x: vactory_three_cols_x1
+      desktop_2x: vactory_three_cols_x2
+      laptop_1x: vactory_three_cols_x1
+      laptop_2x: vactory_three_cols_x2
+      tablet_1x: vactory_three_cols_x1
+      tablet_2x: vactory_three_cols_x2
+      mobile_1x: vactory_three_cols_x1
+      mobile_2x: vactory_three_cols_x2
+      lqip: lqip
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  field_content_access_groups: true
+  field_content_access_roles: true
+  field_content_access_users: true
+  field_vactory_meta_tags: true
+  field_vactory_news_theme: true
+  field_vactory_seo_status: true
+  langcode: true
+  mail_message: true
+  mail_subject: true
+  notification_message: true
+  notification_title: true
+  search_api_excerpt: true

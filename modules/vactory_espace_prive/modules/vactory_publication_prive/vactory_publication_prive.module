@@ -33,6 +33,11 @@ function vactory_publication_prive_theme() {
       'base hook' => 'node',
       'template'  => 'full',
     ],
+     // Node > Mur.
+    'node__vactory_publication_prive__mur'        => [
+      'base hook' => 'node',
+      'template'  => 'mur',
+    ],
   ];
 }
 

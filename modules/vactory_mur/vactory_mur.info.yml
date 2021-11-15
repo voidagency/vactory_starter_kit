@@ -1,0 +1,11 @@
+name: Vactory mur
+description: Allows display all  content type in one page.
+package: Vactory
+type: module
+dependencies: 
+  - drupal:views
+  - views_infinite_scroll
+version: 1.0
+core: 8.x
+core_version_requirement: ^8 || ^9
+configure: vactory_mur.admin_settings

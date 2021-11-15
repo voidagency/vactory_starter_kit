@@ -1,0 +1,34 @@
+{{ attach_library('vactory_nextprev/nextpre') }}
+<div class="next-prev-block">
+  {% if label %}
+    <h4>{{ label }}</h4>
+  {% endif %}
+  {% if content['#content']['prev'] is defined %}
+    <a href="{{ content['#content']['prev']['link'] }}" class="arrow left">
+      <div class="d-flex align-items-center">
+        <svg width="35px" height="55px" viewBox="0 0 50 80" xml:space="preserve">
+        <polyline fill="#FFFFFF" stroke="#117bbd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="
+	      45.63,75.8 0.375,38.087 45.63,0.375 "/>
+      </svg>
+      <div class="d-flex flex-column">
+        <p class="font-12 m-0 font-weight-light">{{ 'Previous Article'|t }}</p>
+        <h6 class="m-0">{{ content['#content']['prev']['title'] }}</h6>
+      </div>
+      </div>
+    </a>
+  {% endif %}
+  {% if content['#content']['next'] is defined %}
+    <a href="{{ content['#content']['next']['link'] }}" class="arrow right">
+      <div class="d-flex align-items-center">
+        <div class="d-flex flex-column">
+          <p class="font-12 m-0 font-weight-light">{{ 'Next article'|t }}</p>
+          <h6 class="m-0">{{ content['#content']['next']['title'] }}</h6>
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="35px" height="55px" viewBox="0 0 50 80" xml:space="preserve">
+          <polyline fill="#FFFFFF" stroke="#117bbd" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="
+	         0.375,0.375 45.63,38.087 0.375,75.8 "/>
+        </svg>
+      </div>
+    </a>
+  {% endif %}
+</div>

@@ -23,6 +23,10 @@ function vactory_announcements_theme($existing, $type, $theme, $path) {
       'base hook' => 'node',
       'template' => 'card-inline',
     ],
+    'node__announcement__mur' => [
+      'base hook' => 'node',
+      'template' => 'mur',
+    ],
   ];
 }
 

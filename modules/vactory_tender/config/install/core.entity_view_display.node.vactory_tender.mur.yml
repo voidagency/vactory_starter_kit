@@ -1,0 +1,60 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.mur
+    - field.field.node.vactory_tender.body
+    - field.field.node.vactory_tender.field_vactory_date
+    - field.field.node.vactory_tender.field_vactory_excerpt
+    - field.field.node.vactory_tender.field_vactory_media_document
+    - field.field.node.vactory_tender.field_vactory_media_file
+    - field.field.node.vactory_tender.field_vactory_reference
+    - node.type.vactory_tender
+  module:
+    - datetime
+    - text
+    - user
+_core:
+  default_config_hash: kG7JFeLRUeZW_3KtYC_FD7o-byFMpGZyC0CiAPsLhH0
+id: node.vactory_tender.mur
+targetEntityType: node
+bundle: vactory_tender
+mode: mur
+content:
+  body:
+    label: hidden
+    type: text_trimmed
+    weight: 1
+    settings:
+      trim_length: 300
+    third_party_settings: {  }
+    region: content
+  field_vactory_date:
+    weight: 2
+    label: above
+    settings:
+      format_type: medium
+      timezone_override: ''
+    third_party_settings: {  }
+    type: datetime_default
+    region: content
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  field_content_access_groups: true
+  field_content_access_roles: true
+  field_content_access_users: true
+  field_vactory_excerpt: true
+  field_vactory_media_document: true
+  field_vactory_media_file: true
+  field_vactory_reference: true
+  langcode: true
+  mail_message: true
+  mail_subject: true
+  notification_message: true
+  notification_title: true
+  search_api_excerpt: true

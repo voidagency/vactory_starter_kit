@@ -105,36 +105,18 @@ class VactoryRemotePostWebformHandler extends WebformHandlerBase {
     'metatag',
   ];
 
-  /**
-   * {@inheritdoc}
-   */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, LoggerChannelFactoryInterface $logger_factory, ConfigFactoryInterface $config_factory, EntityTypeManagerInterface $entity_type_manager, WebformSubmissionConditionsValidatorInterface $conditions_validator, ModuleHandlerInterface $module_handler, ClientInterface $http_client, WebformTokenManagerInterface $token_manager, WebformMessageManagerInterface $message_manager, WebformElementManagerInterface $element_manager) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition, $logger_factory, $config_factory, $entity_type_manager, $conditions_validator);
-    $this->moduleHandler = $module_handler;
-    $this->httpClient = $http_client;
-    $this->tokenManager = $token_manager;
-    $this->messageManager = $message_manager;
-    $this->elementManager = $element_manager;
-  }
+
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    $instance = new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get('logger.factory'),
-      $container->get('config.factory'),
-      $container->get('entity_type.manager'),
-      $container->get('webform_submission.conditions_validator'),
-      $container->get('module_handler'),
-      $container->get('http_client'),
-      $container->get('webform.token_manager'),
-      $container->get('webform.message_manager'),
-      $container->get('plugin.manager.webform.element')
-    );
+    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
+    $instance->moduleHandler = $container->get('module_handler');
+    $instance->httpClient = $container->get('http_client');
+    $instance->tokenManager = $container->get('webform.token_manager');
+    $instance->messageManager = $container->get('webform.message_manager');
+    $instance->elementManager = $container->get('plugin.manager.webform.element');
 
     $instance->request = $container->get('request_stack')->getCurrentRequest();
     $instance->kernel = $container->get('kernel');
@@ -400,6 +382,7 @@ class VactoryRemotePostWebformHandler extends WebformHandlerBase {
       '#default_value' => $this->configuration['debug'],
     ];
 
+
     // Submission data.
     $form['submission_data'] = [
       '#type' => 'details',
@@ -433,7 +416,14 @@ class VactoryRemotePostWebformHandler extends WebformHandlerBase {
     $form['fields_mapping']['table_opener'] = [
       '#markup' => '<table class="table"><tbody><tr><th>Webform field key</th><th>Remote field key</th></tr>',
     ];
-    $data_fields = $this->getWebform()->getElementsInitialized();
+    $data_fields = $this->getWebform()->getElementsDecodedAndFlattened();
+    
+    $elemets_to_exclude = ['webform_flexbox', 'webform_wizard_page', 'container'];
+    foreach ($data_fields as $key => $fld) {
+      if (in_array($fld['#type'], $elemets_to_exclude)) {
+        unset($data_fields[$key]);
+      }
+    }
     $data_fields_keys = array_keys($data_fields);
     $webform_submission_fields = array_keys(\Drupal::service('entity_field.manager')->getBaseFieldDefinitions('webform_submission'));
     $webform_fields = array_merge($data_fields_keys, $webform_submission_fields);
@@ -523,6 +513,7 @@ class VactoryRemotePostWebformHandler extends WebformHandlerBase {
     $request_options = $this->replaceTokens($request_options, $webform_submission);
 
     try {
+
       if ($request_method === 'GET') {
         // Append data as query string to the request URL.
         $query = $this->getRequestData($state, $webform_submission);
@@ -537,7 +528,6 @@ class VactoryRemotePostWebformHandler extends WebformHandlerBase {
     }
     catch (RequestException $request_exception) {
       $response = $request_exception->getResponse();
-
       // Encode HTML entities to prevent broken markup from breaking the page.
       $message = $request_exception->getMessage();
       $message = nl2br(htmlentities($message));

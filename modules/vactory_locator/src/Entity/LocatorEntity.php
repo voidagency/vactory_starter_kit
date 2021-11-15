@@ -54,7 +54,7 @@ use Drupal\user\UserInterface;
  *     "status" = "status",
  *   },
  *   links = {
- *     "canonical" = "/admin/structure/locator_entity/{locator_entity}",
+ *     "canonical" = "/locator_entity/{locator_entity}",
  *     "add-page" = "/admin/structure/locator_entity/add",
  *     "add-form" = "/admin/structure/locator_entity/add/{locator_entity_type}",
  *     "edit-form" = "/admin/structure/locator_entity/{locator_entity}/edit",

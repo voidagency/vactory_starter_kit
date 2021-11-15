@@ -1,0 +1,6 @@
+name: "VACTORY CONTENT LOCALIZER"
+type: module
+core: 8.x
+dependencies:
+  - geofield
+  - vactory_google_map_field

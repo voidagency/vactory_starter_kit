@@ -36,8 +36,6 @@ function vactory_search_theme($existing, $type, $theme, $path) {
 function vactory_search_preprocess_views_view_field(&$variables) {
 
   if ($variables['view']->id() == 'vactory_search') {
-    $variables['#cache']['contexts'][] = 'url.query_args';
-    $variables['#cache']['contexts'][] = 'url.path';
     // Get Vactory search settings.
     $use_node_summary = Drupal::config('vactory_search.settings')->get('use_node_summary');
 
@@ -96,24 +94,3 @@ function vactory_search_preprocess_views_view_field(&$variables) {
 
   }
 }
-
-/*function vactory_search_views_pre_view(\Drupal\views\ViewExecutable $view, $display_id, array &$args) {
-  if ($view->id() == 'vactory_search') {
-    //dump($view);
-    //$view->element['#cache']['context'][] = 'url.query_args';
-  }
-}
-
-/**
- * Implements hook_views_pre_view().
- */
-/**
- * Implements hook_views_pre_render().
- */
-/*function vactory_search_views_pre_render(\Drupal\views\ViewExecutable $view)
-{
-  if ($view->id() == 'vactory_search') {
-    //dump($view);
-    //$view->element['#cache']['context'][] = 'url.query_args';
-  }
-}*/

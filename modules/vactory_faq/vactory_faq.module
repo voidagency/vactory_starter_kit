@@ -27,6 +27,11 @@ function vactory_faq_theme() {
       'base hook' => 'node',
       'template'  => 'card',
     ],
+    // Node > Mur.
+    'node__vactory_faq__mur' => [
+      'base hook' => 'node',
+      'template'  => 'mur',
+    ],
     // accordion.
     'vactory_faq_accordion' => [
       'base hook' => 'aqfield_jquery_accordion_formatter',

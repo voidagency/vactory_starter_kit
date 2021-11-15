@@ -1,0 +1,7 @@
+vactory_points.settings:
+  path: 'admin/config/vactory_points'
+  defaults:
+    _form: Drupal\vactory_points\Form\VactoryPointsSettingsForm
+    _title: 'Vactory Points Settings'
+  requirements:
+    _permission: 'administer site configuration'

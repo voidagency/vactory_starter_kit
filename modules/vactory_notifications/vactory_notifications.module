@@ -268,8 +268,7 @@ function vactory_notifications_form_node_form_alter(&$form) {
     $form['notification_message']['widget'][0]['value']['#default_value'] = $notifications_config->get('notifications_default_message');
   }
 
-  // Mail notification
-
+  // Mail notification.
   $form['node_mail'] = [
     '#type'        => 'details',
     '#title'       => t('Mail Notifications settings'),
@@ -323,13 +322,14 @@ function vactory_notifications_views_pre_render(ViewExecutable $view) {
  */
 function vactory_notifications_preprocess_views_view_fields__notifications(&$variables) {
   $nid = $variables['row']->_entity->getRelatedContent();
-  $node = Node::load($nid);
-  $variables['related_content_url'] = $node->toUrl()->toString();
+  if (!empty($nid)) {
+    $node = Node::load($nid);
+    $variables['related_content_url'] = $node->toUrl()->toString();
+  }
 }
 
 /**
- * Function which returns bundle concerned users IDs after getting it from
- * the module configurations.
+ * Get concerned users IDs form module settings.
  */
 function vactory_notifications_users_ids($bundle, $config) {
   $users = User::loadMultiple();
@@ -402,32 +402,3 @@ function vactory_notifications_mail($key, &$message, $params) {
       break;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

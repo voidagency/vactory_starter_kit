@@ -1,0 +1,8 @@
+
+# Attached assets menu items definition
+entity.attached_assets_entity.collection:
+  title: 'Attached assets'
+  route_name: entity.attached_assets_entity.collection
+  description: 'List Attached assets (bundles)'
+  parent: system.admin_structure
+  weight: 99

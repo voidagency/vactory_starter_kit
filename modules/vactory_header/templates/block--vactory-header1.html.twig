@@ -61,9 +61,9 @@
             <nav id="cbp-hrmenu" class="vh-header--menu cbp-hrmenu d-none d-lg-block">
                 {{ _self.menuMacro(main_navigation_menu.menu_tree) }}
             </nav>
-            {% if is_notifications_enabled() %}
+            {#{% if is_notifications_enabled() %}
               {{ vactory_render('block', 'vactory_notifications_link') }}
-            {% endif %}
+            {% endif %}#}
 
             {% if is_espace_prive_enabled %}
               {{ vactory_render('block', 'vactory_espace_prive_user_menu') }}

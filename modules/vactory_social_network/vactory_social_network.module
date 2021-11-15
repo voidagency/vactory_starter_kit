@@ -20,6 +20,10 @@ function vactory_social_network_theme($existing, $type, $theme, $path) {
       'base hook' => 'node',
       'template' => 'masonry',
     ],
+    'node__vactory_post__mur' => [
+      'base hook' => 'node',
+      'template' => 'mur',
+    ],
     'vactory_social_network_filter_links_type'  => [
       'template'  => 'filter-type-links',
       'variables' => [

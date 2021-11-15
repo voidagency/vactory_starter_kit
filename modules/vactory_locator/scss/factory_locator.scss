@@ -48,8 +48,8 @@
     display: flex;
     width: 100%;
     background: $white;
-    @include rem(margin-bottom, 20px);
-    @include rem( padding, 14px 11px 13px 0px);
+    margin-bottom: 10px;
+    padding: 14px 11px 13px 0px;
     position: relative;
     box-shadow: 0 1px 4px 0 rgba(0,0,0,0.3);
     @include rtl() {
@@ -70,7 +70,7 @@
       content: $icon-search-lightest;
       @include rem(font-size, 16px);
       @include rem(top, 26px);
-      right: 16px;
+      right: 22px;
       @include rtl() {
         left: 16px;
         right: auto;
@@ -78,7 +78,7 @@
     }
 
     &:before {
-      content: $icon-heart;
+      content: $icon-gps;
       @include rem(font-size, 22px);
       @include rem(padding, 10px);
       top: 10px;
@@ -108,15 +108,15 @@
     z-index: 1;
   }
   .input-search {
-    @include rem(margin-left, 60px);
-    @include rem(padding-right, 40px);
+    margin-left: 55px;
+    padding-right: 40px;
     color: $black;
     text-overflow: ellipsis;
     @include rtl() {
-      @include rem(margin-right, 60px);
-      @include rem(padding-left, 40px);
+      margin-right: 55px;
+      padding-left: 40px;
       margin-left: 0px;
-      @include rem(padding-right, 10px);
+      padding-right: 10px;
     }
   }
 
@@ -137,11 +137,11 @@
 
 
     .list-group-item {
-      @include rem(padding, 10px 10px);
+      padding: 5px;
       border: none;
-      border-bottom: 1px dashed $gray-500;
+      border-bottom: 1px solid $gray-100;
       margin-bottom: 0;
-
+      cursor: pointer;
       &:last-child {
         border-bottom: none;
       }
@@ -237,7 +237,7 @@
 
 .location-map {
   width:100%;
-  height: 100vh;
+  height: 640px;
   padding-bottom: 120px;
 
   button[aria-label="Close"] {
@@ -274,29 +274,29 @@
   .block-location {
     .location-search {
       box-shadow: 0 2px 8px 0 rgba(0,0,0,0.3);
-      @include rem(padding, 31px 11px 13px 20px);
+      padding: 31px 14px 13px 14px;
 
       &:before ,
       .input-search {
-        color: $primary;
+        color: $gray-500;
       }
 
       &:after {
-        @include rem(font-size, 24px);
+        font-size: 20px;
       }
 
       &:before {
         box-shadow: none;
         border: 1px solid;
-        @include rem(left, 21px);
-        @include rem(top, 23px);
+        left: 13px;
+        top: 23px;
       }
 
       label {
         display: block;
         position: absolute;
-        @include rem(top, 18px);
-        @include rem(left, 90px);
+        top: 5px;
+        left: 85px;
         font-size: 14px;
         font-weight: bold;
       }
@@ -315,10 +315,10 @@
     }
 
     .input-search {
-      @include rem(padding-right, 80px);
+      padding-right: 33px;
       @include rtl() {
-        @include rem(padding-left, 80px);
-        @include rem(padding-right, 10px);
+        padding-left: 33px;
+        padding-right: 33px;
       }
     }
 
@@ -344,12 +344,12 @@
     }
     .location-search{
       &:after {
-        @include rem(top,38px);
+        top: 40px;
       }
     }
     .location-list {
       .list-group-item {
-        @include rem(padding, 13px 20px);
+        padding: 5px 11px;
       }
     }
 
@@ -371,6 +371,7 @@
     .block-location-wrapper {
       @include rem(margin-top,10px);
       @include rem(margin-left, 30px);
+      min-width: 445px;
       max-width: 445px;
       @include rtl() {
         @include rem(margin-right, 30px);
@@ -380,7 +381,7 @@
 
     .form-control{
       &::placeholder {
-        color: $primary;
+        color: $gray-500;
       }
     }
 

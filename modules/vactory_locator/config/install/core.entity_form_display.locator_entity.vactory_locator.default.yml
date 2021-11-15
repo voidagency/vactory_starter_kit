@@ -16,6 +16,7 @@ dependencies:
     - field.field.locator_entity.vactory_locator.field_locator_fax
     - field.field.locator_entity.vactory_locator.field_locator_image
     - field.field.locator_entity.vactory_locator.field_locator_info
+    - field.field.locator_entity.vactory_locator.field_locator_path_alias
     - field.field.locator_entity.vactory_locator.field_locator_phone
     - field.field.locator_entity.vactory_locator.field_locator_zipcode
     - field.field.locator_entity.vactory_locator.field_locator_zoom
@@ -167,6 +168,14 @@ content:
     third_party_settings: {  }
     type: vactory_google_map_field_default
     region: content
+  field_locator_path_alias:
+    type: string_textfield
+    weight: 14
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_locator_phone:
     weight: 6
     settings:

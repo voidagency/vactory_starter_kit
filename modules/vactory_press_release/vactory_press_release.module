@@ -30,6 +30,11 @@ function vactory_press_release_theme() {
       'base hook' => 'node',
       'template'  => 'full',
     ],
+      // Node > mur.
+    'node__vactory_press_release__mur'        => [
+      'base hook' => 'node',
+      'template'  => 'mur',
+    ],
   ];
 }
 

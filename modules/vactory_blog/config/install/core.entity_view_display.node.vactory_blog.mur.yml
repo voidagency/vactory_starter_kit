@@ -1,0 +1,78 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.mur
+    - field.field.node.vactory_blog.body
+    - field.field.node.vactory_blog.field_blog_category
+    - field.field.node.vactory_blog.field_blog_tags
+    - field.field.node.vactory_blog.field_contenu_lie
+    - field.field.node.vactory_blog.field_vactory_excerpt
+    - field.field.node.vactory_blog.field_vactory_media
+    - field.field.node.vactory_blog.field_vactory_meta_tags
+    - field.field.node.vactory_blog.field_vactory_seo_status
+    - node.type.vactory_blog
+  module:
+    - user
+    - vactory_core
+    - vactory_field
+_core:
+  default_config_hash: QtVlsHEx6TVKBwJQWGWNiNClJQm7nu2H-zapbxFdtGo
+id: node.vactory_blog.mur
+targetEntityType: node
+bundle: vactory_blog
+mode: mur
+content:
+  field_blog_tags:
+    weight: 3
+    label: hidden
+    settings:
+      link: false
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_vactory_excerpt:
+    weight: 1
+    label: hidden
+    settings:
+      trim_length: 350
+    third_party_settings: {  }
+    type: vactory_field_excerpt_formatter
+    region: content
+  field_vactory_media:
+    weight: 2
+    label: hidden
+    settings:
+      desktop_1x: vactory_three_cols_x1
+      desktop_2x: vactory_three_cols_x2
+      laptop_1x: vactory_three_cols_x1
+      laptop_2x: vactory_three_cols_x2
+      tablet_1x: vactory_three_cols_x1
+      tablet_2x: vactory_three_cols_x2
+      mobile_1x: vactory_three_cols_x1
+      mobile_2x: vactory_three_cols_x2
+      lqip: lqip
+    third_party_settings: {  }
+    type: lazy_image
+    region: content
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  body: true
+  field_blog_category: true
+  field_content_access_groups: true
+  field_content_access_roles: true
+  field_content_access_users: true
+  field_contenu_lie: true
+  field_vactory_meta_tags: true
+  field_vactory_seo_status: true
+  langcode: true
+  mail_message: true
+  mail_subject: true
+  notification_message: true
+  notification_title: true
+  search_api_excerpt: true

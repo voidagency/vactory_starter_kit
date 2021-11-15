@@ -1,0 +1,8 @@
+name: Vactory Points
+description: Provides user points calculation system
+type: module
+core_version_requirement: ^8 || ^9
+configure: vactory_points.settings
+package: Vactory
+dependencies:
+  - vactory_espace_prive

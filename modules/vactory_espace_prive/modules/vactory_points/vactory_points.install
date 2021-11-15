@@ -1,0 +1,36 @@
+<?php
+
+/**
+ * @file
+ * Module install/uninstall related hooks.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function vactory_points_install($is_syncing) {
+  if (Drupal::moduleHandler()->moduleExists('improved_multi_select')) {
+    $config = Drupal::configFactory()->getEditable('improved_multi_select.settings');
+    $urls = $config->get('url');
+    $vactory_points_url = '*/admin/config/vactory_points';
+    if (strpos($urls, $vactory_points_url) === FALSE) {
+      $urls = empty($urls) ? $vactory_points_url : $urls . PHP_EOL . $vactory_points_url;
+      $config->set('url', $urls)
+        ->save();
+    }
+  }
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function vactory_points_uninstall($is_syncing) {
+  if (Drupal::moduleHandler()->moduleExists('improved_multi_select')) {
+    $config = Drupal::configFactory()->getEditable('improved_multi_select.settings');
+    $urls = $config->get('url');
+    $vactory_points_url = '*/admin/config/vactory_points';
+    $urls = trim(str_replace($vactory_points_url, '', $urls));
+    $config->set('url', $urls)
+      ->save();
+  }
+}

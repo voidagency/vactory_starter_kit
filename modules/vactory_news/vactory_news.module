@@ -38,6 +38,12 @@ function vactory_news_theme($existing, $type, $theme, $path) {
       'base hook' => 'node',
       'template'  => 'smart-search',
     ],
+     // Node > mur.
+    'node__vactory_news__mur'        => [
+      'base hook' => 'node',
+      'template'  => 'mur',
+    ],
+
     // Node > full.
     'node__view__vactory_news__mosaique'        => [
       'base hook' => 'node',

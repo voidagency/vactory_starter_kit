@@ -86,7 +86,7 @@ class CrossContentAutocomplete extends WidgetBase {
     $bundles = [$type];
     if ($node_type->getThirdPartySetting('vactory_cross_content', 'enabling', '') == 1) {
       $content_type_selected = $node_type->getThirdPartySetting('vactory_cross_content', 'content_type', '');
-      $bundles += $content_type_selected;
+      $bundles = array_merge($bundles, $content_type_selected);
     }
     $bundles = array_values($bundles);
     $node = \Drupal::routeMatch()->getParameter('node');

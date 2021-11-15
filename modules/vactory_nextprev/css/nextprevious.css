@@ -1,0 +1,40 @@
+.next-prev-block{
+  display: flex;
+  justify-content: space-around;
+  width: 40%;
+  margin: auto;
+}
+
+.next-prev-block svg {
+  padding: 5px;
+}
+
+.next-prev-block .arrow {
+  cursor: pointer;
+  top: 50%;
+  width: auto;
+  height: auto;
+}
+
+.next-prev-block .left {
+  left: 42%;
+}
+
+.next-prev-block .right {
+  float: right;
+  left: 58%;
+}
+
+.next-prev-block .left:hover polyline,
+.next-prev-block .left:focus polyline {
+  stroke-width: 4;
+}
+
+.next-prev-block .right:hover polyline,
+.next-prev-block .right:focus polyline {
+  stroke-width: 4;
+}
+
+.next-prev-block polyline {
+  transition: all 250ms ease-in-out;
+}

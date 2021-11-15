@@ -1,0 +1,4 @@
+nextpre:
+  css:
+    theme:
+      css/nextprevious.css: {}

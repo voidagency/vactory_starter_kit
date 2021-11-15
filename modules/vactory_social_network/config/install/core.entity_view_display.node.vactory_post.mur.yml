@@ -1,0 +1,101 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.mur
+    - field.field.node.vactory_post.body
+    - field.field.node.vactory_post.comment
+    - field.field.node.vactory_post.field_vactory_date
+    - field.field.node.vactory_post.field_vactory_excerpt
+    - field.field.node.vactory_post.field_vactory_media
+    - field.field.node.vactory_post.field_vactory_media_image
+    - field.field.node.vactory_post.field_vactory_post_thematique
+    - field.field.node.vactory_post.field_vactory_tags
+    - node.type.vactory_post
+  module:
+    - datetime
+    - text
+    - user
+    - vactory_core
+_core:
+  default_config_hash: ___L-Ymotrrf_v2-f5z4h_eFWuPEfDBy6DcTk6N4GPg
+id: node.vactory_post.mur
+targetEntityType: node
+bundle: vactory_post
+mode: mur
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 1
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_vactory_date:
+    weight: 3
+    label: hidden
+    settings:
+      timezone_override: ''
+      date_format: m/d/Y
+    third_party_settings: {  }
+    type: datetime_custom
+    region: content
+  field_vactory_excerpt:
+    weight: 2
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_vactory_media:
+    weight: 5
+    label: hidden
+    settings:
+      view_mode: default
+      link: false
+    third_party_settings: {  }
+    type: entity_reference_entity_view
+    region: content
+  field_vactory_media_image:
+    weight: 4
+    label: hidden
+    settings:
+      desktop_1x: vactory_three_cols_x1
+      desktop_2x: vactory_three_cols_x2
+      laptop_1x: vactory_three_cols_x1
+      laptop_2x: vactory_three_cols_x2
+      tablet_1x: vactory_three_cols_x1
+      tablet_2x: vactory_three_cols_x2
+      mobile_1x: vactory_three_cols_x1
+      mobile_2x: vactory_three_cols_x2
+      lqip: lqip
+    third_party_settings: {  }
+    type: lazy_image
+    region: content
+  field_vactory_tags:
+    weight: 6
+    label: hidden
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  comment: true
+  field_content_access_groups: true
+  field_content_access_roles: true
+  field_content_access_users: true
+  field_vactory_post_thematique: true
+  flag_liked_content: true
+  langcode: true
+  mail_message: true
+  mail_subject: true
+  notification_message: true
+  notification_title: true
+  search_api_excerpt: true

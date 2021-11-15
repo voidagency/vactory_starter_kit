@@ -16,6 +16,12 @@ function vactory_testimonials_theme($existing, $type, $theme, $path) {
       'template'  => 'card-minimal',
     ],
 
+    // Node > Mur.
+    'node__vactory_testimonials__mur'                    => [
+      'base hook' => 'node',
+      'template'  => 'mur',
+    ],
+
     // Node > Smart search.
     'node__vactory_testimonials__smart_search'        => [
       'base hook' => 'node',

@@ -1,0 +1,30 @@
+<?php
+
+/**
+ * @file
+ * Module related hooks.
+ */
+
+use Drupal\node\Entity\Node;
+
+/**
+ * Implements hook_page_attachments().
+ */
+function vactory_attached_assets_page_attachments(array &$attachments) {
+  $node = \Drupal::routeMatch()->getParameter('node');
+  if ($node && $node instanceof Node) {
+    $attachedAssetsService = \Drupal::service('vactory_attached_assets.manager');
+    $attachedAssetsService->attachAssets($attachments);
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_attached_assets_preprocess_html(&$variables) {
+  $adminRoute = \Drupal::service('router.admin_context')->isAdminRoute();
+  if (!$adminRoute) {
+    $attachedAssetsService = \Drupal::service('ce_attached_assets.manager');
+    $variables['attached_css_files'] = $attachedAssetsService->attachAssetsToHtml();
+  }
+}

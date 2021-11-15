@@ -1,0 +1,7 @@
+vactory_mur.admin_settings:
+  path: '/admin/config/content/vactory_mur'
+  defaults:
+    _form: '\Drupal\vactory_mur\Form\VmurSettingsForm'
+    _title: 'Vactory mur Settings'
+  requirements:
+    _permission: 'access content'

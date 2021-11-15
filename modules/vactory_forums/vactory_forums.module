@@ -27,6 +27,10 @@ function vactory_forums_theme($existing, $type, $theme, $path) {
       'base hook' => 'node',
       'template' => 'smart-search',
     ],
+    'node__vactory_forum__mur' => [
+      'base hook' => 'node',
+      'template' => 'mur',
+    ],
     'views_view_table__vactory_forums' => [
       'base hook' => 'views_view_table',
       'template' => 'vactory-forums-view-table',

@@ -1,0 +1,109 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Content localizer module.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\node\NodeInterface;
+use Drupal\node\NodeTypeInterface;
+use Drupal\vactory_core\Vactory;
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_content_localizer_theme($existing, $type, $theme, $path) {
+  return [
+    'vactory_content_distance_filter_block' => [
+      'template' => 'distance-filter',
+      'variables' => [
+        'content' => NULL,
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_preprocess_hook().
+ */
+function vactory_content_localizer_preprocess_node(&$variables) {
+  $node = $variables['node'];
+  if ($node instanceof NodeInterface) {
+    if ($node->hasField('field_vactory_position')) {
+      $nid = isset($variables['elements']['#node']) ? $variables['elements']['#node']->nid->value : NULL;
+      $results = isset($variables['elements']['#node']->view) ? $variables['elements']['#node']->view->result : NULL;
+      $node_result = NULL;
+      if (isset($nid) && isset($results)) {
+        foreach ($results as $result) {
+          if ($result->nid == $nid) {
+            $node_result = $result;
+            break;
+          }
+        }
+        if (isset($node_result->node__field_vactory_position_field_vactory_position_proximit)) {
+          $distance = $node_result->node__field_vactory_position_field_vactory_position_proximit;
+          if ($distance < 1) {
+            $variables['localizer']['distance'] = round($node_result->node__field_vactory_position_field_vactory_position_proximit * 1000, 0);
+            $variables['localizer']['unit'] = "m";
+          }
+          else {
+            $variables['localizer']['distance'] = round($node_result->node__field_vactory_position_field_vactory_position_proximit, 2);
+            $variables['localizer']['unit'] = "km";
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_content_localizer_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if (isset($form['#id']) && isset($form['field_vactory_position_proximity'])) {
+    $form['field_vactory_position_proximity']['#attributes']['class'][] = 'hidden';
+    $block = Drupal::entityTypeManager()->getStorage('block')->load('vactorycontentdistancefilterblock');
+    if (!empty($block)) {
+      $block_content = \Drupal::entityTypeManager()
+        ->getViewBuilder('block')
+        ->view($block);
+      $form['#suffix'] = Drupal::service('renderer')->render($block_content)->__toString();
+    }
+  }
+  if ($form_id == 'node_type_edit_form') {
+    $type = $form_state->getFormObject()->getEntity();
+    $form['localizer'] = [
+      '#type' => 'details',
+      '#title' => t('Content localizer configuration'),
+      '#group' => 'additional_settings',
+    ];
+    $form['localizer']['enabling'] = [
+      '#title' => t('Enable Content localizer'),
+      '#type' => 'checkbox',
+      '#default_value' => $type->getThirdPartySetting('vactory_content_localizer', 'enabling', ''),
+    ];
+    $form['#entity_builders'][] = 'vactory_content_localizer_form_node_type_form_builder';
+  }
+}
+
+/**
+ * Entity builder for the node type form with scheduler options.
+ */
+function vactory_content_localizer_form_node_type_form_builder($entity_type, NodeTypeInterface $type, &$form, FormStateInterface $form_state) {
+  if ($form_state->getValue('enabling') == 1) {
+    Vactory::createLocationField($form_state->getFormObject()->getEntity()->id(),
+      'field_vactory_position');
+  }
+  $type->setThirdPartySetting('vactory_content_localizer', 'enabling', $form_state->getValue('enabling'));
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function vactory_content_localizer_form_views_ui_config_item_form_alter(&$form, FormStateInterface $form_state) {
+  if (isset($form['options']['value']['value']['#title']) && $form['options']['value']['value']['#title'] == 'Distance') {
+    $form['options']['expose']['description']['#title'] = 'Distances list filter';
+    $form['options']['expose']['description']['#description'] = 'This will appear in view if enabled. Should enter the distances separated by space. Example (500 1000 10000)';
+  }
+}
