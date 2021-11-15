@@ -136,6 +136,7 @@
     "drupal/shortcode": "^2.0",
     "firebase/php-jwt": "^4.0",
     "pviojo/oauth2-keycloak": "^2.0",
+    "drupal/geofield": "^1.20",
     "drupal/domain": "1.0-beta5",
     "drupal/yaml_editor": "^1.1",
     "drupal/mobile_native_share": "^1.0",
