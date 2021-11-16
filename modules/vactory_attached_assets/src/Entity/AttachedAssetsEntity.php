@@ -35,6 +35,12 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "edit-form" = "/admin/structure/attached_assets_entity/{attached_assets_entity}/edit",
  *     "delete-form" = "/admin/structure/attached_assets_entity/{attached_assets_entity}/delete",
  *     "collection" = "/admin/structure/attached_assets_entity"
+ *   },
+ *   config_export = {
+ *     "id",
+ *     "label",
+ *     "file",
+ *     "type"
  *   }
  * )
  */

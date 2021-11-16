@@ -93,13 +93,14 @@ function vactory_frequent_searches_schema() {
   return $schema;
 }
 
-
 /**
  * Implements hook_update_8901().
  * Add published field to vactory_frequent_searches.
  */
 function vactory_frequent_searches_update_8901() {
-  db_add_field('vactory_frequent_searches', 'published', [
+  Drupal::database()
+    ->schema()
+    ->addField('vactory_frequent_searches', 'published', [
     'type' => 'int',
     'not null' => TRUE,
     'default' => 0,

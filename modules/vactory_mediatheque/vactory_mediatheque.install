@@ -41,7 +41,7 @@ function vactory_mediatheque_install() {
     ])->save();
   }
 
-  $photo_parent = \Drupal::entityManager()->getStorage('taxonomy_term')->loadByProperties(['name' => 'Photothèque']);
+  $photo_parent = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties(['name' => 'Photothèque']);
   $photo_parent = reset($photo_parent);
 
   foreach ($photo_children as $item) {
@@ -52,7 +52,7 @@ function vactory_mediatheque_install() {
     ])->save();
   }
 
-  $video_parent = \Drupal::entityManager()->getStorage('taxonomy_term')->loadByProperties(['name' => 'Vidéothèque']);
+  $video_parent = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties(['name' => 'Vidéothèque']);
   $video_parent = reset($video_parent);
 
   foreach ($video_children as $item) {

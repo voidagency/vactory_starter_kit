@@ -57,10 +57,10 @@ function vactory_webform_storage_post_handler_submission_alter(&$entity) {
   $webform_id = $submission->get('webform_id')->getValue()[0]['target_id'];
   $flag = FALSE;
 
-  $storage = \Drupal::service('entity.manager')->getStorage('webform');
-  $webform = $storage->loadByProperties([
-    'id' => $webform_id,
-  ]);
+  $webform = \Drupal::service('entity_type.manager')->getStorage('webform')
+    ->loadByProperties([
+      'id' => $webform_id,
+    ]);
 
   if (isset($webform[$webform_id])) {
     $webform_elements = $webform[$webform_id]->getElementsDecoded();

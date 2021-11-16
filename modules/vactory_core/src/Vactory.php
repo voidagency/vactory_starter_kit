@@ -476,7 +476,7 @@ class Vactory {
       ->getCurrentLanguage()
       ->getId();
     $current_path = \Drupal::service('path.current')->getPath();
-    $alias = \Drupal::service('path.alias_manager')
+    $alias = \Drupal::service('path_alias.manager')
       ->getAliasByPath($current_path);
     $current_path_formats = [
       $current_path,

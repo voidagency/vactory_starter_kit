@@ -17,7 +17,7 @@ function vactory_timeout_page_attachments(array &$page) {
   $paths_authorisation = $config->get('paths_authorisation');
   $requestStack = \Drupal::service('request_stack');
   $currentPath = \Drupal::service('path.current');
-  $aliasManager = \Drupal::service('path.alias_manager');
+  $aliasManager = \Drupal::service('path_alias.manager');
   $pathMatcher = \Drupal::service('path.matcher');
   // Convert path to lowercase. This allows comparison of the same path.
   // With different case. Ex: /Page, /page, /PAGE.
@@ -57,7 +57,7 @@ function vactory_timeout_page_attachments(array &$page) {
     $page['#attached']['drupalSettings']['vactory']['timeout_active'] = FALSE;
     $page['#attached']['drupalSettings']['vactory']['timeout'] = $config->get('timeout');
     $page['#attached']['drupalSettings']['vactory']['landing_page'] = $landing_page;
-    $page['#attached']['drupalSettings']['vactory']['current_page'] = \Drupal::service('path.alias_manager')
+    $page['#attached']['drupalSettings']['vactory']['current_page'] = \Drupal::service('path_alias.manager')
       ->getAliasByPath($path);
 
     /* foreach ($roles_permissions as $role_permissions) {

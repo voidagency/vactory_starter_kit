@@ -96,7 +96,7 @@ function vactory_appbanners_include_tags() {
 
   $path_matcher = \Drupal::service('path.matcher');
   $current_path = \Drupal::service('path.current')->getPath();
-  $current_alias = \Drupal::service('path.alias_manager')
+  $current_alias = \Drupal::service('path_alias.manager')
     ->getAliasByPath($current_path);
 
   // Search matches with internal path.
