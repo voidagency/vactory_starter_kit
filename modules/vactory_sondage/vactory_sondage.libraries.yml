@@ -1,0 +1,5 @@
+style:
+  version: VERSION
+  css:
+    theme:
+      scss/vactory_sondage.css: {}

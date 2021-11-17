@@ -1,0 +1,41 @@
+vactory_points.settings:
+  type: config_object
+  mapping:
+    notifications:
+      type: mapping
+      label: Notifications
+      mapping:
+        increment:
+          type: mapping
+          label: Increment
+          mapping:
+            notification_title:
+              type: text
+              label: Notification title
+            notification_message:
+              type: text
+              label: Notification message
+        decrement:
+          type: mapping
+          label: Decrement
+          mapping:
+            notification_title:
+              type: text
+              label: Notification title
+            notification_message:
+              type: text
+              label: Notification message
+    rules:
+      type: sequence
+      label: 'Rules'
+      sequence:
+        type: mapping
+        label: Rule
+        mapping:
+          action:
+            type: mapping
+            label: Action
+            mapping:
+              action_label:
+                type: text
+                label: 'Action label'

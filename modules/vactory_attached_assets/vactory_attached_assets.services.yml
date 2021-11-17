@@ -1,0 +1,4 @@
+services:
+  vactory_attached_assets.manager:
+    class: Drupal\vactory_attached_assets\Services\AttachedAssetsService
+    arguments: ['@entity_type.manager', '@plugin.manager.condition']

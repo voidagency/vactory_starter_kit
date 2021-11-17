@@ -1,0 +1,99 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.taxonomy_term.locator_category.field_locator_map_marker
+    - field.field.taxonomy_term.locator_category.field_locator_marker_height
+    - field.field.taxonomy_term.locator_category.field_locator_marker_width
+    - taxonomy.vocabulary.locator_category
+  module:
+    - field_group
+    - media_library
+    - path
+    - text
+third_party_settings:
+  field_group:
+    group_marker_container:
+      children:
+        - field_locator_map_marker
+        - field_locator_marker_height
+        - field_locator_marker_width
+      parent_name: ''
+      weight: 3
+      format_type: details
+      region: content
+      format_settings:
+        id: ''
+        classes: ''
+        description: 'Marker container'
+        open: true
+        required_fields: true
+      label: 'Marker container'
+id: taxonomy_term.locator_category.default
+targetEntityType: taxonomy_term
+bundle: locator_category
+mode: default
+content:
+  description:
+    type: text_textarea
+    weight: 1
+    region: content
+    settings:
+      placeholder: ''
+      rows: 5
+    third_party_settings: {  }
+  field_locator_map_marker:
+    type: media_library_widget
+    weight: 6
+    settings:
+      media_types: {  }
+    third_party_settings: {  }
+    region: content
+  field_locator_marker_height:
+    weight: 7
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+    type: number
+    region: content
+  field_locator_marker_width:
+    weight: 8
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+    type: number
+    region: content
+  langcode:
+    type: language_select
+    weight: 2
+    region: content
+    settings:
+      include_locked: true
+    third_party_settings: {  }
+  name:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  path:
+    type: path
+    weight: 8
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  status:
+    type: boolean_checkbox
+    settings:
+      display_label: true
+    weight: 9
+    region: content
+    third_party_settings: {  }
+  translation:
+    weight: 7
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden: {  }

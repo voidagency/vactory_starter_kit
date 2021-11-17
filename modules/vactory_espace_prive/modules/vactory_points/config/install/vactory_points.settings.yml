@@ -1,0 +1,12 @@
+rules: []
+notifications:
+  increment:
+    notification_title: 'New points earned!'
+    notification_message: 'You''ve earned @points points by @action_label the page « @entity_title »'
+  decrement:
+    notification_title: 'Losing points!'
+    notification_message: 'You''ve just lost @points points by @action_label the page « @entity_title »'
+dependencies:
+  enforced:
+    module:
+      - vactory_points

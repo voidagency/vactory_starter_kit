@@ -4,7 +4,7 @@ dependencies:
   module:
     - focal_point
 name: vactory_testimonials_2
-label: 'Testimonials @x2'
+label: 'Testimonials One Col @x2 (240x240)'
 effects:
   47243341-77f3-4ac5-81b7-870d7a98c7ee:
     uuid: 47243341-77f3-4ac5-81b7-870d7a98c7ee

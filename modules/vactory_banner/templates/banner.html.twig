@@ -44,7 +44,7 @@
       </div>
     {% elseif content.field_vactory_media.0.target_id is not null %}
       {% set image_uri = get_image(content.field_vactory_media.0.target_id) %}
-      {% set banner_image = image_uri|image_style('banner_1280_155') %}
+      {% set banner_image = image_uri|image_style('banner_1280_480') %}
     {% elseif content.field_vactory_media['#items'][0].target_id is not null %}
       {% set image_uri = get_image(content.field_vactory_media['#items'][0].target_id) %}
       {% set banner_image = image_uri|image_style('banner_1280_155') %}

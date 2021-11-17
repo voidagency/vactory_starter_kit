@@ -1,0 +1,10 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_sondage
+id: vactory_sondage
+label: Sondage
+revision: 1
+description: 'Utiliser ce type de bloc pour créer un sondage.'

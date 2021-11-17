@@ -1,0 +1,4 @@
+services:
+  vactory_sms_sender.manager:
+    class: Drupal\vactory_sms_sender\Services\VactorySmsSenderService
+    arguments: []

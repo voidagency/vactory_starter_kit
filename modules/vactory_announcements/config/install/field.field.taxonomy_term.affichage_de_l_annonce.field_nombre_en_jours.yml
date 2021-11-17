@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_nombre_en_jours
+    - taxonomy.vocabulary.affichage_de_l_annonce
+id: taxonomy_term.affichage_de_l_annonce.field_nombre_en_jours
+field_name: field_nombre_en_jours
+entity_type: taxonomy_term
+bundle: affichage_de_l_annonce
+label: 'Nombre en jours'
+description: ''
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: 0
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: integer

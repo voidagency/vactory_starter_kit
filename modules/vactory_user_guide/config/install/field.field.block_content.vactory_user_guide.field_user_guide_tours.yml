@@ -1,0 +1,29 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - block_content.type.vactory_user_guide
+    - field.storage.block_content.field_user_guide_tours
+  enforced:
+    module:
+      - vactory_user_guide
+  module:
+    - vactory_dynamic_field
+id: block_content.vactory_user_guide.field_user_guide_tours
+field_name: field_user_guide_tours
+entity_type: block_content
+bundle: vactory_user_guide
+label: Tours
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  allowed_providers:
+    vactory_user_guide_tours: vactory_user_guide_tours
+    vactory_bootstrap: 0
+    vactory_froala: 0
+    vactory_dynamic_sliders: 0
+    vactory_wysiwyg_templates: 0
+field_type: field_wysiwyg_dynamic

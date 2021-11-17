@@ -6,7 +6,7 @@ use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Class SettingsForm.
+ * Vactory timeout Settings Form Class.
  *
  * @package Drupal\vactory_timeout\Form
  */
@@ -27,7 +27,7 @@ class SettingsForm extends ConfigFormBase {
 
     $form = parent::buildForm($form, $form_state);
     $config = $this->config('vactory_timeout.settings');
-
+    $roleList = $this->getRoles();
     $form['timeout'] = [
       '#type'          => 'number',
       '#title'         => $this->t('Set the timeout'),
@@ -58,7 +58,26 @@ class SettingsForm extends ConfigFormBase {
       ],
     ];
 
+    $form['selected_roles'] = [
+      '#type' => 'checkboxes',
+      '#title' => $this->t('selection les role concerné'),
+      '#default_value' => $config->get('selected_roles'),
+      '#options' => $roleList,
+    ];
+
     return $form;
+  }
+
+  /**
+   * Function getRoles.
+   */
+  public function getRoles() {
+    $roles = \Drupal::entityTypeManager()->getStorage('user_role')->loadMultiple();
+    $roleList = [];
+    foreach ($roles as $role => $id) {
+      $roleList[$id->id()] = $role;
+    }
+    return $roleList;
   }
 
   /**
@@ -89,6 +108,8 @@ class SettingsForm extends ConfigFormBase {
       $config->set('landing_page', $form_state->getValue('landing_page'));
       $config->set('paths', $form_state->getValue('paths'));
       $config->set('paths_authorisation', $form_state->getValue('paths_authorisation'));
+      $config->set('selected_roles', $form_state->getValue('selected_roles'));
+
     }
 
     $config->save();

@@ -40,4 +40,11 @@ class EspacePriveUserMenuBlock extends BlockBase {
     ];
   }
 
+  /**
+   * {@inheritDoc}
+   */
+  public function getCacheTags() {
+    return ['menu_link_content_list:vactory-espace-prive-menu'];
+  }
+
 }

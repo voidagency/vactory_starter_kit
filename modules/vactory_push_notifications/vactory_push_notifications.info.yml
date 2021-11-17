@@ -1,0 +1,9 @@
+name: Push Notifications
+type: module
+description: 'Fournis un bloc pour afficher une notification au chargement de la page.'
+package: Vactory
+core: 8.x
+core_version_requirement: ^8 || ^9
+dependencies:
+  - field
+  - block

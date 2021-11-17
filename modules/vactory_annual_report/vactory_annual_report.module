@@ -31,6 +31,11 @@ function vactory_annual_report_theme($existing, $type, $theme, $path) {
       'base hook' => 'node',
       'template'  => 'smart-search',
     ],
+    // Node > Mur.
+    'node__vactory_annual_report__mur'        => [
+      'base hook' => 'node',
+      'template'  => 'mur',
+    ],
     // Views, unformatted List.
     'views_view_unformatted__annual_report'         => [
       'base hook' => 'views_view_unformatted',

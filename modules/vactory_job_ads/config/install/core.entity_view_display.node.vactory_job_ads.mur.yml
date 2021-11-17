@@ -1,0 +1,59 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.mur
+    - field.field.node.vactory_job_ads.body
+    - field.field.node.vactory_job_ads.field_vactory_address
+    - field.field.node.vactory_job_ads.field_vactory_city
+    - field.field.node.vactory_job_ads.field_vactory_contract
+    - field.field.node.vactory_job_ads.field_vactory_description
+    - field.field.node.vactory_job_ads.field_vactory_email
+    - field.field.node.vactory_job_ads.field_vactory_meta_tags
+    - field.field.node.vactory_job_ads.field_vactory_profession
+    - field.field.node.vactory_job_ads.field_vactory_seo_status
+    - field.field.node.vactory_job_ads.field_vactory_telephone
+    - node.type.vactory_job_ads
+  module:
+    - user
+    - vactory_field
+_core:
+  default_config_hash: IFrWvkhQuGw5Kp2LX8rKokrfBHXBKMDLNF5AC9fnPPo
+id: node.vactory_job_ads.mur
+targetEntityType: node
+bundle: vactory_job_ads
+mode: mur
+content:
+  body:
+    label: hidden
+    type: vactory_field_excerpt_formatter
+    weight: 1
+    settings:
+      trim_length: 350
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  field_content_access_groups: true
+  field_content_access_roles: true
+  field_content_access_users: true
+  field_vactory_address: true
+  field_vactory_city: true
+  field_vactory_contract: true
+  field_vactory_description: true
+  field_vactory_email: true
+  field_vactory_meta_tags: true
+  field_vactory_profession: true
+  field_vactory_seo_status: true
+  field_vactory_telephone: true
+  langcode: true
+  mail_message: true
+  mail_subject: true
+  notification_message: true
+  notification_title: true
+  search_api_excerpt: true

@@ -63,6 +63,34 @@ class SettingsForm extends ConfigFormBase {
       '#description' => t('Select for each role associated users the content types which users should recieve notifications from. Empty choice means notifications are disabled for that role.'),
       '#group' => 'settings_tab',
     ];
+    // Mail settings Tab.
+    $form['mail_settings'] = [
+      '#type' => 'details',
+      '#title' => t('Mail settings'),
+      '#description' => t('Select for each role associated users the content types which users should recieve mail notifications from. Empty choice means notifications are disabled for that role.'),
+      '#group' => 'settings_tab',
+    ];
+    $form['mail_settings']['mail_active'] = [
+      '#type' => 'checkbox',
+      '#title' => t('Activate sending mail'),
+      '#description' => t('check it to send notifications by mail'),
+      '#default_value' => $config->get('mail_active'),
+    ];
+    $form['mail_settings']['mail_default_subject'] = [
+      '#type' => 'textfield',
+      '#title' => t('Mail default  subject'),
+      '#description' => t('Default Mail Subject to use. You can explore available notifications tokens by clicking "Browse available tokens" link bellow.'),
+      '#default_value' => $config->get('mail_default_subject'),
+      '#required' => TRUE,
+    ];
+    $form['mail_settings']['mail_default_message'] = [
+      '#type' => 'textarea',
+      '#title' => t('Mail default message'),
+      '#description' => t('Default Mail message to use. You can explore available notifications tokens by clicking "Browse available tokens" link bellow.'),
+      '#default_value' => $config->get('mail_default_message'),
+      '#required' => TRUE,
+    ];
+    $form['mail_settings']['tree_token'] = get_token_tree();
 
     // Global settings.
     $form['global_settings']['notifications_default_title'] = [
@@ -106,6 +134,7 @@ class SettingsForm extends ConfigFormBase {
         '#collapsible' => TRUE,
         '#collapsed' => TRUE,
       ];
+
       foreach ($existing_content_types as $node_type_machine_name => $content_type) {
         $node_types[$node_type_machine_name] = $content_type->label();
       }
@@ -116,8 +145,35 @@ class SettingsForm extends ConfigFormBase {
         '#multiple' => TRUE,
         '#default_value' => !empty($config->get($key . '_content_types')) ? $config->get($key . '_content_types') : [],
       ];
+
+      // Mail Roles settings.
+      if ($role->id()<>'anonymous'){
+        $form['mail_settings'][$key] = [
+          '#type' => 'details',
+          '#title' => $role->label(),
+          '#collapsible' => TRUE,
+          '#collapsed' => TRUE,
+          '#states' => [
+            'visible' => [
+              ':input[name="mail_active"]' => ['checked' => TRUE],
+            ],
+          ],
+        ];
+
+        $form['mail_settings'][$key][$key . '_content_types_mail'] = [
+          '#type' => 'select',
+          '#title' => t('Existing content types'),
+          '#options' => $node_types,
+          '#multiple' => TRUE,
+          '#default_value' => !empty($config->get($key . '_content_types_mail')) ? $config->get($key . '_content_types_mail') : [],
+        ];
+
+
+      }
       $node_types = [];
     }
+
+
 
     return $form;
   }
@@ -127,11 +183,19 @@ class SettingsForm extends ConfigFormBase {
     $existing_roles = Role::loadMultiple();
     $config->set('notifications_default_title', $form_state->getValue('notifications_default_title'))
       ->set('notifications_default_message', $form_state->getValue('notifications_default_message'))
+      ->set('mail_default_subject', $form_state->getValue('mail_default_subject'))
+      ->set('mail_default_message', $form_state->getValue('mail_default_message'))
       ->set('auto_translation', $form_state->getValue('auto_translation'))
+      ->set('mail_active', $form_state->getValue('mail_active'))
       ->set('notifications_lifetime', $form_state->getValue('notifications_lifetime'));
+
     foreach ($existing_roles as $key => $role) {
         $config->set($key . '_content_types', array_keys($form_state->getValue($key . '_content_types')));
+        if ($role->id()<>'anonymous'){
+          $config->set($key . '_content_types_mail', array_keys($form_state->getValue($key . '_content_types_mail')));
+        }
     }
+
     $config->save();
     parent::submitForm($form, $form_state);
   }

@@ -11,24 +11,27 @@
   {% set image_alt = (content.image_alt is not empty) ? content.image_alt : content.image.alt_image %}
 {% endif %}
 
-{% if content.mode == 1 %}
-  <figure class="content-media content-media--video" id="featured-media">
-    <iframe class="content-media__object" id="featured-video" src="https://www.youtube.com/embed/{{content.video_id}}?enablejsapi=1&rel=0&showinfo=0&controls=0&autoplay=1" frameborder="0"></iframe>
-  </figure>
-{% else %}
-<div class="stcky-bloc-wrapper">
-  <div class="sticky-bloc">
-  <div class="js-img-video">
-    <a href="{{content.video}}" class="play-video">
-      {% if content.image.0 is defined %}
-        <img src="{{lqip_image}}" data-src="{{thumbnail}}" alt="{{image_alt}}" class="img-fluid lazyload">
-      {% endif %}
-    </a>
+<div class="sticky-bloc--inner">
+  <button id="close-sticky-video"><div class="visually-hidden">Close</div><i class="icon icon-close"></i></button>
+  {% if content.mode == 1 %}
+    <figure class="content-media content-media--video" id="featured-media">
+      <iframe class="content-media__object" id="featured-video" src="https://www.youtube.com/embed/{{content.video_id}}?enablejsapi=1&rel=0&showinfo=0&controls=1&autoplay=0" frameborder="0"></iframe>
+    </figure>
+  {% else %}
+  <div class="sticky-bloc--wrapper">
+    <div class="sticky-bloc">
+    <div class="js-img-video">
+      <a href="https://www.youtube.com/embed/{{content.video_id}}?enablejsapi=1&rel=0&showinfo=0&controls=1&autoplay=0" class="play-youtube-video">
+        {% if content.image.0 is defined %}
+          <img src="{{lqip_image}}" data-src="{{thumbnail}}" alt="{{image_alt}}" class="img-fluid lazyload">
+        {% endif %}
+      </a>
+    </div>
   </div>
+  </div>
+  {% endif %}
 </div>
-</div>
-{% endif %}
 
-<div>
+<div class="mt-2">
   {{content.description|raw}}
 </div>

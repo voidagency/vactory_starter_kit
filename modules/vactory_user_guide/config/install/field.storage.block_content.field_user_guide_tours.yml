@@ -1,0 +1,21 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_user_guide
+  module:
+    - block_content
+    - vactory_dynamic_field
+id: block_content.field_user_guide_tours
+field_name: field_user_guide_tours
+entity_type: block_content
+type: field_wysiwyg_dynamic
+settings: {  }
+module: vactory_dynamic_field
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

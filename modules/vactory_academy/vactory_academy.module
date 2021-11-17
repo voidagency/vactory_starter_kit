@@ -36,6 +36,11 @@ function vactory_academy_theme() {
       'base hook' => 'node',
       'template'  => 'smart-search',
     ],
+     // Node > Mur.
+    'node__vactory_academy__mur'        => [
+      'base hook' => 'node',
+      'template'  => 'mur',
+    ],
     'user__vactory_academy__full' => [
       'base hook' => 'user',
       'template' => 'user--full',

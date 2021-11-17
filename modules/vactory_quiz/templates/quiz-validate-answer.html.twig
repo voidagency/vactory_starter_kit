@@ -1,0 +1,18 @@
+<div class="shadow p-3 mb-5 mt-4 bg-white rounded">
+	<div class="d-flex mb-3">
+		<strong class="mx-2">{{ content.question.question_number }}.</strong>
+		<div>
+			{{ content.question.question_text_value|raw }}
+		</div>
+	</div>
+	<ul class="d-inline-block">
+		{% for answer in content.question.question_answers %}
+			{% set borderColor = answer.is_correct ? 'border-success' : '' %}
+			{% set borderColor = answer.answer_id in content.user_answers[content.question.question_number] and not answer.is_correct ? 'border-danger' : borderColor %}
+			<li class="border rounded d-block p-2 mb-1 {{ borderColor }}">
+				<strong>{{ answer.answer_id|t }}</strong> -
+				{{ answer.answer }}
+			</li>
+		{% endfor %}
+	</ul>
+</div>

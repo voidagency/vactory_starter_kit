@@ -1,0 +1,7 @@
+vactory_sms_sender_example:
+  path: '/admin/config/services/vactory-sms-sender/example'
+  defaults:
+    _form: 'Drupal\vactory_sms_sender_example\Plugin\Form\VactorySmsSenderExampleForm'
+    _title: 'Vactory SMS Sender Example'
+  requirements:
+    _permission: 'administer site configuration'

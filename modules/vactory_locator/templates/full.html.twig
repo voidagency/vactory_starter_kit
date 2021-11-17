@@ -1,0 +1,44 @@
+{% set lon = elements['#locator_entity'].field_locator_info.lon %}
+{% set lat = elements['#locator_entity'].field_locator_info.lat %}
+{% if classes is not defined %}
+  {% set classes = ['text-center'] %}
+{% endif %}
+<article {{ attributes.addClass(classes) }}>
+  <h1>
+    {{ elements.name }}
+  </h1>
+  {{ elements.field_locator_image }}
+
+  <div class="mt-4">
+    <h3>{{ 'Informations'|t }}</h3>
+    <p>
+      {{ elements.field_locator_additional_adress }}
+    </p>
+    {% if elements.field_locator_phone.0 is defined %}
+      <p>
+        {{ 'Téléphone'|t }}: {{ elements.field_locator_phone.0['#title'] }}
+      </p>
+    {% endif %}
+    {% if elements.field_locator_fax.0 is defined %}
+      <p>
+        {{ 'Fax'|t }}: {{ elements.field_locator_fax.0['#title'] }}
+      </p>
+    {% endif %}
+    {% if elements.field_locator_country.0 is defined %}
+      <p>
+        {{ 'Fax'|t }}: {{ elements.field_locator_fax.0['#title'] }}
+      </p>
+    {% endif %}
+    {% if elements.field_lbr_partner.0 is defined %}
+      <p>
+        {{ elements.field_lbr_partner.0['#markup'] }}
+      </p>
+    {% endif %}
+    {% if elements.field_locator_email.0 is defined %}
+      <p>
+        <a href="mailto:{{ elements.field_locator_email.0['#context'].value }}">{{ elements.field_locator_email.0['#context'].value }}</a>
+      </p>
+    {% endif %}
+  </div>
+
+</article>

@@ -1,0 +1,49 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - core.entity_view_display.comment.comment.default
+    - core.entity_view_mode.node.mur
+    - field.field.node.vactory_page.comment
+    - field.field.node.vactory_page.field_exclude_from_search
+    - field.field.node.vactory_page.field_vactory_meta_tags
+    - field.field.node.vactory_page.field_vactory_paragraphs
+    - field.field.node.vactory_page.field_vactory_seo_status
+    - node.type.vactory_page
+  module:
+    - comment
+    - user
+id: node.vactory_page.mur
+targetEntityType: node
+bundle: vactory_page
+mode: mur
+content:
+  comment:
+    weight: 1
+    label: hidden
+    settings:
+      view_mode: default
+      pager_id: 0
+    third_party_settings: {  }
+    type: comment_default
+    region: content
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  field_content_access_groups: true
+  field_content_access_roles: true
+  field_content_access_users: true
+  field_exclude_from_search: true
+  field_vactory_meta_tags: true
+  field_vactory_paragraphs: true
+  field_vactory_seo_status: true
+  langcode: true
+  mail_message: true
+  mail_subject: true
+  notification_message: true
+  notification_title: true
+  search_api_excerpt: true

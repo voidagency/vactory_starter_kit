@@ -1,0 +1,66 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - block_content.type.vactory_sondage
+    - field.field.block_content.vactory_sondage.body
+    - field.field.block_content.vactory_sondage.field_sondage_close_date
+    - field.field.block_content.vactory_sondage.field_sondage_options
+    - field.field.block_content.vactory_sondage.field_sondage_question
+    - field.field.block_content.vactory_sondage.field_sondage_results
+    - field.field.block_content.vactory_sondage.field_sondage_status
+  enforced:
+    module:
+      - vactory_sondage
+  module:
+    - datetime
+    - options
+    - text
+    - vactory_sondage
+id: block_content.vactory_sondage.default
+targetEntityType: block_content
+bundle: vactory_sondage
+mode: default
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 0
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_sondage_close_date:
+    weight: 2
+    label: hidden
+    settings:
+      timezone_override: ''
+      date_format: 'd/m/Y - H\hi'
+    third_party_settings: {  }
+    type: datetime_custom
+    region: content
+  field_sondage_options:
+    weight: 1
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: vactory_sondage_option_formatter
+    region: content
+  field_sondage_question:
+    weight: 4
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_sondage_status:
+    weight: 3
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: list_key
+    region: content
+hidden:
+  field_sondage_results: true
+  langcode: true
+  search_api_excerpt: true

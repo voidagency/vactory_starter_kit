@@ -37,6 +37,11 @@ function vactory_governance_theme($existing, $type, $theme, $path) {
       'base hook' => 'node',
       'template'  => 'smart-search',
     ],
+    // Node > Mur.
+    'node__vactory_governance__mur'        => [
+      'base hook' => 'node',
+      'template'  => 'mur',
+    ],
     'governance_member_block'               => [
       "variables" => ["content" => []],
       "template"  => 'block--governance-member',
@@ -66,7 +71,10 @@ function vactory_governance_theme_suggestions_alter(array &$suggestions, array $
  * Implements hook_form_alter().
  */
 function vactory_governance_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  if (in_array($form_id, ['node_vactory_governance_edit_form', 'node_vactory_governance_form'])) {
+  if (in_array($form_id, ['node_vactory_governance_edit_form',
+    'node_vactory_governance_form',
+  ]
+  )) {
     $form['field_show_on_roles']['#states'] = [
       'visible' => [
         ':input[name="field_show_in_one_row[value]"]' => ['checked' => TRUE],

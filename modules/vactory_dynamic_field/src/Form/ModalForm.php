@@ -17,7 +17,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * ModalForm class.
+ * ModalForm class for vactory dynamic fields.
  */
 class ModalForm extends FormBase {
 
@@ -127,7 +127,6 @@ class ModalForm extends FormBase {
     $widget_data = \Drupal::request()->request->get('dialogOptions')['data'] ?: NULL;
     $this->cardinality = \Drupal::request()->query->get('cardinality') ?: NULL;
     $this->wrapperId = \Drupal::request()->query->get('wrapper_id') ?: NULL;
-
     if (!$field_id || !is_string($field_id)) {
       throw new BadRequestHttpException('The "field_id" query parameter is required and must be a string.');
     }
@@ -329,7 +328,7 @@ class ModalForm extends FormBase {
 
       if ($is_multiple) {
         // If multiple components case then add drag icon.
-        $form['components'][$i]['#title'] = $this->t('Component') . ' ' . ($i + 1) . ' ' . $icon_drag;;
+        $form['components'][$i]['#title'] = $this->t('Component') . ' ' . ($i + 1) . ' ' . $icon_drag;
         $form['components'][$i]['#open'] = TRUE;
         if ($i === 0) {
           $form['components'][$i]['#prefix'] = '<div id="sortable-components">';
@@ -392,7 +391,7 @@ class ModalForm extends FormBase {
           $element_options = isset($field['options']) ? $field['options'] : [];
 
           $ds_field_name = '';
-          if ($element_type == 'image') {
+          if ($element_type == 'image' || $element_type == 'remote_video') {
             // Save a copy of current parent.
             $form_parents = $form['#parents'] ?? [];
             $form['#parents'] = ['components', $i, $field_id];
@@ -408,7 +407,7 @@ class ModalForm extends FormBase {
 
           $form['components'][$i][$field_id] = $this->getFormElement($element_type, $element_label, $element_default_value, $element_options, $form, $form_state, $ds_field_name, $field_id, $i);
 
-          if ($element_type == 'image') {
+          if ($element_type == 'image' || $element_type == 'remote_video') {
             // Restore parent for other fields.
             $form['#parents'] = $form_parents;
           }

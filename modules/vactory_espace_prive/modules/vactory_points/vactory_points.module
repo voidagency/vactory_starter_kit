@@ -1,0 +1,78 @@
+<?php
+
+/**
+ * @file
+ * Module related hooks.
+ */
+
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_ENTITY_TYPE_view().
+ */
+function vactory_points_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+  if ($view_mode === 'full') {
+    $vactory_points_manager = Drupal::service('vactory_points.manager');
+    $vactory_points_manager->triggerUserPointsUpdate('view', $entity);
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ */
+function vactory_points_node_presave(EntityInterface $entity) {
+  // Manage approved content case.
+  if (!$entity->isNew() && $entity->isPublished()) {
+    $node_owner = $entity->getOwner();
+    $current_user = Drupal::currentUser();
+    if ($node_owner->id() !== $current_user->id()) {
+      Drupal::service('vactory_points.manager')->triggerUserPointsUpdate('add_node', $entity, $node_owner);
+    }
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_insert().
+ */
+function vactory_points_node_insert(EntityInterface $entity) {
+  if ($entity->isPublished()) {
+    $user = $entity->getOwner();
+    Drupal::service('vactory_points.manager')->triggerUserPointsUpdate('add_node', $entity, $user);
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ */
+function vactory_points_comment_presave(EntityInterface $entity) {
+  // New comment case (No approval policy).
+  if ($entity->isNew() && $entity->isPublished()) {
+    $user = $entity->getOwner();
+    $commented_entity = $entity->getCommentedEntity();
+    Drupal::service('vactory_points.manager')->triggerUserPointsUpdate('comment', $commented_entity, $user);
+  }
+  // New comment with approval policy.
+  if (!$entity->isNew() && $entity->isPublished()) {
+    $node_owner = $entity->getOwner();
+    $current_user = Drupal::currentUser();
+    $commented_entity = $entity->getCommentedEntity();
+    if ($node_owner->id() !== $current_user->id()) {
+      Drupal::service('vactory_points.manager')->triggerUserPointsUpdate('comment', $commented_entity, $node_owner);
+    }
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_points_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form_ids = [
+    'user_register_form',
+    'user_form',
+  ];
+  if (in_array($form_id, $form_ids)) {
+    $form['field_no_repeated_actions']['#access'] = FALSE;
+  }
+}

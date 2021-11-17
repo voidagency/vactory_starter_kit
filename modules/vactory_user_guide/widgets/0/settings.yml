@@ -1,0 +1,84 @@
+name: 'User Guide Tours'
+multiple: TRUE
+category: 'User Guide'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: 'Title'
+  intro:
+    type: text_format
+    label: 'Description'
+  element:
+    type: text
+    label: 'Concerned element css selector'
+    options:
+      '#description': 'A unique css selector for the specific element. If ignored that means only display a simple message like for example a welcome message.'
+extra_fields:
+  group_tours_options:
+    g_title: 'Tours Options'
+    tourDisplayCounter:
+      type: number
+      label: 'Number of time the guide should be displayed'
+      options:
+        '#min': 1
+    nextLabel:
+      type: text
+      label: 'Next button label'
+    prevLabel:
+      type: text
+      label: 'Previous button label'
+    doneLabel:
+      type: text
+      label: 'Done button label'
+    skipLabel:
+      type: text
+      label: 'Skip button label'
+      options:
+        '#description': 'Leave empty to use default tooltip closer button (x)'
+    showProgress:
+      type: checkbox
+      label: 'Hide progress bar'
+    useHints:
+      type: checkbox
+      label: 'Keep using tours as hints'
+    showButtons:
+      type: checkbox
+      label: 'Hide Next/Back buttons'
+    showBullets:
+      type: checkbox
+      label: 'Hide bullets'
+    disableInteraction:
+      type: checkbox
+      label: 'Disable interaction with tooltips content'
+    keyboardNavigation:
+      type: checkbox
+      label: 'Disable navigating with keyboard'
+    exitOnEsc:
+      type: checkbox
+      label: 'Do not Exit introduction when pressing Escape button'
+    exitOnOverlayClick:
+      type: checkbox
+      label: 'Do not Exit introduction when clicking on overlay layer'
+    showStepNumbers:
+      type: checkbox
+      label: 'Show step numbers'
+    startStepNumber:
+      type: number
+      label: 'Step number to start with'
+      options:
+        '#min': 1
+        '#description': 'A step number is the step order number starting by 1'
+    overlayOpacity:
+      type: number
+      label: 'Overley opacity (between 0 and 1)'
+      options:
+        '#min': 0
+        '#max': 1
+        '#step': 0.1
+    tooltipClass:
+      type: text
+      label: 'Tooltip CSS class'
+    highlightClass:
+      type: text
+      label: 'Highlighted element CSS class'

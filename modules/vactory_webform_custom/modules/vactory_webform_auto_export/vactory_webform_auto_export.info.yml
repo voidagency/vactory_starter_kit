@@ -1,0 +1,9 @@
+name: 'Vactory Webform Auto Exports'
+description: 'Automatic export for Drupal Webform results'
+type: module
+dependencies:
+  - 'webform:webform'
+  - 'webform:webform_ui'
+  - vactory_webform_custom
+core: '8.x'
+core_version_requirement: ^8 || ^9

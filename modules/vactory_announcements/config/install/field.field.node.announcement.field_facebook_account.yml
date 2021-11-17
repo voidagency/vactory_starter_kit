@@ -1,0 +1,18 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_facebook_account
+    - node.type.announcement
+id: node.announcement.field_facebook_account
+field_name: field_facebook_account
+entity_type: node
+bundle: announcement
+label: 'Compte facebook'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

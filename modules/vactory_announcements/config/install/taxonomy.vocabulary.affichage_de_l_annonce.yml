@@ -1,0 +1,7 @@
+langcode: en
+status: true
+dependencies: {  }
+name: 'Affichage de l''annonce'
+vid: affichage_de_l_annonce
+description: 'This Vocabulary is used for Announcements'
+weight: 0

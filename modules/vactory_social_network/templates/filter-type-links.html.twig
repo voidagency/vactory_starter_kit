@@ -1,0 +1,19 @@
+<div class="btn-filter-group filter-theme" role="group" aria-label="{{ 'Filter Thematic'|t }}">
+  <span class="filter-tab">
+      <button href="{{ path('view.vactory_social_network.vactory_social_network_view') }}" class="btn btn-empty btn-filter active btn-active"
+              data-filter-name="{{ filter_name }}" id="all">
+        <span class="badge badge-primary p-2">{{ 'Tout'|t }}</span>
+      </button>
+  </span>
+  {% for bundle, title in links %}
+    {% set active = bundle in default_value ? 'active' : '' %}
+    {% if bundle != 'All' %}
+      <span class="filter-tab">
+        <button href="{{ path('view.vactory_social_network.vactory_social_network_view') }}" class="btn btn-empty btn-filter {{ active }}"
+                data-filter-name="{{ filter_name }}" id="{{ bundle }}">
+          <span class="badge badge-primary p-2">{{ title }}</span>
+        </button>
+      </span>
+    {% endif %}
+  {% endfor %}
+</div>

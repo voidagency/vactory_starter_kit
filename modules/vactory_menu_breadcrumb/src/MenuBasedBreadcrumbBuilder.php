@@ -369,7 +369,7 @@ class MenuBasedBreadcrumbBuilder implements BreadcrumbBuilderInterface {
         }
       }
 
-      $this->addMissingCurrentPage($links, $route_match);
+      // $this->addMissingCurrentPage($links, $route_match);
       // Create a breadcrumb for <front> which may be either added or replaced:
       $langcode = $this->contentLanguage;
       $label = $this->config->get('home_as_site_name') ?
@@ -377,7 +377,7 @@ class MenuBasedBreadcrumbBuilder implements BreadcrumbBuilderInterface {
         $this->t('Home', [], ['langcode' => $langcode]);
       $home_link = Link::createFromRoute($label, '<front>');
       // Add Front page.
-      array_unshift($links, $home_link);
+      // array_unshift($links, $home_link);
       // The first link from the menu trail, being the root, may be the
       // <front> so first compare those two routes to see if they are identical.
       // (Though in general a link deeper in the menu could be <front>, in that
@@ -391,35 +391,41 @@ class MenuBasedBreadcrumbBuilder implements BreadcrumbBuilderInterface {
         ($front_url->getRouteName() === $first_url->getRouteName()) &&
         ($front_url->getRouteParameters() === $first_url->getRouteParameters())) {
 
-        // According to the confusion hopefully cleared up in issue 2754521, the
-        // sense of "remove_home" is slightly different than in Menu Breadcrumb:
-        // we remove any match with <front> rather than replacing it.
-        if ($this->config->get('remove_home')) {
-          array_shift($links);
-        }
-        else {
-          $links[0] = $home_link;
-        }
+        $links[0] = $home_link;
       }
       else {
         // If trail *doesn't* begin with the home page,
         // add it if that option set.
-        if ($this->config->get('add_home')) {
+        if ($this->config->get(VactoryBreadcrumbConstants::INCLUDE_HOME_SEGMENT)) {
           array_unshift($links, $home_link);
         }
+      }
+      if ($this->config->get(VactoryBreadcrumbConstants::LANGUAGE_PATH_PREFIX_AS_SEGMENT)) {
+        $curr_langue = \Drupal::languageManager()->getCurrentLanguage()->getName();
+        $langue_link = Link::createFromRoute($curr_langue, '<none>');
+        $index = $this->config->get('add_home') ? 0 : -1;
+        $first_part = array_slice($links, 0, $index + 1);
+        $second_part = array_slice($links, $index + 1);
+        array_push($first_part, $langue_link);
+        $links = array_merge($first_part, $second_part);
       }
       if (!empty($links)) {
         $page_type = $this->taxonomyAttachment ? 'member_page' : 'current_page';
         // Display the last item of the breadcrumbs trail,
         // as the options indicate.
         /** @var \Drupal\Core\Link $current */
+        $front = array_shift($links);
         $current = array_pop($links);
+        if (!$this->config->get('add_home')) {
+          $front->setUrl(new Url('<none>'));
+        }
         if ($this->config->get('append_' . $page_type)) {
           if (!$this->config->get($page_type . '_as_link')) {
             $current->setUrl(new Url('<none>'));
           }
           array_push($links, $current);
         }
+        array_unshift($links, $front);
       }
       return $breadcrumb->setLinks($links);
     }
@@ -445,17 +451,14 @@ class MenuBasedBreadcrumbBuilder implements BreadcrumbBuilderInterface {
       $i = 0;
 
       // Remove the current page if it's not wanted.
-      if (!$this->config->get(VactoryBreadcrumbConstants::INCLUDE_TITLE_SEGMENT)) {
+      if (!$this->config->get('append_current_page')) {
         array_pop($path_elements);
       }
 
       if (isset($path_elements[0])) {
-
         // Remove the first parameter if it matches the current language.
-        if (!($this->config->get(VactoryBreadcrumbConstants::LANGUAGE_PATH_PREFIX_AS_SEGMENT))) {
-          if (mb_strtolower($path_elements[0]) == $curr_lang) {
-            array_shift($path_elements);
-          }
+        if (mb_strtolower($path_elements[0]) == $curr_lang) {
+          array_shift($path_elements);
         }
       }
       while (count($path_elements) > 0) {
@@ -482,8 +485,8 @@ class MenuBasedBreadcrumbBuilder implements BreadcrumbBuilderInterface {
             }
             // Add a linked breadcrumb unless it's the current page.
             if ($i == 0
-              && $this->config->get(VactoryBreadcrumbConstants::INCLUDE_TITLE_SEGMENT)
-              && !$this->config->get(VactoryBreadcrumbConstants::TITLE_SEGMENT_AS_LINK)) {
+              && $this->config->get('append_current_page')
+              && !$this->config->get('current_page_as_link')) {
               $links[] = Link::createFromRoute($title, '<none>');
             }
             else {
@@ -511,13 +514,33 @@ class MenuBasedBreadcrumbBuilder implements BreadcrumbBuilderInterface {
         array_pop($path_elements);
       }
       // Add the home link, if desired.
+      $label = $this->config->get('home_as_site_name') ?
+        $this->configFactory->get('system.site')->get('name') :
+        $this->config->get(VactoryBreadcrumbConstants::HOME_SEGMENT_TITLE);
       if ($this->config->get(VactoryBreadcrumbConstants::INCLUDE_HOME_SEGMENT)) {
         if ($path && '/' . $path != $curr_lang) {
-          $links[] = Link::createFromRoute($this->config->get(VactoryBreadcrumbConstants::HOME_SEGMENT_TITLE), '<front>');
+          $links[] = Link::createFromRoute($label, '<front>');
         }
       }
       $links = array_reverse($links);
-
+      if ($this->config->get(VactoryBreadcrumbConstants::LANGUAGE_PATH_PREFIX_AS_SEGMENT)) {
+        $curr_langue = \Drupal::languageManager()->getCurrentLanguage()->getName();
+        $langue_link = Link::createFromRoute($curr_langue, '<none>');
+        $index = $this->config->get('add_home') ? 0 : -1;
+        $first_part = array_slice($links, 0, $index + 1);
+        $second_part = array_slice($links, $index + 1);
+        array_push($first_part, $langue_link);
+        $links = array_merge($first_part, $second_part);
+      }
+      if (!empty($links)) {
+        // Display the last item of the breadcrumbs trail,
+        // as the options indicate.
+        $front = array_shift($links);
+        if (!$this->config->get('add_home')) {
+          $front->setUrl(new Url('<none>'));
+        }
+        array_unshift($links, $front);
+      }
       if ($this->config->get(VactoryBreadcrumbConstants::REMOVE_REPEATED_SEGMENTS)) {
         $links = $this->removeRepeatedSegments($links);
       }

@@ -1,0 +1,221 @@
+<?php
+
+/**
+ * @file
+ * Primary hooks.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\media\Entity\Media;
+use Drupal\node\Entity\Node;
+use Drupal\node\NodeInterface;
+use Drupal\file\Entity\File;
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_social_network_theme($existing, $type, $theme, $path) {
+  return [
+    'node__vactory_post__masonry' => [
+      'base hook' => 'node',
+      'template' => 'masonry',
+    ],
+    'node__vactory_post__mur' => [
+      'base hook' => 'node',
+      'template' => 'mur',
+    ],
+    'vactory_social_network_filter_links_type'  => [
+      'template'  => 'filter-type-links',
+      'variables' => [
+        'links'          => [],
+        'filter_name'    => '',
+        'default_value' => [],
+      ],
+    ],
+    'vactory_social_network_filter_container'   => [
+      'template'  => 'filter-container',
+      'variables' => [
+        'thematic' => [],
+      ],
+    ],
+    'flag__liked_content' => [
+      'base hook' => 'flag',
+      'template' => 'flag-content',
+    ],
+    'views_view__vactory_social_network__vactory_social_network_view' => [
+      'base hook' => 'views_view',
+      'template'  => 'views-page',
+    ],
+    'vactory__views_infinite_scroll_pager' => [
+      'base hook' => 'views_infinite_scroll_pager',
+      'template'  => 'load-more',
+    ],
+    'vactory_social_add_post' => [
+      'template' => 'add-post-block',
+      'variables' => [
+        'content' => [],
+      ],
+    ],
+    'vactory_social_network__field_comment__masonry' => [
+      'base hook' => 'field',
+      'template' => 'field-comment',
+    ],
+    'node__vactory_post__full' => [
+      'base hook' => 'node',
+      'template' => 'post-full',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_preprocess_hook().
+ */
+function vactory_social_network_preprocess_node(&$variables) {
+  if (isset($variables['elements']['#node'])) {
+    $node = $variables['elements']['#node'];
+    $bundle = $node->bundle();
+    if ($bundle == 'vactory_post') {
+      $config = \Drupal::config('vactory_social_network.settings');
+      $variables['enable_add_post'] = $config->get('enable_post');
+      $variables['enable_comments'] = $config->get('enable_comments');
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_hook().
+ */
+function vactory_social_network_preprocess_views_view__vactory_social_network__vactory_social_network_view(&$variables) {
+  $config = \Drupal::config('vactory_social_network.settings');
+  $variables['enable_add_post'] = $config->get('enable_post');
+  $variables['enable_comments'] = $config->get('enable_comments');
+}
+
+/**
+ * Implements hook_preprocess_hook().
+ */
+function vactory_social_network_preprocess_vactory_social_network__field_comment__masonry(&$variables, $hook) {
+  $items_to_show = 4;
+  if (isset($variables['comments']) and !empty($variables['comments'])) {
+    $comments = $variables['comments'];
+    $comments_to_show = [];
+    $comments_to_show['#sorted'] = $comments['#sorted'];
+    $comments_to_show['#pre_render'] = $comments['#pre_render'];
+    $i = 0;
+    foreach ($comments as $key => $comment) {
+      if (is_numeric($key)) {
+        if ($i == $items_to_show) {
+          break;
+        }
+        $comments_to_show[$key] = $comment;
+        $i++;
+      }
+    }
+    $comments_to_show['pager'] = $comments['pager'];
+    $variables['total_comments'] = count($comments) - 3;
+    $variables['comments'] = $comments_to_show;
+  }
+}
+
+/**
+ * Implemenets hook_theme_suggestions_HOOK_alter().
+ */
+function vactory_social_network_theme_suggestions_field_alter(array &$suggestions, array $variables) {
+  if (isset($variables['element']['#view_mode'])) {
+    $suggestions[] = 'vactory_social_network__field_' . $variables['element']['#field_type'] . '__' . $variables['element']['#view_mode'];
+  }
+}
+
+/**
+ * Implements hook_theme_suggestions_alter().
+ */
+function vactory_social_network_theme_suggestions_alter(array &$suggestions, array $variables, $hook) {
+  $layout = ['views_infinite_scroll_pager'];
+  if (in_array($hook, $layout)) {
+    $suggestions[] = 'vactory__' . $hook;
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_social_network_form_alter(&$form, $form_state, $form_id) {
+  if (isset($form['#webform_id']) && $form['#webform_id'] == "vactory_social_network_add_post") {
+    // Add custom submit.
+    $form_submit = $form['actions']['submit']['#submit'];
+    unset($form_submit[0]);
+    unset($form_submit[1]);
+    array_unshift($form_submit, 'add_post_custom_submit');
+    $form['actions']['submit']['#submit'] = $form_submit;
+  }
+  if (strpos($form['#id'], "views-exposed-form-vactory-social-network-vactory-social-network-view") === 0) {
+    $form['#attached']['library'][] = 'vactory_social_network/views_filter_links';
+    $form['#attached']['drupalSettings'] = [
+      'form_id' => $form['#id'],
+    ];
+    // Hide submit button.
+    $form['actions']['submit']['#attributes']['class'][] = 'd-none';
+    $form['field_vactory_post_thematique_target_id']['#attributes']['class'][] = 'd-none';
+    $form['social_network_filter'] = [
+      '#theme'    => 'vactory_social_network_filter_container',
+      '#thematic' => [
+        '#theme'         => 'vactory_social_network_filter_links_type',
+        '#links'         => $form['field_vactory_post_thematique_target_id']['#options'],
+        '#default_value' => $form['field_vactory_post_thematique_target_id']['#default_value'],
+        '#filter_name'   => 'field_vactory_post_thematique_target_id',
+      ],
+    ];
+  }
+
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_social_network_preprocess_flag__liked_content(&$variables) {
+  $node = $variables['flaggable'];
+  if (isset($node) && $node instanceof NodeInterface) {
+    $nid = $node->id();
+    $query = Drupal::entityQuery('flagging');
+    $query->condition('flag_id', 'liked_content', '=')
+      ->condition('entity_type', 'node', '=')
+      ->condition('entity_id', $nid, '=');
+    $likes_count = $query->count()->execute();
+    $variables['likes_count'] = $likes_count;
+  }
+}
+
+/**
+ * Custom webform submit.
+ */
+function add_post_custom_submit($form, FormStateInterface $form_state) {
+  $title = $form_state->getValue('post_title');
+  $description = $form_state->getValue('post_description');
+  $image = $form_state->getValue('post_image');
+  $node = [
+    'type' => 'vactory_post',
+    'title' => $title,
+    'status' => 0,
+  ];
+  if (isset($description) && !empty($description)) {
+    $node['field_vactory_excerpt'] = $description;
+  }
+  if (isset($image)) {
+    $file = File::load($image);
+    $file->setPermanent();
+    $file->save();
+    if (isset($file)) {
+      $media = Media::create([
+        'bundle'           => 'image',
+        'uid'              => \Drupal::currentUser()->id(),
+        'field_media_image' => [
+          'target_id' => $file->id(),
+        ],
+      ]);
+      $media->setName($title)->setPublished(TRUE)->save();
+      $node['field_vactory_media_image'] = $media->id();
+    }
+  }
+  $node = Node::create($node);
+  $node->save();
+}

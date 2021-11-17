@@ -5,6 +5,9 @@
  * Contains vactory_locator.module.
  */
 
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\media\Entity\Media;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
@@ -51,11 +54,11 @@ function vactory_locator_theme() {
     'variables' => [
       'name'                               => '',
       'field_locator_info'                 => [],
-      'field_locator_adress_address_line1' => '',
-      'field_locator_adress_address_line2' => '',
-      'field_locator_adress_country_code'  => '',
-      'field_locator_adress_locality'      => '',
-      'field_locator_adress_postal_code'   => '',
+      'field_locator_category_infos'       => [],
+      'field_locator_country_1'            => '',
+      'field_locator_city_1'               => '',
+      'field_locator_additional_adress'    => '',
+      'field_locator_zipcode'              => '',
       'field_locator_email'                => '',
       'field_locator_description'          => '',
       'field_locator_image'                => '',
@@ -64,8 +67,6 @@ function vactory_locator_theme() {
       'field_locator_autre'                => '',
       'field_locator_autre_2'              => '',
       'field_locator_autre_3'              => '',
-      'field_locator_autre_4'              => '',
-      'field_locator_autre_5'              => '',
     ],
   ];
   $theme['locator_search_list_element'] = [
@@ -73,11 +74,11 @@ function vactory_locator_theme() {
     'variables' => [
       'name'                               => '',
       'field_locator_info'                 => [],
-      'field_locator_adress_address_line1' => '',
-      'field_locator_adress_address_line2' => '',
-      'field_locator_adress_country_code'  => '',
-      'field_locator_adress_locality'      => '',
-      'field_locator_adress_postal_code'   => '',
+      'field_locator_category'             => '',
+      'field_locator_country_1'            => '',
+      'field_locator_city_1'               => '',
+      'field_locator_additional_adress'    => '',
+      'field_locator_zipcode'              => '',
       'field_locator_email'                => '',
       'field_locator_description'          => '',
       'field_locator_image'                => '',
@@ -86,8 +87,6 @@ function vactory_locator_theme() {
       'field_locator_autre'                => '',
       'field_locator_autre_2'              => '',
       'field_locator_autre_3'              => '',
-      'field_locator_autre_4'              => '',
-      'field_locator_autre_5'              => '',
     ],
   ];
   $theme['map_block'] = [
@@ -106,7 +105,32 @@ function vactory_locator_theme() {
     ],
   ];
 
+  $theme['locator_entity__vactory_locator'] = [
+    'template'  => 'locator-entity--vactory-locator',
+    'variables' => [
+      'content' => NULL,
+    ],
+  ];
+
+  $theme['views_view_fields__vactory_locator__agency_listing'] = [
+    'base hook' => 'views_view_fields',
+    'template' => 'locator-card',
+  ];
+
+  $theme['locator_entity__vactory_locator__full'] = [
+    'base hook' => 'locator_entity',
+    'template' => 'full',
+  ];
+
   return $theme;
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter().
+ */
+function vactory_locator_theme_suggestions_views_view_fields_alter(array &$suggestions, array $variables) {
+  $view = $variables['view'];
+  $suggestions[] = 'views_view_fields__' . $view->id() . '__' . $view->current_display;
 }
 
 /**
@@ -159,7 +183,9 @@ function vactory_locator_views_post_render(ViewExecutable $view, &$output, Cache
     $entity_manager = \Drupal::service('entity_type.manager');
     $file_storage = $entity_manager->getStorage('file');
     $decode_data = Json::decode($output['#markup']->jsonSerialize());
-
+    $current_lang_code = \Drupal::languageManager()
+      ->getCurrentLanguage()
+      ->getId();
     foreach ($decode_data as $key => $item) {
       if (isset($item) && !empty($item)) {
         $entity_loc_info = $view->result[$key]->_entity->get('field_locator_info')
@@ -179,6 +205,43 @@ function vactory_locator_views_post_render(ViewExecutable $view, &$output, Cache
           }
         }
 
+        // Add Category Marker, rendered item.
+        $category_id = $decode_data[$key]['field_locator_category_1'];
+        $decode_data[$key]['field_locator_category_infos'] = [
+          'id_category' => $category_id,
+          'label_category' => $decode_data[$key]['field_locator_category'],
+        ];
+
+        if (!empty($category_id)) {
+          $category_terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')
+            ->loadByProperties([
+              'vid' => 'locator_category',
+              'tid' => $category_id,
+            ]);
+          if (isset($category_terms)) {
+            $category_term = array_values($category_terms)[0];
+            $translated_term = \Drupal::service('entity.repository')
+              ->getTranslationFromContext($category_term, $current_lang_code);
+            $url = '';
+            if (isset($translated_term->get('field_locator_map_marker')->getValue()[0]['target_id'])) {
+              $media_id = $translated_term->get('field_locator_map_marker')->getValue()[0]['target_id'];
+              $media = Media::load($media_id);
+              $fid = $media->get('field_media_image')[0]->get('target_id')->getValue();
+              $file = $file_storage->load($fid);
+              if ($file) {
+                $url = file_url_transform_relative(\Drupal::service('stream_wrapper_manager')->getViaUri($file->getFileUri())->getExternalUrl());
+              }
+            }
+            $width = (isset($translated_term->get('field_locator_marker_height')->getValue()[0]['value'])) ? $translated_term->get('field_locator_marker_height')->getValue()[0]['value'] : '';
+            $height = (isset($translated_term->get('field_locator_marker_width')->getValue()[0]['value'])) ? $translated_term->get('field_locator_marker_width')->getValue()[0]['value'] : '';
+            $decode_data[$key]['field_locator_category_infos']['marker']['marker_url'] = $url;
+            $decode_data[$key]['field_locator_category_infos']['marker']['marker_height'] = $height;
+            $decode_data[$key]['field_locator_category_infos']['marker']['marker_width'] = $width;
+          }
+        }
+        // Remove category id and category label from results.
+        unset($decode_data[$key]['field_locator_category_1']);
+        unset($decode_data[$key]['field_locator_category']);
         // Add pin, rendered item.
         $decode_data[$key]['pin'] = _rendered_pin($decode_data[$key], 'locator_pin');
         $decode_data[$key]['search_list_element'] = _rendered_pin($decode_data[$key], 'locator_search_list_element');
@@ -252,4 +315,115 @@ function _rendered_pin(array $data, $theme) {
   $marker = \Drupal::service('renderer')->renderPlain($result);
 
   return $marker;
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_locator_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if (
+    isset($form_id) &&
+    in_array($form_id, [
+      'locator_entity_vactory_locator_add_form',
+      'locator_entity_vactory_locator_edit_form',
+    ])
+  ) {
+    $form['field_locator_country']['widget']['#ajax'] = [
+      'callback' => 'get_cities',
+      'event' => 'change',
+      'wrapper' => 'locator_city_selector',
+    ];
+    $form['field_locator_city']['#prefix'] = '<div id="locator_city_selector">';
+    $form['field_locator_city']['#suffix'] = '</div>';
+    $form['field_locator_city']['widget']['#limit_validation_errors'] = [];
+
+    // Set city and country of the agency in edit form.
+    if ($form_id == 'locator_entity_vactory_locator_edit_form') {
+      $country_id = !empty($form_state->getValue('field_locator_country')) ? $form_state->getValue('field_locator_country')[0]['target_id'] : NULL;
+      $form_country_id = isset($form['field_locator_country']['widget']['#default_value'][0]) ? $form['field_locator_country']['widget']['#default_value'][0] : NULL;
+      $form['field_locator_city']['widget']['#options'] = !$country_id ? get_city_options($form_country_id) : get_city_options($country_id);
+    }
+  }
+}
+
+/**
+ * Callback : Get all cities of selected country.
+ */
+function get_cities($form, FormStateInterface $form_state) {
+  $country_id = $form_state->getValue('field_locator_country')[0]['target_id'];
+  $options = get_city_options($country_id);
+
+  // Affect received cities to city selectBox.
+  $form['field_locator_city']['widget']['#options'] = $options;
+  $form['field_locator_city']['widget']['#default_value'] = array_keys($options)[0];
+  $form['field_locator_city']['#prefix'] = '<div id="locator_city_selector">';
+
+  // Escape validation error for city select.
+  $form['field_locator_city']['widget']['#limit_validation_errors'] = [];
+  $form['field_locator_city'];
+  return $form['field_locator_city'];
+}
+
+/**
+ * Get city options of the country.
+ */
+function get_city_options($country_id) {
+  $vid = 'locator_city';
+  $city_options = ['_none' => '- None -'];
+  if ($country_id) {
+    $citiesOfCountry = \Drupal::entityTypeManager()->getStorage('taxonomy_term')
+      ->loadByProperties(['vid' => $vid, 'field_locator_country' => $country_id]);
+    if (isset($citiesOfCountry) && !empty($citiesOfCountry)) {
+      // Add name of the city.
+      $city_options = array_map(function ($city) {
+        return $city->label();
+      }, $citiesOfCountry);
+    }
+  }
+  return $city_options;
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_locator_preprocess_views_view_fields__vactory_locator__agency_listing(&$variables) {
+  $locator = $variables['row']->_entity;
+  $locator_name = $locator->getName();
+  $locator_name = str_replace('-', '_', $locator_name);
+  $locator_name = str_replace(' ', '-', $locator_name);
+  $config = \Drupal::config('vactory_locator.settings');
+  $prefix = !empty($config->get('path_url')) ? trim($config->get('path_url'), '/') : 'locator';
+  $variables['locator_path'] = '/' . $prefix . '/' . $locator_name;
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ */
+function vactory_locator_locator_entity_presave(EntityInterface $entity) {
+  if ($entity->bundle() === 'vactory_locator') {
+    if (empty($entity->get('field_locator_path_alias')->value)) {
+      $name = trim($entity->get('name')->value);
+      $entity->set('name', $name);
+      $name = str_replace([' ', "'"], '-', $name);
+      $path_alias = filter_var($name, FILTER_SANITIZE_SPECIAL_CHARS);
+      $locator_storage = Drupal::entityTypeManager()->getStorage('locator_entity');
+      $path_alias = generate_locator_path_alias($locator_storage, $path_alias, $path_alias, $entity, 0);
+      $entity->set('field_locator_path_alias', $path_alias);
+    }
+  }
+}
+
+/**
+ * Generate recursively path alias from locator name.
+ */
+function generate_locator_path_alias($locator_storage, $locator_path_alias_oroginal, $locator_path_alias, $locator_entity, $index) {
+  $locator_entities = $locator_storage->loadByProperties(['field_locator_path_alias' => $locator_path_alias]);
+  if (empty($locator_entities)) {
+    return $locator_path_alias;
+  }
+  if (!empty($locator_entities) && count($locator_entities) === 1 && array_keys($locator_entities)[0] == $locator_entity->id()) {
+    return $locator_path_alias;
+  }
+
+  return generate_locator_path_alias($locator_storage, $locator_path_alias_oroginal, $locator_path_alias_oroginal . '-' . $index, $locator_entity, $index + 1);
 }

@@ -10,6 +10,21 @@ use Drupal\node\NodeTypeInterface;
 use Drupal\vactory_core\Vactory;
 
 /**
+ * Implements hook_theme().
+ */
+function vactory_cross_content_theme($existing, $type, $theme, $path) {
+  return [
+    'vcc_block' => [
+      'template' => 'vcc-block',
+      'variables' => [
+        'block' => NULL,
+        'title' => '',
+      ],
+    ],
+  ];
+}
+
+/**
  * Implements hook_form_alter().
  */
 function vactory_cross_content_form_alter(&$form, FormStateInterface $form_state, $form_id) {
@@ -30,7 +45,6 @@ function vactory_cross_content_form_alter(&$form, FormStateInterface $form_state
     '#type' => 'checkbox',
     '#default_value' => $type->getThirdPartySetting('vactory_cross_content', 'enabling', ''),
   ];
-
   $taxonomies_list = Vactory::getTaxonomyList($type->get('type'));
   $taxonomy_field = ['none' => t('-- Select a taxonomy --')];
   foreach ($taxonomies_list as $key => $value) {
@@ -45,8 +59,8 @@ function vactory_cross_content_form_alter(&$form, FormStateInterface $form_state
     '#states' => [
       "visible" => [
         "input[name='enabling']" => ["checked" => TRUE],
-      ] ,
-    ] ,
+      ],
+    ],
     '#default_value' => $type->getThirdPartySetting('vactory_cross_content', 'taxonomy_field', 'none'),
   ];
 
@@ -63,9 +77,33 @@ function vactory_cross_content_form_alter(&$form, FormStateInterface $form_state
     '#states' => [
       "visible" => [
         "input[name='enabling']" => ["checked" => TRUE],
-      ] ,
-    ] ,
+      ],
+    ],
     '#default_value' => $type->getThirdPartySetting('vactory_cross_content', 'terms', 'none'),
+  ];
+
+  $types_content_types = \Drupal::entityTypeManager()
+    ->getStorage('node_type')
+    ->loadMultiple();
+  $types_content_options = ['none' => t('-- Select a Content Type --')];
+  foreach ($types_content_types as $key => $t) {
+    if ($type->get('type') !== $key) {
+      $types_content_options[$key] = $t->label();
+    }
+  }
+
+  $form['vcc']['content_type'] = [
+    '#type' => 'select',
+    '#title' => t('Content type - Optional -'),
+    '#description' => t('If you want to select another content type for the cross content.'),
+    '#options' => (!empty($types_content_options)) ? $types_content_options : [],
+    '#multiple' => TRUE,
+    '#states' => [
+      "visible" => [
+        "input[name='enabling']" => ["checked" => TRUE],
+      ],
+    ],
+    '#default_value' => $type->getThirdPartySetting('vactory_cross_content', 'content_type'),
   ];
 
   $form['vcc']['nombre_elements'] = [
@@ -75,8 +113,8 @@ function vactory_cross_content_form_alter(&$form, FormStateInterface $form_state
     '#states' => [
       "visible" => [
         "input[name='enabling']" => ["checked" => TRUE],
-      ] ,
-    ] ,
+      ],
+    ],
     '#default_value' => $type->getThirdPartySetting('vactory_cross_content', 'nombre_elements', 3),
   ];
 
@@ -87,8 +125,8 @@ function vactory_cross_content_form_alter(&$form, FormStateInterface $form_state
     '#states' => [
       "visible" => [
         "input[name='enabling']" => ["checked" => TRUE],
-      ] ,
-    ] ,
+      ],
+    ],
     '#default_value' => $type->getThirdPartySetting('vactory_cross_content', 'more_link', ''),
   ];
 
@@ -99,8 +137,8 @@ function vactory_cross_content_form_alter(&$form, FormStateInterface $form_state
     '#states' => [
       "visible" => [
         "input[name='enabling']" => ["checked" => TRUE],
-      ] ,
-    ] ,
+      ],
+    ],
     '#default_value' => $type->getThirdPartySetting('vactory_cross_content', 'more_link_label', ''),
   ];
 
@@ -121,4 +159,5 @@ function vactory_cross_content_form_node_type_form_builder($entity_type, NodeTyp
   $type->setThirdPartySetting('vactory_cross_content', 'nombre_elements', $form_state->getValue('nombre_elements'));
   $type->setThirdPartySetting('vactory_cross_content', 'more_link', $form_state->getValue('more_link'));
   $type->setThirdPartySetting('vactory_cross_content', 'more_link_label', $form_state->getValue('more_link_label'));
+  $type->setThirdPartySetting('vactory_cross_content', 'content_type', $form_state->getValue('content_type'));
 }

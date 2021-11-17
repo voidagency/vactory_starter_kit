@@ -1,0 +1,6 @@
+parallel_correction: '1'
+show_quiz_correction: '1'
+allow_new_attempts: '1'
+validate_answer_title: Valider
+allow_new_attempts_title: 'Refaire le quiz'
+next_button_title: Continue

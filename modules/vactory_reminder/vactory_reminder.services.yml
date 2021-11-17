@@ -1,0 +1,7 @@
+services:
+  plugin.manager.reminder:
+    class: Drupal\vactory_reminder\ReminderManager
+    parent: default_plugin_manager
+  vactory_reminder.queue.manager:
+    class: Drupal\vactory_reminder\Services\ReminderQueueManager
+    arguments: ['@queue', '@plugin.manager.reminder']

@@ -2,12 +2,17 @@
 
 namespace Drupal\vactory_frequent_searches\Form;
 
+use Drupal\block\Entity\Block;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\TrustedRedirectResponse;
+use Drupal\Core\Url;
 use Drupal\language\ConfigurableLanguageManager;
 use Drupal\search_api\Entity\Index;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class FrequentSearchesAdminForm.
@@ -109,8 +114,13 @@ class FrequentSearchesAdminForm extends FormBase {
     if (is_null($this->formState)) {
       $this->formState = $form_state;
     }
+    $twigExtension = \Drupal::service('twig_tweak.twig_extension');
+    $switcher_block = $twigExtension->drupalBlock('language_dropdown_block:language_interface', []);
+    $form['#prefix'] = \Drupal::service('renderer')->render($switcher_block);
+
     // Get The number of Unuseless keywords.
     $lang_id = $this->language_manager->getCurrentLanguage()->getId();
+    $languages = $this->language_manager->getLanguages();
     $total_keywords_without_results = (int) \Drupal::service('vactory_frequent_searches.frequent_searches_controller')
       ->getCountOfKeywordsWithoutResults($lang_id);
     $total_keywords_with_results = (int) \Drupal::service('vactory_frequent_searches.frequent_searches_controller')
@@ -118,26 +128,25 @@ class FrequentSearchesAdminForm extends FormBase {
     // Disable caching on this form.
     $form_state->setCached(FALSE);
 
+    $form['language_wrapper'] = [
+      '#type' => 'container',
+      '#attributes' => ['id' => 'language-wrapper'],
+    ];
+
     $form['#attached']['library'][] = 'core/jquery.form';
     $form['#attached']['library'][] = 'core/drupal.ajax';
+    $form['#attached']['library'][] = 'vactory_frequent_searches/vactory_frequent_searches.settings_form';
     // Build frequent searches container.
     $form['clear_searches'] = [
       '#type' => 'fieldset',
       '#attributes' => ['id' => 'searches-messages'],
     ];
+
     $form['clear_searches']['frequent_searches_statistics'] = [
       '#enable' => 'markup',
       '#markup' => '<h2>Total of searched keywords is : <b>' . ($total_keywords_without_results + $total_keywords_with_results) . '</b></h2>',
     ];
-    $form['clear_searches']['actions'][1] = [
-      '#type' => 'actions',
-      'add_item' => [
-        '#type'   => 'submit',
-        '#value'  => $this->t('Clear useless keywords'),
-        '#description' => $this->t('Clear all keywords With The number of times searched is less or equal than 1..'),
-        '#submit' => ['::clearDatabase'],
-      ],
-    ];
+
     $form['clear_searches']['actions'][2] = [
       '#type' => 'actions',
       'add_item' => [
@@ -147,6 +156,9 @@ class FrequentSearchesAdminForm extends FormBase {
         '#ajax'   => [
           'callback' => [$this, 'ajaxCallback'],
           'wrapper'  => 'searches-container',
+        ],
+        '#attributes' => [
+          'data-disable-refocus' => 'true',
         ],
       ],
     ];
@@ -187,6 +199,7 @@ class FrequentSearchesAdminForm extends FormBase {
     $form['frequent_searches'] = [
       '#type' => 'table',
       '#header' => [
+        $this->t('Publish/Unpublish'),
         $this->t('Keywords'),
         $this->t('The number of times searched'),
         $this->t('Total of results -updated-'),
@@ -206,6 +219,15 @@ class FrequentSearchesAdminForm extends FormBase {
 
     // Add new item.
     if ($this->new_item == 1) {
+      $form['frequent_searches'][-1]['published'] = [
+        '#type' => 'checkbox',
+        '#attributes' => [
+          'style' => 'width:100px',
+        ],
+        '#default_value' => false,
+        '#prefix' => '<div class="add-new">',
+        '#suffix' => '</div>',
+      ];
       $form['frequent_searches'][-1]['searched_keyword'] = [
         '#type' => 'textfield',
         '#attributes' => [
@@ -226,10 +248,12 @@ class FrequentSearchesAdminForm extends FormBase {
           'style' => 'width:80px',
         ],
         '#required' => TRUE,
+        '#disabled' => TRUE,
       ];
       $form['frequent_searches'][-1]['language'] = [
         '#type' => 'select',
         '#options' => $this->languages,
+        '#default_value' => $lang_id,
       ];
       $form['frequent_searches'][-1]['search_index'] = [
         '#type' => 'select',
@@ -249,9 +273,12 @@ class FrequentSearchesAdminForm extends FormBase {
     }
 
     foreach ($this->frequent_searches_data_with_results as $key => $search) {
-
-      $form['frequent_searches'][$key] = [
-        '#type' => 'fieldset',
+      $form['frequent_searches'][$key]['published'] = [
+        '#type' => 'checkbox',
+        '#attributes' => [
+          'style' => 'width:100px',
+        ],
+        '#default_value' => $search['published'],
       ];
       $form['frequent_searches'][$key]['searched_keyword'] = [
         '#type' => 'textfield',
@@ -303,7 +330,20 @@ class FrequentSearchesAdminForm extends FormBase {
           'wrapper'  => 'searches-container',
         ],
       ];
+    }
 
+    if(count($this->frequent_searches_data_with_results ) >= 2){
+      $form['updateAllFields'] = [
+        '#type' => 'container',
+        '#attributes' => [
+          'style' => 'display:flex; margin-bottom: 25px;',
+        ],
+      ];
+      $form['updateAllFields']['updateAll'] = [
+        '#type' => 'submit',
+        '#value' => $this->t('Update All'),
+        '#submit' => ['::updateAllItem'],
+      ];
     }
 
     // Table for Searches with no results :
@@ -358,7 +398,7 @@ class FrequentSearchesAdminForm extends FormBase {
       '#attributes' => ['id' => 'searches-no-results-container'],
     ];
 
-
+    //dump($this->frequent_searches_data_with_no_results);
     foreach ($this->frequent_searches_data_with_no_results as $key => $search) {
 
       $form['frequent_searches_no_results'][$key] = [
@@ -396,9 +436,45 @@ class FrequentSearchesAdminForm extends FormBase {
         ],
       ];
 
-    }
+      if (count($this->frequent_searches_data_with_no_results) >= 2){
+        $form['remove_all_items'] = [
+          '#type' => 'container',
+          '#attributes' => [
+            'style' => 'display:flex;',
+          ],
+        ];
 
+        $form['remove_all_items']['remove_all'] = [
+          '#type'   => 'submit',
+          '#value'  => $this->t('Remove All'),
+          '#submit' => ['::removeAllKeywordWithoutResultItem'],
+        ];
+      }
+    }
     return $form;
+  }
+
+
+  /**
+   * Ajax Call back function.
+   */
+  public function languageCallback(array &$form, FormStateInterface $form_state)
+  {
+    $selectedValue = $form_state->getValue('language_switcher');
+    $form_state->set('submitted_language', $selectedValue);
+    $form_state->setRebuild();
+    return $form;
+  }
+
+  public function switchLanguage(array &$form, FormStateInterface $form_state){
+    if (!empty($form_state->get('submitted_language'))) {
+      $selectedValue = $form_state->get('submitted_language');
+      $language = \Drupal::languageManager()->getLanguage($selectedValue);
+      $url = Url::fromRoute('<current>', [], ['language' => $language]);
+      $form_state->setResponse(new TrustedRedirectResponse($url->toString(), Response::HTTP_SEE_OTHER));
+      $response = new RedirectResponse($url->toString());
+      $response->send();
+    }
   }
 
   /**
@@ -413,22 +489,6 @@ class FrequentSearchesAdminForm extends FormBase {
    */
   public function ajaxCallbackNoResults(array $form, FormStateInterface $form_state) {
     return $form['frequent_searches_no_results'];
-  }
-
-  /**
-   * To clear all unuseless keywords from db.
-   */
-  public function clearDatabase(array &$form, FormStateInterface $form_state) {
-    \Drupal::service('vactory_frequent_searches.frequent_searches_controller')
-      ->clearDatabaseFromUnuselessKeywords();
-    foreach ($this->frequent_searches_data_with_results as $key => $search) {
-      if ($search['numfound'] <= 1) {
-        unset($this->frequent_searches_data_with_results[$key]);
-      }
-    }
-    \Drupal::messenger()->addStatus(t('The database is clear now.'));
-    $form_state->setRedirect('vactory_frequent_searches.frequent_searches_admin_form');
-    return;
   }
 
   /**
@@ -499,6 +559,16 @@ class FrequentSearchesAdminForm extends FormBase {
   }
 
   /**
+   * Function to remove all items.
+   */
+  public function removeAllKeywordWithoutResultItem(array &$form, FormStateInterface $form_state) {
+    \Drupal::service('vactory_frequent_searches.frequent_searches_controller')
+      ->deleteAllUnuselessKeywords();
+    \Drupal::messenger()->addStatus(t('All Keywords have been deleted with success'));
+    $form_state->setRedirect('vactory_frequent_searches.frequent_searches_admin_form');
+  }
+
+  /**
    * Function to update one item.
    */
   public function updateItem(array &$form, FormStateInterface $form_state) {
@@ -507,21 +577,63 @@ class FrequentSearchesAdminForm extends FormBase {
     preg_match_all('!\d+!', $triggering_element['#name'], $matches);
     $item_id = (int) $matches[0][0];
     $item_position = (int) $matches[0][1];
+    $published = $form['frequent_searches'][$item_position]['published']['#value'];
     $keyword = $form['frequent_searches'][$item_position]['searched_keyword']['#value'];
     if (empty($keyword)) {
-      \Drupal::messenger()->addError(t('Attention! le champ keywords est vide.'));
+      \Drupal::messenger()->addError(t('Warning! the keywords field is empty.'));
       return;
     }
     $keyword_count = $form['frequent_searches'][$item_position]['searched_keyword_count']['#value'];
     if (!is_numeric($keyword_count) || empty($keyword_count)) {
-      \Drupal::messenger()->addError(t('Attention! le champ Nombre de fois doit être un nombre.'));
+      \Drupal::messenger()->addError(t('Warning! the Number of times field must be a number.'));
       return;
     }
     \Drupal::service('vactory_frequent_searches.frequent_searches_controller')
-      ->updateKeywordById($item_id, $keyword, $keyword_count);
-    \Drupal::messenger()->addStatus('success');
+      ->updateKeywordById($item_id,  $keyword, $keyword_count, $published );
+    \Drupal::messenger()->addStatus('Successfully updated.');
+
     $form_state->setRedirect('vactory_frequent_searches.frequent_searches_admin_form');
-    return;
+  }
+
+  /**
+   * Function to update all items.
+   */
+  public function updateAllItem(array &$form, FormStateInterface $form_state) {
+    //Get all keyword IDs
+    $ids = array_map(function ($el) {
+      return $el['id'];
+    }, $this->frequent_searches_data_with_results);
+    $form_state->set('keyword_ids', $ids);
+    $count = 0;
+
+    $fields = $form_state->getValue('frequent_searches');
+
+    if (!empty($fields) and !empty($ids)) {
+
+      foreach ($fields as $key) {
+        //Using ID to update each keyword
+        $item_id = $ids[$count];
+
+        $keyword = $key['searched_keyword'];
+        if (empty($keyword)) {
+          \Drupal::messenger()->addError(t('Warning! the keywords field is empty.'));
+          return;
+        }
+        $keyword_count = $key['searched_keyword_count'];
+        if (!is_numeric($keyword_count) || empty($keyword_count)) {
+          \Drupal::messenger()->addError(t('Warning! the Number of times field must be a number.'));
+          return;
+        }
+        $published = $key['published'];
+
+        \Drupal::service('vactory_frequent_searches.frequent_searches_controller')
+          ->updateKeywordById($item_id,  $keyword, $keyword_count, $published );
+
+        $count++;
+      }
+      \Drupal::messenger()->addStatus('The changes have been saved successfully');
+      $form_state->setRedirect('vactory_frequent_searches.frequent_searches_admin_form');
+    }
 
   }
 
@@ -531,24 +643,22 @@ class FrequentSearchesAdminForm extends FormBase {
   public function addToDatabase(array &$form, FormStateInterface $form_state) {
     $keyword = $form['frequent_searches'][-1]['searched_keyword']['#value'];
     if (empty($keyword)) {
-      \Drupal::messenger()->addError(t('Attention! le champ keywords est vide.'));
+      \Drupal::messenger()->addError(t('Warning! the keywords field is empty.'));
       return;
     }
     $keyword_count = $form['frequent_searches'][-1]['searched_keyword_count']['#value'];
     if (!is_numeric($keyword_count)) {
-      \Drupal::messenger()->addError(t('Attention! le champ Nombre de fois doit être un nombre.'));
+      \Drupal::messenger()->addError(t('Warning! the Number of times field must be a number. '));
       return;
     }
-    $keyword_total_results = $form['frequent_searches'][-1]['total_of_searches']['#value'];
-    if (!is_numeric($keyword_total_results)) {
-      \Drupal::messenger()->addError(t('Attention! le champ Total des résultats doit être un nombre.'));
-      return;
-    }
+
+    $total_rows = $form['frequent_searches'][-1]['total_results']['#value'];
+
     $lang = $form['frequent_searches'][-1]['language']['#value'];
     $search_index = $form['frequent_searches'][-1]['search_index']['#value'];
-    \Drupal::messenger()->addStatus('success');
+    \Drupal::messenger()->addStatus('New keyword has been added successfully');
     \Drupal::service('vactory_frequent_searches.frequent_searches_controller')
-      ->addKeywordToDatabasa($keyword, $keyword_count, $lang, $search_index, $keyword_total_results);
+      ->addKeywordToDatabase($keyword, $keyword_count, $lang, $search_index, $total_rows);
     $form_state->setRedirect('vactory_frequent_searches.frequent_searches_admin_form');
     return;
   }

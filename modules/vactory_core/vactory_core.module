@@ -14,6 +14,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Url;
+use Drupal\jquery_colorpicker\Plugin\Field\FieldWidget\JQueryColorpickerWidget;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -368,5 +369,14 @@ function vactory_core_preprocess_block(&$variables) {
       'addtoany-js',
     ];
     $variables['#attached']['library'][] = 'addtoany/addtoany';
+  }
+}
+
+/**
+ * Implements hook_field_widget_form_alter().
+ */
+function vactory_core_field_widget_form_alter(&$element, FormStateInterface $form_state, $context) {
+  if ($context['widget'] instanceof JQueryColorpickerWidget) {
+    unset($element['name']);
   }
 }

@@ -1,0 +1,23 @@
+<?php
+
+/**
+ * @file
+ * Contain related hooks.
+ */
+
+use Drupal\views\Plugin\views\query\QueryPluginBase;
+use Drupal\views\ViewExecutable;
+
+/**
+ * Implements hook_entity_query_alter().
+ */
+function vactory_mur_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
+  if ($view->id() == 'vactory_mur' && $view->current_display == 'vactory_mur_page') {
+    $config = \Drupal::config('vactorymur.settings');
+    $nodes = $config->get('content_types');
+    $nodes_values = array_values($nodes);
+    $nodes_string = array_filter($nodes_values, 'is_string');
+    $nodes_string = empty($nodes_string) ? ['empty'] : $nodes_string;
+    $query->where[1]['conditions'][1]['value'] = $nodes_string;
+  }
+}

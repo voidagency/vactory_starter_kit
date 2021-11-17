@@ -1,0 +1,7 @@
+langcode: fr
+status: true
+dependencies: {  }
+name: 'Médiathèque - Année'
+vid: medium_year
+description: 'This Vocabulary is used for Media library content type'
+weight: 0

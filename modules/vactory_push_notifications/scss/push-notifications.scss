@@ -1,0 +1,29 @@
+.push-notifications {
+  height: auto;
+  margin-bottom: 20px;
+  display: none;
+  .paragraph.paragraph--type--vactory-component {
+    background:$white;
+    padding: $notification-sm;
+    @include media-breakpoint-up(md) {
+      padding: $notification-lg;
+    }
+  }
+
+  .close {
+    position: absolute;
+    top: 5%;
+    right: 3%;
+    color: red;
+    text-shadow: none;
+    opacity: 1;
+  }
+
+  .push-notifications--content {
+    display: flex;
+    justify-content: center;
+    vertical-align: middle;
+    align-items: center;
+  }
+
+}

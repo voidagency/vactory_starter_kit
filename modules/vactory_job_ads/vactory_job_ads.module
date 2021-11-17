@@ -35,6 +35,11 @@ function vactory_job_ads_theme() {
       'base hook' => 'node',
       'template'  => 'smart-search',
     ],
+    // Node > Mur.
+    'node__vactory_job_ads__mur'        => [
+      'base hook' => 'node',
+      'template'  => 'mur',
+    ],
 
     // View > Job Ads.
     'views_view_unformatted__vactory_job_ads__vactory_job_ads' => [
@@ -69,22 +74,6 @@ function vactory_job_ads_form_alter(&$form, FormStateInterface $form_state, $for
       $form['elements']['job_ad']['#type'] = 'hidden';
     }
   }
-}
-
-/**
- * Vactory job_ads Form Submit.
- */
-function vactory_job_ads_form_submit(array $form, FormStateInterface $form_state) {
-  /* if( $form_state->getStorage()['langcode'] != 'en'){
-  drupal_set_message(
-  t('Votre candidature a été transmise avec succès.')
-  );
-  }
-  else{
-  drupal_set_message(
-  t('Your application has been successfully submitted.')
-  );
-  }*/
 }
 
 /**

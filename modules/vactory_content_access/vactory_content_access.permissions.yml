@@ -1,0 +1,4 @@
+administer content access:
+  title: 'Administer content access'
+  description: 'Allow to access the administration form to configure content access.'
+  restrict access: true

@@ -1,0 +1,10 @@
+name: "Ads - Libre"
+multiple: FALSE
+category: 'Ads'
+enabled: TRUE
+fields:
+  content:
+    type: text_format
+    label: "Content"
+    options:
+      '#format': 'full_html'

@@ -1,0 +1,15 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - node.type.announcement
+  module:
+    - content_translation
+third_party_settings:
+  content_translation:
+    enabled: true
+id: node.announcement
+target_entity_type_id: node
+target_bundle: announcement
+default_langcode: fr
+language_alterable: true

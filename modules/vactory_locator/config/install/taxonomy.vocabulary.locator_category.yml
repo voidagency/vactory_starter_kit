@@ -4,5 +4,4 @@ dependencies: {  }
 name: 'Locator - Category'
 vid: locator_category
 description: 'Category for locator items'
-hierarchy: 1
 weight: 0

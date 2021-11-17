@@ -1,0 +1,12 @@
+services:
+  locator.path_processor:
+    class: Drupal\vactory_locator\PathProcessor\LocatorPathProcessor
+    arguments:
+      - '@database'
+      - '@entity_type.manager'
+      - '@current_route_match'
+      - '@language_manager'
+      - '@path.current'
+    tags:
+      - { name: 'path_processor_inbound', priority: -10000 }
+      - { name: 'path_processor_outbound', priority: -10 }

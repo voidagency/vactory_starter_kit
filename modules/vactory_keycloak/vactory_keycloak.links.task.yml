@@ -1,0 +1,4 @@
+vactory_keycloak.settings.tab:
+  title: 'Keycloak'
+  route_name: vactory_keycloak.settings_form
+  base_route: social_auth.integrations

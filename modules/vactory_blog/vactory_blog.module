@@ -35,5 +35,10 @@ function vactory_blog_theme($existing, $type, $theme, $path) {
       'base hook' => 'node',
       'template'  => 'smart-search',
     ],
+    // Node > mur.
+    'node__vactory_blog__mur'        => [
+      'base hook' => 'node',
+      'template'  => 'mur',
+    ],
   ];
 }

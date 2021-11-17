@@ -1,4 +1,4 @@
-name: Vactory Pretty Views
+name: Vactory Views Pretty Path
 description: Custom module to override views paths when applying filters
 core: 8.x
 core_version_requirement: ^8 || ^9

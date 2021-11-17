@@ -18,6 +18,11 @@ function vactory_faq_prive_theme() {
       'base hook' => 'node',
       'template'  => 'card',
     ],
+     // Node > Mur.
+    'node__vactory_faq_prive__mur' => [
+      'base hook' => 'node',
+      'template'  => 'mur',
+    ],
     'views_view_fields__vactory_faq_prive' => [
       'base hook' => 'views_view_fields',
       'template'  => 'views-view-fields--vactory-faq-prive',

@@ -1,0 +1,54 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.announcement.field_ad_content
+    - field.field.node.announcement.field_ad_display
+    - field.field.node.announcement.field_already_approved
+    - field.field.node.announcement.field_city
+    - field.field.node.announcement.field_country
+    - field.field.node.announcement.field_discipline
+    - field.field.node.announcement.field_event_date_end
+    - field.field.node.announcement.field_event_date_start
+    - field.field.node.announcement.field_facebook_account
+    - field.field.node.announcement.field_site
+    - field.field.node.announcement.field_twitter_account
+    - field.field.node.announcement.field_typology
+    - field.field.node.announcement.field_vactory_email
+    - field.field.node.announcement.field_vactory_media
+    - field.field.node.announcement.field_vactory_name
+    - field.field.node.announcement.field_vactory_phone
+    - node.type.announcement
+  module:
+    - user
+id: node.announcement.teaser
+targetEntityType: node
+bundle: announcement
+mode: teaser
+content:
+  links:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  addtoany: true
+  field_ad_content: true
+  field_ad_display: true
+  field_already_approved: true
+  field_city: true
+  field_country: true
+  field_discipline: true
+  field_event_date_end: true
+  field_event_date_start: true
+  field_facebook_account: true
+  field_site: true
+  field_twitter_account: true
+  field_typology: true
+  field_vactory_email: true
+  field_vactory_media: true
+  field_vactory_name: true
+  field_vactory_phone: true
+  langcode: true
+  search_api_excerpt: true

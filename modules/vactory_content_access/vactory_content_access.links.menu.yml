@@ -1,0 +1,5 @@
+vactory_content_access.settings_form:
+  title: "Vactory Content Access Settings"
+  description: 'Vactory Content Access Settings.'
+  parent: system.admin_config_development
+  route_name: vactory_content_access.settings_form

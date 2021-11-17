@@ -1,0 +1,89 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.mur
+    - field.field.node.vactory_governance.body
+    - field.field.node.vactory_governance.field_gov_address
+    - field.field.node.vactory_governance.field_gov_social_media
+    - field.field.node.vactory_governance.field_show_in_one_row
+    - field.field.node.vactory_governance.field_show_link_to_bio
+    - field.field.node.vactory_governance.field_show_on_roles
+    - field.field.node.vactory_governance.field_vactory_document
+    - field.field.node.vactory_governance.field_vactory_email
+    - field.field.node.vactory_governance.field_vactory_fax
+    - field.field.node.vactory_governance.field_vactory_media
+    - field.field.node.vactory_governance.field_vactory_name
+    - field.field.node.vactory_governance.field_vactory_seo_status
+    - field.field.node.vactory_governance.field_vactory_taxonomy_1
+    - field.field.node.vactory_governance.field_vactory_telephone
+    - node.type.vactory_governance
+  module:
+    - text
+    - user
+    - vactory_core
+id: node.vactory_governance.mur
+targetEntityType: node
+bundle: vactory_governance
+mode: mur
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 2
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_image:
+    weight: 4
+    label: hidden
+    settings:
+      image_style: ''
+      image_link: ''
+    third_party_settings: {  }
+    type: image
+    region: content
+  field_vactory_media:
+    type: lazy_image
+    weight: 1
+    region: content
+    label: above
+    settings:
+      desktop_1x: vactory_three_cols_x1
+      desktop_2x: vactory_three_cols_x2
+      laptop_1x: vactory_three_cols_x1
+      laptop_2x: vactory_three_cols_x2
+      tablet_1x: vactory_three_cols_x1
+      tablet_2x: vactory_three_cols_x2
+      mobile_1x: vactory_three_cols_x1
+      mobile_2x: vactory_three_cols_x2
+      lqip: lqip
+    third_party_settings: {  }
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  field_content_access_groups: true
+  field_content_access_roles: true
+  field_content_access_users: true
+  field_gov_address: true
+  field_gov_social_media: true
+  field_show_in_one_row: true
+  field_show_link_to_bio: true
+  field_show_on_roles: true
+  field_vactory_document: true
+  field_vactory_email: true
+  field_vactory_fax: true
+  field_vactory_name: true
+  field_vactory_seo_status: true
+  field_vactory_taxonomy_1: true
+  field_vactory_telephone: true
+  langcode: true
+  mail_message: true
+  mail_subject: true
+  notification_message: true
+  notification_title: true
+  search_api_excerpt: true

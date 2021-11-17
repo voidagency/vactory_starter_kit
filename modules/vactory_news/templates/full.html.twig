@@ -63,6 +63,9 @@
  *   in different view modes.
  */
 #}
+{{ attach_library('classy/node') }}
+{{ attach_library('vactory_news/vactory_news.sticky_sharing') }}
+
 {% set bundle = node.bundle|clean_class %}
 {% set classes = [
   'node',
@@ -72,55 +75,66 @@
   not node.isPublished() ? bundle ~ '--unpublished',
   view_mode ? bundle ~ '--' ~ view_mode|clean_class,
 ] %}
-{{ attach_library('classy/node') }}
+
 <article{{ attributes.addClass(classes) }}>
-
-  <div class="page-header">
+  <div class="vactory-news__head">
     {{ title_prefix }}
-    <h1 {{ title_attributes }}>
-      <a href="{{ url }}" rel="bookmark">{{ label }}</a>
-    </h1>
-
-    <div class="meta d-flex align-items-center">
-      <div class="tags">
+      <h1 {{ title_attributes.addClass('vactory-news__title') }}>
+        <a href="{{ url }}" rel="bookmark">{{ label }}</a>
+      </h1>
+    {{ title_suffix }}
+    <div class="vactory-news__meta">
+      <div class="vactory-news__tags">
         {{ hideLabel(addAttributes(content.field_vactory_news_theme, {'class': ['badge', 'badge-primary']})) }}
       </div>
-      <div class="date ml-1 mr-1">
-        <small class="text-muted">
-          {{ noWrapper(hideLabel(addAttributes(content.field_vactory_date))) }}
-        </small>
+      <small class="vactory-news__date">
+        {{ noWrapper(hideLabel(addAttributes(content.field_vactory_date))) }}
+      </small>
+    </div>
+    <hr/>
+  </div>
+
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <div class="vactory-news__inner">
+        {% if content.field_vactory_media.0['#item'].target_id is defined %}
+          {% set image_id = content.field_vactory_media.0['#item'].target_id %}
+          {% set image = get_image_info(image_id) %}
+          {% set image_url = image.url %}
+          {% set image_webp = image.uri|image_style('webp') %}
+          {% set image_type = image.filemime %}
+          {% set image_height = image.height %}
+          {% set image_width = image.width %}
+          {% set image_alt = content.field_vactory_media.0['#item'].alt %}
+          {% set image_title = content.field_vactory_media.0['#item'].title %}
+          <div class="vactory-news__image">
+            <picture>
+              <source data-srcset="{{image_webp}}" type="image/webp">
+              <source data-srcset="{{image_url}}" type="{{image_type}}">
+              <img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{image_url}}" data-sizes="auto" height="{{image_height}}" width="{{image_width}}" class="img-fluid w-100 lazyload" alt="{{ image_alt }}" typeof="foaf:Image">
+            </picture>
+          </div>
+        {% endif %}
+
+        <div class="vactory-news__details">
+          {{ noWrapper(hideLabel(addAttributes(content.body))) }}
+        </div>
+        <div class="vactory-news__sharing">
+          <div class="block-share">
+            <span class="block-share__title">{{ 'Vous avez aimé cette page ? Partagez la !'|t }}</span>
+            {{ vactory_render('block', 'addtoany_block') }}
+          </div>
+        </div>
       </div>
     </div>
-    {{ title_suffix }}
-  </div>
-
-  <hr/>
-  {% if content.field_vactory_media.0 is defined %}
-    {% set image_alt = content.field_vactory_media.0['#item'].alt %}
-    {% set image_title = content.field_vactory_media.0['#item'].title %}
-    {% set image_uri = get_image(content.field_vactory_media.0['#item'].target_id) %}
-    {% set image_url = image_uri is not empty ? file_url(image_uri) %}
-    <div class="featured-img text-center mb-4">
-      <img src="{{ image_url }}" alt="{{ image_alt }}" title="{{ image_title }}" width="940">
-    </div>
-  {% endif %}
-
-  <div class="content">
-    {{ hideLabel(addAttributes(content.body)) }}
   </div>
 
 
-  <div class="card mb-3 mt-2 bg-dark">
-    <div class="card-body">
-      <p class="card-text mb-1 text-white">{{ 'Vous avez aimé cette page ? Partagez la !'|t }}</p>
-      {{ vactory_render('block', 'addtoany_block') }}
-    </div>
+  <div class="vactory-news__comment pt-4">
+    {% if content.comment.0 is defined  %}
+      {{ content.comment }}
+    {% endif %}
   </div>
 
-  <div class="pt-4">
-      {% if content.comment.0 is defined  %}
-          {{ content.comment }}
-      {% endif %}
-  </div>
 
 </article>

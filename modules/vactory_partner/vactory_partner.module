@@ -30,5 +30,10 @@ function vactory_partner_theme($existing, $type, $theme, $path) {
       'base hook' => 'node',
       'template'  => 'smart-search',
     ],
+    // Node > Mur.
+    'node__vactory_partner__mur'        => [
+      'base hook' => 'node',
+      'template'  => 'mur',
+    ],
   ];
 }

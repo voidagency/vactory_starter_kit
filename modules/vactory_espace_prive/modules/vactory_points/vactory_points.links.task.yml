@@ -1,0 +1,4 @@
+vactory_points.settings:
+  route_name: vactory_points.settings
+  title: Settings
+  base_route: vactory_points.settings

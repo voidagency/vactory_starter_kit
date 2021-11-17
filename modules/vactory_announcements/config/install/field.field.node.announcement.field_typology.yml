@@ -1,0 +1,28 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_typology
+    - node.type.announcement
+    - taxonomy.vocabulary.vactory_typologie
+id: node.announcement.field_typology
+field_name: field_typology
+entity_type: node
+bundle: announcement
+label: 'Typologie '
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      vactory_typologie: vactory_typologie
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

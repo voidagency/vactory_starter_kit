@@ -1,0 +1,9 @@
+vactory_mur.admin_settings:
+  title: 'vactory mur List Settings'
+  description: 'display all content type'
+  route_name: vactory_mur.admin_settings
+  parent: system.admin_config_content
+  weight: 10
+
+  
+  

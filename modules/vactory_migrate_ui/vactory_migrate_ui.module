@@ -1,0 +1,53 @@
+<?php
+
+/**
+ * @file
+ * Hooks module.
+ */
+
+use Drupal\Component\Render\MarkupInterface;
+use Drupal\Core\Session\UserSession;
+use Drupal\vactory_migrate_ui\Controller\MigrationUiListBuilder;
+use Drupal\views\Views;
+
+/**
+ * Implements hook_entity_operation().
+ */
+function vactory_migrate_ui_entity_type_alter(array &$entity_types) {
+  $entity_types['migration']->setListBuilderClass(MigrationUiListBuilder::class);
+}
+
+/**
+ * Implements hook_cron().
+ */
+function vactory_migrate_ui_cron() {
+  $config = \Drupal::config('vactory_migrate_ui.settings_form');
+  $data = $config->getRawData()['views'];
+  if (is_array($data) && !empty($data)) {
+    $accountSwitcher = \Drupal::service('account_switcher');
+    foreach ($data as $v) {
+      $view_id = $v['view'];
+      $display_id = $v['display'];
+      $delimiter = empty($v['delimiter']) ? ';' : $v['delimiter'];
+      $file_name = $v['file_infos']['file_name'];
+      $file_path = $v['file_infos']['file_path'];
+      $file_path = (substr($file_path, -1) == '/') ? $file_path . $view_id . '/' . date("m_d_Y") . '/' . $display_id : $file_path . '/' . $view_id . '/' . date("m_d_Y") . '/' . $display_id;
+      $fields = [];
+      foreach (preg_split("/((\r?\n)|(\r\n?))/", $v['view_fields']) as $field) {
+        if (!empty($field)) {
+          array_push($fields, $field);
+        }
+      }
+      $view = Views::getView($view_id);
+      $view->setDisplay($display_id);
+      $accountSwitcher->switchTo(new UserSession(['uid' => 1]));
+      $res = $view->executeDisplay($display_id);
+      $resultat = $res["#markup"] ? ($res["#markup"] instanceof MarkupInterface ? $res["#markup"]->__toString() : $res["#markup"]) : '';
+      $data = json_decode($resultat, TRUE);
+      \Drupal::service('vactory_migrate_ui.generate_csv')->generateCsv($fields, $data, $delimiter, $file_name, $file_path);
+      \Drupal::logger('vactory_migrate_ui')->notice("View: " . $view_id . " results was successful exported.");
+    }
+    $accountSwitcher->switchBack();
+  }
+
+}

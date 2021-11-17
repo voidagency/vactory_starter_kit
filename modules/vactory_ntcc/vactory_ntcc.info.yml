@@ -1,0 +1,8 @@
+name: Vactory Node Type Configs Centralizer
+type: module
+package: vactory
+core_version_requirement: ^8 ||^9
+dependencies:
+  - flag
+  - comment
+  - vactory_field

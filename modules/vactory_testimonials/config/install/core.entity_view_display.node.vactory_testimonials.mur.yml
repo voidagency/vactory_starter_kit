@@ -1,0 +1,85 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.mur
+    - field.field.node.vactory_testimonials.body
+    - field.field.node.vactory_testimonials.field_vactory_address
+    - field.field.node.vactory_testimonials.field_vactory_date
+    - field.field.node.vactory_testimonials.field_vactory_excerpt
+    - field.field.node.vactory_testimonials.field_vactory_media
+    - field.field.node.vactory_testimonials.field_vactory_profils
+    - field.field.node.vactory_testimonials.field_vactory_role
+    - field.field.node.vactory_testimonials.field_vactory_seo_status
+    - node.type.vactory_testimonials
+  module:
+    - datetime
+    - text
+    - user
+    - vactory_core
+_core:
+  default_config_hash: 0gwaRpCczXbQdcjvYgK221zr4Z1cFdlHO2Cxlh0os3g
+id: node.vactory_testimonials.mur
+targetEntityType: node
+bundle: vactory_testimonials
+mode: mur
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 1
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_vactory_date:
+    weight: 4
+    label: above
+    settings:
+      format_type: medium
+      timezone_override: ''
+    third_party_settings: {  }
+    type: datetime_default
+    region: content
+  field_vactory_excerpt:
+    weight: 3
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_vactory_media:
+    weight: 2
+    label: hidden
+    settings:
+      desktop_1x: vactory_three_cols_x1
+      desktop_2x: vactory_three_cols_x2
+      laptop_1x: vactory_three_cols_x1
+      laptop_2x: vactory_three_cols_x2
+      tablet_1x: vactory_three_cols_x1
+      tablet_2x: vactory_three_cols_x2
+      mobile_1x: vactory_three_cols_x1
+      mobile_2x: vactory_three_cols_x2
+      lqip: lqip
+    third_party_settings: {  }
+    type: lazy_image
+    region: content
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  field_content_access_groups: true
+  field_content_access_roles: true
+  field_content_access_users: true
+  field_vactory_address: true
+  field_vactory_profils: true
+  field_vactory_role: true
+  field_vactory_seo_status: true
+  langcode: true
+  mail_message: true
+  mail_subject: true
+  notification_message: true
+  notification_title: true
+  search_api_excerpt: true

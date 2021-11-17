@@ -13,10 +13,11 @@ use Drupal\Core\Url;
 function vactory_timeout_page_attachments(array &$page) {
   $config = \Drupal::config('vactory_timeout.settings');
   $paths = $config->get('paths');
+  $selected_roles = $config->get('selected_roles');
   $paths_authorisation = $config->get('paths_authorisation');
   $requestStack = \Drupal::service('request_stack');
   $currentPath = \Drupal::service('path.current');
-  $aliasManager = \Drupal::service('path.alias_manager');
+  $aliasManager = \Drupal::service('path_alias.manager');
   $pathMatcher = \Drupal::service('path.matcher');
   // Convert path to lowercase. This allows comparison of the same path.
   // With different case. Ex: /Page, /page, /PAGE.
@@ -47,7 +48,7 @@ function vactory_timeout_page_attachments(array &$page) {
     /* $params = \Drupal::request()->query->all(); */
     $language = \Drupal::languageManager()->getCurrentLanguage();
     $landing_page = Url::fromUserInput('/' . $language->getId() . $landing_page)->toString();
-    $user = Drupal::currentUser();
+    $user = \Drupal::currentUser();
     $user_roles = $user->getRoles();
     $roles_permissions = user_role_permissions($user_roles);
 
@@ -56,13 +57,24 @@ function vactory_timeout_page_attachments(array &$page) {
     $page['#attached']['drupalSettings']['vactory']['timeout_active'] = FALSE;
     $page['#attached']['drupalSettings']['vactory']['timeout'] = $config->get('timeout');
     $page['#attached']['drupalSettings']['vactory']['landing_page'] = $landing_page;
-    $page['#attached']['drupalSettings']['vactory']['current_page'] = \Drupal::service('path.alias_manager')
+    $page['#attached']['drupalSettings']['vactory']['current_page'] = \Drupal::service('path_alias.manager')
       ->getAliasByPath($path);
 
-    foreach ($roles_permissions as $role_permissions) {
-      if (in_array('active timeout', $role_permissions)) {
-        $page['#attached']['drupalSettings']['vactory']['timeout_active'] = TRUE;
-        break;
+    /* foreach ($roles_permissions as $role_permissions) {
+    if (in_array('active timeout', $role_permissions)) {
+    $page['#attached']['drupalSettings']['vactory']['timeout_active'] = TRUE;
+    break;
+    }
+     */
+    if (isset($selected_roles) && is_array($selected_roles)) {
+      $selected_roles = array_filter($selected_roles, function ($el) {
+        return $el !== 0;
+      });
+      if (!empty($selected_roles)) {
+        $role_has_access = count(array_intersect($selected_roles, $user_roles)) > 0;
+        if ($role_has_access) {
+          $page['#attached']['drupalSettings']['vactory']['timeout_active'] = TRUE;
+        }
       }
     }
   }

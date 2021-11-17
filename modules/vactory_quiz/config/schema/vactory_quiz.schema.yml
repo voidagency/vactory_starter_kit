@@ -1,0 +1,32 @@
+field.widget.settings.vactory_quiz_question_widget:
+  type: mapping
+  label: 'Quiz Question widget settings'
+  mapping:
+    size:
+      type: integer
+      label: 'Answers cardinality'
+vactory_quiz.settings:
+  type: mapping
+  label: 'Quiz Question widget settings'
+  mapping:
+    parallel_correction:
+      type: string
+      label: 'Prallel correction'
+    show_quiz_correction:
+      type: string
+      label: 'Show quiz correction'
+    allow_new_attempts:
+      type: string
+      label: 'Allow new attempts'
+    validate_answer_title:
+      type: text
+      label: 'Validate answer button text'
+      translatable: true
+    allow_new_attempts_title:
+      type: text
+      label: 'New attempts button text'
+      translatable: true
+    next_button_title:
+      type: text
+      label: 'Next button text'
+      translatable: true

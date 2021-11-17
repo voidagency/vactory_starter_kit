@@ -1,0 +1,11 @@
+vactory_mediatheque.term_generator:
+  js:
+    js/term_generator.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
+vactory_mediatheque.vactory_views_filter_years:
+  js:
+    js/vactory_views_filter_years.js: {}
+  dependencies:
+    - core/jquery

@@ -1,0 +1,8 @@
+{{ attach_library('vactory_content_localizer/vactory_content_localizer.filter_distance') }}
+{% if content.distances is not empty %}
+  <div class="row">
+    {% for distance in content.distances %}
+      <a data-distance="{{ distance.distance }}" data-unit="{{ distance.unit }}" class="js-filter-distance btn btn-sm btn-outline-primary mr-2">à moins de {{ distance.distance }} {{ distance.unit }}</a>
+    {% endfor %}
+  </div>
+{% endif %}

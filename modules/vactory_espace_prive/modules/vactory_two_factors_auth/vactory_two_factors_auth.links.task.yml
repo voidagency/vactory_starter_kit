@@ -1,0 +1,14 @@
+vactory_two_factors_auth.settings:
+  route_name: vactory_two_factors_auth.settings
+  title: Two Factors Auth
+  base_route: vactory_espace_prive.settings_form
+vactory_two_factors_auth.settings_form:
+  route_name: vactory_two_factors_auth.settings
+  title: Settings
+  parent_id: vactory_two_factors_auth.settings
+  base_route: vactory_two_factors_auth.settings
+vactory_two_factors_auth.settings_translation:
+  route_name: config_translation.item.overview.vactory_two_factors_auth.settings
+  title: Translate
+  parent_id: vactory_two_factors_auth.settings
+  base_route: vactory_two_factors_auth.settings

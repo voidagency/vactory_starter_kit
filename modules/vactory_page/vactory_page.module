@@ -15,5 +15,10 @@ function vactory_page_theme($existing, $type, $theme, $path) {
       'base hook' => 'node',
       'template'  => 'smart-search',
     ],
+    // Node > Mur.
+    'node__vactory_page__mur'        => [
+      'base hook' => 'node',
+      'template'  => 'mur',
+    ],
   ];
 }

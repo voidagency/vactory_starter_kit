@@ -1,0 +1,35 @@
+
+<div class="vc-sticky-bar">
+  <ul class="vc-sticky-bar__list">
+    {% for item in content %}
+      {% if item.cta is not empty %}
+        {% set link_target = item.cta.attributes.target %}
+        {% set link_class = (item.cta.attributes.class is not empty) ? item.cta.attributes.class : '' %}
+        {% set link_id = (item.cta.attributes.id is not empty) ? item.cta.attributes.id : '' %}
+        {% set link_rel = (item.cta.attributes.rel is not empty) ? item.cta.attributes.rel : '' %}
+        <li class="vc-sticky-bar__item">
+          <a
+            href="{{ item.cta.url }}"
+
+            title="{{ item.cta.title }}"
+
+            class="{{ link_class }}"
+
+            {% if link_id is not empty %}id="{{ link_id }}"{% endif %}
+
+            {% if link_rel is not empty %}rel="{{ link_rel }}"{% endif %}
+
+            {% if link_target is not empty %}target='{{ link_target }}'{% endif %}
+
+            >
+
+            <i class="vc-sticky-bar__icon icon {{item.icon}}"></i>
+            <span class="vc-sticky-bar__tooltip">
+              {{ item.cta.title }}
+            </span>
+          </a>
+        </li>
+      {% endif %}
+    {% endfor %}
+  </ul>
+</div>

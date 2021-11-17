@@ -1,8 +1,0 @@
-third_party_settings:
-  field_group:
-    group_display:
-      label: Affichage
-content:
-  field_vactory_paragraph_tab:
-    settings:
-      title_plural: Paragraphs

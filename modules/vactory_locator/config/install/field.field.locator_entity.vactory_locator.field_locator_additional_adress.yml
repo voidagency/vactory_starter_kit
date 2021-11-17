@@ -1,0 +1,20 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.locator_entity.field_locator_additional_adress
+    - vactory_locator.locator_entity_type.vactory_locator
+  module:
+    - text
+id: locator_entity.vactory_locator.field_locator_additional_adress
+field_name: field_locator_additional_adress
+entity_type: locator_entity
+bundle: vactory_locator
+label: 'Additional adress'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: text_long

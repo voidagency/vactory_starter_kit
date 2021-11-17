@@ -1,0 +1,103 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_display.comment.comment.default
+    - field.field.node.vactory_post.body
+    - field.field.node.vactory_post.comment
+    - field.field.node.vactory_post.field_vactory_date
+    - field.field.node.vactory_post.field_vactory_excerpt
+    - field.field.node.vactory_post.field_vactory_media
+    - field.field.node.vactory_post.field_vactory_media_image
+    - field.field.node.vactory_post.field_vactory_post_thematique
+    - field.field.node.vactory_post.field_vactory_tags
+    - node.type.vactory_post
+  module:
+    - comment
+    - datetime
+    - media
+    - text
+    - user
+id: node.vactory_post.default
+targetEntityType: node
+bundle: vactory_post
+mode: default
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 1
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  comment:
+    weight: 8
+    label: hidden
+    settings:
+      pager_id: 10
+      view_mode: default
+    third_party_settings: {  }
+    type: comment_default
+    region: content
+  field_vactory_date:
+    weight: 3
+    label: hidden
+    settings:
+      timezone_override: ''
+      date_format: m/d/Y
+    third_party_settings: {  }
+    type: datetime_custom
+    region: content
+  field_vactory_excerpt:
+    weight: 2
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_vactory_media:
+    weight: 5
+    label: hidden
+    settings:
+      view_mode: default
+      link: false
+    third_party_settings: {  }
+    type: entity_reference_entity_view
+    region: content
+  field_vactory_media_image:
+    weight: 4
+    label: hidden
+    settings:
+      image_style: ''
+      image_link: ''
+    third_party_settings: {  }
+    type: media_thumbnail
+    region: content
+  field_vactory_post_thematique:
+    weight: 7
+    label: hidden
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_vactory_tags:
+    weight: 9
+    label: hidden
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  flag_liked_content: true
+  langcode: true
+  notification_message: true
+  notification_title: true
+  search_api_excerpt: true

@@ -1,0 +1,28 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_mediatheque_theme
+    - node.type.vactory_mediatheque
+    - taxonomy.vocabulary.mediatheque_theme_albums
+id: node.vactory_mediatheque.field_mediatheque_theme
+field_name: field_mediatheque_theme
+entity_type: node
+bundle: vactory_mediatheque
+label: Thème
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      mediatheque_theme_albums: mediatheque_theme_albums
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

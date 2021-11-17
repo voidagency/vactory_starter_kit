@@ -1,0 +1,5 @@
+entity.attached_assets_entity.add_form:
+  route_name: entity.attached_assets_entity.add_form
+  title: 'Add Attached assets'
+  appears_on:
+    - entity.attached_assets_entity.collection

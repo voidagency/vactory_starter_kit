@@ -1,0 +1,92 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.mur
+    - field.field.node.vactory_event.body
+    - field.field.node.vactory_event.field_vactory_date_interval
+    - field.field.node.vactory_event.field_vactory_excerpt
+    - field.field.node.vactory_event.field_vactory_image
+    - field.field.node.vactory_event.field_vactory_media
+    - field.field.node.vactory_event.field_vactory_seo_status
+    - field.field.node.vactory_event.field_vactory_taxonomy_1
+    - field.field.node.vactory_event.field_vactory_taxonomy_2
+    - node.type.vactory_event
+  module:
+    - text
+    - user
+    - vactory_core
+    - vactory_field
+id: node.vactory_event.mur
+targetEntityType: node
+bundle: vactory_event
+mode: mur
+content:
+  body:
+    type: text_default
+    weight: 3
+    region: content
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+  comment:
+    type: comment_default
+    weight: 7
+    region: content
+    label: above
+    settings:
+      view_mode: default
+      pager_id: 0
+    third_party_settings: {  }
+  field_vactory_excerpt:
+    weight: 1
+    label: hidden
+    settings:
+      trim_length: 350
+    third_party_settings: {  }
+    type: vactory_field_excerpt_formatter
+    region: content
+  field_vactory_media:
+    weight: 2
+    label: hidden
+    settings:
+      desktop_1x: vactory_three_cols_x1
+      desktop_2x: vactory_three_cols_x2
+      laptop_1x: vactory_three_cols_x1
+      laptop_2x: vactory_three_cols_x2
+      tablet_1x: vactory_three_cols_x1
+      tablet_2x: vactory_three_cols_x2
+      mobile_1x: vactory_three_cols_x1
+      mobile_2x: vactory_three_cols_x2
+      lqip: lqip
+    third_party_settings: {  }
+    type: lazy_image
+    region: content
+  field_vactory_meta_tags:
+    type: metatag_empty_formatter
+    weight: 8
+    region: content
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  field_content_access_groups: true
+  field_content_access_roles: true
+  field_content_access_users: true
+  field_vactory_date_interval: true
+  field_vactory_image: true
+  field_vactory_seo_status: true
+  field_vactory_taxonomy_1: true
+  field_vactory_taxonomy_2: true
+  langcode: true
+  mail_message: true
+  mail_subject: true
+  notification_message: true
+  notification_title: true
+  search_api_excerpt: true

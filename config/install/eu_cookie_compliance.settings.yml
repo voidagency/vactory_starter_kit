@@ -1,0 +1,60 @@
+domain: lapreprod.com
+domains_option: 0
+domains_list: 'http://vactory8.lapreprod.com'
+eu_only: null
+exclude_paths: "/admin\r\n/admin/*\r\n/batch\r\n/node/add*\r\n/node/*/*\r\n/user/*/*"
+export:
+  folder: custom
+langcode: fr
+popup_agreed:
+  value: '<h2>Thank you for accepting cookies</h2><p>You can now hide this message or find out more about cookies.</p>'
+  format: restricted_html
+popup_agree_button_message: 'OK, I agree'
+popup_agreed_enabled: false
+popup_bg_hex: '000000'
+popup_clicking_confirmation: false
+popup_delay: 1000
+popup_disagree_button_message: 'More info'
+popup_enabled: true
+popup_find_more_button_message: 'More info'
+popup_height: null
+popup_hide_agreed: false
+popup_hide_button_message: Hide
+popup_info:
+  value: '<h2>We use cookies on this site to enhance your user experience</h2><p>By clicking any link on this page you are giving your consent for us to set cookies.</p>'
+  format: restricted_html
+popup_link: 'http://vactory8.lapreprod.com/en/privacy-policy-0'
+popup_link_new_window: true
+popup_position: false
+popup_text_hex: ffffff
+popup_width: 100%
+cookie_lifetime: 100
+mobile_popup_info:
+  value: ''
+  format: basic_html
+show_disagree_button: true
+popup_scrolling_confirmation: false
+use_mobile_message: false
+mobile_breakpoint: 768
+exclude_admin_theme: false
+cookie_session: 0
+eu_only_js: null
+use_bare_css: false
+disagree_do_not_show_popup: false
+reload_page: false
+cookie_name: ''
+exclude_uid_1: false
+better_support_for_screen_readers: false
+fixed_top_position: false
+method: default
+disagree_button_label: 'No, thanks'
+whitelisted_cookies: ''
+disabled_javascripts: ''
+consent_storage_method: do_not_store
+withdraw_message:
+  value: '<h2>We use cookies on this site to enhance your user experience</h2><p>You have given your consent for us to set cookies.</p>'
+  format: plain_text
+withdraw_action_button_label: 'Withdraw consent'
+withdraw_tab_button_label: 'Privacy settings'
+withdraw_enabled: false
+popup_info_template: legacy

@@ -36,6 +36,10 @@ use Drupal\Core\Config\Entity\ConfigEntityBundleBase;
  *     "edit-form" = "/admin/structure/locator_entity/conf/locator_entity_type/{locator_entity_type}/edit",
  *     "delete-form" = "/admin/structure/locator_entity/conf/locator_entity_type/{locator_entity_type}/delete",
  *     "collection" = "/admin/structure/locator_entity/conf/locator_entity_type"
+ *   },
+ *   config_export = {
+ *     "id",
+ *     "label",
  *   }
  * )
  */

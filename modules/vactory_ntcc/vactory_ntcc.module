@@ -1,0 +1,186 @@
+<?php
+
+/**
+ * @file
+ * Module related hooks.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\field\Entity\FieldConfig;
+use Drupal\field\Entity\FieldStorageConfig;
+use Drupal\flag\FlagInterface;
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_ntcc_form_node_type_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $node_type = Drupal::routeMatch()->getParameter('node_type');
+  $form['actions']['submit']['#submit'][] = 'vactory_ntcc_submit';
+  $form['flag'] = [
+    '#type' => 'details',
+    '#title' => t('Flag Settings'),
+    '#group' => 'additional_settings',
+  ];
+  $form['comment'] = [
+    '#type' => 'details',
+    '#title' => t('Comments Settings'),
+    '#group' => 'additional_settings',
+  ];
+  if (Drupal::moduleHandler()->moduleExists('flag')) {
+    $form['flag']['enable_flag'] = [
+      '#type' => 'checkbox',
+      '#title' => t('Enable Flag'),
+      '#description' => t('If checked Flag will be enabled for current content type'),
+      '#default_value' => $node_type->getThirdPartySetting('flag', 'enable_flag', 0),
+    ];
+    $flags = Drupal::service('flag')->getAllFlags();
+    $flags = array_map(function ($el) {
+      return $el->label;
+    }, $flags);
+    $form['flag']['flag_id'] = [
+      '#type' => 'select',
+      '#title' => t('Flag ID'),
+      '#options' => $flags,
+      '#description' => t('Select the concerned flag ID'),
+      '#states' => [
+        'visible' => [
+          'input[name="enable_flag"]' => ['checked' => TRUE],
+        ],
+      ],
+      '#default_value' => $node_type->getThirdPartySetting('flag', 'flag_id', ''),
+    ];
+  }
+  else {
+    $form['flag']['message'] = [
+      '#type' => t('Please make sure to install and enable "flag" contrib module!'),
+    ];
+  }
+  if (Drupal::moduleHandler()->moduleExists('comment')) {
+    $form['comment']['enable_comment'] = [
+      '#type' => 'checkbox',
+      '#title' => t('Enable Comments'),
+      '#description' => t('If checked comments will be enabled for current content type'),
+      '#default_value' => $node_type->getThirdPartySetting('comment', 'enable_comment', ''),
+    ];
+  }
+  else {
+    $form['comment']['message'] = [
+      '#type' => t('Please make sure to install and enable "comment" contrib module!'),
+    ];
+  }
+}
+
+/**
+ * Node type edit form custom submit.
+ */
+function vactory_ntcc_submit($form, FormStateInterface $form_state) {
+  $bundle = $form_state->getValue('type');
+  $node_type = $form_state->getFormObject()->getEntity();
+  if ($form_state->getValue('enable_flag')) {
+    $flag_id = $form_state->getValue('flag_id');
+    if ($flag_id) {
+      $flag = Drupal::service('flag')->getFlagById($flag_id);
+      if ($flag instanceof FlagInterface) {
+        $bundles = $flag->getBundles();
+        $bundles[] = $bundle;
+        $flag->set('bundles', $bundles)
+          ->save();
+      }
+    }
+    $node_type->setThirdPartySetting('flag', 'enable_flag', TRUE);
+    $node_type->setThirdPartySetting('flag', 'flag_id', $flag_id);
+    $node_type->save();
+  }
+  else {
+    $node_type->setThirdPartySetting('flag', 'enable_flag', FALSE);
+    $node_type->save();
+    $flags = Drupal::service('flag')->getAllFlags('node', $bundle);
+    foreach ($flags as &$flag) {
+      $bundles = $flag->getBundles();
+      $index = array_search($bundle, $bundles);
+      unset($bundles[$index]);
+      $flag->set('bundles', $bundles)
+        ->save();
+    }
+  }
+  if ($form_state->getValue('enable_comment')) {
+    create_comment_field($bundle, 'comment');
+    $node_type->setThirdPartySetting('comment', 'enable_comment', TRUE);
+    $node_type->save();
+  }
+  else {
+    $node_type->setThirdPartySetting('comment', 'enable_comment', FALSE);
+    $node_type->save();
+    $field = FieldConfig::loadByName('node', $bundle, 'comment');
+    if (!empty($field)) {
+      $field->delete();
+    }
+  }
+}
+
+/**
+ * Create Comment field.
+ */
+function create_comment_field(string $content_type, string $field_name) {
+  $field = FieldConfig::loadByName('node', $content_type, $field_name);
+  if (empty($field)) {
+    $field_storage = FieldStorageConfig::loadByName('node', $field_name);
+    if (empty($field_storage)) {
+      $field_storage = FieldStorageConfig::create([
+        'field_name' => $field_name,
+        'entity_type' => 'node',
+        'type' => 'comment',
+        'cardinality' => 1,
+      ]);
+      $field_storage->save();
+    }
+    $field = FieldConfig::create([
+      'field_storage' => $field_storage,
+      'bundle' => $content_type,
+      'label' => t('Comment'),
+    ]);
+    $field->save();
+
+    /** @var \Drupal\Core\Entity\Entity\EntityFormDisplay */
+    $entity_form_display = \Drupal::entityTypeManager()
+      ->getStorage('entity_form_display')
+      ->load('node.' . $content_type . '.default');
+
+    if (!$entity_form_display) {
+      $values = [
+        'targetEntityType' => 'node',
+        'bundle' => $content_type,
+        'mode' => 'default',
+        'status' => TRUE,
+      ];
+      \Drupal::entityTypeManager()
+        ->getStorage('entity_form_display')
+        ->create($values);
+    }
+
+    $entity_form_display->setComponent($field_name, [
+      'type' => 'comment_default',
+    ])->save();
+
+    /** @var \Drupal\Core\Entity\Entity\EntityViewDisplay */
+    $entity_view_display = \Drupal::entityTypeManager()
+      ->getStorage('entity_view_display')
+      ->load('node.' . $content_type . '.default');
+
+    if (!$entity_view_display) {
+      $values = [
+        'targetEntityType' => 'node',
+        'bundle' => $content_type,
+        'mode' => 'default',
+        'status' => TRUE,
+      ];
+      \Drupal::entityTypeManager()
+        ->getStorage('entity_view_display')
+        ->create($values);
+    }
+
+    $entity_view_display->setComponent($field_name, [
+      'label' => 'hidden',
+    ])->save();
+  }
+}

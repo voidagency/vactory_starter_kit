@@ -1,0 +1,7 @@
+vactory_locator.settings:
+  type: config_object
+  label: 'Locator Form Config'
+  mapping:
+    path_url:
+      type: label
+      label: 'Path Locator Full Page'

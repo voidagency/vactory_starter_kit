@@ -1,0 +1,7 @@
+vactory_mediatheque.term_generation:
+  path: '/_term_generator'
+  defaults:
+    _controller: '\Drupal\vactory_mediatheque\Controller\VactoryMediathequeController::generateTerms'
+  methods: [POST]
+  requirements:
+    _permission: 'access content'

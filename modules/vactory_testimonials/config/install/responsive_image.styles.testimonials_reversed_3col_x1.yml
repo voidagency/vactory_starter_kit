@@ -5,7 +5,7 @@ dependencies:
     - image.style.testimonials_reversed_3col_x1
     - image.style.testimonials_reversed_3col_x2
   theme:
-    - vactory_theme
+    - vactory
 id: testimonials_reversed_3col_x1
 label: 'Testimonials reversed'
 image_style_mappings:

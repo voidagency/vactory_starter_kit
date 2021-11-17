@@ -1,0 +1,8 @@
+views_filter_links:
+  js:
+    js/views_filter_links.js: {}
+    ../../../../libraries/ReadMore.js/src/readMoreJS.min.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
+    - core/jquery.once

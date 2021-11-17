@@ -13,7 +13,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
- * Class VactoryViewsPrettyPathAdminForm.
+ * Vactory Views Pretty Path Admin Form.
  */
 class VactoryViewsPrettyPathAdminForm extends ConfigFormBase {
 
@@ -248,6 +248,7 @@ class VactoryViewsPrettyPathAdminForm extends ConfigFormBase {
         ];
       }
       unset($selected_view_id);
+      unset($selected_view_display_id);
 
       // Remove button.
       $form['paths'][$i]['remove_item_' . $i] = [
@@ -308,13 +309,13 @@ class VactoryViewsPrettyPathAdminForm extends ConfigFormBase {
             }
           }
           if ($set_error) {
-            $form_state->setError($form['paths'][$key]['path'], $this->t('The path provided does not exist in the system.'));
+            $form_state->setErrorByName('paths[' . $key . '][path]', $this->t('The path provided does not exist in the system.'));
           }
         }
         // Make sure the user only selects one view per path.
         if (is_numeric($key)) {
           if (in_array($path_value['path'], $path_collector)) {
-            $form_state->setError($form['paths'][$key]['path'], $this->t('You cannot rewrite the path, @path, more than once.', ['@path' => $path_value['path']]));
+            $form_state->setErrorByName('paths[' . $key . '][path]', $this->t('You cannot rewrite the path, @path, more than once.', ['@path' => $path_value['path']]));
           }
           $path_collector[] = $path_value['path'];
         }

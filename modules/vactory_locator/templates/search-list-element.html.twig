@@ -6,12 +6,11 @@
  * Available variables:
  * - name : the item name.
  * - field_locator_info : array contain item localisation info (lat & lon).
- * - field_locator_adress_address_line1 : item adresse .
- * - field_locator_adress_address_line2 : the second item adresse.
  * - field_locator_category : item category.
- * - field_locator_adress_country_code :  item country (this return the full country name).
- * - field_locator_adress_locality : item city.
- * - field_locator_adress_postal_code :  item postal code.
+ * - field_locator_country_1 : item country.
+ * - field_locator_city_1 : item city.
+ * - field_locator_additional_adress : additional item adresse.
+ * - field_locator_zipcode : item postal code.
  * - field_locator_email : item E-mail.
  * - field_locator_description : description about item.
  * - field_locator_image : uri item image.
@@ -27,7 +26,7 @@
         <p class="text-dark font-weight-bold">{{ name }}</p>
     </div>
     <div>
-        <p class="font-weight-light text-secondary">{{ field_locator_adress_address_line1 }} </p>
+        <p class="font-weight-light text-secondary">{{ field_locator_country_1 }}, {{ field_locator_city_1}} </p>
     </div>
 
 </div>

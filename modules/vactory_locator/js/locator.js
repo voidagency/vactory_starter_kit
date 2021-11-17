@@ -211,15 +211,16 @@
       //up to 5
     ];
 
-
-    app.getMarkerIcon = function () {
+    //Pass category marker in
+    app.getMarkerIcon = function (category_marker) {
       return {
-        url: settings.markerOptions.defaultMarkerUrl,
-        size: new google.maps.Size(settings.markerOptions.width, settings.markerOptions.height),
+        url: (category_marker !== null && category_marker.marker_url !== null && category_marker.marker_url !== '') ? category_marker.marker_url : settings.markerOptions.defaultMarkerUrl,
+        size: new google.maps.Size(
+          (category_marker !== null && category_marker.marker_width !== null && category_marker.marker_width !== '') ? category_marker.marker_width : settings.markerOptions.width,
+          (category_marker !== null && category_marker.marker_height !== null && category_marker.marker_height !== '') ? category_marker.marker_height : settings.markerOptions.height),
         scaledSize: new google.maps.Size(settings.markerOptions.width, settings.markerOptions.height)
       };
     };
-
 
     app.showLocationList = function () {
       app.dom.locationsListContainer.show(); //removeClass('vactory_locator_close').addClass('vactory_locator_open');
@@ -337,7 +338,7 @@
       var marker = new google.maps.Marker({
         position: latLng,
         map: app.map,
-        icon: app.getMarkerIcon(),
+        icon: app.getMarkerIcon((element.field_locator_category_infos.marker !== undefined) ? element.field_locator_category_infos.marker : null), //if the marker exist  get the default one else it gets the category icon
         cursor: 'pointer',
       });
 
@@ -362,7 +363,6 @@
       app.listenEvent(app.events.DATA_LOADED, function () {
 
         var locations = app.data.results;
-
         locations.forEach(function (element, index) {
           app.addMarker(element, index);
         });
@@ -484,12 +484,10 @@
       var filtredLocationsIndex = [];
 
       var name_normalize,
-        adresse_line_1_normalize,
-        adresse_line_2_normalize,
+        adresse_country_normalize,
         city_normalize,
         name,
-        adresse_line_1,
-        adresse_line_2,
+        adresse_country,
         city;
 
       var ua = window.navigator.userAgent;
@@ -510,23 +508,20 @@
       for (var i = 0; i < app.data.total_rows; i++) {
 
         name = app.data.results[i].name.toLowerCase();
-        adresse_line_1 = app.data.results[i].field_locator_adress_address_line1.toLowerCase();
-        adresse_line_2 = app.data.results[i].field_locator_adress_address_line2.toLowerCase();
-        city = app.data.results[i].field_locator_adress_locality.toLowerCase();
+        adresse_country = app.data.results[i].field_locator_country_1.toLowerCase();
+        city = app.data.results[i].field_locator_city_1.toLowerCase();
 
         if (msie > 0 || !!navigator.userAgent.match(/Trident.*rv\:11\./)) {
           name_normalize = name;
-          adresse_line_1_normalize = adresse_line_1;
-          adresse_line_2_normalize = adresse_line_2;
+          adresse_country_normalize = adresse_country;
           city_normalize = city;
         } else {
           name_normalize = getnormalize(name);
-          adresse_line_1_normalize = getnormalize(adresse_line_1);
-          adresse_line_2_normalize = getnormalize(adresse_line_2);
+          adresse_country_normalize = getnormalize(adresse_country);
           city_normalize = getnormalize(city);
         }
 
-        if (name_normalize.indexOf(query) >= 0 || adresse_line_1_normalize.indexOf(query) >= 0 || adresse_line_2_normalize.indexOf(query) >= 0 || city_normalize.indexOf(query) >= 0) {
+        if (name_normalize.indexOf(query) >= 0 || adresse_country_normalize.indexOf(query) >= 0 || city_normalize.indexOf(query) >= 0) {
           filtredLocationsIndex.push(i);
         }
       }
@@ -893,6 +888,8 @@
 
     };
 
+
+
     // Filter by categories;
     $('.locator-category').on('click', function (e) {
       e.preventDefault();
@@ -901,7 +898,7 @@
         app.data = Object.assign({}, app.allData);
         if (tid !== "all") {
           app.data.results = app.data.results.filter(function(el) {
-            return el.field_locator_category_1 == tid;
+            return el.field_locator_category_infos.id_category == tid;
           });
           app.data.total_rows = app.data.results.length;
         }
@@ -954,6 +951,7 @@
   Drupal.behaviors.vactory_locator = {
 
     attach: function (context, settings) {
+
       var options = {
         googleApiKey: drupalSettings.vactory_locator.map_key,
         apiUrl: drupalSettings.vactory_locator.url,
@@ -962,6 +960,7 @@
         clusterIconUrl: drupalSettings.vactory_locator.url_cluster,
         noResultMessage: drupalSettings.vactory_locator.no_result_msg || 'Aucun résultat trouvé',
         googleDirectionService: (drupalSettings.vactory_locator.use_geolocation != 0) ? true : false,
+
         geolocalisationMarker: {
           url: (drupalSettings.vactory_locator.url_geolocation_marker !== '') ? drupalSettings.vactory_locator.url_geolocation_marker : '', // '/themes/vactory/assets/img/geolocalisation.png'
         },
@@ -1001,6 +1000,5 @@
         $('.block-location').show();
       }
     }
-
   };
 })(jQuery, Drupal, drupalSettings);

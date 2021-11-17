@@ -1,0 +1,13 @@
+{#
+/**
+ * @file
+ * The views infinite scroll pager template.
+ */
+#}
+{% if items.next %}
+    <ul{{ attributes }}>
+      <li class="pager__item text-center home-page-load-more">
+        <a class="button font-semibold btn btn-gradient hvr-icon-spin pl-2" href="{{ items.next.href }}" title="{{ 'Go to next page'|t }}" rel="next"><i class="icon-more hvr-icon"></i>{{ options.button_text }}</a>
+      </li>
+    </ul>
+{% endif %}

@@ -1,0 +1,110 @@
+<?php
+
+/**
+ * @file
+ * Contains install and update functions.
+ */
+
+/**
+ * Define the SFTP library location.
+ */
+define('SFTP_LIBRARY_URI', 'https://github.com/phpseclib/phpseclib');
+
+/**
+ * Implements hook_requirements().
+ */
+function vactory_webform_auto_export_requirements($phase) {
+    $requirements = [];
+    $downloadMessage = t('Please install the "PHP Secure Communications Library (phpseclib)" using "composer require phpseclib/phpseclib:~2.0" or check <a href="@link">@link</a> for more details, if you wish to enable SFTP transfer of generated CSV files.', array('@link' => SFTP_LIBRARY_URI));
+
+    if (!class_exists('phpseclib\Net\SFTP')) {
+        $requirements['vactory_webform_auto_export_dependencies'] = [
+            'title' => t('Vactory Webform Auto Exports'),
+            'description' => $downloadMessage,
+            'severity' => \REQUIREMENT_WARNING,
+        ];
+    }
+
+    return $requirements;
+}
+
+/**
+ * Implements hook_schema().
+ */
+function vactory_webform_auto_export_schema()
+{
+    $schema['webform_auto_exports'] = array(
+        'fields' => array(
+            'id' => array(
+                'type' => 'serial',
+                'not null' => TRUE,
+            ),
+            'name'=>array(
+                'type' => 'varchar',
+                'length' => 200,
+                'not null' => TRUE,
+            ),
+            'path'=>array(
+                'type' => 'varchar',
+                'length' => 200,
+                'not null' => TRUE,
+            ),
+            'schedule_config'=>array(
+                'type' => 'blob',
+                'size' => 'big',
+                'not null' => TRUE,
+            ),
+            'search_config'=>array(
+                'type' => 'blob',
+                'size' => 'big',
+                'not null' => TRUE,
+            ),
+            'next_run'=>array(
+                'type' => 'varchar',
+                'length' => 100,
+                'not null' => TRUE,
+            ),
+            'last_run'=>array(
+                'type' => 'varchar',
+                'length' => 100,
+                'not null' => FALSE,
+            ),
+            'enable_auto_export'=>array(
+                'type' => 'varchar',
+                'length' => 2,
+                'not null' => TRUE,
+            ),
+            'enable_sftp'=>array(
+                'type' => 'varchar',
+                'length' => 2,
+                'not null' => TRUE,
+            ),
+            'enable_email'=>array(
+                'type' => 'varchar',
+                'length' => 2,
+                'not null' => TRUE,
+            ),
+            'email'=>array(
+                'type' => 'varchar',
+                'length' => 100,
+                'not null' => FALSE,
+            ),
+        ),
+        'primary key' => array('id')
+    );
+    return $schema;
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function vactory_webform_auto_export_uninstall() {
+    $connection = \Drupal\Core\Database\Database::getConnection();
+    $query = $connection->select('webform_auto_exports','wex');
+    $query->fields('wex', ['name']);
+    $results = $query->execute()->fetchAll();
+
+    foreach($results as $result) {
+        \Drupal::configFactory()->getEditable('vactory_webform_auto_export.config.' . $result->name)->delete();
+    }
+}

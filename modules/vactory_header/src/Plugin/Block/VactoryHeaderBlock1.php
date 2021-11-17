@@ -3,6 +3,7 @@
 namespace Drupal\vactory_header\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
@@ -20,12 +21,9 @@ class VactoryHeaderBlock1 extends BlockBase {
    * {@inheritdoc}
    */
   public function build() {
-
-    return array(
-      "#cache" => array("max-age" => 0),
+    return [
       "#theme" => "block_vactory_header1",
-    );
-
+    ];
   }
 
   /**
@@ -34,6 +32,13 @@ class VactoryHeaderBlock1 extends BlockBase {
   public function blockSubmit($form, FormStateInterface $form_state) {
     $config = \Drupal::service('config.factory')->getEditable('vactory_header.settings');
     $config->set('variante_number', 1)->save();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  public function getCacheMaxAge() {
+    return Cache::PERMANENT;
   }
 
 }

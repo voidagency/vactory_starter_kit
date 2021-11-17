@@ -1,0 +1,49 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.field.node.vactory_quiz.body
+    - field.field.node.vactory_quiz.field_quiz_questions
+    - node.type.vactory_quiz
+  enforced:
+    module:
+      - vactory_quiz
+  module:
+    - text
+    - user
+    - vactory_quiz
+id: node.vactory_quiz.default
+targetEntityType: node
+bundle: vactory_quiz
+mode: default
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 101
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_quiz_questions:
+    weight: 102
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: vactory_quiz_question_formatter
+    region: content
+  links:
+    weight: 100
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  field_content_access_groups: true
+  field_content_access_roles: true
+  field_content_access_users: true
+  langcode: true
+  mail_message: true
+  mail_subject: true
+  notification_message: true
+  notification_title: true
+  search_api_excerpt: true

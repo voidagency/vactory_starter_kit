@@ -1,0 +1,7 @@
+langcode: en
+status: true
+dependencies: {  }
+name: Discipline
+vid: discipline_
+description: 'This Vocabulary is used for Announcements'
+weight: 0

@@ -1,0 +1,27 @@
+vactory_attached_assets.attached_assets_entity.*:
+  type: config_entity
+  label: 'Attached assets config'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    file:
+      type: sequence
+      label: 'File id'
+      sequence:
+        type: file.[index]
+        label: 'file id'
+    type:
+      type: string
+      label: 'Type'
+    uuid:
+      type: string
+    conditions:
+      type: sequence
+      label: 'Insertion conditions'
+      sequence:
+        type: condition.plugin.[id]
+        label: 'Insertion condition'

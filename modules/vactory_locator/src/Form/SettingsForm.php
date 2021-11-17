@@ -166,6 +166,19 @@ class SettingsForm extends ConfigFormBase {
       '#default_value' => !empty($config->get('zoom')) ? $config->get('zoom') : $zooms['nothing'],
     ];
 
+    $form['page_path'] = [
+      '#type'  => 'details',
+      '#title' => t('Path Setting'),
+      '#group' => 'tabs',
+    ];
+
+    $form['page_path']['path_url'] = [
+      '#type' => 'textfield',
+      '#title' => t('Path Locator Full Page'),
+      '#description' => t('si rempli, le lien vers la page détaille va être /ur-custom-path/{agency-name}'),
+      '#default_value' => !empty($config->get('path_url')) ? $config->get('path_url') : '',
+    ];
+
     return parent::buildForm($form, $form_state);
   }
 
@@ -225,6 +238,7 @@ class SettingsForm extends ConfigFormBase {
       ->set('lat', $form_state->getValue('lat'))
       ->set('lon', $form_state->getValue('lon'))
       ->set('zoom', $form_state->getValue('zoom'))
+      ->set('path_url', $form_state->getValue('path_url'))
       ->save();
     parent::submitForm($form, $form_state);
   }

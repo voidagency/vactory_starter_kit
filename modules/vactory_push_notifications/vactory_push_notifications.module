@@ -1,0 +1,27 @@
+<?php
+
+/**
+ * @file
+ * Primary hooks.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_push_notifications_theme() {
+  return [
+    'block_push_notifications' => [
+      "variables" => ["content" => []],
+      "template"  => 'block-push-notifications',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_cron().
+ */
+function vactory_push_notifications_cron() {
+  // Update pushnotifications.
+  \Drupal::service('vactory_push_notifications.pushnotifications.manage')
+    ->updatePushNotificationsStatus();
+}

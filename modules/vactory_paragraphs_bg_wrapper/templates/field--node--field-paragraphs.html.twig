@@ -10,96 +10,31 @@
 {% set title_classes = [
   'field__label',
   label_display == 'visually_hidden' ? 'visually-hidden',
+  label_display == 'hidden' ? 'visually-hidden',
 ] %}
-{% if label_hidden %}
-  {% if multiple %}
-    <div{{ attributes.addClass(classes) }}>
-      {% for item in items %}
 
-      {% if item.paragraph_type is not null %}
-      {#case of opener#}
-      {% if  item.paragraph_type == 'opener' %}
-      {#background of type image #}
-      {% if item.background.type == 'image' %}
-      <div {{ item.attributes.addClass(item.paragraph.classes) }} style="background-image: url({{ file_url(item.background.image) }}); background-size: 100%; background-repeat: no-repeat;">
-        {#background of type color #}
-        {% elseif item.background.type == 'solid' %}
-        <div {{ item.attributes.addClass(item.paragraph.classes) }} style="background-color: {{ item.background.color }}">
-          {#background of type both image and color#}
-          {% else %}
-          <div {{ item.attributes.addClass(item.paragraph.classes) }} style="background: {{ item.background.color }} url({{ file_url(item.background.image) }}); background-size: 100%; background-repeat: no-repeat;">
-            {% endif %}
-            {#case of closer#}
-            {% else %}
-          </div>
-          {% endif %}
-
-          {% else %}
-            <div{{ item.attributes.addClass('field__item') }}>{{ item.content }}</div>
-          {% endif %}
-
-          {% endfor %}
-    </div>
-  {% else %}
-    {% for item in items %}
-
-    {% if item.paragraph_type is not null %}
-    {#case of opener#}
-    {% if  item.paragraph_type == 'opener' %}
-    {#background of type image #}
-    {% if item.background.type == 'image' %}
-<div {{ item.attributes.addClass(item.paragraph.classes) }} style="background-image: url({{ file_url(item.background.image) }}); background-size: 100%; background-repeat: no-repeat;">
-  {#background of type color #}
-  {% elseif item.background.type == 'solid' %}
-  <div {{ item.attributes.addClass(item.paragraph.classes) }} style="background-color: {{ item.background.color }}">
-    {#background of type both image and color#}
-    {% else %}
-    <div {{ item.attributes.addClass(item.paragraph.classes) }} style="background: {{ item.background.color }} url({{ file_url(item.background.image) }}); background-size: 100%; background-repeat: no-repeat;">
-      {% endif %}
-      {#case of closer#}
-      {% else %}
-    </div>
-    {% endif %}
-
-    {% else %}
-      <div{{ item.attributes.addClass('field__item') }}>{{ item.content }}</div>
-    {% endif %}
-
-    {% endfor %}
-  {% endif %}
-{% else %}
 <div{{ attributes.addClass(classes) }}>
   <strong{{ title_attributes.addClass(title_classes) }}>{{ label }}</strong>
-  {% if multiple %}
-  <div class="field__items">
-    {% endif %}
-    {% for item in items %}
-
+  {% for item in items %}
     {% if item.paragraph_type is not null %}
-    {#case of opener#}
-    {% if  item.paragraph_type == 'opener' %}
-    {#background of type image #}
-    {% if item.background.type == 'image' %}
-    <div {{ item.attributes.addClass(item.paragraph.classes) }} style="background-image: url({{ file_url(item.background.image) }}); background-size: 100%; background-repeat: no-repeat;">
-      {#background of type color #}
-      {% elseif item.background.type == 'solid' %}
-      <div {{ item.attributes.addClass(item.paragraph.classes) }} style="background-color: {{ item.background.color }}">
-        {#background of type both image and color#}
+      {#case of opener#}
+      {% if  item.paragraph_type == 'opener' %}
+        {#background of type image #}
+        {% if item.background.type == 'image' %}
+          <div {{ item.attributes.addClass(item.paragraph.classes).addClass('paragraph-background-wrapper') }} style="background-image: url({{ file_url(item.background.image) }})">
+          {#background of type color #}
+        {% elseif item.background.type == 'solid' %}
+          <div {{ item.attributes.addClass(item.paragraph.classes).addClass('paragraph-background-wrapper') }} style="background-color: {{ item.background.color }}">
+            {#background of type both image and color#}
         {% else %}
-        <div {{ item.attributes.addClass(item.paragraph.classes) }} style="background: {{ item.background.color }} url({{ file_url(item.background.image) }}); background-size: 100%; background-repeat: no-repeat;">
-          {% endif %}
-          {#case of closer#}
-          {% else %}
-        </div>
+            <div {{ item.attributes.addClass(item.paragraph.classes).addClass('paragraph-background-wrapper') }} style="background-color: {{ item.background.color }}; background-image: url({{ file_url(item.background.image) }})">
         {% endif %}
-
-        {% else %}
-          <div{{ item.attributes.addClass('field__item') }}>{{ item.content }}</div>
-        {% endif %}
-
-        {% endfor %}
-        {% if multiple %}
-      </div>
+        {#case of closer#}
+      {% else %}
+          </div>
       {% endif %}
-    </div>
+    {% else %}
+      {{ item.content }}
     {% endif %}
+  {% endfor %}
+</div>

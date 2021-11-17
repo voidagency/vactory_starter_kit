@@ -1,0 +1,19 @@
+langcode: en
+status: false
+dependencies:
+  module:
+    - vactory_mediatheque
+  theme:
+    - vactory
+id: mediathequeyearblock
+theme: vactory
+region: content
+weight: -2
+provider: null
+plugin: year_block_filter
+settings:
+  id: year_block_filter
+  label: 'Médiathèque Year Block'
+  provider: vactory_mediatheque
+  label_display: '0'
+visibility: {  }

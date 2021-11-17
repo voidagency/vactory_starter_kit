@@ -1,0 +1,18 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_vactory_email
+    - node.type.announcement
+id: node.announcement.field_vactory_email
+field_name: field_vactory_email
+entity_type: node
+bundle: announcement
+label: Email
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: email

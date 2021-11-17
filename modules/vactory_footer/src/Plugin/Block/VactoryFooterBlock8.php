@@ -3,6 +3,7 @@
 namespace Drupal\vactory_footer\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
+use Drupal\Core\Cache\Cache;
 
 /**
  * Provides a "Vactory Footer Block 8" block.
@@ -20,10 +21,16 @@ class VactoryFooterBlock8 extends BlockBase {
    */
   public function build() {
     return [
-      "#cache"   => ["max-age" => 0],
       "#theme"   => "block_vactory_footer8",
     ];
 
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCacheMaxAge() {
+    return Cache::PERMANENT;
   }
 
 }

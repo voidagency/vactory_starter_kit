@@ -1,0 +1,14 @@
+vactory_migrate_ui.modify:
+  path: '/admin/structure/migrate/manage/{migration_group}/migrations/{migration}/modify'
+  defaults:
+    _form: 'Drupal\vactory_migrate_ui\Form\MigrationFormEdit'
+    _title: 'Modify Migration'
+  requirements:
+    _permission: 'Modify Migration'
+vactory_migrate_ui.export_data:
+  path: '/admin/structure/migration/export'
+  defaults:
+    _form: 'Drupal\vactory_migrate_ui\Form\ViewsExportDataSettings'
+    _title: 'Export Migration'
+  requirements:
+    _permission: 'Export Migration'

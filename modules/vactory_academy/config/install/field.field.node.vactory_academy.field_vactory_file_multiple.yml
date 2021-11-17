@@ -4,16 +4,16 @@ dependencies:
   config:
     - field.storage.node.field_vactory_file_multiple
     - node.type.vactory_academy
-  module:
-    - file
   enforced:
     module:
       - vactory_academy
+  module:
+    - file
 id: node.vactory_academy.field_vactory_file_multiple
 field_name: field_vactory_file_multiple
 entity_type: node
 bundle: vactory_academy
-label: Videos
+label: 'Support du videos'
 description: ''
 required: true
 translatable: true

@@ -194,9 +194,11 @@ class Vactory {
     $terms = [];
     foreach (\Drupal::service('entity_field.manager')->getFieldDefinitions('node', $content_type) as $v => $item) {
       if ($item->getSetting("target_type") === "taxonomy_term") {
-        $field_name = $item->get('field_name');
-        foreach ($item->getSetting("handler_settings")['target_bundles'] as $key => $value) {
-          $terms[$value] = [$value, $field_name];
+        if (method_exists($item, 'get')) {
+          $field_name = $item->get('field_name');
+          foreach ($item->getSetting("handler_settings")['target_bundles'] as $key => $value) {
+            $terms[$value] = [$value, $field_name];
+          }
         }
       }
     }
@@ -334,7 +336,7 @@ class Vactory {
    * @return string|array
    *   Rendered block.
    */
-  public static function renderBlock($machine_name, array $configuration = []) {
+  public static function renderBlock($machine_name, array $configuration = [], array $attributes = []) {
     $twigExtension = \Drupal::service('twig_tweak.twig_extension');
     $entityManager = \Drupal::service('entity_type.manager');
     $block_storage = $entityManager->getStorage('block_content');
@@ -342,7 +344,6 @@ class Vactory {
     // Load block by custom machine_name ID.
     // @see modules/vactory/vactory_core/vactory_core.module
     $block = $block_storage->loadByProperties(['block_machine_name' => $machine_name]);
-
     if (is_array($block) && reset($block) instanceof BlockContent) {
       $block_view = $entityManager->getViewBuilder('block_content')
         ->view(reset($block));
@@ -362,6 +363,9 @@ class Vactory {
 
     $block = $twigExtension->drupalBlock($machine_name, $configuration);
     if ($block && is_array($block) && isset($block['#plugin_id']) && $block['#plugin_id'] !== 'broken') {
+      if (isset($block['#attributes'])) {
+        $block['#attributes'] = array_merge_recursive($block['#attributes'], $attributes);
+      }
       return $block;
     }
 
@@ -472,7 +476,7 @@ class Vactory {
       ->getCurrentLanguage()
       ->getId();
     $current_path = \Drupal::service('path.current')->getPath();
-    $alias = \Drupal::service('path.alias_manager')
+    $alias = \Drupal::service('path_alias.manager')
       ->getAliasByPath($current_path);
     $current_path_formats = [
       $current_path,
@@ -526,6 +530,71 @@ class Vactory {
     }
 
     return $show_block;
+  }
+
+  /**
+   * @param $content_type
+   * @param $field_name
+   * @throws Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws Drupal\Component\Plugin\Exception\PluginNotFoundException
+   * @throws Drupal\Core\Entity\EntityStorageException
+   */
+  public static function createLocationField($content_type, $field_name) {
+    $field = FieldConfig::loadByName('node', $content_type, $field_name);
+    if (empty($field)) {
+      $field_storage = FieldStorageConfig::loadByName('node', $field_name);
+      if (empty($field_storage)) {
+        $field_storage = FieldStorageConfig::create([
+          'field_name' => $field_name,
+          'entity_type' => 'node',
+          'type' => 'geofield',
+          'cardinality' => 1,
+        ]);
+        $field_storage->save();
+      }
+      $field = FieldConfig::create([
+        'field_storage' => $field_storage,
+        'bundle' => $content_type,
+        'label' => t('Position'),
+      ]);
+      $field->save();
+      /* @var \Drupal\Core\Entity\Entity\EntityFormDisplay */
+      $entity_form_display = \Drupal::entityTypeManager()
+        ->getStorage('entity_form_display')
+        ->load('node.' . $content_type . '.default');
+      if (!$entity_form_display) {
+        $values = [
+          'targetEntityType' => 'node',
+          'bundle' => $content_type,
+          'mode' => 'default',
+          'status' => TRUE,
+        ];
+        \Drupal::entityTypeManager()
+          ->getStorage('entity_form_display')
+          ->create($values);
+      }
+      $entity_form_display->setComponent($field_name, [
+        'type' => 'options_select',
+      ])->save();
+      /* @var \Drupal\Core\Entity\Entity\EntityViewDisplay */
+      $entity_view_display = \Drupal::entityTypeManager()
+        ->getStorage('entity_view_display')
+        ->load('node.' . $content_type . '.default');
+      if (!$entity_view_display) {
+        $values = [
+          'targetEntityType' => 'node',
+          'bundle' => $content_type,
+          'mode' => 'default',
+          'status' => TRUE,
+        ];
+        \Drupal::entityTypeManager()
+          ->getStorage('entity_view_display')
+          ->create($values);
+      }
+      $entity_view_display->setComponent($field_name, [
+        'label' => 'hidden',
+      ])->save();
+    }
   }
 
 }

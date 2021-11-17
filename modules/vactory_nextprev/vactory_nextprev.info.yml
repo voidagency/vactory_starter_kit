@@ -1,0 +1,8 @@
+name: Vactory Next And Previous links
+type: module
+description: Next and previous links on detail page.
+core: 8.x
+core_version_requirement: ^8 || ^9
+
+dependencies:
+  - drupal:node

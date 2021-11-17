@@ -4,7 +4,7 @@ vactory_espace_prive.settings:
   mapping:
     metatag_register_title:
       type: text
-      label: "Titre Metatag de la page crétion d'un compte"
+      label: "Titre Metatag de la page création d'un compte"
     metatag_register_description:
       type: text
       label: "Description Metatag de la page création d'un compte"

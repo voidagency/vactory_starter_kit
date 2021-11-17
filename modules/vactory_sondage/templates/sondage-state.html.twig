@@ -1,0 +1,53 @@
+<div class="text-left">
+	{% if statistics.options.0.type == 'image' %}
+		{% for option in statistics.options %}
+			<div class="row mb-3">
+        {% set image = option.image.uri|image_style('medium') %}
+        <div class="col-md-3">
+          <img src="{{ image }}" alt="{{ option.image.alt }}"/>
+        </div>
+				<div class="col-md-7 m-auto">
+					<div class="progress bg-gray">
+						<div class="progress-bar" role="progressbar"
+								 style="width: {{ option.percentage }}; background-color: #dadada" aria-valuenow="25" aria-valuemin="0"
+								 aria-valuemax="100">
+						</div>
+					</div>
+				</div>
+				<div class="col-md-2 m-auto">
+					<span class="h6">{{ option.percentage }}</span>
+					<span title="{{ option.is_current_user_vote ? 'My vote'|t : '' }}"
+								class="{{ option.is_current_user_vote ? 'h6 suffix-icon-check' : '' }}">
+						{{ option.text }}
+					</span>
+				</div>
+			</div>
+		{% endfor %}
+	{% else %}
+		{% for option in statistics.options %}
+			<div class="row mb-3">
+				<div class="col-md-10">
+					<div class="progress bg-gray h-100 text-align-left">
+						<h6 class="px-4 py-1 {{ option.is_current_user_vote ? 'suffix-icon-check' : '' }}"
+								style="position: absolute">{{ option.text }}</h6>
+						<div class="progress-bar" role="progressbar"
+								 style="width: {{ option.percentage }}; background-color: #ebebeb" aria-valuenow="25" aria-valuemin="0"
+								 aria-valuemax="100">
+						</div>
+					</div>
+				</div>
+				<div class="col-md-2">
+					<span class="h4">{{ option.percentage }}</span>
+				</div>
+			</div>
+		{% endfor %}
+	{% endif %}
+	<span class="text-muted">{{ statistics.votes_count }} {{ 'votes'|t }}</span>
+	{% if statistics.is_closed %}
+		<span class="text-muted">• {{ 'Sondage fermé'|t }}</span>
+	{% else %}
+		<span class="text-muted">• {{ 'Sondage ouvert'|t }}</span>
+	{% endif %}
+</div>
+
+

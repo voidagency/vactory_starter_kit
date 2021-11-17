@@ -1,0 +1,7 @@
+vactory_sms_sender:
+  path: '/admin/config/services/vactory-sms-sender'
+  defaults:
+    _form: 'Drupal\vactory_sms_sender\Plugin\Form\VactorySmsSenderSettings'
+    _title: 'Vactory SMS Sender Settings'
+  requirements:
+    _permission: 'administer site configuration'

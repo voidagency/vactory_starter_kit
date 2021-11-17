@@ -1,0 +1,25 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - block_content.type.vactory_sondage
+    - field.storage.block_content.field_sondage_status
+  enforced:
+    module:
+      - vactory_sondage
+  module:
+    - options
+id: block_content.vactory_sondage.field_sondage_status
+field_name: field_sondage_status
+entity_type: block_content
+bundle: vactory_sondage
+label: 'État de sondage'
+description: ''
+required: true
+translatable: true
+default_value:
+  -
+    value: '1'
+default_value_callback: ''
+settings: {  }
+field_type: list_string

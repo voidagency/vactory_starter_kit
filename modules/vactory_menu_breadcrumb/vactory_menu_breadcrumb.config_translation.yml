@@ -1,0 +1,5 @@
+vactory_menu_breadcrumb.settings:
+  title: 'Vactory Menu Breadcrumb Settings'
+  base_route_name: vactory_menu_breadcrumb.settings
+  names:
+    - vactory_menu_breadcrumb.settings

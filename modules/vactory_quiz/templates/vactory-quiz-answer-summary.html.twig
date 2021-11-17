@@ -1,0 +1,15 @@
+<div id="{{ content.wrapper_id }}">
+  {% if content.answers is not empty %}
+    <h6>{{ "This question has " ~ content.answers|length ~ " answers" }}</h6>
+    <ul style="list-style: none">
+      {% for answer in content.answers %}
+        {% set answer_text =  answer.answer|length > 80 ? answer.answer|slice(0, 80) ~ '[...]' : answer.answer %}
+        <li>
+          <strong style="{{ answer.is_correct ? "color: #5cb730" : '' }}">{{ answer.answer_id }}</strong>. {{ answer_text }}
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p>{{ 'No answers has been added yet!'|t }}</p>
+  {% endif %}
+</div>

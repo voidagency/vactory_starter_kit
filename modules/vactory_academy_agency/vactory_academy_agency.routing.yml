@@ -2,7 +2,7 @@
 #  path: '/borne/{agency_path}/services/inscription-formation'
 #  defaults:
 #    _title: 'Inscription aux Formations'
-#    _form: '\Drupal\vactory_academy_agencys\Form\SubscribeToFormationDAM'
+#    _form: '\Drupal\vactory_academy_agencys\Form\VactorySubscribeToFormation'
 #  requirements:
 #    _permission: 'access content'
 #  options:

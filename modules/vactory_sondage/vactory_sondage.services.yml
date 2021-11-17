@@ -1,0 +1,3 @@
+services:
+  vactory_sondage.manager:
+    class: Drupal\vactory_sondage\Services\SondageManager

@@ -14,5 +14,10 @@ function vactory_flash_news_theme($existing, $type, $theme, $path) {
       'template' => 'views-view-unformatted-flash-news',
       'base hook' => 'views_view_unformatted',
     ],
+    // Node > Mur.
+    'node__vactory_flash_news__mur'        => [
+      'base hook' => 'node',
+      'template'  => 'mur',
+    ],
   ];
 }

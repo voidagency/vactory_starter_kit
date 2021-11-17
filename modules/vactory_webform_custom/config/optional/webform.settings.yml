@@ -195,7 +195,7 @@ html_editor:
   tidy: true
   make_unused_managed_files_temporary: true
 file:
-  file_public: false
+  file_public: true
   file_private_redirect: true
   file_private_redirect_message: 'Please login to access the uploaded file.'
   default_max_filesize: ''

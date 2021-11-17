@@ -1,0 +1,76 @@
+<?php
+
+/**
+ * @file
+ * Module related hooks.
+ */
+
+use Drupal\block_content\BlockContentInterface;
+use Drupal\Component\Serialization\Json;
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_user_guide_theme($existing, $type, $theme, $path) {
+  return [
+    'block__block_content__vactory_user_guide' => [
+      'base hook' => 'block',
+      'template' => 'block-user-guide',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_user_guide_preprocess_block(&$variables) {
+  $block = isset($variables['elements']['content']['#block_content']) ? $variables['elements']['content']['#block_content'] : NULL;
+  if ($block instanceof BlockContentInterface && $block->get('type')->target_id == 'vactory_user_guide') {
+    $is_rtl = Drupal::languageManager()->getCurrentLanguage()->getDirection() === 'rtl';
+    $guide_tours = $block->get('field_user_guide_tours')->widget_data;
+    $block_machine_name = $block->get('block_machine_name')->value;
+    $variables['content'] = [];
+    if ($guide_tours) {
+      $artifact = Json::decode($guide_tours);
+      $toursSettings = $artifact['extra_field']['group_tours_options'];
+      unset($artifact['extra_field']);
+      $toursSettings['steps'] = [];
+      foreach ($artifact as $step) {
+        unset($step['_weight']);
+        $step['intro'] = $step['intro']['value'];
+        $toursSettings['steps'][] = $step;
+      }
+      // Normalize Tour options.
+      $toursSettings['exitOnEsc'] = !$toursSettings['exitOnEsc'];
+      $toursSettings['exitOnOverlayClick'] = !$toursSettings['exitOnOverlayClick'];
+      $toursSettings['keyboardNavigation'] = !$toursSettings['keyboardNavigation'];
+      $toursSettings['showProgress'] = !$toursSettings['showProgress'];
+      $toursSettings['showButtons'] = !$toursSettings['showButtons'];
+      $toursSettings['showBullets'] = !$toursSettings['showBullets'];
+      $toursSettings['showStepNumbers'] = (boolean) $toursSettings['showStepNumbers'];
+      $toursSettings['useHints'] = (boolean) $toursSettings['useHints'];
+      $toursSettings['disableInteraction'] = (boolean) $toursSettings['disableInteraction'];
+      $toursSettings['startStepNumber'] = (int) $toursSettings['startStepNumber'];
+      $toursSettings['tourDisplayCounter'] = !empty($toursSettings['tourDisplayCounter']) ? (int) $toursSettings['tourDisplayCounter']: 1;
+      $toursSettings['overlayOpacity'] = !empty($toursSettings['overlayOpacity']) ? (float) $toursSettings['overlayOpacity']: 0;
+      $toursSettings['blockMachineName'] = $block_machine_name;
+      if (empty($toursSettings['skipLabel'])) {
+        unset($toursSettings['skipLabel']);
+      }
+      if (empty($toursSettings['nextLabel'])) {
+        unset($toursSettings['nextLabel']);
+      }
+      if (empty($toursSettings['prevLabel'])) {
+        unset($toursSettings['prevLabel']);
+      }
+      if (empty($toursSettings['doneLabel'])) {
+        unset($toursSettings['doneLabel']);
+      }
+      $variables['#attached']['drupalSettings']['vactory_user_guide']['tours_settings'] = $toursSettings;
+      $variables['#attached']['library'][] = $is_rtl ? 'vactory_user_guide/guideStyleRtl' : 'vactory_user_guide/guideStyleLtr';
+      $variables['#attached']['library'][] = 'vactory_user_guide/guideScripts';
+      $variables['#cache']['tags'][] = 'block_content:vactory_user_guide';
+      $variables['#cache']['contexts'][] = 'languages';
+    }
+  }
+}

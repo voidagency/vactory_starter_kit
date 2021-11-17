@@ -8,5 +8,6 @@ dependencies:
   - vactory_field
   - vactory_views
   - webform
+  - yoast_seo
 package: Vactory
 configure: vactory_job_ads.admin_settings

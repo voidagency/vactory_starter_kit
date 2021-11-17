@@ -1,0 +1,22 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_already_approved
+    - node.type.announcement
+id: node.announcement.field_already_approved
+field_name: field_already_approved
+entity_type: node
+bundle: announcement
+label: 'déjà apprové'
+description: ''
+required: false
+translatable: true
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: '1'
+  off_label: '0'
+field_type: boolean

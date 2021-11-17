@@ -1,0 +1,53 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.vactory_post.body
+    - field.field.node.vactory_post.comment
+    - field.field.node.vactory_post.field_vactory_date
+    - field.field.node.vactory_post.field_vactory_excerpt
+    - field.field.node.vactory_post.field_vactory_media
+    - field.field.node.vactory_post.field_vactory_media_image
+    - field.field.node.vactory_post.field_vactory_post_thematique
+    - field.field.node.vactory_post.field_vactory_tags
+    - node.type.vactory_post
+  module:
+    - text
+    - user
+id: node.vactory_post.teaser
+targetEntityType: node
+bundle: vactory_post
+mode: teaser
+content:
+  body:
+    label: hidden
+    type: text_summary_or_trimmed
+    weight: 101
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+    region: content
+  flag_liked_content:
+    weight: 10
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  addtoany: true
+  comment: true
+  field_vactory_date: true
+  field_vactory_excerpt: true
+  field_vactory_media: true
+  field_vactory_media_image: true
+  field_vactory_post_thematique: true
+  field_vactory_tags: true
+  langcode: true
+  notification_message: true
+  notification_title: true
+  search_api_excerpt: true

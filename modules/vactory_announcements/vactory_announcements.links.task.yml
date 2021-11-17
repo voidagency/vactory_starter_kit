@@ -1,0 +1,4 @@
+vactory_announcements.settings_form:
+  route_name: vactory_announcements.admin_settings
+  title: 'Announcements Settings'
+  base_route: vactory_announcements.admin_settings

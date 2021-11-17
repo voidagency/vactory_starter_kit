@@ -1,0 +1,10 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - node.type.vactory_mediatheque
+id: node.vactory_mediatheque
+target_entity_type_id: node
+target_bundle: vactory_mediatheque
+default_langcode: site_default
+language_alterable: false

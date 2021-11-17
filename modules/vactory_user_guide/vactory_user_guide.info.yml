@@ -1,0 +1,15 @@
+name: 'Vactory User Guide'
+type: module
+core_version_requirement: '^8.9 || ^9'
+package: Vactory
+dependencies:
+  - 'drupal:block_content'
+  - 'drupal:content_translation'
+  - 'drupal:field'
+  - 'drupal:language'
+  - 'drupal:link'
+  - 'drupal:options'
+  - 'drupal:taxonomy'
+  - 'drupal:text'
+  - 'vactory_dynamic_field:vactory_dynamic_field'
+  - 'vactory_user_guide:vactory_user_guide'

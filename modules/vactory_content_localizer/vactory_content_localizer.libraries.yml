@@ -1,0 +1,18 @@
+vactory_content_localizer.filter_distance:
+  js:
+    js/filter-distance.js: {}
+  dependencies:
+    - core/jquery
+google-map-field-widget-renderer:
+  version: 1.x
+  css:
+    theme:
+      css/google-map-field-widget-renderer.css: { }
+  js:
+    js/google-map-field-widget-renderer.js: { }
+    js/google-map-field-widget-renderer-previews.js: { }
+    js/google-map-field-widget-renderer-setter.js: { }
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupal.dialog

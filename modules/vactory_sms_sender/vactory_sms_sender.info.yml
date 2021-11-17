@@ -1,0 +1,7 @@
+name: Vactory SMS Sender
+description: Provide BO console to cofigure SMS endpoint API settings and also provide a service to send SMS.
+type: module
+core: 8.x
+core_version_requirement: ^8 || ^9
+package: Vactory
+configure: vactory_sms_sender

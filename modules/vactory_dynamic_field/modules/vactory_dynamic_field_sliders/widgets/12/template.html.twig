@@ -1,0 +1,76 @@
+
+{{ attach_library('vactory_dynamic_field_sliders/variant12') }}
+
+{% set slide_infinite = (extra_fields.group_gonfig.loop == 1) ? "true" : "false" %}
+{% set slide_fade = (extra_fields.group_gonfig.fade == 1) ? "true" : 'false' %}
+{% set slide_arrows = (extra_fields.group_gonfig.arrows == 1) ? "true" : "false" %}
+{% set slide_animationspeed = (extra_fields.group_gonfig.animationspeed is not empty) ? extra_fields.group_gonfig.animationspeed : '500' %}
+{% set slide_autoLoop = (extra_fields.group_gonfig.autoLoop > 0) ? extra_fields.group_gonfig.autoLoop : 0 %}
+{% set slide_loopSpeed = (extra_fields.group_gonfig.loopSpeed is not empty) ? extra_fields.group_gonfig.loopSpeed : '2500' %}
+
+<div class="vf-slider-tab">
+
+  <div class="vf-slider-tab__tab-wrapper">
+    <div class="vf-slider-tab__tab-items">
+      {% for item in content %}
+        <button class="vf-slider-tab__tab-item" data-index="{{loop.index0}}">{{item.tab_title}}</button>
+      {% endfor %}
+    </div>
+    <div class="vf-slider-tab__tab-indicator"></div>
+  </div>
+
+  <div class="vf-slider-tab__slider"
+      data-fade="{{ slide_fade }}"
+      data-infinte="{{ slide_infinite }}"
+      data-arrows="{{ slide_arrows }}"
+      data-animationspeed="{{ slide_animationspeed }}"
+      data-autoplay="{{ slide_autoLoop }}"
+      data-autoplayspeed="{{ slide_loopSpeed }}">
+
+      {% for item in content %}
+        <div class="vf-slider-tab__slider-item">
+          <div class="row align-items-center{% if item.reversed == 1 %} flex-lg-row-reverse{% endif %}">
+            <div class="col-lg-6 mb-2 mb-lg-0">
+              {% if item.image.0 is defined and item.image.0 is not empty %}
+                {% set image_id = get_media(item.image.0).field_media_image.target_id %}
+                {% set image = get_image_info(image_id) %}
+                {% set image_url = image.url %}
+                {% set image_webp = image.uri|image_style('webp') %}
+                {% set image_type = image.filemime %}
+                {% set image_height = image.height %}
+                {% set image_width = image.width %}
+                {% set image_alt = (item.image.alt_image is not empty) ? item.image.alt_image : 'image' %}
+                <picture>
+                  <source data-srcset="{{image_webp}}" type="image/webp">
+                  <source data-srcset="{{image_url}}" type="{{image_type}}">
+                  <img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{image_url}}" data-sizes="auto" height="{{image_height}}" width="{{image_width}}" class="img-fluid lazyload" alt="{{ image_alt }}" typeof="foaf:Image">
+                </picture>
+              {% endif %}
+            </div>
+
+            <div class="col-lg-6">
+              {% if item.title is not empty %}
+                <h3 class="fadeInUp animated">{{ item.title }}</h3>
+              {% endif %}
+
+              {% if item.description.value["#text"] is not empty %}
+                {{ item.description|raw }}
+              {% endif %}
+
+              {% if item.link.url is not empty and item.link.title  is not empty %}
+                {% set link_attributes = create_attribute() %}
+                {% set link_attributes = item.link.attributes.id is not empty ? link_attributes.setAttribute('id', item.link.attributes.id ) : link_attributes %}
+                {% set link_attributes = item.link.attributes.class is not empty ? link_attributes.setAttribute('class', item.link.attributes.class ~ ' permalink') : link_attributes.setAttribute('class','permalink') %}
+                {% set link_attributes = item.link.attributes.target is not empty ? link_attributes.setAttribute('target', item.link.attributes.target ) : link_attributes %}
+                {% set link_attributes = item.link.attributes.rel is not empty ? link_attributes.setAttribute('rel', item.link.attributes.rel ) : link_attributes %}
+                  <a href="{{ item.link.url }}" {{ link_attributes }} > {{ item.link.title }} </a>
+              {% endif %}
+            </div>
+          </div>
+
+        </div>
+      {% endfor %}
+
+  </div>
+
+</div>

@@ -4,7 +4,7 @@ dependencies:
   module:
     - focal_point
 name: testimonials_reversed_3col_x2
-label: 'Testimonials reversed 3col @x2'
+label: 'Testimonials Three Cols @x2 (100x100)'
 effects:
   03f0572c-d003-4f8e-b668-3abc874303f2:
     uuid: 03f0572c-d003-4f8e-b668-3abc874303f2

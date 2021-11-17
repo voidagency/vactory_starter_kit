@@ -1,13 +1,11 @@
 langcode: en
 status: true
 dependencies:
-  enforced:
-    module:
-      - vactory_forums
   config:
     - core.entity_view_mode.node.teaser
     - field.field.node.vactory_forum.body
     - field.field.node.vactory_forum.comment
+    - field.field.node.vactory_forum.field_groupe_utilisateurs
     - field.field.node.vactory_forum.field_vactory_date
     - field.field.node.vactory_forum.field_vactory_excerpt
     - field.field.node.vactory_forum.field_vactory_forum_room
@@ -16,6 +14,9 @@ dependencies:
     - field.field.node.vactory_forum.field_vactory_media
     - field.field.node.vactory_forum.field_vactory_meta_tags
     - node.type.vactory_forum
+  enforced:
+    module:
+      - vactory_forums
   module:
     - text
     - user
@@ -40,6 +41,7 @@ content:
 hidden:
   addtoany: true
   comment: true
+  field_groupe_utilisateurs: true
   field_vactory_date: true
   field_vactory_excerpt: true
   field_vactory_forum_room: true

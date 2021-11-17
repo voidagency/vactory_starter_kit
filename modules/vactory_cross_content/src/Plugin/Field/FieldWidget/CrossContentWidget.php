@@ -6,6 +6,7 @@ use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\Plugin\Field\FieldWidget\OptionsSelectWidget;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\node\Entity\NodeType;
 
 /**
  * Plugin implementation of the 'field_cross_content_widget' widget.
@@ -61,14 +62,25 @@ class CrossContentWidget extends OptionsSelectWidget {
    */
   protected function getOptions(FieldableEntityInterface $entity) {
     $language = \Drupal::languageManager()->getCurrentLanguage()->getId();
-
+    $type = $entity->bundle();
+    $node_type = NodeType::load($type);
+    if ($node_type->getThirdPartySetting('vactory_cross_content', 'enabling', '') == 1) {
+      $content_type_selected = $node_type->getThirdPartySetting('vactory_cross_content', 'content_type', '');
+      if ($content_type_selected != '' && $content_type_selected != 'none') {
+        $type = $content_type_selected;
+      }
+    }
     $node_list = \Drupal::entityTypeManager()
       ->getListBuilder('node')
       ->getStorage()
       ->loadByProperties([
-        'type'     => $entity->bundle(),
-        'langcode' => $language,
+        'type'     => $type,
       ]);
+
+    foreach ($node_list as $key => $node) {
+      $node_list[$key] = \Drupal::service('entity.repository')
+        ->getTranslationFromContext($node, $language);
+    }
 
     $current_node = $entity->get('nid')->getValue();
     if (empty($current_node)) {

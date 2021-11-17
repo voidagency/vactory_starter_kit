@@ -1,0 +1,37 @@
+<?php
+
+/**
+ * @file
+ * Contains vactory_reminder.module.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_reminder_theme($existing, $type, $theme, $path) {
+  return [
+    'vactory_reminder_consumers_field_description' => [
+      'template' => 'reminder-consumers-field-description',
+      'variables' => [],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_cron().
+ */
+function vactory_reminder_cron() {
+  Drupal::service('vactory_reminder.commands')->runReminderQueue();
+}
+
+/**
+ * Implements hook_mail().
+ */
+function vactory_reminder_mail($key, &$message, $params) {
+  switch ($key) {
+    case 'action_send_email':
+      $message['subject'] = $params['subject'];
+      $message['body'][] = $params['message'];
+      break;
+  }
+}

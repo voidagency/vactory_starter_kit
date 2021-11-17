@@ -1,0 +1,23 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_quiz_questions
+    - node.type.vactory_quiz
+  enforced:
+    module:
+      - vactory_quiz
+  module:
+    - vactory_quiz
+id: node.vactory_quiz.field_quiz_questions
+field_name: field_quiz_questions
+entity_type: node
+bundle: vactory_quiz
+label: 'Quiz Questions'
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: vactory_quiz_question

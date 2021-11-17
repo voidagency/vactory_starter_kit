@@ -52,3 +52,9 @@ variant11:
   dependencies:
     - core/jquery
     - core/drupalSettings
+variant12:
+  js:
+    js/variant12.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings

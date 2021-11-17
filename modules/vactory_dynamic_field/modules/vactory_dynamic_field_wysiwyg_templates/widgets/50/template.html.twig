@@ -1,20 +1,31 @@
-{% set content = content.0 %}
 
-{% set image = (content.image.0 is defined) ? get_image_url(content.image.0) : '' %}
-{% set image_alt = (content.image_alt is not empty) ? content.image_alt : content.image.alt_image %}
+<div class="vc-toolbox">
+  {% for item in content %}
+    {% if item.cta is not empty %}
+      {% set link_target = item.cta.attributes.target %}
+      {% set link_class = (item.cta.attributes.class is not empty) ? item.cta.attributes.class : '' %}
+      {% set link_id = (item.cta.attributes.id is not empty) ? item.cta.attributes.id : '' %}
+      {% set link_rel = (item.cta.attributes.rel is not empty) ? item.cta.attributes.rel : '' %}
+      <a
+        href="{{ item.cta.url }}"
 
-<h3>{{content.title}}</h3>
+        title="{{ item.cta.title }}"
 
-<div class="stcky-bloc-wrapper">
-  <div class="sticky-bloc">
-    <div class="js-img-video">
-      <a href="{{content.video}}" class="play-video">
-        <img src="{{image}}" alt="{{image_alt}}" class="img-fluid">
+        class="{{ link_class }} vc-toolbox__item {% if item.mode > 0 %}mobile-sticky{% endif %}"
+
+        {% if link_id is not empty %}id="{{ link_id }}"{% endif %}
+
+        {% if link_rel is not empty %}rel="{{ link_rel }}"{% endif %}
+
+        {% if link_target is not empty %}target='{{ link_target }}'{% endif %}
+
+        >
+
+        <i class="icon {{item.icon}}"></i>
+        <span class="visually-hidden">
+          {{ item.cta.title }}
+        </span>
       </a>
-    </div>
-  </div>
-</div>
-
-<div>
-  {{content.description|raw}}
+    {% endif %}
+  {% endfor %}
 </div>

@@ -1,0 +1,23 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - block_content.type.ads
+    - field.field.block_content.ads.field_dynamic_block_components
+  module:
+    - vactory_dynamic_field
+id: block_content.ads.default
+targetEntityType: block_content
+bundle: ads
+mode: default
+content:
+  field_dynamic_block_components:
+    weight: 0
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: field_wysiwyg_dynamic_formatter
+    region: content
+hidden:
+  langcode: true
+  search_api_excerpt: true

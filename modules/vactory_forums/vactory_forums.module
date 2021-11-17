@@ -6,6 +6,9 @@
  */
 
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\node\NodeInterface;
+use Drupal\views\ViewExecutable;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Implements hook_theme().
@@ -23,6 +26,10 @@ function vactory_forums_theme($existing, $type, $theme, $path) {
     'node__vactory_forum__smart_search' => [
       'base hook' => 'node',
       'template' => 'smart-search',
+    ],
+    'node__vactory_forum__mur' => [
+      'base hook' => 'node',
+      'template' => 'mur',
     ],
     'views_view_table__vactory_forums' => [
       'base hook' => 'views_view_table',
@@ -71,4 +78,76 @@ function vactory_forums_theme_suggestions_views_view_table_alter(array &$suggest
  */
 function vactory_forums_theme_suggestions_views_view_field_alter(array &$suggestions, array $variables) {
   $suggestions[] = 'views_view_field__' . $variables['field']->field;
+}
+
+/**
+ * Implements hook_preprocess_hook().
+ */
+function vactory_forums_preprocess_node__vactory_forum__full(&$variables) {
+  if (isset($variables['node'])) {
+    $node = $variables['node'];
+    $has_access = user_has_acces_to_forum($node);
+    if (!$has_access) {
+      throw new NotFoundHttpException();
+    }
+  }
+}
+
+/**
+ * Implements hook_views_pre_render().
+ */
+function vactory_forums_views_pre_render(ViewExecutable $view) {
+  $route_name = \Drupal::routeMatch()->getRouteName();
+  $routes = [
+    'view.vactory_forums.page_forum_table',
+    'view.vactory_forums.page_forums_listing_card',
+  ];
+
+  if (in_array($route_name, $routes)) {
+    foreach ($view->result as $key => $result) {
+      $node = $result->_entity;
+      $has_access = user_has_acces_to_forum($node);
+      if (!$has_access) {
+        unset($view->result[$key]);
+      }
+    }
+  }
+}
+
+/**
+ * Check if user has access to such forum.
+ */
+function user_has_acces_to_forum($node) {
+  if ($node instanceof NodeInterface && $node->hasField('field_groupe_utilisateurs') && !empty($node->get('field_groupe_utilisateurs'))) {
+    $tids = $node->get('field_groupe_utilisateurs')->getValue();
+    $tids = array_values($tids);
+    $users_groups = [];
+    if (!empty($tids)) {
+      foreach ($tids as $t) {
+        $tid = $t['target_id'];
+        // Load users.
+        $users = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties([
+          'vid' => 'users_groups',
+          'tid' => $tid,
+        ]);
+        $users = array_values($users);
+        foreach ($users as $key => $user) {
+          $users_tax = $user->get('field_vactory_utilisateurs')->getValue();
+          foreach ($users_tax as $u) {
+            if (!in_array($u['target_id'], $users_groups)) {
+              array_push($users_groups, $u['target_id']);
+            }
+          }
+        }
+      }
+      $current_user = \Drupal::currentUser();
+      if (!$current_user->isAnonymous() && !in_array('administrator', $current_user->getRoles())) {
+        $user_id = $current_user->id();
+        if (!in_array($user_id, $users_groups)) {
+          return FALSE;
+        }
+      }
+    }
+  }
+  return TRUE;
 }

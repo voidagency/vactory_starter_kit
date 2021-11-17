@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.locator_entity.field_locator_zipcode
+    - vactory_locator.locator_entity_type.vactory_locator
+id: locator_entity.vactory_locator.field_locator_zipcode
+field_name: field_locator_zipcode
+entity_type: locator_entity
+bundle: vactory_locator
+label: Zipcode
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: null
+  max: null
+  prefix: ''
+  suffix: ''
+field_type: integer

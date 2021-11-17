@@ -1,0 +1,6 @@
+services:
+  vactory_keycloak.manager:
+    class: Drupal\vactory_keycloak\KeycloakAuthManager
+    arguments:
+      - '@config.factory'
+      - '@logger.factory'

@@ -1,9 +1,6 @@
 langcode: en
 status: true
 dependencies:
-  enforced:
-    module:
-      - vactory_academy_agency
   config:
     - field.field.node.vactory_academy_agency.body
     - field.field.node.vactory_academy_agency.comment
@@ -22,13 +19,17 @@ dependencies:
     - field.field.node.vactory_academy_agency.field_vactory_paragraphs
     - field.field.node.vactory_academy_agency.field_vactory_seo_status
     - field.field.node.vactory_academy_agency.field_vactory_theme
-    - field.field.node.vactory_academy_agency.field_vactory_youtube_videos
+    - field.field.node.vactory_academy_agency.field_vactory_youtube_media
     - node.type.vactory_academy_agency
+  enforced:
+    module:
+      - vactory_academy_agency
   module:
     - datetime
     - media_library
     - metatag
     - path
+    - scheduler
     - text
     - yoast_seo
 id: node.vactory_academy_agency.default
@@ -112,6 +113,13 @@ content:
     third_party_settings: {  }
     type: yoast_seo_widget
     region: content
+  field_vactory_youtube_media:
+    weight: 37
+    settings:
+      media_types: {  }
+    third_party_settings: {  }
+    type: media_library_widget
+    region: content
   langcode:
     type: language_select
     weight: 1
@@ -133,6 +141,29 @@ content:
     settings:
       media_types: {  }
     third_party_settings: {  }
+  node_bg_image:
+    type: media_library_widget
+    weight: 0
+    region: content
+    settings:
+      media_types: {  }
+    third_party_settings: {  }
+  notification_message:
+    type: string_textarea
+    weight: -1
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+  notification_title:
+    type: string_textfield
+    weight: -6
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   path:
     type: path
     weight: 9
@@ -145,6 +176,12 @@ content:
       display_label: true
     weight: 5
     region: content
+    third_party_settings: {  }
+  publish_on:
+    type: datetime_timestamp_no_default
+    weight: 30
+    region: content
+    settings: {  }
     third_party_settings: {  }
   status:
     type: boolean_checkbox
@@ -183,6 +220,12 @@ content:
       match_limit: 10
     region: content
     third_party_settings: {  }
+  unpublish_on:
+    type: datetime_timestamp_no_default
+    weight: 30
+    region: content
+    settings: {  }
+    third_party_settings: {  }
   url_redirects:
     weight: 10
     region: content
@@ -196,4 +239,3 @@ hidden:
   field_vactory_media: true
   field_vactory_paragraphs: true
   field_vactory_theme: true
-  field_vactory_youtube_videos: true

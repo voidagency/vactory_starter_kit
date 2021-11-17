@@ -1,0 +1,54 @@
+name: 'S12 - tabs slider v2'
+multiple: TRUE
+category: 'Sliders'
+enabled: TRUE
+fields:
+  tab_title:
+    type: text
+    label: 'Titre du tab'
+    options:
+      '#required': TRUE
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': TRUE
+  title:
+    type: text
+    label: 'Titre'
+    options:
+      '#required': TRUE
+  description:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'full_html'
+  link:
+    type: url_extended
+    label: 'Lien'
+  reversed:
+    type: checkbox
+    label: 'show the content on the left & the image on the right'
+extra_fields:
+  group_gonfig:
+    g_title: 'Configuration Slider'
+    arrows:
+      type: checkbox
+      label: 'Afficher les fléches de navigation'
+      options:
+        '#checked': TRUE
+    loop:
+      type: checkbox
+      label: 'Infinite slide'
+    autoLoop:
+      type: checkbox
+      label: 'Auto Slide'
+    loopSpeed:
+      type: number
+      label: 'Slide Speed'
+    animationspeed:
+      type: number
+      label: 'Animation speed'
+    fade:
+      type: checkbox
+      label: 'Fade sliding style'

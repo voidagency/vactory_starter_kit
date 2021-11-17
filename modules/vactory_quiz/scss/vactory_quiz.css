@@ -1,0 +1,11 @@
+.vactory-quiz-form input[type="radio"], .vactory-quiz-form input[type="checkbox"] {
+    display: none;
+}
+.vactory-quiz-form label {
+    margin: 0;
+}
+.vactory-quiz-form input:checked + label {
+    display: inline-block;
+    border: 1px solid dodgerblue;
+    border-radius: .25rem;
+}

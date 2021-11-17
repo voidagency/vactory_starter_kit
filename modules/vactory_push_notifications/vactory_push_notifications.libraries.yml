@@ -1,0 +1,9 @@
+push_notifications.v1:
+  js:
+    js/push-notifications-v1.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupalSettings
+    - core/jquery.once
+    - core/jquery.cookie

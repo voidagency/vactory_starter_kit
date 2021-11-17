@@ -1,0 +1,4 @@
+vactory_quiz.settings_translate:
+  title: 'Settings'
+  route_name: vactory_quiz.settings
+  base_route: vactory_quiz.settings

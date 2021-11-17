@@ -1,0 +1,16 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - focal_point
+name: vactory_one_col_x1
+label: 'One Col @x1'
+effects:
+  vactory_one_column_x1:
+    uuid: vactory_one_column_x1
+    id: focal_point_scale_and_crop
+    weight: 1
+    data:
+      width: 464
+      height: 261
+      crop_type: focal_point

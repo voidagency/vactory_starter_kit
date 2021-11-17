@@ -15,7 +15,7 @@ use Drupal\views\Views;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Class VactoryViewsPrettyPathProcessor.
+ * Vactory Views Pretty Path Processor.
  *
  * @package Drupal\vactory_views_pretty_path\PathProcessor
  */
@@ -71,6 +71,13 @@ class VactoryViewsPrettyPathProcessor implements InboundPathProcessorInterface, 
   protected $terms;
 
   /**
+   * Taxonomy term storage.
+   *
+   * @var \Drupal\taxonomy\TermStorage
+   */
+  protected $termStorage;
+
+  /**
    * VactoryViewsPrettyPathProcessor constructor.
    */
   public function __construct(EntityTypeManagerInterface $entityTypeManager, EntityRepositoryInterface $entityRepository, ConfigFactoryInterface $configFactory, CurrentRouteMatch $routeMatch, ConfigurableLanguageManager $languageManager) {
@@ -80,8 +87,8 @@ class VactoryViewsPrettyPathProcessor implements InboundPathProcessorInterface, 
     $this->config = $configFactory->get('vactory_views_pretty_path.settings');
     $this->routeMatch = $routeMatch;
     $this->langcode = $languageManager->getCurrentLanguage()->getId();
-    $this->terms = $this->entityTypeManager->getStorage('taxonomy_term')
-      ->loadMultiple();
+    $this->termStorage = $this->entityTypeManager->getStorage('taxonomy_term');
+    $this->terms = $this->termStorage->loadMultiple();
   }
 
   /**
@@ -124,6 +131,7 @@ class VactoryViewsPrettyPathProcessor implements InboundPathProcessorInterface, 
           $taxonomy_exposed_filters_identifiers = [];
           foreach ($taxonomy_exposed_filters as $taxonomy_exposed_filter) {
             $taxonomy_exposed_filters_identifiers[$taxonomy_exposed_filter['id']]['identifier'] = $taxonomy_exposed_filter['expose']['identifier'];
+            $taxonomy_exposed_filters_identifiers[$taxonomy_exposed_filter['id']]['vid'] = $taxonomy_exposed_filter['vid'];
             $taxonomy_exposed_filters_identifiers[$taxonomy_exposed_filter['id']]['is_multiple'] = isset($taxonomy_exposed_filter['expose']['multiple']) ? $taxonomy_exposed_filter['expose']['multiple'] : FALSE;
           }
           $path_tmp = $path;
@@ -133,9 +141,10 @@ class VactoryViewsPrettyPathProcessor implements InboundPathProcessorInterface, 
             $term_name = str_replace('-', ' ', $path_tmp);
             $concerned_filter_id = array_keys($view_filter_name_map)[0];
             if ($concerned_filter_id !== FALSE) {
-              $filter_identifier = $taxonomy_exposed_filters_identifiers[$concerned_filter_id]['identifier'];
+              $filter_identifier = strtolower($taxonomy_exposed_filters_identifiers[$concerned_filter_id]['identifier']);
               $has_multiple_values = $taxonomy_exposed_filters_identifiers[$concerned_filter_id]['is_multiple'];
-              $tid = $this->getConcernedTermsIds($term_name, $concerned_filter_id, $terms, $has_multiple_values);
+              $filter_vid = $taxonomy_exposed_filters_identifiers[$concerned_filter_id]['vid'];
+              $tid = $this->getConcernedTermsIds($term_name, $concerned_filter_id, $terms, $has_multiple_values, $filter_vid);
               if ($tid) {
                 // Add path founded filter by taxonomy to the request.
                 $request->request->set($filter_identifier, $tid);
@@ -165,7 +174,8 @@ class VactoryViewsPrettyPathProcessor implements InboundPathProcessorInterface, 
                 if ($concerned_filter_id !== FALSE) {
                   $filter_identifier = $taxonomy_exposed_filters_identifiers[$concerned_filter_id]['identifier'];
                   $has_multiple_values = $taxonomy_exposed_filters_identifiers[$concerned_filter_id]['is_multiple'];
-                  $tid = $this->getConcernedTermsIds($term_name, $concerned_filter_id, $terms, $has_multiple_values);
+                  $filter_vid = $taxonomy_exposed_filters_identifiers[$concerned_filter_id]['vid'];
+                  $tid = $this->getConcernedTermsIds($term_name, $concerned_filter_id, $terms, $has_multiple_values, $filter_vid);
                   if (isset($tid)) {
                     // Add path founded filter by taxonomy to the request.
                     $request->request->set($filter_identifier, $tid);
@@ -254,16 +264,14 @@ class VactoryViewsPrettyPathProcessor implements InboundPathProcessorInterface, 
             $tid = $query_params[$identifier];
             if (is_array($tid)) {
               // Filter with multiple values case.
-              $terms = $this->entityTypeManager->getStorage('taxonomy_term')
-                ->loadMultiple($tid);
+              $terms = $this->termStorage->loadMultiple($tid);
               if (!empty($terms)) {
                 $this->addMultipleTermFilterToPath($path, $filter_name, $this->langcode, $terms, $has_one_term_filter_field);
               }
             }
             else {
               // Load the associated term object.
-              $term = $this->entityTypeManager->getStorage('taxonomy_term')
-                ->load($tid);
+              $term = $this->termStorage->load($tid);
               if ($term) {
                 $this->addTermFilterToPath($path, $filter_name, $this->langcode, $term, $has_one_term_filter_field);
               }
@@ -372,25 +380,21 @@ class VactoryViewsPrettyPathProcessor implements InboundPathProcessorInterface, 
   /**
    * Get IDs of path terms params.
    */
-  protected function getConcernedTermsIds($term_name, $concerned_filter_id, $terms, $has_multiple_values) {
-    global $_concerned_term_name;
-    global $_has_multiple_values;
-    $_has_multiple_values = $has_multiple_values;
+  protected function getConcernedTermsIds($term_name, $concerned_filter_id, $terms, $has_multiple_values, $filter_vid) {
     $tid = NULL;
     $term_name = str_replace('-', ' ', $term_name);
     $term_name = strpos($term_name, '.') > 0 ? explode('.', $term_name) : $term_name;
-    $term_name = $_has_multiple_values && !is_array($term_name) ? [$term_name] : $term_name;
+    $term_name = $has_multiple_values && !is_array($term_name) ? [$term_name] : $term_name;
     $_concerned_term_name = $term_name;
-    $filtered_term = array_filter($terms, function ($term) {
-      global $_concerned_term_name;
-      global $_has_multiple_values;
+    $filtered_term = array_filter($terms, function ($term) use ($term_name, $has_multiple_values, $filter_vid) {
       $term_translation = $this->entityRepository->getTranslationFromContext($term, $this->langcode);
       $name = $term_translation->getName();
-      return $_has_multiple_values ? in_array($name, $_concerned_term_name) : $name == $_concerned_term_name;
+      $vid = $term_translation->bundle();
+      return ($has_multiple_values ? in_array($name, $term_name) : strtolower($name) == strtolower($term_name)) && $vid === $filter_vid;
     });
     if (!empty($filtered_term) && $concerned_filter_id) {
       $tid = array_keys($filtered_term)[0];
-      if ($_has_multiple_values) {
+      if ($has_multiple_values) {
         $tid = array_map(function ($el) {
           return (string) $el;
         }, array_keys($filtered_term));

@@ -1,0 +1,7 @@
+vactory_content_access.settings_form:
+  path: '/admin/config/system/content-access-configuration'
+  defaults:
+    _title: 'Access Content Settings'
+    _form: '\Drupal\vactory_content_access\Form\ContentAccessSettings'
+  requirements:
+    _permission: 'administer content access'

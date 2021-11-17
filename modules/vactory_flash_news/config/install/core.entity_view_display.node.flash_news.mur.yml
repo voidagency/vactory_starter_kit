@@ -1,0 +1,46 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.mur
+    - field.field.node.flash_news.body
+    - field.field.node.flash_news.field_vactory_call_to_action
+    - node.type.flash_news
+  enforced:
+    module:
+      - vactory_flash_news
+  module:
+    - text
+    - user
+_core:
+  default_config_hash: ywCTe7c0NV6yRpGEGQGqrdgsipSvDZLWl40Za_9kfyE
+id: node.flash_news.mur
+targetEntityType: node
+bundle: flash_news
+mode: mur
+content:
+  body:
+    label: hidden
+    type: text_trimmed
+    weight: 1
+    settings:
+      trim_length: 300
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  field_content_access_groups: true
+  field_content_access_roles: true
+  field_content_access_users: true
+  field_vactory_call_to_action: true
+  langcode: true
+  mail_message: true
+  mail_subject: true
+  notification_message: true
+  notification_title: true
+  search_api_excerpt: true

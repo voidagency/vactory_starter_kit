@@ -25,7 +25,7 @@
     "drupal/block_class": "^1.3.0",
     "drupal/block_field": "^1.0.0-rc1",
     "drupal/captcha": "^1.1",
-    "drupal/coffee": "^1.0",
+    "drupal/coffee": "1.x-dev@dev",
     "drupal/components": "^2.0",
     "drupal/config_update": "1.7",
     "drupal/ctools": "^3.4",
@@ -58,12 +58,12 @@
     "drupal/twig_extender": "^3.0@beta",
     "drupal/twig_tweak": "^2.8",
     "drupal/ultimate_cron": "^2.0.0-alpha5",
-    "drupal/viewsreference": "1.6.0",
+    "drupal/viewsreference": "^2.0@beta",
     "drupal/webform": "^6.0",
     "drupal/xmlsitemap": "1.0",
     "drupal/security_review": "1.x-dev",
     "drupal/mailsystem": "^4.3",
-    "drupal/swiftmailer": "^2.0@beta",
+    "drupal/swiftmailer": "^2.0",
     "drupal/menu_item_extras": "^2.13",
     "drupal/mailchimp": "^2.0",
     "drupal/user_registrationpassword": "^1.0.0-alpha5",
@@ -92,7 +92,7 @@
     "drupal/minifyhtml": "^1.8",
     "drupal/flag": "^4.0@beta",
     "drupal/rate": "^1.0",
-    "masterminds/html5":"^2.3.0",
+    "masterminds/html5":"2.3.0",
     "drupal/link_attributes": "^1.9",
     "drupal/entity_embed": "^1.0",
     "drupal/search_api_autocomplete": "^1.4",
@@ -113,7 +113,7 @@
     "drupal/easy_install": "^10.4",
     "drupal/entity": "^1.2",
     "drupal/faqfield": "^7.0",
-    "drupal/flood_unblock": "^3.1",
+    "drupal/flood_control": "^2.2",
     "drupal/search_api": "^1.18",
     "drupal/upgrade_status": "^3.0",
     "drupal/google_tag": "^1.4",
@@ -132,12 +132,19 @@
     "drupal/social_auth": "^3.0",
     "drupal/social_auth_facebook": "^3.0@RC",
     "drupal/social_auth_microsoft": "^3.0@RC",
-    "drupal/social_auth_google": "^3.0@RC"
+    "drupal/social_auth_google": "^3.0@RC",
+    "drupal/shortcode": "^2.0",
+    "firebase/php-jwt": "^4.0",
+    "pviojo/oauth2-keycloak": "^2.0",
+    "drupal/geofield": "^1.20",
+    "drupal/domain": "1.0-beta5",
+    "drupal/yaml_editor": "^1.1",
+    "drupal/mobile_native_share": "^1.0",
+    "drupal/views_infinite_scroll": "1.8.0",
+    "drupal/multiple_fields_remove_button": "^1.0@alpha"
   },
   "require-dev": {
-    "squizlabs/php_codesniffer": "^3.3",
-    "void/php-composter-phpcs-drupal": "dev-master",
-    "void/php-composter-regular-expression": "dev-master"
+    "squizlabs/php_codesniffer": "^3.3"
   },
   "extra": {
     "php-composter-phpcs-drupal": {
@@ -159,11 +166,13 @@
         "Export config translation": "https://www.drupal.org/files/issues/features_export-config-translation-2869336-2.patch"
       },
       "drupal/core": {
-        "Add internal path check to blocks visibility pages evaluation.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/19e54a007837537dd7de97456ab0e1ad0b9d3cf6/block-visibility-pages-paths-evaluate.patch"
+        "Add internal path check to blocks visibility pages evaluation.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/19e54a007837537dd7de97456ab0e1ad0b9d3cf6/block-visibility-pages-paths-evaluate.patch",
+        "Composer 2: Fatal error Call to undefined method getJobType()": "https://www.drupal.org/files/issues/2020-11-04/drupal-composer2-3162228.patch",
+        "fix undefined offset on date form element": "https://www.drupal.org/files/issues/2021-04-07/3189302_11.patch",
+        "Fix number of items allowed in Media Library": "https://www.drupal.org/files/issues/2019-12-22/3082690-77.patch"
       },
       "drupal/rate": {
-        "Make rate available for all node display mode.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/19e54a007837537dd7de97456ab0e1ad0b9d3cf6/rate-add-rate-to-all-node-display-mode.patch",
-        "Drupal 9 readiness": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/9e6eca9bcbd95e7bed7859d54a0c4623a6112e5a/rate-drupal9-readiness.patch"
+        "Make rate available for all node display mode.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/19e54a007837537dd7de97456ab0e1ad0b9d3cf6/rate-add-rate-to-all-node-display-mode.patch"
       },
       "drupal/oauth_login_oauth2": {
         "Store ressourceOwner into a session variable.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/d86aeeb1921f10cc36198efb5f4ac00504e9c2ee/oauth-login-oauth2-add-resource-owner-to-session.patch"
@@ -184,29 +193,34 @@
       "drupal/viewsreference": {
         "Exposed filters not working for Views in Paragraphs": "https://www.drupal.org/files/issues/2020-05-13/viewsreference-exposed_filters_not_working-3129609-3.patch"
       },
-      "drupal/coffee": {
-        "Fix Coffee : Could not load data, please refresh the page.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/9e6eca9bcbd95e7bed7859d54a0c4623a6112e5a/fixed-ajax-multilang-url-coffee.patch"
-      },
       "drupal/swiftmailer": {
-        "Fix undefined index warnings on reset password form": "https://www.drupal.org/files/issues/2020-10-29/3179656-two-undentified-index-notices-2.patch"
+        "Fix undefined index warnings on reset password form": "https://www.drupal.org/files/issues/2020-10-29/3179656-two-undentified-index-notices-2.patch",
+        "Swiftmailer fix renderPlan method cli breaks": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/e11467100b3dd3c3ee66026b5f6ee781712b214c/swiftmailer-prevent-cli-commands-break.patch"
       },
       "drupal/advagg": {
         "Remove version comments from minified files.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/9e6eca9bcbd95e7bed7859d54a0c4623a6112e5a/advagg-remove-version-comment-from-minified-js.patch"
       },
       "drupal/colorapi": {
+        "Color api : Fix undefined index name.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/cd98ab758217f762b1f8daeda8774f19cea1f9dc/fix-color-api-undefined-index-name.patch",
         "Enable colorapi field type by default": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/9e6eca9bcbd95e7bed7859d54a0c4623a6112e5a/colorapi-enable-colorapi-field-type-by-default.patch"
       },
-      "drupal/nocurrent_pass": {
-        "Drupal 9 readiness": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/9e6eca9bcbd95e7bed7859d54a0c4623a6112e5a/nocurrent-pass-drupal9-readiness.patch"
+      "drupal/migrate_tools": {
+        "Fix migrate tools drush command not found": "https://www.drupal.org/files/issues/2019-12-11/3099611-15.patch"
       },
-      "drupal/link_target": {
-        "Drupal 9 readiness": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/9e6eca9bcbd95e7bed7859d54a0c4623a6112e5a/link-target-drupal9-readiness.patch"
+      "drupal/jquery_colorpicker": {
+        "jQuery color picker resolve vendor path": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/d6f8848db0da2b9c79d6860c81a39831dce9ed18/jquery-color-picker-resolve-vendor-path.patch"
+      },
+      "drupal/domain": {
+        "Domain no context : resolve null given.": "https://www.drupal.org/files/issues/2021-03-05/3201514-domain-no-context-test_7.patch"
+      },
+      "drupal/easy_install": {
+        "optional details": "https://www.drupal.org/files/issues/2020-07-25/Solution.patch"
+      },
+      "drupal/nocurrent_pass": {
+        "Settings are not applied if use not a standard path": "https://www.drupal.org/files/issues/2018-10-09/user-from-session-3005310-2.patch"
       },
       "drupal/webform": {
         "Invoke alter hook after webform handlers execution": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/9e6eca9bcbd95e7bed7859d54a0c4623a6112e5a/webform-post-handlers-hook.patch"
-      },
-      "drupal/password_policy" : {
-        "Fix Field field_last_password_reset is unknown": "https://www.drupal.org/files/issues/2020-07-03/2771129-114.patch"
       }
     }
   },
@@ -214,14 +228,6 @@
     {
       "type": "composer",
       "url": "https://packages.drupal.org/8"
-    },
-    {
-      "type": "git",
-      "url": "https://bitbucket.org/adminvoid/php-composter-regular-expression.git"
-    },
-    {
-      "type": "git",
-      "url": "https://bitbucket.org/adminvoid/php-composter-phpcs-drupal.git"
     },
     {
       "type": "package",

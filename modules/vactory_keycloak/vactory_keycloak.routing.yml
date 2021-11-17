@@ -1,0 +1,27 @@
+vactory_keycloak.redirect_to_kc:
+  path: 'user/login/keycloak'
+  defaults:
+    _controller: '\Drupal\vactory_keycloak\Controller\KeycloakAuthController::redirectToProvider'
+  requirements:
+    # Anonymous users can log in, but authenticated users can also associate a new provider.
+    _access: 'TRUE'
+  options:
+    no_cache: TRUE
+
+vactory_keycloak.callback:
+  path: 'user/login/keycloak/callback'
+  defaults:
+    _controller: '\Drupal\vactory_keycloak\Controller\KeycloakAuthController::callback'
+  requirements:
+    # Anonymous users can log in, but authenticated users can also associate a new provider.
+    _access: 'TRUE'
+  options:
+    no_cache: TRUE
+
+vactory_keycloak.settings_form:
+  path: 'admin/config/social-api/social-auth/keycloak'
+  defaults:
+    _title: 'Social Auth Keycloak settings'
+    _form: '\Drupal\vactory_keycloak\Form\KeycloakAuthSettingsForm'
+  requirements:
+    _permission: 'administer social api authentication'

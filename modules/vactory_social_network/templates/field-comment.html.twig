@@ -1,0 +1,8 @@
+{% if comments is not empty %}
+  <section{{ attributes }}>
+    <h5>
+      {{ total_comments }} {{ total_comments > 1 ? 'Commentaires'|t : 'Commentaire' }}
+    </h5>
+    {{ comments }}
+  </section>
+{% endif %}

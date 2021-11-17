@@ -1,0 +1,4 @@
+vactory_sms_sender:
+  route_name: vactory_sms_sender
+  title: Settings
+  base_route: vactory_sms_sender

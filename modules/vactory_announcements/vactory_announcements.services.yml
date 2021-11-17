@@ -1,0 +1,4 @@
+services:
+  vactory_announcements.announcements.manage:
+    class: Drupal\vactory_announcements\Services\AnnouncementsService
+    arguments: ['@logger.factory', '@plugin.manager.mail', '@config.manager']

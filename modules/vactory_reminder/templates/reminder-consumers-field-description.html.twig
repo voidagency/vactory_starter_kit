@@ -1,0 +1,30 @@
+<div>
+  {{ 'Enter reminder consumers date intervals, you could add one consumer by line in format'|t }} <strong>consumerId|dateIntervalString</strong><br><br>
+  <strong>{{ 'dateIntervalString Examples'|t }}:</strong>
+  <ul>
+    <li><strong>{{ '-5 minute' }}</strong>: {{ 'Five minutes before the related date, if positif then five minutes after the related date' }}</li>
+    <li><strong>{{ '-1 hour' }}</strong>: {{ 'One hour before the related date, if positif then one hour after the related date' }}</li>
+    <li><strong>{{ '-1 day' }}</strong>: {{ 'One day before the related date, if positif then one day after the related date' }}</li>
+    <li><strong>{{ '-2 month' }}</strong>: {{ 'Two months before the related date, if positif then two months after the related date' }}</li>
+    <li><strong>{{ '-2 year' }}</strong>: {{ 'Two years before the related date, if positif then two years after the related date' }}</li>
+    <li><strong>{{ 'next monday' }}</strong>: {{ 'The closest next monday of the related date' }}</li>
+    <li><strong>{{ 'last monday' }}</strong>: {{ 'The closest previous monday of the related date' }}</li>
+    <li><strong>{{ '-1 hour -30 minute' }}</strong>: {{ 'One hour 30 minutes before the related date' }}</li>
+    <li><strong>{{ '1 hour 30 minute' }}</strong>: {{ 'One hour 30 minutes after the related date' }}</li>
+  </ul>
+  <strong>{{ 'Note'|t }}:</strong>{{ 'You can combine these options as per your need'|t }}<br><br>
+  <strong>{{ 'consumerId Examples'|t }}:</strong> <br>
+  {{ 'Any valid machine name string to identify the reminder consumer, (it is recommanded to always start with the consumer module machine name).' }}
+  <ul>
+    <li>{{ 'vactory_academy_inscription_mail' }}</li>
+    <li>{{ 'vactory_academy_formation_update' }}</li>
+    <li>{{ 'vactory_event_create_notification' }}</li>
+  </ul>
+  <br><br>
+  <strong>{{ 'Examples'|t }}:</strong>
+  <p>
+    vactory_academy_inscription_mail|1 hour<br>
+    vactory_academy_formation_update|1 hour<br>
+    vactory_event_create_notification|-2 day<br>
+  </p>
+</div>

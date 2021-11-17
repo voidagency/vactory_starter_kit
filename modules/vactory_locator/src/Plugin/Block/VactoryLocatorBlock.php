@@ -227,12 +227,10 @@ class VactoryLocatorBlock extends BlockBase implements BlockPluginInterface {
       }
     }
     $this->configuration['locator_category'] = $form_state->getValue('locator_category');
-    /* $this->configuration['locator_marker'] = $form_state->getValue('locator_marker');*/
     $this->configuration['locator_marker'] = $values['map_markers']['locator_marker'];
     $this->configuration['locator_marker_url'] = (isset($marker_url) && !empty($marker_url)) ? $marker_url : '';
     $this->configuration['locator_marker_height'] = $values['map_markers']['locator_marker_height'];
     $this->configuration['locator_marker_width'] = $values['map_markers']['locator_marker_width'];
-    /* $this->configuration['locator_cluster'] = $form_state->getValue('locator_cluster');*/
     $this->configuration['locator_cluster'] = $values['map_markers']['locator_cluster'];
     $this->configuration['locator_cluster_url'] = (isset($cluster_url) && !empty($cluster_url)) ? $cluster_url : '';
     $this->configuration['locator_cluster_height'] = $values['map_markers']['locator_cluster_height'];
@@ -274,7 +272,7 @@ class VactoryLocatorBlock extends BlockBase implements BlockPluginInterface {
     $lon = (!empty($locator_settings->get('lon'))) ? $locator_settings->get('lon') : '';
     $lat = (!empty($locator_settings->get('lat'))) ? $locator_settings->get('lat') : '';
     $zoom = (!empty($locator_settings->get('zoom'))) ? $locator_settings->get('zoom') : '';
-    // vactory_locator view url.
+    // Vactory locator view url.
     $view_url = '/vactory/locator/list/%';
     $path = str_replace('%', implode(",", $category), $view_url);
     $url = Url::fromUserInput($path, $options = ['absolute' => TRUE])->toString();
@@ -321,8 +319,8 @@ class VactoryLocatorBlock extends BlockBase implements BlockPluginInterface {
   /**
    * {@inheritdoc}
    */
-  public function getCacheMaxAge() {
-    return 0;
+  public function getCacheTags() {
+    return ['config:vactory_locator.settings', 'locator_entity_type_list:vactory_locator'];
   }
 
 }

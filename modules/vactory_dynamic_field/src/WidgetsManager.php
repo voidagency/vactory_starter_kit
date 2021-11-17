@@ -77,6 +77,7 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
         $contents = $file->getContents();
         $screenshot_path = $file->getPath() . '/screenshot.png';
         $screenshot_path_fallback = $file->getPath() . '/screenshoot.png';
+        $screenshot_url_gif = $file->getPath() . '/screenshot.gif';
         $static_widget_path = $file->getPath() . '/static.html.twig';
 
         // Decode YAML file.
@@ -94,6 +95,9 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
         }
         elseif (file_exists($screenshot_path_fallback)) {
           $data['screenshot'] = file_create_url($screenshot_path_fallback);
+        }
+        elseif (file_exists($screenshot_url_gif)) {
+          $data['screenshot'] = file_create_url($screenshot_url_gif);
         }
 
         // Add static widget - demo content.
@@ -143,6 +147,7 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
         $contents = $file->getContents();
         $screenshot_path = $file->getPath() . '/screenshot.png';
         $screenshot_path_fallback = $file->getPath() . '/screenshoot.png';
+        $screenshot_url_gif = $file->getPath() . '/screenshot.gif';
         $static_widget_path = $file->getPath() . '/static.html.twig';
 
         // Decode YAML file.
@@ -160,6 +165,9 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
         }
         elseif (file_exists($screenshot_path_fallback)) {
           $data['screenshot'] = file_create_url($screenshot_path_fallback);
+        }
+        elseif (file_exists($screenshot_url_gif)) {
+          $data['screenshot'] = file_create_url($screenshot_url_gif);
         }
 
         // Add static widget - demo content.
@@ -211,6 +219,7 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
     $settings_path = $widget_path . '/' . $id . '/settings.yml';
     $screenshot_url = $widget_path . '/' . $id . '/screenshot.png';
     $screenshot_url_fallback = $widget_path . '/' . $id . '/screenshoot.png';
+    $screenshot_url_gif = $widget_path . '/' . $id . '/screenshot.gif';
     $static_widget_path = $widget_path . '/' . $id . '/static.html.twig';
 
     try {
@@ -229,6 +238,9 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
     }
     elseif (file_exists($screenshot_url_fallback)) {
       $data['screenshot'] = file_create_url($screenshot_url_fallback);
+    }
+    elseif (file_exists($screenshot_url_gif)) {
+      $data['screenshot'] = file_create_url($screenshot_url_gif);
     }
 
     // Add static widget - demo content.

@@ -1,0 +1,8 @@
+name: Vactory SMS Sender Example
+description: Provide a form to test sending SMS with vactory sms sender custom module
+type: module
+core: 8.x
+core_version_requirement: ^8 || ^9
+package: Vactory
+dependencies:
+  - vactory_sms_sender

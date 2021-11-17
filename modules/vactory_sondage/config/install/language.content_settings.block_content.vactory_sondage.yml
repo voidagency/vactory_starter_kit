@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - block_content.type.vactory_sondage
+  enforced:
+    module:
+      - vactory_sondage
+  module:
+    - content_translation
+third_party_settings:
+  content_translation:
+    enabled: true
+id: block_content.vactory_sondage
+target_entity_type_id: block_content
+target_bundle: vactory_sondage
+default_langcode: site_default
+language_alterable: true

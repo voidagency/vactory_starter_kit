@@ -38,6 +38,11 @@ function vactory_publication_theme() {
       'base hook' => 'node',
       'template'  => 'smart-search',
     ],
+    // Node > Mur.
+    'node__vactory_publication__mur'        => [
+      'base hook' => 'node',
+      'template'  => 'mur',
+    ],
   ];
 }
 

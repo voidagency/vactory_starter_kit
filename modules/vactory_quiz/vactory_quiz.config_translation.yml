@@ -1,0 +1,5 @@
+vactory_quiz.settings:
+  title: 'Vactory Quiz Settings'
+  base_route_name: vactory_quiz.settings
+  names:
+    - vactory_quiz.settings

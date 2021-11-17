@@ -64,6 +64,7 @@
  */
 #}
 {% set academy_videos = content.field_vactory_file_multiple['#items'].value is defined ? content.field_vactory_file_multiple['#items'].value : '' %}
+{% set videos = content.field_vactory_youtube_media.0 is defined ? content.field_vactory_youtube_media.0['#media'].field_media_oembed_video.0.value : null %}
 
 <div class="block-top bg-secondary text-white position-relative pt-2 pb-4 row">
     <div class='col-md-12 mb-md-3 wrapper-flag_favorite'>
@@ -75,6 +76,7 @@
             {{ content.flag_favorite_academy }}
         {% endif %}
     </div>
+
   <div class='col-md-12 d-flex flex-column-reverse flex-md-row'>
     <div class='col-md-8 pr-md-4'>
       <div class="pb-2">
@@ -90,7 +92,7 @@
           {% for i in 0..4 %}
             {% if rating >=1 %}
               <span class="favorite-star checked-full"></span>
-            {% elseif rating <1  and rating >0 %}  
+            {% elseif rating <1  and rating >0 %}
               <span class="favorite-star checked-half"></span>
             {% else %}
               <span class="favorite-star"></span>
@@ -110,7 +112,7 @@
         <div class="academy-date ml-md-2">
           <span>{{'Dernière mise à jour :' |t }}</span>
           {{ content.field_vactory_date['#items'].value|date('d/m/Y') }}
-        </div> 
+        </div>
       </div>
       <div class="d-flex align-items-center">
         <span class="icon-comment mr-1"></span>
@@ -119,6 +121,7 @@
         {{content.field_academy_duree}}
       </div>
     </div>
+
     <div class='col-md-4  mb-3 mb-md-0'>
       {#%  if academy_videos is not empty %}
         <div class="mb-4">
@@ -133,15 +136,17 @@
           </div>
         </div>
       {% endif %}#}
+
       <div class="right-col_content p-0 mr-md-2">
         {% if not is_anonymous %}
-          {% if content.field_vactory_youtube_videos['#items'].value is defined %}
+          {% if videos is defined %}
             <div class="academy-video text-center">
               {#% <h3>{{ 'Contenu du cours'|t }}</h3>#}
               <div class="mb-3">
-                {% for video in content.field_vactory_youtube_videos['#items'] %}
-                  <a data-fancybox href="{{ video.value }}" class='play-videos'>
-                      {{content.field_vactory_media}}
+                {% for key, item in content.field_vactory_youtube_media if key|first != '#' %}
+                  {% set video = item is defined ? item['#media'].field_media_oembed_video.0.value : null %}
+                  <a data-fancybox href="{{ video }}" class='play-videos'>
+                    {{content.field_vactory_media}}
                   </a>
                 {% endfor %}
               </div>
@@ -153,14 +158,13 @@
           {% endif %}
         {% else %}
           <div class="academy-video">
-            {{content.field_vactory_media}}
+            {{content.field_vactory_file}}
           </div>
         {% endif %}
       </div>
     </div>
-  </div>  
+  </div>
 </div>
-
 <div class="block-detail mb-4 mt-4 row">
   <div class="col-md-8 ">
     <div class="row">
@@ -174,21 +178,21 @@
       {% for i in 0..4 %}
         {% if rating >=1 %}
           <span class="favorite-star checked-full"></span>
-        {% elseif rating <1  and rating >0 %}  
+        {% elseif rating <1  and rating >0 %}
           <span class="favorite-star checked-half"></span>
         {% else %}
           <span class="favorite-star"></span>
         {% endif %}
         {% set rating = rating - 1 %}
       {% endfor %}
-    </div> 
+    </div>
     <p>{{ 'Note du cours'|t }}</p>
     {% if not is_anonymous %}
       <div class='star-vote'>
         {{ content.rate_vote_widget}}
       </div>
       <p>{{ 'Votre Vote'|t }}</p>
-    {% endif %}  
+    {% endif %}
 
     <div class="mb-3 mt-2">
       <div class="card-body">
