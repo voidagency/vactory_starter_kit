@@ -1,8 +1,0 @@
-colorpicker-fix-css:
-  css:
-    theme:
-      css/colorpicker-fix.css: {}
-  js:
-    js/colorpicker-fix.js: {}
-  dependencies:
-    - core/jquery

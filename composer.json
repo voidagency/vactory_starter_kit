@@ -58,12 +58,12 @@
     "drupal/twig_extender": "^3.0@beta",
     "drupal/twig_tweak": "^2.8",
     "drupal/ultimate_cron": "^2.0.0-alpha5",
-    "drupal/viewsreference": "1.6.0",
+    "drupal/viewsreference": "^2.0@beta",
     "drupal/webform": "^6.0",
     "drupal/xmlsitemap": "1.0",
     "drupal/security_review": "1.x-dev",
     "drupal/mailsystem": "^4.3",
-    "drupal/swiftmailer": "^2.0@beta",
+    "drupal/swiftmailer": "^2.0",
     "drupal/menu_item_extras": "^2.13",
     "drupal/mailchimp": "^2.0",
     "drupal/user_registrationpassword": "^1.0.0-alpha5",
@@ -144,9 +144,7 @@
     "drupal/multiple_fields_remove_button": "^1.0@alpha"
   },
   "require-dev": {
-    "squizlabs/php_codesniffer": "^3.3",
-    "void/php-composter-phpcs-drupal": "dev-master",
-    "void/php-composter-regular-expression": "dev-master"
+    "squizlabs/php_codesniffer": "^3.3"
   },
   "extra": {
     "php-composter-phpcs-drupal": {
@@ -230,14 +228,6 @@
     {
       "type": "composer",
       "url": "https://packages.drupal.org/8"
-    },
-    {
-      "type": "git",
-      "url": "https://bitbucket.org/adminvoid/php-composter-regular-expression.git"
-    },
-    {
-      "type": "git",
-      "url": "https://bitbucket.org/adminvoid/php-composter-phpcs-drupal.git"
     },
     {
       "type": "package",
