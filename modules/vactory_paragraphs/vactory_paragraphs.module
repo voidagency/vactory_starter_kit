@@ -252,7 +252,7 @@ function views_reference_get_enabled_displays(array &$form, FormStateInterface $
   $options = [];
   if ($view) {
     foreach ($view->get('display') as $display) {
-      if ($display['display_options']['enabled'] && $display['display_plugin'] == 'page') {
+      if ((!isset($display['display_options']['enabled']) || $display['display_options']['enabled']) && $display['display_plugin'] === 'page') {
         $options[$display['id']] = $display['display_title'];
       }
     }

@@ -11,11 +11,9 @@ dependencies:
     - field.field.block_content.vactory_banner.field_vactory_flag
     - field.field.block_content.vactory_banner.field_vactory_media
     - field.field.block_content.vactory_banner.field_vactory_title
-    - responsive_image.styles.wide
   module:
     - block_field
-    - jquery_colorpicker
-    - media_responsive_thumbnail
+    - colorapi
     - text
 id: block_content.vactory_banner.full
 targetEntityType: block_content
@@ -30,20 +28,21 @@ content:
     third_party_settings: {  }
     region: content
   field_background_color:
-    type: jquery_colorpicker_color_display
-    weight: 5
+    settings:
+      display_name: true
+    type: colorapi_color_display
+    weight: 3
     region: content
     label: above
-    settings: {  }
     third_party_settings: {  }
   field_banner_image_mobile:
-    type: media_responsive_thumbnail
+    type: entity_reference_entity_view
     weight: 4
     region: content
-    label: hidden
+    label: above
     settings:
-      responsive_image_style: wide
-      image_link: ''
+      link: true
+      view_mode: default
     third_party_settings: {  }
   field_vactory_blocks_multiple:
     type: block_field
@@ -63,13 +62,13 @@ content:
       format_custom_true: ''
     third_party_settings: {  }
   field_vactory_media:
-    type: media_responsive_thumbnail
-    weight: 3
+    type: entity_reference_entity_view
+    weight: 5
     region: content
-    label: hidden
+    label: above
     settings:
-      responsive_image_style: wide
-      image_link: ''
+      link: true
+      view_mode: default
     third_party_settings: {  }
 hidden:
   field_vactory_title: true
