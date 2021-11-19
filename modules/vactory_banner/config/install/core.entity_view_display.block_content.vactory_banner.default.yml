@@ -12,7 +12,7 @@ dependencies:
     - field.field.block_content.vactory_banner.field_vactory_title
   module:
     - block_field
-    - jquery_colorpicker
+    - colorapi
     - text
 id: block_content.vactory_banner.default
 targetEntityType: block_content
@@ -27,11 +27,13 @@ content:
     third_party_settings: {  }
     region: content
   field_background_color:
-    type: jquery_colorpicker_raw_hex_display
+    settings:
+      show_hash: true
+      display_name: true
+    type: colorapi_raw_hex_display
     weight: 4
     region: content
     label: above
-    settings: {  }
     third_party_settings: {  }
   field_banner_image_mobile:
     type: entity_reference_entity_view

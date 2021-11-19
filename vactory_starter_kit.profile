@@ -109,7 +109,7 @@ function vactory_starter_kit_after_install_finished(array &$install_state) {
   $messenger->deleteAll();
 
   // Success message.
-  $messenger->addMessage(t('Congratulations, you have installed Factory 8!'));
+  $messenger->addMessage(t('Congratulations, you have installed Factory 9!'));
 
   // Run a complete cache flush.
   drupal_flush_all_caches();
@@ -117,7 +117,7 @@ function vactory_starter_kit_after_install_finished(array &$install_state) {
   $output = [
     '#title'    => t('Vactory'),
     'info'      => [
-      '#markup' => t('<p>Congratulations, you have installed Factory 8!</p><p>If you are not redirected to the front page in 5 seconds, Please <a href="@url">click here</a> to proceed to your installed site.</p>', [
+      '#markup' => t('<p>Congratulations, you have installed Factory 9!</p><p>If you are not redirected to the front page in 5 seconds, Please <a href="@url">click here</a> to proceed to your installed site.</p>', [
         '@url' => $after_install_direction,
       ]),
     ],
