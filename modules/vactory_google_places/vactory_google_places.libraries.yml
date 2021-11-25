@@ -1,0 +1,14 @@
+# Custom module library for general purposes.
+autocomplete:
+  css:
+    theme:
+      css/vactory-google-places-autocomplete.css: {}
+  js:
+    js/vactory-google-places-autocomplete.js: {}
+  dependencies:
+    - core/drupalSettings
+map:
+  js:
+    js/vactory-google-places-map.js: {}
+  dependencies:
+    - core/drupalSettings

@@ -13,7 +13,7 @@ use Drupal\views\ViewExecutable;
  */
 function vactory_mur_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
   if ($view->id() == 'vactory_mur' && $view->current_display == 'vactory_mur_page') {
-    $config = \Drupal::config('vactorymur.settings');
+    $config = \Drupal::config('vactory_mur.settings');
     $nodes = $config->get('content_types');
     $nodes_values = array_values($nodes);
     $nodes_string = array_filter($nodes_values, 'is_string');
