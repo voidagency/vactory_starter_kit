@@ -1,0 +1,4 @@
+services:
+  vactory_google_places.manager:
+    class: Drupal\vactory_google_places\Services\VactoryGooglePlacesManager
+    arguments: ['@http_client', '@language_manager', '@state']

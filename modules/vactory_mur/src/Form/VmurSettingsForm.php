@@ -30,7 +30,7 @@ class VmurSettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   protected function getEditableConfigNames() {
-    return ['vactorymur.settings'];
+    return ['vactory_mur.settings'];
   }
 
   /**
@@ -38,7 +38,7 @@ class VmurSettingsForm extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state, Request $request = NULL) {
     $form = parent::buildForm($form, $form_state);
-    $config = \Drupal::config('vactorymur.settings');
+    $config = \Drupal::config('vactory_mur.settings');
     $types = \Drupal::entityTypeManager()
       ->getStorage('node_type')
       ->loadMultiple();
@@ -62,7 +62,7 @@ class VmurSettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $config = $this->config('vactorymur.settings');
+    $config = $this->config('vactory_mur.settings');
     if (!empty($form_state->getValue('content_types'))) {
       $config->set('content_types', $form_state->getValue('content_types'));
     }

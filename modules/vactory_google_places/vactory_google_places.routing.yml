@@ -1,0 +1,7 @@
+vactory_google_places.settings_form:
+  path: '/admin/config/system/vactory-google-places'
+  defaults:
+    _title: 'Vactory Google Places settings'
+    _form: 'Drupal\vactory_google_places\Form\SettingsForm'
+  requirements:
+    _permission: 'administer site configuration'
