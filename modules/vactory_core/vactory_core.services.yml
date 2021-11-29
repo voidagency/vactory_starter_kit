@@ -18,3 +18,6 @@ services:
     class: Drupal\vactory_core\EventSubscriber\RemoveXGeneratorResponseHeader
     tags:
       - { name: event_subscriber }
+  vactory_core.tools:
+    class: Drupal\vactory_core\Services\VactoryDevTools
+    arguments: []

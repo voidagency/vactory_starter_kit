@@ -1,0 +1,29 @@
+<?php
+
+/**
+ * @file
+ * Module install/uninstall hooks.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function vactory_views_pretty_path_install($is_syncing) {
+  $entity_type = \Drupal::service('entity_type.manager')->getDefinition('taxonomy_term');
+  \Drupal::entityDefinitionUpdateManager()->updateEntityType($entity_type);
+  $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')
+    ->loadMultiple();
+  foreach ($terms as $term) {
+    if ($term->get('status')->value !== NULL) {
+      $term->save();
+    }
+  }
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function vactory_views_pretty_path_uninstall($is_syncing) {
+  // Invoke core field cron job to purge deleted Field API data.
+  field_cron();
+}
