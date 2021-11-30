@@ -11,9 +11,9 @@ services:
     tags:
       - { name: event_subscriber }
   vactory_core.disable_route_node_subscriber:
-      class: Drupal\vactory_core\Routing\RouteSubscriber
-      tags:
-        - { name: event_subscriber }
+    class: Drupal\vactory_core\Routing\RouteSubscriber
+    tags:
+      - { name: event_subscriber }
   vactory_core.remove_x_generator_response_header:
     class: Drupal\vactory_core\EventSubscriber\RemoveXGeneratorResponseHeader
     tags:
@@ -21,3 +21,8 @@ services:
   vactory_core.tools:
     class: Drupal\vactory_core\Services\VactoryDevTools
     arguments: []
+  vactory_core.path:
+    class: Drupal\vactory_core\PathProcessor\VactoryCorePathProcessor
+    arguments: []
+    tags:
+      - { name: 'path_processor_outbound', priority: -10 }
