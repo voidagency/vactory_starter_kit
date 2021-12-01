@@ -142,7 +142,8 @@
     "drupal/mobile_native_share": "^1.0",
     "drupal/views_infinite_scroll": "1.8.0",
     "drupal/multiple_fields_remove_button": "^1.0@alpha",
-    "drupal/amptheme": "^3.0"
+    "drupal/amptheme": "^3.0",
+    "drupal/cloudinary": "^1.0@alpha"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.3"
@@ -222,6 +223,9 @@
       },
       "drupal/webform": {
         "Invoke alter hook after webform handlers execution": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/9e6eca9bcbd95e7bed7859d54a0c4623a6112e5a/webform-post-handlers-hook.patch"
+      },
+      "drupal/cloudinary": {
+        "Cloudinary Drupal 9 readiness": "https://www.drupal.org/files/issues/2021-11-30/3146732-14.patch"
       }
     }
   },
