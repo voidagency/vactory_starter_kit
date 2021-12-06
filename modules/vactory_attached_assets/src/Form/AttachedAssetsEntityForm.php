@@ -68,6 +68,10 @@ class AttachedAssetsEntityForm extends EntityForm {
    */
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
+    // Get site default stream wrapper.
+    $default_stream_wrapper = $this->configFactory
+      ->get('system.file')
+      ->get('default_scheme');
 
     $attached_assets_entity = $this->entity;
 
@@ -103,7 +107,7 @@ class AttachedAssetsEntityForm extends EntityForm {
     $form['file'] = [
       '#type' => 'managed_file',
       '#title' => $this->t('File'),
-      '#upload_location' => 'public://attached_assets',
+      '#upload_location' => $default_stream_wrapper . '://attached_assets',
       '#upload_validators' => [
         'file_validate_extensions' => ['css js'],
       ],

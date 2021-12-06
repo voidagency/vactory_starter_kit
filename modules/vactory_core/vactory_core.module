@@ -219,6 +219,11 @@ function vactory_core_form_alter(&$form, FormStateInterface &$form_state, $form_
       unset($form['link']['widget'][0]['options']['attributes']);
     }
   }
+
+  // Allow changing file fields stream wrapper settings.
+  if ($form_id === 'field_storage_config_edit_form') {
+    $form['settings']['uri_scheme']['#disabled'] = FALSE;
+  }
 }
 
 /**

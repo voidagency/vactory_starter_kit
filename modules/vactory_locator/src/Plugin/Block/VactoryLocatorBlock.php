@@ -25,6 +25,9 @@ class VactoryLocatorBlock extends BlockBase implements BlockPluginInterface {
    */
   public function blockForm($form, FormStateInterface $form_state) {
     $form = parent::blockForm($form, $form_state);
+    // Get site default stream wrapper.
+    $default_stream_wrapper = \Drupal::config('system.file')
+      ->get('default_scheme');
     $config = $this->getConfiguration();
     $terms = $term = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties(['vid' => 'locator_category']);
     $options = [
@@ -100,7 +103,7 @@ class VactoryLocatorBlock extends BlockBase implements BlockPluginInterface {
         'file_validate_extensions' => ['png svg'],
         'file_validate_size' => [25600000],
       ],
-      '#upload_location' => 'public://locator/marker',
+      '#upload_location' => $default_stream_wrapper . '://locator/marker',
       '#required' => FALSE,
       '#default_value' => isset($config['locator_marker']) ? $config['locator_marker'] : '',
     ];
@@ -131,7 +134,7 @@ class VactoryLocatorBlock extends BlockBase implements BlockPluginInterface {
         'file_validate_extensions' => ['png svg'],
         'file_validate_size' => [25600000],
       ],
-      '#upload_location' => 'public://locator/marker_cluster',
+      '#upload_location' => $default_stream_wrapper . '://locator/marker_cluster',
       '#required' => FALSE,
       '#default_value' => isset($config['locator_cluster']) ? $config['locator_cluster'] : '',
     ];

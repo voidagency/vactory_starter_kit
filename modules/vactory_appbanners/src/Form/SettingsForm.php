@@ -65,7 +65,10 @@ class SettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-
+    // Get site default stream wrapper.
+    $default_stream_wrapper = $this->configFactory
+      ->get('system.file')
+      ->get('default_scheme');
     $config = $this->config('vactory_appbanners.settings');
 
     $form['general'] = [
@@ -97,7 +100,7 @@ class SettingsForm extends ConfigFormBase {
     $form['general']['logo_upload'] = [
       '#type'              => 'managed_file',
       '#title'             => t('App Icon'),
-      '#upload_location'   => 'public://vactory_appbanners/',
+      '#upload_location'   => $default_stream_wrapper . '://vactory_appbanners/',
       '#upload_validators' => [
         'file_validate_is_image' => [],
       ],
