@@ -229,24 +229,13 @@ function views_reference_get_enabled_displays(array &$form, FormStateInterface $
   $field_value = NestedArray::getValue($form_state->getValues(), $trigger['#parents']);
 
   // Get the value for the target id of the View.
-  switch ($trigger['#type']) {
-    case 'select':
-      $view_id = $field_value[$trigger['#delta']][$trigger['#key_column']];
-      break;
-
-    default:
-      $view_id = $field_value;
-      break;
-  }
-
-  // Obtain the display ids for the given View.
-  // We recreate the same unique class as in the parent function.
-  $element_class_selector = '#' . implode('-', $trigger['#parents']) . '-display';
+  $view_id = $field_value;
 
   // Change the display_id field options.
   $display_id_field_path = array_slice($trigger['#array_parents'], 0, -1);
   array_push($display_id_field_path, 'display_id');
   $display_id_field = NestedArray::getValue($form, $display_id_field_path);
+  $display_element_name = $display_id_field['#name'];
   $view = Drupal::service('entity_type.manager')->getStorage('view')
     ->load($view_id);
   $options = [];
@@ -259,6 +248,6 @@ function views_reference_get_enabled_displays(array &$form, FormStateInterface $
   }
   $display_id_field['#options'] = $options;
   $response = new AjaxResponse();
-  $response->addCommand(new ReplaceCommand($element_class_selector, render($display_id_field)));
+  $response->addCommand(new ReplaceCommand('div:has(> [name="' . $display_element_name .'"])', render($display_id_field)));
   return $response;
 }

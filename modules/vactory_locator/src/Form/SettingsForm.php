@@ -6,6 +6,7 @@ use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\file\Entity\File;
 use Drupal\media\Entity\Media;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Configure Locator Settings.
@@ -32,6 +33,10 @@ class SettingsForm extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $zooms = [];
     $zooms['nothing'] = '--Nothing--';
+    // Get site default stream wrapper.
+    $default_stream_wrapper = $this->configFactory
+      ->get('system.file')
+      ->get('default_scheme');
     foreach (range(1, 20) as $i) {
       $zooms[$i] = $i;
     }
@@ -76,7 +81,7 @@ class SettingsForm extends ConfigFormBase {
         'file_validate_extensions' => ['png svg'],
         'file_validate_size'       => [25600000],
       ],
-      '#upload_location'     => 'public://locator/marker',
+      '#upload_location'     => $default_stream_wrapper . '://locator/marker',
       '#required'            => TRUE,
       '#default_value'       => $is_it_media_library ? $config->get('locator_default_marker') : '',
     ];
@@ -110,7 +115,7 @@ class SettingsForm extends ConfigFormBase {
       ],
       '#theme'               => 'image_widget',
       '#preview_image_style' => 'medium',
-      '#upload_location'     => 'public://locator/marker',
+      '#upload_location'     => $default_stream_wrapper . '://locator/marker',
       '#default_value'       => !empty($config->get('geolocation_marker')) ? $config->get('geolocation_marker') : '',
     ];
 

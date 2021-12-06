@@ -35,6 +35,9 @@ trait FormWidgetTrait {
    */
   protected function getFormElementDefaults($type = '', array $options = []) {
     $default_options = [];
+    // Get site default stream wrapper.
+    $default_stream_wrapper = \Drupal::config('system.file')
+      ->get('default_scheme');
 
     if ($type === 'text') {
       $default_options = [
@@ -55,7 +58,7 @@ trait FormWidgetTrait {
     if ($type === 'image') {
       $default_options =
         [
-          '#upload_location'   => 'public://widgets/images',
+          '#upload_location'   => $default_stream_wrapper . '://widgets/images',
           '#upload_validators' => [
             'file_validate_extensions' => ['jpg gif png jpeg svg'],
           ],
@@ -66,7 +69,7 @@ trait FormWidgetTrait {
       $default_options =
         [
           '#allowed_bundles' => ['file'],
-          '#upload_location'   => 'public://widgets/files',
+          '#upload_location'   => $default_stream_wrapper . '://widgets/files',
           '#upload_validators' => [
             'file_validate_extensions' => ['pdf doc docx txt'],
           ],
@@ -464,6 +467,9 @@ trait FormWidgetTrait {
    *   File id.
    */
   protected function getFileId($platform_directory, $template_name, $fileName, $fieldType) {
+    // Get site default stream wrapper.
+    $default_stream_wrapper = \Drupal::config('system.file')
+      ->get('default_scheme');
     $filePath = $platform_directory . '/' . $template_name . '/' . $fileName;
     // If the file doesn't exist, return an empty array.
     if (!file_exists($filePath)) {
@@ -484,15 +490,15 @@ trait FormWidgetTrait {
 
     $fileStream = fopen($filePath, 'r');
 
-    if (!file_exists("public://vdf_placeholder/")) {
-      mkdir("public://vdf_placeholder/", 0770, TRUE);
+    if (!file_exists($default_stream_wrapper . "://vdf_placeholder/")) {
+      mkdir($default_stream_wrapper . "://vdf_placeholder/", 0770, TRUE);
     }
 
     // Create the file.
     $file = File::create([
       'uid'      => \Drupal::currentUser()->id(),
       'filename' => $fileName,
-      'uri'      => 'public://vdf_placeholder/' . $fileName,
+      'uri'      => $default_stream_wrapper . '://vdf_placeholder/' . $fileName,
       'status'   => 1,
     ]);
 

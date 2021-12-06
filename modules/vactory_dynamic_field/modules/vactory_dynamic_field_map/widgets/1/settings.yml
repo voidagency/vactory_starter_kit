@@ -29,7 +29,6 @@ extra_fields:
     options:
       '#description': '<b>Exemple</b>: -25.363882, 131.044922 (lat, lng) - <a href="https://www.latlong.net/" target="_blank"><span class="ui-icon ui-icon-search page-title"></span> <span class="page-title">Trouver une position</span></a>'
       '#required': TRUE
-      '#required': TRUE
       '#attributes':
         'placeholder': '-25.363882, 131.044922'
   map_zoom:

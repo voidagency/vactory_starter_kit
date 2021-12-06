@@ -37,6 +37,10 @@ class AddAnnouncementsForm extends FormBase {
    * The build form function.
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
+    // Get site default stream wrapper.
+    $default_stream_wrapper = $this->configFactory
+      ->get('system.file')
+      ->get('default_scheme');
     $current_user = \Drupal::currentUser();
     if ($current_user->isAnonymous()) {
       return $this->redirect('user.login',
@@ -145,7 +149,7 @@ class AddAnnouncementsForm extends FormBase {
         'file_validate_size' => [1 * 1024 * 1024],
       ],
       '#theme'               => 'image_widget',
-      '#upload_location'     => 'public://announcement/',
+      '#upload_location'     => $default_stream_wrapper . '://announcement/',
     ];
     $form['container']['first_group']['content'] = [
       '#title' => t('CONTENU DE L’ANNONCE'),
