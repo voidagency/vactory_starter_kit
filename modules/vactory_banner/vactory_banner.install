@@ -8,14 +8,6 @@
 use Drupal\Core\Field\BaseFieldDefinition;
 
 /**
- * Implements hook_install().
- */
-function vactory_banner_install() {
-  // Ensure the translation fields are created in the database.
-  \Drupal::service('entity.definition_update_manager')->applyUpdates();
-}
-
-/**
  * Add node_banner_mobile_image field.
  */
 function vactory_banner_update_8002() {
