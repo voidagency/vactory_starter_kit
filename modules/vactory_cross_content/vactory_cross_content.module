@@ -85,11 +85,8 @@ function vactory_cross_content_form_alter(&$form, FormStateInterface $form_state
   $types_content_types = \Drupal::entityTypeManager()
     ->getStorage('node_type')
     ->loadMultiple();
-  $types_content_options = ['none' => t('-- Select a Content Type --')];
   foreach ($types_content_types as $key => $t) {
-    if ($type->get('type') !== $key) {
-      $types_content_options[$key] = $t->label();
-    }
+    $types_content_options[$key] = $t->label();
   }
 
   $form['vcc']['content_type'] = [
@@ -97,6 +94,7 @@ function vactory_cross_content_form_alter(&$form, FormStateInterface $form_state
     '#title' => t('Content type - Optional -'),
     '#description' => t('If you want to select another content type for the cross content.'),
     '#options' => (!empty($types_content_options)) ? $types_content_options : [],
+    '#empty_option' => '-- Select a Content Type --',
     '#multiple' => TRUE,
     '#states' => [
       "visible" => [

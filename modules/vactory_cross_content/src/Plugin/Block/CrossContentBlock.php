@@ -70,10 +70,6 @@ class CrossContentBlock extends BlockBase implements BlockPluginInterface {
       return NULL;
     }
     $content_type_selected = $type->getThirdPartySetting('vactory_cross_content', 'content_type', '');
-    $type_node = '';
-    if ($content_type_selected != '' and $content_type_selected != 'none') {
-      $type_node = $content_type_selected;
-    }
     $title =  (!empty($this->configuration['title'])) ? $this->configuration['title'] : '';
     $taxonomy_field = $type->getThirdPartySetting('vactory_cross_content', 'taxonomy_field', '');
     $term_id = $type->getThirdPartySetting('vactory_cross_content', 'terms', '');
@@ -106,8 +102,8 @@ class CrossContentBlock extends BlockBase implements BlockPluginInterface {
     // Plugin style must be set before preExecute.
     $view->preExecute();
     // Set content type.
-    $type_node = !empty($type_node) ? $type_node : $node->bundle();
-    $view->filter['type']->value = [$type_node => $type_node];
+    $content_type_selected = !empty($content_type_selected) ? $content_type_selected : [$node->bundle() => $node->bundle()];
+    $view->filter['type']->value = $content_type_selected;
 
     // Set number of items per page.
     $view->setItemsPerPage($nbr);
@@ -175,7 +171,7 @@ class CrossContentBlock extends BlockBase implements BlockPluginInterface {
       // Creating a hook to alter the block.
       $data = [
         'view'         => $view,
-        'content_type' => !empty($type_node) ? $type_node : $node->bundle(),
+        'content_type' => !empty($content_type_selected) ? $content_type_selected : [$node->bundle() => $node->bundle()],
         'block'        => 'block_list',
       ];
       Drupal::moduleHandler()->alter('vactory_cross_content_view', $data);
