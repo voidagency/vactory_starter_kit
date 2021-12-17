@@ -1,0 +1,6 @@
+script:
+  js:
+    js/vactory-email-ajax.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings

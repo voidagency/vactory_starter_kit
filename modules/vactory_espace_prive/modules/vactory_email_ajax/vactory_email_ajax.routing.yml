@@ -1,0 +1,9 @@
+vactory_email_ajax.validator:
+  path: '/email/validate'
+  defaults:
+    _title: 'Vactory Email Ajax Validator'
+    _controller: '\Drupal\vactory_email_ajax\Controller\VactoryEmailAjaxController::validate'
+  requirements:
+    _permission: 'access content'
+  options:
+    no_cache: 'TRUE'

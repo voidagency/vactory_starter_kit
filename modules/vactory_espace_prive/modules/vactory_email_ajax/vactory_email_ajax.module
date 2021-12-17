@@ -1,0 +1,38 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for vactory_email_ajax module.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_email_ajax_theme($existing, $type, $theme, $path) {
+  return [
+    'input__email__ajax' => [
+      'base hook' => 'input',
+      'template' => 'input-email-ajax',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function vactory_email_ajax_form_user_register_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  //dump($form);
+  $form['#attached']['library'][] = 'vactory_email_ajax/script';
+}
+
+
+/**
+ * Implements hook_theme_suggestions_HOOK_alter().
+ */
+function vactory_email_ajax_theme_suggestions_input_alter(array &$suggestions, array $variables) {
+  if (isset($variables['element']['#type']) && $variables['element']['#type'] === 'email') {
+    $suggestions[] = 'input__email__ajax';
+  }
+}
