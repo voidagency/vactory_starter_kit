@@ -10,6 +10,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\vactory_core\Vactory;
 use Drupal\views\Views;
 use Drupal\node\Entity\NodeType;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a "Vactory Cross Content Block" block.
@@ -20,7 +21,34 @@ use Drupal\node\Entity\NodeType;
  *   category = @Translation("Vactory")
  * )
  */
-class CrossContentBlock extends BlockBase implements BlockPluginInterface {
+class CrossContentBlock extends BlockBase implements BlockPluginInterface, \Drupal\Core\Plugin\ContainerFactoryPluginInterface {
+
+  /**
+   * Vactory service.
+   *
+   * @var Drupal\vactory_core\Vactory
+   */
+  protected $vactory;
+
+  /**
+   * {@inheritDoc}
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, Vactory $vactory) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->vactory = $vactory;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('vactory')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -80,7 +108,7 @@ class CrossContentBlock extends BlockBase implements BlockPluginInterface {
     $view_mode = $this->configuration['view_mode'];
     $view_mode_options = $this->configuration['view_options'][$view_mode . '_options'];
     $display_mode = $this->configuration['display_mode'];
-    $field_name = Vactory::getFieldbyType($node, 'field_cross_content');
+    $field_name = $this->vactory->getFieldbyType($node, 'field_cross_content');
     $related_nodes = $field_name <> NULL ? $node->get($field_name)->value : '';
     $ignore = !empty($related_nodes);
     $id_table = 'node_field_data';

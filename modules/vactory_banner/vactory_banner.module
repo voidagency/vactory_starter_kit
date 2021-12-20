@@ -40,7 +40,7 @@ function vactory_banner_preprocess_block(&$variables) {
     $current_route_name = \Drupal::routeMatch()->getRouteName();
 
     // Get current page title.
-    $variables['content']['page_title'] = ((isset($field_dynamic_title)) && $field_dynamic_title[0]['value'] == 1) ? Vactory::getCurrentTitle() : '';
+    $variables['content']['page_title'] = ((isset($field_dynamic_title)) && $field_dynamic_title[0]['value'] == 1) ? Drupal::service('vactory')->getCurrentTitle() : '';
     // Get page title if current page not checked.
     $variables['content']['page_title'] = ((isset($dynamic_title[0]['value'])) && !empty($dynamic_title[0]['value'])) ? $dynamic_title[0]['value'] : $variables['content']['page_title'];
 

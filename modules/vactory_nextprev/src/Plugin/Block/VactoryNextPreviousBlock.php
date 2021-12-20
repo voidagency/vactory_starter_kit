@@ -40,6 +40,13 @@ class VactoryNextPreviousBlock extends BlockBase implements BlockPluginInterface
   protected $entityTypeManager;
 
   /**
+   * Vactory service.
+   *
+   * @var \Drupal\vactory_core\Vactory
+   */
+  protected $vactory;
+
+  /**
    * Creates a NextPreviousBlock instance.
    *
    * @param array $configuration
@@ -53,10 +60,18 @@ class VactoryNextPreviousBlock extends BlockBase implements BlockPluginInterface
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
    *   The entity type manager.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, RouteMatchInterface $route_match, EntityTypeManagerInterface $entityTypeManager) {
+  public function __construct(
+    array $configuration,
+    $plugin_id,
+    $plugin_definition,
+    RouteMatchInterface $route_match,
+    EntityTypeManagerInterface $entityTypeManager,
+    Vactory $vactory
+  ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->routeMatch = $route_match;
     $this->entityTypeManager = $entityTypeManager;
+    $this->vactory = $vactory;
   }
 
   /**
@@ -68,7 +83,8 @@ class VactoryNextPreviousBlock extends BlockBase implements BlockPluginInterface
       $plugin_id,
       $plugin_definition,
       $container->get('current_route_match'),
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('vactory')
     );
   }
 
@@ -272,7 +288,7 @@ class VactoryNextPreviousBlock extends BlockBase implements BlockPluginInterface
     ];
     $artifact = [];
     foreach ($node_types as $content_type => $label) {
-      $taxonomyList = Vactory::getTaxonomyList($content_type);
+      $taxonomyList = $this->vactory->getTaxonomyList($content_type);
       if (!empty($taxonomyList)) {
         foreach ($taxonomyList as $taxonomyInfo) {
           $vid = $taxonomyInfo[0];

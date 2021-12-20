@@ -15,15 +15,15 @@
             {% set active = active ~ ((menu_item.active_trail) ? ' is-active-trail' : '') %}
 
             {# Check if this item has childs. #}
-            {% set has_sub = ((menu_item.submenu or menu_item.fields.field_injected_block | render | trim is not empty) ? 'has-sub' : '') %}
+            {% set has_sub = ((menu_item.submenu or menu_item.fields.field_injected_block.plugin_id is not empty) ? 'has-sub' : '') %}
 
             <li class="menu__item{{ active }} menu__item--{{ level|default(default_level) }} {{ has_sub }} {{ menu_item.options.attributes.wrapper_class }}">
                 <a href="{{ menu_item.url }}" id="{{ menu_item.options.attributes.id }}" class="menu__link{{ active }} {{ menu_item.options.attributes.class|join(' ') }}">{{ menu_item.text }}</a>
                 {# Call the block injected menu if exist. #}
-                {% if menu_item.fields.field_injected_block | render | trim is not empty %}
+                {% if menu_item.fields.field_injected_block.plugin_id is not empty %}
                   <div class="menu-sub--{{ level|default(default_level) }}">
                     <div class="menu-sub-inner--{{ level|default(default_level) }}">
-                      {{ menu_item.fields.field_injected_block }}
+                      {{ vactory_render('block', menu_item.fields.field_injected_block.plugin_id) }}
                     </div>
                   </div>
                 {# End Injected Block #}

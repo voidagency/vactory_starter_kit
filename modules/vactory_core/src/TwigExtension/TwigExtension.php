@@ -3,9 +3,11 @@
 namespace Drupal\vactory_core\TwigExtension;
 
 use Drupal\block\Entity\Block;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Template\Attribute;
 use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
+use Drupal\taxonomy\Entity\Term;
 use Drupal\vactory_core\Vactory;
 
 /**
@@ -14,6 +16,28 @@ use Drupal\vactory_core\Vactory;
  * @package Drupal\vactory_core\TwigExtension
  */
 class TwigExtension extends \Twig_Extension {
+
+  /**
+   * Vactory service.
+   *
+   * @var \Drupal\vactory_core\Vactory
+   */
+  protected $vactory;
+
+  /**
+   * Entity Type Manager service.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
+   * {@inheritDoc}
+   */
+  public function __construct(Vactory $vactory, EntityTypeManagerInterface $entityTypeManager) {
+    $this->vactory = $vactory;
+    $this->entityTypeManager = $entityTypeManager;
+  }
 
   /**
    * {@inheritDoc}
@@ -58,6 +82,10 @@ class TwigExtension extends \Twig_Extension {
 
       new \Twig_SimpleFunction('successive_image_styles',
         [$this, 'successiveImageStyles'],
+        ['is_safe' => ['html']]),
+
+      new \Twig_SimpleFunction('get_term_name',
+        [$this, 'getTermName'],
         ['is_safe' => ['html']]),
     ];
   }
@@ -175,19 +203,19 @@ class TwigExtension extends \Twig_Extension {
 
     switch ($type) {
       case 'block':
-        return Vactory::renderBlock($object, (is_array($configuration)) ? $configuration : [], is_array($attributes) ? $attributes : []);
+        return $this->vactory->renderBlock($object, (is_array($configuration)) ? $configuration : [], is_array($attributes) ? $attributes : []);
 
       case 'views':
-        return Vactory::renderView($object, $configuration);
+        return $this->vactory->renderView($object, $configuration);
 
       case 'menu':
-        return Vactory::renderMenu($object);
+        return $this->vactory->renderMenu($object);
 
       case 'form':
-        return Vactory::renderForm($object, $configuration);
+        return $this->vactory->renderForm($object, $configuration);
 
       case 'entity':
-        return Vactory::renderEntity($object, $configuration, $view_mode);
+        return $this->vactory->renderEntity($object, $configuration, $view_mode);
     }
   }
 
@@ -228,7 +256,7 @@ class TwigExtension extends \Twig_Extension {
    * @return \Drupal\media\Entity\Media|NULL
    */
   public function getMedia($mid) {
-    $media = \Drupal::service('entity_type.manager')->getStorage('media')
+    $media = $this->entityTypeManager->getStorage('media')
       ->load($mid);
     return $media;
   }
@@ -258,8 +286,8 @@ class TwigExtension extends \Twig_Extension {
         'filemime' => $image->get('filemime')->value,
         'uri' => $image->get('uri')->value,
         'url' => file_create_url($image->get('uri')->value),
-        'alt' => !empty($image->get('field_image_alt_text')->value) ? $image->get('field_image_alt_text')->value : '',
-        'title' => !empty($image->get('field_image_title_text')->value) ? $image->get('field_image_title_text')->value : '',
+        'alt' => $image->hasField('field_image_alt_text') && !empty($image->get('field_image_alt_text')->value) ? $image->get('field_image_alt_text')->value : '',
+        'title' => $image->hasField('field_image_title_text') && !empty($image->get('field_image_title_text')->value) ? $image->get('field_image_title_text')->value : '',
       ];
       return array_merge($file_info, $image_meta_data);
     }
@@ -275,8 +303,6 @@ class TwigExtension extends \Twig_Extension {
    *   Ordered list of styles to apply.
    *
    * @return string|null
-   *
-   * @deprecated will be removed, use one image style instead.
    */
   public function successiveImageStyles($image_uri, $styles) {
     if (empty($styles)) {
@@ -292,4 +318,12 @@ class TwigExtension extends \Twig_Extension {
     return NULL;
   }
 
+  public function getTermName($tid) {
+    if (isset($tid)) {
+      $term = Term::load($tid);
+      if (isset($term)) {
+        return $term->get('name')->value;
+      }
+    }
+  }
 }
