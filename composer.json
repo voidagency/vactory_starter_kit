@@ -144,7 +144,8 @@
     "drupal/multiple_fields_remove_button": "^1.0@alpha",
     "drupal/amptheme": "^3.0",
     "drupal/filefield_paths": "^1.0@beta",
-    "burst/cloudinary": "^9.2"
+    "burst/cloudinary": "^9.2",
+    "drupal/workbench_moderation": "^1.6"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.3"
