@@ -1,0 +1,10 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_toolbox
+id: toolbox
+label: Toolbox
+description: 'Manage toolbox menu items'
+locked: false

@@ -1,0 +1,59 @@
+{% macro menuMacro(menu, level) -%}
+
+	{# Set our default level as an integer. #}
+	{% set default_level = 1 %}
+
+	<ul class="menu-level--{{ level|default(default_level) }}">
+		{% for menu_item in menu %}
+			{# Check if this is the active item. #}
+			{% set active = (menu_item.active) ? ' is-active' : '' %}
+
+			{# Check if this item is in the active trail. #}
+			{% set active = active ~ ((menu_item.active_trail) ? ' is-active-trail' : '') %}
+
+			{# Check if this item has childs. #}
+			{% set has_sub = ((menu_item.submenu or menu_item.fields.field_injected_block.plugin_id is not empty) ? 'has-sub' : '') %}
+
+			<li class="menu__item{{ active }} menu__item--{{ level|default(default_level) }} {{ has_sub }} {{ menu_item.options.attributes.wrapper_class }}">
+				<a href="{{ menu_item.url }}" id="{{ menu_item.options.attributes.id }}" class="menu__link{{ active }} {{ menu_item.options.attributes.class|join(' ') }}">{{ menu_item.text }}</a>
+				{# Call the block injected menu if exist. #}
+				{% if menu_item.fields.field_injected_block.plugin_id is not empty %}
+					<div class="menu-sub--{{ level|default(default_level) }}">
+						<div class="menu-sub-inner--{{ level|default(default_level) }}">
+							{{ vactory_render('block', menu_item.fields.field_injected_block.plugin_id) }}
+						</div>
+					</div>
+					{# End Injected Block #}
+				{% elseif menu_item.submenu %}
+					<div class="menu-sub--{{ level|default(default_level) }}">
+						<div class="menu-sub-inner--{{ level|default(default_level) }}">
+							{# Since this menu item has a submenu, recall function and increment counter. #}
+							{{ _self.menuMacro(menu_item.submenu, level|default(default_level) + 1) }}
+						</div>
+					</div>
+				{% endif %}
+			</li>
+		{% endfor %}
+	</ul>
+{%- endmacro %}
+
+{%
+	set classes = [
+	'vactory-toolbox',
+	'block-content',
+	'block-content--' ~ bundle|clean_class,
+	'block-content--' ~ id|clean_class,
+	bundle|clean_class
+]
+%}
+<div{{ attributes.addClass(classes)|without('id') }}>
+	{% block content %}
+		{% set source = content.field_links_source.0['#markup'] is defined ? content.field_links_source.0['#markup'] : '' %}
+		{% if source == 'df_template' %}
+			{{ content.field_dynamic_block_components }}
+		{% else %}
+			{% set toolbox_menu = simplify_menu('toolbox') %}
+				{{ _self.menuMacro(toolbox_menu.menu_tree) }}
+		{% endif %}
+	{% endblock %}
+</div>

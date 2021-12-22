@@ -5,6 +5,7 @@ package: Vactory
 core: 8.x
 core_version_requirement: ^8 || ^9
 dependencies:
-- node
-- block
+  - node
+  - block
+  - vactory_field
 version: 8.x-1.0

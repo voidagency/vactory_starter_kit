@@ -5,6 +5,8 @@
  * Primary module hooks for vactory toolbox module.
  */
 
+use Drupal\Core\Form\FormStateInterface;
+
 /**
  * Implements hook_theme().
  */
@@ -14,5 +16,28 @@ function vactory_toolbox_theme() {
       "variables" => ["content" => []],
       "template"  => 'block-toolbox',
     ],
+    'block__block_content__vactory_toolbox' => [
+      'base hook' => 'block',
+      'template' => 'vactory-toolbox-block',
+    ],
   ];
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_toolbox_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $concerned_form_ids = [
+    'block_content_vactory_toolbox_edit_form',
+    'block_content_vactory_toolbox_form',
+  ];
+  if (in_array($form_id, $concerned_form_ids)) {
+    $form['field_dynamic_block_components']['#states'] = [
+      'visible' => [
+        'select[name="field_links_source"]' => [
+          'value' => 'df_template',
+        ],
+      ],
+    ];
+  }
 }
