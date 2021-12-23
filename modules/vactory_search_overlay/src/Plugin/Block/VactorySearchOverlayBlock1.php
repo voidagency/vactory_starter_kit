@@ -20,12 +20,9 @@ class VactorySearchOverlayBlock1 extends BlockBase {
    * {@inheritdoc}
    */
   public function build() {
-    // Get the search form.
-    $searchOverlayForm = \Drupal::formBuilder()
-      ->getForm('Drupal\vactory_search_overlay\Form\SearchOverlayForm', 'variant1');
+
     return [
       '#theme' => 'block_vactory_search_overlay_variant1',
-      '#form'  => $searchOverlayForm,
     ];
   }
 

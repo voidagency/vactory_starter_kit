@@ -4,9 +4,11 @@ vactory_search_overlay.variant1:
   dependencies:
     - core/jquery
     - core/drupalSettings
+    - core/drupal.ajax
 vactory_search_overlay.variant2:
   js:
     js/variant2.js: {}
   dependencies:
     - core/jquery
     - core/drupalSettings
+    - core/drupal.ajax
