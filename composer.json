@@ -145,7 +145,8 @@
     "drupal/amptheme": "^3.0",
     "drupal/filefield_paths": "^1.0@beta",
     "burst/cloudinary": "^9.2",
-    "drupal/workbench_moderation": "^1.6"
+    "drupal/workbench_moderation": "^1.6",
+    "phpoffice/phpspreadsheet": "^1.20"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.3"
