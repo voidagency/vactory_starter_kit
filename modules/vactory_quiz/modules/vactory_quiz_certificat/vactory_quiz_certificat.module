@@ -1,0 +1,19 @@
+<?php
+
+/**
+ * @file
+ * Module related hooks.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function vactory_quiz_certificat_form_node_vactory_quiz_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['field_certificat_require']['#states'] = [
+    'visible' => [
+      'input[name="field_enable_certificat[value]"]' => ['checked' => TRUE],
+    ],
+  ];
+}

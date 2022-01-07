@@ -48,6 +48,11 @@ function vactory_quiz_history_schema() {
         'not null' => TRUE,
         'description' => "Timestamp for user's attempt.",
       ],
+      'certificat' => [
+        'type' => 'text',
+        'size' => 'big',
+        'description' => "Generated certificat URI.",
+      ],
     ],
     'primary key' => ['id'],
   ];

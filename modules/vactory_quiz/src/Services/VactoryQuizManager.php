@@ -69,6 +69,7 @@ class VactoryQuizManager {
         $result['perfect_mark'] = (int) $search->perfect_mark;
         $result['user_answers'] = Json::decode($search->user_answers);
         $result['time'] = (int) $search->time;
+        $result['certificat'] = (int) $search->certificat;
       }
     }
     return $result;
@@ -77,7 +78,7 @@ class VactoryQuizManager {
   /**
    * Update user attempt history if exist or create it.
    */
-  public function updateUserAttemptHistory($uid, $quiz_nid, $user_mark, $user_answers) {
+  public function updateUserAttemptHistory($uid, $quiz_nid, $user_mark, $user_answers, $certificat = '') {
     $query = "SELECT * FROM vactory_quiz_history where uid = :uid and quiz_nid = :nid";
     $quiz_perfect_mark = $this->getPerfectMark($quiz_nid);
     $searches = $this->database->query($query, [
@@ -100,6 +101,7 @@ class VactoryQuizManager {
           'perfect_mark' => $user_mark > $quiz_perfect_mark ? $quiz_perfect_mark : $user_mark,
           'user_answers' => Json::encode($user_answers),
           'time' => \Drupal::time()->getCurrentTime(),
+          'certificat' => $certificat,
         ])
         ->execute();
     }
@@ -114,6 +116,7 @@ class VactoryQuizManager {
           'perfect_mark' => $user_perfect_mark,
           'user_answers' => Json::encode($user_answers),
           'time' => \Drupal::time()->getCurrentTime(),
+          'certificat' => $certificat,
         ])
         ->condition('uid', $uid)
         ->condition('quiz_nid', $quiz_nid)

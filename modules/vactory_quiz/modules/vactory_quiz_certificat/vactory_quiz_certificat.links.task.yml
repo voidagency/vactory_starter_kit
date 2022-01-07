@@ -1,0 +1,8 @@
+vactory_quiz_certificat.settings:
+  title: 'Certificat Settings'
+  route_name: vactory_quiz_certificat.settings
+  base_route: vactory_quiz.settings
+vactory_quiz_certificat.translate.settings:
+  title: 'Translate Certificat Settings'
+  route_name: config_translation.item.overview.vactory_quiz_certificat.settings
+  base_route: vactory_quiz.settings

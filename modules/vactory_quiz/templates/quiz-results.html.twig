@@ -23,4 +23,11 @@
 			}%}
 		</div>
 	{% endif %}
+	{% if content.certificat_url is defined %}
+		<p class="mb-3">
+			<a class="btn btn-primary suffix-icon-download" href="{{ content.certificat_url }}" download>
+				{{ "Télécharger mon certificat"|t }}
+			</a>
+		</p>
+	{% endif %}
 </div>
