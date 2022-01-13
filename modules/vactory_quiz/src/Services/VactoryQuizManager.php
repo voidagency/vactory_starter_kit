@@ -76,6 +76,30 @@ class VactoryQuizManager {
   }
 
   /**
+   * Get all quiz ids passed by the given user.
+   */
+  public function getAllPassedQuiz($user_id) {
+    $query = "SELECT quiz_nid FROM vactory_quiz_history where uid = :uid";
+    $searches = $this->database->query($query, [
+      ':uid' => $user_id,
+    ]);
+    $result = [];
+    if (isset($searches) and !empty($searches)) {
+      foreach ($searches as $search) {
+        $result['uid'] = (int) $search->uid;
+        $result['quiz_nid'] = (int) $search->quiz_nid;
+        $result['user_mark'] = (int) $search->user_mark;
+        $result['perfect_mark'] = (int) $search->perfect_mark;
+        $result['user_answers'] = Json::decode($search->user_answers);
+        $result['time'] = (int) $search->time;
+        $result['certificat'] = (int) $search->certificat;
+      }
+    }
+    return $result;
+  }
+
+
+  /**
    * Update user attempt history if exist or create it.
    */
   public function updateUserAttemptHistory($uid, $quiz_nid, $user_mark, $user_answers, $certificat = '') {

@@ -9,6 +9,7 @@ use Drupal\Component\Serialization\Json;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
 use Drupal\node\NodeTypeInterface;
@@ -259,6 +260,19 @@ function vactory_notifications_entity_base_field_info(EntityTypeInterface $entit
       ->setDisplayConfigurable('form', TRUE);
   }
   return $fields;
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_notifications_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $user_forms = [
+    'user_form',
+    'user_register_form',
+  ];
+  if (in_array($form_id, $user_forms)) {
+    $form['field_notification_toast']['#access'] = FALSE;
+  }
 }
 
 /**
