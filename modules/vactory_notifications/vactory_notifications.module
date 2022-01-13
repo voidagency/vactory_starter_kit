@@ -5,15 +5,17 @@
  * Vactory notifications custom module logic here.
  */
 
+use Drupal\Component\Serialization\Json;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\node\Entity\Node;
+use Drupal\node\NodeInterface;
+use Drupal\node\NodeTypeInterface;
 use Drupal\user\Entity\Role;
 use Drupal\vactory_notifications\Entity\NotificationsEntity;
 use Drupal\views\ViewExecutable;
 use Drupal\user\Entity\User;
-use Drupal\Core\Entity\EntityInterface;
 
 /**
  * Implements hook_theme().
@@ -31,138 +33,141 @@ function vactory_notifications_theme($existing, $type, $theme, $path) {
         'nb_new_notifications' => NULL,
       ],
     ],
+    'vactory_notifications_toasts' => [
+      'template' => 'notifications-toast',
+      'variables' => [
+        'notifications' => NULL,
+      ],
+    ],
+    'vactory_notifications_toasts_block' => [
+      'template' => 'notifications-toasts-block',
+      'variables' => [
+        'content' => NULL,
+      ],
+    ],
   ];
 }
 
 /**
- * Implements hook_entity_insert().
+ * Implements hook_ENTITY_TYPE_presave().
  */
-function vactory_notifications_entity_insert(EntityInterface $entity) {
-
-  $notification_Service = \Drupal::service('vactory_notifications.send_mail');
-  $notification_config = Drupal::config('vactory_notifications.settings');
-  $token = Drupal::token();
-  if ($entity->getEntityTypeId() === 'node') {
-
-    $node_notification_title = !empty($entity->get('notification_title')->value) ? $entity->get('notification_title')->value : $notification_config->get('notifications_default_title');
-    $node_notification_message = !empty($entity->get('notification_message')->value) ? $entity->get('notification_message')->value : $notification_config->get('notifications_default_message');
-    // Generate a notification.
-    $current_user_id = Drupal::currentUser()->id();
-    $notification_data = [
-      'type' => 'notification_entity',
-      'name' => $token->replace($node_notification_title, ['entity' => $entity]),
-      'user_id' => $current_user_id,
-      'notification_related_content' => $entity->id(),
-      'notification_message' => $token->replace($node_notification_message, ['entity' => $entity]),
-      'status' => TRUE,
-      'notification_concerned_users' => json_encode(vactory_notifications_users_ids($entity->bundle(), $notification_config)),
-      'notification_viewers' => json_encode([]),
-    ];
-    $notification = Drupal::entityTypeManager()
-      ->getStorage('notifications_entity')
-      ->create($notification_data);
-    $notification->save();
-    // Notifications auto translation feature.
-    $is_auto_translated = (boolean) $notification_config->get('auto_translation');
-    if ($is_auto_translated) {
-      notifications_auto_translate($notification, $notification_config);
+function vactory_notifications_node_presave(Drupal\Core\Entity\EntityInterface $entity) {
+  $notification_manager = \Drupal::service('vactory_notifications.manager');
+  if ($entity->get('generate_notification')->value && $notification_manager->isNotificationsEnabledForBundle($entity->bundle())) {
+    if ($entity->isNew()) {
+      drupal_register_shutdown_function('vactory_notification_generate', $entity);
     }
-    // Notification by Mail.
-    $node_mail_subject = !empty($entity->get('mail_subject')->value) ? $entity->get('mail_subject')->value : $notification_config->get('mail_default_subject');
-    $node_mail_message = !empty($entity->get('mail_message')->value) ? $entity->get('mail_message')->value : $notification_config->get('mail_default_message');
-    // Send a mail notification.
-    $is_mail_active = $notification_config->get('mail_active');
-    if ($is_mail_active == 1) {
-      $existing_roles = Role::loadMultiple();
-      $target_roles = [];
-      foreach ($existing_roles as $key => $role) {
-        $mail_roles = $notification_config->get($key . '_content_types_mail');
-        if (isset($mail_roles) && !empty($mail_roles) && in_array($entity->bundle(), $mail_roles)) {
-          array_push($target_roles, $key);
-        }
-      }
-      if (!empty($target_roles) && isset($node_mail_subject) && isset($node_mail_message)) {
-        $subject = $token->replace($node_mail_subject, ['entity' => $entity]);
-        $message = $token->replace($node_mail_message, ['entity' => $entity]);
-        $users = User::loadMultiple();
-        foreach ($users as $user) {
-          if (count(array_intersect($user->getRoles(), $target_roles)) > 0 && !empty($user->getEmail())) {
-            $notification_Service->sendNotificationByMail($subject, $user->getEmail(), $message);
-          }
-        }
-      }
-      // Generate a mail notification.
-      $mail_notification_data = [
-        'type' => 'notification_entity',
-        'mail_subject' => $token->replace($node_mail_subject, ['entity' => $entity]),
-        'user_id' => $current_user_id,
-        'notification_related_content' => $entity->id(),
-        'mail_message' => $token->replace($node_mail_message, ['entity' => $entity]),
-        'status' => TRUE,
-        'notification_concerned_users' => json_encode(vactory_notifications_users_ids($entity->bundle(), $notification_config)),
-        'notification_viewers' => json_encode([]),
-      ];
-
-      $mail_notification = Drupal::entityTypeManager()
-        ->getStorage('notifications_entity')
-        ->create($mail_notification_data);
-      $notification->save();
-      // Notifications auto translation feature.
-      $is_auto_translated = (boolean) $notification_config->get('auto_translation');
-      if ($is_auto_translated) {
-        notifications_auto_translate($mail_notification, $notification_config);
-      }
+    else {
+      vactory_notification_generate($entity);
     }
-
-  }
-
-  if ($entity->getEntityTypeId() === 'notifications_entity') {
-    $current_route_name = Drupal::routeMatch()->getRouteName();
-    // Manually created notifications case.
-    if ($current_route_name === 'entity.notifications_entity.add_page') {
-      $related_content_id = $entity->getRelatedContent();
-      $related_content = Node::load($related_content_id);
-      $concerned_users = vactory_notifications_users_ids($related_content->bundle(), $notification_config);
-      $entity->setTitle($token->replace($entity->getTitle(), ['entity' => $entity]));
-      $entity->setMessage($token->replace($entity->getMessage(), ['entity' => $entity]));
-      $entity->setConcernedUsers($concerned_users);
-      $entity->setViewers([]);
-      $entity->save();
-      // Notifications auto translation feature.
-      $is_auto_translated = (boolean) $notification_config->get('auto_translation');
-      if ($is_auto_translated) {
-        notifications_auto_translate($entity, $notification_config);
-      }
-    }
-
   }
 }
 
 /**
- * Auto translate a notification function for enabled languages.
+ * Generate notification for given entity.
  */
-function notifications_auto_translate($notification, $default_config) {
-  $enabled_languages = Drupal::languageManager()->getLanguages();
+function vactory_notification_generate($entity) {
+  $notification_manager = \Drupal::service('vactory_notifications.manager');
+  $notification_config = Drupal::config('vactory_notifications.settings');
   $token = Drupal::token();
+  $node_notification_title = !empty($entity->get('notification_title')->value) ? $entity->get('notification_title')->value : $notification_config->get('notifications_default_title');
+  $node_notification_message = !empty($entity->get('notification_message')->value) ? $entity->get('notification_message')->value : $notification_config->get('notifications_default_message');
+  $notification_users_ids = $notification_manager->getNotificationsUsersIds($entity->bundle());
+  // Generate a notification.
+  $current_user_id = Drupal::currentUser()->id();
+  $notification_data = [
+    'type' => 'notification_entity',
+    'name' => $token->replace($node_notification_title, ['entity' => $entity]),
+    'user_id' => $current_user_id,
+    'notification_related_content' => $entity->id(),
+    'notification_message' => $token->replace($node_notification_message, ['entity' => $entity]),
+    'status' => TRUE,
+    'notification_concerned_users' => Json::encode($notification_users_ids),
+    'notification_viewers' => Json::encode([]),
+  ];
+  $notification = Drupal::entityTypeManager()
+    ->getStorage('notifications_entity')
+    ->create($notification_data);
+  $notification->save();
+  if ($notification_config->get('enable_toast')) {
+    // Trigger notification toast.
+    $notification_manager->triggerNotificationsToast($notification);
+  }
+  // Notifications auto translation feature.
+  $is_auto_translated = (boolean) $notification_config->get('auto_translation');
+  if ($is_auto_translated) {
+    $notification_manager->notificationsAutoTranslate($notification);
+  }
+  // Notification by Mail.
+  $node_mail_subject = !empty($entity->get('mail_subject')->value) ? $entity->get('mail_subject')->value : $notification_config->get('mail_default_subject');
+  $node_mail_message = !empty($entity->get('mail_message')->value) ? $entity->get('mail_message')->value : $notification_config->get('mail_default_message');
+  // Send a mail notification.
+  $is_mail_active = $notification_config->get('mail_active');
+  if ($is_mail_active == 1) {
+    $existing_roles = Role::loadMultiple();
+    $target_roles = [];
+    foreach ($existing_roles as $key => $role) {
+      $mail_roles = $notification_config->get($key . '_content_types_mail');
+      if (isset($mail_roles) && !empty($mail_roles) && in_array($entity->bundle(), $mail_roles)) {
+        array_push($target_roles, $key);
+      }
+    }
+    if (!empty($target_roles) && isset($node_mail_subject) && isset($node_mail_message)) {
+      $subject = $token->replace($node_mail_subject, ['entity' => $entity]);
+      $message = $token->replace($node_mail_message, ['entity' => $entity]);
+      $users = User::loadMultiple();
+      foreach ($users as $user) {
+        if (count(array_intersect($user->getRoles(), $target_roles)) > 0 && !empty($user->getEmail())) {
+          $notification_manager->sendNotificationByMail($subject, $user->getEmail(), $message);
+        }
+      }
+    }
+    // Generate a mail notification.
+    $mail_notification_data = [
+      'type' => 'notification_entity',
+      'mail_subject' => $token->replace($node_mail_subject, ['entity' => $entity]),
+      'user_id' => $current_user_id,
+      'notification_related_content' => $entity->id(),
+      'mail_message' => $token->replace($node_mail_message, ['entity' => $entity]),
+      'status' => TRUE,
+      'notification_concerned_users' => Json::encode($notification_users_ids),
+      'notification_viewers' => Json::encode([]),
+    ];
 
-  foreach ($enabled_languages as $langcode => $language) {
-    if (!$language->isDefault()) {
-      $notification_config_translation = \Drupal::languageManager()->getLanguageConfigOverride($langcode, 'vactory_notifications.settings');
-      $translated_notification_title = $notification_config_translation->get('notifications_default_title');
-      $translated_notification_message = $notification_config_translation->get('notifications_default_message');
-      $translated_mail_subject = $notification_config_translation->get('mail_default_subject');
-      $translated_mail_message = $notification_config_translation->get('mail_default_message');
-      $translated_notification = $notification->addTranslation($langcode);
-      $translated_notification_title = isset($translated_notification_title) ? $translated_notification_title : $default_config->get('notifications_default_title');
-      $translated_notification_message = isset($translated_notification_message) ? $translated_notification_message : $default_config->get('notifications_default_message');
-      $translated_mail_subject = isset($translated_mail_subject) ? $translated_mail_subject : $default_config->get('mail_default_subject');
-      $translated_mail_message = isset($translated_mail_message) ? $translated_mail_message : $default_config->get('mail_default_message');
-      // Tokens replacement.
-      $translated_notification->name = $token->replace($translated_notification_title, ['entity' => $notification]);
-      $translated_notification->notification_message = $token->replace($translated_notification_message, ['entity' => $notification]);
-      $translated_notification->mail_subject = $token->replace($translated_mail_subject, ['entity' => $notification]);
-      $translated_notification->mail_message = $token->replace($translated_mail_message, ['entity' => $notification]);
-      $translated_notification->save();
+    $mail_notification = Drupal::entityTypeManager()
+      ->getStorage('notifications_entity')
+      ->create($mail_notification_data);
+    $notification->save();
+    // Notifications auto translation feature.
+    $is_auto_translated = (boolean) $notification_config->get('auto_translation');
+    if ($is_auto_translated) {
+      $notification_manager->notificationsAutoTranslate($mail_notification);
+    }
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_insert().
+ */
+function vactory_notifications_notifications_entity_insert(Drupal\Core\Entity\EntityInterface $entity) {
+  $notification_manager = \Drupal::service('vactory_notifications.manager');
+  $token = Drupal::token();
+  $notification_config = Drupal::config('vactory_notifications.settings');
+  $current_route_name = Drupal::routeMatch()->getRouteName();
+  // Manually created notifications case.
+  if ($current_route_name === 'entity.notifications_entity.add_page') {
+    $related_content_id = $entity->getRelatedContent();
+    $related_content = Node::load($related_content_id);
+    $concerned_users = $notification_manager->getNotificationsUsersIds($related_content->bundle());
+    $entity->setTitle($token->replace($entity->getTitle(), ['entity' => $entity]));
+    $entity->setMessage($token->replace($entity->getMessage(), ['entity' => $entity]));
+    $entity->setConcernedUsers($concerned_users);
+    $entity->setViewers([]);
+    $entity->save();
+    // Notifications auto translation feature.
+    $is_auto_translated = (boolean) $notification_config->get('auto_translation');
+    if ($is_auto_translated) {
+      $notification_manager->notificationsAutoTranslate($entity);
     }
   }
 }
@@ -239,6 +244,19 @@ function vactory_notifications_entity_base_field_info(EntityTypeInterface $entit
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
+    // Generate notification.
+    $fields['generate_notification'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Generate notification'))
+      ->setDescription(t('Check this to generate a notification for this content'))
+      ->setTranslatable(TRUE)
+      ->setDefaultValue(1)
+      ->setDisplayOptions('form', array(
+        'type' => 'boolean_checkbox',
+        'settings' => array(
+          'display_label' => TRUE,
+        ),
+      ))
+      ->setDisplayConfigurable('form', TRUE);
   }
   return $fields;
 }
@@ -260,6 +278,7 @@ function vactory_notifications_form_node_form_alter(&$form) {
   $form['node_notifications']['notifications_tokens_tree'] = get_token_tree();
   $form['notification_title']['#group'] = 'node_notifications';
   $form['notification_message']['#group'] = 'node_notifications';
+  $form['generate_notification']['#group'] = 'node_notifications';
 
   if (!isset($form['notification_title']['widget'][0]['value']['#default_value'])) {
     $form['notification_title']['widget'][0]['value']['#default_value'] = $notifications_config->get('notifications_default_title');
@@ -287,6 +306,21 @@ function vactory_notifications_form_node_form_alter(&$form) {
   }
   if (!isset($form['mail_message']['widget'][0]['value']['#default_value'])) {
     $form['mail_message']['widget'][0]['value']['#default_value'] = $notifications_config->get('mail_default_message');
+  }
+  // Check if notification are enabled for the current node bundle.
+  $notification_manager = \Drupal::service('vactory_notifications.manager');
+  $bundle = '';
+  $node = Drupal::routeMatch()->getParameter('node');
+  $content_type = Drupal::routeMatch()->getParameter('node_type');
+  if ($node instanceof NodeInterface) {
+    $bundle = $node->bundle();
+  }
+  if ($content_type instanceof NodeTypeInterface) {
+    $bundle = $content_type->id();
+  }
+  if (!empty($bundle) && $notification_manager->isNotificationsEnabledForBundle($bundle)) {
+    $form['#attached']['library'][] = 'vactory_notifications/scripts';
+    $form['#attached']['library'][] = 'vactory_notifications/styles';
   }
 }
 
@@ -324,27 +358,10 @@ function vactory_notifications_preprocess_views_view_fields__notifications(&$var
   $nid = $variables['row']->_entity->getRelatedContent();
   if (!empty($nid)) {
     $node = Node::load($nid);
-    $variables['related_content_url'] = $node->toUrl()->toString();
-  }
-}
-
-/**
- * Get concerned users IDs form module settings.
- */
-function vactory_notifications_users_ids($bundle, $config) {
-  $users = User::loadMultiple();
-  $users_ids = [];
-  foreach ($users as $user) {
-    $user_roles = $user->getRoles();
-    foreach ($user_roles as $role_name) {
-      $role_content_types = $config->get($role_name . '_content_types');
-      if (!empty($role_content_types) && in_array($bundle, $role_content_types)) {
-        $users_ids[] = $user->id();
-      }
+    if ($node) {
+      $variables['related_content_url'] = $node->toUrl()->toString();
     }
   }
-
-  return $users_ids;
 }
 
 /**

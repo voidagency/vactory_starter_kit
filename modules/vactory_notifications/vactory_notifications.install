@@ -127,3 +127,23 @@ function vactory_notifications_update_8103(&$sandbox) {
     'mail_message', 'node', 'vactory_notifications', $mail_message_field
   );
 }
+
+/**
+ * Update node entity type - Install generate notification field storage.
+ */
+function vactory_notifications_update_8105(&$sandbox) {
+  // Generate notification.
+  $field_definition = BaseFieldDefinition::create('boolean')
+    ->setLabel(t('Generate notification'))
+    ->setDescription(t('Check this to generate a notification for this content'))
+    ->setTranslatable(TRUE)
+    ->setDefaultValue(1)
+    ->setDisplayOptions('form', array(
+      'type' => 'boolean_checkbox',
+      'settings' => array(
+        'display_label' => TRUE,
+      ),
+    ))
+    ->setDisplayConfigurable('form', TRUE);
+  Drupal::entityDefinitionUpdateManager()->installFieldStorageDefinition('generate_notification', 'node', 'vactory_notifications', $field_definition);
+}

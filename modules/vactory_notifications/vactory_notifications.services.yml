@@ -1,4 +1,18 @@
 services:
-  vactory_notifications.send_mail:
+  vactory_notifications.manager:
     class: Drupal\vactory_notifications\Services\VactoryNotificationsService
-    arguments: ['@plugin.manager.mail', '@language_manager']
+    arguments:
+      - '@plugin.manager.mail'
+      - '@language_manager'
+      - '@entity_type.manager'
+      - '@config.factory'
+      - '@token'
+      - '@event_dispatcher'
+  vactory_notification.toast_event:
+    class: '\Drupal\vactory_notifications\EventSubscriber\NotificationsToastEventSubscriber'
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@datetime.time'
+    tags:
+      - { name: 'event_subscriber' }
