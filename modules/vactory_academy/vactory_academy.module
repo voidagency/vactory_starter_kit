@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Url;
+use Drupal\node\NodeInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Drupal\user\Entity\User;
 use Drupal\node\Entity\Node;
@@ -143,7 +144,7 @@ function vactory_academy_preprocess_field__comment(&$variables) {
   $current_user = Drupal::currentUser();
   $node = Drupal::routeMatch()->getParameter('node');
   // Anonymous users could not comment academy content types nodes.
-  if (in_array('anonymous', $current_user->getRoles()) && $node->bundle() == 'vactory_academy') {
+  if ($node instanceof NodeInterface && in_array('anonymous', $current_user->getRoles()) && $node->bundle() == 'vactory_academy') {
     unset($variables['comment_form']);
   }
 }

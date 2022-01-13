@@ -41,14 +41,6 @@ function vactory_user_form_user_login_form_alter(&$form, FormStateInterface $for
     return;
   }
 
-  // Unused markup & elements.
-  unset(
-    $form['name']['#title'],
-    $form['name']['#description'],
-    $form['pass']['#title'],
-    $form['pass']['#description']
-  );
-
   // Setup placeholders.
   if ($moduleHandler->moduleExists('email_registration')) {
     $config = \Drupal::config('email_registration.settings');
@@ -86,19 +78,6 @@ function vactory_user_form_user_register_form_alter(&$form, FormStateInterface $
   $form['contact']['#access'] = FALSE;
   $form['timezone']['#access'] = FALSE;
   $form['field_about_the_author']['#access'] = FALSE;
-
-  // Unused markup & elements.
-  unset(
-    $form['field_first_name']['widget'][0]['#title'],
-    $form['field_first_name']['widget']['#title'],
-    $form['field_first_name']['widget'][0]['value']['#title'],
-    $form['field_last_name']['widget'][0]['#title'],
-    $form['field_last_name']['widget']['#title'],
-    $form['field_last_name']['widget'][0]['value']['#title'],
-    $form['field_telephone']['widget']['#title'],
-    $form['field_telephone']['widget'][0]['value']['#title'],
-    $form['account']['mail']['#title']
-  );
 
   // Setup placeholders.
   $form['field_first_name']['widget'][0]['value']['#attributes']['placeholder'] = t('First name');
