@@ -1,0 +1,7 @@
+vactory_node_view_count.increment_counter:
+  path: '/node-views-count/update-count/{nid}'
+  defaults:
+    _controller: '\Drupal\vactory_node_view_count\Controller\VactoryNodeViewCountController::incrementCounter'
+  methods: [PUT]
+  requirements:
+    _permission: 'access content'

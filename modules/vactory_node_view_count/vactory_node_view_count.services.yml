@@ -1,0 +1,3 @@
+services:
+  vactory_node_view_count.node_view_count:
+    class: Drupal\vactory_node_view_count\Services\NodeViewCountService
