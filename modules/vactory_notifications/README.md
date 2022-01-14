@@ -58,6 +58,9 @@ The module defines its own tokens to create notifications with dynamic title and
 content, just click the link "Brows available tokens" showed in different module config pages,
 and in the token name 'Notifications' group choose the needed tokens.
 
+## Loom demo video
+https://www.loom.com/share/a8b79aa700d14d7cb9af3f46a29cfeaf
+
 ## Maintainers
 Brahim KHOUY
 <b.khouy@void.fr>
