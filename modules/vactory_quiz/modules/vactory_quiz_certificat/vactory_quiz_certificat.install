@@ -1,0 +1,102 @@
+<?php
+
+/**
+ * @file
+ * Module install/uninstall hooks.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function vactory_quiz_certificat_install($is_syncing) {
+  // Update quiz content type view display.
+  $certificat_require = [
+    'type' => 'list_key',
+    'weight' => 3,
+    'region' => 'content',
+    'label' => 'visually_hidden',
+  ];
+  $enable_certificat = [
+    'type' => 'boolean',
+    'weight' => 4,
+    'region' => 'content',
+    'label' => 'visually_hidden',
+    'settings' => [
+      'format' => 'default',
+      'format_custom_false' => '',
+      'format_custom_true' => '',
+    ],
+  ];
+  \Drupal::entityTypeManager()
+    ->getStorage('entity_view_display')
+    ->load('node.vactory_quiz.default')
+    ->setComponent('field_enable_certificat', $enable_certificat)
+    ->setComponent('field_certificat_require', $certificat_require)
+    ->save();
+  \Drupal::entityTypeManager()
+    ->getStorage('entity_view_display')
+    ->load('node.vactory_quiz.card')
+    ->setComponent('field_enable_certificat', $enable_certificat)
+    ->setComponent('field_certificat_require', $certificat_require)
+    ->save();
+
+  // Update quiz content type view display.
+  $certificat_require = [
+    'type' => 'options_select',
+    'weight' => 21,
+    'region' => 'content',
+  ];
+  $enable_certificat = [
+    'type' => 'boolean_checkbox',
+    'weight' => 20,
+    'region' => 'content',
+    'settings' => [
+      'display_label' => true,
+    ],
+  ];
+  \Drupal::entityTypeManager()
+    ->getStorage('entity_form_display')
+    ->load('node.vactory_quiz.default')
+    ->setComponent('field_enable_certificat', $enable_certificat)
+    ->setComponent('field_certificat_require', $certificat_require)
+    ->save();
+
+  // Set default real fonts directories.
+  $font_directories = Drupal::config('vactory_quiz_certificat.settings')->get('font_directories');
+  $real_font_directories = [];
+  if (!empty($font_directories)) {
+    $font_directories = explode(PHP_EOL, $font_directories);
+    $real_font_directories = array_map(function ($el) {
+      $separator = str_starts_with($el, '/') ? '' : '/';
+      return DRUPAL_ROOT . $separator . trim($el);
+    }, array_filter($font_directories));
+  }
+  \Drupal::state()->set('vactory_quiz_certificat_font_dirs', $real_font_directories);
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function vactory_quiz_certificat_uninstall($is_syncing) {
+  // Remove certificat field from quiz content type.
+  \Drupal::entityTypeManager()
+    ->getStorage('entity_view_display')
+    ->load('node.vactory_quiz.default')
+    ->removeComponent('field_enable_certificat')
+    ->removeComponent('field_certificat_require')
+    ->save();
+  \Drupal::entityTypeManager()
+    ->getStorage('entity_view_display')
+    ->load('node.vactory_quiz.card')
+    ->removeComponent('field_enable_certificat')
+    ->removeComponent('field_certificat_require')
+    ->save();
+  \Drupal::entityTypeManager()
+    ->getStorage('entity_form_display')
+    ->load('node.vactory_quiz.default')
+    ->removeComponent('field_enable_certificat')
+    ->removeComponent('field_certificat_require')
+    ->save();
+  // Remove fonts directories state.
+  \Drupal::state()->delete('vactory_quiz_certificat_font_dirs');
+}

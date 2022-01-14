@@ -47,3 +47,12 @@ entity.notifications_entity.delete_all:
     _title: 'Are you sure you want to delete all existing notifications ?'
   requirements:
     _permission: 'delete notifications'
+vactory_notifications.toast:
+  path: '/notifications-toast'
+  defaults:
+    _title: 'Notifications toast'
+    _controller: '\Drupal\vactory_notifications\Controller\NotificationsToastsController::getNotificationsToast'
+  requirements:
+    _permission: 'access content'
+  options:
+    no_cache: TRUE

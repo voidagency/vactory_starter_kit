@@ -1,0 +1,25 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_quiz_certificat
+  config:
+    - field.storage.node.field_certificat_require
+    - node.type.vactory_quiz
+  module:
+    - options
+id: node.vactory_quiz.field_certificat_require
+field_name: field_certificat_require
+entity_type: node
+bundle: vactory_quiz
+label: 'Min required result to obtain the certificate'
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    value: '50'
+default_value_callback: ''
+settings: {  }
+field_type: list_string

@@ -4,3 +4,7 @@ allow_new_attempts: '1'
 validate_answer_title: Valider
 allow_new_attempts_title: 'Refaire le quiz'
 next_button_title: Continue
+dependencies:
+  enforced:
+    module:
+      - vactory_quiz

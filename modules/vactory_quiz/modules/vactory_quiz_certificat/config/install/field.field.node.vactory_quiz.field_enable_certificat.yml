@@ -1,0 +1,25 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_quiz_certificat
+  config:
+    - field.storage.node.field_enable_certificat
+    - node.type.vactory_quiz
+id: node.vactory_quiz.field_enable_certificat
+field_name: field_enable_certificat
+entity_type: node
+bundle: vactory_quiz
+label: 'Enable certificat'
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    value: 0
+default_value_callback: ''
+settings:
+  on_label: 'On'
+  off_label: 'Off'
+field_type: boolean

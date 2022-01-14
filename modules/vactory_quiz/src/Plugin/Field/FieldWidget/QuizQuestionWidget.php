@@ -411,22 +411,24 @@ class QuizQuestionWidget extends WidgetBase {
    */
   public function cleanWidgetValues($store, &$element, FormStateInterface $form_state, $delta) {
     $triggering_element = $form_state->getTriggeringElement();
-    $parents = $triggering_element['#array_parents'];
-    $is_remove = isset($triggering_element) ? in_array('remove_button', $parents, TRUE) : FALSE;
-    if (!\Drupal::request()->isXmlHttpRequest()) {
-      $store->delete('widget_state');
-      $store->delete('is_removed');
-    }
-    if ($is_remove && !isset($triggering_element['processed'])) {
-      $widget_state = $store->get('widget_state');
-      $parents = array_slice($parents, 0, -1);
-      $index = end($parents);
-      unset($widget_state[$index]);
-      ksort($widget_state, SORT_NUMERIC);
-      $store->set('is_removed', TRUE);
-      $store->set('widget_state', array_values($widget_state));
-      $triggering_element['processed'] = TRUE;
-      $form_state->setTriggeringElement($triggering_element);
+    if (!empty($triggering_element)) {
+      $parents = $triggering_element['#array_parents'];
+      $is_remove = isset($triggering_element) ? in_array('remove_button', $parents, TRUE) : FALSE;
+      if (!\Drupal::request()->isXmlHttpRequest()) {
+        $store->delete('widget_state');
+        $store->delete('is_removed');
+      }
+      if ($is_remove && !isset($triggering_element['processed'])) {
+        $widget_state = $store->get('widget_state');
+        $parents = array_slice($parents, 0, -1);
+        $index = end($parents);
+        unset($widget_state[$index]);
+        ksort($widget_state, SORT_NUMERIC);
+        $store->set('is_removed', TRUE);
+        $store->set('widget_state', array_values($widget_state));
+        $triggering_element['processed'] = TRUE;
+        $form_state->setTriggeringElement($triggering_element);
+      }
     }
   }
 

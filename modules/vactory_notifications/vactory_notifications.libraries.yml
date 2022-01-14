@@ -1,0 +1,16 @@
+scripts:
+  js:
+    js/vactory-notifications.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
+toast:
+  js:
+    js/notifications-toast.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
+styles:
+  css:
+    theme:
+      css/notification-bo.css: {}
