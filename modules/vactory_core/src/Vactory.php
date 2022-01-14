@@ -306,9 +306,11 @@ class Vactory {
     $terms = [];
     foreach ($this->entityFieldManager->getFieldDefinitions('node', $content_type) as $v => $item) {
       if ($item->getSetting("target_type") === "taxonomy_term") {
-        $field_name = $item->get('field_name');
-        foreach ($item->getSetting("handler_settings")['target_bundles'] as $key => $value) {
-          $terms[$value] = [$value, $field_name];
+        $field_name = $item->getName();
+        if (isset($item->getSetting("handler_settings")['target_bundles'])) {
+          foreach ($item->getSetting("handler_settings")['target_bundles'] as $key => $value) {
+            $terms[$value] = [$value, $field_name];
+          }
         }
       }
     }
