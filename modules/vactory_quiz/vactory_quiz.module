@@ -111,7 +111,7 @@ function vactory_quiz_views_query_alter(ViewExecutable $view, QueryPluginBase $q
           ':uid' => Drupal::currentUser()->id(),
         ],
       )->fetchAll();
-      $nids = [];
+      $nids = [0];
       if (!empty($results)) {
         $nids = array_map(function ($result) {
           return $result->quiz_nid;
