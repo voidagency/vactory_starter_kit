@@ -3,3 +3,6 @@ notifications_default_message: 'New content « [notification:content_type:node_t
 auto_translation: TRUE
 notifications_lifetime: 6
 langcode: en
+enforced:
+  module:
+    - vactory_notifications

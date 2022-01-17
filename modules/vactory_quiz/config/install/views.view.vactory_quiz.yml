@@ -10,7 +10,6 @@ dependencies:
   module:
     - node
     - user
-    - vactory_google_places
     - vactory_views
 id: vactory_quiz
 label: Quiz

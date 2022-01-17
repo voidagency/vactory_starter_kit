@@ -9,26 +9,8 @@ dependencies:
     - system.menu.toolbox
   module:
     - content_translation
-    - filefield_paths
     - image
 third_party_settings:
-  filefield_paths:
-    enabled: false
-    file_path:
-      value: '[date:custom:Y]-[date:custom:m]'
-      options:
-        slashes: false
-        pathauto: false
-        transliterate: false
-    redirect: false
-    retroactive_update: false
-    active_updating: false
-    file_name:
-      value: '[file:ffp-name-only-original].[file:ffp-extension-original]'
-      options:
-        slashes: false
-        pathauto: false
-        transliterate: false
   content_translation:
     translation_sync:
       alt: alt

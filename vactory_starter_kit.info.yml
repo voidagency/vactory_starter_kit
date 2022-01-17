@@ -164,6 +164,7 @@ install:
   - vactory_search_overlay
   - vactory_header
   - vactory_footer
+  - vactory_google_places
   - vactory_dynamic_field
   # Vactory Custom
   - vactory_dynamic_field_froala
