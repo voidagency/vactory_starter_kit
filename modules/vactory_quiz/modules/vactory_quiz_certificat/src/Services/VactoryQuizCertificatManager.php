@@ -143,6 +143,7 @@ class VactoryQuizCertificatManager {
       $fontData = $this->mpdfDefaultFontConfig['fontdata'];
       // Set MPDF options.
       $mpdf_options = [
+        'tempDir' => '/tmp',
         'mode' => 'utf-8',
         'format' => 'A4-L',
         'fontDir' => array_merge($fontDirs, $custom_fonts_directories),
