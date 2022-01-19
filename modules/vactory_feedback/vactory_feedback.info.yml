@@ -1,5 +1,0 @@
-name: Vactory FeedBack
-description: Provides feedback entity & block.
-type: module
-package: Vactory
-core_version_requirement: ^8 || ^9
