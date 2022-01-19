@@ -51,12 +51,14 @@ class DatetimeVactory extends Date {
     // If year filter choosed.
     if (!empty($this->value['type']) && $this->value['type'] == 'date_year') {
       $value = $this->value['value'] ?? '';
-      // In Case of changed and created date is timestamp.
-      if ($field == 'node_field_data.changed' || $field == 'node_field_data.created') {
-        $this->query->addWhereExpression($this->options['group'], "YEAR(FROM_UNIXTIME($field)) $this->operator $value");
-      }
-      else {
-        $this->query->addWhereExpression($this->options['group'], "YEAR($field) $this->operator $value");
+      if (is_numeric($value) && intval($value) > 0) {
+        // In Case of changed and created date is timestamp.
+        if ($field == 'node_field_data.changed' || $field == 'node_field_data.created') {
+          $this->query->addWhereExpression($this->options['group'], "YEAR(FROM_UNIXTIME($field)) $this->operator $value");
+        }
+        else {
+          $this->query->addWhereExpression($this->options['group'], "YEAR($field) $this->operator $value");
+        }
       }
     }
     else {
