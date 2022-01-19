@@ -1,0 +1,6 @@
+services:
+  vactory_action.path_processor:
+    class: Drupal\vactory_action\PathProcessor\VactoryActionPathProcessor
+    tags:
+      - { name: 'path_processor_inbound', priority: -10000 }
+      - { name: 'path_processor_outbound', priority: -10 }

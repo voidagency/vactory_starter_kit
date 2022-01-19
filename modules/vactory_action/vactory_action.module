@@ -1,0 +1,45 @@
+<?php
+
+/**
+ * @file
+ * Module related hooks.
+ */
+
+/**
+ * Implements hook_user_login().
+ */
+function vactory_action_user_login() {
+  $params = \Drupal::request()->query->all();
+  // Check on action params recieved from frontend instance.
+  if (isset($params['action']) && isset($params['action']['id'])) {
+    $action = $params['action'];
+    $action_id = $action['id'];
+    $action_params = isset($action['params']) ? $action['params'] : [];
+    $account = \Drupal::currentUser();
+    // Invoke all hook_vactory_action_execute implementations.
+    \Drupal::moduleHandler()->invokeAll('vactory_action_execute', [$action_id, $action_params, $account]);
+  }
+}
+
+/**
+ * Implements hook_hook_info().
+ */
+function vactory_action_hook_info() {
+  return [
+    'vactory_action_execute' => [
+      'group' => 'vactory_action',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_module_implements_alter().
+ */
+function vactory_action_module_implements_alter(&$implementations, $hook) {
+  if ($hook === 'user_login') {
+    $va_implementation = $implementations['vactory_action'];
+    unset($implementations['vactory_action']);
+    // First of all execute vactory action's implemented user_login hook.
+    $implementations = ['vactory_action' => $va_implementation] + $implementations;
+  }
+}
