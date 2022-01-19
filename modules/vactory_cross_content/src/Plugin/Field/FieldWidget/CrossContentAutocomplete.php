@@ -83,10 +83,14 @@ class CrossContentAutocomplete extends WidgetBase {
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
     $type = $form_state->getFormObject()->getEntity()->bundle();
     $node_type = NodeType::load($type);
+    if (!isset($node_type)) {
+      $type = $form_state->getFormObject()->getEntity()->get('bundle');
+      $node_type = NodeType::load($type);
+    }
     $bundles = [$type];
     if ($node_type->getThirdPartySetting('vactory_cross_content', 'enabling', '') == 1) {
-      $content_type_selected = $node_type->getThirdPartySetting('vactory_cross_content', 'content_type', '');
-      $bundles = array_merge($bundles, $content_type_selected);
+      $content_type_selected = $node_type->getThirdPartySetting('vactory_cross_content', 'content_type', []);
+      $bundles = is_array($content_type_selected) ? array_merge($bundles, $content_type_selected) : $bundles;
     }
     $bundles = array_values($bundles);
     $node = \Drupal::routeMatch()->getParameter('node');

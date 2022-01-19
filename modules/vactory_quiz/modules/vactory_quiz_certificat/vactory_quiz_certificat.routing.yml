@@ -1,0 +1,7 @@
+vactory_quiz_certificat.settings:
+  path: 'admin/config/vactory_quiz/certificat'
+  defaults:
+    _form: '\Drupal\vactory_quiz_certificat\Form\QuizCertificatSettingsForm'
+    _title: 'Vactory Quiz Certificat Settings'
+  requirements:
+    _permission: 'administer site configuration'

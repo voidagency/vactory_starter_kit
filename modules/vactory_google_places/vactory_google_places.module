@@ -1,0 +1,107 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Vactory Google Places module.
+ *
+ * @DCG
+ * This file is no longer required in Drupal 8.
+ * @see https://www.drupal.org/node/2217931
+ */
+
+use Drupal\views\Plugin\views\filter\StringFilter;
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_google_places_theme($existing, $type, $theme, $path) {
+  return [
+    'vactory_google_places' => [
+      'template' => 'vactory-google-places',
+      'variables' => [
+        'content' => NULL,
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_views_query_alter().
+ */
+function vactory_google_places_views_query_alter(\Drupal\views\ViewExecutable $view, \Drupal\views\Plugin\views\query\QueryPluginBase $query) {
+  $params = Drupal::request()->query->all();
+  $filters = $view->filter;
+  $google_places_filters= [];
+  if (!empty($filters)) {
+    // We are interested only in string filters.
+    $string_filters = array_filter($filters, function ($filter) {
+      return $filter instanceof StringFilter;
+    });
+    foreach ($string_filters as $string_filter) {
+      if (
+        isset($string_filter->options['vactory_google_places']) &&
+        $string_filter->options['vactory_google_places'] &&
+        in_array($string_filter->operator, ['=', '!='], TRUE)
+      ) {
+        // From string filters we are interested only in google places filters.
+        // Also, we are interested only in equal/not equal operators.
+        $google_places_filters[$string_filter->realField] = $string_filter;
+      }
+    }
+  }
+  if (!empty($google_places_filters)) {
+    // A google places filter exist
+    foreach ($google_places_filters as $filter_id => $filter) {
+      $field_pieces = $field_longitude_pieces = $field_latitude_pieces = explode('_', $filter_id);
+      if (is_numeric($field_pieces[count($field_pieces) - 1])) {
+        // In case of more than one google places filter, we omit the num suffix.
+        unset($field_pieces[count($field_pieces) - 1]);
+        $field_longitude_pieces = $field_latitude_pieces = $field_pieces;
+      }
+      $index = count($field_pieces) - 1;
+      // Construct langitude/latitude field names.
+      $field_longitude_pieces[$index] = 'longitude';
+      $field_latitude_pieces[$index] = 'latitude';
+      $field_longitude = $filter->tableAlias . '.' . implode('_', $field_longitude_pieces);
+      $field_latitude = $filter->tableAlias . '.' . implode('_', $field_latitude_pieces);
+      // Get the desired place if exist.
+      $place = $filter->options['exposed'] && isset($params[$filter->options['expose']['identifier']]) ? $params[$filter->options['expose']['identifier']] : $filter->options['value'];
+      if (!empty($place)) {
+        // Get the longitude/latitude of the desired place.
+        $geo_infos = \Drupal::service('vactory_google_places.manager')->geoLatLong($place);
+        if ($geo_infos) {
+          // Remove google place text filter and user lon/lat filter instead.
+          $conditions = $query->where[$filter->options['group']]['conditions'];
+          $conditions = array_filter($conditions, function ($condition) use ($filter_id) {
+            return strpos($condition['field'], $filter_id) === FALSE;
+          });
+          $query->where[$filter->options['group']]['conditions'] = array_values($conditions);
+          if ($filter->operator === '=') {
+            $query->addWhere($filter->options['group'], $field_longitude, $geo_infos['longitude'], $filter->operator);
+            $query->addWhere($filter->options['group'], $field_latitude, $geo_infos['latitude'], $filter->operator);
+          }
+          if ($filter->operator === '!=') {
+            $group_id = count($query->where) + 1;
+            $query->addWhere($group_id, $field_longitude, $geo_infos['longitude'], $filter->operator);
+            $query->addWhere($group_id, $field_latitude, $geo_infos['latitude'], $filter->operator);
+            $query->addWhere($group_id, $field_latitude, NULL, 'IS NULL');
+            $query->setWhereGroup('OR', $group_id);
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_module_implements_alter().
+ */
+function vactory_google_places_module_implements_alter(&$implementations, $hook) {
+  if ($hook === 'views_data_alter') {
+    $implementation = isset($implementations['vactory_google_places']) ? $implementations['vactory_google_places'] : NULL;
+    if ($implementation) {
+      unset($implementations['vactory_google_places']);
+      $implementations += ['vactory_google_places' => $implementation];
+    }
+  }
+}

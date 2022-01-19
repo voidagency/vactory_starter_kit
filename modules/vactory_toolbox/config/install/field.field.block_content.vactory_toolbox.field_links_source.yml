@@ -1,0 +1,25 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_toolbox
+  config:
+    - block_content.type.vactory_toolbox
+    - field.storage.block_content.field_links_source
+  module:
+    - options
+id: block_content.vactory_toolbox.field_links_source
+field_name: field_links_source
+entity_type: block_content
+bundle: vactory_toolbox
+label: 'Toolbox links source'
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    value: df_template
+default_value_callback: ''
+settings: {  }
+field_type: list_string

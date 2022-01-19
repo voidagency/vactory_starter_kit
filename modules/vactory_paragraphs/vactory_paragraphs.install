@@ -6,15 +6,6 @@
  */
 
 /**
- * Implements hook_install().
- */
-function vactory_paragraphs_install() {
-//  // Ensure the translation fields are created in the database.
-//  \Drupal::service('content_translation.manager')->setEnabled('paragraph', 'vactory_paragraph_block', TRUE);
-//  \Drupal::service('entity.definition_update_manager')->applyUpdates();
-}
-
-/**
  * Implements vactory_paragraphs: Copy paragraph background color values.
  */
 function vactory_paragraphs_update_8100(&$sandbox) {

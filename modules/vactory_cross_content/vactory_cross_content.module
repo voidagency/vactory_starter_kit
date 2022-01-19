@@ -45,7 +45,7 @@ function vactory_cross_content_form_alter(&$form, FormStateInterface $form_state
     '#type' => 'checkbox',
     '#default_value' => $type->getThirdPartySetting('vactory_cross_content', 'enabling', ''),
   ];
-  $taxonomies_list = Vactory::getTaxonomyList($type->get('type'));
+  $taxonomies_list = \Drupal::service('vactory')->getTaxonomyList($type->get('type'));
   $taxonomy_field = ['none' => t('-- Select a taxonomy --')];
   foreach ($taxonomies_list as $key => $value) {
     $taxonomy_field[$value[1]] = $value[0];
@@ -66,7 +66,7 @@ function vactory_cross_content_form_alter(&$form, FormStateInterface $form_state
 
   $terms_options = [];
   foreach ($taxonomies_list as $taxonomy) {
-    $terms_options[$taxonomy[0]] = Vactory::getTermsFromTaxonomy($taxonomy[0], $type->get('type'));
+    $terms_options[$taxonomy[0]] = \Drupal::service('vactory')->getTermsFromTaxonomy($taxonomy[0], $type->get('type'));
   }
 
   $form['vcc']['terms'] = [
@@ -85,11 +85,8 @@ function vactory_cross_content_form_alter(&$form, FormStateInterface $form_state
   $types_content_types = \Drupal::entityTypeManager()
     ->getStorage('node_type')
     ->loadMultiple();
-  $types_content_options = ['none' => t('-- Select a Content Type --')];
   foreach ($types_content_types as $key => $t) {
-    if ($type->get('type') !== $key) {
-      $types_content_options[$key] = $t->label();
-    }
+    $types_content_options[$key] = $t->label();
   }
 
   $form['vcc']['content_type'] = [
@@ -97,6 +94,7 @@ function vactory_cross_content_form_alter(&$form, FormStateInterface $form_state
     '#title' => t('Content type - Optional -'),
     '#description' => t('If you want to select another content type for the cross content.'),
     '#options' => (!empty($types_content_options)) ? $types_content_options : [],
+    '#empty_option' => '-- Select a Content Type --',
     '#multiple' => TRUE,
     '#states' => [
       "visible" => [
@@ -150,7 +148,7 @@ function vactory_cross_content_form_alter(&$form, FormStateInterface $form_state
  */
 function vactory_cross_content_form_node_type_form_builder($entity_type, NodeTypeInterface $type, &$form, FormStateInterface $form_state) {
   if ($form_state->getValue('enabling') == 1) {
-    Vactory::createVccField($form_state->getFormObject()->getEntity()->id(),
+    \Drupal::service('vactory')->createVccField($form_state->getFormObject()->getEntity()->id(),
       'field_contenu_lie');
   }
   $type->setThirdPartySetting('vactory_cross_content', 'enabling', $form_state->getValue('enabling'));

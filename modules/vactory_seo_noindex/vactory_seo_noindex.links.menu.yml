@@ -1,0 +1,6 @@
+vactory_seo_noindex.settings_form:
+  title: vactory_seo_noindex
+  description: Configure vactory_seo_noindex.
+  parent: system.admin_config_system
+  route_name: vactory_seo_noindex.settings_form
+  weight: 10

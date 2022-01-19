@@ -1,0 +1,49 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_toolbox
+  config:
+    - field.field.menu_link_content.toolbox.field_menu_image
+    - image.style.thumbnail
+    - system.menu.toolbox
+  module:
+    - image
+    - link
+    - menu_item_extras
+id: menu_link_content.toolbox.default
+targetEntityType: menu_link_content
+bundle: toolbox
+mode: default
+content:
+  field_menu_image:
+    weight: 1
+    settings:
+      progress_indicator: throbber
+      preview_image_style: thumbnail
+    third_party_settings: {  }
+    type: image_image
+    region: content
+  langcode:
+    type: language_select
+    weight: 3
+    region: content
+    settings:
+      include_locked: true
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  view_mode:
+    type: menu_item_extras_view_mode_selector_select
+    weight: 2
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden: {  }

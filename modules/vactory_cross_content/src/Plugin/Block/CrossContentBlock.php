@@ -10,6 +10,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\vactory_core\Vactory;
 use Drupal\views\Views;
 use Drupal\node\Entity\NodeType;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a "Vactory Cross Content Block" block.
@@ -20,7 +21,34 @@ use Drupal\node\Entity\NodeType;
  *   category = @Translation("Vactory")
  * )
  */
-class CrossContentBlock extends BlockBase implements BlockPluginInterface {
+class CrossContentBlock extends BlockBase implements BlockPluginInterface, \Drupal\Core\Plugin\ContainerFactoryPluginInterface {
+
+  /**
+   * Vactory service.
+   *
+   * @var Drupal\vactory_core\Vactory
+   */
+  protected $vactory;
+
+  /**
+   * {@inheritDoc}
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, Vactory $vactory) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->vactory = $vactory;
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('vactory')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -70,10 +98,6 @@ class CrossContentBlock extends BlockBase implements BlockPluginInterface {
       return NULL;
     }
     $content_type_selected = $type->getThirdPartySetting('vactory_cross_content', 'content_type', '');
-    $type_node = '';
-    if ($content_type_selected != '' and $content_type_selected != 'none') {
-      $type_node = $content_type_selected;
-    }
     $title =  (!empty($this->configuration['title'])) ? $this->configuration['title'] : '';
     $taxonomy_field = $type->getThirdPartySetting('vactory_cross_content', 'taxonomy_field', '');
     $term_id = $type->getThirdPartySetting('vactory_cross_content', 'terms', '');
@@ -84,7 +108,7 @@ class CrossContentBlock extends BlockBase implements BlockPluginInterface {
     $view_mode = $this->configuration['view_mode'];
     $view_mode_options = $this->configuration['view_options'][$view_mode . '_options'];
     $display_mode = $this->configuration['display_mode'];
-    $field_name = Vactory::getFieldbyType($node, 'field_cross_content');
+    $field_name = $this->vactory->getFieldbyType($node, 'field_cross_content');
     $related_nodes = $field_name <> NULL ? $node->get($field_name)->value : '';
     $ignore = !empty($related_nodes);
     $id_table = 'node_field_data';
@@ -106,8 +130,8 @@ class CrossContentBlock extends BlockBase implements BlockPluginInterface {
     // Plugin style must be set before preExecute.
     $view->preExecute();
     // Set content type.
-    $type_node = !empty($type_node) ? $type_node : $node->bundle();
-    $view->filter['type']->value = [$type_node => $type_node];
+    $content_type_selected = !empty($content_type_selected) ? $content_type_selected : [$node->bundle() => $node->bundle()];
+    $view->filter['type']->value = $content_type_selected;
 
     // Set number of items per page.
     $view->setItemsPerPage($nbr);
@@ -175,7 +199,7 @@ class CrossContentBlock extends BlockBase implements BlockPluginInterface {
       // Creating a hook to alter the block.
       $data = [
         'view'         => $view,
-        'content_type' => !empty($type_node) ? $type_node : $node->bundle(),
+        'content_type' => !empty($content_type_selected) ? $content_type_selected : [$node->bundle() => $node->bundle()],
         'block'        => 'block_list',
       ];
       Drupal::moduleHandler()->alter('vactory_cross_content_view', $data);

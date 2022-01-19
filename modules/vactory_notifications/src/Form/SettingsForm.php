@@ -52,41 +52,41 @@ class SettingsForm extends ConfigFormBase {
     // Global setting Tab.
     $form['global_settings'] = [
       '#type' => 'details',
-      '#title' => t('Content settings'),
-      '#description' => t('Set the global notifications title and message to use for all content types (You can customize it later for each node on node edit page).'),
+      '#title' => $this->t('Content settings'),
+      '#description' => $this->t('Set the global notifications title and message to use for all content types (You can customize it later for each node on node edit page).'),
       '#group' => 'settings_tab',
     ];
     // Roles settings Tab.
     $form['roles_settings'] = [
       '#type' => 'details',
-      '#title' => t('Roles settings'),
-      '#description' => t('Select for each role associated users the content types which users should recieve notifications from. Empty choice means notifications are disabled for that role.'),
+      '#title' => $this->t('Roles settings'),
+      '#description' => $this->t('Select for each role associated users the content types which users should recieve notifications from. Empty choice means notifications are disabled for that role.'),
       '#group' => 'settings_tab',
     ];
     // Mail settings Tab.
     $form['mail_settings'] = [
       '#type' => 'details',
-      '#title' => t('Mail settings'),
-      '#description' => t('Select for each role associated users the content types which users should recieve mail notifications from. Empty choice means notifications are disabled for that role.'),
+      '#title' => $this->t('Mail settings'),
+      '#description' => $this->t('Select for each role associated users the content types which users should recieve mail notifications from. Empty choice means notifications are disabled for that role.'),
       '#group' => 'settings_tab',
     ];
     $form['mail_settings']['mail_active'] = [
       '#type' => 'checkbox',
-      '#title' => t('Activate sending mail'),
-      '#description' => t('check it to send notifications by mail'),
+      '#title' => $this->t('Activate sending mail'),
+      '#description' => $this->t('check it to send notifications by mail'),
       '#default_value' => $config->get('mail_active'),
     ];
     $form['mail_settings']['mail_default_subject'] = [
       '#type' => 'textfield',
-      '#title' => t('Mail default  subject'),
-      '#description' => t('Default Mail Subject to use. You can explore available notifications tokens by clicking "Browse available tokens" link bellow.'),
+      '#title' => $this->t('Mail default  subject'),
+      '#description' => $this->t('Default Mail Subject to use. You can explore available notifications tokens by clicking "Browse available tokens" link bellow.'),
       '#default_value' => $config->get('mail_default_subject'),
       '#required' => TRUE,
     ];
     $form['mail_settings']['mail_default_message'] = [
       '#type' => 'textarea',
-      '#title' => t('Mail default message'),
-      '#description' => t('Default Mail message to use. You can explore available notifications tokens by clicking "Browse available tokens" link bellow.'),
+      '#title' => $this->t('Mail default message'),
+      '#description' => $this->t('Default Mail message to use. You can explore available notifications tokens by clicking "Browse available tokens" link bellow.'),
       '#default_value' => $config->get('mail_default_message'),
       '#required' => TRUE,
     ];
@@ -95,35 +95,41 @@ class SettingsForm extends ConfigFormBase {
     // Global settings.
     $form['global_settings']['notifications_default_title'] = [
       '#type' => 'textfield',
-      '#title' => t('Notifications default  title'),
-      '#description' => t('Default notifications title to use. You can explore available notifications tokens by clicking "Browse available tokens" link bellow.'),
+      '#title' => $this->t('Notifications default  title'),
+      '#description' => $this->t('Default notifications title to use. You can explore available notifications tokens by clicking "Browse available tokens" link bellow.'),
       '#default_value' => $config->get('notifications_default_title'),
       '#required' => TRUE,
     ];
     $form['global_settings']['notifications_default_message'] = [
       '#type' => 'textarea',
-      '#title' => t('Notifications default message'),
-      '#description' => t('Default notifications message to use. You can explore available notifications tokens by clicking "Browse available tokens" link bellow.'),
+      '#title' => $this->t('Notifications default message'),
+      '#description' => $this->t('Default notifications message to use. You can explore available notifications tokens by clicking "Browse available tokens" link bellow.'),
       '#default_value' => $config->get('notifications_default_message'),
       '#required' => TRUE,
     ];
     $form['global_settings']['tree_token'] = get_token_tree();
     // Auto translation feature.
     $url = Url::fromRoute('config_translation.item.overview.vactory_notifications.notifications_settings')->toString();
-    $translate_config_link_title = t('Notifications settings translation page');
+    $translate_config_link_title = $this->t('Notifications settings translation page');
     $translate_config_link = '<a href="' . $url . '">' . $translate_config_link_title . '</a>';
     $form['global_settings']['auto_translation'] = [
       '#type' => 'checkbox',
-      '#title' => t('Translate notifications automatically'),
-      '#description' => t('Uncheck it to translate notifications manually. Notifications default title and message are translatable under') . ' ' . $translate_config_link,
+      '#title' => $this->t('Translate notifications automatically'),
+      '#description' => $this->t('Uncheck it to translate notifications manually. Notifications default title and message are translatable under') . ' ' . $translate_config_link,
       '#default_value' => $config->get('auto_translation'),
     ];
     $form['global_settings']['notifications_lifetime'] = [
       '#type' => 'textfield',
-      '#title' => t('Notifications lifetime'),
-      '#description' => t('Set days number from the notification created date after which this notification is deleted in the next cron call. By default 6 days.'),
+      '#title' => $this->t('Notifications lifetime'),
+      '#description' => $this->t('Set days number from the notification created date after which this notification is deleted in the next cron call. By default 6 days.'),
       '#default_value' => $config->get('notifications_lifetime'),
       '#required' => TRUE,
+    ];
+    $form['global_settings']['enable_toast'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Enable notifications toast'),
+      '#description' => $this->t('When checked notifications bootstrap toast will be enabled for real time generated notification.'),
+      '#default_value' => $config->get('enable_toast'),
     ];
 
     // Roles settings.
@@ -140,7 +146,7 @@ class SettingsForm extends ConfigFormBase {
       }
       $form['roles_settings'][$key][$key . '_content_types'] = [
         '#type' => 'select',
-        '#title' => t('Existing content types'),
+        '#title' => $this->t('Existing content types'),
         '#options' => $node_types,
         '#multiple' => TRUE,
         '#default_value' => !empty($config->get($key . '_content_types')) ? $config->get($key . '_content_types') : [],
@@ -162,7 +168,7 @@ class SettingsForm extends ConfigFormBase {
 
         $form['mail_settings'][$key][$key . '_content_types_mail'] = [
           '#type' => 'select',
-          '#title' => t('Existing content types'),
+          '#title' => $this->t('Existing content types'),
           '#options' => $node_types,
           '#multiple' => TRUE,
           '#default_value' => !empty($config->get($key . '_content_types_mail')) ? $config->get($key . '_content_types_mail') : [],
@@ -187,7 +193,9 @@ class SettingsForm extends ConfigFormBase {
       ->set('mail_default_message', $form_state->getValue('mail_default_message'))
       ->set('auto_translation', $form_state->getValue('auto_translation'))
       ->set('mail_active', $form_state->getValue('mail_active'))
-      ->set('notifications_lifetime', $form_state->getValue('notifications_lifetime'));
+      ->set('notifications_lifetime', $form_state->getValue('notifications_lifetime'))
+      ->set('enable_toast', $form_state->getValue('enable_toast'))
+      ->save();
 
     foreach ($existing_roles as $key => $role) {
         $config->set($key . '_content_types', array_keys($form_state->getValue($key . '_content_types')));

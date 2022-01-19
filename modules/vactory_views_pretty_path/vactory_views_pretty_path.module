@@ -5,7 +5,11 @@
  * Module related hooks.
  */
 
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\views\ViewExecutable;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Implements hook_views_pre_view().
@@ -61,4 +65,85 @@ function get_view_filter_name_map($view_filter_map_str) {
     }
   }
   return $view_filter_map;
+}
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function vactory_views_pretty_path_entity_base_field_info(EntityTypeInterface $entity_type) {
+  $fields = [];
+  if ($entity_type->id() === 'taxonomy_term') {
+    $fields['pretty_path'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Pretty path name'))
+      ->setDescription(t('Term name in path, if empty it would be generated automatically from the term name (spaces should be replaced with "-")'))
+      ->setTranslatable(TRUE)
+      ->setDisplayOptions('form', [
+        'type'   => 'string_textfield',
+        'weight' => 0,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->addConstraint('UniqueField', []);
+  }
+
+  return $fields;
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ */
+function vactory_views_pretty_path_taxonomy_term_presave(EntityInterface $entity) {
+  if ($entity->hasField('pretty_path')) {
+    $pretty_path = $entity->get('pretty_path')->getValue();
+    if (empty($pretty_path) && !empty($entity->getName())) {
+      $pretty_path = Drupal::service('vactory_core.tools')->unaccent($entity->getName(), '-');
+      $entity->set('pretty_path', strtolower($pretty_path));
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_views_pretty_path_preprocess_pager(&$variables) {
+  $current_path = Drupal::service('path.current')->getPath();
+  $pretty_path_processor = Drupal::service('vactory_views_pretty_path.path_processor');
+  if (isset($variables['items']['pages'])) {
+    foreach ($variables['items']['pages'] as &$page) {
+      if (isset($page['href'])) {
+        vactory_views_pretty_path_processor($current_path, $pretty_path_processor, $page['href']);
+      }
+    }
+  }
+  if (isset($variables['items']['next']['href'])) {
+    vactory_views_pretty_path_processor($current_path, $pretty_path_processor, $variables['items']['next']['href']);
+  }
+  if (isset($variables['items']['previous']['href'])) {
+    vactory_views_pretty_path_processor($current_path, $pretty_path_processor, $variables['items']['previous']['href']);
+  }
+  if (isset($variables['items']['first']['href'])) {
+    vactory_views_pretty_path_processor($current_path, $pretty_path_processor, $variables['items']['first']['href']);
+  }
+  if (isset($variables['items']['last']['href'])) {
+    vactory_views_pretty_path_processor($current_path, $pretty_path_processor, $variables['items']['last']['href']);
+  }
+}
+
+/**
+ * Apply pretty path processor on given href link.
+ */
+function vactory_views_pretty_path_processor($current_path, $pretty_path_processor, &$href) {
+  $langcode = Drupal::languageManager()->getCurrentLanguage()->getId();
+  $href = str_replace('?', '', $href);
+  parse_str($href, $params);
+  $request = new Request();
+  foreach ($params as $key => $value) {
+    $request->query->set($key, $value);
+  }
+  $options = ['from_pager' => TRUE];
+  $href = $pretty_path_processor->processOutbound($current_path, $options, $request);
+  $query_string = http_build_query($request->query->all());
+  $href = '/' . $langcode . $href;
+  if (!empty($query_string)) {
+    $href .= '?' . $query_string;
+  }
 }

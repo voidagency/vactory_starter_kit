@@ -27,12 +27,13 @@ class CrossContentWidget extends OptionsSelectWidget {
    * {@inheritdoc}
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
+    $this->options = $this->getOptions($items->getEntity());
     $element = parent::formElement($items, $delta, $element, $form, $form_state);
     $element["#multiple"] = TRUE;
     $element["#default_value"] = $this->getSelectedOptions($items);
     $element += [
       '#type'    => 'select',
-      '#options' => $this->getOptions($items->getEntity()),
+      '#options' => $this->options,
     ];
     return ['value' => $element];
   }

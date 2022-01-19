@@ -1,6 +1,9 @@
 langcode: en
 status: true
 dependencies:
+  enforced:
+    module:
+      - vactory_notifications
   module:
     - user
     - vactory_notifications

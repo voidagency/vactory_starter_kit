@@ -1,0 +1,63 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.vactory_quiz.body
+    - field.field.node.vactory_quiz.field_certificat_require
+    - field.field.node.vactory_quiz.field_enable_certificat
+    - field.field.node.vactory_quiz.field_quiz_questions
+    - node.type.vactory_quiz
+  enforced:
+    module:
+      - vactory_quiz
+  module:
+    - options
+    - text
+    - user
+id: node.vactory_quiz.teaser
+targetEntityType: node
+bundle: vactory_quiz
+mode: teaser
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 1
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_certificat_require:
+    type: list_key
+    weight: 2
+    region: content
+    label: visually_hidden
+    settings: {  }
+    third_party_settings: {  }
+  field_enable_certificat:
+    type: boolean
+    weight: 3
+    region: content
+    label: visually_hidden
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+  links:
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  addtoany: true
+  field_content_access_groups: true
+  field_content_access_roles: true
+  field_content_access_users: true
+  field_quiz_questions: true
+  langcode: true
+  mail_message: true
+  mail_subject: true
+  notification_message: true
+  notification_title: true
+  search_api_excerpt: true

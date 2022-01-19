@@ -1,0 +1,6 @@
+vactory_search_overlay.overlay_form:
+  path: '_search-overlay/{variant}'
+  defaults:
+    _controller: '\Drupal\vactory_search_overlay\Controller\SearchOverlayCallback::doRender'
+  requirements:
+    _access: 'TRUE'

@@ -11,9 +11,6 @@ use Drupal\user\Entity\Role;
  * Implements hook_install().
  */
 function vactory_academy_install() {
-  // Ensure the translation fields are created in the database.
-  \Drupal::service('entity.definition_update_manager')->applyUpdates();
-
   $anonymous = Role::load('anonymous');
   $authenticated = Role::load('authenticated');
 

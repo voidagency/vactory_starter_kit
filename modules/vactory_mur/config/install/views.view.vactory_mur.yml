@@ -8,8 +8,6 @@ dependencies:
     - node
     - user
     - views_infinite_scroll
-_core:
-  default_config_hash: dw_yTc9NY4HTJkn19I-3auoMeQzoTkjvbF3HQyPJvAs
 id: vactory_mur
 label: vactory_mur
 module: views

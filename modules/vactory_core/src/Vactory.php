@@ -2,20 +2,135 @@
 
 namespace Drupal\vactory_core;
 
-use Drupal;
 use Drupal\block\Entity\Block;
 use Drupal\block_content\Entity\BlockContent;
+use Drupal\Core\Block\BlockManagerInterface;
+use Drupal\Core\Controller\TitleResolverInterface;
 use Drupal\Core\Entity\EntityBase;
+use Drupal\Core\Entity\EntityFieldManagerInterface;
+use Drupal\Core\Entity\EntityRepositoryInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
+use Drupal\Core\Path\CurrentPathStack;
+use Drupal\Core\Path\PathMatcherInterface;
+use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\file\Entity\File;
 use Drupal\node\NodeInterface;
+use Drupal\path_alias\AliasManagerInterface;
 use Drupal\twig_tweak\TwigExtension;
 
 /**
  * Defines a route controller for BlockManager.
  */
 class Vactory {
+
+  /**
+   * Twig extension service.
+   *
+   * @var \Drupal\twig_tweak\TwigExtension
+   */
+  protected $twigExtension;
+
+  /**
+   * Entity type manager service.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
+   * Language manager service.
+   *
+   * @var \Drupal\Core\Language\LanguageManagerInterface
+   */
+  protected $languageManager;
+
+  /**
+   * Current path stack service.
+   *
+   * @var \Drupal\Core\Path\CurrentPathStack
+   */
+  protected $currentPathStack;
+
+  /**
+   * Alias manager service.
+   *
+   * @var \Drupal\path_alias\AliasManager
+   */
+  protected $aliasManager;
+
+  /**
+   * Path matcher service.
+   *
+   * @var \Drupal\Core\Path\PathMatcherInterface
+   */
+  protected $pathMatcher;
+
+  /**
+   * Entity repository service.
+   *
+   * @var \Drupal\Core\Entity\EntityRepositoryInterface
+   */
+  protected $entityRepository;
+
+  /**
+   * Block manager service.
+   *
+   * @var \Drupal\Core\Block\BlockManagerInterface
+   */
+  protected $blockManager;
+
+  /**
+   * Entity field manager.
+   *
+   * @var \Drupal\Core\Entity\EntityFieldManagerInterface
+   */
+  protected $entityFieldManager;
+
+  /**
+   * Current route match service.
+   *
+   * @var \Drupal\Core\Routing\CurrentRouteMatch
+   */
+  protected $currentRouteMatch;
+
+  /**
+   * Title resolver service.
+   *
+   * @var \Drupal\Core\Controller\TitleResolverInterface
+   */
+  protected $titleResolver;
+
+  /**
+   * {@inheritDoc}
+   */
+  public function __construct(
+    TwigExtension $twigExtension,
+    EntityTypeManagerInterface $entityTypeManager,
+    LanguageManagerInterface $languageManager,
+    CurrentPathStack $currentPathStack,
+    AliasManagerInterface $aliasManager,
+    PathMatcherInterface $pathMatcher,
+    EntityRepositoryInterface $entityRepository,
+    BlockManagerInterface $blockManager,
+    EntityFieldManagerInterface $entityFieldManager,
+    CurrentRouteMatch $currentRouteMatch,
+    TitleResolverInterface $titleResolver
+  ) {
+    $this->twigExtension = $twigExtension;
+    $this->entityTypeManager = $entityTypeManager;
+    $this->languageManager = $languageManager;
+    $this->currentPathStack = $currentPathStack;
+    $this->aliasManager = $aliasManager;
+    $this->pathMatcher = $pathMatcher;
+    $this->entityRepository = $entityRepository;
+    $this->blockManager = $blockManager;
+    $this->entityFieldManager = $entityFieldManager;
+    $this->currentRouteMatch = $currentRouteMatch;
+    $this->titleResolver = $titleResolver;
+  }
 
   /**
    * Return render block by block machine name.
@@ -26,12 +141,11 @@ class Vactory {
    * @return bool|html
    *   Rendered Block.
    */
-  public static function getRenderBlock(string $block_id) {
+  public function getRenderBlock(string $block_id) {
     $block = Block::load($block_id);
     if ($block) {
       if ($block) {
-        $variables = \Drupal::entityTypeManager()
-          ->getViewBuilder('block')
+        $variables = $this->entityTypeManager->getViewBuilder('block')
           ->view($block);
         if ($variables) {
           return render($variables);
@@ -39,7 +153,7 @@ class Vactory {
       }
     }
 
-    $block = self::getBlockById($block_id);
+    $block = $this->getBlockById($block_id);
     return $block;
   }
 
@@ -52,12 +166,12 @@ class Vactory {
    * @return bool|null
    *   Rendered block
    */
-  public static function getBlockByDelta(string $delta) {
+  public function getBlockByDelta(string $delta) {
     $block = Block::load($delta);
 
     if ($block) {
-      if (self::isBlockVisible($block)) {
-        $variables = \Drupal::entityTypeManager()
+      if ($this->isBlockVisible($block)) {
+        $variables = $this->entityTypeManager
           ->getViewBuilder('block')
           ->view($block);
 
@@ -78,10 +192,10 @@ class Vactory {
    * @return array|null
    *   Rendered block
    */
-  public static function getBlockByBid($bid) {
+  public function getBlockByBid($bid) {
     $block = BlockContent::load($bid);
     if (isset($block) && !empty($block)) {
-      $render = \Drupal::entityTypeManager()
+      $render = $this->entityTypeManager
         ->getViewBuilder('block_content')
         ->view($block);
       return isset($render) ? $render : FALSE;
@@ -100,7 +214,7 @@ class Vactory {
    * @return null|string
    *   Image URI if it exists.
    */
-  public static function getImageUri(EntityBase $entity, string $fieldName) {
+  public function getImageUri(EntityBase $entity, string $fieldName) {
     $image_uri = NULL;
     if ($entity->hasField($fieldName)) {
       try {
@@ -131,8 +245,7 @@ class Vactory {
               // See https://www.drupal.org/node/2549139
               // entityManager is deprecated.
               // Use entity.repository instead.
-              $entityrepository = Drupal::service('entity.repository');
-              $default_imageFile = $entityrepository->loadEntityByUuid('file', $default_image['uuid']);
+              $default_imageFile = $this->entityRepository->loadEntityByUuid('file', $default_image['uuid']);
               if ($default_imageFile) {
                 $image_uri = $default_imageFile->getFileUri();
               }
@@ -157,10 +270,9 @@ class Vactory {
    * @return mixed
    *   Rendered Block.
    */
-  public static function getBlockById(int $bid) {
-    $block_manager = \Drupal::service('plugin.manager.block');
+  public function getBlockById(int $bid) {
     $config = [];
-    $plugin_block = $block_manager->createInstance($bid, $config);
+    $plugin_block = $this->blockManager->createInstance($bid, $config);
     $render = $plugin_block->build();
 
     return $render;
@@ -172,11 +284,11 @@ class Vactory {
    * @return mixed
    *   The page's title.
    */
-  public static function getCurrentTitle() {
+  public function getCurrentTitle() {
     $request = \Drupal::request();
-    $route = \Drupal::service('current_route_match')->getCurrentRouteMatch()
+    $route = $this->currentRouteMatch->getCurrentRouteMatch()
       ->getRouteObject();
-    $title = \Drupal::service('title_resolver')->getTitle($request, $route);
+    $title = $this->titleResolver->getTitle($request, $route);
 
     return $title;
   }
@@ -190,12 +302,12 @@ class Vactory {
    * @return array
    *   Array of taxonomies related to the content type.
    */
-  public static function getTaxonomyList(string $content_type) {
+  public function getTaxonomyList(string $content_type) {
     $terms = [];
-    foreach (\Drupal::service('entity_field.manager')->getFieldDefinitions('node', $content_type) as $v => $item) {
+    foreach ($this->entityFieldManager->getFieldDefinitions('node', $content_type) as $v => $item) {
       if ($item->getSetting("target_type") === "taxonomy_term") {
-        if (method_exists($item, 'get')) {
-          $field_name = $item->get('field_name');
+        $field_name = $item->getName();
+        if (isset($item->getSetting("handler_settings")['target_bundles'])) {
           foreach ($item->getSetting("handler_settings")['target_bundles'] as $key => $value) {
             $terms[$value] = [$value, $field_name];
           }
@@ -216,11 +328,12 @@ class Vactory {
    * @return array
    *   Array of terms.
    */
-  public static function getTermsFromTaxonomy(string $taxonomy_field, string $content_type) {
+  public function getTermsFromTaxonomy(string $taxonomy_field, string $content_type) {
     $tid_terms = [];
-    $taxonomy = self::getTaxonomyList($content_type);
-    $storage = \Drupal::service('entity_type.manager')
-      ->getStorage("taxonomy_term")->loadTree($taxonomy[$taxonomy_field][0]);
+    $taxonomy = $this->getTaxonomyList($content_type);
+    $storage = $this->entityTypeManager
+      ->getStorage("taxonomy_term")
+      ->loadTree($taxonomy[$taxonomy_field][0]);
 
     foreach ($storage as $key => $value) {
       $tid_terms[$value->tid] = $value->name;
@@ -239,7 +352,7 @@ class Vactory {
    * @return string|null
    *   The name of the field of type $field_type if it exists.
    */
-  public static function getFieldbyType(NodeInterface $node, string $field_type) {
+  public function getFieldbyType(NodeInterface $node, string $field_type) {
     foreach ($node->getFields() as $key => $field) {
       $current_type = $field->getFieldDefinition()->getType();
       if (strncmp($field_type, $current_type, strlen($field_type)) == 0) {
@@ -259,7 +372,7 @@ class Vactory {
    *
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public static function createVccField(string $content_type, string $field_name) {
+  public function createVccField(string $content_type, string $field_name) {
     $field = FieldConfig::loadByName('node', $content_type, $field_name);
     if (empty($field)) {
       $field_storage = FieldStorageConfig::loadByName('node', $field_name);
@@ -280,7 +393,7 @@ class Vactory {
       $field->save();
 
       /* @var \Drupal\Core\Entity\Entity\EntityFormDisplay */
-      $entity_form_display = \Drupal::entityTypeManager()
+      $entity_form_display = $this->entityTypeManager
         ->getStorage('entity_form_display')
         ->load('node.' . $content_type . '.default');
 
@@ -291,8 +404,7 @@ class Vactory {
           'mode' => 'default',
           'status' => TRUE,
         ];
-        \Drupal::entityTypeManager()
-          ->getStorage('entity_form_display')
+        $this->entityTypeManager->getStorage('entity_form_display')
           ->create($values);
       }
 
@@ -301,8 +413,7 @@ class Vactory {
       ])->save();
 
       /* @var \Drupal\Core\Entity\Entity\EntityViewDisplay */
-      $entity_view_display = \Drupal::entityTypeManager()
-        ->getStorage('entity_view_display')
+      $entity_view_display = $this->entityTypeManager->getStorage('entity_view_display')
         ->load('node.' . $content_type . '.default');
 
       if (!$entity_view_display) {
@@ -312,8 +423,7 @@ class Vactory {
           'mode' => 'default',
           'status' => TRUE,
         ];
-        \Drupal::entityTypeManager()
-          ->getStorage('entity_view_display')
+        $this->entityTypeManager->getStorage('entity_view_display')
           ->create($values);
       }
 
@@ -336,32 +446,30 @@ class Vactory {
    * @return string|array
    *   Rendered block.
    */
-  public static function renderBlock($machine_name, array $configuration = [], array $attributes = []) {
-    $twigExtension = \Drupal::service('twig_tweak.twig_extension');
-    $entityManager = \Drupal::service('entity_type.manager');
-    $block_storage = $entityManager->getStorage('block_content');
+  public function renderBlock($machine_name, array $configuration = [], array $attributes = []) {
+    $block_storage = $this->entityTypeManager->getStorage('block_content');
 
     // Load block by custom machine_name ID.
     // @see modules/vactory/vactory_core/vactory_core.module
     $block = $block_storage->loadByProperties(['block_machine_name' => $machine_name]);
     if (is_array($block) && reset($block) instanceof BlockContent) {
-      $block_view = $entityManager->getViewBuilder('block_content')
+      $block_view = $this->entityTypeManager->getViewBuilder('block_content')
         ->view(reset($block));
       return $block_view;
     }
 
     // Load block core.
-    $block = self::getBlockByDelta($machine_name);
+    $block = $this->getBlockByDelta($machine_name);
     if ($block) {
       return $block;
     }
 
-    $block = self::getBlockByBid($machine_name);
+    $block = $this->getBlockByBid($machine_name);
     if ($block) {
       return $block;
     }
 
-    $block = $twigExtension->drupalBlock($machine_name, $configuration);
+    $block = $this->twigExtension->drupalBlock($machine_name, $configuration);
     if ($block && is_array($block) && isset($block['#plugin_id']) && $block['#plugin_id'] !== 'broken') {
       if (isset($block['#attributes'])) {
         $block['#attributes'] = array_merge_recursive($block['#attributes'], $attributes);
@@ -396,7 +504,7 @@ class Vactory {
    * @return string
    *   Rendered view.
    */
-  public static function renderView($view, $display) {
+  public function renderView($view, $display) {
     if (!isset($display) && empty($display)) {
       throw new \InvalidArgumentException(sprintf('For views you need to specify the view display (at 3 param)'));
     }
@@ -413,9 +521,8 @@ class Vactory {
    * @return html
    *   Rendered  menu.
    */
-  public static function renderMenu($menu_id) {
-    $function = new TwigExtension();
-    return $function->drupalMenu($menu_id);
+  public function renderMenu($menu_id) {
+    return $this->twigExtension->drupalMenu($menu_id);
   }
 
   /**
@@ -431,8 +538,7 @@ class Vactory {
    * @return html
    *   Html.
    */
-  public static function renderForm($type, string $form_id) {
-    $function = new TwigExtension();
+  public function renderForm($type, string $form_id) {
     if (!isset($form_id) && empty($form_id)) {
       throw new \InvalidArgumentException(sprintf('For Form you need to specify the form_id or form namespace like this -- Drupal\search\Form\SearchBlockForm -- for custom forms (at 3 param)'));
     }
@@ -441,10 +547,10 @@ class Vactory {
       /* $namespace = str_replace(
       '/\/', '/\\/', "Drupal\\search\\Form\\SearchBlockForm"
       ); */
-      return $function->drupalForm($form_id);
+      return $this->twigExtension->drupalForm($form_id);
     }
     // For contrib forms (by contrib modules like webform)
-    return $function->drupalEntity($type, $form_id);
+    return $this->twigExtension->drupalEntity($type, $form_id);
   }
 
   /**
@@ -460,24 +566,21 @@ class Vactory {
    * @return array|html
    *   Html.
    */
-  public static function renderEntity($type, $id, $view_mode = NULL) {
-    $function = new TwigExtension();
+  public function renderEntity($type, $id, $view_mode = NULL) {
     if (!isset($id) && empty($id)) {
       throw new \InvalidArgumentException(sprintf('For Entity you need to specify the ID -- example (entity, node, 1) (at 3 param)'));
     }
-    return $function->drupalEntity($type, $id, $view_mode);
+    return $this->twigExtension->drupalEntity($type, $id, $view_mode);
   }
 
   /**
    * Check block visibility from block admin settings.
    */
-  public static function isBlockVisible($block) {
-    $langcode = Drupal::service('language_manager')
-      ->getCurrentLanguage()
+  public function isBlockVisible($block) {
+    $langcode = $this->languageManager->getCurrentLanguage()
       ->getId();
-    $current_path = \Drupal::service('path.current')->getPath();
-    $alias = \Drupal::service('path_alias.manager')
-      ->getAliasByPath($current_path);
+    $current_path = $this->currentPathStack->getPath();
+    $alias = $this->aliasManager->getAliasByPath($current_path);
     $current_path_formats = [
       $current_path,
       '/' . $langcode . $current_path,
@@ -486,7 +589,7 @@ class Vactory {
       '/' . $langcode . $alias,
       $alias . '/',
     ];
-    $is_front_page = \Drupal::service('path.matcher')->isFrontPage();
+    $is_front_page = $this->pathMatcher->isFrontPage();
     $block_visibility = $block->getVisibility();
     $show_block = empty($block_visibility);
     if (!empty($block_visibility)) {
@@ -530,71 +633,6 @@ class Vactory {
     }
 
     return $show_block;
-  }
-
-  /**
-   * @param $content_type
-   * @param $field_name
-   * @throws Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
-   * @throws Drupal\Component\Plugin\Exception\PluginNotFoundException
-   * @throws Drupal\Core\Entity\EntityStorageException
-   */
-  public static function createLocationField($content_type, $field_name) {
-    $field = FieldConfig::loadByName('node', $content_type, $field_name);
-    if (empty($field)) {
-      $field_storage = FieldStorageConfig::loadByName('node', $field_name);
-      if (empty($field_storage)) {
-        $field_storage = FieldStorageConfig::create([
-          'field_name' => $field_name,
-          'entity_type' => 'node',
-          'type' => 'geofield',
-          'cardinality' => 1,
-        ]);
-        $field_storage->save();
-      }
-      $field = FieldConfig::create([
-        'field_storage' => $field_storage,
-        'bundle' => $content_type,
-        'label' => t('Position'),
-      ]);
-      $field->save();
-      /* @var \Drupal\Core\Entity\Entity\EntityFormDisplay */
-      $entity_form_display = \Drupal::entityTypeManager()
-        ->getStorage('entity_form_display')
-        ->load('node.' . $content_type . '.default');
-      if (!$entity_form_display) {
-        $values = [
-          'targetEntityType' => 'node',
-          'bundle' => $content_type,
-          'mode' => 'default',
-          'status' => TRUE,
-        ];
-        \Drupal::entityTypeManager()
-          ->getStorage('entity_form_display')
-          ->create($values);
-      }
-      $entity_form_display->setComponent($field_name, [
-        'type' => 'options_select',
-      ])->save();
-      /* @var \Drupal\Core\Entity\Entity\EntityViewDisplay */
-      $entity_view_display = \Drupal::entityTypeManager()
-        ->getStorage('entity_view_display')
-        ->load('node.' . $content_type . '.default');
-      if (!$entity_view_display) {
-        $values = [
-          'targetEntityType' => 'node',
-          'bundle' => $content_type,
-          'mode' => 'default',
-          'status' => TRUE,
-        ];
-        \Drupal::entityTypeManager()
-          ->getStorage('entity_view_display')
-          ->create($values);
-      }
-      $entity_view_display->setComponent($field_name, [
-        'label' => 'hidden',
-      ])->save();
-    }
   }
 
 }

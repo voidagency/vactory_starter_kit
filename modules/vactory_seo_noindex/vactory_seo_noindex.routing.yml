@@ -1,0 +1,7 @@
+vactory_seo_noindex.settings_form:
+  path: '/admin/config/system/vactory-seo-noindex'
+  defaults:
+    _title: 'Vactory SEO noindex settings'
+    _form: 'Drupal\vactory_seo_noindex\Form\SettingsForm'
+  requirements:
+    _permission: 'administer vactory_seo_noindex configuration'

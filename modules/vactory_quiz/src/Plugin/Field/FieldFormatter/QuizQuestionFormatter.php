@@ -109,6 +109,7 @@ class QuizQuestionFormatter extends FormatterBase {
     $quiz = $items->getEntity();
     $results = [];
     $questions = $items->getValue();
+    $is_certificat_enabled = NULL;
     $questions = array_map(function ($question) {
       $question['question_answers'] = Json::decode($question['question_answers']);
       return $question;
@@ -116,10 +117,18 @@ class QuizQuestionFormatter extends FormatterBase {
     $perfect_mark = $this->quizManager->getPerfectMark($quiz->id());
     $attempt_history_exist = FALSE;
     if ($this->moduleHandler->moduleExists('vactory_quiz_history')) {
-      $results = $this->quizManager->getQuizUserAttemptHistory($quiz->id(), $current_user->id());
-      $user_attempt_history = $this->quizManager->getQuizUserAttemptHistory($quiz->id(), $current_user->id());
+      $user_attempt_history = $results = $this->quizManager->getQuizUserAttemptHistory($quiz->id(), $current_user->id());
       if (!empty($user_attempt_history)) {
         $attempt_history_exist = TRUE;
+      }
+    }
+    if ($this->moduleHandler->moduleExists('vactory_quiz_certificat')) {
+      $is_certificat_enabled = $quiz->get('field_enable_certificat')->value;
+      $min_required_result = NULL;
+      if ($is_certificat_enabled) {
+        $min_required_result = $quiz->get('field_certificat_require')->value;
+        // Set default min required result to 50%.
+        $min_required_result = !empty($min_required_result) ? (int) $min_required_result : 50;
       }
     }
     $quiz = [
@@ -130,6 +139,10 @@ class QuizQuestionFormatter extends FormatterBase {
       'attempt_history_exist' => $attempt_history_exist,
       'perfect_mark' => $perfect_mark,
     ];
+
+    if ($is_certificat_enabled) {
+      $quiz['certificat']['min_required_result'] = $min_required_result;
+    }
 
     return $this->formBuilder->getForm('Drupal\vactory_quiz\Form\QuizForm', $quiz);
   }

@@ -1,20 +1,42 @@
 services:
   vactory_core.field.twig_extension:
     class: Drupal\vactory_core\TwigExtension\TwigExtension
+    arguments:
+      - '@vactory'
+      - '@entity_type.manager'
     tags:
       - { name: twig.extension }
-  simplify_menu.menu_items:
-    class: Drupal\vactory_core\MenuItems
-    arguments: ['@menu.link_tree', '@entity.repository', '@entity_field.manager', '@entity_type.manager']
   vactory_core.disable_route_subscriber:
     class: Drupal\vactory_core\EventSubscriber\DisableRouteSubscriber
     tags:
       - { name: event_subscriber }
   vactory_core.disable_route_node_subscriber:
-      class: Drupal\vactory_core\Routing\RouteSubscriber
-      tags:
-        - { name: event_subscriber }
+    class: Drupal\vactory_core\Routing\RouteSubscriber
+    tags:
+      - { name: event_subscriber }
   vactory_core.remove_x_generator_response_header:
     class: Drupal\vactory_core\EventSubscriber\RemoveXGeneratorResponseHeader
     tags:
       - { name: event_subscriber }
+  vactory_core.tools:
+    class: Drupal\vactory_core\Services\VactoryDevTools
+    arguments: []
+  vactory_core.path:
+    class: Drupal\vactory_core\PathProcessor\VactoryCorePathProcessor
+    arguments: []
+    tags:
+      - { name: 'path_processor_outbound', priority: -10 }
+  vactory:
+    class: Drupal\vactory_core\Vactory
+    arguments:
+      - '@twig_tweak.twig_extension'
+      - '@entity_type.manager'
+      - '@language_manager'
+      - '@path.current'
+      - '@path_alias.manager'
+      - '@path.matcher'
+      - '@entity.repository'
+      - '@plugin.manager.block'
+      - '@entity_field.manager'
+      - '@current_route_match'
+      - '@title_resolver'

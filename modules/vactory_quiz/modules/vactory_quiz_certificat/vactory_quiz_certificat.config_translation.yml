@@ -1,0 +1,5 @@
+vactory_quiz_certificat.settings:
+  title: 'Vactory Quiz Certificat Settings'
+  base_route_name: vactory_quiz_certificat.settings
+  names:
+    - vactory_quiz_certificat.settings

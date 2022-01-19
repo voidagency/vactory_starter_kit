@@ -1,0 +1,20 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_notifications
+  theme:
+    - vactory
+id: vactorynotificationstoasts
+theme: vactory
+region: footer
+weight: 0
+provider: null
+plugin: vactory_notifications_toasts
+settings:
+  id: vactory_notifications_toasts
+  label: 'Vactory Notifications Toasts'
+  provider: vactory_notifications
+  label_display: '0'
+visibility: {  }

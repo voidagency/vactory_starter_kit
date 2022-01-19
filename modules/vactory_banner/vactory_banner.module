@@ -40,7 +40,7 @@ function vactory_banner_preprocess_block(&$variables) {
     $current_route_name = \Drupal::routeMatch()->getRouteName();
 
     // Get current page title.
-    $variables['content']['page_title'] = ((isset($field_dynamic_title)) && $field_dynamic_title[0]['value'] == 1) ? Vactory::getCurrentTitle() : '';
+    $variables['content']['page_title'] = ((isset($field_dynamic_title)) && $field_dynamic_title[0]['value'] == 1) ? Drupal::service('vactory')->getCurrentTitle() : '';
     // Get page title if current page not checked.
     $variables['content']['page_title'] = ((isset($dynamic_title[0]['value'])) && !empty($dynamic_title[0]['value'])) ? $dynamic_title[0]['value'] : $variables['content']['page_title'];
 
@@ -49,8 +49,10 @@ function vactory_banner_preprocess_block(&$variables) {
       $banner_image = $node->get('node_banner_image')->getValue();
       $banner_image_mobile = $node->get('node_banner_mobile_image')->getValue();
       $banner_title = $node->get('node_banner_title')->getValue();
-      $variables['content']['field_vactory_media'] = isset($banner_image[0]['target_id']) ? $banner_image : $variables['content']['field_vactory_media'];
-      $variables['content']['field_vactory_media_mobile'] = isset($banner_image_mobile[0]['target_id']) ? $banner_image_mobile : $variables['content']['field_banner_image_mobile'];
+      $content_image = isset($variables['content']['field_vactory_media']) ? $variables['content']['field_vactory_media'] : NULL;
+      $content_image_mobile = isset($variables['content']['field_banner_image_mobile']) ? $variables['content']['field_banner_image_mobile'] : NULL;
+      $variables['content']['field_vactory_media'] = isset($banner_image[0]['target_id']) ? $banner_image : $content_image;
+      $variables['content']['field_vactory_media_mobile'] = isset($banner_image_mobile[0]['target_id']) ? $banner_image_mobile : $content_image_mobile;
       $field_dynamic_title = (isset($banner_title[0]['value']) && !empty($banner_title[0]['value'])) ? $banner_title[0]['value'] : $variables['content']['page_title'];
       $variables['content']['page_title'] = $field_dynamic_title;
     }

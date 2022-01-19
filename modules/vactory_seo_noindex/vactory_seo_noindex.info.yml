@@ -1,0 +1,6 @@
+name: Vactory SEO noindex
+type: module
+description: Provides console to load list of pages that should not be indexed by exploration robots
+package: Vactory
+core: 8.x
+core_version_requirement: ^8 || ^9

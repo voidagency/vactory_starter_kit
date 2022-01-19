@@ -5,7 +5,6 @@ vactory_appointment.appointments_settings:
     _form: '\Drupal\vactory_appointment\Form\SettingsForm'
   requirements:
     _permission: 'administer appointments'
-    _permission: 'access content'
 vactory_appointment.appointment_edit_submit_form:
   path: '/modifier-un-rendez-vous'
   defaults:

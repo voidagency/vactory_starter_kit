@@ -2,6 +2,7 @@
 
 namespace Drupal\vactory_search_overlay\Form;
 
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 
@@ -39,7 +40,7 @@ class SearchOverlayForm extends FormBase {
    *
    * @see: \Drupal\vactory_search_overlay\Plugin\Block\VactorySearchOverlayBlock2::build()
    */
-  public function buildForm(array $form, FormStateInterface $form_state, $variant = '') {
+  public function buildForm(array $form, FormStateInterface $form_state, string $variant = '') {
     $form['search_api_fulltext'] = [
       '#type'      => 'search',
       '#maxlength' => 128,
@@ -67,6 +68,7 @@ class SearchOverlayForm extends FormBase {
     else {
       $form['#theme'] = 'vactory_search_overlay_form_' . $variant;
     }
+    $form['#cache']['max-age'] = Cache::PERMANENT;
 
     return $form;
   }

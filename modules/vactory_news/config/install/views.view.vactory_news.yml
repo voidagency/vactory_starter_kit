@@ -5,7 +5,6 @@ dependencies:
     - core.entity_view_mode.node.card
     - core.entity_view_mode.node.card_inline
     - core.entity_view_mode.node.masonry
-    - core.entity_view_mode.node.mosaic
     - entityqueue.entity_queue.vactory_news_block_masonry
     - entityqueue.entity_queue.vactory_news_block_three_columns
     - entityqueue.entity_queue.vactory_news_block_two_columns
@@ -88,7 +87,7 @@ display:
         type: 'entity:node'
         options:
           relationship: none
-          view_mode: mosaic
+          view_mode: card
       fields:
         title:
           id: title
@@ -176,6 +175,128 @@ display:
         - 'languages:language_content'
         - 'languages:language_interface'
         - url.query_args
+        - 'user.node_grants:view'
+        - user.permissions
+      tags: {  }
+  block_3_columns_sorted_by_views_count:
+    display_plugin: block
+    id: block_3_columns_sorted_by_views_count
+    display_title: 'Block Three Columns - Count Views'
+    position: 2
+    display_options:
+      display_extenders:
+        metatag_display_extender: {  }
+      title: 'Block three columns - Tri depending on article views count'
+      defaults:
+        title: false
+        pager: false
+        css_class: false
+        use_more: false
+        use_more_always: false
+        use_more_text: false
+        link_display: false
+        link_url: false
+        filters: false
+        filter_groups: false
+        sorts: false
+        style: false
+        row: false
+        relationships: false
+      pager:
+        type: some
+        options:
+          items_per_page: 3
+      display_description: ''
+      block_description: 'Three Columns - Tri depending on article views count'
+      enabled: true
+      css_class: block-three-columns-vactory-news
+      use_more: true
+      use_more_always: true
+      use_more_text: 'Voir plus d''actualités'
+      link_display: listing_three_columns
+      link_url: vactory/news/listing-one-column
+      filters:
+        status:
+          value: '1'
+          table: node_field_data
+          field: status
+          plugin_id: boolean
+          entity_type: node
+          entity_field: status
+          id: status
+          expose:
+            operator: ''
+            operator_limit_selection: false
+            operator_list: {  }
+          group: 1
+        type:
+          id: type
+          table: node_field_data
+          field: type
+          operator: in
+          value:
+            - vactory_news
+          exposed: false
+          entity_type: node
+          entity_field: type
+          plugin_id: bundle
+          expose:
+            operator_limit_selection: false
+            operator_list: {  }
+        langcode:
+          id: langcode
+          table: node_field_data
+          field: langcode
+          operator: in
+          value:
+            '***LANGUAGE_language_interface***': '***LANGUAGE_language_interface***'
+          exposed: false
+          entity_type: node
+          entity_field: langcode
+          plugin_id: language
+          expose:
+            operator_limit_selection: false
+            operator_list: {  }
+      filter_groups:
+        operator: AND
+        groups:
+          1: AND
+      rendering_language: '***LANGUAGE_language_interface***'
+      sorts:
+        field_node_count_view_value:
+          id: field_node_count_view_value
+          table: node__field_node_count_view
+          field: field_node_count_view_value
+          relationship: none
+          group_type: group
+          admin_label: ''
+          order: DESC
+          exposed: false
+          expose:
+            label: ''
+          plugin_id: standard
+      style:
+        type: vactory_views_grid
+        options:
+          uses_fields: false
+          xs: col-xs-12
+          sm: col-sm-6
+          md: col-md-4
+          lg: col-lg-4
+          wrapper_class_custom: eq-height
+          row_class_default: 1
+          row_class_custom: ''
+      row:
+        type: 'entity:node'
+        options:
+          relationship: none
+          view_mode: card
+      relationships: {  }
+      block_category: News
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_interface'
         - 'user.node_grants:view'
         - user.permissions
       tags: {  }
@@ -1231,7 +1352,8 @@ display:
     display_title: 'Listing One Column'
     position: 1
     display_options:
-      display_extenders: {  }
+      display_extenders:
+        metatag_display_extender: {  }
       path: vactory/news/listing-one-column
       display_description: ''
       filters:
@@ -1335,14 +1457,43 @@ display:
           expose_sort_order: true
           sort_asc_label: Ascendant
           sort_desc_label: Descendant
-          input_required: false
           text_input_required: 'Sélectionnez n''importe quel filtre et cliquez sur Appliquer pour voir les résultats'
+          text_input_required_format: restricted_html
           bef:
             general:
+              autosubmit: false
+              autosubmit_exclude_textfield: false
+              autosubmit_textfield_delay: 500
+              autosubmit_hide: false
+              input_required: false
               allow_secondary: false
               secondary_label: 'Options avancées'
-              autosubmit: false
-              autosubmit_hide: false
+              secondary_open: false
+            sort:
+              plugin_id: default
+              advanced:
+                combine: true
+                combine_rewrite: "Tri depending on article views count Ascendant|Least read to most read\r\nTri depending on article views count Descendant|Most read to least read"
+                reset: false
+                reset_label: ''
+                collapsible: false
+                collapsible_label: 'Sort options'
+                is_secondary: false
+            filter:
+              field_vactory_news_theme_target_id:
+                plugin_id: default
+                advanced:
+                  sort_options: false
+                  rewrite:
+                    filter_rewrite_values: ''
+                  collapsible: false
+                  is_secondary: false
+              field_vactory_date_value:
+                plugin_id: default
+                advanced:
+                  placeholder_text: ''
+                  collapsible: false
+                  is_secondary: false
             created:
               bef_format: bef_datepicker
               more_options:
@@ -1351,7 +1502,7 @@ display:
               bef_format: bef_datepicker
               more_options:
                 is_secondary: true
-          text_input_required_format: restricted_html
+          input_required: false
       arguments: {  }
       enabled: true
       title: News
@@ -1365,21 +1516,18 @@ display:
       use_more_text: more
       rendering_language: '***LANGUAGE_language_interface***'
       sorts:
-        created:
-          id: created
-          table: node_field_data
-          field: created
+        field_node_count_view_value:
+          id: field_node_count_view_value
+          table: node__field_node_count_view
+          field: field_node_count_view_value
           relationship: none
           group_type: group
           admin_label: ''
           order: DESC
-          exposed: false
+          exposed: true
           expose:
-            label: ''
-          granularity: second
-          entity_type: node
-          entity_field: created
-          plugin_id: date
+            label: 'Tri depending on article views count'
+          plugin_id: standard
       style:
         type: vactory_views_grid
         options:
@@ -1417,6 +1565,8 @@ display:
         - 'languages:language_interface'
         - url
         - url.query_args
+        - 'url.query_args:sort_by'
+        - 'url.query_args:sort_order'
         - user
         - 'user.node_grants:view'
         - user.permissions
@@ -1757,117 +1907,21 @@ display:
     display_plugin: block
     id: mosaique
     display_title: 'Block Mosaique'
-    position: 2
+    position: 11
     display_options:
       display_extenders:
         metatag_display_extender: {  }
-      title: 'Block Mosaique'
-      defaults:
-        title: false
-        pager: false
-        css_class: false
-        use_more: false
-        use_more_always: false
-        use_more_text: false
-        link_display: false
-        link_url: false
-        filters: false
-        filter_groups: false
-        sorts: false
-        style: false
-        row: false
-        relationships: false
-      pager:
-        type: some
-        options:
-          items_per_page: 6
       display_description: ''
-      block_description: 'Block Mosaique'
-      enabled: true
-      css_class: block-slider-large-vactory-news
-      use_more: true
-      use_more_always: true
-      use_more_text: 'Voir plus d''actualités'
-      link_display: listing_one_column
-      link_url: vactory/news/listing-one-column
-      filters:
-        status:
-          value: '1'
-          table: node_field_data
-          field: status
-          plugin_id: boolean
-          entity_type: node
-          entity_field: status
-          id: status
-          expose:
-            operator: ''
-            operator_limit_selection: false
-            operator_list: {  }
-          group: 1
-        type:
-          id: type
-          table: node_field_data
-          field: type
-          operator: in
-          value:
-            - vactory_news
-          exposed: false
-          entity_type: node
-          entity_field: type
-          plugin_id: bundle
-          expose:
-            operator_limit_selection: false
-            operator_list: {  }
-        langcode:
-          id: langcode
-          table: node_field_data
-          field: langcode
-          operator: in
-          value:
-            '***LANGUAGE_language_interface***': '***LANGUAGE_language_interface***'
-          exposed: false
-          entity_type: node
-          entity_field: langcode
-          plugin_id: language
-          expose:
-            operator_limit_selection: false
-            operator_list: {  }
-      filter_groups:
-        operator: AND
-        groups:
-          1: AND
-      rendering_language: '***LANGUAGE_language_interface***'
-      sorts:
-        field_vactory_date_value:
-          id: field_vactory_date_value
-          table: node__field_vactory_date
-          field: field_vactory_date_value
-          relationship: none
-          group_type: group
-          admin_label: ''
-          order: DESC
-          exposed: false
-          expose:
-            label: ''
-          granularity: second
-          plugin_id: datetime
-      style:
-        type: default
-        options:
-          row_class: ''
-          default_row_class: true
-          uses_fields: false
-      row:
-        type: 'entity:node'
-        options:
-          relationship: none
-          view_mode: mosaic
-      relationships: {  }
-      block_category: News
+      defaults:
+        style: true
+        row: true
+      block_description: 'Block mosaique'
     cache_metadata:
       max-age: -1
       contexts:
+        - 'languages:language_content'
         - 'languages:language_interface'
+        - url.query_args
         - 'user.node_grants:view'
         - user.permissions
       tags: {  }

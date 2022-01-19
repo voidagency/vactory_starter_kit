@@ -20,10 +20,14 @@ class VactoryCoreServiceProvider extends ServiceProviderBase {
     // Override simplify_menu_menu_items service.
     $definition = $container->getDefinition('simplify_menu.menu_items');
     $definition->setClass('Drupal\vactory_core\MenuItems')
-      ->addArgument(new Reference('menu.link_tree'));
+      ->addArgument(new Reference('entity.repository'))
+      ->addArgument(new Reference('entity_field.manager'))
+      ->addArgument(new Reference('entity_type.manager'))
+      ->addArgument(new Reference('current_user'));
     // Override menu.default_tree_manipulators service.
     $container->getDefinition('menu.default_tree_manipulators')
-      ->setClass(MenuRoleLinkTreeManipulator::class);
+      ->setClass(MenuRoleLinkTreeManipulator::class)
+      ->addArgument(new Reference('router.admin_context'));
   }
 
 }

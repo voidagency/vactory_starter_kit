@@ -1,0 +1,7 @@
+vactory_node_view_count.increment:
+  js:
+    assets/js/vactory_node_view_count.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupalSettings

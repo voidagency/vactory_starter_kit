@@ -1,0 +1,29 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_toolbox
+  module:
+    - block_content
+    - options
+id: block_content.field_links_source
+field_name: field_links_source
+entity_type: block_content
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: menu
+      label: 'Toolbox menu'
+    -
+      value: df_template
+      label: 'Dynamic field template'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

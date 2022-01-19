@@ -92,7 +92,7 @@ function vactory_content_localizer_form_alter(&$form, FormStateInterface $form_s
  */
 function vactory_content_localizer_form_node_type_form_builder($entity_type, NodeTypeInterface $type, &$form, FormStateInterface $form_state) {
   if ($form_state->getValue('enabling') == 1) {
-    Vactory::createLocationField($form_state->getFormObject()->getEntity()->id(),
+    Drupal::service('vactory')->createLocationField($form_state->getFormObject()->getEntity()->id(),
       'field_vactory_position');
   }
   $type->setThirdPartySetting('vactory_content_localizer', 'enabling', $form_state->getValue('enabling'));

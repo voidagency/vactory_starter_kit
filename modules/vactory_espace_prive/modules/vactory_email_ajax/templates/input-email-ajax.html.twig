@@ -1,0 +1,26 @@
+{#
+/**
+ * @file
+ * Default theme implementation for an 'input' #type form element.
+ *
+ * Available variables:
+ * - attributes: A list of HTML attributes for the input element.
+ * - children: Optional additional rendered elements.
+ *
+ * @see template_preprocess_input()
+ *
+ * @ingroup themeable
+ */
+#}
+{%
+	set classes = [
+	'form-type-' ~ type|clean_class,
+	type not in ['checkbox', 'radio', 'submit', 'button'] ? 'form-control',
+	type in ['checkbox', 'radio'] ? 'form-check-input',
+	type in ['submit', 'button'] ? 'btn',
+	type in ['submit', 'button'] ? 'btn-primary',
+]
+%}
+<input{{ attributes.addClass(classes).removeClass('form-text').setAttribute('id', 'account-email') }} />
+<small id="invalid-account-email-message" class="text-danger"></small>
+{{ children }}

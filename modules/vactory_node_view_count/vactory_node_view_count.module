@@ -1,0 +1,70 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Vactory node view count module.
+ *
+ * @DCG
+ * This file is no longer required in Drupal 8.
+ * @see https://www.drupal.org/node/2217931
+ */
+
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
+use Drupal\node\NodeTypeInterface;
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_node_view_count_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+    if ($form_id <> "node_type_edit_form") {
+        return;
+    }
+
+    $form_object = $form_state->getFormObject()->getEntity();
+
+    $form['node_view_count_details'] = [
+        '#type' => 'details',
+        '#title' => t('Node view count configuration'),
+        '#group' => 'additional_settings',
+    ];
+    $form['node_view_count_details']['enabling_count_node'] = [
+        '#title' => t('Enable Node View Count'),
+        '#type' => 'checkbox',
+        '#default_value' => $form_object->getThirdPartySetting('vactory_node_view_count', 'enabling_count_node', ''),
+    ];
+
+    $form['#entity_builders'][] = 'vactory_node_view_count_form_node_type_form_builder';
+}
+
+/**
+ * Entity builder for the node type form with scheduler options.
+ */
+function vactory_node_view_count_form_node_type_form_builder($entity_type, NodeTypeInterface $type, &$form, FormStateInterface $form_state) {
+    if ($form_state->getValue('enabling_count_node') == 1) {
+        \Drupal::service('vactory_node_view_count.node_view_count')
+            ->createNodeViewCountField($form_state->getFormObject()->getEntity()->id(), 'field_node_count_view');
+    }
+    else {
+        \Drupal::service('vactory_node_view_count.node_view_count')
+            ->removeNodeViewCountField($form_state->getFormObject()->getEntity()->id(), 'field_node_count_view');
+    }
+    $type->setThirdPartySetting('vactory_node_view_count', 'enabling_count_node', $form_state->getValue('enabling_count_node'));
+}
+
+/**
+ * Implements hook_node_view().
+ */
+function vactory_node_view_count_node_view(array &$build, EntityInterface $node, EntityViewDisplayInterface $display, $view_mode) {
+    if ($view_mode == 'full' && node_is_page($node) &&
+        empty($node->in_preview) && $node->hasField('field_node_count_view')) {
+        $current_user = \Drupal::currentUser()->id();
+        $owner_id = isset($node->getOwner()->get('uid')->getValue()[0]) ? $node->getOwner()->get('uid')->getValue()[0]['value'] : NULL;
+        if ($current_user != $owner_id) {
+            $build['#attached']['library'][] = 'vactory_node_view_count/vactory_node_view_count.increment';
+            $build['#attached']['drupalSettings']['vactory_node_view_count']['url'] = Url::fromRoute('vactory_node_view_count.increment_counter', ['nid' => $node->id()])->toString();
+        }
+    }
+}

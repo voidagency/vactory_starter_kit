@@ -30,7 +30,10 @@ class QuizForm extends FormBase {
   /**
    * Class constructor.
    */
-  public function __construct(VactoryQuizManager $quizManager, ModuleHandlerInterface $moduleHandler) {
+  public function __construct(
+    VactoryQuizManager $quizManager,
+    ModuleHandlerInterface $moduleHandler
+  ) {
     $this->quizManager = $quizManager;
     $this->moduleHandler = $moduleHandler;
   }
@@ -106,15 +109,46 @@ class QuizForm extends FormBase {
     $current_question_number = $form_state->get('current_question_num');
     if ($current_question_number > $questions_count) {
       $perfect_mark = $form_state->get('perfectMark');
+      $content = [
+        'results' => $results,
+        'perfect_mark' => $perfect_mark,
+        'questions' => $questions,
+        'show_correction' => $show_correction,
+        'quiz_history' => $this->moduleHandler->moduleExists('vactory_quiz_history'),
+      ];
+      // Check if certificat is enabled in quiz then generate it when necessary.
+      if (isset($quiz['certificat'])) {
+        $min_required_result = $quiz['certificat']['min_required_result'];
+        $user_perfect_mark = (int) $results['perfect_mark'];
+        $user_result_percentage = intval(round(($user_perfect_mark*100)/(int) $perfect_mark));
+        if ($user_result_percentage >= $min_required_result) {
+          if (isset($results['certificat']) && !empty($results['certificat']) && file_exists($results['certificat'])) {
+            // Certificat already generated so get related uri from history.
+            $certificat_url = file_create_url($results['certificat']);
+          }
+          else {
+            // Certificat not yet generated or maybe quiz history module is disabled.
+            // So regenerate the certificat.
+            $certificat_info = \Drupal::service('vactory_quiz_certificat.manager')->generateCertificat($quiz['entity_id']);
+            $certificat_url = $certificat_info['url'];
+            $results['certificat'] = $certificat_info['uri'];
+            $form_state->set('results', $results);
+            if ($this->moduleHandler->moduleExists('vactory_quiz_history')) {
+              $this->quizManager->updateUserAttemptHistory(
+                \Drupal::currentUser()->id(),
+                $quiz['entity_id'],
+                $results['user_mark'],
+                $results['user_answers'],
+                $certificat_info['uri']
+              );
+            }
+          }
+          $content['certificat_url'] = $certificat_url;
+        }
+      }
       $form['quiz_results'] = [
         '#theme' => 'vactory_quiz_results',
-        '#content' => [
-          'results' => $results,
-          'perfect_mark' => $perfect_mark,
-          'questions' => $questions,
-          'show_correction' => $show_correction,
-          'quiz_history' => $this->moduleHandler->moduleExists('vactory_quiz_history'),
-        ],
+        '#content' => $content,
       ];
       if ($allow_new_attempts) {
         $form['new_attempt'] = $this->getSubmitElement($form, $form_state, $ajax_wrapper_id, $allow_new_attempts_title);
@@ -217,15 +251,17 @@ class QuizForm extends FormBase {
 
     if ($action === 'next') {
       if ($current_question_num === count($questions) && $this->moduleHandler->moduleExists('vactory_quiz_history')) {
-        $this->quizManager->updateUserAttemptHistory($current_user->id(), $entity_id, $results['user_mark'], $results['user_answers']);
+        $this->quizManager->updateUserAttemptHistory($current_user->id(), $entity_id, $results['user_mark'], $results['user_answers'], $results['certificat']);
       }
       $form_state->set('isValidateAnswer', FALSE);
       $form_state->set('current_question_num', $current_question_num + 1);
     }
 
     if ($action === 'new_attempt') {
+      $results = $form_state->get('results');
+      $results = array_intersect_key($results, array_flip(['perfect_mark', 'certificat']));
       // In new attempt case we empty all form data.
-      $form_state->set('results', NULL);
+      $form_state->set('results', $results);
       $form_state->set('isValidateAnswer', NULL);
       $form_state->set('current_question_num', NULL);
       $form_state->set('attemptHistoryExist', FALSE);

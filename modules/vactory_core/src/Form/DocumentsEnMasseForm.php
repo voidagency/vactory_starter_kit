@@ -52,17 +52,21 @@ class DocumentsEnMasseForm extends FormBase {
    * {@inheritDoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
+    // Get site default stream wrapper.
+    $default_stream_wrapper = $this->configFactory
+      ->get('system.file')
+      ->get('default_scheme');
     $values = $form_state->getValues();
     $failure = [];
     $upload_success_counter = 0;
     $time = (new \DateTime('now'))->format('d-m-Y');
-    if (!file_exists('public://documents-en-masse/' . $time)) {
-      mkdir('public://documents-en-masse/' . $time, 0777, TRUE);
+    if (!file_exists($default_stream_wrapper . '://documents-en-masse/' . $time)) {
+      mkdir($default_stream_wrapper . '://documents-en-masse/' . $time, 0777, TRUE);
     }
     foreach ($values['documents']['uploaded_files'] as $file) {
       $handle = fopen($file['path'], 'r');
       if ($handle) {
-        $file = file_save_data($handle, 'public://documents-en-masse/' . $time . '/' . $file['filename']);
+        $file = file_save_data($handle, $default_stream_wrapper . '://documents-en-masse/' . $time . '/' . $file['filename']);
         fclose($handle);
         if ($file) {
           $file->setPermanent();

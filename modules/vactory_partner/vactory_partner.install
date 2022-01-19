@@ -4,11 +4,3 @@
  * @file
  * Install file.
  */
-
-/**
- * Implements hook_install().
- */
-function vactory_partner_install() {
-  // Ensure the translation fields are created in the database.
-  \Drupal::service('entity.definition_update_manager')->applyUpdates();
-}

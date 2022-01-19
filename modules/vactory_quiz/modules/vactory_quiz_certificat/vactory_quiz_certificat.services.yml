@@ -1,0 +1,11 @@
+services:
+  vactory_quiz_certificat.manager:
+    class: Drupal\vactory_quiz_certificat\Services\VactoryQuizCertificatManager
+    arguments:
+      - '@entity_type.manager'
+      - '@config.factory'
+      - '@current_user'
+      - '@token'
+      - '@state'
+      - '@language_manager'
+      - '@entity.repository'

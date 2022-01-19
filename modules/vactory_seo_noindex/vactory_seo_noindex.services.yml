@@ -1,0 +1,6 @@
+services:
+  vactory_seo_noindex.event_subscriber:
+    class: Drupal\vactory_seo_noindex\EventSubscriber\VactorySeoNoindexSubscriber
+    arguments: ['@config.factory', '@path.current', '@path_alias.manager']
+    tags:
+      - { name: event_subscriber }

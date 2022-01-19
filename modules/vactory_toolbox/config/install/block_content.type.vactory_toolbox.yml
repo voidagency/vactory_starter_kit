@@ -1,0 +1,10 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_toolbox
+id: vactory_toolbox
+label: Toolbox
+revision: 1
+description: 'Utiliser ce type de bloc pour pour créer des toolbox.'

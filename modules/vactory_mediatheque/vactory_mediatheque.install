@@ -11,9 +11,6 @@ use Drupal\taxonomy\Entity\Term;
  * Implements hook_install().
  */
 function vactory_mediatheque_install() {
-  // Ensure the translation fields are created in the database.
-  \Drupal::service('entity.definition_update_manager')->applyUpdates();
-
   // Term names to be added.
   $parent_items = [
     'Photothèque',

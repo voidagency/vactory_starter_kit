@@ -12,6 +12,8 @@ use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\node\NodeInterface;
 use Drupal\user\UserInterface;
+use Drupal\vactory_notifications\Entity\NotificationsInterface;
+use Drupal\vactory_notifications\Services\VactoryNotificationsService;
 use Drupal\vactory_points\Event\VactoryPointsEditEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -71,6 +73,13 @@ class PointsEditEventsSubscriber implements EventSubscriberInterface {
   protected $moduleHandler;
 
   /**
+   * Notifications service.
+   *
+   * @var \Drupal\vactory_notifications\Services\VactoryNotificationsService
+   */
+  protected $notificationsManager;
+
+  /**
    * Points Edit event subscriber constructor.
    *
    * @param \Drupal\Core\Session\AccountProxyInterface $account
@@ -92,7 +101,8 @@ class PointsEditEventsSubscriber implements EventSubscriberInterface {
     EntityRepositoryInterface $entityRepository,
     LanguageManagerInterface $languageManager,
     ConfigFactoryInterface $configFactory,
-    ModuleHandlerInterface $moduleHandler
+    ModuleHandlerInterface $moduleHandler,
+    VactoryNotificationsService $notificationsManager
   ) {
     $this->account = $account;
     $this->entityTypeManager = $entityTypeManager;
@@ -100,6 +110,7 @@ class PointsEditEventsSubscriber implements EventSubscriberInterface {
     $this->languageManager = $languageManager;
     $this->configFactory = $configFactory;
     $this->moduleHandler = $moduleHandler;
+    $this->notificationsManager = $notificationsManager;
   }
 
   /**
@@ -127,10 +138,14 @@ class PointsEditEventsSubscriber implements EventSubscriberInterface {
     $user_points = !empty($this->user->get('field_user_points')->value) ? $this->user->get('field_user_points')->value : 0;
     $old_user_points = $user_points;
     $rules = $this->getSatisfiedRulesByAction($event, $action, $user_performed_actions);
+    $action = strpos($action, 'flag/') === 0 || strpos($action, 'unflag/') === 0 ? explode('/', $action)[0] : $action ;
     if (!empty($rules)) {
       foreach ($rules as $index => $rule) {
         if ($rule['action']['no_repeat']) {
-          if (isset($entity) && in_array($entity->id(), $user_performed_actions[$action]) || !isset($entity) && isset($user_performed_actions[$action])) {
+          if (
+            isset($entity) && isset($user_performed_actions[$action]) && in_array($entity->id(), $user_performed_actions[$action]) ||
+            !isset($entity) && isset($user_performed_actions[$action])
+          ) {
             continue;
           }
           else {
@@ -160,9 +175,19 @@ class PointsEditEventsSubscriber implements EventSubscriberInterface {
     $rules = $config->get('rules');
     $entity = $event->getEntity();
     $filtered_rules = [];
+    $flag_id = '';
+    if (strpos($action, 'flag/') === 0 || strpos($action, 'unflag/') === 0) {
+      $action_pieces = explode('/', $action);
+      $action = $action_pieces[0];
+      $flag_id = $action_pieces[1];
+    }
+
     foreach ($rules as $index => $rule) {
       $action_value = $rule['action']['value'] === 'other' ? $rule['action']['other_action_value'] : $rule['action']['value'];
       if ($action_value === $action) {
+        if (!empty($flag_id) && !in_array($flag_id, $rule['action']['concerned_flags'], TRUE)) {
+          continue;
+        }
         $role_match = count(array_intersect($this->user->getRoles(), $rule['roles'])) > 0 || in_array('all', $rule['roles']);
         $node_type_match = (isset($entity) && in_array($entity->bundle(), $rule['node_type'])) || in_array('all', $rule['node_type']);
         $no_repeat = $rule['action']['no_repeat'];
@@ -207,6 +232,10 @@ class PointsEditEventsSubscriber implements EventSubscriberInterface {
     $notification = $this->entityTypeManager->getStorage('notifications_entity')
       ->create($notification_data);
     $notification->save();
+    if ($notification_config->get('enable_toast')) {
+      // Trigger notification toast.
+      $this->notificationsManager->triggerNotificationsToast($notification);
+    }
     // Notifications auto translation feature.
     $is_auto_translated = (boolean) $notification_config->get('auto_translation');
     if ($is_auto_translated) {

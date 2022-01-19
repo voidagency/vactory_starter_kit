@@ -1,0 +1,35 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_toolbox
+  config:
+    - block_content.type.vactory_toolbox
+    - field.field.block_content.vactory_toolbox.field_dynamic_block_components
+    - field.field.block_content.vactory_toolbox.field_links_source
+  module:
+    - options
+    - vactory_dynamic_field
+id: block_content.vactory_toolbox.default
+targetEntityType: block_content
+bundle: vactory_toolbox
+mode: default
+content:
+  field_dynamic_block_components:
+    weight: 1
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: field_wysiwyg_dynamic_formatter
+    region: content
+  field_links_source:
+    weight: 2
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    type: list_key
+    region: content
+hidden:
+  langcode: true
+  search_api_excerpt: true

@@ -9,6 +9,12 @@
 
   $(document).ready(function () {
 
+    var form = $('#js-form-search');
+    if (form.children().length === 0) {
+      var endpoint = Drupal.url('_search-overlay/variant1');
+      var executed = Drupal.ajax({ url: endpoint }).execute();
+    }
+
     var _searchOverlay = $('.search-overlay-variant1'),
       search_overlay_button = $('.js-btn-search-overlay,.close-search-overlay'),
       inputSearch = _searchOverlay.find('.search_input');
@@ -30,8 +36,10 @@
       }
     });
 
+
     $('#btn-search-overlay-close').on('click', function (event) {
       event.preventDefault();
+
       if (_searchOverlay.hasClass('open')) {
         _searchOverlay.removeClass('open');
         $('body').removeClass('overflow-y');
@@ -64,6 +72,6 @@
         $('body').removeClass('overflow-y');
       }
     });
-  })
+  });
 
 }(jQuery, Drupal));

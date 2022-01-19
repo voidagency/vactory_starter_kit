@@ -1,0 +1,32 @@
+{% if classes is not defined %}
+	{% set classes = [] %}
+{% endif %}
+{% set classes = classes|merge(['card']) %}
+
+<article {{ attributes.addClass(classes) }}>
+	<div class="card-body">
+		<h4 {{ title_attributes }} class="card-title">
+			{% if  url is null %}
+				<span class="link font-semibold text-uppercase font-20">{{ label }}</span>
+			{% else %}
+				<a href="{{ url }}" rel="bookmark" class="link font-semibold text-uppercase font-20">{{ label }}</a>
+			{% endif %}
+		</h4>
+		<div class="card-text">
+			<p>{{ noWrapper(hideLabel(addAttributes(content.body))) }}</p>
+			{% if quiz_user_history is not empty %}
+				<p class="text-muted">
+					{{ 'Your score'|t }}: <span class="border rounded-circle border-danger p-2 text-danger font-weight-bold">{{ quiz_user_history.user_mark }}/{{ quiz_perfect_mark }}</span>
+				</p>
+				<p class="text-muted">
+					{{ 'Your best score in this quiz'|t }}: <span class="border rounded-circle border-danger p-2 text-danger font-weight-bold">{{ quiz_user_history.perfect_mark }}/{{ quiz_perfect_mark }}</span>
+				</p>
+			{% endif %}
+		</div>
+		{% if url is not null %}
+			<div class="card-read-more">
+				<a href="{{ url }}" class="btn btn-primary">{{ 'En savoir plus' }}</a>
+			</div>
+		{% endif %}
+	</div>
+</article>

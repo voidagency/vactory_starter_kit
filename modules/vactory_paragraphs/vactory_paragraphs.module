@@ -176,6 +176,8 @@ function vactory_paragraphs_field_widget_form_alter(&$element, FormStateInterfac
   if (!empty($field_name) && $field_name == 'field_views_reference') {
     views_reference_remove_disabled_views($element['target_id']['#options']);
     $element['target_id']['#ajax']['callback'] = 'views_reference_get_enabled_displays';
+    $element['display_id']['#prefix'] = '<div id="' . implode('_', $element['target_id']['#field_parents']) . '">';
+    $element['display_id']['#suffix'] = '</div>';
   }
   if (!empty($field_name) && $field_name == 'field_background_color') {
     $color = $element['color']['#default_value'];
@@ -229,36 +231,27 @@ function views_reference_get_enabled_displays(array &$form, FormStateInterface $
   $field_value = NestedArray::getValue($form_state->getValues(), $trigger['#parents']);
 
   // Get the value for the target id of the View.
-  switch ($trigger['#type']) {
-    case 'select':
-      $view_id = $field_value[$trigger['#delta']][$trigger['#key_column']];
-      break;
-
-    default:
-      $view_id = $field_value;
-      break;
-  }
-
-  // Obtain the display ids for the given View.
-  // We recreate the same unique class as in the parent function.
-  $element_class_selector = '#' . implode('-', $trigger['#parents']) . '-display';
+  $view_id = $field_value;
 
   // Change the display_id field options.
   $display_id_field_path = array_slice($trigger['#array_parents'], 0, -1);
   array_push($display_id_field_path, 'display_id');
   $display_id_field = NestedArray::getValue($form, $display_id_field_path);
+  $display_element_id = implode('_', array_slice($trigger['#parents'], 0, -3));
   $view = Drupal::service('entity_type.manager')->getStorage('view')
     ->load($view_id);
   $options = [];
   if ($view) {
     foreach ($view->get('display') as $display) {
-      if ($display['display_options']['enabled'] && $display['display_plugin'] == 'page') {
+      if ((!isset($display['display_options']['enabled']) || $display['display_options']['enabled']) && $display['display_plugin'] === 'page') {
         $options[$display['id']] = $display['display_title'];
       }
     }
   }
+  array_unshift($options, '- Select -');
   $display_id_field['#options'] = $options;
+  $display_id_field['#required'] = TRUE;
   $response = new AjaxResponse();
-  $response->addCommand(new ReplaceCommand($element_class_selector, render($display_id_field)));
+  $response->addCommand(new ReplaceCommand('#' . $display_element_id, render($display_id_field)));
   return $response;
 }
