@@ -46,6 +46,12 @@ function vactory_core_theme() {
         'srcset'    => [],
       ],
     ],
+    'vactory_image' => [
+      'template' => 'vactory-image',
+      'variables' => [
+        'image' => [],
+      ],
+    ],
   ];
 }
 

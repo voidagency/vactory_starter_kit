@@ -1,0 +1,47 @@
+{% set classes = image.classes is not empty ? image.classes|join(' ') : '' %}
+{% if image['picture-urls'] is not empty %}
+
+    <picture class="card-picture-figure">
+        <source
+                data-srcset="{{ image['picture-urls'][0] }}"
+                media="(max-width: 767px)">
+
+        <source
+                data-srcset="{{ image['picture-urls'][1] }}"
+                media="(min-width: 768px) and (max-width: 991px)">
+
+        <source
+                srcset="{{ image['picture-urls'][2] }}"
+                media="(min-width: 992px) and (max-width: 1199px)">
+
+        <source
+                data-srcset="{{ image['picture-urls'][3] }}"
+                media="(min-width: 1200px)">
+
+        <img
+            src="{{ image.url }}"
+            {% if classes is not empty %}
+                class = "{{ classes }}"
+            {% endif %}
+            {% if image['data-src'] is not empty %}
+                data-src="{{ image['data-src'] }}"
+            {% endif %}
+            alt="{{ image.alt }}"
+        />
+
+    </picture>
+
+{% else %}
+    <img
+            src="{{ image.url }}"
+            {% if classes is not empty %}
+                class = "{{ classes }}"
+            {% endif %}
+            {% if image['data-src'] is not empty %}
+                data-src="{{ image['data-src'] }}"
+            {% endif %}
+            alt="{{ image.alt }}"
+            height="{{ image.height }}"
+            width="{{ image.width }}"
+    />
+{% endif %}
