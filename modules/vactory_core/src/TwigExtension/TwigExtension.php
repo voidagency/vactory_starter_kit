@@ -100,6 +100,15 @@ class TwigExtension extends \Twig_Extension {
       new \Twig_SimpleFunction('vactory_image',
         [$this, 'vactoryImage'],
         ['is_safe' => ['html']]),
+
+      new \Twig_SimpleFunction('get_image_url',
+        [$this, 'getImageUrl'],
+        ['is_safe' => ['html']]),
+
+      new \Twig_SimpleFunction('get_image',
+        [$this, 'getImage'],
+        ['is_safe' => ['html']]),
+
     ];
   }
 
@@ -419,6 +428,30 @@ class TwigExtension extends \Twig_Extension {
 
     return $this->renderer->render($theme);
 
+  }
+
+  /**
+   * Implement get image function.
+   */
+  public function getImageUrl($fid = 0) {
+    $file = $this->entityTypeManager->getStorage('media')->load($fid);
+    if (!$file) {
+      return;
+    }
+    $path = file_create_url($file->thumbnail->entity->getFileUri());
+    return $path;
+  }
+
+  /**
+   * Implement get image function.
+   */
+  public function getImage($fid = 0) {
+    $file = $this->entityTypeManager->getStorage('media')->load($fid);
+    if (!$file) {
+      return;
+    }
+    $path = $file->thumbnail->entity->getFileUri();
+    return $path;
   }
 
 }

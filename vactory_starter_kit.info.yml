@@ -123,7 +123,6 @@ install:
   - metatag_twitter_cards
   - captcha
   - recaptcha
-  - twig_extender
   - simplify_menu
   - eu_cookie_compliance
   - viewsreference
