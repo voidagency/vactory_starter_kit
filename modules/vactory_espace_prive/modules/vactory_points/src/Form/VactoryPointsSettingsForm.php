@@ -82,6 +82,10 @@ class VactoryPointsSettingsForm extends ConfigFormBase {
     if ($this->moduleHandler->moduleExists('vactory_sondage')) {
       $actions['vote'] = $this->t('Sondage vote');
     }
+    if ($this->moduleHandler->moduleExists('admin_feedback')) {
+      $actions['feedback'] = $this->t('Feedback');
+    }
+
     $actions['other'] = $this->t('Other');
     // Get available content types.
     $node_types = $this->entityTypeManager->getStorage('node_type')

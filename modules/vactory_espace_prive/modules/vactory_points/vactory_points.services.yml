@@ -24,3 +24,11 @@ services:
     arguments: ['@vactory_points.manager']
     tags:
       - { name: event_subscriber }
+  vactory_points.feedback_subscriber:
+    class: Drupal\vactory_points\EventSubscriber\AdminFeedbackEventSubscriber
+    arguments:
+      - '@vactory_points.manager'
+      - '@entity_type.manager'
+    tags:
+      - { name: event_subscriber }
+

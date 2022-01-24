@@ -147,7 +147,8 @@
     "burst/cloudinary": "^9.2",
     "drupal/workbench_moderation": "^1.6",
     "phpoffice/phpspreadsheet": "^1.20",
-    "mpdf/mpdf": "^8.0"
+    "mpdf/mpdf": "^8.0",
+    "drupal/admin_feedback": "^2.2"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.3"
