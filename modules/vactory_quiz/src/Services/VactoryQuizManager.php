@@ -69,7 +69,8 @@ class VactoryQuizManager {
         $result['perfect_mark'] = (int) $search->perfect_mark;
         $result['user_answers'] = Json::decode($search->user_answers);
         $result['time'] = (int) $search->time;
-        $result['certificat'] = (int) $search->certificat;
+        $result['certificat'] = $search->certificat;
+        $result['certificat_time'] = $search->certificat_time;
       }
     }
     return $result;
@@ -79,30 +80,33 @@ class VactoryQuizManager {
    * Get all quiz ids passed by the given user.
    */
   public function getAllPassedQuiz($user_id) {
-    $query = "SELECT quiz_nid FROM vactory_quiz_history where uid = :uid";
+    $query = "SELECT * FROM vactory_quiz_history where uid = :uid";
     $searches = $this->database->query($query, [
       ':uid' => $user_id,
     ]);
-    $result = [];
+    $results = [];
     if (isset($searches) and !empty($searches)) {
       foreach ($searches as $search) {
-        $result['uid'] = (int) $search->uid;
-        $result['quiz_nid'] = (int) $search->quiz_nid;
-        $result['user_mark'] = (int) $search->user_mark;
-        $result['perfect_mark'] = (int) $search->perfect_mark;
-        $result['user_answers'] = Json::decode($search->user_answers);
-        $result['time'] = (int) $search->time;
-        $result['certificat'] = (int) $search->certificat;
+        $results[] = [
+          'uid' => (int) $search->uid,
+          'quiz_nid' => (int) $search->quiz_nid,
+          'user_mark' => (int) $search->user_mark,
+          'perfect_mark' => (int) $search->perfect_mark,
+          'user_answers' => Json::decode($search->user_answers),
+          'time' => (int) $search->time,
+          'certificat' => $search->certificat,
+          'certificat_time' => (int) $search->certificat_time,
+        ];
       }
     }
-    return $result;
+    return $results;
   }
 
 
   /**
    * Update user attempt history if exist or create it.
    */
-  public function updateUserAttemptHistory($uid, $quiz_nid, $user_mark, $user_answers, $certificat = '') {
+  public function updateUserAttemptHistory($uid, $quiz_nid, $user_mark, $user_answers, $certificat = '', $certificat_time = NULL) {
     $query = "SELECT * FROM vactory_quiz_history where uid = :uid and quiz_nid = :nid";
     $quiz_perfect_mark = $this->getPerfectMark($quiz_nid);
     $searches = $this->database->query($query, [
@@ -126,6 +130,7 @@ class VactoryQuizManager {
           'user_answers' => Json::encode($user_answers),
           'time' => \Drupal::time()->getCurrentTime(),
           'certificat' => $certificat,
+          'certificat_time' => $certificat_time,
         ])
         ->execute();
     }
@@ -141,6 +146,7 @@ class VactoryQuizManager {
           'user_answers' => Json::encode($user_answers),
           'time' => \Drupal::time()->getCurrentTime(),
           'certificat' => $certificat,
+          'certificat_time' => $certificat_time,
         ])
         ->condition('uid', $uid)
         ->condition('quiz_nid', $quiz_nid)

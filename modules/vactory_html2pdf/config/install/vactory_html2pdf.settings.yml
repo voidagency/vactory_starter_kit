@@ -1,0 +1,10 @@
+font_directories: "/profiles/contrib/vactory_starter_kit/modules/vactory_html2pdf/assets/fonts\r\n"
+fonts_data:
+  chocolate-covered-raindrops:
+    R: 'Chocolate Covered Raindrops.ttf'
+  chocolatier-artisanal:
+    R: 'Chocolatier Artisanal.ttf'
+  daniel-davis:
+    R: 'Daniel Davis.ttf'
+  motionpicture-personaluseonly:
+    R: MotionPicture_PersonalUseOnly.ttf

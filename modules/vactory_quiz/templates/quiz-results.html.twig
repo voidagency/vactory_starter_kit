@@ -23,10 +23,28 @@
 			}%}
 		</div>
 	{% endif %}
-	{% if content.certificat_url is defined %}
+	{% if content.certificat_url is not empty and content.certificat_url != 1 %}
 		<p class="mb-3">
 			<a class="btn btn-primary suffix-icon-download" href="{{ content.certificat_url }}" download>
 				{{ "Télécharger mon certificat"|t }}
+			</a>
+		</p>
+	{% endif %}
+	{% if content.certificat_url is not empty and content.certificat_url == 1 %}
+		<p class="mb-3 text-muted d-block">
+			{{ 'Congrats! Your certificate is in progress...'|t }}
+			<br>
+			{% if content.enable_email %}
+				{{ 'Once your certificate is generated you will receive it by email.'|t }}
+			{% else %}
+				{{ 'Please come back later to download it.'|t }}
+			{% endif %}
+		</p>
+	{% endif %}
+	{% if content.certificat_print_url is not empty %}
+		<p class="mb-3">
+			<a class="btn btn-primary suffix-icon-eye" href="{{ content.certificat_print_url }}">
+				{{ "Voir mon certificat"|t }}
 			</a>
 		</p>
 	{% endif %}

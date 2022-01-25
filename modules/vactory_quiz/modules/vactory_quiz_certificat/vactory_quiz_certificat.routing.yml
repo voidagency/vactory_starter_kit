@@ -5,3 +5,11 @@ vactory_quiz_certificat.settings:
     _title: 'Vactory Quiz Certificat Settings'
   requirements:
     _permission: 'administer site configuration'
+
+vactory_quiz_certificat.generate:
+  path: '/quiz-certificate/{token}'
+  defaults:
+    _title: 'Certificat'
+    _controller: '\Drupal\vactory_quiz_certificat\Controller\VactoryQuizCertificatGenerator::build'
+  requirements:
+    _permission: 'access content'

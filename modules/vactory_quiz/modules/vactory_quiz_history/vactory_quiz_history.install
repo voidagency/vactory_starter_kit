@@ -53,6 +53,10 @@ function vactory_quiz_history_schema() {
         'size' => 'big',
         'description' => "Generated certificat URI.",
       ],
+      'certificat_time' => [
+        'type' => 'int',
+        'description' => "Timestamp for getting certificat.",
+      ],
     ],
     'primary key' => ['id'],
   ];

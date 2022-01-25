@@ -2,9 +2,19 @@ vactory_quiz_certificat.settings:
   type: config_object
   label: 'Vactory Quiz Certificat Settings'
   mapping:
+    email_subject:
+      type: text
+      label: "Email subject"
+    email_body:
+      type: mapping
+      label: Email Body
+      mapping:
+        value:
+          type: text
+          label: "Certificat Body"
     certificat_body:
       type: mapping
-      label: Notifications
+      label: Certificat
       mapping:
         value:
           type: text

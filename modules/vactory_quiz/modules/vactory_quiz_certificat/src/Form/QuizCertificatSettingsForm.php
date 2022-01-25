@@ -31,7 +31,25 @@ class QuizCertificatSettingsForm extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildForm($form, $form_state);
     $config = $this->config('vactory_quiz_certificat.settings');
-    $form['orientation'] = [
+    $form['method'] = [
+      '#type' => 'radios',
+      '#title' => $this->t('Certificate Generate method'),
+      '#options' => [
+        'browser_print' => $this->t('Using browser print button'),
+        'html2pdf' => $this->t('Using Vactory HTML2PDF (mpdf php library)'),
+      ],
+      '#default_value' => $config->get('method'),
+    ];
+    $form['html2pdf_container'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Advanced settings'),
+      '#states' => [
+        'visible' => [
+          'input[name="method"]' => ['value' => 'html2pdf'],
+        ],
+      ],
+    ];
+    $form['html2pdf_container']['orientation'] = [
       '#type' => 'select',
       '#title' => $this->t('Document orientation'),
       '#options' => [
@@ -40,60 +58,58 @@ class QuizCertificatSettingsForm extends ConfigFormBase {
       ],
       '#default_value' => $config->get('orientation'),
     ];
+    $form['html2pdf_container']['enable_email'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Enable email notification when certificat is generated'),
+      '#default_value' => $config->get('enable_email'),
+    ];
+    $form['html2pdf_container']['email_subject'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Email subject'),
+      '#default_value' => $config->get('email_subject'),
+      '#states' => [
+        'visible' => [
+          'input[name="enable_email"]' => ['checked' => TRUE],
+        ],
+      ],
+      '#description' => $this->t('Supports tokens'),
+    ];
+    $form['html2pdf_container']['email_body'] = [
+      '#type' => 'text_format',
+      '#title' => $this->t('Email body'),
+      '#default_value' => !empty($config->get('email_body')) ? $config->get('email_body')['value'] : '',
+      '#format' => !empty($config->get('email_body')) ? $config->get('email_body')['format'] : 'basic_html',
+      '#states' => [
+        'visible' => [
+          'input[name="enable_email"]' => ['checked' => TRUE],
+        ],
+      ],
+      '#description' => $this->t('Supports tokens'),
+    ];
+
     $form['certificat_body'] = [
       '#type' => 'text_format',
       '#title' => $this->t('Certificat body'),
-      '#default_value' => $config->get('certificat_body')['value'],
-      '#format' => $config->get('certificat_body')['format'],
+      '#default_value' => !empty($config->get('certificat_body')) ? $config->get('certificat_body')['value'] : '',
+      '#format' => !empty($config->get('certificat_body')) ? $config->get('certificat_body')['format'] : 'basic_html',
     ];
     $form['token_tree'] = $this->getTokenTree();
-    $form['font_directories'] = [
-      '#type' => 'textarea',
-      '#title' => $this->t('Fonts Directories'),
-      '#description' => $this->t('Custom fonts directories, enter a directory per line, use project root relative path. The fonts directory should not contains any subdirectory all fonts ttf/otf files should be sotred directly under the specified font directory.'),
-      '#default_value' => $config->get('font_directories'),
-    ];
-    $fonts_data = $config->get('fonts_data');
-    if (!empty($fonts_data)) {
-      $output = '<h3>Existing custom fonts</h3>';
-      $output .= '<table><tr><th>Font name</th><th>Font file</th></tr>';
-      foreach ($fonts_data as $font_name => $font) {
-        $output .= '<tr>';
-        $output .= '<td>' . $font_name . '</td>';
-        $output .= '<td>' . $font['R'] . '</td>';
-        $output .= '<tr>';
-      }
-      $output .= '</table>';
-      $form['fonts_chart_wrapper'] = [
-        '#type' => 'details',
-        '#title' => $this->t('Detected custom fonts'),
-      ];
-      $form['fonts_chart_wrapper']['list'] = [
-        '#markup' => $output,
-      ];
-    }
-
     return $form;
   }
 
   /**
-   * {@inheritDoc}
+   * @inheritDoc
    */
-  function validateForm(array &$form, FormStateInterface $form_state) {
-    parent::validateForm($form, $form_state);
-    $font_directories = $form_state->getValue('font_directories');
-    if (!empty($font_directories)) {
-      $font_directories = explode(PHP_EOL, $font_directories);
-      $real_font_directories = array_map(function ($el) {
-        $separator = str_starts_with($el, '/') ? '' : '/';
-        return DRUPAL_ROOT . $separator . trim($el);
-      }, array_filter($font_directories));
-      if (!empty($real_font_directories)) {
-        foreach ($real_font_directories as $key => $directory) {
-          if (!file_exists($directory)) {
-            $form_state->setErrorByName('font_directories', $this->t('The directory "@dir" does not exist', ['@dir' => $font_directories[$key]]));
-          }
-        }
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    $enable_email = $form_state->getValue('enable_email');
+    if ($enable_email) {
+      $email_subject = $form_state->getValue('email_subject');
+      $email_body = $form_state->getValue('email_body')['value'];
+      if (empty($email_body)) {
+        $form_state->setErrorByName('email_body', $this->t('Email body field is required'));
+      }
+      if (empty($email_subject)) {
+        $form_state->setErrorByName('email_subject', $this->t('Email subject field is required'));
       }
     }
   }
@@ -103,39 +119,12 @@ class QuizCertificatSettingsForm extends ConfigFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $config = $this->configFactory->getEditable('vactory_quiz_certificat.settings');
-    $font_directories = $form_state->getValue('font_directories');
-    $real_font_directories = [];
-    if (!empty($font_directories)) {
-      $font_directories = explode(PHP_EOL, $font_directories);
-      $real_font_directories = array_map(function ($el) {
-        $separator = str_starts_with($el, '/') ? '' : '/';
-        return DRUPAL_ROOT . $separator . trim($el);
-      }, array_filter($font_directories));
-      $fonts_data = [];
-      if (!empty($real_font_directories)) {
-        foreach ($real_font_directories as $key => $directory) {
-          if (file_exists($directory)) {
-            $fonts = scandir($directory);
-            $fonts = array_filter($fonts, function ($el) {
-              return !in_array($el, ['.', '..']) && (str_ends_with($el, '.ttf') || str_ends_with($el, '.otf'));
-            });
-            if (!empty($fonts)) {
-              foreach ($fonts as $font) {
-                $font_name = strtolower(str_replace([' ', '_'], '-', $font));
-                $font_name = str_replace(['.ttf', '.otf'], '', $font_name);
-                $fonts_data[$font_name]['R'] = $font;
-              }
-            }
-          }
-        }
-      }
-    }
-
-    \Drupal::state()->set('vactory_quiz_certificat_font_dirs', $real_font_directories);
     $config->set('certificat_body', $form_state->getValue('certificat_body'))
       ->set('orientation', $form_state->getValue('orientation'))
-      ->set('font_directories', $form_state->getValue('font_directories'))
-      ->set('fonts_data', $fonts_data)
+      ->set('method', $form_state->getValue('method'))
+      ->set('enable_email', $form_state->getValue('enable_email'))
+      ->set('email_subject', $form_state->getValue('email_subject'))
+      ->set('email_body', $form_state->getValue('email_body'))
       ->save();
     Cache::invalidateTags(['vactory_quiz:settings']);
     parent::submitForm($form, $form_state);

@@ -1,0 +1,6 @@
+name: Vactory HTML To PDF
+type: module
+description: Provides service for generating pdf from HTML content using mpdf library.
+package: Vactory
+core: 8.x
+core_version_requirement: ^8 || ^9

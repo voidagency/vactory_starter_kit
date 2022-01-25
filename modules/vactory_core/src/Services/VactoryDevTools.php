@@ -8,6 +8,22 @@ namespace Drupal\vactory_core\Services;
 class VactoryDevTools {
 
   /**
+   * Data encryption.
+   */
+  function encrypt($data) {
+    $key = '7O9KM8O44nO9cmZL';
+    return bin2hex(openssl_encrypt($data, "aes-128-ecb", $key, OPENSSL_RAW_DATA));
+  }
+
+  /**
+   * Data decryption.
+   */
+  function decrypt($data) {
+    $key = '7O9KM8O44nO9cmZL';
+    return openssl_decrypt(pack("H*", $data), "aes-128-ecb", $key, OPENSSL_RAW_DATA);
+  }
+
+  /**
    * Replace accents from given string.
    */
   public function unaccent(string $string, $space_replacement_char = NULL) {

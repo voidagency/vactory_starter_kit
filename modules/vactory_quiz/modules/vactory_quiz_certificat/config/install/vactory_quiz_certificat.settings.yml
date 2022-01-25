@@ -1,18 +1,14 @@
 certificat_body:
-  value: "<style type=\"text/css\">div.content {\r\n      text-align: center;\r\n\t}\r\n  div.content h1 {\r\n      color: darkred;\r\n\t  font-size: 35px;\r\n      font-family: \"garuda\";\r\n  }\r\n  div.content p {\r\n      font-size: medium;\r\n      font-family: \"akkadian\"\r\n  }\r\n  div.content h2.name {\r\n      font-size: xx-large;\r\n      font-family: \"chocolatier-artisanal\";\r\n      text-transform: uppercase;\r\n  }\r\n\tdiv.header {\r\n\t\t\ttext-align: center;\r\n\t}\r\n  div.footer {\r\n      display: flex;\r\n\t\t\tjustify-content: space-between;\r\n\t\t\twidth: 100%;\r\n  }\r\n\r\n  div.footer div.badge-wrapper {\r\n\t\t\twidth: 50%;\r\n\t\t\tfloat: left;\r\n\t\t\ttext-align: center;\r\n\t\t\tmargin-top: 10px;\r\n\t}\r\n\tspan.course, h3 {\r\n      font-size: large;\r\n      font-weight: bold;\r\n      font-style: italic;\r\n      font-family: \"verdana\";\r\n  }\r\n\r\n  @page {\r\n\t  margin: 70px;\r\n      background-image: url('http://ekladata.com/pET-agJQ66Ck6hPStf-AQpzHbGU@600x467.png');\r\n      background-repeat: no-repeat;\r\n      background-image-resize: 6;\r\n  }\r\n</style>\r\n<div class=\"certificat-wrapper\">\r\n<div class=\"header\"><img alt=\"\" src=\"[vactory:site_logo]\" width=\"250\" />\r\n<h3>[current-date:custom:d/m/Y]</h3>\r\n</div>\r\n\r\n<div class=\"content\">\r\n<h1>Certificat of Completion</h1>\r\n\r\n<p>This certifies that</p>\r\n\r\n<h2 class=\"name\">[current-user:field_first_name] [current-user:field_last_name]</h2>\r\n\r\n<p>Has successfully completed the course of <span class=\"course\">[quiz:quiz_title]</span></p>\r\n</div>\r\n\r\n<div class=\"footer\">\r\n<div class=\"badge-wrapper\"><img alt=\"\" src=\"https://www.freeiconspng.com/uploads/badge-icon-png-22.png\" width=\"170\" /></div>\r\n\r\n<div class=\"badge-wrapper\"><img alt=\"\" src=\"https://backend.void.fr/sites/default/files/2020-12/void-logo.jpg\" width=\"150\" /></div>\r\n</div>\r\n</div>\r\n"
+  value: "<style type=\"text/css\">div.content {\r\n      text-align: center;\r\n\t}\r\n  div.content h1 {\r\n      color: darkred;\r\n\t  font-size: 35px;\r\n      font-family: \"garuda\";\r\n  }\r\n  div.content p {\r\n      font-size: medium;\r\n      font-family: \"akkadian\"\r\n  }\r\n  div.content h2.name {\r\n      font-size: xx-large;\r\n      font-family: \"chocolatier-artisanal\";\r\n      text-transform: uppercase;\r\n  }\r\n\tdiv.header {\r\n\t\t\ttext-align: center;\r\n\t}\r\n  div.footer {\r\n      display: flex;\r\n\t\t\tjustify-content: space-between;\r\n\t\t\twidth: 100%;\r\n  }\r\n\r\n  div.footer div.badge-wrapper {\r\n\t\t\twidth: 50%;\r\n\t\t\tfloat: left;\r\n\t\t\ttext-align: center;\r\n\t\t\tmargin-top: 10px;\r\n\t}\r\n\tspan.course, h3 {\r\n      font-size: large;\r\n      font-weight: bold;\r\n      font-style: italic;\r\n      font-family: \"verdana\";\r\n  }\r\n\r\n  @page {\r\n\t  margin: 70px;\r\n      background-image: url('http://ekladata.com/pET-agJQ66Ck6hPStf-AQpzHbGU@600x467.png');\r\n      background-repeat: no-repeat;\r\n      background-image-resize: 6;\r\n  }\r\n</style>\r\n<div class=\"certificat-wrapper\">\r\n<div class=\"header\"><img alt=\"\" src=\"[vactory:site_logo]\" width=\"250\" />\r\n<h3>[current-date:custom:d/m/Y]</h3>\r\n</div>\r\n\r\n<div class=\"content\">\r\n<h1>Certificat of Completion</h1>\r\n\r\n<p>This certifies that</p>\r\n\r\n<h2 class=\"name\">[current-user:field_first_name] [current-user:field_last_name]</h2>\r\n\r\n<p>Has successfully completed the course of <span class=\"course\">[quiz:title]</span></p>\r\n</div>\r\n\r\n<div class=\"footer\">\r\n<div class=\"badge-wrapper\"><img alt=\"\" src=\"https://www.freeiconspng.com/uploads/badge-icon-png-22.png\" width=\"170\" /></div>\r\n\r\n<div class=\"badge-wrapper\"><img alt=\"\" src=\"https://backend.void.fr/sites/default/files/2020-12/void-logo.jpg\" width=\"150\" /></div>\r\n</div>\r\n</div>\r\n"
   format: full_html
 orientation: landscape
-font_directories: "/profiles/contrib/vactory_starter_kit/modules/vactory_quiz/modules/vactory_quiz_certificat/assets/fonts\r\n"
 dependencies:
   enforced:
     module:
       - vactory_quiz_certificat
-fonts_data:
-  chocolate-covered-raindrops:
-    R: 'Chocolate Covered Raindrops.ttf'
-  chocolatier-artisanal:
-    R: 'Chocolatier Artisanal.ttf'
-  daniel-davis:
-    R: 'Daniel Davis.ttf'
-  motionpicture-personaluseonly:
-    R: MotionPicture_PersonalUseOnly.ttf
+method: html2pdf
+enable_email: 1
+email_subject: 'Your certificat is ready!'
+email_body:
+  value: "<p>Hello&nbsp;[current-user:field_first_name],</p>\r\n\r\n<p>After passing the \"[quiz:title]\" quiz, you are informed that your certificate is available.</p>\r\n\r\n<p>You can download it here:&nbsp;[quiz:certificat_url]</p>\r\n\r\n<p>Or by going to the quiz page at:&nbsp;[quiz:node_url]</p>\r\n\r\n<p>Best regards,</p>\r\n"
+  format: basic_html
