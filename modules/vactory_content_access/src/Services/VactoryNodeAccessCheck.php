@@ -109,6 +109,11 @@ class VactoryNodeAccessCheck {
           }
         }
       }
+      if (!empty($node->get('field_content_access_custom')->value)) {
+        $key = $node->get('field_content_access_custom')->value;
+        // Check if accessible by custom hook.
+        \Drupal::moduleHandler()->alter('vactory_content_access', $is_accessible, $key, $node);
+      }
       return $is_accessible;
     }
 
