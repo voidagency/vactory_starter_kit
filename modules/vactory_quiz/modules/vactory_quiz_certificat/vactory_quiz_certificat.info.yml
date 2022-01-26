@@ -4,6 +4,7 @@ type: module
 core: 8.x
 core_version_requirement: ^8 || ^9
 package: Vactory
+configure: vactory_quiz_certificat.settings
 dependencies:
   - vactory_quiz
   - vactory_quiz_history

@@ -10,5 +10,5 @@ method: html2pdf
 enable_email: 1
 email_subject: 'Your certificat is ready!'
 email_body:
-  value: "<p>Hello&nbsp;[current-user:field_first_name],</p>\r\n\r\n<p>After passing the \"[quiz:title]\" quiz, you are informed that your certificate is available.</p>\r\n\r\n<p>You can download it here:&nbsp;[quiz:certificat_url]</p>\r\n\r\n<p>Or by going to the quiz page at:&nbsp;[quiz:node_url]</p>\r\n\r\n<p>Best regards,</p>\r\n"
+  value: "<p>Hello&nbsp;[quiz:user_first_name],</p>\r\n\r\n<p>After passing the \"[quiz:title]\" quiz, you are informed that your certificate is available.</p>\r\n\r\n<p>You can download it here:&nbsp;[quiz:certificat_url]</p>\r\n\r\n<p>Or by going to the quiz page at:&nbsp;[quiz:node_url]</p>\r\n\r\n<p>Best regards,</p>\r\n"
   format: basic_html

@@ -73,7 +73,7 @@ function vactory_content_access_entity_base_field_info(EntityTypeInterface $enti
 
     $fields['field_content_access_custom'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Custom access key'))
-      ->setDescription(t('Enter a custom key to check with in hook_custom_content_access($node, $key)'))
+      ->setDescription(t('Enter a custom key to check with in <br> hook_vactory_content_access_alter(&$is_accessible, $key, \Drupal\node\NodeInterface $node)'))
       ->setDisplayOptions('form', [
         'type' => 'string_textfield',
         'weight' => 6,
