@@ -9,4 +9,3 @@ services:
       - '@state'
       - '@language_manager'
       - '@entity.repository'
-      - '@vactory_html2pdf.manager'

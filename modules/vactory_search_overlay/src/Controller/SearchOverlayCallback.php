@@ -50,7 +50,7 @@ class SearchOverlayCallback extends ControllerBase {
     $searchOverlayForm = $this->formBuilder->getForm('Drupal\vactory_search_overlay\Form\SearchOverlayForm', $variant);
     $response = new AjaxResponse();
     $rendered = \Drupal::service('renderer')->renderRoot($searchOverlayForm);
-    $response->addCommand(new HtmlCommand('#js-form-search', $rendered));
+    $response->addCommand(new HtmlCommand('#js-form-search-' . $variant, $rendered));
     return $response;
   }
 

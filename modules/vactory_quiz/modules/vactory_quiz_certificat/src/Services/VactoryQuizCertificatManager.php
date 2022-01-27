@@ -10,11 +10,7 @@ use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\State\StateInterface;
 use Drupal\Core\Utility\Token;
 use Drupal\node\NodeInterface;
-use Drupal\vactory_html2pdf\Services\VactoryHtml2PdfManager;
 use Drupal\vactory_quiz_certificat\Services\Exceptions\InvalidArgumentException;
-use Mpdf\Config\ConfigVariables;
-use Mpdf\Config\FontVariables;
-use Mpdf\Mpdf;
 
 /**
  * Vactory quiz manager service class.
@@ -71,13 +67,6 @@ class VactoryQuizCertificatManager {
   protected $entityRepository;
 
   /**
-   * Vactory Html to PDF service.
-   *
-   * @var \Drupal\vactory_html2pdf\Services\VactoryHtml2PdfManager
-   */
-  protected $html2PdfManager;
-
-  /**
    * {@inheritDoc}
    */
   public function __construct(
@@ -88,7 +77,6 @@ class VactoryQuizCertificatManager {
     StateInterface $state,
     LanguageManagerInterface $languageManager,
     EntityRepositoryInterface $entityRepository,
-    VactoryHtml2PdfManager $html2PdfManager
   ) {
     $this->entityTypeManager = $entityTypeManager;
     $this->configFactory = $configFactory;
@@ -97,7 +85,6 @@ class VactoryQuizCertificatManager {
     $this->state = $state;
     $this->languageManager = $languageManager;
     $this->entityRepository = $entityRepository;
-    $this->html2PdfManager = $html2PdfManager;
   }
 
   /**
