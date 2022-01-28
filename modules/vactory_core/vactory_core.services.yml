@@ -4,6 +4,7 @@ services:
     arguments:
       - '@vactory'
       - '@entity_type.manager'
+      - '@renderer'
     tags:
       - { name: twig.extension }
   vactory_core.disable_route_subscriber:
