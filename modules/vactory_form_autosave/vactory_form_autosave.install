@@ -1,0 +1,70 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Vactory Form Autosave module.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function vactory_form_autosave_install() {
+  \Drupal::messenger()->addStatus(__FUNCTION__);
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function vactory_form_autosave_uninstall() {
+  \Drupal::messenger()->addStatus(__FUNCTION__);
+}
+
+/**
+ * Implements hook_schema().
+ */
+function vactory_form_autosave_schema() {
+  $schema['vactory_form_autosave_storage'] = [
+    'description' => 'Store forms submit attempts.',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'not null' => TRUE,
+        'description' => 'Primary Key: Unique record ID.',
+      ],
+      'uid' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'The {users}.uid of the user who created the attempt.',
+      ],
+      'form_id' => [
+        'type' => 'varchar_ascii',
+        'length' => 255,
+        'not null' => TRUE,
+        'default' => '',
+        'description' => 'The form id.',
+      ],
+      'session_id' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'default' => '',
+        'description' => 'The session id.',
+      ],
+      'created' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => time(),
+        'description' => 'Timestamp when the attempt was created.',
+      ],
+      'data' => [
+        'type' => 'blob',
+        'size' => 'big',
+        'description' => 'The submit attempt data.',
+      ],
+    ],
+    'primary key' => ['id'],
+  ];
+
+  return $schema;
+}

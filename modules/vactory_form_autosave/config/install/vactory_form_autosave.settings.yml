@@ -1,0 +1,15 @@
+policy: '0'
+form_ids_string: ''
+form_ids: []
+roles:
+  anonymous: 0
+  authenticated: 0
+  administrator: 0
+  super_administrator: 0
+  master: 0
+  webmaster: 0
+lifetime: '3'
+dependencies:
+  enforced:
+    module:
+      - vactory_form_auotosave

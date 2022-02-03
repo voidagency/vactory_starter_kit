@@ -1,0 +1,7 @@
+# Custom module library for general purposes.
+script:
+  js:
+    js/vactory-form-autosave.js: {}
+  dependencies:
+    - core/drupalSettings
+    - core/jquery

@@ -1,0 +1,24 @@
+vactory_form_autosave.update:
+  path: '/vactory-form-autosave/update'
+  defaults:
+    _title: 'Update forms drafts'
+    _controller: '\Drupal\vactory_form_autosave\Controller\VactoryFormAutosaveController::updateFormDraft'
+  requirements:
+    _permission: 'access content'
+
+vactory_form_autosave.draft:
+  path: '/vactory-form-autosave/draft'
+  defaults:
+    _title: 'get form draft'
+    _controller: '\Drupal\vactory_form_autosave\Controller\VactoryFormAutosaveController::getFormDraft'
+  requirements:
+    _permission: 'access content'
+
+
+vactory_form_autosave.settings_form:
+  path: '/admin/config/system/vactory-form-autosave'
+  defaults:
+    _title: 'Vactory Form Autosave settings'
+    _form: 'Drupal\vactory_form_autosave\Form\SettingsForm'
+  requirements:
+    _permission: 'administer site configuration'

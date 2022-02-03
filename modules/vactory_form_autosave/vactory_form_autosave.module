@@ -1,0 +1,52 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Vactory Form Autosave module.
+ *
+ * @DCG
+ * This file is no longer required in Drupal 8.
+ * @see https://www.drupal.org/node/2217931
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_form_autosave_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $config = Drupal::config('vactory_form_autosave.settings');
+  $policy = $config->get('policy');
+  $form_ids = $config->get('form_ids');
+  $roles = array_filter($config->get('roles'));
+  $current_user = \Drupal::currentUser();
+  $is_form_concerned = $policy ? !in_array($form_id, $form_ids) : in_array($form_id, $form_ids);
+  $is_user_concerned = !empty($roles) ? count(array_intersect($current_user->getRoles(), $roles)) > 0 : TRUE ;
+  if ($is_form_concerned && $is_user_concerned) {
+    $data = NULL;
+    $session = \Drupal::request()->getSession();
+    if ($session && method_exists($session, 'getId') && !empty($session->getId())) {
+      $session_id = $session->getId();
+      /** @var \Drupal\vactory_form_autosave\Services\VactoryFormAutosaveManager $form_autosave_manager */
+      $form_autosave_manager = Drupal::service('vactory_form_autosave.manager');
+      $data = $form_autosave_manager->getFormDraft($form_id, $current_user, $session_id);
+    }
+    $form['#attached']['library'][] = 'vactory_form_autosave/script';
+    $form['#attached']['drupalSettings']['vactory_form_autosave'][$form_id]['data'] = $data;
+    $form['#attributes']['class'][] = 'form-autosave';
+    $form['#attributes']['data-real-fid'] = $form_id;
+  }
+}
+
+/**
+ * Implements Vactory form autosave purger.
+ */
+function vactory_form_autosave_cron() {
+  /** @var \Drupal\vactory_form_autosave\Services\VactoryFormAutosaveManager $form_autosave_manager */
+  $form_autosave_manager = Drupal::service('vactory_form_autosave.manager');
+  $config = Drupal::config('vactory_form_autosave.settings');
+  $timeline = $config->get('timeline');
+  if ($timeline > 0) {
+    $form_autosave_manager->purgeFormDraft($timeline);
+  }
+}
