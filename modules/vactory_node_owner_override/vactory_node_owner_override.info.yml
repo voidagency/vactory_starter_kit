@@ -1,0 +1,7 @@
+name: Vactory Node Owner Override
+type: module
+description: Change node owner to the last user involved
+package: Vactory
+configure: vactory_node_owner_override.settings_form
+core: 8.x
+core_version_requirement: ^8 || ^9

@@ -13,8 +13,6 @@ vactory_form_autosave.draft:
     _controller: '\Drupal\vactory_form_autosave\Controller\VactoryFormAutosaveController::getFormDraft'
   requirements:
     _permission: 'access content'
-
-
 vactory_form_autosave.settings_form:
   path: '/admin/config/system/vactory-form-autosave'
   defaults:

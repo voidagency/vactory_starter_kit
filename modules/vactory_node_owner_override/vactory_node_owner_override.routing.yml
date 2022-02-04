@@ -1,0 +1,7 @@
+vactory_node_owner_override.settings_form:
+  path: '/admin/config/system/vactory-node-owner-override'
+  defaults:
+    _title: 'Vactory Node Owner Override settings'
+    _form: 'Drupal\vactory_node_owner_override\Form\SettingsForm'
+  requirements:
+    _permission: 'administer vactory_node_owner_override configuration'
