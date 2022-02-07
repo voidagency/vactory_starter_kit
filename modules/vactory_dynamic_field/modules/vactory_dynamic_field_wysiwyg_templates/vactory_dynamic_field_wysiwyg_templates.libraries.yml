@@ -1,6 +1,6 @@
 widget7:
   js:
-    js/widget7.js: {}
+    ./assets/js/widget7.js: {}
   dependencies:
     - core/jquery
     - core/drupalSettings
@@ -11,6 +11,6 @@ youtube_api:
 
 sticky_video:
   js:
-    js/sticky-video.js: {}
+    ./assets/js/sticky-video.js: {}
   dependencies:
     - vactory_dynamic_field_wysiwyg_templates/youtube_api

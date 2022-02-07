@@ -1,0 +1,92 @@
+.vf-footer--variant1 .block--menu li, .vf-footer--variant1 .block--menu li a {
+  color: #fff;
+}
+
+.vf-footer--variant1 .block--menu li:not(:first-child):after {
+  background-color: #fff;
+}
+
+.vf-footer--variant1 {
+  background-color: #6c757d;
+}
+
+.vf-footer--variant1 .container .vf-footer-items {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.vf-footer--variant1 .container .vf-footer-items .vf-footer__top {
+  margin-right: 0;
+}
+
+.vf-footer--variant1 .container .vf-footer-items .vf-footer__middle {
+  margin-bottom: 30px;
+  margin-bottom: 1.875rem;
+}
+
+.vf-footer--variant1 .container .vf-footer-items .vf-footer__bottom {
+  margin: 0 auto;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  text-align: center;
+}
+
+.vf-footer--variant1 .container .vf-footer-items .vf-footer__bottom .block-footer-realisation_void {
+  text-align: center;
+}
+
+.cke_editable .vf-footer--variant1 .container .vf-footer-items .vf-footer__bottom .block-footer-realisation_void {
+  background-color: #6c757d;
+}
+
+.vf-footer--variant1 .container .vf-footer-items .vf-footer__bottom .block-footer-realisation_void p {
+  color: #fff;
+  display: inline-block;
+}
+
+.vf-footer--variant1 .container .vf-footer-items .vf-footer__bottom .block-social-media .fa {
+  color: #fff;
+}
+
+@media (min-width: 992px) {
+  .vf-footer--variant1 .container .vf-footer-items {
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+            flex-direction: row;
+    -ms-flex-pack: distribute;
+        justify-content: space-around;
+  }
+  .vf-footer--variant1 .container .vf-footer-items .vf-footer__top {
+    margin-right: 50px;
+    margin-right: 3.125rem;
+  }
+  .vf-footer--variant1 .container .vf-footer-items .vf-footer__middle {
+    margin-bottom: 0;
+    margin-right: auto;
+  }
+  .vf-footer--variant1 .container .vf-footer-items .vf-footer__bottom {
+    margin: 0;
+  }
+}
+
+/*# sourceMappingURL=vactory_footer_v1.css.map */

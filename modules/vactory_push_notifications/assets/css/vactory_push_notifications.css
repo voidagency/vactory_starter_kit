@@ -1,0 +1,43 @@
+.push-notifications {
+  height: auto;
+  margin-bottom: 20px;
+  margin-bottom: 1.25rem;
+  display: none;
+}
+
+.push-notifications .paragraph.paragraph--type--vactory-component {
+  background: #fff;
+  padding: 15px;
+  padding: 0.9375rem;
+}
+
+@media (min-width: 768px) {
+  .push-notifications .paragraph.paragraph--type--vactory-component {
+    padding: 20px;
+    padding: 1.25rem;
+  }
+}
+
+.push-notifications .close {
+  position: absolute;
+  top: 5%;
+  right: 3%;
+  color: red;
+  text-shadow: none;
+  opacity: 1;
+}
+
+.push-notifications .push-notifications--content {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  vertical-align: middle;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+/*# sourceMappingURL=vactory_push_notifications.css.map */

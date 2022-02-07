@@ -1,26 +1,38 @@
+vactory_appointment_style:
+  css:
+    theme:
+      ./assets/css/vactory_appointment.css: {}
+
+vactory_appointment_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_appointment-rtl.css: {}
+
 fullcalendar:
   version: VERSION
   css:
     theme:
-      ../../../../libraries/fullcalendar/packages/core/main.min.css: {}
-      ../../../../libraries/fullcalendar/packages/timegrid/main.min.css: {}
+      /libraries/fullcalendar/packages/core/main.min.css: {}
+      /libraries/fullcalendar/packages/timegrid/main.min.css: {}
   js:
-    ../../../../libraries/fullcalendar/packages/core/main.min.js: {}
-    ../../../../libraries/fullcalendar/packages/daygrid/main.min.js: {}
-    ../../../../libraries/fullcalendar/packages/interaction/main.min.js: {}
-    ../../../../libraries/fullcalendar/packages/timegrid/main.min.js: {}
-    js/adviser-holiday.js: {}
+    /libraries/fullcalendar/packages/core/main.min.js: {}
+    /libraries/fullcalendar/packages/daygrid/main.min.js: {}
+    /libraries/fullcalendar/packages/interaction/main.min.js: {}
+    /libraries/fullcalendar/packages/timegrid/main.min.js: {}
+    ./assets/js/adviser-holiday.js: {}
   dependencies:
     - core/drupal
     - core/drupalSettings
+
 submit_appointment.calendar:
   js:
-    js/app.js: {}
+    ./assets/js/app.js: {}
   dependencies:
     - vactory_appointment/fullcalendar
+
 adviser.calendar:
   js:
-    js/adviser-holiday.js: {}
+    ./assets/js/adviser-holiday.js: {}
   dependencies:
     - vactory_appointment/fullcalendar
 

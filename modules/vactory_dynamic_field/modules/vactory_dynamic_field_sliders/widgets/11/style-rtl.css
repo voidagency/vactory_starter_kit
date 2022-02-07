@@ -1,0 +1,96 @@
+.vf-slider-swiper {
+  position: relative;
+}
+
+.vf-slider-swiper .swiper-container-vertical + .swiper-pagination {
+  right: auto;
+  bottom: auto;
+  display: block;
+}
+
+.vf-slider-swiper .swiper-container-horizontal + .swiper-pagination {
+  right: 50%;
+  bottom: 15px;
+  bottom: 0.9375rem;
+  -webkit-transform: translateX(50%);
+      -ms-transform: translateX(50%);
+          transform: translateX(50%);
+}
+
+.vf-slider-swiper .swiper-container {
+  background-color: rgba(0, 0, 0, 0.6);
+  position: relative;
+  right: 0;
+  width: 100%;
+  height: 500px;
+  height: 31.25rem;
+  margin-right: 0;
+  margin-top: 0;
+}
+
+.vf-slider-swiper .swiper-slide {
+  background-position: center;
+  background-size: cover;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  position: relative;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.vf-slider-swiper .swiper-slide:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.4);
+}
+
+.vf-slider-swiper .swiper-content {
+  max-width: calc(100% - 60px);
+  max-width: calc(100% - 3.75rem);
+  color: white;
+  text-align: center;
+  position: relative;
+  z-index: 1;
+}
+
+.vf-slider-swiper .swiper-content--title, .vf-slider-swiper .swiper-content--text, .vf-slider-swiper .swiper-content--link {
+  opacity: 0;
+}
+
+.vf-slider-swiper .swiper-content--title {
+  font-size: 40px;
+  font-size: 2.5rem;
+  color: #fff;
+  margin-bottom: 10px;
+  margin-bottom: 0.625rem;
+  -webkit-animation-delay: 0s;
+          animation-delay: 0s;
+}
+
+.vf-slider-swiper .swiper-content--text {
+  -webkit-animation-delay: .2s;
+          animation-delay: .2s;
+}
+
+.vf-slider-swiper .swiper-content--link {
+  -webkit-animation-delay: .4s;
+          animation-delay: .4s;
+}
+
+@media (min-width: 992px) {
+  .vf-slider-swiper .swiper-content {
+    max-width: 500px;
+    max-width: 31.25rem;
+  }
+}
+
+/*# sourceMappingURL=style-rtl.css.map */

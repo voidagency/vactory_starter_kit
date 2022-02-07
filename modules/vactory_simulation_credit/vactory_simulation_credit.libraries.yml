@@ -1,23 +1,35 @@
+vactory_simulation_credit_style:
+  css:
+    theme:
+      ./assets/css/vactory_simulation_credit.css: {}
+
+vactory_simulation_credit_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_simulation_credit-rtl.css: {}
+
 vactory_simulation_credit.simulation_style:
   css:
     theme:
-      css/style.css: {}
+      ./assets/css/style.css: {}
   js:
-    js/simulateur_credit.js: {}
+    ./assets/js/simulateur_credit.js: {}
   dependencies:
     - core/jquery
     - core/drupal
     - core/drupalSettings
+
 vactory_simulation_credit.simulation_capacite_emprunt:
   js:
-    js/simulateur_capacite_emprunt.js: {}
+    ./assets/js/simulateur_capacite_emprunt.js: {}
   dependencies:
     - core/jquery
     - core/drupal
     - core/drupalSettings
+
 vactory_simulation_credit.tabs:
   js:
-    js/tabs.js: {}
+    ./assets/js/tabs.js: {}
   dependencies:
     - core/jquery
     - core/drupal

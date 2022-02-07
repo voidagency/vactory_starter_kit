@@ -1,0 +1,31 @@
+.vf-footer--variant8 * {
+  color: #fff;
+  text-align: center;
+}
+
+.vf-footer--variant8 .block-social-media .fa {
+  color: #fff;
+}
+
+.vf-footer--variant8 .block--menu ul,
+.vf-footer--variant8 .block-social-media {
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.vf-footer--variant8 .vf-footer__top {
+  background: #343a40;
+}
+
+.vf-footer--variant8 .vf-footer__middle {
+  padding: 30px 0;
+  padding: 1.875rem 0;
+  background: #495057;
+}
+
+.vf-footer--variant8 .vf-footer__bottom {
+  background: #343a40;
+}
+
+/*# sourceMappingURL=vactory_footer_v8-rtl.css.map */

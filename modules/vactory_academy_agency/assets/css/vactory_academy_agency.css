@@ -1,0 +1,58 @@
+.formation-items-wrapper {
+  height: 450px;
+  height: 28.125rem;
+  overflow: scroll;
+  top: -15px;
+  top: -0.9375rem;
+  padding: 0 10px;
+  padding: 0 0.625rem;
+  margin-top: -20px;
+  margin-top: -1.25rem;
+}
+
+.formation-items-wrapper div#edit-type-formation {
+  display: -webkit-inline-box;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+}
+
+.formation-items-wrapper .select-formation-radio {
+  display: none;
+}
+
+.formation-items-wrapper .select-formation-radio ~ label .formation-type-item, .formation-items-wrapper .select-formation-radio ~ label .formations-select-item {
+  border: 2px solid #ccc;
+  border: 0.125rem solid #ccc;
+  -webkit-box-shadow: none;
+          box-shadow: none;
+}
+
+.formation-items-wrapper .select-formation-radio:checked ~ label .formation-type-item, .formation-items-wrapper .select-formation-radio:checked ~ label .formations-select-item {
+  border: 3px solid #007bff;
+  border: 0.1875rem solid #007bff;
+  -webkit-box-shadow: 0 0 10px #ff874f;
+          box-shadow: 0 0 10px #ff874f;
+  -webkit-box-shadow: 0 0 0.625rem #ff874f;
+          box-shadow: 0 0 0.625rem #ff874f;
+}
+
+/* -------------------------------------------------------------------------- */
+.view-filters.formation-agence-filter .form-row div:not(.form-actions) {
+  min-width: 200px;
+  min-width: 12.5rem;
+  -ms-flex-negative: 0;
+      flex-shrink: 0;
+  -webkit-box-flex: 1;
+      -ms-flex-positive: 1;
+          flex-grow: 1;
+}
+
+.view-filters.formation-agence-filter .form-actions {
+  -ms-flex-preferred-size: 100%;
+      flex-basis: 100%;
+  -webkit-box-pack: start;
+      -ms-flex-pack: start;
+          justify-content: flex-start;
+}
+
+/*# sourceMappingURL=vactory_academy_agency.css.map */

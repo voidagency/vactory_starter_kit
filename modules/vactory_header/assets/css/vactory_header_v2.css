@@ -1,0 +1,147 @@
+/*******************
+Header 2
+*******************/
+@media (min-width: 992px) {
+  .vh-header-2.bottom {
+    top: -60px;
+    top: -3.75rem;
+  }
+  .vh-header-2.top {
+    top: 0;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .vh-header-2.bottom {
+    top: -80px;
+    top: -5rem;
+  }
+  .vh-header-2.top {
+    top: 0px;
+    top: 0;
+  }
+}
+
+.vh-header-2 .vh-header {
+  background: #adb5bd;
+}
+
+.vh-header-2 .vh-header__top-wrapper {
+  position: relative;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  padding: 10px 0;
+  padding: 0.625rem 0;
+}
+
+.vh-header-2 .vh-header__top-left, .vh-header-2 .vh-header__top-right {
+  -webkit-box-flex: 0;
+      -ms-flex: 0 0 auto;
+          flex: 0 0 auto;
+}
+
+.vh-header-2 .vh-header__top-center {
+  -webkit-box-flex: 1;
+      -ms-flex: 1;
+          flex: 1;
+  padding: 0 20px;
+  padding: 0 1.25rem;
+}
+
+.vh-header-2 .vh-header__menu ul.nav {
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.vh-header-2 .vh-header__menu ul.nav a {
+  text-transform: capitalize;
+  font-weight: bold;
+  -webkit-transition: color .3s ease;
+  -o-transition: color .3s ease;
+  transition: color .3s ease;
+  color: #000;
+  padding: 0 16px;
+  padding: 0 1rem;
+}
+
+.vh-header-2 .vh-header__menu ul.nav a:hover {
+  color: #fff;
+}
+
+/*
+* Mobile Layer Style
+*/
+.vhm-header-2 {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  display: block;
+  padding-top: 83px;
+  padding-top: 5.1875rem;
+  opacity: 1;
+  -webkit-transition: all .5s ease;
+  -o-transition: all .5s ease;
+  transition: all .5s ease;
+  background: #adb5bd;
+}
+
+.vhm-header-2.is-closed {
+  opacity: 0;
+  -webkit-transform: translateX(-100%);
+      -ms-transform: translateX(-100%);
+          transform: translateX(-100%);
+}
+
+.vhm-header-2 .vhm-header {
+  padding: 20px 0 20px;
+  padding: 1.25rem 0 1.25rem;
+  border-top: 1px solid #000;
+  border-top: 0.0625rem solid #000;
+}
+
+.vhm-header-2 .vhm-header__top {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+
+.vhm-header-2 .vhm-header__middle {
+  overflow: auto;
+  overflow-x: hidden;
+}
+
+.vhm-header-2 .vhm-header__bottom {
+  margin-top: auto;
+}
+
+.vhm-header-2 .vhm-header__language-drop-switcher {
+  margin-bottom: 20px;
+  margin-bottom: 1.25rem;
+}
+
+.vhm-header-2 .vhm-header__language-drop-switcher .bootstrap-select {
+  width: auto;
+}
+
+.vhm-header-2 .vhm-header__menu {
+  margin-bottom: 20px;
+  margin-bottom: 1.25rem;
+}
+
+/*# sourceMappingURL=vactory_header_v2.css.map */

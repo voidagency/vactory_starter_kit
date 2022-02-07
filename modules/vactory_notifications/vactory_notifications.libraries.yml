@@ -1,16 +1,26 @@
+vactory_notifications_style:
+  css:
+    theme:
+      ./assets/css/vactory_notifications.css: {}
+
+vactory_notifications_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_notifications-rtl.css: {}
+
 scripts:
   js:
-    js/vactory-notifications.js: {}
+    ./assets/js/vactory-notifications.js: {}
   dependencies:
     - core/jquery
     - core/drupalSettings
 toast:
   js:
-    js/notifications-toast.js: {}
+    ./assets/js/notifications-toast.js: {}
   dependencies:
     - core/jquery
     - core/drupalSettings
 styles:
   css:
     theme:
-      css/notification-bo.css: {}
+      ./assets/css/notification-bo.css: {}

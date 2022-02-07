@@ -1,7 +1,17 @@
+vactory_social_network_style:
+  css:
+    theme:
+      ./assets/css/vactory_social_network.css: {}
+
+vactory_social_network_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_social_network-rtl.css: {}
+
 views_filter_links:
   js:
-    js/views_filter_links.js: {}
-    ../../../../libraries/ReadMore.js/src/readMoreJS.min.js: {}
+    ./assets/js/views_filter_links.js: {}
+    /libraries/ReadMore.js/src/readMoreJS.min.js: {}
   dependencies:
     - core/jquery
     - core/drupalSettings

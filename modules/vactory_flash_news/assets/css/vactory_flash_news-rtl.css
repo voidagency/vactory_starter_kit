@@ -1,0 +1,37 @@
+.flash-news-items-wrapper {
+  position: relative;
+}
+
+.flash-news-items-wrapper .item {
+  position: absolute;
+  opacity: 0;
+  -webkit-transform: translate(0, 200%);
+      -ms-transform: translate(0, 200%);
+          transform: translate(0, 200%);
+}
+
+.flash-news-items-wrapper .item.prev {
+  -webkit-transform: translate(0, -200%);
+      -ms-transform: translate(0, -200%);
+          transform: translate(0, -200%);
+  opacity: 0;
+  -webkit-transition: opacity 300ms ease-in, -webkit-transform 500ms ease-in;
+  transition: opacity 300ms ease-in, -webkit-transform 500ms ease-in;
+  -o-transition: transform 500ms ease-in, opacity 300ms ease-in;
+  transition: transform 500ms ease-in, opacity 300ms ease-in;
+  transition: transform 500ms ease-in, opacity 300ms ease-in, -webkit-transform 500ms ease-in;
+}
+
+.flash-news-items-wrapper .item.active {
+  opacity: 1;
+  -webkit-transform: translate(0, 0);
+      -ms-transform: translate(0, 0);
+          transform: translate(0, 0);
+  -webkit-transition: -webkit-transform 500ms ease-in;
+  transition: -webkit-transform 500ms ease-in;
+  -o-transition: transform 500ms ease-in;
+  transition: transform 500ms ease-in;
+  transition: transform 500ms ease-in, -webkit-transform 500ms ease-in;
+}
+
+/*# sourceMappingURL=vactory_flash_news-rtl.css.map */

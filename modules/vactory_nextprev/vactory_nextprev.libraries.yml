@@ -1,4 +1,4 @@
 nextpre:
   css:
     theme:
-      css/nextprevious.css: {}
+      ./assets/css/nextprevious.css: {}

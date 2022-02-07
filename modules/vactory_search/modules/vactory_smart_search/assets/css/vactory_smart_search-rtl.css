@@ -1,0 +1,32 @@
+.smart-search-exposed-form form legend {
+  font-weight: bold;
+}
+
+.smart-search-exposed-form form .form-type-textfield.form-item-search-api-fulltext {
+  padding: 0;
+  margin-bottom: 0.5rem;
+}
+
+.smart-search-exposed-form form .form-checkboxes .form-group.form-type-checkbox {
+  -webkit-box-pack: unset;
+      -ms-flex-pack: unset;
+          justify-content: unset;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.smart-search-exposed-form form .form-checkboxes .form-group.form-type-checkbox label {
+  padding-right: 0.4rem;
+  position: static;
+  width: auto;
+  height: auto;
+  clip: unset;
+}
+
+.view--vactory-smart-search .view__header {
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+/*# sourceMappingURL=vactory_smart_search-rtl.css.map */

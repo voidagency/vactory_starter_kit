@@ -1,6 +1,16 @@
+vactory_banner_style:
+  css:
+    theme:
+      ./assets/css/vactory_banner.css: {}
+
+vactory_banner_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_banner-rtl.css: {}
+
 banner.loader:
   js:
-    js/app.js: {}
+    ./assets/js/app.js: {}
   dependencies:
     - core/jquery
     - core/drupalSettings

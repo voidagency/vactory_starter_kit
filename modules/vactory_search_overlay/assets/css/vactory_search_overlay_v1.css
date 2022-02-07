@@ -1,0 +1,225 @@
+@charset "UTF-8";
+.overflow-y {
+  overflow-y: hidden;
+}
+
+.search-overlay-variant1 {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.85);
+  z-index: 9999;
+  visibility: hidden;
+  opacity: 0;
+  -webkit-transition: opacity 200ms ease-in, visibility 200ms ease-in;
+  -o-transition: opacity 200ms ease-in, visibility 200ms ease-in;
+  transition: opacity 200ms ease-in, visibility 200ms ease-in;
+  -webkit-transition-delay: 100ms;
+       -o-transition-delay: 100ms;
+          transition-delay: 100ms;
+}
+
+.search-overlay-variant1.open {
+  visibility: visible;
+  opacity: 1;
+  -webkit-transition-delay: 0ms;
+       -o-transition-delay: 0ms;
+          transition-delay: 0ms;
+}
+
+.search-overlay-variant1 form.search-block-form {
+  position: relative;
+}
+
+.search-overlay-variant1 .search-block-formulaire {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+  width: 90%;
+  padding: 50px 10px;
+  padding: 3.125rem 0.625rem;
+}
+
+.search-overlay-variant1 .form-inline .form-group.form-actions {
+  position: absolute;
+  top: 50%;
+  right: 0;
+  width: 2rem;
+  height: 2rem;
+  -webkit-transform: translateY(-50%);
+      -ms-transform: translateY(-50%);
+          transform: translateY(-50%);
+}
+
+.search-overlay-variant1 .form-inline .form-group.form-actions:before {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+  color: #FFF;
+  font-size: 16px;
+  font-size: 1rem;
+  font-family: 'vactory';
+  z-index: 1;
+}
+
+.search-overlay-variant1 .form-inline .form-group.form-actions input {
+  background-color: transparent;
+  border: 0;
+  font-size: 0;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  z-index: 3;
+}
+
+.search-overlay-variant1 .form-inline .form-group.form-actions input, .search-overlay-variant1 .form-inline .form-group.form-actions input:focus {
+  outline: none;
+  -webkit-box-shadow: none;
+          box-shadow: none;
+}
+
+.search-overlay-variant1 .form-type-search {
+  width: 100%;
+}
+
+.search-overlay-variant1 .form-type-search input.form-autocomplete,
+.search-overlay-variant1 .form-type-search input.form-search {
+  font-size: 32px;
+  font-size: 2rem;
+  line-height: 1;
+  display: inline-block;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  width: 100%;
+  padding: 16px 48px 16px 0;
+  padding: 1rem 3rem 1rem 0;
+  color: #FFF;
+  border: 0;
+  border-bottom: 3px solid #007bff;
+  border-bottom: 0.1875rem solid #007bff;
+  border-radius: 0;
+  background-color: transparent;
+  outline: none;
+  -webkit-appearance: none;
+}
+
+.search-overlay-variant1 .form-type-search input.form-autocomplete:focus,
+.search-overlay-variant1 .form-type-search input.form-search:focus {
+  outline: 0;
+  -webkit-box-shadow: none;
+          box-shadow: none;
+}
+
+.search-overlay-variant1 .form-type-search input.form-autocomplete::-webkit-input-placeholder,
+.search-overlay-variant1 .form-type-search input.form-search::-webkit-input-placeholder {
+  color: #ababab;
+}
+
+.search-overlay-variant1 .form-type-search input.form-autocomplete::-moz-placeholder,
+.search-overlay-variant1 .form-type-search input.form-search::-moz-placeholder {
+  color: #ababab;
+}
+
+.search-overlay-variant1 .form-type-search input.form-autocomplete:-ms-input-placeholder,
+.search-overlay-variant1 .form-type-search input.form-search:-ms-input-placeholder {
+  color: #ababab;
+}
+
+.search-overlay-variant1 .form-type-search input.form-autocomplete::-webkit-search-cancel-button, .search-overlay-variant1 .form-type-search input.form-autocomplete::-webkit-search-decoration,
+.search-overlay-variant1 .form-type-search input.form-search::-webkit-search-cancel-button,
+.search-overlay-variant1 .form-type-search input.form-search::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+.search-overlay-variant1 .form-type-search input.form-autocomplete::-ms-clear,
+.search-overlay-variant1 .form-type-search input.form-search::-ms-clear {
+  display: none;
+}
+
+.search-overlay-variant1 .search__info {
+  color: #FFF;
+  display: block;
+  text-align: right;
+  font-size: 13px;
+  font-size: 0.8125rem;
+}
+
+.btn-search-overlay-close, .btn-search-overlay-close:focus {
+  background-color: transparent;
+  border: 0;
+  outline: none;
+  color: #FFF;
+  display: inline-block;
+  font-size: 32px;
+  font-size: 2rem;
+  position: absolute;
+  top: -50px;
+  top: -3.125rem;
+  right: 0;
+  -webkit-transition: color 500ms ease-in, -webkit-transform 500ms ease-in;
+  transition: color 500ms ease-in, -webkit-transform 500ms ease-in;
+  -o-transition: transform 500ms ease-in, color 500ms ease-in;
+  transition: transform 500ms ease-in, color 500ms ease-in;
+  transition: transform 500ms ease-in, color 500ms ease-in, -webkit-transform 500ms ease-in;
+}
+
+.btn-search-overlay-close:hover {
+  -webkit-transform: rotate(180deg);
+      -ms-transform: rotate(180deg);
+          transform: rotate(180deg);
+  color: #007bff;
+}
+
+@media (min-width: 768px) {
+  .search-overlay-variant1 .search-block-formulaire {
+    width: 75%;
+    padding: 100px;
+    padding: 6.25rem;
+  }
+  .search-overlay-variant1 .form-inline .form-group.form-actions {
+    width: 5rem;
+    height: 5rem;
+  }
+  .search-overlay-variant1 .form-inline .form-group.form-actions:before {
+    font-size: 48px;
+    font-size: 3rem;
+  }
+  .search-overlay-variant1 .form-type-search {
+    width: 100%;
+  }
+  .search-overlay-variant1 .form-type-search input.form-autocomplete,
+  .search-overlay-variant1 .form-type-search input.form-search {
+    font-size: 96px;
+    font-size: 6rem;
+    padding: 16px 80px 16px 0;
+    padding: 1rem 5rem 1rem 0;
+  }
+  .search-overlay-variant1 .search__info {
+    color: #FFF;
+    display: block;
+    text-align: right;
+    font-size: 19px;
+    font-size: 1.1875rem;
+  }
+  .btn-search-overlay-close {
+    cursor: pointer;
+  }
+  .btn-search-overlay-close, .btn-search-overlay-close:focus {
+    font-size: 32px;
+    font-size: 2rem;
+    right: 20px;
+    right: 1.25rem;
+    top: 0;
+  }
+}
+
+/*# sourceMappingURL=vactory_search_overlay_v1.css.map */

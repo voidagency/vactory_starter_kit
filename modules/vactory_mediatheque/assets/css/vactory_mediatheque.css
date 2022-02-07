@@ -1,0 +1,11 @@
+.fancy_card {
+  position: relative;
+  margin: 5% 10%;
+  width: 50%;
+  height: auto;
+  border: 2px solid black;
+  border: 0.125rem solid black;
+  z-index: 100;
+}
+
+/*# sourceMappingURL=vactory_mediatheque.css.map */

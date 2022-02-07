@@ -1,0 +1,75 @@
+.btn-anchor.dropdown-toggle::before, .btn-anchor.dropdown-toggle::after {
+  display: none;
+}
+
+.vp_anchor,
+.vactory-ancre.cloned {
+  background-color: #fff;
+  -webkit-box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.08), 0 3px 4px 0 rgba(0, 0, 0, 0.06), 0 1px 8px 0 rgba(0, 0, 0, 0.1);
+          box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.08), 0 3px 4px 0 rgba(0, 0, 0, 0.06), 0 1px 8px 0 rgba(0, 0, 0, 0.1);
+  -webkit-box-shadow: 0 0.1875rem 0.1875rem 0 rgba(0, 0, 0, 0.08), 0 0.1875rem 0.25rem 0 rgba(0, 0, 0, 0.06), 0 0.0625rem 0.5rem 0 rgba(0, 0, 0, 0.1);
+          box-shadow: 0 0.1875rem 0.1875rem 0 rgba(0, 0, 0, 0.08), 0 0.1875rem 0.25rem 0 rgba(0, 0, 0, 0.06), 0 0.0625rem 0.5rem 0 rgba(0, 0, 0, 0.1);
+  margin-bottom: 64px;
+  margin-bottom: 4rem;
+}
+
+@media (min-width: 768px) {
+  .vactory-ancre {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+  }
+  .vactory-ancre.cloned {
+    padding-left: 85px;
+    padding-left: 5.3125rem;
+    padding-right: 85px;
+    padding-right: 5.3125rem;
+    opacity: 0;
+    visibility: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 4;
+    -webkit-transition: top 500ms ease-in;
+    -o-transition: top 500ms ease-in;
+    transition: top 500ms ease-in;
+  }
+  .vactory-ancre.fixed {
+    opacity: 1;
+    visibility: visible;
+  }
+  .vactory-ancre.fixed.top {
+    top: -60px;
+    top: -3.75rem;
+  }
+  .vactory-ancre.fixed.bottom {
+    top: 0;
+  }
+  .toolbar-horizontal.toolbar-tray-open .vactory-ancre.fixed.bottom {
+    top: 78px;
+    top: 4.875rem;
+  }
+  .toolbar-horizontal .vactory-ancre.fixed.bottom {
+    top: 38px;
+    top: 2.375rem;
+  }
+  .vactory-ancre .anchor-link {
+    padding-top: 12px;
+    padding-top: 0.75rem;
+    padding-bottom: 12px;
+    padding-bottom: 0.75rem;
+  }
+  .vactory-ancre .anchor-link:hover, .vactory-ancre .anchor-link.active {
+    background: #007bff;
+    color: #fff;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .vp_anchor {
+    display: none;
+  }
+}
+
+/*# sourceMappingURL=vactory_anchor.css.map */
