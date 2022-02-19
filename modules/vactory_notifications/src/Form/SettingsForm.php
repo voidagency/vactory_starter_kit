@@ -131,6 +131,17 @@ class SettingsForm extends ConfigFormBase {
       '#description' => $this->t('When checked notifications bootstrap toast will be enabled for real time generated notification.'),
       '#default_value' => $config->get('enable_toast'),
     ];
+    $form['global_settings']['toast_template'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Toast template'),
+      '#description' => $this->t('Enter Toast template twig file path here, Default to ' . drupal_get_path('module', 'vactory_notifications') . '/templates/notifications-toast.html.twig'),
+      '#default_value' => $config->get('toast_template') ? $config->get('toast_template') : drupal_get_path('module', 'vactory_notifications') . '/templates/notifications-toast.html.twig',
+      '#states' => [
+        'visible' => [
+          'input[name="enable_toast"]' => ['checked' => TRUE],
+        ],
+      ],
+    ];
 
     // Roles settings.
     foreach ($existing_roles as $key => $role) {
@@ -195,6 +206,7 @@ class SettingsForm extends ConfigFormBase {
       ->set('mail_active', $form_state->getValue('mail_active'))
       ->set('notifications_lifetime', $form_state->getValue('notifications_lifetime'))
       ->set('enable_toast', $form_state->getValue('enable_toast'))
+      ->set('toast_template', $form_state->getValue('toast_template'))
       ->save();
 
     foreach ($existing_roles as $key => $role) {

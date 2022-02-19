@@ -12,7 +12,6 @@ use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\node\NodeInterface;
 use Drupal\user\UserInterface;
-use Drupal\vactory_notifications\Entity\NotificationsInterface;
 use Drupal\vactory_notifications\Services\VactoryNotificationsService;
 use Drupal\vactory_points\Event\VactoryPointsEditEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -253,11 +252,14 @@ class PointsEditEventsSubscriber implements EventSubscriberInterface {
       if (!$language->isDefault()) {
         $translated_entity = isset($entity) ? $this->entityRepository->getTranslationFromContext($entity, $langcode) : NULL;
         $vactory_points_config_translation = $this->languageManager->getLanguageConfigOverride($langcode, 'vactory_points.settings');
+        $vactory_points_config = $this->configFactory->get('vactory_points.settings');
         $points = $rule['points_info']['points'];
-        $action_label = $vactory_points_config_translation->get('rules')[$index]['action']['action_label'];
+        $rules = $vactory_points_config_translation->get('rules') ?? $vactory_points_config->get('rules');
+        $action_label = $rules[$index]['action']['action_label'];
         $entity_title = $translated_entity ? $translated_entity->label() : '';
-        $translated_notification_title = $vactory_points_config_translation->get('notifications')[$rule['points_info']['operation']]['notification_title'];
-        $translated_notification_message = $vactory_points_config_translation->get('notifications')[$rule['points_info']['operation']]['notification_message'];
+        $notifications = $vactory_points_config_translation->get('notifications') ?? $vactory_points_config->get('notifications');
+        $translated_notification_title = $notifications[$rule['points_info']['operation']]['notification_title'];
+        $translated_notification_message = $notifications[$rule['points_info']['operation']]['notification_message'];
         $translated_notification_title = $this->replaceTokens($translated_notification_title, $points, $action_label, $entity_title);
         $translated_notification_message = $this->replaceTokens($translated_notification_message, $points, $action_label, $entity_title);
         $entity_title_wrapper = ['«', '»'];

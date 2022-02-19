@@ -6,6 +6,7 @@ use Drupal\Component\Datetime\Time;
 use Drupal\Component\Serialization\Json;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\user\Entity\User;
 use Drupal\vactory_notifications\Event\VactoryNotificationsToastEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -91,8 +92,8 @@ class NotificationsToastEventSubscriber implements EventSubscriberInterface {
   public function getOnlineUsers() {
     $results = $this->database->select('sessions', 's')
       ->fields('s', ['uid'])
-      // We are interested in users which were connected last 15min.
-      ->condition('timestamp', $this->time->getCurrentTime() - 900, '>=')
+      // We are interested in users which were connected last 30min.
+      ->condition('timestamp', $this->time->getCurrentTime() - 1800, '>=')
       ->execute()
       ->fetchCol();
     return $results;
