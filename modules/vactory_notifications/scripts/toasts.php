@@ -9,6 +9,8 @@ define('DRUPAL_DIR', __DIR__ . '/../../../../../..');
 // Bootstrap to initialize container.
 $autoloader = require DRUPAL_DIR . '/autoload.php';
 require_once DRUPAL_DIR . '/core/includes/bootstrap.inc';
+require_once DRUPAL_DIR . '/core/includes/common.inc';
+
 $request = Request::createFromGlobals();
 Settings::initialize(dirname(dirname(DRUPAL_DIR)), DrupalKernel::findSitePath($request), $autoloader);
 $kernel = DrupalKernel::createFromRequest($request, $autoloader, 'prod')->boot();
