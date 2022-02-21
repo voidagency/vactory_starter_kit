@@ -1,0 +1,6 @@
+name: 'Inwi Dir iddik Datalayer'
+type: module
+description: Inwi Dir iddik Datalayer.
+package: Dir iddik
+core: 8.x
+core_version_requirement: ^8 || ^9
