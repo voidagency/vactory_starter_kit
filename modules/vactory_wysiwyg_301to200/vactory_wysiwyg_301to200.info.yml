@@ -1,0 +1,6 @@
+name: Vactory WYSIWYG Link 301 to 200
+type: module
+description: Provides drush command to replace all 301 link with the final 200 link in wysiwyg fields
+package: Vactory
+core: 8.x
+core_version_requirement: ^8 || ^9
