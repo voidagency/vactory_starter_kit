@@ -1,0 +1,47 @@
+<style>
+	.error-message {
+      font-family: Courier;
+	}
+</style>
+<div class="bg-warning p-3 text-white border rounded border-danger">
+	<h6>{{  'Error in template: ' ~ error.template_id }}</h6>
+	{% if error.message is not empty %}
+		<p class="p-3 bg-dark error-message">{{  error.message }}</p>
+	{% endif %}
+	{% if error.trace is not empty or error.concerned_file is not empty %}
+		<div class="accordion" id="error-accordion">
+			{% if error.trace is not empty %}
+				<div class="card bg-orange">
+					<div class="card-header" id="error-trace">
+						<h6 class="mb-0">
+							<button class="btn btn-link btn-block text-left text-white collapsed" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+								View trace
+							</button>
+						</h6>
+					</div>
+					<div id="collapseOne" class="collapse" aria-labelledby="error-trace" data-parent="#error-accordion">
+						<div class="card-body bg-dark text-small error-message">
+							{{ error.trace }}
+						</div>
+					</div>
+				</div>
+			{% endif %}
+			{% if error.concerned_file is not empty %}
+				<div class="card bg-orange">
+					<div class="card-header" id="error-source-file">
+						<h6 class="mb-0">
+							<button class="btn btn-link btn-block text-left text-white collapsed" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+								Source file
+							</button>
+						</h6>
+					</div>
+					<div id="collapseTwo" class="collapse" aria-labelledby="error-source-file" data-parent="#error-accordion">
+						<div class="card-body bg-dark error-message">
+							{{ error.concerned_file }}
+						</div>
+					</div>
+				</div>
+			{% endif %}
+		</div>
+	{% endif %}
+</div>
