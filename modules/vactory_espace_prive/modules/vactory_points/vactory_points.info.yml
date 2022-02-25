@@ -6,3 +6,5 @@ configure: vactory_points.settings
 package: Vactory
 dependencies:
   - vactory_espace_prive
+  - flag
+  - admin_feedback

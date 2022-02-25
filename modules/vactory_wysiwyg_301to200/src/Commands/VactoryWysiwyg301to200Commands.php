@@ -77,6 +77,8 @@ class VactoryWysiwyg301to200Commands extends DrushCommands {
    *   The Site URI to be used for hrefs with relative path, the site uri should contains the schema + domain name, Example: https://vactory.lapreprod.com.
    * @option entity-type
    *   The concerned entity type.
+   * @option timeout
+   *   The max curl timeout in seconds for each link (default to 0 which means unlimited).
    * @option bundle
    *   The concerned bundle of given entity type.
    * @usage wysiwyg301to200 --entity-type=node --bundle=vactory_news --site-uri=http://vactory.lapreprod.com
@@ -90,10 +92,15 @@ class VactoryWysiwyg301to200Commands extends DrushCommands {
    * @command wysiwyg301to200
    * @aliases 301to200
    */
-  public function wysiwyg301to200($options = ['site-uri' => '', 'entity-type' => 'node', 'bundle' => '']) {
+  public function wysiwyg301to200($options = ['site-uri' => '', 'entity-type' => 'node', 'bundle' => '', 'timeout' => 0]) {
     $site_uri = $options['site-uri'];
     if (empty($site_uri)) {
       $this->output->writeln('<error>ERROR: Please enter the site uri using --site-uri option, example: drush 301to200 --site-uri=http://vactory.lapreprod.com"</error>');
+      exit(0);
+    }
+    $timeout = $options['timeout'];
+    if (!is_numeric($timeout) || (is_numeric($timeout) && $timeout < 0)) {
+      $this->output->writeln('<error>ERROR: --timeout option value should be a positive number</error>');
       exit(0);
     }
     $site_url_info = parse_url($site_uri);
@@ -114,7 +121,7 @@ class VactoryWysiwyg301to200Commands extends DrushCommands {
     }
     $bundles = !empty($bundle) ? [$bundle] : $bundles;
     $httpClient = new Client(['allow_redirects' => ['track_redirects' => true]]);
-    $this->replaceLinks($entity_type, $bundles, $site_uri, $site_url_info, $httpClient);
+    $this->replaceLinks($entity_type, $bundles, $site_uri, $site_url_info, $httpClient, $timeout);
     $this->output->writeln('Please wait for cache rebuild...');
     drupal_flush_all_caches();
     $this->logger()->success("Cache rebuild complete, I'm Done! :)");
@@ -123,7 +130,7 @@ class VactoryWysiwyg301to200Commands extends DrushCommands {
   /**
    * Replace link in Wysiwyg fields.
    */
-  public function replaceLinks($entity_type, $bundles, $site_uri, $site_url_info, $httpClient) {
+  public function replaceLinks($entity_type, $bundles, $site_uri, $site_url_info, $httpClient, $timeout) {
     foreach ($bundles as $bundle) {
       $definitions = $this->entityFieldManager->getFieldDefinitions($entity_type, $bundle);
       $fields = [];
@@ -145,9 +152,10 @@ class VactoryWysiwyg301to200Commands extends DrushCommands {
             }
             $target_bundles = !empty($target_bundles)? $target_bundles : array_keys($this->entityTypeBundleInfo->getBundleInfo('paragraph'));
             // Replace links in dynamic fields wysiwyg if exist.
-            $this->replaceLinksInDynamicField($target_bundles, 'paragraph', $site_uri, $site_url_info, $httpClient);
+            // @todo: Review dynamic field case.
+            // $this->replaceLinksInDynamicField($target_bundles, 'paragraph', $site_uri, $site_url_info, $httpClient, $timeout);
             // Replace field in paragraph wysiwyg fields.
-            $this->replaceLinks('paragraph', $target_bundles, $site_uri, $site_url_info, $httpClient);
+            $this->replaceLinks('paragraph', $target_bundles, $site_uri, $site_url_info, $httpClient, $timeout);
           }
         }
         else {
@@ -180,7 +188,7 @@ class VactoryWysiwyg301to200Commands extends DrushCommands {
                       $link = trim($site_uri, '/') . '/' . trim($link, '/');
                     }
                     try {
-                      $response = $httpClient->request('GET', $link);
+                      $response = $httpClient->request('GET', $link, ['timeout' => $timeout]);
                       $redirects = $response->getHeader(RedirectMiddleware::HISTORY_HEADER);
                       if (!empty($redirects)) {
                         $final_redirect = end($redirects);
@@ -193,7 +201,7 @@ class VactoryWysiwyg301to200Commands extends DrushCommands {
                     }
                     catch (\Exception $e) {
                       $reason = 'REASON: ' . $e->getMessage();
-                      $this->logger()->warning('SKIPPED: Field "' . $field_name . '" of entity "' . $bundle . '" with ID [' . $id . '] ' . PHP_EOL . '        ' . $reason  );
+                      $this->logger()->warning('SKIPPED: Field "' . $field_name . '" of entity "' . $bundle . '" with ID [' . $id . '] ' . PHP_EOL . '        ' . $reason);
                     }
                   }
                 }
@@ -219,7 +227,7 @@ class VactoryWysiwyg301to200Commands extends DrushCommands {
   /**
    * Replace links in DF.
    */
-  public function replaceLinksInDynamicField($bundles, $entity_type, $site_uri, $site_url_info, $httpClient) {
+  public function replaceLinksInDynamicField($bundles, $entity_type, $site_uri, $site_url_info, $httpClient, $timeout) {
     $field_definitions = [];
     foreach ($bundles as $bundle) {
       $definitions = $this->entityFieldManager->getFieldDefinitions($entity_type, $bundle);
@@ -253,7 +261,7 @@ class VactoryWysiwyg301to200Commands extends DrushCommands {
                     $original_link = trim($site_uri, '/') . '/' . trim($original_link, '/');
                   }
                   try {
-                    $response = $httpClient->request('GET', $original_link);
+                    $response = $httpClient->request('GET', $original_link, ['timeout' => $timeout]);
                     $redirects = $response->getHeader(RedirectMiddleware::HISTORY_HEADER);
                     if (!empty($redirects)) {
                       $final_redirect = end($redirects);

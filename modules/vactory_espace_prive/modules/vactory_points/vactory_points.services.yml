@@ -19,11 +19,6 @@ services:
     arguments: ['@config.factory', '@vactory_points.manager']
     tags:
       - { name: event_subscriber }
-  vactory_points.sondage_vote_subscriber:
-    class: Drupal\vactory_points\EventSubscriber\SondageVoteEventsSubscriber
-    arguments: ['@vactory_points.manager']
-    tags:
-      - { name: event_subscriber }
   vactory_points.feedback_subscriber:
     class: Drupal\vactory_points\EventSubscriber\AdminFeedbackEventSubscriber
     arguments:
