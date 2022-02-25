@@ -246,11 +246,12 @@ class VactoryDynamicFormatter extends FormatterBase {
       $elements[$delta] = $this->renderer->executeInRenderContext(new RenderContext(), static function () use ($render, $widget_id, $renderer, $logger) {
         // Make sure the template render doesn't throw any exception.
         try {
-          $render = ['#markup' =>$renderer->render($render)];
+          $artifact_render = $render;
+          $renderer->render($render);
         }
         catch (\Exception $e) {
           $df_errors_policy = Settings::get('df_errors_policy');
-          $render = [
+          $artifact_render = [
             '#theme' => 'vactory_dynamic_errors',
             '#error' => [
               'template_id' => $widget_id,
@@ -265,7 +266,7 @@ class VactoryDynamicFormatter extends FormatterBase {
           $error_message .= $e->getTraceAsString();
           $logger->get('vactory_dynamic_field')->error($error_message);
         }
-        return $render;
+        return $artifact_render;
       });
     }
 
