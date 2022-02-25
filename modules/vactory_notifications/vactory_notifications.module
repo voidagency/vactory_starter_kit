@@ -77,11 +77,11 @@ function vactory_notification_generate($entity) {
   $node_notification_message = !empty($source_translated_node->get('notification_message')->value) ? $source_translated_node->get('notification_message')->value : $notification_config->get('notifications_default_message');
   $notification_users_ids = $notification_manager->getNotificationsUsersIds($entity->bundle());
   // Generate a notification.
-  $current_user_id = Drupal::currentUser()->id();
+  $user_id = $entity->getOwnerId();
   $notification_data = [
     'type' => 'notification_entity',
     'name' => $token->replace($node_notification_title, ['entity' => $entity]),
-    'user_id' => $current_user_id,
+    'user_id' => $user_id,
     'notification_related_content' => $entity->id(),
     'notification_message' => $token->replace($node_notification_message, ['entity' => $entity]),
     'status' => TRUE,
@@ -129,7 +129,7 @@ function vactory_notification_generate($entity) {
     $mail_notification_data = [
       'type' => 'notification_entity',
       'mail_subject' => $token->replace($node_mail_subject, ['entity' => $entity]),
-      'user_id' => $current_user_id,
+      'user_id' => $user_id,
       'notification_related_content' => $entity->id(),
       'mail_message' => $token->replace($node_mail_message, ['entity' => $entity]),
       'status' => TRUE,
