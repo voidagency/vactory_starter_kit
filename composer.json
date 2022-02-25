@@ -175,8 +175,6 @@
       "drupal/core": {
         "Composer 2: Fatal error Call to undefined method getJobType()": "https://www.drupal.org/files/issues/2020-11-04/drupal-composer2-3162228.patch",
         "Add internal path check to blocks visibility pages evaluation.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/19e54a007837537dd7de97456ab0e1ad0b9d3cf6/block-visibility-pages-paths-evaluate.patch",
-        "Fix Declaring string usig t() function in global context": "https://gist.githubusercontent.com/b-khouy/43ebcca28db78713e10426bf9376827c/raw/6e8f8468f7f1d8c932b3aa5e89072cf7a7f9bffa/declaring-string-using-t-in-global-context-fix.patch",
-        "Fix Argument 1 passed to RequestContext::fromRequest() is null from global context": "https://gist.githubusercontent.com/b-khouy/26b23ad6aba6d7dcb1d1275704abad60/raw/a48fb860a4894481824bbb7fdb621e57474cebe2/fix-request-context-null-from-global-context.patch",
         "fix undefined offset on date form element": "https://www.drupal.org/files/issues/2021-04-07/3189302_11.patch",
         "Fix number of items allowed in Media Library": "https://www.drupal.org/files/issues/2019-12-22/3082690-77.patch",
         "Set MenuLinkContent getEntity to public visibility": "https://www.drupal.org/files/issues/2019-12-30/2997790-28.patch",
