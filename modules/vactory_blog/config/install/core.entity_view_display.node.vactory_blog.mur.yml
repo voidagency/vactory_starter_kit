@@ -6,7 +6,6 @@ dependencies:
     - field.field.node.vactory_blog.body
     - field.field.node.vactory_blog.field_blog_category
     - field.field.node.vactory_blog.field_blog_tags
-    - field.field.node.vactory_blog.field_contenu_lie
     - field.field.node.vactory_blog.field_vactory_excerpt
     - field.field.node.vactory_blog.field_vactory_media
     - field.field.node.vactory_blog.field_vactory_meta_tags
@@ -67,7 +66,6 @@ hidden:
   field_content_access_groups: true
   field_content_access_roles: true
   field_content_access_users: true
-  field_contenu_lie: true
   field_vactory_meta_tags: true
   field_vactory_seo_status: true
   langcode: true
