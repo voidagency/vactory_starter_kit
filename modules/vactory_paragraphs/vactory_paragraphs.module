@@ -184,7 +184,7 @@ function vactory_paragraphs_field_widget_form_alter(&$element, FormStateInterfac
     $element['color']['#default_value'] = isset($color) && !empty($color) && $color != '#FFFFFF' ? $color : '#FF0000';
   }
   if (isset($context['form']['#entity_type']) && $context['form']['#entity_type'] == 'paragraph') {
-    if (in_array('field_vactory_paragraph_tab', $element['#field_parents'], TRUE)) {
+    if (isset($element['#field_parents']) && in_array('field_vactory_paragraph_tab', $element['#field_parents'], TRUE)) {
       if ($element['#title'] instanceof TranslatableMarkup && $element['#title']->getUntranslatedString() == 'Paragraph ID') {
         $element['value']['#title'] = t('Tab ID');
         $element['value']['#description'] = t('Set the HTML ID attribute value, useful to enhance CSS selectors for current tab (Default to "TabTitle-ParagraphID").');
