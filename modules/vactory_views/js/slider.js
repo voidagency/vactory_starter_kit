@@ -36,6 +36,7 @@
           var $settings_views = $.parseJSON($slider.attr('data-settings'));
           // Default settings.
           var $settings_defaults = {
+            rtl: rtlMode,
             dots: true,
             arrows: true,
             infinite: true,
