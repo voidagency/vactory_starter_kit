@@ -1,0 +1,3 @@
+view wysiwyg 301 redirects log:
+  title: 'View wysiwyg 301 redirects log'
+  restrict access: true

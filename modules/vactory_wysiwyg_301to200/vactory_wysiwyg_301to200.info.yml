@@ -4,3 +4,5 @@ description: Provides drush command to replace all 301 link with the final 200 l
 package: Vactory
 core: 8.x
 core_version_requirement: ^8 || ^9
+dependencies:
+  - views_json_source

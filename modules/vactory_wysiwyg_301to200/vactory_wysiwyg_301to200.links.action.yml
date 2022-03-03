@@ -1,0 +1,5 @@
+vactory_wysiwyg_301to200.clear_log:
+  route_name: vactory_wysiwyg_301to200.clear_log
+  title: 'Clear log'
+  appears_on:
+    - view.wysiwyg_301to200.admin_listing

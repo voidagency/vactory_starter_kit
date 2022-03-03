@@ -13,4 +13,6 @@
 
 # Ignore IDE settings files.
 .idea
+.DS_Store
+*/.DS_Store
 

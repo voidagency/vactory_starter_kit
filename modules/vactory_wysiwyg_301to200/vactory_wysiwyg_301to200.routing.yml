@@ -1,0 +1,7 @@
+vactory_wysiwyg_301to200.clear_log:
+  path: /admin/content/wysiwyg-redirects-log/clear
+  defaults:
+    _form: Drupal\vactory_wysiwyg_301to200\Form\ClearLogForm
+    _title: Clear Wysiwyg 301 redirects log
+  requirements:
+    _permission: 'view wysiwyg 301 redirects log'
