@@ -1,0 +1,28 @@
+<?php
+
+/**
+ * @file
+ * Module installation related hooks.
+ */
+
+use Drupal\Core\Field\BaseFieldDefinition;
+
+/**
+ * Implements hook_install().
+ */
+function vactory_amp_install($is_syncing) {
+  $entity_definition_manager = \Drupal::entityDefinitionUpdateManager();
+  $field_definition = BaseFieldDefinition::create('boolean')
+    ->setLabel(t('Exclude from AMP'))
+    ->setDescription(t('If checked then the node will be excluded from AMP generate process'))
+    ->setDefaultValue(0)
+    ->setDisplayOptions('form', [
+      'type' => 'boolean_checkbox',
+      'settings' => [
+        'display_label' => TRUE,
+      ],
+    ])
+    ->setDisplayConfigurable('form', TRUE);
+  $entity_definition_manager->installFieldStorageDefinition('exclude_from_amp', 'node', 'vactory_amp', $field_definition);
+}
+

@@ -1,0 +1,72 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for vactory_amp module.
+ *
+ * @DCG
+ * This file is no longer required in Drupal 8.
+ * @see https://www.drupal.org/node/2217931
+ */
+
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function vactory_amp_entity_base_field_info(EntityTypeInterface $entity_type) {
+  $fields = [];
+  if ($entity_type->id() === 'node') {
+    $fields['exclude_from_amp'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Exclude from AMP'))
+      ->setDescription(t('If checked then the node will be excluded from AMP generate process'))
+      ->setDefaultValue(0)
+      ->setDisplayOptions('form', [
+        'type' => 'boolean_checkbox',
+        'settings' => [
+          'display_label' => TRUE,
+        ],
+      ])
+      ->setDisplayConfigurable('form', TRUE);
+  }
+  return $fields;
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_amp_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $route_name = Drupal::routeMatch()->getRouteName();
+  $node_routes = [
+    'entity.node.edit_form',
+    'node.add',
+  ];
+  if (in_array($route_name, $node_routes)) {
+    $form['amp_settings'] = [
+      '#type' => 'details',
+      '#title' => t('AMP Settings'),
+      '#group' => 'advanced',
+    ];
+    $form['amp_settings']['exclude_from_amp'] = $form['exclude_from_amp'];
+    unset($form['exclude_from_amp']);
+    $amp_context = Drupal::service('router.amp_context');
+    $node = Drupal::routeMatch()->getParameter('node');
+    $node_type = Drupal::routeMatch()->getParameter('node_type');
+    if ($node_type) {
+      $nodes = Drupal::entityQuery('node')
+        ->condition('type', $node_type->id())
+        ->pager(1)
+        ->execute();
+      $nid = reset($nodes);
+      if ($nid) {
+        $node = Drupal::entityTypeManager()->getStorage('node')
+          ->load($nid);
+      }
+    }
+    if (!$amp_context->entityIsAmp($node)) {
+      unset($form['amp_settings']);
+    }
+  }
+}

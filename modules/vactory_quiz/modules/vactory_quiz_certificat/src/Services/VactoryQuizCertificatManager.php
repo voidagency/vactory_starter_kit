@@ -76,7 +76,7 @@ class VactoryQuizCertificatManager {
     Token $token,
     StateInterface $state,
     LanguageManagerInterface $languageManager,
-    EntityRepositoryInterface $entityRepository,
+    EntityRepositoryInterface $entityRepository
   ) {
     $this->entityTypeManager = $entityTypeManager;
     $this->configFactory = $configFactory;

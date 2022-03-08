@@ -106,7 +106,7 @@
     "drupal/votingapi": "3.0-beta2",
     "drupal/amp": "3.x-dev@dev",
     "drupal/crop": "^2.1",
-    "drupal/devel": "4.0.1",
+    "drupal/devel": "^4.1",
     "drupal/draggableviews": "^2.0",
     "drupal/auto_entityqueue": "^2.0",
     "drupal/easy_install": "^10.4",
