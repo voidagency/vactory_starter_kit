@@ -13,6 +13,8 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
+use Drupal\user\Entity\User;
 
 
 /**
@@ -92,8 +94,7 @@ function vactory_revisions_form_alter(&$form, FormStateInterface $form_state, $f
 /**
  * Implements hook_preprocess_HOOK().
  */
-function vactory_revisions_preprocess_page(&$variables)
-{
+function vactory_revisions_preprocess_page(&$variables) {
   $entity_definition_manager = Drupal::entityDefinitionUpdateManager();
   $field_definition = BaseFieldDefinition::create('entity_reference')
     ->setLabel(t('Last contributor'))
@@ -116,5 +117,23 @@ function vactory_revisions_preprocess_page(&$variables)
   unset($entity_type_ids['vactory_revision'], $entity_type_ids['notifications_entity']);
   foreach ($entity_type_ids as $entity_type_id) {
     $entity_definition_manager->installFieldStorageDefinition('last_contributor', $entity_type_id, 'vactory_revisions', $field_definition);
+  }
+}
+
+/**
+ * Implements hook_field_widget_form_alter().
+ */
+function vactory_revisions_field_widget_form_alter(&$element, FormStateInterface $form_state, $context) {
+  if ($context['items']->getName() === 'last_contributor') {
+    $uid = $context['items']->target_id;
+    $element = [];
+    if (!empty($uid)) {
+      $user = User::load($uid);
+      $username = $user->getAccountName();
+      $url = Url::fromRoute('entity.user.canonical', ['user' => $uid])->toString();
+      $element = [
+        '#markup' => '<strong>' . t('Last contributor') . '</strong>: <a href="' . $url . '" target="_blank">' . $username .'</a>',
+      ];
+    }
   }
 }
