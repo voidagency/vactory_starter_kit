@@ -9,9 +9,12 @@
  * @see https://www.drupal.org/node/2217931
  */
 
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\node\NodeInterface;
 
 /**
  * Implements hook_entity_base_field_info().
@@ -67,6 +70,26 @@ function vactory_amp_form_alter(&$form, FormStateInterface $form_state, $form_id
     }
     if (!$amp_context->entityIsAmp($node)) {
       unset($form['amp_settings']);
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_view_alter().
+ */
+function vactory_amp_entity_view_alter(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display) {
+  if ($entity instanceof NodeInterface && !$entity->isNew() && in_array($build['#view_mode'], ['full', 'amp'])) {
+    $amp_context = Drupal::service('router.amp_context');
+    $exclude_from_search = $entity->get('exclude_from_amp')->value;
+    if ($amp_context->entityIsAmp($entity) && $exclude_from_search) {
+      $html_head_link = $build['#attached']['html_head_link'];
+      $html_head_link = array_filter($html_head_link, function ($link_info) {
+        if (isset($link_info[0]['rel'])) {
+          return $link_info[0]['rel'] !== 'amphtml';
+        }
+        return TRUE;
+      });
+      $build['#attached']['html_head_link'] = $html_head_link;
     }
   }
 }
