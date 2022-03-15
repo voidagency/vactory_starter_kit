@@ -3,6 +3,7 @@
 namespace Drupal\vactory_dynamic_field\Form;
 
 use Drupal\Component\Render\FormattableMarkup;
+use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Ajax\CloseDialogCommand;
 use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Entity\EntityFieldManager;
@@ -88,6 +89,13 @@ class ModalForm extends FormBase {
   protected $isDropdownSelectMode;
 
   /**
+   * Text format fields.
+   *
+   * @var array
+   */
+  protected $textformatFields;
+
+  /**
    * Constructs a new ExampleConfigEntityExternalForm.
    *
    * @param \Drupal\vactory_dynamic_field\WidgetsManagerInterface $widgets_manager
@@ -96,6 +104,7 @@ class ModalForm extends FormBase {
    *   The entity field manager.
    */
   public function __construct(WidgetsManagerInterface $widgets_manager, EntityFieldManager $entity_field_manager) {
+    $this->textformatFields = [];
     $this->widgetsManager = $widgets_manager;
     $this->entityFieldManager = $entity_field_manager;
     $this->isDropdownSelectMode = \Drupal::config('vactory_dynamic_field.settings')->get('is_dropdown_select_templates');
@@ -268,6 +277,10 @@ class ModalForm extends FormBase {
 
             $form['components']['extra_field'][$field_id][$field_key] = $this->getFormElement($element_type, $element_label, $element_default_value, $element_options, $form, $form_state, $ds_field_name, $field_id, $field_key);
 
+            if ($element_type == 'text_format') {
+              $this->textformatFields[] = ['components', 'extra_field', $field_id, $field_key];
+            }
+
             if ($element_type == 'image') {
               // Restore parent for other fields.
               $form['#parents'] = $form_parents;
@@ -295,6 +308,10 @@ class ModalForm extends FormBase {
           }
 
           $form['components']['extra_field'][$field_id] = $this->getFormElement($element_type, $element_label, $element_default_value, $element_options, $form, $form_state, $ds_field_name, $field_id);
+
+          if ($element_type == 'text_format') {
+            $this->textformatFields[] = ['components', 'extra_field', $field_id];
+          }
 
           if ($element_type == 'image') {
             // Restore parent for other fields.
@@ -377,6 +394,10 @@ class ModalForm extends FormBase {
 
             $form['components'][$i][$field_id][$field_key] = $this->getFormElement($element_type, $element_label, $element_default_value, $element_options, $form, $form_state, $ds_field_name);
 
+            if ($element_type == 'text_format') {
+              $this->textformatFields[] = ['components', $i, $field_id, $field_key];
+            }
+
             if ($element_type == 'image') {
               // Restore parent for other fields.
               $form['#parents'] = $form_parents;
@@ -406,6 +427,10 @@ class ModalForm extends FormBase {
           }
 
           $form['components'][$i][$field_id] = $this->getFormElement($element_type, $element_label, $element_default_value, $element_options, $form, $form_state, $ds_field_name, $field_id, $i);
+
+          if ($element_type == 'text_format') {
+            $this->textformatFields[] = ['components', $i, $field_id];
+          }
 
           if ($element_type == 'image' || $element_type == 'remote_video') {
             // Restore parent for other fields.
@@ -783,6 +808,37 @@ class ModalForm extends FormBase {
     $current--;
     $form_state->set('num_widgets', $current);
     $form_state->setRebuild();
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    parent::validateForm($form, $form_state);
+    $errors = $form_state->getErrors();
+    $values = $form_state->getValues();
+    $form_errors_updated = FALSE;
+    foreach ($this->textformatFields as $textformat_field_parents) {
+      $key = implode('][', $textformat_field_parents) . '][value';
+      $element = NestedArray::getValue($form, $textformat_field_parents);
+      if (isset($errors[$key]) && isset($element['#maxlength']) && is_numeric($element['#maxlength'])) {
+        $html_info = NestedArray::getValue($values, $textformat_field_parents);
+        $value = strip_tags($html_info['value']);
+        if ($value) {
+          $value = str_replace([PHP_EOL, "\r"], '', $value);
+          if (strlen($value) <= $element['#maxlength']) {
+            unset($errors[$key]);
+            $form_errors_updated = TRUE;
+          }
+        }
+      }
+    }
+    if ($form_errors_updated) {
+      $form_state->clearErrors();
+      foreach ($errors as $key => $message) {
+        $form_state->setErrorByName($key, $message);
+      }
+    }
   }
 
 }
