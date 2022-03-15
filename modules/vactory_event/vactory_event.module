@@ -38,7 +38,7 @@ function vactory_event_theme($existing, $type, $theme, $path) {
       'base hook' => 'node',
       'template'  => 'smart-search',
     ],
-     // Node > Mur.
+    // Node > Mur.
     'node__vactory_event__mur' => [
       'base hook' => 'node',
       'template'  => 'mur',
@@ -148,6 +148,14 @@ function vactory_event_preprocess_views_view(&$variables) {
     $arguments_infos = $view->argument;
     if (count($args) > 2 && isset($args[2]) && is_array($args[2]) ) {
       $meta_data = $args[2];
+      $args[0] = $meta_data['category_term_id'];
+      $term = Drupal::entityTypeManager()->getStorage('taxonomy_term')
+        ->load($args[0]);
+      $parents = $term->get('parent')->getValue();
+      $parents = array_filter($parents, function ($parent) {
+        return $parent['target_id'] !== '0' && $parent['target_id'] !== 0;
+      });
+      $has_parent = !empty($parents);
       if (isset($meta_data['override_more_link']) && $meta_data['override_more_link']) {
         $use_more = $view->display_handler->options['use_more'];
         $link_display = $view->display_handler->options['link_display'];
@@ -156,6 +164,10 @@ function vactory_event_preprocess_views_view(&$variables) {
           if (isset($handlers_configurations[$link_display])) {
             $filters = $handlers_configurations[$link_display]['display_options']['filters'];
             if (!empty($filters)) {
+              // Check in view filter if we have taxonomy tid depth filter.
+              $taxonomy_tid_depth_filter = array_filter($filters, function ($filter) {
+                return $filter['plugin_id'] === 'taxonomy_index_tid_depth';
+              });
               $filters_ids = array_map(function ($filter) {
                 return isset($filter['expose']['identifier']) ? $filter['expose']['identifier'] : $filter['id'];
               }, $filters);
@@ -168,12 +180,20 @@ function vactory_event_preprocess_views_view(&$variables) {
                 $more_link_params = [];
                 foreach ($field_names as $field_name) {
                   $filter_index = array_search($field_name, $arguments_infos);
-                  if ($filter_index !== FALSE) {
+                  $filter_name = '';
+                  // In case of parent term and view taxonomy tid depth filter exist.
+                  if (!$has_parent && !empty($taxonomy_tid_depth_filter)) {
+                    $filter_name = reset($taxonomy_tid_depth_filter)['id'];
+                    $filter_name = !isset($more_link_params[$filter_name]) ? $filter_name : '';
+                  }
+                  if ($filter_index !== FALSE && empty($filter_name)) {
                     $matches = preg_grep('#(.)*' . $field_name . '(.)*#', array_flip($filters_ids));
                     if (!empty($matches)) {
                       $filter_name = array_keys($matches)[0];
-                      $more_link_params[$filter_name] = $args[$filter_index];
                     }
+                  }
+                  if (!empty($filter_name) && $args[$filter_index] !== 'all') {
+                    $more_link_params[$filter_name] = $args[$filter_index];
                   }
                 }
                 if (isset($variables['more']['#url'])) {

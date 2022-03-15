@@ -144,6 +144,13 @@ class EventsBlockFiltredByTaxonomy extends BlockBase implements ContainerFactory
     $city_term_id = $this->configuration['city_filter'];
     $override_more_link = $this->configuration['override_more_link'];
     $field_name = [];
+    $children = $this->entityTypeManager->getStorage('taxonomy_term')->loadChildren($category_term_id);
+    $selected_category_term_id = $category_term_id;
+    if (!empty($children)) {
+      $children_ids = array_keys($children);
+      $children_ids[] = $category_term_id;
+      $category_term_id = implode('+', $children_ids);
+    }
     if (!empty($category_term_id)) {
       $field_name[] = 'field_vactory_taxonomy_1';
     }
@@ -159,6 +166,7 @@ class EventsBlockFiltredByTaxonomy extends BlockBase implements ContainerFactory
         'meta_data' => [
           'override_more_link' => $override_more_link,
           'field_name' => $field_name,
+          'category_term_id' => $selected_category_term_id,
         ],
       ],
     ];
