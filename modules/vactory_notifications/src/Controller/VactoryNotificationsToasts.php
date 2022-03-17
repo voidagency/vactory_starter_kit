@@ -71,7 +71,7 @@ class VactoryNotificationsToasts extends ControllerBase {
     $user_toasts = $this->database->query('SELECT field_notification_toast_value FROM {user__field_notification_toast} WHERE entity_id=:uid', [':uid' => $uid]);
     if (!empty($user_toasts)) {
       $user_toasts = $user_toasts->fetchAll();
-      $user_toasts = Json::decode($user_toasts[0]->field_notification_toast_value);
+      $user_toasts = !empty($user_toasts) ? Json::decode($user_toasts[0]->field_notification_toast_value) : [];
       if (!empty($user_toasts)) {
         $viewed_toasts = $this->database->query('SELECT field_notifications_viewed_toast_value FROM {user__field_notifications_viewed_toast} WHERE entity_id=:uid', [':uid' => $uid]);
         if (!empty($viewed_toasts)) {

@@ -174,12 +174,12 @@
         "Export config translation": "https://www.drupal.org/files/issues/features_export-config-translation-2869336-2.patch"
       },
       "drupal/core": {
-        "Composer 2: Fatal error Call to undefined method getJobType()": "https://www.drupal.org/files/issues/2020-11-04/drupal-composer2-3162228.patch",
         "Add internal path check to blocks visibility pages evaluation.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/19e54a007837537dd7de97456ab0e1ad0b9d3cf6/block-visibility-pages-paths-evaluate.patch",
         "fix undefined offset on date form element": "https://www.drupal.org/files/issues/2021-04-07/3189302_11.patch",
         "Fix number of items allowed in Media Library": "https://www.drupal.org/files/issues/2019-12-22/3082690-77.patch",
         "Set MenuLinkContent getEntity to public visibility": "https://www.drupal.org/files/issues/2019-12-30/2997790-28.patch",
-        "Fix Untranslated menu items are displayed in menus": "https://www.drupal.org/files/issues/2020-05-14/2466553-75-d91x.patch"
+        "Fix Untranslated menu items are displayed in menus": "https://www.drupal.org/files/issues/2020-05-14/2466553-75-d91x.patch",
+        "Fix submitting a comment always redirects to the default language": "https://www.drupal.org/files/issues/2021-11-29/2751269-106.patch"
       },
       "drupal/rate": {
         "Make rate available for all node display mode.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/19e54a007837537dd7de97456ab0e1ad0b9d3cf6/rate-add-rate-to-all-node-display-mode.patch"
