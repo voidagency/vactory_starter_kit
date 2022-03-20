@@ -6,6 +6,7 @@
  */
 
 use Drupal\Component\Serialization\Json;
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
@@ -358,6 +359,7 @@ function vactory_notifications_views_pre_render(ViewExecutable $view) {
           $notification_viewers[] = $current_user->id();
           $notification_object->setViewers($notification_viewers);
           $notification_object->save();
+          Cache::invalidateTags(['notifications_entity:view']);
         }
       }
       else {
