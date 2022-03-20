@@ -1,7 +1,0 @@
-policy: '0'
-bundles:
-  vactory_page: 0
-dependencies:
-  enforced:
-    module:
-      - vactory_node_owner_override
