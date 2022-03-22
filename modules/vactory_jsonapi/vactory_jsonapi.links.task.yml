@@ -1,0 +1,6 @@
+vactory_jsonapi.translate_import:
+  route_name: vactory_jsonapi.import_translation
+  base_route: locale.translate_page
+  title: Import Frontend
+  weight: 40
+

@@ -1,0 +1,14 @@
+services:
+  vactory_jsonapi.breadcrumb.default:
+    class: Drupal\vactory_jsonapi\MenuBasedBreadcrumbBuilder
+    arguments: ['@string_translation','@plugin.manager.menu.link','@language_manager','@entity_type.manager', '@config.factory', '@cache.discovery', '@lock', '@entity.repository', '@path_processor_manager', '@router.no_access_checks', '@title_resolver', '@current_route_match']
+#    tags:
+#      # The priority must be higher than core taxonomy builder (priority: 1002)
+#      # see https://www.drupal.org/node/1495510
+#      - { name: breadcrumb_builder, priority: 1011 }
+  vactory_jsonapi.breadcrumb.generate:
+    class: Drupal\vactory_jsonapi\Breadcrumb
+    arguments: ['@vactory_jsonapi.breadcrumb.default', '@database', '@router.no_access_checks', '@entity.repository']
+  vactory_jsonapi.blocksManager:
+    class: Drupal\vactory_jsonapi\BlocksManager
+    arguments: ['@plugin.manager.block', '@theme.manager', '@entity_type.manager', '@plugin.manager.condition', '@jsonapi_extras.entity.to_jsonapi']

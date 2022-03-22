@@ -1,0 +1,88 @@
+langcode: fr
+status: true
+dependencies:
+  module:
+    - ultimate_cron
+id: ultimate_cron_job--ultimate_cron_job
+disabled: true
+path: ultimate_cron_job/ultimate_cron_job
+resourceType: ultimate_cron_job--ultimate_cron_job
+resourceFields:
+  uuid:
+    fieldName: uuid
+    publicName: uuid
+    enhancer:
+      id: ''
+    disabled: false
+  langcode:
+    fieldName: langcode
+    publicName: langcode
+    enhancer:
+      id: ''
+    disabled: false
+  status:
+    fieldName: status
+    publicName: status
+    enhancer:
+      id: ''
+    disabled: false
+  dependencies:
+    fieldName: dependencies
+    publicName: dependencies
+    enhancer:
+      id: ''
+    disabled: false
+  third_party_settings:
+    fieldName: third_party_settings
+    publicName: third_party_settings
+    enhancer:
+      id: ''
+    disabled: false
+  title:
+    fieldName: title
+    publicName: title
+    enhancer:
+      id: ''
+    disabled: false
+  id:
+    fieldName: id
+    publicName: id
+    enhancer:
+      id: ''
+    disabled: false
+  weight:
+    fieldName: weight
+    publicName: weight
+    enhancer:
+      id: ''
+    disabled: false
+  module:
+    fieldName: module
+    publicName: module
+    enhancer:
+      id: ''
+    disabled: false
+  callback:
+    fieldName: callback
+    publicName: callback
+    enhancer:
+      id: ''
+    disabled: false
+  scheduler:
+    fieldName: scheduler
+    publicName: scheduler
+    enhancer:
+      id: ''
+    disabled: false
+  launcher:
+    fieldName: launcher
+    publicName: launcher
+    enhancer:
+      id: ''
+    disabled: false
+  logger:
+    fieldName: logger
+    publicName: logger
+    enhancer:
+      id: ''
+    disabled: false

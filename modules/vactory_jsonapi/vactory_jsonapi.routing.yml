@@ -1,0 +1,93 @@
+vactory_jsonapi.image:
+  path: '/app-image/{cached_uri}/{width}/{height}/{fid}/{filename}'
+  defaults:
+    _controller: '\Drupal\vactory_jsonapi\Controller\ImageController::image'
+    _disable_route_normalizer: 'TRUE'
+  requirements:
+    _permission: 'access content'
+
+vactory_jsonapi.create_image_style:
+  path: '/app-image/create-style'
+  defaults:
+    _controller: '\Drupal\vactory_jsonapi\Controller\ImageStyleController::image'
+    _disable_route_normalizer: 'TRUE'
+  requirements:
+    _permission: 'access content'
+
+vactory_jsonapi.translations:
+  path: '/_translations'
+  defaults:
+    _controller: '\Drupal\vactory_jsonapi\Controller\TranslationsController::index'
+    _disable_route_normalizer: 'TRUE'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+
+vactory_jsonapi.blocks:
+  path: '/_blocks'
+  defaults:
+    _controller: '\Drupal\vactory_jsonapi\Controller\BlocksController::index'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+
+vactory_jsonapi.breadcrumb:
+  path: '/_breadcrumb'
+  defaults:
+    _controller: '\Drupal\vactory_jsonapi\Controller\BreadcrumbController::index'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+
+vactory_jsonapi.menus:
+  path: '/_menus'
+  defaults:
+    _controller: '\Drupal\vactory_jsonapi\Controller\MenusController::index'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+
+vactory_jsonapi.search:
+  path: '/_search'
+  defaults:
+    _controller: '\Drupal\vactory_jsonapi\Controller\SearchController::index'
+    _disable_route_normalizer: 'TRUE'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+  options:
+    _is_jsonapi: 1
+
+vactory_jsonapi.import_translation:
+  path: 'admin/config/regional/translate/import_frontend'
+  defaults:
+    _form: 'Drupal\vactory_jsonapi\Form\TranslationImportForm'
+    _title: 'Frontend Translation Import'
+  requirements:
+    _permission: 'translate interface'
+
+vactory_jsonapi.vcc:
+  path: '/_vcc'
+  defaults:
+    _controller: '\Drupal\vactory_jsonapi\Controller\VccController::index'
+    _disable_route_normalizer: 'TRUE'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+  options:
+    _is_jsonapi: 1
+
+vactory_jsonapi.pays.api:
+  path: /api/available-pays
+  defaults:
+    _controller: '\Drupal\vactory_jsonapi\Controller\PaysController::getPays'
+    _disable_route_normalizer: 'TRUE'
+  requirements:
+    _permission: 'access content'
+vactory_jsonapi.social_media.api:
+  path: /api/available-social-media
+  defaults:
+    _controller: '\Drupal\vactory_jsonapi\Controller\SocialMediaController::getSocialMedia'
+    _disable_route_normalizer: 'TRUE'
+  requirements:
+    _permission: 'access content'
