@@ -7,8 +7,6 @@ dependencies:
     - field.field.node.vactory_academy.body
     - field.field.node.vactory_academy.comment
     - field.field.node.vactory_academy.field_academy_duree
-    - field.field.node.vactory_academy.field_contenu_lie
-    - field.field.node.vactory_academy.field_test_image
     - field.field.node.vactory_academy.field_vactory_academy_langue
     - field.field.node.vactory_academy.field_vactory_date
     - field.field.node.vactory_academy.field_vactory_excerpt
@@ -100,8 +98,6 @@ hidden:
   field_content_access_groups: true
   field_content_access_roles: true
   field_content_access_users: true
-  field_contenu_lie: true
-  field_test_image: true
   field_vactory_academy_langue: true
   field_vactory_file: true
   field_vactory_file_multiple: true
