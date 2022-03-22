@@ -51,4 +51,6 @@ services:
       - '@vactory_core.autocomplete_matcher_decorator.inner'
       - '@plugin.manager.entity_reference_selection'
       - '@settings'
+  vactory_core.slug_manager:
+    class: Drupal\vactory_core\SlugManager
 
