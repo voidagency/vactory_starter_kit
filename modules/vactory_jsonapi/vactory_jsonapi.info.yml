@@ -5,32 +5,9 @@ package: Vactory
 core: 8.x
 core_version_requirement: ^8 || ^9
 dependencies:
-  - backup_migrate
-  - captcha
-  - comment
-  - crop
-  - editor
-  - features
-  - field
-  - file_entity
-  - filter
-  - image
+  - decoupled_router
   - jsonapi
   - jsonapi_extras
-  - language
-  - linkit
-  - menu_link_content
-  - metatag
-  - paragraphs
-  - path_alias
-  - pathauto
-#  - search
-  - search_api
-  - shortcut
+  - jsonapi_user_resources
   - simple_oauth
-  - system
-  - taxonomy
-  - ultimate_cron
-  - vactory_core
-  - views
 version: 8.x-1.0
