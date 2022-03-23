@@ -150,7 +150,9 @@
     "drupal/admin_feedback": "^2.2",
     "drupal/views_json_source": "^1.1",
     "drupal/jsonapi_extras": "^3.20",
-    "drupal/simple_oauth": "^4.5"
+    "drupal/simple_oauth": "^5.2",
+    "drupal/decoupled_router": "^2.0",
+    "drupal/jsonapi_user_resources": "1.0.0-alpha4"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.3"
