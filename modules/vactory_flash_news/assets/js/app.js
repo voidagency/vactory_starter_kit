@@ -6,8 +6,8 @@
   };
   function animateFlashNews() {
     setTimeout(function() {
-      items = $('.flash-news-items-wrapper .item');
-      $('.flash-news-items-wrapper .item.prev').removeClass('prev');
+      items = $('.vactory-flash-news__item');
+      $('.vactory-flash-news__item.prev').removeClass('prev');
       for (i = 0; i < items.length; i++) {
         item = $(items[i]);
         if (item.hasClass('active')) {
@@ -25,7 +25,7 @@
         }
       }
       setTimeout(function() {
-        $('.flash-news-items-wrapper .item.prev').removeClass('prev');
+        $('.vactory-flash-news__item.prev').removeClass('prev');
       }, 1000);
       animateFlashNews();
     }, 5000);
