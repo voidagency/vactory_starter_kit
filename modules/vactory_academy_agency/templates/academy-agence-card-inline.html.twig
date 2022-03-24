@@ -64,41 +64,48 @@
  */
 #}
 
-{% set classes = ['vf-card--academy']|merge(['card','w-100', 'mb-4']) %}
-<article {{ attributes.addClass(classes) }}>
-  <div class="card-col position-relative card-body--inline">
-    <div class="card-body">
-      {{ contextual_links }}
-      {{ title_prefix }}
-      <h4 {{ title_attributes }} class="card-title">
-        {% if (content.field_formation_agency_module.0 is defined) %}
-          {{ content.field_formation_agency_module.0['#title'] }} -
-        {% endif %}
-        {{ label }}
-      </h4>
-      {{ title_suffix }}
-      <div class="d-flex flex-sm-row flex-column mt-1 mb-2">
-        <div class="mr-sm-2 mr-0 mb-sm-0 mb-1">
-          {{ 'Agence'|t }} : <strong>{{ agency_name }}</strong>
-        </div>
-        <div>
-          <strong>{{ formation_date.day }}</strong> - <strong>{{ formation_date.hour }}</strong>
-        </div>
-      </div>
+{% set classes = ['card', 'card--inline', 'card--academy','w-100', 'mb-4'] %}
 
-      {{ noWrapper(hideLabel(content.field_vactory_excerpt)) }}
+<article {{ attributes.addClass(classes) }}>
+  <div class="card__body">
+    {{ contextual_links }}
+    {{ title_prefix }}
+    <h3 {{ title_attributes }} class="card__title">
+      {% if (content.field_formation_agency_module.0 is defined) %}
+        {{ content.field_formation_agency_module.0['#title'] }} -
+      {% endif %}
+      {{ label }}
+    </h3>
+    {{ title_suffix }}
+
+    <div class="card__meta">
+      <div class="card__tag">
+        {{ 'Agence'|t }} : <strong>{{ agency_name }}</strong>
+      </div>
+      <div class="card__date">
+        <strong>{{ formation_date.day }}</strong> - <strong>{{ formation_date.hour }}</strong>
+      </div>
+    </div>
+
+
+      <div class="card__description">
+        {{ noWrapper(hideLabel(content.field_vactory_excerpt)) }}
+      </div>
 
       {% if is_disponible %}
         {% if not is_subscribed_to_formation %}
-          <div class="card-read-more mt-2">
-            <a href="{{ url('vactory_academy_agency.inscription', { 'nid': encrypted_nid }) }}" class="permalink-v2">{{ "S'inscrire"|t }}</a>
+          <div class="card__read-more">
+            <a href="{{ url('vactory_academy_agency.inscription', { 'nid': encrypted_nid }) }}" class="permalink">{{ "S'inscrire"|t }}</a>
           </div>
         {% else %}
-          <p class="text-gray font-bold">{{ "Vous êtes inscrit"|t }}</p>
+          <div class="card__read-more">
+            <span class="text-gray font-bold">{{ "Vous êtes inscrit"|t }}</span>
+          </div>
         {% endif %}
       {% else %}
-        <p class="text-red">{{ "Il n'y a plus de places disponibles dans cette formation"|t }}</p>
+        <div class="card__read-more">
+          <span class="text-danger">{{ "Il n'y a plus de places disponibles dans cette formation"|t }}</span>
+        </div>
       {% endif %}
     </div>
-  </div>
 </article>
