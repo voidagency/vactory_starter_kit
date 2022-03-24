@@ -44,11 +44,33 @@
   margin-right: 0.1875rem;
 }
 
-.vf-card--academy .card-read-more a:before {
+.card--academy .flag {
+  position: absolute;
+  top: 10px;
+  top: 0.625rem;
+  right: 0;
+  z-index: 9;
+}
+
+.card--academy .favorite-course {
+  font-size: 0;
+  color: #000;
+}
+
+.card--academy .badge-top {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0 11px;
+  padding: 0 0.6875rem;
+  color: #fff;
+}
+
+.card--academy .card__read-more a:before {
   display: none;
 }
 
-.vf-card--academy.card:hover img {
+.card--academy.card:hover img {
   -webkit-transform: none;
       -ms-transform: none;
           transform: none;
@@ -99,27 +121,6 @@
   -webkit-transform: translate(-50%, -50%);
       -ms-transform: translate(-50%, -50%);
           transform: translate(-50%, -50%);
-}
-
-.card .flag {
-  position: absolute;
-  top: 10px;
-  top: 0.625rem;
-  right: 0;
-  z-index: 9;
-}
-
-.card .favorite-course {
-  font-size: 0;
-  color: #000;
-}
-
-.card .badge-top {
-  position: absolute;
-  top: 0;
-  left: 0;
-  padding: 0 11px;
-  padding: 0 0.6875rem;
 }
 
 @media (min-width: 768px) {

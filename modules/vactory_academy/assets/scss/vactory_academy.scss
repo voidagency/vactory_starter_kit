@@ -21,11 +21,13 @@
     }
   }
 }
+
 .block-about-instructor {
   .avatar {
     max-width: 100px;
   }
 }
+
 .academy-user-menu {
   list-style: none;
   li {
@@ -35,8 +37,25 @@
   }
 }
 
-.vf-card--academy {
-  .card-read-more a:before {
+.card--academy {
+  .flag {
+    position: absolute;
+    top: 10px;
+    right: 0;
+    z-index: 9;
+  }
+  .favorite-course {
+    font-size: 0;
+    color: $black;
+  }
+  .badge-top {
+    position: absolute;
+    top: 0;
+    left: 0;
+    padding: 0 11px;
+    color: $white;
+  }
+  .card__read-more a:before {
     display: none;
   }
   &.card:hover {
@@ -45,6 +64,7 @@
     }
   }
 }
+
 .academy-video {
   img {
     border: 2px solid $white;
@@ -52,6 +72,7 @@
     width: 100%;
   }
 }
+
 .play-videos {
   position: relative;
   display: block;
@@ -80,24 +101,7 @@
     transform: translate(-50%,-50%);
   }
 }
-.card {
-  .flag {
-    position: absolute;
-    top: 10px;
-    right: 0;
-    z-index: 9;
-  }
-  .favorite-course {
-    font-size: 0;
-    color: $black;
-  }
-  .badge-top {
-    position: absolute;
-    top: 0;
-    left: 0;
-    padding: 0 11px;
-  }
-}
+
 
 @include media-breakpoint-up(md) {
   .page--vactory-academy .container .block-detail .container{
