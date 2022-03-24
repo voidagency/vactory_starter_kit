@@ -1,0 +1,76 @@
+langcode: fr
+status: true
+dependencies:
+  module:
+    - features
+id: features_bundle--features_bundle
+disabled: true
+path: features_bundle/features_bundle
+resourceType: features_bundle--features_bundle
+resourceFields:
+  uuid:
+    fieldName: uuid
+    publicName: uuid
+    enhancer:
+      id: ''
+    disabled: false
+  langcode:
+    fieldName: langcode
+    publicName: langcode
+    enhancer:
+      id: ''
+    disabled: false
+  status:
+    fieldName: status
+    publicName: status
+    enhancer:
+      id: ''
+    disabled: false
+  dependencies:
+    fieldName: dependencies
+    publicName: dependencies
+    enhancer:
+      id: ''
+    disabled: false
+  third_party_settings:
+    fieldName: third_party_settings
+    publicName: third_party_settings
+    enhancer:
+      id: ''
+    disabled: false
+  name:
+    fieldName: name
+    publicName: name
+    enhancer:
+      id: ''
+    disabled: false
+  machine_name:
+    fieldName: machine_name
+    publicName: machine_name
+    enhancer:
+      id: ''
+    disabled: false
+  description:
+    fieldName: description
+    publicName: description
+    enhancer:
+      id: ''
+    disabled: false
+  assignments:
+    fieldName: assignments
+    publicName: assignments
+    enhancer:
+      id: ''
+    disabled: false
+  profile_name:
+    fieldName: profile_name
+    publicName: profile_name
+    enhancer:
+      id: ''
+    disabled: false
+  is_profile:
+    fieldName: is_profile
+    publicName: is_profile
+    enhancer:
+      id: ''
+    disabled: false

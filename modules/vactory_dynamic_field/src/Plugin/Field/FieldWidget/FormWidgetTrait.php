@@ -128,6 +128,11 @@ trait FormWidgetTrait {
       $element['#default_value'] = $default_value;
     }
 
+    // Dynamic Views default value.
+    if ($type === 'dynamic_views' && $default_value) {
+      $options['#default_value'] = $default_value;
+    }
+
     $element_defaults = $this->getFormElementDefaults($type, $options);
 
     if ($type == 'image') {
