@@ -105,6 +105,13 @@ function vactory_news_preprocess_views_view(&$variables) {
     $args = $view->args;
     if (count($args) > 1 && isset($args[1]) && is_array($args[1]) ) {
       $meta_data = $args[1];
+      $term = Drupal::entityTypeManager()->getStorage('taxonomy_term')
+        ->load($args[0]);
+      $parents = $term->get('parent')->getValue();
+      $parents = array_filter($parents, function ($parent) {
+        return $parent['target_id'] !== '0' && $parent['target_id'] !== 0;
+      });
+      $has_parent = !empty($parents);
       if (isset($meta_data['override_more_link']) && $meta_data['override_more_link']) {
         $use_more = $view->display_handler->options['use_more'];
         $link_display = $view->display_handler->options['link_display'];
@@ -113,17 +120,28 @@ function vactory_news_preprocess_views_view(&$variables) {
           if (isset($handlers_configurations[$link_display])) {
             $filters = $handlers_configurations[$link_display]['display_options']['filters'];
             if (!empty($filters)) {
-              $filters_ids = array_map(function ($filter) {
-                return isset($filter['expose']['identifier']) ? $filter['expose']['identifier'] : $filter['id'];
-              }, $filters);
-              $field_name = $meta_data['field_name'];
-              $matches = preg_grep('#(.)*' . $field_name . '(.)*#', array_flip($filters_ids));
-              if (!empty($matches)) {
-                $filter_name = array_keys($matches)[0];
-                if (isset($variables['more']['#url'])) {
-                  $listing_route = 'view.' . $view->id() . '.' . $link_display;
-                  $variables['more']['#url'] = Url::fromRoute($listing_route, [$filter_name => $args[0]]);
+              $filter_name = '';
+              // Check in view filter if we have taxonomy tid depth filter.
+              $taxonomy_tid_depth_filter = array_filter($filters, function ($filter) {
+                return $filter['plugin_id'] === 'taxonomy_index_tid_depth';
+              });
+              // In case of parent term and view taxonomy tid depth filter exist.
+              if (!$has_parent && !empty($taxonomy_tid_depth_filter)) {
+                $filter_name = reset($taxonomy_tid_depth_filter)['id'];
+              }
+              if (empty($filter_name)) {
+                $filters_ids = array_map(function ($filter) {
+                  return isset($filter['expose']['identifier']) ? $filter['expose']['identifier'] : $filter['id'];
+                }, $filters);
+                $field_name = $meta_data['field_name'];
+                $matches = preg_grep('#(.)*' . $field_name . '(.)*#', array_flip($filters_ids));
+                if (!empty($matches)) {
+                  $filter_name = array_keys($matches)[0];
                 }
+              }
+              if (isset($variables['more']['#url']) && !empty($filter_name)) {
+                $listing_route = 'view.' . $view->id() . '.' . $link_display;
+                $variables['more']['#url'] = Url::fromRoute($listing_route, [$filter_name => $args[0]]);
               }
             }
           }

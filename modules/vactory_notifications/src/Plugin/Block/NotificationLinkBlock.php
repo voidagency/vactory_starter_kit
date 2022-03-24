@@ -59,4 +59,12 @@ class NotificationLinkBlock extends BlockBase {
       return [];
     }
   }
+
+  /**
+   * {@inheritDoc}
+   */
+  public function getCacheTags() {
+    return ['notifications_entity:view'];
+  }
+
 }

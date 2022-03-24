@@ -61,6 +61,13 @@ class NotificationsToastsBlock extends BlockBase implements ContainerFactoryPlug
       '#content' => [
         'enable_toast' => $this->notificationsConfig->get('enable_toast'),
       ],
+      '#attached' => [
+        'drupalSettings' => [
+          'vactory_notifications' => [
+            'langcode' => \Drupal::languageManager()->getCurrentLanguage()->getId(),
+          ],
+        ],
+      ],
     ];
   }
 

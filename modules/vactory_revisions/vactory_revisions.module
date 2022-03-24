@@ -1,0 +1,139 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Vactory Revisions module.
+ *
+ * @DCG
+ * This file is no longer required in Drupal 8.
+ * @see https://www.drupal.org/node/2217931
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
+use Drupal\user\Entity\User;
+
+
+/**
+ * Implements hook_entity_presave().
+ */
+function vactory_revisions_entity_presave(EntityInterface $entity) {
+  Drupal::service('vactory_revisions.manager')->vactoryCreateRevisions($entity, 'update');
+}
+
+/**
+ * Implements hook_entity_insert().
+ */
+function vactory_revisions_entity_insert(EntityInterface $entity) {
+  Drupal::service('vactory_revisions.manager')->vactoryCreateRevisions($entity, 'create');
+}
+
+/**
+ * Implements hook_entity_delete().
+ */
+function vactory_revisions_entity_delete(EntityInterface $entity) {
+  Drupal::service('vactory_revisions.manager')->vactoryCreateRevisions($entity, 'delete');
+}
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function vactory_revisions_entity_base_field_info(EntityTypeInterface $entity_type) {
+  $excluded_entities = [
+    'vactory_revision',
+    'notifications_entity',
+  ];
+  if (in_array($entity_type->id(),$excluded_entities)) {
+    return [];
+  }
+
+  $fields['last_contributor'] = BaseFieldDefinition::create('entity_reference')
+    ->setLabel(t('Last contributor'))
+    ->setDescription(t('Last user who edited current entity'))
+    ->setSetting('target_type', 'user')
+    ->setDisplayConfigurable('form', TRUE)
+    ->setDisplayConfigurable('view', FALSE)
+    ->setDisplayOptions('form', [
+      'type' => 'entity_reference_autocomplete',
+      'settings' => [
+        'match_operator' => 'CONTAINS',
+        'size' => 60,
+        'placeholder' => '',
+        'match_limit' => 10,
+      ],
+      'weight' => 0,
+    ]);
+
+  return $fields;
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_revisions_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $route_name = Drupal::routeMatch()->getRouteName();
+  $node_forms = [
+    'entity.node.edit_form',
+    'node.add',
+  ];
+  if (in_array($route_name, $node_forms)) {
+    $form['last_contributor']['#group'] = 'author';
+  }
+  if ($form_id === 'views_exposed_form' && $route_name === 'view.vactory_revisions.admin_listing') {
+    // Use jquery datepicker for date field.
+    $form['op_time_wrapper']['op_time']['min']['#type'] = 'date';
+    $form['op_time_wrapper']['op_time']['max']['#type'] = 'date';
+    unset($form['op_time_wrapper']['op_time']['min']['#pre_render']);
+    unset($form['op_time_wrapper']['op_time']['max']['#pre_render']);
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_revisions_preprocess_page(&$variables) {
+  $entity_definition_manager = Drupal::entityDefinitionUpdateManager();
+  $field_definition = BaseFieldDefinition::create('entity_reference')
+    ->setLabel(t('Last contributor'))
+    ->setDescription(t('Last user who edited current entity'))
+    ->setSetting('target_type', 'user')
+    ->setDisplayConfigurable('form', TRUE)
+    ->setDisplayConfigurable('view', FALSE)
+    ->setDisplayOptions('form', [
+      'type' => 'entity_reference_autocomplete',
+      'settings' => [
+        'match_operator' => 'CONTAINS',
+        'size' => 60,
+        'placeholder' => '',
+        'match_limit' => 10,
+      ],
+      'weight' => 0,
+    ]);
+  $entity_types = \Drupal::entityTypeManager()->getDefinitions();
+  $entity_type_ids = array_keys($entity_types);
+  unset($entity_type_ids['vactory_revision'], $entity_type_ids['notifications_entity']);
+  foreach ($entity_type_ids as $entity_type_id) {
+    $entity_definition_manager->installFieldStorageDefinition('last_contributor', $entity_type_id, 'vactory_revisions', $field_definition);
+  }
+}
+
+/**
+ * Implements hook_field_widget_form_alter().
+ */
+function vactory_revisions_field_widget_form_alter(&$element, FormStateInterface $form_state, $context) {
+  if ($context['items']->getName() === 'last_contributor') {
+    $uid = $context['items']->target_id;
+    $element = [];
+    if (!empty($uid)) {
+      $user = User::load($uid);
+      $username = $user->getAccountName();
+      $url = Url::fromRoute('entity.user.canonical', ['user' => $uid])->toString();
+      $element = [
+        '#markup' => '<strong>' . t('Last contributor') . '</strong>: <a href="' . $url . '" target="_blank">' . $username .'</a>',
+      ];
+    }
+  }
+}

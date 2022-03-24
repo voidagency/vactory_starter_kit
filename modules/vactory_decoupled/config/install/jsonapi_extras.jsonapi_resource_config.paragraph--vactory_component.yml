@@ -1,0 +1,154 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - paragraphs.paragraphs_type.vactory_component
+id: paragraph--vactory_component
+disabled: false
+path: paragraph/vactory_component
+resourceType: paragraph--vactory_component
+resourceFields:
+  id:
+    fieldName: id
+    publicName: id
+    enhancer:
+      id: ''
+    disabled: false
+  uuid:
+    fieldName: uuid
+    publicName: uuid
+    enhancer:
+      id: ''
+    disabled: false
+  revision_id:
+    fieldName: revision_id
+    publicName: revision_id
+    enhancer:
+      id: ''
+    disabled: false
+  langcode:
+    fieldName: langcode
+    publicName: langcode
+    enhancer:
+      id: ''
+    disabled: false
+  type:
+    fieldName: type
+    publicName: type
+    enhancer:
+      id: ''
+    disabled: false
+  status:
+    fieldName: status
+    publicName: status
+    enhancer:
+      id: ''
+    disabled: false
+  created:
+    fieldName: created
+    publicName: created
+    enhancer:
+      id: ''
+    disabled: false
+  parent_id:
+    fieldName: parent_id
+    publicName: parent_id
+    enhancer:
+      id: ''
+    disabled: false
+  parent_type:
+    fieldName: parent_type
+    publicName: parent_type
+    enhancer:
+      id: ''
+    disabled: false
+  parent_field_name:
+    fieldName: parent_field_name
+    publicName: parent_field_name
+    enhancer:
+      id: ''
+    disabled: false
+  behavior_settings:
+    fieldName: behavior_settings
+    publicName: behavior_settings
+    enhancer:
+      id: ''
+    disabled: false
+  default_langcode:
+    fieldName: default_langcode
+    publicName: default_langcode
+    enhancer:
+      id: ''
+    disabled: false
+  revision_default:
+    fieldName: revision_default
+    publicName: revision_default
+    enhancer:
+      id: ''
+    disabled: false
+  revision_translation_affected:
+    fieldName: revision_translation_affected
+    publicName: revision_translation_affected
+    enhancer:
+      id: ''
+    disabled: false
+  paragraph_identifier:
+    fieldName: paragraph_identifier
+    publicName: paragraph_identifier
+    enhancer:
+      id: ''
+    disabled: false
+  paragraph_container:
+    fieldName: paragraph_container
+    publicName: paragraph_container
+    enhancer:
+      id: ''
+    disabled: false
+  paragraph_css_class:
+    fieldName: paragraph_css_class
+    publicName: paragraph_css_class
+    enhancer:
+      id: ''
+    disabled: false
+  paragraph_background_image:
+    fieldName: paragraph_background_image
+    publicName: paragraph_background_image
+    enhancer:
+      id: ''
+    disabled: false
+  paragraph_background_color:
+    fieldName: paragraph_background_color
+    publicName: paragraph_background_color
+    enhancer:
+      id: ''
+    disabled: false
+  content_translation_source:
+    fieldName: content_translation_source
+    publicName: content_translation_source
+    enhancer:
+      id: ''
+    disabled: false
+  content_translation_outdated:
+    fieldName: content_translation_outdated
+    publicName: content_translation_outdated
+    enhancer:
+      id: ''
+    disabled: false
+  content_translation_changed:
+    fieldName: content_translation_changed
+    publicName: content_translation_changed
+    enhancer:
+      id: ''
+    disabled: false
+  field_vactory_component:
+    fieldName: field_vactory_component
+    publicName: field_vactory_component
+    enhancer:
+      id: vactory_dynamic_field
+    disabled: false
+  field_vactory_title:
+    fieldName: field_vactory_title
+    publicName: field_vactory_title
+    enhancer:
+      id: ''
+    disabled: false

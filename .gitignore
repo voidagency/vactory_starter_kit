@@ -16,6 +16,7 @@
 /.sass-cache
 .DS_Store
 *.DS_Store
+*/.DS_Store
 /extensions/compass_factory
 *.codekit
 bower_components

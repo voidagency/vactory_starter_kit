@@ -1,0 +1,4 @@
+vactory_wysiwyg_301to200.admin_listing:
+  route_name: view.wysiwyg_301to200.admin_listing
+  base_route: system.admin_content
+  title: Redirections 301

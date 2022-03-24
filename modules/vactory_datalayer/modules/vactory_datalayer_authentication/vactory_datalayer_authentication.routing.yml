@@ -1,0 +1,7 @@
+vactory_datalayer_authentication.config:
+  path: '/admin/config/datalayer_auth'
+  defaults:
+    _form: 'Drupal\vactory_datalayer_authentication\Form\VactoryDatalayerAuthenticationConfig'
+    _title: 'Vactory Datalayer Authentication Config'
+  requirements:
+    _permission: 'administer site configuration'

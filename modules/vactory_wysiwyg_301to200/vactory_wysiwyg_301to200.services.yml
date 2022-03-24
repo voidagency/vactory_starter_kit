@@ -1,0 +1,3 @@
+services:
+  vactory_wysiwyg_301to200.logger:
+    class: \Drupal\vactory_wysiwyg_301to200\Services\VactoryWysiwyg301to200Logger

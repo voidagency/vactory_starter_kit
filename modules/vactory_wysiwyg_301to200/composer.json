@@ -1,0 +1,11 @@
+{
+    "name": "voidagency/vactory_wysiwyg_301to200",
+    "type": "drupal-drush",
+    "extra": {
+        "drush": {
+            "services": {
+                "drush.services.yml": "^10"
+            }
+        }
+    }
+}

@@ -1,3 +1,7 @@
 services:
   vactory_sondage.manager:
     class: Drupal\vactory_sondage\Services\SondageManager
+  vactory_points.sondage_vote_subscriber:
+    class: Drupal\vactory_sondage\EventSubscriber\SondageVoteEventsSubscriber
+    tags:
+      - { name: event_subscriber }

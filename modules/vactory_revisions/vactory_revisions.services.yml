@@ -1,0 +1,5 @@
+services:
+  vactory_revisions.manager:
+    class: Drupal\vactory_revisions\Services\VactoryRevisionsService
+    arguments:
+      - '@entity_type.manager'

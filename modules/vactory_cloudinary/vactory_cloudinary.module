@@ -1,0 +1,153 @@
+<?php
+
+/**
+ * @file
+ * Module related hooks.
+ */
+
+use Drupal\Component\Serialization\Json;
+use Drupal\Core\File\FileSystem;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\file_entity\FileEntityInterface;
+use Symfony\Component\Console\Output\ConsoleOutput;
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_cloudinary_form_alter(&$form, FormStateInterface &$form_state, $form_id) {
+  // Allow changing file fields stream wrapper settings.
+  if ($form_id === 'field_storage_config_edit_form') {
+    $form['settings']['uri_scheme']['#disabled'] = FALSE;
+  }
+}
+
+function vactory_cloudinary_batch_process($fid, $operation_message, $source, &$context) {
+  $entity_type_manager = Drupal::entityTypeManager();
+  if ($fid && is_numeric($fid)) {
+    $file = $entity_type_manager->getStorage('file')
+      ->load($fid);
+    if ($file) {
+      $statistics = [];
+      vactory_cloudinary_move_file($file, $source, $statistics);
+    }
+  }
+}
+
+function vactory_cloudinary_move_file(FileEntityInterface $file, $source, &$statistics = [], $console_output = NULL) {
+  if ($file) {
+    if (empty($statistics)) {
+      $statistics['public_files_count'] = 0;
+      $statistics['moved_files_count'] = 0;
+      $statistics['remained_files_count'] = 0;
+    }
+    $public_files_count = $statistics['public_files_count'];
+    $moved_files_count = $statistics['moved_files_count'];
+    $remained_files_count = $statistics['remained_files_count'];
+
+    $uri = $file->getFileUri();
+    $source_schema = $source === 'cloudinary' ? 'cloudinary://' : 'public://';
+    $destination_schema = $source === 'cloudinary' ? 'public://' : 'cloudinary://';
+    if (strpos($uri, $source_schema) === 0 && $file->bundle() !== 'document') {
+      $public_files_count++;
+      $file_system = \Drupal::service('file_system');
+      $stream_wrapper_manager = \Drupal::service('stream_wrapper_manager');
+      $path = str_replace($source_schema, '', $uri);
+      $path_pieces = explode('/', $path);
+      $path_pieces = array_map(function ($piece) {
+        return \Drupal::service('transliteration')->transliterate($piece);
+      }, $path_pieces);
+      $path = implode('/', $path_pieces);
+      $path = str_replace(' ', '-', strtolower($path));
+      $destination = $stream_wrapper_manager->normalizeUri($destination_schema . $path);
+      $vactory_cloudinary_manager = Drupal::service('vactory_cloudinary.manager');
+      $source_file_exist = $source !== 'cloudinary' ? file_exists($uri) : FALSE;
+      if ($source === 'cloudinary') {
+        $resource = $vactory_cloudinary_manager->getCloudinaryRessource($uri);
+        $source_file_exist = isset($resource['secure_url']) && file_get_contents($resource['secure_url']);
+      }
+      if ($uri !== $destination && $source_file_exist) {
+        $is_moved = $source === 'cloudinary' ? $vactory_cloudinary_manager->moveFromCloudinary($file, $destination, $path, $resource['secure_url']) : move_file_to_cloudinary($file, $destination, $path, $file_system, $vactory_cloudinary_manager);
+        $to = $source === 'cloudinary' ? 'Drupal file system' : 'cloudinary';
+        if ($is_moved) {
+          $moved_files_count++;
+          if ($console_output) {
+            $console_output->writeln('<info>Processed:</info>' . $path . ' [File id: ' . $file->id() . '] has been moved to ' . $to);
+          }
+        }
+        else {
+          $remained_files_count++;
+          if ($console_output) {
+            $console_output->writeln('<comment>SKIPED:</comment>' . $path . ' [File id: ' . $file->id() . '] Could not move file to ' . $to);
+          }
+        }
+      }
+    }
+    else {
+      if ($console_output) {
+        if ($file->bundle() === 'document') {
+          $console_output->writeln('<comment>SKIPED: Document files are not concerned (file uri: ' . $uri . ')</comment>');
+        }
+        else {
+          $schema = $source === 'cloudinary' ? 'cloudinary' : 'public';
+          $console_output->writeln('<comment>SKIPED: The file is not a ' . $schema . ' file (file uri: ' . $uri . ')</comment>');
+        }
+      }
+    }
+    $statistics['public_files_count'] = $public_files_count;
+    $statistics['moved_files_count'] = $moved_files_count;
+    $statistics['remained_files_count'] = $remained_files_count;
+  }
+  else {
+    if ($console_output) {
+      $console_output->writeln('<comment>SKIPED: No file with ID has been founded</comment>');
+    }
+  }
+}
+
+/**
+ * Implements batch finished callback.
+ */
+function vactory_cloudinary_move_file_finished($success, $results, $operations) {
+  $console_output = new ConsoleOutput();
+  if ($success) {
+    $console_output->writeln('<info>Moving public files batch operations end.</info>');
+  }
+  else {
+    $console_output->writeln('<error>Finished with an error.</error>');
+  }
+}
+
+/**
+ * Create folder function.
+ */
+function move_file_to_cloudinary(FileEntityInterface $file, $destination, $path, FileSystem $file_system, $vactory_cloudinary_manager) {
+  $dirname = $file_system->dirname($path);
+  if (!file_move($file, $destination, 1)) {
+    if (!empty($dirname) && $dirname !== '.') {
+      $settings = \Drupal::config('cloudinary_sdk.settings');
+      $cloud_name = $settings->get('cloudinary_sdk_cloud_name');
+      $api_key = $settings->get('cloudinary_sdk_api_key');
+      $api_secret = $settings->get('cloudinary_sdk_api_secret');
+      $http_client = Drupal::httpClient();
+      // Create folder on cloudinary.
+      $response = $http_client->post('https://' . $api_key . ':' . $api_secret . '@api.cloudinary.com/v1_1/' . $cloud_name . '/folders/' . $dirname)
+        ->getBody()
+        ->getContents();
+      if (!empty($response)) {
+        $response = Json::decode($response);
+        if (isset($response['success']) && $response['success']) {
+          // Try file move again after cloudinary folder creation.
+          $uri = $vactory_cloudinary_manager->moveFileWithoutUnlink($file->getFileUri(), $destination);
+          $old_uri = $file->getFileUri();
+          if ($vactory_cloudinary_manager->updateFileEntity($file, $uri, $destination)) {
+            // File has been moved successfully so delete it from Drupal system.
+            unlink($old_uri);
+            return TRUE;
+          }
+        }
+      }
+    }
+    return FALSE;
+  }
+  return TRUE;
+}

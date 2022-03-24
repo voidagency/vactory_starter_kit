@@ -1,0 +1,4 @@
+administer field node settings:
+  title: 'Administer node settings'
+  description: 'Administer the node settings params.'
+  restrict access: TRUE

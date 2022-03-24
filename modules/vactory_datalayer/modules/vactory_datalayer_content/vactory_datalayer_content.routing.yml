@@ -1,0 +1,7 @@
+vactory_datalayer_content.config:
+  path: '/admin/config/datalayer_content'
+  defaults:
+    _form: 'Drupal\vactory_datalayer_content\Form\VactoryDatalayerContentConfig'
+    _title: 'Vactory Datalayer Content Config'
+  requirements:
+    _permission: 'administer site configuration'
