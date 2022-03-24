@@ -19,7 +19,6 @@ fullcalendar:
     /libraries/fullcalendar/packages/daygrid/main.min.js: {}
     /libraries/fullcalendar/packages/interaction/main.min.js: {}
     /libraries/fullcalendar/packages/timegrid/main.min.js: {}
-    ./assets/js/adviser-holiday.js: {}
   dependencies:
     - core/drupal
     - core/drupalSettings

@@ -111,7 +111,7 @@
             durationEditable: false,
           });
         }
-        $.getScript( "../../../../libraries/fullcalendar/packages/core/locales-all.js", function(data) {
+        $.getScript( "../../../../../../../libraries/fullcalendar/packages/core/locales-all.js", function(data) {
           allLocales = data;
         });
         app.options = {

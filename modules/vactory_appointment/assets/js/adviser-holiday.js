@@ -27,7 +27,7 @@
       app.getNewEvent = function (appointmentID, dateStart) {};
       app.dateClickCallback = function (dateStart) {};
       app.eventRenderCallback = function (event, element) {};
-      $.getScript( "../../../../libraries/fullcalendar/packages/core/locales-all.js", function(data) {
+      $.getScript( "../../../../../../../libraries/fullcalendar/packages/core/locales-all.js", function(data) {
         allLocales = data;
       });
       app.options = {
