@@ -1,9 +1,9 @@
-vactory_banner_style:
+vactory_banner_css:
   css:
     theme:
       ./assets/css/vactory_banner.css: {}
 
-vactory_banner_style_rtl:
+vactory_banner_css_rtl:
   css:
     theme:
       ./assets/css/vactory_banner-rtl.css: {}
