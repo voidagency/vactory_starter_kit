@@ -16,6 +16,27 @@ use Drupal\node\Entity\Node;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ */
+function vactory_decoupled_form_node_form_alter(&$form, FormStateInterface $form_state)
+{
+  // Node Settings.
+  if (isset($form['node_settings'])) {
+    $form['node_settings_group'] = [
+      '#type'        => 'details',
+      '#title'       => t('Node settings'),
+      '#group'       => 'advanced',
+      '#open'        => FALSE,
+      '#access'      => \Drupal::currentUser()
+        ->hasPermission('administer field node settings'),
+      '#attributes'  => ['class' => ['node-settings-form']],
+    ];
+    $form['node_settings']['#group'] = 'node_settings_group';
+  }
+}
+
+
+/**
  * Implements hook_form_alter().
  */
 function vactory_decoupled_form_alter(&$form, FormStateInterface $form_state, $form_id)
@@ -180,6 +201,25 @@ function vactory_decoupled_entity_base_field_info(EntityTypeInterface $entity_ty
       ->setComputed(TRUE)
       ->setReadOnly(TRUE)
       ->setTargetEntityTypeId($entity_type->id())
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE);
+  }
+
+  if ($entity_type->id() === 'node') {
+    $fields['node_settings'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Node Settings'))
+      ->setDescription(t('Add extra parameters in JSON Format : { "isHomePage": true, "taxonomy": 4, "limit": 6 }'))
+      ->setRevisionable(TRUE)
+      ->setTranslatable(TRUE)
+      ->setDefaultValue('')
+      ->setRequired(FALSE)
+      ->setDisplayOptions('form', [
+        'type'     => 'string_textarea',
+        'weight'   => 1,
+        'settings' => [
+          'rows' => 4,
+        ],
+      ])
       ->setDisplayConfigurable('form', FALSE)
       ->setDisplayConfigurable('view', FALSE);
   }

@@ -4,3 +4,30 @@
  * @file
  * Install, update and uninstall functions for vactory_decoupled.
  */
+
+use Drupal\Core\Field\BaseFieldDefinition;
+
+/**
+ * Add node_settings field.
+ */
+function vactory_decoupled_update_9001() {
+  $storage_definition = BaseFieldDefinition::create('string_long')
+    ->setLabel(t('Node Settings'))
+    ->setDescription(t('Add extra parameters in JSON Format : { "isHomePage": true, "taxonomy": 4, "limit": 6 }'))
+    ->setRevisionable(TRUE)
+    ->setTranslatable(TRUE)
+    ->setDefaultValue('')
+    ->setRequired(TRUE)
+    ->setDisplayOptions('form', [
+      'type'     => 'string_textarea',
+      'weight'   => 1,
+      'settings' => [
+        'rows' => 4,
+      ],
+    ])
+    ->setDisplayConfigurable('form', FALSE)
+    ->setDisplayConfigurable('view', FALSE);
+
+  \Drupal::entityDefinitionUpdateManager()
+    ->installFieldStorageDefinition('node_settings', 'node', 'node', $storage_definition);
+}
