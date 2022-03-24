@@ -73,33 +73,37 @@
     not node.isPublished() ? bundle ~ '--unpublished',
     view_mode ? bundle ~ '--' ~ view_mode|clean_class,
     'card',
+    'card--member'
 ] %}
-<article class="vf-card__member d-flex flex-column">
 
-  <header class="vf-card__header">
-    {{ addAttributes(content.field_vactory_media, {'class': ['card-img-top']}) }}
-    {#{ content.field_gov_social_media }#}
-  </header>
+{% set show_bio = (content.field_show_link_to_bio.0 is defined) ? content.field_show_link_to_bio.0['#markup'] : 0 %}
 
-  <section class="vf-card__body d-flex flex-column">
-    <div class='cart-title'>
-      {{ title_prefix }}
-      <h4 class="card-title h4 mb-1">{{ label }}</h4>
-      {{ title_suffix }}
-    </div>
+<article{{ attributes.addClass(classes) }}>
+
+  <div class="card__image">
+    {{ addAttributes(noWrapper(content.field_vactory_media), {'class': ['img-fluid']}) }}
+  </div>
+
+  <div class="card__body">
+    {{ contextual_links }}
+    {{ title_prefix }}
+    <h3 class="card__title">{{ label }}</h3>
+    {{ title_suffix }}
+
     {% if not page %}
-      <div class="vf-card__subtitle mb-2">
-        {{ content.field_vactory_name }}
+      <div class="card__meta">
+        <span class="card__tag">{{ noWrapper(content.field_vactory_name) }}</span>
       </div>
     {% endif %}
-    <div class="card-governance-social-media">
+
+    <div class="card__social-media">
       {{ content.field_gov_social_media }}
     </div>
-    {% set show_bio = (content.field_show_link_to_bio.0 is defined) ? content.field_show_link_to_bio.0['#markup'] : 0 %}
+
     {% if show_bio > 0 %}
-      <div class='mt-auto'>
-        <a class="btn btn-outline-primary mt-2" href="{{ url }}">{{ 'Découvrir la bio'|t }}</a>
+      <div class='card__read-more'>
+        <a class="btn btn-outline-primary" href="{{ url }}">{{ 'Découvrir la bio'|t }}</a>
       </div>
     {% endif %}
-  </section>
+  </div>
 </article>

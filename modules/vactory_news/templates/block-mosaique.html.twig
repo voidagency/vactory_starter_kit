@@ -77,13 +77,13 @@
 
 {% include "@twigComponents/article/article-inline.twig" with {
 'classes': [
-    'vf-card--news',
-    'vf-card--mosaique',
+    'card--news',
+    'card--mosaique',
     is_pair ? 'flex-row-reverse' : ''
 ],
 'title': label,
 'url': url,
-'image': addAttributes(content.field_vactory_media, {'class': ['vf-card__image', 'img-fluid']}),
+'image': addAttributes(noWrapper(content.field_vactory_media), {'class': ['img-fluid']}),
 'subtitle': content.field_vactory_news_theme.0,
 'intro': content.field_vactory_excerpt,
 'read_more': 'Read more'|t
