@@ -16,3 +16,8 @@ services:
   vactory_decoupled.url_resolver:
     class: Drupal\vactory_decoupled\UrlResolver
     arguments: ['@config.factory']
+
+  vactory_decoupled.route_subscriber:
+    class: Drupal\vactory_decoupled\Routing\RouteSubscriber
+    tags:
+      - { name: event_subscriber }

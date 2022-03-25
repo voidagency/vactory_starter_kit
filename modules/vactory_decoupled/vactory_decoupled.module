@@ -13,6 +13,7 @@ use Drupal\Core\Url;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\node\Entity\Node;
+use Drupal\user\UserInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Drupal\simple_oauth\Entities\AccessTokenEntity;
 use Drupal\user\Entity\User;
@@ -251,13 +252,15 @@ function vactory_decoupled_entity_type_alter(array &$entity_types) {
 }
 
 /**
- * Implements hook_simple_oauth_private_claims_alter().
+ * Oauth extra user informations.
+ *
+ * @param \Drupal\user\UserInterface $user
+ *
+ * @return array
+ * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+ * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
  */
-function vactory_decoupled_simple_oauth_private_claims_alter(&$private_claims, AccessTokenEntity $access_token_entity) {
-  $user_id = $access_token_entity->getUserIdentifier();
-  /** @var \Drupal\user\UserInterface $user */
-  $user = User::load($user_id);
-
+function get_oauth_user_infos(UserInterface $user) {
   $full_name = $user->getDisplayName();
   $first_name = $user->get('field_first_name')->getString();
   $last_name = $user->get('field_last_name')->getString();
@@ -273,18 +276,36 @@ function vactory_decoupled_simple_oauth_private_claims_alter(&$private_claims, A
     $avatar = $style->buildUrl($pictureUri);
   }
 
+  return [
+    'id' => $user->id(),
+    'uuid' => $user->uuid(),
+    'email' => $user->getEmail(),
+    'username' => $user->getAccountName(),
+    'avatar' => $avatar,
+    'first_name' => $first_name,
+    'last_name' => $last_name,
+    'full_name' => $full_name,
+    'name_initial' => _auth_generate_intials_from_name($full_name),
+    'roles' => $user->getRoles()
+  ];
+}
+
+/**
+ * Implements hook_simple_oauth_private_claims_alter().
+ */
+function vactory_decoupled_simple_oauth_private_claims_alter(&$private_claims, AccessTokenEntity $access_token_entity) {
+  $user_id = $access_token_entity->getUserIdentifier();
+  /** @var \Drupal\user\UserInterface $user */
+  $user = User::load($user_id);
+  $profile = [];
+  try {
+    $profile = get_oauth_user_infos($user);
+  } catch (\Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException $e) {
+  } catch (\Drupal\Component\Plugin\Exception\PluginNotFoundException $e) {
+  }
+
   $private_claims = [
-    "profile" => [
-      'id' => $user->id(),
-      'uuid' => $user->uuid(),
-      'email' => $user->getEmail(),
-      'username' => $user->getAccountName(),
-      'avatar' => $avatar,
-      'first_name' => $first_name,
-      'last_name' => $last_name,
-      'full_name' => $full_name,
-      'name_initial' => _auth_generate_intials_from_name($full_name),
-    ],
+    "profile" => $profile,
   ];
 }
 
