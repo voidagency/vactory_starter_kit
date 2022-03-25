@@ -5,9 +5,10 @@
  * Contain related hooks.
  */
 
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\NodeTypeInterface;
-use Drupal\vactory_core\Vactory;
 
 /**
  * Implements hook_theme().
@@ -158,4 +159,24 @@ function vactory_cross_content_form_node_type_form_builder($entity_type, NodeTyp
   $type->setThirdPartySetting('vactory_cross_content', 'more_link', $form_state->getValue('more_link'));
   $type->setThirdPartySetting('vactory_cross_content', 'more_link_label', $form_state->getValue('more_link_label'));
   $type->setThirdPartySetting('vactory_cross_content', 'content_type', $form_state->getValue('content_type'));
+}
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function vactory_cross_content_entity_base_field_info(EntityTypeInterface $entity_type) {
+  $fields = [];
+  if ($entity_type->id() === 'node') {
+    $fields['vcc_normalized'] = BaseFieldDefinition::create('map')
+      ->setLabel(t('VCC Normalized'))
+      ->setDescription(t('List of nids for json api.'))
+      ->setTranslatable(FALSE)
+      ->setClass('Drupal\vactory_cross_content\Field\InternalVCCFieldItemList')
+      ->setComputed(TRUE)
+      ->setReadOnly(TRUE)
+      ->setTargetEntityTypeId($entity_type->id())
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE);
+  }
+  return $fields;
 }

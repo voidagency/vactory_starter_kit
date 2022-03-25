@@ -248,8 +248,10 @@ class BlocksManager
       if (is_array($contentBlock)) {
         $contentBlock = reset($contentBlock);
         try {
-          $contentBlock = $this->entityToJsonApi
-            ->normalize($contentBlock)['data']['attributes']['field_dynamic_block_components'];
+          $normalizedBlock = $this->entityToJsonApi->normalize($contentBlock);
+          if (isset($normalizedBlock['data']['attributes']['field_dynamic_block_components'])) {
+            $contentBlock = $normalizedBlock['data']['attributes']['field_dynamic_block_components'];
+          }
         } catch (\Exception $e) {
           \Drupal::logger('vactory_decoupled')->error('Block @block_id not found', ['@block_id' => $uuid]);
         }
