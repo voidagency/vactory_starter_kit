@@ -47,11 +47,12 @@ class ApiKeyAccessCheck implements AccessInterface {
    *   The access result.
    */
   public function access() {
-    if (!$this->getKey($this->request)) {
+    $key = $this->getKey($this->request);
+    if (!$key) {
       return AccessResult::forbidden();
     }
 
-    if (!$this->authenticate($this->request)) {
+    if (!$this->authenticate($key)) {
       return AccessResult::forbidden();
     }
 
@@ -61,27 +62,13 @@ class ApiKeyAccessCheck implements AccessInterface {
   /**
    * {@inheritdoc}
    */
-  protected function authenticate(Request $request) {
+  protected function authenticate($key) {
     // Load config entity.
     $api_key_entities = \Drupal::entityTypeManager()
       ->getStorage('api_key')
-      ->loadMultiple();
+      ->loadByProperties(['key' => $key]);
 
-    // @todo: use entityTypeManager for a direct lookup for the key
-    // no loop
-    foreach ($api_key_entities as $key_item) {
-      if ($this->getKey($request) == $key_item->key) {
-        $accounts = $this->entityTypeManager->getStorage('user')->loadByProperties(['uuid' => $key_item->user_uuid]);
-        $account = reset($accounts);
-
-        if (isset($account)) {
-          return TRUE;
-        }
-        break;
-      }
-    }
-
-    return FALSE;
+    return reset($api_key_entities);
   }
 
   /**
