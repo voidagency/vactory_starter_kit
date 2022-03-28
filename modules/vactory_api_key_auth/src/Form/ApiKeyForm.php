@@ -4,6 +4,7 @@ namespace Drupal\vactory_api_key_auth\Form;
 
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\user\Entity\User;
 
 /**
  * Class ApiKeyForm.
@@ -40,11 +41,13 @@ class ApiKeyForm extends EntityForm {
     ];
 
     $form['user_uuid'] = [
-      '#type' => 'select',
-      '#multiple' => FALSE,
-      '#options' => self::getUser(),
+      '#type' => 'entity_autocomplete',
+      '#title' => t('User'),
+      '#target_type' => 'user',
+      '#validate_reference' => FALSE,
+      '#maxlength' => 60,
       '#description' => $this->t("Please select the user who gets authenticated with that API Key."),
-      '#default_value' => $api_key->user_uuid,
+      '#default_value' => (!empty($api_key->user_uuid)) ? User::load($api_key->user_uuid) : NULL
     ];
 
     $form['id'] = [
