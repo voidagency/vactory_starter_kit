@@ -69,7 +69,7 @@ class ApiKeyAuth implements AuthenticationProviderInterface {
     // no loop
     foreach ($api_key_entities as $key_item) {
       if ($this->getKey($request) == $key_item->key) {
-        $accounts = $this->entityTypeManager->getStorage('user')->loadByProperties(['uuid' => $key_item->user_uuid]);
+        $accounts = $this->entityTypeManager->getStorage('user')->loadByProperties(['uid' => $key_item->user_uuid]);
         $account = reset($accounts);
 
         if (isset($account)) {
