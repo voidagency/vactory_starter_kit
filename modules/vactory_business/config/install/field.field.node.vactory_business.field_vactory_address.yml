@@ -1,0 +1,27 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_vactory_address
+    - node.type.vactory_business
+  module:
+    - allowed_formats
+    - text
+third_party_settings:
+  allowed_formats:
+    plain_text: plain_text
+    restricted_html: '0'
+    basic_html: '0'
+    full_html: '0'
+id: node.vactory_business.field_vactory_address
+field_name: field_vactory_address
+entity_type: node
+bundle: vactory_business
+label: Adresse
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: text_long
