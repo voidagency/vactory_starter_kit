@@ -174,7 +174,7 @@ class VactoryDynamicFormatter extends FormatterBase {
       $widgets_path = $this->platformProvider->getWidgetsPath($widget_id);
 
       // Current template to find.
-      $content['template'] = (int) $template_id;
+      $content['template'] = $template_id;
       // Placeholder Image.
       $content['image_placeholder'] = VACTORY_DYNAMIC_FIELD_V_IMAGE_PLACEHOLDER;
       // Is content auto populate.
