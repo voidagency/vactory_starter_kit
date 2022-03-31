@@ -418,3 +418,19 @@ display:
         - 'user.node_grants:view'
       tags:
         - 'config:search_api.index.vactory_faq_index'
+  block_list:
+    display_plugin: block
+    id: block_list
+    display_title: List
+    position: 1
+    display_options:
+      display_extenders: { }
+      display_description: ''
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_content'
+        - 'languages:language_interface'
+        - 'user.node_grants:view'
+        - user.permissions
+      tags: { }

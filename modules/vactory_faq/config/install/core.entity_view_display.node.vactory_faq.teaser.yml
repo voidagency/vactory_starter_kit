@@ -5,6 +5,7 @@ dependencies:
     - core.entity_view_mode.node.teaser
     - field.field.node.vactory_faq.body
     - field.field.node.vactory_faq.field_faq
+    - field.field.node.faq.field_vactory_taxonomy_1
     - node.type.vactory_faq
   module:
     - text
@@ -31,5 +32,6 @@ content:
 hidden:
   addtoany: true
   field_faq: true
+  field_vactory_taxonomy_1: true
   langcode: true
   node_banner_image: true
