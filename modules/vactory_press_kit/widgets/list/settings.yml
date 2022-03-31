@@ -1,0 +1,24 @@
+name: 'List'
+multiple: FALSE
+category: 'Press Kit'
+enabled: TRUE
+fields:
+  views:
+    type: dynamic_views
+    label: 'Views'
+    options:
+      '#required': TRUE
+      '#default_value':
+        views_id: vactory_press_kit
+        views_display_id: block_list
+        fields:
+          id: id
+          uuid: key
+          title: title
+          url: url
+          field_vactory_excerpt: excerpt
+          field_press_kit_theme: category
+          field_vactory_media: image
+          field_vactory_document: file
+        vocabularies:
+          press_kit_theme: press_kit_theme
