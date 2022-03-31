@@ -3,12 +3,12 @@ status: true
 dependencies:
   config:
     - field.storage.node.field_vactory_taxonomy_1
-    - node.type.faq
+    - node.type.vactory_faq
     - taxonomy.vocabulary.faq_section
-id: node.faq.field_vactory_taxonomy_1
+id: node.vactory_faq.field_vactory_taxonomy_1
 field_name: field_vactory_taxonomy_1
 entity_type: node
-bundle: faq
+bundle: vactory_faq
 label: Section
 description: ''
 required: true

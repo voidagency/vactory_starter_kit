@@ -6,7 +6,7 @@ dependencies:
     - field.field.node.vactory_faq.body
     - field.field.node.vactory_faq.field_faq
     - field.field.node.vactory_faq.field_vactory_seo_status
-    - field.field.node.faq.field_vactory_taxonomy_1
+    - field.field.node.vactory_faq.field_vactory_taxonomy_1
     - node.type.vactory_faq
   module:
     - text
