@@ -1,0 +1,22 @@
+name: 'Simple'
+multiple: FALSE
+category: 'Mailchimp'
+enabled: TRUE
+fields:
+  mailchimp_list:
+    type: mailchimp_decoupled
+    label: 'Mailchimp'
+    options:
+      '#required': TRUE
+extra_fields:
+  title:
+    type: text
+    label: "Titre"
+  intro:
+    type: text_format
+    label: 'Introduction'
+    options:
+      '#format': 'full_html'
+  link:
+    type: url_extended
+    label: 'Lien'
