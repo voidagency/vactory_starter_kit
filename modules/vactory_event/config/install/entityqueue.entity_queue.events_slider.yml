@@ -1,10 +1,12 @@
-langcode: en
+langcode: fr
 status: true
 dependencies:
   module:
     - node
-id: vactory_event_slider_small
-label: 'Event Slider Small'
+  config:
+    - node.type.vactory_event
+id: events_slider
+label: 'Events - Slider'
 handler: simple
 handler_configuration: {  }
 entity_settings:
@@ -22,6 +24,6 @@ entity_settings:
       insert_front: 0
 queue_settings:
   min_size: 0
-  max_size: 0
+  max_size: 3
   act_as_queue: false
-  reverse_in_admin: false
+  reverse: false
