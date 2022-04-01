@@ -1,0 +1,24 @@
+name: 'List'
+multiple: FALSE
+category: 'Press Release'
+enabled: TRUE
+fields:
+  views:
+    type: dynamic_views
+    label: 'Views'
+    options:
+      '#required': TRUE
+      '#default_value':
+        views_id: vactory_press_release
+        views_display_id: block_list
+        fields:
+          id: id
+          uuid: key
+          title: title
+          url: url
+          field_vactory_excerpt: excerpt
+          field_press_release_theme: category
+          field_vactory_media: image
+          field_vactory_document: file
+        vocabularies:
+          press_release_theme: press_release_theme
