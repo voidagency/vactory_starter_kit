@@ -3,6 +3,7 @@
 namespace Drupal\vactory_attached_assets\Form;
 
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Executable\ExecutableManagerInterface;
@@ -21,6 +22,13 @@ class AttachedAssetsEntityForm extends EntityForm {
    * @var \Drupal\Core\Condition\ConditionManager
    */
   protected $conditionManager;
+
+  /**
+   * The config factory service.
+   *
+   * @var ConfigFactoryInterface
+   */
+  protected $configFactory;
 
   /**
    * The Attached Assets entity.
@@ -47,8 +55,9 @@ class AttachedAssetsEntityForm extends EntityForm {
    * @param \Drupal\Core\Executable\ExecutableManagerInterface $condition_manager
    *   The ConditionManager for building the insertion conditions.
    */
-  public function __construct(ExecutableManagerInterface $condition_manager) {
+  public function __construct(ExecutableManagerInterface $condition_manager, ConfigFactoryInterface $configFactory) {
     $this->conditionManager = $condition_manager;
+    $this->configFactory = $configFactory;
   }
 
   /**
@@ -59,7 +68,8 @@ class AttachedAssetsEntityForm extends EntityForm {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('plugin.manager.condition')
+      $container->get('plugin.manager.condition'),
+      $container->get('config.factory')
     );
   }
 
