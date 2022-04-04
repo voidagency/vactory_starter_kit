@@ -50,6 +50,13 @@ class VactoryDynamicFormatter extends FormatterBase {
   protected $loggerChannelFactory;
 
   /**
+   * File url generator.
+   *
+   * @var \Drupal\Core\File\FileUrlGeneratorInterface
+   */
+  protected $fileUrlGenerator;
+
+  /**
    * {@inheritDoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
@@ -57,6 +64,7 @@ class VactoryDynamicFormatter extends FormatterBase {
     $instance->renderer = $container->get('renderer');
     $instance->platformProvider = $container->get('vactory_dynamic_field.vactory_provider_manager');
     $instance->loggerChannelFactory = $container->get('logger.factory');
+    $instance->fileUrlGenerator = $container->get('file_url_generator');
     return $instance;
   }
 
@@ -102,17 +110,21 @@ class VactoryDynamicFormatter extends FormatterBase {
 
         // File media.
         if ($info['type'] === 'file' && !empty($value)) {
-          $file_link = NULL;
+          $file_data = [];
           $media = Media::load($value);
           if (isset($media) && !empty($media) && isset($media->field_media_file->target_id) && !empty($media->field_media_file->target_id)) {
             $fid = $media->field_media_file->target_id;
             $file = File::load($fid);
             if (isset($file) && !empty($file)) {
-              $absolute_url = file_create_url($file->getFileUri());
-              $file_link = file_url_transform_relative($absolute_url);
+              $absolute_url = $this->fileUrlGenerator->generateAbsoluteString($file->getFileUri());
+              $file_data['fid'] = $file->id();
+              $file_data['url'] = $this->fileUrlGenerator->transformRelative($absolute_url);
+              $file_data['filename'] = $file->getFilename();
+              $file_data['filesize'] = $file->getSize();
+              $file_data['filemime'] = $file->getMimeType();
             }
           }
-          $value = $file_link;
+          $value = $file_data;
         }
 
         if ($info['type'] === 'remote_video' && !empty($value)) {
@@ -169,7 +181,7 @@ class VactoryDynamicFormatter extends FormatterBase {
     foreach ($items as $delta => $item) {
       $widget_id = $item->widget_id;
       $widget_data = json_decode($item->widget_data, TRUE);
-      list($platform, $template_id) = explode(':', $widget_id);
+      [$platform, $template_id] = explode(':', $widget_id);
       $settings = $this->platformProvider->loadSettings($widget_id);
       $widgets_path = $this->platformProvider->getWidgetsPath($widget_id);
 
