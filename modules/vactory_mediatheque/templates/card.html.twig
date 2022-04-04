@@ -117,17 +117,13 @@
     </h3>
     {{ title_suffix }}
 
-    <div class="card__read-more">
+    <div class="card__attached-assets ">
       {% if video_url is not empty %}
-        <div class="card__link">
-          <a href="#{{card_id}}" data-fancybox class="prefix-icon-eye"></a>
-        </div>
+          <a href="#{{card_id}}" data-fancybox class="prefix-icon-eye">{{'Voir la video'|t}}</a>
       {% endif %}
 
       {% if document_url is defined  and document_url is not empty %}
-        <div class="card__link">
-          <a href="{{ document_url }}" class="prefix-icon-download mb-2" download></a>
-        </div>
+          <a href="{{ document_url }}" class="prefix-icon-download" download>{{'Télécharger le fichier'|t}}</a>
       {% endif %}
     </div>
   </div>
