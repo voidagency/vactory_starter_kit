@@ -1,0 +1,20 @@
+name: 'List'
+multiple: FALSE
+category: 'FAQ'
+enabled: TRUE
+fields:
+  views:
+    type: dynamic_views
+    label: 'Views'
+    options:
+      '#required': TRUE
+      '#default_value':
+        views_id: vactory_faq
+        views_display_id: block_list
+        fields:
+          id: id
+          uuid: key
+          title: title
+          field_faq: questions
+        vocabularies:
+          faq_section: faq_section

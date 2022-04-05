@@ -217,7 +217,7 @@ class VactoryNotificationsService {
       ->loadMultiple();
     foreach (array_keys($roles) as $role) {
       $content_types = $this->notificationConfig->get($role . '_content_types');
-      if (in_array($bundle, $content_types)) {
+      if (is_array($content_types) && in_array($bundle, $content_types)) {
         return TRUE;
       }
     }

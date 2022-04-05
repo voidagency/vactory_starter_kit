@@ -5,6 +5,7 @@ dependencies:
     - field.field.node.vactory_faq.body
     - field.field.node.vactory_faq.field_faq
     - field.field.node.vactory_faq.field_vactory_seo_status
+    - field.field.node.vactory_faq.field_vactory_taxonomy_1
     - node.type.vactory_faq
   module:
     - faqfield
@@ -55,6 +56,12 @@ content:
       edit_description: false
     third_party_settings: {  }
     type: yoast_seo_widget
+    region: content
+  field_vactory_taxonomy_1:
+    weight: 123
+    settings: { }
+    third_party_settings: { }
+    type: options_select
     region: content
   langcode:
     type: language_select

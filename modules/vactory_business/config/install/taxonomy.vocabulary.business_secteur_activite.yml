@@ -1,0 +1,7 @@
+langcode: fr
+status: true
+dependencies: {  }
+name: 'Business - Secteur d''activité'
+vid: business_secteur_activite
+description: 'Utiliser ce vocabulaire pour ajouter des secteurs d''activité business'
+weight: 0

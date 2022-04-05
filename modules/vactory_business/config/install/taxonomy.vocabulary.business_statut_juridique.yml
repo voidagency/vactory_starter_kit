@@ -1,0 +1,7 @@
+langcode: fr
+status: true
+dependencies: {  }
+name: 'Business - Statut juridique'
+vid: business_statut_juridique
+description: 'Utiliser ce vocabulaire pour ajouter un statut juridique business'
+weight: 0

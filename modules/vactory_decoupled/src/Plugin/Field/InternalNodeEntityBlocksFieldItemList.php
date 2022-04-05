@@ -31,7 +31,21 @@ class InternalNodeEntityBlocksFieldItemList extends FieldItemList
       return;
     }
 
-    $value = $block_manager->getBlocksByNode($entity->id());
+    // Exclude Banner blocks.
+    $banner_plugin_filter = [];
+    $banner_blocks = \Drupal::entityTypeManager()->getStorage('block_content')
+      ->loadByProperties(['type' => 'vactory_decoupled_banner']);
+    if (!empty($banner_blocks)) {
+      $banner_blocks_plugins = array_map(function ($banner_block) {
+        return 'block_content:' . $banner_block->uuid();
+      }, $banner_blocks);
+      $banner_plugin_filter = [
+        'operator' => 'NOT IN',
+        'plugins' => array_values($banner_blocks_plugins),
+      ];
+    }
+
+    $value = $block_manager->getBlocksByNode($entity->id(), $banner_plugin_filter);
 
     $this->list[0] = $this->createItem(0, $value);
   }

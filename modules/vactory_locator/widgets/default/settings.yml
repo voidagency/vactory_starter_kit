@@ -1,0 +1,16 @@
+name: 'Default'
+multiple: FALSE
+category: 'Maps'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: "Titre"
+  description:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'basic_html'
+  link:
+    type: url_extended
+    label: 'Lien'

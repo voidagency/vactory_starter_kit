@@ -1,0 +1,25 @@
+name: 'List'
+multiple: FALSE
+category: 'Publication'
+enabled: TRUE
+fields:
+  views:
+    type: dynamic_views
+    label: 'Views'
+    options:
+      '#required': TRUE
+      '#default_value':
+        views_id: vactory_publication
+        views_display_id: block_list
+        fields:
+          id: id
+          uuid: key
+          title: title
+          url: url
+          field_vactory_excerpt: excerpt
+          field_vactory_publication_theme: category
+          field_vactory_media: image
+          field_vactory_document: file
+          field_vactory_date: date
+        vocabularies:
+          vactory_publication_theme: vactory_publication_theme

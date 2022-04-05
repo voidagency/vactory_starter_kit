@@ -1,0 +1,27 @@
+name: 'List'
+multiple: FALSE
+category: 'Job Ads'
+enabled: TRUE
+fields:
+  views:
+    type: dynamic_views
+    label: 'Views'
+    options:
+      '#required': TRUE
+      '#default_value':
+        views_id: vactory_job_ads
+        views_display_id: block_list
+        fields:
+          id: id
+          uuid: key
+          title: title
+          url: url
+          created: created
+          field_vactory_description: profileDescription
+          field_vactory_city: city
+          field_vactory_contract: contract
+          field_vactory_profession: profession
+        vocabularies:
+          vactory_job_ads_city: vactory_job_ads_city
+          vactory_job_ads_contract: vactory_job_ads_contract
+          vactory_job_ads_profession: vactory_job_ads_profession

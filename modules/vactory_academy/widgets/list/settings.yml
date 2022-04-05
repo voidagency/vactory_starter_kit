@@ -1,0 +1,25 @@
+name: 'List'
+multiple: FALSE
+category: 'Academy'
+enabled: TRUE
+fields:
+  views:
+    type: dynamic_views
+    label: 'Views'
+    options:
+      '#required': TRUE
+      '#default_value':
+        views_id: vactory_academy
+        views_display_id: block_list
+        fields:
+          id: id
+          uuid: key
+          title: title
+          url: url
+          field_vactory_date: date
+          field_academy_duree: duration
+          field_vactory_excerpt: excerpt
+          field_vactory_theme: category
+          field_vactory_media: image
+        vocabularies:
+          vactory_academy_themes: vactory_academy_themes

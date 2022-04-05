@@ -1,0 +1,21 @@
+langcode: fr
+status: true
+dependencies:
+  module:
+    - node
+id: pathauto_content_business_pattern
+label: 'Pathauto Content Business Pattern'
+type: 'canonical_entities:node'
+pattern: '/fiches-business/[node:title]'
+selection_criteria:
+  bb993a6d-5eda-4fa6-b5c7-cffd96e85b83:
+    id: node_type
+    bundles:
+      vactory_business: vactory_business
+    negate: false
+    context_mapping:
+      node: node
+    uuid: bb993a6d-5eda-4fa6-b5c7-cffd96e85b83
+selection_logic: and
+weight: -5
+relationships: {  }

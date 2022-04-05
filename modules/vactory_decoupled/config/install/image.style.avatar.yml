@@ -1,0 +1,14 @@
+langcode: fr
+status: true
+dependencies: {  }
+name: avatar
+label: Avatar
+effects:
+  user_avatar:
+    uuid: user_avatar
+    id: image_scale_and_crop
+    weight: 1
+    data:
+      width: 74
+      height: 74
+      anchor: center-center
