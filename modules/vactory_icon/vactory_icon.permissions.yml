@@ -1,0 +1,3 @@
+manage icons settings:
+  title: 'Manage icomoon settings.'
+  restrict access: true

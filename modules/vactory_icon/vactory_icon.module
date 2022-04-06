@@ -1,0 +1,13 @@
+<?php
+
+
+/**
+ * Implements hook_library_info_build().
+ */
+function vactory_icon_library_info_build()
+{
+    $libraries = [];
+    $stylesheet = 'public://vactory_icon/style.css';
+    $libraries['vactory_icon.fonticonpicker']['css']['theme'][$stylesheet] = [];
+    return $libraries;
+}
