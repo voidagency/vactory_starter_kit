@@ -166,7 +166,7 @@ body.menu-open {
 }
 
 .vh-header__language-link-switcher--inline .language-link.is-active {
-  color: #212529;
+  color: #000;
   pointer-events: none;
 }
 
@@ -179,7 +179,7 @@ body.menu-open {
   height: 1.125rem;
   width: 1px;
   width: 0.0625rem;
-  background-color: #212529;
+  background-color: #000;
   right: -4px;
   right: -0.25rem;
 }
@@ -534,5 +534,3 @@ body.menu-open {
   padding-top: 20px;
   padding-top: 1.25rem;
 }
-
-/*# sourceMappingURL=vactory_header_helpers.css.map */
