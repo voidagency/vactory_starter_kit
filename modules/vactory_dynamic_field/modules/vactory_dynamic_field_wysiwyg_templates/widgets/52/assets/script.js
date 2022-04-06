@@ -4,9 +4,6 @@
   $(function () {
 
     let initialWindowScroll = $(window).scrollTop();
-
-    console.log(initialWindowScroll);
-
     // let mobileTrigger = $('.toolbox__trigger-mobile');
 
     let toolboxWrapper = $('.toolbox__wrapper');

@@ -21,3 +21,9 @@ widget52:
       ./widgets/52/assets/style.css: {}
   js:
     ./widgets/52/assets/script.js: {}
+
+
+widget53:
+  css:
+    component:
+      ./widgets/53/assets/style.css: {}
