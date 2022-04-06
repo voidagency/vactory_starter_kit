@@ -1,0 +1,30 @@
+<?php
+
+/**
+ * @file
+ * Contain related hooks.
+ */
+
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function vactory_decoupled_banner_entity_base_field_info(EntityTypeInterface $entity_type) {
+  $fields = [];
+  if ($entity_type->id() === 'node') {
+    $fields['internal_node_banner'] = BaseFieldDefinition::create('map')
+      ->setLabel(t('Banner'))
+      ->setDescription(t('The banner to be used for this node.'))
+      ->setTranslatable(FALSE)
+      ->setClass('\Drupal\vactory_decoupled_banner\Field\InternalBannerEntityFieldItemList')
+      ->setComputed(TRUE)
+      ->setReadOnly(TRUE)
+      ->setTargetEntityTypeId($entity_type->id())
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE);
+  }
+  return $fields;
+}
+

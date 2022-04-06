@@ -75,7 +75,7 @@ class BlocksManager
     $this->entityToJsonApi = $entity_to_jsonapi;
   }
 
-  public function getBlocksByNode($nid)
+  public function getBlocksByNode($nid, $filter = [])
   {
     $blocks = [];
 
@@ -85,6 +85,18 @@ class BlocksManager
 
     try {
       $blocks = $this->getThemeBlocks();
+      if (isset($filter['operator']) && isset($filter['plugins']) && !empty($filter['plugins'])) {
+        // Apply filter if exist.
+        $blocks = array_filter($blocks, function ($block) use ($filter) {
+          if ($filter['operator'] === 'IN') {
+            return isset($block['plugin']) && in_array($block['plugin'], $filter['plugins'], TRUE);
+          }
+          if ($filter['operator'] === 'NOT IN') {
+            return isset($block['plugin']) && !in_array($block['plugin'], $filter['plugins'], TRUE);
+          }
+          return TRUE;
+        });
+      }
     } catch (InvalidPluginDefinitionException $e) {
     } catch (PluginNotFoundException $e) {
     }
@@ -236,8 +248,10 @@ class BlocksManager
       if (is_array($contentBlock)) {
         $contentBlock = reset($contentBlock);
         try {
-          $contentBlock = $this->entityToJsonApi
-            ->normalize($contentBlock)['data']['attributes']['field_dynamic_block_components'];
+          $normalizedBlock = $this->entityToJsonApi->normalize($contentBlock);
+          if (isset($normalizedBlock['data']['attributes']['field_dynamic_block_components'])) {
+            $contentBlock = $normalizedBlock['data']['attributes']['field_dynamic_block_components'];
+          }
         } catch (\Exception $e) {
           \Drupal::logger('vactory_decoupled')->error('Block @block_id not found', ['@block_id' => $uuid]);
         }

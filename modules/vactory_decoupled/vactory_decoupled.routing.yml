@@ -84,10 +84,20 @@ vactory_decoupled.pays.api:
     _disable_route_normalizer: 'TRUE'
   requirements:
     _permission: 'access content'
+
 vactory_decoupled.social_media.api:
   path: /api/available-social-media
   defaults:
     _controller: '\Drupal\vactory_decoupled\Controller\SocialMediaController::getSocialMedia'
     _disable_route_normalizer: 'TRUE'
+  requirements:
+    _permission: 'access content'
+
+vactory_decoupled.get_unique_username_by_email:
+  path: '/api/get-unique-username-by-email'
+  defaults:
+    _controller: '\Drupal\vactory_decoupled\Controller\UsernameController::getUniqueUsernameByEmail'
+    _disable_route_normalizer: 'TRUE'
+  methods: [GET]
   requirements:
     _permission: 'access content'

@@ -1,0 +1,40 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - taxonomy.vocabulary.business_statut_juridique
+id: taxonomy_term.business_statut_juridique.default
+targetEntityType: taxonomy_term
+bundle: business_statut_juridique
+mode: default
+content:
+  langcode:
+    type: language_select
+    weight: 1
+    region: content
+    settings:
+      include_locked: true
+    third_party_settings: {  }
+  name:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  status:
+    type: boolean_checkbox
+    settings:
+      display_label: true
+    weight: 3
+    region: content
+    third_party_settings: {  }
+  translation:
+    weight: 2
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  description: true
+  path: true

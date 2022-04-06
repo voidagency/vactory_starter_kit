@@ -1,0 +1,18 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_business_ville
+    - node.type.vactory_business
+id: node.vactory_business.field_business_ville
+field_name: field_business_ville
+entity_type: node
+bundle: vactory_business
+label: Ville
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

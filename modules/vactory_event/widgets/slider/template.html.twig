@@ -1,0 +1,34 @@
+{% if content.0.title is not empty %}
+  <div>{{content.0.title}}</div>
+{% endif %}
+{% if content.0.description is not empty %}
+  <div>{{content.0.description.value}}</div>
+{% endif %}
+{% if content.0.link is not empty %}
+  <div><a href="{{ content.0.link.url }}">{{ content.0.link.title }}</a> </div>
+{% endif %}
+{% if content.0.views.nodes is not empty %}
+  {% for node in content.0.views.nodes %}
+    <div style="margin: 20px">
+      {% if node.title is not empty %}
+        <div>{{node.title}}</div>
+      {% endif %}
+      {% if node.category.label is not empty %}
+        <div>{{node.category.label}}</div>
+      {% endif %}
+      {% if node.city.label is not empty %}
+        <div>{{node.city.label}}</div>
+      {% endif %}
+      {% if node.dateInterval is not empty %}
+        <div>Event date : {{node.dateInterval.date_start}} --> {{node.dateInterval.date_end}}</div>
+      {% endif %}
+      {% if node.excerpt is not empty %}
+        <div>{{ node.excerpt|striptags }}</div>
+      {% endif %}
+      {% if node.image is not empty %}
+        <div><img src="{{ node.image._default }}"></div>
+      {% endif %}
+    </div>
+  {% endfor %}
+{% endif %}
+

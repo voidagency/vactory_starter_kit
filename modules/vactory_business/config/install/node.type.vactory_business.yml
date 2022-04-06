@@ -1,0 +1,40 @@
+langcode: fr
+status: true
+dependencies:
+  module:
+    - menu_ui
+    - scheduler
+    - vactory_banner
+    - vactory_vcc
+third_party_settings:
+  menu_ui:
+    available_menus:
+      - main
+    parent: 'main:'
+  scheduler:
+    expand_fieldset: when_required
+    fields_display_mode: vertical_tab
+    publish_enable: false
+    publish_past_date: error
+    publish_past_date_created: false
+    publish_required: false
+    publish_revision: false
+    publish_touch: false
+    show_message_after_update: false
+    unpublish_enable: false
+    unpublish_required: false
+    unpublish_revision: false
+  vactory_banner:
+    banner: null
+  vactory_vcc:
+    enabled: 0
+    taxonomy: none
+    limit: '3'
+    more_link: ''
+name: 'Fiche Business'
+type: vactory_business
+description: 'Utiliser ce type de contenu pour créer des fiches business'
+help: ''
+new_revision: true
+preview_mode: 1
+display_submitted: false

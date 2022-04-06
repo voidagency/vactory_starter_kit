@@ -1,0 +1,232 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.field.node.vactory_business.body
+    - field.field.node.vactory_business.field_business_pays
+    - field.field.node.vactory_business.field_business_specialisations
+    - field.field.node.vactory_business.field_business_users
+    - field.field.node.vactory_business.field_business_ville
+    - field.field.node.vactory_business.field_secteur_activite
+    - field.field.node.vactory_business.field_site_web
+    - field.field.node.vactory_business.field_social_networks
+    - field.field.node.vactory_business.field_statut_juridique
+    - field.field.node.vactory_business.field_taille_entreprise
+    - field.field.node.vactory_business.field_vactory_address
+    - field.field.node.vactory_business.field_vactory_date
+    - field.field.node.vactory_business.field_vactory_image
+    - field.field.node.vactory_business.field_vactory_telephone
+    - image.style.thumbnail
+    - node.type.vactory_business
+  module:
+    - address
+    - datetime
+    - image
+    - path
+    - scheduler
+    - social_media_links_field
+    - text
+    - vactory_vcc
+id: node.vactory_business.default
+targetEntityType: node
+bundle: vactory_business
+mode: default
+content:
+  body:
+    type: text_textarea_with_summary
+    weight: 13
+    settings:
+      rows: 9
+      summary_rows: 3
+      placeholder: ''
+      show_summary: false
+    third_party_settings: {  }
+    region: content
+  created:
+    type: datetime_timestamp
+    weight: 4
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_business_pays:
+    weight: 21
+    settings: {  }
+    third_party_settings: {  }
+    type: address_country_default
+    region: content
+  field_business_specialisations:
+    weight: 14
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_business_users:
+    weight: 25
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: entity_reference_autocomplete
+    region: content
+  field_business_ville:
+    weight: 22
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_secteur_activite:
+    weight: 15
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_site_web:
+    weight: 19
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  field_social_networks:
+    weight: 20
+    settings: {  }
+    third_party_settings: {  }
+    type: social_media_links_field_default
+    region: content
+  field_statut_juridique:
+    weight: 17
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_taille_entreprise:
+    weight: 18
+    settings: {  }
+    third_party_settings: {  }
+    type: options_select
+    region: content
+  field_vactory_address:
+    weight: 24
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+    type: text_textarea
+    region: content
+  field_vactory_date:
+    weight: 16
+    settings: {  }
+    third_party_settings: {  }
+    type: datetime_default
+    region: content
+  field_vactory_image:
+    weight: 38
+    settings:
+      progress_indicator: throbber
+      preview_image_style: thumbnail
+    third_party_settings: {  }
+    type: image_image
+    region: content
+  field_vactory_telephone:
+    weight: 23
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+    type: string_textfield
+    region: content
+  langcode:
+    type: language_select
+    weight: 1
+    region: content
+    settings:
+      include_locked: true
+    third_party_settings: {  }
+  node_banner:
+    type: options_select
+    weight: 0
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  path:
+    type: path
+    weight: 7
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  promote:
+    type: boolean_checkbox
+    settings:
+      display_label: true
+    weight: 5
+    region: content
+    third_party_settings: {  }
+  publish_on:
+    type: datetime_timestamp_no_default
+    weight: 8
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  status:
+    type: boolean_checkbox
+    settings:
+      display_label: true
+    weight: 10
+    region: content
+    third_party_settings: {  }
+  sticky:
+    type: boolean_checkbox
+    settings:
+      display_label: true
+    weight: 6
+    region: content
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: 12
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  translation:
+    weight: 3
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  uid:
+    type: entity_reference_autocomplete
+    weight: 2
+    settings:
+      match_operator: CONTAINS
+      size: 60
+      placeholder: ''
+      match_limit: 10
+    region: content
+    third_party_settings: {  }
+  unpublish_on:
+    type: datetime_timestamp_no_default
+    weight: 9
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  vcc:
+    type: vcc_entity_reference_autocomplete
+    settings:
+      match_operator: CONTAINS
+      size: '60'
+      placeholder: ''
+      match_limit: 10
+    region: content
+    weight: 11
+    third_party_settings: {  }
+hidden: {  }

@@ -13,7 +13,10 @@ use Drupal\Core\Url;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\node\Entity\Node;
+use Drupal\user\UserInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Drupal\simple_oauth\Entities\AccessTokenEntity;
+use Drupal\user\Entity\User;
 
 /**
  * Implements hook_form_BASE_FORM_ID_alter().
@@ -246,4 +249,93 @@ function vactory_decoupled_entity_base_field_info(EntityTypeInterface $entity_ty
 function vactory_decoupled_entity_type_alter(array &$entity_types) {
   $entity_types['comment']->addConstraint('jsonapi_recaptcha');
   $entity_types['node']->addConstraint('jsonapi_recaptcha');
+}
+
+/**
+ * Oauth extra user informations.
+ *
+ * @param \Drupal\user\UserInterface $user
+ *
+ * @return array
+ * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+ * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+ */
+function get_oauth_user_infos(UserInterface $user) {
+  $full_name = $user->getDisplayName();
+  $first_name = $user->get('field_first_name')->getString();
+  $last_name = $user->get('field_last_name')->getString();
+  if (!empty($first_name) && !empty($last_name)) {
+    $full_name = $first_name . ' ' . $last_name;
+  }
+
+  $avatar = NULL;
+
+  if (user_picture_enabled() && !$user->get('user_picture')->isEmpty()) {
+    $pictureUri = $user->get('user_picture')->entity->getFileUri();
+    $style = \Drupal::entityTypeManager()->getStorage('image_style')->load('avatar');
+    $avatar = $style->buildUrl($pictureUri);
+  }
+
+  return [
+    'id' => $user->id(),
+    'uuid' => $user->uuid(),
+    'email' => $user->getEmail(),
+    'username' => $user->getAccountName(),
+    'avatar' => $avatar,
+    'first_name' => $first_name,
+    'last_name' => $last_name,
+    'full_name' => $full_name,
+    'name_initial' => _auth_generate_intials_from_name($full_name),
+    'roles' => $user->getRoles()
+  ];
+}
+
+/**
+ * Implements hook_simple_oauth_private_claims_alter().
+ */
+function vactory_decoupled_simple_oauth_private_claims_alter(&$private_claims, AccessTokenEntity $access_token_entity) {
+  $user_id = $access_token_entity->getUserIdentifier();
+  /** @var \Drupal\user\UserInterface $user */
+  $user = User::load($user_id);
+  $profile = [];
+  try {
+    $profile = get_oauth_user_infos($user);
+  } catch (\Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException $e) {
+  } catch (\Drupal\Component\Plugin\Exception\PluginNotFoundException $e) {
+  }
+
+  $private_claims = [
+    "profile" => $profile,
+  ];
+}
+
+
+/**
+ * Generate initials from a name
+ *
+ * @param string $name
+ * @return string
+ */
+function _auth_generate_intials_from_name($name)
+{
+  $words = explode(' ', $name);
+  if (count($words) >= 2) {
+    return strtoupper(substr($words[0], 0, 1) . substr(end($words), 0, 1));
+  }
+  return _auth_make_unitials_from_single_word($name);
+}
+
+/**
+ * Make initials from a word with no spaces
+ *
+ * @param string $name
+ * @return string
+ */
+function _auth_make_unitials_from_single_word($name)
+{
+  preg_match_all('#([A-Z]+)#', $name, $capitals);
+  if (count($capitals[1]) >= 2) {
+    return substr(implode('', $capitals[1]), 0, 2);
+  }
+  return strtoupper(substr($name, 0, 2));
 }

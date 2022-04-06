@@ -1,0 +1,5 @@
+services:
+  vactory_cross_content.manager:
+    class: Drupal\vactory_cross_content\Services\VactoryCrossContentManager
+    arguments:
+      - '@vactory'

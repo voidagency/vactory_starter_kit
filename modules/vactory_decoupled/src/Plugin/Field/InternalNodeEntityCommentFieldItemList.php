@@ -29,8 +29,8 @@ class InternalNodeEntityCommentFieldItemList extends FieldItemList
     }
 
     if ($entity->hasField('comment')) {
-      $comments = $entity->get('comment')->getValue()[0];
-      $contributions = $comments['comment_count'];
+      $comments = !empty($entity->get('comment')->getValue()) ? $entity->get('comment')->getValue()[0] : [];
+      $contributions = isset($comments['comment_count']) ? $comments['comment_count'] : 0;
       $last_contribution = $contributions > 0 ? $comments['last_comment_timestamp'] : null;
 
       $value = [

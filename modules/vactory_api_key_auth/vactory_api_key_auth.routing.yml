@@ -1,0 +1,34 @@
+entity.api_key.collection:
+  path: '/admin/config/services/api_key'
+  defaults:
+    _entity_list: 'api_key'
+    _title: 'Api Key List'
+  requirements:
+    _permission: 'administer vactory_api_key_auth'
+
+entity.api_key.add_form:
+  path: '/admin/config/services/api_key/add'
+  defaults:
+    _title: 'Add Api keys'
+    _entity_form: 'api_key.add'
+  requirements:
+    _entity_create_access: 'api_key'
+
+entity.api_key.edit_form:
+  path: '/admin/config/services/api_key/{api_key}/edit'
+  defaults:
+    _entity_form: 'api_key.add'
+  requirements:
+    _entity_access: 'api_key.edit'
+
+entity.api_key.delete_form:
+  path: '/admin/config/services/api_key/{api_key}/delete'
+  defaults:
+    _title: 'Delete api_key'
+    _entity_form: 'api_key.delete'
+  requirements:
+    _entity_access: 'api_key.delete'
+  options:
+    parameters:
+      api_key:
+        with_config_overrides: TRUE

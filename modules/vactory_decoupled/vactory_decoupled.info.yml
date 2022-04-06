@@ -10,4 +10,5 @@ dependencies:
   - jsonapi_extras
   - jsonapi_user_resources
   - simple_oauth
+  - vactory_api_key_auth
 version: 8.x-1.0

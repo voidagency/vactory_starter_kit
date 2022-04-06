@@ -1,0 +1,17 @@
+{% if content.0.views.nodes is not empty %}
+  {% for node in content.0.views.nodes %}
+    <div style="margin: 20px">
+      {% if node.title is not empty %}
+        <div>{{ node.title }}</div>
+      {% endif %}
+      <ol>
+        {% for question in node.questions %}
+          <li>
+            <h5>{{ question.question }}</h5>
+            <p>{{ question.answer }}</p>
+          </li>
+        {% endfor %}
+      </ol>
+    </div>
+  {% endfor %}
+{% endif %}

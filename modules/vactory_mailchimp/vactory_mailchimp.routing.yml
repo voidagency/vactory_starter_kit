@@ -1,0 +1,6 @@
+vactory_mailchimp.api:
+  path: '/_mailchimp'
+  defaults:
+    _controller: 'Drupal\vactory_mailchimp\Controller\ApiController::send'
+  requirements:
+    _permission: 'access content'

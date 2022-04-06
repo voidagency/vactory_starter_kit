@@ -5,6 +5,7 @@ dependencies:
     - core.entity_view_mode.node.full
     - field.field.node.vactory_faq.body
     - field.field.node.vactory_faq.field_faq
+    - field.field.node.vactory_faq.field_vactory_taxonomy_1
     - node.type.vactory_faq
   module:
     - faqfield
@@ -38,6 +39,14 @@ content:
         duration: 200
     third_party_settings: {  }
     type: faqfield_accordion
+    region: content
+  field_vactory_taxonomy_1:
+    weight: 102
+    label: above
+    settings:
+      link: true
+    third_party_settings: { }
+    type: entity_reference_label
     region: content
   links:
     weight: 100

@@ -1,0 +1,17 @@
+vactory_api_key_auth.api_key.*:
+  type: config_entity
+  label: 'API Key configuration'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Name'
+    uuid:
+      type: string
+    key:
+      type: string
+      Label: 'API Key'
+    user_uuid:
+      type: string

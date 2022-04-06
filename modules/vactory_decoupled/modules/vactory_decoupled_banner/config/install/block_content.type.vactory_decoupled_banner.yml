@@ -1,0 +1,10 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_decoupled_banner
+id: vactory_decoupled_banner
+label: 'Decoupled banner'
+revision: 0
+description: 'Provides Banner custom block type for decoupled projects'
