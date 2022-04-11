@@ -1,0 +1,14 @@
+name: 'Media video'
+multiple: FALSE
+category: 'Video help'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: 'Titre'
+  image:
+    type: image
+    label: 'Image'
+  video:
+    type: media_video
+    label: 'Video'

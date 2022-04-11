@@ -1,0 +1,17 @@
+langcode: fr
+status: true
+dependencies:
+  module:
+    - crop
+third_party_settings:
+  crop:
+    image_field: _none
+id: remote_cloudinary_video
+label: 'Remote Cloudinary video'
+description: 'Remotely hosted video from Cloudinary'
+source: video_file
+queue_thumbnail_downloads: false
+new_revision: true
+source_configuration:
+  source_field: field_cloudinary_video
+field_map: {  }
