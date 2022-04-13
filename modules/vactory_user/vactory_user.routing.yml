@@ -4,3 +4,13 @@ vactory_user.reset:
     _controller: '\Drupal\vactory_user\Controller\ResetCheckController::checkReset'
   requirements:
     _permission: 'access content'
+vactory_user.delete_account:
+  path: 'api/user/user/delete'
+  defaults:
+    _controller: '\Drupal\vactory_user\Controller\VactoryUserController::deleteAccount'
+    _disable_route_normalizer: 'TRUE'
+  methods: [DELETE]
+  requirements:
+    _permission: 'access content'
+  options:
+    _is_jsonapi: 1

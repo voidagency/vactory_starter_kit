@@ -122,6 +122,11 @@ trait FormWidgetTrait {
       $element['#default_value'] = isset($default_value['value']) ? $default_value['value'] : $default_value_string;
     }
 
+    // Replace name property option token.
+    if (isset($options['#name']) && preg_match('/\{(i|index)\}$/', $options['#name'])) {
+      $options['#name'] = preg_replace('/\{(i|index)\}$/', $index, $options['#name']);
+    }
+
     // Entity autocomplete default value.
     if ($type === 'entity_autocomplete') {
       $default_value = !empty($default_value) ? \Drupal::entityTypeManager()->getStorage($options['#target_type'])->load($default_value) : NULL;

@@ -1,0 +1,19 @@
+vactory_rate.vote:
+  path: '/api/rate/{entity_type_id}/{entity_id}/{vote_type_id}/{value}'
+  defaults:
+    _controller: '\Drupal\vactory_rate\Controller\VoteController::vote'
+  requirements:
+    _permission: 'access content'
+vactory_rate.undo_vote:
+  path: '/api/rate/undo/{entity_type_id}/{entity_id}'
+  defaults:
+    _controller: 'Drupal\vactory_rate\Controller\VoteController::undoVote'
+  requirements:
+    _permission: 'access content'
+vactory_rate.results:
+  path: '/api/rate/results/{entity_type_id}/{entity_id}'
+  defaults:
+    _controller: 'Drupal\vactory_rate\Controller\VoteController::results'
+  requirements:
+    _permission: 'access content'
+

@@ -24,7 +24,7 @@ function vactory_attached_assets_page_attachments(array &$attachments) {
 function vactory_attached_assets_preprocess_html(&$variables) {
   $adminRoute = \Drupal::service('router.admin_context')->isAdminRoute();
   if (!$adminRoute) {
-    $attachedAssetsService = \Drupal::service('ce_attached_assets.manager');
+    $attachedAssetsService = \Drupal::service('vactory_attached_assets.manager');
     $variables['attached_css_files'] = $attachedAssetsService->attachAssetsToHtml();
   }
 }
