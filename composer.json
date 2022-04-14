@@ -62,6 +62,7 @@
     "drupal/xmlsitemap": "1.0",
     "drupal/security_review": "1.x-dev",
     "drupal/mailsystem": "^4.3",
+    "drupal/swiftmailer": "^2.0",
     "drupal/menu_item_extras": "^2.13",
     "drupal/mailchimp": "^2.0",
     "drupal/user_registrationpassword": "^1.0.0-alpha5",
@@ -198,6 +199,10 @@
       },
       "drupal/viewsreference": {
         "Exposed filters not working for Views in Paragraphs": "https://www.drupal.org/files/issues/2020-05-13/viewsreference-exposed_filters_not_working-3129609-3.patch"
+      },
+      "drupal/swiftmailer": {
+        "Fix undefined index warnings on reset password form": "https://www.drupal.org/files/issues/2020-10-29/3179656-two-undentified-index-notices-2.patch",
+        "Swiftmailer fix renderPlan method cli breaks": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/e11467100b3dd3c3ee66026b5f6ee781712b214c/swiftmailer-prevent-cli-commands-break.patch"
       },
       "drupal/advagg": {
         "Remove version comments from minified files.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/9e6eca9bcbd95e7bed7859d54a0c4623a6112e5a/advagg-remove-version-comment-from-minified-js.patch"
