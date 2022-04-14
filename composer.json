@@ -151,7 +151,8 @@
     "drupal/jsonapi_extras": "^3.20",
     "drupal/simple_oauth": "^5.2",
     "drupal/decoupled_router": "^2.0",
-    "drupal/jsonapi_user_resources": "1.0.0-alpha4"
+    "drupal/jsonapi_user_resources": "1.0.0-alpha4",
+    "drupal/symfony_mailer": "^1.0@alpha"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.3"
