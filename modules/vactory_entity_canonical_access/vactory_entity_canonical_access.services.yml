@@ -1,0 +1,5 @@
+services:
+  vactory_entity_canonical_access.route_subscriber:
+    class: Drupal\vactory_entity_canonical_access\Routing\EntityCanonicalAccessRouteSubscriber
+    tags:
+      - { name: event_subscriber }
