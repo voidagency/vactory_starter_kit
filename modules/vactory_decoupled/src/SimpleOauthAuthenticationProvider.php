@@ -16,6 +16,7 @@ use Lcobucci\JWT\Signer\Key\InMemory;
 use Lcobucci\JWT\Configuration;
 use Lcobucci\JWT\Validation\Constraint\IssuedBy;
 use Lcobucci\JWT\Validation\Constraint\SignedWith;
+use Drupal\Core\Site\Settings;
 
 /**
  * @internal
@@ -37,8 +38,10 @@ class SimpleOauthAuthenticationProvider extends BaseSimpleOauthAuthenticationPro
       InMemory::plainText('0eylDkJplsBm22Meby8EKIeBMckMKMyO')
     );
 
+    $keycloak_issuer = Settings::get('KEYCLOAK_ISSUER', "http://localhost:8003/auth/realms/master");
+
     $this->jwtConfiguration->setValidationConstraints(
-      new IssuedBy("http://localhost:8003/auth/realms/master"));
+      new IssuedBy($keycloak_issuer));
   }
 
   /**
