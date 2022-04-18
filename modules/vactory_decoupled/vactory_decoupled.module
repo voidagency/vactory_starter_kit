@@ -17,6 +17,7 @@ use Drupal\user\UserInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Drupal\simple_oauth\Entities\AccessTokenEntity;
 use Drupal\user\Entity\User;
+use Drupal\Component\Render\PlainTextOutput;
 
 /**
  * Implements hook_form_BASE_FORM_ID_alter().
@@ -339,3 +340,59 @@ function _auth_make_unitials_from_single_word($name)
   }
   return strtoupper(substr($name, 0, 2));
 }
+
+/**
+ * Implements hook_mail_alter().
+ */
+function vactory_decoupled_mail_alter(&$message) {
+  if ($message['id'] === 'user_password_reset') {
+    $key = 'password_reset';
+    $variables = ['user' => $message['params']['account']];
+    $token_service = \Drupal::token();
+    $language_manager = \Drupal::languageManager();
+    $langcode = $message['langcode'];
+    $language = $language_manager->getLanguage($langcode);
+    $original_language = $language_manager->getConfigOverrideLanguage();
+    $language_manager->setConfigOverrideLanguage($language);
+    $mail_config = \Drupal::config('user.mail');
+    $token_options = ['langcode' => $langcode, 'callback' => '_vactory_decoupled_user_mail_tokens', 'clear' => TRUE];
+    $message['subject'] = '';
+    $message['body'] = [];
+    $message['subject'] .= PlainTextOutput::renderFromHtml($token_service->replace($mail_config->get($key . '.subject'), $variables, $token_options));
+    $message['body'][] = $token_service->replace($mail_config->get($key . '.body'), $variables, $token_options);
+    $language_manager->setConfigOverrideLanguage($original_language);
+  }
+}
+
+/**
+ * @param $replacements
+ * @param $data
+ * @param $options
+ */
+function _vactory_decoupled_user_mail_tokens(&$replacements, $data, $options) {
+  if (isset($data['user'])) {
+    $replacements['[user:one-time-login-url]'] = _vactory_decoupled_user_pass_reset_url($data['user'], $options);
+    $replacements['[user:cancel-url]'] = user_cancel_url($data['user'], $options);
+  }
+}
+
+/**
+ * @param $account
+ * @param array $options
+ *
+ * @return string
+ */
+function _vactory_decoupled_user_pass_reset_url($account, $options = []) {
+  $frontend_url = Settings::get('FRONTEND_URL', "http://localhost:3000");
+  $timestamp = \Drupal::time()->getRequestTime();
+  $langcode = $options['langcode'] ?? $account->getPreferredLangcode();
+  $data = [
+    'uid' => $account->id(),
+    'timestamp' => $timestamp,
+    'hash' => user_pass_rehash($account, $timestamp),
+  ];
+
+  $query_string = http_build_query($data, "", "&", PHP_QUERY_RFC3986);
+  return $frontend_url . "/$langcode/user/one-time-login?" . $query_string;
+}
+
