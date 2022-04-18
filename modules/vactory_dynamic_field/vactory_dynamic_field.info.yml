@@ -10,3 +10,4 @@ dependencies:
   - jquery_colorpicker
   - field_group
   - media_library_form_element
+  - textfield_counter

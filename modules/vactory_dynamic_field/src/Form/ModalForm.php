@@ -793,6 +793,10 @@ class ModalForm extends FormBase {
         $response->addCommand(new InvokeCommand("#" . $this->wrapperId, 'addClass', ['update-templates-deltas']));
       }
 
+      if (isset($form['#attached'])) {
+        $response->setAttachments($form['#attached']);
+      }
+
       return $response;
     }
     return $form;

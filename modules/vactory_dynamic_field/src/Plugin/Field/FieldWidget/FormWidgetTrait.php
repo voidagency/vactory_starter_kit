@@ -108,7 +108,7 @@ trait FormWidgetTrait {
    *   The Form API renderable array.
    */
   // phpcs:disable
-  protected function getFormElement($type, MarkupInterface $label, $default_value, array $options, array $form, FormStateInterface $form_state, $field_name, $field_id = '', $index = '') {
+  protected function getFormElement($type, MarkupInterface $label, $default_value, array $options, array &$form, FormStateInterface $form_state, $field_name, $field_id = '', $index = '') {
     // phpcs:enable
     $element = [
       '#type'          => $type,
@@ -120,6 +120,28 @@ trait FormWidgetTrait {
     if ($type === 'text_format') {
       $default_value_string = is_string($default_value) ? $default_value : '';
       $element['#default_value'] = isset($default_value['value']) ? $default_value['value'] : $default_value_string;
+    }
+
+    if (in_array($type, ['text_format', 'text', 'textarea'])) {
+      if ($type === 'text' && !isset($options['#maxlength'])) {
+        $options['#maxlength'] = 255;
+      }
+
+      if (isset($options['#maxlength'])) {
+        // Attach textfield counter library.
+        $delta = !empty($index) ? $index : 1;
+        $key = $field_id . '-' . $delta;
+        $element['#attributes']['class'][] = $key;
+        $element['#attributes']['class'][] = 'textfield-counter-element';
+        $element['#attributes']['data-field-definition-id'] = $key;
+        $form['#attached']['library'][] = 'textfield_counter/counter';
+        $form['#attached']['drupalSettings']['textfieldCounter'][$key]['key'][$delta] = $key;
+        $form['#attached']['drupalSettings']['textfieldCounter'][$key]['maxlength'] = (int) $options['#maxlength'];
+        $form['#attached']['drupalSettings']['textfieldCounter'][$key]['counterPosition'] = 'after';
+        $form['#attached']['drupalSettings']['textfieldCounter'][$key]['textCountStatusMessage'] = '<span class="current_count">@current_length</span>/<span class="maxlength_count">@maxlength</span>';
+        $form['#attached']['drupalSettings']['textfieldCounter'][$key]['preventSubmit'] = TRUE;
+        $form['#attached']['drupalSettings']['textfieldCounter'][$key]['countHTMLCharacters'] = 0;
+      }
     }
 
     // Replace name property option token.

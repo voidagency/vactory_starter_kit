@@ -390,4 +390,46 @@ function vactory_core_field_widget_form_alter(&$element, FormStateInterface $for
   if ($context['widget'] instanceof JQueryColorpickerWidget) {
     unset($element['name']);
   }
+  if (
+    $context['widget'] instanceof \Drupal\Core\Field\Plugin\Field\FieldWidget\StringTextareaWidget ||
+    $context['widget'] instanceof \Drupal\Core\Field\Plugin\Field\FieldWidget\StringTextfieldWidget
+  ) {
+    if (isset($element['#maxlength']) || isset($element['value']['#maxlength'])) {
+      addCounterToTextElement($element);
+    }
+  }
+}
+
+/**
+ * Attach textfield counter library to given element.
+ */
+function addCounterToTextElement(&$element) {
+  $delta = $element['#delta'];
+  $key = 'text-field-' . $delta;
+  if (isset($element['value'])) {
+    $maxlength = $element['value']['#maxlength'];
+    $element['value']['#attributes']['class'][] = $key;
+    $element['value']['#attributes']['class'][] = 'textfield-counter-element';
+    $element['value']['#attributes']['data-field-definition-id'] = $key;
+    $element['value']['#attached']['library'][] = 'textfield_counter/counter';
+    $element['value']['#attached']['drupalSettings']['textfieldCounter'][$key]['key'][$delta] = $key;
+    $element['value']['#attached']['drupalSettings']['textfieldCounter'][$key]['maxlength'] = (int) $maxlength;
+    $element['value']['#attached']['drupalSettings']['textfieldCounter'][$key]['counterPosition'] = 'after';
+    $element['value']['#attached']['drupalSettings']['textfieldCounter'][$key]['textCountStatusMessage'] = '<span class="current_count">@current_length</span>/<span class="maxlength_count">@maxlength</span>';
+    $element['value']['#attached']['drupalSettings']['textfieldCounter'][$key]['preventSubmit'] = TRUE;
+    $element['value']['#attached']['drupalSettings']['textfieldCounter'][$key]['countHTMLCharacters'] = 0;
+  }
+  else {
+    $maxlength = $element['#maxlength'];
+    $element['#attributes']['class'][] = $key;
+    $element['#attributes']['class'][] = 'textfield-counter-element';
+    $element['#attributes']['data-field-definition-id'] = $key;
+    $element['#attached']['library'][] = 'textfield_counter/counter';
+    $element['#attached']['drupalSettings']['textfieldCounter'][$key]['key'][$delta] = $key;
+    $element['#attached']['drupalSettings']['textfieldCounter'][$key]['maxlength'] = (int) $maxlength;
+    $element['#attached']['drupalSettings']['textfieldCounter'][$key]['counterPosition'] = 'after';
+    $element['#attached']['drupalSettings']['textfieldCounter'][$key]['textCountStatusMessage'] = '<span class="current_count">@current_length</span>/<span class="maxlength_count">@maxlength</span>';
+    $element['#attached']['drupalSettings']['textfieldCounter'][$key]['preventSubmit'] = TRUE;
+    $element['#attached']['drupalSettings']['textfieldCounter'][$key]['countHTMLCharacters'] = 0;
+  }
 }
