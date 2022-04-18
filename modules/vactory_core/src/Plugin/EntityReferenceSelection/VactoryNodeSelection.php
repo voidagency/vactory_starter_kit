@@ -23,7 +23,7 @@ class VactoryNodeSelection extends NodeSelection {
   protected function buildEntityQuery($match = NULL, $match_operator = 'CONTAINS') {
     $query = parent::buildEntityQuery($match, $match_operator);
     // Add locator entity conditions based on handler settings filters.
-    $handler_settings = $this->configuration['handler_settings'];
+    $handler_settings = isset($this->configuration['handler_settings']) ? $this->configuration['handler_settings'] : [];
     if (!isset($handler_settings['filter'])) {
       return $query;
     }
