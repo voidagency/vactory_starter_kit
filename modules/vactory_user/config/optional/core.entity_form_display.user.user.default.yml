@@ -8,7 +8,6 @@ dependencies:
     - field.field.user.user.field_last_name
     - field.field.user.user.field_last_password_reset
     - field.field.user.user.field_password_expiration
-    - field.field.user.user.field_social_media_links
     - field.field.user.user.field_telephone
     - field.field.user.user.field_user_groups
     - field.field.user.user.field_user_profession
@@ -61,7 +60,6 @@ hidden:
   field_date_of_birth: true
   field_first_name: true
   field_last_name: true
-  field_social_media_links: true
   field_telephone: true
   field_user_groups: true
   field_user_profession: true
