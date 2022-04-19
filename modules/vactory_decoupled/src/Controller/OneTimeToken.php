@@ -19,6 +19,7 @@ use League\OAuth2\Server\ResponseTypes\BearerTokenResponse;
 use GuzzleHttp\Psr7\Response;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use Drupal\simple_oauth\Entities\ClientEntity;
+use League\OAuth2\Server\Repositories\ScopeRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Drupal\user\UserStorageInterface;
 
@@ -71,6 +72,11 @@ class OneTimeToken extends ControllerBase {
   protected $userStorage;
 
   /**
+   * @var \League\OAuth2\Server\Repositories\ScopeRepositoryInterface
+   */
+  protected $scopeRepository;
+
+  /**
    * Class constructor.
    */
   public function __construct(
@@ -78,6 +84,7 @@ class OneTimeToken extends ControllerBase {
     AccessTokenRepositoryInterface $access_token_repository,
     RefreshTokenRepositoryInterface $refresh_token_repository,
     ClientRepositoryInterface $client_repository,
+    ScopeRepositoryInterface $scope_repository,
     UserStorageInterface $user_storage,
     ConfigFactoryInterface $config_factory)
   {
@@ -85,8 +92,9 @@ class OneTimeToken extends ControllerBase {
     $this->refreshTokenRepository = $refresh_token_repository;
     $this->clientRepository = $client_repository;
     $this->accessTokenRepository = $access_token_repository;
-    $this->configFactory = $config_factory;
+    $this->scopeRepository = $scope_repository;
     $this->userStorage = $user_storage;
+    $this->configFactory = $config_factory;
     $settings = $config_factory->get('simple_oauth.settings');
     $this->setKeyPaths($settings);
   }
@@ -101,6 +109,7 @@ class OneTimeToken extends ControllerBase {
       $container->get('simple_oauth.repositories.access_token'),
       $container->get('simple_oauth.repositories.refresh_token'),
       $container->get('simple_oauth.repositories.client'),
+      $container->get('simple_oauth.repositories.scope'),
       $container->get('entity_type.manager')->getStorage('user'),
       $container->get('config.factory')
     );
@@ -196,18 +205,19 @@ class OneTimeToken extends ControllerBase {
     $grant->setAccessTokenRepository($this->accessTokenRepository);
     $grant->setPrivateKey($crypt_key);
     $settings = $this->configFactory->get('simple_oauth.settings');
-    $accessTokenTTL = new \DateInterval(sprintf('PT%dS', $settings->get('refresh_token_expiration')));
+    $accessTokenTTL = new \DateInterval(sprintf('PT%dS', $settings->get('access_token_expiration')));
 
     $abstractGrantReflection = new \ReflectionClass($grant);
     $issueAccessTokenMethod = $abstractGrantReflection->getMethod('issueAccessToken');
     $issueAccessTokenMethod->setAccessible(true);
 
+    $scope = $this->scopeRepository->getScopeEntityByIdentifier("authenticated");
     $accessToken = $issueAccessTokenMethod->invoke(
       $grant,
       $accessTokenTTL,
       $client,
       $uid,
-      []
+      [$scope]
     );
 
     $issueRefreshTokenMethod = $abstractGrantReflection->getMethod('issueRefreshToken');
