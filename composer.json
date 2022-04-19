@@ -3,8 +3,7 @@
   "description": "Vactory is a custom Drupal profile which is developed and released by VOID Agency.",
   "type": "drupal-profile",
   "license": "GPL-2.0-or-later",
-  "authors": [
-  ],
+  "authors": [],
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
@@ -90,7 +89,7 @@
     "drupal/minifyhtml": "^1.8",
     "drupal/flag": "^4.0@beta",
     "drupal/rate": "^1.0",
-    "masterminds/html5":"2.3.0",
+    "masterminds/html5": "2.3.0",
     "drupal/link_attributes": "^1.9",
     "drupal/entity_embed": "^1.0",
     "drupal/search_api_autocomplete": "^1.4",
@@ -233,6 +232,9 @@
       },
       "drupal/email_registration": {
         "Allow authentication via mail and password over OAuth2 module": "https://www.drupal.org/files/issues/2021-10-06/2991141-19-allow_authentication_via_mail.patch"
+      },
+      "drupal/simple_oauth": {
+        "Auth revoke on profile update": "https://www.drupal.org/files/issues/2019-04-15/simple_oauth-auth-revoke-2946882-34.patch"
       }
     }
   },
