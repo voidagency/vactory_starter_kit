@@ -262,6 +262,9 @@ function vactory_decoupled_entity_type_alter(array &$entity_types) {
  * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
  */
 function get_oauth_user_infos(UserInterface $user) {
+  /** @var \Drupal\Core\File\FileUrlGeneratorInterface $file_url_generator */
+  $file_url_generator = \Drupal::service('file_url_generator');
+
   $full_name = $user->getDisplayName();
   $first_name = $user->get('field_first_name')->getString();
   $last_name = $user->get('field_last_name')->getString();
@@ -274,7 +277,11 @@ function get_oauth_user_infos(UserInterface $user) {
   if (user_picture_enabled() && !$user->get('user_picture')->isEmpty()) {
     $pictureUri = $user->get('user_picture')->entity->getFileUri();
     $style = \Drupal::entityTypeManager()->getStorage('image_style')->load('avatar');
-    $avatar = $style->buildUrl($pictureUri);
+    $derivative_uri = $style->buildUri($pictureUri);
+    $avatar = $file_url_generator->generateAbsoluteString($style->buildUrl($pictureUri));
+    if (!file_exists($derivative_uri)) {
+      $style->createDerivative($pictureUri, $derivative_uri);
+    }
   }
 
   return [
