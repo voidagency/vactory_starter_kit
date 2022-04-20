@@ -22,6 +22,7 @@ use Drupal\simple_oauth\Entities\ClientEntity;
 use League\OAuth2\Server\Repositories\ScopeRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Drupal\user\UserStorageInterface;
+use Defuse\Crypto\Core;
 
 class OneTimeToken extends ControllerBase {
 
@@ -200,6 +201,8 @@ class OneTimeToken extends ControllerBase {
       NULL,
       Settings::get('simple_oauth.key_permissions_check', TRUE)
     );
+    $salt = Settings::getHashSalt();
+    $encryptionKey = Core::ourSubstr($salt, 0, 32);
 
     $grant = new PasswordGrant($this->userRepository, $this->refreshTokenRepository);
     $grant->setAccessTokenRepository($this->accessTokenRepository);
@@ -226,8 +229,7 @@ class OneTimeToken extends ControllerBase {
 
     $responseType = new BearerTokenResponse();
     $responseType->setPrivateKey($crypt_key);
-    // This is needed by the auth server but not used.
-    $responseType->setEncryptionKey(\base64_encode(\random_bytes(36)));
+    $responseType->setEncryptionKey($encryptionKey);
 
     $responseType->setAccessToken($accessToken);
     $responseType->setRefreshToken($refreshToken);
