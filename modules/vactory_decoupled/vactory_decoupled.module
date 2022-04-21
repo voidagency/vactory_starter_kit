@@ -366,7 +366,8 @@ function vactory_decoupled_mail_alter(&$message) {
     $message['subject'] = '';
     $message['body'] = [];
     $message['subject'] .= PlainTextOutput::renderFromHtml($token_service->replace($mail_config->get($key . '.subject'), $variables, $token_options));
-    $message['body'][] = $token_service->replace($mail_config->get($key . '.body'), $variables, $token_options);
+    $markup = ['#markup' => $token_service->replace($mail_config->get($key . '.body'), $variables, $token_options)];
+    $message['body'][] = \Drupal::service('renderer')->render($markup);
     $language_manager->setConfigOverrideLanguage($original_language);
   }
 }
@@ -392,7 +393,8 @@ function _vactory_decoupled_user_mail_tokens(&$replacements, $data, $options) {
 function _vactory_decoupled_user_pass_reset_url($account, $options = []) {
   $frontend_url = Settings::get('FRONTEND_URL', "http://localhost:3000");
   $timestamp = \Drupal::time()->getRequestTime();
-  $langcode = $options['langcode'] ?? $account->getPreferredLangcode();
+  $language = \Drupal::languageManager()->getCurrentLanguage()->getId();
+  $langcode = $language ?? $account->getPreferredLangcode();
   $data = [
     'uid' => $account->id(),
     'timestamp' => $timestamp,
