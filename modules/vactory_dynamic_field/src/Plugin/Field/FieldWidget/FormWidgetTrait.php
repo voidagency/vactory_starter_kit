@@ -179,10 +179,10 @@ trait FormWidgetTrait {
       }
 
       return $this->getImageFieldForm($field_name, [
-        'label'         => $label,
+        'label' => $label,
         'default_value' => $image_default_value,
-        'required'      => FALSE,
-        'cardinality'   => 1,
+        'required' => $element_defaults['#required'] ?? FALSE,
+        'cardinality' => 1,
       ], $form, $form_state);
     }
 
@@ -203,10 +203,10 @@ trait FormWidgetTrait {
       }
 
       return $this->getRemoteVideoFieldForm($field_name, [
-        'label'         => $label,
-        'required'      => FALSE,
+        'label' => $label,
+        'required' => $element_defaults['#required'] ?? FALSE,
         'default_value' => $remote_video_default_value,
-        'cardinality'   => 1,
+        'cardinality' => 1,
       ], $form, $form_state);
     }
 
