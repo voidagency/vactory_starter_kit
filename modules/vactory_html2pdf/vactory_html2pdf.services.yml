@@ -1,0 +1,9 @@
+services:
+  vactory_html2pdf.manager:
+    class: Drupal\vactory_html2pdf\Services\VactoryHtml2PdfManager
+    arguments:
+      - '@config.factory'
+      - '@stream_wrapper_manager'
+      - '@token'
+      - '@state'
+      - '@logger.factory'

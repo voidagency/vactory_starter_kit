@@ -19,12 +19,12 @@
         resizeTimer,
         prevArrow = Drupal.theme('vButtonMarkup', {
           'css': rtlMode ? 'slick-next' : 'slick-prev',
-          'icon': rtlMode ? 'icon-chevron-right' : 'icon-chevron-left',
+          'icon': rtlMode ? 'icon-arrow-right' : 'icon-arrow-left',
           'ariaLabel': rtlMode ? 'next-slide' : 'previous-slide'
         }),
         nextArrow = Drupal.theme('vButtonMarkup', {
           'css': rtlMode ? 'slick-prev' : 'slick-next',
-          'icon': rtlMode ? 'icon-chevron-left' : 'icon-chevron-right',
+          'icon': rtlMode ? 'icon-arrow-left' : 'icon-arrow-right',
           'ariaLabel': rtlMode ? 'previous-slide' : 'next-slide'
         });
 
@@ -36,6 +36,7 @@
           var $settings_views = $.parseJSON($slider.attr('data-settings'));
           // Default settings.
           var $settings_defaults = {
+            rtl: rtlMode,
             dots: true,
             arrows: true,
             infinite: true,

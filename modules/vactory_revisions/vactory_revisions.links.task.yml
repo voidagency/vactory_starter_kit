@@ -1,0 +1,4 @@
+vactory_revisions.admin_listing:
+  route_name: view.vactory_revisions.admin_listing
+  base_route: system.admin_content
+  title: Revisions

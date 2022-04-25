@@ -6,7 +6,6 @@ dependencies:
     - field.field.node.vactory_event.body
     - field.field.node.vactory_event.field_vactory_date_interval
     - field.field.node.vactory_event.field_vactory_excerpt
-    - field.field.node.vactory_event.field_vactory_image
     - field.field.node.vactory_event.field_vactory_media
     - field.field.node.vactory_event.field_vactory_seo_status
     - field.field.node.vactory_event.field_vactory_taxonomy_1
@@ -59,7 +58,6 @@ content:
 hidden:
   addtoany: true
   body: true
-  field_vactory_image: true
   field_vactory_seo_status: true
   field_vactory_taxonomy_1: true
   field_vactory_taxonomy_2: true

@@ -1165,3 +1165,22 @@ display:
         - user.permissions
       tags:
         - 'config:field.storage.node.field_vactory_forum_room'
+  block_list:
+    display_plugin: block
+    id: block_list
+    display_title: List
+    position: 1
+    display_options:
+      display_extenders: { }
+      display_description: ''
+      block_description: List
+      block_category: Forum
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_content'
+        - 'languages:language_interface'
+        - url
+        - 'user.node_grants:view'
+        - user.permissions
+      tags: { }

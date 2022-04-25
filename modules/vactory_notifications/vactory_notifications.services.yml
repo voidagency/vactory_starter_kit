@@ -5,6 +5,7 @@ services:
       - '@plugin.manager.mail'
       - '@language_manager'
       - '@entity_type.manager'
+      - '@entity.repository'
       - '@config.factory'
       - '@token'
       - '@event_dispatcher'

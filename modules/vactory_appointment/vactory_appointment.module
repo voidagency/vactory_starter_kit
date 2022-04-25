@@ -461,7 +461,12 @@ function vactory_appointment_theme_suggestions_alter(array &$suggestions, array 
  */
 function vactory_appointment_form_user_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $route_name = Drupal::routeMatch()->getRouteName();
-  if ($route_name == 'vactory_espace_prive.profile' || $route_name == 'entity.user.edit_form') {
+  $profile_edit_routes = [
+    'vactory_espace_prive.cleaned_profile',
+    'vactory_espace_prive.profile',
+    'entity.user.edit_form'
+  ];
+  if (in_array($route_name,  $profile_edit_routes)) {
     $current_user_id = Drupal::currentUser()->id();
     $modified_account = Drupal::entityTypeManager()->getStorage('user')
       ->load($current_user_id);

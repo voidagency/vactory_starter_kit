@@ -1,0 +1,6 @@
+vactory_entity_canonical_access.settings_form:
+  title: Vactory Entity Canonical Access
+  description: Configure vactory_entity_canonical_access.
+  parent: system.admin_config_system
+  route_name: vactory_entity_canonical_access.settings_form
+  weight: 10

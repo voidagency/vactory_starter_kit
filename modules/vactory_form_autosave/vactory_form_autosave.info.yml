@@ -1,0 +1,7 @@
+name: Vactory Form Autosave
+type: module
+description: Store forms attempts for eache session id on database to use it as default values later
+package: Vactory
+configure: vactory_form_autosave.settings_form
+core: 8.x
+core_version_requirement: ^8 || ^9

@@ -1,0 +1,26 @@
+name: 'List'
+multiple: FALSE
+category: 'Events'
+enabled: TRUE
+fields:
+  views:
+    type: dynamic_views
+    label: 'Views'
+    options:
+      '#required': TRUE
+      '#default_value':
+        views_id: vactory_event
+        views_display_id: block_list
+        fields:
+          id: id
+          uuid: key
+          title: title
+          url: url
+          field_vactory_date_interval: dateInterval
+          field_vactory_excerpt: excerpt
+          field_vactory_taxonomy_1: category
+          field_vactory_taxonomy_2: city
+          field_vactory_media: image
+        vocabularies:
+          vactory_event_category: vactory_event_category
+          vactory_event_citys: vactory_event_citys

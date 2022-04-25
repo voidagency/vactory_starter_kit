@@ -1,0 +1,8 @@
+# Api key menu items definition
+entity.api_key.collection:
+  title: 'API Key Auth provider'
+  route_name: entity.api_key.collection
+  description: 'Configure API Key registration for users'
+  parent: system.admin_config_services
+  weight: 99
+

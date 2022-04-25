@@ -1,0 +1,22 @@
+name: 'List'
+multiple: FALSE
+category: 'Appel Offres'
+enabled: TRUE
+fields:
+  views:
+    type: dynamic_views
+    label: 'Views'
+    options:
+      '#required': TRUE
+      '#default_value':
+        views_id: vactory_tenders
+        views_display_id: block_list
+        fields:
+          id: id
+          uuid: key
+          title: title
+          url: url
+          field_vactory_excerpt: excerpt
+          field_vactory_reference: reference
+          field_vactory_date: date
+          field_vactory_media_file: invitation

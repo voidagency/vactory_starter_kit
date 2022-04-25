@@ -1,0 +1,13 @@
+services:
+  vactory_amp.amp_context_decorator:
+    class: Drupal\vactory_amp\Services\VactoryAmpContextDecorator
+    decorates: router.amp_context
+    decoration_priority: 9
+    public: false
+    arguments:
+      - '@vactory_amp.amp_context_decorator.inner'
+      - '@config.factory'
+      - '@theme.manager'
+      - '@amp.entity_type'
+      - '@current_route_match'
+      - '@router.admin_context'

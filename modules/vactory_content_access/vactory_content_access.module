@@ -70,6 +70,17 @@ function vactory_content_access_entity_base_field_info(EntityTypeInterface $enti
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE)
       ->setDisplayConfigurable('field', TRUE);
+
+    $fields['field_content_access_custom'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Custom access key'))
+      ->setDescription(t('Enter a custom key to check with in <br> hook_vactory_content_access_alter(&$is_accessible, $key, \Drupal\node\NodeInterface $node)'))
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => 6,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayConfigurable('field', TRUE);
   }
   return $fields;
 }
@@ -107,6 +118,7 @@ function vactory_content_access_form_node_form_alter(&$form) {
   $form['field_content_access_users']['#group'] = 'node_content_access';
   $form['field_content_access_roles']['#group'] = 'node_content_access';
   $form['field_content_access_groups']['#group'] = 'node_content_access';
+  $form['field_content_access_custom']['#group'] = 'node_content_access';
 }
 
 /**

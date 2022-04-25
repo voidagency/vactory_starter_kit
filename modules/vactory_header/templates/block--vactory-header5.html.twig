@@ -19,7 +19,7 @@
       {# Check if this is the active item. #}
       {% set active = (menu_item.active or menu_item.active_trail) ? ' active' : '' %}
       <li class='{{ menu_item.options.attributes.wrapper_class }}'> 
-        <a class="nav-link {{ active }} {{ menu_item.options.attributes.class }}" href="{{ menu_item.url }}">{{ menu_item.text }}</a>
+        <a class="nav-link {{ active }} {{ menu_item.options.attributes.class }}" href="{{ menu_item.url }} {% if menu_item.options.attributes.rel is not empty %} rel="{{ menu_item.options.attributes.rel }}" {% endif %}">{{ menu_item.text }}</a>
       </li>
     {% endfor %}
   </nav>

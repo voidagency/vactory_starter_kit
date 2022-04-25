@@ -197,7 +197,9 @@ function vactory_locator_views_post_render(ViewExecutable $view, &$output, Cache
         $image = $view->result[$key]->_entity->get('field_locator_image')
           ->getValue();
         if (isset($image[0]['target_id'])) {
-          $fid = $image[0]['target_id'];
+          $mid = $image[0]['target_id'];
+          $media = Media::load($mid);
+          $fid = $media->getSource()->getSourceFieldValue($media);
           $file = $file_storage->load($fid);
           if ($file) {
             $wrapper = $stream_wrapper_manager->getViaUri($file->getFileUri());
@@ -207,10 +209,8 @@ function vactory_locator_views_post_render(ViewExecutable $view, &$output, Cache
 
         // Add Category Marker, rendered item.
         $category_id = $decode_data[$key]['field_locator_category_1'];
-        $decode_data[$key]['field_locator_category_infos'] = [
-          'id_category' => $category_id,
-          'label_category' => $decode_data[$key]['field_locator_category'],
-        ];
+        $decode_data[$key]['field_locator_category_infos']['id_category'] = $category_id;
+        $decode_data[$key]['field_locator_category_infos']['label_category'] = $decode_data[$key]['field_locator_category'];
 
         if (!empty($category_id)) {
           $category_terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')
@@ -218,7 +218,7 @@ function vactory_locator_views_post_render(ViewExecutable $view, &$output, Cache
               'vid' => 'locator_category',
               'tid' => $category_id,
             ]);
-          if (isset($category_terms)) {
+          if (isset($category_terms) && !empty($category_terms)) {
             $category_term = array_values($category_terms)[0];
             $translated_term = \Drupal::service('entity.repository')
               ->getTranslationFromContext($category_term, $current_lang_code);

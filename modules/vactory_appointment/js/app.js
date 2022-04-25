@@ -1,6 +1,9 @@
 (function ($, Drupal, drupalSettings) {
   Drupal.behaviors.vactory_appointment = {
     attach: function (context, setting) {
+      if (context !== document) {
+        return;
+      }
       var app = {};
       var isEditAppointment = drupalSettings.vactory_appointment.is_edit_appointment;
       var choosedDate = drupalSettings.vactory_appointment.choosed_date;
@@ -111,7 +114,7 @@
             durationEditable: false,
           });
         }
-        $.getScript( "../../../../libraries/fullcalendar/packages/core/locales-all.js", function(data) {
+        $.getScript( "../../../../../libraries/fullcalendar/packages/core/locales-all.js", function(data) {
           allLocales = data;
         });
         app.options = {

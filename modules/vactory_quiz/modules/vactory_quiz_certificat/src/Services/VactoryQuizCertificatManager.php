@@ -11,9 +11,6 @@ use Drupal\Core\State\StateInterface;
 use Drupal\Core\Utility\Token;
 use Drupal\node\NodeInterface;
 use Drupal\vactory_quiz_certificat\Services\Exceptions\InvalidArgumentException;
-use Mpdf\Config\ConfigVariables;
-use Mpdf\Config\FontVariables;
-use Mpdf\Mpdf;
 
 /**
  * Vactory quiz manager service class.
@@ -60,30 +57,14 @@ class VactoryQuizCertificatManager {
    *
    * @var \Drupal\Core\Language\LanguageManagerInterface
    */
-  private $languageManager;
-
-  /**
-   * MDF default config.
-   *
-   * @var array
-   */
-  protected $mpdfDefaultConfig;
-
-  /**
-   * MDF default font config.
-   *
-   * @var array
-   */
-  protected $mpdfDefaultFontConfig;
+  protected $languageManager;
 
   /**
    * The entity repository service.
    *
    * @var \Drupal\Core\Entity\EntityRepositoryInterface
    */
-  private $entityRepository;
-
-
+  protected $entityRepository;
 
   /**
    * {@inheritDoc}
@@ -104,14 +85,12 @@ class VactoryQuizCertificatManager {
     $this->state = $state;
     $this->languageManager = $languageManager;
     $this->entityRepository = $entityRepository;
-    $this->mpdfDefaultConfig = (new ConfigVariables())->getDefaults();
-    $this->mpdfDefaultFontConfig = (new FontVariables())->getDefaults();
   }
 
   /**
    * {@inheritDoc}
    */
-  public function generateCertificat($quiz_nid) {
+  public function getCertificatInfos($quiz_nid) {
     $quiz = $this->entityTypeManager->getStorage('node')->load($quiz_nid);
     $langcode = $this->languageManager->getCurrentLanguage()->getId();
     $default_langcode = $this->languageManager->getDefaultLanguage()->getId();
@@ -135,44 +114,27 @@ class VactoryQuizCertificatManager {
         }
       }
       $config_translation = !$config_translation ? $this->configFactory->get('vactory_quiz_certificat.settings') : $config_translation;
-      $custom_fonts_directories = $this->state->get('vactory_quiz_certificat_font_dirs');
-      $custom_fonts_data = $config->get('fonts_data');
       $orientation = $config->get('orientation');
       $certificat_body = $config_translation->get('certificat_body')['value'];
-      $fontDirs = $this->mpdfDefaultConfig['fontDir'];
-      $fontData = $this->mpdfDefaultFontConfig['fontdata'];
       // Set MPDF options.
-      $mpdf_options = [
-        'tempDir' => '/tmp',
-        'mode' => 'utf-8',
-        'format' => 'A4-L',
-        'fontDir' => array_merge($fontDirs, $custom_fonts_directories),
-        'fontdata' => $fontData + $custom_fonts_data,
-      ];
+      $mpdf_options = [];
       if ($orientation !== 'default') {
         $mpdf_options['format'] = 'A4-L';
       }
-      // Create MPDF object.
-      $mpdf = new Mpdf($mpdf_options);
-      //$mpdf->autoMarginPadding = 0;
-      //$mpdf->bleedMargin = 0;
-      $output = $this->token->replace($certificat_body, ['quiz_title' => $title]);
-      $mpdf->WriteHTML($output);
+      // Rpelace token in certificat body.
+      $html_output = $this->token->replace($certificat_body, ['quiz_title' => $title]);
+      // Generate file name.
       $current_time = new \DateTime('now');
       $file_name = !empty($first_name) ? $first_name . '-' : '';
       $file_name .= !empty($last_name) ? $last_name . '-' : '';
       $file_name .= 'Certif-' . $current_time->format('U') . '.pdf';
       $date = $current_time->format('Y-m');
       $dirname = 'private://quiz_certificat/' . $date;
-      if (!file_exists($dirname)) {
-        mkdir($dirname, 755, TRUE);
-      }
-      $file = $dirname . '/' . $file_name;
-      $mpdf->Output($file, 'F');
-      $url = file_create_url($file);
+      $output_file = $dirname . '/' . $file_name;
       return [
-        'url' => $url,
-        'uri' => $file,
+        'html_output' => $html_output,
+        'output_file' => $output_file,
+        'mpdf_options' => $mpdf_options,
       ];
     }
     else {

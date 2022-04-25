@@ -1,0 +1,341 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for vactory_decoupled module.
+ */
+
+use Drupal\Core\Entity\ContentEntityFormInterface;
+use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Site\Settings;
+use Drupal\Core\Url;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\node\Entity\Node;
+use Drupal\user\UserInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Drupal\simple_oauth\Entities\AccessTokenEntity;
+use Drupal\user\Entity\User;
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ */
+function vactory_decoupled_form_node_form_alter(&$form, FormStateInterface $form_state)
+{
+  // Node Settings.
+  if (isset($form['node_settings'])) {
+    $form['node_settings_group'] = [
+      '#type'        => 'details',
+      '#title'       => t('Node settings'),
+      '#group'       => 'advanced',
+      '#open'        => FALSE,
+      '#access'      => \Drupal::currentUser()
+        ->hasPermission('administer field node settings'),
+      '#attributes'  => ['class' => ['node-settings-form']],
+    ];
+    $form['node_settings']['#group'] = 'node_settings_group';
+  }
+}
+
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_decoupled_form_alter(&$form, FormStateInterface $form_state, $form_id)
+{
+  $form_object = $form_state->getFormObject();
+  if (!($form_object instanceof ContentEntityFormInterface)) {
+    return;
+  }
+  $entity = $form_object->getEntity();
+  $op = $form_object->getOperation();
+
+  if (!($entity instanceof ContentEntityInterface) || !($entity instanceof Node)) {
+    return;
+  }
+
+  if (in_array($op, ['edit', 'add', 'default'], TRUE)) {
+    unset($form['actions']['preview']);
+  }
+
+  $frontend_url = Settings::get('BASE_FRONTEND_URL', FALSE);
+  if (!$frontend_url || empty($frontend_url)) {
+    return;
+  }
+
+  $type = $form_state->getFormObject()->getEntity()->bundle();
+  // @todo: make an interface for this.
+  $disabledTypes = Settings::get('PREVIEW_DISABLED_TYPES', [
+    'vactory_page_listing',
+    'vactory_government_member',
+    'vactory_banner'
+  ]);
+
+  if (in_array($type, $disabledTypes)) {
+    return;
+  }
+
+  if ($op === 'edit') {
+    // Add another option to go to the Gatsby page after saving.
+    $form['actions']['save_view_gatsby'] = [
+      '#type' => 'submit',
+      '#value' => t('Save and view page'),
+      '#submit' => ['::submitForm', '::save'],
+      '#access' => TRUE,
+      '#weight' => 20,
+    ];
+
+    // Add a submit handler to redirect to the Gatsby page.
+    $form['actions']['save_view_gatsby']['#submit'][] = 'gatsby_node_form_submit';
+  }
+}
+
+/**
+ * Submit handler for viewing the Gatsby page.
+ */
+function gatsby_node_form_submit(&$form, FormStateInterface $form_state) {
+  $path = $form_state->getValue('path');
+  $url = !empty($path[0]['alias']) ? '/' .$path[0]['langcode'] . $path[0]['alias'] : $path[0]['source'];
+  $nid = $form_state->getValue('nid');
+  $siteConfig = \Drupal::config('system.site');
+  $front_uri = $siteConfig->get('page.front');
+  $frontend_url = Settings::get('BASE_FRONTEND_URL', FALSE);
+
+  if ($front_uri === '/node/' . $nid) {
+    $url = Url::fromRoute('<front>')->toString() ;
+  }
+
+  // Redirect to the alias if it exists, otherwise use the node URL.
+  if (isset($url)) {
+    $gatsby_url = Url::fromUri($frontend_url . $url . '/__preview')->toString();
+    $response = new RedirectResponse($gatsby_url);
+    $response->send();
+  }
+}
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function vactory_decoupled_entity_base_field_info(EntityTypeInterface $entity_type) {
+  $base_table = $entity_type->getBaseTable();
+  $canonical_template_exists = $entity_type->hasLinkTemplate('canonical');
+  $fields = [];
+
+  if (!empty($base_table) && $canonical_template_exists) {
+    $fields['internal_user'] = BaseFieldDefinition::create('map')
+      ->setLabel(t('Internal User'))
+      ->setDescription(t('User profile'))
+      ->setTranslatable(FALSE)
+      ->setClass('\Drupal\vactory_decoupled\Plugin\Field\InternalUserEntityFieldItemList')
+      ->setComputed(TRUE)
+      ->setReadOnly(TRUE)
+      ->setTargetEntityTypeId($entity_type->id())
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE);
+  }
+
+  if ($entity_type->id() === 'comment') {
+    $fields['extra_data'] = BaseFieldDefinition::create('map')
+      ->setLabel(t('Comment Extra Data'))
+      ->setDescription(t('Comment Extra Data'))
+      ->setTranslatable(FALSE)
+      ->setClass('\Drupal\vactory_decoupled\Plugin\Field\InternalCommentEntityFieldItemList')
+      ->setComputed(TRUE)
+      ->setReadOnly(TRUE)
+      ->setTargetEntityTypeId($entity_type->id())
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE);
+  }
+
+  if ($entity_type->id() === 'node') {
+    $fields['internal_blocks'] = BaseFieldDefinition::create('map')
+      ->setLabel(t('Node Region Blocks'))
+      ->setDescription(t('Defined blocks per node'))
+      ->setTranslatable(FALSE)
+      ->setClass('\Drupal\vactory_decoupled\Plugin\Field\InternalNodeEntityBlocksFieldItemList')
+      ->setComputed(TRUE)
+      ->setReadOnly(TRUE)
+      ->setTargetEntityTypeId($entity_type->id())
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE);
+  }
+
+  if ($entity_type->id() === 'node') {
+    $fields['internal_comment'] = BaseFieldDefinition::create('map')
+      ->setLabel(t('Node comment'))
+      ->setDescription(t('Defined comment per node'))
+      ->setTranslatable(FALSE)
+      ->setClass('\Drupal\vactory_decoupled\Plugin\Field\InternalNodeEntityCommentFieldItemList')
+      ->setComputed(TRUE)
+      ->setReadOnly(TRUE)
+      ->setTargetEntityTypeId($entity_type->id())
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE);
+  }
+
+  if ($entity_type->id() === 'node') {
+    $fields['internal_breadcrumb'] = BaseFieldDefinition::create('map')
+      ->setLabel(t('Node breadcrumb'))
+      ->setDescription(t('Defined breadcrumb per node'))
+      ->setTranslatable(FALSE)
+      ->setClass('\Drupal\vactory_decoupled\Plugin\Field\InternalNodeEntityBreadcrumbFieldItemList')
+      ->setComputed(TRUE)
+      ->setReadOnly(TRUE)
+      ->setTargetEntityTypeId($entity_type->id())
+//      ->setDisplayOptions('view', [
+//        'label' => 'hidden',
+//        'type' => 'hidden',
+//        'weight' => 0,
+//      ])
+//      ->setDisplayOptions('form', ['type' => 'hidden'])
+//      ->setDisplayConfigurable('form', TRUE)
+//      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE);
+  }
+
+  if ($entity_type->id() === 'taxonomy_term') {
+    $fields['slug'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Term slug'))
+      ->setDescription(t('Term slug'))
+      ->setTranslatable(FALSE)
+      ->setClass('\Drupal\vactory_decoupled\Plugin\Field\InternalTermEntitySlugFieldItemList')
+      ->setComputed(TRUE)
+      ->setReadOnly(TRUE)
+      ->setTargetEntityTypeId($entity_type->id())
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE);
+  }
+
+  if ($entity_type->id() === 'node') {
+    $fields['node_settings'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Node Settings'))
+      ->setDescription(t('Add extra parameters in JSON Format : { "isHomePage": true, "taxonomy": 4, "limit": 6 }'))
+      ->setRevisionable(TRUE)
+      ->setTranslatable(TRUE)
+      ->setDefaultValue('')
+      ->setRequired(FALSE)
+      ->setDisplayOptions('form', [
+        'type'     => 'string_textarea',
+        'weight'   => 1,
+        'settings' => [
+          'rows' => 4,
+        ],
+      ])
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE);
+  }
+
+  return $fields;
+}
+
+
+/**
+ * Implements hook_field_formatter_info_alter().
+ *
+ * Make sure the standard formatter for string can be used for the current
+ * map internal_breadcrumb computed field. for debug.
+ */
+/*function vactory_decoupled_field_formatter_info_alter(array &$info) {
+  $info['text_default']['field_types'][] = 'map';
+}*/
+
+/**
+ * Implements hook_entity_type_alter().
+ *
+ * @param array $entity_types
+ */
+function vactory_decoupled_entity_type_alter(array &$entity_types) {
+  $entity_types['comment']->addConstraint('jsonapi_recaptcha');
+  $entity_types['node']->addConstraint('jsonapi_recaptcha');
+}
+
+/**
+ * Oauth extra user informations.
+ *
+ * @param \Drupal\user\UserInterface $user
+ *
+ * @return array
+ * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+ * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+ */
+function get_oauth_user_infos(UserInterface $user) {
+  $full_name = $user->getDisplayName();
+  $first_name = $user->get('field_first_name')->getString();
+  $last_name = $user->get('field_last_name')->getString();
+  if (!empty($first_name) && !empty($last_name)) {
+    $full_name = $first_name . ' ' . $last_name;
+  }
+
+  $avatar = NULL;
+
+  if (user_picture_enabled() && !$user->get('user_picture')->isEmpty()) {
+    $pictureUri = $user->get('user_picture')->entity->getFileUri();
+    $style = \Drupal::entityTypeManager()->getStorage('image_style')->load('avatar');
+    $avatar = $style->buildUrl($pictureUri);
+  }
+
+  return [
+    'id' => $user->id(),
+    'uuid' => $user->uuid(),
+    'email' => $user->getEmail(),
+    'username' => $user->getAccountName(),
+    'avatar' => $avatar,
+    'first_name' => $first_name,
+    'last_name' => $last_name,
+    'full_name' => $full_name,
+    'name_initial' => _auth_generate_intials_from_name($full_name),
+    'roles' => $user->getRoles()
+  ];
+}
+
+/**
+ * Implements hook_simple_oauth_private_claims_alter().
+ */
+function vactory_decoupled_simple_oauth_private_claims_alter(&$private_claims, AccessTokenEntity $access_token_entity) {
+  $user_id = $access_token_entity->getUserIdentifier();
+  /** @var \Drupal\user\UserInterface $user */
+  $user = User::load($user_id);
+  $profile = [];
+  try {
+    $profile = get_oauth_user_infos($user);
+  } catch (\Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException $e) {
+  } catch (\Drupal\Component\Plugin\Exception\PluginNotFoundException $e) {
+  }
+
+  $private_claims = [
+    "profile" => $profile,
+  ];
+}
+
+
+/**
+ * Generate initials from a name
+ *
+ * @param string $name
+ * @return string
+ */
+function _auth_generate_intials_from_name($name)
+{
+  $words = explode(' ', $name);
+  if (count($words) >= 2) {
+    return strtoupper(substr($words[0], 0, 1) . substr(end($words), 0, 1));
+  }
+  return _auth_make_unitials_from_single_word($name);
+}
+
+/**
+ * Make initials from a word with no spaces
+ *
+ * @param string $name
+ * @return string
+ */
+function _auth_make_unitials_from_single_word($name)
+{
+  preg_match_all('#([A-Z]+)#', $name, $capitals);
+  if (count($capitals[1]) >= 2) {
+    return substr(implode('', $capitals[1]), 0, 2);
+  }
+  return strtoupper(substr($name, 0, 2));
+}

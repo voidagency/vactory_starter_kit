@@ -1,0 +1,4 @@
+take advantage of form autosave feature:
+  title: 'Take advantage of form autosave feature'
+  description: 'Users with this permission will take advantage of form autosave feature'
+  restrict access: true

@@ -3,3 +3,7 @@ vactory_frequent_searches.settings_form:
     theme:
       css/frequent-searches.css: {}
 
+  js:
+    js/frequent-searches.js: { }
+  dependencies:
+    - core/jquery

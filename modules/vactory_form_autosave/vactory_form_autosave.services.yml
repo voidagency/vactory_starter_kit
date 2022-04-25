@@ -1,0 +1,6 @@
+services:
+  vactory_form_autosave.manager:
+    class: '\Drupal\vactory_form_autosave\Services\VactoryFormAutosaveManager'
+    arguments:
+      - '@database'
+      - '@datetime.time'

@@ -1,0 +1,10 @@
+services:
+  vactory_wysiwyg_301to200.commands:
+    class: \Drupal\vactory_wysiwyg_301to200\Commands\VactoryWysiwyg301to200Commands
+    arguments:
+      - '@entity_type.manager'
+      - '@entity_field.manager'
+      - '@entity_type.bundle.info'
+      - '@database'
+    tags:
+      - { name: drush.command }

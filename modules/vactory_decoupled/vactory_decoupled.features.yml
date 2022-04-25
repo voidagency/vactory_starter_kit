@@ -1,0 +1,6 @@
+bundle: vactory
+required:
+  - jsonapi_extras.jsonapi_resource_config.oauth2_token--access_token
+  - jsonapi_extras.jsonapi_resource_config.oauth2_token--auth_code
+  - jsonapi_extras.jsonapi_resource_config.oauth2_token--refresh_token
+  - jsonapi_extras.jsonapi_resource_config.oauth2_token_type--oauth2_token_type

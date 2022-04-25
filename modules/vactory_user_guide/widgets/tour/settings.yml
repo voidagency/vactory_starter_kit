@@ -1,0 +1,51 @@
+name: "Guided Tour (from Decoupled)"
+multiple: TRUE
+category: 'Navigation'
+enabled: TRUE
+extra_fields:
+  group_tours_options:
+    g_title: 'Tour Options'
+    showNTimes:
+      type: number
+      label: Number of times the tour should be shown
+      options:
+        '#description': set to 0 to always show the tour on each visit
+    delay:
+      type: number
+      label: 'Number of seconds to delay starting the tour'
+    prevButtonText:
+      type: text
+      label: 'Previous button text'
+    nextButtonText:
+      type: text
+      label: 'Next button text'
+    closeWithMask:
+      type: checkbox
+      label: 'Close on click on the mask'
+    showCloseButton:
+      type: checkbox
+      label: 'Show Close button'
+    showPrevNextButtons:
+      type: checkbox
+      label: 'Show Prev Next buttons'
+    showBadge:
+      type: checkbox
+      label: 'Show a badge with the number of the current step'
+    showDots:
+      type: checkbox
+      label: 'Show navigation dots'
+    disableKeyboardNavigation:
+      type: checkbox
+      label: 'Disable keyboard navigation'
+fields:
+  selector:
+    type: text
+    label: "Selector"
+    options:
+      '#required': true
+  content:
+    type: text_format
+    label: 'Content'
+    options:
+      '#format': 'full_html'
+      '#required': true

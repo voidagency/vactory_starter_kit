@@ -9,6 +9,7 @@ use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\vactory_core\Vactory;
+use Drupal\Core\Render\RendererInterface;
 
 /**
  * Class TwigExtension.
@@ -32,11 +33,19 @@ class TwigExtension extends \Twig_Extension {
   protected $entityTypeManager;
 
   /**
+   * Renderer service.
+   *
+   * @var \Drupal\Core\Render\RendererInterface
+   */
+  protected $renderer;
+
+  /**
    * {@inheritDoc}
    */
-  public function __construct(Vactory $vactory, EntityTypeManagerInterface $entityTypeManager) {
+  public function __construct(Vactory $vactory, EntityTypeManagerInterface $entityTypeManager, RendererInterface $renderer) {
     $this->vactory = $vactory;
     $this->entityTypeManager = $entityTypeManager;
+    $this->renderer = $renderer;
   }
 
   /**
@@ -87,6 +96,19 @@ class TwigExtension extends \Twig_Extension {
       new \Twig_SimpleFunction('get_term_name',
         [$this, 'getTermName'],
         ['is_safe' => ['html']]),
+
+      new \Twig_SimpleFunction('vactory_image',
+        [$this, 'vactoryImage'],
+        ['is_safe' => ['html']]),
+
+      new \Twig_SimpleFunction('get_image_url',
+        [$this, 'getImageUrl'],
+        ['is_safe' => ['html']]),
+
+      new \Twig_SimpleFunction('get_image',
+        [$this, 'getImage'],
+        ['is_safe' => ['html']]),
+
     ];
   }
 
@@ -326,4 +348,110 @@ class TwigExtension extends \Twig_Extension {
       }
     }
   }
+
+  /**
+   * Get image from the media id, inculdes [apply images styles,
+   * add classes, lazy loading, image alt]
+   */
+  public function vactoryImage($media_id, $image_styles = [], $classes = [], $lazyLoading = TRUE, $image_alt = '') {
+    if (empty($media_id)) {
+        return NULL;
+    }
+
+    $media = $this->entityTypeManager->getStorage('media')->load($media_id);
+    if (!isset($media)) {
+        return NULL;
+    }
+
+    $fid = $media->get('field_media_image')->getValue()[0]['target_id'];
+    $file = $this->entityTypeManager->getStorage('file')->load($fid);
+    if (!isset($file)) {
+        return NULL;
+    }
+
+    $alt = empty($image_alt) ? $media->get('field_media_image')->getValue()[0]['alt'] : $image_alt;
+    $height = $media->get('field_media_image')->getValue()[0]['height'];
+    $width = $media->get('field_media_image')->getValue()[0]['width'];
+    $uri = $file->getFileUri();
+    $picture_urls = [];
+    $lqip_url = '';
+
+    if (!empty($image_styles)) {
+      if (is_string($image_styles) || (is_array($image_styles) && count($image_styles) == 1)) {
+          $image_style = is_array($image_styles) ? $image_styles[0] : $image_styles;
+          $image_url = $this->entityTypeManager
+            ->getStorage('image_style')->load($image_style)->buildUrl($uri);
+          $image_style_configs = !is_null($this->entityTypeManager
+            ->getStorage('image_style')->load($image_style)->getEffects()->getConfiguration()) ?
+            array_values($this->entityTypeManager->getStorage('image_style')->load($image_style)->getEffects()->getConfiguration())[0] : NULL;
+          // Get Height && width.
+          $height = isset($image_style_configs) ? $image_style_configs['data']['height'] : '';
+          $width = isset($image_style_configs) ? $image_style_configs['data']['width'] : '';
+      }
+      else {
+        foreach ($image_styles as $image_style) {
+            $picture_urls[] = $this->entityTypeManager
+              ->getStorage('image_style')->load($image_style)->buildUrl($uri);
+        }
+        if (count($picture_urls) < 4) {
+            $picture_urls = array_pad($picture_urls, 4, $picture_urls[count($picture_urls) - 1]);
+        }
+        $image_url = $picture_urls[0];
+        $lazyLoading = TRUE;
+      }
+    }
+    else {
+        $image_url = file_create_url($uri);
+    }
+
+    if ($lazyLoading || !empty($picture_urls)) {
+        $lqip_url = $this->entityTypeManager
+          ->getStorage('image_style')->load('lqip')->buildUrl($uri);
+    }
+
+    if ($lazyLoading) {
+        array_push($classes, 'lazyload');
+    }
+
+    $theme = [
+        '#theme' => 'vactory_image',
+        '#image' => [
+            'picture-urls' => $picture_urls,
+            'url' => !empty($lqip_url) ? $lqip_url : $image_url,
+            'data-src' => !empty($lqip_url) ? $image_url : '',
+            'alt' => $alt,
+            'height' => $height,
+            'width' => $width,
+            'classes' => $classes,
+        ],
+    ];
+
+    return $this->renderer->render($theme);
+
+  }
+
+  /**
+   * Implement get image function.
+   */
+  public function getImageUrl($fid = 0) {
+    $file = $this->entityTypeManager->getStorage('media')->load($fid);
+    if (!$file) {
+      return;
+    }
+    $path = file_create_url($file->thumbnail->entity->getFileUri());
+    return $path;
+  }
+
+  /**
+   * Implement get image function.
+   */
+  public function getImage($fid = 0) {
+    $file = $this->entityTypeManager->getStorage('media')->load($fid);
+    if (!$file) {
+      return;
+    }
+    $path = $file->thumbnail->entity->getFileUri();
+    return $path;
+  }
+
 }

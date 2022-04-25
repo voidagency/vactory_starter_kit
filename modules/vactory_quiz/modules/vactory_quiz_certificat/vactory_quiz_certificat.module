@@ -8,6 +8,20 @@
 use Drupal\Core\Form\FormStateInterface;
 
 /**
+ * Implements hook_theme().
+ */
+function vactory_quiz_certificat_theme($existing, $type, $theme, $path) {
+  return [
+    'vactory_quiz_certificat_generate' => [
+      'template' => 'quiz-certificat-generate',
+      'variables' => [
+        'content' => NULL,
+      ],
+    ],
+  ];
+}
+
+/**
  * Implements hook_form_FORM_ID_alter().
  */
 function vactory_quiz_certificat_form_node_vactory_quiz_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
@@ -16,4 +30,40 @@ function vactory_quiz_certificat_form_node_vactory_quiz_edit_form_alter(&$form, 
       'input[name="field_enable_certificat[value]"]' => ['checked' => TRUE],
     ],
   ];
+}
+
+/**
+ * Implements hook_mail().
+ */
+function vactory_quiz_certificat_mail($key, &$message, $params) {
+  switch ($key) {
+    case 'quiz_certificate_mail':
+      $language_manager = Drupal::languageManager();
+      $default_langcode = $language_manager->getDefaultLanguage()->getId();
+      $langcode = Drupal::languageManager()->getCurrentLanguage()->getId();
+      // Get module settings translation.
+      $config = Drupal::config('vactory_quiz_certificat.settings');
+      // For default language we use default config.
+      $config_translation = $config;
+      if ($langcode !== $default_langcode) {
+        $config_translation = $language_manager->getLanguageConfigOverride($langcode, 'vactory_quiz_certificat.settings');
+        if (empty($config_translation->get('certificat_body'))) {
+          $config_translation = $config;
+        }
+      }
+      if (empty($config_translation)) {
+        $config_translation = $config;
+      }
+      $config = Drupal::config('vactory_quiz_certificat.settings');
+      $subject = !empty($config_translation->get('email_subject')) ? $config_translation->get('email_subject') : $config->get('email_subject');
+      $body = !empty($config_translation->get('email_body')) ? $config_translation->get('email_body') : $config->get('email_body');
+      $body = !empty($body) ? $body['value'] : '';
+      if (!empty($subject) && !empty($body)) {
+        $subject = Drupal::token()->replace($subject, $params['tokens']);
+        $body = Drupal::token()->replace($body, $params['tokens']);
+        $message['subject'] = $subject;
+        $message['body'][] = $body;
+      }
+      break;
+  }
 }

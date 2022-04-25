@@ -222,10 +222,10 @@ class CrossContentAutocomplete extends WidgetBase {
     $field_name = reset($triggering_element['#array_parents']);
     $values = $form_state->getValues();
     if ($field_name !== 'actions') {
-      $widget_values = $values[$field_name]['autocomplete_widgets'];
+      $widget_values = isset($values[$field_name]['autocomplete_widgets']) ? $values[$field_name]['autocomplete_widgets'] : [];
       foreach ($widget_values as $key => $value) {
         if (empty($value['node'])) {
-          $form_state->setError($element['autocomplete_widgets'][$key]['node'], $this->t('Ce champ est requis'));
+          $form_state->setError($element[$key]['node'], $this->t('Ce champ est requis'));
         }
       }
     }

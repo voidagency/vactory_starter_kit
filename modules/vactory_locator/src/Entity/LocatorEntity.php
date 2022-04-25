@@ -284,32 +284,4 @@ class LocatorEntity extends RevisionableContentEntityBase implements LocatorEnti
     return $fields;
   }
 
-  /**
-   * {@inheritdoc}
-   */
-  public function getRevisionCreationTime() {
-    return $this->getRevisionCreationTime();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setRevisionCreationTime($timestamp) {
-    $this->setRevisionCreationTime($timestamp);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getRevisionUser() {
-    return $this->getRevisionUser();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setRevisionUserId($uid) {
-    $this->setRevisionUserId($uid);
-  }
-
 }

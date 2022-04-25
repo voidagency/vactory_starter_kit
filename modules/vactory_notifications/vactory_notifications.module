@@ -6,6 +6,7 @@
  */
 
 use Drupal\Component\Serialization\Json;
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
@@ -71,15 +72,17 @@ function vactory_notification_generate($entity) {
   $notification_manager = \Drupal::service('vactory_notifications.manager');
   $notification_config = Drupal::config('vactory_notifications.settings');
   $token = Drupal::token();
-  $node_notification_title = !empty($entity->get('notification_title')->value) ? $entity->get('notification_title')->value : $notification_config->get('notifications_default_title');
-  $node_notification_message = !empty($entity->get('notification_message')->value) ? $entity->get('notification_message')->value : $notification_config->get('notifications_default_message');
+  $default_langcode = Drupal::languageManager()->getDefaultLanguage()->getId();
+  $source_translated_node = Drupal::service('entity.repository')->getTranslationFromContext($entity, $default_langcode);
+  $node_notification_title = !empty($source_translated_node->get('notification_title')->value) ? $source_translated_node->get('notification_title')->value : $notification_config->get('notifications_default_title');
+  $node_notification_message = !empty($source_translated_node->get('notification_message')->value) ? $source_translated_node->get('notification_message')->value : $notification_config->get('notifications_default_message');
   $notification_users_ids = $notification_manager->getNotificationsUsersIds($entity->bundle());
   // Generate a notification.
-  $current_user_id = Drupal::currentUser()->id();
+  $user_id = $entity->getOwnerId();
   $notification_data = [
     'type' => 'notification_entity',
     'name' => $token->replace($node_notification_title, ['entity' => $entity]),
-    'user_id' => $current_user_id,
+    'user_id' => $user_id,
     'notification_related_content' => $entity->id(),
     'notification_message' => $token->replace($node_notification_message, ['entity' => $entity]),
     'status' => TRUE,
@@ -127,7 +130,7 @@ function vactory_notification_generate($entity) {
     $mail_notification_data = [
       'type' => 'notification_entity',
       'mail_subject' => $token->replace($node_mail_subject, ['entity' => $entity]),
-      'user_id' => $current_user_id,
+      'user_id' => $user_id,
       'notification_related_content' => $entity->id(),
       'mail_message' => $token->replace($node_mail_message, ['entity' => $entity]),
       'status' => TRUE,
@@ -249,7 +252,6 @@ function vactory_notifications_entity_base_field_info(EntityTypeInterface $entit
     $fields['generate_notification'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Generate notification'))
       ->setDescription(t('Check this to generate a notification for this content'))
-      ->setTranslatable(TRUE)
       ->setDefaultValue(1)
       ->setDisplayOptions('form', array(
         'type' => 'boolean_checkbox',
@@ -272,6 +274,7 @@ function vactory_notifications_form_alter(&$form, FormStateInterface $form_state
   ];
   if (in_array($form_id, $user_forms)) {
     $form['field_notification_toast']['#access'] = FALSE;
+    $form['field_notifications_viewed_toast']['#access'] = FALSE;
   }
 }
 
@@ -293,12 +296,14 @@ function vactory_notifications_form_node_form_alter(&$form) {
   $form['notification_title']['#group'] = 'node_notifications';
   $form['notification_message']['#group'] = 'node_notifications';
   $form['generate_notification']['#group'] = 'node_notifications';
-
-  if (!isset($form['notification_title']['widget'][0]['value']['#default_value'])) {
-    $form['notification_title']['widget'][0]['value']['#default_value'] = $notifications_config->get('notifications_default_title');
+  $route_name = Drupal::routeMatch()->getRouteName();
+  $langcode = Drupal::languageManager()->getCurrentLanguage()->getId();
+  $notification_config_translation = Drupal::languageManager()->getLanguageConfigOverride($langcode, 'vactory_notifications.settings');
+  if (!isset($form['notification_title']['widget'][0]['value']['#default_value']) || $route_name === 'entity.node.content_translation_add') {
+    $form['notification_title']['widget'][0]['value']['#default_value'] = $notification_config_translation->get('notifications_default_title') ?? $notifications_config->get('notifications_default_title');
   }
-  if (!isset($form['notification_message']['widget'][0]['value']['#default_value'])) {
-    $form['notification_message']['widget'][0]['value']['#default_value'] = $notifications_config->get('notifications_default_message');
+  if (!isset($form['notification_message']['widget'][0]['value']['#default_value']) || $route_name === 'entity.node.content_translation_add') {
+    $form['notification_message']['widget'][0]['value']['#default_value'] = $notification_config_translation->get('notifications_default_message') ?? $notifications_config->get('notifications_default_message');
   }
 
   // Mail notification.
@@ -315,10 +320,10 @@ function vactory_notifications_form_node_form_alter(&$form) {
   $form['mail_subject']['#group'] = 'node_mail';
   $form['mail_message']['#group'] = 'node_mail';
 
-  if (!isset($form['mail_subject']['widget'][0]['value']['#default_value'])) {
+  if (!isset($form['mail_subject']['widget'][0]['value']['#default_value']) || $route_name === 'entity.node.content_translation_add') {
     $form['mail_subject']['widget'][0]['value']['#default_value'] = $notifications_config->get('mail_default_subject');
   }
-  if (!isset($form['mail_message']['widget'][0]['value']['#default_value'])) {
+  if (!isset($form['mail_message']['widget'][0]['value']['#default_value']) || $route_name === 'entity.node.content_translation_add') {
     $form['mail_message']['widget'][0]['value']['#default_value'] = $notifications_config->get('mail_default_message');
   }
   // Check if notification are enabled for the current node bundle.
@@ -343,25 +348,34 @@ function vactory_notifications_form_node_form_alter(&$form) {
  */
 function vactory_notifications_views_pre_render(ViewExecutable $view) {
   if ($view->id() == 'notifications' && $view->current_display == 'listing') {
-    $results = $view->result;
-    $current_user = Drupal::currentUser();
-    foreach ($results as $key => $result) {
-      $notification_object = $result->_entity;
-      if ($result->_entity->isUserConcerned($current_user->id())) {
-        $notification_viewers = $notification_object->getViewers();
-        // Add current user to the notification viewers.
-        if (!in_array($current_user->id(), $notification_viewers)) {
-          $notification_viewers[] = $current_user->id();
-          $notification_object->setViewers($notification_viewers);
-          $notification_object->save();
+    $filters = $view->filter;
+    if (isset($filters['notification_concerned_users'])) {
+      $filter_value = $filters['notification_concerned_users']->value;
+      $uid = $filter_value['concerned_user'] === 'current_user' ? Drupal::currentUser()->id() : $filter_value['user'];
+      if (!empty($uid)) {
+        // Get not viewed yet notifications list.
+        $query = \Drupal::entityQuery('notifications_entity')
+          ->condition('notification_concerned_users', '%"' . $uid . '"%', 'LIKE')
+          ->condition('notification_viewers', '%"' . $uid . '"%', 'NOT LIKE')
+          ->condition('status', 1);
+        $notification_ids = $query->execute();
+        if (!empty($notification_ids)) {
+          $notifications = Drupal::entityTypeManager()
+            ->getStorage('notifications_entity')
+            ->loadMultiple($notification_ids);
+          foreach ($notifications as $notification) {
+            // Update notification viewers list.
+            $notification_viewers = $notification->getViewers();
+            $notification_viewers[] = $uid;
+            $notification->setViewers($notification_viewers);
+            $notification->save();
+          }
+          if (!empty($notifications)) {
+            Cache::invalidateTags(['notifications_entity:view']);
+          }
         }
       }
-      else {
-        // The current is not concerned by the notification.
-        unset($results[$key]);
-      }
     }
-    $view->result = $results;
   }
 }
 

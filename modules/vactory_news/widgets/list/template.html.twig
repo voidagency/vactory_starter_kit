@@ -1,0 +1,18 @@
+{% if content.0.views.nodes is not empty %}
+  {% for node in content.0.views.nodes %}
+    <div style="margin: 20px">
+      {% if node.title is not empty %}
+        <div>{{node.title}}</div>
+      {% endif %}
+      {% if node.category.label is not empty %}
+        <div>{{node.category.label}}</div>
+      {% endif %}
+      {% if node.excerpt is not empty %}
+        <div>{{ node.excerpt|striptags }}</div>
+      {% endif %}
+      {% if node.image is not empty %}
+        <div><img src="{{ node.image._default }}"></div>
+      {% endif %}
+    </div>
+  {% endfor %}
+{% endif %}

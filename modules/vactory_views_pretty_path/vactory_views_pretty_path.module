@@ -15,6 +15,11 @@ use Symfony\Component\HttpFoundation\Request;
  * Implements hook_views_pre_view().
  */
 function vactory_views_pretty_path_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
+  $route_name = Drupal::routeMatch()->getRouteName();
+  // Do nothing in jsonapi call case.
+  if (strpos($route_name, 'jsonapi') === 0) {
+    return;
+  }
   $config = \Drupal::config('vactory_views_pretty_path.settings');
   $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
   $paths_infos = $config->get('paths');

@@ -254,7 +254,7 @@ class VactoryViewsPrettyPathProcessor implements InboundPathProcessorInterface, 
     if (is_array($paths_infos)) {
       // Get concerned paths from module settings.
       $concerned_paths = $this->getConcernedPaths($paths_infos);
-      $current_path = $this->currentPath->getPath();
+      $current_path = $request ? $this->currentPath->getPath() : '';
       // Check if current path should be processed.
       if (
         strpos($current_path, $path) === 0 &&

@@ -1,0 +1,23 @@
+services:
+  vactory_decoupled.breadcrumb.default:
+    class: Drupal\vactory_decoupled\MenuBasedBreadcrumbBuilder
+    arguments: ['@string_translation','@plugin.manager.menu.link','@language_manager','@entity_type.manager', '@config.factory', '@cache.discovery', '@lock', '@entity.repository', '@path_processor_manager', '@router.no_access_checks', '@title_resolver', '@current_route_match']
+#    tags:
+#      # The priority must be higher than core taxonomy builder (priority: 1002)
+#      # see https://www.drupal.org/node/1495510
+#      - { name: breadcrumb_builder, priority: 1011 }
+  vactory_decoupled.breadcrumb.generate:
+    class: Drupal\vactory_decoupled\Breadcrumb
+    arguments: ['@vactory_decoupled.breadcrumb.default', '@database', '@router.no_access_checks', '@entity.repository']
+  vactory_decoupled.blocksManager:
+    class: Drupal\vactory_decoupled\BlocksManager
+    arguments: ['@plugin.manager.block', '@theme.manager', '@entity_type.manager', '@plugin.manager.condition', '@jsonapi_extras.entity.to_jsonapi']
+
+  vactory_decoupled.url_resolver:
+    class: Drupal\vactory_decoupled\UrlResolver
+    arguments: ['@config.factory']
+
+  vactory_decoupled.route_subscriber:
+    class: Drupal\vactory_decoupled\Routing\RouteSubscriber
+    tags:
+      - { name: event_subscriber }

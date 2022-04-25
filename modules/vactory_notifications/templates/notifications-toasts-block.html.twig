@@ -1,4 +1,4 @@
-{% if content.enable_toast %}
+{% if content.enable_toast and logged_in %}
 	{{ attach_library('vactory_notifications/toast') }}
 	<div id="notifications-toast-wrapper" style="position: fixed; bottom: 8%; left: 5%; z-index: 9999; width: 100%">
 	</div>

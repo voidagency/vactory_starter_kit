@@ -2,9 +2,13 @@
 
 namespace Drupal\vactory_quiz\Form;
 
+use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Queue\QueueFactory;
+use Drupal\Core\Url;
+use Drupal\vactory_core\Services\VactoryDevTools;
 use Drupal\vactory_quiz\Services\VactoryQuizManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -28,14 +32,40 @@ class QuizForm extends FormBase {
   protected $moduleHandler;
 
   /**
+   * Queue factory service.
+   *
+   * @var \Drupal\Core\Queue\QueueFactory
+   */
+  protected $queueFactory;
+
+  /**
+   * Quiz Certificat settings.
+   *
+   * @var \Drupal\Core\Config\ImmutableConfig
+   */
+  protected $quizCertificatSettings;
+
+  /**
+   * Vactory devtools service.
+   *
+   * @var \Drupal\vactory_core\Services\VactoryDevTools
+   */
+  protected $vactoryDevTools;
+
+  /**
    * Class constructor.
    */
   public function __construct(
     VactoryQuizManager $quizManager,
-    ModuleHandlerInterface $moduleHandler
+    ModuleHandlerInterface $moduleHandler,
+    QueueFactory $queueFactory,
+    VactoryDevTools $vactoryDevTools
   ) {
     $this->quizManager = $quizManager;
     $this->moduleHandler = $moduleHandler;
+    $this->queueFactory = $queueFactory;
+    $this->quizCertificatSettings = $this->config('vactory_quiz_certificat.settings');
+    $this->vactoryDevTools = $vactoryDevTools;
   }
 
   /**
@@ -44,7 +74,9 @@ class QuizForm extends FormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('vactory_quiz.manager'),
-      $container->get('module_handler')
+      $container->get('module_handler'),
+      $container->get('queue'),
+      $container->get('vactory_core.tools'),
     );
   }
 
@@ -67,6 +99,7 @@ class QuizForm extends FormBase {
     $allow_new_attempts_title = $config->get('allow_new_attempts_title');
     $next_button_title = $config->get('next_button_title');
     $validate_answer_title = $config->get('validate_answer_title');
+    $current_user = \Drupal::currentUser();
     if (!isset($quiz)) {
       // No quiz case.
       return [
@@ -92,6 +125,7 @@ class QuizForm extends FormBase {
     if (empty($form_state->get('questions'))) {
       $form_state->set('questions', $quiz['questions']);
     }
+
     $questions = $form_state->get('questions');
 
     if (empty($form_state->get('results'))) {
@@ -122,30 +156,17 @@ class QuizForm extends FormBase {
         $user_perfect_mark = (int) $results['perfect_mark'];
         $user_result_percentage = intval(round(($user_perfect_mark*100)/(int) $perfect_mark));
         if ($user_result_percentage >= $min_required_result) {
-          if (isset($results['certificat']) && !empty($results['certificat']) && file_exists($results['certificat'])) {
-            // Certificat already generated so get related uri from history.
-            $certificat_url = file_create_url($results['certificat']);
+          $generate_certificat_method = $this->quizCertificatSettings->get('method');
+          if ($generate_certificat_method === 'html2pdf') {
+            $content['enable_email'] = $this->quizCertificatSettings->get('enable_email');
+            $content['certificat_url'] = $this->generateCertificatUsingMpdfQueue($results, $form_state, $quiz);
           }
           else {
-            // Certificat not yet generated or maybe quiz history module is disabled.
-            // So regenerate the certificat.
-            $certificat_info = \Drupal::service('vactory_quiz_certificat.manager')->generateCertificat($quiz['entity_id']);
-            $certificat_url = $certificat_info['url'];
-            $results['certificat'] = $certificat_info['uri'];
-            $form_state->set('results', $results);
-            if ($this->moduleHandler->moduleExists('vactory_quiz_history')) {
-              $this->quizManager->updateUserAttemptHistory(
-                \Drupal::currentUser()->id(),
-                $quiz['entity_id'],
-                $results['user_mark'],
-                $results['user_answers'],
-                $certificat_info['uri']
-              );
-            }
+            $content['certificat_print_url'] = $this->generateCertificateUsingBrowserPrint($results, $current_user, $quiz);
           }
-          $content['certificat_url'] = $certificat_url;
         }
       }
+      // Render Quiz Results.
       $form['quiz_results'] = [
         '#theme' => 'vactory_quiz_results',
         '#content' => $content,
@@ -288,6 +309,72 @@ class QuizForm extends FormBase {
         'wrapper' => $ajax_wrapper_id,
       ],
     ];
+  }
+
+  /**
+   * Generate certificat using MPDF.
+   */
+  public function generateCertificatUsingMpdfQueue(&$results, $form_state, $quiz) {
+    $certificat_url = NULL;
+    if (isset($results['certificat']) && !empty($results['certificat']) && file_exists($results['certificat'])) {
+      // Certificat already generated so get related uri from history.
+      $certificat_url = file_create_url($results['certificat']);
+    }
+    elseif (
+      !isset($results['certificat']) ||
+      (isset($results['certificat']) && $results['certificat'] !== 1)
+    ) {
+      // Certificate not yet generated so add item to quiz certificat.
+      // Queue processor so the certificat will be generated later.
+      $certificat_info = \Drupal::service('vactory_quiz_certificat.manager')->getCertificatInfos($quiz['entity_id']);
+      if (is_array($certificat_info)) {
+        $certificat_queue_processor = $this->queueFactory->get('quiz_certificat_queue_processor');
+        $certificat_queue_processor->createItem([
+          'html_output' => $certificat_info['html_output'],
+          'output_file' => $certificat_info['output_file'],
+          'mpdf_options' => $certificat_info['mpdf_options'],
+          'quiz_id' => $quiz['entity_id'],
+          'user_id' => \Drupal::currentUser()->id(),
+          'user_mark' => $results['user_mark'],
+          'user_answers' => $results['user_answers'],
+        ]);
+        // 1 means certificate in progress.
+        $results['certificat'] = 1;
+        $certificat_url = 1;
+        $form_state->set('results', $results);
+        $this->quizManager->updateUserAttemptHistory(
+          \Drupal::currentUser()->id(),
+          $quiz['entity_id'],
+          $results['user_mark'],
+          $results['user_answers'],
+          1,
+          $results['certificat_time'],
+        );
+      }
+    }
+    return $certificat_url;
+  }
+
+  /**
+   * Generate certificat using browser print.
+   */
+  public function generateCertificateUsingBrowserPrint(&$results, $current_user, $quiz) {
+    if (!isset($results['certificat']) || $results['certificat'] !== 2 || !isset($results['certificat_time'])) {
+      // 2 means get certificat using browser print.
+      $results['certificat'] = 2;
+      $results['certificat_time'] = \Drupal::time()->getCurrentTime();
+      $this->quizManager->updateUserAttemptHistory(
+        \Drupal::currentUser()->id(),
+        $quiz['entity_id'],
+        $results['user_mark'],
+        $results['user_answers'],
+        $results['certificat'],
+        $results['certificat_time'],
+      );
+    }
+    $token = $current_user->id() . '_' . $quiz['entity_id'] . '_' . $results['certificat_time'];
+    $token = $this->vactoryDevTools->encrypt($token);
+    return Url::fromRoute('vactory_quiz_certificat.generate', ['token' => $token]);
   }
 
 }

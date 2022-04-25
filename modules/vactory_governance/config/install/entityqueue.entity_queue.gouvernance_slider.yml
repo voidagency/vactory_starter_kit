@@ -1,0 +1,29 @@
+langcode: fr
+status: true
+dependencies:
+  module:
+    - node
+  config:
+    - node.type.vactory_governance
+id: gouvernance_slider
+label: 'Gouvernance - Slider'
+handler: simple
+handler_configuration: {  }
+entity_settings:
+  target_type: node
+  handler: 'default:node'
+  handler_settings:
+    target_bundles:
+      vactory_governance: vactory_governance
+    sort:
+      field: _none
+    auto_create: false
+    auto_create_bundle: ''
+    auto_entityqueue:
+      auto_add: 1
+      insert_front: 0
+queue_settings:
+  min_size: 0
+  max_size: 0
+  act_as_queue: false
+  reverse: false

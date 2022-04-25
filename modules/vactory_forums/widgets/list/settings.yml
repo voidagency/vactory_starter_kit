@@ -1,0 +1,20 @@
+name: 'List'
+multiple: FALSE
+category: 'Forum'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: "Titre"
+  taxonomy:
+    type: text
+    label: 'Section'
+  limit:
+    type: number
+    label: 'Limit'
+  link:
+    type: url_extended
+    label: 'Lien'
+  is_listing:
+    type: checkbox
+    label: 'Is listing'

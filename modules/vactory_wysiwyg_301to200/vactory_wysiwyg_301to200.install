@@ -1,0 +1,18 @@
+<?php
+
+/**
+ * @file
+ * Module related installation hooks.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function vactory_wysiwyg_301to200_install($is_syncing) {
+  $log_file_name = 'redirects-log.json';
+  $log_file_path = 'public://vactory_wysiwyg_301to200';
+  if (!file_exists($log_file_path)) {
+    mkdir($log_file_path, 0777, TRUE);
+  }
+  file_put_contents($log_file_path . '/' . $log_file_name, '[]');
+}

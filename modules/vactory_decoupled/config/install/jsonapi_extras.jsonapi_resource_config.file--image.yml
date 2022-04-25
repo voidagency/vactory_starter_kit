@@ -1,0 +1,106 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - file_entity.type.image
+id: file--image
+disabled: false
+path: file/image
+resourceType: file--image
+resourceFields:
+  fid:
+    fieldName: fid
+    publicName: fid
+    enhancer:
+      id: ''
+    disabled: false
+  uuid:
+    fieldName: uuid
+    publicName: uuid
+    enhancer:
+      id: ''
+    disabled: false
+  langcode:
+    fieldName: langcode
+    publicName: langcode
+    enhancer:
+      id: ''
+    disabled: false
+  type:
+    fieldName: type
+    publicName: type
+    enhancer:
+      id: ''
+    disabled: false
+  uid:
+    fieldName: uid
+    publicName: uid
+    enhancer:
+      id: ''
+    disabled: false
+  filename:
+    fieldName: filename
+    publicName: filename
+    enhancer:
+      id: ''
+    disabled: false
+  uri:
+    fieldName: uri
+    publicName: uri
+    enhancer:
+      id: vactory_file_image
+    disabled: false
+  filemime:
+    fieldName: filemime
+    publicName: filemime
+    enhancer:
+      id: ''
+    disabled: false
+  filesize:
+    fieldName: filesize
+    publicName: filesize
+    enhancer:
+      id: ''
+    disabled: false
+  status:
+    fieldName: status
+    publicName: status
+    enhancer:
+      id: ''
+    disabled: false
+  created:
+    fieldName: created
+    publicName: created
+    enhancer:
+      id: ''
+    disabled: false
+  changed:
+    fieldName: changed
+    publicName: changed
+    enhancer:
+      id: ''
+    disabled: false
+  path:
+    fieldName: path
+    publicName: path
+    enhancer:
+      id: ''
+    disabled: false
+  metatag:
+    fieldName: metatag
+    publicName: metatag
+    enhancer:
+      id: ''
+    disabled: false
+  field_image_alt_text:
+    fieldName: field_image_alt_text
+    publicName: field_image_alt_text
+    enhancer:
+      id: ''
+    disabled: false
+  field_image_title_text:
+    fieldName: field_image_title_text
+    publicName: field_image_title_text
+    enhancer:
+      id: ''
+    disabled: false

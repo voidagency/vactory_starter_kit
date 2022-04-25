@@ -2,6 +2,10 @@ notifications_default_title: 'New content from [notification:owner_first_name]'
 notifications_default_message: 'New content « [notification:content_type:node_title] » of type [notification:content_type] has been added by [notification:owner_first_name] [notification:owner_last_name].'
 auto_translation: TRUE
 notifications_lifetime: 6
+enable_toast: 1
+toast_template: profiles/contrib/vactory_starter_kit/modules/vactory_notifications/templates/notifications-toast.html.twig
+mail_default_subject: 'New content from [notification:owner_first_name]'
+mail_default_message: 'New content « [notification:content_type:node_title] » of type [notification:content_type] has been added by [notification:owner_first_name] [notification:owner_last_name].'
 langcode: en
 enforced:
   module:

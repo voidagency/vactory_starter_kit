@@ -1,0 +1,4 @@
+services:
+  vactory_rate.vote:
+    class: Drupal\vactory_rate\RateVote
+    arguments: ['@entity_type.manager', '@plugin.manager.votingapi.resultfunction', '@database', '@rate.bot_detector', '@current_user', '@messenger']

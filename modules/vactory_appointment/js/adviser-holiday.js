@@ -1,11 +1,18 @@
 (function ($, Drupal, drupalSettings) {
   Drupal.behaviors.vactory_appointment = {
     attach: function (context, setting) {
+      if (context !== document) {
+        return;
+      }
       var app = {};
       var allLocales = [];
       var calendar = {};
       var events = JSON.parse(drupalSettings.vactory_appointment.adviser_appointments);
       var adviserHolidays = JSON.parse(drupalSettings.vactory_appointment.adviser_holidays);
+      adviserHolidays = adviserHolidays.map(function (holiday) {
+        holiday.color = "rgba(100, 150, 190, 0.6)";
+        return holiday;
+      });
       var adviserAppointmentInfos = drupalSettings.vactory_appointment.adviser_appointment_infos;
       var serverTimezoneOfsset = drupalSettings.vactory_appointment.server_timezone_ofsset;
       events = events.map(function (event) {
@@ -27,7 +34,7 @@
       app.getNewEvent = function (appointmentID, dateStart) {};
       app.dateClickCallback = function (dateStart) {};
       app.eventRenderCallback = function (event, element) {};
-      $.getScript( "../../../../libraries/fullcalendar/packages/core/locales-all.js", function(data) {
+      $.getScript( "../../../../../libraries/fullcalendar/packages/core/locales-all.js", function(data) {
         allLocales = data;
       });
       app.options = {
@@ -163,6 +170,7 @@
         if (title) {
           adviserHoliday = adviserHolidays.pop();
           adviserHoliday.title = Drupal.t(title);
+          holiday.color = "rgba(100, 150, 190, 0.6)";
           adviserHolidays.push(adviserHoliday);
           adviserHolidayEvent = calendar.getEventById(adviserHoliday.id);
           adviserHolidayEvent.remove();

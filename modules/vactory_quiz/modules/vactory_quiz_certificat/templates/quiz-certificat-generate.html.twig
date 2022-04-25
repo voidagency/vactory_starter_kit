@@ -1,0 +1,24 @@
+{{ attach_library('vactory_quiz_certificat/scripts') }}
+<div id="certificat-wrapper">
+	<div id="printable">
+		{# Inline style to set orientation to landscape #}
+		<style>
+        @media print {
+            @page {
+                size: A4 landscape;
+                margin: 0mm;
+            }
+            body {
+                margin: 0mm;
+            }
+            html {
+                margin: 0mm;
+            }
+        }
+		</style>
+		{{ content|raw }}
+		<div>
+			<a class="btn btn-primary suffix-icon-download" id="print-certificat">{{ 'Imprimer'|t }}</a>
+		</div>
+	</div>
+</div>

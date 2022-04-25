@@ -67,7 +67,7 @@ class CrossContentWidget extends OptionsSelectWidget {
     $node_type = NodeType::load($type);
     if ($node_type->getThirdPartySetting('vactory_cross_content', 'enabling', '') == 1) {
       $content_type_selected = $node_type->getThirdPartySetting('vactory_cross_content', 'content_type', '');
-      if ($content_type_selected != '' && $content_type_selected != 'none') {
+      if (!empty($content_type_selected) && $content_type_selected != 'none') {
         $type = $content_type_selected;
       }
     }

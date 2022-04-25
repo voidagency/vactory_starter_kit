@@ -357,9 +357,6 @@ class MenuBasedBreadcrumbBuilder implements BreadcrumbBuilderInterface {
             $uuid = $plugin->getDerivativeId();
             $entities = $this->entityTypeManager->getStorage('menu_link_content')
               ->loadByProperties(['uuid' => $uuid]);
-            if (array_keys($entities)[0] == 2) {
-              continue;
-            }
             if ($entity = reset($entities)) {
               $breadcrumb->addCacheableDependency($entity);
             }

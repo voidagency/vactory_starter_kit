@@ -4,10 +4,12 @@ namespace Drupal\vactory_notifications\Services;
 
 use Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Mail\MailManagerInterface;
 use Drupal\Core\Utility\Token;
+use Drupal\node\NodeInterface;
 use Drupal\vactory_notifications\Event\VactoryNotificationsToastEvent;
 
 /**
@@ -35,6 +37,14 @@ class VactoryNotificationsService {
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
+
+  /**
+   * Entity repository service.
+   *
+   * @var \Drupal\Core\Entity\EntityRepositoryInterface
+   */
+  protected $entityRepository;
+
 
   /**
    * @var \Drupal\Core\Config\ConfigFactoryInterface
@@ -76,6 +86,7 @@ class VactoryNotificationsService {
     MailManagerInterface $mail_manager,
     LanguageManagerInterface $language_manager,
     EntityTypeManagerInterface $entityTypeManager,
+    EntityRepositoryInterface $entityRepository,
     ConfigFactoryInterface $configFactory,
     Token $token,
     ContainerAwareEventDispatcher $eventDispatcher
@@ -84,6 +95,7 @@ class VactoryNotificationsService {
     $this->languageManager = $language_manager;
     $this->configFactory = $configFactory;
     $this->entityTypeManager = $entityTypeManager;
+    $this->entityRepository = $entityRepository;
     $this->notificationConfig = $this->configFactory->get('vactory_notifications.settings');
     $this->token = $token;
     $this->eventDispatcher = $eventDispatcher;
@@ -127,38 +139,61 @@ class VactoryNotificationsService {
    * Get concerned users IDs form module settings.
    */
   public function getNotificationsUsersIds($bundle) {
-    $uids = $this->entityTypeManager->getStorage('user')
-      ->getQuery()
-      ->condition('status', 1)
-      ->execute();
-    $users = $this->entityTypeManager->getStorage('user')
-      ->loadMultiple($uids);
     $users_ids = [];
-    foreach ($users as $user) {
-      $user_roles = $user->getRoles();
-      foreach ($user_roles as $role_name) {
-        $role_content_types = $this->notificationConfig->get($role_name . '_content_types');
-        if (!empty($role_content_types) && in_array($bundle, $role_content_types)) {
-          $users_ids[] = $user->id();
+    $roles = $this->entityTypeManager->getStorage('user_role')->loadMultiple();
+    foreach ($roles as $role) {
+      $role_content_types = $this->notificationConfig->get($role->id() . '_content_types');
+      if (!empty($role_content_types) && in_array($bundle, $role_content_types)) {
+        $uids = \Drupal::entityQuery('user')
+          ->condition('status', 1)
+          ->condition('roles', $role->id())
+          ->execute();
+        if (!empty($uids)) {
+          $users_ids = array_merge($users_ids, $uids);
+          $users_ids = array_unique($users_ids);
         }
       }
     }
-
-    return $users_ids;
+    return array_values($users_ids);
   }
 
-  public /**
+  /**
    * Auto translate a notification function for enabled languages.
    */
-  function notificationsAutoTranslate($notification) {
+  public function notificationsAutoTranslate($notification) {
     $enabled_languages = $this->languageManager->getLanguages();
+    $related_nid = $notification->get('notification_related_content')->target_id;
+    $related_node = NULL;
+    if ($related_nid) {
+      $node = $this->entityTypeManager->getStorage('node')
+        ->load($related_nid);
+      if ($node && $node instanceof NodeInterface) {
+        $related_node = $node;
+      }
+    }
     foreach ($enabled_languages as $langcode => $language) {
       if (!$language->isDefault()) {
+        $translated_node = NULL;
+        // If related node exists then get related translation.
+        if ($related_node) {
+          $translated_node = $this->entityRepository->getTranslationFromContext($related_node, $langcode);
+        }
         $notification_config_translation = $this->languageManager->getLanguageConfigOverride($langcode, 'vactory_notifications.settings');
         $translated_notification_title = $notification_config_translation->get('notifications_default_title');
         $translated_notification_message = $notification_config_translation->get('notifications_default_message');
         $translated_mail_subject = $notification_config_translation->get('mail_default_subject');
         $translated_mail_message = $notification_config_translation->get('mail_default_message');
+        if ($translated_node && $related_node->hasTranslation($langcode)) {
+          // Override notification default values with node translation data.
+          $node_notification_title = $translated_node->get('notification_title')->value;
+          $node_notification_message = $translated_node->get('notification_message')->value;
+          $node_notification_mail_sub = $translated_node->get('mail_subject')->value;
+          $node_notification_mail_message = $translated_node->get('mail_message')->value;
+          $translated_notification_title = !empty($node_notification_title) ? $node_notification_title : $translated_notification_title;
+          $translated_notification_message = !empty($node_notification_message) ? $node_notification_message : $translated_notification_message;
+          $translated_mail_subject = !empty($node_notification_mail_sub) ? $node_notification_mail_sub : $translated_mail_subject;
+          $translated_mail_message = !empty($node_notification_mail_message) ? $node_notification_mail_message : $translated_mail_message;
+        }
         $translated_notification = $notification->addTranslation($langcode);
         $translated_notification_title = isset($translated_notification_title) ? $translated_notification_title : $this->notificationConfig->get('notifications_default_title');
         $translated_notification_message = isset($translated_notification_message) ? $translated_notification_message : $this->notificationConfig->get('notifications_default_message');
@@ -182,7 +217,7 @@ class VactoryNotificationsService {
       ->loadMultiple();
     foreach (array_keys($roles) as $role) {
       $content_types = $this->notificationConfig->get($role . '_content_types');
-      if (in_array($bundle, $content_types)) {
+      if (is_array($content_types) && in_array($bundle, $content_types)) {
         return TRUE;
       }
     }

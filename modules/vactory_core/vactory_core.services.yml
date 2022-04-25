@@ -4,6 +4,7 @@ services:
     arguments:
       - '@vactory'
       - '@entity_type.manager'
+      - '@renderer'
     tags:
       - { name: twig.extension }
   vactory_core.disable_route_subscriber:
@@ -40,3 +41,16 @@ services:
       - '@entity_field.manager'
       - '@current_route_match'
       - '@title_resolver'
+  # Decorate entity.autocomplete_matcher service to get exact match feature.
+  vactory_core.autocomplete_matcher_decorator:
+    class: Drupal\vactory_core\VactoryEntityAutocompleteExactMatcher
+    decorates: entity.autocomplete_matcher
+    decoration_priority: 50
+    public: false
+    arguments:
+      - '@vactory_core.autocomplete_matcher_decorator.inner'
+      - '@plugin.manager.entity_reference_selection'
+      - '@settings'
+  vactory_core.slug_manager:
+    class: Drupal\vactory_core\SlugManager
+

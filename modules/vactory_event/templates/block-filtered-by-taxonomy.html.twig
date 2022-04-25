@@ -1,0 +1,4 @@
+{% set category_id = content.category_term_id %}
+{% set city_id = content.city_term_id %}
+{% set event_block_id = content.event_block_id %}
+{{ drupal_view('vactory_event', event_block_id, category_id, city_id, content.meta_data) }}

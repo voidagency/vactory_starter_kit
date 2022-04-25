@@ -1,0 +1,6 @@
+vactory_form_autosave.settings_form:
+  title: Vactory Form Autosave
+  description: Configure Vactory Form Autosave.
+  parent: system.admin_config_system
+  route_name: vactory_form_autosave.settings_form
+  weight: 10

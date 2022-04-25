@@ -1,0 +1,40 @@
+name: 'Decoupled Banner - A'
+multiple: FALSE
+category: 'Decoupled Banners'
+enabled: TRUE
+fields:
+  group_banner:
+    g_title: 'Banner'
+    image:
+      type: image
+      label: 'Image'
+      options:
+        '#required': TRUE
+    image_mobile:
+      type: image
+      label: 'Image Mobile'
+    options:
+      '#description': 'Cette image sera utiliser dans la version mobile.'
+  group_banner_title:
+    g_title: 'Title'
+    custom_title:
+      type: text
+      label: 'Custom Titre'
+      options:
+        '#description': 'Surcharger le titre de la page.'
+    use_page_title:
+      type: checkbox
+      label: 'Afficher le titre de la page'
+      options:
+        '#description': 'Afficher le titre de la page actuelle. Si "Custom Titre" est utiliser, ce champs ne sera pas pris en considération.'
+  group_banner_content:
+    g_title: 'Contenu'
+    use_breadcrumb:
+      type: checkbox
+      label: "Afficher Le fil d'Ariane"
+    description:
+      type: text_format
+      label: 'Description'
+      options:
+        '#format': 'full_html'
+        '#description': 'Afficher du contenu suplémentaire.'

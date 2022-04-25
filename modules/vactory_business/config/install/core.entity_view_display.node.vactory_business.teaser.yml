@@ -1,0 +1,57 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.vactory_business.body
+    - field.field.node.vactory_business.field_business_pays
+    - field.field.node.vactory_business.field_business_specialisations
+    - field.field.node.vactory_business.field_business_users
+    - field.field.node.vactory_business.field_business_ville
+    - field.field.node.vactory_business.field_secteur_activite
+    - field.field.node.vactory_business.field_site_web
+    - field.field.node.vactory_business.field_social_networks
+    - field.field.node.vactory_business.field_statut_juridique
+    - field.field.node.vactory_business.field_taille_entreprise
+    - field.field.node.vactory_business.field_vactory_address
+    - field.field.node.vactory_business.field_vactory_date
+    - field.field.node.vactory_business.field_vactory_image
+    - field.field.node.vactory_business.field_vactory_telephone
+    - node.type.vactory_business
+  module:
+    - text
+    - user
+id: node.vactory_business.teaser
+targetEntityType: node
+bundle: vactory_business
+mode: teaser
+content:
+  body:
+    label: hidden
+    type: text_summary_or_trimmed
+    weight: 101
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+    region: content
+  links:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  field_business_pays: true
+  field_business_specialisations: true
+  field_business_users: true
+  field_business_ville: true
+  field_secteur_activite: true
+  field_site_web: true
+  field_social_networks: true
+  field_statut_juridique: true
+  field_taille_entreprise: true
+  field_vactory_address: true
+  field_vactory_date: true
+  field_vactory_image: true
+  field_vactory_telephone: true
+  langcode: true
+  search_api_excerpt: true

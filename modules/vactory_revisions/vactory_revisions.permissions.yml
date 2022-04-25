@@ -1,0 +1,3 @@
+view entity revisions:
+  title: 'View entity revisions'
+  restrict access: true

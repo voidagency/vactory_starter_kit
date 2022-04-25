@@ -7,9 +7,12 @@ use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Render\RenderContext;
+use Drupal\Core\Site\Settings;
 use Drupal\Core\Url;
 use Drupal\file\Entity\File;
 use Drupal\media\Entity\Media;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Plugin implementation of the 'field_wysiwyg_dynamic_formatter' formatter.
@@ -24,6 +27,38 @@ use Drupal\media\Entity\Media;
  * )
  */
 class VactoryDynamicFormatter extends FormatterBase {
+
+  /**
+   * Renderer service.
+   *
+   * @var \Drupal\Core\Render\RendererInterface
+   */
+  protected $renderer;
+
+  /**
+   * Platform provider service.
+   *
+   * @var \Drupal\vactory_dynamic_field\WidgetsManager
+   */
+  protected $platformProvider;
+
+  /**
+   * Logger factory service.
+   *
+   * @var \Drupal\Core\Logger\LoggerChannelFactoryInterface
+   */
+  protected $loggerChannelFactory;
+
+  /**
+   * {@inheritDoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
+    $instance->renderer = $container->get('renderer');
+    $instance->platformProvider = $container->get('vactory_dynamic_field.vactory_provider_manager');
+    $instance->loggerChannelFactory = $container->get('logger.factory');
+    return $instance;
+  }
 
   /**
    * Apply formatters such as processed_text, image & links.
@@ -84,25 +119,58 @@ class VactoryDynamicFormatter extends FormatterBase {
           if (is_array($value) && isset(array_values($value)[0]['selection'][0]['target_id'])) {
             $media_id = array_values($value)[0]['selection'][0]['target_id'];
             $media = Media::load($media_id);
+            $uri = '';
             if (isset($media) && !empty($media)) {
-              $fid = $media->get('thumbnail')->target_id;
-              $uri = '';
-              if (isset($fid) && !empty($fid)) {
-                $uri = File::load($fid)->getFileUri();
+              if ($media->hasField('field_media_oembed_video')) {
+                $video_url = $media->get('field_media_oembed_video')->value;
+                $url_components = parse_url($video_url);
+                $is_youtube_full_url = strpos($url_components['host'], 'youtube.com') !== FALSE;
+                $is_youtube_embed_url = strpos($url_components['host'], 'youtu.be') !== FALSE;
+                // Handle youtube thumbnail case.
+                if ($is_youtube_full_url || $is_youtube_embed_url) {
+                  $video_id = '';
+                  if ($is_youtube_full_url && isset($url_components['query'])) {
+                    parse_str($url_components['query'], $params);
+                    if (isset($params['v'])) {
+                      $video_id = $params['v'];
+                    }
+                  }
+                  if ($is_youtube_embed_url && isset($url_components['path'])) {
+                    $path = trim($url_components['path'], '/');
+                    $path_args = explode('/', $path);
+                    if (!empty($path_args)) {
+                      $video_id = $path_args[0];
+                    }
+                  }
+                  if (!empty($video_id)) {
+                    $uri = 'https://img.youtube.com/vi/'. $video_id .'/maxres2.jpg';
+                  }
+                }
               }
-
+              if (empty($uri)) {
+                $fid = $media->get('thumbnail')->target_id;
+                if (isset($fid) && !empty($fid)) {
+                  $uri = File::load($fid)->getFileUri();
+                }
+              }
               $content = [
-                'titre'       => $media->get('name')->value,
-                'video_url'   => $media->get('field_media_oembed_video')->value,
-                'thumbnail'   => [
-                  'uri'    => $uri,
+                'titre' => $media->get('name')->value,
+                'video_url' => $media->get('field_media_oembed_video')->value,
+                'thumbnail' => [
+                  'uri' => $uri,
                   'height' => $media->get('thumbnail')->height,
-                  'width'  => $media->get('thumbnail')->width,
+                  'width' => $media->get('thumbnail')->width,
                 ],
               ];
               $value = $content;
             }
           }
+        }
+
+        // Views.
+        if ($info['type'] === 'dynamic_views' && !empty($value)) {
+          $value = array_merge($value, $info['options']['#default_value']);
+          $value = \Drupal::service('vactory.views.to_api')->normalize($value);
         }
       }
       elseif (is_array($value)) {
@@ -125,21 +193,15 @@ class VactoryDynamicFormatter extends FormatterBase {
 
     $elements = [];
 
-    // Get vactory_provider_manager to get the module name provide the plugin.
-    /**
-     * @var \Drupal\vactory_dynamic_field\WidgetsManager $platformProvider
-     */
-    $platformProvider = \Drupal::service('vactory_dynamic_field.vactory_provider_manager');
-
     foreach ($items as $delta => $item) {
       $widget_id = $item->widget_id;
       $widget_data = json_decode($item->widget_data, TRUE);
       list($platform, $template_id) = explode(':', $widget_id);
-      $settings = $platformProvider->loadSettings($widget_id);
-      $widgets_path = $platformProvider->getWidgetsPath($widget_id);
+      $settings = $this->platformProvider->loadSettings($widget_id);
+      $widgets_path = $this->platformProvider->getWidgetsPath($widget_id);
 
       // Current template to find.
-      $content['template'] = (int) $template_id;
+      $content['template'] = $template_id;
       // Placeholder Image.
       $content['image_placeholder'] = VACTORY_DYNAMIC_FIELD_V_IMAGE_PLACEHOLDER;
       // Is content auto populate.
@@ -200,8 +262,7 @@ class VactoryDynamicFormatter extends FormatterBase {
        * @endcode
        */
       \Drupal::moduleHandler()->alter('dynamic_field_content', $content);
-
-      $elements[$delta] = [
+      $render = [
         '#theme'        => 'vactory_dynamic_main',
         '#entity_delta' => $delta,
         '#item'         => $item,
@@ -212,9 +273,38 @@ class VactoryDynamicFormatter extends FormatterBase {
           "max-age" => Cache::PERMANENT,
         ],
       ];
+
+      $renderer = $this->renderer;
+      $logger = $this->loggerChannelFactory;
+      $elements[$delta] = $this->renderer->executeInRenderContext(new RenderContext(), static function () use ($render, $widget_id, $renderer, $logger) {
+        // Make sure the template render doesn't throw any exception.
+        try {
+          $artifact_render = $render;
+          $renderer->render($render);
+        }
+        catch (\Exception $e) {
+          $df_errors_policy = Settings::get('df_errors_policy');
+          $artifact_render = [
+            '#theme' => 'vactory_dynamic_errors',
+            '#error' => [
+              'template_id' => $widget_id,
+              'message' => isset($df_errors_policy['show_message']) && $df_errors_policy['show_message'] ? $e->getMessage() : '',
+              'trace' => isset($df_errors_policy['show_trace']) && $df_errors_policy['show_trace'] ? $e->getTraceAsString() : '',
+              'concerned_file' => isset($df_errors_policy['show_source_file']) && $df_errors_policy['show_source_file'] ? $e->getFile() : '',
+            ],
+          ];
+          $error_message = $widget_id . PHP_EOL;
+          $error_message .= $e->getMessage() . PHP_EOL;
+          $error_message .= 'In ' . $e->getFile() . PHP_EOL;
+          $error_message .= $e->getTraceAsString();
+          $logger->get('vactory_dynamic_field')->error($error_message);
+        }
+        return $artifact_render;
+      });
     }
 
     return $elements;
+
   }
 
 }

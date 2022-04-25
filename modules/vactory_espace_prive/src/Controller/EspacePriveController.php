@@ -28,7 +28,7 @@ class EspacePriveController extends ControllerBase {
         '#login_form' => $login_form,
       ];
     }
-    return $this->redirect('vactory_espace_prive.profile');
+    return $this->redirect('vactory_espace_prive.cleaned_profile');
   }
 
   /**

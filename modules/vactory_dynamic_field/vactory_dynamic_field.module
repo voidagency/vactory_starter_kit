@@ -20,7 +20,13 @@ use Drupal\media\Entity\Media;
  */
 function vactory_dynamic_field_theme() {
   return [
-    'vactory_dynamic_main'                 => [
+    'vactory_dynamic_errors' => [
+      'template'  => 'dynamic-field-errors',
+      'variables' => [
+        'error' => [],
+      ],
+    ],
+    'vactory_dynamic_main' => [
       'variables' => [
         'platform'     => '',
         'widgets_path' => '',

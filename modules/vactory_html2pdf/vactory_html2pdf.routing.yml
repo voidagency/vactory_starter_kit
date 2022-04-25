@@ -1,0 +1,7 @@
+vactory_html2pdf.settings_form:
+  path: '/admin/config/system/vactory-html2pdf'
+  defaults:
+    _title: 'Vactory HTML To PDF settings'
+    _form: 'Drupal\vactory_html2pdf\Form\SettingsForm'
+  requirements:
+    _permission: 'administer vactory_html2pdf configuration'

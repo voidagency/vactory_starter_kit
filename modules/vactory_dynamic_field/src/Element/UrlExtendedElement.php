@@ -53,6 +53,7 @@ class UrlExtendedElement extends FormElement {
       '#type' => 'textfield',
       '#title' => t('Link URL'),
       '#required' => $element['#required'],
+      '#maxlength' => 1024,
       '#default_value' => isset($default_values['url']) ? $default_values['url'] : '',
       '#description' => t('An external URL or internal path, <br> Examples for an internal path: <strong>/node/1</strong> or <strong>/path-example-alias</strong><br>Examples for an external path: <strong>https://example.com</strong>'),
     ];

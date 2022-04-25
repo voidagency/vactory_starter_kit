@@ -40,7 +40,8 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     "id",
  *     "label",
  *     "file",
- *     "type"
+ *     "type",
+ *     "conditions"
  *   }
  * )
  */

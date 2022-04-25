@@ -1,0 +1,35 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.field.media.remote_cloudinary_video.field_cloudinary_video
+    - media.type.remote_cloudinary_video
+  module:
+    - file_entity
+id: media.remote_cloudinary_video.default
+targetEntityType: media
+bundle: remote_cloudinary_video
+mode: default
+content:
+  field_cloudinary_video:
+    type: file_video
+    label: visually_hidden
+    weight: 0
+    settings:
+      controls: true
+      autoplay: false
+      loop: false
+      muted: false
+      playsinline: false
+      width: null
+      height: null
+      multiple_file_behavior: tags
+    third_party_settings: {  }
+    region: content
+hidden:
+  created: true
+  langcode: true
+  name: true
+  search_api_excerpt: true
+  thumbnail: true
+  uid: true
