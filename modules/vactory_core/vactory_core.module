@@ -8,6 +8,8 @@
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
+use Drupal\Core\Field\Plugin\Field\FieldWidget\StringTextareaWidget;
+use Drupal\Core\Field\Plugin\Field\FieldWidget\StringTextfieldWidget;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
@@ -390,11 +392,12 @@ function vactory_core_field_widget_form_alter(&$element, FormStateInterface $for
   if ($context['widget'] instanceof JQueryColorpickerWidget) {
     unset($element['name']);
   }
-  if (
-    $context['widget'] instanceof \Drupal\Core\Field\Plugin\Field\FieldWidget\StringTextareaWidget ||
-    $context['widget'] instanceof \Drupal\Core\Field\Plugin\Field\FieldWidget\StringTextfieldWidget
-  ) {
-    if (isset($element['#maxlength']) || isset($element['value']['#maxlength'])) {
+  if ($context['widget'] instanceof StringTextareaWidget || $context['widget'] instanceof StringTextfieldWidget) {
+    // Get admin theme.
+    $admin_theme_name = \Drupal::config('system.theme')->get('admin');
+    // Get active theme.
+    $current_theme = \Drupal::service('theme.manager')->getActiveTheme()->getName();
+    if ($current_theme === $admin_theme_name && (isset($element['#maxlength']) || isset($element['value']['#maxlength']))) {
       addCounterToTextElement($element);
     }
   }
