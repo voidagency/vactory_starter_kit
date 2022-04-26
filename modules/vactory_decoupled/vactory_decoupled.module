@@ -405,3 +405,12 @@ function _vactory_decoupled_user_pass_reset_url($account, $options = []) {
   return $frontend_url . "/$langcode/user/one-time-login?" . $query_string;
 }
 
+/**
+ * Implements hook_validation_constraint_alter().
+ *
+ * Replace core's ProtectedUserFieldConstraint with a decorated version that
+ * skips over the validation if restricted password mangement is enabled.
+ */
+function vactory_decoupled_validation_constraint_alter(array &$definitions) {
+  $definitions['ProtectedUserField']['class'] = 'Drupal\vactory_decoupled\Plugin\Validation\Constraint\SspaProtectedUserFieldConstraint';
+}
