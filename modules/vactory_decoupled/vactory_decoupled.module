@@ -184,14 +184,19 @@ function vactory_decoupled_entity_base_field_info(EntityTypeInterface $entity_ty
       ->setComputed(TRUE)
       ->setReadOnly(TRUE)
       ->setTargetEntityTypeId($entity_type->id())
-//      ->setDisplayOptions('view', [
-//        'label' => 'hidden',
-//        'type' => 'hidden',
-//        'weight' => 0,
-//      ])
-//      ->setDisplayOptions('form', ['type' => 'hidden'])
-//      ->setDisplayConfigurable('form', TRUE)
-//      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE);
+  }
+
+  if ($entity_type->id() === 'node') {
+    $fields['internal_extra'] = BaseFieldDefinition::create('map')
+    ->setLabel(t('Node extra'))
+    ->setDescription(t('Extra data per node'))
+    ->setTranslatable(FALSE)
+      ->setClass('\Drupal\vactory_decoupled\Plugin\Field\InternalNodeEntityExtraFieldItemList')
+      ->setComputed(TRUE)
+      ->setReadOnly(TRUE)
+      ->setTargetEntityTypeId($entity_type->id())
       ->setDisplayConfigurable('form', FALSE)
       ->setDisplayConfigurable('view', FALSE);
   }

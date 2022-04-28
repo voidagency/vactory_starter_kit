@@ -10,7 +10,8 @@ use Drupal\Core\Field\BaseFieldDefinition;
 /**
  * Add node_settings field.
  */
-function vactory_decoupled_update_9001() {
+function vactory_decoupled_update_9001()
+{
   $storage_definition = BaseFieldDefinition::create('string_long')
     ->setLabel(t('Node Settings'))
     ->setDescription(t('Add extra parameters in JSON Format : { "isHomePage": true, "taxonomy": 4, "limit": 6 }'))
@@ -30,4 +31,24 @@ function vactory_decoupled_update_9001() {
 
   \Drupal::entityDefinitionUpdateManager()
     ->installFieldStorageDefinition('node_settings', 'node', 'node', $storage_definition);
+}
+
+/**
+ * Add internal_extra field.
+ */
+function vactory_decoupled_update_9002()
+{
+  $storage_definition = BaseFieldDefinition::create('map')
+    ->setLabel(t('Node extra'))
+    ->setDescription(t('Extra data per node'))
+    ->setTranslatable(FALSE)
+    ->setClass('\Drupal\vactory_decoupled\Plugin\Field\InternalNodeEntityExtraFieldItemList')
+    ->setComputed(TRUE)
+    ->setReadOnly(TRUE)
+    ->setTargetEntityTypeId('node')
+    ->setDisplayConfigurable('form', FALSE)
+    ->setDisplayConfigurable('view', FALSE);
+
+  \Drupal::entityDefinitionUpdateManager()
+    ->installFieldStorageDefinition('internal_extra', 'node', 'node', $storage_definition);
 }
