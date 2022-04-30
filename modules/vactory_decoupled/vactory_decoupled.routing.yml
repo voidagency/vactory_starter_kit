@@ -101,3 +101,11 @@ vactory_decoupled.get_unique_username_by_email:
   methods: [GET]
   requirements:
     _permission: 'access content'
+
+vactory_decoupled.one_time_token:
+  path: '/oauth/one-time-token'
+  defaults:
+    _controller: 'Drupal\vactory_decoupled\Controller\OneTimeToken::token'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
