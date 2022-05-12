@@ -1,0 +1,3 @@
+services:
+  vactory.webform.normalizer:
+    class: Drupal\vactory_decoupled_webform\Webform

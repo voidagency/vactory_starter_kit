@@ -1,0 +1,203 @@
+<?php
+
+/**
+ * @file
+ * Install file.
+ */
+
+use Drupal\locale\SourceString;
+use \Drupal\user\RoleInterface;
+
+/**
+ * Implements hook_install().
+ */
+function vactory_decoupled_webform_install()
+{
+  // Grant permission to all users by default.
+  if (\Drupal::moduleHandler()->moduleExists('user')) {
+    user_role_grant_permissions(RoleInterface::ANONYMOUS_ID, ['access any webform configuration']);
+    user_role_grant_permissions(RoleInterface::AUTHENTICATED_ID, ['access any webform configuration']);
+    user_role_grant_permissions('master', ['administer webform_decoupled props']);
+    user_role_grant_permissions('webmaster', ['administer webform_decoupled props']);
+  }
+
+  // Import Translations
+  _vactory_decoupled_webform_importTranslation();
+}
+
+/**
+ * Import Frontend translations.
+ */
+function _vactory_decoupled_webform_importTranslation()
+{
+  $storage = \Drupal::service('locale.storage');
+  $translations = [
+    [
+      'label' => 'webform:Submit',
+      'translations' => [
+        'fr' => 'Envoyer',
+        'en' => 'Submit',
+        'ar' => 'إرسال',
+      ],
+    ],
+    [
+      'label' => 'webform:Reset',
+      'translations' => [
+        'fr' => 'Réinitialiser',
+        'en' => 'Reset',
+        'ar' => 'إعادة تعيين',
+      ],
+    ],
+    [
+      'label' => 'webform:Close',
+      'translations' => [
+        'fr' => 'Fermer',
+        'en' => 'Close',
+        'ar' => 'أغلق',
+      ],
+    ],
+    [
+      'label' => 'Webform: Le champ "{{fieldName}}" est requis.',
+      'translations' => [
+        'fr' => 'Le champ "{{fieldName}}" est requis.',
+        'en' => 'The field "{{fieldName}}" is required.',
+        'ar' => 'الحقل "{{fieldName}}" مطلوب.',
+      ],
+    ],
+    [
+      'label' => 'Webform: Le champ "{{fieldName}}" est invalid.',
+      'translations' => [
+        'fr' => 'Le champ "{{fieldName}}" est invalid.',
+        'en' => 'Le champ "{{fieldName}}" est invalid.',
+        'ar' => 'الحقل "{{fieldName}}" غير صالح.',
+      ],
+    ],
+    [
+      'label' => 'webform:Des fichiers sont en cours de transfert.',
+      'translations' => [
+        'fr' => 'Des fichiers sont en cours de transfert.',
+        'en' => 'Files are being transferred',
+        'ar' => 'يتم نقل الملفات',
+      ],
+    ],
+    [
+      'label' => "webform:Une erreur s'est produite, essayez avec un autre fichier.",
+      'translations' => [
+        'fr' => "Une erreur s'est produite, essayez avec un autre fichier.",
+        'en' => "An error has occurred, try with another file.",
+        'ar' => 'حدث خطأ ، حاول مع ملف آخر.',
+      ],
+    ],
+    [
+      'label' => "webform:Faites glisser des fichiers ou cliquez pour parcourir",
+      'translations' => [
+        'fr' => "Faites glisser des fichiers ou cliquez pour parcourir",
+        'en' => "Drag files or click to browse",
+        'ar' => 'اسحب الملفات أو انقر للتصفح',
+      ],
+    ],
+    [
+      'label' => "webform:Ajouter des fichiers",
+      'translations' => [
+        'fr' => "Ajouter des fichiers",
+        'en' => "Add files",
+        'ar' => 'إضافة ملفات',
+      ],
+    ],
+    [
+      'label' => "webform:Limité à ",
+      'translations' => [
+        'fr' => "Limité à ",
+        'en' => "Limited to ",
+        'ar' => 'تقتصر على ',
+      ],
+    ],
+    [
+      'label' => "webform:Fichiers",
+      'translations' => [
+        'fr' => "Fichiers",
+        'en' => "Files",
+        'ar' => 'ملف',
+      ],
+    ],
+    [
+      'label' => "webform:Extensions autorisées :",
+      'translations' => [
+        'fr' => "Extensions autorisées :",
+        'en' => "Allowed extensions :",
+        'ar' => 'الامتدادات المسموح بها :',
+      ],
+    ],
+    [
+      'label' => "webform:Mo",
+      'translations' => [
+        'fr' => "Mo",
+        'en' => "Mb",
+        'ar' => 'Mb',
+      ],
+    ],
+    [
+      'label' => "webform:Fichier trop petit",
+      'translations' => [
+        'fr' => "Fichier trop petit",
+        'en' => "File too small",
+        'ar' => 'الملف صغير جدًا',
+      ],
+    ],
+    [
+      'label' => "webform:Fichier trop gros",
+      'translations' => [
+        'fr' => "Fichier trop gros",
+        'en' => "File too big",
+        'ar' => 'ملف كبير جدا',
+      ],
+    ],
+    [
+      'label' => "webform:(échec du téléchargement)",
+      'translations' => [
+        'fr' => "(échec du téléchargement)",
+        'en' => "(upload failed)",
+        'ar' => '(التحميل فشل)',
+      ],
+    ],
+    [
+      'label' => "webform:(annulé)",
+      'translations' => [
+        'fr' => "(annulé)",
+        'en' => "(canceled)",
+        'ar' => '(ألغيت)',
+      ],
+    ],
+  ];
+
+  foreach ($translations as $translation) {
+    // Find the source string.
+    try {
+      $string = $storage->findString(array('source' => $translation['label']));
+      if (is_null($string)) {
+        $string = new SourceString();
+        $string->context = '_FRONTEND';
+        $string->setString($translation['label']);
+        $string->setStorage($storage);
+        $string->save();
+      }
+
+      // Create translation. If one already exists, it will be replaced.
+      foreach ($translation['translations'] as $langcode => $string_translation) {
+        $storage->createTranslation([
+          'lid' => $string->lid,
+          'language' => $langcode,
+          'translation' => $string_translation,
+        ])->save();
+      }
+
+    } catch (Exception $e) {
+      \Drupal::logger('vactory_decoupled_webform')->warning('Error trying to find string @s: @e on line @l', [
+        '@s' => $translation['label'],
+        '@e' => $e->getMessage(),
+        '@l' => $e->getLine(),
+      ]);
+    }
+  }
+
+}
