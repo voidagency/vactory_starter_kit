@@ -1,0 +1,37 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - core.entity_form_mode.media.media_library
+    - field.field.media.onboarding_image.field_image_onboarding
+    - image.style.thumbnail
+    - media.type.onboarding_image
+  module:
+    - image
+id: media.onboarding_image.media_library
+targetEntityType: media
+bundle: onboarding_image
+mode: media_library
+content:
+  field_image_onboarding:
+    weight: 5
+    settings:
+      progress_indicator: throbber
+      preview_image_style: thumbnail
+    third_party_settings: {  }
+    type: image_image
+    region: content
+  name:
+    type: string_textfield
+    settings:
+      size: 60
+      placeholder: ''
+    weight: 0
+    third_party_settings: {  }
+    region: content
+hidden:
+  created: true
+  langcode: true
+  path: true
+  status: true
+  uid: true

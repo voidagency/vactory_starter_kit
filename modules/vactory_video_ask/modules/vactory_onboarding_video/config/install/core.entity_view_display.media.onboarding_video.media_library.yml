@@ -1,0 +1,31 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.media.media_library
+    - field.field.media.onboarding_video.field_video_onboarding
+    - image.style.medium
+    - media.type.onboarding_video
+  module:
+    - image
+id: media.onboarding_video.media_library
+targetEntityType: media
+bundle: onboarding_video
+mode: media_library
+content:
+  thumbnail:
+    type: image
+    label: hidden
+    settings:
+      image_style: medium
+      image_link: ''
+    weight: 0
+    third_party_settings: {  }
+    region: content
+hidden:
+  created: true
+  field_video_onboarding: true
+  langcode: true
+  name: true
+  search_api_excerpt: true
+  uid: true

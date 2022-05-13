@@ -1,0 +1,3 @@
+bundle: vactory
+required:
+  - field.storage.media.field_image_onboarding

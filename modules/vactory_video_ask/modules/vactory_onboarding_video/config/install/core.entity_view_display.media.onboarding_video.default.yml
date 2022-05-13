@@ -1,0 +1,35 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.field.media.onboarding_video.field_video_onboarding
+    - media.type.onboarding_video
+  module:
+    - file_entity
+id: media.onboarding_video.default
+targetEntityType: media
+bundle: onboarding_video
+mode: default
+content:
+  field_video_onboarding:
+    type: file_video
+    label: visually_hidden
+    weight: 0
+    settings:
+      controls: true
+      autoplay: false
+      loop: false
+      muted: false
+      playsinline: false
+      width: null
+      height: null
+      multiple_file_behavior: tags
+    third_party_settings: {  }
+    region: content
+hidden:
+  created: true
+  langcode: true
+  name: true
+  search_api_excerpt: true
+  thumbnail: true
+  uid: true
