@@ -1,0 +1,6 @@
+vactory_image_sitemap.settings_form:
+  title: Vactory Image Sitemap
+  description: Configure Vactory Image Sitemap.
+  parent: system.admin_config_system
+  route_name: vactory_image_sitemap.settings_form
+  weight: 10
