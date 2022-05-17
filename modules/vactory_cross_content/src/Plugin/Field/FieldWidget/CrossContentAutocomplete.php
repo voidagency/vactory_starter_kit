@@ -141,6 +141,7 @@ class CrossContentAutocomplete extends WidgetBase {
       $default_entity = is_numeric($nid) ? Node::load($nid) : NULL;
       $element['autocomplete_widgets'][$i]['#attributes']['class'][] = 'draggable';
       $element['autocomplete_widgets'][$i]['#weight'] = $i;
+
       $element['autocomplete_widgets'][$i]['node'] = [
         '#type' => 'entity_autocomplete',
         '#target_type' => 'node',
@@ -152,12 +153,12 @@ class CrossContentAutocomplete extends WidgetBase {
         '#multiple' => FALSE,
         '#tag' => FALSE,
       ];
+
       $element['autocomplete_widgets'][$i]['remove'] = [
         '#type' => 'submit',
         '#name' => 'remove_' . $i,
         '#remove_action_trigger' => TRUE,
         '#index' => $i,
-        '#limit_validation_errors' => [],
         '#value' => $this->t('Remove'),
         '#ajax' => [
           'callback' => [$this, 'removeWidgetForm'],
@@ -166,6 +167,7 @@ class CrossContentAutocomplete extends WidgetBase {
         '#limit_validation_errors' => [],
         '#submit' => [[$this, 'removeWidgetState']],
       ];
+
       $element['autocomplete_widgets'][$i]['weight'] = [
         '#type' => 'weight',
         '#title' => $this->t('Weight for @title'),
@@ -178,6 +180,7 @@ class CrossContentAutocomplete extends WidgetBase {
       ];
       unset($default_entity);
     }
+
     $element['add_one'] = [
       '#type' => 'submit',
       '#value' => $this->t('Add one more cross content'),
@@ -187,6 +190,7 @@ class CrossContentAutocomplete extends WidgetBase {
         'wrapper' => 'cross-content-field-container',
       ],
     ];
+
     $element['value'] = [
       '#type' => 'hidden',
       '#default_value' => implode(' ', $default_options),
