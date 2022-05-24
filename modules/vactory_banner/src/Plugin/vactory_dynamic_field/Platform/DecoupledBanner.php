@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\vactory_decoupled_banner\Plugin\vactory_dynamic_field\Platform;
+namespace Drupal\vactory_banner\Plugin\vactory_dynamic_field\Platform;
 
 use Drupal\vactory_dynamic_field\VactoryDynamicFieldPluginBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -9,8 +9,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * A DF provider plugin.
  *
  * @PlatformProvider(
- *   id = "vactory_decoupled_banner",
- *   title = @Translation("Decoupled Banners")
+ *   id = "vactory_banner",
+ *   title = @Translation("vactory Banners")
  * )
  */
 class DecoupledBanner extends VactoryDynamicFieldPluginBase {
@@ -28,7 +28,7 @@ class DecoupledBanner extends VactoryDynamicFieldPluginBase {
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
     $instance->extensionPathResolver = $container->get('extension.path.resolver');
-    $instance->setWidgetsPath($instance->extensionPathResolver->getPath('module', 'vactory_decoupled_banner') . '/widgets');
+    $instance->setWidgetsPath($instance->extensionPathResolver->getPath('module', 'vactory_banner') . '/widgets');
     return $instance;
   }
 

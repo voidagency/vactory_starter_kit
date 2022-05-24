@@ -1,6 +1,6 @@
-name: 'Decoupled Banner - A'
+name: 'Banner default'
 multiple: FALSE
-category: 'Decoupled Banners'
+category: 'Banners'
 enabled: TRUE
 fields:
   group_banner:
