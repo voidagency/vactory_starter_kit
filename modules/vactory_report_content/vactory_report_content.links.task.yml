@@ -1,0 +1,16 @@
+entity.vactory_report_content.canonical:
+  route_name: entity.reported_content.canonical
+  base_route: entity.reported_content.canonical
+  title: View
+entity.vactory_report_content.edit_form:
+  route_name: entity.reported_content.edit_form
+  base_route: entity.reported_content.canonical
+  title: Edit
+entity.vactory_report_content.delete_form:
+  route_name:  entity.reported_content.delete_form
+  base_route:  entity.reported_content.canonical
+  title: Delete
+vactory_report_content.admin_listing:
+  route_name: view.reported_content.admin_listing
+  base_route: system.admin_content
+  title: Reported content

@@ -152,7 +152,8 @@
     "drupal/decoupled_router": "^2.0",
     "drupal/jsonapi_user_resources": "1.0.0-alpha4",
     "drupal/symfony_mailer": "^1.0@alpha",
-    "drupal/textfield_counter": "^2.0"
+    "drupal/textfield_counter": "^2.0",
+    "drupal/default_content": "^2.0@alpha"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.3"
