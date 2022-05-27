@@ -2,3 +2,19 @@ services:
   vactory_content_access.access_manager:
     class: Drupal\vactory_content_access\Services\VactoryNodeAccessCheck
     arguments: ['@current_user', '@entity_type.manager']
+  jsonapi_override.entity_access_checker:
+    class: Drupal\vactory_content_access\JsonapiAccess\EntityAccessChecker
+    decorates: jsonapi.entity_access_checker
+    decoration_priority: 7
+    public: false
+    arguments:
+      - '@jsonapi_override.entity_access_checker.inner'
+      - '@jsonapi.resource_type.repository'
+      - '@router.no_access_checks'
+      - '@current_user'
+      - '@entity.repository'
+      - '@?access_check.latest_revision'
+      - '@entity_type.manager'
+      - '@vactory_content_access.access_manager'
+      - '@config.factory'
+      - '@current_route_match'
