@@ -102,7 +102,7 @@ function vactory_decoupled_form_alter(&$form, FormStateInterface $form_state, $f
  * Invalidate nodes cache on block admin display submit.
  */
 function block_admin_display_submit($form, FormStateInterface $form_state) {
-  node_cache_invalidate_tags();
+  Cache::invalidateTags(['node_list']);
 }
 
 /**
@@ -437,18 +437,5 @@ function vactory_decoupled_validation_constraint_alter(array &$definitions) {
  * Implements hook_ENTITY_TYPE_presave().
  */
 function vactory_decoupled_block_presave(EntityInterface $entity) {
-  node_cache_invalidate_tags();
-}
-
-/**
- * Node cache invalidate tags.
- */
-function node_cache_invalidate_tags() {
-  $nids = Drupal::entityQuery('node')
-    ->execute();
-  $tags = array_map(function ($nid) {
-    return 'node:' . $nid;
-  }, $nids);
-  $tags[] = 'node_list';
-  Cache::invalidateTags(array_values($tags));
+  Cache::invalidateTags(['node_list']);
 }
