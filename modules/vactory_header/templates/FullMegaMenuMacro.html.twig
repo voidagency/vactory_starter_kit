@@ -1,0 +1,68 @@
+{% macro FullMenuMacro(menu, level) %}
+
+{# Set our default level as an integer. #}
+{% set default_level = 1 %}
+<nav class="full-mega-menu">
+  <ul class="menu-level--{{ level|default(default_level) }}">
+
+    {% for menu_item in menu %}
+
+    {# Check if this is the active item. #}
+    {% set active = (menu_item.active) ? ' is-active' : '' %}
+
+    {# Check if this item is in the active trail. #}
+    {% set active_trail = (menu_item.active_trail) ? ' is-active-trail' : '' %}
+
+    {# {% set active = active ~ ((menu_item.active_trail) ? ' is-active-trail' : '') %} #}
+
+    {# Check if this item has childs. #}
+    {% set submenu = (menu_item.submenu) ? true : false %}
+    {% set has_sub = (menu_item.submenu) ? 'has-sub' : '' %}
+
+    {# Check if the link item has injected block. #}
+    {% set menuBlock = (menu_item.fields.field_injected_block.plugin_id is defined) ? "has-sub menu-block" : "" %}
+
+    {# Check of item has wrapper class #}
+    {% set wrapper_class = (menu_item.options.attributes.wrapper_class is defined) ? menu_item.options.attributes.wrapper_class : '' %}
+
+    {% set link_target = (menu_item.options.attributes.target is defined) ? menu_item.options.attributes.target : '_self' %}
+
+    {% set link_title = (menu_item.options.attributes.title is defined) ? menu_item.options.attributes.title : menu_item.text|striptags %}
+
+    {% set link_id = (menu_item.options.attributes.id is defined) ? menu_item.options.attributes.id : '' %}
+
+
+    <li class="menu__item{{ active }} menu__item--{{ level|default(default_level) }} {{ has_sub }} {{ wrapper_class }} {{menuBlock}}">
+
+      {% if menu_item.fields.field_injected_block.plugin_id is defined %}
+        {# Call the block injected menu if exist. #}
+        {{ vactory_render('block', menu_item.fields.field_injected_block.plugin_id) }}
+        {# End Injected Block #}
+      {% elseif menu_item.url is not empty %}
+      <a href="{{ menu_item.url }}" id="{{ link_id }}"
+        class="menu__link{{ active }} menu__link--{{ level|default(default_level) }} {{ menu_item.options.attributes.class }}" target="{{link_target}}"
+        title="{{ link_title }}" {% if link_target == '_blank' %} rel="noopener" {% endif %}>
+        {{ menu_item.text|raw }}
+      </a>
+      {% else %}
+      <span id="{{ link_id }}" class="menu__no-link menu__link{{ active }} menu__link--{{ level|default(default_level) }} {{ menu_item.options.attributes.class.0 }}"
+        title="{{ link_title }}">
+        {{ menu_item.text|raw }}
+      </span>
+      {% endif %}
+
+
+      {% if menu_item.submenu %}
+      <div class="menu__sub--{{ level|default(default_level) }}">
+      <div class="menu__sub--wrapper--{{ level|default(default_level) }}">
+      {# Since this menu item has a submenu, recall function and increment counter. #}
+      {{ _self.FullMenuMacro(menu_item.submenu, level|default(default_level) + 1) }}
+      <button class="menu__sub--closer d-none d-md-block"><i class="icon icon-close"></i></button>
+      </div>
+      </div>
+      {% endif %}
+    </li>
+    {% endfor %}
+  </ul>
+</nav>
+{% endmacro %}

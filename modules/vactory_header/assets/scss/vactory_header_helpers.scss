@@ -31,7 +31,7 @@ body {
   }
 
   &.top {
-    top: -73px; // vh-header height to show
+    top: 0; // vh-header height to show
 
     .toolbar-horizontal & {
       top: -34px; // toolbar has a 39px height

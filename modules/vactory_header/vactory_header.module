@@ -65,6 +65,9 @@ function vactory_header_theme($existing, $type, $theme, $path) {
     "MegaMenuMacro" => [
       "template" => "MegaMenuMacro",
     ],
+    "FullMegaMenuMacro" => [
+      "template" => "FullMegaMenuMacro",
+    ],
     "MobileMenuMacro" => [
       "template" => "MobileMenuMacro",
     ],
