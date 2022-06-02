@@ -265,6 +265,11 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
           $value['data'] = \Drupal::service('vactory.views.to_api')->normalize($value);
         }
 
+        if ($info['type'] === 'webform_decoupled' && !empty($value)) {
+          $webform_id = $value['id'];
+          $value['elements'] = \Drupal::service('vactory.webform.normalizer')->normalize($webform_id);
+        }
+
       }
       elseif (is_array($value)) {
         // Go deeper.
