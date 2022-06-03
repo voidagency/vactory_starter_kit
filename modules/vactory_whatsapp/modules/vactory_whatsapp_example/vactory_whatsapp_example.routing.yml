@@ -1,0 +1,7 @@
+vactory_whatsapp_example.test_form:
+  path: '/admin/config/system/vactory-whatsapp/test'
+  defaults:
+    _title: 'Vactory Whatsapp Test'
+    _form: 'Drupal\vactory_whatsapp_example\Form\VactoryWhatsappTestForm'
+  requirements:
+    _permission: 'administer site configuration'

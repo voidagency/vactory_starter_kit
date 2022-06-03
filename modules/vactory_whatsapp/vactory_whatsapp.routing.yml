@@ -1,0 +1,7 @@
+vactory_whatsapp.settings_form:
+  path: '/admin/config/system/vactory-whatsapp'
+  defaults:
+    _title: 'Vactory Whatsapp settings'
+    _form: 'Drupal\vactory_whatsapp\Form\SettingsForm'
+  requirements:
+    _permission: 'administer site configuration'
