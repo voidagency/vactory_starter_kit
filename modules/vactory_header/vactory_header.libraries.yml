@@ -1,59 +1,150 @@
+vactory_header_helpers_style:
+  css:
+    theme:
+      ./assets/css/vactory_header_helpers.css: {}
+
+vactory_header_helpers_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_header_helpers-rtl.css: {}
+
+vactory_header_v1_style:
+  css:
+    theme:
+      ./assets/css/vactory_header_v1.css: {}
+
+vactory_header_v1_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_header_v1-rtl.css: {}
+
+vactory_header_v2_style:
+  css:
+    theme:
+      ./assets/css/vactory_header_v2.css: {}
+
+vactory_header_v2_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_header_v2-rtl.css: {}
+
+vactory_header_v3_style:
+  css:
+    theme:
+      ./assets/css/vactory_header_v3.css: {}
+
+vactory_header_v3_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_header_v3-rtl.css: {}
+
+vactory_header_v4_style:
+  css:
+    theme:
+      ./assets/css/vactory_header_v4.css: {}
+
+vactory_header_v4_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_header_v4-rtl.css: {}
+
+vactory_header_v5_style:
+  css:
+    theme:
+      ./assets/css/vactory_header_v5.css: {}
+
+vactory_header_v5_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_header_v5-rtl.css: {}
+
+vactory_header_v6_style:
+  css:
+    theme:
+      ./assets/css/vactory_header_v6.css: {}
+
+vactory_header_v6_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_header_v6-rtl.css: {}
+
+vactory_header_v7_style:
+  css:
+    theme:
+      ./assets/css/vactory_header_v7.css: {}
+
+vactory_header_v7_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_header_v7-rtl.css: {}
+
+vactory_header_v8_style:
+  css:
+    theme:
+      ./assets/css/vactory_header_v8.css: {}
+
+vactory_header_v8_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_header_v8-rtl.css: {}
+
+
 vactory_header.variant1:
   js:
-    js/variant1.js: {}
+    ./assets/js/variant1.js: {}
   dependencies:
     - core/jquery
     - core/drupalSettings
 
 vactory_header.variant2:
   js:
-    js/variant2.js: {}
+    ./assets/js/variant2.js: {}
   dependencies:
     - core/jquery
     - core/drupalSettings
 
 vactory_header.variant3:
   js:
-    js/variant3.js: {}
+    ./assets/js/variant3.js: {}
 
 vactory_header.variant4:
   js:
-    js/variant4.js: {}
+    ./assets/js/variant4.js: {}
   dependencies:
     - core/jquery
     - core/drupalSettings
 
 vactory_header.variant5:
   js:
-    js/variant5.js: {}
+    ./assets/js/variant5.js: {}
   dependencies:
     - core/jquery
     - core/drupalSettings
 
 vactory_header.variant6:
   js:
-    js/variant6.js: {}
+    ./assets/js/variant6.js: {}
   dependencies:
     - core/jquery
     - core/drupalSettings
 
 vactory_header.variant7:
   js:
-    js/variant7.js: {}
+    ./assets/js/variant7.js: {}
   dependencies:
     - core/jquery
     - core/drupalSettings
 
 vactory_header.variant8:
   js:
-    js/variant8.js: {}
+    ./assets/js/variant8.js: {}
   dependencies:
     - core/jquery
     - core/drupalSettings
 
 vactory_header.header-helper:
   js:
-    js/header-helpers.js: {}
+    ./assets/js/header-helpers.js: {}
   dependencies:
     - core/jquery
     - core/drupalSettings

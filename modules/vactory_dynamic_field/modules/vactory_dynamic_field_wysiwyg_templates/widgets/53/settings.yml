@@ -1,0 +1,24 @@
+name: 'C53 - card slider with custom pagination'
+category: 'Sliders'
+multiple: TRUE
+enabled: TRUE
+fields:
+  image:
+    type: image
+    label: 'Image'
+  image_alt:
+    type: text
+    label: "Text alternative d'image"
+  title:
+    type: text
+    label: 'Titre'
+  description:
+    type: textarea
+    label: description
+  link:
+    type: url_extended
+    label: 'lien'
+extra_fields:
+  intro:
+    type: textarea
+    label: 'Introduction'

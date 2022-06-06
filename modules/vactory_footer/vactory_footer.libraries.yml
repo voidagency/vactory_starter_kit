@@ -1,0 +1,89 @@
+vactory_footer_style:
+  css:
+    theme:
+      ./assets/css/vactory_footer.css: {}
+
+vactory_footer_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_footer-rtl.css: {}
+
+vactory_footer_v1_style:
+  css:
+    theme:
+      ./assets/css/vactory_footer_v1.css: {}
+
+vactory_footer_v1_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_footer_v1-rtl.css: {}
+
+vactory_footer_v2_style:
+  css:
+    theme:
+      ./assets/css/vactory_footer_v2.css: {}
+
+vactory_footer_v2_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_footer_v2-rtl.css: {}
+
+vactory_footer_v3_style:
+  css:
+    theme:
+      ./assets/css/vactory_footer_v3.css: {}
+
+vactory_footer_v3_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_footer_v3-rtl.css: {}
+
+vactory_footer_v4_style:
+  css:
+    theme:
+      ./assets/css/vactory_footer_v4.css: {}
+
+vactory_footer_v4_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_footer_v4-rtl.css: {}
+
+vactory_footer_v5_style:
+  css:
+    theme:
+      ./assets/css/vactory_footer_v5.css: {}
+
+vactory_footer_v5_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_footer_v5-rtl.css: {}
+
+vactory_footer_v6_style:
+  css:
+    theme:
+      ./assets/css/vactory_footer_v6.css: {}
+
+vactory_footer_v6_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_footer_v6-rtl.css: {}
+
+vactory_footer_v7_style:
+  css:
+    theme:
+      ./assets/css/vactory_footer_v7.css: {}
+
+vactory_footer_v7_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_footer_v7-rtl.css: {}
+
+vactory_footer_v8_style:
+  css:
+    theme:
+      ./assets/css/vactory_footer_v8.css: {}
+
+vactory_footer_v8_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_footer_v8-rtl.css: {}

@@ -1,0 +1,7 @@
+vactory_webform_test.testform:
+  path: '/test_wbform'
+  defaults:
+    _title: 'Test Form'
+    _form: '\Drupal\vactory_decoupled_webform_test\Form\WebformForm'
+  requirements:
+    _permission: 'access content'

@@ -1,6 +1,16 @@
+vactory_news_style:
+  css:
+    theme:
+      ./assets/css/vactory_news.css: {}
+
+vactory_news_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_news-rtl.css: {}
+
 vactory_news.sticky_sharing:
   js:
-    js/sticky-sharing.js: {}
+    ./assets/js/sticky-sharing.js: {}
   dependencies:
     - core/jquery
     - core/drupalSettings

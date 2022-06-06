@@ -6,7 +6,6 @@ dependencies:
     - field.field.user.user.field_about_the_author
     - field.field.user.user.field_first_name
     - field.field.user.user.field_last_name
-    - field.field.user.user.field_social_media_links
     - field.field.user.user.field_token
     - field.field.user.user.field_token_experation_date
     - field.field.user.user.field_user_profession
@@ -54,12 +53,6 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-  field_social_media_links:
-    weight: 9
-    settings: {  }
-    third_party_settings: {  }
-    type: social_media_links_field_default
-    region: content
   field_user_profession:
     weight: 8
     settings:

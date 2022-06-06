@@ -1,0 +1,9 @@
+vactory_faq_style:
+  css:
+    theme:
+      ./assets/css/vactory_faq.css: {}
+
+vactory_faq_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_faq-rtl.css: {}

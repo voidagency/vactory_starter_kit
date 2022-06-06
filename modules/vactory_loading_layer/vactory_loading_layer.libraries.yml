@@ -2,9 +2,9 @@ loading_layer_libs:
   version: VERSION
   css:
     theme:
-      css/style.css: {}
+      ./assets/css/vactory_loading_layer.css: {}
   js:
-    js/script.js: {}
+    ./assets/js/script.js: {}
   dependencies:
     - core/jquery
     - core/drupalSettings

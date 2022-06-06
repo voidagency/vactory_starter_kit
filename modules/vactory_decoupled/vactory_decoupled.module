@@ -5,8 +5,10 @@
  * Primary module hooks for vactory_decoupled module.
  */
 
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\ContentEntityFormInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Site\Settings;
 use Drupal\Core\Url;
@@ -45,6 +47,10 @@ function vactory_decoupled_form_node_form_alter(&$form, FormStateInterface $form
  */
 function vactory_decoupled_form_alter(&$form, FormStateInterface $form_state, $form_id)
 {
+  if ($form_id === 'block_admin_display_form') {
+    $form['#submit'][] = 'block_admin_display_submit';
+  }
+
   $form_object = $form_state->getFormObject();
   if (!($form_object instanceof ContentEntityFormInterface)) {
     return;
@@ -90,6 +96,13 @@ function vactory_decoupled_form_alter(&$form, FormStateInterface $form_state, $f
     // Add a submit handler to redirect to the Gatsby page.
     $form['actions']['save_view_gatsby']['#submit'][] = 'gatsby_node_form_submit';
   }
+}
+
+/**
+ * Invalidate nodes cache on block admin display submit.
+ */
+function block_admin_display_submit($form, FormStateInterface $form_state) {
+  Cache::invalidateTags(['node_list']);
 }
 
 /**
@@ -418,4 +431,11 @@ function _vactory_decoupled_user_pass_reset_url($account, $options = []) {
  */
 function vactory_decoupled_validation_constraint_alter(array &$definitions) {
   $definitions['ProtectedUserField']['class'] = 'Drupal\vactory_decoupled\Plugin\Validation\Constraint\SspaProtectedUserFieldConstraint';
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ */
+function vactory_decoupled_block_presave(EntityInterface $entity) {
+  Cache::invalidateTags(['node_list']);
 }

@@ -1,0 +1,4 @@
+vactory_whatsapp_example.test:
+  route_name: vactory_whatsapp_example.test_form
+  base_route: vactory_whatsapp.settings_form
+  title: Test

@@ -1,0 +1,9 @@
+vactory_glossary_style:
+  css:
+    theme:
+      ./assets/css/vactory_glossary.css: {}
+
+vactory_glossary_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_glossary-rtl.css: {}

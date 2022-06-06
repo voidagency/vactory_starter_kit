@@ -1,0 +1,37 @@
+.card.notifications {
+  height: auto;
+  margin-bottom: 20px;
+  margin-bottom: 1.25rem;
+}
+
+.notifications-link {
+  font-size: 12px;
+  font-size: 0.75rem;
+  font-weight: bold;
+}
+
+.notifications-link .notifications-count-wrapper {
+  position: relative;
+}
+
+.notifications-link .notifications-count-wrapper i[class^="icon-"] {
+  font-size: 30px;
+  font-size: 1.875rem;
+  margin-right: 0;
+}
+
+.notifications-link .notifications-count-wrapper .notifications-count {
+  background-color: #dc3545;
+  color: white;
+  position: absolute;
+  top: 0;
+  left: 0;
+  -webkit-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+  font-size: 14px;
+  font-size: 0.875rem;
+  line-height: 1.2;
+  padding: 2px;
+  padding: 0.125rem;
+}

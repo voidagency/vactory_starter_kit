@@ -1,0 +1,37 @@
+// Template 2
+.t-2b-image-videp-bg-title-text {
+
+  .t-2b-image-bg {
+    @include rem(padding, 24px);
+    //@include rem(margin-bottom, 23px);
+    @include rem(margin-top, 23px);
+    @include bg-shadow(#fff, 0 2px 8px 0 rgba(0, 0, 0, 0.06), 24px, 24px, none, 6px);
+    position: relative;
+
+    .t-video-title {
+      position: absolute;
+      z-index: 9999;
+      color: $white;
+      @include rem(font-size, 16px);
+      @include rem(line-height, 18px);
+      font-weight: normal;
+      top: 30px;
+      left: 30px;
+      width: calc(100% - 80px);
+    }
+  }
+
+  .t-description {
+    @include rem(margin-bottom, 20px);
+    width: 100%;
+
+    &:last-child {
+      @include rem(margin-bottom, 15px);
+    }
+  }
+
+  h2 {
+    @include rem(margin-bottom, 20px);
+    width: 100%;
+  }
+}
