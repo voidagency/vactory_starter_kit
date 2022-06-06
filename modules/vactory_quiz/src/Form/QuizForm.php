@@ -225,7 +225,7 @@ class QuizForm extends FormBase {
       $form['next'] = $this->getSubmitElement($form, $form_state, $ajax_wrapper_id, $next_button_title);
     }
 
-    $form['#attached']['library'][] = 'vactory_quiz/style';
+    $form['#attached']['library'][] = 'vactory_quiz/vactory_quiz_style';
     return $form;
   }
 

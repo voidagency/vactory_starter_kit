@@ -1,0 +1,9 @@
+vactory_toolbox_style:
+  css:
+    theme:
+      ./assets/css/vactory_toolbox.css: {}
+
+vactory_toolbox_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_toolbox-rtl.css: {}

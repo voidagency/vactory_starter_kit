@@ -1,7 +1,7 @@
 scripts:
   js:
-    ../../../../../../../libraries/jquery-print/dist/jQuery.print.min.js: {}
-    js/quiz-certificat.js: {}
+    /libraries/jquery-print/dist/jQuery.print.min.js: {}
+    ./assets/js/quiz-certificat.js: {}
   dependencies:
     - core/jquery
     - core/drupalSettings

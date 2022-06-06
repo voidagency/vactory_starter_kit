@@ -1,3 +1,13 @@
+vactory_announcements_style:
+  css:
+    theme:
+      ./assets/css/vactory_announcements.css: {}
+
+vactory_announcements_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_announcements-rtl.css: {}
+
 announcementsLib:
   js:
     assets/js/contact.js: {}

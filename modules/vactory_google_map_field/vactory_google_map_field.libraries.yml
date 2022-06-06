@@ -1,7 +1,17 @@
+vactory_google_map_field_style:
+  css:
+    theme:
+      ./assets/css/vactory_google_map_field.css: {}
+
+vactory_google_map_field_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_google_map_field-rtl.css: {}
+
 google-map-field-renderer:
   version: 1.x
   js:
-    js/google-map-field-renderer.js: {}
+    ./assets/js/google-map-field-renderer.js: {}
   dependencies:
     - core/jquery
     - core/drupal
@@ -11,11 +21,11 @@ google-map-field-widget-renderer:
   version: 1.x
   css:
     theme:
-      css/google-map-field-widget-renderer.css: {}
+      ./assets/css/google-map-field-widget-renderer.css: {}
   js:
-    js/google-map-field-widget-renderer.js: {}
-    js/google-map-field-widget-renderer-previews.js: {}
-    js/google-map-field-widget-renderer-setter.js: {}
+    ./assets/js/google-map-field-widget-renderer.js: {}
+    ./assets/js/google-map-field-widget-renderer-previews.js: {}
+    ./assets/js/google-map-field-widget-renderer-setter.js: {}
   dependencies:
     - core/jquery
     - core/drupal

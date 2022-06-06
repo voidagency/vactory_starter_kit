@@ -65,10 +65,10 @@
 #}
 
 {% embed "@twigComponents/article/article-event.twig" with {
-  'classes': ['vf-card--event'],
+  'classes': ['card--event'],
   'title': label,
   'url': url,
-  'image': addAttributes(content.field_vactory_media, {'class': ['vf-card__image', 'img-fluid']}),
+  'image': addAttributes(noWrapper(content.field_vactory_media), {'class': ['img-fluid']}),
   'subtitle': {
     'category': content.field_vactory_taxonomy_1,
     'city': content.field_vactory_taxonomy_2.0,
@@ -81,10 +81,10 @@
 } %}
 
   {% block subtitle %}
-    <span class="badge badge-danger">{{ subtitle.city }}</span>
+    <span class="card__tag badge badge-danger">{{ subtitle.city }}</span>
     {% for key,thematic in subtitle.category %}
       {% if key matches '/^\\d+$/' %}
-        <span class="badge badge-primary">{{ subtitle.category[key] }}</span>
+        <span class="card__tag badge badge-primary">{{ subtitle.category[key] }}</span>
       {% endif %}
     {% endfor %}
   {% endblock %}

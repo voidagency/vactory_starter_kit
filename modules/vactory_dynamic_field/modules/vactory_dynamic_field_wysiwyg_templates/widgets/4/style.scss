@@ -1,0 +1,36 @@
+// Template 4
+.t-6-points-indices {
+  .t-item {
+    justify-content: center;
+  }
+
+  .t-box {
+    position: relative;
+    text-align: center;
+
+    img {
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .t-box-description {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+
+      .t-box-description-number {
+        p {
+          font-style: italic;
+          @include rem(font-size, 40px);
+          @include rem(line-height, 36px);
+          @include rem(margin-bottom, 10px);
+        }
+      }
+
+      p {
+        color: $white;
+      }
+    }
+  }
+}

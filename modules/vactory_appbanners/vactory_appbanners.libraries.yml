@@ -1,16 +1,16 @@
 jquery.smartbanner:
   css:
     theme:
-      js/jquery.smartbanner/jquery.smartbanner.css: {}
+      ./assets/js/jquery.smartbanner/jquery.smartbanner.css: {}
   js:
-    js/jquery.smartbanner/jquery.smartbanner.js: {}
+    ./assets/js/jquery.smartbanner/jquery.smartbanner.js: {}
   dependencies:
     - core/jquery
     - core/drupalSettings
 
 app:
   js:
-    js/app.js: {}
+    ./assets/js/app.js: {}
   dependencies:
     - core/jquery
     - core/drupalSettings

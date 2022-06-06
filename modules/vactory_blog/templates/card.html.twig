@@ -64,12 +64,11 @@
  */
 #}
 
-
 {% include "@twigComponents/article/article.twig" with {
-'classes': ['vf-card--blog'],
+'classes': ['card--blog'],
 'title': label,
 'url': url,
-'image': addAttributes(content.field_vactory_media, {'class': ['vf-card__image', 'img-fluid']}),
+'image': addAttributes(noWrapper(content.field_vactory_media), {'class': ['img-fluid']}),
 'subtitle': content.field_blog_category.0,
 'intro': content.field_vactory_excerpt,
 'read_more': 'Read more'|t

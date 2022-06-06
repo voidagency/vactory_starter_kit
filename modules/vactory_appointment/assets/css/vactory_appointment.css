@@ -1,0 +1,409 @@
+@charset "UTF-8";
+.confirmation-wrapper {
+  padding: 50px;
+  padding: 3.125rem;
+  border: 1px solid #000;
+  border: 0.0625rem solid #000;
+}
+
+td.fc-widget-content {
+  cursor: pointer;
+}
+
+td.fc-axis {
+  cursor: auto;
+}
+
+div#adviser-holiday-title-wrapper {
+  padding: 50px;
+  padding: 3.125rem;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  -webkit-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+  width: 35%;
+  border: 2px solid #007bff;
+  border: 0.125rem solid #007bff;
+  background: #fff;
+  z-index: 9999;
+}
+
+.adviser-holiday-title-bg {
+  position: fixed;
+  background: #000;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9998;
+  opacity: 0.7;
+}
+
+.adviser-title-error {
+  color: red;
+  font-size: 14px;
+  font-size: 0.875rem;
+}
+
+span.adviser-holiday-title-closer {
+  position: absolute;
+  top: 0;
+  right: 15px;
+  right: 0.9375rem;
+  font-size: 32px;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #007bff;
+}
+
+.event-description {
+  position: absolute;
+  background: #fff;
+  color: #0a0a0a;
+  border: 1px solid #007bff;
+  border: 0.0625rem solid #007bff;
+  font-size: 13px;
+  font-size: 0.8125rem;
+  top: 0;
+  width: 90%;
+  height: 0;
+  opacity: 0;
+  overflow: hidden;
+  -webkit-transition: height 0.3s ease-in;
+  -o-transition: height 0.3s ease-in;
+  transition: height 0.3s ease-in;
+}
+
+.event-description.event-description-bottom {
+  bottom: 0;
+  top: unset;
+}
+
+.event-description.show {
+  -webkit-transform: translate(0, -100%);
+      -ms-transform: translate(0, -100%);
+          transform: translate(0, -100%);
+  padding: 8px;
+  padding: 0.5rem;
+  height: 400%;
+  opacity: 1;
+  -webkit-transition: opacity 0.3s ease-in, height 0.5s ease-in;
+  -o-transition: opacity 0.3s ease-in, height 0.5s ease-in;
+  transition: opacity 0.3s ease-in, height 0.5s ease-in;
+}
+
+.event-description.show-bottom {
+  -webkit-transform: translate(0, 100%);
+      -ms-transform: translate(0, 100%);
+          transform: translate(0, 100%);
+  padding: 8px;
+  padding: 0.5rem;
+  height: 350%;
+  opacity: 1;
+  -webkit-transition: opacity 0.3s ease-in, height 0.5s ease-in;
+  -o-transition: opacity 0.3s ease-in, height 0.5s ease-in;
+  transition: opacity 0.3s ease-in, height 0.5s ease-in;
+}
+
+/* ----------------------------- Select adviser ----------------------------- */
+.card-radio-wrapper > div {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  margin-right: -15px;
+  margin-right: -0.9375rem;
+  margin-left: -15px;
+  margin-left: -0.9375rem;
+}
+
+.card-radio-wrapper > div .form-item {
+  margin: 0;
+  padding-left: 15px;
+  padding-left: 0.9375rem;
+  padding-right: 15px;
+  padding-right: 0.9375rem;
+  padding-bottom: 20px;
+  padding-bottom: 1.25rem;
+  width: 100%;
+  min-height: 1px;
+  min-height: 0.0625rem;
+  position: relative;
+  -webkit-box-flex: 0;
+      -ms-flex: 0 0 100%;
+          flex: 0 0 100%;
+  max-width: 100%;
+  /**
+       * fix responsive for cards
+       * inside input type radio
+       **/
+}
+
+@media (min-width: 576px) {
+  .card-radio-wrapper > div .form-item {
+    -webkit-box-flex: 0;
+        -ms-flex: 0 0 50%;
+            flex: 0 0 50%;
+    max-width: 50%;
+  }
+}
+
+@media (min-width: 768px) {
+  .card-radio-wrapper > div .form-item {
+    -webkit-box-flex: 0;
+        -ms-flex: 0 0 33.33333%;
+            flex: 0 0 33.33333%;
+    max-width: 33.33333%;
+  }
+}
+
+@media (min-width: 992px) {
+  .card-radio-wrapper > div .form-item {
+    -webkit-box-flex: 0;
+        -ms-flex: 0 0 25%;
+            flex: 0 0 25%;
+    max-width: 25%;
+  }
+}
+
+.card-radio-wrapper > div label {
+  margin: 0;
+  display: block;
+  height: 100%;
+}
+
+.card-radio-wrapper > div .hidden-radio {
+  position: absolute;
+  z-index: 1;
+  opacity: 0;
+  top: 0;
+  right: 12.5px;
+  right: 0.78125rem;
+  bottom: 20px;
+  bottom: 1.25rem;
+  width: calc(100% - 25px);
+  width: calc(100% - 1.5625rem);
+  height: calc(100% - 20px);
+  height: calc(100% - 1.25rem);
+  margin: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.card-radio-wrapper > div .form-radio:checked ~ label .push-card {
+  border-color: #007bff !important;
+}
+
+.card-radio-wrapper > div .form-radio:checked ~ label .push-card hr {
+  border-top-color: rgba(0, 123, 255, 0.23);
+}
+
+.card-radio-wrapper > div .push-card {
+  width: 100%;
+}
+
+.card-radio-wrapper.card-radio--inline > div {
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+
+/* -------------------------------------------------------------------------- */
+/*                            Formation Date Resume                           */
+/* -------------------------------------------------------------------------- */
+.date-resume {
+  padding: 20px;
+  padding: 1.25rem;
+}
+
+.date-resume__icon {
+  margin-bottom: 10px;
+  margin-bottom: 0.625rem;
+}
+
+.date-resume__icon img {
+  max-height: 92px;
+  max-height: 5.75rem;
+}
+
+.date-resume__title {
+  font-size: 24px;
+  font-size: 1.5rem;
+  margin-bottom: 4px;
+  margin-bottom: 0.25rem;
+}
+
+.date-resume__span {
+  display: block;
+  font-size: 20px;
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 10px;
+  margin-bottom: 0.625rem;
+}
+
+.date-resume__date {
+  font-size: 26px;
+  font-size: 1.625rem;
+  line-height: 23px;
+  line-height: 1.4375rem;
+  margin-bottom: 10px;
+  margin-bottom: 0.625rem;
+}
+
+.date-resume__hour {
+  font-size: 26px;
+  font-size: 1.625rem;
+  line-height: 23px;
+  line-height: 1.4375rem;
+  margin-bottom: 0;
+}
+
+@media (min-width: 768px) {
+  .date-resume {
+    padding: 24px 20px 30px;
+    padding: 1.5rem 1.25rem 1.875rem;
+  }
+  .date-resume__title {
+    font-size: 26px;
+    font-size: 1.625rem;
+    line-height: 44px;
+    line-height: 2.75rem;
+    letter-spacing: -0.23px;
+    margin-bottom: 3px;
+    margin-bottom: 0.1875rem;
+  }
+  .date-resume__span {
+    font-size: 24px;
+    font-size: 1.5rem;
+    line-height: 23px;
+    line-height: 1.4375rem;
+    margin-bottom: 20px;
+    margin-bottom: 1.25rem;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/*                            Form user information                           */
+/* -------------------------------------------------------------------------- */
+.user-informations {
+  padding: 20px;
+  padding: 1.25rem;
+}
+
+.user-informations label {
+  display: none;
+}
+
+.user-informations .conditions-general + label {
+  display: block;
+}
+
+@media (min-width: 768px) {
+  .user-informations {
+    padding: 25px;
+    padding: 1.5625rem;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/*                             Condition generale                             */
+/* -------------------------------------------------------------------------- */
+.borne-conditions__collapse {
+  text-decoration: none;
+}
+
+.borne-conditions__collapse:hover {
+  text-decoration: none;
+}
+
+.borne-conditions__collapse i {
+  margin-right: 5px;
+  margin-right: 0.3125rem;
+  font-size: 12px;
+  font-size: 0.75rem;
+  vertical-align: middle;
+}
+
+.borne-conditions__collapse span {
+  font-weight: bold;
+  text-decoration: underline;
+  font-size: 14px;
+  font-size: 0.875rem;
+  line-height: 18px;
+  line-height: 1.125rem;
+  color: #000;
+  opacity: .43;
+}
+
+.borne-conditions__collapse[aria-expanded="true"] i::before {
+  content: "";
+}
+
+.borne-conditions__text {
+  font-size: 12px;
+  font-size: 0.75rem;
+  color: rgba(0, 0, 0, 0.6);
+  padding: 8px 16px;
+  padding: 0.5rem 1rem;
+}
+
+/* -------------------------------------------------------------------------- */
+/* ----------------------------- CHange rdv card ---------------------------- */
+.card-rdv-edit {
+  position: relative;
+}
+
+.card-rdv-edit .btn-edit {
+  position: absolute;
+  z-index: 1;
+  top: 4px;
+  top: 0.25rem;
+  right: 4px;
+  right: 0.25rem;
+}
+
+.card-rdv-edit .card-col {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.card-rdv-edit .card-picto {
+  margin-right: 30px;
+  margin-right: 1.875rem;
+}
+
+.card-rdv-edit .card-picto img {
+  max-height: 122px;
+  max-height: 7.625rem;
+  max-width: 122px;
+  max-width: 7.625rem;
+}
+
+.card-rdv-edit .card-body {
+  padding-bottom: 0;
+}
+
+/* -------------------------------------------------------------------------- */
+/*                              confirmation page                             */
+/* -------------------------------------------------------------------------- */
+.confirmation-page {
+  max-width: 800px;
+  max-width: 50rem;
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.confirmation-page .smile-icon img {
+  max-height: 122px;
+  max-height: 7.625rem;
+}

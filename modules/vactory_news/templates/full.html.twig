@@ -96,12 +96,12 @@
 
   <div class="row justify-content-center">
     <div class="col-lg-10">
-      <div class="vactory-news__inner">
+      <div class="vactory-news__body">
         {% if content.field_vactory_media.0['#item'].target_id is defined %}
           {% set image_id = content.field_vactory_media.0['#item'].target_id %}
           {% set image = get_image_info(image_id) %}
           {% set image_url = image.url %}
-          {% set image_webp = image.uri|image_style('webp') %}
+          {# {% set image_webp = image.uri|image_style('webp') %} #}
           {% set image_type = image.filemime %}
           {% set image_height = image.height %}
           {% set image_width = image.width %}
@@ -109,7 +109,7 @@
           {% set image_title = content.field_vactory_media.0['#item'].title %}
           <div class="vactory-news__image">
             <picture>
-              <source data-srcset="{{image_webp}}" type="image/webp">
+              {# <source data-srcset="{{image_webp}}" type="image/webp"> #}
               <source data-srcset="{{image_url}}" type="{{image_type}}">
               <img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{image_url}}" data-sizes="auto" height="{{image_height}}" width="{{image_width}}" class="img-fluid w-100 lazyload" alt="{{ image_alt }}" typeof="foaf:Image">
             </picture>

@@ -84,6 +84,7 @@ class FormationInscriptionController extends ControllerBase {
           $current_user = \Drupal::service('entity_type.manager')->getStorage('user')
             ->load($current_user->id());
           $datalayer_fields_infos = \Drupal::config('vactory_academy_agency.settings')->get('datalayer_concerned_fields');
+          $datalayer_fields_infos = $datalayer_fields_infos ? $datalayer_fields_infos : [];
           $datalayer_attributes = [];
           $client_infos_fields = ['first_name', 'last_name', 'email', 'phone'];
           $first_name = $current_user->get('field_first_name')->value;

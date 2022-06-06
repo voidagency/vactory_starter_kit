@@ -1,0 +1,73 @@
+.slick-controls.slick-controls--v2 {
+  display: block;
+  width: 100%;
+  padding-top: 50px;
+  padding-top: 3.125rem;
+  padding-left: 140px;
+  padding-left: 8.75rem;
+}
+
+.slick-controls.slick-controls--v2 .slick-arrow {
+  position: absolute;
+  top: 0;
+}
+
+.slick-controls.slick-controls--v2 .slick-next {
+  right: auto;
+  left: 60px;
+  left: 3.75rem;
+}
+
+.slick-controls.slick-controls--v2 .slick-dots {
+  position: relative;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.slick-controls.slick-controls--v2 .slick-dots li {
+  height: 8px;
+  height: 0.5rem;
+  width: auto;
+  margin: 0;
+  -webkit-box-flex: 1;
+      -ms-flex-positive: 1;
+          flex-grow: 1;
+  -ms-flex-negative: 0;
+      flex-shrink: 0;
+  background-color: #ececec;
+}
+
+.slick-controls.slick-controls--v2 .slick-dots li:first-of-type {
+  border-top-left-radius: 4px;
+  border-top-left-radius: 0.25rem;
+  border-bottom-left-radius: 4px;
+  border-bottom-left-radius: 0.25rem;
+}
+
+.slick-controls.slick-controls--v2 .slick-dots li:last-of-type {
+  border-top-right-radius: 4px;
+  border-top-right-radius: 0.25rem;
+  border-bottom-right-radius: 4px;
+  border-bottom-right-radius: 0.25rem;
+}
+
+.slick-controls.slick-controls--v2 .slick-dots li button {
+  display: none;
+}
+
+.slick-controls.slick-controls--v2 .slick-controls__active-indicator {
+  position: absolute;
+  height: 100%;
+  top: 0;
+  left: 0;
+  -webkit-transform: translateX(-100%);
+      -ms-transform: translateX(-100%);
+          transform: translateX(-100%);
+  background-color: #879198;
+  -webkit-transition: all .4s;
+  -o-transition: all .4s;
+  transition: all .4s;
+  border-radius: 4px;
+  border-radius: 0.25rem;
+}

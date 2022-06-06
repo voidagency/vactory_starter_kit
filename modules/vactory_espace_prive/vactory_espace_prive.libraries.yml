@@ -1,0 +1,9 @@
+vactory_espace_prive_style:
+  css:
+    theme:
+      ./assets/css/vactory_espace_prive.css: {}
+
+vactory_espace_prive_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_espace_prive-rtl.css: {}

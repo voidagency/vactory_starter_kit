@@ -8,23 +8,21 @@
 {% if classes is not defined %}
   {% set classes = [] %}
 {% endif %}
-{% set classes = classes|merge(['card','card--inline', 'notifications']) %}
+{% set classes = classes|merge(['card','card--inline', 'card--notifications', 'mb-3']) %}
 <article {{ attributes.addClass(classes) }}>
-  <div class="card-col position-relative card-body--inline">
-    <div class="card-body">
-      <h4{{ title_attributes }} class="card-title">
-        <span class="link font-semibold text-uppercase font-20">{{ fields.name.content }}</span>
-      </h4>
-      <h6 class="card-subtitle mb-2">
-        <span class="badge badge-primary">{{ fields.created.content }}</span>
-      </h6>
-      <div class="card-text">{{ fields.notification_message.content }}</div>
-      {% if related_content_url is not null %}
-        <div class="card-read-more">
-          <a href="{{ related_content_url }}" class="btn btn-primary">{{ "Consulter"|t }}</a>
-        </div>
-      {% endif %}
+  <div class="card__body">
+    <h3{{ title_attributes }} class="card__title">
+      <span>{{ fields.name.content }}</span>
+    </h3>
+    <div class="card__meta">
+      <span class="card__tag">{{ fields.created.content }}</span>
     </div>
+    <div class="card__description">{{ fields.notification_message.content }}</div>
+    {% if related_content_url is not null %}
+      <div class="card__read-more">
+        <a href="{{ related_content_url }}" class="btn btn-primary">{{ "Consulter"|t }}</a>
+      </div>
+    {% endif %}
   </div>
 </article>
 
