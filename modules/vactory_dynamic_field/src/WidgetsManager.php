@@ -197,8 +197,8 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
     foreach ($widgets_alter as $catgeory => &$items) {
       $id = 1;
       if (is_array($items) || is_object($items)) {
-        foreach ($items as &$item) {
-          $this->removeDisabledWidgetFromWidgetResults($items ,$key, $disabled_widgets);
+        foreach ($items as $key => &$item) {
+          $this->removeDisabledWidgetFromWidgetResults($items, $key, $disabled_widgets);
           $old_name = $item['name'];
           $new_name = preg_replace('/([0-9]+) - /', '', $old_name);
 
