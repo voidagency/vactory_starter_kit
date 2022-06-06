@@ -6,7 +6,7 @@
  */
 
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-
+use Drupal\Core\Form\FormStateInterface;
 /**
  * Implements hook_theme().
  */
@@ -167,3 +167,61 @@ function vactory_espace_prive_page_attachments(array &$attachments) {
     }
   }
 }
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_espace_prive_form_user_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $current_path = \Drupal::service('path.current')->getPath();
+  if ($current_path == "/espace-prive/profile") {
+    $form['#attached']['library'][] = 'vactory_espace_prive/script.auto_upload';
+    if ($form_state->getValue('user_picture') != null) {
+      $fid = $form_state->getValue('user_picture')['0']['fids']['0'];
+      $current_user = \Drupal::currentUser();
+      $user = \Drupal::entityTypeManager()->getStorage('user')
+      ->load($current_user->id());
+        $user->set('user_picture', $fid);
+        $user->save();
+    }
+  }
+}
+
+/**
+ * Implements hook_element_info_alter().
+ */
+function vactory_espace_prive_element_info_alter(array &$info) {
+  $current_path = \Drupal::service('path.current')->getPath();
+  if ($current_path == "/espace-prive/profile") {
+    $info['managed_file']['#process'][] = 'vactory_espace_prive_managed_file_process';
+    $info['managed_file']['#attached']['library'][] = 'vactory_espace_prive/command.managed_file_upload_complete_event_command';
+  }
+
+}
+
+/**
+ * Custom ajax callback for managed files.
+ *
+ * Overrides \Drupal\file\Element\ManagedFile::uploadAjaxCallback()
+ *
+ * @see \Drupal\file\Element\ManagedFile::uploadAjaxCallback
+ */
+function vactory_espace_prive_managed_file_ajax_callback(array &$form, FormStateInterface $form_state) {
+  $response = \Drupal\file\Element\ManagedFile::uploadAjaxCallback($form, $form_state, \Drupal::request());
+  $response->addCommand(new \Drupal\vactory_espace_prive\Ajax\ManagedFileUploadCompleteEventCommand($form, $form_state));
+  return $response;
+}
+
+/**
+ * Custom process callback added to managed_file elements.
+ *
+ * Replaces the original #ajax callback with a custom one.
+ */
+function vactory_espace_prive_managed_file_process(array &$element, FormStateInterface $form_state) {
+  $current_path = \Drupal::service('path.current')->getPath();
+  if ($current_path == "/espace-prive/profile") {
+    $element['upload_button']['#ajax']['callback'] = 'vactory_espace_prive_managed_file_ajax_callback';
+  }
+  return $element;
+}
+
+
