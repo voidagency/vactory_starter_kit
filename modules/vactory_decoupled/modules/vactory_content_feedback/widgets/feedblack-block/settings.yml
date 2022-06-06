@@ -1,0 +1,8 @@
+name: 'Content Feedback'
+multiple: FALSE
+category: 'Feedback'
+enabled: TRUE
+fields:
+  title:
+    label: 'Title'
+    type: text
