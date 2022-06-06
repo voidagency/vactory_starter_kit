@@ -190,15 +190,22 @@ class BlocksManager
 
       $visibilityCollection = new ConditionPluginCollection($conditionPluginManager, $visibility);
 
-      return [
+      // Determine block classification to distinguish between blocks.
+      $classification = 'default';
+      $block_info = [
         'id' => $block->getOriginalId(),
         'label' => $block->label(),
         'region' => $block->getRegion(),
         'plugin' => $block->getPluginId(),
         'weight' => $block->getWeight(),
+        'classification' => $classification,
         'content' => $this->getContent($block->getPluginId()),
         'visibilityConditions' => $visibilityCollection,
       ];
+      // Invoke internal block classification alter
+      \Drupal::moduleHandler()->invokeAll('internal_block_classification_alter', [&$classification, $block_info]);
+      $block_info['classification'] = $classification;
+      return $block_info;
     }, $blocks_list);
 
     return $blocks;

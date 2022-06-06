@@ -119,20 +119,47 @@ class VactoryDynamicFormatter extends FormatterBase {
           if (is_array($value) && isset(array_values($value)[0]['selection'][0]['target_id'])) {
             $media_id = array_values($value)[0]['selection'][0]['target_id'];
             $media = Media::load($media_id);
+            $uri = '';
             if (isset($media) && !empty($media)) {
-              $fid = $media->get('thumbnail')->target_id;
-              $uri = '';
-              if (isset($fid) && !empty($fid)) {
-                $uri = File::load($fid)->getFileUri();
+              if ($media->hasField('field_media_oembed_video')) {
+                $video_url = $media->get('field_media_oembed_video')->value;
+                $url_components = parse_url($video_url);
+                $is_youtube_full_url = strpos($url_components['host'], 'youtube.com') !== FALSE;
+                $is_youtube_embed_url = strpos($url_components['host'], 'youtu.be') !== FALSE;
+                // Handle youtube thumbnail case.
+                if ($is_youtube_full_url || $is_youtube_embed_url) {
+                  $video_id = '';
+                  if ($is_youtube_full_url && isset($url_components['query'])) {
+                    parse_str($url_components['query'], $params);
+                    if (isset($params['v'])) {
+                      $video_id = $params['v'];
+                    }
+                  }
+                  if ($is_youtube_embed_url && isset($url_components['path'])) {
+                    $path = trim($url_components['path'], '/');
+                    $path_args = explode('/', $path);
+                    if (!empty($path_args)) {
+                      $video_id = $path_args[0];
+                    }
+                  }
+                  if (!empty($video_id)) {
+                    $uri = 'https://img.youtube.com/vi/'. $video_id .'/maxres2.jpg';
+                  }
+                }
               }
-
+              if (empty($uri)) {
+                $fid = $media->get('thumbnail')->target_id;
+                if (isset($fid) && !empty($fid)) {
+                  $uri = File::load($fid)->getFileUri();
+                }
+              }
               $content = [
-                'titre'       => $media->get('name')->value,
-                'video_url'   => $media->get('field_media_oembed_video')->value,
-                'thumbnail'   => [
-                  'uri'    => $uri,
+                'titre' => $media->get('name')->value,
+                'video_url' => $media->get('field_media_oembed_video')->value,
+                'thumbnail' => [
+                  'uri' => $uri,
                   'height' => $media->get('thumbnail')->height,
-                  'width'  => $media->get('thumbnail')->width,
+                  'width' => $media->get('thumbnail')->width,
                 ],
               ];
               $value = $content;

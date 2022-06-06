@@ -3,8 +3,7 @@
   "description": "Vactory is a custom Drupal profile which is developed and released by VOID Agency.",
   "type": "drupal-profile",
   "license": "GPL-2.0-or-later",
-  "authors": [
-  ],
+  "authors": [],
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
@@ -39,7 +38,6 @@
     "drupal/improved_multi_select": "^1.7",
     "drupal/inline_entity_form": "^1.0.0-rc2",
     "drupal/colorapi": "^1.1",
-    "drupal/vendor_stream_wrapper": "^1.6",
     "drupal/jquery_colorpicker": "^2.0@RC",
     "drupal/lang_dropdown": "^2.0@beta",
     "drupal/menu_link_attributes": "^1.1.0",
@@ -91,7 +89,7 @@
     "drupal/minifyhtml": "^1.8",
     "drupal/flag": "^4.0@beta",
     "drupal/rate": "^1.0",
-    "masterminds/html5":"2.3.0",
+    "masterminds/html5": "2.3.0",
     "drupal/link_attributes": "^1.9",
     "drupal/entity_embed": "^1.0",
     "drupal/search_api_autocomplete": "^1.4",
@@ -152,7 +150,10 @@
     "drupal/jsonapi_extras": "^3.20",
     "drupal/simple_oauth": "^5.2",
     "drupal/decoupled_router": "^2.0",
-    "drupal/jsonapi_user_resources": "1.0.0-alpha4"
+    "drupal/jsonapi_user_resources": "1.0.0-alpha4",
+    "drupal/symfony_mailer": "^1.0@alpha",
+    "drupal/textfield_counter": "^2.0",
+    "drupal/default_content": "^2.0@alpha"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.3"
@@ -214,7 +215,9 @@
         "Fix migrate tools drush command not found": "https://www.drupal.org/files/issues/2019-12-11/3099611-15.patch"
       },
       "drupal/jquery_colorpicker": {
-        "jQuery color picker resolve vendor path": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/d6f8848db0da2b9c79d6860c81a39831dce9ed18/jquery-color-picker-resolve-vendor-path.patch"
+        "jQuery color picker resolve vendor path": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/d6f8848db0da2b9c79d6860c81a39831dce9ed18/jquery-color-picker-resolve-vendor-path.patch",
+        "jQuery color picker remove vendor dependencies": "https://gist.githubusercontent.com/khalidbouhouch77/c128e712544f303f0214857cb362c3c7/raw/bd6219096734da124dc2b7ed95e9e34bfff3122e/jquery-colorpicker-remove-vendor-dependencies.patch",
+        "jQuery color picker update background (drupalSettings variable)": "https://gist.githubusercontent.com/khalidbouhouch77/bf02c4bc65240acea5b87a2ff5b5d719/raw/973efb8f4a7bdecd71f21e198de924e98feab66d/jquery-colorpicker-update-background.patch"
       },
       "drupal/domain": {
         "Domain no context : resolve null given.": "https://www.drupal.org/files/issues/2021-03-05/3201514-domain-no-context-test_7.patch"
@@ -230,6 +233,9 @@
       },
       "drupal/email_registration": {
         "Allow authentication via mail and password over OAuth2 module": "https://www.drupal.org/files/issues/2021-10-06/2991141-19-allow_authentication_via_mail.patch"
+      },
+      "drupal/simple_oauth": {
+        "Auth revoke on profile update": "https://www.drupal.org/files/issues/2019-04-15/simple_oauth-auth-revoke-2946882-34.patch"
       }
     }
   },

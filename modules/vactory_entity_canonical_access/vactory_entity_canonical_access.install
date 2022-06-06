@@ -1,0 +1,36 @@
+<?php
+
+/**
+ * @file
+ * Module install/uninstall related hooks.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function vactory_entity_canonical_access_install($is_syncing) {
+  if (Drupal::moduleHandler()->moduleExists('improved_multi_select')) {
+    $config = Drupal::configFactory()->getEditable('improved_multi_select.settings');
+    $urls = $config->get('url');
+    $setting_form_url = '*/admin/config/system/vactory-entity-canonical-access';
+    if (strpos($urls, $setting_form_url) === FALSE) {
+      $urls = empty($urls) ? $setting_form_url : $urls . PHP_EOL . $setting_form_url;
+      $config->set('url', $urls)
+        ->save();
+    }
+  }
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function vactory_entity_canonical_access_uninstall($is_syncing) {
+  if (Drupal::moduleHandler()->moduleExists('improved_multi_select')) {
+    $config = Drupal::configFactory()->getEditable('improved_multi_select.settings');
+    $urls = $config->get('url');
+    $setting_form_url = '*/admin/config/system/vactory-entity-canonical-access';
+    $urls = trim(str_replace($setting_form_url, '', $urls));
+    $config->set('url', $urls)
+      ->save();
+  }
+}

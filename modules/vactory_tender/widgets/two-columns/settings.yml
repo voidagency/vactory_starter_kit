@@ -1,0 +1,33 @@
+name: 'Two Columns'
+multiple: FALSE
+category: 'Appel Offres'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: "Titre"
+  description:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'basic_html'
+  views:
+    type: dynamic_views
+    label: 'Views'
+    options:
+      '#required': TRUE
+      '#default_value':
+        views_id: vactory_tenders
+        views_display_id: block_two_columns
+        fields:
+          id: id
+          uuid: key
+          title: title
+          url: url
+          field_vactory_excerpt: excerpt
+          field_vactory_reference: reference
+          field_vactory_date: date
+          field_vactory_media_file: invitation
+  link:
+    type: url_extended
+    label: 'Lien'

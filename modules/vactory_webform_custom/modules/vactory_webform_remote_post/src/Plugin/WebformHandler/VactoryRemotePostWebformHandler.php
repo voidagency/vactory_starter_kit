@@ -7,6 +7,7 @@ use Drupal\Core\Serialization\Yaml;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\file\Entity\File;
+use Drupal\taxonomy\Entity\Term;
 use Drupal\webform\Element\WebformMessage;
 use Drupal\webform\Plugin\WebformElement\BooleanBase;
 use Drupal\webform\Plugin\WebformElement\NumericBase;
@@ -408,14 +409,19 @@ class VactoryRemotePostWebformHandler extends WebformHandlerBase {
     ];
     $data_fields = $this->getWebform()->getElementsDecodedAndFlattened();
     
-    $elemets_to_exclude = ['webform_flexbox', 'webform_wizard_page', 'container'];
+    $elemets_to_exclude = [
+      'webform_flexbox',
+      'webform_wizard_page',
+      'container',
+    ];
     foreach ($data_fields as $key => $fld) {
       if (in_array($fld['#type'], $elemets_to_exclude)) {
         unset($data_fields[$key]);
       }
     }
     $data_fields_keys = array_keys($data_fields);
-    $webform_submission_fields = array_keys(\Drupal::service('entity_field.manager')->getBaseFieldDefinitions('webform_submission'));
+    $webform_submission_fields = array_keys(\Drupal::service('entity_field.manager')
+      ->getBaseFieldDefinitions('webform_submission'));
     $webform_fields = array_merge($data_fields_keys, $webform_submission_fields);
     foreach ($webform_fields as $webform_field_key) {
       $form['fields_mapping'][$webform_field_key] = [
@@ -450,9 +456,21 @@ class VactoryRemotePostWebformHandler extends WebformHandlerBase {
     if ($this->configuration['method'] === 'GET') {
       $this->configuration['type'] = '';
     }
+    $data_fields = $this->getWebform()->getElementsDecodedAndFlattened();
+    $elemets_to_exclude = [
+      'webform_flexbox',
+      'webform_wizard_page',
+      'container',
+    ];
+    foreach ($data_fields as $key => $fld) {
+      if (in_array($fld['#type'], $elemets_to_exclude)) {
+        unset($data_fields[$key]);
+      }
+    }
     $data_fields = $this->getWebform()->getElementsInitialized();
     $data_fields_keys = array_keys($data_fields);
-    $webform_submission_fields = array_keys(\Drupal::service('entity_field.manager')->getBaseFieldDefinitions('webform_submission'));
+    $webform_submission_fields = array_keys(\Drupal::service('entity_field.manager')
+      ->getBaseFieldDefinitions('webform_submission'));
     $webform_fields = array_merge($data_fields_keys, $webform_submission_fields);
     foreach ($webform_fields as $webform_field) {
       $this->configuration[$webform_field . '_remote_key'] = $form_state->getValue('fields_mapping')[$webform_field . '_remote_key'];
@@ -628,13 +646,26 @@ class VactoryRemotePostWebformHandler extends WebformHandlerBase {
       $data = Yaml::decode($this->configuration[$state . '_custom_data']) + $data;
     }
 
+    $data_fields = $this->getWebform()->getElementsDecodedAndFlattened();
+    foreach ($data as $key => $value){
+      if (key_exists($key,$data_fields) && $data_fields[$key]['#type'] == 'webform_term_select'){
+        $term = Term::load($data[$key]);
+        if ($term){
+          $option_label = $term->getName();
+          $data[$key] = $option_label;
+        }
+      }
+    }
+
     // Replace tokens.
     $data = $this->replaceTokens($data, $webform_submission);
 
     foreach ($data as $key => $value) {
       if (!empty($this->configuration[$key . '_remote_key'])) {
         $data[$this->configuration[$key . '_remote_key']] = $value;
-        unset($data[$key]);
+        if ($this->configuration[$key . '_remote_key'] !=  $key){
+          unset($data[$key]);
+        }
       }
     }
 

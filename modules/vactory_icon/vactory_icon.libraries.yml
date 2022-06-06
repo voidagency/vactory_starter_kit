@@ -1,0 +1,10 @@
+vactory_icon.fonticonpicker:
+  version: 1.0
+  js:
+    libraries/fontIconPicker/js/jquery.fonticonpicker.min.js: {}
+    libraries/fontIconPicker/js/init-picker.js: { }
+  css:
+    theme:
+      libraries/fontIconPicker/css/base/jquery.fonticonpicker.min.css: {}
+      libraries/fontIconPicker/css/themes/grey-theme/jquery.fonticonpicker.grey.min.css: {}
+#      libraries/fontIconPicker/fontello-7275ca86/css/fontello.css: {}

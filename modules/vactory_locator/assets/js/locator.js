@@ -952,6 +952,11 @@
 
     attach: function (context, settings) {
 
+      // Ajax call case.
+      if (context !== document) {
+        return;
+      }
+
       var options = {
         googleApiKey: drupalSettings.vactory_locator.map_key,
         apiUrl: drupalSettings.vactory_locator.url,

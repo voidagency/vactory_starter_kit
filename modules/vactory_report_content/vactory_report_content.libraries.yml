@@ -1,0 +1,6 @@
+script:
+  js:
+    js/report-content.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings

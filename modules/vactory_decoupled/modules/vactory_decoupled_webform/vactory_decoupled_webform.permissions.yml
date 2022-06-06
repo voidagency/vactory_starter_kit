@@ -1,0 +1,3 @@
+administer webform_decoupled props:
+  title: 'Edit webform props object.'
+  restrict access: true

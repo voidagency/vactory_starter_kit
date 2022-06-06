@@ -140,7 +140,7 @@ fields:
 
 Si on prend l'exemple suivant:
 
-![Chiffres clés](/modules/vactory/vactory_dynamic_field/_docs/widget-extra-field-example.png "Chiffres clés")
+![Chiffres clés](./_docs/widget-extra-field-example.png "Chiffres clés")
 
 ```code
 name: 'Ciffres clés'
@@ -310,6 +310,45 @@ fields:
           type: block_field
           label: 'Block'
 ```
+
+## Conditional fields
+For adding a condition to a field we use the key `conditions`
+in the bellow structure:
+
+        fields:
+            description:
+                type: text
+                label: 'Description'
+                conditions:
+                  ElementState:
+                    DependentFieldName:
+                      ConditionState: ConditionValue
+* ElementState: The element state when the ConditionState is satisfied
+Valid Element States:
+ > enabled \
+  disabled \
+  required \
+  optional \
+  visible \
+  invisible \
+  checked \
+  unchecked \
+  expanded \
+  collapsed 
+* DependentFieldName: The dependent field name.
+* ConditionState: The condition to be satisfied
+ Valid condition states:
+  > empty \
+  filled \
+  checked \
+  unchecked \
+  expanded \
+  collapsed \
+  value
+* ConditionValue: The value that satisfy the condition (bool or string)
+
+Loom Tutorial
+https://www.loom.com/share/895b2edccdea45f8b59c1db4f496998f
 
 ## Extends
 Aucun

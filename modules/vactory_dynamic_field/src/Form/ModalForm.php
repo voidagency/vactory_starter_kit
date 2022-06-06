@@ -249,6 +249,20 @@ class ModalForm extends FormBase {
             '#collapsed' => TRUE,
           ];
 
+          // Replace name property option token.
+          if (isset($field['g_name'])) {
+            if (preg_match('/\{(i|index)\}$/', $field['g_name'])) {
+              $field['g_name'] = preg_replace('/\{(i|index)\}$/', '1', $field['g_name']);
+            }
+            $form['components']['extra_field'][$field_id]['#name'] = $field['g_name'];
+          }
+
+          // Handle conditional fields.
+          if (isset($field['g_conditions'])) {
+            $this->setVisibilityConditions($form['components']['extra_field'][$field_id], $field['g_conditions']);
+            unset($field['g_conditions']);
+          }
+
           foreach ($field as $field_key => $field_info) {
             $element_type = $field_info['type'];
             $element_label = t('@field_label', ['@field_label' => $field_info['label']]);
@@ -276,6 +290,11 @@ class ModalForm extends FormBase {
             }
 
             $form['components']['extra_field'][$field_id][$field_key] = $this->getFormElement($element_type, $element_label, $element_default_value, $element_options, $form, $form_state, $ds_field_name, $field_id, $field_key);
+
+            // Handle conditional fields.
+            if (isset($field_info['conditions'])) {
+              $this->setVisibilityConditions($form['components']['extra_field'][$field_id][$field_key], $field_info['conditions']);
+            }
 
             if ($element_type == 'text_format') {
               $this->textformatFields[] = ['components', 'extra_field', $field_id, $field_key];
@@ -308,6 +327,11 @@ class ModalForm extends FormBase {
           }
 
           $form['components']['extra_field'][$field_id] = $this->getFormElement($element_type, $element_label, $element_default_value, $element_options, $form, $form_state, $ds_field_name, $field_id);
+
+          // Handle conditional fields.
+          if (isset($field['conditions'])) {
+            $this->setVisibilityConditions($form['components']['extra_field'][$field_id], $field['conditions']);
+          }
 
           if ($element_type == 'text_format') {
             $this->textformatFields[] = ['components', 'extra_field', $field_id];
@@ -366,6 +390,20 @@ class ModalForm extends FormBase {
             '#collapsed' => TRUE,
           ];
 
+          // Replace name property option token.
+          if (isset($field['g_name'])) {
+            if (preg_match('/\{(i|index)\}$/', $field['g_name'])) {
+              $field['g_name'] = preg_replace('/\{(i|index)\}$/', $i, $field['g_name']);
+            }
+            $form['components'][$i][$field_id]['#name'] = $field['g_name'];
+          }
+
+          // Handle conditional fields.
+          if (isset($field['g_conditions'])) {
+            $this->setVisibilityConditions($form['components'][$i][$field_id], $field['g_conditions'], $i);
+            unset($field['g_conditions']);
+          }
+
           foreach ($field as $field_key => $field_info) {
             if ($field_key == 'g_title') {
               continue;
@@ -393,6 +431,11 @@ class ModalForm extends FormBase {
             }
 
             $form['components'][$i][$field_id][$field_key] = $this->getFormElement($element_type, $element_label, $element_default_value, $element_options, $form, $form_state, $ds_field_name);
+
+            // Handle conditional fields.
+            if (isset($field_info['conditions'])) {
+              $this->setVisibilityConditions($form['components'][$i][$field_id][$field_key], $field_info['conditions'], $i);
+            }
 
             if ($element_type == 'text_format') {
               $this->textformatFields[] = ['components', $i, $field_id, $field_key];
@@ -427,6 +470,11 @@ class ModalForm extends FormBase {
           }
 
           $form['components'][$i][$field_id] = $this->getFormElement($element_type, $element_label, $element_default_value, $element_options, $form, $form_state, $ds_field_name, $field_id, $i);
+
+          // Handle conditional fields.
+          if (isset($field['conditions'])) {
+            $this->setVisibilityConditions($form['components'][$i][$field_id], $field['conditions'], $i);
+          }
 
           if ($element_type == 'text_format') {
             $this->textformatFields[] = ['components', $i, $field_id];
@@ -745,6 +793,10 @@ class ModalForm extends FormBase {
         $response->addCommand(new InvokeCommand("#" . $this->wrapperId, 'addClass', ['update-templates-deltas']));
       }
 
+      if (isset($form['#attached'])) {
+        $response->setAttachments($form['#attached']);
+      }
+
       return $response;
     }
     return $form;
@@ -838,6 +890,31 @@ class ModalForm extends FormBase {
       foreach ($errors as $key => $message) {
         $form_state->setErrorByName($key, $message);
       }
+    }
+  }
+
+  /**
+   * Manage given elemen states.
+   */
+  public function setVisibilityConditions(&$element, $conditions, $index = '1') {
+    $states = [
+      '#states' => [],
+    ];
+    foreach ($conditions as $state => $state_condition) {
+      if (is_array($state_condition)) {
+        foreach ($state_condition as $dependent_name => $condition) {
+          if (preg_match('/\{(i|index)\}$/', $dependent_name)) {
+            $dependent_name = preg_replace('/\{(i|index)\}$/', $index, $dependent_name);
+          }
+          if (is_array($condition)) {
+            $selector = '[name="' . $dependent_name . '"]';
+            $states['#states'][$state][$selector] = $condition;
+          }
+        }
+      }
+    }
+    if (!empty($states['#states'])) {
+      $element = array_merge($element, $states);
     }
   }
 

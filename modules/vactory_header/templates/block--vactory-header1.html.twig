@@ -18,7 +18,7 @@
             {% set has_sub = ((menu_item.submenu or menu_item.fields.field_injected_block.plugin_id is not empty) ? 'has-sub' : '') %}
 
             <li class="menu__item{{ active }} menu__item--{{ level|default(default_level) }} {{ has_sub }} {{ menu_item.options.attributes.wrapper_class }}">
-                <a href="{{ menu_item.url }}" id="{{ menu_item.options.attributes.id }}" class="menu__link{{ active }} {{ menu_item.options.attributes.class|join(' ') }}">{{ menu_item.text }}</a>
+                <a href="{{ menu_item.url }}" {% if menu_item.options.attributes.rel is not empty %} rel="{{ menu_item.options.attributes.rel }}" {% endif %} id="{{ menu_item.options.attributes.id }}" class="menu__link{{ active }} {{ menu_item.options.attributes.class|join(' ') }}">{{ menu_item.text }}</a>
                 {# Call the block injected menu if exist. #}
                 {% if menu_item.fields.field_injected_block.plugin_id is not empty %}
                   <div class="menu-sub--{{ level|default(default_level) }}">

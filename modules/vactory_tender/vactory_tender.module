@@ -159,35 +159,42 @@ function _vactory_tender_webform_redirection($form, FormStateInterface $form_sta
  * Implements hook_views_pre_view().
  */
 function vactory_tender_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
+  $route_name = Drupal::routeMatch()->getRouteName();
+  // Do nothing in jsonapi call case.
+  if (strpos($route_name, 'jsonapi') === 0) {
+    return;
+  }
   // Check if header is enabled.
   $is_header_enabled = !empty($view->display_handler->options['header']) ? TRUE : FALSE;
   if ($view->id() == 'vactory_tenders' && $is_header_enabled) {
     // Get the header block machine name.
     $block_machine_name = $view->display_handler->options['header']['entity_block_content']['target'];
-    $entity_manager = \Drupal::service('entity_type.manager');
-    // Load Block by machine name.
-    $block = $entity_manager->getStorage('block_content')
-      ->loadByProperties(['block_machine_name' => $block_machine_name]);
+    if (!empty($block_machine_name)) {
+      $entity_manager = \Drupal::service('entity_type.manager');
+      // Load Block by machine name.
+      $block = $entity_manager->getStorage('block_content')
+        ->loadByProperties(['block_machine_name' => $block_machine_name]);
 
-    if (is_array($block) && reset($block) instanceof BlockContent) {
-      // Get block view display.
-      $block_content = $entity_manager->getViewBuilder('block_content')
-        ->view(reset($block));
-      // Override the view header for the current display.
-      $item = [
-        'id' => 'area_text_custom',
-        'table' => 'views',
-        'field' => 'area_text_custom',
-        'relationship' => 'none',
-        'group_type' => 'none',
-        'admin_label' => '',
-        'empty' => TRUE,
-        'tokenize' => FALSE,
-        'content' => \Drupal::service('renderer')
-          ->render($block_content),
-        'plugin_id' => 'text_custom',
-      ];
-      $view->setHandler($display_id, 'header', 'area_text_custom', $item);
+      if (is_array($block) && reset($block) instanceof BlockContent) {
+        // Get block view display.
+        $block_content = $entity_manager->getViewBuilder('block_content')
+          ->view(reset($block));
+        // Override the view header for the current display.
+        $item = [
+          'id' => 'area_text_custom',
+          'table' => 'views',
+          'field' => 'area_text_custom',
+          'relationship' => 'none',
+          'group_type' => 'none',
+          'admin_label' => '',
+          'empty' => TRUE,
+          'tokenize' => FALSE,
+          'content' => \Drupal::service('renderer')
+            ->render($block_content),
+          'plugin_id' => 'text_custom',
+        ];
+        $view->setHandler($display_id, 'header', 'area_text_custom', $item);
+      }
     }
   }
 }

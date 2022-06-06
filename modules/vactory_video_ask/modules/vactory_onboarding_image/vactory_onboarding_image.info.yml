@@ -1,0 +1,14 @@
+name: 'Onboarding image'
+description: 'Provides Onboarding image type de média and related configuration. Onboarding image file.'
+type: module
+core_version_requirement: '^8.9 || ^9'
+dependencies:
+  - 'drupal:content_translation'
+  - 'drupal:field'
+  - 'drupal:file'
+  - 'drupal:image'
+  - 'drupal:language'
+  - 'drupal:media'
+  - 'drupal:path'
+  - 'vactory_core:vactory_core'
+package: Vactory

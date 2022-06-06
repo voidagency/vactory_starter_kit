@@ -56,6 +56,14 @@ class EspacePriveRouteSubscriber extends RouteSubscriberBase {
       $route_espace_prive = $collection->get('vactory_espace_prive.login');
       $route_espace_prive->setPath($path_login);
     }
+    if ($route = $collection->get('user.login.http')) {
+      $path_login = $espace_prive_settings->get('path_login');
+      $path_login = strpos($path_login, '/') !== 0 ? '/' . $path_login : $path_login;
+      $route->setPath($path_login);
+      $route_espace_prive = $collection->get('vactory_espace_prive.login');
+      $route_espace_prive->setMethods(['POST']);
+      $route_espace_prive->setPath($path_login);
+    }
     if ($route = $collection->get('user.register')) {
       $path_register = $espace_prive_settings->get('path_register');
       $path_register = strpos($path_register, '/') !== 0 ? '/' . $path_register : $path_register;

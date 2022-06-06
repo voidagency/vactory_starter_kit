@@ -21,3 +21,10 @@ services:
     class: Drupal\vactory_decoupled\Routing\RouteSubscriber
     tags:
       - { name: event_subscriber }
+  vactory_decoupled.normalizer.primitive_data:
+    class: Drupal\vactory_decoupled\Normalizer\PrimitiveDataNormalizerOverride
+    decorates: serializer.normalizer.primitive_data
+    decoration_priority: 7
+    public: false
+    arguments:
+      - '@vactory_decoupled.normalizer.primitive_data.inner'
