@@ -167,7 +167,6 @@ function vactory_academy_form_user_form_alter(&$form, FormStateInterface $form_s
     // Those fields are available only for users with instructor role.
     $form['field_about_the_author']['#access'] = FALSE;
     $form['field_user_profession']['#access'] = FALSE;
-    $form['field_social_media_links']['#access'] = FALSE;
   }
 }
 
