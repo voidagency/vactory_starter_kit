@@ -1,0 +1,5 @@
+vactory_facebook_pixel_settings:
+  title: Facebook Pixel Settings
+  description: Configuration de module personnalisé Vactory Facebook Pixel
+  route_name: vactory_facebook_pixel.settings_form
+  parent: system.admin_config_system
