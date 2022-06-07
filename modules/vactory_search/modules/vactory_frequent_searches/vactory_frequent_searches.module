@@ -7,8 +7,6 @@
 
 use Drupal\Core\Database\Database;
 use Drupal\views\ViewExecutable;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 /**
  * Implements hook_theme().
@@ -131,9 +129,4 @@ function vactory_frequent_searches_cron() {
       ], ';');
     }
     fclose($file);
-    $response = new BinaryFileResponse('private://Frequently_searched_keywords/' . $file_name);
-    $response->setContentDisposition(
-      ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-      $file_name
-    );
   }
