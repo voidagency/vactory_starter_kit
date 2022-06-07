@@ -88,6 +88,25 @@ vactory_header_v8_style_rtl:
     theme:
       ./assets/css/vactory_header_v8-rtl.css: {}
 
+vactory_header_v9_style:
+  css:
+    theme:
+      ./assets/css/vactory_header_v9.css: {}
+
+vactory_header_v9_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_header_v9-rtl.css: {}
+
+full-mega-menu_style:
+  css:
+    theme:
+      ./assets/css/full-mega-menu.css: {}
+
+full-mega-menu_style_rtl:
+  css:
+    theme:
+      ./assets/css/full-mega-menu-rtl.css: {}
 
 vactory_header.variant1:
   js:
@@ -138,6 +157,13 @@ vactory_header.variant7:
 vactory_header.variant8:
   js:
     ./assets/js/variant8.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
+
+vactory_header.full-menu:
+  js:
+    ./assets/js/full-mega-menu.js: {}
   dependencies:
     - core/jquery
     - core/drupalSettings
