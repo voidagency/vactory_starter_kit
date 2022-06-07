@@ -214,6 +214,14 @@ class FrequentSearchesController extends ControllerBase {
     }
   }
 
-
+    /**
+   * Delete all used Keywords.
+   */
+  public function deleteUsedKeywords() {
+    $this->database->delete('vactory_frequent_searches')
+      ->condition('total_results', 0, '!=')
+      ->condition('language', $this->langcode , '=' )
+      ->execute();
+  }
 
 }
