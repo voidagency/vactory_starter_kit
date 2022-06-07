@@ -4,14 +4,22 @@
     $(document).ready(function () {
       $(".btn-edit-picto").click(function (e) {
         // var value = $(".profile-picto input").val();
-         $(".profile-picto input").mousedown();
-         $(".profile-picto input").ajaxComplete(function () {
-           $(".profile-picto input").click();
-         });
-          jQuery("#uploaded_img").attr( "src"," /themes/vactory/assets/img/user-avatar.svg");
-          setTimeout(() => {
-           $(".profile-picto input").click();
-          }, 2000);
+        if ($('.profile-picto input[type="file"]').length > 0) {
+          $('.profile-picto input[type="file"]').click();
+        }
+        else {
+          $('.profile-picto input[type="submit"]').mousedown();
+        }
+        $(document).ajaxComplete(function (event, xhr, settings) {
+          if (
+            settings.extraData !== undefined &&
+            settings.extraData._triggering_element_name !== undefined &&
+            settings.extraData._triggering_element_name.match(/^user_picture_(.)*_remove_button$/)
+          ) {
+            $('.profile-picto input[type="file"]').click();
+          }
+        });
+        jQuery("#uploaded_img").attr( "src", "/themes/vactory/assets/img/user-avatar.svg");
       });
     });
 
