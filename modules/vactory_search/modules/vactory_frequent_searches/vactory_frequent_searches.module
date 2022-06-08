@@ -86,47 +86,19 @@ function vactory_frequent_searches_cron() {
   $service =\Drupal::service('vactory_frequent_searches.frequent_searches_controller');
   $keywords_with_results = $service->fetchKeywordsWithResultsFromDatabase();
   $keywords_with_no_results = $service->fetchKeywordsWithNoResultsFromDatabase();
-  $keywords = [$keywords_with_results, $keywords_with_no_results];
-  foreach($keywords as $keyword) {
-    if (!empty($keyword)){
-      if ($keyword == $keywords_with_results){
-        vactory_frequent_searches_exportCsv($keyword,"with-results");
-        $service->deleteUsedKeywords();
-      } else if ($keyword == $keywords_with_no_results){
-        vactory_frequent_searches_exportCsv($keyword,"with-no-results");
-        $service->deleteAllUnuselessKeywords();
-      }
-    } else{
-      if ($keyword == $keywords_with_results){
-      \Drupal::messenger()->addWarning('There are no keywords with results to export.');
-    } else {
-      \Drupal::messenger()->addWarning('There are no keywords without results to export.');
-    }
-    }
-  }
-}
 
-/**
- * Export Keywords.
- */
- function vactory_frequent_searches_exportCsv( $results, $has_results) {
-    $current_time = new \DateTime('now');
-    $date = $current_time->format('Y-m-d\TH-i-s');
-    $file_name = $has_results . "-" . $date . '.csv';
-    $file = fopen('private://Frequently_searched_keywords/' . $file_name, 'w');
-    fputcsv($file, [
-      'keyword',
-      'Number of times searches',
-      'Total of results',
-      'Last search date',
-    ], ';');
-    foreach ($results as $result) {
-      fputcsv($file, [
-        $result['keywords'],
-        $result['numfound'],
-        array_key_exists('total_results', $result) ? $result['total_results'] : 0,
-        date('d/m/Y H:i:s', $result['timestamp']),
-      ], ';');
-    }
-    fclose($file);
+  if (!empty($keywords_with_results)) {
+    $service->exportToCsv($keywords_with_results, "with-results");
+    $service->deleteUsedKeywords();
   }
+  else
+    \Drupal::messenger()->addWarning('There are no keywords with results to export.');
+
+  if (!empty($keywords_with_no_results)) {
+    $service->exportToCsv($keywords_with_no_results, "with-no-results");
+    $service->deleteAllUnuselessKeywords();
+  }
+  else
+    \Drupal::messenger()->addWarning('There are no keywords without results to export.');
+
+}
