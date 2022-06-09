@@ -185,9 +185,6 @@
         "Fixing call to function on null.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/19e54a007837537dd7de97456ab0e1ad0b9d3cf6/microsoft_social_auth.patch",
         "Update to v2 endpoints.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/9e6eca9bcbd95e7bed7859d54a0c4623a6112e5a/social_auth_microsoft-v2.patch"
       },
-      "drupal/focal_point": {
-        "Add the focal point to image.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/9e6eca9bcbd95e7bed7859d54a0c4623a6112e5a/focal-point-add-patch.patch"
-      },
       "stevenmaguire/oauth2-microsoft": {
         "Fix Bearer Authorization - Update ResourceOwner": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/9e6eca9bcbd95e7bed7859d54a0c4623a6112e5a/oauth2-microsoft-authorization-ressource-owner.patch"
       },
