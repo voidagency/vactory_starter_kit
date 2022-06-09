@@ -137,7 +137,7 @@
     "drupal/domain": "1.0-beta5",
     "drupal/yaml_editor": "^1.1",
     "drupal/mobile_native_share": "^1.0",
-    "drupal/views_infinite_scroll": "^1.9",
+    "drupal/views_infinite_scroll": "^1.8",
     "drupal/multiple_fields_remove_button": "^1.0@alpha",
     "drupal/amptheme": "^3.0",
     "drupal/filefield_paths": "^1.0@beta",
