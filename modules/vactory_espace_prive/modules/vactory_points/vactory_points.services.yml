@@ -8,7 +8,6 @@ services:
       - '@language_manager'
       - '@config.factory'
       - '@module_handler'
-      - '@vactory_notifications.manager'
     tags:
       - { name: 'event_subscriber' }
   vactory_points.manager:

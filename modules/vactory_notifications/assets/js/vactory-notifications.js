@@ -1,6 +1,7 @@
 (function ($, Drupal, drupalSettings) {
 	var confirmCallback = function () {
 		$('#edit-submit').click(function(e){
+			e.stopImmediatePropagation();
 			if(confirm(Drupal.t('Attention! En cliquant sur "OK" une notification sera générée pour ce contenu! si vous ne souhaiter pas encore générer de notification veuillez cliquer "Annuler" et décocher la case "Generate notification"'))){
 				return true;
 			}

@@ -1,0 +1,12 @@
+views.filter.notification_concerned_user:
+  type: mapping
+  label: 'Notification concerned user'
+  mapping:
+    user:
+      type: string
+      label: 'User'
+    concerned_user:
+      type: string
+      label: 'Concerned User'
+views.filter_value.notification_concerned_user:
+  type: string
