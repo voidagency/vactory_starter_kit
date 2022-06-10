@@ -107,6 +107,7 @@ class CrossContentAutocomplete extends WidgetBase {
     $stored_values = $store->get('storedValues');
     $default_options = !empty($items->getValue()[0]) ? explode(' ', trim($items->getValue()[0]['value'])) : [];
     $default_options = !empty($stored_values) ? $stored_values : $default_options;
+    $default_options = isset($form_state->getTriggeringElement()['#trigger_element']) && $form_state->getTriggeringElement()['#trigger_element'] == 'vcc_remove_action' ? $stored_values : $default_options;
     $store->set('storedValues', $default_options);
     $element += [
       '#type' => 'container',
