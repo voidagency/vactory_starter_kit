@@ -230,6 +230,9 @@
       },
       "drupal/rate": {
         "Make rate available for all node display mode.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/19e54a007837537dd7de97456ab0e1ad0b9d3cf6/rate-add-rate-to-all-node-display-mode.patch"
+      },
+      "drupal/captcha": {
+        "Fix captcha error message translation": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/f66e3eaaa67a0d0e1de3d55aec61ca327b192d4a/fix-captcha-error-message-translation.patch"
       }
     }
   },

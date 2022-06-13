@@ -82,6 +82,7 @@ function vactory_espace_prive_preprocess_input__password(&$variables) {
   if ($variables['element']['#type'] == 'password') {
     $title = $variables['element']['#id'] == 'edit-pass-pass1' ? t('Mot de passe') : t('Confirmer le mot de passe');
     $title = $variables['element']['#id'] == 'edit-current-pass' ? t('Mot de passe actuel') : $title;
+    $title = $variables['element']['#id'] == 'edit-pass' ? t('Enter your password') : $title;
     $variables['attributes']['placeholder'] = $title;
   }
 }
