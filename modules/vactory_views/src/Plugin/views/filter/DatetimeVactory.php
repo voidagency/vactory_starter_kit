@@ -33,6 +33,7 @@ class DatetimeVactory extends Date {
         '#title'         => $this->t('Value type'),
         '#options'       => [
           'date'      => $this->t('A date in any machine readable format. CCYY-MM-DD HH:MM:SS is preferred.'),
+          'date_month' => $this->t('A date in mm/yyyy format.'),
           'date_year' => $this->t('A date in yyyy format.'),
           'offset'    => $this->t('An offset from the current time such as "@example1" or "@example2"', [
             '@example1' => '+1 day',
@@ -59,6 +60,16 @@ class DatetimeVactory extends Date {
         else {
           $this->query->addWhereExpression($this->options['group'], "YEAR($field) $this->operator $value");
         }
+      }
+    }
+    elseif (!empty($this->value['type']) && $this->value['type'] == 'date_month') {
+      $value = $this->value['value'] ?? '';
+      // In Case of changed and created date is timestamp.
+      if ($field == 'node_field_data.changed' || $field == 'node_field_data.created') {
+        $this->query->addWhereExpression($this->options['group'], "DATE_FORMAT(FROM_UNIXTIME($field), '%m')/YEAR(FROM_UNIXTIME($field)) $this->operator $value");
+      }
+      else {
+        $this->query->addWhereExpression($this->options['group'], "DATE_FORMAT($field, '%m')/YEAR($field) $this->operator $value");
       }
     }
     else {
