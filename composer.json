@@ -88,7 +88,7 @@
     "drupal/responsive_favicons": "1.x-dev@dev",
     "drupal/minifyhtml": "^1.8",
     "drupal/flag": "^4.0@beta",
-    "drupal/rate": "^1.0",
+    "drupal/rate": "^3.0",
     "masterminds/html5": "2.3.0",
     "drupal/link_attributes": "^1.9",
     "drupal/entity_embed": "^1.0",
@@ -227,9 +227,6 @@
       },
       "drupal/simple_oauth": {
         "Auth revoke on profile update": "https://www.drupal.org/files/issues/2019-04-15/simple_oauth-auth-revoke-2946882-34.patch"
-      },
-      "drupal/rate": {
-        "Make rate available for all node display mode.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/19e54a007837537dd7de97456ab0e1ad0b9d3cf6/rate-add-rate-to-all-node-display-mode.patch"
       },
       "drupal/captcha": {
         "Fix captcha error message translation": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/f66e3eaaa67a0d0e1de3d55aec61ca327b192d4a/fix-captcha-error-message-translation.patch"
