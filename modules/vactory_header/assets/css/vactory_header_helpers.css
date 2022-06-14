@@ -22,8 +22,7 @@ body.menu-open {
 }
 
 .vh-sticky.top {
-  top: -73px;
-  top: -4.5625rem;
+  top: 0;
 }
 
 .toolbar-horizontal .vh-sticky.top {
