@@ -312,7 +312,9 @@ function get_oauth_user_infos(UserInterface $user) {
     'last_name' => $last_name,
     'full_name' => $full_name,
     'name_initial' => _auth_generate_intials_from_name($full_name),
-    'roles' => $user->getRoles()
+    'roles' => $user->getRoles(),
+    'isActive' => $user->isActive(),
+    'isBlocked' => $user->isBlocked(),
   ];
 }
 
