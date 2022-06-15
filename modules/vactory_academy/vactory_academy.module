@@ -57,10 +57,6 @@ function vactory_academy_theme() {
       'base hook' => 'flag',
       'template' => 'favorite-link',
     ],
-    'rate_template_fivestar__vactory_academy' => [
-      'base hook' => 'rate_template_fivestar',
-      'template' => 'vactory-academy-vote',
-    ],
   ];
 }
 
@@ -98,6 +94,11 @@ function vactory_academy_preprocess_node(&$variables) {
   // Get node alias to use it as a redirection params.
   $node_alias = $node->toUrl()->toString();
   $variables['redirect_params'] = '?destination=' . $node_alias;
+
+  if (isset($variables['content']['rate_rate_voting'][0]['rating']['#children']['form']['#results']['#results']['rate_average'])) {
+    $average = $variables['content']['rate_rate_voting'][0]['rating']['#children']['form']['#results']['#results']['rate_average'];
+    $variables['rate_average'] = round($average * 5 / 100, 2);
+  }
 }
 
 /**
@@ -303,6 +304,14 @@ function vactory_academy_preprocess_page(&$variables) {
       $profile_url = Url::fromRoute('system.403');
       $redirect = new RedirectResponse($profile_url->toString());
       $redirect->send();
+    }
+  }
+}
+
+function vactory_academy_preprocess_rate_widget(&$variables) {
+  foreach ($variables['form']['value'] as $key => &$element) {
+    if (is_numeric($key)) {
+      unset($element['#option_result']);
     }
   }
 }

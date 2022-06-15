@@ -96,7 +96,8 @@
       </div>
 
       <div class="star-rating mb-2">
-        {% set rating = content.rate_vote_widget["#results"].fivestar.vote_average %}
+        {% set vote_rating = rate_average is defined ? rate_average : 0.00 %}
+        {% set rating = vote_rating %}
         {% for i in 0..4 %}
           {% if rating >=1 %}
             <span class="favorite-star checked-full"></span>
@@ -107,8 +108,8 @@
           {% endif %}
           {% set rating = rating - 1 %}
         {% endfor %}
-        {% if content.rate_vote_widget["#results"].fivestar.vote_count is not null %}
-          <span class='ml-2'>{{ content.rate_vote_widget["#results"].fivestar.vote_average }} ({{ content.rate_vote_widget["#results"].fivestar.vote_count }} {{ 'Notes'|t }})</span>
+        {% if vote_rating is not null and  vote_rating > 0 %}
+          <span class='ml-2'>{{ vote_rating }}</span>
         {% endif %}
       </div>
 
