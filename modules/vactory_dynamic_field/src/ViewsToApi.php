@@ -175,7 +175,7 @@ class ViewsToApi {
    *
    * @throws EntityMalformedException
    */
-  protected function normalizeNode(NodeInterface $node, array $config = []) {
+  public function normalizeNode(NodeInterface $node, array $config = []) {
     $fields = $config['fields'];
     $imageStyles = $config['image_styles'];
 
@@ -294,7 +294,7 @@ class ViewsToApi {
         $result[$output_field_name] = NULL;
         if (!empty($node->get($field_name)->getString()) && $node->get($field_name)->entity ) {
           $result[$output_field_name] = [
-            'id' => $node->get($field_name)->entity->id(),
+            'id' => intval($node->get($field_name)->entity->id()),
             'label' => $node->get($field_name)->entity->label(),
           ];
         }
