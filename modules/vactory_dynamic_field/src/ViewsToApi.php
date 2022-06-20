@@ -177,7 +177,7 @@ class ViewsToApi {
    */
   public function normalizeNode(NodeInterface $node, array $config = []) {
     $fields = $config['fields'];
-    $imageStyles = $config['image_styles'];
+    $imageStyles = [];
 
     $result = [];
     $image_app_base_url = Url::fromUserInput('/app-image/')
