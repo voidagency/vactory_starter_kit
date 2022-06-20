@@ -175,7 +175,7 @@ class ViewsToApi {
    *
    * @throws EntityMalformedException
    */
-  protected function normalizeNode(NodeInterface $node, array $config = []) {
+  public function normalizeNode(NodeInterface $node, array $config = []) {
     $fields = $config['fields'];
     $imageStyles = $config['image_styles'];
 
@@ -189,7 +189,7 @@ class ViewsToApi {
       $appliedImageStyle = ImageStyle::loadMultiple($imageStyles);
     }
 
-    foreach ($fields as $field_name => $output_field_name) {
+    foreach ($fields as $field_name) {
       if (!$node->hasField($field_name) && !in_array($field_name, self::RESERVED_FIELDS)) {
         \Drupal::logger('vactory_dynamic_field')
           ->warning('Could not find %field_name field in content type %content_type in form element dynamic_views. You may have entered wrong fields names in the DF.', [
@@ -201,13 +201,13 @@ class ViewsToApi {
 
       // Url.
       if ($field_name === 'url') {
-        $result[$output_field_name] = $node->toUrl()->toString();
+        $result[$field_name] = $node->toUrl()->toString();
         continue;
       }
 
       // ID.
       if ($field_name === 'id') {
-        $result[$output_field_name] = $node->id();
+        $result[$field_name] = $node->id();
         continue;
       }
 
@@ -216,7 +216,7 @@ class ViewsToApi {
       $field_type = $definition->getType();
 
       if ($field_type === 'text_long') {
-        $result[$output_field_name] = NULL;
+        $result[$field_name] = NULL;
         $text_field_data = $node->get($field_name)->getValue();
         if ($text_field_data && isset($text_field_data[0]['value'])) {
           $build = [
@@ -225,7 +225,7 @@ class ViewsToApi {
             '#format' => $text_field_data[0]['format'],
           ];
 
-          $result[$output_field_name] = (string) \Drupal::service('renderer')
+          $result[$field_name] = (string) \Drupal::service('renderer')
             ->renderPlain($build);
         }
         continue;
@@ -233,7 +233,7 @@ class ViewsToApi {
 
       if ($field_type === 'entity_reference' && $field_storage_definition->getSettings()['target_type'] == 'media') {
         $mid = $node->get($field_name)->getString();
-        $result[$output_field_name] = NULL;
+        $result[$field_name] = NULL;
 
         if (!empty($mid)) {
           $mid = (int) $mid;
@@ -262,7 +262,7 @@ class ViewsToApi {
               $fileResult[$imageStyle->id()] = $imageStyle->buildUrl($uri);
             }
 
-            $result[$output_field_name] = $fileResult;
+            $result[$field_name] = $fileResult;
           }
 
           if (
@@ -283,7 +283,7 @@ class ViewsToApi {
               'file_name' => $media->label(),
             ];
 
-            $result[$output_field_name] = $fileResult;
+            $result[$field_name] = $fileResult;
           }
 
         }
@@ -291,10 +291,10 @@ class ViewsToApi {
       }
 
       if ($field_type === 'entity_reference' && $field_storage_definition->getSettings()['target_type'] == 'taxonomy_term') {
-        $result[$output_field_name] = NULL;
+        $result[$field_name] = NULL;
         if (!empty($node->get($field_name)->getString()) && $node->get($field_name)->entity ) {
-          $result[$output_field_name] = [
-            'id' => $node->get($field_name)->entity->id(),
+          $result[$field_name] = [
+            'id' => intval($node->get($field_name)->entity->id()),
             'label' => $node->get($field_name)->entity->label(),
           ];
         }
@@ -302,27 +302,27 @@ class ViewsToApi {
       }
 
       if ($field_type === 'link') {
-        $result[$output_field_name] = NULL;
+        $result[$field_name] = NULL;
         $link_value = $node->get($field_name)->getValue();
         if (isset($link_value[0]['uri']) && !empty($link_value[0]['uri'])) {
           if (UrlHelper::isExternal($link_value[0]['uri'])) {
-            $result[$output_field_name]['url'] = $link_value[0]['uri'];
+            $result[$field_name]['url'] = $link_value[0]['uri'];
           }
           else {
             $front_uri = $this->siteConfig->get('page.front');
             if ($front_uri === $link_value[0]['uri']) {
-              $result[$output_field_name]['url'] = Url::fromRoute('<front>')
+              $result[$field_name]['url'] = Url::fromRoute('<front>')
                 ->toString();
             }
             else {
-              $result[$output_field_name]['url'] = Url::fromUri($link_value[0]['uri'])
+              $result[$field_name]['url'] = Url::fromUri($link_value[0]['uri'])
                 ->toString();
             }
-            $result[$output_field_name]['url'] = str_replace('/backend', '', $result[$output_field_name]['url']);
+            $result[$field_name]['url'] = str_replace('/backend', '', $result[$field_name]['url']);
           }
 
-          $result[$output_field_name]['title'] = $link_value[0]['title'] ?? '';
-          $result[$output_field_name]['options'] = $link_value[0]['options'] ?? [];
+          $result[$field_name]['title'] = $link_value[0]['title'] ?? '';
+          $result[$field_name]['options'] = $link_value[0]['options'] ?? [];
         }
 
         continue;
@@ -330,15 +330,15 @@ class ViewsToApi {
 
 
       if ($field_type === 'datetime') {
-        $result[$output_field_name] = NULL;
+        $result[$field_name] = NULL;
         if (isset($node->get($field_name)->getValue()[0]['value'])) {
           $timestamp = $node->get($field_name)->date->getTimestamp();
           $date_formats = array_keys($this->dateFormats);
-          $result[$output_field_name] = [];
-          $result[$output_field_name]['timestamp'] = $timestamp;
+          $result[$field_name] = [];
+          $result[$field_name]['timestamp'] = $timestamp;
 
           foreach ($date_formats as $key => $date_format) {
-            $result[$output_field_name][$date_format] = $this->dateFormatter->format($timestamp, $date_format);
+            $result[$field_name][$date_format] = $this->dateFormatter->format($timestamp, $date_format);
           }
 
         }
@@ -348,29 +348,29 @@ class ViewsToApi {
       if ($field_type === 'created') {
         $date_formats = array_keys($this->dateFormats);
         $timestamp = intval($node->get($field_name)->getString());
-        $result[$output_field_name] = [];
-        $result[$output_field_name]['timestamp'] = $timestamp;
+        $result[$field_name] = [];
+        $result[$field_name]['timestamp'] = $timestamp;
 
         foreach ($date_formats as $key => $date_format) {
-          $result[$output_field_name][$date_format] = $this->dateFormatter->format($timestamp, $date_format);
+          $result[$field_name][$date_format] = $this->dateFormatter->format($timestamp, $date_format);
         }
 
         continue;
       }
 
       if ($field_type === 'daterange') {
-        $result[$output_field_name] = [
+        $result[$field_name] = [
           'date_start' => NULL,
           'date_end' => NULL,
         ];
 
         if (isset($node->get($field_name)->getValue()[0]['value'])) {
-          $result[$output_field_name]['date_start'] = $node->get($field_name)
+          $result[$field_name]['date_start'] = $node->get($field_name)
             ->getValue()[0]['value'];
         }
 
         if (isset($node->get($field_name)->getValue()[0]['end_value'])) {
-          $result[$output_field_name]['date_end'] = $node->get($field_name)
+          $result[$field_name]['date_end'] = $node->get($field_name)
             ->getValue()[0]['end_value'];
         }
 
@@ -378,11 +378,11 @@ class ViewsToApi {
       }
 
       if ($field_type === 'faqfield') {
-        $result[$output_field_name] = $node->get($field_name)->getValue();
+        $result[$field_name] = $node->get($field_name)->getValue();
         continue;
       }
 
-      $result[$output_field_name] = $node->get($field_name)->getString();
+      $result[$field_name] = $node->get($field_name)->getString();
     }
 
 
