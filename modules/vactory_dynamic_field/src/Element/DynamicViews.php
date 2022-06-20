@@ -161,16 +161,16 @@ class DynamicViews extends FormElement {
       ],
     ];
 
-    $element['fields'] = [
-      '#type' => 'textarea',
-      '#required' => TRUE,
-      '#title' => t('Fields'),
-      '#description' => self::allowedValuesDescription(),
-      '#default_value' => $element['#default_value']['fields'] ? self::allowedValuesString($element['#default_value']['fields']) : '',
-      '#wrapper_attributes' => [
-        'style' => $has_access ? NULL : 'display:none',
-      ],
-    ];
+    // $element['fields'] = [
+    //   '#type' => 'textarea',
+    //   '#required' => TRUE,
+    //   '#title' => t('Fields'),
+    //   '#description' => self::allowedValuesDescription(),
+    //   '#default_value' => $element['#default_value']['fields'] ? self::allowedValuesString($element['#default_value']['fields']) : '',
+    //   '#wrapper_attributes' => [
+    //     'style' => $has_access ? NULL : 'display:none',
+    //   ],
+    // ];
 
     $element['vocabularies'] = [
       '#type' => 'checkboxes',
@@ -186,19 +186,19 @@ class DynamicViews extends FormElement {
       ],
     ];
 
-    $element['image_styles'] = [
-      '#type' => 'checkboxes',
-      '#title' => t('Image Styles'),
-      '#description' => t('Image styles to be applied on image fields.'),
-      '#options' => self::getImageStyles(),
-      '#default_value' => $element['#default_value']['image_styles'] ?? '',
-      '#wrapper_attributes' => [
-        'style' => $has_access ? NULL : 'display:none',
-      ],
-      '#attributes' => [
-        'style' => $has_access ? NULL : 'display:none',
-      ],
-    ];
+    // $element['image_styles'] = [
+    //   '#type' => 'checkboxes',
+    //   '#title' => t('Image Styles'),
+    //   '#description' => t('Image styles to be applied on image fields.'),
+    //   '#options' => self::getImageStyles(),
+    //   '#default_value' => $element['#default_value']['image_styles'] ?? '',
+    //   '#wrapper_attributes' => [
+    //     'style' => $has_access ? NULL : 'display:none',
+    //   ],
+    //   '#attributes' => [
+    //     'style' => $has_access ? NULL : 'display:none',
+    //   ],
+    // ];
 
     return $element;
   }
@@ -210,7 +210,7 @@ class DynamicViews extends FormElement {
     $views_name = $element['views_id']['#value'];
     $views_display_name = $element['views_display_id']['#value'];
     $views_entity_queue = $element['entity_queue']['#value'];
-    $fields = $element['fields']['#value'];
+    // $fields = $element['fields']['#value'];
     $view = Views::getView($views_name);
     if (!$view) {
       $form_state->setError($element['views_id'], t("Views ID @views_id is not valid.", ['@views_id' => $views_name]));
@@ -274,25 +274,25 @@ class DynamicViews extends FormElement {
         $input['args'] = array_map('trim', explode(self::DELIMITER, $input['args']));
       }
 
-      if (isset($input['fields']) && !empty($input['fields'])) {
-        $values = [];
+      // if (isset($input['fields']) && !empty($input['fields'])) {
+      //   $values = [];
 
-        $list = explode("\n", $input['fields']);
-        $list = array_map('trim', $list);
-        $list = array_filter($list, 'strlen');
-        foreach ($list as $position => $text) {
-          // Check for an explicit key.
-          $matches = [];
-          if (preg_match('/(.*)\|(.*)/', $text, $matches)) {
-            // Trim key and value to avoid unwanted spaces issues.
-            $key = trim($matches[1]);
-            $value = trim($matches[2]);
-            $values[$key] = $value;
-          }
-        }
+      //   $list = explode("\n", $input['fields']);
+      //   $list = array_map('trim', $list);
+      //   $list = array_filter($list, 'strlen');
+      //   foreach ($list as $position => $text) {
+      //     // Check for an explicit key.
+      //     $matches = [];
+      //     if (preg_match('/(.*)\|(.*)/', $text, $matches)) {
+      //       // Trim key and value to avoid unwanted spaces issues.
+      //       $key = trim($matches[1]);
+      //       $value = trim($matches[2]);
+      //       $values[$key] = $value;
+      //     }
+      //   }
 
-        $input['fields'] = $values;
-      }
+      //   $input['fields'] = $values;
+      // }
     }
 
     return is_array($input) ? $input : $element['#default_value'];
