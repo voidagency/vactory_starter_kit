@@ -1,0 +1,7 @@
+json_api_collection.form:
+  path: '/_tests/json-api-collection'
+  defaults:
+    _title: 'JSON:API Collection form'
+    _form: '\Drupal\vactory_decoupled_tests\Form\JsonApiCollectionFormTester'
+  requirements:
+    _permission: 'access content'

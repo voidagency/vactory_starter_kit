@@ -28,3 +28,16 @@ services:
     public: false
     arguments:
       - '@vactory_decoupled.normalizer.primitive_data.inner'
+
+  vactory_decoupled.jsonapi.client:
+    class: Drupal\vactory_decoupled\JsonApiClient
+    arguments:
+      - '@http_kernel.basic'
+      - '@jsonapi.resource_type.repository'
+      - '@session'
+      - '@request_stack'
+
+  vactory_decoupled.jsonapi.generator:
+    class: Drupal\vactory_decoupled\JsonApiGenerator
+    arguments:
+      - '@vactory_decoupled.jsonapi.client'
