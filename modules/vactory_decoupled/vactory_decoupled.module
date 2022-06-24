@@ -21,6 +21,11 @@ use Drupal\simple_oauth\Entities\AccessTokenEntity;
 use Drupal\user\Entity\User;
 use Drupal\Component\Render\PlainTextOutput;
 
+use Drupal\Component\Utility\UrlHelper;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\ServerException;
+use Drupal\menu_item_extras\Entity\MenuItemExtrasMenuLinkContent;
+
 /**
  * Implements hook_form_BASE_FORM_ID_alter().
  */
@@ -47,6 +52,10 @@ function vactory_decoupled_form_node_form_alter(&$form, FormStateInterface $form
  */
 function vactory_decoupled_form_alter(&$form, FormStateInterface $form_state, $form_id)
 {
+  if ($form_id === 'locale_translate_edit_form') {
+    $form['#submit'][] = 'clear_next_cache_translation';
+  }
+
   if ($form_id === 'block_admin_display_form') {
     $form['#submit'][] = 'block_admin_display_submit';
   }
@@ -454,4 +463,161 @@ function vactory_decoupled_validation_constraint_alter(array &$definitions) {
  */
 function vactory_decoupled_block_presave(EntityInterface $entity) {
   Cache::invalidateTags(['node_list']);
+}
+
+
+/**
+ * Implements hook_entity_update().
+ * Clear drupal cache => clear frontend cache.
+ */
+function vactory_decoupled_cache_flush() {
+  clear_next_cache();
+}
+
+
+
+function clear_next_cache_translation(&$form, FormStateInterface $form_state) {
+  $query = [
+    'translation' => 'true',
+    'invalidate'  => 'translation',
+  ];
+  clear_next_cache($query);
+}
+
+
+/**
+ * Implements hook_entity_update().
+ */
+function vactory_decoupled_entity_update(EntityInterface $entity) {
+
+  if ($entity instanceof Node) {
+
+    if (!$entity->isNew()) {
+      $query = get_node_info($entity);
+      clear_next_cache($query);
+    }
+  }
+
+
+  static $loaded;
+
+  if ($entity instanceof MenuItemExtrasMenuLinkContent) {
+    if (!isset($loaded)) {
+      $loaded = 1;
+      $query = [
+        'menu'       => $entity->bundle(),
+        'invalidate' => 'menu',
+      ];
+
+      clear_next_cache($query);
+    }
+  }
+
+
+  if ($entity instanceof Drupal\system\Entity\Menu) {
+
+    $query = [
+      'menu'       => $entity->id(),
+      'invalidate' => 'menu',
+    ];
+
+    clear_next_cache($query);
+  }
+
+
+}
+
+
+/**
+ * Implements hook_entity_predelete().
+ */
+function vactory_decoupled_entity_predelete(EntityInterface $entity) {
+  if ($entity instanceof Node && \Drupal::currentUser()->isAuthenticated()) {
+    $query = get_node_info($entity);
+    clear_next_cache($query);
+  }
+}
+
+function get_node_info($entity) {
+  $nid = $entity->id();
+  $langcode = $entity->language()->getId();
+  $alias = \Drupal::service('path_alias.manager')
+    ->getAliasByPath('/node/' . $nid);
+
+  return $query = [
+    'id'         => $nid,
+    'langcode'   => $langcode,
+    'alias'      => $alias,
+    'invalidate' => 'node',
+  ];
+}
+
+
+/**
+ * Implements hook_entity_delete().
+ */
+function vactory_decoupled_entity_delete(EntityInterface $entity) {
+  if ($entity instanceof MenuItemExtrasMenuLinkContent) {
+    $query = [
+      'menu'       => $entity->bundle(),
+      'invalidate' => 'menu',
+    ];
+    clear_next_cache($query);
+  }
+}
+
+/**
+ * @param array $query
+ * Clears frontend cache.
+ *
+ * @return bool
+ */
+function clear_next_cache($query = []) {
+  $front_end_url = Settings::get('FRONTEND_URL');
+  $cache_secret = Settings::get('FRONTEND_CACHE_KEY');
+
+  if (!isset($front_end_url) || $front_end_url == '') {
+    \Drupal::logger('clear_next_cache')
+      ->error('FRONTEND_URL env variable is undefined');
+    return FALSE;
+  }
+
+  if (!isset($cache_secret) || $cache_secret == '') {
+    \Drupal::logger('clear_next_cache')
+      ->error('FRONTEND_CACHE_KEY env variable is undefined');
+    return FALSE;
+  }
+
+  $endpoint = '/api/cache/clear';
+
+  $query_str = $query === [] ? '' : '?' . UrlHelper::buildQuery($query);
+
+  $success_msg = $query == [] ? 'Next Cache Cleared' : 'Next Cache Cleared for ' . print_r($query, TRUE);
+  $error_msg = $query == [] ? 'Cannot Clear Next Cache' : 'Cannot Clear Next Cache for ' . print_r($query, TRUE);
+
+  $client = \Drupal::httpClient();
+
+  try {
+    $request = $client->get($front_end_url . $endpoint . $query_str, [
+      "headers" => [
+        "x-cache-secret" => $cache_secret,
+      ],
+    ]);
+
+    if ($request->getStatusCode() == 200) {
+      \Drupal::logger('clear_next_cache')->info($success_msg);
+      return TRUE;
+    }
+    else {
+      \Drupal::logger('clear_next_cache')->warning($error_msg);
+      return FALSE;
+    }
+
+  } catch (ServerException $e) {
+    \Drupal::logger('clear_next_cache')->warning($error_msg);
+    return FALSE;
+  } catch (RequestException $e) {
+    \Drupal::logger('clear_next_cache')->warning($error_msg);
+    return FALSE;
+  }
 }
