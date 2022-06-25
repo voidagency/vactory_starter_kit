@@ -4,6 +4,7 @@ namespace Drupal\vactory_decoupled;
 
 use Drupal\entityqueue\Entity\EntityQueue;
 use Drupal\entityqueue\Entity\EntitySubqueue;
+use Drupal\Core\Cache\Cache;
 
 /**
  * Simplifies the process of generating an API version using DF.
@@ -66,16 +67,20 @@ class JsonApiGenerator {
     parse_str(http_build_query($parsed), $query_filters);
 
     $response = $this->client->serialize($resource, $query_filters);
+    $exposedTerms = $this->getExposedTerms($exposed_vocabularies);
+    $response['cache']['tags'] = Cache::mergeTags($response['cache']['tags'], $exposedTerms['cache_tags']);
 
     return [
-      'data' => json_decode($response),
+      'data' => json_decode($response['data']),
+      'cache' => $response['cache'],
       'filters' => $query_filters,
-      'taxonomies' => $this->getExposedTerms($exposed_vocabularies),
+      'taxonomies' => $exposedTerms['data'],
     ];
   }
 
   protected function getExposedTerms(array $vocabularies) {
     $result = [];
+    $cacheTags = [];
 
     $entityTypeManager = \Drupal::service('entity_type.manager');
     $taxonomyTermStorage = $entityTypeManager->getStorage('taxonomy_term');
@@ -93,6 +98,8 @@ class JsonApiGenerator {
       foreach ($terms as $term) {
         $term = $entityRepository
           ->getTranslationFromContext($term);
+
+          $cacheTags = Cache::mergeTags($cacheTags, $term->getCacheTags());
         array_push($result[$vid], [
           'id' => $term->id(),
           'uuid' => $term->uuid(),
@@ -103,7 +110,10 @@ class JsonApiGenerator {
 
     }
 
-    return $result;
+    return [
+      "data" => $result,
+      "cache_tags" => $cacheTags
+    ];
   }
 
 }

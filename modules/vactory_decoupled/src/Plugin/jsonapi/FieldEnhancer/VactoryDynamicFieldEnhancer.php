@@ -15,6 +15,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\taxonomy\Entity\Term;
+use Drupal\Core\Cache\Cache;
+use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\serialization\Normalizer\CacheableNormalizerInterface;
 
 /**
  * Use for Dynamic Field field value.
@@ -57,6 +60,8 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
 
   protected $siteConfig;
 
+  protected $cacheability;
+
   /**
    * {@inheritdoc}
    */
@@ -86,6 +91,10 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
    * {@inheritdoc}
    */
   protected function doUndoTransform($data, Context $context) {
+    /** @var \Drupal\Core\Cache\CacheableMetadata $cacheability */
+    $cacheability = (object) $context[CacheableNormalizerInterface::SERIALIZATION_CONTEXT_CACHEABILITY];
+    $this->cacheability = $cacheability;
+
     if (isset($data['widget_data']) && !empty($data['widget_data'])) {
       $widget_id = $data['widget_id'];
       $widget_data = json_decode($data['widget_data'], TRUE);
@@ -137,6 +146,9 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
 
       $data['widget_data'] = json_encode($content);
     }
+
+    // Restore cache.
+    $context[CacheableNormalizerInterface::SERIALIZATION_CONTEXT_CACHEABILITY] = $this->cacheability;
 
     return $data;
   }
@@ -268,7 +280,13 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
         // Collection.
         if ($info['type'] === 'json_api_collection' && !empty($value)) {
           $value = array_merge($value, $info['options']['#default_value']);
-          $value = \Drupal::service('vactory_decoupled.jsonapi.generator')->fetch($value);
+          $response = \Drupal::service('vactory_decoupled.jsonapi.generator')->fetch($value);
+          $cache = $response['cache'];
+          unset($response['cache']);
+
+          $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $cache['tags']);
+          $this->cacheability->setCacheTags($cacheTags);
+          $value = $response;
         }
 
         // Webform.
