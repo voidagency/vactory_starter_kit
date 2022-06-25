@@ -232,6 +232,9 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
             foreach ($value[$key]['selection'] as $media) {
               $file = Media::load($media['target_id']);
               if ($file) {
+                // Add cache.
+                $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $file->getCacheTags());
+                $this->cacheability->setCacheTags($cacheTags);
                 $uri = $file->thumbnail->entity->getFileUri();
                 $image_item['_default'] = \Drupal::service('file_url_generator')->generateAbsoluteString($uri);
                 $image_item['_lqip'] = $this->imageStyles['lqip']->buildUrl($uri);
@@ -257,9 +260,15 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
         if ($info['type'] === 'file' && !empty($value)) {
           $media = Media::load($value);
           if ($media) {
+            // Add cache.
+            $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $media->getCacheTags());
+            $this->cacheability->setCacheTags($cacheTags);
             $fid = (int) $media->get('field_media_document')->getString();
             $file = File::load($fid);
             if ($file) {
+              // Add cache.
+              $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $file->getCacheTags());
+              $this->cacheability->setCacheTags($cacheTags);
               $uri = $file->getFileUri();
               $value = [
                 '_default' => \Drupal::service('file_url_generator')->generateAbsoluteString($uri),
