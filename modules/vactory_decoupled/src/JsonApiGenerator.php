@@ -37,6 +37,7 @@ class JsonApiGenerator {
     $exposed_vocabularies = $config['vocabularies'];
     $entity_queue = $config['entity_queue'] ?? '';
     $entity_queue_field_id = $config['entity_queue_field_id'] ?? '';
+    $subqueue_items_ids = [];
 
     // Add a filter for entity queue.
     if (!empty($entity_queue)) {
@@ -70,8 +71,24 @@ class JsonApiGenerator {
     $exposedTerms = $this->getExposedTerms($exposed_vocabularies);
     $response['cache']['tags'] = Cache::mergeTags($response['cache']['tags'], $exposedTerms['cache_tags']);
 
+    $client_data = json_decode($response['data']);
+
+    // For entityqueue, we cannot use JSON:API sorting mecanism as we don't have any field attached to entities
+    // where it indicate a sorting value we can use. And since entity queues are limited to fewer items or we assume so.
+    // we are going to alter the response and do a dynamic sorting.
+    // @todo: we should only trigger if the results are less then 50 as it harcoded in JSON:API max return list
+    // we don't wanna mess with the order of the rest of the pages.
+    if (!empty($entity_queue) && count($subqueue_items_ids) > 0) {
+      $items = $client_data->data ?? [];
+      $result = array_map(static fn($entity_queue_id) => current(array_values(
+          array_filter($items, static fn($entity) => intval($entity->attributes->{$entity_queue_field_id}) === intval($entity_queue_id))
+        )), $subqueue_items_ids);
+
+      $client_data->data = $result;
+    }
+
     return [
-      'data' => json_decode($response['data']),
+      'data' => $client_data,
       'cache' => $response['cache'],
       'filters' => $query_filters,
       'taxonomies' => $exposedTerms['data'],
