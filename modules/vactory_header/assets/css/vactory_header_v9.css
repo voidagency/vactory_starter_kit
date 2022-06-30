@@ -1,0 +1,66 @@
+.vh-variant9 {
+    background-color: #fff;
+    padding-bottom: 0 !important;
+    padding-top: 20px;
+    padding-top: 1.25rem;
+}
+
+.vh-variant9__branding h1 {
+    line-height: 0;
+}
+
+.vh-variant9__branding .navbar-brand {
+    padding: 0;
+    margin: 0;
+}
+
+.vh-variant9__branding img {
+    height: 52px;
+    height: 3.25rem;
+}
+
+@media (min-width: 768px) {
+    .vh-variant9 .menu-level--1 .menu__item--1 {
+        -webkit-box-flex: 1;
+        -ms-flex: 1;
+        flex: 1;
+    }
+}
+
+@media (max-width: 767.98px) {
+    .vh-variant9 > div {
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: flex;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        align-items: center;
+        height: 100%;
+    }
+    .vh-variant9.vh-sticky {
+        height: 85px;
+        height: 5.3125rem;
+    }
+    .vh-variant9.menu-mobile-open {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 9999;
+    }
+    .vh-variant9__hamburger {
+        -ms-flex-negative: 0;
+        flex-shrink: 0;
+        -webkit-box-flex: 0;
+        -ms-flex-positive: 0;
+        flex-grow: 0;
+    }
+    .vh-variant9__branding {
+        margin-right: auto;
+        margin-left: auto;
+    }
+    .vh-variant9__branding img {
+        height: 40px;
+        height: 2.5rem;
+    }
+}

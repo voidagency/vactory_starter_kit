@@ -119,25 +119,70 @@ class VactoryDynamicFormatter extends FormatterBase {
           if (is_array($value) && isset(array_values($value)[0]['selection'][0]['target_id'])) {
             $media_id = array_values($value)[0]['selection'][0]['target_id'];
             $media = Media::load($media_id);
+            $uri = '';
             if (isset($media) && !empty($media)) {
-              $fid = $media->get('thumbnail')->target_id;
-              $uri = '';
-              if (isset($fid) && !empty($fid)) {
-                $uri = File::load($fid)->getFileUri();
+              if ($media->hasField('field_media_oembed_video')) {
+                $video_url = $media->get('field_media_oembed_video')->value;
+                $url_components = parse_url($video_url);
+                $is_youtube_full_url = strpos($url_components['host'], 'youtube.com') !== FALSE;
+                $is_youtube_embed_url = strpos($url_components['host'], 'youtu.be') !== FALSE;
+                // Handle youtube thumbnail case.
+                if ($is_youtube_full_url || $is_youtube_embed_url) {
+                  $video_id = '';
+                  if ($is_youtube_full_url && isset($url_components['query'])) {
+                    parse_str($url_components['query'], $params);
+                    if (isset($params['v'])) {
+                      $video_id = $params['v'];
+                    }
+                  }
+                  if ($is_youtube_embed_url && isset($url_components['path'])) {
+                    $path = trim($url_components['path'], '/');
+                    $path_args = explode('/', $path);
+                    if (!empty($path_args)) {
+                      $video_id = $path_args[0];
+                    }
+                  }
+                  if (!empty($video_id)) {
+                    $uri = 'https://img.youtube.com/vi/'. $video_id .'/maxres2.jpg';
+                  }
+                }
               }
-
+              if (empty($uri)) {
+                $fid = $media->get('thumbnail')->target_id;
+                if (isset($fid) && !empty($fid)) {
+                  $uri = File::load($fid)->getFileUri();
+                }
+              }
               $content = [
-                'titre'       => $media->get('name')->value,
-                'video_url'   => $media->get('field_media_oembed_video')->value,
-                'thumbnail'   => [
-                  'uri'    => $uri,
+                'titre' => $media->get('name')->value,
+                'video_url' => $media->get('field_media_oembed_video')->value,
+                'thumbnail' => [
+                  'uri' => $uri,
                   'height' => $media->get('thumbnail')->height,
-                  'width'  => $media->get('thumbnail')->width,
+                  'width' => $media->get('thumbnail')->width,
                 ],
               ];
               $value = $content;
             }
           }
+        }
+
+        // Views.
+        if ($info['type'] === 'dynamic_views' && !empty($value)) {
+          $value = array_merge($value, $info['options']['#default_value']);
+          $value = \Drupal::service('vactory.views.to_api')->normalize($value);
+        }
+
+        // Collection.
+        if ($info['type'] === 'json_api_collection' && !empty($value)) {
+          $value = array_merge($value, $info['options']['#default_value']);
+          $value = \Drupal::service('vactory_decoupled.jsonapi.generator')->fetch($value);
+        }
+
+        // Webform.
+        if ($info['type'] === 'webform_decoupled' && !empty($value)) {
+          $webform_id = $value['id'];
+          $value['elements'] = \Drupal::service('vactory.webform.normalizer')->normalize($webform_id);
         }
       }
       elseif (is_array($value)) {
@@ -168,7 +213,7 @@ class VactoryDynamicFormatter extends FormatterBase {
       $widgets_path = $this->platformProvider->getWidgetsPath($widget_id);
 
       // Current template to find.
-      $content['template'] = (int) $template_id;
+      $content['template'] = $template_id;
       // Placeholder Image.
       $content['image_placeholder'] = VACTORY_DYNAMIC_FIELD_V_IMAGE_PLACEHOLDER;
       // Is content auto populate.

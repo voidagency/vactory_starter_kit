@@ -178,6 +178,35 @@ display:
         - 'user.node_grants:view'
         - user.permissions
       tags: {  }
+  block_list:
+    display_plugin: block
+    id: block_list
+    display_title: List
+    position: 3
+    display_options:
+      display_extenders: { }
+      title: List
+      defaults:
+        title: false
+        arguments: false
+        relationships: false
+        pager: false
+      display_description: ''
+      arguments: { }
+      relationships: { }
+      pager:
+        type: some
+        options:
+          items_per_page: 9
+          offset: 0
+    cache_metadata:
+      max-age: -1
+      contexts:
+        - 'languages:language_content'
+        - 'languages:language_interface'
+        - 'user.node_grants:view'
+        - user.permissions
+      tags: { }
   block_3_columns_sorted_by_views_count:
     display_plugin: block
     id: block_3_columns_sorted_by_views_count

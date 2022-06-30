@@ -1,0 +1,46 @@
+langcode: en
+status: true
+dependencies: {  }
+id: rate_voting
+label: 'Rate voting'
+template: fivestar
+value_type: points
+entity_types:
+  - node.vactory_academy
+comment_types: {  }
+options:
+  -
+    value: '0'
+    label: '1'
+    class: ''
+  -
+    value: '25'
+    label: '2'
+    class: ''
+  -
+    value: '50'
+    label: '3'
+    class: ''
+  -
+    value: '75'
+    label: '4'
+    class: ''
+  -
+    value: '100'
+    label: '5'
+    class: ''
+voting:
+  use_deadline: 0
+  anonymous_window: -2
+  user_window: -2
+display:
+  display_label: ''
+  label_class: ''
+  label_position: hidden
+  description: ''
+  description_class: ''
+  description_position: hidden
+  readonly: 0
+results:
+  result_type: user_vote_empty
+  result_position: hidden

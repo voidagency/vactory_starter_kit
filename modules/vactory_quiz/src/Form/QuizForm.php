@@ -2,11 +2,11 @@
 
 namespace Drupal\vactory_quiz\Form;
 
-use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Queue\QueueFactory;
+use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Url;
 use Drupal\vactory_core\Services\VactoryDevTools;
 use Drupal\vactory_quiz\Services\VactoryQuizManager;
@@ -53,19 +53,28 @@ class QuizForm extends FormBase {
   protected $vactoryDevTools;
 
   /**
+   * Renderer service.
+   *
+   * @var \Drupal\Core\Render\RendererInterface
+   */
+  protected $renderer;
+
+  /**
    * Class constructor.
    */
   public function __construct(
     VactoryQuizManager $quizManager,
     ModuleHandlerInterface $moduleHandler,
     QueueFactory $queueFactory,
-    VactoryDevTools $vactoryDevTools
+    VactoryDevTools $vactoryDevTools,
+    RendererInterface $renderer
   ) {
     $this->quizManager = $quizManager;
     $this->moduleHandler = $moduleHandler;
     $this->queueFactory = $queueFactory;
     $this->quizCertificatSettings = $this->config('vactory_quiz_certificat.settings');
     $this->vactoryDevTools = $vactoryDevTools;
+    $this->renderer = $renderer;
   }
 
   /**
@@ -77,6 +86,7 @@ class QuizForm extends FormBase {
       $container->get('module_handler'),
       $container->get('queue'),
       $container->get('vactory_core.tools'),
+      $container->get('renderer'),
     );
   }
 
@@ -191,10 +201,11 @@ class QuizForm extends FormBase {
     }
     $options = [];
     foreach ($current_question_answers as $question_answer) {
-      $options[$question_answer['answer_id']] = [
+      $option = [
         '#theme' => 'quiz_answer_option',
         '#content' => $question_answer,
       ];
+      $options[$question_answer['answer_id']] = $this->renderer->render($option);
     }
     $form['question_body'] = [
       '#markup' => '<div class="d-flex mb-3"><strong class="mx-2">' . $current_question['question_number'] . '.</strong><div>' . $current_question['question_text_value'] . '</div></div>',
@@ -214,7 +225,7 @@ class QuizForm extends FormBase {
       $form['next'] = $this->getSubmitElement($form, $form_state, $ajax_wrapper_id, $next_button_title);
     }
 
-    $form['#attached']['library'][] = 'vactory_quiz/style';
+    $form['#attached']['library'][] = 'vactory_quiz/vactory_quiz_style';
     return $form;
   }
 

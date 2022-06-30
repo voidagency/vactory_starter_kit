@@ -44,18 +44,18 @@
     </div>
 </div>#}
 
-<div class="card panel">
-  <div class="card-header panel-heading" id="heading{{ row.index }}">
+<div class="accordion-item w-100">
+  <div class="accordion-header" id="heading{{ row.index }}">
     <h5 class="mb-0">
-      <button type="button" data-toggle="collapse" data-target="#collapse{{ row.index }}" aria-expanded="true" aria-controls="collapse{{ row.index }}">{{ row._entity.title.value }}</button>
+      <button type="button" data-toggle="collapse" data-target="#collapse{{ row.index }}" aria-expanded="false" aria-controls="collapse{{ row.index }}">{{ row._entity.title.value }}</button>
     </h5>
   </div>
 
-  <div id="collapse{{ row.index }}" class="collapse panel-collapse" aria-labelledby="heading{{ row.index }}" data-parent="#accordion-faq">
-    <div class="card-body">
-      <h6 class="card-subtitle">
+  <div id="collapse{{ row.index }}" class="collapse" aria-labelledby="heading{{ row.index }}" data-parent="#accordion-faq">
+    <div class="accordion-body">
+      <div>
         <span class="badge badge-primary">{{ fields.field_faq_prive_thematique.content }}</span>
-      </h6>
+      </div>
       {{ fields.body.content }}
     </div>
   </div>

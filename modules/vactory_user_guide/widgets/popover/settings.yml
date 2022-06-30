@@ -1,0 +1,55 @@
+name: "Popover (from Decoupled)"
+multiple: TRUE
+category: Navigation
+enabled: TRUE
+extra_fields:
+  group_tours_options:
+    g_title: Popover Options
+    show_n_times:
+      type: number
+      label: Number of times the popover should be shown
+      options:
+        # "#default_value": "1" // default_value is buggy, it is always used even it a value is set
+        '#description': set to 0 to always show the popover on each visit
+    delay:
+        type: number
+        label: Delay in seconds before the popover is shown
+        options:
+          # '#default_value': "0"
+        '#description': set to 0 to show the popover once the page is ready
+    auto_hide_after:
+        type: number
+        label: Number of seconds after which the popover hides automatically
+        options:
+          # '#default_value': "1"
+          '#description': set to 0 to never hide it automatically
+    show_close_button:
+        type: checkbox
+        label: Show close button
+    mask_click_close:
+        type: checkbox
+        label: Close popover on click on the mask
+    show_on_mouseover:
+        type: checkbox
+        label: Show the popover on mouse over
+        options:
+          '#description': show/hide the popover on mouse over/mouse out. 
+                          if this is active, the configurations above are all ignored
+    show_mask:
+        type: checkbox
+        label: Show mask
+fields:
+  selector:
+    type: text
+    label: "Selector"
+    options:
+      required: true
+      '#description': <b>Heads up!</b> Make sure the selector exists in the page at 
+                      the moment the popover will be shown.
+  content:
+    type: text_format
+    label: Content
+    options:
+      '#format': 'full_html'
+      # description: Contenu type WYSIWYG.
+      required: true

@@ -1,0 +1,25 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the vactory_icon module.
+ */
+
+/**
+ * Implements hook_requirements().
+ */
+function vactory_icon_requirements($phase) {
+  $requirements = [];
+  $fid = \Drupal::config('vactory_icon.settings')->get('fid');
+
+  if ($phase == 'runtime' && !$fid) {
+    $requirements['vactory_icon'] = [
+      'title' => t('Icons'),
+      'description' => t('Iconmoon zip file is missing. Please upload one at /admin/config/content/vactory-icon'),
+      'severity' => REQUIREMENT_WARNING,
+    ];
+  }
+
+  return $requirements;
+}
+

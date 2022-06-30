@@ -1,0 +1,64 @@
+langcode: fr
+status: true
+dependencies:
+  module:
+    - comment
+id: comment_type--comment_type
+disabled: true
+path: comment_type/comment_type
+resourceType: comment_type--comment_type
+resourceFields:
+  uuid:
+    fieldName: uuid
+    publicName: uuid
+    enhancer:
+      id: ''
+    disabled: false
+  langcode:
+    fieldName: langcode
+    publicName: langcode
+    enhancer:
+      id: ''
+    disabled: false
+  status:
+    fieldName: status
+    publicName: status
+    enhancer:
+      id: ''
+    disabled: false
+  dependencies:
+    fieldName: dependencies
+    publicName: dependencies
+    enhancer:
+      id: ''
+    disabled: false
+  third_party_settings:
+    fieldName: third_party_settings
+    publicName: third_party_settings
+    enhancer:
+      id: ''
+    disabled: false
+  id:
+    fieldName: id
+    publicName: id
+    enhancer:
+      id: ''
+    disabled: false
+  label:
+    fieldName: label
+    publicName: label
+    enhancer:
+      id: ''
+    disabled: false
+  target_entity_type_id:
+    fieldName: target_entity_type_id
+    publicName: target_entity_type_id
+    enhancer:
+      id: ''
+    disabled: false
+  description:
+    fieldName: description
+    publicName: description
+    enhancer:
+      id: ''
+    disabled: false

@@ -1,0 +1,608 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for vactory_decoupled module.
+ */
+
+use Drupal\Core\Cache\Cache;
+use Drupal\Core\Entity\ContentEntityFormInterface;
+use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Site\Settings;
+use Drupal\Core\Url;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\node\Entity\Node;
+use Drupal\user\UserInterface;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Drupal\simple_oauth\Entities\AccessTokenEntity;
+use Drupal\user\Entity\User;
+use Drupal\Component\Render\PlainTextOutput;
+
+use Drupal\Component\Utility\UrlHelper;
+use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\ServerException;
+use Drupal\menu_item_extras\Entity\MenuItemExtrasMenuLinkContent;
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ */
+function vactory_decoupled_form_node_form_alter(&$form, FormStateInterface $form_state)
+{
+  // Node Settings.
+  if (isset($form['node_settings'])) {
+    $form['node_settings_group'] = [
+      '#type'        => 'details',
+      '#title'       => t('Node settings'),
+      '#group'       => 'advanced',
+      '#open'        => FALSE,
+      '#access'      => \Drupal::currentUser()
+        ->hasPermission('administer field node settings'),
+      '#attributes'  => ['class' => ['node-settings-form']],
+    ];
+    $form['node_settings']['#group'] = 'node_settings_group';
+  }
+}
+
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_decoupled_form_alter(&$form, FormStateInterface $form_state, $form_id)
+{
+  if ($form_id === 'locale_translate_edit_form') {
+    $form['#submit'][] = 'clear_next_cache_translation';
+  }
+
+  if ($form_id === 'block_admin_display_form') {
+    $form['#submit'][] = 'block_admin_display_submit';
+  }
+
+  $form_object = $form_state->getFormObject();
+  if (!($form_object instanceof ContentEntityFormInterface)) {
+    return;
+  }
+  $entity = $form_object->getEntity();
+  $op = $form_object->getOperation();
+
+  if (!($entity instanceof ContentEntityInterface) || !($entity instanceof Node)) {
+    return;
+  }
+
+  if (in_array($op, ['edit', 'add', 'default'], TRUE)) {
+    unset($form['actions']['preview']);
+  }
+
+  $frontend_url = Settings::get('BASE_FRONTEND_URL', FALSE);
+  if (!$frontend_url || empty($frontend_url)) {
+    return;
+  }
+
+  $type = $form_state->getFormObject()->getEntity()->bundle();
+  // @todo: make an interface for this.
+  $disabledTypes = Settings::get('PREVIEW_DISABLED_TYPES', [
+    'vactory_page_listing',
+    'vactory_government_member',
+    'vactory_banner'
+  ]);
+
+  if (in_array($type, $disabledTypes)) {
+    return;
+  }
+
+  if ($op === 'edit') {
+    // Add another option to go to the Gatsby page after saving.
+    $form['actions']['save_view_gatsby'] = [
+      '#type' => 'submit',
+      '#value' => t('Save and view page'),
+      '#submit' => ['::submitForm', '::save'],
+      '#access' => TRUE,
+      '#weight' => 20,
+    ];
+
+    // Add a submit handler to redirect to the Gatsby page.
+    $form['actions']['save_view_gatsby']['#submit'][] = 'gatsby_node_form_submit';
+  }
+}
+
+/**
+ * Invalidate nodes cache on block admin display submit.
+ */
+function block_admin_display_submit($form, FormStateInterface $form_state) {
+  Cache::invalidateTags(['node_list']);
+}
+
+/**
+ * Submit handler for viewing the Gatsby page.
+ */
+function gatsby_node_form_submit(&$form, FormStateInterface $form_state) {
+  $path = $form_state->getValue('path');
+  $url = !empty($path[0]['alias']) ? '/' .$path[0]['langcode'] . $path[0]['alias'] : $path[0]['source'];
+  $nid = $form_state->getValue('nid');
+  $siteConfig = \Drupal::config('system.site');
+  $front_uri = $siteConfig->get('page.front');
+  $frontend_url = Settings::get('BASE_FRONTEND_URL', FALSE);
+
+  if ($front_uri === '/node/' . $nid) {
+    $url = Url::fromRoute('<front>')->toString() ;
+  }
+
+  // Redirect to the alias if it exists, otherwise use the node URL.
+  if (isset($url)) {
+    $gatsby_url = Url::fromUri($frontend_url . $url . '/__preview')->toString();
+    $response = new RedirectResponse($gatsby_url);
+    $response->send();
+  }
+}
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function vactory_decoupled_entity_base_field_info(EntityTypeInterface $entity_type) {
+  $base_table = $entity_type->getBaseTable();
+  $canonical_template_exists = $entity_type->hasLinkTemplate('canonical');
+  $fields = [];
+
+  if (!empty($base_table) && $canonical_template_exists) {
+    $fields['internal_user'] = BaseFieldDefinition::create('map')
+      ->setLabel(t('Internal User'))
+      ->setDescription(t('User profile'))
+      ->setTranslatable(FALSE)
+      ->setClass('\Drupal\vactory_decoupled\Plugin\Field\InternalUserEntityFieldItemList')
+      ->setComputed(TRUE)
+      ->setReadOnly(TRUE)
+      ->setTargetEntityTypeId($entity_type->id())
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE);
+  }
+
+  if ($entity_type->id() === 'comment') {
+    $fields['extra_data'] = BaseFieldDefinition::create('map')
+      ->setLabel(t('Comment Extra Data'))
+      ->setDescription(t('Comment Extra Data'))
+      ->setTranslatable(FALSE)
+      ->setClass('\Drupal\vactory_decoupled\Plugin\Field\InternalCommentEntityFieldItemList')
+      ->setComputed(TRUE)
+      ->setReadOnly(TRUE)
+      ->setTargetEntityTypeId($entity_type->id())
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE);
+  }
+
+  if ($entity_type->id() === 'node') {
+    $fields['internal_blocks'] = BaseFieldDefinition::create('map')
+      ->setLabel(t('Node Region Blocks'))
+      ->setDescription(t('Defined blocks per node'))
+      ->setTranslatable(FALSE)
+      ->setClass('\Drupal\vactory_decoupled\Plugin\Field\InternalNodeEntityBlocksFieldItemList')
+      ->setComputed(TRUE)
+      ->setReadOnly(TRUE)
+      ->setTargetEntityTypeId($entity_type->id())
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE);
+  }
+
+  if ($entity_type->id() === 'node') {
+    $fields['internal_comment'] = BaseFieldDefinition::create('map')
+      ->setLabel(t('Node comment'))
+      ->setDescription(t('Defined comment per node'))
+      ->setTranslatable(FALSE)
+      ->setClass('\Drupal\vactory_decoupled\Plugin\Field\InternalNodeEntityCommentFieldItemList')
+      ->setComputed(TRUE)
+      ->setReadOnly(TRUE)
+      ->setTargetEntityTypeId($entity_type->id())
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE);
+  }
+
+  if ($entity_type->id() === 'node') {
+    $fields['internal_breadcrumb'] = BaseFieldDefinition::create('map')
+      ->setLabel(t('Node breadcrumb'))
+      ->setDescription(t('Defined breadcrumb per node'))
+      ->setTranslatable(FALSE)
+      ->setClass('\Drupal\vactory_decoupled\Plugin\Field\InternalNodeEntityBreadcrumbFieldItemList')
+      ->setComputed(TRUE)
+      ->setReadOnly(TRUE)
+      ->setTargetEntityTypeId($entity_type->id())
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE);
+  }
+
+  if ($entity_type->id() === 'node') {
+    $fields['internal_extra'] = BaseFieldDefinition::create('map')
+      ->setLabel(t('Node extra'))
+      ->setDescription(t('Extra data per node'))
+      ->setTranslatable(FALSE)
+      ->setClass('\Drupal\vactory_decoupled\Plugin\Field\InternalNodeEntityExtraFieldItemList')
+      ->setComputed(TRUE)
+      ->setReadOnly(TRUE)
+      ->setTargetEntityTypeId($entity_type->id())
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE);
+  }
+
+  if ($entity_type->id() === 'taxonomy_term') {
+    $fields['slug'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Term slug'))
+      ->setDescription(t('Term slug'))
+      ->setTranslatable(FALSE)
+      ->setClass('\Drupal\vactory_decoupled\Plugin\Field\InternalTermEntitySlugFieldItemList')
+      ->setComputed(TRUE)
+      ->setReadOnly(TRUE)
+      ->setTargetEntityTypeId($entity_type->id())
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE);
+  }
+
+  if ($entity_type->id() === 'node') {
+    $fields['node_settings'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Node Settings'))
+      ->setDescription(t('Add extra parameters in JSON Format : { "isHomePage": true, "taxonomy": 4, "limit": 6 }'))
+      ->setRevisionable(TRUE)
+      ->setTranslatable(TRUE)
+      ->setDefaultValue('')
+      ->setRequired(FALSE)
+      ->setDisplayOptions('form', [
+        'type'     => 'string_textarea',
+        'weight'   => 1,
+        'settings' => [
+          'rows' => 4,
+        ],
+      ])
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE);
+  }
+
+  return $fields;
+}
+
+
+/**
+ * Implements hook_field_formatter_info_alter().
+ *
+ * Make sure the standard formatter for string can be used for the current
+ * map internal_breadcrumb computed field. for debug.
+ */
+/*function vactory_decoupled_field_formatter_info_alter(array &$info) {
+  $info['text_default']['field_types'][] = 'map';
+}*/
+
+/**
+ * Implements hook_entity_type_alter().
+ *
+ * @param array $entity_types
+ */
+function vactory_decoupled_entity_type_alter(array &$entity_types) {
+  $entity_types['comment']->addConstraint('jsonapi_recaptcha');
+  $entity_types['node']->addConstraint('jsonapi_recaptcha');
+}
+
+/**
+ * Oauth extra user informations.
+ *
+ * @param \Drupal\user\UserInterface $user
+ *
+ * @return array
+ * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+ * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+ */
+function get_oauth_user_infos(UserInterface $user) {
+  /** @var \Drupal\Core\File\FileUrlGeneratorInterface $file_url_generator */
+  $file_url_generator = \Drupal::service('file_url_generator');
+
+  $full_name = $user->getDisplayName();
+  $first_name = $user->get('field_first_name')->getString();
+  $last_name = $user->get('field_last_name')->getString();
+  if (!empty($first_name) && !empty($last_name)) {
+    $full_name = $first_name . ' ' . $last_name;
+  }
+
+  $avatar = NULL;
+
+  if (user_picture_enabled() && !$user->get('user_picture')->isEmpty()) {
+    $pictureUri = $user->get('user_picture')->entity->getFileUri();
+    $style = \Drupal::entityTypeManager()->getStorage('image_style')->load('avatar');
+    $derivative_uri = $style->buildUri($pictureUri);
+    $avatar = $file_url_generator->generateAbsoluteString($style->buildUrl($pictureUri));
+    if (!file_exists($derivative_uri)) {
+      $style->createDerivative($pictureUri, $derivative_uri);
+    }
+  }
+
+  return [
+    'id' => $user->id(),
+    'uuid' => $user->uuid(),
+    'email' => $user->getEmail(),
+    'username' => $user->getAccountName(),
+    'avatar' => $avatar,
+    'first_name' => $first_name,
+    'last_name' => $last_name,
+    'full_name' => $full_name,
+    'name_initial' => _auth_generate_intials_from_name($full_name),
+    'roles' => $user->getRoles(),
+    'isActive' => $user->isActive(),
+    'isBlocked' => $user->isBlocked(),
+  ];
+}
+
+/**
+ * Implements hook_simple_oauth_private_claims_alter().
+ */
+function vactory_decoupled_simple_oauth_private_claims_alter(&$private_claims, AccessTokenEntity $access_token_entity) {
+  $user_id = $access_token_entity->getUserIdentifier();
+  /** @var \Drupal\user\UserInterface $user */
+  $user = User::load($user_id);
+  $profile = [];
+  try {
+    $profile = get_oauth_user_infos($user);
+  } catch (\Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException $e) {
+  } catch (\Drupal\Component\Plugin\Exception\PluginNotFoundException $e) {
+  }
+
+  $private_claims = [
+    "profile" => $profile,
+  ];
+}
+
+
+/**
+ * Generate initials from a name
+ *
+ * @param string $name
+ * @return string
+ */
+function _auth_generate_intials_from_name($name)
+{
+  $words = explode(' ', $name);
+  if (count($words) >= 2) {
+    return strtoupper(substr($words[0], 0, 1) . substr(end($words), 0, 1));
+  }
+  return _auth_make_unitials_from_single_word($name);
+}
+
+/**
+ * Make initials from a word with no spaces
+ *
+ * @param string $name
+ * @return string
+ */
+function _auth_make_unitials_from_single_word($name)
+{
+  preg_match_all('#([A-Z]+)#', $name, $capitals);
+  if (count($capitals[1]) >= 2) {
+    return substr(implode('', $capitals[1]), 0, 2);
+  }
+  return strtoupper(substr($name, 0, 2));
+}
+
+/**
+ * Implements hook_mail_alter().
+ */
+function vactory_decoupled_mail_alter(&$message) {
+  $route = \Drupal::routeMatch()->getRouteName();
+  if (strpos($route, 'jsonapi_') === 0) {
+    $token_service = \Drupal::token();
+    $mail_config = \Drupal::config('user.mail');
+    $language_manager = \Drupal::languageManager();
+    $langcode = $message['langcode'];
+    $language = $language_manager->getLanguage($langcode);
+    if ($message['id'] === 'user_password_reset') {
+      $key = 'password_reset';
+      $variables = ['user' => $message['params']['account']];
+      $original_language = $language_manager->getConfigOverrideLanguage();
+      $language_manager->setConfigOverrideLanguage($language);
+      $token_options = ['langcode' => $langcode, 'callback' => '_vactory_decoupled_user_mail_tokens', 'clear' => TRUE];
+      $message['subject'] = '';
+      $message['body'] = [];
+      $message['subject'] .= PlainTextOutput::renderFromHtml($token_service->replace($mail_config->get($key . '.subject'), $variables, $token_options));
+      $markup = ['#markup' => $token_service->replace($mail_config->get($key . '.body'), $variables, $token_options)];
+      $message['body'][] = \Drupal::service('renderer')->render($markup);
+      $language_manager->setConfigOverrideLanguage($original_language);
+    }
+    if ($message['id'] == 'user_register_no_approval_required') {
+      $key = 'register_no_approval_required';
+      $variables = ['user' => $message['params']['account']];
+      $token_options = ['langcode' => $langcode, 'callback' => '_vactory_decoupled_user_mail_tokens', 'clear' => TRUE];
+      $markup = ['#markup' => $token_service->replace($mail_config->get($key . '.body'), $variables, $token_options)];
+      $message['body'][0] = \Drupal::service('renderer')->render($markup);
+    }
+  }
+}
+
+/**
+ * @param $replacements
+ * @param $data
+ * @param $options
+ */
+function _vactory_decoupled_user_mail_tokens(&$replacements, $data, $options) {
+  if (isset($data['user'])) {
+    $frontend_url = Settings::get('FRONTEND_URL', "http://localhost:3000");
+    $nextjs_user_pages_path_prefix = Settings::get('NEXTJS_USER_PAGES_PATH_PREFIX', "user");
+    $language = \Drupal::languageManager()->getCurrentLanguage()->getId();
+    $langcode = $language ?? $data['user']->getPreferredLangcode();
+    $replacements['[user:one-time-login-url]'] = _vactory_decoupled_user_pass_reset_url($data['user'], $options);
+    $replacements['[user:cancel-url]'] = user_cancel_url($data['user'], $options);
+    $replacements['[site:login-url]'] = $frontend_url . "/$langcode/$$nextjs_user_pages_path_prefix";
+  }
+}
+
+/**
+ * @param $account
+ * @param array $options
+ *
+ * @return string
+ */
+function _vactory_decoupled_user_pass_reset_url($account, $options = []) {
+  $frontend_url = Settings::get('FRONTEND_URL', "http://localhost:3000");
+  $nextjs_user_pages_path_prefix = Settings::get('NEXTJS_USER_PAGES_PATH_PREFIX', "user");
+
+  $timestamp = \Drupal::time()->getRequestTime();
+  $language = \Drupal::languageManager()->getCurrentLanguage()->getId();
+  $langcode = $language ?? $account->getPreferredLangcode();
+  $data = [
+    'uid' => $account->id(),
+    'timestamp' => $timestamp,
+    'hash' => user_pass_rehash($account, $timestamp),
+  ];
+
+  $query_string = http_build_query($data, "", "&", PHP_QUERY_RFC3986);
+  return $frontend_url . "/$langcode/$nextjs_user_pages_path_prefix/one-time-login?" . $query_string;
+}
+
+/**
+ * Implements hook_validation_constraint_alter().
+ *
+ * Replace core's ProtectedUserFieldConstraint with a decorated version that
+ * skips over the validation if restricted password mangement is enabled.
+ */
+function vactory_decoupled_validation_constraint_alter(array &$definitions) {
+  $definitions['ProtectedUserField']['class'] = 'Drupal\vactory_decoupled\Plugin\Validation\Constraint\SspaProtectedUserFieldConstraint';
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ */
+function vactory_decoupled_block_presave(EntityInterface $entity) {
+  Cache::invalidateTags(['node_list']);
+}
+
+/**
+ * Implements hook_entity_update().
+ * Clear drupal cache => clear frontend cache.
+ */
+function vactory_decoupled_cache_flush() {
+  clear_next_cache();
+}
+
+function clear_next_cache_translation(&$form, FormStateInterface $form_state) {
+  $query = [
+    'invalidate'  => 'translation',
+  ];
+  clear_next_cache($query);
+}
+
+/**
+ * Implements hook_entity_update().
+ */
+function vactory_decoupled_entity_update(EntityInterface $entity) {
+  static $loaded;
+
+  // @todo: do we need to keep going in this function ?
+  // Updating a node will also update menu ?
+  if ($entity instanceof Node && !$entity->isNew()) {
+      $query = get_node_info($entity);
+      clear_next_cache($query);
+  }
+
+  if ($entity instanceof MenuItemExtrasMenuLinkContent && !isset($loaded)) {
+      $loaded = 1;
+      clear_next_cache([
+        'menu'       => $entity->bundle(),
+        'invalidate' => 'menu',
+      ]);
+  }
+  else if ($entity instanceof Drupal\system\Entity\Menu) {
+    clear_next_cache([
+      'menu'       => $entity->id(),
+      'invalidate' => 'menu',
+    ]);
+  }
+}
+
+
+/**
+ * Implements hook_entity_predelete().
+ */
+function vactory_decoupled_entity_predelete(EntityInterface $entity) {
+  if ($entity instanceof Node) {
+    $query = get_node_info($entity);
+    clear_next_cache($query);
+  }
+}
+
+function get_node_info($entity) {
+  $nid = $entity->id();
+  $langcode = $entity->language()->getId();
+  // $alias = \Drupal::service('path_alias.manager')
+  //   ->getAliasByPath('/node/' . $nid);
+  // @todo: if no alias fall back to /node/id
+
+  return $query = [
+    'id'         => $nid,
+    'langcode'   => $langcode,
+    // 'alias'      => $alias,
+    'invalidate' => 'node',
+  ];
+}
+
+/**
+ * Implements hook_entity_delete().
+ */
+function vactory_decoupled_entity_delete(EntityInterface $entity) {
+  if ($entity instanceof MenuItemExtrasMenuLinkContent) {
+    $query = [
+      'menu'       => $entity->bundle(),
+      'invalidate' => 'menu',
+    ];
+    clear_next_cache($query);
+  }
+}
+
+/**
+ * @param array $query
+ * Clears frontend cache.
+ *
+ * @return bool
+ */
+function clear_next_cache($query = []) {
+
+  $front_end_url = Settings::get('FRONTEND_URL');
+  $cache_secret = Settings::get('FRONTEND_CACHE_KEY');
+
+  if (!isset($front_end_url) || $front_end_url == '') {
+    \Drupal::logger('clear_next_cache')
+      ->error('FRONTEND_URL env variable is undefined');
+    return FALSE;
+  }
+
+  if (!isset($cache_secret) || $cache_secret == '') {
+    \Drupal::logger('clear_next_cache')
+      ->error('FRONTEND_CACHE_KEY env variable is undefined');
+    return FALSE;
+  }
+
+  $endpoint = '/api/cache/clear';
+
+  $query_str = $query === [] ? '' : '?' . UrlHelper::buildQuery($query);
+
+  $success_msg = $query == [] ? 'Next Cache Cleared' : 'Next Cache Cleared for ' . print_r($query, TRUE);
+  $error_msg = $query == [] ? 'Cannot Clear Next Cache' : 'Cannot Clear Next Cache for ' . print_r($query, TRUE);
+
+  $client = \Drupal::httpClient();
+
+  try {
+    $request = $client->get($front_end_url . $endpoint . $query_str, [
+      "headers" => [
+        "x-cache-secret" => $cache_secret,
+      ],
+    ]);
+
+    if ($request->getStatusCode() == 200) {
+      \Drupal::logger('clear_next_cache')->info($success_msg);
+      return TRUE;
+    }
+    else {
+      \Drupal::logger('clear_next_cache')->warning($error_msg);
+      return FALSE;
+    }
+
+  } catch (ServerException $e) {
+    \Drupal::logger('clear_next_cache')->warning($error_msg);
+    return FALSE;
+  } catch (RequestException $e) {
+    \Drupal::logger('clear_next_cache')->warning($error_msg);
+    return FALSE;
+  }
+}

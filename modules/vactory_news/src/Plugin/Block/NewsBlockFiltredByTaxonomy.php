@@ -123,6 +123,13 @@ class NewsBlockFiltredByTaxonomy extends BlockBase implements ContainerFactoryPl
     $news_block_id = $this->configuration['news_block_selected'];
     $news_term_id = $this->configuration['filtred_term'];
     $override_more_link = $this->configuration['override_more_link'];
+    $children = $this->entityTypeManager->getStorage('taxonomy_term')->loadChildren($news_term_id);
+    $selected_news_term_id = $news_term_id;
+    if (!empty($children)) {
+      $children_ids = array_keys($children);
+      $children_ids[] = $news_term_id;
+      $news_term_id = implode('+', $children_ids);
+    }
     return [
       '#theme' => 'vactory_news_block_filtred_by_taxonomy',
       '#content'  => [
@@ -131,6 +138,7 @@ class NewsBlockFiltredByTaxonomy extends BlockBase implements ContainerFactoryPl
         'meta_data' => [
           'override_more_link' => $override_more_link,
           'field_name' => 'field_vactory_news_theme',
+          'news_term_id' => $selected_news_term_id,
         ],
       ],
     ];

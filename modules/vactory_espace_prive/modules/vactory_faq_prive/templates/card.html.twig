@@ -8,16 +8,16 @@
 {% if classes is not defined %}
   {% set classes = [] %}
 {% endif %}
-{% set classes = classes|merge(['card']) %}
+
+{% set classes = classes|merge(['card', 'card--faq', 'card--faq-prive']) %}
+
 <article {{ attributes.addClass(classes) }}>
-  <div class="card-body">
-    <h4 class="card-title">
-        <span class="link font-semibold text-uppercase font-20">{{ label }}</span>
-    </h4>
-    <div class="card-text">
-      <h6 class="card-subtitle">
-        <span class="badge badge-primary">{{ content.field_faq_prive_thematique }}</span>
-      </h6>
+  <div class="card__body">
+    <h3 class="card__title"><span>{{ label }}</span></h3>
+    <div class="card__meta">
+      <span class="vard_tags badge badge-primary">{{ content.field_faq_prive_thematique }}</span>
+    </div>
+    <div class="card__description">
       {{ content.body }}
     </div>
   </div>

@@ -183,7 +183,7 @@ class VactoryNotificationsService {
         $translated_notification_message = $notification_config_translation->get('notifications_default_message');
         $translated_mail_subject = $notification_config_translation->get('mail_default_subject');
         $translated_mail_message = $notification_config_translation->get('mail_default_message');
-        if ($translated_node) {
+        if ($translated_node && $related_node->hasTranslation($langcode)) {
           // Override notification default values with node translation data.
           $node_notification_title = $translated_node->get('notification_title')->value;
           $node_notification_message = $translated_node->get('notification_message')->value;
@@ -217,7 +217,7 @@ class VactoryNotificationsService {
       ->loadMultiple();
     foreach (array_keys($roles) as $role) {
       $content_types = $this->notificationConfig->get($role . '_content_types');
-      if (in_array($bundle, $content_types)) {
+      if (is_array($content_types) && in_array($bundle, $content_types)) {
         return TRUE;
       }
     }

@@ -14,3 +14,20 @@ attributes:
     options:
       _blank: 'New window (_blank)'
       _self: 'Same window (_self)'
+  rel:
+    label: ''
+    description: ''
+    options:
+      alternate: alternate
+      author: author
+      bookmark: bookmark
+      external: external
+      help: help
+      license: license
+      next: next
+      nofollow: nofollow
+      noopener: noopener
+      noreferrer: noreferrer
+      prev: prev
+      search: search
+      tag: tag

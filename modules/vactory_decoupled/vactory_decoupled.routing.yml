@@ -1,0 +1,127 @@
+vactory_decoupled.image:
+  path: '/app-image/{cached_uri}/{width}/{height}/{fid}/{filename}'
+  defaults:
+    _controller: '\Drupal\vactory_decoupled\Controller\ImageController::image'
+    _disable_route_normalizer: 'TRUE'
+  requirements:
+    _permission: 'access content'
+
+vactory_decoupled.create_image_style:
+  path: '/app-image/create-style'
+  defaults:
+    _controller: '\Drupal\vactory_decoupled\Controller\ImageStyleController::image'
+    _disable_route_normalizer: 'TRUE'
+  requirements:
+    _permission: 'access content'
+
+vactory_decoupled.translations:
+  path: '/_translations'
+  defaults:
+    _controller: '\Drupal\vactory_decoupled\Controller\TranslationsController::index'
+    _disable_route_normalizer: 'TRUE'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+
+vactory_decoupled.blocks:
+  path: '/_blocks'
+  defaults:
+    _controller: '\Drupal\vactory_decoupled\Controller\BlocksController::index'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+
+vactory_decoupled.breadcrumb:
+  path: '/_breadcrumb'
+  defaults:
+    _controller: '\Drupal\vactory_decoupled\Controller\BreadcrumbController::index'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+
+vactory_decoupled.menus:
+  path: '/_menus'
+  defaults:
+    _controller: '\Drupal\vactory_decoupled\Controller\MenusController::index'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+
+vactory_decoupled.search:
+  path: '/_search'
+  defaults:
+    _controller: '\Drupal\vactory_decoupled\Controller\SearchController::index'
+    _disable_route_normalizer: 'TRUE'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+  options:
+    _is_jsonapi: 1
+
+vactory_decoupled.import_translation:
+  path: 'admin/config/regional/translate/import_frontend'
+  defaults:
+    _form: 'Drupal\vactory_decoupled\Form\TranslationImportForm'
+    _title: 'Frontend Translation Import'
+  requirements:
+    _permission: 'translate interface'
+
+vactory_decoupled.firebase_key:
+  path: 'admin/config/firebase/key'
+  defaults:
+    _form: 'Drupal\vactory_decoupled\Form\FirebaseKeyForm'
+    _title: 'Firebase Cloud Messaging Key'
+  requirements:
+    _permission: 'administer site configuration'
+
+vactory_decoupled.vcc:
+  path: '/_vcc'
+  defaults:
+    _controller: '\Drupal\vactory_decoupled\Controller\VccController::index'
+    _disable_route_normalizer: 'TRUE'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+  options:
+    _is_jsonapi: 1
+
+vactory_decoupled.pays.api:
+  path: /api/available-pays
+  defaults:
+    _controller: '\Drupal\vactory_decoupled\Controller\PaysController::getPays'
+    _disable_route_normalizer: 'TRUE'
+  requirements:
+    _permission: 'access content'
+
+vactory_decoupled.social_media.api:
+  path: /api/available-social-media
+  defaults:
+    _controller: '\Drupal\vactory_decoupled\Controller\SocialMediaController::getSocialMedia'
+    _disable_route_normalizer: 'TRUE'
+  requirements:
+    _permission: 'access content'
+
+vactory_decoupled.get_unique_username_by_email:
+  path: '/api/get-unique-username-by-email'
+  defaults:
+    _controller: '\Drupal\vactory_decoupled\Controller\UsernameController::getUniqueUsernameByEmail'
+    _disable_route_normalizer: 'TRUE'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+
+vactory_decoupled.one_time_token:
+  path: '/oauth/one-time-token'
+  defaults:
+    _controller: 'Drupal\vactory_decoupled\Controller\OneTimeToken::token'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+
+vactory_decoupled.firebase_key_controller:
+  path: '/_firebase-key'
+  defaults:
+    _controller: '\Drupal\vactory_decoupled\Controller\FirebaseKeyController::getFirebaseKey'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'

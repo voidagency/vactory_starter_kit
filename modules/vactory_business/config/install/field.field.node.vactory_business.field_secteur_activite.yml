@@ -1,0 +1,28 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_secteur_activite
+    - node.type.vactory_business
+    - taxonomy.vocabulary.business_secteur_activite
+id: node.vactory_business.field_secteur_activite
+field_name: field_secteur_activite
+entity_type: node
+bundle: vactory_business
+label: 'Secteur d''activité'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      business_secteur_activite: business_secteur_activite
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

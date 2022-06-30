@@ -1,0 +1,6 @@
+vactory_decoupled.translate_import:
+  route_name: vactory_decoupled.import_translation
+  base_route: locale.translate_page
+  title: Import Frontend
+  weight: 40
+

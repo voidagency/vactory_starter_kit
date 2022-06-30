@@ -11,4 +11,4 @@ dependencies:
   - redirect
   - simplify_menu
   - dropzonejs
-
+  - textfield_counter

@@ -4,8 +4,6 @@ dependencies:
   config:
     - core.entity_view_mode.node.teaser
     - field.field.node.vactory_quiz.body
-    - field.field.node.vactory_quiz.field_certificat_require
-    - field.field.node.vactory_quiz.field_enable_certificat
     - field.field.node.vactory_quiz.field_quiz_questions
     - node.type.vactory_quiz
   enforced:

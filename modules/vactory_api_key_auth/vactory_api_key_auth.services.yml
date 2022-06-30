@@ -1,0 +1,16 @@
+services:
+  authentication.vactory_api_key_auth:
+    class: Drupal\vactory_api_key_auth\Authentication\Provider\ApiKeyAuth
+    arguments: ['@config.factory', '@entity_type.manager']
+    tags:
+      - { name: authentication_provider, provider_id: api_key_auth, global: TRUE, priority: 36 }
+  vactory_api_key_auth.page_cache_request_policy.disallow_api_key_requests:
+    class: Drupal\vactory_api_key_auth\PageCache\DisallowApiKeyRequests
+    public: false
+    tags:
+      - { name: page_cache_request_policy }
+  vactory_api_key_auth.access_check:
+    class: Drupal\vactory_api_key_auth\Access\ApiKeyAccessCheck
+    arguments: [ '@request_stack', '@entity_type.manager']
+    tags:
+      - { name: access_check, applies_to: _route_api_key_auth__access_check }

@@ -1,7 +1,7 @@
 slider:
   version: 1.x
   js:
-    js/slider.js: {}
+    ./assets/js/slider.js: {}
   dependencies:
     - core/jquery
     - core/jquery.once
@@ -10,7 +10,7 @@ slider:
 masonry:
   version: 1.x
   js:
-    js/masonry.js: {}
+    ./assets/js/masonry.js: {}
   dependencies:
     - core/jquery
     - core/jquery.once
@@ -19,7 +19,7 @@ masonry:
 datepicker:
   version: 1.x
   js:
-    js/datepicker.js: {}
+    ./assets/js/datepicker.js: {}
   dependencies:
     - core/jquery
     - core/drupal

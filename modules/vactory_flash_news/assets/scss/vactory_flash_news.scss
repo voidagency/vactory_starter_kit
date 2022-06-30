@@ -1,0 +1,41 @@
+
+.vactory-flash-news {
+  padding: 10px;
+  overflow: hidden;
+
+  &__items {
+    position: relative;
+    overflow: hidden;
+    height: 26px;
+  }
+
+  &__item {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    opacity: 0;
+    transform: translate(0, 200%);
+
+    text-overflow: ellipsis;
+    /* Required for text-overflow to do anything */
+    white-space: nowrap;
+    overflow: hidden;
+
+    a {
+      color: $black;
+    }
+
+    &.prev {
+      transform: translate(0, -200%);
+      opacity: 0;
+      transition: transform 500ms ease-in, opacity 300ms ease-in;
+    }
+
+    &.active {
+      opacity: 1;
+      transform: translate(0, 0);
+      transition: transform 500ms ease-in;
+    }
+  }
+
+}

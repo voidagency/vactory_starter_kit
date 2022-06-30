@@ -1,0 +1,6 @@
+name: 'Request API Key Authentication'
+type: module
+description: 'Provides a Request Origin Authentication'
+package: Web services
+core: 8.x
+core_version_requirement: ^8 || ^9

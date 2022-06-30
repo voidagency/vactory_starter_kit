@@ -1,0 +1,3 @@
+'administer vactory_api_key_auth':
+  title: 'Administer Services Api Key Auth'
+  description: 'Create and configure API keys.'

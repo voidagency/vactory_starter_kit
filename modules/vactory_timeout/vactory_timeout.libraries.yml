@@ -1,6 +1,6 @@
 timeout:
   js:
-    js/timeout.js: {}
+    ./assets/js/timeout.js: {}
   dependencies:
     - core/jquery
     - core/drupal

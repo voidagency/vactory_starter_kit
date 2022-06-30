@@ -1,0 +1,38 @@
+name: 'List'
+multiple: FALSE
+category: 'Appel Offres'
+enabled: TRUE
+fields:
+  collection:
+    type: json_api_collection
+    label: 'JSON:API'
+    options:
+      '#required': TRUE
+      '#default_value':
+        resource: node--vactory_tender
+        filters:
+          - fields[node--vactory_tender]=drupal_internal__nid,path,title,field_vactory_date,field_vactory_media_document,field_vactory_excerpt,field_vactory_media_file,field_vactory_reference
+          - fields[media--file]=name,field_media_file
+          - fields[file--document]=filename,uri
+          - include=field_vactory_media_document,field_vactory_media_document.field_media_file,field_vactory_media_file,field_vactory_media_file.field_media_file
+          - page[offset]=0
+          - page[limit]=9
+          - sort=-created
+        vocabularies: {}
+#  views:
+#    type: dynamic_views
+#    label: 'Views'
+#    options:
+#      '#required': TRUE
+#      '#default_value':
+#        views_id: vactory_tenders
+#        views_display_id: block_list
+#        fields:
+#          id: id
+#          uuid: key
+#          title: title
+#          url: url
+#          field_vactory_excerpt: excerpt
+#          field_vactory_reference: reference
+#          field_vactory_date: date
+#          field_vactory_media_file: invitation

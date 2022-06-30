@@ -1,0 +1,19 @@
+<?php
+
+/**
+ * @file
+ * Module related hooks.
+ */
+
+/**
+ * Implements hook_internal_block_classification_alter().
+ */
+function vactory_dynamic_field_video_help_internal_block_classification_alter(string &$classification, array $block_info) {
+  if (isset($block_info['content']) && is_array($block_info['content']) && isset($block_info['content']['widget_id'])) {
+    list($provider, $tpl) = explode(':', $block_info['content']['widget_id']);
+    if (strpos($provider, 'video_help') !== FALSE) {
+      // Change block classification to video_help.
+      $classification = 'video_help';
+    }
+  }
+}

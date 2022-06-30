@@ -17,13 +17,14 @@
     {# Attribtes #}
     {% set wrapper_class = menu_item.options.attributes.wrapper_class %}
     {% set item_class = menu_item.options.attributes.class %}
+    {% set item_rel = menu_item.options.attributes.rel %}
     
     {% if level is null %}
       <li class="nav-item {{ has_sub }} {{ wrapper_class }}">
     {% endif %}
 
     {% if level is null %}
-      <a href="{{ menu_item.url }}"
+      <a href="{{ menu_item.url }}" {% if item_rel is not empty %} rel="{{ item_rel }}" {% endif %}
          class="nav-link menu__link{{ active }} menu__link__title {{ item_class }}">{{ menu_item.text }}</a>
 
       {% if menu_item.submenu %}
@@ -66,7 +67,7 @@
 
         {# Bloc Search - visible on mobile #}
         <div class="search pr-1 d-lg-none mb-1">
-          <button class="icon-search icon btn-search-overlay js-btn-search-overlay"></button>
+          <button class="icon-search icon btn-search-overlay js-btn-search-overlay" name="search" aria-label="Search button"></button>
         </div>
         {# End search #}
         {# Burger Menu #}
@@ -102,7 +103,7 @@
               {{ vactory_render('block', 'system_menu_block:top-navigation') }}
             </div>
             <div class="search">
-              <button class="icon-search icon btn-search-overlay js-btn-search-overlay"></button>
+              <button class="icon-search icon btn-search-overlay js-btn-search-overlay" name="search" aria-label="Search button"></button>
             </div>
           </div>
           {# End Navigatioon Secondaire - TOP #}

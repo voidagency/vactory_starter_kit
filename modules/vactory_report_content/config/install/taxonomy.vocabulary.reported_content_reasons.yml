@@ -1,0 +1,10 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_report_content
+name: 'Reported Content - Reasons'
+vid: reported_content_reasons
+description: 'Utiliser ce vocabulaire pour ajouter de nouvelles raisons de contenu signalées'
+weight: 0

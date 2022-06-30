@@ -5,6 +5,8 @@ dependencies:
     - field.field.node.vactory_forum.body
     - field.field.node.vactory_forum.comment
     - field.field.node.vactory_forum.field_groupe_utilisateurs
+    - field.field.node.vactory_forum.field_forum_editeur
+    - field.field.node.vactory_forum.field_forum_expert
     - field.field.node.vactory_forum.field_vactory_date
     - field.field.node.vactory_forum.field_vactory_excerpt
     - field.field.node.vactory_forum.field_vactory_forum_room
@@ -75,6 +77,18 @@ content:
     weight: 17
     settings: {  }
     third_party_settings: {  }
+    type: options_select
+    region: content
+  field_forum_editeur:
+    weight: 18
+    settings: { }
+    third_party_settings: { }
+    type: options_select
+    region: content
+  field_forum_expert:
+    weight: 19
+    settings: { }
+    third_party_settings: { }
     type: options_select
     region: content
   field_vactory_forum_status:

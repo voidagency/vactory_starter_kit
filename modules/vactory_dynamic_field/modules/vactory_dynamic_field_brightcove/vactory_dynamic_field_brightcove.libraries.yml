@@ -1,6 +1,6 @@
 video:
   js:
-    js/video.js: {}
+    ./assets/js/video.js: {}
   dependencies:
     - vactory_dynamic_field_brightcove/video_script
 video_script:

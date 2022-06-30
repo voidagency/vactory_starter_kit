@@ -1,0 +1,26 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.storage.media.field_cloudinary_video
+    - media.type.remote_cloudinary_video
+  module:
+    - file
+id: media.remote_cloudinary_video.field_cloudinary_video
+field_name: field_cloudinary_video
+entity_type: media
+bundle: remote_cloudinary_video
+label: 'Fichier vidéo'
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  file_directory: 'videos/[date:custom:Y]-[date:custom:m]'
+  file_extensions: mp4
+  max_filesize: ''
+  description_field: false
+  handler: 'default:file'
+  handler_settings: {  }
+field_type: file

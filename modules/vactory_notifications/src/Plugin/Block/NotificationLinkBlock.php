@@ -4,8 +4,6 @@ namespace Drupal\vactory_notifications\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Url;
-use Drupal\social_media_links\Plugin\SocialMediaLinks\Platform\Drupal;
-use Drupal\vactory_notifications\Entity\NotificationsEntity;
 use Drupal\views\Entity\View;
 
 /**
@@ -36,13 +34,13 @@ class NotificationLinkBlock extends BlockBase {
     $current_user = \Drupal::currentUser();
     if ($current_user->hasPermission('view notifications')) {
       $current_user = \Drupal::currentUser();
-      $notifications = NotificationsEntity::loadMultiple();
-      $new_notifications_counter = 0;
-      foreach ($notifications as $notification) {
-        if ($notification->isUserConcerned($current_user->id()) && !$notification->isViewedByUser($current_user->id()) && $notification->isPublished()) {
-          $new_notifications_counter++;
-        }
-      }
+      $uid = '%"' . $current_user->id() . '"%';
+      $query = \Drupal::entityQuery('notifications_entity')
+        ->condition('notification_concerned_users', $uid, 'LIKE')
+        ->condition('notification_viewers', $uid, 'NOT LIKE')
+        ->condition('status', 1);
+      $results = $query->execute();
+      $new_notifications_counter = is_array($results) ? count($results) : 0;
       $notification_view = View::load('notifications');
       $path = '/' . $notification_view->getDisplay('listing')['display_options']['path'];
       $url = Url::fromUserInput($path)->toString();

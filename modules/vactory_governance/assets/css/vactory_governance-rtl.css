@@ -1,0 +1,86 @@
+.governance-slider-full .slick-list {
+  margin-right: 0;
+  margin-left: 0;
+}
+
+.card-governance .card-governance-social-media {
+  margin: 20px auto 0 auto;
+  margin: 1.25rem auto 0 auto;
+}
+
+.card-governance .card-governance-social-media .social-media-links--platforms {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.card-governance .card-governance-social-media .social-media-links--platforms li {
+  margin-right: 10px;
+  margin-right: 0.625rem;
+  margin-left: 10px;
+  margin-left: 0.625rem;
+}
+
+.page--vactory-governance {
+  background-color: #f7f7f7;
+}
+
+.page--vactory-governance .social-media a {
+  color: #000;
+  font-size: 20px;
+  font-size: 1.25rem;
+}
+
+.governance-member .nav-tabs {
+  border: none;
+}
+
+.governance-member .nav-tabs .nav-link {
+  font-size: 18px;
+  font-size: 1.125rem;
+}
+
+.governance-member .nav-tabs .nav-item {
+  -webkit-box-flex: 1;
+      -ms-flex: auto;
+          flex: auto;
+  text-align: center;
+}
+
+.governance-member .vf-card__body {
+  -webkit-box-flex: 1;
+      -ms-flex: 1 1 auto;
+          flex: 1 1 auto;
+}
+
+@media (max-width: 991.98px) {
+  .governance-member {
+    position: relative;
+  }
+  .governance-member .nav-tabs {
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+  .governance-member .nav-tabs:after {
+    content: '';
+    z-index: 1;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 58px;
+    width: 3.625rem;
+    height: 54px;
+    height: 3.375rem;
+    background: -webkit-gradient(linear, right top, left top, color-stop(0, rgba(0, 0, 0, 0)), to(rgba(0, 0, 0, 0.4)));
+    background: -o-linear-gradient(right, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 0.4) 100%);
+    background: linear-gradient(-90deg, rgba(0, 0, 0, 0) 0, rgba(0, 0, 0, 0.4) 100%);
+  }
+  .governance-member .nav-item {
+    white-space: nowrap;
+  }
+  .governance-member .nav-item a {
+    padding: 17px 24px;
+    padding: 1.0625rem 1.5rem;
+  }
+}

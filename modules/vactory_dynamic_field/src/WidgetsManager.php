@@ -186,6 +186,8 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
       }
     }
 
+    $disabled_widgets = $this->getDisabledWidgets();
+
     $widgets_alter = $widgets;
     unset($widgets_alter['Froala']);
     unset($widgets_alter['Content']);
@@ -195,7 +197,8 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
     foreach ($widgets_alter as $catgeory => &$items) {
       $id = 1;
       if (is_array($items) || is_object($items)) {
-        foreach ($items as &$item) {
+        foreach ($items as $key => &$item) {
+          $this->removeDisabledWidgetFromWidgetResults($items, $key, $disabled_widgets);
           $old_name = $item['name'];
           $new_name = preg_replace('/([0-9]+) - /', '', $old_name);
 
@@ -292,6 +295,67 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
       $options[$definition['id']] = $definition['title'];
     }
     return $options;
+  }
+
+  /**
+   * Get list of disabled widgets.
+   */
+  public function getDisabledWidgets() {
+    $disabled_widgets = [];
+    $excluded_widgets = \Drupal::config('vactory_dynamic_field.settings')->get('excluded_widgets') ?: '';
+    // Decode YAML file.
+    try {
+      $data = Yaml::decode($excluded_widgets) ?: [];
+      foreach ($data as $key => $dfs) {
+        if (isset($dfs['settings'])) {
+          $item = [];
+          $item['disable_all'] = isset($dfs['settings']['disable_all']) ? $dfs['settings']['disable_all'] : FALSE;
+          if ($item['disable_all'] != TRUE && isset($dfs['settings']['widgets'])) {
+            foreach ($dfs['settings']['widgets'] as $df) {
+              $item['widgets'][] = $key . ':' . $df;
+            }
+          }
+          else {
+            $item['widgets'] = $key;
+            if (isset($dfs['settings']['except'])) {
+              foreach ($dfs['settings']['except'] as $df) {
+                $item['except'][] = $key . ':' . $df;
+              }
+            }
+          }
+          array_push($disabled_widgets, $item);
+        }
+      }
+    }
+    catch (InvalidDataTypeException $e) {
+      throw new \Exception("The exculded_widgets input contains invalid YAML", 0, $e);
+    }
+    return $disabled_widgets;
+  }
+
+  /**
+   * Unset unused widgets from active widgets.
+   */
+  public function removeDisabledWidgetFromWidgetResults(&$widgets, $widget_key, $disabled_widgets) {
+    if ($disabled_widgets != []) {
+      foreach ($disabled_widgets as $widget) {
+        if ($widget['disable_all']) {
+          if (isset($widget['widgets']) && strpos($widget_key, $widget['widgets']) === 0) {
+            if (isset($widget['except']) && in_array($widget_key, $widget['except'])) {
+              continue;
+            }
+            unset($widgets[$widget_key]);
+          }
+        }
+        else {
+          if (isset($widget['widgets']) && $widget['widgets'] != []) {
+            if (in_array($widget_key, $widget['widgets'])) {
+              unset($widgets[$widget_key]);
+            }
+          }
+        }
+      }
+    }
   }
 
 }

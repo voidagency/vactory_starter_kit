@@ -5,6 +5,7 @@
  * Contain related hooks.
  */
 
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
@@ -198,6 +199,7 @@ function vactory_content_access_node_access_records(NodeInterface $node) {
       }
     }
   }
+  Cache::invalidateTags(Cache::mergeTags($node->getCacheTags(), ['node:' . $node->id()]));
   return $grants;
 }
 

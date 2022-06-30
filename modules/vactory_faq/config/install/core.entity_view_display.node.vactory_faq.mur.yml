@@ -5,13 +5,12 @@ dependencies:
     - core.entity_view_mode.node.mur
     - field.field.node.vactory_faq.body
     - field.field.node.vactory_faq.field_faq
+    - field.field.node.vactory_faq.field_vactory_taxonomy_1
     - field.field.node.vactory_faq.field_vactory_seo_status
     - node.type.vactory_faq
   module:
     - text
     - user
-_core:
-  default_config_hash: Sow_MV3sZAXalPy-Q_7OQAGOdZzREiZT_6kARpQ0tKs
 id: node.vactory_faq.mur
 targetEntityType: node
 bundle: vactory_faq
@@ -37,6 +36,7 @@ hidden:
   field_content_access_users: true
   field_faq: true
   field_vactory_seo_status: true
+  field_vactory_taxonomy_1: true
   langcode: true
   mail_message: true
   mail_subject: true

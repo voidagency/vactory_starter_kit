@@ -1,0 +1,10 @@
+{% for item in content %}
+  <div>
+    {% if item.group_banner_title.custom_title is not empty %}
+      {{ item.group_banner_title.custom_title }}
+    {% endif %}
+    {% if item.group_banner_content.description is not empty %}
+      {{ item.group_banner_content.description.value }}
+    {% endif %}
+  </div>
+{% endfor %}

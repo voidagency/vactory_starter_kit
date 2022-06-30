@@ -1,0 +1,15 @@
+vactory_image_sitemap.settings_form:
+  path: '/admin/config/system/vactory-image-sitemap'
+  defaults:
+    _title: 'Vactory Image Sitemap generator'
+    _form: 'Drupal\vactory_image_sitemap\Form\SettingsForm'
+  requirements:
+    _permission: 'administer site configuration'
+
+vactory_image_sitemap.xml:
+  path: '/image-sitemap.xml'
+  defaults:
+    _title: 'Image sitemap'
+    _controller: '\Drupal\vactory_image_sitemap\Controller\VactoryImageSitemapXml::build'
+  requirements:
+    _permission: 'access content'

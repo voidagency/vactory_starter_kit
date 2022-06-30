@@ -1,5 +1,9 @@
 vactory_frequent_searches.settings_form:
   css:
     theme:
-      css/frequent-searches.css: {}
+      ./assets/css/vactory_frequent_searches.css: {}
 
+  js:
+    js/frequent-searches.js: { }
+  dependencies:
+    - core/jquery

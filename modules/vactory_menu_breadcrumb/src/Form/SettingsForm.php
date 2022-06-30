@@ -129,6 +129,22 @@ class SettingsForm extends ConfigFormBase {
       '#default_value' => $config->get('home_as_site_name'),
     ];
 
+    $form['include_views_taxonomy_filter'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Include views taxonomy filters'),
+      '#description' => $this->t('Include the views filtered taxonomy name in breadcrumb links'),
+      '#default_value' => $config->get('include_views_taxonomy_filter'),
+    ];
+
+    if (\Drupal::moduleHandler()->moduleExists('domain_access')) {
+      $form['include_domain'] = [
+        '#type' => 'checkbox',
+        '#title' => $this->t('Include Domain name (domain access entity label)'),
+        '#description' => $this->t('Include the current domain access entity label in breadcrumb links list'),
+        '#default_value' => $config->get('include_domain'),
+      ];
+    }
+
     $form['include_exclude'] = [
       '#type' => 'fieldset',
       '#title' => $this->t('Enable / Disable Menus'),
@@ -279,6 +295,8 @@ class SettingsForm extends ConfigFormBase {
       ->set('append_member_page', (boolean) $form_state->getValue('append_member_page'))
       ->set('member_page_as_link', (boolean) $form_state->getValue('member_page_as_link'))
       ->set('home_as_site_name', (boolean) $form_state->getValue('home_as_site_name'))
+      ->set('include_views_taxonomy_filter', (boolean) $form_state->getValue('include_views_taxonomy_filter'))
+      ->set('include_domain', (boolean) $form_state->getValue('include_domain'))
       ->set('add_home', (boolean) $form_state->getValue('add_home'))
       ->set('vactory_menu_breadcrumb_menus', $form_state->getValue('vactory_menu_breadcrumb_menus'))
       ->set(VactoryBreadcrumbConstants::INCLUDE_INVALID_PATHS, $form_state->getValue(VactoryBreadcrumbConstants::INCLUDE_INVALID_PATHS))

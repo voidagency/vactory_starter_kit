@@ -68,15 +68,15 @@
   'classes': ['vf-card--publication'],
   'title': label,
   'url': url,
-  'image': addAttributes(content.field_vactory_media, {'class': ['vf-card__image', 'img-fluid']}),
+  'image': addAttributes(noWrapper(content.field_vactory_media), {'class': ['img-fluid']}),
   'subtitle': content,
   'intro': null,
   'read_more': 'Read more'|t
 } %}
 
   {% block image_after %}
-    {% if image.0 is not defined and image.0 is empty%}
-      <img alt="defaut-annonces"  class="vf-card__image img-fluid" src="/profiles/contrib/vactory_starter_kit/modules/vactory_announcements/assets/images/defaut_announces.jpg">
+    {% if image.0 is not defined and image.0 is empty %}
+      <img alt="defaut-annonces"  class="img-fluid" src="/profiles/contrib/vactory_starter_kit/modules/vactory_announcements/assets/images/defaut_announces.jpg">
     {% endif %}
   {% endblock %}
 

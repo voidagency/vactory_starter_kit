@@ -1,0 +1,35 @@
+
+ /* @todo: Use SCSS Instead */
+ .sondage-option input {
+  display: none;
+}
+.sondage-option label {
+  margin: 0;
+  display: block;
+}
+
+.sondage-option input[type="radio"]:checked+label h6 {
+  border: 1px solid #00aaff !important;
+  box-shadow: 0 0 2px #00aaff;
+}
+.sondage-option.type-image input[type="radio"]:checked+label {
+  border: 1px solid #00aaff !important;
+  box-shadow: 0 0 6px #00aaff;
+}
+.sondage-option.type-image div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+}
+.sondage-option.type-image div div {
+  min-width: 45%;
+  border: 1px solid #aaa;
+  padding: 0;
+  margin-right: 8px;
+}
+.sondage-option.type-image div div label {
+  width: 100%;
+  height: 100%;
+}
+

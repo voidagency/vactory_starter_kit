@@ -1,0 +1,151 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.field.node.vactory_business.body
+    - field.field.node.vactory_business.field_business_pays
+    - field.field.node.vactory_business.field_business_specialisations
+    - field.field.node.vactory_business.field_business_users
+    - field.field.node.vactory_business.field_business_ville
+    - field.field.node.vactory_business.field_secteur_activite
+    - field.field.node.vactory_business.field_site_web
+    - field.field.node.vactory_business.field_social_networks
+    - field.field.node.vactory_business.field_statut_juridique
+    - field.field.node.vactory_business.field_taille_entreprise
+    - field.field.node.vactory_business.field_vactory_address
+    - field.field.node.vactory_business.field_vactory_date
+    - field.field.node.vactory_business.field_vactory_image
+    - field.field.node.vactory_business.field_vactory_telephone
+    - node.type.vactory_business
+  module:
+    - address
+    - datetime
+    - image
+    - social_media_links_field
+    - text
+    - user
+id: node.vactory_business.default
+targetEntityType: node
+bundle: vactory_business
+mode: default
+content:
+  body:
+    label: hidden
+    type: text_default
+    weight: 101
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+  field_business_pays:
+    weight: 110
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: address_country_default
+    region: content
+  field_business_specialisations:
+    weight: 114
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_business_users:
+    weight: 112
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_business_ville:
+    weight: 115
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_secteur_activite:
+    weight: 102
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_site_web:
+    weight: 106
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  field_social_networks:
+    weight: 111
+    label: above
+    settings:
+      appearance: {  }
+      link_attributes: {  }
+    third_party_settings: {  }
+    type: social_media_links_field_default
+    region: content
+  field_statut_juridique:
+    weight: 104
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_taille_entreprise:
+    weight: 105
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    type: entity_reference_label
+    region: content
+  field_vactory_address:
+    weight: 109
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    type: text_default
+    region: content
+  field_vactory_date:
+    weight: 103
+    label: above
+    settings:
+      format_type: medium
+      timezone_override: ''
+    third_party_settings: {  }
+    type: datetime_default
+    region: content
+  field_vactory_image:
+    weight: 117
+    label: above
+    settings:
+      image_style: ''
+      image_link: ''
+    third_party_settings: {  }
+    type: image
+    region: content
+  field_vactory_telephone:
+    weight: 113
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    type: string
+    region: content
+  links:
+    weight: 100
+    settings: {  }
+    third_party_settings: {  }
+    region: content
+hidden:
+  langcode: true
+  search_api_excerpt: true

@@ -1,0 +1,25 @@
+<?php
+
+/**
+ * @file
+ * Provides an IP Consumer authentication provider.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function vactory_api_key_auth_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the api_key_auth module.
+    case 'help.page.api_key_auth':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('API Key Auth') . '</p>';
+      $output .= '<p>' . t('The API Key Auth module provides an authentication 
+      provider to authenticate users via a GET or POST Parameter (api_key=1234)') . '</p>';
+
+      return $output;
+  }
+}

@@ -348,26 +348,34 @@ function vactory_notifications_form_node_form_alter(&$form) {
  */
 function vactory_notifications_views_pre_render(ViewExecutable $view) {
   if ($view->id() == 'notifications' && $view->current_display == 'listing') {
-    $results = $view->result;
-    $current_user = Drupal::currentUser();
-    foreach ($results as $key => $result) {
-      $notification_object = $result->_entity;
-      if ($result->_entity->isUserConcerned($current_user->id())) {
-        $notification_viewers = $notification_object->getViewers();
-        // Add current user to the notification viewers.
-        if (!in_array($current_user->id(), $notification_viewers)) {
-          $notification_viewers[] = $current_user->id();
-          $notification_object->setViewers($notification_viewers);
-          $notification_object->save();
-          Cache::invalidateTags(['notifications_entity:view']);
+    $filters = $view->filter;
+    if (isset($filters['notification_concerned_users'])) {
+      $filter_value = $filters['notification_concerned_users']->value;
+      $uid = $filter_value['concerned_user'] === 'current_user' ? Drupal::currentUser()->id() : $filter_value['user'];
+      if (!empty($uid)) {
+        // Get not viewed yet notifications list.
+        $query = \Drupal::entityQuery('notifications_entity')
+          ->condition('notification_concerned_users', '%"' . $uid . '"%', 'LIKE')
+          ->condition('notification_viewers', '%"' . $uid . '"%', 'NOT LIKE')
+          ->condition('status', 1);
+        $notification_ids = $query->execute();
+        if (!empty($notification_ids)) {
+          $notifications = Drupal::entityTypeManager()
+            ->getStorage('notifications_entity')
+            ->loadMultiple($notification_ids);
+          foreach ($notifications as $notification) {
+            // Update notification viewers list.
+            $notification_viewers = $notification->getViewers();
+            $notification_viewers[] = $uid;
+            $notification->setViewers($notification_viewers);
+            $notification->save();
+          }
+          if (!empty($notifications)) {
+            Cache::invalidateTags(['notifications_entity:view']);
+          }
         }
       }
-      else {
-        // The current is not concerned by the notification.
-        unset($results[$key]);
-      }
     }
-    $view->result = $results;
   }
 }
 

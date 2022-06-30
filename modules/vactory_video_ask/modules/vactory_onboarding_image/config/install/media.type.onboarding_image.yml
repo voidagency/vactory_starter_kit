@@ -1,0 +1,12 @@
+langcode: fr
+status: true
+dependencies: {  }
+id: onboarding_image
+label: 'Onboarding image'
+description: 'Onboarding image file.'
+source: image
+queue_thumbnail_downloads: false
+new_revision: true
+source_configuration:
+  source_field: field_image_onboarding
+field_map: {  }

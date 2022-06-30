@@ -1,0 +1,193 @@
+section.vf-slider--swiper {
+  width: 100%;
+  height: 100vh;
+  .swiper-container {
+    width: 100%;
+    height: 100%;
+  }
+  .slide {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    text-align: center;
+    @include rem(font-size, 18px);
+    background: #fff;
+    overflow: hidden;
+    flex-direction: column;
+
+    .word-part {
+      white-space: nowrap;
+    }
+
+    &.swiper-slide-active {
+      .slide-description {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    &-image {
+      position: absolute;
+      top: -200px;
+      left: -200px;
+      width: calc(100% + 400px);
+      height: calc(100% + 400px);
+      background-position: 50% 50%;
+      background-size: cover;
+    }
+    &-title {
+      @include rem(font-size, 50px);
+      line-height: 1;
+      max-width: calc(100% - 20px);
+      white-space: normal;
+      word-break: break-word;
+      color: #FFF;
+      z-index: 100;
+      text-transform: uppercase;
+      font-weight: normal;
+      @include rem(margin-bottom, 20px);
+      @media (min-width: 45em) {
+        @include rem(font-size, 60px);
+        max-width: none;
+      }
+      span:not(.word-part) {
+        white-space: pre;
+        display: inline-block;
+        opacity: 0;
+      }
+    }
+    &-description {
+      color: #FFF;
+      z-index: 100;
+      max-width: calc(100% - 20px);
+      opacity: 0;
+      transform: translateY(40px) scale(.6);
+      transition: all .5s ease-in .3s
+    }
+  }
+  .slideshow {
+    position: relative;
+
+    &-pagination {
+      position: absolute;
+      bottom: 5rem;
+      left: 0;
+      width: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      transition: .3s opacity;
+      z-index: 10;
+      &-item {
+        display: flex;
+        align-items: center;
+        .pagination-number {
+          opacity: 0.5;
+        }
+        &:hover,
+        &:focus {
+          cursor: pointer;
+        }
+        &:last-of-type {
+          .pagination-separator {
+            width: 0;
+          }
+        }
+        &.active {
+          .pagination-number {
+            opacity: 1;
+          }
+          .pagination-separator {
+            width: 10vw;
+          }
+          //.pagination-separator-loader {
+          //  transform: scaleX(1);
+          //  transition: all 3s ease;
+          //}
+        }
+      }
+    }
+
+    &-navigation {
+      &-button {
+        position: absolute;
+        top: 0;
+        display: flex;
+        justify-content: center;
+        align-items: flex-end;
+        @include rem(padding-bottom, 94px);
+        height: 100%;
+        @include rem(width, 40px);
+        z-index: 1000;
+        transition: all .3s ease;
+        color: #FFF;
+        &:hover, &:focus {
+          cursor: pointer;
+          background: rgba(#000, 0.5);
+        }
+        &.prev {
+          left: 0;
+        }
+        &.next {
+          right: 0;
+        }
+      }
+    }
+
+  }
+  .pagination-number {
+    @include rem(font-size, 30px);
+    color: #FFF;
+    @include rem(padding, 0 8px);
+  }
+  .pagination-separator {
+    display: none;
+    @media (min-width: 45em) {
+      display: block;
+    }
+    position: relative;
+    width: 40px;
+    height: 2px;
+    background: rgba(#FFFFFF, 0.25);
+    transition: all .3s ease;
+    &-loader {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #FFFFFF;
+      transform-origin: 0 0;
+      //transform: scaleX(0);
+      //transition: all 0.3s ease;
+    }
+  }
+}
+
+
+
+
+@include media-breakpoint-up(lg) {
+  section.vf-slider--swiper {
+    .slide {
+      &-title {
+        max-width: 50%;
+      }
+      &-description {
+        max-width: 600px;
+      }
+    }
+    .slideshow {
+      &-navigation {
+        &-button {
+          align-items: center;
+          padding-bottom: 0;
+          @include rem(width, 80px);
+        }
+      }
+
+    }
+  }
+}

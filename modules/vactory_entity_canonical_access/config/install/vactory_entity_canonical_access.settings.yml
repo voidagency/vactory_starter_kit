@@ -1,0 +1,9 @@
+content_entities:
+  file:
+    policy: roles
+    roles:
+      administrator: administrator
+      webmaster: webmaster
+  taxonomy_term:
+    policy: default
+    roles: {  }

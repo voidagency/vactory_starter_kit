@@ -1,0 +1,34 @@
+name: 'Three Columns'
+multiple: FALSE
+category: 'Events'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: "Titre"
+  description:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'basic_html'
+  collection:
+    type: json_api_collection
+    label: 'JSON:API'
+    options:
+      '#required': TRUE
+      '#default_value':
+        resource: node--vactory_event
+        entity_queue: vactory_block_three_columns
+        entity_queue_field_id: drupal_internal__nid
+        filters:
+          - fields[node--vactory_event]=drupal_internal__nid,path,title,field_vactory_taxonomy_1,field_vactory_taxonomy_2,field_vactory_media,field_vactory_excerpt
+          - fields[taxonomy_term--vactory_event_category]=tid,name
+          - fields[taxonomy_term--vactory_event_citys]=tid,name
+          - fields[media--image]=name,thumbnail
+          - fields[file--image]=filename,uri
+          - include=field_vactory_taxonomy_1,field_vactory_taxonomy_2,field_vactory_media,field_vactory_media.thumbnail
+          # - page[limit]=3
+          # - sort=-created
+  link:
+    type: url_extended
+    label: 'Lien'

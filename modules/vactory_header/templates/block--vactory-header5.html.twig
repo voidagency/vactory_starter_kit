@@ -19,7 +19,7 @@
       {# Check if this is the active item. #}
       {% set active = (menu_item.active or menu_item.active_trail) ? ' active' : '' %}
       <li class='{{ menu_item.options.attributes.wrapper_class }}'> 
-        <a class="nav-link {{ active }} {{ menu_item.options.attributes.class }}" href="{{ menu_item.url }}">{{ menu_item.text }}</a>
+        <a class="nav-link {{ active }} {{ menu_item.options.attributes.class }}" href="{{ menu_item.url }} {% if menu_item.options.attributes.rel is not empty %} rel="{{ menu_item.options.attributes.rel }}" {% endif %}">{{ menu_item.text }}</a>
       </li>
     {% endfor %}
   </nav>
@@ -64,7 +64,7 @@
             <div class="vh-header--navigation--switcher d-flex d-column align-items-center">
               <div class="vh-header--navigation d-none d-lg-block ">
                 <button title="{{ 'Search' | t }}" target="_parent"
-                   data-toggle="tooltip" data-placement="top" class="btn btn-light vh--search-button js-btn-search-overlay">
+                   data-toggle="tooltip" data-placement="top" class="btn btn-light vh--search-button js-btn-search-overlay" name="search" aria-label="Search button">
                   <i class="icon-search-lightest"></i>
                 </button>
               </div>
@@ -84,7 +84,7 @@
   <div class="vh-header--navigation--switcher fixed d-lg-none d-block">
     <div class="vh-header--navigation d-flex align-items-center justify-content-between flex-wrap">
         <button title="{{ 'Search' | t }}" target="_parent"
-           data-toggle="tooltip" data-placement="top" class="btn btn-light vh--search-button js-btn-search-overlay">
+           data-toggle="tooltip" data-placement="top" class="btn btn-light vh--search-button js-btn-search-overlay" name="search" aria-label="Search button">
           <i class="icon-search-lightest"></i> {{ 'Search' | t }}
         </button>
     </div>

@@ -1,0 +1,28 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_statut_juridique
+    - node.type.vactory_business
+    - taxonomy.vocabulary.business_statut_juridique
+id: node.vactory_business.field_statut_juridique
+field_name: field_statut_juridique
+entity_type: node
+bundle: vactory_business
+label: 'Statut juridique'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      business_statut_juridique: business_statut_juridique
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

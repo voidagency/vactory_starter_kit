@@ -1,0 +1,28 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_business_specialisations
+    - node.type.vactory_business
+    - taxonomy.vocabulary.business_specialisations
+id: node.vactory_business.field_business_specialisations
+field_name: field_business_specialisations
+entity_type: node
+bundle: vactory_business
+label: Spécialisations
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      business_specialisations: business_specialisations
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

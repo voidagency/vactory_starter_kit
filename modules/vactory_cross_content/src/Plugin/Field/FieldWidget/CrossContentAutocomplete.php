@@ -107,6 +107,8 @@ class CrossContentAutocomplete extends WidgetBase {
     $stored_values = $store->get('storedValues');
     $default_options = !empty($items->getValue()[0]) ? explode(' ', trim($items->getValue()[0]['value'])) : [];
     $default_options = !empty($stored_values) ? $stored_values : $default_options;
+    $default_options = isset($form_state->getTriggeringElement()['#trigger_element']) && $form_state->getTriggeringElement()['#trigger_element'] == 'vcc_remove_action' ? $stored_values : $default_options;
+    $store->set('storedValues', $default_options);
     $element += [
       '#type' => 'container',
       '#attributes' => ['id' => 'cross-content-field-container'],
@@ -115,6 +117,7 @@ class CrossContentAutocomplete extends WidgetBase {
       '#type' => 'table',
       '#header' => [
         $this->t('Contenu lié'),
+        $this->t('Actions'),
         $this->t('Weight'),
       ],
       '#empty' => $this->t('No content'),
@@ -139,6 +142,7 @@ class CrossContentAutocomplete extends WidgetBase {
       $default_entity = is_numeric($nid) ? Node::load($nid) : NULL;
       $element['autocomplete_widgets'][$i]['#attributes']['class'][] = 'draggable';
       $element['autocomplete_widgets'][$i]['#weight'] = $i;
+
       $element['autocomplete_widgets'][$i]['node'] = [
         '#type' => 'entity_autocomplete',
         '#target_type' => 'node',
@@ -150,6 +154,21 @@ class CrossContentAutocomplete extends WidgetBase {
         '#multiple' => FALSE,
         '#tag' => FALSE,
       ];
+
+      $element['autocomplete_widgets'][$i]['remove'] = [
+        '#type' => 'submit',
+        '#name' => 'remove_' . $i,
+        '#remove_action_trigger' => TRUE,
+        '#index' => $i,
+        '#value' => $this->t('Remove'),
+        '#ajax' => [
+          'callback' => [$this, 'removeWidgetForm'],
+          'wrapper' => 'cross-content-field-container',
+        ],
+        '#limit_validation_errors' => [],
+        '#submit' => [[$this, 'removeWidgetState']],
+      ];
+
       $element['autocomplete_widgets'][$i]['weight'] = [
         '#type' => 'weight',
         '#title' => $this->t('Weight for @title'),
@@ -162,6 +181,7 @@ class CrossContentAutocomplete extends WidgetBase {
       ];
       unset($default_entity);
     }
+
     $element['add_one'] = [
       '#type' => 'submit',
       '#value' => $this->t('Add one more cross content'),
@@ -171,10 +191,47 @@ class CrossContentAutocomplete extends WidgetBase {
         'wrapper' => 'cross-content-field-container',
       ],
     ];
+
     $element['value'] = [
       '#type' => 'hidden',
       '#default_value' => implode(' ', $default_options),
     ];
+    return $element;
+  }
+
+  /**
+   * Remove widget state callback.
+   */
+  public function removeWidgetState(array $form, FormStateInterface $form_state) {
+    // Get triggering element.
+    $user_input = $form_state->getUserInput();
+    $node = \Drupal::routeMatch()->getParameter('node');
+    $node_type = \Drupal::routeMatch()->getParameter('node_type');
+    $suffix = $node ? $node->id() : $node_type->id();
+    $tempstore = \Drupal::service('tempstore.private');
+    $store = $tempstore->get('vactpry_cross_content_' . $suffix);
+    $triggering_element = $form_state->getTriggeringElement();
+    $index = $triggering_element['#index'];
+    $field_name = reset($triggering_element['#array_parents']);
+    unset($user_input[$field_name]['autocomplete_widgets'][$index]);
+    $user_input[$field_name]['autocomplete_widgets'] = array_values($user_input[$field_name]['autocomplete_widgets']);
+    $stored_values = $store->get('storedValues');
+    if ($stored_values != []) {
+      unset($stored_values[$index]);
+      $store->set('storedValues', array_values($stored_values));
+    }
+    $user_input[$field_name]['value'] = implode(' ', $stored_values);
+    $form_state->setUserInput($user_input);
+    $form_state->setRebuild();
+  }
+
+  /**
+   * Remove widget form callback.
+   */
+  public function removeWidgetForm(array $form, FormStateInterface $form_state) {
+    $triggering_element = $form_state->getTriggeringElement();
+    $parents = array_slice($triggering_element['#array_parents'], 0, 1);
+    $element = NestedArray::getValue($form, $parents);
     return $element;
   }
 
@@ -219,13 +276,15 @@ class CrossContentAutocomplete extends WidgetBase {
    */
   public function validate(&$element, FormStateInterface $form_state, &$complete_form) {
     $triggering_element = $form_state->getTriggeringElement();
-    $field_name = reset($triggering_element['#array_parents']);
-    $values = $form_state->getValues();
-    if ($field_name !== 'actions') {
-      $widget_values = $values[$field_name]['autocomplete_widgets'];
-      foreach ($widget_values as $key => $value) {
-        if (empty($value['node'])) {
-          $form_state->setError($element['autocomplete_widgets'][$key]['node'], $this->t('Ce champ est requis'));
+    if (!array_key_exists('#remove_action_trigger', $triggering_element)) {
+      $field_name = reset($triggering_element['#array_parents']);
+      $values = $form_state->getValues();
+      if ($field_name !== 'actions') {
+        $widget_values = $values[$field_name]['autocomplete_widgets'];
+        foreach ($widget_values as $key => $value) {
+          if (empty($value['node'])) {
+            $form_state->setError($element[$key]['node'], $this->t('Ce champ est requis'));
+          }
         }
       }
     }
@@ -241,8 +300,17 @@ class CrossContentAutocomplete extends WidgetBase {
         return $el['node'];
       }, $values['autocomplete_widgets']);
     }
-    $values['value'] = implode(' ', $field_values);
+    $values['value'] = !$this->containsOnlyNull($field_values) ? implode(' ', $field_values) : '';
     return parent::massageFormValues($values, $form, $form_state);
+  }
+
+  /**
+   * Check if array contains only NULL values.
+   */
+  function containsOnlyNull($input) {
+    return empty(array_filter($input, function ($a) {
+      return $a !== NULL;
+    }));
   }
 
 }

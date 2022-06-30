@@ -1,0 +1,7 @@
+vactory_decoupled_webform.webform_submit:
+  path: '/_webform'
+  defaults:
+    _controller: '\Drupal\vactory_decoupled_webform\Controller\WebformController::index'
+  methods: [POST]
+  requirements:
+    _permission: 'access content'

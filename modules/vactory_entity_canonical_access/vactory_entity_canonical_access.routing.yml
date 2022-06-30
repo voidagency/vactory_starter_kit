@@ -1,0 +1,7 @@
+vactory_entity_canonical_access.settings_form:
+  path: '/admin/config/system/vactory-entity-canonical-access'
+  defaults:
+    _title: 'vactory Entity Canonical Access Settings'
+    _form: 'Drupal\vactory_entity_canonical_access\Form\SettingsForm'
+  requirements:
+    _permission: 'administer site configuration'

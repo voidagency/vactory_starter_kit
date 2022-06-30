@@ -38,7 +38,7 @@
       {% endif %}
       <li
         class="menu__item{{ active }} {{ cols }} menu__item--{{ level|default(default_level) }} {{ has_sub }} {{ menu_item.options.attributes.wrapper_class }}">
-        <a href="{{ menu_item.url }}" class="menu__link{{ active }} {{ menu_item.options.attributes.class }}"
+        <a href="{{ menu_item.url }}" {% if menu_item.options.attributes.rel is not empty %} rel="{{ menu_item.options.attributes.rel }}" {% endif %} class="menu__link{{ active }} {{ menu_item.options.attributes.class }}"
            target="{{ menu_item.options.attributes.target }}">{{ menu_item.text }}</a>
         {# Call the block injected the menu if exist. #}
 

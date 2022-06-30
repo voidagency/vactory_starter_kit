@@ -1,0 +1,18 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Vactory Image Sitemap module.
+ *
+ * @DCG
+ * This file is no longer required in Drupal 8.
+ * @see https://www.drupal.org/node/2217931
+ */
+
+/**
+ * Implements hook_cron().
+ */
+function vactory_image_sitemap_cron() {
+  // Generate image xml sitemap.
+  \Drupal::service('vactory_image_sitemap.generator')->process();
+}

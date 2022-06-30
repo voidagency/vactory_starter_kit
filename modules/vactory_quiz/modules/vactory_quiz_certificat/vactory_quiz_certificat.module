@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Site\Settings;
 
 /**
  * Implements hook_theme().
@@ -61,6 +62,10 @@ function vactory_quiz_certificat_mail($key, &$message, $params) {
       if (!empty($subject) && !empty($body)) {
         $subject = Drupal::token()->replace($subject, $params['tokens']);
         $body = Drupal::token()->replace($body, $params['tokens']);
+        if (strpos($body, '://default/') !== FALSE) {
+          $site_domain = Settings::get('site_domain');
+          $body = str_replace('://default/', '://' . $site_domain . '/' , $body);
+        }
         $message['subject'] = $subject;
         $message['body'][] = $body;
       }
