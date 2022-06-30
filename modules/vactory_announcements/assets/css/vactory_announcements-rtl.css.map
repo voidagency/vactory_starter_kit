@@ -1,0 +1,1 @@
+{"version":3,"sources":["vactory_announcements.scss","vactory_announcements-rtl.css"],"names":[],"mappings":"AACA;EACA,aAAA;ACAA","file":"vactory_announcements-rtl.css","sourcesContent":["$is_rtl: true;\n @import \"__import.scss\";\n\n.contact {\n  display: none;\n}\n",".contact {\n  display: none;\n}\n"]}

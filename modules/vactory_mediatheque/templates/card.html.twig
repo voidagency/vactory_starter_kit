@@ -63,6 +63,8 @@
  *   in different view modes.
  */
 #}
+
+{% set card_id = "card--mediatheque_" ~ elements['#node'].nid.value %}
 {% set image_uri = file_object(content.field_vactory_media.0['#item'].target_id).uri.value %}
 {% set image_url = image_uri | file_url %}
 {% set nid = elements['#node'].nid.value %}
@@ -87,47 +89,48 @@
 {% if classes is not defined %}
   {% set classes = [] %}
 {% endif %}
-{% set classes = classes|merge(['card']) %}
+{% set classes = classes|merge(['card', 'card--mediatheque']) %}
 
 <article  {{ attributes.addClass(classes) }}>
-  <div class="card-image__wrapper">
-    <a href='#card' data-fancybox>
-     {{ image }}
+  <div class="card__image">
+    <a href="#{{card_id}}" data-fancybox>
+      {{ image }}
     </a>
     {% block image_after %}{% endblock %}
   </div>
-  <div class="card-body">
-    {% if subtitle %}
-      <h6 class="card-subtitle mb-2">
-        {% block subtitle %}
-          <span class="badge badge-primary">{{ subtitle }}</span>
-          <span class="font-weight-normal text-muted">{{ date }}</span>
-        {% endblock %}
-      </h6>
-    {% endif %}
+
+  <div class="card__body">
     {{ contextual_links }}
+
+    {% if subtitle %}
+      <div class="card__meta">
+        {% block subtitle %}
+          <span class="card__tag badge badge-primary">{{ subtitle }}</span>
+          <span class="card__date">{{ date }}</span>
+        {% endblock %}
+      </div>
+    {% endif %}
+
     {{ title_prefix }}
-    <h4{{ title_attributes }} class="card-title">
-      <span class="link font-semibold text-uppercase font-20">{{ title }}</span>
-    </h4>
+    <h3{{ title_attributes }} class="card__title">
+      <span>{{ title }}</span>
+    </h3>
     {{ title_suffix }}
 
-    {% if video_url is not empty %}
-      <div class="card-link d-flex justify-content-end">
-        <a href="#card" data-fancybox class="prefix-icon-eye"></a>
-      </div>
-    {% endif %}
+    <div class="card__attached-assets ">
+      {% if video_url is not empty %}
+          <a href="#{{card_id}}" data-fancybox class="prefix-icon-eye">{{'Voir la video'|t}}</a>
+      {% endif %}
 
-    {% if document_url is defined  and document_url is not empty %}
-      <div class="card-link d-flex justify-content-end">
-         <a href="{{ document_url }}" class="prefix-icon-download mb-2" download></a>
-      </div>
-    {% endif %}
-
+      {% if document_url is defined  and document_url is not empty %}
+          <a href="{{ document_url }}" class="prefix-icon-download" download>{{'Télécharger le fichier'|t}}</a>
+      {% endif %}
+    </div>
   </div>
 </article>
-<div class="fancybox-is-hidden fancy_card" id="card">
-  <div class="card-image__wrapper">
+
+<div class="fancybox-is-hidden fancy_card" id="{{card_id}}">
+  <div class="card__image">
     {% if video_url is empty %}
       {{ image }}
     {% else %}
@@ -135,33 +138,39 @@
       </iframe>
     {% endif %}
   </div>
-  <div class="card-body">
-    {% if subtitle %}
-      <h6 class="card-subtitle mb-2">
-          <span class="badge badge-primary">{{ subtitle }}</span>
-          <span class="font-weight-normal text-muted">{{ date }}</span>
-      </h6>
-    {% endif %}
+
+  <div class="card__body">
     {{ contextual_links }}
+    {% if subtitle %}
+      <div class="card__meta">
+          <span class="card__tag badge badge-primary">{{ subtitle }}</span>
+          <span class="card__date">{{ date }}</span>
+      </div>
+    {% endif %}
+
     {{ title_prefix }}
-    <h4{{ title_attributes }} class="card-title">
-      <span class="link font-semibold text-uppercase font-20">{{ title }}</span>
-    </h4>
+    <h3{{ title_attributes }} class="card__title">
+      <span>{{ title }}</span>
+    </h3>
     {{ title_suffix }}
 
-    {% if video_url is not empty %}
-      <div class="card-link d-flex justify-content-end">
-       <div class="form-group">
-         <label for="video_link">{{ 'Copier ce lien pour partager la video'|t }}</label>
-         <input type="text" id="video_link" class="form-control" name="video_link" value="{{ video_url }}"/>
-       </div>
-      </div>
-    {% endif %}
+    <div class="card__read-more">
+      {% if video_url is not empty %}
+        <div class="card__link ">
+        <div class="form-group">
+          <label for="video_link">{{ 'Copier ce lien pour partager la video'|t }}</label>
+          <input type="text" id="video_link" class="form-control" name="video_link" value="{{ video_url }}"/>
+        </div>
+        </div>
+      {% endif %}
 
-    {% if document_url is defined  and document_url is not empty %}
-      <div class="card-link d-flex justify-content-end">
-        <a href="{{ document_url }}" class="btn btn-primary prefix-icon-download mb-2" download>{{ 'Télécharger'|t }}</a>
-      </div>
-    {% endif %}
+      {% if document_url is defined  and document_url is not empty %}
+        <div class="card__link">
+          <a href="{{ document_url }}" class="btn btn-primary prefix-icon-download mb-2" download>{{ 'Télécharger'|t }}</a>
+        </div>
+      {% endif %}
+    </div>
+
+
   </div>
 </div>

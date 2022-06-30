@@ -1,0 +1,105 @@
+.vf-slider-tab {
+  /* ------------------------- Style for the TAB items ------------------------ */
+}
+
+.vf-slider-tab__tab-wrapper {
+  position: relative;
+  margin-bottom: 30px;
+  margin-bottom: 1.875rem;
+  border-bottom: 4px solid #adb5bd;
+  border-bottom: 0.25rem solid #adb5bd;
+}
+
+.vf-slider-tab__tab-items {
+  position: relative;
+  padding: 0 40px;
+  padding: 0 2.5rem;
+  overflow: hidden;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  white-space: nowrap;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  list-style: none;
+}
+
+.vf-slider-tab__tab-items::-webkit-scrollbar {
+  display: none;
+}
+
+.vf-slider-tab__tab-item {
+  display: inline-block;
+  position: relative;
+  width: auto;
+  -webkit-box-flex: 0;
+      -ms-flex: 0 0 auto;
+          flex: 0 0 auto;
+  padding: 15px 10px;
+  padding: 0.9375rem 0.625rem;
+  background-color: transparent;
+  border: 0;
+  text-align: center;
+  font-size: 18px;
+  font-size: 1.125rem;
+  font-weight: bold;
+  color: #000;
+  opacity: .4;
+  -webkit-transition: opacity linear .2s;
+  -o-transition: opacity linear .2s;
+  transition: opacity linear .2s;
+  cursor: pointer;
+}
+
+.vf-slider-tab__tab-item.is-active, .vf-slider-tab__tab-item:hover {
+  opacity: 1;
+}
+
+.vf-slider-tab__tab-indicator {
+  height: 4px;
+  height: 0.25rem;
+  background-color: #dc3545;
+  display: inline-block;
+  position: absolute;
+  bottom: -4px;
+  bottom: -0.25rem;
+  -webkit-transition: all linear .3s;
+  -o-transition: all linear .3s;
+  transition: all linear .3s;
+  margin: 0 auto;
+}
+
+.vf-slider-tab__tab-indicator.is-mobile {
+  right: 50% !important;
+  -webkit-transform: translateX(50%);
+      -ms-transform: translateX(50%);
+          transform: translateX(50%);
+}
+
+.vf-slider-tab__slider .slick-list {
+  margin: 0;
+}
+
+@media (max-width: 991.98px) {
+  .vf-slider-tab__tab-wrapper {
+    padding: 0 20px;
+    padding: 0 1.25rem;
+  }
+  .vf-slider-tab__tab-items {
+    padding: 0;
+    -webkit-box-pack: start;
+        -ms-flex-pack: start;
+            justify-content: flex-start;
+  }
+  .vf-slider-tab__tab-indicator {
+    max-width: 180px;
+    max-width: 11.25rem;
+    right: 50% !important;
+    -webkit-transform: translateX(50%);
+        -ms-transform: translateX(50%);
+            transform: translateX(50%);
+  }
+}

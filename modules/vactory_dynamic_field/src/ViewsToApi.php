@@ -175,9 +175,9 @@ class ViewsToApi {
    *
    * @throws EntityMalformedException
    */
-  protected function normalizeNode(NodeInterface $node, array $config = []) {
+  public function normalizeNode(NodeInterface $node, array $config = []) {
     $fields = $config['fields'];
-    $imageStyles = $config['image_styles'];
+    $imageStyles = [];
 
     $result = [];
     $image_app_base_url = Url::fromUserInput('/app-image/')
@@ -294,7 +294,7 @@ class ViewsToApi {
         $result[$output_field_name] = NULL;
         if (!empty($node->get($field_name)->getString()) && $node->get($field_name)->entity ) {
           $result[$output_field_name] = [
-            'id' => $node->get($field_name)->entity->id(),
+            'id' => intval($node->get($field_name)->entity->id()),
             'label' => $node->get($field_name)->entity->label(),
           ];
         }
@@ -318,7 +318,7 @@ class ViewsToApi {
               $result[$output_field_name]['url'] = Url::fromUri($link_value[0]['uri'])
                 ->toString();
             }
-            $result[$output_field_name]['url'] = str_replace('/backend', '', $result[$output_field_name]['url']);
+            $result[$output_field_name]['url'] = str_replace('/backend', '', $result[$field_name]['url']);
           }
 
           $result[$output_field_name]['title'] = $link_value[0]['title'] ?? '';

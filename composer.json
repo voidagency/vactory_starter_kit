@@ -3,8 +3,7 @@
   "description": "Vactory is a custom Drupal profile which is developed and released by VOID Agency.",
   "type": "drupal-profile",
   "license": "GPL-2.0-or-later",
-  "authors": [
-  ],
+  "authors": [],
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
@@ -18,10 +17,10 @@
     "commerceguys/intl": "^0.7.5",
     "lullabot/amp": "^1.0.0",
     "drupal/address": "^1.9",
-    "drupal/addtoany": "1.14",
+    "drupal/addtoany": "^1.16",
     "drupal/advagg": "^4.1.0",
-    "drupal/backup_migrate": "^5.0@RC",
-    "drupal/better_exposed_filters": "^5.0@beta",
+    "drupal/backup_migrate": "^5.1",
+    "drupal/better_exposed_filters": "^5.0",
     "drupal/block_class": "^1.3.0",
     "drupal/block_field": "^1.0.0-rc1",
     "drupal/captcha": "^1.1",
@@ -35,7 +34,7 @@
     "drupal/eu_cookie_compliance": "^1.14",
     "drupal/features": "^3.11.0",
     "drupal/file_entity": "^2.0-beta8",
-    "drupal/focal_point": "1.4",
+    "drupal/focal_point": "^1.5",
     "drupal/improved_multi_select": "^1.7",
     "drupal/inline_entity_form": "^1.0.0-rc2",
     "drupal/colorapi": "^1.1",
@@ -45,8 +44,8 @@
     "drupal/metatag": "^1.14",
     "drupal/yoast_seo": "^2.0.0-alpha4",
     "drupal/nocurrent_pass": "^1.0.0",
-    "drupal/paragraphs": "^1.12",
-    "drupal/pathauto": "1.8",
+    "drupal/paragraphs": "^1.14",
+    "drupal/pathauto": "^1.10",
     "drupal/persistent_login": "^1.3",
     "drupal/responsive_preview": "^1.0.0",
     "drupal/shield": "^1.2.0",
@@ -58,7 +57,7 @@
     "drupal/ultimate_cron": "^2.0.0-alpha5",
     "drupal/viewsreference": "^2.0@beta",
     "drupal/webform": "^6.0",
-    "drupal/xmlsitemap": "1.0",
+    "drupal/xmlsitemap": "^1.2",
     "drupal/security_review": "1.x-dev",
     "drupal/mailsystem": "^4.3",
     "drupal/swiftmailer": "^2.0",
@@ -69,8 +68,8 @@
     "drupal/admin_toolbar": "^2.4",
     "drupal/redirect": "^1.6",
     "drupal/path_redirect_import": "^1.0@beta",
-    "drupal/migrate_plus": "^5.1",
-    "drupal/migrate_tools": "4.5.0",
+    "drupal/migrate_plus": "^5.3",
+    "drupal/migrate_tools": "^5.1",
     "drupal/migrate_source_csv": "^3.1.0",
     "drupal/link_target": "^1.2.0",
     "drupal/linkit": "^5.0-beta11",
@@ -82,27 +81,27 @@
     "drupal/media_responsive_thumbnail": "1.2",
     "drupal/password_policy": "^3.0@beta",
     "drupal/block_blacklist": "^1.1.0",
-    "drupal/views_bulk_operations": "^3.3.0",
+    "drupal/views_bulk_operations": "^4.1",
     "drupal/views_bulk_edit": "^2.5",
     "drupal/styleguide": "^2.0@beta",
     "drupal/search_api_exclude_entity": "^1.3.0",
     "drupal/responsive_favicons": "1.x-dev@dev",
     "drupal/minifyhtml": "^1.8",
     "drupal/flag": "^4.0@beta",
-    "drupal/rate": "^1.0",
-    "masterminds/html5":"2.3.0",
+    "drupal/rate": "^3.0",
+    "masterminds/html5": "2.3.0",
     "drupal/link_attributes": "^1.9",
     "drupal/entity_embed": "^1.0",
     "drupal/search_api_autocomplete": "^1.4",
     "drupal/chosen": "^2.9",
-    "drupal/media_library_form_element": "2.0.0",
+    "drupal/media_library_form_element": "^2.0",
     "drupal/paragraphs_edit": "^2.0",
     "drupal/views_autocomplete_filters": "^1.3",
     "drupal/dropzonejs": "^2.3",
     "drupal/tinypng": "^1.0@RC",
     "drupal/field_group": "^3.1",
-    "drupal/csv_serialization": "2.0-beta3",
-    "drupal/votingapi": "3.0-beta2",
+    "drupal/csv_serialization": "^2.0",
+    "drupal/votingapi": "^3.0@beta",
     "drupal/amp": "3.x-dev@dev",
     "drupal/crop": "^2.1",
     "drupal/devel": "^4.1",
@@ -138,7 +137,7 @@
     "drupal/domain": "1.0-beta5",
     "drupal/yaml_editor": "^1.1",
     "drupal/mobile_native_share": "^1.0",
-    "drupal/views_infinite_scroll": "1.8.0",
+    "drupal/views_infinite_scroll": "^1.8",
     "drupal/multiple_fields_remove_button": "^1.0@alpha",
     "drupal/amptheme": "^3.0",
     "drupal/filefield_paths": "^1.0@beta",
@@ -153,7 +152,9 @@
     "drupal/decoupled_router": "^2.0",
     "drupal/jsonapi_user_resources": "1.0.0-alpha4",
     "drupal/symfony_mailer": "^1.0@alpha",
-    "drupal/textfield_counter": "^2.0"
+    "drupal/textfield_counter": "^2.0",
+    "drupal/default_content": "^2.0@alpha",
+    "mailchimp/marketing": "^3.0"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.3"
@@ -178,18 +179,12 @@
       "drupal/features": {
         "Export config translation": "https://www.drupal.org/files/issues/features_export-config-translation-2869336-2.patch"
       },
-      "drupal/rate": {
-        "Make rate available for all node display mode.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/19e54a007837537dd7de97456ab0e1ad0b9d3cf6/rate-add-rate-to-all-node-display-mode.patch"
-      },
       "drupal/oauth_login_oauth2": {
         "Store ressourceOwner into a session variable.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/d86aeeb1921f10cc36198efb5f4ac00504e9c2ee/oauth-login-oauth2-add-resource-owner-to-session.patch"
       },
       "drupal/social_auth_microsoft": {
         "Fixing call to function on null.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/19e54a007837537dd7de97456ab0e1ad0b9d3cf6/microsoft_social_auth.patch",
         "Update to v2 endpoints.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/9e6eca9bcbd95e7bed7859d54a0c4623a6112e5a/social_auth_microsoft-v2.patch"
-      },
-      "drupal/focal_point": {
-        "Add the focal point to image.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/9e6eca9bcbd95e7bed7859d54a0c4623a6112e5a/focal-point-add-patch.patch"
       },
       "stevenmaguire/oauth2-microsoft": {
         "Fix Bearer Authorization - Update ResourceOwner": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/9e6eca9bcbd95e7bed7859d54a0c4623a6112e5a/oauth2-microsoft-authorization-ressource-owner.patch"
@@ -211,11 +206,8 @@
         "Color api : Fix undefined index name.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/cd98ab758217f762b1f8daeda8774f19cea1f9dc/fix-color-api-undefined-index-name.patch",
         "Enable colorapi field type by default": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/9e6eca9bcbd95e7bed7859d54a0c4623a6112e5a/colorapi-enable-colorapi-field-type-by-default.patch"
       },
-      "drupal/migrate_tools": {
-        "Fix migrate tools drush command not found": "https://www.drupal.org/files/issues/2019-12-11/3099611-15.patch"
-      },
       "drupal/jquery_colorpicker": {
-        "jQuery color picker resolve vendor path": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/d6f8848db0da2b9c79d6860c81a39831dce9ed18/jquery-color-picker-resolve-vendor-path.patch",
+        "jQuery color picker resolve vendor path": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/348f7580c779478baebca58bfb8b27fe5c55d1ed/jquery-color-picker-resolve-vendor-path.patch",
         "jQuery color picker remove vendor dependencies": "https://gist.githubusercontent.com/khalidbouhouch77/c128e712544f303f0214857cb362c3c7/raw/bd6219096734da124dc2b7ed95e9e34bfff3122e/jquery-colorpicker-remove-vendor-dependencies.patch",
         "jQuery color picker update background (drupalSettings variable)": "https://gist.githubusercontent.com/khalidbouhouch77/bf02c4bc65240acea5b87a2ff5b5d719/raw/973efb8f4a7bdecd71f21e198de924e98feab66d/jquery-colorpicker-update-background.patch"
       },
@@ -233,6 +225,12 @@
       },
       "drupal/email_registration": {
         "Allow authentication via mail and password over OAuth2 module": "https://www.drupal.org/files/issues/2021-10-06/2991141-19-allow_authentication_via_mail.patch"
+      },
+      "drupal/simple_oauth": {
+        "Auth revoke on profile update": "https://www.drupal.org/files/issues/2019-04-15/simple_oauth-auth-revoke-2946882-34.patch"
+      },
+      "drupal/captcha": {
+        "Fix captcha error message translation": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/f66e3eaaa67a0d0e1de3d55aec61ca327b192d4a/fix-captcha-error-message-translation.patch"
       }
     }
   },

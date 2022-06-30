@@ -62,6 +62,7 @@ function vactory_cloudinary_move_file(FileEntityInterface $file, $source, &$stat
       $vactory_cloudinary_manager = Drupal::service('vactory_cloudinary.manager');
       $source_file_exist = $source !== 'cloudinary' ? file_exists($uri) : FALSE;
       if ($source === 'cloudinary') {
+        // Migrating files back from cloudinary to Drupal case.
         $resource = $vactory_cloudinary_manager->getCloudinaryRessource($uri);
         $source_file_exist = isset($resource['secure_url']) && file_get_contents($resource['secure_url']);
       }
@@ -124,10 +125,11 @@ function move_file_to_cloudinary(FileEntityInterface $file, $destination, $path,
   $dirname = $file_system->dirname($path);
   if (!file_move($file, $destination, 1)) {
     if (!empty($dirname) && $dirname !== '.') {
-      $settings = \Drupal::config('cloudinary_sdk.settings');
-      $cloud_name = $settings->get('cloudinary_sdk_cloud_name');
-      $api_key = $settings->get('cloudinary_sdk_api_key');
-      $api_secret = $settings->get('cloudinary_sdk_api_secret');
+      //$settings = \Drupal::config('cloudinary_sdk.settings');
+      $state = Drupal::service('state');
+      $cloud_name = $state->get('cloudinary_sdk_cloud_name');
+      $api_key = $state->get('cloudinary_sdk_api_key');
+      $api_secret = $state->get('cloudinary_sdk_api_secret');
       $http_client = Drupal::httpClient();
       // Create folder on cloudinary.
       $response = $http_client->post('https://' . $api_key . ':' . $api_secret . '@api.cloudinary.com/v1_1/' . $cloud_name . '/folders/' . $dirname)

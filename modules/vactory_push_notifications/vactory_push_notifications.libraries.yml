@@ -1,6 +1,16 @@
+vactory_push_notifications_style:
+  css:
+    theme:
+      ./assets/css/vactory_push_notifications.css: {}
+
+vactory_push_notifications_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_push_notifications-rtl.css: {}
+
 push_notifications.v1:
   js:
-    js/push-notifications-v1.js: {}
+    ./assets/js/push-notifications-v1.js: {}
   dependencies:
     - core/jquery
     - core/drupal

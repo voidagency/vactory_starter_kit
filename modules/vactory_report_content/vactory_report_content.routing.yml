@@ -1,0 +1,34 @@
+vactory_report_content.render_form:
+  path: '_report-content'
+  defaults:
+    _controller: '\Drupal\vactory_report_content\Controller\ReportContentController::renderReportForm'
+  requirements:
+    _access: 'TRUE'
+entity.reported_content.add_page:
+  path: '/admin/reported-content/add'
+  defaults:
+    _entity_form: reported_content.add
+    _title: 'Add Reported content'
+  requirements:
+    _entity_create_access: 'reported_content'
+entity.reported_content.edit_form:
+  path: '/admin/reported-content/{reported_content}/edit'
+  defaults:
+    _entity_form: reported_content.edit
+    _title: 'Edit reported content'
+  requirements:
+    _entity_access: 'reported_content.edit'
+entity.reported_content.delete_form:
+  path: '/admin/reported-content/{reported_content}/delete'
+  defaults:
+    _entity_form: reported_content.delete
+    _title: 'Delete reported content'
+  requirements:
+    _entity_access: 'reported_content.delete'
+entity.reported_content.canonical:
+  path: '/admin/reported-content/{reported_content}'
+  defaults:
+    _entity_view: 'reported_content'
+    _title: 'Reported Content'
+  requirements:
+    _entity_access: 'reported_content.view'

@@ -7,6 +7,7 @@ use Drupal\Core\Database\Connection;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\StreamWrapper\StreamWrapperManagerInterface;
+use Drupal\file\Entity\File;
 use Drupal\filter\FilterProcessResult;
 use Drupal\filter\Plugin\FilterBase;
 use Drupal\vactory_cloudinary\Services\VactoryCloudinaryManager;
@@ -94,27 +95,24 @@ class VactoryReplaceWithCloudinaryUrl extends FilterBase implements ContainerFac
           continue;
         }
         $file_link = $element->attributes->getNamedItem('src')->value;
-        if (empty($file_link)) {
+        if (preg_match('#(.)*/sites/default/files/(.*)#', $file_link)) {
+          $file_link = preg_replace('#(.)*/sites/default/files/#', '', $file_link);
           $query = $this->database->select('file_managed', 'fm');
-          $file_uuid = $element->attributes->getNamedItem('data-entity-uuid')->value;
+          //$file_uuid = $element->attributes->getNamedItem('data-entity-uuid')->value;
           $results = $query->fields('fm', ['uri', 'fid'])
-            ->condition('uuid', $file_uuid)
+            //->condition('uuid', $file_uuid)
+            ->condition('uri', '%' . $file_link . '%', 'LIKE')
             ->execute()
             ->fetchAll();
           if (!empty($results)) {
             $uri = $results[0]->uri;
             $fid = $results[0]->fid;
             if ($replace_policy === 'drupal_to_cloudinary') {
-              $resource = $this->cloudinaryManager->getCloudinaryRessource($uri);
-              if (isset($resource['secure_url'])) {
-                $image_alt = $this->getImageMetadata('file__field_image_alt_text', 'field_image_alt_text_value', $langcode, $fid);
-                $image_title = $this->getImageMetadata('file__field_image_title_text', 'field_image_title_text_value', $langcode, $fid);
-                $element->setAttribute('src', $resource['secure_url']);
-                $element->setAttribute('alt', $image_alt);
-                $element->setAttribute('title', $image_title);
-                $element->removeAttribute('height');
-                $element->removeAttribute('width');
-              }
+              $url = file_create_url(File::load($fid)->getFileUri());
+              $element->setAttribute('src', $url);
+              $element->removeAttribute('height');
+              $element->removeAttribute('width');
+              //$resource = $this->cloudinaryManager->getCloudinaryRessource($uri);
             }
             else {
               $stream_wrapper = $this->streamWrapperManager->getViaUri($uri);

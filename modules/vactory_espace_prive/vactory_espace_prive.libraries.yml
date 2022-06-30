@@ -1,0 +1,24 @@
+vactory_espace_prive_style:
+  css:
+    theme:
+      ./assets/css/vactory_espace_prive.css: {}
+
+vactory_espace_prive_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_espace_prive-rtl.css: {}
+      
+script.auto_upload:
+  js:
+    js/auto_upload.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
+
+command.managed_file_upload_complete_event_command:
+  js:
+    js/managed_file_upload_complete_event_command.js: {}
+  dependencies:
+    - core/jquery
+    - core/jquery.once
+

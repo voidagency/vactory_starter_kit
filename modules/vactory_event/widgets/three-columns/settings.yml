@@ -11,24 +11,24 @@ fields:
     label: 'Description'
     options:
       '#format': 'basic_html'
-  views:
-    type: dynamic_views
-    label: 'Views'
+  collection:
+    type: json_api_collection
+    label: 'JSON:API'
     options:
       '#required': TRUE
       '#default_value':
-        views_id: vactory_event
-        views_display_id: block_three_columns
-        fields:
-          id: id
-          uuid: key
-          title: title
-          url: url
-          field_vactory_date_interval: dateInterval
-          field_vactory_excerpt: excerpt
-          field_vactory_taxonomy_1: category
-          field_vactory_taxonomy_2: city
-          field_vactory_media: image
+        resource: node--vactory_event
+        entity_queue: vactory_block_three_columns
+        entity_queue_field_id: drupal_internal__nid
+        filters:
+          - fields[node--vactory_event]=drupal_internal__nid,path,title,field_vactory_taxonomy_1,field_vactory_taxonomy_2,field_vactory_media,field_vactory_excerpt
+          - fields[taxonomy_term--vactory_event_category]=tid,name
+          - fields[taxonomy_term--vactory_event_citys]=tid,name
+          - fields[media--image]=name,thumbnail
+          - fields[file--image]=filename,uri
+          - include=field_vactory_taxonomy_1,field_vactory_taxonomy_2,field_vactory_media,field_vactory_media.thumbnail
+          # - page[limit]=3
+          # - sort=-created
   link:
     type: url_extended
     label: 'Lien'

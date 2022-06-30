@@ -3,7 +3,7 @@ status: true
 dependencies:
   enforced:
     module:
-      - vactory_form_auotosave
+      - vactory_form_autosave
   module:
     - vactory_form_autosave
 title: 'Vactory Form Autosave Draft Purger'

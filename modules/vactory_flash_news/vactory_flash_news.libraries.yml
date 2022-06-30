@@ -1,6 +1,16 @@
+vactory_flash_news_style:
+  css:
+    theme:
+      ./assets/css/vactory_flash_news.css: {}
+
+vactory_flash_news_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_flash_news-rtl.css: {}
+
 scripts:
   js:
-    js/app.js: {}
+    ./assets/js/app.js: {}
   dependencies:
     - core/jquery
     - core/drupalSettings

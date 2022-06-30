@@ -1,0 +1,12 @@
+langcode: fr
+status: true
+dependencies: {  }
+id: onboarding_video
+label: 'Onboarding video'
+description: 'Onboarding video file.'
+source: video_file
+queue_thumbnail_downloads: false
+new_revision: true
+source_configuration:
+  source_field: field_video_onboarding
+field_map: {  }

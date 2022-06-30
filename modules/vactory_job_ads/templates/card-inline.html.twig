@@ -65,22 +65,24 @@
 #}
 {% set date = node.createdtime | date("d/m/Y") %}
 
-<div class="card mb-4">
-    <h5 class="card-header">
-        <span class="badge badge-primary">{{ content.field_vactory_profession }}</span>
-        <span class="badge badge-warning">{{ content.field_vactory_city }}</span>
-    </h5>
-    <div class="card-body">
-      {{ title_prefix }}
-        <h5 class="card-title"><strong>{{ label }}</strong></h5>
-      {{ title_suffix }}
+<div class="card card--inline mb-4">
 
-      <p class="card-text">
-            <small class="text-muted">{{ date }}</small>
-        </p>
-        <p class="card-text">{{ noWrapper(hideLabel(content.body)) }}</p>
-        <div>
-            <a href="{{ url }}" class="btn btn-primary">{{ 'Read More'|t }}</a>
-        </div>
+  <div class="card__body">
+    <div class="card__meta">
+      <span class="card__tag badge badge-primary">{{ content.field_vactory_profession }}</span>
+      <span class="card__tag badge badge-warning">{{ content.field_vactory_city }}</span>
+      <span class="card__date">{{ date }}</span>
     </div>
+
+    {{ title_prefix }}
+      <h3 class="card__title">{{ label }}</h3>
+    {{ title_suffix }}
+
+    <div class="card__description">
+      {{ noWrapper(hideLabel(content.body)) }}
+    </div>
+    <div class="card__read-more">
+        <a href="{{ url }}" class="btn btn-primary">{{ 'Read More'|t }}</a>
+    </div>
+  </div>
 </div>

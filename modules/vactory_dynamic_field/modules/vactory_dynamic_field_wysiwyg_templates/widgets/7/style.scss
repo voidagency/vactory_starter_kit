@@ -1,0 +1,22 @@
+// Template 7
+.t-2b-imageorvideo-bigTitle-text {
+  .block-image {
+    text-align: center;
+
+    img {
+      width: auto;
+      max-width: 80%;
+    }
+  }
+
+  h1 {
+    @include rem(margin-bottom, 10px);
+  }
+
+  .text-description {
+    @include rem(font-size, 22px);
+    @include rem(line-height, 29px);
+    font-weight: normal;
+    color: $brown-dark;
+  }
+}

@@ -14,7 +14,11 @@
  */
 #}
 
-{{ attach_library('vactory_banner/banner.loader') }}
+{% if dir == "ltr" %}
+  {{ attach_library('vactory_banner/vactory_banner_css') }}
+{% else %}
+  {{ attach_library('vactory_banner/vactory_banner_css_rtl') }}
+{% endif %}
 
 {% set classes = [
   'vf-banner',
@@ -22,84 +26,86 @@
 ] %}
 
 {% if content|default %}
-  <div {{ attributes.addClass(classes) }}>
 
-    {% if content.video_id|default %}
-      <div id="banner-video" class="vf-banner__video"></div>
-      <div class="ytplayer"
-           data-property="{
-                 videoURL:'http://youtu.be/{{ content.video_id }}',
-                 containment:'#banner-video',
-                 mobileFallbackImage: '',
-                 showYTLogo: false,
-                 ratio:'16/9',
-                 autoPlay:true,
-                 showControls: false,
-                 quality: 'large',
-                 mute:true,
-                 startAt:0,
-                 loop: 10,
-                 opacity:1
-                 }">
-      </div>
-    {% elseif content.field_vactory_media.0.target_id is not null %}
-      {% set image_uri = get_image(content.field_vactory_media.0.target_id) %}
-      {% set banner_image = image_uri|image_style('banner_1280_480') %}
-    {% elseif content.field_vactory_media['#items'][0].target_id is not null %}
-      {% set image_uri = get_image(content.field_vactory_media['#items'][0].target_id) %}
-      {% set banner_image = image_uri|image_style('banner_1280_155') %}
-    {% endif %}
+  {% if content.field_vactory_media.0.target_id is not null %}
+    {% set image_uri = get_image(content.field_vactory_media.0.target_id) %}
+    {% set banner_image = image_uri|image_style('banner_1280_155') %}
+    {% set banner_image_x2 = image_uri|image_style('banner_1280_155') %}
 
 
-    {% if content.field_banner_image_mobile.0.target_id is not null %}
-      {% set image_uri_mobile = get_image(content.field_banner_image_mobile.0.target_id) %}
-      {% set banner_image_mobile = (image_uri_mobile is not empty) ? file_url(image_uri_mobile) : file_url(image_uri) %}
-    {% elseif content.field_banner_image_mobile['#items'][0].target_id is not null %}
-      {% set image_uri_mobile = get_image(content.field_banner_image_mobile['#items'][0].target_id) %}
-      {% set banner_image_mobile = (image_uri_mobile is not empty) ? file_url(image_uri_mobile) : file_url(image_uri) %}
-    {% endif %}
+    {% set banner_desktop_media = get_media(content.field_vactory_media.0.target_id).field_media_image.value.0 %}
+    {% set banner_desktop_info = get_image_info(banner_desktop_media.target_id) %}
+    {% set banner_desktop_type = banner_desktop_info.filemime %}
+    {% set banner_desktop_height = banner_desktop_info.height %}
+    {% set banner_desktop_width = banner_desktop_info.width %}
+    {% set banner_desktop_alt = get_media(content.field_vactory_media.0.target_id).field_media_image.value.0.alt %}
 
-    {% if content.field_background_color.0.color['#hexadecimal_color'] is not empty %}
-      {% set background_color = content.field_background_color.0.color['#hexadecimal_color']  %}
-    {% endif %}
+  {% elseif content.field_vactory_media['#items'][0].target_id is not null %}
+    {% set image_uri = get_image(content.field_vactory_media['#items'][0].target_id) %}
+    {% set banner_image = image_uri|image_style('banner_1280_155') %}
+    {% set banner_image_x2 = image_uri|image_style('banner_1280_155') %}
 
-    {#{% set banner_image = image_uri|image_style('banner_1280_155') %}
+
+    {% set banner_desktop_media = get_media(content.field_vactory_media['#items'][0].target_id).field_media_image.0.target_id %}
+    {% set banner_desktop_info = get_image_info(banner_desktop_media) %}
+    {% set banner_desktop_type = banner_desktop_info.filemime %}
+    {% set banner_desktop_height = banner_desktop_info.height %}
+    {% set banner_desktop_width = banner_desktop_info.width %}
+    {% set banner_desktop_alt = get_media(content.field_vactory_media['#items'][0].target_id).field_media_image.0.alt %}
+
+  {% endif %}
+
+  {% if content.field_banner_image_mobile.0.target_id is not null %}
+    {% set image_uri_mobile = get_image(content.field_banner_image_mobile.0.target_id) %}
     {% set banner_image_mobile = (image_uri_mobile is not empty) ? file_url(image_uri_mobile) : file_url(image_uri) %}
-     <div class="vf-banner__image loading" data-desktop="{{banner_image}}" data-mobile="{{banner_image_mobile}}"></div> #}
-    {% if banner_image is not null or (banner_image_mobile is not null and banner_image_mobile != '/') %}
-      {% if background_color is not null %}
-        <div style="background-color: {{ background_color }}" class="vf-banner__image loading" data-desktop="{{banner_image}}" data-mobile="{{banner_image_mobile}}"  ></div>
-      {% else %}
-        <div class="vf-banner__image loading" data-desktop="{{banner_image}}" data-mobile="{{banner_image_mobile}}" ></div>
-      {% endif %}
-    {% elseif  background_color is not null %}
-      <div style="background-color: {{ background_color }} !important" class="vf-banner__image"></div>
-    {% endif %}
-    <div class="container vf-banner__container">
-      <div class="row">
-        <div class="col-md-12">
-          <div class="vf-banner__title">
-            {{ title_prefix }}
-            {% if content.page_title|default %}
-              <h1>{{ content.page_title }}</h1>
-            {% else %}
-              <h1>{{ label }}</h1>
-            {% endif %}
-            {{ title_suffix }}
-          </div>
-          {% if content.body %}
-            <div class="vf-banner__body">
-              <p> {{ content.body|raw }} </p>
-            </div>
-          {% endif %}
-          {% if content.field_vactory_blocks_multiple|default %}
-            <div class="vf-banner__blocks">
-              {{ content.field_vactory_blocks_multiple }}
-              <div class="clearfix"></div>
-            </div>
-          {% endif %}
-        </div>
-      </div>
+  {% elseif content.field_banner_image_mobile['#items'][0].target_id is not null %}
+    {% set image_uri_mobile = get_image(content.field_banner_image_mobile['#items'][0].target_id) %}
+    {% set banner_image_mobile = (image_uri_mobile is not empty) ? file_url(image_uri_mobile) : file_url(image_uri) %}
+  {% endif %}
+
+  {% if content.field_background_color.0.color['#hexadecimal_color'] is not empty %}
+    {% set background_color = content.field_background_color.0.color['#hexadecimal_color']  %}
+  {% endif %}
+
+
+  <div {{ attributes.addClass(classes) }} {% if background_color is not null %} style="background-color: {{ background_color }}" {% endif %} >
+
+    <div class="vf-banner__image">
+    <picture>
+      <source data-srcset="{{banner_image}} 1x, {{banner_image_x2}} 2x" type="{{image_desktop_type}}" width="{{banner_desktop_width}}" height="{{banner_desktop_height}}" media="(min-width: 992px)">
+      <source data-srcset="{{banner_image_mobile}}" type="{{image_mobile_type}}">
+      <img src="data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==" data-src="{{banner_image}}"
+        data-sizes="auto" class="img-fluid lazyload"
+        alt="{{banner_desktop_alt}}" typeof="foaf:Image">
+    </picture>
     </div>
+
+    <div class="container vf-banner__container">
+
+      <div class="vf-banner__title">
+        {{ title_prefix }}
+        {% if content.page_title|default %}
+          <h1>{{ content.page_title|raw }}</h1>
+        {% else %}
+          <h1>{{ label|raw }}</h1>
+        {% endif %}
+        {{ title_suffix }}
+      </div>
+
+      {% if content.field_vactory_blocks_multiple|default %}
+        <div class="vf-banner__blocks">
+          {{ content.field_vactory_blocks_multiple }}
+          <div class="clearfix"></div>
+        </div>
+      {% endif %}
+
+      {% if content.body.0['#text'] is not null %}
+        <div class="vf-banner__body">
+          {{ content.body|raw }}
+        </div>
+      {% endif %}
+
+    </div>
+
   </div>
 {% endif %}

@@ -133,7 +133,8 @@ class ModalForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $field_id = \Drupal::request()->query->get('field_id');
     $widget_id = \Drupal::request()->query->get('widget_id');
-    $widget_data = \Drupal::request()->request->get('dialogOptions')['data'] ?: NULL;
+    $dialog_options = \Drupal::request()->request->get('dialogOptions');
+    $widget_data = isset($dialog_options['data']) ? $dialog_options['data'] : NULL;
     $this->cardinality = \Drupal::request()->query->get('cardinality') ?: NULL;
     $this->wrapperId = \Drupal::request()->query->get('wrapper_id') ?: NULL;
     if (!$field_id || !is_string($field_id)) {

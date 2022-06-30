@@ -1,0 +1,7 @@
+administer reported content:
+  title: 'Administer reported content'
+  description: 'Users with this permissions could view and administrate reported content.'
+  restrict access: true
+report published content:
+  title: 'Report published content'
+  description: 'A user with this permission could reports published content.'

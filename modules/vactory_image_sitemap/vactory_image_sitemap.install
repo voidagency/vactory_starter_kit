@@ -1,0 +1,28 @@
+<?php
+
+/**
+ * @file
+ * Module install hooks.
+ */
+
+use Drupal\Core\File\FileSystemInterface;
+
+/**
+ * Implements hook_install().
+ */
+function vactory_image_sitemap_install($is_syncing) {
+  $languages = Drupal::languageManager()->getLanguages();
+  $path = \Drupal::service('file_url_generator')->generateAbsoluteString(\Drupal::service('file_system')->realpath("public://image_sitemap"));
+  // Sitemap xml output.
+  $output = '<?xml version="1.0" encoding="UTF-8"?>';
+  $output .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+          xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">';
+  $output .= '</urlset>';
+  if (!is_dir($path)) {
+    \Drupal::service('file_system')->mkdir($path);
+  }
+  foreach ($languages as $langcode => $language) {
+    $filename = $langcode . '_image_sitemap.xml';
+    $file = \Drupal::service('file_system')->saveData($output, $path . '/' . $filename, FileSystemInterface::EXISTS_REPLACE);
+  }
+}

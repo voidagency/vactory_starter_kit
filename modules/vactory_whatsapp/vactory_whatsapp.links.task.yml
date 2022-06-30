@@ -1,0 +1,4 @@
+vactory_whatsapp.settings:
+  route_name: vactory_whatsapp.settings_form
+  base_route: vactory_whatsapp.settings_form
+  title: Settings

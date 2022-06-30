@@ -1,0 +1,145 @@
+@charset "UTF-8";
+.favorite-course {
+  color: #fff;
+}
+
+.favorite-course::before {
+  content: "";
+  font-family: 'vactory';
+  font-size: 25px;
+  font-size: 1.5625rem;
+  padding-left: 5px;
+  padding-left: 0.3125rem;
+}
+
+.favorite-course:hover {
+  color: #fff;
+}
+
+.favorite-course:hover::before {
+  content: "";
+}
+
+.favorite-course.active::before {
+  font-weight: 900;
+  color: #dc3545;
+  content: "";
+}
+
+.block-about-instructor .avatar {
+  max-width: 100px;
+  max-width: 6.25rem;
+}
+
+.academy-user-menu {
+  list-style: none;
+}
+
+.academy-user-menu li {
+  border: 1px solid #2196f3;
+  border: 0.0625rem solid #2196f3;
+  padding: 6px;
+  padding: 0.375rem;
+  margin-left: 3px;
+  margin-left: 0.1875rem;
+}
+
+.card--academy .flag {
+  position: absolute;
+  top: 10px;
+  top: 0.625rem;
+  left: 0;
+  z-index: 9;
+}
+
+.card--academy .favorite-course {
+  font-size: 0;
+  color: #000;
+}
+
+.card--academy .badge-top {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0 11px;
+  padding: 0 0.6875rem;
+  color: #fff;
+}
+
+.card--academy .card__read-more a:before {
+  display: none;
+}
+
+.card--academy.card:hover img {
+  -webkit-transform: none;
+      -ms-transform: none;
+          transform: none;
+}
+
+.academy-video img {
+  border: 2px solid #fff;
+  border: 0.125rem solid #fff;
+  border-radius: 3px;
+  border-radius: 0.1875rem;
+  width: 100%;
+}
+
+.play-videos {
+  position: relative;
+  display: block;
+}
+
+.play-videos::after {
+  content: "";
+  position: absolute;
+  font-family: 'vactory';
+  font-size: 40px;
+  font-size: 2.5rem;
+  color: #fff;
+  top: 50%;
+  right: 50%;
+  -webkit-transform: translate(50%, -50%);
+      -ms-transform: translate(50%, -50%);
+          transform: translate(50%, -50%);
+  z-index: 2;
+}
+
+.play-videos::before {
+  content: "";
+  position: absolute;
+  height: 50px;
+  height: 3.125rem;
+  width: 50px;
+  width: 3.125rem;
+  border-radius: 50px;
+  border-radius: 3.125rem;
+  background: #495057;
+  opacity: .7;
+  z-index: 2;
+  top: 50%;
+  right: 50%;
+  -webkit-transform: translate(50%, -50%);
+      -ms-transform: translate(50%, -50%);
+          transform: translate(50%, -50%);
+}
+
+@media (min-width: 768px) {
+  .page--vactory-academy .container .block-detail .container {
+    padding: 0;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .wrapper-flag_favorite {
+    position: absolute;
+    z-index: 9;
+    font-size: 0;
+    top: 4%;
+  }
+  .wrapper-flag_favorite .favorite-course::before {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 3px 10px;
+    padding: 0.1875rem 0.625rem;
+    border-radius: 50%;
+  }
+}
