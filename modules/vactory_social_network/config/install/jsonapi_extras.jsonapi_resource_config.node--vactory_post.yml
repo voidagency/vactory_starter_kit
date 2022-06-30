@@ -1,14 +1,12 @@
-langcode: fr
+langcode: en
 status: true
 dependencies:
   config:
-    - node.type.vactory_business
-_core:
-  default_config_hash: 45YYCRbvwFk3zvJIn1mE-mgXEkT8q_ASeBDQ0vtv20Y
-id: node--vactory_business
+    - node.type.vactory_post
+id: node--vactory_post
 disabled: false
-path: node/fiche_business
-resourceType: node--vactory_business
+path: node/vactory_post
+resourceType: node--vactory_post
 resourceFields:
   nid:
     disabled: false
@@ -33,7 +31,7 @@ resourceFields:
     fieldName: langcode
     publicName: langcode
     enhancer:
-      id: vactory_langcode
+      id: ''
   type:
     disabled: false
     fieldName: type
@@ -129,7 +127,7 @@ resourceFields:
     fieldName: path
     publicName: path
     enhancer:
-      id: vactory_link
+      id: ''
   publish_on:
     disabled: false
     fieldName: publish_on
@@ -213,7 +211,7 @@ resourceFields:
     fieldName: node_bg_image
     publicName: node_bg_image
     enhancer:
-      id: ''
+      id: vactory_file_image
   node_class:
     disabled: false
     fieldName: node_class
@@ -250,64 +248,10 @@ resourceFields:
     publicName: body
     enhancer:
       id: ''
-  field_business_pays:
+  comment:
     disabled: false
-    fieldName: field_business_pays
-    publicName: field_business_pays
-    enhancer:
-      id: vactory_pays
-  field_business_specialisations:
-    disabled: false
-    fieldName: field_business_specialisations
-    publicName: field_business_specialisations
-    enhancer:
-      id: ''
-  field_business_users:
-    disabled: false
-    fieldName: field_business_users
-    publicName: field_business_users
-    enhancer:
-      id: ''
-  field_business_ville:
-    disabled: false
-    fieldName: field_business_ville
-    publicName: field_business_ville
-    enhancer:
-      id: ''
-  field_secteur_activite:
-    disabled: false
-    fieldName: field_secteur_activite
-    publicName: field_secteur_activite
-    enhancer:
-      id: ''
-  field_site_web:
-    disabled: false
-    fieldName: field_site_web
-    publicName: field_site_web
-    enhancer:
-      id: ''
-  field_social_networks:
-    disabled: false
-    fieldName: field_social_networks
-    publicName: field_social_networks
-    enhancer:
-      id: vactory_social_networks
-  field_statut_juridique:
-    disabled: false
-    fieldName: field_statut_juridique
-    publicName: field_statut_juridique
-    enhancer:
-      id: ''
-  field_taille_entreprise:
-    disabled: false
-    fieldName: field_taille_entreprise
-    publicName: field_taille_entreprise
-    enhancer:
-      id: ''
-  field_vactory_address:
-    disabled: false
-    fieldName: field_vactory_address
-    publicName: field_vactory_address
+    fieldName: comment
+    publicName: comment
     enhancer:
       id: ''
   field_vactory_date:
@@ -316,15 +260,33 @@ resourceFields:
     publicName: field_vactory_date
     enhancer:
       id: ''
-  field_vactory_image:
+  field_vactory_excerpt:
     disabled: false
-    fieldName: field_vactory_image
-    publicName: field_vactory_image
+    fieldName: field_vactory_excerpt
+    publicName: field_vactory_excerpt
+    enhancer:
+      id: ''
+  field_vactory_media:
+    disabled: false
+    fieldName: field_vactory_media
+    publicName: field_vactory_media
     enhancer:
       id: vactory_file_image
-  field_vactory_telephone:
+  field_vactory_media_image:
     disabled: false
-    fieldName: field_vactory_telephone
-    publicName: field_vactory_telephone
+    fieldName: field_vactory_media_image
+    publicName: field_vactory_media_image
+    enhancer:
+      id: vactory_file_image
+  field_vactory_post_thematique:
+    disabled: false
+    fieldName: field_vactory_post_thematique
+    publicName: field_vactory_post_thematique
+    enhancer:
+      id: ''
+  field_vactory_tags:
+    disabled: false
+    fieldName: field_vactory_tags
+    publicName: field_vactory_tags
     enhancer:
       id: ''
