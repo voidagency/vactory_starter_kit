@@ -3,6 +3,7 @@
 namespace Drupal\vactory_locator\PathProcessor;
 
 use Drupal\Core\Database\Connection;
+use Drupal\Core\Database\Schema;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Language\LanguageManager;
 use Drupal\Core\Path\CurrentPathStack;
@@ -161,11 +162,13 @@ class LocatorPathProcessor implements InboundPathProcessorInterface, OutboundPat
   public function isLocatorPath($current_path) {
     $pieces = explode('/', $current_path);
     $path_alias = urldecode(end($pieces));
-    $query = (int) $this->connection->query("SELECT count(1) FROM locator_entity__field_locator_path_alias where
-              field_locator_path_alias_value= :path_alias", [':path_alias' => $path_alias])->fetchField();
-
+    $count = 0;
+    if ($this->connection->schema()->tableExists('locator_entity__field_locator_path_alias')) {
+      $count = (int) $this->connection->query("SELECT count(1) FROM locator_entity__field_locator_path_alias where
+            field_locator_path_alias_value= :path_alias", [':path_alias' => $path_alias])->fetchField();
+    }
     return strpos($current_path, '/locator_entity/') === 0 ||
-      strpos($current_path, '/' . $this->langcode . '/locator_entity/') === 0 || $query > 0;
+      strpos($current_path, '/' . $this->langcode . '/locator_entity/') === 0 || $count > 0;
   }
 
 }

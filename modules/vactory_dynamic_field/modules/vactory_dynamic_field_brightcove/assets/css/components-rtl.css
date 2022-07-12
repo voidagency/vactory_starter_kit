@@ -1,0 +1,88 @@
+/* * The body style is just for the
+ * background color of the codepen.
+ * Do not include in your code.
+ */
+body {
+  background-color: #111;
+  color: #fff;
+  padding-top: 50px;
+}
+
+/*
+ * Styles essential to the sample
+ * are below
+ */
+/* Style the player */
+body {
+  margin: 0;
+  background-color: black;
+}
+
+/* Hide the player control bar */
+.video-js .vjs-control-bar {
+  display: none;
+}
+
+/* Remove click events on the player */
+.video-js {
+  pointer-events: none;
+}
+
+/* Style the article container and text */
+#article {
+  font-family: Agenda-Light, Agenda Light, Agenda, Arial Narrow, sans-serif;
+  background: rgba(0, 0, 0, 0.3);
+  color: white;
+  padding: 2rem;
+  width: 33%;
+  margin: 2rem;
+  float: left;
+  font-size: 1.2rem;
+  position: absolute;
+  top: .25em;
+  left: .25em;
+}
+
+h1 {
+  font-size: 2rem;
+  text-transform: uppercase;
+  margin-top: 0;
+  letter-spacing: .3rem;
+}
+
+/* Style the article's Play/Pause button */
+a {
+  display: inline-block;
+  color: #fff;
+  text-decoration: none;
+  background: rgba(0, 0, 0, 0.5);
+  padding: .5rem;
+  -webkit-transition: .6s background;
+  -o-transition: .6s background;
+  transition: .6s background;
+}
+
+a:hover {
+  background: rgba(0, 0, 0, 0.9);
+}
+
+#article button {
+  display: block;
+  width: 80%;
+  padding: .4rem;
+  border: none;
+  margin: 1rem auto;
+  font-size: 1.3rem;
+  background: rgba(255, 255, 255, 0.23);
+  color: #fff;
+  border-radius: 3px;
+  border-radius: 0.1875rem;
+  cursor: pointer;
+  -webkit-transition: .3s background;
+  -o-transition: .3s background;
+  transition: .3s background;
+}
+
+#article button:hover {
+  background: rgba(0, 0, 0, 0.5);
+}

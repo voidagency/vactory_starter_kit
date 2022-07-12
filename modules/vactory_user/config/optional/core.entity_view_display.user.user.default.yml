@@ -8,7 +8,6 @@ dependencies:
     - field.field.user.user.field_last_name
     - field.field.user.user.field_last_password_reset
     - field.field.user.user.field_password_expiration
-    - field.field.user.user.field_social_media_links
     - field.field.user.user.field_telephone
     - field.field.user.user.field_user_groups
     - field.field.user.user.field_user_profession
@@ -16,7 +15,6 @@ dependencies:
   module:
     - datetime
     - image
-    - social_media_links_field
     - text
     - user
 _core:
@@ -58,19 +56,6 @@ content:
     settings:
       link_to_entity: false
     third_party_settings: {  }
-  field_social_media_links:
-    weight: 6
-    label: above
-    settings:
-      appearance:
-        orientation: h
-        show_name: 0
-      link_attributes:
-        target: '<none>'
-        rel: '<none>'
-    third_party_settings: {  }
-    type: social_media_links_field_default
-    region: content
   field_telephone:
     type: string
     weight: 7

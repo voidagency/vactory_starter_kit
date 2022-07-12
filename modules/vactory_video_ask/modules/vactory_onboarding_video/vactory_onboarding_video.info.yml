@@ -1,0 +1,15 @@
+name: 'Onboarding video'
+description: 'Provides Onboarding video type de média and related configuration. Onboarding video file.'
+type: module
+core_version_requirement: '^8.9 || ^9'
+dependencies:
+  - 'drupal:content_translation'
+  - 'drupal:field'
+  - 'drupal:file'
+  - 'drupal:image'
+  - 'drupal:language'
+  - 'drupal:media'
+  - 'drupal:path'
+  - 'file_entity:file_entity'
+  - 'vactory_core:vactory_core'
+package: Vactory

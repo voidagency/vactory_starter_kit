@@ -12,7 +12,6 @@ use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\node\NodeInterface;
 use Drupal\user\UserInterface;
-use Drupal\vactory_notifications\Services\VactoryNotificationsService;
 use Drupal\vactory_points\Event\VactoryPointsEditEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -72,13 +71,6 @@ class PointsEditEventsSubscriber implements EventSubscriberInterface {
   protected $moduleHandler;
 
   /**
-   * Notifications service.
-   *
-   * @var \Drupal\vactory_notifications\Services\VactoryNotificationsService
-   */
-  protected $notificationsManager;
-
-  /**
    * Points Edit event subscriber constructor.
    *
    * @param \Drupal\Core\Session\AccountProxyInterface $account
@@ -100,8 +92,7 @@ class PointsEditEventsSubscriber implements EventSubscriberInterface {
     EntityRepositoryInterface $entityRepository,
     LanguageManagerInterface $languageManager,
     ConfigFactoryInterface $configFactory,
-    ModuleHandlerInterface $moduleHandler,
-    VactoryNotificationsService $notificationsManager
+    ModuleHandlerInterface $moduleHandler
   ) {
     $this->account = $account;
     $this->entityTypeManager = $entityTypeManager;
@@ -109,7 +100,6 @@ class PointsEditEventsSubscriber implements EventSubscriberInterface {
     $this->languageManager = $languageManager;
     $this->configFactory = $configFactory;
     $this->moduleHandler = $moduleHandler;
-    $this->notificationsManager = $notificationsManager;
   }
 
   /**
@@ -233,7 +223,7 @@ class PointsEditEventsSubscriber implements EventSubscriberInterface {
     $notification->save();
     if ($notification_config->get('enable_toast')) {
       // Trigger notification toast.
-      $this->notificationsManager->triggerNotificationsToast($notification);
+      \Drupal::service('vactory_notifications.manager')->triggerNotificationsToast($notification);
     }
     // Notifications auto translation feature.
     $is_auto_translated = (boolean) $notification_config->get('auto_translation');

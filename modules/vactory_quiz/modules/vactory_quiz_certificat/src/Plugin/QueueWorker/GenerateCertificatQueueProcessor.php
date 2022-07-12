@@ -200,11 +200,11 @@ class GenerateCertificatQueueProcessor extends QueueWorkerBase implements Contai
                 'quiz_node_url' => $quiz_url,
                 'quiz_user_first_name' => $user->get('field_first_name')->value,
                 'quiz_user_last_name' => $user->get('field_last_name')->value,
-                'quiz_certificate_url' => $file_url,
+                'quiz_certificat_url' => $file_url,
                 'quiz_title' => $translated_quiz->label(),
               ],
             ];
-            $this->mailManager->mail('vactory_quiz_certificate', 'quiz_certificate_mail', $user_email, $this->defaultLangcode, $params, NULL, TRUE);
+            $this->mailManager->mail('vactory_quiz_certificat', 'quiz_certificate_mail', $user_email, $this->defaultLangcode, $params, NULL, TRUE);
           }
         }
       }

@@ -186,19 +186,19 @@ class DynamicViews extends FormElement {
       ],
     ];
 
-    $element['image_styles'] = [
-      '#type' => 'checkboxes',
-      '#title' => t('Image Styles'),
-      '#description' => t('Image styles to be applied on image fields.'),
-      '#options' => self::getImageStyles(),
-      '#default_value' => $element['#default_value']['image_styles'] ?? '',
-      '#wrapper_attributes' => [
-        'style' => $has_access ? NULL : 'display:none',
-      ],
-      '#attributes' => [
-        'style' => $has_access ? NULL : 'display:none',
-      ],
-    ];
+    // $element['image_styles'] = [
+    //   '#type' => 'checkboxes',
+    //   '#title' => t('Image Styles'),
+    //   '#description' => t('Image styles to be applied on image fields.'),
+    //   '#options' => self::getImageStyles(),
+    //   '#default_value' => $element['#default_value']['image_styles'] ?? '',
+    //   '#wrapper_attributes' => [
+    //     'style' => $has_access ? NULL : 'display:none',
+    //   ],
+    //   '#attributes' => [
+    //     'style' => $has_access ? NULL : 'display:none',
+    //   ],
+    // ];
 
     return $element;
   }
@@ -210,7 +210,7 @@ class DynamicViews extends FormElement {
     $views_name = $element['views_id']['#value'];
     $views_display_name = $element['views_display_id']['#value'];
     $views_entity_queue = $element['entity_queue']['#value'];
-    $fields = $element['fields']['#value'];
+    // $fields = $element['fields']['#value'];
     $view = Views::getView($views_name);
     if (!$view) {
       $form_state->setError($element['views_id'], t("Views ID @views_id is not valid.", ['@views_id' => $views_name]));

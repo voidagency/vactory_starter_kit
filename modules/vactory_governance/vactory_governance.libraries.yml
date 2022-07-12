@@ -1,0 +1,9 @@
+vactory_governance_style:
+  css:
+    theme:
+      ./assets/css/vactory_governance.css: {}
+
+vactory_governance_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_governance-rtl.css: {}

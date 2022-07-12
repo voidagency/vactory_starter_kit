@@ -1,0 +1,23 @@
+name: 'Toolbox Sticky'
+multiple: TRUE
+category: 'Toolbox'
+enabled: TRUE
+fields:
+  icon:
+    type: text
+    label: 'Icon'
+    options:
+      '#required': TRUE
+  link:
+    type: url_extended
+    label: 'Link'
+  active:
+    type: checkbox
+    label: 'is active / activate item by default'
+  hide:
+    type: checkbox
+    label: 'hide in mobile / item wont be shown on mobile'
+# extra_fields:
+#   sticky:
+#     type: checkbox
+#     label: 'Active sticky bar in mobile device'

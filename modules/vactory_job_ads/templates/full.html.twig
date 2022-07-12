@@ -67,45 +67,61 @@
 {% set bundle = node.bundle|clean_class %}
 {% set classes = [
   'node',
+  'node-details',
+  'node-details' ~ '--' ~ bundle,
   bundle,
   node.isPromoted() ? bundle ~ '--promoted',
   node.isSticky() ? bundle ~ '--sticky',
   not node.isPublished() ? bundle ~ '--unpublished',
   view_mode ? bundle ~ '--' ~ view_mode|clean_class,
 ] %}
+
 {{ attach_library('classy/node') }}
-<div id="content" class="" >
 
-  <div class="region region-content">
-    <div class="container">
-      <div {{ attributes.addClass(classes) }}>
-         <h2>{{ label }}</h2>
-        <h3>{{ 'Poste'|t }}</h3>
-         <p>{{ content.body }}</p>
-        <h3>{{ 'Profil recherché'|t }}</h3>
-        <p>{{ content.field_vactory_description }}</p>
-        <h3>{{ 'Métier'|t }}</h3>
-        <p>{{ content.field_vactory_profession }}</p>
-        <h3>{{ 'Type de contrat'|t }}</h3>
-        <p>{{ content.field_vactory_contract }}</p>
-        <h3>{{ 'Ville'|t }}</h3>
-        <p>{{ content.field_vactory_city }}</p>
-        <h3>Date de publication</h3>
-        <p>{{ date }}</p>
-        <h3>{{ 'Coordonnées du recruteur'|t }}</h3>
-        <p>
-          {{ content.field_vactory_email }}<br>
-          {{ content.field_vactory_telephone }}<br>
-          {{ content.field_vactory_address }}<br>
-        </p>
-        <a {% if (apply_link) %} href="{{ apply_link }}"{% endif %} class="btn btn-primary">{{ 'Postuler'|t }}</a>
-      </div>
-    </div>
+<article {{ attributes.addClass(classes) }}>
+  <h2 class="node-details__title">{{ label }}</h2>
+
+  <h3 class="node-details__sub-title h5 mb-1">{{ 'Poste'|t }} :</h3>
+
+  <div class="node-details__description mb-4">
+    {{ noWrapper(content.body) }}
   </div>
 
-  <div class="pt-4">
-      {% if content.comment.0 is defined  %}
-          {{ content.comment }}
-      {% endif %}
+  <h3 class="node-details__sub-title h5 mb-1">{{ 'Profil recherché'|t }} :</h3>
+
+  <div class="node-details__description mb-4">{{ noWrapper(content.field_vactory_description)}}</div>
+
+  <h3 class="node-details__sub-title h5 mb-1">{{ 'Métier'|t }} :</h3>
+
+  <div class="node-details__description mb-4">{{ noWrapper(content.field_vactory_profession) }}</div>
+
+  <h3 class="node-details__sub-title h5 mb-1">{{ 'Type de contrat'|t }} :</h3>
+
+  <div class="node-details__description mb-4">{{ noWrapper(content.field_vactory_contract) }}</div>
+
+  <h3 class="node-details__sub-title h5 mb-1">{{ 'Ville'|t }} :</h3>
+
+  <div class="node-details__description mb-4">{{ noWrapper(content.field_vactory_city) }}</div>
+
+  <h3 class="node-details__sub-title h5 mb-1">{{'Date de publication'|t}} :</h3>
+
+  <div class="node-details__description mb-4">{{ date }}</div>
+
+  <h3 class="node-details__sub-title h5 mb-1">{{ 'Coordonnées du recruteur'|t }} :</h3>
+
+  <div class="node-details__description mb-4">
+    {{ noWrapper(content.field_vactory_email) }}<br>
+    {{ noWrapper(content.field_vactory_telephone) }}<br>
+    {{ noWrapper(content.field_vactory_address) }}
   </div>
+
+  <div class="node-details__cta">
+    <a {% if (apply_link) %} href="{{ apply_link }}"{% endif %} class="btn btn-primary">{{ 'Postuler'|t }}</a>
+  </div>
+</article>
+
+{% if content.comment.0 is defined  %}
+<div class="pt-4">
+        {{ content.comment }}
 </div>
+{% endif %}

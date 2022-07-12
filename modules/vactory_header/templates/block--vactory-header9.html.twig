@@ -1,0 +1,25 @@
+{{ attach_library('vactory_header/vactory_header_v9_style') }}
+{{ attach_library('vactory_header/full-mega-menu_style') }}
+{{ attach_library('vactory_header/vactory_header.full-menu') }}
+
+{% import "FullMegaMenuMacro.html.twig" as menuStructure %}
+{% set main_navigation_menu = simplify_menu('main') %}
+
+
+<header id="vh-header" class="vh-header vh-variant9 vh-sticky">
+	<div class="container">
+		<div class="vh-variant9__hamburger vh-header__hamburger d-md-none">
+			{% include('vh-hamburger.html.twig') %}
+		</div>
+		<div class="vh-variant9__branding d-flex justify-content-center">
+			{% if is_front%}
+			<h1 class="m-0">
+				{% endif %}
+				{{ vactory_render('block', 'system_branding_block', {use_site_name: false}) }}
+				{% if is_front %}
+			</h1>
+			{% endif %}
+		</div>
+		{{ menuStructure.FullMenuMacro(main_navigation_menu.menu_tree) }}
+	</div>
+</header>

@@ -1,24 +1,24 @@
-<div class="appointment-type-wrapper">
-  <div class="appointment-type-intro">
-    <h2 class="appointment-type-intro-title">{{ 'Choisissez une agence'|t }}</h2>
-  </div>
-  <div class="row justify-content-center appointment-type-items">
+<div class="appointment__wrapper py-4">
+
+  <h2 class="appointment__title text-center">{{ 'Choisissez une agence'|t }}</h2>
+
     {% if content is not empty %}
+      <div class="row justify-content-center">
       {% for item in content %}
         {% set image = item.image_uri is defined ? file_url(item.image_uri) : '' %}
-        <div class="col-12 col-sm-6 col-md-4 col-lg-3 pb-2 text-center" onClick="window.open('{{ url('vactory_appointment.site_appointment_types_select', {'agency': item.agency_path }) }}', '_self')">
-          <article class="push-card push-card--service h-100 bg-white border border--active rounded shadow">
-            <div class="push-card__icon">
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <article class="card-appointment h-100 text-center bg-white border border--active rounded shadow cursor-pointer" onClick="window.open('{{ url('vactory_appointment.site_appointment_types_select', {'agency': item.agency_path }) }}', '_self')">
+            <div class="card-appointment__image">
               <img src="{{ image is not empty ? image : '/themes/vactory/assets/img/agence.svg' }}" alt="{{ item.title }}" class="img-fluid">
             </div>
             <hr>
-            <h3 class="push-card__title">{{ item.title }}</h3>
+            <h3 class="card-appointment__title">{{ item.title }}</h3>
           </article>
         </div>
       {% endfor %}
+      </div>
     {% else %}
-      <p class="text-center h2 text-danger">{{ 'Aucune agence trouvée.'|t }}</p>
+      <h2 class="text-center text-danger">{{ 'Aucune agence trouvée.'|t }}</h2>
     {% endif %}
 
-  </div>
 </div>

@@ -1,0 +1,88 @@
+blockquote {
+  border-right: none;
+}
+
+.quote-badge {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.quote-box {
+  overflow: hidden;
+  border-radius: 17px;
+  border-radius: 1.0625rem;
+  background-color: #4ADFCC;
+  margin-top: 25px;
+  margin-top: 1.5625rem;
+  color: white;
+  width: 325px;
+  width: 20.3125rem;
+  -webkit-box-shadow: -2px 2px 2px 2px #E0E0E0;
+          box-shadow: -2px 2px 2px 2px #E0E0E0;
+  -webkit-box-shadow: -0.125rem 0.125rem 0.125rem 0.125rem #E0E0E0;
+          box-shadow: -0.125rem 0.125rem 0.125rem 0.125rem #E0E0E0;
+}
+
+.quotation-mark {
+  margin-top: -10px;
+  margin-top: -0.625rem;
+  font-weight: bold;
+  font-size: 100px;
+  font-size: 6.25rem;
+  color: white;
+  font-family: "Times New Roman", Georgia, Serif;
+}
+
+.quote-text {
+  font-size: 19px;
+  font-size: 1.1875rem;
+  margin-top: -65px;
+  margin-top: -4.0625rem;
+}
+
+.box {
+  background: #fff;
+  -webkit-transition: all 0.2s ease;
+  -o-transition: all 0.2s ease;
+  transition: all 0.2s ease;
+  border: 2px dashed #dadada;
+  border: 0.125rem dashed #dadada;
+  margin-top: 10px;
+  margin-top: 0.625rem;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  border-radius: 5px;
+  border-radius: 0.3125rem;
+  background-clip: padding-box;
+  padding: 0 20px 20px 20px;
+  padding: 0 1.25rem 1.25rem 1.25rem;
+  min-height: 340px;
+  min-height: 21.25rem;
+}
+
+.box:hover {
+  border: 2px solid #525C7A;
+  border: 0.125rem solid #525C7A;
+}
+
+.box span.box-title {
+  color: #fff;
+  font-size: 24px;
+  font-size: 1.5rem;
+  font-weight: 300;
+  text-transform: uppercase;
+}
+
+.box .box-content {
+  padding: 16px;
+  padding: 1rem;
+  border-radius: 0 0 2px 2px;
+  border-radius: 0 0 0.125rem 0.125rem;
+  background-clip: padding-box;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.box .box-content p {
+  color: #515c66;
+  text-transform: none;
+}

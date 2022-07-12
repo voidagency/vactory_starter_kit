@@ -1,0 +1,28 @@
+_meta:
+  version: '1.0'
+  entity_type: taxonomy_term
+  uuid: 550f86ad-aa11-4047-953f-636d42889f85
+  bundle: reported_content_status
+  default_langcode: und
+default:
+  status:
+    -
+      value: true
+  name:
+    -
+      value: 'Active'
+  description:
+    -
+      value: ''
+      format: ''
+  weight:
+    -
+      value: 0
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      pid: 0
+      langcode: und

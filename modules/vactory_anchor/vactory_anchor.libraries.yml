@@ -1,6 +1,16 @@
+vactory_anchor_style:
+  css:
+    theme:
+      ./assets/css/vactory_anchor.css: {}
+
+vactory_anchor_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_anchor-rtl.css: {}
+
 anchorLib:
   js:
-    js/app.js: {}
+    ./assets/js/app.js: {}
   dependencies:
     - core/jquery
     - core/drupalSettings

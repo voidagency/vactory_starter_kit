@@ -1,19 +1,22 @@
 {% if classes is not defined %}
 	{% set classes = [] %}
 {% endif %}
-{% set classes = classes|merge(['card']) %}
+{% set classes = classes|merge(['card', 'card--quiz']) %}
 
 <article {{ attributes.addClass(classes) }}>
-	<div class="card-body">
-		<h4 {{ title_attributes }} class="card-title">
-			{% if  url is null %}
-				<span class="link font-semibold text-uppercase font-20">{{ label }}</span>
-			{% else %}
-				<a href="{{ url }}" rel="bookmark" class="link font-semibold text-uppercase font-20">{{ label }}</a>
+	<div class="card__body">
+		<h3 {{ title_attributes.addClass('card__title') }}>
+			{% if  url is not null %}
+				<a href="{{ url }}" rel="bookmark">
 			{% endif %}
-		</h4>
-		<div class="card-text">
+				{{ label }}
+			{% if  url is not null %}
+				</a>
+			{% endif %}
+		</h3>
+		<div class="card__description">
 			<p>{{ noWrapper(hideLabel(addAttributes(content.body))) }}</p>
+
 			{% if quiz_user_history is not empty %}
 				<p class="text-muted">
 					{{ 'Your score'|t }}: <span class="border rounded-circle border-danger p-2 text-danger font-weight-bold">{{ quiz_user_history.user_mark }}/{{ quiz_perfect_mark }}</span>
@@ -23,10 +26,12 @@
 				</p>
 			{% endif %}
 		</div>
+
 		{% if url is not null %}
-			<div class="card-read-more">
+			<div class="card__read-more">
 				<a href="{{ url }}" class="btn btn-primary">{{ 'En savoir plus' }}</a>
 			</div>
 		{% endif %}
+
 	</div>
 </article>

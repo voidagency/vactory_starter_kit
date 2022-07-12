@@ -66,6 +66,14 @@ vactory_decoupled.import_translation:
   requirements:
     _permission: 'translate interface'
 
+vactory_decoupled.firebase_key:
+  path: 'admin/config/firebase/key'
+  defaults:
+    _form: 'Drupal\vactory_decoupled\Form\FirebaseKeyForm'
+    _title: 'Firebase Cloud Messaging Key'
+  requirements:
+    _permission: 'administer site configuration'
+
 vactory_decoupled.vcc:
   path: '/_vcc'
   defaults:
@@ -98,6 +106,22 @@ vactory_decoupled.get_unique_username_by_email:
   defaults:
     _controller: '\Drupal\vactory_decoupled\Controller\UsernameController::getUniqueUsernameByEmail'
     _disable_route_normalizer: 'TRUE'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+
+vactory_decoupled.one_time_token:
+  path: '/oauth/one-time-token'
+  defaults:
+    _controller: 'Drupal\vactory_decoupled\Controller\OneTimeToken::token'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+
+vactory_decoupled.firebase_key_controller:
+  path: '/_firebase-key'
+  defaults:
+    _controller: '\Drupal\vactory_decoupled\Controller\FirebaseKeyController::getFirebaseKey'
   methods: [GET]
   requirements:
     _permission: 'access content'

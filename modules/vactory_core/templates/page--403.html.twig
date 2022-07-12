@@ -10,22 +10,29 @@
     {{ page.header }}
 {% endif %}
 
-<main role="main">
-    {% if page.bridge %}
-        {{ page.bridge }}
-    {% endif %}
+{% if page.bridge %}
+    {{ page.bridge }}
+{% endif %}
+
+<main role="main" class="error-page error-page--403 page-403">
     {% block v_page_content %}
-        <div class="container page-content page-403">
-            <h2> {{ 'Oups :(' | trans }} </h2>
-            <p>
-                {{ 'You are not authorized to access this page ...' | t }}
+      <div class="container">
+        <div class="error-page__wrapper">
+            <div class="error-page__image">
+              <img src="{{ base_path ~ directory ~ '/assets/img/error-forbidden.svg' }}" alt="page 403" class="img-fluid">
+            </div>
+            <h1 class="error-page__title paragraph__title text-uppercase"> {{ 'Error forbidden' | trans }} </h1>
+            <p class="error-page__description">
+                {{ 'It seems that this page does not exist ...' | t }}
             </p>
-            <p>
-                <a href="{{ url('<front>') }}" class="btn btn-primary">{{ 'Home'|t }}</a>
+            <p class="error-page__btn">
+                <a href="{{ url('<front>') }}" class="btn btn-primary">{{ "Retour à l'accueil"|t }}</a>
             </p>
         </div>
+      </div>
     {% endblock %}
 </main>
+
 
 {% if page.footer %}
     {{ page.footer }}

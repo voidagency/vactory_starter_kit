@@ -1,6 +1,16 @@
+vactory_splashscreen_style:
+  css:
+    theme:
+      ./assets/css/vactory_splashscreen.css: {}
+
+vactory_splashscreen_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_splashscreen-rtl.css: {}
+
 splash_screen.v1:
   js:
-    js/splash-screen-v1.js: {}
+    ./assets/js/splash-screen-v1.js: {}
   dependencies:
     - core/jquery
     - core/drupal

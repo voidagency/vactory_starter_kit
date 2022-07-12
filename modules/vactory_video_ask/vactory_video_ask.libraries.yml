@@ -1,0 +1,11 @@
+video-ask-form:
+  version: 1.x
+  css:
+    theme:
+      css/video_ask_form.css: {}
+  js:
+    /libraries/sortable/Sortable.min.js: { }
+    js/drag_and_drop.js: { }
+    dependencies:
+      - core/jquery
+      - core/drupalSettingss

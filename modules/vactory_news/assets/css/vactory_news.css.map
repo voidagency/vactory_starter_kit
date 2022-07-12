@@ -1,0 +1,1 @@
+{"version":3,"sources":["vactory_news.scss","vactory_news.css"],"names":[],"mappings":"AACA;EACA,kBAAA;ACAA","file":"vactory_news.css","sourcesContent":["$is_rtl: false;\n @import \"__import.scss\";\n\n.vactory-news--full {\n  position: relative;\n}\n",".vactory-news--full {\n  position: relative;\n}\n"]}

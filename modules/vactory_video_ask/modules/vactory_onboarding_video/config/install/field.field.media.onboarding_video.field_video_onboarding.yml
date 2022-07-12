@@ -1,0 +1,26 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.storage.media.field_video_onboarding
+    - media.type.onboarding_video
+  module:
+    - file
+id: media.onboarding_video.field_video_onboarding
+field_name: field_video_onboarding
+entity_type: media
+bundle: onboarding_video
+label: 'Fichier vidéo'
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  file_directory: 'onboarding/videos/[date:custom:Y]-[date:custom:m]'
+  file_extensions: mp4
+  max_filesize: '100 MB'
+  description_field: false
+  handler: 'default:file'
+  handler_settings: {  }
+field_type: file
