@@ -443,7 +443,7 @@ function _vactory_decoupled_user_mail_tokens(&$replacements, $data, $options) {
     $langcode = $language ?? $data['user']->getPreferredLangcode();
     $replacements['[user:one-time-login-url]'] = _vactory_decoupled_user_pass_reset_url($data['user'], $options);
     $replacements['[user:cancel-url]'] = user_cancel_url($data['user'], $options);
-    $replacements['[site:login-url]'] = $frontend_url . "/$langcode/$$nextjs_user_pages_path_prefix";
+    $replacements['[site:login-url]'] = $frontend_url . "/$langcode/$nextjs_user_pages_path_prefix";
   }
 }
 
