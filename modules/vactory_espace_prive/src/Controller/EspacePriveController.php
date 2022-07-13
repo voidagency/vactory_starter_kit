@@ -3,6 +3,7 @@
 namespace Drupal\vactory_espace_prive\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Url;
 use Drupal\user\Entity\User;
 use Drupal\user\Form\UserLoginForm;
 use Drupal\user\Form\UserPasswordForm;
@@ -24,7 +25,7 @@ class EspacePriveController extends ControllerBase {
     if ($is_anonymous) {
       $login_form = \Drupal::formBuilder()->getForm(UserLoginForm::class);
       return [
-        '#theme'      => 'espace_prive_login',
+        '#theme' => 'espace_prive_login',
         '#login_form' => $login_form,
       ];
     }
@@ -45,7 +46,7 @@ class EspacePriveController extends ControllerBase {
         ->setEntity($entity);
       $registration_form = \Drupal::formBuilder()->getForm($formObject);
       return [
-        '#theme'             => 'espace_prive_registration',
+        '#theme' => 'espace_prive_registration',
         '#registration_form' => $registration_form,
       ];
     }
@@ -57,6 +58,14 @@ class EspacePriveController extends ControllerBase {
    */
   public function profile($user) {
     $current_user = \Drupal::currentUser();
+
+    $is_anonymous = $current_user->isAnonymous();
+    if ($is_anonymous) {
+      $profile_url = Url::fromRoute('vactory_espace_prive.profile', ['user' => $user->id()])
+        ->toString();
+      return $this->redirect('vactory_espace_prive.login', ['destination' => $profile_url]);
+    }
+
     if ($user instanceof UserInterface && !$current_user->isAnonymous()) {
       if ($current_user->hasPermission('administer users')) {
         $formObject = \Drupal::entityTypeManager()
@@ -64,7 +73,7 @@ class EspacePriveController extends ControllerBase {
           ->setEntity($user);
         $profile_form = \Drupal::formBuilder()->getForm($formObject);
         return [
-          '#theme'        => 'espace_prive_profile',
+          '#theme' => 'espace_prive_profile',
           '#profile_form' => $profile_form,
         ];
       }
@@ -88,7 +97,7 @@ class EspacePriveController extends ControllerBase {
         ->setEntity($user);
       $profile_form = \Drupal::formBuilder()->getForm($formObject);
       return [
-        '#theme'        => 'espace_prive_profile',
+        '#theme' => 'espace_prive_profile',
         '#profile_form' => $profile_form,
       ];
     }
@@ -103,7 +112,7 @@ class EspacePriveController extends ControllerBase {
     if ($is_anonymous) {
       $password_form = \Drupal::formBuilder()->getForm(UserPasswordForm::class);
       return [
-        '#theme'         => 'espace_prive_password',
+        '#theme' => 'espace_prive_password',
         '#password_form' => $password_form,
       ];
     }
@@ -118,7 +127,7 @@ class EspacePriveController extends ControllerBase {
     if ($user instanceof UserInterface && !$current_user->isAnonymous() && $current_user->hasPermission('administer users')) {
       return [
         '#theme' => 'user',
-        '#user'  => $user,
+        '#user' => $user,
       ];
     }
     if ($current_user->id() === $user->id()) {
@@ -136,7 +145,7 @@ class EspacePriveController extends ControllerBase {
       $user = User::load(\Drupal::currentUser()->id());
       return [
         '#theme' => 'user',
-        '#user'  => $user,
+        '#user' => $user,
       ];
     }
     throw new NotFoundHttpException();
