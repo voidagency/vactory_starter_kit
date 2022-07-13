@@ -214,6 +214,42 @@ class FrequentSearchesController extends ControllerBase {
     }
   }
 
+  /**
+   * Delete all used Keywords.
+   */
+  public function deleteUsedKeywords() {
+    $this->database->delete('vactory_frequent_searches')
+      ->condition('total_results', 0, '!=')
+      ->condition('language', $this->langcode , '=' )
+      ->execute();
+  }
 
+  /**
+   * export keywords to csv file for cron job.
+   */
+  public function exportToCsv ($results, $has_results){
+    $current_time = new \DateTime('now');
+    $date = $current_time->format('d-m-Y');
+    $file_name = $has_results . '.csv';
+    if (!file_exists('private://frequently_searched_keywords/'. $date))
+      mkdir("private://frequently_searched_keywords/". $date, 0777, true);
+
+    $file = fopen('private://frequently_searched_keywords/' . $date ."/". $file_name, 'w');
+    fputcsv($file, [
+      'keyword',
+      'Number of times searches',
+      'Total of results',
+      'Last search date',
+    ], ';');
+    foreach ($results as $result) {
+      fputcsv($file, [
+        $result['keywords'],
+        $result['numfound'],
+        array_key_exists('total_results', $result) ? $result['total_results'] : 0,
+        date('d/m/Y H:i:s', $result['timestamp']),
+      ], ';');
+    }
+    fclose($file);
+  }
 
 }
