@@ -1,14 +1,12 @@
-langcode: fr
+langcode: en
 status: true
 dependencies:
   config:
-    - node.type.vactory_business
-_core:
-  default_config_hash: 45YYCRbvwFk3zvJIn1mE-mgXEkT8q_ASeBDQ0vtv20Y
-id: node--vactory_business
+    - node.type.announcement
+id: node--announcement
 disabled: false
-path: node/fiche_business
-resourceType: node--vactory_business
+path: node/announcement
+resourceType: node--announcement
 resourceFields:
   nid:
     disabled: false
@@ -33,7 +31,7 @@ resourceFields:
     fieldName: langcode
     publicName: langcode
     enhancer:
-      id: vactory_langcode
+      id: ''
   type:
     disabled: false
     fieldName: type
@@ -129,7 +127,7 @@ resourceFields:
     fieldName: path
     publicName: path
     enhancer:
-      id: vactory_link
+      id: ''
   publish_on:
     disabled: false
     fieldName: publish_on
@@ -213,7 +211,7 @@ resourceFields:
     fieldName: node_bg_image
     publicName: node_bg_image
     enhancer:
-      id: ''
+      id: vactory_file_image
   node_class:
     disabled: false
     fieldName: node_class
@@ -244,87 +242,99 @@ resourceFields:
     publicName: content_translation_outdated
     enhancer:
       id: ''
-  body:
+  field_ad_content:
     disabled: false
-    fieldName: body
-    publicName: body
+    fieldName: field_ad_content
+    publicName: field_ad_content
     enhancer:
       id: ''
-  field_business_pays:
+  field_ad_display:
     disabled: false
-    fieldName: field_business_pays
-    publicName: field_business_pays
-    enhancer:
-      id: vactory_pays
-  field_business_specialisations:
-    disabled: false
-    fieldName: field_business_specialisations
-    publicName: field_business_specialisations
+    fieldName: field_ad_display
+    publicName: field_ad_display
     enhancer:
       id: ''
-  field_business_users:
+  field_already_approved:
     disabled: false
-    fieldName: field_business_users
-    publicName: field_business_users
+    fieldName: field_already_approved
+    publicName: field_already_approved
     enhancer:
       id: ''
-  field_business_ville:
+  field_city:
     disabled: false
-    fieldName: field_business_ville
-    publicName: field_business_ville
+    fieldName: field_city
+    publicName: field_city
     enhancer:
       id: ''
-  field_secteur_activite:
+  field_country:
     disabled: false
-    fieldName: field_secteur_activite
-    publicName: field_secteur_activite
+    fieldName: field_country
+    publicName: field_country
     enhancer:
       id: ''
-  field_site_web:
+  field_discipline:
     disabled: false
-    fieldName: field_site_web
-    publicName: field_site_web
+    fieldName: field_discipline
+    publicName: field_discipline
     enhancer:
       id: ''
-  field_social_networks:
+  field_event_date_end:
     disabled: false
-    fieldName: field_social_networks
-    publicName: field_social_networks
-    enhancer:
-      id: vactory_social_networks
-  field_statut_juridique:
-    disabled: false
-    fieldName: field_statut_juridique
-    publicName: field_statut_juridique
+    fieldName: field_event_date_end
+    publicName: field_event_date_end
     enhancer:
       id: ''
-  field_taille_entreprise:
+  field_event_date_start:
     disabled: false
-    fieldName: field_taille_entreprise
-    publicName: field_taille_entreprise
+    fieldName: field_event_date_start
+    publicName: field_event_date_start
     enhancer:
       id: ''
-  field_vactory_address:
+  field_facebook_account:
     disabled: false
-    fieldName: field_vactory_address
-    publicName: field_vactory_address
+    fieldName: field_facebook_account
+    publicName: field_facebook_account
     enhancer:
       id: ''
-  field_vactory_date:
+  field_site:
     disabled: false
-    fieldName: field_vactory_date
-    publicName: field_vactory_date
+    fieldName: field_site
+    publicName: field_site
     enhancer:
       id: ''
-  field_vactory_image:
+  field_twitter_account:
     disabled: false
-    fieldName: field_vactory_image
-    publicName: field_vactory_image
+    fieldName: field_twitter_account
+    publicName: field_twitter_account
+    enhancer:
+      id: ''
+  field_typology:
+    disabled: false
+    fieldName: field_typology
+    publicName: field_typology
+    enhancer:
+      id: ''
+  field_vactory_email:
+    disabled: false
+    fieldName: field_vactory_email
+    publicName: field_vactory_email
+    enhancer:
+      id: ''
+  field_vactory_media:
+    disabled: false
+    fieldName: field_vactory_media
+    publicName: field_vactory_media
     enhancer:
       id: vactory_file_image
-  field_vactory_telephone:
+  field_vactory_name:
     disabled: false
-    fieldName: field_vactory_telephone
-    publicName: field_vactory_telephone
+    fieldName: field_vactory_name
+    publicName: field_vactory_name
+    enhancer:
+      id: ''
+  field_vactory_phone:
+    disabled: false
+    fieldName: field_vactory_phone
+    publicName: field_vactory_phone
     enhancer:
       id: ''

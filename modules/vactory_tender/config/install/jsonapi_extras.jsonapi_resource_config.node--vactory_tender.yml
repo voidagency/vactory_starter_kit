@@ -1,14 +1,17 @@
-langcode: fr
+langcode: en
 status: true
 dependencies:
   config:
-    - node.type.vactory_business
-_core:
-  default_config_hash: 45YYCRbvwFk3zvJIn1mE-mgXEkT8q_ASeBDQ0vtv20Y
-id: node--vactory_business
+    - node.type.vactory_tender
+  module:
+    - jsonapi_defaults
+third_party_settings:
+  jsonapi_defaults:
+    page_limit: 50
+id: node--vactory_tender
 disabled: false
-path: node/fiche_business
-resourceType: node--vactory_business
+path: node/vactory_tender
+resourceType: node--vactory_tender
 resourceFields:
   nid:
     disabled: false
@@ -33,7 +36,7 @@ resourceFields:
     fieldName: langcode
     publicName: langcode
     enhancer:
-      id: vactory_langcode
+      id: ''
   type:
     disabled: false
     fieldName: type
@@ -129,7 +132,7 @@ resourceFields:
     fieldName: path
     publicName: path
     enhancer:
-      id: vactory_link
+      id: ''
   publish_on:
     disabled: false
     fieldName: publish_on
@@ -164,6 +167,30 @@ resourceFields:
     disabled: false
     fieldName: node_banner_title
     publicName: node_banner_title
+    enhancer:
+      id: ''
+  field_content_access_users:
+    disabled: false
+    fieldName: field_content_access_users
+    publicName: field_content_access_users
+    enhancer:
+      id: ''
+  field_content_access_roles:
+    disabled: false
+    fieldName: field_content_access_roles
+    publicName: field_content_access_roles
+    enhancer:
+      id: ''
+  field_content_access_groups:
+    disabled: false
+    fieldName: field_content_access_groups
+    publicName: field_content_access_groups
+    enhancer:
+      id: ''
+  field_content_access_custom:
+    disabled: false
+    fieldName: field_content_access_custom
+    publicName: field_content_access_custom
     enhancer:
       id: ''
   vcc_normalized:
@@ -213,7 +240,7 @@ resourceFields:
     fieldName: node_bg_image
     publicName: node_bg_image
     enhancer:
-      id: ''
+      id: vactory_file_image
   node_class:
     disabled: false
     fieldName: node_class
@@ -230,6 +257,36 @@ resourceFields:
     disabled: false
     fieldName: node_body_class
     publicName: node_body_class
+    enhancer:
+      id: ''
+  notification_title:
+    disabled: false
+    fieldName: notification_title
+    publicName: notification_title
+    enhancer:
+      id: ''
+  notification_message:
+    disabled: false
+    fieldName: notification_message
+    publicName: notification_message
+    enhancer:
+      id: ''
+  mail_subject:
+    disabled: false
+    fieldName: mail_subject
+    publicName: mail_subject
+    enhancer:
+      id: ''
+  mail_message:
+    disabled: false
+    fieldName: mail_message
+    publicName: mail_message
+    enhancer:
+      id: ''
+  generate_notification:
+    disabled: false
+    fieldName: generate_notification
+    publicName: generate_notification
     enhancer:
       id: ''
   content_translation_source:
@@ -250,81 +307,33 @@ resourceFields:
     publicName: body
     enhancer:
       id: ''
-  field_business_pays:
-    disabled: false
-    fieldName: field_business_pays
-    publicName: field_business_pays
-    enhancer:
-      id: vactory_pays
-  field_business_specialisations:
-    disabled: false
-    fieldName: field_business_specialisations
-    publicName: field_business_specialisations
-    enhancer:
-      id: ''
-  field_business_users:
-    disabled: false
-    fieldName: field_business_users
-    publicName: field_business_users
-    enhancer:
-      id: ''
-  field_business_ville:
-    disabled: false
-    fieldName: field_business_ville
-    publicName: field_business_ville
-    enhancer:
-      id: ''
-  field_secteur_activite:
-    disabled: false
-    fieldName: field_secteur_activite
-    publicName: field_secteur_activite
-    enhancer:
-      id: ''
-  field_site_web:
-    disabled: false
-    fieldName: field_site_web
-    publicName: field_site_web
-    enhancer:
-      id: ''
-  field_social_networks:
-    disabled: false
-    fieldName: field_social_networks
-    publicName: field_social_networks
-    enhancer:
-      id: vactory_social_networks
-  field_statut_juridique:
-    disabled: false
-    fieldName: field_statut_juridique
-    publicName: field_statut_juridique
-    enhancer:
-      id: ''
-  field_taille_entreprise:
-    disabled: false
-    fieldName: field_taille_entreprise
-    publicName: field_taille_entreprise
-    enhancer:
-      id: ''
-  field_vactory_address:
-    disabled: false
-    fieldName: field_vactory_address
-    publicName: field_vactory_address
-    enhancer:
-      id: ''
   field_vactory_date:
     disabled: false
     fieldName: field_vactory_date
     publicName: field_vactory_date
     enhancer:
       id: ''
-  field_vactory_image:
+  field_vactory_excerpt:
     disabled: false
-    fieldName: field_vactory_image
-    publicName: field_vactory_image
+    fieldName: field_vactory_excerpt
+    publicName: field_vactory_excerpt
     enhancer:
-      id: vactory_file_image
-  field_vactory_telephone:
+      id: ''
+  field_vactory_media_document:
     disabled: false
-    fieldName: field_vactory_telephone
-    publicName: field_vactory_telephone
+    fieldName: field_vactory_media_document
+    publicName: field_vactory_media_document
+    enhancer:
+      id: vactory_file_document
+  field_vactory_media_file:
+    disabled: false
+    fieldName: field_vactory_media_file
+    publicName: field_vactory_media_file
+    enhancer:
+      id: vactory_file_document
+  field_vactory_reference:
+    disabled: false
+    fieldName: field_vactory_reference
+    publicName: field_vactory_reference
     enhancer:
       id: ''
