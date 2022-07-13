@@ -232,7 +232,7 @@ function vactory_content_access_node_grants(AccountInterface $account, $op) {
       ->load($account->id());
 
     // Get user grants IDs from cache if exist.
-    $cid = 'chaabi_users_grants_' . $user->id() . $user->get('name')->value;
+    $cid = 'vactory_users_grants_' . $user->id() . $user->get('name')->value;
     $user_grants = !empty(Drupal::cache()->get($cid)) ? Drupal::cache()->get($cid)->data : [];
     if (empty($user_grants)) {
       // Get user grants IDs.
@@ -248,7 +248,7 @@ function vactory_content_access_node_grants(AccountInterface $account, $op) {
  * Get User Grants.
  */
 function get_user_grants($user, $types) {
-  $cid = 'chaabi_users_grants_' . $user->id() . $user->get('name')->value;
+  $cid = 'vactory_users_grants_' . $user->id() . $user->get('name')->value;
   $user_grants = !empty(Drupal::cache()->get($cid)) ? Drupal::cache()->get($cid)->data : [];
   $is_accessible_services = \Drupal::service('vactory_content_access.access_manager');
   if (empty($user_grants)) {
@@ -294,8 +294,8 @@ function rebuild_nodes_access($nids, &$context) {
 /**
  * Implements hook_user_logout().
  */
-function sacd_authentication_user_logout(AccountInterface $account) {
-  $cid = 'chaabi_users_grants_' . $account->id() . $account->getAccountName();
+function vactory_content_access_user_logout(AccountInterface $account) {
+  $cid = 'vactory_users_grants_' . $account->id() . $account->getAccountName();
   Drupal::cache()->delete($cid);
 }
 
