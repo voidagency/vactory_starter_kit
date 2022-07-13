@@ -105,6 +105,18 @@ function vactory_decoupled_form_alter(&$form, FormStateInterface $form_state, $f
     // Add a submit handler to redirect to the Gatsby page.
     $form['actions']['save_view_gatsby']['#submit'][] = 'gatsby_node_form_submit';
   }
+
+  $form['actions']['submit']['#submit'][] = 'nextjs_node_form_submit';
+
+}
+
+/**
+ * Submit handler for viewing the nextjs page.
+ */
+function nextjs_node_form_submit(&$form, FormStateInterface $form_state) {
+  //@todo : config form.
+  // Redirect to content page after (Add or update or delete the node)
+  $form_state->setRedirect('view.content.page_1');
 }
 
 /**
