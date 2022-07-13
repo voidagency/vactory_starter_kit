@@ -201,6 +201,7 @@ class BlocksManager
         'classification' => $classification,
         'content' => $this->getContent($block->getPluginId()),
         'visibilityConditions' => $visibilityCollection,
+        'classes' => $block->getThirdPartySetting('block_class', 'classes'),
       ];
       // Invoke internal block classification alter
       \Drupal::moduleHandler()->invokeAll('internal_block_classification_alter', [&$classification, $block_info]);
