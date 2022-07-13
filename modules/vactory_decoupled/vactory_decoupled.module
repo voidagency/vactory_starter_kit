@@ -382,12 +382,13 @@ function _auth_make_unitials_from_single_word($name)
  */
 function vactory_decoupled_mail_alter(&$message) {
   $route = \Drupal::routeMatch()->getRouteName();
+  $langcode = $message['langcode'];
+  $token_service = \Drupal::token();
+  $mail_config = \Drupal::config('user.mail');
+  $language_manager = \Drupal::languageManager();
+  $language = $language_manager->getLanguage($langcode);
+
   if (strpos($route, 'jsonapi_') === 0) {
-    $token_service = \Drupal::token();
-    $mail_config = \Drupal::config('user.mail');
-    $language_manager = \Drupal::languageManager();
-    $langcode = $message['langcode'];
-    $language = $language_manager->getLanguage($langcode);
     if ($message['id'] === 'user_password_reset') {
       $key = 'password_reset';
       $variables = ['user' => $message['params']['account']];
@@ -408,6 +409,12 @@ function vactory_decoupled_mail_alter(&$message) {
       $markup = ['#markup' => $token_service->replace($mail_config->get($key . '.body'), $variables, $token_options)];
       $message['body'][0] = \Drupal::service('renderer')->render($markup);
     }
+  }
+  if ($message['id'] == 'user_status_activated') {
+    $variables = ['user' => $message['params']['account']];
+    $token_options = ['langcode' => $langcode, 'callback' => '_vactory_decoupled_user_mail_tokens', 'clear' => TRUE];
+    $markup = ['#markup' => $token_service->replace($mail_config->get('status_activated')['body'], $variables, $token_options)];
+    $message['body'][0] = \Drupal::service('renderer')->render($markup);
   }
 }
 
