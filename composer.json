@@ -203,7 +203,6 @@
         "Remove version comments from minified files.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/9e6eca9bcbd95e7bed7859d54a0c4623a6112e5a/advagg-remove-version-comment-from-minified-js.patch"
       },
       "drupal/colorapi": {
-        "Color api : Fix undefined index name.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/cd98ab758217f762b1f8daeda8774f19cea1f9dc/fix-color-api-undefined-index-name.patch",
         "Enable colorapi field type by default": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/9e6eca9bcbd95e7bed7859d54a0c4623a6112e5a/colorapi-enable-colorapi-field-type-by-default.patch"
       },
       "drupal/jquery_colorpicker": {
