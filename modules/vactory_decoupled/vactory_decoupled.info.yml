@@ -8,7 +8,11 @@ dependencies:
   - decoupled_router
   - jsonapi
   - jsonapi_extras
+  - jsonapi_defaults
   - jsonapi_user_resources
   - simple_oauth
   - vactory_api_key_auth
+  - media
+  - vactory_page
+  - vactory_paragraphs
 version: 8.x-1.0
