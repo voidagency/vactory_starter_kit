@@ -5,7 +5,6 @@
  * Contain related hooks.
  */
 
-use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
@@ -13,7 +12,6 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
 use Drupal\node\NodeInterface;
-use Drupal\user\Entity\User;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -106,14 +104,14 @@ function vactory_content_access_form_node_form_alter(&$form) {
     }
   }
   $form['node_content_access'] = [
-    '#type'        => 'details',
-    '#title'       => t('Content Access settings'),
-    '#group'       => 'advanced',
+    '#type' => 'details',
+    '#title' => t('Content Access settings'),
+    '#group' => 'advanced',
     '#attributes' => [
       'style' => $style,
     ],
-    '#open'        => FALSE,
-    '#access'      => \Drupal::currentUser()
+    '#open' => FALSE,
+    '#access' => \Drupal::currentUser()
       ->hasPermission('administer content access'),
   ];
   $form['field_content_access_users']['#group'] = 'node_content_access';
@@ -174,33 +172,44 @@ function vactory_content_access_node_access_records(NodeInterface $node) {
       array_push($types, $key);
     }
   }
-  if (in_array($node->bundle(), $types)) {
-    $users = User::loadMultiple();
-    $is_accessible_services = \Drupal::service('vactory_content_access.access_manager');
-    foreach ($users as $user) {
-      $is_accessible = $is_accessible_services->isAccessible($node, $types, 'field_content_access_groups', 'field_content_access_users', 'field_content_access_roles', $user);
-      if (!$is_accessible) {
-        $grants[] = [
-          'realm' => 'vactory_content_access',
-          'gid' => $user->id(),
-          'grant_view' => 0,
-          'grant_update' => 0,
-          'grant_delete' => 0,
-        ];
-      }
-      else {
-        $grants[] = [
-          'realm' => 'vactory_content_access',
-          'gid' => $user->id(),
-          'grant_view' => 1,
-          'grant_update' => 0,
-          'grant_delete' => 0,
-        ];
-      }
+
+  if ($node->isPublished()) {
+    if (in_array($node->bundle(), $types) && isPrivateNode($node)) {
+      $grants[] = [
+        'realm' => 'access_content_access_realm',
+        'gid' => $node->id(),
+        'grant_view' => 1,
+        'grant_update' => 0,
+        'grant_delete' => 0,
+        'priority' => 0,
+      ];
     }
   }
-  Cache::invalidateTags(Cache::mergeTags($node->getCacheTags(), ['node:' . $node->id()]));
+
   return $grants;
+}
+
+/**
+ * Check if node is private.
+ */
+function isPrivateNode(NodeInterface $node) {
+  $count = 0;
+  if ($node->hasField('field_content_access_groups') && $node->get('field_content_access_groups')->getValue() != []) {
+    $count++;
+  }
+
+  if ($node->hasField('field_content_access_users') && $node->get('field_content_access_users')->getValue() != []) {
+    $count++;
+  }
+
+  if ($node->hasField('field_content_access_roles') && $node->get('field_content_access_roles')->getValue() != []) {
+    $count++;
+  }
+
+  if ($count > 0) {
+    return TRUE;
+  }
+  return FALSE;
 }
 
 /**
@@ -209,9 +218,59 @@ function vactory_content_access_node_access_records(NodeInterface $node) {
 function vactory_content_access_node_grants(AccountInterface $account, $op) {
   $grants = [];
   if ($op == 'view') {
-    $grants['vactory_content_access'][] = $account->id();
+    $config = \Drupal::config('vactory_content_access.settings');
+    $node_types = NodeType::loadMultiple();
+    $types = [];
+    foreach ($node_types as $key => $value) {
+      $is_access_listing = $config->get($key . '_listing_access');
+      if (isset($is_access_listing) && $is_access_listing == 1) {
+        array_push($types, $key);
+      }
+    }
+
+    $user = Drupal::entityTypeManager()->getStorage('user')
+      ->load($account->id());
+
+    // Get user grants IDs from cache if exist.
+    $cid = 'vactory_users_grants_' . $user->id() . $user->get('name')->value;
+    $user_grants = !empty(Drupal::cache()->get($cid)) ? Drupal::cache()->get($cid)->data : [];
+    if (empty($user_grants)) {
+      // Get user grants IDs.
+      $user_grants = get_user_grants($user, $types);
+    }
+    $grants['access_content_access_realm'] = $user_grants;
+
   }
   return $grants;
+}
+
+/**
+ * Get User Grants.
+ */
+function get_user_grants($user, $types) {
+  $cid = 'vactory_users_grants_' . $user->id() . $user->get('name')->value;
+  $user_grants = !empty(Drupal::cache()->get($cid)) ? Drupal::cache()->get($cid)->data : [];
+  $is_accessible_services = \Drupal::service('vactory_content_access.access_manager');
+  if (empty($user_grants)) {
+    $user_grants = [];
+    // Load all private content.
+    $nodes = Drupal::entityTypeManager()->getStorage('node')
+      ->loadByProperties([
+        'status' => 1,
+      ]);
+    if (!empty($nodes)) {
+      foreach ($nodes as $node) {
+        $is_accessible = $is_accessible_services->isAccessible($node, $types, 'field_content_access_groups', 'field_content_access_users', 'field_content_access_roles', $user);
+        // Check if user has access to node then use node id as grant id.
+        if ($is_accessible) {
+          $user_grants[] = $node->id();
+        }
+      }
+      Drupal::cache()->set($cid, $user_grants);
+    }
+  }
+
+  return $user_grants;
 }
 
 /**
@@ -230,6 +289,14 @@ function rebuild_nodes_access($nids, &$context) {
   }
   $context['message'] = $message;
   $context['results'] = $results;
+}
+
+/**
+ * Implements hook_user_logout().
+ */
+function vactory_content_access_user_logout(AccountInterface $account) {
+  $cid = 'vactory_users_grants_' . $account->id() . $account->getAccountName();
+  Drupal::cache()->delete($cid);
 }
 
 /**
