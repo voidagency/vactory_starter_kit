@@ -242,29 +242,24 @@ function vactory_espace_prive_form_alter(&$form, FormStateInterface $form_state,
  * Implements hook_cron().
  */
 function vactory_espace_prive_cron() {
-  $users = Drupal::entityTypeManager()->getStorage('user')
-    ->loadByProperties([
-      'roles' => 'webmaster'
-    ]);
-  $config = Drupal::config('vactory_espace_prive.settings');
-  $password_lifetime = $config->get('password_lifetime');
-  if ($password_lifetime) {
-    foreach ($users as $user) {
-      if ($user->hasField('field_reset_password_date')) {
-        // Last reset password date.
-        $lrp_date = $user->get('field_reset_password_date')->value;
-        if (empty($lrp_date) || !is_numeric($lrp_date)) {
-          $user->set('field_reset_password_date', time());
-          $user->save();
-          $lrp_date = $user->get('field_reset_password_date')->value;
-        }
-        $now = time();
-        $diff_days = ($now - (int) $lrp_date)/(60*60*24);
-        if ($diff_days >= (int) $password_lifetime) {
-          $user->setPassword('reSet'. time());
-          $user->save();
-        }
-      }
-    }
+  Drupal::service('vactory_espace_prive.manager')->resetWebmastersPasswords();
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function vactory_espace_prive_form_user_register_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#validate'][] = 'vactory_mail_black_list_validation';
+}
+
+/**
+ * Validate mail black list callback.
+ */
+function vactory_mail_black_list_validation($form, FormStateInterface $form_state) {
+  $valid = \Drupal::service('vactory_espace_prive.manager')->validateEmail($form_state->getValue('mail'));
+  if (!$valid) {
+    $form_state->setErrorByName('mail', t('The email domain is not valid'));
   }
 }
+
+
