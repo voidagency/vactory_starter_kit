@@ -1,0 +1,304 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - node.type.vactory_publication
+id: node--vactory_publication
+disabled: false
+path: node/vactory_publication
+resourceType: node--vactory_publication
+resourceFields:
+  nid:
+    disabled: false
+    fieldName: nid
+    publicName: nid
+    enhancer:
+      id: ''
+  uuid:
+    disabled: false
+    fieldName: uuid
+    publicName: uuid
+    enhancer:
+      id: ''
+  vid:
+    disabled: false
+    fieldName: vid
+    publicName: vid
+    enhancer:
+      id: ''
+  langcode:
+    disabled: false
+    fieldName: langcode
+    publicName: langcode
+    enhancer:
+      id: ''
+  type:
+    disabled: false
+    fieldName: type
+    publicName: type
+    enhancer:
+      id: ''
+  revision_timestamp:
+    disabled: false
+    fieldName: revision_timestamp
+    publicName: revision_timestamp
+    enhancer:
+      id: ''
+  revision_uid:
+    disabled: false
+    fieldName: revision_uid
+    publicName: revision_uid
+    enhancer:
+      id: ''
+  revision_log:
+    disabled: false
+    fieldName: revision_log
+    publicName: revision_log
+    enhancer:
+      id: ''
+  status:
+    disabled: false
+    fieldName: status
+    publicName: status
+    enhancer:
+      id: ''
+  uid:
+    disabled: false
+    fieldName: uid
+    publicName: uid
+    enhancer:
+      id: ''
+  title:
+    disabled: false
+    fieldName: title
+    publicName: title
+    enhancer:
+      id: ''
+  created:
+    disabled: false
+    fieldName: created
+    publicName: created
+    enhancer:
+      id: ''
+  changed:
+    disabled: false
+    fieldName: changed
+    publicName: changed
+    enhancer:
+      id: ''
+  promote:
+    disabled: false
+    fieldName: promote
+    publicName: promote
+    enhancer:
+      id: ''
+  sticky:
+    disabled: false
+    fieldName: sticky
+    publicName: sticky
+    enhancer:
+      id: ''
+  default_langcode:
+    disabled: false
+    fieldName: default_langcode
+    publicName: default_langcode
+    enhancer:
+      id: ''
+  revision_default:
+    disabled: false
+    fieldName: revision_default
+    publicName: revision_default
+    enhancer:
+      id: ''
+  revision_translation_affected:
+    disabled: false
+    fieldName: revision_translation_affected
+    publicName: revision_translation_affected
+    enhancer:
+      id: ''
+  metatag:
+    disabled: false
+    fieldName: metatag
+    publicName: metatag
+    enhancer:
+      id: ''
+  path:
+    disabled: false
+    fieldName: path
+    publicName: path
+    enhancer:
+      id: ''
+  publish_on:
+    disabled: false
+    fieldName: publish_on
+    publicName: publish_on
+    enhancer:
+      id: ''
+  unpublish_on:
+    disabled: false
+    fieldName: unpublish_on
+    publicName: unpublish_on
+    enhancer:
+      id: ''
+  menu_link:
+    disabled: false
+    fieldName: menu_link
+    publicName: menu_link
+    enhancer:
+      id: vactory_link
+  node_banner_image:
+    disabled: false
+    fieldName: node_banner_image
+    publicName: node_banner_image
+    enhancer:
+      id: vactory_file_image
+  node_banner_mobile_image:
+    disabled: false
+    fieldName: node_banner_mobile_image
+    publicName: node_banner_mobile_image
+    enhancer:
+      id: vactory_file_image
+  node_banner_title:
+    disabled: false
+    fieldName: node_banner_title
+    publicName: node_banner_title
+    enhancer:
+      id: ''
+  vcc_normalized:
+    disabled: false
+    fieldName: vcc_normalized
+    publicName: vcc_normalized
+    enhancer:
+      id: ''
+  internal_user:
+    disabled: false
+    fieldName: internal_user
+    publicName: internal_user
+    enhancer:
+      id: ''
+  internal_blocks:
+    disabled: false
+    fieldName: internal_blocks
+    publicName: internal_blocks
+    enhancer:
+      id: ''
+  internal_comment:
+    disabled: false
+    fieldName: internal_comment
+    publicName: internal_comment
+    enhancer:
+      id: ''
+  internal_breadcrumb:
+    disabled: false
+    fieldName: internal_breadcrumb
+    publicName: internal_breadcrumb
+    enhancer:
+      id: ''
+  internal_extra:
+    disabled: false
+    fieldName: internal_extra
+    publicName: internal_extra
+    enhancer:
+      id: ''
+  node_settings:
+    disabled: false
+    fieldName: node_settings
+    publicName: node_settings
+    enhancer:
+      id: ''
+  node_bg_image:
+    disabled: false
+    fieldName: node_bg_image
+    publicName: node_bg_image
+    enhancer:
+      id: vactory_file_image
+  node_class:
+    disabled: false
+    fieldName: node_class
+    publicName: node_class
+    enhancer:
+      id: ''
+  node_summary:
+    disabled: false
+    fieldName: node_summary
+    publicName: node_summary
+    enhancer:
+      id: ''
+  node_body_class:
+    disabled: false
+    fieldName: node_body_class
+    publicName: node_body_class
+    enhancer:
+      id: ''
+  content_translation_source:
+    disabled: false
+    fieldName: content_translation_source
+    publicName: content_translation_source
+    enhancer:
+      id: ''
+  content_translation_outdated:
+    disabled: false
+    fieldName: content_translation_outdated
+    publicName: content_translation_outdated
+    enhancer:
+      id: ''
+  body:
+    disabled: false
+    fieldName: body
+    publicName: body
+    enhancer:
+      id: ''
+  comment:
+    disabled: false
+    fieldName: comment
+    publicName: comment
+    enhancer:
+      id: ''
+  field_vactory_call_to_action:
+    disabled: false
+    fieldName: field_vactory_call_to_action
+    publicName: field_vactory_call_to_action
+    enhancer:
+      id: vactory_link
+  field_vactory_date:
+    disabled: false
+    fieldName: field_vactory_date
+    publicName: field_vactory_date
+    enhancer:
+      id: ''
+  field_vactory_document:
+    disabled: false
+    fieldName: field_vactory_document
+    publicName: field_vactory_document
+    enhancer:
+      id: vactory_file_document
+  field_vactory_excerpt:
+    disabled: false
+    fieldName: field_vactory_excerpt
+    publicName: field_vactory_excerpt
+    enhancer:
+      id: ''
+  field_vactory_media:
+    disabled: false
+    fieldName: field_vactory_media
+    publicName: field_vactory_media
+    enhancer:
+      id: vactory_file_image
+  field_vactory_meta_tags:
+    disabled: false
+    fieldName: field_vactory_meta_tags
+    publicName: field_vactory_meta_tags
+    enhancer:
+      id: vactory_metatag
+  field_vactory_publication_theme:
+    disabled: false
+    fieldName: field_vactory_publication_theme
+    publicName: field_vactory_publication_theme
+    enhancer:
+      id: ''
+  field_vactory_seo_status:
+    disabled: false
+    fieldName: field_vactory_seo_status
+    publicName: field_vactory_seo_status
+    enhancer:
+      id: ''

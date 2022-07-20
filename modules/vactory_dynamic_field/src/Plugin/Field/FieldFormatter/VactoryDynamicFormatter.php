@@ -274,16 +274,18 @@ class VactoryDynamicFormatter extends FormatterBase {
        * @endcode
        */
       \Drupal::moduleHandler()->alter('dynamic_field_content', $content);
+      $cache = [
+        "max-age" => Cache::PERMANENT,
+      ];
+      \Drupal::moduleHandler()->alter('dynamic_field_cache', $cache);
       $render = [
-        '#theme'        => 'vactory_dynamic_main',
+        '#theme' => 'vactory_dynamic_main',
         '#entity_delta' => $delta,
-        '#item'         => $item,
-        '#content'      => $content,
-        '#platform'     => $platform,
+        '#item' => $item,
+        '#content' => $content,
+        '#platform' => $platform,
         '#widgets_path' => $widgets_path,
-        "#cache"        => [
-          "max-age" => Cache::PERMANENT,
-        ],
+        "#cache" => is_array($cache) ? $cache : [],
       ];
 
       $renderer = $this->renderer;

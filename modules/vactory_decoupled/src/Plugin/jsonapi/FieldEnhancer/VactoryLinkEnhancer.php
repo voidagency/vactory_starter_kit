@@ -89,6 +89,12 @@ class VactoryLinkEnhancer extends ResourceFieldEnhancerBase implements Container
 
       $data['alias'] = str_replace('/backend', '', $data['alias']);
       $data['alias'] =  '/' .$this->language . $data['alias'];
+
+      // Entity not having a translation
+      if ($this->language !== $data['langcode']) {
+        $data['alias'] = '/' .$this->language . '/' . $context['field_item_object']->getEntity()->toUrl()->getInternalPath();
+      }
+
       $data['langcode'] =  $this->language;
     }
     $data['is_external'] = (isset($data['uri']) && !empty($data['uri'])) ? UrlHelper::isExternal($data['uri']) : false;

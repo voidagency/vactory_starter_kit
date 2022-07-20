@@ -110,10 +110,18 @@ class JsonApiClient {
       $request->setSession($this->session);
     }
 
+    // This is used to retrieve Cacheability Metadata from JSON:API
+    $request->headers->set("X-Internal-Cacheability-Debug", "true");
     \Drupal::logger('vactory_decoupled')->info('Request created: @url', ['@url' => urldecode($request->getUri())]);
 
     $response = $this->httpKernel->handle($request, HttpKernelInterface::SUB_REQUEST);
-    return $response->getContent();
+
+    return [
+      "data" => $response->getContent(),
+      "cache" => [
+        "tags" => explode(" ", $response->headers->get('x-drupal-cache-tags'))
+      ]
+    ];
   }
 
   /**

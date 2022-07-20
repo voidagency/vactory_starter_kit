@@ -4,6 +4,7 @@ namespace Drupal\vactory_decoupled;
 
 use Drupal\entityqueue\Entity\EntityQueue;
 use Drupal\entityqueue\Entity\EntitySubqueue;
+use Drupal\Core\Cache\Cache;
 
 /**
  * Simplifies the process of generating an API version using DF.
@@ -36,6 +37,7 @@ class JsonApiGenerator {
     $exposed_vocabularies = $config['vocabularies'];
     $entity_queue = $config['entity_queue'] ?? '';
     $entity_queue_field_id = $config['entity_queue_field_id'] ?? '';
+    $subqueue_items_ids = [];
 
     // Add a filter for entity queue.
     if (!empty($entity_queue)) {
@@ -66,16 +68,36 @@ class JsonApiGenerator {
     parse_str(http_build_query($parsed), $query_filters);
 
     $response = $this->client->serialize($resource, $query_filters);
+    $exposedTerms = $this->getExposedTerms($exposed_vocabularies);
+    $response['cache']['tags'] = Cache::mergeTags($response['cache']['tags'], $exposedTerms['cache_tags']);
+
+    $client_data = json_decode($response['data']);
+
+    // For entityqueue, we cannot use JSON:API sorting mecanism as we don't have any field attached to entities
+    // where it indicate a sorting value we can use. And since entity queues are limited to fewer items or we assume so.
+    // we are going to alter the response and do a dynamic sorting.
+    // @todo: we should only trigger if the results are less then 50 as it harcoded in JSON:API max return list
+    // we don't wanna mess with the order of the rest of the pages.
+    if (!empty($entity_queue) && count($subqueue_items_ids) > 0) {
+      $items = $client_data->data ?? [];
+      $result = array_map(static fn($entity_queue_id) => current(array_values(
+          array_filter($items, static fn($entity) => intval($entity->attributes->{$entity_queue_field_id}) === intval($entity_queue_id))
+        )), $subqueue_items_ids);
+
+      $client_data->data = $result;
+    }
 
     return [
-      'data' => json_decode($response),
+      'data' => $client_data,
+      'cache' => $response['cache'],
       'filters' => $query_filters,
-      'taxonomies' => $this->getExposedTerms($exposed_vocabularies),
+      'taxonomies' => $exposedTerms['data'],
     ];
   }
 
   protected function getExposedTerms(array $vocabularies) {
     $result = [];
+    $cacheTags = [];
 
     $entityTypeManager = \Drupal::service('entity_type.manager');
     $taxonomyTermStorage = $entityTypeManager->getStorage('taxonomy_term');
@@ -93,6 +115,8 @@ class JsonApiGenerator {
       foreach ($terms as $term) {
         $term = $entityRepository
           ->getTranslationFromContext($term);
+
+          $cacheTags = Cache::mergeTags($cacheTags, $term->getCacheTags());
         array_push($result[$vid], [
           'id' => $term->id(),
           'uuid' => $term->uuid(),
@@ -103,7 +127,10 @@ class JsonApiGenerator {
 
     }
 
-    return $result;
+    return [
+      "data" => $result,
+      "cache_tags" => $cacheTags
+    ];
   }
 
 }
