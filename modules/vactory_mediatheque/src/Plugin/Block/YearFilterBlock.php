@@ -25,6 +25,7 @@ class YearFilterBlock extends BlockBase {
     ];
     $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties($properties);
     $terms = array_values($terms);
+    $years = [];
     if (isset($terms) && !empty($terms)) {
       foreach ($terms as $term) {
         $years[$term->id()] = $term->getName();

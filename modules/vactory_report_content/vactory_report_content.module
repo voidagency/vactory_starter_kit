@@ -1,0 +1,76 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Vactory Report Content module.
+ *
+ * @DCG
+ * This file is no longer required in Drupal 8.
+ * @see https://www.drupal.org/node/2217931
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_report_content_theme($existing, $type, $theme, $path) {
+  return [
+    'block_vactory_report_content' => [
+      'template' => 'block-vactory-report-content',
+      'variables' => [
+        'content' => NULL,
+      ],
+    ],
+    'vactory_report_content_reason' => [
+      'template' => 'vactory-report-content-reason',
+      'variables' => [
+        'reason' => NULL,
+      ],
+    ],
+    'vactory_report_success_message' => [
+      'template' => 'vactory-report-success-message',
+      'variables' => [
+        'reason' => NULL,
+      ],
+    ],
+  ];
+}
+
+
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function vactory_report_content_form_views_exposed_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id)
+{
+  if ($form['#id'] === 'views-exposed-form-reported-content-admin-listing') {
+    // Load reasons terms.
+    $reasons = \Drupal::entityTypeManager()->getStorage('taxonomy_term')
+      ->loadByProperties([
+        'vid' => 'reported_content_reasons',
+      ]);
+    $reason_options = array_map(function ($term) {
+      return $term->label();
+    }, $reasons);
+    // Status terms.
+    $status = \Drupal::entityTypeManager()->getStorage('taxonomy_term')
+      ->loadByProperties([
+        'vid' => 'reported_content_status',
+      ]);
+    $status_options = array_map(function ($term) {
+      return $term->label();
+    }, $status);
+    $form['reason'] = [
+      '#type' => 'select',
+      '#title' => t('Reasons'),
+      '#options' => $reason_options,
+      '#empty_option' => '- Select -',
+    ];
+    $form['status'] = [
+      '#type' => 'select',
+      '#title' => t('Status'),
+      '#options' => $status_options,
+      '#empty_option' => '- Select -',
+    ];
+    $form['created']['#type'] = 'date';
+  }
+}

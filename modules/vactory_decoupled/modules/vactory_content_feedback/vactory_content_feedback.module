@@ -1,0 +1,11 @@
+<?php
+
+/**
+ * Implements hook_df_jsonapi_output_alter().
+*/
+function vactory_content_feedback_df_jsonapi_output_alter(&$content) {
+  if ($content['template'] === 'vactory_content_feedback_widgets:feedblack-block') {
+    $feedback_config = \Drupal::config("admin_feedback.settings")->getOriginal();
+    $content['feedback_config'] = $feedback_config;
+  }
+}

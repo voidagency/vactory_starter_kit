@@ -1,4 +1,4 @@
 ckeditor_config:
   version: 1.x
   js:
-    js/ckeditor-config.js: {}
+    ./assets/js/ckeditor-config.js: {}

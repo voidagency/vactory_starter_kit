@@ -2,18 +2,18 @@ vactory_widgets:
   version: 1.x
   css:
     theme:
-      css/app.css: {}
+      ./assets/css/app.css: {}
   js:
-    js/app.js: {}
+    ./assets/js/app.js: {}
 
 dynamic.modal:
   version: 1.x
   css:
     theme:
-      css/modal.css: {}
+      ./assets/css/modal.css: {}
   js:
-    js/selection.min.js: {}
-    js/modal.js: {}
+    ./assets/js/selection.min.js: {}
+    ./assets/js/modal.js: {}
   dependencies:
     - core/jquery
     - core/drupalSettings
@@ -49,16 +49,16 @@ dynamic.libraries.jquery.select2:
 
 dynamic.form_modal:
   js:
-    js/form-modal.js: {}
+    ./assets/js/form-modal.js: {}
   css:
     theme:
-      css/form-modal.css: {}
+      ./assets/css/form-modal.css: {}
   dependencies:
     - vactory_dynamic_field/dynamic.libraries.jquery.select2
 
 pop_in:
   js:
-    js/pop-in.js: {}
+    ./assets/js/pop-in.js: {}
   dependencies:
     - core/jquery
     - core/drupalSettingss
@@ -66,8 +66,8 @@ pop_in:
 
 drag_and_drop:
   js:
-    libraries/sortable/Sortable.min.js: { }
-    js/drag_and_drop.js: {}
+    /libraries/sortable/Sortable.min.js: { }
+    ./assets/js/drag_and_drop.js: {}
   dependencies:
     - core/jquery
     - core/drupalSettingss

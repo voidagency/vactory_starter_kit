@@ -71,54 +71,58 @@
 {% set document_url = (document is not empty) ? file_url(document.uri.value) : ''  %}
 {% set bundle = node.bundle|clean_class %}
 {% set date = content.field_mediatheque_date.0['#markup'] %}
+
 {% set classes = [
-'node',
-bundle,
-node.isPromoted() ? bundle ~ '--promoted',
-node.isSticky() ? bundle ~ '--sticky',
-not node.isPublished() ? bundle ~ '--unpublished',
-view_mode ? bundle ~ '--' ~ view_mode|clean_class,
+  'node',
+  'node-details',
+  'node-details' ~ '--' ~ bundle,
+  bundle,
+  node.isPromoted() ? bundle ~ '--promoted',
+  node.isSticky() ? bundle ~ '--sticky',
+  not node.isPublished() ? bundle ~ '--unpublished',
+  view_mode ? bundle ~ '--' ~ view_mode|clean_class,
 ] %}
+
 {{ attach_library('classy/node') }}
+
 <article{{ attributes.addClass(classes) }}>
 
-    <div class="page-header">
-        {{ title_prefix }}
-        <h1 {{ title_attributes }}>
-            <a href="{{ url }}" rel="bookmark">{{ label }}</a>
-        </h1>
-        <div class="tags pull-right">
-            {{ hideLabel(addAttributes(content.field_mediatheque_theme, {'class': ['label', 'label-primary']})) }}
-        </div>
-        {{ title_suffix }}
-        <div class="clearfix"></div>
-    </div>
+  {{ title_prefix }}
+  <h1 {{ title_attributes.addClass('node-details__title') }}>
+      <a href="{{ url }}" rel="bookmark">{{ label }}</a>
+  </h1>
+  {{ title_suffix }}
 
-    <div class="featured-img">
-        <a href="{{ url }}" rel="bookmark">
-            {{ hideLabel(addAttributes(content.field_vactory_media, {'class': ['img-fluid', 'thumbnail']})) }}
-        </a>
-    </div>
+  <div class="node-details__tags">
+    {{ hideLabel(addAttributes(content.field_mediatheque_theme, {'class': ['badge', 'badge-primary']})) }}
+  </div>
 
-    <div class="content">
-        {{ addAttributes(content.field_vactory_excerpt) }}
-    </div>
+  <div class="node-details__image">
+    <a href="{{ url }}" rel="bookmark">
+      {{ hideLabel(addAttributes(noWrapper(content.field_vactory_media), {'class': ['img-fluid']})) }}
+    </a>
+  </div>
 
-    {% if document_url is defined  and document_url is not empty %}
-      <a href="{{ document_url }}" class="btn btn-primary prefix-icon-download mb-2" download>{{ 'Télécharger le document'|t }}</a>
-    {% endif %}
+  <div class="node-details__description">
+    {{ hideLabel(noWrapper(content.field_vactory_excerpt)) }}
+  </div>
 
-    {% if content.field_vactory_media is not empty %}
-      <a href="{{ image_url }}" class="btn btn-primary prefix-icon-download mb-2" download>{{ "Télécharger l'image"|t }}</a>
-    {% endif %}
+  {% if document_url is defined  and document_url is not empty %}
+    <a href="{{ document_url }}" class="btn btn-primary prefix-icon-download mb-2" download>{{ 'Télécharger le document'|t }}</a>
+  {% endif %}
 
-    {% if video_url is not empty %}
-      <a data-fancybox href="{{ video_url }}" class="btn btn-primary prefix-icon mb-2">
-        {{ "Regarder la vidéo"|t }}
-      </a>
-    {% endif %}
+  {% if content.field_vactory_media is not empty %}
+    <a href="{{ image_url }}" class="btn btn-primary prefix-icon-download mb-2" download>{{ "Télécharger l'image"|t }}</a>
+  {% endif %}
 
-    <div class="row">
-      {{content.field_vactory_paragraphs	}}
-    </div>
+  {% if video_url is not empty %}
+    <a data-fancybox href="{{ video_url }}" class="btn btn-primary prefix-icon mb-2">
+      {{ "Regarder la vidéo"|t }}
+    </a>
+  {% endif %}
+
+  <div class="row">
+    {{content.field_vactory_paragraphs	}}
+  </div>
+
 </article>

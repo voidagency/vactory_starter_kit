@@ -11,23 +11,43 @@ fields:
     label: 'Description'
     options:
       '#format': 'basic_html'
-  views:
-    type: dynamic_views
-    label: 'Views'
+  collection:
+    type: json_api_collection
+    label: 'JSON:API'
     options:
       '#required': TRUE
       '#default_value':
-        views_id: vactory_governance
-        views_display_id: block_slider
-        fields:
-          id: id
-          uuid: key
-          title: title
-          url: url
-          field_vactory_taxonomy_1: role
-          field_vactory_media: image
+        resource: node--vactory_governance
+        filters:
+          - fields[node--vactory_governance]=drupal_internal__nid,path,title,field_gov_address,field_show_in_one_row,field_show_link_to_bio,field_vactory_email,field_vactory_document,field_vactory_fax,field_vactory_media,field_vactory_taxonomy_1,field_vactory_telephone,field_gov_social_media
+          - fields[taxonomy_term--vactory_governance_role]=tid,name
+          - fields[media--image]=name,thumbnail
+          - fields[file--image]=filename,uri
+          - fields[file--document]=filename,uri
+          - include=field_vactory_taxonomy_1,field_vactory_media,field_vactory_media.thumbnail,field_vactory_document
+          - page[offset]=0
+          - page[limit]=9
+          - sort=-created
         vocabularies:
           vactory_governance_role: vactory_governance_role
+
+#  views:
+#    type: dynamic_views
+#    label: 'Views'
+#    options:
+#      '#required': TRUE
+#      '#default_value':
+#        views_id: vactory_governance
+#        views_display_id: block_slider
+#        fields:
+#          id: id
+#          uuid: key
+#          title: title
+#          url: url
+#          field_vactory_taxonomy_1: role
+#          field_vactory_media: image
+#        vocabularies:
+#          vactory_governance_role: vactory_governance_role
   link:
     type: url_extended
     label: 'Lien'

@@ -1,0 +1,12 @@
+name: Webform Decoupled
+description: 'Decoupled Webform.'
+type: module
+core_version_requirement: '^8.9 || ^9'
+dependencies:
+  - vactory_decoupled
+  - webform
+  - jsonapi_extras
+  - rest
+version: 8.x-1.0
+package: Vactory
+core_incompatible: false

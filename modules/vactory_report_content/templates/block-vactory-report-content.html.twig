@@ -1,0 +1,27 @@
+{% if not logged_in and not content.is_reporter_user %}
+	<a class="btn btn-primary"
+		href="{{ url('vactory_espace_prive.login', {destination: content.current_path_alias}) }}">
+		{{ 'Report this post'|t }}
+	</a>
+{% endif %}
+{% if content.is_reporter_user %}
+	<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#report-content-modal">
+		{{ 'Report this post'|t }}
+	</button>
+	<div class="modal fade" id="report-content-modal" tabindex="-1" role="dialog" aria-labelledby="report-content-modal-title" aria-hidden="true">
+		<div class="modal-lg modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="report-content-modal-title">{{ 'Report' }}</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<div id="js-form-report-content"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endif %}
+

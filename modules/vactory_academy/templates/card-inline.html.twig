@@ -64,29 +64,40 @@
  */
 #}
 
-{% set classes = ['vf-card--academy']|merge(['card','card--inline','w-100']) %}
+{% set classes = ['card--academy']|merge(['card','card--inline']) %}
 
 <article {{ attributes.addClass(classes) }}>
-  <div class="card-col position-relative card-image--inline">
-    {{ addAttributes(content.field_vactory_media, {'class': ['vf-card__image']}) }}
+  <div class="card__image">
+    {{ addAttributes(noWrapper(content.field_vactory_media), {'class': ['img-fluid']}) }}
   </div>
+
   <span class='badge-primary badge-top'>{{ 'Drurée'|t }} {{ content.field_academy_duree.0['#context']['value'] }}</span>
-  <div class="card-col position-relative card-body--inline">
-    <div class="card-body">
+
+  <div class="card__body">
       {{ contextual_links }}
       {{ title_prefix }}
-      <h4 {{ title_attributes }} class="card-title">
-        <a href="{{ url }}" rel="bookmark" class="link font-semibold text-uppercase font-20">{{ label }}</a>
-      </h4>
+        <h3{{ title_attributes }} class="card__title">
+          {% if  url is null %}
+            <span>{{ label }}</span>
+          {% else %}
+            <a href="{{ url }}" rel="bookmark">{{ label }}</a>
+          {% endif %}
+        </h3>
       {{ title_suffix }}
 
-      {#<h6 class="card-subtitle">
-        <span class="badge badge-primary">{{ content.field_vactory_theme.0['#plain_text'] }}</span>
-          {{ content.field_vactory_date.0['#text']|date('d/m/Y') }}
-      </h6>#}
-      <p>{{ instructor.first_name|capitalize }} {{ instructor.last_name|capitalize }}</p>
+      <div class="card__meta">
+        <span class="card__tag">{{ content.field_vactory_theme.0['#plain_text'] }}</span>
+        <span class="card__date">{{ content.field_vactory_date.0['#text']|date('d/m/Y') }}</span>
+      </div>
+
+      <div class="card__author mb-10">
+        <span class="card__author__first-name">{{ instructor.first_name|capitalize }}</span>
+        <span class="card__author__last-name">{{ instructor.last_name|capitalize }}</span>
+      </div>
+
       <div class="star-rating mb-2">
-        {% set rating = content.rate_vote_widget["#results"].fivestar.vote_average %}
+        {% set vote_rating = rate_average is defined ? rate_average : 0.00 %}
+        {% set rating = vote_rating %}
         {% for i in 0..4 %}
           {% if rating >=1 %}
             <span class="favorite-star checked-full"></span>
@@ -97,8 +108,8 @@
           {% endif %}
           {% set rating = rating - 1 %}
         {% endfor %}
-        {% if content.rate_vote_widget["#results"].fivestar.vote_count is not null %}
-          <span class='ml-2'>{{ content.rate_vote_widget["#results"].fivestar.vote_average }} ({{ content.rate_vote_widget["#results"].fivestar.vote_count }} {{ 'Notes'|t }})</span>
+        {% if vote_rating is not null and  vote_rating > 0 %}
+          <span class='ml-2'>{{ vote_rating }}</span>
         {% endif %}
       </div>
 
@@ -110,11 +121,12 @@
         {{ content.flag_favorite_academy }}
       {% endif %}
 
-      {{ noWrapper(hideLabel(content.field_vactory_excerpt)) }}
+      <div class="card__description">
+        {{ noWrapper(hideLabel(content.field_vactory_excerpt)) }}
+      </div>
 
-      <div class="card-read-more">
+      <div class="card__read-more">
         <a href="{{ url }}" class="btn btn-primary">{{ 'Read more'|t }}</a>
       </div>
-    </div>
   </div>
 </article>

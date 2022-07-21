@@ -1,0 +1,9 @@
+vactory_search_autosuggestions_style:
+  css:
+    theme:
+      ./assets/css/vactory_search_autosuggestions.css: {}
+
+vactory_search_autosuggestions_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_search_autosuggestions-rtl.css: {}

@@ -1,0 +1,23 @@
+.remove-setting-submit {
+  position: absolute;
+  right: 0;
+  top: 0;
+}
+
+[id*="videoask-screen-details"] .details-wrapper {
+  position: relative;
+}
+
+.remove-element-submit input {
+  color: red;
+}
+
+.remove-setting-submit input, .remove-setting-submit input:hover {
+  color: red;
+  background: white;
+  border-color: red;
+}
+
+.va-screens-sortable-handler {
+  padding: 0 30px
+}

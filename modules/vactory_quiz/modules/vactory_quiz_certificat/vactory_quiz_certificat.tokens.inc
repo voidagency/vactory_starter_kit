@@ -60,7 +60,7 @@ function vactory_quiz_certificat_tokens($type, $tokens, array $data, array $opti
         case 'certificate_url':
           $replacements[$original] = isset($data['quiz_certificat_url']) && !empty($data['quiz_certificat_url']) ? $data['quiz_certificat_url'] : '';
           break;
-        case 'page_url':
+        case 'node_url':
           $replacements[$original] = isset($data['quiz_node_url']) && !empty($data['quiz_node_url']) ? $data['quiz_node_url'] : '';
           break;
         case 'user_first_name':

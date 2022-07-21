@@ -1,0 +1,17 @@
+langcode: fr
+status: true
+dependencies:
+  module:
+    - serialization
+    - user
+    - vactory_decoupled_webform
+id: vactory_decoupled_webform_rest_file_upload
+plugin_id: vactory_decoupled_webform_rest_file_upload
+granularity: resource
+configuration:
+  methods:
+    - POST
+  formats:
+    - json
+  authentication:
+    - cookie

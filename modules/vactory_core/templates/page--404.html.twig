@@ -9,20 +9,26 @@
     {{ page.header }}
 {% endif %}
 
-<main role="main">
-    {% if page.bridge %}
-        {{ page.bridge }}
-    {% endif %}
+{% if page.bridge %}
+    {{ page.bridge }}
+{% endif %}
+
+<main role="main" class="error-page error-page--404 page-404">
     {% block v_page_content %}
-        <div class="container page-content page-404">
-            <h2> {{ 'Oups :(' | trans }} </h2>
-            <p>
+      <div class="container">
+        <div class="error-page__wrapper">
+            <div class="error-page__image">
+              <img src="{{ base_path ~ directory ~ '/assets/img/page-introuvable.svg' }}" alt="page 404" class="img-fluid">
+            </div>
+            <h1 class="error-page__title paragraph__title text-uppercase"> {{ 'Page introuvable' | trans }} </h1>
+            <p class="error-page__description">
                 {{ 'It seems that this page does not exist ...' | t }}
             </p>
-            <p>
-                <a href="{{ url('<front>') }}" class="btn btn-primary">{{ 'Home'|t }}</a>
+            <p class="error-page__btn">
+                <a href="{{ url('<front>') }}" class="btn btn-primary">{{ "Retour à l'accueil"|t }}</a>
             </p>
         </div>
+      </div>
     {% endblock %}
 </main>
 

@@ -1,20 +1,24 @@
-<div class="appointment-type-wrapper">
-  <div class="appointment-type-intro">
-    <h2 class="appointment-type-intro-title text-uppercase">{{ 'Commencez dès maintenant, Prenez votre rendez-vous pour'|t }}</h2>
-  </div>
-  <div class="row justify-content-center borne-services__items">
-    {% set destination_route = 'vactory_appointment.site_appointment_submit_form' %}
-    {% for item in content.appointment_types %}
-      {% set image = file_url(item.image_uri) %}
-      <div class="col-12 col-sm-6 col-md-4 col-lg-3 pb-2" onClick="window.open('{{ url(destination_route, {'agency': item.agency, 'appointment_type': item.appointment_type_path}) }}', '_self')">
-        <article class="push-card push-card--service h-100 bg-white border border--active rounded shadow">
-          <div class="push-card__icon">
-            <img src="{{ image }}" alt="{{ item.title }}">
-          </div>
-          <hr>
-          <h3 class="push-card__title">{{ item.title }}</h3>
-        </article>
-      </div>
-    {% endfor %}
-  </div>
+<div class="appointment__wrapper py-4">
+
+  <h2 class="appointment__title text-center">{{ 'Commencez dès maintenant, Prenez votre rendez-vous pour'|t }}</h2>
+
+  {% if content is not empty %}
+    <div class="row justify-content-center borne-services__items">
+      {% set destination_route = 'vactory_appointment.site_appointment_submit_form' %}
+      {% for item in content.appointment_types %}
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+          <article class="card-appointment h-100 text-center bg-white border border--active rounded shadow cursor-pointer" onClick="window.open('{{ url(destination_route, {'agency': item.agency, 'appointment_type': item.appointment_type_path}) }}', '_self')">
+            <div class="card-appointment__image">
+              {% set image = file_url(item.image_uri) %}
+              <img src="{{ image }}" alt="{{ item.title }}" class="img-fluid">
+            </div>
+            <hr>
+            <h3 class="card-appointment__title">{{ item.title }}</h3>
+          </article>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <h2 class="text-center text-danger">{{ 'Aucun service trouvé.'|t }}</h2>
+  {% endif %}
 </div>

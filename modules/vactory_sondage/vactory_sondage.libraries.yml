@@ -2,4 +2,4 @@ style:
   version: VERSION
   css:
     theme:
-      scss/vactory_sondage.css: {}
+      ./assets/css/vactory_sondage.css: {}

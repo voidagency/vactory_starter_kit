@@ -1,11 +1,22 @@
+vactory_mediatheque_style:
+  css:
+    theme:
+      ./assets/css/vactory_mediatheque.css: {}
+
+vactory_mediatheque_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_mediatheque-rtl.css: {}
+
 vactory_mediatheque.term_generator:
   js:
-    js/term_generator.js: {}
+    ./assets/js/term_generator.js: {}
   dependencies:
     - core/jquery
     - core/drupalSettings
+
 vactory_mediatheque.vactory_views_filter_years:
   js:
-    js/vactory_views_filter_years.js: {}
+    ./assets/js/vactory_views_filter_years.js: {}
   dependencies:
     - core/jquery

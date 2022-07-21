@@ -1,0 +1,10 @@
+langcode: en
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_report_content
+name: 'Reported Content - Status'
+vid: reported_content_status
+description: 'Utiliser ce vocabulaire pour ajouter les status de contenu signalées'
+weight: 0

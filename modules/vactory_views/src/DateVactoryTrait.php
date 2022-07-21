@@ -36,6 +36,14 @@ trait DateVactoryTrait {
         $form[$value]['#attributes']['data-date-view-mode'] = 'years';
         $form[$value]['#attributes']['data-date-min-view-mode'] = 'years';
       }
+      // Add config for date_month filter.
+      if (isset($this->options['value']['type']) && $this->options['value']['type'] === 'date_month') {
+        $form[$value]['#attributes']['type'] = 'textfield';
+        $form[$value]['#attributes']['class'][] = 'js-date-month-filter';
+        $form[$value]['#attributes']['data-date-format'] = 'mm/yyyy';
+        $form[$value]['#attributes']['data-date-view-mode'] = 'months';
+        $form[$value]['#attributes']['data-date-min-view-mode'] = 'months';
+      }
     }
   }
 

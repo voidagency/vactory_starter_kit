@@ -2,13 +2,13 @@
 autocomplete:
   css:
     theme:
-      css/vactory-google-places-autocomplete.css: {}
+      ./assets/css/vactory-google-places-autocomplete.css: {}
   js:
-    js/vactory-google-places-autocomplete.js: {}
+    ./assets/js/vactory-google-places-autocomplete.js: {}
   dependencies:
     - core/drupalSettings
 map:
   js:
-    js/vactory-google-places-map.js: {}
+    ./assets/js/vactory-google-places-map.js: {}
   dependencies:
     - core/drupalSettings

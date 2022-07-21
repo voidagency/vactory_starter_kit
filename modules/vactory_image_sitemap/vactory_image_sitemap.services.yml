@@ -1,0 +1,3 @@
+services:
+  vactory_image_sitemap.generator:
+    class: '\Drupal\vactory_image_sitemap\Services\ImageSitemapGenerator'

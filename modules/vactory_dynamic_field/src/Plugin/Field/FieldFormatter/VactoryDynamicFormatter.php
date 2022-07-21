@@ -172,6 +172,18 @@ class VactoryDynamicFormatter extends FormatterBase {
           $value = array_merge($value, $info['options']['#default_value']);
           $value = \Drupal::service('vactory.views.to_api')->normalize($value);
         }
+
+        // Collection.
+        if ($info['type'] === 'json_api_collection' && !empty($value)) {
+          $value = array_merge($value, $info['options']['#default_value']);
+          $value = \Drupal::service('vactory_decoupled.jsonapi.generator')->fetch($value);
+        }
+
+        // Webform.
+        if ($info['type'] === 'webform_decoupled' && !empty($value)) {
+          $webform_id = $value['id'];
+          $value['elements'] = \Drupal::service('vactory.webform.normalizer')->normalize($webform_id);
+        }
       }
       elseif (is_array($value)) {
         // Go deeper.

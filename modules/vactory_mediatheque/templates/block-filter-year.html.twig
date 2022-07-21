@@ -5,7 +5,7 @@
       {% if current_active_year is defined and current_active_year is not empty %}
         {% set active = current_active_year == key ? 'active' : '' %}
       {% endif %}
-         <button  type="button" class="{{ active }} filter-tab btn btn-outline-secondary" data-filter-id="{{ key }}">{{ year }}</button>
+        <button  type="button" class="{{ active }} filter-tab btn btn-outline-secondary" data-filter-id="{{ key }}">{{ year }}</button>
     {% endfor %}
   </div>
 {% endif %}

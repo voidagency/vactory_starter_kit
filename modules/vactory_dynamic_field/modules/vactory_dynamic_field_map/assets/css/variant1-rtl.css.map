@@ -1,0 +1,1 @@
+{"version":3,"sources":["variant1.scss","variant1-rtl.css"],"names":[],"mappings":"AAAA;EACA,WAAA;EACA,aAAA;EAAA,aAAA;ACCA","file":"variant1-rtl.css","sourcesContent":["$is_rtl: true;\n @import \"__import.scss\";\n.vactory-map--variant1 {\n  width: 100%;\n  height: 400px;\n}\n",".vactory-map--variant1 {\n  width: 100%;\n  height: 400px;\n}\n"]}

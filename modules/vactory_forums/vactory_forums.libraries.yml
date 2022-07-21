@@ -1,0 +1,9 @@
+vactory_forums_style:
+  css:
+    theme:
+      ./assets/css/vactory_forums.css: {}
+
+vactory_forums_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_forums-rtl.css: {}

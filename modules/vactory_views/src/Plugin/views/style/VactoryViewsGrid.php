@@ -59,7 +59,7 @@ class VactoryViewsGrid extends StylePluginBase {
     // Bootstrap Grid Demo.
     $form['bootstrap_grid'] = [
       '#theme' => 'image',
-      '#uri' => drupal_get_path('module', 'vactory_views') . '/img/bootstrap-grid.png',
+      '#uri' => drupal_get_path('module', 'vactory_views') . '/assets/img/bootstrap-grid.png',
       '#alt' => $this->t('Bootstrap Grid'),
       '#width' => 1000,
       '#height' => 301,

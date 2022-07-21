@@ -1,0 +1,6 @@
+vactory_whatsapp.settings_form:
+  title: Vactory Whatsapp
+  description: Configure Vactory Whatsapp.
+  parent: system.admin_config_system
+  route_name: vactory_whatsapp.settings_form
+  weight: 10

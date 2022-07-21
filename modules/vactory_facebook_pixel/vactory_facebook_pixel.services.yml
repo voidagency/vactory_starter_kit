@@ -1,0 +1,6 @@
+services:
+  vactory_facebook_pixel.facebook_validation:
+    class: Drupal\vactory_facebook_pixel\Services\FacebookValidation
+    arguments: ['@config.factory', '@http_client', '@uuid', '@current_user',
+                '@request_stack', '@logger.factory', '@path.current',
+                '@path_alias.manager', '@path.matcher', '@language_manager', '@current_route_match']

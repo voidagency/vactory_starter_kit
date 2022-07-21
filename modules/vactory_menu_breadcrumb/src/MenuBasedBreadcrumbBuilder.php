@@ -2,11 +2,13 @@
 
 namespace Drupal\vactory_menu_breadcrumb;
 
+use Drupal\Component\Render\MarkupInterface;
 use Drupal\Component\Utility\SortArray;
 use Drupal\Core\Breadcrumb\Breadcrumb;
 use Drupal\Core\Breadcrumb\BreadcrumbBuilderInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Controller\TitleResolverInterface;
+use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Language\Language;
@@ -20,8 +22,13 @@ use Drupal\Core\Menu\MenuTreeParameters;
 use Drupal\Core\Routing\AdminContext;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
+use Drupal\domain\DomainInterface;
+use Drupal\domain\DomainNegotiatorInterface;
 use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
+use Drupal\vactory_core\Services\VactoryDevTools;
+use Drupal\views\ViewExecutable;
+use Drupal\views\Views;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\Access\AccessManagerInterface;
@@ -164,6 +171,20 @@ class MenuBasedBreadcrumbBuilder implements BreadcrumbBuilderInterface {
   private $contentLanguage;
 
   /**
+   * Vactory devtools service.
+   *
+   * @var \Drupal\vactory_core\Services\VactoryDevTools
+   */
+  protected $vactoryDevTools;
+
+  /**
+   * Entity repository interface.
+   *
+   * @var \Drupal\Core\Entity\EntityRepositoryInterface
+   */
+  protected $entityRepository;
+
+  /**
    * {@inheritdoc}
    */
   public function __construct(
@@ -180,7 +201,9 @@ class MenuBasedBreadcrumbBuilder implements BreadcrumbBuilderInterface {
     TitleResolverInterface $title_resolver,
     RequestStack $request_stack,
     LanguageManagerInterface $language_manager,
-    EntityTypeManagerInterface $entity_type_manager
+    EntityTypeManagerInterface $entity_type_manager,
+    VactoryDevTools $vactoryDevTools,
+    EntityRepositoryInterface $entityRepository
   ) {
     $this->context = $context;
     $this->accessManager = $access_manager;
@@ -197,6 +220,8 @@ class MenuBasedBreadcrumbBuilder implements BreadcrumbBuilderInterface {
     $this->languageManager = $language_manager;
     $this->entityTypeManager = $entity_type_manager;
     $this->config = $this->configFactory->get('vactory_menu_breadcrumb.settings');
+    $this->vactoryDevTools = $vactoryDevTools;
+    $this->entityRepository = $entityRepository;
   }
 
   /**
@@ -334,7 +359,7 @@ class MenuBasedBreadcrumbBuilder implements BreadcrumbBuilderInterface {
       // any breadcrumb generated here.
       $site_config = $this->configFactory->get('system.site');
       $breadcrumb->addCacheableDependency($site_config);
-      $breadcrumb->addCacheContexts(['url.path']);
+      $breadcrumb->addCacheContexts(['url.path', 'url.query_args']);
 
       // Changing any module settings will invalidate the breadcrumb:
       $breadcrumb->addCacheableDependency($this->config);
@@ -443,7 +468,7 @@ class MenuBasedBreadcrumbBuilder implements BreadcrumbBuilderInterface {
 
       // Because this breadcrumb builder is path and config based, vary cache
       // by the 'url.path' cache context and config changes.
-      $breadcrumb->addCacheContexts(['url.path']);
+      $breadcrumb->addCacheContexts(['url.path', 'url.query_args']);
       $breadcrumb->addCacheableDependency($this->config);
       $i = 0;
 
@@ -541,7 +566,99 @@ class MenuBasedBreadcrumbBuilder implements BreadcrumbBuilderInterface {
       if ($this->config->get(VactoryBreadcrumbConstants::REMOVE_REPEATED_SEGMENTS)) {
         $links = $this->removeRepeatedSegments($links);
       }
+
+      // Include views filtered taxonomy term name in breadcrumb links.
+      if ($this->config->get('include_views_taxonomy_filter')) {
+        $params = \Drupal::routeMatch()->getParameters()->all();
+        if (isset($params['view_id']) && isset($params['display_id'])) {
+          $view = Views::getView($params['view_id']);
+          $view->setDisplay($params['display_id']);
+          $query_params = \Drupal::request()->query->all();
+          if (!empty($query_params)) {
+            $this->updateAccordingToViewsQueryParams($links, $query_params, $view);
+            $this->removeSuccessiveDuplicates($links);
+          }
+        }
+      }
+
+      if ($this->config->get('include_domain') && \Drupal::moduleHandler()->moduleExists('domain_access')) {
+        /** @var DomainNegotiatorInterface $domain_nigociator */
+        $domain_nigociator = \Drupal::service('domain.negotiator');
+        $active_domain = $domain_nigociator->getActiveDomain();
+        if ($active_domain instanceof DomainInterface) {
+          $active_domain = $this->entityRepository->getTranslationFromContext($active_domain, $this->contentLanguage);
+          array_unshift($links, Link::createFromRoute($active_domain->label(), '<front>'));
+        }
+      }
+
       return $breadcrumb->setLinks($links);
+    }
+  }
+
+  /**
+   * Update breadcrumb links according to views query params.
+   */
+  public function updateAccordingToViewsQueryParams(&$links, $query_params, ViewExecutable $view) {
+    $query_params_keys = array_keys($query_params);
+    $filters = $view->display_handler->display['display_options']['filters'];
+    $concerned_params = [];
+    $filters = array_filter($filters, function ($filter) use ($query_params_keys, &$concerned_params) {
+      $match_filter_id = in_array($filter['id'], $query_params_keys);
+      $match_filter_identifier = FALSE;
+      if (isset($filter['expose']['identifier'])) {
+        $match_filter_identifier = in_array($filter['expose']['identifier'], $query_params_keys);
+      }
+      if (
+        ($match_filter_id || $match_filter_identifier) &&
+        $filter['plugin_id'] === 'taxonomy_index_tid'
+      ) {
+        if ($match_filter_id) {
+          $concerned_params[] = $filter['id'];
+        }
+        if ($match_filter_identifier) {
+          $concerned_params[] = $filter['expose']['identifier'];
+        }
+        return TRUE;
+      }
+
+      return FALSE;
+    });
+    if (!empty($filters)) {
+      foreach ($concerned_params as $key) {
+        $value = $query_params[$key];
+        if (empty($value) || !is_numeric($value)) {
+          continue;
+        }
+        $term = $this->entityTypeManager->getStorage('taxonomy_term')
+          ->load($value);
+        $term = $this->entityRepository->getTranslationFromContext($term, $this->contentLanguage);
+        $links[] = Link::createFromRoute($term->label(), '<none>');
+      }
+    }
+  }
+
+  /**
+   * Remove successive duplicates.
+   */
+  public function removeSuccessiveDuplicates(&$links) {
+    foreach ($links as $key => $link) {
+      if (isset($links[$key+1])) {
+        $link_text = $link->getText();
+        if ($link_text instanceof MarkupInterface) {
+          $link_text = $link_text->__toString();
+        }
+        $next_link_text = $links[$key+1]->getText();
+        if ($next_link_text instanceof MarkupInterface) {
+          $next_link_text = $next_link_text->__toString();
+        }
+        if (is_string($link_text) && is_string($next_link_text)) {
+          $link_text = $this->vactoryDevTools->unaccent($link_text);
+          $next_link_text = $this->vactoryDevTools->unaccent($next_link_text);
+          if (strtolower($link_text) === strtolower($next_link_text)) {
+            unset($links[$key]);
+          }
+        }
+      }
     }
   }
 

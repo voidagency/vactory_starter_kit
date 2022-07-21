@@ -19,17 +19,17 @@
 {% spaceless %}
   <div class="accordion accordion--faq" id="{{ id }}">
     {% for item in items %}
-      <div class="accordion__item card">
-        <div class="card-header">
+      <div class="accordion-item">
+        <div class="accordion-header" id="heading{{id ~ loop.index}}">
           <h3 class="mb-0">
-            <button class="btn btn-link" data-toggle="collapse" data-target="{{'#' ~ id ~ loop.index}}" aria-expanded="true" aria-controls="{{id ~ loop.index}}">
+            <button type="button" class="btn btn-link" data-toggle="collapse" data-target="{{'#' ~ id ~ loop.index}}" aria-expanded="false" aria-controls="{{id ~ loop.index}}">
               {{ item.question }}
             </button>
           </h3>
         </div>
 
-        <div id="{{id ~ loop.index}}" class="collapse" aria-labelledby="{{id ~ loop.index}}" data-parent="{{'#' ~ id}}">
-          <div class="card-body">
+        <div id="{{id ~ loop.index}}" class="collapse" aria-labelledby="heading{{id ~ loop.index}}" data-parent="{{'#' ~ id}}">
+          <div class="accordion-body">
             {{ item.answer|raw }}
           </div>
         </div>

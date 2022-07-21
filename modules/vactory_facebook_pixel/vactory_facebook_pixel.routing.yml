@@ -1,0 +1,7 @@
+vactory_facebook_pixel.settings_form:
+  path: '/admin/config/system/vactory_facebook_pixel'
+  defaults:
+    _form: '\Drupal\vactory_facebook_pixel\Form\FacebookPixelSettingsForm'
+    _title: 'Facebook Pixel Settings'
+  requirements:
+    _permission: 'administer site configuration'
