@@ -11,6 +11,7 @@ dependencies:
     - field.field.node.vactory_testimonials.field_vactory_profils
     - field.field.node.vactory_testimonials.field_vactory_role
     - field.field.node.vactory_testimonials.field_vactory_seo_status
+    - field.field.node.vactory_testimonials.field_vactory_tags
     - node.type.vactory_testimonials
   module:
     - smart_trim
@@ -21,29 +22,29 @@ bundle: vactory_testimonials
 mode: teaser
 content:
   body:
-    label: hidden
     type: smart_trim
-    weight: 1
+    label: hidden
     settings:
       trim_length: 50
       trim_type: words
       trim_suffix: ...
+      wrap_output: false
       wrap_class: trimmed
-      more_text: More
+      more_link: false
       more_class: more-link
+      more_text: More
       summary_handler: full
       trim_options:
         text: true
         trim_zero: false
-      wrap_output: false
-      more_link: false
     third_party_settings: {  }
+    weight: 1
     region: content
   links:
-    weight: 0
-    region: content
     settings: {  }
     third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   addtoany: true
   field_vactory_address: true
@@ -53,6 +54,6 @@ hidden:
   field_vactory_profils: true
   field_vactory_role: true
   field_vactory_seo_status: true
+  field_vactory_tags: true
   langcode: true
-  node_banner_image: true
   search_api_excerpt: true
