@@ -5,43 +5,50 @@ dependencies:
     - core.entity_view_mode.node.card
     - field.field.node.vactory_quiz.body
     - field.field.node.vactory_quiz.field_quiz_questions
+    - field.field.node.vactory_quiz.field_vactory_tags
     - node.type.vactory_quiz
-  enforced:
-    module:
-      - vactory_quiz
   module:
     - text
     - user
     - vactory_quiz
+  enforced:
+    module:
+      - vactory_quiz
 id: node.vactory_quiz.card
 targetEntityType: node
 bundle: vactory_quiz
 mode: card
 content:
   body:
-    label: hidden
     type: text_default
-    weight: 101
+    label: hidden
     settings: {  }
     third_party_settings: {  }
+    weight: 101
     region: content
   field_quiz_questions:
-    weight: 102
+    type: vactory_quiz_question_formatter
     label: hidden
     settings: {  }
     third_party_settings: {  }
-    type: vactory_quiz_question_formatter
+    weight: 102
     region: content
-  links:
-    weight: 100
-    region: content
+  flag_liked_content:
     settings: {  }
     third_party_settings: {  }
+    weight: 10
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
 hidden:
   addtoany: true
   field_content_access_groups: true
   field_content_access_roles: true
   field_content_access_users: true
+  field_vactory_tags: true
   langcode: true
   mail_message: true
   mail_subject: true
