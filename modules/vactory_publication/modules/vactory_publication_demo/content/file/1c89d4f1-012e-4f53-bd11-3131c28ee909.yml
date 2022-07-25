@@ -1,0 +1,33 @@
+_meta:
+  version: '1.0'
+  entity_type: file
+  uuid: 1c89d4f1-012e-4f53-bd11-3131c28ee909
+  bundle: document
+  default_langcode: fr
+default:
+  uid:
+    -
+      target_id: 1
+  filename:
+    -
+      value: doc1_doc_4.pdf
+  uri:
+    -
+      value: 'public://publication/2022-07/doc1_doc_4.pdf'
+  filemime:
+    -
+      value: application/pdf
+  filesize:
+    -
+      value: 12687
+  status:
+    -
+      value: true
+  created:
+    -
+      value: 1658398778
+  path:
+    -
+      alias: ''
+      langcode: fr
+      pathauto: 1

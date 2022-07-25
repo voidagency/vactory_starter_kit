@@ -1,0 +1,32 @@
+_meta:
+  version: '1.0'
+  entity_type: media
+  uuid: 52dc1328-3113-4e8c-ae37-501846e831e1
+  bundle: remote_video
+  default_langcode: fr
+  depends:
+    5fc7666c-bc63-4267-84cf-09fc431c7c79: user
+default:
+  status:
+    -
+      value: true
+  uid:
+    -
+      entity: 5fc7666c-bc63-4267-84cf-09fc431c7c79
+  name:
+    -
+      value: '5 Front-end Development Skills to Land Your First Job'
+  created:
+    -
+      value: 1657207752
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: fr
+      pathauto: 0
+  field_media_oembed_video:
+    -
+      value: 'https://www.youtube.com/watch?v=-_X6PhkjpzU'

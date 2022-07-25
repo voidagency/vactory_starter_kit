@@ -1,0 +1,36 @@
+_meta:
+  version: '1.0'
+  entity_type: media
+  uuid: 84464c88-30e3-43c0-af21-4b4208e8e426
+  bundle: image
+  default_langcode: fr
+  depends:
+    7817a5b6-1390-4258-b9e8-28953277f101: file
+default:
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  name:
+    -
+      value: news8.png
+  created:
+    -
+      value: 1657193877
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: fr
+      pathauto: 0
+  field_media_image:
+    -
+      entity: 7817a5b6-1390-4258-b9e8-28953277f101
+      alt: test
+      title: ''
+      width: 1280
+      height: 720

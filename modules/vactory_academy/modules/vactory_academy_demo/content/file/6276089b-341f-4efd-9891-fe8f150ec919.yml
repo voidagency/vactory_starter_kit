@@ -1,0 +1,33 @@
+_meta:
+  version: '1.0'
+  entity_type: file
+  uuid: 6276089b-341f-4efd-9891-fe8f150ec919
+  bundle: document
+  default_langcode: fr
+default:
+  uid:
+    -
+      target_id: 1
+  filename:
+    -
+      value: cours1_poly.pdf
+  uri:
+    -
+      value: 'public://2022-07/cours1_poly.pdf'
+  filemime:
+    -
+      value: application/pdf
+  filesize:
+    -
+      value: 3588269
+  status:
+    -
+      value: true
+  created:
+    -
+      value: 1657207865
+  path:
+    -
+      alias: ''
+      langcode: fr
+      pathauto: 1

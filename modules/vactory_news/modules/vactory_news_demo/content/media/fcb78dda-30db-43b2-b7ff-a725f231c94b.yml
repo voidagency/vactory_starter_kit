@@ -1,0 +1,31 @@
+_meta:
+  version: '1.0'
+  entity_type: media
+  uuid: fcb78dda-30db-43b2-b7ff-a725f231c94b
+  bundle: image
+  default_langcode: fr
+  depends:
+    c6f3e8ff-1d23-41b8-b7db-5df0a8a333bf: file
+default:
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  name:
+    -
+      value: photo-1558174685-430919a96c8d.jpeg
+  created:
+    -
+      value: 1592425690
+  revision_translation_affected:
+    -
+      value: true
+  field_media_image:
+    -
+      entity: c6f3e8ff-1d23-41b8-b7db-5df0a8a333bf
+      alt: 'News 1'
+      title: ''
+      width: 1051
+      height: 701

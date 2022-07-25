@@ -1,0 +1,31 @@
+_meta:
+  version: '1.0'
+  entity_type: media
+  uuid: 451082e6-1d03-4193-b078-13df227cabbe
+  bundle: image
+  default_langcode: fr
+  depends:
+    7eddfa72-2c78-49eb-b25d-5bf41a7b6c3e: file
+default:
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  name:
+    -
+      value: photo-1585829365295-ab7cd400c167.jpeg
+  created:
+    -
+      value: 1592425801
+  revision_translation_affected:
+    -
+      value: true
+  field_media_image:
+    -
+      entity: 7eddfa72-2c78-49eb-b25d-5bf41a7b6c3e
+      alt: 'News 3'
+      title: ''
+      width: 750
+      height: 500

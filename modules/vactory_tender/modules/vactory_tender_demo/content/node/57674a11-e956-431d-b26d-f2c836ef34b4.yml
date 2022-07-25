@@ -1,0 +1,63 @@
+_meta:
+  version: '1.0'
+  entity_type: node
+  uuid: 57674a11-e956-431d-b26d-f2c836ef34b4
+  bundle: vactory_tender
+  default_langcode: fr
+  depends:
+    965da9aa-170d-499a-b3bd-35e1dc0f122f: media
+default:
+  revision_uid:
+    -
+      target_id: 1
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  title:
+    -
+      value: 'Offre N°07/2020'
+  created:
+    -
+      value: 1657298029
+  promote:
+    -
+      value: true
+  sticky:
+    -
+      value: false
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: fr
+      pathauto: 0
+  node_summary:
+    -
+      value: 'Vivamus aliquet elit ac nisl. Vestibulum rutrum, mi nec elementum vehicula, eros quam gravida nisl, id fringilla neque ante vel mi. Vivamus consectetuer hendrerit lacus. Aliquam eu nunc. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos.'
+  content_translation_source:
+    -
+      value: und
+  content_translation_outdated:
+    -
+      value: false
+  field_vactory_date:
+    -
+      value: '2022-10-22'
+  field_vactory_excerpt:
+    -
+      value: "<p>Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem. Vivamus magna justo, lacinia eget consectetur sed, convallis at tellus. Quisque velit nisi, pretium ut lacinia in, elementum id enim. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec velit neque, auctor sit amet aliquam vel, ullamcorper sit amet ligula. Proin eget tortor risus. Vivamus magna justo, lacinia eget consectetur sed, convallis at tellus. Pellentesque in ipsum id orci porta dapibus. Pellentesque in ipsum id orci porta dapibus. Sed porttitor lectus nibh. Praesent sapien massa, convallis a pellentesque nec, egestas non nisi. Vivamus suscipit tortor eget felis porttitor volutpat.</p>\r\n"
+      format: basic_html
+  field_vactory_media_document:
+    -
+      entity: 965da9aa-170d-499a-b3bd-35e1dc0f122f
+  field_vactory_media_file:
+    -
+      entity: 965da9aa-170d-499a-b3bd-35e1dc0f122f
+  field_vactory_reference:
+    -
+      value: N°07/2020
