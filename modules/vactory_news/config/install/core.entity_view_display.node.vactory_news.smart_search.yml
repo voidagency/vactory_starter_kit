@@ -11,6 +11,7 @@ dependencies:
     - field.field.node.vactory_news.field_vactory_meta_tags
     - field.field.node.vactory_news.field_vactory_news_theme
     - field.field.node.vactory_news.field_vactory_seo_status
+    - field.field.node.vactory_news.field_vactory_tags
     - node.type.vactory_news
   module:
     - datetime
@@ -23,25 +24,24 @@ bundle: vactory_news
 mode: smart_search
 content:
   field_vactory_date:
-    weight: 2
+    type: datetime_custom
     label: hidden
     settings:
       timezone_override: ''
       date_format: 'd | M | Y'
     third_party_settings: {  }
-    type: datetime_custom
+    weight: 2
     region: content
   field_vactory_excerpt:
-    weight: 1
+    type: vactory_field_excerpt_formatter
     label: hidden
     settings:
       trim_length: '170'
     third_party_settings: {  }
-    type: vactory_field_excerpt_formatter
+    weight: 1
     region: content
   field_vactory_media:
     type: lazy_image
-    weight: 3
     label: hidden
     settings:
       desktop_1x: vactory_two_cols_x1
@@ -54,12 +54,18 @@ content:
       mobile_2x: vactory_two_cols_x2
       lqip: lqip
     third_party_settings: {  }
+    weight: 3
     region: content
-  links:
-    weight: 0
-    region: content
+  flag_liked_content:
     settings: {  }
     third_party_settings: {  }
+    weight: 10
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   addtoany: true
   body: true
@@ -67,6 +73,7 @@ hidden:
   field_vactory_meta_tags: true
   field_vactory_news_theme: true
   field_vactory_seo_status: true
+  field_vactory_tags: true
   langcode: true
   notification_message: true
   notification_title: true
