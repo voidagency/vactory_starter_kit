@@ -32,12 +32,19 @@ class VactoryCrossContentEnhancer extends ResourceFieldEnhancerBase implements C
   protected $entityTypeManager;
 
   /**
+   * The vactory manager.
+   *
+   * @var \Drupal\vactory_core\Vactory
+   */
+  protected $vactory;
+
+  /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, array $plugin_definition, EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct(array $configuration, $plugin_id, array $plugin_definition, EntityTypeManagerInterface $entity_type_manager, Vactory $vactory) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->entityTypeManager = $entity_type_manager;
-
+    $this->vactory = $vactory;
   }
 
   /**
@@ -48,7 +55,8 @@ class VactoryCrossContentEnhancer extends ResourceFieldEnhancerBase implements C
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('vactory')
     );
   }
 
@@ -70,7 +78,7 @@ class VactoryCrossContentEnhancer extends ResourceFieldEnhancerBase implements C
       'terms' => '',
       'nombre_elements' => '',
       'more_link' => '',
-      'more_link_label' => ''
+      'more_link_label' => '',
     ];
 
     $node_type = array_filter($entity->referencedEntities(), function ($element) {
@@ -82,13 +90,14 @@ class VactoryCrossContentEnhancer extends ResourceFieldEnhancerBase implements C
       $config[$key] = $node_type->getThirdPartySetting('vactory_cross_content', $key, $value);
 
       if ($key === 'more_link' && !empty($config[$key])) {
-        $config[$key] = str_replace('/backend', '', Url::fromUserInput($config[$key])->toString());
+        $config[$key] = str_replace('/backend', '', Url::fromUserInput($config[$key])
+          ->toString());
       }
     }
 
     if (empty($related_nodes) || !isset($related_nodes)) {
-      $taxonomy = Vactory::getTaxonomyList($entity->bundle());
-      $taxonomy_fields = array_map(function($element) {
+      $taxonomy = $this->vactory->getTaxonomyList($entity->bundle());
+      $taxonomy_fields = array_map(function ($element) {
         return $element[1];
       }, $taxonomy);
       $taxonomy_fields = reset($taxonomy_fields);
@@ -103,12 +112,28 @@ class VactoryCrossContentEnhancer extends ResourceFieldEnhancerBase implements C
         $query->execute();
 
       $related_nodes = array_values($query);
-    } else {
+    }
+    else {
       $related_nodes = explode(' ', $related_nodes);
     }
     unset($config['terms']);
 
     $related_nodes_list = array_values(Node::loadMultiple($related_nodes));
+
+    $option = ['absolute' => TRUE];
+    $url = Url::fromRoute('<front>', [], $option);
+    $jsonapi_settings = \Drupal::config('jsonapi_extras.settings');
+    $path_prefix = $jsonapi_settings->get('path_prefix');
+    $res = [];
+    if (!empty($related_nodes_list)) {
+      foreach ($related_nodes_list as $node) {
+        $res[] = [
+          'uuid' => $node->uuid(),
+          'type' => $node->bundle(),
+          'path' => $url->toString() . '/' . $path_prefix . '/node/' . $node->bundle() . '/' . $node->uuid(),
+        ];
+      }
+    }
 
     /*
      * Allow other modules to override nodes format.
@@ -120,9 +145,10 @@ class VactoryCrossContentEnhancer extends ResourceFieldEnhancerBase implements C
      * @endcode
      */
     $content_type = $entity->bundle();
-    \Drupal::moduleHandler()->alter('json_api_vcc', $related_nodes_list, $content_type);
+    \Drupal::moduleHandler()
+      ->alter('json_api_vcc', $related_nodes_list, $content_type);
 
-    $config['nodes'] = $related_nodes_list;
+    $config['nodes'] = $res;
     $data = $config;
     return $data;
   }
