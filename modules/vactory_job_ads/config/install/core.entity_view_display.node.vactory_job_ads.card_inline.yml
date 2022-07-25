@@ -13,99 +13,105 @@ dependencies:
     - field.field.node.vactory_job_ads.field_vactory_meta_tags
     - field.field.node.vactory_job_ads.field_vactory_profession
     - field.field.node.vactory_job_ads.field_vactory_seo_status
+    - field.field.node.vactory_job_ads.field_vactory_tags
     - field.field.node.vactory_job_ads.field_vactory_telephone
     - node.type.vactory_job_ads
   module:
     - smart_trim
     - text
     - user
-    - vactory_field
 id: node.vactory_job_ads.card_inline
 targetEntityType: node
 bundle: vactory_job_ads
 mode: card_inline
 content:
   body:
-    label: hidden
     type: smart_trim
-    weight: 0
+    label: hidden
     settings:
       trim_length: 50
       trim_type: words
       trim_suffix: ...
+      wrap_output: false
       wrap_class: trimmed
-      more_text: More
+      more_link: false
       more_class: more-link
+      more_text: More
       summary_handler: full
       trim_options:
         text: true
         trim_zero: false
-      wrap_output: false
-      more_link: false
     third_party_settings: {  }
+    weight: 0
     region: content
   field_vactory_address:
-    weight: 4
+    type: text_default
     label: hidden
     settings: {  }
     third_party_settings: {  }
-    type: text_default
+    weight: 4
     region: content
   field_vactory_city:
-    weight: 7
+    type: entity_reference_label
     label: hidden
     settings:
       link: false
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 7
     region: content
   field_vactory_contract:
-    weight: 6
+    type: entity_reference_label
     label: hidden
     settings:
       link: false
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 6
     region: content
   field_vactory_description:
-    weight: 1
+    type: text_default
     label: hidden
     settings: {  }
     third_party_settings: {  }
-    type: text_default
+    weight: 1
     region: content
   field_vactory_email:
-    weight: 2
+    type: basic_string
     label: hidden
     settings: {  }
     third_party_settings: {  }
-    type: basic_string
+    weight: 2
     region: content
   field_vactory_profession:
-    weight: 5
+    type: entity_reference_label
     label: hidden
     settings:
       link: false
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 5
     region: content
   field_vactory_telephone:
-    weight: 3
+    type: string
     label: hidden
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 3
     region: content
-  links:
-    weight: 8
-    region: content
+  flag_liked_content:
     settings: {  }
     third_party_settings: {  }
+    weight: 10
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 8
+    region: content
 hidden:
   addtoany: true
   comment: true
   field_vactory_meta_tags: true
   field_vactory_seo_status: true
+  field_vactory_tags: true
   langcode: true
   search_api_excerpt: true
