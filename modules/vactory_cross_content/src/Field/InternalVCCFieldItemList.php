@@ -6,6 +6,7 @@ use Drupal\block\Entity\Block;
 use Drupal\Core\Field\FieldItemList;
 use Drupal\Core\TypedData\ComputedItemListTrait;
 use Drupal\node\Entity\NodeType;
+use Drupal\node\NodeInterface;
 
 /**
  * Defines a vcc list class for better normalization targeting.
@@ -28,12 +29,13 @@ class InternalVCCFieldItemList extends FieldItemList {
       return $value;
     }
     $value = [
-      'ids' => [],
+      'nodes' => [],
       'more_link' => '',
       'more_link_label' => '',
       'display_mode' => '',
       'limit' => 0,
     ];
+
     if (\Drupal::moduleHandler()->moduleExists('vactory_decoupled')) {
       // Get vcc blocks here.
       $banner_plugin_filter = [
@@ -63,7 +65,25 @@ class InternalVCCFieldItemList extends FieldItemList {
               $nids = array_map(function ($row) {
                 return $row->nid;
               }, $view->result);
-              $value['ids'] = $nids;
+              $value['nodes'] = $nids;
+            }
+          }
+          if (isset($value['nodes']) && !empty($value['nodes'])) {
+            $nodes = \Drupal::entityTypeManager()->getStorage('node')
+              ->loadMultiple($value['nodes']);
+            $value['nodes'] = [];
+            /** @var NodeInterface $node */
+            foreach ($nodes as $node) {
+              $normalized_node = [
+                'title' => $node->label(),
+              ];
+              $context = [
+                'node' => $node,
+                'node_type' => $node->bundle(),
+              ];
+              $base_node_type = $node->bundle();
+              \Drupal::moduleHandler()->alter('jsonapi_vcc_normalized_node', $normalized_node, $context, $base_node_type);
+              $value['nodes'][] = $normalized_node;
             }
           }
         }
