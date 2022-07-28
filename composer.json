@@ -251,5 +251,9 @@
         }
       }
     }
-  ]
+  ],
+  "config": {
+    "disable-tls": true,
+    "secure-http": false
+  }
 }

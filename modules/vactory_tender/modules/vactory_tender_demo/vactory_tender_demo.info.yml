@@ -1,0 +1,9 @@
+name: 'Tender - Default content demo'
+type: module
+description: 'Tender default content.'
+package: Vactory
+core: 8.x
+core_version_requirement: ^8 || ^9
+dependencies:
+  - default_content:default_content
+  - vactory_tender:vactory_tender

@@ -1,0 +1,340 @@
+_meta:
+  version: '1.0'
+  entity_type: node
+  uuid: 627a6b8b-1de3-4f09-a3f3-aeb225ff9be2
+  bundle: vactory_academy
+  default_langcode: fr
+  depends:
+    e38abbc7-6020-4038-8cf3-acd1e4824f7a: file
+    5fc7666c-bc63-4267-84cf-09fc431c7c79: user
+    3276aef7-468b-4ef7-b965-8893b87049ad: media
+    32f63e87-f6d2-4869-a9c5-e5405344f482: taxonomy_term
+    8e87411e-f661-43bc-bec0-6ecb7a40e358: media
+default:
+  revision_uid:
+    -
+      target_id: 1
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  title:
+    -
+      value: 'Drupal 8 de A à Z | Guide Complet'
+  created:
+    -
+      value: 1657272335
+  promote:
+    -
+      value: true
+  sticky:
+    -
+      value: false
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: /academy-courses/drupal-8-de-z-guide-complet
+      langcode: fr
+      pathauto: 1
+  node_summary:
+    -
+      value: ' Drupal 8 de A à Z | Guide Complet'
+  content_translation_source:
+    -
+      value: und
+  content_translation_outdated:
+    -
+      value: false
+  comment:
+    -
+      status: 0
+      cid: 0
+      last_comment_timestamp: 1657272737
+      last_comment_name: ''
+      last_comment_uid: 1
+      comment_count: 0
+  field_academy_duree:
+    -
+      value: 12h30
+  field_vactory_academy_langue:
+    -
+      value: Français
+  field_vactory_date:
+    -
+      value: '2022-07-29'
+  field_vactory_excerpt:
+    -
+      value: "<p>Découvrez Drupal 9, la dernière version du meilleur CMS sur le marché. Construisez des sites robustes rapidement et effi</p>\r\n"
+      format: basic_html
+  field_vactory_file:
+    -
+      entity: e38abbc7-6020-4038-8cf3-acd1e4824f7a
+      display: true
+      description: ''
+  field_vactory_instructor:
+    -
+      entity: 5fc7666c-bc63-4267-84cf-09fc431c7c79
+  field_vactory_media:
+    -
+      entity: 3276aef7-468b-4ef7-b965-8893b87049ad
+  field_vactory_meta_tags:
+    -
+      value:
+        og_image: '[node:field_vactory_media:entity:field_media_image:vactory_opengraph_image_style:url]'
+        og_image_url: '[node:field_vactory_media:entity:field_media_image:vactory_opengraph_image_style:url]'
+        og_image_secure_url: '[node:field_vactory_media:entity:field_media_image:vactory_opengraph_image_style:url]'
+  field_vactory_paragraphs:
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: a74c53dc-9259-495c-969b-89bccf645919
+          bundle: vactory_component
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1657272549
+          behavior_settings:
+            -
+              value: {  }
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_vactory_component:
+            -
+              widget_id: 'vactory_froala:7'
+              widget_data: '{"extra_field":{"title":""},"0":{"description":{"value":"<p>&nbsp;<\/p>\r\n\r\n<ul>\r\n\t<li>Savoir utiliser toutes les possibilit\u00e9s de Drupal 8 coeur pour g\u00e9rer et configurer des sites Internet,<\/li>\r\n\t<li>Installer et configurer le CMS Drupal 8,<\/li>\r\n\t<li>Comprendre et g\u00e9rer les contenus sous Drupal 8,<\/li>\r\n<\/ul>\r\n\r\n<p>&nbsp;<\/p>\r\n","format":"full_html"},"_weight":"1"},"1":{"description":{"value":"<p>&nbsp;<\/p>\r\n\r\n<ul>\r\n\t<li>G\u00e9rer les utilisateurs et leurs r\u00f4les avec le CMS Drupal 8,<\/li>\r\n\t<li>Installer, configurer et modifier un th\u00e8me sous Drupal 8,<\/li>\r\n\t<li>Maintenir, sauvegarder et optimiser un site web sous Drupal 8.<\/li>\r\n<\/ul>\r\n\r\n<p>&nbsp;<\/p>\r\n","format":"full_html"},"_weight":"2"}}'
+          field_vactory_flag:
+            -
+              value: true
+          field_vactory_flag_2:
+            -
+              value: false
+          field_vactory_title:
+            -
+              value: 'Ce que vous apprendrez'
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: a4f2b138-2263-47ac-a241-debf113f4824
+          bundle: vactory_component
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1657272598
+          behavior_settings:
+            -
+              value: {  }
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_vactory_component:
+            -
+              widget_id: 'vactory_bootstrap:4'
+              widget_data: '{"extra_field":{"intro":"","bigtitle":""},"0":{"title":"Pr\u00e9sentation de la formation","description":{"value":"<p>Pr\u00e9sentation de la formation<\/p>\r\n","format":"full_html"},"_weight":"1"},"1":{"title":"Introduction \u00e0 Drupal 8 ","description":{"value":"<p>Introduction \u00e0 Drupal 8&nbsp;<\/p>\r\n","format":"full_html"},"_weight":"2"},"2":{"title":"Gestion des contenus ","description":{"value":"<p>Gestion des contenus&nbsp;<\/p>\r\n","format":"full_html"},"_weight":"3"}}'
+          field_vactory_flag:
+            -
+              value: true
+          field_vactory_flag_2:
+            -
+              value: false
+          field_vactory_title:
+            -
+              value: 'Contenu du cours'
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: 1e1aa28f-b652-4185-93d3-30978f33e958
+          bundle: vactory_component
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1657272671
+          behavior_settings:
+            -
+              value: {  }
+          revision_translation_affected:
+            -
+              value: true
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_vactory_component:
+            -
+              widget_id: 'vactory_froala:6'
+              widget_data: '[{"title":"","description":{"value":"<p>&nbsp;<\/p>\r\n\r\n<ul>\r\n\t<li>Avoir une bonne connaissance du web en r\u00e8gle g\u00e9n\u00e9rale,<\/li>\r\n\t<li>Avoir des connaissances sur les CMS en r\u00e8gle g\u00e9n\u00e9rale,<\/li>\r\n\t<li>Avoir des notions en HTML et CSS,<\/li>\r\n\t<li>Avoir suivi la formation Drupal 7 est un plus.<\/li>\r\n<\/ul>\r\n\r\n<p>&nbsp;<\/p>\r\n","format":"full_html"}}]'
+          field_vactory_flag:
+            -
+              value: true
+          field_vactory_flag_2:
+            -
+              value: false
+          field_vactory_title:
+            -
+              value: Prérequis
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: 881e4b8c-b1d3-48eb-8b1c-58f988706d93
+          bundle: vactory_component
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1657272707
+          behavior_settings:
+            -
+              value: {  }
+          revision_translation_affected:
+            -
+              value: true
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_vactory_component:
+            -
+              widget_id: 'vactory_froala:6'
+              widget_data: '[{"title":"","description":{"value":"<p>Enti\u00e8rement refait avec&nbsp;<strong>Symfony<\/strong>, le&nbsp;<strong>CMS Drupal 8<\/strong>&nbsp;est encore plus robuste et performant.&nbsp;<\/p>\r\n\r\n<p>Cette formation Drupal 8 pour les webmasters vous permet de d\u00e9couvrir Drupal 8 depuis son installation jusqu\u2019\u00e0 sa maintenance. Ce qui va vous permettre de cr\u00e9er un site fonctionnel, performant et s\u00e9curit\u00e9 en toute facilit\u00e9 et confiance.&nbsp;<\/p>\r\n\r\n<p>Durant cette formation Drupal 8, vous allez apprendre comment installer et configurer le CMS Drupal 8,<strong>&nbsp;enrichir votre site&nbsp;<\/strong>avec des modules, lui mettre une belle couche graphique facilement avec des th\u00e8mes, cr\u00e9er des contenus via les Views, rendre le site accessible \u00e0 votre audience internationale en ajoutant le multilingue, g\u00e9rer vos utilisateurs.<\/p>\r\n\r\n<p>Et enfin&nbsp;<strong>s\u00e9curiser&nbsp;<\/strong>et rendre&nbsp;<strong>performant&nbsp;<\/strong>votre site sous le CMS Drupal 8. Cette formation Drupal 8 est un tr\u00e8s bon d\u00e9but pour se lancer tr\u00e8s bien sur le d\u00e9veloppement sous Drupal 8. Une formation Drupal 8 pour les d\u00e9veloppeurs est en cours de r\u00e9alisation.<\/p>\r\n\r\n<p>\u00c0 qui ce cours s''adresse-t-il&nbsp;?<\/p>\r\n\r\n<ul>\r\n\t<li>Webmaster d\u00e9sirant g\u00e9rer de fa\u00e7on autonome son site quotidiennement avec Drupal 8,<\/li>\r\n\t<li>Chef de projet d\u00e9sirant avoir une vue d\u2019ensemble sur Drupal 8,<\/li>\r\n\t<li>WebMaster souhaitant maitriser le CMS Drupal 8,<\/li>\r\n\t<li>Toute personne d\u00e9sirant d\u00e9couvrir le monde du CMS avec Drupal 8.<\/li>\r\n<\/ul>\r\n\r\n<p>&nbsp;<\/p>\r\n","format":"full_html"}}]'
+          field_vactory_flag:
+            -
+              value: true
+          field_vactory_flag_2:
+            -
+              value: false
+          field_vactory_title:
+            -
+              value: Description
+  field_vactory_seo_status:
+    -
+      status: ''
+      focus_keyword: ''
+      title: ''
+      description: ''
+  field_vactory_theme:
+    -
+      entity: 32f63e87-f6d2-4869-a9c5-e5405344f482
+  field_vactory_youtube_media:
+    -
+      entity: 8e87411e-f661-43bc-bec0-6ecb7a40e358

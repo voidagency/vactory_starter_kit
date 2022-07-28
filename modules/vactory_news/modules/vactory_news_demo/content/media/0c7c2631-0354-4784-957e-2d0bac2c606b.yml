@@ -1,0 +1,31 @@
+_meta:
+  version: '1.0'
+  entity_type: media
+  uuid: 0c7c2631-0354-4784-957e-2d0bac2c606b
+  bundle: image
+  default_langcode: fr
+  depends:
+    2de4a1ec-676f-4572-96aa-8dd0db9980bc: file
+default:
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  name:
+    -
+      value: photo-1561266311-e0e31ff8939d.jpeg
+  created:
+    -
+      value: 1592426071
+  revision_translation_affected:
+    -
+      value: true
+  field_media_image:
+    -
+      entity: 2de4a1ec-676f-4572-96aa-8dd0db9980bc
+      alt: 'News 7'
+      title: ''
+      width: 891
+      height: 500

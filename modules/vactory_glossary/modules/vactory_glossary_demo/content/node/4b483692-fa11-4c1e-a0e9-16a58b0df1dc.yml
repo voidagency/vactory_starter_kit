@@ -1,0 +1,58 @@
+_meta:
+  version: '1.0'
+  entity_type: node
+  uuid: 4b483692-fa11-4c1e-a0e9-16a58b0df1dc
+  bundle: vactory_glossary
+  default_langcode: fr
+  depends:
+    b06cb150-700e-48cb-869d-0b81471a1cb1: taxonomy_term
+    0bf1492c-bf4c-4d37-95f1-23410c64bd36: taxonomy_term
+default:
+  revision_uid:
+    -
+      target_id: 1
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  title:
+    -
+      value: 'Exerci Incassum Lucidus'
+  created:
+    -
+      value: 1657122739
+  promote:
+    -
+      value: false
+  sticky:
+    -
+      value: false
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: fr
+      pathauto: 0
+  node_summary:
+    -
+      value: 'Exerci Incassum Lucidus'
+  content_translation_source:
+    -
+      value: und
+  content_translation_outdated:
+    -
+      value: false
+  body:
+    -
+      value: "Abbas camur exputo fere jus laoreet proprius. Cogo gemino imputo loquor magna nimis probo quia. Haero natu nisl. Dolor ibidem magna pala plaga suscipere. Dignissim iriure laoreet. Appellatio quadrum utinam. Commodo genitus immitto laoreet nulla sed sudo te validus vulpes. Iaceo nutus oppeto proprius quadrum scisco venio.\r\n\r\nAmet defui erat gilvus meus nobis voco. Bene haero hendrerit loquor molior olim refero vel veniam. In inhibeo laoreet. Duis hos nunc populus quidem quidne torqueo usitas vel. Dolus hendrerit roto. Adipiscing consequat damnum distineo dolor magna ullamcorper vel venio vindico. Abbas brevitas conventio eros huic praesent ratis sed similis valde.\r\n\r\nAt damnum modo saluto tincidunt tum vel. Abluo conventio elit inhibeo. Dignissim illum immitto imputo premo. Hendrerit iaceo os. Camur distineo incassum qui. Accumsan in lenis loquor lucidus mos pecus.\r\n\r\nConsequat iusto pertineo praemitto premo proprius singularis. Eum fere feugiat pagus paratus scisco venio verto. Capto in qui quis. Decet esse macto odio refero. Ludus macto nobis nutus odio pertineo ratis suscipere tamen veniam. Conventio pagus proprius qui singularis tation tego.\r\n\r\nAbigo acsi amet aptent dolus esca haero obruo proprius vindico. Acsi ad causa consequat elit exputo nostrud torqueo velit zelus. Persto similis sit. Accumsan quia tum. Adipiscing appellatio facilisis jugis utinam velit volutpat. Cui dignissim enim et nimis sit vindico. Abico abluo caecus consectetuer dolus fere melior nimis nulla. Genitus laoreet meus probo quae tincidunt typicus velit voco.\r\n\r\nAliquip commodo esca magna refero similis utrum. Feugiat jugis jus ludus melior nostrud nulla pecus vereor. Diam ea praemitto voco. Antehabeo aptent iustum nisl typicus. Esse neque nostrud occuro proprius sagaciter similis tum venio verto. Abluo exputo ille interdico lobortis quadrum quidne voco. Esca et feugiat hendrerit mos probo tation tego ut vereor. Eros exerci quia rusticus.\r\n\r\nEsse gilvus imputo mos praemitto uxor. Incassum modo nimis olim. Dolus letalis nunc quadrum quis suscipere tincidunt. Camur causa lenis secundum tego. Amet cogo consequat et euismod in os plaga scisco sed.\r\n\r\nIustum nostrud pagus quia quidne saepius. Abigo elit inhibeo lucidus turpis virtus. Consectetuer conventio diam elit euismod exerci quadrum sino. Saluto typicus valde. Abluo ad causa eros modo populus suscipere veniam vindico zelus. Decet inhibeo loquor molior neque suscipere tego utrum veniam. Accumsan facilisi iustum minim nutus patria quidne scisco vero.\r\n\r\nDignissim feugiat gemino macto plaga qui torqueo vindico ymo. Abbas ideo inhibeo metuo odio turpis vereor. Exputo gemino nutus oppeto te.\r\n\r\nNimis nunc oppeto probo quis. Abbas huic tamen vel. Abluo commodo gemino quis suscipere vulpes zelus. Eu eum interdico lobortis sagaciter vulpes. Elit feugiat gilvus importunus lobortis quae refoveo tum turpis.\r\n\r\nCommoveo consequat gravis ideo iriure luctus populus vero. Commodo dignissim eum facilisi incassum loquor minim pecus premo quidem. Abdo iriure quidem singularis suscipere. Abdo diam dolore immitto luctus meus nisl tincidunt. Aptent caecus saepius sed turpis.\r\n\r\nCogo defui eum pagus singularis velit. Defui occuro pagus validus. Abico acsi capto duis haero in interdico iriure mauris velit. Capto hos illum iustum lucidus oppeto sudo virtus. Abigo aliquam antehabeo dolore immitto jus pala quibus. Antehabeo consequat diam dignissim jumentum jus luctus ratis verto zelus. Consequat jugis mauris modo nimis occuro ratis suscipere vulpes. Accumsan at quia suscipit tum valde.\r\n\r\n"
+      format: plain_text
+      summary: "Abbas camur exputo fere jus laoreet proprius. Cogo gemino imputo loquor magna nimis probo quia. Haero natu nisl. Dolor ibidem magna pala plaga suscipere. Dignissim iriure laoreet. Appellatio quadrum utinam. Commodo genitus immitto laoreet nulla sed sudo te validus vulpes. Iaceo nutus oppeto proprius quadrum scisco venio.\r\n\r\nAmet defui erat gilvus meus nobis voco. Bene haero hendrerit loquor molior olim refero vel veniam. In inhibeo laoreet. Duis hos nunc populus quidem quidne torqueo usitas vel. Dolus hendrerit roto. Adipiscing consequat damnum distineo dolor magna ullamcorper vel venio vindico. Abbas brevitas conventio eros huic praesent ratis sed similis valde.\r\n\r\nAt damnum modo saluto tincidunt tum vel. Abluo conventio elit inhibeo. Dignissim illum immitto imputo premo. Hendrerit iaceo os. Camur distineo incassum qui. Accumsan in lenis loquor lucidus mos pecus.\r\n\r\nConsequat iusto pertineo praemitto premo proprius singularis. Eum fere feugiat pagus paratus scisco venio verto. Capto in qui quis. Decet esse macto odio refero. Ludus macto nobis nutus odio pertineo ratis suscipere tamen veniam. Conventio pagus proprius qui singularis tation tego.\r\n\r\nAbigo acsi amet aptent dolus esca haero obruo proprius vindico. Acsi ad causa consequat elit exputo nostrud torqueo velit zelus. Persto similis sit. Accumsan quia tum. Adipiscing appellatio facilisis jugis utinam velit volutpat. Cui dignissim enim et nimis sit vindico. Abico abluo caecus consectetuer dolus fere melior nimis nulla. Genitus laoreet meus probo quae tincidunt typicus velit voco.\r\n\r\nAliquip commodo esca magna refero similis utrum. Feugiat jugis jus ludus melior nostrud nulla pecus vereor. Diam ea praemitto voco. Antehabeo aptent iustum nisl typicus. Esse neque nostrud occuro proprius sagaciter similis tum venio verto. Abluo exputo ille interdico lobortis quadrum quidne voco. Esca et feugiat hendrerit mos probo tation tego ut vereor. Eros exerci quia rusticus.\r\n\r\nEsse gilvus imputo mos praemitto uxor. Incassum modo nimis olim. Dolus letalis nunc quadrum quis suscipere tincidunt. Camur causa lenis secundum tego. Amet cogo consequat et euismod in os plaga scisco sed.\r\n\r\nIustum nostrud pagus quia quidne saepius. Abigo elit inhibeo lucidus turpis virtus. Consectetuer conventio diam elit euismod exerci quadrum sino. Saluto typicus valde. Abluo ad causa eros modo populus suscipere veniam vindico zelus. Decet inhibeo loquor molior neque suscipere tego utrum veniam. Accumsan facilisi iustum minim nutus patria quidne scisco vero.\r\n\r\nDignissim feugiat gemino macto plaga qui torqueo vindico ymo. Abbas ideo inhibeo metuo odio turpis vereor. Exputo gemino nutus oppeto te.\r\n\r\nNimis nunc oppeto probo quis. Abbas huic tamen vel. Abluo commodo gemino quis suscipere vulpes zelus. Eu eum interdico lobortis sagaciter vulpes. Elit feugiat gilvus importunus lobortis quae refoveo tum turpis.\r\n\r\nCommoveo consequat gravis ideo iriure luctus populus vero. Commodo dignissim eum facilisi incassum loquor minim pecus premo quidem. Abdo iriure quidem singularis suscipere. Abdo diam dolore immitto luctus meus nisl tincidunt. Aptent caecus saepius sed turpis.\r\n\r\nCogo defui eum pagus singularis velit. Defui occuro pagus validus. Abico acsi capto duis haero in interdico iriure mauris velit. Capto hos illum iustum lucidus oppeto sudo virtus. Abigo aliquam antehabeo dolore immitto jus pala quibus. Antehabeo consequat diam dignissim jumentum jus luctus ratis verto zelus. Consequat jugis mauris modo nimis occuro ratis suscipere vulpes. Accumsan at quia suscipit tum valde.\r\n\r\n"
+  field_vactory_taxonomy_1:
+    -
+      entity: b06cb150-700e-48cb-869d-0b81471a1cb1
+    -
+      entity: 0bf1492c-bf4c-4d37-95f1-23410c64bd36

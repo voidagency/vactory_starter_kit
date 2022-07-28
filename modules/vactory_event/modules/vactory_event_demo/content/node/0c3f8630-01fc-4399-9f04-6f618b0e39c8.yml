@@ -1,0 +1,659 @@
+_meta:
+  version: '1.0'
+  entity_type: node
+  uuid: 0c3f8630-01fc-4399-9f04-6f618b0e39c8
+  bundle: vactory_page
+  default_langcode: fr
+default:
+  revision_uid:
+    -
+      target_id: 1
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  title:
+    -
+      value: 'Evénement Demo'
+  created:
+    -
+      value: 1657190170
+  promote:
+    -
+      value: true
+  sticky:
+    -
+      value: false
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: /evenement-demo
+      langcode: fr
+      pathauto: 1
+  node_summary:
+    -
+      value: 'Evénement Demo'
+  content_translation_source:
+    -
+      value: und
+  content_translation_outdated:
+    -
+      value: false
+  comment:
+    -
+      status: 0
+      cid: 0
+      last_comment_timestamp: 1657190409
+      last_comment_name: ''
+      last_comment_uid: 1
+      comment_count: 0
+  field_exclude_from_search:
+    -
+      value: false
+  field_vactory_paragraphs:
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: 35962fe5-fd99-4ed8-ae8e-cdeababbd9ce
+          bundle: vactory_paragraph_block
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1657190191
+          behavior_settings:
+            -
+              value: {  }
+          revision_translation_affected:
+            -
+              value: true
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_vactory_block:
+            -
+              plugin_id: 'views_block:vactory_event-block_masonry'
+              settings:
+                id: 'views_block:vactory_event-block_masonry'
+                label: ''
+                label_display: visible
+                provider: views
+                views_label: ''
+                items_per_page: none
+          field_vactory_flag:
+            -
+              value: false
+          field_vactory_flag_2:
+            -
+              value: false
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: 1146c6eb-980c-4087-b107-8c9ccd02b038
+          bundle: vactory_paragraph_block
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1657190207
+          behavior_settings:
+            -
+              value: {  }
+          revision_translation_affected:
+            -
+              value: true
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_vactory_block:
+            -
+              plugin_id: 'views_block:vactory_event-block_slider'
+              settings:
+                id: 'views_block:vactory_event-block_slider'
+                label: ''
+                label_display: visible
+                provider: views
+                views_label: ''
+                items_per_page: none
+          field_vactory_flag:
+            -
+              value: false
+          field_vactory_flag_2:
+            -
+              value: false
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: afe496cb-84a2-4f5e-a807-a58cf08a9b6a
+          bundle: vactory_paragraph_block
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1657190218
+          behavior_settings:
+            -
+              value: {  }
+          revision_translation_affected:
+            -
+              value: true
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_vactory_block:
+            -
+              plugin_id: 'views_block:vactory_event-block_slider_large'
+              settings:
+                id: 'views_block:vactory_event-block_slider_large'
+                label: ''
+                label_display: visible
+                provider: views
+                views_label: ''
+                items_per_page: none
+          field_vactory_flag:
+            -
+              value: false
+          field_vactory_flag_2:
+            -
+              value: false
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: 8086fee9-7c29-4e96-8f4b-eff80b62366f
+          bundle: vactory_paragraph_block
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1657190228
+          behavior_settings:
+            -
+              value: {  }
+          revision_translation_affected:
+            -
+              value: true
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_vactory_block:
+            -
+              plugin_id: 'views_block:vactory_event-block_slider_small'
+              settings:
+                id: 'views_block:vactory_event-block_slider_small'
+                label: ''
+                label_display: visible
+                provider: views
+                views_label: ''
+                items_per_page: none
+          field_vactory_flag:
+            -
+              value: false
+          field_vactory_flag_2:
+            -
+              value: false
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: b2c15cef-c0fd-4623-9865-3a211576fc15
+          bundle: vactory_paragraph_block
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1657190238
+          behavior_settings:
+            -
+              value: {  }
+          revision_translation_affected:
+            -
+              value: true
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_vactory_block:
+            -
+              plugin_id: 'views_block:vactory_event-block_three_columns'
+              settings:
+                id: 'views_block:vactory_event-block_three_columns'
+                label: ''
+                label_display: visible
+                provider: views
+                views_label: ''
+                items_per_page: none
+          field_vactory_flag:
+            -
+              value: false
+          field_vactory_flag_2:
+            -
+              value: false
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: f4064722-0f95-4c74-a53f-e45004837c99
+          bundle: vactory_paragraph_block
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1657190248
+          behavior_settings:
+            -
+              value: {  }
+          revision_translation_affected:
+            -
+              value: true
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_vactory_block:
+            -
+              plugin_id: 'views_block:vactory_event-block_two_columns'
+              settings:
+                id: 'views_block:vactory_event-block_two_columns'
+                label: ''
+                label_display: visible
+                provider: views
+                views_label: ''
+                items_per_page: none
+          field_vactory_flag:
+            -
+              value: false
+          field_vactory_flag_2:
+            -
+              value: false
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: 9e8cb05c-69c1-4c66-9188-b5346e220da6
+          bundle: views_reference
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1657190280
+          behavior_settings:
+            -
+              value: {  }
+          revision_translation_affected:
+            -
+              value: true
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_views_reference:
+            -
+              target_id: vactory_event
+              display_id: listing_masonry
+              data: 'a:5:{s:5:"pager";N;s:6:"offset";N;s:5:"limit";N;s:8:"argument";N;s:5:"title";N;}'
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: 667c21aa-b71b-4840-bf0f-64d93dd498e2
+          bundle: views_reference
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1657190307
+          behavior_settings:
+            -
+              value: {  }
+          revision_translation_affected:
+            -
+              value: true
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_views_reference:
+            -
+              target_id: vactory_event
+              display_id: listing_one_column
+              data: 'a:5:{s:5:"pager";N;s:6:"offset";N;s:5:"limit";N;s:8:"argument";N;s:5:"title";N;}'
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: 8bf90b38-9a8e-41ba-aae5-693cfb0e21d4
+          bundle: views_reference
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1657190333
+          behavior_settings:
+            -
+              value: {  }
+          revision_translation_affected:
+            -
+              value: true
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_views_reference:
+            -
+              target_id: vactory_event
+              display_id: listing_three_columns
+              data: 'a:5:{s:5:"pager";N;s:6:"offset";N;s:5:"limit";N;s:8:"argument";N;s:5:"title";N;}'
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: 1364b892-1673-4c7f-82f9-e55594f6b9e5
+          bundle: views_reference
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1657190352
+          behavior_settings:
+            -
+              value: {  }
+          revision_translation_affected:
+            -
+              value: true
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_views_reference:
+            -
+              target_id: vactory_event
+              display_id: listing_two_columns
+              data: 'a:5:{s:5:"pager";N;s:6:"offset";N;s:5:"limit";N;s:8:"argument";N;s:5:"title";N;}'
+  field_vactory_seo_status:
+    -
+      status: '0'
+      focus_keyword: ''
+      title: ''
+      description: ''

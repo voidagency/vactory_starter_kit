@@ -1,0 +1,91 @@
+_meta:
+  version: '1.0'
+  entity_type: node
+  uuid: a434dc71-0bea-44de-82bc-c7a0ad854b9c
+  bundle: vactory_job_ads
+  default_langcode: fr
+  depends:
+    26b30cc0-d128-4fb4-bc9f-7e010a4606f4: taxonomy_term
+    e961a106-d4b2-41a3-b611-c1f30d08092d: taxonomy_term
+    8d4c7a0c-d1b2-4220-b137-8885d1e04189: taxonomy_term
+default:
+  revision_uid:
+    -
+      target_id: 1
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  title:
+    -
+      value: 'Chef de Projet Junior'
+  created:
+    -
+      value: 1657617161
+  promote:
+    -
+      value: true
+  sticky:
+    -
+      value: false
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: /jobs/chef-de-projet-junior
+      langcode: fr
+      pathauto: 1
+  node_summary:
+    -
+      value: 'Chef de Projet Junior'
+  content_translation_source:
+    -
+      value: und
+  content_translation_outdated:
+    -
+      value: false
+  body:
+    -
+      value: "<p>Chef de Projet Junior</p>\r\n"
+      format: basic_html
+      summary: ''
+  comment:
+    -
+      status: 0
+      cid: 0
+      last_comment_timestamp: 1657617219
+      last_comment_name: ''
+      last_comment_uid: 1
+      comment_count: 0
+  field_vactory_address:
+    -
+      value: "<p>dui. Pellentesque in ipsum id orci porta dapibus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec velit neque, auctor sit amet aliquam vel, ullamcorper sit amet ligula.</p>\r\n"
+      format: basic_html
+  field_vactory_city:
+    -
+      entity: 26b30cc0-d128-4fb4-bc9f-7e010a4606f4
+  field_vactory_contract:
+    -
+      entity: e961a106-d4b2-41a3-b611-c1f30d08092d
+  field_vactory_description:
+    -
+      value: "<p>Missions :&nbsp;</p>\r\n\r\n<ul>\r\n\t<li>Supervision de la réalisation des activités et projets dans le domaine de la gestion de copropriété ;</li>\r\n\t<li>&nbsp;Assurer les relations avec les responsables des sites et recueillir les informations nécessaires à l’accomplissement de sa mission ;</li>\r\n\t<li>&nbsp;Coordonner et piloter les projets qui lui sont confiés.</li>\r\n\t<li>&nbsp;Convocation des assemblées générales des copropriétés et associations ;</li>\r\n\t<li>&nbsp;Réalisation des appels de fonds des copropriétaires ;</li>\r\n\t<li>&nbsp;Supervision des encaissements au niveau des sites et en central ;</li>\r\n\t<li>&nbsp;Préparation et envoi des lettres de relances et de mise en demeure ; • Préparation des quitus ;</li>\r\n\t<li>&nbsp;Supervision du publipostage ; • Consolidation des règlements de copropriétés, statuts et procès-verbaux.</li>\r\n\t<li>&nbsp;Suivi du contentieux et relation avec les cabinets d’avocat ;</li>\r\n</ul>\r\n"
+      format: basic_html
+  field_vactory_email:
+    -
+      value: void.france@void.fr
+  field_vactory_profession:
+    -
+      entity: 8d4c7a0c-d1b2-4220-b137-8885d1e04189
+  field_vactory_seo_status:
+    -
+      status: ''
+      focus_keyword: ''
+      title: ''
+      description: ''
+  field_vactory_telephone:
+    -
+      value: '+212523323343'
