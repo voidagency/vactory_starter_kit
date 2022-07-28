@@ -38,7 +38,7 @@
     "drupal/improved_multi_select": "^1.7",
     "drupal/inline_entity_form": "^1.0.0-rc2",
     "drupal/colorapi": "^1.1",
-    "drupal/jquery_colorpicker": "^2.0@RC",
+    "drupal/jquery_colorpicker": "^3.0",
     "drupal/lang_dropdown": "^2.0@beta",
     "drupal/menu_link_attributes": "^1.1.0",
     "drupal/metatag": "^1.14",
