@@ -127,7 +127,7 @@ resourceFields:
     fieldName: path
     publicName: path
     enhancer:
-      id: ''
+      id: 'vactory_link'
   publish_on:
     disabled: false
     fieldName: publish_on

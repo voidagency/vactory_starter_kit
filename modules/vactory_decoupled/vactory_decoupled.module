@@ -582,13 +582,13 @@ function clear_next_cache($query = []) {
 
   if (!isset($front_end_url) || $front_end_url == '') {
     \Drupal::logger('clear_next_cache')
-      ->error('BASE_FRONTEND_URL env variable is undefined');
+      ->warning('BASE_FRONTEND_URL env variable is undefined');
     return FALSE;
   }
 
   if (!isset($cache_secret) || $cache_secret == '') {
     \Drupal::logger('clear_next_cache')
-      ->error('FRONTEND_CACHE_KEY env variable is undefined');
+      ->warning('FRONTEND_CACHE_KEY env variable is undefined');
     return FALSE;
   }
 
