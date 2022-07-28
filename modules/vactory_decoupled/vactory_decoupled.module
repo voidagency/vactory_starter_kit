@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Drupal\simple_oauth\Entities\AccessTokenEntity;
 use Drupal\user\Entity\User;
 use Drupal\Component\Render\PlainTextOutput;
-
+use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Component\Utility\UrlHelper;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
@@ -410,23 +410,22 @@ function vactory_decoupled_mail_alter(&$message) {
       $message['subject'] = '';
       $message['body'] = [];
       $message['subject'] .= PlainTextOutput::renderFromHtml($token_service->replace($mail_config->get($key . '.subject'), $variables, $token_options));
-      $markup = ['#markup' => $token_service->replace($mail_config->get($key . '.body'), $variables, $token_options)];
-      $message['body'][] = \Drupal::service('renderer')->render($markup);
+      $message['body'][] = new FormattableMarkup($token_service->replace($mail_config->get($key . '.body'), $variables, $token_options), []);
       $language_manager->setConfigOverrideLanguage($original_language);
     }
     if ($message['id'] == 'user_register_no_approval_required') {
       $key = 'register_no_approval_required';
+      $message['body'] = [];
       $variables = ['user' => $message['params']['account']];
       $token_options = ['langcode' => $langcode, 'callback' => '_vactory_decoupled_user_mail_tokens', 'clear' => TRUE];
-      $markup = ['#markup' => $token_service->replace($mail_config->get($key . '.body'), $variables, $token_options)];
-      $message['body'][0] = \Drupal::service('renderer')->render($markup);
+      $message['body'][] = new FormattableMarkup($token_service->replace($mail_config->get($key . '.body'), $variables, $token_options), []);
     }
   }
   if ($message['id'] == 'user_status_activated' && !empty(Settings::get('BASE_FRONTEND_URL'))) {
+    $message['body'] = [];
     $variables = ['user' => $message['params']['account']];
     $token_options = ['langcode' => $langcode, 'callback' => '_vactory_decoupled_user_mail_tokens', 'clear' => TRUE];
-    $markup = ['#markup' => $token_service->replace($mail_config->get('status_activated')['body'], $variables, $token_options)];
-    $message['body'][0] = \Drupal::service('renderer')->render($markup);
+    $message['body'][] = new FormattableMarkup($token_service->replace($mail_config->get('status_activated')['body'], $variables, $token_options), []);
   }
 }
 
