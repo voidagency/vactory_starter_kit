@@ -179,6 +179,10 @@ class BlocksManager
       }
     }
 
+    $blocks_list = array_filter($blocks_list, function($block) {
+      return strpos($block->getPluginId(), 'block_content:') !== false;
+    });
+
     $blocks = array_map(function ($block) use ($conditionPluginManager) {
       $visibility = $block->getVisibility();
 
