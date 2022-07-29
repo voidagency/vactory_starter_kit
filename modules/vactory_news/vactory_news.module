@@ -15,40 +15,40 @@ use Drupal\block_content\Entity\BlockContent;
 function vactory_news_theme($existing, $type, $theme, $path) {
   return [
     // Node > card.
-    'node__vactory_news__card'        => [
+    'node__vactory_news__card' => [
       'base hook' => 'node',
-      'template'  => 'card',
+      'template' => 'card',
     ],
     // Node > card inline.
     'node__vactory_news__card_inline' => [
       'base hook' => 'node',
-      'template'  => 'card-inline',
+      'template' => 'card-inline',
     ],
     // Node > Masonry.
-    'node__vactory_news__masonry'     => [
+    'node__vactory_news__masonry' => [
       'base hook' => 'node',
-      'template'  => 'masonry',
+      'template' => 'masonry',
     ],
     // Node > full.
-    'node__vactory_news__full'        => [
+    'node__vactory_news__full' => [
       'base hook' => 'node',
-      'template'  => 'full',
+      'template' => 'full',
     ],
     // Node > Smart search.
-    'node__vactory_news__smart_search'        => [
+    'node__vactory_news__smart_search' => [
       'base hook' => 'node',
-      'template'  => 'smart-search',
+      'template' => 'smart-search',
     ],
-     // Node > mur.
-    'node__vactory_news__mur'        => [
+    // Node > mur.
+    'node__vactory_news__mur' => [
       'base hook' => 'node',
-      'template'  => 'mur',
+      'template' => 'mur',
     ],
 
     // Node > full.
-    'node__view__vactory_news__mosaique'        => [
+    'node__view__vactory_news__mosaique' => [
       'base hook' => 'node',
-      'template'  => 'block-mosaique',
+      'template' => 'block-mosaique',
     ],
     'vactory_news_block_filtred_by_taxonomy' => [
       'template' => 'block-filtred-by-taxonomy',
@@ -110,7 +110,7 @@ function vactory_news_preprocess_views_view(&$variables) {
   $view = $variables['view'];
   if ($view instanceof ViewExecutable && $view->id() === 'vactory_news' && $view->display_handler->getPluginId() === 'block') {
     $args = $view->args;
-    if (count($args) > 1 && isset($args[1]) && is_array($args[1]) ) {
+    if (count($args) > 1 && isset($args[1]) && is_array($args[1])) {
       $meta_data = $args[1];
       if (isset($meta_data['news_term_id'])) {
         $args[0] = $meta_data['news_term_id'];
@@ -157,6 +157,105 @@ function vactory_news_preprocess_views_view(&$variables) {
           }
         }
       }
+    }
+  }
+}
+
+/**
+ * A custom hook to alter the node access.
+ *
+ * @param array $normalized_node
+ *   An array that contains normalized node fields to be altered.
+ * @param string $context
+ *   Extra data has two keys:
+ *     node: the related node object.
+ *     node_type: the related node content type machine name.
+ * @param string $base_node_type
+ *   Base node content type machine name.
+ */
+function vactory_news_jsonapi_vcc_normalized_node_alter(&$normalized_node, $context, $base_node_type) {
+  if ($base_node_type === 'vactory_news') {
+    /** @var \Drupal\node\NodeInterface $node */
+    $node = $context['node'];
+    $node_type = $context['node_type'];
+    if ($node_type === 'vactory_news') {
+      $current_lang = \Drupal::languageManager()->getCurrentLanguage()->getId();
+      // Get image.
+      $lqipImageStyle = ImageStyle::load('lqip');
+      $output_field_name = 'field_vactory_media';
+      $mid = $node->get($output_field_name)->getString();
+      $result[$output_field_name] = NULL;
+      if (!empty($mid)) {
+        $mid = (int) $mid;
+        $media = Media::load($mid);
+        if (
+          $media &&
+          $media->bundle() === 'image' &&
+          isset($media->get('field_media_image')->getValue()[0]['target_id'])
+        ) {
+          $fid = $media->get('field_media_image')->getValue()[0]['target_id'];
+          $file = File::load($fid);
+          if ($file != NULL) {
+            $uri = $file->getFileUri();
+            $fileResult = [];
+            $fileResult['_default'] = \Drupal::service('file_url_generator')
+              ->generateAbsoluteString($uri);
+            $fileResult['_lqip'] = $lqipImageStyle->buildUrl($uri);
+            $fileResult['uri'] = StreamWrapperManager::getTarget($uri);
+            $fileResult['fid'] = $fid;
+            $fileResult['file_name'] = $media->label();
+            $fileResult['meta'] = $media->get('field_media_image')
+              ->first()
+              ->getValue();
+            $result[$output_field_name] = $fileResult;
+          }
+        }
+
+      }
+
+      // Get date.
+      $dateFormats = \Drupal::entityTypeManager()
+        ->getStorage('date_format')
+        ->loadMultiple();
+      $dateFormatter = \Drupal::service('date.formatter');
+      $resultDate = [];
+      $date_field_name = 'field_vactory_date';
+      $d = isset($node->get($date_field_name)
+          ->getValue()[0]['value']) ? DateTime::createFromFormat('Y-m-d', $node->get($date_field_name)
+        ->getValue()[0]['value']) : '';
+      if ($d != '') {
+        $vactory_date_timestamp = $d->getTimestamp();
+        // Get date.
+        $date_formats = array_keys($dateFormats);
+        $resultDate['timestamp'] = $vactory_date_timestamp;
+
+        foreach ($date_formats as $key => $date_format) {
+          $resultDate[$date_format] = $dateFormatter->format($vactory_date_timestamp, $date_format);
+        }
+      }
+      // Get term.
+      $term_field_name = 'field_vactory_news_theme';
+      $news_term_tid = $node->get($term_field_name)->target_id ?? NULL;
+      $term_label = '';
+      if ($news_term_tid != NULL) {
+        $new_term = Term::load($news_term_tid);
+        if ($new_term != NULL) {
+          $new_term_trans = $term = \Drupal::service('entity.repository')
+            ->getTranslationFromContext($new_term, $current_lang);
+          $term_label = $new_term_trans->label();
+        }
+      }
+
+      $normalized_node = [
+        'id' => $node->id(),
+        'image' => $result[$output_field_name],
+        'date' => $resultDate,
+        'tag' => $term_label,
+        'title' => $node->label(),
+        'excerpt' => $node->get('field_vactory_excerpt')->getValue(),
+        'url' => $node->toUrl()->toString(),
+      ];
+
     }
   }
 }
