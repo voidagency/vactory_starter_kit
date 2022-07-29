@@ -288,7 +288,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
 
         // Collection.
         if ($info['type'] === 'json_api_collection' && !empty($value)) {
-          $value = array_merge($value, $info['options']['#default_value']);
+          // $value = array_merge($value, $info['options']['#default_value']);
           $response = \Drupal::service('vactory_decoupled.jsonapi.generator')->fetch($value);
           $cache = $response['cache'];
           unset($response['cache']);
