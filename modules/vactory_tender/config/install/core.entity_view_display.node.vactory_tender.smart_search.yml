@@ -9,6 +9,7 @@ dependencies:
     - field.field.node.vactory_tender.field_vactory_media_document
     - field.field.node.vactory_tender.field_vactory_media_file
     - field.field.node.vactory_tender.field_vactory_reference
+    - field.field.node.vactory_tender.field_vactory_tags
     - node.type.vactory_tender
   module:
     - datetime
@@ -20,33 +21,34 @@ bundle: vactory_tender
 mode: smart_search
 content:
   field_vactory_date:
-    weight: 1
+    type: datetime_custom
     label: hidden
     settings:
       timezone_override: ''
       date_format: 'd | M | Y'
     third_party_settings: {  }
-    type: datetime_custom
+    weight: 1
     region: content
   field_vactory_excerpt:
     type: vactory_field_excerpt_formatter
-    weight: 2
-    region: content
     label: hidden
     settings:
       trim_length: '170'
     third_party_settings: {  }
-  links:
-    weight: 0
+    weight: 2
     region: content
+  links:
     settings: {  }
     third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   addtoany: true
   body: true
   field_vactory_media_document: true
   field_vactory_media_file: true
   field_vactory_reference: true
+  field_vactory_tags: true
   langcode: true
   notification_message: true
   notification_title: true

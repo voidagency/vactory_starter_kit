@@ -5,37 +5,42 @@ dependencies:
     - core.entity_view_mode.node.mur
     - field.field.node.vactory_glossary.body
     - field.field.node.vactory_glossary.field_vactory_seo_status
+    - field.field.node.vactory_glossary.field_vactory_tags
     - field.field.node.vactory_glossary.field_vactory_taxonomy_1
     - node.type.vactory_glossary
   module:
     - user
     - vactory_field
-_core:
-  default_config_hash: MksWVqxlCWYhip6Kgxdn9QYqMLukcqYXlv3FFq_RdRo
 id: node.vactory_glossary.mur
 targetEntityType: node
 bundle: vactory_glossary
 mode: mur
 content:
   body:
-    label: hidden
     type: vactory_field_excerpt_formatter
-    weight: 1
+    label: hidden
     settings:
       trim_length: '350'
     third_party_settings: {  }
+    weight: 1
     region: content
-  links:
-    weight: 0
-    region: content
+  flag_liked_content:
     settings: {  }
     third_party_settings: {  }
+    weight: 10
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   addtoany: true
   field_content_access_groups: true
   field_content_access_roles: true
   field_content_access_users: true
   field_vactory_seo_status: true
+  field_vactory_tags: true
   field_vactory_taxonomy_1: true
   langcode: true
   mail_message: true

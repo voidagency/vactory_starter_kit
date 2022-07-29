@@ -4,6 +4,7 @@ dependencies:
   config:
     - core.entity_view_mode.node.mur
     - field.field.node.vactory_publication.body
+    - field.field.node.vactory_publication.comment
     - field.field.node.vactory_publication.field_vactory_call_to_action
     - field.field.node.vactory_publication.field_vactory_date
     - field.field.node.vactory_publication.field_vactory_document
@@ -12,44 +13,43 @@ dependencies:
     - field.field.node.vactory_publication.field_vactory_meta_tags
     - field.field.node.vactory_publication.field_vactory_publication_theme
     - field.field.node.vactory_publication.field_vactory_seo_status
+    - field.field.node.vactory_publication.field_vactory_tags
     - node.type.vactory_publication
   module:
     - datetime
     - text
     - user
     - vactory_core
-_core:
-  default_config_hash: Eh_N9E2zi26kl0BbmxDa61n1nhLz0BenTnoQe_CF4ao
 id: node.vactory_publication.mur
 targetEntityType: node
 bundle: vactory_publication
 mode: mur
 content:
   body:
-    weight: 4
+    type: text_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: text_default
+    weight: 4
     region: content
   field_vactory_date:
-    weight: 2
+    type: datetime_default
     label: hidden
     settings:
-      format_type: medium
       timezone_override: ''
+      format_type: medium
     third_party_settings: {  }
-    type: datetime_default
+    weight: 2
     region: content
   field_vactory_excerpt:
-    weight: 1
+    type: text_default
     label: hidden
     settings: {  }
     third_party_settings: {  }
-    type: text_default
+    weight: 1
     region: content
   field_vactory_media:
-    weight: 3
+    type: lazy_image
     label: hidden
     settings:
       desktop_1x: vactory_three_cols_x1
@@ -62,15 +62,21 @@ content:
       mobile_2x: vactory_three_cols_x2
       lqip: lqip
     third_party_settings: {  }
-    type: lazy_image
+    weight: 3
     region: content
-  links:
-    weight: 0
-    region: content
+  flag_liked_content:
     settings: {  }
     third_party_settings: {  }
+    weight: 10
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   addtoany: true
+  comment: true
   field_content_access_groups: true
   field_content_access_roles: true
   field_content_access_users: true
@@ -79,6 +85,7 @@ hidden:
   field_vactory_meta_tags: true
   field_vactory_publication_theme: true
   field_vactory_seo_status: true
+  field_vactory_tags: true
   langcode: true
   mail_message: true
   mail_subject: true

@@ -12,12 +12,15 @@ dependencies:
     - field.field.node.vactory_job_ads.field_vactory_meta_tags
     - field.field.node.vactory_job_ads.field_vactory_profession
     - field.field.node.vactory_job_ads.field_vactory_seo_status
+    - field.field.node.vactory_job_ads.field_vactory_tags
     - field.field.node.vactory_job_ads.field_vactory_telephone
     - node.type.vactory_job_ads
   module:
     - comment
+    - media_library
     - metatag
     - path
+    - scheduler
     - text
     - yoast_seo
 id: node.vactory_job_ads.default
@@ -28,18 +31,18 @@ content:
   body:
     type: text_textarea_with_summary
     weight: 121
+    region: content
     settings:
       rows: 9
       summary_rows: 3
       placeholder: ''
     third_party_settings: {  }
-    region: content
   comment:
+    type: comment_default
     weight: 131
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: comment_default
-    region: content
   created:
     type: datetime_timestamp
     weight: 10
@@ -47,75 +50,106 @@ content:
     settings: {  }
     third_party_settings: {  }
   field_vactory_address:
+    type: text_textarea
     weight: 125
+    region: content
     settings:
       rows: 5
       placeholder: ''
     third_party_settings: {  }
-    type: text_textarea
-    region: content
   field_vactory_city:
+    type: options_select
     weight: 128
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_select
-    region: content
   field_vactory_contract:
+    type: options_select
     weight: 127
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_select
-    region: content
   field_vactory_description:
+    type: text_textarea
     weight: 122
+    region: content
     settings:
       rows: 5
       placeholder: ''
     third_party_settings: {  }
-    type: text_textarea
-    region: content
   field_vactory_email:
-    weight: 123
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
     type: email_default
+    weight: 123
     region: content
+    settings:
+      placeholder: ''
+      size: 60
+    third_party_settings: {  }
   field_vactory_meta_tags:
-    weight: 130
-    settings: {  }
-    third_party_settings: {  }
     type: metatag_firehose
+    weight: 130
     region: content
-  field_vactory_profession:
-    weight: 126
     settings: {  }
     third_party_settings: {  }
+  field_vactory_profession:
     type: options_select
+    weight: 126
     region: content
+    settings: {  }
+    third_party_settings: {  }
   field_vactory_seo_status:
+    type: yoast_seo_widget
     weight: 129
+    region: content
     settings:
       edit_title: false
       edit_description: false
     third_party_settings: {  }
-    type: yoast_seo_widget
+  field_vactory_tags:
+    type: entity_reference_autocomplete
+    weight: 132
     region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_vactory_telephone:
+    type: string_textfield
     weight: 124
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   langcode:
     type: language_select
     weight: 2
     region: content
     settings:
       include_locked: true
+    third_party_settings: {  }
+  node_banner_image:
+    type: media_library_widget
+    weight: 0
+    region: content
+    settings:
+      media_types: {  }
+    third_party_settings: {  }
+  node_banner_mobile_image:
+    type: media_library_widget
+    weight: 0
+    region: content
+    settings:
+      media_types: {  }
+    third_party_settings: {  }
+  node_bg_image:
+    type: media_library_widget
+    weight: 0
+    region: content
+    settings:
+      media_types: {  }
     third_party_settings: {  }
   path:
     type: path
@@ -125,10 +159,10 @@ content:
     third_party_settings: {  }
   promote:
     type: boolean_checkbox
-    settings:
-      display_label: true
     weight: 15
     region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   publish_on:
     type: datetime_timestamp_no_default
@@ -138,17 +172,17 @@ content:
     third_party_settings: {  }
   status:
     type: boolean_checkbox
-    settings:
-      display_label: true
     weight: 120
     region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   sticky:
     type: boolean_checkbox
-    settings:
-      display_label: true
     weight: 16
     region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   title:
     type: string_textfield
@@ -166,11 +200,11 @@ content:
   uid:
     type: entity_reference_autocomplete
     weight: 5
+    region: content
     settings:
       match_operator: CONTAINS
       size: 60
       placeholder: ''
-    region: content
     third_party_settings: {  }
   unpublish_on:
     type: datetime_timestamp_no_default
@@ -180,7 +214,7 @@ content:
     third_party_settings: {  }
   url_redirects:
     weight: 50
+    region: content
     settings: {  }
     third_party_settings: {  }
-    region: content
 hidden: {  }

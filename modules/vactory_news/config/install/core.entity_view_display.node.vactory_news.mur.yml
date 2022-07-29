@@ -12,6 +12,7 @@ dependencies:
     - field.field.node.vactory_news.field_vactory_meta_tags
     - field.field.node.vactory_news.field_vactory_news_theme
     - field.field.node.vactory_news.field_vactory_seo_status
+    - field.field.node.vactory_news.field_vactory_tags
     - node.type.vactory_news
   module:
     - comment
@@ -26,39 +27,38 @@ mode: mur
 content:
   body:
     type: text_default
-    weight: 4
-    region: content
     label: hidden
     settings: {  }
     third_party_settings: {  }
+    weight: 4
+    region: content
   comment:
-    weight: 5
+    type: comment_default
     label: hidden
     settings:
       view_mode: default
       pager_id: 0
     third_party_settings: {  }
-    type: comment_default
+    weight: 5
     region: content
   field_vactory_date:
-    weight: 2
+    type: datetime_default
     label: hidden
     settings:
-      format_type: medium
       timezone_override: ''
+      format_type: medium
     third_party_settings: {  }
-    type: datetime_default
+    weight: 2
     region: content
   field_vactory_excerpt:
-    weight: 1
+    type: text_default
     label: hidden
     settings: {  }
     third_party_settings: {  }
-    type: text_default
+    weight: 1
     region: content
   field_vactory_media:
     type: lazy_image
-    weight: 3
     label: hidden
     settings:
       desktop_1x: vactory_three_cols_x1
@@ -71,12 +71,18 @@ content:
       mobile_2x: vactory_three_cols_x2
       lqip: lqip
     third_party_settings: {  }
+    weight: 3
     region: content
-  links:
-    weight: 0
-    region: content
+  flag_liked_content:
     settings: {  }
     third_party_settings: {  }
+    weight: 10
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   addtoany: true
   field_content_access_groups: true
@@ -85,6 +91,7 @@ hidden:
   field_vactory_meta_tags: true
   field_vactory_news_theme: true
   field_vactory_seo_status: true
+  field_vactory_tags: true
   langcode: true
   mail_message: true
   mail_subject: true

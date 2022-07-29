@@ -6,6 +6,8 @@ dependencies:
     - field.field.node.vactory_partner.body
     - field.field.node.vactory_partner.field_vactory_call_to_action
     - field.field.node.vactory_partner.field_vactory_media
+    - field.field.node.vactory_partner.field_vactory_seo_status
+    - field.field.node.vactory_partner.field_vactory_tags
     - node.type.vactory_partner
   module:
     - text
@@ -16,22 +18,28 @@ bundle: vactory_partner
 mode: teaser
 content:
   body:
-    label: hidden
     type: text_summary_or_trimmed
-    weight: 101
+    label: hidden
     settings:
       trim_length: 600
     third_party_settings: {  }
+    weight: 101
     region: content
-  links:
-    weight: 100
-    region: content
+  flag_liked_content:
     settings: {  }
     third_party_settings: {  }
+    weight: 10
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
 hidden:
   addtoany: true
   field_vactory_call_to_action: true
   field_vactory_media: true
+  field_vactory_seo_status: true
+  field_vactory_tags: true
   langcode: true
-  node_banner_image: true
   search_api_excerpt: true

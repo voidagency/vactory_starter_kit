@@ -5,8 +5,9 @@ dependencies:
     - core.entity_view_mode.node.smart_search
     - field.field.node.vactory_faq.body
     - field.field.node.vactory_faq.field_faq
-    - field.field.node.vactory_faq.field_vactory_taxonomy_1
     - field.field.node.vactory_faq.field_vactory_seo_status
+    - field.field.node.vactory_faq.field_vactory_tags
+    - field.field.node.vactory_faq.field_vactory_taxonomy_1
     - node.type.vactory_faq
   module:
     - user
@@ -18,22 +19,28 @@ mode: smart_search
 content:
   body:
     type: vactory_field_excerpt_formatter
-    weight: 1
-    region: content
     label: hidden
     settings:
       trim_length: '170'
     third_party_settings: {  }
-  links:
-    weight: 0
+    weight: 1
     region: content
+  flag_liked_content:
     settings: {  }
     third_party_settings: {  }
+    weight: 10
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   addtoany: true
   field_faq: true
-  field_vactory_taxonomy_1: true
   field_vactory_seo_status: true
+  field_vactory_tags: true
+  field_vactory_taxonomy_1: true
   langcode: true
   notification_message: true
   notification_title: true

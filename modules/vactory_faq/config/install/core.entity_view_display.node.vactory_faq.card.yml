@@ -6,6 +6,7 @@ dependencies:
     - field.field.node.vactory_faq.body
     - field.field.node.vactory_faq.field_faq
     - field.field.node.vactory_faq.field_vactory_seo_status
+    - field.field.node.vactory_faq.field_vactory_tags
     - field.field.node.vactory_faq.field_vactory_taxonomy_1
     - node.type.vactory_faq
   module:
@@ -22,30 +23,36 @@ mode: card
 content:
   body:
     type: text_default
-    weight: 3
-    region: content
     label: hidden
     settings: {  }
     third_party_settings: {  }
+    weight: 3
+    region: content
   field_vactory_seo_status:
-    weight: 1
+    type: yoastseo_formatter
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: yoastseo_formatter
+    weight: 1
+    region: content
+  flag_liked_content:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 10
     region: content
   links:
+    settings: {  }
+    third_party_settings: {  }
     weight: 0
     region: content
+  search_api_excerpt:
     settings: {  }
     third_party_settings: {  }
-  search_api_excerpt:
     weight: 2
     region: content
-    settings: {  }
-    third_party_settings: {  }
 hidden:
   addtoany: true
-  field_vactory_taxonomy_1: true
   field_faq: true
+  field_vactory_tags: true
+  field_vactory_taxonomy_1: true
   langcode: true
