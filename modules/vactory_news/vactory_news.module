@@ -10,6 +10,7 @@ use Drupal\Core\Url;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\media\Entity\Media;
 use Drupal\taxonomy\Entity\Term;
+use Drupal\file\Entity\File;
 use Drupal\views\ViewExecutable;
 use Drupal\block_content\Entity\BlockContent;
 
