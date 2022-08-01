@@ -30,10 +30,13 @@ function hook_internal_block_classification_alter(string &$classification, array
  *   The component value.
  * @param array $info
  *   DF settings infos.
+ * @param \Drupal\Core\Cache\CacheableMetadata $cacheability
+ *   DF settings infos.
  */
-function hook_decoupled_df_format_alter(&$value, $info) {
+function hook_decoupled_df_format_alter(&$value, $info, \Drupal\Core\Cache\CacheableMetadata &$cacheability) {
   if ($info['type'] === 'webform_decoupled' && !empty($value)) {
     $webform_id = $value['id'];
     $value['elements'] = \Drupal::service('vactory.webform.normalizer')->normalize($webform_id);
+    $cacheability->setCacheTags(['webform_list']);
   }
 }

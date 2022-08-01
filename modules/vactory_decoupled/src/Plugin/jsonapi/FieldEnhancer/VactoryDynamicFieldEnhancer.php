@@ -304,8 +304,10 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
           $value['elements'] = \Drupal::service('vactory.webform.normalizer')->normalize($webform_id);
         }
 
+        $cacheability = $this->cacheability;
         // Apply other modules formatters if exist on current component.
-        \Drupal::moduleHandler()->alter('decoupled_df_format', $value, $info);
+        \Drupal::moduleHandler()->alter('decoupled_df_format', $value, $info, $cacheability);
+        $this->cacheability = $cacheability;
       }
       elseif (is_array($value)) {
         // Go deeper.
