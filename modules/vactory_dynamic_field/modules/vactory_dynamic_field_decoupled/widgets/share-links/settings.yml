@@ -12,9 +12,9 @@ fields:
   twitter:
     type: checkbox
     label: "Partage sur twitter"
-  # linkedin:
-  #   type: checkbox
-  #   label: "Partage sur linkedin"
+  linkedin:
+    type: checkbox
+    label: "Partage sur linkedin"
   whatsapp:
     type: checkbox
     label: "Partage sur whatsapp"
@@ -24,3 +24,6 @@ fields:
   pinterest:
     type: checkbox
     label: "Partage sur pinterest"
+  telegram:
+    type: checkbox
+    label: "Partage sur telegram"
