@@ -1,0 +1,16 @@
+name: 'Header - Default'
+multiple: FALSE
+category: 'Headers'
+enabled: TRUE
+fields:
+  show_language_dropdown:
+      type: checkbox
+      label: "Display language dropdown"
+  show_account:
+      type: checkbox
+      label: "Display language dropdown"
+  use_menu:
+      type: text
+      label: "Menu ID"
+      options:
+        '#description': 'Menu machine name. Default to main'
