@@ -1,0 +1,23 @@
+name: 'Footer variant 1'
+multiple: FALSE
+category: 'Layout'
+enabled: TRUE
+fields:
+  enableNewsletter:
+    type: checkbox
+    label: "Afficher newsletter"
+  newsletterTitle:
+    type: text
+    label: 'Newsletter Title'
+  newsletterSubtitle:
+    type: text
+    label: 'Newsletter Subtitle'
+  newsletterbtn:
+    type: text
+    label: 'Newsletter Button Text'
+  logo:
+    type: image
+    label: Footer's logo
+  copyrights:
+    type: text
+    label: 'copyrights Text'
