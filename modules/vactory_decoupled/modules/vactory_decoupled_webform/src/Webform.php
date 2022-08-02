@@ -112,6 +112,10 @@ class Webform
       $properties['default_value'] = $this->webformTokenManager->replace($item['#default_value'], NULL, [], []);
     }
 
+    if (isset($item['#title_display'])) {
+      $properties['title_display'] = $item['#title_display'];
+    }
+
     // @todo: webform_terms_of_service
 
     $types = [
