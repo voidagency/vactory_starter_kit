@@ -427,3 +427,26 @@ function generate_locator_path_alias($locator_storage, $locator_path_alias_orogi
 
   return generate_locator_path_alias($locator_storage, $locator_path_alias_oroginal, $locator_path_alias_oroginal . '-' . $index, $locator_entity, $index + 1);
 }
+
+function vactory_locator_df_jsonapi_output_alter(&$content) {
+  $config = \Drupal::config('vactory_locator.settings');
+
+  $map_api_key = $config->get('map_api_key');
+  $marker = $config->get('locator_default_marker_url');
+  $content['config']['map_api_key'] = $map_api_key;
+  $content['config']['marker'] = $marker;
+
+
+  $terms = \Drupal::entityTypeManager()
+    ->getStorage('taxonomy_term')
+    ->loadByProperties(['vid' => 'locator_category']);
+  $categories = [];
+  foreach ($terms as $term) {
+    $categories[] = [
+      "uuid" => $term->get('uuid')->value,
+      "name" => $term->getName(),
+    ];
+  }
+  $content['categories'] = $categories;
+
+}
