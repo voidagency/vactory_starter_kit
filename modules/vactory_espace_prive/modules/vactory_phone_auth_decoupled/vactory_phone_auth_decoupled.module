@@ -25,7 +25,6 @@ function vactory_phone_auth_decoupled_entity_bundle_field_info_alter(&$fields, E
 function vactory_phone_auth_decoupled_form_user_admin_settings_alter(&$form, FormStateInterface &$form_state) {
   $phone_auth = \Drupal::config('vactory_phone_auth_decoupled.settings')->get('phone_auth_enable');
 
-  // Add "Do not require current password" field and its fieldset
   $form['vactory_phone_auth_settings'] = [
     '#type' => 'details',
     '#open' => TRUE,
