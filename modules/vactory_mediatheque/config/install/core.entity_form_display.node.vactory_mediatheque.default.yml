@@ -10,6 +10,7 @@ dependencies:
     - field.field.node.vactory_mediatheque.field_vactory_media
     - field.field.node.vactory_mediatheque.field_vactory_media_document
     - field.field.node.vactory_mediatheque.field_vactory_paragraphs
+    - field.field.node.vactory_mediatheque.field_vactory_tags
     - node.type.vactory_mediatheque
   module:
     - datetime
@@ -30,64 +31,74 @@ content:
     settings: {  }
     third_party_settings: {  }
   field_mediatheque_date:
-    weight: 18
-    settings: {  }
-    third_party_settings: {  }
     type: datetime_default
+    weight: 18
     region: content
-  field_mediatheque_theme:
-    weight: 12
     settings: {  }
     third_party_settings: {  }
+  field_mediatheque_theme:
     type: options_select
+    weight: 12
     region: content
+    settings: {  }
+    third_party_settings: {  }
   field_mediatheque_video:
     type: media_library_widget
     weight: 15
+    region: content
     settings:
       media_types: {  }
     third_party_settings: {  }
-    region: content
   field_vactory_excerpt:
+    type: text_textarea
     weight: 13
+    region: content
     settings:
       rows: 5
       placeholder: ''
     third_party_settings: {  }
-    type: text_textarea
-    region: content
   field_vactory_media:
+    type: media_library_widget
     weight: 14
+    region: content
     settings:
       media_types: {  }
     third_party_settings: {  }
-    type: media_library_widget
-    region: content
   field_vactory_media_document:
+    type: media_library_widget
     weight: 16
+    region: content
     settings:
       media_types: {  }
     third_party_settings: {  }
-    type: media_library_widget
-    region: content
   field_vactory_paragraphs:
+    type: paragraphs
     weight: 17
+    region: content
     settings:
       title: Paragraph
       title_plural: Paragraphs
       edit_mode: open
-      add_mode: dropdown
-      form_display_mode: default
-      default_paragraph_type: ''
       closed_mode: summary
       autocollapse: none
       closed_mode_threshold: 0
+      add_mode: dropdown
+      form_display_mode: default
+      default_paragraph_type: ''
       features:
         collapse_edit_all: collapse_edit_all
         duplicate: duplicate
     third_party_settings: {  }
-    type: paragraphs
+  field_vactory_tags:
+    type: entity_reference_autocomplete
+    weight: 37
     region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   langcode:
     type: language_select
     weight: 2
@@ -140,10 +151,10 @@ content:
     third_party_settings: {  }
   promote:
     type: boolean_checkbox
-    settings:
-      display_label: true
     weight: 5
     region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   publish_on:
     type: datetime_timestamp_no_default
@@ -153,17 +164,17 @@ content:
     third_party_settings: {  }
   status:
     type: boolean_checkbox
-    settings:
-      display_label: true
     weight: 11
     region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   sticky:
     type: boolean_checkbox
-    settings:
-      display_label: true
     weight: 6
     region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   title:
     type: string_textfield
@@ -176,12 +187,12 @@ content:
   uid:
     type: entity_reference_autocomplete
     weight: 3
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
-    region: content
     third_party_settings: {  }
   unpublish_on:
     type: datetime_timestamp_no_default

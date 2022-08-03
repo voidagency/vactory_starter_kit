@@ -1,0 +1,80 @@
+_meta:
+  version: '1.0'
+  entity_type: user
+  uuid: 5fc7666c-bc63-4267-84cf-09fc431c7c79
+  default_langcode: fr
+  depends:
+    4af9bde2-9ff8-4e94-9742-5c460604ed5c: file
+default:
+  preferred_langcode:
+    -
+      value: fr
+  preferred_admin_langcode:
+    -
+      value: fr
+  name:
+    -
+      value: mjid.bendrif
+  pass:
+    -
+      value: $S$Ev/BmFAmSu95eGi0yPjJBe7kCAYcZrTjHmGFrKDvdIB1Gf0B.SFm
+      existing: ''
+      pre_hashed: false
+  mail:
+    -
+      value: mjid.bendrif@void.fr
+  timezone:
+    -
+      value: Africa/Casablanca
+  status:
+    -
+      value: true
+  created:
+    -
+      value: 1657207644
+  access:
+    -
+      value: 0
+  login:
+    -
+      value: 0
+  init:
+    -
+      value: mjid.bendrif@void.fr
+  roles:
+    -
+      target_id: vactory_academy_instructor
+  path:
+    -
+      alias: ''
+      langcode: fr
+      pathauto: 0
+  field_about_the_author:
+    -
+      value: "<p>Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a. Vivamus magna justo, lacinia eget consectetur sed, convallis at tellus. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur aliquet quam id dui posuere blandit. Nulla porttitor accumsan tincidunt. Praesent sapien massa, convallis a pellentesque nec, egestas non nisi. Vivamus magna justo, lacinia eget consectetur sed, convallis at tellus. Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui. Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui. Sed porttitor lectus nibh. Curabitur non nulla sit amet nisl tempus convallis quis ac lectus.</p>\r\n"
+      format: basic_html
+  field_first_name:
+    -
+      value: Abdelmajid
+  field_last_name:
+    -
+      value: Bendrif
+  field_last_password_reset:
+    -
+      value: '2022-07-07T16:35:04'
+  field_password_expiration:
+    -
+      value: false
+  field_pending_expire_sent:
+    -
+      value: 0
+  field_user_profession:
+    -
+      value: Formateur
+  user_picture:
+    -
+      entity: 4af9bde2-9ff8-4e94-9742-5c460604ed5c
+      alt: ''
+      title: ''
+      width: 300
+      height: 300

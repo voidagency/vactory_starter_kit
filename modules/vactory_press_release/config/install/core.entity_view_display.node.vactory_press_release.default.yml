@@ -9,6 +9,7 @@ dependencies:
     - field.field.node.vactory_press_release.field_vactory_media
     - field.field.node.vactory_press_release.field_vactory_meta_tags
     - field.field.node.vactory_press_release.field_vactory_seo_status
+    - field.field.node.vactory_press_release.field_vactory_tags
     - node.type.vactory_press_release
   module:
     - datetime
@@ -24,39 +25,39 @@ bundle: vactory_press_release
 mode: default
 content:
   field_press_release_theme:
-    weight: 3
+    type: entity_reference_label
     label: hidden
     settings:
       link: false
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 3
     region: content
   field_vactory_date:
-    weight: 2
+    type: datetime_default
     label: hidden
     settings:
-      format_type: medium
       timezone_override: ''
+      format_type: medium
     third_party_settings: {  }
-    type: datetime_default
+    weight: 2
     region: content
   field_vactory_document:
-    weight: 6
+    type: file_default
     label: above
     settings:
       use_description_as_link_text: true
     third_party_settings: {  }
-    type: file_default
+    weight: 6
     region: content
   field_vactory_excerpt:
-    weight: 1
+    type: text_default
     label: hidden
     settings: {  }
     third_party_settings: {  }
-    type: text_default
+    weight: 1
     region: content
   field_vactory_media:
-    weight: 4
+    type: lazy_image
     label: hidden
     settings:
       desktop_1x: vactory_two_cols_x1
@@ -69,27 +70,40 @@ content:
       mobile_2x: vactory_two_cols_x2
       lqip: lqip
     third_party_settings: {  }
-    type: lazy_image
+    weight: 4
     region: content
   field_vactory_meta_tags:
-    weight: 8
+    type: metatag_empty_formatter
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: metatag_empty_formatter
+    weight: 8
     region: content
   field_vactory_seo_status:
-    weight: 7
+    type: yoastseo_formatter
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: yoastseo_formatter
+    weight: 7
     region: content
-  links:
-    weight: 0
+  field_vactory_tags:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 11
     region: content
+  flag_liked_content:
     settings: {  }
     third_party_settings: {  }
+    weight: 10
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   addtoany: true
   langcode: true

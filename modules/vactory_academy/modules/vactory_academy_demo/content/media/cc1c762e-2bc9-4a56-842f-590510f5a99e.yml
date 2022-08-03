@@ -1,0 +1,37 @@
+_meta:
+  version: '1.0'
+  entity_type: media
+  uuid: cc1c762e-2bc9-4a56-842f-590510f5a99e
+  bundle: image
+  default_langcode: fr
+  depends:
+    0263402e-e9e7-43c0-aef1-4acf5c539285: user
+    41e7b351-626b-429f-bf2e-cb6e663e3344: file
+default:
+  status:
+    -
+      value: true
+  uid:
+    -
+      entity: 0263402e-e9e7-43c0-aef1-4acf5c539285
+  name:
+    -
+      value: 654784_e6af.jpeg
+  created:
+    -
+      value: 1657277520
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: fr
+      pathauto: 0
+  field_media_image:
+    -
+      entity: 41e7b351-626b-429f-bf2e-cb6e663e3344
+      alt: test
+      title: ''
+      width: 560
+      height: 315

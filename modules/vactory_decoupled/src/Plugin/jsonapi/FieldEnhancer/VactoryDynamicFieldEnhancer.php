@@ -288,7 +288,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
 
         // Collection.
         if ($info['type'] === 'json_api_collection' && !empty($value)) {
-          $value = array_merge($value, $info['options']['#default_value']);
+          $value = array_merge($info['options']['#default_value'], $value);
           $response = \Drupal::service('vactory_decoupled.jsonapi.generator')->fetch($value);
           $cache = $response['cache'];
           unset($response['cache']);
@@ -304,6 +304,10 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
           $value['elements'] = \Drupal::service('vactory.webform.normalizer')->normalize($webform_id);
         }
 
+        $cacheability = $this->cacheability;
+        // Apply other modules formatters if exist on current component.
+        \Drupal::moduleHandler()->alter('decoupled_df_format', $value, $info, $cacheability);
+        $this->cacheability = $cacheability;
       }
       elseif (is_array($value)) {
         // Go deeper.

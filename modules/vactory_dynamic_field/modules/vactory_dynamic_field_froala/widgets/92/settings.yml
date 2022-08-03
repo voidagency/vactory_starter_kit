@@ -1,0 +1,19 @@
+name: 'C54 - Chiffres clés avec prefix et suffix'
+category: 'Key figures'
+multiple: TRUE
+enabled: TRUE
+fields:
+  number:
+    type: text
+    label: 'Chiffre'
+    options:
+      '#required': true
+  textPrefix:
+    type: text
+    label: 'Text Prefix'
+  textSuffix:
+    type: text
+    label: 'Text Suffix'
+  description:
+    type: textarea
+    label: 'Description'

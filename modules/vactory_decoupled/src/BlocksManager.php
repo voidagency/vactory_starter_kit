@@ -179,6 +179,10 @@ class BlocksManager
       }
     }
 
+    $blocks_list = array_filter($blocks_list, function($block) {
+      return strpos($block->getPluginId(), 'block_content:') !== false;
+    });
+
     $blocks = array_map(function ($block) use ($conditionPluginManager) {
       $visibility = $block->getVisibility();
 
@@ -201,6 +205,7 @@ class BlocksManager
         'classification' => $classification,
         'content' => $this->getContent($block->getPluginId()),
         'visibilityConditions' => $visibilityCollection,
+        'classes' => $block->getThirdPartySetting('block_class', 'classes'),
       ];
       // Invoke internal block classification alter
       \Drupal::moduleHandler()->invokeAll('internal_block_classification_alter', [&$classification, $block_info]);

@@ -1,0 +1,63 @@
+_meta:
+  version: '1.0'
+  entity_type: node
+  uuid: 6092302b-c9eb-49b7-bd7e-93be88ce73fc
+  bundle: vactory_tender
+  default_langcode: fr
+  depends:
+    965da9aa-170d-499a-b3bd-35e1dc0f122f: media
+default:
+  revision_uid:
+    -
+      target_id: 1
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  title:
+    -
+      value: 'Offre N°05/2019'
+  created:
+    -
+      value: 1657297835
+  promote:
+    -
+      value: true
+  sticky:
+    -
+      value: false
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: fr
+      pathauto: 0
+  node_summary:
+    -
+      value: N°05/2019
+  content_translation_source:
+    -
+      value: und
+  content_translation_outdated:
+    -
+      value: false
+  field_vactory_date:
+    -
+      value: '2022-11-26'
+  field_vactory_excerpt:
+    -
+      value: "<p>Vivamus aliquet elit ac nisl. Vestibulum rutrum, mi nec elementum vehicula, eros quam gravida nisl, id fringilla neque ante vel mi. Vivamus consectetuer hendrerit lacus. Aliquam eu nunc. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos hymenaeos.</p>\r\n"
+      format: basic_html
+  field_vactory_media_document:
+    -
+      entity: 965da9aa-170d-499a-b3bd-35e1dc0f122f
+  field_vactory_media_file:
+    -
+      entity: 965da9aa-170d-499a-b3bd-35e1dc0f122f
+  field_vactory_reference:
+    -
+      value: N°05/2019

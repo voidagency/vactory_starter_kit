@@ -1,0 +1,91 @@
+_meta:
+  version: '1.0'
+  entity_type: node
+  uuid: 4ca91320-c92b-4baf-b6d8-75d529245ffe
+  bundle: vactory_job_ads
+  default_langcode: fr
+  depends:
+    26b30cc0-d128-4fb4-bc9f-7e010a4606f4: taxonomy_term
+    e961a106-d4b2-41a3-b611-c1f30d08092d: taxonomy_term
+    aaf63bbf-962b-4ba3-a7a9-f6de7672c794: taxonomy_term
+default:
+  revision_uid:
+    -
+      target_id: 1
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  title:
+    -
+      value: 'Front office manager'
+  created:
+    -
+      value: 1657617706
+  promote:
+    -
+      value: true
+  sticky:
+    -
+      value: false
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: /jobs/front-office-manager
+      langcode: fr
+      pathauto: 1
+  node_summary:
+    -
+      value: 'Front office manager'
+  content_translation_source:
+    -
+      value: und
+  content_translation_outdated:
+    -
+      value: false
+  body:
+    -
+      value: "<p>Responsable: Front office manager (f/h)</p>\r\n\r\n<p>On recrute pour le compte de son client basé sur Casablanca un front office manager ayant une expérience Obligatoire dans un poste similaire.</p>\r\n"
+      format: basic_html
+      summary: ''
+  comment:
+    -
+      status: 0
+      cid: 0
+      last_comment_timestamp: 1657617792
+      last_comment_name: ''
+      last_comment_uid: 1
+      comment_count: 0
+  field_vactory_address:
+    -
+      value: "<p>Nulla quis lorem ut libero malesuada feugiat</p>\r\n"
+      format: basic_html
+  field_vactory_city:
+    -
+      entity: 26b30cc0-d128-4fb4-bc9f-7e010a4606f4
+  field_vactory_contract:
+    -
+      entity: e961a106-d4b2-41a3-b611-c1f30d08092d
+  field_vactory_description:
+    -
+      value: "<p>Très bonne connaissance du service clients, de la gestion des bureaux et de la comptabilité de base Maîtrise de l’anglais (oral et écrit) Excellente connaissance de MS Office, notamment Excel et Word Excellentes compétences de communication et relationnelles Bonnes capacités organisationnelles et polyvalence Compétences en matière de résolution des problèmes</p>\r\n"
+      format: basic_html
+  field_vactory_email:
+    -
+      value: void.france@void.fr
+  field_vactory_profession:
+    -
+      entity: aaf63bbf-962b-4ba3-a7a9-f6de7672c794
+  field_vactory_seo_status:
+    -
+      status: ''
+      focus_keyword: ''
+      title: ''
+      description: ''
+  field_vactory_telephone:
+    -
+      value: '+212523323343'

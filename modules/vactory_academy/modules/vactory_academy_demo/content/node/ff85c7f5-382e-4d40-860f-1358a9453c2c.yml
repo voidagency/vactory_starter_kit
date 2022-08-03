@@ -1,0 +1,154 @@
+_meta:
+  version: '1.0'
+  entity_type: node
+  uuid: ff85c7f5-382e-4d40-860f-1358a9453c2c
+  bundle: vactory_academy
+  default_langcode: fr
+  depends:
+    5fc7666c-bc63-4267-84cf-09fc431c7c79: user
+    3276aef7-468b-4ef7-b965-8893b87049ad: media
+    d7254337-206b-4501-b32d-45a0e1d38456: taxonomy_term
+    52dc1328-3113-4e8c-ae37-501846e831e1: media
+default:
+  revision_uid:
+    -
+      target_id: 1
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  title:
+    -
+      value: 'Responsive Design, créer des interfaces Web adaptables.'
+  created:
+    -
+      value: 1657276888
+  promote:
+    -
+      value: true
+  sticky:
+    -
+      value: false
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: /academy-courses/responsive-design-creer-des-interfaces-web-adaptables
+      langcode: fr
+      pathauto: 1
+  node_summary:
+    -
+      value: 'Responsive Design, créer des interfaces Web adaptables.'
+  content_translation_source:
+    -
+      value: und
+  content_translation_outdated:
+    -
+      value: false
+  comment:
+    -
+      status: 0
+      cid: 0
+      last_comment_timestamp: 1657277049
+      last_comment_name: ''
+      last_comment_uid: 1
+      comment_count: 0
+  field_academy_duree:
+    -
+      value: 12h
+  field_vactory_academy_langue:
+    -
+      value: Français
+  field_vactory_date:
+    -
+      value: '2022-09-16'
+  field_vactory_excerpt:
+    -
+      value: "<p>Les concepteurs de sites Web doivent dorénavant revoir leur approche pour que leurs interfaces s'adaptent à la diversité des terminaux. Cette formation apporte des réponses pratiques aux problématiques de conception ergonomique et de gestion des contraintes liées au Responsive Design.</p>\r\n"
+      format: basic_html
+  field_vactory_instructor:
+    -
+      entity: 5fc7666c-bc63-4267-84cf-09fc431c7c79
+  field_vactory_media:
+    -
+      entity: 3276aef7-468b-4ef7-b965-8893b87049ad
+  field_vactory_meta_tags:
+    -
+      value:
+        og_image: '[node:field_vactory_media:entity:field_media_image:vactory_opengraph_image_style:url]'
+        og_image_url: '[node:field_vactory_media:entity:field_media_image:vactory_opengraph_image_style:url]'
+        og_image_secure_url: '[node:field_vactory_media:entity:field_media_image:vactory_opengraph_image_style:url]'
+  field_vactory_paragraphs:
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: 31f9f556-9d32-4abb-b7c3-5866933f35db
+          bundle: vactory_component
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1657277005
+          behavior_settings:
+            -
+              value: {  }
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_vactory_component:
+            -
+              widget_id: 'vactory_froala:6'
+              widget_data: '[{"title":"","description":{"value":"<h2>Les terminaux<\/h2>\r\n\r\n<ul>\r\n\t<li>Types de terminaux (mobile, tablette, tv, liseuse...) et leur r\u00e9solution. P\u00e9riph\u00e9riques, OS, navigateurs.<\/li>\r\n\t<li>Le march\u00e9 mobile et parts de march\u00e9.<\/li>\r\n\t<li>Standards HTML, HTML5, CSS3 (API, s\u00e9lecteurs...).<\/li>\r\n<\/ul>\r\n\r\n<p>Travaux pratiques<\/p>\r\n\r\n<p>D\u00e9tection du type de terminal en PHP JavaScript.<\/p>\r\n\r\n<p>&nbsp;<\/p>\r\n\r\n<h2>D\u00e9marche de conception<\/h2>\r\n\r\n<ul>\r\n\t<li>Concept de Marcotte, Mobile First.<\/li>\r\n\t<li>S\u00e9paration contenu\/contenant.<\/li>\r\n\t<li>Approche portrait\/paysage, tactile, impact sur l''ergonomie.<\/li>\r\n\t<li>Cr\u00e9er un plan de tests.<\/li>\r\n\t<li>Diff\u00e9rence entre design Web et design Mobile.<\/li>\r\n<\/ul>\r\n\r\n<p>&nbsp;<\/p>\r\n\r\n<h2>MediaQueries<\/h2>\r\n\r\n<ul>\r\n\t<li>Adaptation des CSS aux caract\u00e9ristiques du terminal.<\/li>\r\n\t<li>R\u00e8gles conditionnelles (orientation, device-width...).<\/li>\r\n\t<li>JavaScript et les anciens navigateurs.<\/li>\r\n\t<li>R\u00e9glage compl\u00e9mentaire de rendu visuel (Viewport).<\/li>\r\n<\/ul>\r\n\r\n<p>Travaux pratiques<\/p>\r\n\r\n<p>Construction de CSS selon les modes portrait\/paysage, r\u00e9solution du terminal.<\/p>\r\n\r\n<p>&nbsp;<\/p>\r\n\r\n<h2>Principe de grille flexible, fluide<\/h2>\r\n\r\n<ul>\r\n\t<li>Conception classique versus conception selon une grille.<\/li>\r\n\t<li>Importance des blocs, approche contenu\/contenant.<\/li>\r\n\t<li>Unit\u00e9s de mesure (% em px), mode Retina.<\/li>\r\n\t<li>Eviter les d\u00e9bordements. Points de rupture.<\/li>\r\n\t<li>Principe des box, layout avec CSS3.<\/li>\r\n<\/ul>\r\n\r\n<p>Travaux pratiques<\/p>\r\n\r\n<p>Construire une ergonomie bas\u00e9e sur une grille flexible.<\/p>\r\n\r\n<p>&nbsp;<\/p>\r\n\r\n<h2>Composants graphiques<\/h2>\r\n\r\n<ul>\r\n\t<li>Images flexibles : images de fond, adaptation HTML5, adaptation de la qualit\u00e9 graphique selon le terminal.<\/li>\r\n\t<li>Contenu responsive : rupture texte, multicolonnes. C\u00e9sure et d\u00e9coupe.<\/li>\r\n\t<li>Polices fluides : format des polices, taille.<\/li>\r\n\t<li>Marges et espaces flexibles.<\/li>\r\n\t<li>Menus adaptables, carrousel adaptatif.<\/li>\r\n\t<li>Cr\u00e9ation de layout avec flexbox (organisation des \u00e9l\u00e9ments en fonction d''une grille).<\/li>\r\n\t<li>Cr\u00e9er des images et des vid\u00e9os adapt\u00e9es.<\/li>\r\n<\/ul>\r\n\r\n<p>Travaux pratiques<\/p>\r\n\r\n<p>Mise en oeuvre de solutions.<\/p>\r\n\r\n<p>&nbsp;<\/p>\r\n\r\n<h2>Framework et librairies responsive<\/h2>\r\n\r\n<ul>\r\n\t<li>D\u00e9tecter les ressources avec \"Modernizr\".<\/li>\r\n\t<li>Librairies de substitution (less, css3pie...).<\/li>\r\n\t<li>Frameworks CSS 960 grid, HTML5 BoilerPlate, Bootstrap, Foundation, Skeleton, 320...<\/li>\r\n<\/ul>\r\n","format":"full_html"}}]'
+          field_vactory_flag:
+            -
+              value: true
+          field_vactory_flag_2:
+            -
+              value: false
+          field_vactory_title:
+            -
+              value: 'Programme de la formation'
+  field_vactory_seo_status:
+    -
+      status: ''
+      focus_keyword: ''
+      title: ''
+      description: ''
+  field_vactory_theme:
+    -
+      entity: d7254337-206b-4501-b32d-45a0e1d38456
+  field_vactory_youtube_media:
+    -
+      entity: 52dc1328-3113-4e8c-ae37-501846e831e1

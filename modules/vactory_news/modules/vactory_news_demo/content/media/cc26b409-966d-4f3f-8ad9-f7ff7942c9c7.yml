@@ -1,0 +1,31 @@
+_meta:
+  version: '1.0'
+  entity_type: media
+  uuid: cc26b409-966d-4f3f-8ad9-f7ff7942c9c7
+  bundle: image
+  default_langcode: fr
+  depends:
+    ca1163df-9d36-4833-a42e-d21f81747b4d: file
+default:
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  name:
+    -
+      value: photo-1501281668745-f7f57925c3b4.jpeg
+  created:
+    -
+      value: 1592426263
+  revision_translation_affected:
+    -
+      value: true
+  field_media_image:
+    -
+      entity: ca1163df-9d36-4833-a42e-d21f81747b4d
+      alt: 'News 10'
+      title: ''
+      width: 750
+      height: 500

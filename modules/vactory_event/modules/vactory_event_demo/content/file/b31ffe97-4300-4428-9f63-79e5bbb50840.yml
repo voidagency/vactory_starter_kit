@@ -1,0 +1,33 @@
+_meta:
+  version: '1.0'
+  entity_type: file
+  uuid: b31ffe97-4300-4428-9f63-79e5bbb50840
+  bundle: image
+  default_langcode: fr
+default:
+  uid:
+    -
+      target_id: 1
+  filename:
+    -
+      value: event4.jpeg
+  uri:
+    -
+      value: 'public://2022-07/event4.jpeg'
+  filemime:
+    -
+      value: image/jpeg
+  filesize:
+    -
+      value: 1133822
+  status:
+    -
+      value: true
+  created:
+    -
+      value: 1657193310
+  path:
+    -
+      alias: ''
+      langcode: fr
+      pathauto: 1

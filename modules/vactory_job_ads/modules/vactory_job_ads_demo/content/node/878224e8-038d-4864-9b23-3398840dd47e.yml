@@ -1,0 +1,91 @@
+_meta:
+  version: '1.0'
+  entity_type: node
+  uuid: 878224e8-038d-4864-9b23-3398840dd47e
+  bundle: vactory_job_ads
+  default_langcode: fr
+  depends:
+    26b30cc0-d128-4fb4-bc9f-7e010a4606f4: taxonomy_term
+    e80065ee-a9a9-44fc-b08f-7d3682aa1fca: taxonomy_term
+    aaf63bbf-962b-4ba3-a7a9-f6de7672c794: taxonomy_term
+default:
+  revision_uid:
+    -
+      target_id: 1
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  title:
+    -
+      value: 'Stage en Réseaux & Télécommunication'
+  created:
+    -
+      value: 1657616898
+  promote:
+    -
+      value: true
+  sticky:
+    -
+      value: false
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: /jobs/stage-en-reseaux-telecommunication
+      langcode: fr
+      pathauto: 1
+  node_summary:
+    -
+      value: 'Stage en Réseaux & Télécommunication'
+  content_translation_source:
+    -
+      value: und
+  content_translation_outdated:
+    -
+      value: false
+  body:
+    -
+      value: "<p>Je suis à la recherche d'un ou d'une stagiaire bac+2 en réseau et système pour un stage pré-embauche, le stage est rémunéré</p>\r\n"
+      format: basic_html
+      summary: ''
+  comment:
+    -
+      status: 0
+      cid: 0
+      last_comment_timestamp: 1657616971
+      last_comment_name: ''
+      last_comment_uid: 1
+      comment_count: 0
+  field_vactory_address:
+    -
+      value: "<p>Sed porttitor lectus nibh. Lorem ipsum dolor sit amet,&nbsp;</p>\r\n"
+      format: basic_html
+  field_vactory_city:
+    -
+      entity: 26b30cc0-d128-4fb4-bc9f-7e010a4606f4
+  field_vactory_contract:
+    -
+      entity: e80065ee-a9a9-44fc-b08f-7d3682aa1fca
+  field_vactory_description:
+    -
+      value: "<p>Missions et activités principales : •</p>\r\n\r\n<ul>\r\n\t<li>Gestion, installation et maintenance du matériel informatique (postes informatiques, périphériques) ;</li>\r\n\t<li>&nbsp;Administration et exploitation des serveurs ; • Aide à la gestion, installation et maintenance des logiciels ;&nbsp;</li>\r\n\t<li>Assistance et support technique (matériel et logiciel) auprès des utilisateurs ;</li>\r\n\t<li>&nbsp;Gestion des sauvegardes des bases de données (Applications et serveurs internes) ;</li>\r\n\t<li>&nbsp;Présentation des ressources informatiques aux nouveaux utilisateurs ;</li>\r\n\t<li>&nbsp;Sensibilisation des utilisateurs sur la sécurité informatique et sur les règles de bonnes pratiques ;</li>\r\n\t<li>Aide à la gestion de la téléphonie sur IP, assistance aux utilisateurs et maintenance des installations ;</li>\r\n</ul>\r\n"
+      format: basic_html
+  field_vactory_email:
+    -
+      value: void.france@void.fr
+  field_vactory_profession:
+    -
+      entity: aaf63bbf-962b-4ba3-a7a9-f6de7672c794
+  field_vactory_seo_status:
+    -
+      status: ''
+      focus_keyword: ''
+      title: ''
+      description: ''
+  field_vactory_telephone:
+    -
+      value: '+212523323343'

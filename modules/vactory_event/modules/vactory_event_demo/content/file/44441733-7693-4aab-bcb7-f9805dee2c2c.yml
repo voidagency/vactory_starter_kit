@@ -1,0 +1,33 @@
+_meta:
+  version: '1.0'
+  entity_type: file
+  uuid: 44441733-7693-4aab-bcb7-f9805dee2c2c
+  bundle: image
+  default_langcode: fr
+default:
+  uid:
+    -
+      target_id: 1
+  filename:
+    -
+      value: event3.png
+  uri:
+    -
+      value: 'public://2022-07/event3.png'
+  filemime:
+    -
+      value: image/png
+  filesize:
+    -
+      value: 189250
+  status:
+    -
+      value: true
+  created:
+    -
+      value: 1657193482
+  path:
+    -
+      alias: ''
+      langcode: fr
+      pathauto: 1

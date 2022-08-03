@@ -5,11 +5,14 @@ dependencies:
     - field.field.node.vactory_faq.body
     - field.field.node.vactory_faq.field_faq
     - field.field.node.vactory_faq.field_vactory_seo_status
+    - field.field.node.vactory_faq.field_vactory_tags
     - field.field.node.vactory_faq.field_vactory_taxonomy_1
     - node.type.vactory_faq
   module:
     - faqfield
+    - media_library
     - path
+    - scheduler
     - text
     - yoast_seo
   enforced:
@@ -50,25 +53,56 @@ content:
         answer_rows: 3
     third_party_settings: {  }
   field_vactory_seo_status:
+    type: yoast_seo_widget
     weight: 10
+    region: content
     settings:
       edit_title: false
       edit_description: false
     third_party_settings: {  }
-    type: yoast_seo_widget
+  field_vactory_tags:
+    type: entity_reference_autocomplete
+    weight: 124
     region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_vactory_taxonomy_1:
-    weight: 123
-    settings: { }
-    third_party_settings: { }
     type: options_select
+    weight: 123
     region: content
+    settings: {  }
+    third_party_settings: {  }
   langcode:
     type: language_select
     weight: 1
     region: content
     settings:
       include_locked: true
+    third_party_settings: {  }
+  node_banner_image:
+    type: media_library_widget
+    weight: 0
+    region: content
+    settings:
+      media_types: {  }
+    third_party_settings: {  }
+  node_banner_mobile_image:
+    type: media_library_widget
+    weight: 0
+    region: content
+    settings:
+      media_types: {  }
+    third_party_settings: {  }
+  node_bg_image:
+    type: media_library_widget
+    weight: 0
+    region: content
+    settings:
+      media_types: {  }
     third_party_settings: {  }
   path:
     type: path
@@ -78,24 +112,30 @@ content:
     third_party_settings: {  }
   promote:
     type: boolean_checkbox
-    settings:
-      display_label: true
     weight: 4
     region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  publish_on:
+    type: datetime_timestamp_no_default
+    weight: 30
+    region: content
+    settings: {  }
     third_party_settings: {  }
   status:
     type: boolean_checkbox
-    settings:
-      display_label: true
     weight: 8
     region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   sticky:
     type: boolean_checkbox
-    settings:
-      display_label: true
     weight: 5
     region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   title:
     type: string_textfield
@@ -108,11 +148,17 @@ content:
   uid:
     type: entity_reference_autocomplete
     weight: 2
+    region: content
     settings:
       match_operator: CONTAINS
       size: 60
       placeholder: ''
+    third_party_settings: {  }
+  unpublish_on:
+    type: datetime_timestamp_no_default
+    weight: 30
     region: content
+    settings: {  }
     third_party_settings: {  }
   url_redirects:
     weight: 7

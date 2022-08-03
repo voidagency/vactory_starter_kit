@@ -19,26 +19,25 @@ dependencies:
     - field.field.node.announcement.field_vactory_media
     - field.field.node.announcement.field_vactory_name
     - field.field.node.announcement.field_vactory_phone
+    - field.field.node.announcement.field_vactory_tags
     - node.type.announcement
   module:
     - user
     - vactory_core
-_core:
-  default_config_hash: 6s-sap7TRRNAapb5H2cvRFjUdAE-fOXE3rHEktD10fc
 id: node.announcement.mur
 targetEntityType: node
 bundle: announcement
 mode: mur
 content:
   field_ad_content:
-    weight: 3
+    type: basic_string
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: basic_string
+    weight: 3
     region: content
   field_vactory_media:
-    weight: 1
+    type: lazy_image
     label: above
     settings:
       desktop_1x: vactory_three_cols_x1
@@ -51,21 +50,26 @@ content:
       mobile_2x: vactory_three_cols_x2
       lqip: lqip
     third_party_settings: {  }
-    type: lazy_image
+    weight: 1
     region: content
   field_vactory_name:
-    weight: 2
+    type: string
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 2
     region: content
-  links:
-    weight: 0
-    region: content
+  flag_liked_content:
     settings: {  }
     third_party_settings: {  }
+    weight: 10
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   addtoany: true
   field_ad_display: true
@@ -84,6 +88,7 @@ hidden:
   field_typology: true
   field_vactory_email: true
   field_vactory_phone: true
+  field_vactory_tags: true
   langcode: true
   mail_message: true
   mail_subject: true

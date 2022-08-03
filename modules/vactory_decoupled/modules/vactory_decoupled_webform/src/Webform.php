@@ -5,6 +5,7 @@ namespace Drupal\vactory_decoupled_webform;
 
 use Drupal\webform\Element\WebformTermReferenceTrait;
 use Drupal\webform\Entity\WebformSubmission;
+use Drupal\webform\WebformTokenManager;
 
 /**
  * Simplifies the process of generating an API version of a webform.
@@ -16,6 +17,17 @@ class Webform
   use WebformTermReferenceTrait;
 
   protected $webform;
+
+  /**
+   * The webform token manager.
+   *
+   * @var \Drupal\webform\WebformTokenManager
+   */
+  protected $webformTokenManager;
+
+  public function __construct(WebformTokenManager $webformTokenManager) {
+    $this->webformTokenManager = $webformTokenManager;
+  }
 
   /**
    * Return the requested entity as an structured array.
@@ -64,6 +76,10 @@ class Webform
     $properties = [];
     if (isset($item['#required']) || isset($item['#pattern'])) {
       $properties['validation'] = [];
+    }
+
+    if (isset($item['#default_value'])) {
+      $properties['default_value'] = $this->webformTokenManager->replace($item['#default_value'], NULL, [], []);
     }
 
     // @todo: webform_terms_of_service

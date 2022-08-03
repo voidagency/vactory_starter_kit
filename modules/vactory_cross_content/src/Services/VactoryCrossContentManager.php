@@ -4,6 +4,7 @@ namespace Drupal\vactory_cross_content\Services;
 
 use Drupal\vactory_core\Vactory;
 use Drupal\views\Views;
+use Drupal\Core\Entity\EntityRepositoryInterface;
 
 /**
  * Vactory Cross Content Manager service.
@@ -18,16 +19,28 @@ class VactoryCrossContentManager {
   protected $vactory;
 
   /**
+   * Entity Repository.
+   *
+   * @var \Drupal\Core\Entity\EntityRepositoryInterface
+   */
+  protected $entityRepository;
+
+  /**
    * Cross content manager service constructor.
    */
-  public function __construct(Vactory $vactory) {
+  public function __construct(Vactory $vactory, EntityRepositoryInterface $entityRepository) {
     $this->vactory = $vactory;
+    $this->entityRepository = $entityRepository;
   }
 
   /**
    * Get cross content view.
    */
   public function getCrossContentView($type, $node, $configuration) {
+    $node = $this->entityRepository->getTranslationFromContext($node);
+    if (!isset($node)) {
+      return [];
+    }
     $content_type_selected = $type->getThirdPartySetting('vactory_cross_content', 'content_type', '');
     $taxonomy_field = $type->getThirdPartySetting('vactory_cross_content', 'taxonomy_field', '');
     $term_id = $type->getThirdPartySetting('vactory_cross_content', 'terms', '');

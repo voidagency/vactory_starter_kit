@@ -1,0 +1,91 @@
+_meta:
+  version: '1.0'
+  entity_type: node
+  uuid: b28dac08-2c1d-4d4f-a153-b9f1ce61970b
+  bundle: vactory_job_ads
+  default_langcode: fr
+  depends:
+    9f10be5c-e6f0-4894-8089-966a82fbf136: taxonomy_term
+    e80065ee-a9a9-44fc-b08f-7d3682aa1fca: taxonomy_term
+    29d7f846-1d96-4197-b40f-2afbb9e8fbde: taxonomy_term
+default:
+  revision_uid:
+    -
+      target_id: 1
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  title:
+    -
+      value: 'Stage en comptabilité à Agadir'
+  created:
+    -
+      value: 1657617570
+  promote:
+    -
+      value: true
+  sticky:
+    -
+      value: false
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: /jobs/stage-en-comptabilite-agadir
+      langcode: fr
+      pathauto: 1
+  node_summary:
+    -
+      value: 'Stage en comptabilité à Agadir'
+  content_translation_source:
+    -
+      value: und
+  content_translation_outdated:
+    -
+      value: false
+  body:
+    -
+      value: "<p>Nous recherchons un(e) stagiaire en comptabilité et finance, formation minimum BAC+3</p>\r\n"
+      format: basic_html
+      summary: ''
+  comment:
+    -
+      status: 0
+      cid: 0
+      last_comment_timestamp: 1657617669
+      last_comment_name: ''
+      last_comment_uid: 1
+      comment_count: 0
+  field_vactory_address:
+    -
+      value: "<p>66r accumsan tincidunt. Pellentesque in ipsum id orci porta dapibus.</p>\r\n"
+      format: basic_html
+  field_vactory_city:
+    -
+      entity: 9f10be5c-e6f0-4894-8089-966a82fbf136
+  field_vactory_contract:
+    -
+      entity: e80065ee-a9a9-44fc-b08f-7d3682aa1fca
+  field_vactory_description:
+    -
+      value: "<p>Nous recherchons un(e) stagiaire en comptabilité et finance, formation minimum BAC+3</p>\r\n"
+      format: basic_html
+  field_vactory_email:
+    -
+      value: void.france@void.fr
+  field_vactory_profession:
+    -
+      entity: 29d7f846-1d96-4197-b40f-2afbb9e8fbde
+  field_vactory_seo_status:
+    -
+      status: ''
+      focus_keyword: ''
+      title: ''
+      description: ''
+  field_vactory_telephone:
+    -
+      value: '+212523323343'

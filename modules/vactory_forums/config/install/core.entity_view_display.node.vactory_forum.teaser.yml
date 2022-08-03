@@ -5,6 +5,8 @@ dependencies:
     - core.entity_view_mode.node.teaser
     - field.field.node.vactory_forum.body
     - field.field.node.vactory_forum.comment
+    - field.field.node.vactory_forum.field_forum_editeur
+    - field.field.node.vactory_forum.field_forum_expert
     - field.field.node.vactory_forum.field_groupe_utilisateurs
     - field.field.node.vactory_forum.field_vactory_date
     - field.field.node.vactory_forum.field_vactory_excerpt
@@ -13,34 +15,42 @@ dependencies:
     - field.field.node.vactory_forum.field_vactory_forums_thematic
     - field.field.node.vactory_forum.field_vactory_media
     - field.field.node.vactory_forum.field_vactory_meta_tags
+    - field.field.node.vactory_forum.field_vactory_tags
     - node.type.vactory_forum
-  enforced:
-    module:
-      - vactory_forums
   module:
     - text
     - user
+  enforced:
+    module:
+      - vactory_forums
 id: node.vactory_forum.teaser
 targetEntityType: node
 bundle: vactory_forum
 mode: teaser
 content:
   body:
-    label: hidden
     type: text_summary_or_trimmed
-    weight: 101
+    label: hidden
     settings:
       trim_length: 600
     third_party_settings: {  }
+    weight: 101
     region: content
-  links:
-    weight: 100
+  flag_liked_content:
     settings: {  }
     third_party_settings: {  }
+    weight: 10
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
     region: content
 hidden:
   addtoany: true
   comment: true
+  field_forum_editeur: true
+  field_forum_expert: true
   field_groupe_utilisateurs: true
   field_vactory_date: true
   field_vactory_excerpt: true
@@ -49,5 +59,6 @@ hidden:
   field_vactory_forums_thematic: true
   field_vactory_media: true
   field_vactory_meta_tags: true
+  field_vactory_tags: true
   langcode: true
   search_api_excerpt: true
