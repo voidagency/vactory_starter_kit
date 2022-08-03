@@ -1,0 +1,91 @@
+_meta:
+  version: '1.0'
+  entity_type: node
+  uuid: 5e496b13-98a6-49b7-9a36-2874b832474a
+  bundle: vactory_job_ads
+  default_langcode: fr
+  depends:
+    5f6f8d7e-da65-4c90-9ef8-88990619f23f: taxonomy_term
+    e961a106-d4b2-41a3-b611-c1f30d08092d: taxonomy_term
+    8965cece-f592-40c3-a2ae-2e3f6d1e5887: taxonomy_term
+default:
+  revision_uid:
+    -
+      target_id: 1
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  title:
+    -
+      value: 'Chargé(e) de Marketing Digital'
+  created:
+    -
+      value: 1657616994
+  promote:
+    -
+      value: true
+  sticky:
+    -
+      value: false
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: /jobs/chargee-de-marketing-digital
+      langcode: fr
+      pathauto: 1
+  node_summary:
+    -
+      value: 'Chargé(e) de Marketing Digital'
+  content_translation_source:
+    -
+      value: und
+  content_translation_outdated:
+    -
+      value: false
+  body:
+    -
+      value: "<p>Nous recherchons un profil capable de nous accompagner sur la mise en place de la stratégie digitale, la création de contenu pour nos campagnes publicitaires, la mise en œuvre des actions marketing (réseaux sociaux, campagnes d’influence, etc.).</p>\r\n"
+      format: basic_html
+      summary: ''
+  comment:
+    -
+      status: 0
+      cid: 0
+      last_comment_timestamp: 1657617058
+      last_comment_name: ''
+      last_comment_uid: 1
+      comment_count: 0
+  field_vactory_address:
+    -
+      value: "<p>&nbsp;63 onec velit neque, auctor sit amet aliquam vel, ullamcorper sit amet ligula.</p>\r\n"
+      format: basic_html
+  field_vactory_city:
+    -
+      entity: 5f6f8d7e-da65-4c90-9ef8-88990619f23f
+  field_vactory_contract:
+    -
+      entity: e961a106-d4b2-41a3-b611-c1f30d08092d
+  field_vactory_description:
+    -
+      value: "<p>Votre Rôle :&nbsp;</p>\r\n\r\n<ul>\r\n\t<li>Votre rôle en tant que Chargé(e) de Marketing Digital sera à la fois de développer et d’optimiser des compagnes marketing ciblées, aussi, vos journées ne se ressembleront jamais et la polyvalence et le dynamisme s’imposent !</li>\r\n\t<li>&nbsp;Gérer la réputation en ligne de la marque employeur</li>\r\n\t<li>&nbsp;Créer du contenu sur les réseaux sociaux</li>\r\n\t<li>&nbsp;Réfléchir à de nouvelles idées et approches pour améliorer l'image de marque de l'entreprise</li>\r\n\t<li>&nbsp;Identifier les tendances et les meilleures pratique</li>\r\n</ul>\r\n"
+      format: basic_html
+  field_vactory_email:
+    -
+      value: void.france@void.fr
+  field_vactory_profession:
+    -
+      entity: 8965cece-f592-40c3-a2ae-2e3f6d1e5887
+  field_vactory_seo_status:
+    -
+      status: ''
+      focus_keyword: ''
+      title: ''
+      description: ''
+  field_vactory_telephone:
+    -
+      value: '+212523323343'

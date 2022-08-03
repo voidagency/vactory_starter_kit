@@ -14,6 +14,7 @@ dependencies:
     - field.field.node.vactory_governance.field_vactory_media
     - field.field.node.vactory_governance.field_vactory_name
     - field.field.node.vactory_governance.field_vactory_seo_status
+    - field.field.node.vactory_governance.field_vactory_tags
     - field.field.node.vactory_governance.field_vactory_taxonomy_1
     - field.field.node.vactory_governance.field_vactory_telephone
     - node.type.vactory_governance
@@ -23,6 +24,7 @@ dependencies:
     - file
     - media_library
     - path
+    - scheduler
     - social_media_links_field
     - text
     - yoast_seo
@@ -36,17 +38,17 @@ third_party_settings:
         - field_vactory_media
         - field_vactory_document
         - field_show_link_to_bio
+      label: Personal
+      region: content
       parent_name: ''
       weight: 5
       format_type: tab
       format_settings:
+        classes: ''
+        id: ''
         formatter: open
         description: ''
-        id: ''
-        classes: ''
         required_fields: false
-      label: Personal
-      region: content
     group_coordinate:
       children:
         - field_vactory_email
@@ -54,32 +56,32 @@ third_party_settings:
         - field_vactory_telephone
         - field_vactory_fax
         - field_gov_social_media
+      label: Coordinate
+      region: content
       parent_name: ''
       weight: 6
       format_type: tab
       format_settings:
-        id: ''
         classes: ''
+        id: ''
         formatter: open
         description: ''
         required_fields: false
-      label: Coordinate
-      region: content
     group_controle_d_affichage:
       children:
         - field_show_in_one_row
         - field_show_on_roles
+      label: 'Controle d''affichage'
+      region: content
       parent_name: ''
       weight: 7
       format_type: tab
-      region: content
       format_settings:
-        description: ''
-        formatter: open
-        required_fields: true
-        id: ''
         classes: ''
-      label: 'Controle d''affichage'
+        id: ''
+        formatter: open
+        description: ''
+        required_fields: true
 id: node.vactory_governance.default
 targetEntityType: node
 bundle: vactory_governance
@@ -88,13 +90,13 @@ content:
   body:
     type: text_textarea_with_summary
     weight: 8
+    region: content
     settings:
       rows: 9
       summary_rows: 3
       placeholder: ''
       show_summary: false
     third_party_settings: {  }
-    region: content
   created:
     type: datetime_timestamp
     weight: 10
@@ -102,105 +104,115 @@ content:
     settings: {  }
     third_party_settings: {  }
   field_gov_address:
-    weight: 5
-    settings: {  }
-    third_party_settings: {  }
     type: address_default
+    weight: 5
     region: content
-  field_gov_social_media:
-    weight: 8
     settings: {  }
     third_party_settings: {  }
+  field_gov_social_media:
     type: social_media_links_field_default
+    weight: 8
     region: content
+    settings: {  }
+    third_party_settings: {  }
   field_image:
+    type: image_image
     weight: 9
+    region: content
     settings:
       progress_indicator: throbber
       preview_image_style: thumbnail
     third_party_settings: {  }
-    type: image_image
-    region: content
   field_show_in_one_row:
+    type: boolean_checkbox
     weight: 17
+    region: content
     settings:
       display_label: true
     third_party_settings: {  }
-    type: boolean_checkbox
-    region: content
   field_show_link_to_bio:
+    type: boolean_checkbox
     weight: 11
+    region: content
     settings:
       display_label: true
     third_party_settings: {  }
-    type: boolean_checkbox
-    region: content
   field_show_on_roles:
+    type: options_select
     weight: 18
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_select
-    region: content
   field_vactory_document:
+    type: file_generic
     weight: 10
+    region: content
     settings:
       progress_indicator: throbber
     third_party_settings: {  }
-    type: file_generic
-    region: content
   field_vactory_email:
-    weight: 4
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
     type: email_default
+    weight: 4
     region: content
+    settings:
+      placeholder: ''
+      size: 60
+    third_party_settings: {  }
   field_vactory_fax:
+    type: string_textfield
     weight: 7
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_vactory_media:
+    type: media_library_widget
     weight: 9
+    region: content
     settings:
       media_types: {  }
     third_party_settings: {  }
-    type: media_library_widget
-    region: content
   field_vactory_name:
+    type: string_textfield
     weight: 8
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_vactory_seo_status:
+    type: yoast_seo_widget
     weight: 17
+    region: content
     settings:
       edit_title: false
       edit_description: false
     third_party_settings: {  }
-    type: yoast_seo_widget
+  field_vactory_tags:
+    type: entity_reference_autocomplete
+    weight: 37
     region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_vactory_taxonomy_1:
+    type: options_select
     weight: 7
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_select
-    region: content
   field_vactory_telephone:
+    type: string_textfield
     weight: 6
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   langcode:
     type: language_select
     weight: 4
@@ -218,6 +230,13 @@ content:
   node_banner_mobile_image:
     type: media_library_widget
     weight: 3
+    region: content
+    settings:
+      media_types: {  }
+    third_party_settings: {  }
+  node_bg_image:
+    type: media_library_widget
+    weight: 0
     region: content
     settings:
       media_types: {  }
@@ -246,10 +265,10 @@ content:
     third_party_settings: {  }
   promote:
     type: boolean_checkbox
-    settings:
-      display_label: true
     weight: 11
     region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   publish_on:
     type: datetime_timestamp_no_default
@@ -259,17 +278,17 @@ content:
     third_party_settings: {  }
   status:
     type: boolean_checkbox
-    settings:
-      display_label: true
     weight: 15
     region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   sticky:
     type: boolean_checkbox
-    settings:
-      display_label: true
     weight: 13
     region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   title:
     type: string_textfield
@@ -282,12 +301,12 @@ content:
   uid:
     type: entity_reference_autocomplete
     weight: 9
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
-    region: content
     third_party_settings: {  }
   unpublish_on:
     type: datetime_timestamp_no_default

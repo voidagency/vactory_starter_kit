@@ -6,6 +6,7 @@ dependencies:
     - field.field.node.vactory_partner.field_vactory_call_to_action
     - field.field.node.vactory_partner.field_vactory_media
     - field.field.node.vactory_partner.field_vactory_seo_status
+    - field.field.node.vactory_partner.field_vactory_tags
     - node.type.vactory_partner
   module:
     - link
@@ -18,14 +19,14 @@ bundle: vactory_partner
 mode: default
 content:
   body:
-    label: hidden
     type: text_default
-    weight: 101
+    label: hidden
     settings: {  }
     third_party_settings: {  }
+    weight: 101
     region: content
   field_vactory_call_to_action:
-    weight: 103
+    type: link
     label: above
     settings:
       trim_length: 80
@@ -34,10 +35,10 @@ content:
       rel: ''
       target: ''
     third_party_settings: {  }
-    type: link
+    weight: 103
     region: content
   field_vactory_media:
-    weight: 104
+    type: lazy_image
     label: hidden
     settings:
       desktop_1x: partner_image_style
@@ -50,13 +51,26 @@ content:
       mobile_2x: partner_image_style_x2
       lqip: lqip
     third_party_settings: {  }
-    type: lazy_image
+    weight: 104
     region: content
-  links:
-    weight: 100
+  field_vactory_tags:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 105
     region: content
+  flag_liked_content:
     settings: {  }
     third_party_settings: {  }
+    weight: 10
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
 hidden:
   addtoany: true
   field_vactory_seo_status: true

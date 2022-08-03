@@ -1,0 +1,36 @@
+_meta:
+  version: '1.0'
+  entity_type: media
+  uuid: 9256e7ac-635a-4add-9c98-b68e0087f011
+  bundle: image
+  default_langcode: fr
+  depends:
+    b31ffe97-4300-4428-9f63-79e5bbb50840: file
+default:
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  name:
+    -
+      value: news6.jpeg
+  created:
+    -
+      value: 1657193310
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: fr
+      pathauto: 0
+  field_media_image:
+    -
+      entity: b31ffe97-4300-4428-9f63-79e5bbb50840
+      alt: test
+      title: ''
+      width: 2000
+      height: 1333

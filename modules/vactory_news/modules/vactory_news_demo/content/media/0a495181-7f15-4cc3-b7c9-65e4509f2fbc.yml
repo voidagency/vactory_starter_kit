@@ -1,0 +1,31 @@
+_meta:
+  version: '1.0'
+  entity_type: media
+  uuid: 0a495181-7f15-4cc3-b7c9-65e4509f2fbc
+  bundle: image
+  default_langcode: fr
+  depends:
+    e722bcd8-d368-4533-a9fc-c75ebfc7acf0: file
+default:
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  name:
+    -
+      value: photo-1521120413309-42e7eada0334.jpeg
+  created:
+    -
+      value: 1592425936
+  revision_translation_affected:
+    -
+      value: true
+  field_media_image:
+    -
+      entity: e722bcd8-d368-4533-a9fc-c75ebfc7acf0
+      alt: 'News 5'
+      title: ''
+      width: 750
+      height: 500

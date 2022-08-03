@@ -9,6 +9,8 @@ dependencies:
     - field.field.node.vactory_press_release.field_vactory_excerpt
     - field.field.node.vactory_press_release.field_vactory_media
     - field.field.node.vactory_press_release.field_vactory_meta_tags
+    - field.field.node.vactory_press_release.field_vactory_seo_status
+    - field.field.node.vactory_press_release.field_vactory_tags
     - node.type.vactory_press_release
   module:
     - user
@@ -17,11 +19,16 @@ targetEntityType: node
 bundle: vactory_press_release
 mode: teaser
 content:
-  links:
-    weight: 100
-    region: content
+  flag_liked_content:
     settings: {  }
     third_party_settings: {  }
+    weight: 10
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
 hidden:
   addtoany: true
   field_press_release_theme: true
@@ -30,5 +37,7 @@ hidden:
   field_vactory_excerpt: true
   field_vactory_media: true
   field_vactory_meta_tags: true
+  field_vactory_seo_status: true
+  field_vactory_tags: true
   langcode: true
   search_api_excerpt: true

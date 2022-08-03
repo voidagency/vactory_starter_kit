@@ -6,6 +6,22 @@
  */
 
 /**
+ * Implements hook_install().
+ */
+function vactory_espace_prive_install($is_syncing) {
+  $users = Drupal::entityTypeManager()->getStorage('user')
+    ->loadByProperties([
+      'roles' => 'webmaster'
+    ]);
+  foreach ($users as $user) {
+    if ($user->hasField('field_reset_password_date')) {
+      $user->set('field_reset_password_date', time());
+      $user->save();
+    }
+  }
+}
+
+/**
  * Implements hook_uninstall().
  */
 function vactory_espace_prive_uninstall($is_syncing) {

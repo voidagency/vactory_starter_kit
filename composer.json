@@ -15,7 +15,7 @@
     "google/apiclient": "~2.0",
     "commerceguys/addressing": "~1.0",
     "commerceguys/intl": "^0.7.5",
-    "lullabot/amp": "^1.0.0",
+    "lullabot/amp": "^2.0.0",
     "drupal/address": "^1.9",
     "drupal/addtoany": "^1.16",
     "drupal/advagg": "^4.1.0",
@@ -38,7 +38,7 @@
     "drupal/improved_multi_select": "^1.7",
     "drupal/inline_entity_form": "^1.0.0-rc2",
     "drupal/colorapi": "^1.1",
-    "drupal/jquery_colorpicker": "^2.0@RC",
+    "drupal/jquery_colorpicker": "^3.0",
     "drupal/lang_dropdown": "^2.0@beta",
     "drupal/menu_link_attributes": "^1.1.0",
     "drupal/metatag": "^1.14",
@@ -89,7 +89,7 @@
     "drupal/minifyhtml": "^1.8",
     "drupal/flag": "^4.0@beta",
     "drupal/rate": "^3.0",
-    "masterminds/html5": "2.3.0",
+    "masterminds/html5": "^2.3",
     "drupal/link_attributes": "^1.9",
     "drupal/entity_embed": "^1.0",
     "drupal/search_api_autocomplete": "^1.4",
@@ -203,7 +203,6 @@
         "Remove version comments from minified files.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/9e6eca9bcbd95e7bed7859d54a0c4623a6112e5a/advagg-remove-version-comment-from-minified-js.patch"
       },
       "drupal/colorapi": {
-        "Color api : Fix undefined index name.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/cd98ab758217f762b1f8daeda8774f19cea1f9dc/fix-color-api-undefined-index-name.patch",
         "Enable colorapi field type by default": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/9e6eca9bcbd95e7bed7859d54a0c4623a6112e5a/colorapi-enable-colorapi-field-type-by-default.patch"
       },
       "drupal/jquery_colorpicker": {
@@ -252,5 +251,9 @@
         }
       }
     }
-  ]
+  ],
+  "config": {
+    "disable-tls": true,
+    "secure-http": false
+  }
 }

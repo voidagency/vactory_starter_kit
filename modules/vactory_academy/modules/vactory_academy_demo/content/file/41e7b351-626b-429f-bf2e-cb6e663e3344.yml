@@ -1,0 +1,33 @@
+_meta:
+  version: '1.0'
+  entity_type: file
+  uuid: 41e7b351-626b-429f-bf2e-cb6e663e3344
+  bundle: image
+  default_langcode: fr
+default:
+  uid:
+    -
+      target_id: 1
+  filename:
+    -
+      value: 654784_e6af.jpeg
+  uri:
+    -
+      value: 'public://2022-07/654784_e6af.jpeg'
+  filemime:
+    -
+      value: image/jpeg
+  filesize:
+    -
+      value: 68664
+  status:
+    -
+      value: true
+  created:
+    -
+      value: 1657277520
+  path:
+    -
+      alias: ''
+      langcode: fr
+      pathauto: 1

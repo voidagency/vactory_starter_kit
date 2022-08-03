@@ -1,0 +1,86 @@
+_meta:
+  version: '1.0'
+  entity_type: node
+  uuid: c385d334-75ef-413c-b177-a6bdeeb8af1d
+  bundle: vactory_news
+  default_langcode: fr
+  depends:
+    cc26b409-966d-4f3f-8ad9-f7ff7942c9c7: media
+    95e44038-b0cb-4026-ae92-b408005ce5b0: taxonomy_term
+default:
+  revision_uid:
+    -
+      target_id: 1
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  title:
+    -
+      value: 'Actualité 1'
+  created:
+    -
+      value: 1656587064
+  promote:
+    -
+      value: true
+  sticky:
+    -
+      value: false
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: /news/actualite-1
+      langcode: fr
+      pathauto: 1
+  node_summary:
+    -
+      value: 'Actualité 1'
+  content_translation_source:
+    -
+      value: und
+  content_translation_outdated:
+    -
+      value: false
+  body:
+    -
+      value: "<p>Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem. Pellentesque in ipsum id orci porta dapibus. Proin eget tortor risus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec velit neque, auctor sit amet aliquam vel, ullamcorper sit amet ligula. Pellentesque in ipsum id orci porta dapibus. Nulla quis lorem ut libero malesuada feugiat. Curabitur aliquet quam id dui posuere blandit. Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec velit neque, auctor sit amet aliquam vel, ullamcorper sit amet ligula. Curabitur non nulla sit amet nisl tempus convallis quis ac lectus.</p>\r\n\r\n<p>Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem. Pellentesque in ipsum id orci porta dapibus. Proin eget tortor risus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec velit neque, auctor sit amet aliquam vel, ullamcorper sit amet ligula. Pellentesque in ipsum id orci porta dapibus. Nulla quis lorem ut libero malesuada feugiat. Curabitur aliquet quam id dui posuere blandit. Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec velit neque, auctor sit amet aliquam vel, ullamcorper sit amet ligula. Curabitur non nulla sit amet nisl tempus convallis quis ac lectus.</p>\r\n\r\n<p>&nbsp;</p>\r\n\r\n<p>Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem. Pellentesque in ipsum id orci porta dapibus. Proin eget tortor risus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec velit neque, auctor sit amet aliquam vel, ullamcorper sit amet ligula. Pellentesque in ipsum id orci porta dapibus. Nulla quis lorem ut libero malesuada feugiat. Curabitur aliquet quam id dui posuere blandit. Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec velit neque, auctor sit amet aliquam vel, ullamcorper sit amet ligula. Curabitur non nulla sit amet nisl tempus convallis quis ac lectus.</p>\r\n"
+      format: basic_html
+      summary: ''
+  comment:
+    -
+      status: 0
+      cid: 0
+      last_comment_timestamp: 1656587106
+      last_comment_name: ''
+      last_comment_uid: 1
+      comment_count: 0
+  field_vactory_date:
+    -
+      value: '2022-06-30'
+  field_vactory_excerpt:
+    -
+      value: "<p>Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem. Pellentesque in ipsum id orci porta dapibus. Proin eget tortor risus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec velit neque, auctor sit amet aliquam vel, ullamcorper sit amet ligula. Pellentesque in ipsum id orci porta dapibus. Nulla quis</p>\r\n"
+      format: basic_html
+  field_vactory_media:
+    -
+      entity: cc26b409-966d-4f3f-8ad9-f7ff7942c9c7
+  field_vactory_meta_tags:
+    -
+      value:
+        og_image: '[node:field_vactory_media:entity:field_media_image:vactory_opengraph_image_style:url]'
+        og_image_url: '[node:field_vactory_media:entity:field_media_image:vactory_opengraph_image_style:url]'
+        og_image_secure_url: '[node:field_vactory_media:entity:field_media_image:vactory_opengraph_image_style:url]'
+  field_vactory_news_theme:
+    -
+      entity: 95e44038-b0cb-4026-ae92-b408005ce5b0
+  field_vactory_seo_status:
+    -
+      status: '0'
+      focus_keyword: ''
+      title: ''
+      description: ''

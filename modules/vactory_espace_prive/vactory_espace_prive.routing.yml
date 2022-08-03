@@ -18,7 +18,7 @@ vactory_espace_prive.profile:
     _controller: '\Drupal\vactory_espace_prive\Controller\EspacePriveController::profile'
     _title: 'Mon profil'
   requirements:
-    _access: 'TRUE'
+    _permission: 'access content'
   options:
     no_cache: 'TRUE'
     parameters:

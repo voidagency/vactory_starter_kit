@@ -5,54 +5,60 @@ dependencies:
     - core.entity_view_mode.node.teaser
     - field.field.node.vactory_quiz.body
     - field.field.node.vactory_quiz.field_quiz_questions
+    - field.field.node.vactory_quiz.field_vactory_tags
     - node.type.vactory_quiz
+  module:
+    - text
+    - user
   enforced:
     module:
       - vactory_quiz
-  module:
-    - options
-    - text
-    - user
 id: node.vactory_quiz.teaser
 targetEntityType: node
 bundle: vactory_quiz
 mode: teaser
 content:
   body:
-    label: hidden
     type: text_default
-    weight: 1
+    label: hidden
     settings: {  }
     third_party_settings: {  }
+    weight: 1
     region: content
   field_certificat_require:
     type: list_key
-    weight: 2
-    region: content
     label: visually_hidden
     settings: {  }
     third_party_settings: {  }
+    weight: 2
+    region: content
   field_enable_certificat:
     type: boolean
-    weight: 3
-    region: content
     label: visually_hidden
     settings:
       format: default
       format_custom_false: ''
       format_custom_true: ''
     third_party_settings: {  }
-  links:
-    weight: 0
+    weight: 3
     region: content
+  flag_liked_content:
     settings: {  }
     third_party_settings: {  }
+    weight: 10
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   addtoany: true
   field_content_access_groups: true
   field_content_access_roles: true
   field_content_access_users: true
   field_quiz_questions: true
+  field_vactory_tags: true
   langcode: true
   mail_message: true
   mail_subject: true

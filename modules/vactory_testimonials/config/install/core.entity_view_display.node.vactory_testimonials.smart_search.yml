@@ -11,6 +11,7 @@ dependencies:
     - field.field.node.vactory_testimonials.field_vactory_profils
     - field.field.node.vactory_testimonials.field_vactory_role
     - field.field.node.vactory_testimonials.field_vactory_seo_status
+    - field.field.node.vactory_testimonials.field_vactory_tags
     - node.type.vactory_testimonials
     - responsive_image.styles.vactory_three_cols
   module:
@@ -18,44 +19,42 @@ dependencies:
     - media_responsive_thumbnail
     - user
     - vactory_field
-_core:
-  default_config_hash: 0gwaRpCczXbQdcjvYgK221zr4Z1cFdlHO2Cxlh0os3g
 id: node.vactory_testimonials.smart_search
 targetEntityType: node
 bundle: vactory_testimonials
 mode: smart_search
 content:
   field_vactory_date:
-    weight: 3
+    type: datetime_custom
     label: hidden
     settings:
       timezone_override: ''
       date_format: 'd | M | Y'
     third_party_settings: {  }
-    type: datetime_custom
+    weight: 3
     region: content
   field_vactory_excerpt:
-    weight: 2
+    type: vactory_field_excerpt_formatter
     label: hidden
     settings:
       trim_length: '170'
     third_party_settings: {  }
-    type: vactory_field_excerpt_formatter
+    weight: 2
     region: content
   field_vactory_media:
-    weight: 1
+    type: media_responsive_thumbnail
     label: hidden
     settings:
       responsive_image_style: vactory_three_cols
       image_link: ''
     third_party_settings: {  }
-    type: media_responsive_thumbnail
+    weight: 1
     region: content
   links:
-    weight: 0
-    region: content
     settings: {  }
     third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   addtoany: true
   body: true
@@ -63,6 +62,7 @@ hidden:
   field_vactory_profils: true
   field_vactory_role: true
   field_vactory_seo_status: true
+  field_vactory_tags: true
   langcode: true
   notification_message: true
   notification_title: true

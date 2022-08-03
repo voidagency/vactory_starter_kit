@@ -16,14 +16,15 @@ dependencies:
     - field.field.node.vactory_annual_report.field_vactory_excerpt
     - field.field.node.vactory_annual_report.field_vactory_media
     - field.field.node.vactory_annual_report.field_vactory_paragraphs
+    - field.field.node.vactory_annual_report.field_vactory_tags
     - node.type.vactory_annual_report
-  enforced:
-    module:
-      - vactory_annual_report
   module:
     - text
     - user
     - vactory_core
+  enforced:
+    module:
+      - vactory_annual_report
 id: node.vactory_annual_report.mur
 targetEntityType: node
 bundle: vactory_annual_report
@@ -31,15 +32,13 @@ mode: mur
 content:
   field_vactory_excerpt:
     type: text_default
-    weight: 2
-    region: content
     label: above
     settings: {  }
     third_party_settings: {  }
+    weight: 2
+    region: content
   field_vactory_media:
     type: lazy_image
-    weight: 1
-    region: content
     label: above
     settings:
       desktop_1x: vactory_three_cols_x1
@@ -52,11 +51,18 @@ content:
       mobile_2x: vactory_three_cols_x2
       lqip: lqip
     third_party_settings: {  }
-  links:
-    weight: 0
+    weight: 1
     region: content
+  flag_liked_content:
     settings: {  }
     third_party_settings: {  }
+    weight: 10
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   addtoany: true
   body: true
@@ -73,6 +79,7 @@ hidden:
   field_has_corner: true
   field_rapport_digital_annee: true
   field_vactory_paragraphs: true
+  field_vactory_tags: true
   langcode: true
   mail_message: true
   mail_subject: true

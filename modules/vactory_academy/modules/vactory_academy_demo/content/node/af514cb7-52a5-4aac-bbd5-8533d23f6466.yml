@@ -1,0 +1,477 @@
+_meta:
+  version: '1.0'
+  entity_type: node
+  uuid: af514cb7-52a5-4aac-bbd5-8533d23f6466
+  bundle: vactory_page
+  default_langcode: fr
+default:
+  revision_uid:
+    -
+      target_id: 1
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  title:
+    -
+      value: 'Academy Demo'
+  created:
+    -
+      value: 1657273757
+  promote:
+    -
+      value: true
+  sticky:
+    -
+      value: false
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: /academy-demo
+      langcode: fr
+      pathauto: 1
+  node_summary:
+    -
+      value: 'Academy Demo'
+  content_translation_source:
+    -
+      value: und
+  content_translation_outdated:
+    -
+      value: false
+  comment:
+    -
+      status: 0
+      cid: 0
+      last_comment_timestamp: 1657278745
+      last_comment_name: ''
+      last_comment_uid: 1
+      comment_count: 0
+  field_exclude_from_search:
+    -
+      value: false
+  field_vactory_paragraphs:
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: fc7dc5f8-ff8e-490a-94ab-d24122cb40df
+          bundle: vactory_paragraph_block
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1657273771
+          behavior_settings:
+            -
+              value: {  }
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_vactory_block:
+            -
+              plugin_id: 'views_block:vactory_academy-block_three_columns'
+              settings:
+                id: 'views_block:vactory_academy-block_three_columns'
+                label: ''
+                label_display: visible
+                provider: views
+                views_label: ''
+                items_per_page: none
+          field_vactory_flag:
+            -
+              value: false
+          field_vactory_flag_2:
+            -
+              value: false
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: 2b46035a-58d8-449d-8430-1f74bcf5feca
+          bundle: vactory_paragraph_block
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1657273822
+          behavior_settings:
+            -
+              value: {  }
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_vactory_block:
+            -
+              plugin_id: 'views_block:vactory_academy-block_two_columns'
+              settings:
+                id: 'views_block:vactory_academy-block_two_columns'
+                label: ''
+                label_display: visible
+                provider: views
+                views_label: ''
+                items_per_page: none
+          field_vactory_flag:
+            -
+              value: false
+          field_vactory_flag_2:
+            -
+              value: false
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: 15482166-390e-4a7c-ae98-dfbec04b2851
+          bundle: vactory_paragraph_block
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1657274054
+          behavior_settings:
+            -
+              value: {  }
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_vactory_block:
+            -
+              plugin_id: 'views_block:vactory_academy-block_listing_favorite_courses'
+              settings:
+                id: 'views_block:vactory_academy-block_listing_favorite_courses'
+                label: ''
+                label_display: visible
+                provider: views
+                views_label: ''
+                items_per_page: none
+          field_vactory_flag:
+            -
+              value: false
+          field_vactory_flag_2:
+            -
+              value: false
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: 4b250396-4743-42b4-b571-8469bd540ef9
+          bundle: vactory_paragraph_block
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1657274067
+          behavior_settings:
+            -
+              value: {  }
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_vactory_block:
+            -
+              plugin_id: 'views_block:vactory_academy-block_recommended_courses'
+              settings:
+                id: 'views_block:vactory_academy-block_recommended_courses'
+                label: ''
+                label_display: visible
+                provider: views
+                views_label: ''
+                items_per_page: none
+          field_vactory_flag:
+            -
+              value: false
+          field_vactory_flag_2:
+            -
+              value: false
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: 2caea8b1-0321-460b-bdab-244536d328c0
+          bundle: vactory_paragraph_block
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1657274079
+          behavior_settings:
+            -
+              value: {  }
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_vactory_block:
+            -
+              plugin_id: 'views_block:vactory_academy-block_list'
+              settings:
+                id: 'views_block:vactory_academy-block_list'
+                label: ''
+                label_display: false
+                provider: views
+                views_label: ''
+                items_per_page: none
+          field_vactory_flag:
+            -
+              value: true
+          field_vactory_flag_2:
+            -
+              value: false
+          field_vactory_title:
+            -
+              value: 'List ( Block )'
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: 64314c7c-42fb-477f-919b-1f63e0461c83
+          bundle: views_reference
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1657273953
+          behavior_settings:
+            -
+              value: {  }
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_vactory_title:
+            -
+              value: 'List ( View )'
+          field_views_reference:
+            -
+              target_id: vactory_academy
+              display_id: listing_one_column
+              data: 'a:5:{s:5:"pager";N;s:6:"offset";N;s:5:"limit";N;s:8:"argument";N;s:5:"title";N;}'
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: 2a212083-26e7-4c6f-9e77-5a7f8917fe77
+          bundle: views_reference
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1657273853
+          behavior_settings:
+            -
+              value: {  }
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_vactory_title:
+            -
+              value: 'Listing Favorite courses'
+          field_views_reference:
+            -
+              target_id: vactory_academy
+              display_id: listing_favorite_cours
+              data: 'a:5:{s:5:"pager";N;s:6:"offset";N;s:5:"limit";N;s:8:"argument";N;s:5:"title";N;}'
+  field_vactory_seo_status:
+    -
+      status: '0'
+      focus_keyword: ''
+      title: ''
+      description: ''

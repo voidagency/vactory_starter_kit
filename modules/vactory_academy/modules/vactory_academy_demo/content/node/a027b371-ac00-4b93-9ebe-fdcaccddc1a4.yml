@@ -1,0 +1,276 @@
+_meta:
+  version: '1.0'
+  entity_type: node
+  uuid: a027b371-ac00-4b93-9ebe-fdcaccddc1a4
+  bundle: vactory_academy
+  default_langcode: fr
+  depends:
+    6276089b-341f-4efd-9891-fe8f150ec919: file
+    5fc7666c-bc63-4267-84cf-09fc431c7c79: user
+    de3f6f4e-d9e7-4345-9d72-a0f3a1491201: media
+    d7254337-206b-4501-b32d-45a0e1d38456: taxonomy_term
+    52dc1328-3113-4e8c-ae37-501846e831e1: media
+default:
+  revision_uid:
+    -
+      target_id: 1
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  title:
+    -
+      value: 'Le Front-End: Formation Complète'
+  created:
+    -
+      value: 1657099446
+  promote:
+    -
+      value: true
+  sticky:
+    -
+      value: false
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: /academy-courses/le-front-end-formation-complete
+      langcode: fr
+      pathauto: 1
+  node_summary:
+    -
+      value: 'Le Front-End: Formation Complète'
+  content_translation_source:
+    -
+      value: und
+  content_translation_outdated:
+    -
+      value: false
+  comment:
+    -
+      status: 0
+      cid: 0
+      last_comment_timestamp: 1657100642
+      last_comment_name: ''
+      last_comment_uid: 1
+      comment_count: 0
+  field_academy_duree:
+    -
+      value: 1h30
+  field_vactory_academy_langue:
+    -
+      value: Français
+  field_vactory_date:
+    -
+      value: '2022-07-14'
+  field_vactory_excerpt:
+    -
+      value: "<p>Devenez un expert du développement web avec les techno du Front-End: HTML, CSS, Javascript, Jquery.</p>\r\n"
+      format: basic_html
+  field_vactory_file:
+    -
+      entity: 6276089b-341f-4efd-9891-fe8f150ec919
+      display: true
+      description: ''
+  field_vactory_instructor:
+    -
+      entity: 5fc7666c-bc63-4267-84cf-09fc431c7c79
+  field_vactory_media:
+    -
+      entity: de3f6f4e-d9e7-4345-9d72-a0f3a1491201
+  field_vactory_meta_tags:
+    -
+      value:
+        og_image: '[node:field_vactory_media:entity:field_media_image:vactory_opengraph_image_style:url]'
+        og_image_url: '[node:field_vactory_media:entity:field_media_image:vactory_opengraph_image_style:url]'
+        og_image_secure_url: '[node:field_vactory_media:entity:field_media_image:vactory_opengraph_image_style:url]'
+  field_vactory_paragraphs:
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: 9683b32e-a4fd-4cac-b0ef-08d2599fab66
+          bundle: vactory_component
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1657100518
+          behavior_settings:
+            -
+              value: {  }
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_vactory_component:
+            -
+              widget_id: 'vactory_froala:7'
+              widget_data: '{"extra_field":{"title":""},"0":{"description":{"value":"<p>&nbsp;<\/p>\r\n\r\n<ul>\r\n\t<li>Vous n''aurez besoin d''aucune connaissance particuli\u00e8re.<\/li>\r\n\t<li>Vous aurez besoin d''un \u00e9diteur gratuit (inclus dans le cours)<\/li>\r\n\t<li>Un navigateur sympa (aussi inclus dans le cours)<\/li>\r\n<\/ul>\r\n\r\n<p>&nbsp;<\/p>\r\n","format":"full_html"},"_weight":"1"}}'
+          field_vactory_flag:
+            -
+              value: true
+          field_vactory_flag_2:
+            -
+              value: false
+          field_vactory_title:
+            -
+              value: 'Ce que vous apprendrez'
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: fadf78ba-e29a-4a3b-b715-a396fdaf7460
+          bundle: vactory_component
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1657101104
+          behavior_settings:
+            -
+              value: {  }
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_vactory_component:
+            -
+              widget_id: 'vactory_froala:7'
+              widget_data: '{"extra_field":{"title":""},"0":{"description":{"value":"<p>Salut ! Bienvenu dans le cours complet&nbsp;<strong>Front-End<\/strong>&nbsp;vous permettra de devenir tr\u00e8s facilement int\u00e9grateur web. Fort de mon&nbsp;exp\u00e9rience de formateur web, j''ai con\u00e7u ce cours afin qu''il soit le seul dont vous aillez besoin pour devenir d\u00e9veloppeur front.<\/p>\r\n\r\n<ul>\r\n\t<li>Ce cours a \u00e9t\u00e9 con\u00e7u par un&nbsp;<strong>formateur professionne<\/strong>l ind\u00e9pendant<\/li>\r\n\t<li>Vous apprendrez tous ce que<strong>&nbsp;j''utilise tous les jours<\/strong>&nbsp;en tant que&nbsp;<strong>d\u00e9veloppeur Front-end<\/strong><\/li>\r\n\t<li>Le cours contient seulement des technologie Front-End donc&nbsp;<strong>pas de PHP<\/strong>&nbsp;et autres approches serveur.<\/li>\r\n\t<li>Chaque section contient un&nbsp;<strong>exercice r\u00e9capitulatif<\/strong>.<\/li>\r\n\t<li><strong>Chaque mois<\/strong>, le cours sera mis \u00e0 jour pour ajouter&nbsp;un projet projet Front-End Complet.<\/li>\r\n<\/ul>\r\n\r\n<p>Ce cours est en cours d''\u00e9criture et&nbsp;<strong>\u00e9voluera vers une cours de D\u00e9veloppeur Front-End.&nbsp;<\/strong><\/p>\r\n\r\n<p><strong>A venir, j''ajouterai le&nbsp;<em>Jquery&nbsp;<\/em>et un projet professionnel corrig\u00e9&nbsp;GRATUITEMENT pour ceux qui ont d\u00e9j\u00e0 achet\u00e9 ce cours..<\/strong><\/p>\r\n\r\n<p>&nbsp;<\/p>\r\n\r\n<p>\u00c0 qui ce cours s''adresse-t-il&nbsp;?<\/p>\r\n\r\n<ul>\r\n\t<li>Chaque personne int\u00e9ress\u00e9e par une carri\u00e8re dans le d\u00e9veloppement Front-End<\/li>\r\n\t<li>D\u00e9veloppeurs d\u00e9butants qui veulent apprendre l''HTML, le CSS , et le javascript<\/li>\r\n\t<li>D\u00e9veloppeurs confirm\u00e9s voulant gagner en expertise Front-End<\/li>\r\n\t<li>Ce cours ne couvre pas la partie d\u00e9veloppeur back-end.<\/li>\r\n<\/ul>\r\n\r\n<p>&nbsp;<\/p>\r\n","format":"full_html"},"_weight":"1"}}'
+          field_vactory_flag:
+            -
+              value: true
+          field_vactory_flag_2:
+            -
+              value: false
+          field_vactory_title:
+            -
+              value: Description
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: 1e4da5d2-4428-46bd-b2f5-85fe82ff70a2
+          bundle: vactory_component
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1657101262
+          behavior_settings:
+            -
+              value: {  }
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_vactory_component:
+            -
+              widget_id: 'vactory_bootstrap:4'
+              widget_data: '{"extra_field":{"intro":"","bigtitle":""},"0":{"title":" HTML 1\/3 : Introduction","description":{"value":"<p>Vivamus suscipit tortor eget felis porttitor volutpat. Nulla quis lorem ut libero malesuada feugiat. Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a. Nulla porttitor accumsan tincidunt. Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a. Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem. Curabitur non nulla sit amet nisl tempus convallis quis ac lectus. Praesent sapien massa, convallis a pellentesque nec, egestas non nisi. Praesent sapien massa, convallis a pellentesque nec, egestas non nisi. Quisque velit nisi, pretium ut lacinia in, elementum id enim. Proin eget tortor risus.<\/p>\r\n","format":"full_html"},"_weight":"1"},"1":{"title":"HTML : Savoir bien structurer ses donn\u00e9es ","description":{"value":"<p>Proin eget tortor risus. Quisque velit nisi, pretium ut lacinia in, elementum id enim. Vivamus magna justo, lacinia eget consectetur sed, convallis at tellus. Curabitur aliquet quam id dui posuere blandit. Donec sollicitudin molestie malesuada. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque in ipsum id orci porta dapibus. Vivamus magna justo, lacinia eget consectetur sed, convallis at tellus. Curabitur non nulla sit amet nisl tempus convallis quis ac lectus. Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a. Lorem ipsum dolor sit amet, consectetur adipiscing elit.<\/p>\r\n","format":"full_html"},"_weight":"2"}}'
+          field_vactory_flag:
+            -
+              value: true
+          field_vactory_flag_2:
+            -
+              value: false
+          field_vactory_title:
+            -
+              value: 'Contenu du cours'
+  field_vactory_seo_status:
+    -
+      status: ''
+      focus_keyword: ''
+      title: ''
+      description: ''
+  field_vactory_theme:
+    -
+      entity: d7254337-206b-4501-b32d-45a0e1d38456
+  field_vactory_youtube_media:
+    -
+      entity: 52dc1328-3113-4e8c-ae37-501846e831e1

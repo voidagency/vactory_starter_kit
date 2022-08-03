@@ -10,11 +10,13 @@ dependencies:
     - field.field.node.vactory_testimonials.field_vactory_profils
     - field.field.node.vactory_testimonials.field_vactory_role
     - field.field.node.vactory_testimonials.field_vactory_seo_status
+    - field.field.node.vactory_testimonials.field_vactory_tags
     - node.type.vactory_testimonials
   module:
     - datetime
     - media_library
     - path
+    - scheduler
     - text
     - yoast_seo
 id: node.vactory_testimonials.default
@@ -25,12 +27,12 @@ content:
   body:
     type: text_textarea_with_summary
     weight: 10
+    region: content
     settings:
       rows: 9
       summary_rows: 3
       placeholder: ''
     third_party_settings: {  }
-    region: content
   created:
     type: datetime_timestamp
     weight: 4
@@ -38,61 +40,92 @@ content:
     settings: {  }
     third_party_settings: {  }
   field_vactory_address:
+    type: text_textarea
     weight: 11
+    region: content
     settings:
       rows: 5
       placeholder: ''
     third_party_settings: {  }
-    type: text_textarea
-    region: content
   field_vactory_date:
+    type: datetime_default
     weight: 15
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: datetime_default
-    region: content
   field_vactory_excerpt:
+    type: text_textarea
     weight: 14
+    region: content
     settings:
       rows: 5
       placeholder: ''
     third_party_settings: {  }
-    type: text_textarea
-    region: content
   field_vactory_media:
-    weight: 12
-    settings: {  }
-    third_party_settings: {  }
     type: media_library_widget
+    weight: 12
     region: content
-  field_vactory_profils:
-    weight: 16
     settings: {  }
     third_party_settings: {  }
+  field_vactory_profils:
     type: options_select
+    weight: 16
     region: content
+    settings: {  }
+    third_party_settings: {  }
   field_vactory_role:
+    type: string_textfield
     weight: 17
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_vactory_seo_status:
+    type: yoast_seo_widget
     weight: 18
+    region: content
     settings:
       edit_title: false
       edit_description: false
     third_party_settings: {  }
-    type: yoast_seo_widget
+  field_vactory_tags:
+    type: entity_reference_autocomplete
+    weight: 37
     region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   langcode:
     type: language_select
     weight: 1
     region: content
     settings:
       include_locked: true
+    third_party_settings: {  }
+  node_banner_image:
+    type: media_library_widget
+    weight: 0
+    region: content
+    settings:
+      media_types: {  }
+    third_party_settings: {  }
+  node_banner_mobile_image:
+    type: media_library_widget
+    weight: 0
+    region: content
+    settings:
+      media_types: {  }
+    third_party_settings: {  }
+  node_bg_image:
+    type: media_library_widget
+    weight: 0
+    region: content
+    settings:
+      media_types: {  }
     third_party_settings: {  }
   path:
     type: path
@@ -102,10 +135,10 @@ content:
     third_party_settings: {  }
   promote:
     type: boolean_checkbox
-    settings:
-      display_label: true
     weight: 5
     region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   publish_on:
     type: datetime_timestamp_no_default
@@ -115,17 +148,17 @@ content:
     third_party_settings: {  }
   status:
     type: boolean_checkbox
-    settings:
-      display_label: true
     weight: 9
     region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   sticky:
     type: boolean_checkbox
-    settings:
-      display_label: true
     weight: 6
     region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   title:
     type: string_textfield
@@ -143,11 +176,11 @@ content:
   uid:
     type: entity_reference_autocomplete
     weight: 2
+    region: content
     settings:
       match_operator: CONTAINS
       size: 60
       placeholder: ''
-    region: content
     third_party_settings: {  }
   unpublish_on:
     type: datetime_timestamp_no_default

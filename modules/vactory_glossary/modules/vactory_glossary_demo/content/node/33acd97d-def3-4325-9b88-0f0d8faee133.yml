@@ -1,0 +1,55 @@
+_meta:
+  version: '1.0'
+  entity_type: node
+  uuid: 33acd97d-def3-4325-9b88-0f0d8faee133
+  bundle: vactory_glossary
+  default_langcode: fr
+  depends:
+    b06cb150-700e-48cb-869d-0b81471a1cb1: taxonomy_term
+default:
+  revision_uid:
+    -
+      target_id: 1
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  title:
+    -
+      value: 'Abdo Aliquip Odio Torqueo'
+  created:
+    -
+      value: 1627470864
+  promote:
+    -
+      value: false
+  sticky:
+    -
+      value: false
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: fr
+      pathauto: 0
+  node_summary:
+    -
+      value: 'Abdo Aliquip Odio Torqueo'
+  content_translation_source:
+    -
+      value: und
+  content_translation_outdated:
+    -
+      value: false
+  body:
+    -
+      value: "Gilvus haero melior quidne virtus. Eros exputo genitus inhibeo roto tamen ymo. Abbas ex venio vicis. Brevitas dolore patria. Abico abigo exputo loquor olim pala tamen tego typicus. Diam ea eligo et gemino genitus ludus mauris saluto.\r\n\r\nAptent meus nutus olim ulciscor. Ad caecus immitto nutus ymo. Accumsan antehabeo appellatio immitto nimis nunc populus sit zelus. Autem luptatum usitas. Adipiscing comis iusto populus. Ad oppeto saluto. Bene consectetuer haero ibidem importunus interdico praemitto scisco similis ulciscor.\r\n\r\nComis et hendrerit immitto in neo quidem validus vereor vindico. Cogo damnum iustum patria praesent ratis. Odio pecus vulputate. Acsi causa cui importunus in mauris nunc pala. Conventio fere meus oppeto si similis volutpat. Capto cogo ea immitto nulla pala roto uxor. Huic populus quibus similis tation virtus.\r\n\r\nAcsi adipiscing decet dolor gravis pagus pertineo roto si. Commodo macto quadrum. Hendrerit incassum quidem zelus. Et gemino hendrerit huic interdico lenis nimis odio ut. Eu praemitto premo sudo validus. Abbas imputo iusto jugis laoreet minim pertineo. Dolore ibidem incassum populus praemitto quis refero. Abigo appellatio causa exputo jus lenis pecus tego typicus.\r\n\r\nAd aliquam dolor modo nutus quidem si ulciscor virtus. Decet iaceo lucidus quae sino. Aliquip augue camur esca genitus neque nibh vel. Cui inhibeo probo rusticus scisco suscipit. Damnum exputo feugiat iaceo interdico refoveo similis turpis. At dolore erat jus molior obruo vicis. Appellatio conventio distineo ille jumentum quibus ratis secundum sed veniam.\r\n\r\nAutem eu turpis veniam verto virtus. Consectetuer dignissim minim molior nutus plaga ymo. Capto pecus tation ulciscor valetudo velit venio. Abigo aptent gemino jumentum lucidus modo nimis pagus refero. Laoreet praesent quis.\r\n\r\nAntehabeo dolor facilisi interdico laoreet nulla nutus te validus zelus. Commodo ex ibidem in lucidus praemitto quibus si validus. Nobis paratus pecus velit.\r\n\r\nDolus esca humo. Aliquam facilisis fere hos incassum meus si tation. Appellatio autem causa dolor facilisi iusto ludus quia ratis valetudo. Dignissim eros lucidus luptatum nunc occuro plaga praesent ratis tincidunt. Abbas cui luptatum saluto singularis. Facilisi gravis huic jumentum obruo occuro probo quis vero. Gilvus modo nostrud tego.\r\n\r\nAbico aliquam augue bene blandit meus odio persto tincidunt. Distineo imputo inhibeo modo sit utinam vereor vulpes. Causa euismod huic importunus iusto luctus os quidne typicus ullamcorper. Commoveo eligo jus lenis mauris usitas uxor velit. Aliquip imputo inhibeo odio saepius suscipit. Molior proprius ut zelus. Abico dolore jugis modo refero ullamcorper.\r\n\r\nEligo huic luptatum oppeto praemitto probo saluto si. At bene conventio euismod jus pertineo tamen te. Adipiscing augue esse letalis luctus molior secundum voco. Eligo exputo facilisis illum immitto molior olim oppeto tum vicis. In melior olim secundum. Abdo augue ea elit facilisis jugis luctus roto sudo volutpat. At nostrud validus. Exerci lucidus pala paulatim similis torqueo valetudo vel.\r\n\r\nCogo cui huic molior. Cogo esse hos iustum nostrud. Damnum ea facilisis. Adipiscing commoveo premo vulputate. Cogo premo tamen zelus. Dolor eligo esca jumentum macto praemitto proprius suscipit utrum. Ideo melior refero. Amet autem cui inhibeo oppeto ullamcorper venio virtus voco. Bene esca inhibeo ludus natu vereor vindico.\r\n\r\nAd distineo ludus obruo quia quis. Augue iusto os pala. Erat ideo inhibeo molior nulla utrum vel. Ibidem turpis utrum. Abico dolor esse ex iustum nostrud plaga pneum roto.\r\n\r\n"
+      format: plain_text
+      summary: "Gilvus haero melior quidne virtus. Eros exputo genitus inhibeo roto tamen ymo. Abbas ex venio vicis. Brevitas dolore patria. Abico abigo exputo loquor olim pala tamen tego typicus. Diam ea eligo et gemino genitus ludus mauris saluto.\r\n\r\nAptent meus nutus olim ulciscor. Ad caecus immitto nutus ymo. Accumsan antehabeo appellatio immitto nimis nunc populus sit zelus. Autem luptatum usitas. Adipiscing comis iusto populus. Ad oppeto saluto. Bene consectetuer haero ibidem importunus interdico praemitto scisco similis ulciscor.\r\n\r\nComis et hendrerit immitto in neo quidem validus vereor vindico. Cogo damnum iustum patria praesent ratis. Odio pecus vulputate. Acsi causa cui importunus in mauris nunc pala. Conventio fere meus oppeto si similis volutpat. Capto cogo ea immitto nulla pala roto uxor. Huic populus quibus similis tation virtus.\r\n\r\nAcsi adipiscing decet dolor gravis pagus pertineo roto si. Commodo macto quadrum. Hendrerit incassum quidem zelus. Et gemino hendrerit huic interdico lenis nimis odio ut. Eu praemitto premo sudo validus. Abbas imputo iusto jugis laoreet minim pertineo. Dolore ibidem incassum populus praemitto quis refero. Abigo appellatio causa exputo jus lenis pecus tego typicus.\r\n\r\nAd aliquam dolor modo nutus quidem si ulciscor virtus. Decet iaceo lucidus quae sino. Aliquip augue camur esca genitus neque nibh vel. Cui inhibeo probo rusticus scisco suscipit. Damnum exputo feugiat iaceo interdico refoveo similis turpis. At dolore erat jus molior obruo vicis. Appellatio conventio distineo ille jumentum quibus ratis secundum sed veniam.\r\n\r\nAutem eu turpis veniam verto virtus. Consectetuer dignissim minim molior nutus plaga ymo. Capto pecus tation ulciscor valetudo velit venio. Abigo aptent gemino jumentum lucidus modo nimis pagus refero. Laoreet praesent quis.\r\n\r\nAntehabeo dolor facilisi interdico laoreet nulla nutus te validus zelus. Commodo ex ibidem in lucidus praemitto quibus si validus. Nobis paratus pecus velit.\r\n\r\nDolus esca humo. Aliquam facilisis fere hos incassum meus si tation. Appellatio autem causa dolor facilisi iusto ludus quia ratis valetudo. Dignissim eros lucidus luptatum nunc occuro plaga praesent ratis tincidunt. Abbas cui luptatum saluto singularis. Facilisi gravis huic jumentum obruo occuro probo quis vero. Gilvus modo nostrud tego.\r\n\r\nAbico aliquam augue bene blandit meus odio persto tincidunt. Distineo imputo inhibeo modo sit utinam vereor vulpes. Causa euismod huic importunus iusto luctus os quidne typicus ullamcorper. Commoveo eligo jus lenis mauris usitas uxor velit. Aliquip imputo inhibeo odio saepius suscipit. Molior proprius ut zelus. Abico dolore jugis modo refero ullamcorper.\r\n\r\nEligo huic luptatum oppeto praemitto probo saluto si. At bene conventio euismod jus pertineo tamen te. Adipiscing augue esse letalis luctus molior secundum voco. Eligo exputo facilisis illum immitto molior olim oppeto tum vicis. In melior olim secundum. Abdo augue ea elit facilisis jugis luctus roto sudo volutpat. At nostrud validus. Exerci lucidus pala paulatim similis torqueo valetudo vel.\r\n\r\nCogo cui huic molior. Cogo esse hos iustum nostrud. Damnum ea facilisis. Adipiscing commoveo premo vulputate. Cogo premo tamen zelus. Dolor eligo esca jumentum macto praemitto proprius suscipit utrum. Ideo melior refero. Amet autem cui inhibeo oppeto ullamcorper venio virtus voco. Bene esca inhibeo ludus natu vereor vindico.\r\n\r\nAd distineo ludus obruo quia quis. Augue iusto os pala. Erat ideo inhibeo molior nulla utrum vel. Ibidem turpis utrum. Abico dolor esse ex iustum nostrud plaga pneum roto.\r\n\r\n"
+  field_vactory_taxonomy_1:
+    -
+      entity: b06cb150-700e-48cb-869d-0b81471a1cb1

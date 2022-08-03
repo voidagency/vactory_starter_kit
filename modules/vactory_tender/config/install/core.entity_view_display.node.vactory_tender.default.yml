@@ -8,6 +8,7 @@ dependencies:
     - field.field.node.vactory_tender.field_vactory_media_document
     - field.field.node.vactory_tender.field_vactory_media_file
     - field.field.node.vactory_tender.field_vactory_reference
+    - field.field.node.vactory_tender.field_vactory_tags
     - node.type.vactory_tender
   module:
     - datetime
@@ -19,66 +20,74 @@ bundle: vactory_tender
 mode: default
 content:
   body:
-    label: hidden
     type: text_default
-    weight: 1
+    label: hidden
     settings: {  }
     third_party_settings: {  }
+    weight: 1
     region: content
   field_vactory_date:
-    weight: 2
+    type: datetime_default
     label: above
     settings:
-      format_type: medium
       timezone_override: ''
+      format_type: medium
     third_party_settings: {  }
-    type: datetime_default
+    weight: 2
     region: content
   field_vactory_excerpt:
-    weight: 7
+    type: text_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: text_default
+    weight: 7
     region: content
   field_vactory_media_document:
-    weight: 9
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 9
     region: content
   field_vactory_media_file:
-    weight: 10
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 10
     region: content
   field_vactory_reference:
-    weight: 3
+    type: string
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 3
+    region: content
+  field_vactory_tags:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 11
     region: content
   langcode:
     type: language
-    weight: 8
-    region: content
     label: above
     settings:
       link_to_entity: false
       native_language: false
     third_party_settings: {  }
-  links:
-    weight: 0
+    weight: 8
     region: content
+  links:
     settings: {  }
     third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   addtoany: true
-  node_banner_image: true
+  search_api_excerpt: true

@@ -1,0 +1,86 @@
+_meta:
+  version: '1.0'
+  entity_type: node
+  uuid: 3866c57e-5109-4a8d-ba26-a89f567ee0aa
+  bundle: vactory_publication
+  default_langcode: fr
+  depends:
+    1c89d4f1-012e-4f53-bd11-3131c28ee909: file
+    0c86766e-e7b3-4841-b86a-e73c6104e9ea: media
+    cf362948-f2f1-426b-bd85-b55c2fed388e: taxonomy_term
+default:
+  revision_uid:
+    -
+      target_id: 1
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  title:
+    -
+      value: 'Publication #6'
+  created:
+    -
+      value: 1658398747
+  promote:
+    -
+      value: true
+  sticky:
+    -
+      value: false
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: /publications/publication-6
+      langcode: fr
+      pathauto: 1
+  node_summary:
+    -
+      value: 'sectetur sed, convallis at tellus.'
+  content_translation_source:
+    -
+      value: und
+  content_translation_outdated:
+    -
+      value: false
+  body:
+    -
+      value: "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus suscipit tortor eget felis porttitor volutpat. Curabitur aliquet quam id dui posuere blandit. Praesent sapien massa, convallis a pellentesque nec, egestas non nisi. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec velit neque, auctor sit amet aliquam vel, ullamcorper sit amet ligula. Quisque velit nisi, pretium ut lacinia in, elementum id enim. Mauris blandit aliquet elit,</p>\r\n\r\n<p>eget tincidunt nibh pulvinar a. Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a. Sed porttitor lectus nibh. Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui. Vivamus magna justo, lacinia eget consectetur sed, convallis at tellus.Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus suscipit tortor eget felis porttitor volutpat. Curabitur aliquet quam id dui posuere blandit. Praesent sapien massa, convallis a pellentesque nec, egestas non nisi. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec velit neque, auctor sit amet aliquam vel, ullamcorper sit amet ligula. Quisque velit nisi, pretium ut lacinia in, elementum id enim. Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a. Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a. Sed porttitor lectus nibh. Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui. Vivamus</p>\r\n\r\n<p>magna justo, lacinia eget consectetur sed, convallis at tellus.</p>\r\n"
+      format: basic_html
+      summary: ''
+  comment:
+    -
+      status: 0
+      cid: 0
+      last_comment_timestamp: 1658398810
+      last_comment_name: ''
+      last_comment_uid: 1
+      comment_count: 0
+  field_vactory_date:
+    -
+      value: '2022-09-18'
+  field_vactory_document:
+    -
+      entity: 1c89d4f1-012e-4f53-bd11-3131c28ee909
+      display: true
+      description: ''
+  field_vactory_excerpt:
+    -
+      value: "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus suscipit tortor eget felis porttitor volutpat. Curabitur aliquet quam id dui posuere blandit. Praesent sapien massa, convallis a pellentesque nec, egestas non nisi. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae</p>\r\n\r\n<p>&nbsp;</p>\r\n"
+      format: basic_html
+  field_vactory_media:
+    -
+      entity: 0c86766e-e7b3-4841-b86a-e73c6104e9ea
+  field_vactory_publication_theme:
+    -
+      entity: cf362948-f2f1-426b-bd85-b55c2fed388e
+  field_vactory_seo_status:
+    -
+      status: ''
+      focus_keyword: ''
+      title: ''
+      description: ''
