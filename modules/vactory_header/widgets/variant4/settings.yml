@@ -1,0 +1,29 @@
+name: 'Header - Variant 4'
+multiple: TRUE
+category: 'Headers'
+enabled: TRUE
+fields:
+  cta:
+      type: url_extended
+      label: 'Add extra button'
+  cta_social:
+      type: url_extended
+      label: 'Social media links'
+extra_fields:
+  header_logo:
+      type: image
+      label: "Header's logo"
+  slogon:
+      type: text
+      label: "Slogon site"
+  cta_social_label:
+      type: text
+      label: 'Social media title'
+  show_language_dropdown:
+      type: checkbox
+      label: "Display language dropdown"
+  use_menu:
+      type: text
+      label: "Menu Main ID"
+      options:
+        '#description': 'Menu machine name. Default to main'

@@ -1,0 +1,28 @@
+name: 'Header - Variant 3'
+multiple: TRUE
+category: 'Headers'
+enabled: TRUE
+fields:
+  cta:
+      type: url_extended
+      label: 'Add extra button'
+extra_fields:
+  header_logo:
+      type: image
+      label: "Header's logo"
+  show_language_dropdown:
+      type: checkbox
+      label: "Display language dropdown"
+  show_account:
+      type: checkbox
+      label: "Enable account button"
+  use_menu_main:
+      type: text
+      label: "Menu Main ID"
+      options:
+        '#description': 'Menu machine name. Default to main'
+  use_menu_top:
+      type: text
+      label: "Menu Top ID"
+      options:
+        '#description': 'Top Menu machine name'
