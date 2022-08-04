@@ -1,0 +1,15 @@
+name: 'D04 - Services Blocks'
+multiple: TRUE
+category: 'Content'
+enabled: TRUE
+fields:
+  title:
+      type: text
+      label: 'Title'
+      required: TRUE
+  description:
+        type: textarea
+        label: 'Description'
+  link:
+      type: url_extended
+      label: 'Read More Link'
