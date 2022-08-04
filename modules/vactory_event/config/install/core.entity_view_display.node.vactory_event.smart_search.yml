@@ -4,10 +4,13 @@ dependencies:
   config:
     - core.entity_view_mode.node.smart_search
     - field.field.node.vactory_event.body
+    - field.field.node.vactory_event.comment
     - field.field.node.vactory_event.field_vactory_date_interval
     - field.field.node.vactory_event.field_vactory_excerpt
     - field.field.node.vactory_event.field_vactory_media
+    - field.field.node.vactory_event.field_vactory_meta_tags
     - field.field.node.vactory_event.field_vactory_seo_status
+    - field.field.node.vactory_event.field_vactory_tags
     - field.field.node.vactory_event.field_vactory_taxonomy_1
     - field.field.node.vactory_event.field_vactory_taxonomy_2
     - node.type.vactory_event
@@ -24,41 +27,49 @@ bundle: vactory_event
 mode: smart_search
 content:
   field_vactory_date_interval:
-    weight: 1
+    type: daterange_custom
     label: hidden
     settings:
       timezone_override: ''
       date_format: 'd | M | Y'
       separator: ''
     third_party_settings: {  }
-    type: daterange_custom
+    weight: 1
     region: content
   field_vactory_excerpt:
-    weight: 2
+    type: vactory_field_excerpt_formatter
     label: hidden
     settings:
       trim_length: '170'
     third_party_settings: {  }
-    type: vactory_field_excerpt_formatter
+    weight: 2
     region: content
   field_vactory_media:
-    weight: 3
+    type: media_responsive_thumbnail
     label: hidden
     settings:
       responsive_image_style: ''
       image_link: ''
     third_party_settings: {  }
-    type: media_responsive_thumbnail
+    weight: 3
     region: content
-  links:
-    weight: 0
-    region: content
+  flag_liked_content:
     settings: {  }
     third_party_settings: {  }
+    weight: 10
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   addtoany: true
   body: true
+  comment: true
+  field_vactory_meta_tags: true
   field_vactory_seo_status: true
+  field_vactory_tags: true
   field_vactory_taxonomy_1: true
   field_vactory_taxonomy_2: true
   langcode: true

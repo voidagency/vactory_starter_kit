@@ -1,0 +1,154 @@
+_meta:
+  version: '1.0'
+  entity_type: node
+  uuid: 7ce1939f-6444-4baf-ba08-9a79f6c0b6d0
+  bundle: vactory_academy
+  default_langcode: fr
+  depends:
+    0263402e-e9e7-43c0-aef1-4acf5c539285: user
+    cc1c762e-2bc9-4a56-842f-590510f5a99e: media
+    d7254337-206b-4501-b32d-45a0e1d38456: taxonomy_term
+    8e87411e-f661-43bc-bec0-6ecb7a40e358: media
+default:
+  revision_uid:
+    -
+      target_id: 1
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  title:
+    -
+      value: 'Formation JQuery'
+  created:
+    -
+      value: 1657277404
+  promote:
+    -
+      value: true
+  sticky:
+    -
+      value: false
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: /academy-courses/formation-jquery
+      langcode: fr
+      pathauto: 1
+  node_summary:
+    -
+      value: 'Formation JQuery'
+  content_translation_source:
+    -
+      value: und
+  content_translation_outdated:
+    -
+      value: false
+  comment:
+    -
+      status: 0
+      cid: 0
+      last_comment_timestamp: 1657277567
+      last_comment_name: ''
+      last_comment_uid: 1
+      comment_count: 0
+  field_academy_duree:
+    -
+      value: 45min
+  field_vactory_academy_langue:
+    -
+      value: Français
+  field_vactory_date:
+    -
+      value: '2022-10-01'
+  field_vactory_excerpt:
+    -
+      value: "<p>Atelier : Mise en place de jQuery (développement/production) - gestion des conflits avec les autres frameworks ($ / jQuery)</p>\r\n"
+      format: basic_html
+  field_vactory_instructor:
+    -
+      entity: 0263402e-e9e7-43c0-aef1-4acf5c539285
+  field_vactory_media:
+    -
+      entity: cc1c762e-2bc9-4a56-842f-590510f5a99e
+  field_vactory_meta_tags:
+    -
+      value:
+        og_image: '[node:field_vactory_media:entity:field_media_image:vactory_opengraph_image_style:url]'
+        og_image_url: '[node:field_vactory_media:entity:field_media_image:vactory_opengraph_image_style:url]'
+        og_image_secure_url: '[node:field_vactory_media:entity:field_media_image:vactory_opengraph_image_style:url]'
+  field_vactory_paragraphs:
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: ad92ac61-39cb-451d-b2f2-ea422765827c
+          bundle: vactory_component
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1657277534
+          behavior_settings:
+            -
+              value: {  }
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_vactory_component:
+            -
+              widget_id: 'vactory_froala:6'
+              widget_data: '[{"title":"","description":{"value":"<h4>Introduction<\/h4>\r\n\r\n<p>Pr\u00e9sentation de jQuery : objectifs, alternatives...<br \/>\r\nCas d''utilisation, exemples de sites<br \/>\r\nPrincipes sp\u00e9cifiques et astuces<br \/>\r\nCohabitation avec d''autres frameworks<\/p>\r\n\r\n<p><strong>Atelier : Mise en place de jQuery (d\u00e9veloppement\/production) - gestion des conflits avec les autres frameworks ($ \/ jQuery)<\/strong><\/p>\r\n\r\n<h4>Le coeur de jQuery<\/h4>\r\n\r\n<p>Fonctions essentielles et cha\u00eenage<br \/>\r\nS\u00e9lecteurs CSS3 \u00e9tendus<br \/>\r\nParcours, manipulation de l''arbre DOM et filtres<\/p>\r\n\r\n<p><strong>Atelier : Manipulation de pages web avec jQuery : \u00e9l\u00e9ments, styles, ...<\/strong><\/p>\r\n\r\n<h4>Le syst\u00e8me complet des callbacks<\/h4>\r\n\r\n<p>Principe<br \/>\r\nContr\u00f4le du contexte d''ex\u00e9cution des callbacks<br \/>\r\nFonctions existantes<\/p>\r\n\r\n<p><strong>Atelier : Multiples cas d''utilisation des callbacks, consommation<\/strong><\/p>\r\n\r\n<h4>Interfaces utilisateurs gr\u00e2ce \u00e0 jQuery<\/h4>\r\n\r\n<p>Comportement des liens<br \/>\r\nAssociation d''\u00e9v\u00e8nements et d\u00e9clenchement<br \/>\r\nEffets d\u2019animations<\/p>\r\n\r\n<p><strong>Atelier : Panorama des \u00e9v\u00e8nements g\u00e9r\u00e9s par jQuery, association d''effets<\/strong><\/p>\r\n\r\n<h4>AJAX avec jQuery<\/h4>\r\n\r\n<p>Communication asynchrone\/synchrone<br \/>\r\nMise en oeuvre d''AJAX<br \/>\r\nFonctions jQuery disponibles<br \/>\r\nInterface des objets Deferred et Promise<br \/>\r\nChargement de pages et injection de code<br \/>\r\nInt\u00e9gration compl\u00e8te d''AJAX et de l''UI<br \/>\r\nCompatibilit\u00e9 avec les autres frameworks<\/p>\r\n\r\n<p><strong>Atelier : Requ\u00eates AJAX et parsing XML avec jQuery<\/strong><\/p>\r\n\r\n<h4>Le syst\u00e8me des plugins et l''augmentation de jQuery<\/h4>\r\n\r\n<p>Principe de fonctionnement<br \/>\r\nPanorama des plugins existants (jQuery UI, autres...)<br \/>\r\nWidgets : sliders, infobulles, drag\u2019n\u2019drop...<br \/>\r\nCr\u00e9ation d''un plugin personnalis\u00e9 jQuery<\/p>\r\n\r\n<p><strong>Atelier : Int\u00e9gration\/utilisation de plugins existants (slider, datePicket, ...) - Cr\u00e9ation d''un plugin<\/strong><\/p>\r\n","format":"full_html"}}]'
+          field_vactory_flag:
+            -
+              value: false
+          field_vactory_flag_2:
+            -
+              value: false
+          field_vactory_title:
+            -
+              value: 'Description de la formation'
+  field_vactory_seo_status:
+    -
+      status: ''
+      focus_keyword: ''
+      title: ''
+      description: ''
+  field_vactory_theme:
+    -
+      entity: d7254337-206b-4501-b32d-45a0e1d38456
+  field_vactory_youtube_media:
+    -
+      entity: 8e87411e-f661-43bc-bec0-6ecb7a40e358

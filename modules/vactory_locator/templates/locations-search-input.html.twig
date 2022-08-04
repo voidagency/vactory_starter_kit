@@ -1,0 +1,34 @@
+<div class="location-search">
+  <input type="button" class="btn-search">
+  <label>{{ 'Tapez une adresse' | t }}</label>
+  {# {{ content.search_google_places }}#}
+  <input type="text" class="form-control input-search" id="vactory_locator_search_input" placeholder="{{ 'Saisissez votre adresse' | t }}">
+  {#<input type="text" class="form-control input-places-search" id="vactory_locator_search_place_input" placeholder="{{ 'Saisissez votre adresse' | t }}">#}
+  <div class="close-button">
+    <a id="btn_clear_search" class="">
+      <i class="icon-close"></i>
+    </a>
+  </div>
+  <input type="button" class="btn-gps">
+</div>
+
+{# Locations list #}
+<div id="vactory_locator_locations_list_container" class="location-list mb-3">
+  <div class="agences-box">
+    <ul id="vactory_locator_locations_list" class='p-0'>
+    </ul>
+  </div>
+  <div id="vactory_locator_pagination" class="nav-address ">
+    <div class="counting-result">
+      <span id="vactory_locator_pagination_status" class="results"></span>
+    </div>
+    <div class="navigation">
+      <a id="btn_pagination_prev">
+        <i class="icon-chevron-left"></i>
+      </a>
+      <a id="btn_pagination_next">
+        <i class="icon-chevron-right"></i>
+      </a>
+    </div>
+  </div>
+</div>

@@ -15,17 +15,19 @@ dependencies:
     - field.field.node.vactory_annual_report.field_vactory_excerpt
     - field.field.node.vactory_annual_report.field_vactory_media
     - field.field.node.vactory_annual_report.field_vactory_paragraphs
+    - field.field.node.vactory_annual_report.field_vactory_tags
     - node.type.vactory_annual_report
-  enforced:
-    module:
-      - vactory_annual_report
   module:
     - field_group
     - jquery_colorpicker
     - media_library
     - paragraphs
     - path
+    - scheduler
     - text
+  enforced:
+    module:
+      - vactory_annual_report
 third_party_settings:
   field_group:
     group_annual_report_layout:
@@ -35,17 +37,17 @@ third_party_settings:
         - field_border_color
         - field_ar_element_width
         - field_has_corner
+      label: Layout
+      region: content
       parent_name: ''
       weight: 14
       format_type: details
       format_settings:
-        id: ''
         classes: ''
-        description: ''
+        id: ''
         open: false
+        description: ''
         required_fields: true
-      label: Layout
-      region: content
 id: node.vactory_annual_report.default
 targetEntityType: node
 bundle: vactory_annual_report
@@ -57,8 +59,8 @@ content:
     region: content
     settings:
       rows: 9
-      placeholder: ''
       summary_rows: 3
+      placeholder: ''
       show_summary: false
     third_party_settings: {  }
   created:
@@ -68,36 +70,36 @@ content:
     settings: {  }
     third_party_settings: {  }
   field_ar_background_color:
+    type: jquery_colorpicker
     weight: 37
+    region: content
     settings:
       color: FFFFFF
     third_party_settings: {  }
-    type: jquery_colorpicker
-    region: content
   field_ar_element_width:
+    type: options_select
     weight: 39
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_select
-    region: content
   field_ar_layout:
+    type: options_select
     weight: 36
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_select
-    region: content
   field_ar_media_type:
+    type: options_select
     weight: 9
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_select
-    region: content
   field_ar_thematic:
+    type: options_select
     weight: 10
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_select
-    region: content
   field_border_color:
     type: jquery_colorpicker
     weight: 38
@@ -119,14 +121,16 @@ content:
     settings: {  }
     third_party_settings: {  }
   field_vactory_media:
+    type: media_library_widget
     weight: 11
+    region: content
     settings:
       media_types: {  }
     third_party_settings: {  }
-    type: media_library_widget
-    region: content
   field_vactory_paragraphs:
+    type: entity_reference_paragraphs
     weight: 15
+    region: content
     settings:
       title: Paragraph
       title_plural: Paragraphs
@@ -135,8 +139,16 @@ content:
       form_display_mode: default
       default_paragraph_type: _none
     third_party_settings: {  }
-    type: entity_reference_paragraphs
+  field_vactory_tags:
+    type: entity_reference_autocomplete
+    weight: 41
     region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   langcode:
     type: language_select
     weight: 1
@@ -152,6 +164,13 @@ content:
       media_types: {  }
     third_party_settings: {  }
   node_banner_mobile_image:
+    type: media_library_widget
+    weight: 0
+    region: content
+    settings:
+      media_types: {  }
+    third_party_settings: {  }
+  node_bg_image:
     type: media_library_widget
     weight: 0
     region: content
@@ -182,24 +201,30 @@ content:
     third_party_settings: {  }
   promote:
     type: boolean_checkbox
-    settings:
-      display_label: true
     weight: 4
     region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  publish_on:
+    type: datetime_timestamp_no_default
+    weight: 30
+    region: content
+    settings: {  }
     third_party_settings: {  }
   status:
     type: boolean_checkbox
-    settings:
-      display_label: true
     weight: 8
     region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   sticky:
     type: boolean_checkbox
-    settings:
-      display_label: true
     weight: 5
     region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   title:
     type: string_textfield
@@ -212,12 +237,18 @@ content:
   uid:
     type: entity_reference_autocomplete
     weight: 2
+    region: content
     settings:
       match_operator: CONTAINS
+      match_limit: 10
       size: 60
       placeholder: ''
-      match_limit: 10
+    third_party_settings: {  }
+  unpublish_on:
+    type: datetime_timestamp_no_default
+    weight: 30
     region: content
+    settings: {  }
     third_party_settings: {  }
   url_redirects:
     weight: 7

@@ -1,0 +1,35 @@
+_meta:
+  version: '1.0'
+  entity_type: file
+  uuid: aed2b226-0446-4f14-b8fa-b43dd48508ee
+  bundle: image
+  default_langcode: fr
+  depends:
+    5fc7666c-bc63-4267-84cf-09fc431c7c79: user
+default:
+  uid:
+    -
+      entity: 5fc7666c-bc63-4267-84cf-09fc431c7c79
+  filename:
+    -
+      value: 3UPsTK9e_j5agiFss88-F1OEzIuucdzCOb-YMeiQvEY.jpg
+  uri:
+    -
+      value: 'public://oembed_thumbnails/3UPsTK9e_j5agiFss88-F1OEzIuucdzCOb-YMeiQvEY.jpg'
+  filemime:
+    -
+      value: image/jpeg
+  filesize:
+    -
+      value: 26609
+  status:
+    -
+      value: true
+  created:
+    -
+      value: 1657276494
+  path:
+    -
+      alias: ''
+      langcode: fr
+      pathauto: 1

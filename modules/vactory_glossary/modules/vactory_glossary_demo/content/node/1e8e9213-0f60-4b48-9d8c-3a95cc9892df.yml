@@ -1,0 +1,58 @@
+_meta:
+  version: '1.0'
+  entity_type: node
+  uuid: 1e8e9213-0f60-4b48-9d8c-3a95cc9892df
+  bundle: vactory_glossary
+  default_langcode: fr
+  depends:
+    b06cb150-700e-48cb-869d-0b81471a1cb1: taxonomy_term
+    0bf1492c-bf4c-4d37-95f1-23410c64bd36: taxonomy_term
+default:
+  revision_uid:
+    -
+      target_id: 1
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 0
+  title:
+    -
+      value: 'Nunc Typicus'
+  created:
+    -
+      value: 1626359276
+  promote:
+    -
+      value: false
+  sticky:
+    -
+      value: false
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: fr
+      pathauto: 0
+  node_summary:
+    -
+      value: 'Nunc Typicus'
+  content_translation_source:
+    -
+      value: und
+  content_translation_outdated:
+    -
+      value: false
+  body:
+    -
+      value: "Aliquam comis consectetuer consequat dolore erat haero pagus rusticus suscipit. Cogo decet hos iaceo obruo. Bene dignissim iaceo jumentum occuro premo sed similis tincidunt valde. Haero hendrerit magna pala plaga sino suscipit utrum velit virtus. Commoveo olim saluto ulciscor.\r\n\r\nHos huic ille interdico nimis pecus quibus. Amet consequat exerci illum mos ratis sino valetudo wisi. Dolor genitus roto te velit. Facilisis praemitto tamen. Paulatim plaga quidem sed tation.\r\n\r\nBrevitas comis eros esca feugiat nunc pala. At enim hendrerit immitto natu refero turpis usitas. Aptent facilisis ideo tego verto. Blandit esse ibidem immitto oppeto pertineo premo quidem. Facilisi humo minim patria pertineo vel. Adipiscing consequat magna pneum. Abdo gilvus letalis pagus pneum sino. Capto scisco vindico. Abico augue causa eros letalis nostrud. Bene consectetuer lucidus mos oppeto sudo utrum uxor.\r\n\r\nAptent damnum decet ideo ille imputo iriure iusto pertineo vel. Dolus humo iaceo quadrum quidne singularis ullamcorper voco. Elit quidne vereor. Acsi adipiscing eros exerci interdico laoreet tego turpis. Acsi comis euismod ideo lobortis molior sino.\r\n\r\nDistineo exerci genitus illum laoreet qui si tation tum. Adipiscing genitus hos nutus quibus refero sit vulputate. Ideo in inhibeo pagus refoveo sed turpis utinam vero. Commodo conventio iriure laoreet obruo odio praesent si. Facilisi laoreet vulputate. Dolor dolus loquor nostrud nunc paulatim utrum vicis. Amet blandit huic ideo lenis turpis. Abico oppeto paulatim validus vicis.\r\n\r\nAd dolore elit iustum probo roto ullamcorper utinam virtus voco. Abbas iriure letalis. Cogo distineo iustum luptatum metuo occuro quidne. Abluo aptent letalis meus occuro os tamen vero ymo. Abbas duis gilvus iaceo imputo inhibeo neo wisi. Caecus damnum eligo. Antehabeo aptent consectetuer consequat imputo rusticus saepius sit. Causa et macto magna neo refero.\r\n\r\nAbbas consequat hendrerit hos occuro pecus usitas uxor. Abluo immitto in luptatum nulla plaga vulputate. Eum letalis pagus paratus refoveo. Autem duis natu persto quae sed validus.\r\n\r\nAntehabeo erat odio olim sit tation typicus. Autem dolore quidne. Commodo dolus exputo importunus quia quibus quidne refoveo tego ullamcorper. Sed si tum vereor. At conventio duis facilisis nostrud sagaciter scisco. Laoreet lenis ludus olim paratus pertineo. Blandit facilisis ideo laoreet minim nimis similis te voco.\r\n\r\nConsectetuer distineo et ille nibh pecus quibus tum vulputate zelus. Ideo importunus obruo persto plaga validus venio. Antehabeo bene jus mos nunc paratus quia refero refoveo similis. Abdo autem diam meus odio praesent premo. Populus ullamcorper utinam. Cui ea et neque scisco utrum. Cui dolus ea magna uxor velit vulpes. Antehabeo blandit et in interdico lobortis oppeto ut.\r\n\r\nCommodo hos luptatum neo paratus quis. Accumsan commodo lobortis. Aliquam hos in pala typicus. Facilisis ludus nutus valde. Commoveo eum jumentum laoreet magna pecus rusticus sagaciter valetudo vindico. Adipiscing erat feugiat uxor. Capto pagus praemitto sagaciter scisco verto. Accumsan euismod ex natu pala quidne utrum valetudo vero. Defui odio praemitto quibus ullamcorper. Abbas camur capto eum illum jumentum neque persto.\r\n\r\nConventio dolus duis enim esse exputo jus refoveo roto tum. Decet dolus elit gemino in lucidus nimis zelus. Consectetuer hos lucidus praesent probo refoveo. At camur esca gemino ideo magna mauris praemitto vulputate. Esse gravis haero sudo vel. Inhibeo mos neque occuro odio persto ratis vel. Aliquam elit importunus jus nobis pala te ut. Abdo brevitas comis conventio eu luptatum minim pecus tamen.\r\n\r\nDolor macto neo paratus quidem secundum suscipit uxor zelus. Enim huic proprius ratis valde. Abluo causa comis esca hos nisl occuro praemitto secundum. Esse eum exputo mauris nisl nobis quidne voco.\r\n\r\n"
+      format: plain_text
+      summary: "Aliquam comis consectetuer consequat dolore erat haero pagus rusticus suscipit. Cogo decet hos iaceo obruo. Bene dignissim iaceo jumentum occuro premo sed similis tincidunt valde. Haero hendrerit magna pala plaga sino suscipit utrum velit virtus. Commoveo olim saluto ulciscor.\r\n\r\nHos huic ille interdico nimis pecus quibus. Amet consequat exerci illum mos ratis sino valetudo wisi. Dolor genitus roto te velit. Facilisis praemitto tamen. Paulatim plaga quidem sed tation.\r\n\r\nBrevitas comis eros esca feugiat nunc pala. At enim hendrerit immitto natu refero turpis usitas. Aptent facilisis ideo tego verto. Blandit esse ibidem immitto oppeto pertineo premo quidem. Facilisi humo minim patria pertineo vel. Adipiscing consequat magna pneum. Abdo gilvus letalis pagus pneum sino. Capto scisco vindico. Abico augue causa eros letalis nostrud. Bene consectetuer lucidus mos oppeto sudo utrum uxor.\r\n\r\nAptent damnum decet ideo ille imputo iriure iusto pertineo vel. Dolus humo iaceo quadrum quidne singularis ullamcorper voco. Elit quidne vereor. Acsi adipiscing eros exerci interdico laoreet tego turpis. Acsi comis euismod ideo lobortis molior sino.\r\n\r\nDistineo exerci genitus illum laoreet qui si tation tum. Adipiscing genitus hos nutus quibus refero sit vulputate. Ideo in inhibeo pagus refoveo sed turpis utinam vero. Commodo conventio iriure laoreet obruo odio praesent si. Facilisi laoreet vulputate. Dolor dolus loquor nostrud nunc paulatim utrum vicis. Amet blandit huic ideo lenis turpis. Abico oppeto paulatim validus vicis.\r\n\r\nAd dolore elit iustum probo roto ullamcorper utinam virtus voco. Abbas iriure letalis. Cogo distineo iustum luptatum metuo occuro quidne. Abluo aptent letalis meus occuro os tamen vero ymo. Abbas duis gilvus iaceo imputo inhibeo neo wisi. Caecus damnum eligo. Antehabeo aptent consectetuer consequat imputo rusticus saepius sit. Causa et macto magna neo refero.\r\n\r\nAbbas consequat hendrerit hos occuro pecus usitas uxor. Abluo immitto in luptatum nulla plaga vulputate. Eum letalis pagus paratus refoveo. Autem duis natu persto quae sed validus.\r\n\r\nAntehabeo erat odio olim sit tation typicus. Autem dolore quidne. Commodo dolus exputo importunus quia quibus quidne refoveo tego ullamcorper. Sed si tum vereor. At conventio duis facilisis nostrud sagaciter scisco. Laoreet lenis ludus olim paratus pertineo. Blandit facilisis ideo laoreet minim nimis similis te voco.\r\n\r\nConsectetuer distineo et ille nibh pecus quibus tum vulputate zelus. Ideo importunus obruo persto plaga validus venio. Antehabeo bene jus mos nunc paratus quia refero refoveo similis. Abdo autem diam meus odio praesent premo. Populus ullamcorper utinam. Cui ea et neque scisco utrum. Cui dolus ea magna uxor velit vulpes. Antehabeo blandit et in interdico lobortis oppeto ut.\r\n\r\nCommodo hos luptatum neo paratus quis. Accumsan commodo lobortis. Aliquam hos in pala typicus. Facilisis ludus nutus valde. Commoveo eum jumentum laoreet magna pecus rusticus sagaciter valetudo vindico. Adipiscing erat feugiat uxor. Capto pagus praemitto sagaciter scisco verto. Accumsan euismod ex natu pala quidne utrum valetudo vero. Defui odio praemitto quibus ullamcorper. Abbas camur capto eum illum jumentum neque persto.\r\n\r\nConventio dolus duis enim esse exputo jus refoveo roto tum. Decet dolus elit gemino in lucidus nimis zelus. Consectetuer hos lucidus praesent probo refoveo. At camur esca gemino ideo magna mauris praemitto vulputate. Esse gravis haero sudo vel. Inhibeo mos neque occuro odio persto ratis vel. Aliquam elit importunus jus nobis pala te ut. Abdo brevitas comis conventio eu luptatum minim pecus tamen.\r\n\r\nDolor macto neo paratus quidem secundum suscipit uxor zelus. Enim huic proprius ratis valde. Abluo causa comis esca hos nisl occuro praemitto secundum. Esse eum exputo mauris nisl nobis quidne voco.\r\n\r\n"
+  field_vactory_taxonomy_1:
+    -
+      entity: b06cb150-700e-48cb-869d-0b81471a1cb1
+    -
+      entity: 0bf1492c-bf4c-4d37-95f1-23410c64bd36

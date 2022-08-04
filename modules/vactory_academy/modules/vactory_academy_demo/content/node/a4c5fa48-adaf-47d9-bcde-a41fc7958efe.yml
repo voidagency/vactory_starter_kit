@@ -1,0 +1,151 @@
+_meta:
+  version: '1.0'
+  entity_type: node
+  uuid: a4c5fa48-adaf-47d9-bcde-a41fc7958efe
+  bundle: vactory_academy
+  default_langcode: fr
+  depends:
+    0263402e-e9e7-43c0-aef1-4acf5c539285: user
+    ed2b4e8c-37fc-4eb6-98a7-60a5f6589a5f: media
+    32f63e87-f6d2-4869-a9c5-e5405344f482: taxonomy_term
+    fba4aff8-6f2a-43db-a38e-f66e180cad9b: media
+default:
+  revision_uid:
+    -
+      target_id: 1
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  title:
+    -
+      value: 'Formations PHP'
+  created:
+    -
+      value: 1657277207
+  promote:
+    -
+      value: true
+  sticky:
+    -
+      value: false
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: /academy-courses/formations-php
+      langcode: fr
+      pathauto: 1
+  node_summary:
+    -
+      value: 'Formations PHP'
+  content_translation_source:
+    -
+      value: und
+  content_translation_outdated:
+    -
+      value: false
+  comment:
+    -
+      status: 0
+      cid: 0
+      last_comment_timestamp: 1657277385
+      last_comment_name: ''
+      last_comment_uid: 1
+      comment_count: 0
+  field_academy_duree:
+    -
+      value: 13h
+  field_vactory_academy_langue:
+    -
+      value: Français
+  field_vactory_excerpt:
+    -
+      value: "<p>PHP est devenu un langage de programmation incontournable pour tous les webmasters ou informaticiens de PME gérant des sites Web, sites E-Commerce ou Intranet de gestion.</p>\r\n"
+      format: basic_html
+  field_vactory_instructor:
+    -
+      entity: 0263402e-e9e7-43c0-aef1-4acf5c539285
+  field_vactory_media:
+    -
+      entity: ed2b4e8c-37fc-4eb6-98a7-60a5f6589a5f
+  field_vactory_meta_tags:
+    -
+      value:
+        og_image: '[node:field_vactory_media:entity:field_media_image:vactory_opengraph_image_style:url]'
+        og_image_url: '[node:field_vactory_media:entity:field_media_image:vactory_opengraph_image_style:url]'
+        og_image_secure_url: '[node:field_vactory_media:entity:field_media_image:vactory_opengraph_image_style:url]'
+  field_vactory_paragraphs:
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: 90f28f57-1a42-49a5-8103-01fc5f575657
+          bundle: vactory_component
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1657277337
+          behavior_settings:
+            -
+              value: {  }
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_vactory_component:
+            -
+              widget_id: 'vactory_froala:6'
+              widget_data: '[{"title":"Description","description":{"value":"<p>Notre initiation de 5 jours vous permettra :<\/p>\r\n\r\n<ol>\r\n\t<li>1- de comprendre comment fonctionne PHP<\/li>\r\n\t<li>2- d''utiliser des bases de donn\u00e9es sur votre site Web<\/li>\r\n\t<li>3- d''organiser en fonctions le code HTML redondant de votre site<\/li>\r\n\t<li>4- d''utiliser les sessions ou les cookies<\/li>\r\n<\/ol>\r\n\r\n<p>L''accent est mis sur la cr\u00e9ation d''interface avec la base de donn\u00e9es mySQL. A la fin du cours, vous saurez :<\/p>\r\n\r\n<ul>\r\n\t<li>- concevoir une base de donn\u00e9es<\/li>\r\n\t<li>- cr\u00e9er une zone d''administration sur votre site Web<\/li>\r\n\t<li>- d\u00e9velopper les fonctions pour manipuler des donn\u00e9es, les afficher, les supprimer, les modifier<\/li>\r\n<\/ul>\r\n\r\n<p>Merci d''avance pour vos remarques et suggestions.<\/p>\r\n\r\n<p>&nbsp;<\/p>\r\n","format":"full_html"}}]'
+          field_vactory_flag:
+            -
+              value: true
+          field_vactory_flag_2:
+            -
+              value: false
+          field_vactory_title:
+            -
+              value: 'Description de la formation'
+  field_vactory_seo_status:
+    -
+      status: ''
+      focus_keyword: ''
+      title: ''
+      description: ''
+  field_vactory_theme:
+    -
+      entity: 32f63e87-f6d2-4869-a9c5-e5405344f482
+  field_vactory_youtube_media:
+    -
+      entity: fba4aff8-6f2a-43db-a38e-f66e180cad9b

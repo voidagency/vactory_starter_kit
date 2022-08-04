@@ -31,7 +31,7 @@
 	 */
 	Drupal.behaviors.vactoryGooglePlaceAutocomplete = {
 		attach: function (context, settings) {
-			google.maps.event.addDomListener(window, 'load', locationInitialize);
+			window.addEventListener('load', locationInitialize);
 		}
 	};
 })(jQuery);

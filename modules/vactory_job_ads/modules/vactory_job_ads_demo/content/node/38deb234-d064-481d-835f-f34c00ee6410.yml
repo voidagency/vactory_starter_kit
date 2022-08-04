@@ -1,0 +1,91 @@
+_meta:
+  version: '1.0'
+  entity_type: node
+  uuid: 38deb234-d064-481d-835f-f34c00ee6410
+  bundle: vactory_job_ads
+  default_langcode: fr
+  depends:
+    26b30cc0-d128-4fb4-bc9f-7e010a4606f4: taxonomy_term
+    2977d63b-c76e-4067-b26c-c97d04691cc6: taxonomy_term
+    8965cece-f592-40c3-a2ae-2e3f6d1e5887: taxonomy_term
+default:
+  revision_uid:
+    -
+      target_id: 1
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  title:
+    -
+      value: 'Chargé Marketing H/F - Casablanca'
+  created:
+    -
+      value: 1657617071
+  promote:
+    -
+      value: true
+  sticky:
+    -
+      value: false
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: /jobs/charge-marketing-hf-casablanca
+      langcode: fr
+      pathauto: 1
+  node_summary:
+    -
+      value: 'Chargé Marketing H/F - Casablanca'
+  content_translation_source:
+    -
+      value: und
+  content_translation_outdated:
+    -
+      value: false
+  body:
+    -
+      value: "<p>&nbsp;</p>\r\n\r\n<p>Nous recrutons pour le compte de notre client spécialisé dans l’audiovisuel un Chargé Marketing H/F.</p>\r\n"
+      format: basic_html
+      summary: ''
+  comment:
+    -
+      status: 0
+      cid: 0
+      last_comment_timestamp: 1657617136
+      last_comment_name: ''
+      last_comment_uid: 1
+      comment_count: 0
+  field_vactory_address:
+    -
+      value: "<p>16r adipiscing elit.</p>\r\n"
+      format: basic_html
+  field_vactory_city:
+    -
+      entity: 26b30cc0-d128-4fb4-bc9f-7e010a4606f4
+  field_vactory_contract:
+    -
+      entity: 2977d63b-c76e-4067-b26c-c97d04691cc6
+  field_vactory_description:
+    -
+      value: "<p>Missions : •</p>\r\n\r\n<ul>\r\n\t<li>L’élaboration et la proposition à la direction les grandes lignes de la stratégie commerciale de l'entreprise.</li>\r\n\t<li>&nbsp;Définir le contenu et les outils et les supports de communication en interne.</li>\r\n\t<li>&nbsp;Mise en place d’une veille stratégique.</li>\r\n\t<li>&nbsp;Conception d’une stratégie marketing.</li>\r\n\t<li>&nbsp;Conception et lancement des nouveaux projets.</li>\r\n\t<li>&nbsp;Suivi des opérations de marketing.</li>\r\n\t<li>&nbsp;Élaboration de la ligne éditoriale, site web.</li>\r\n\t<li>&nbsp;Assurer la veille médias.</li>\r\n</ul>\r\n"
+      format: basic_html
+  field_vactory_email:
+    -
+      value: void.france@void.fr
+  field_vactory_profession:
+    -
+      entity: 8965cece-f592-40c3-a2ae-2e3f6d1e5887
+  field_vactory_seo_status:
+    -
+      status: ''
+      focus_keyword: ''
+      title: ''
+      description: ''
+  field_vactory_telephone:
+    -
+      value: '+212523323343'

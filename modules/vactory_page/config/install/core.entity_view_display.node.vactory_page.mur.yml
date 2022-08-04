@@ -9,6 +9,7 @@ dependencies:
     - field.field.node.vactory_page.field_vactory_meta_tags
     - field.field.node.vactory_page.field_vactory_paragraphs
     - field.field.node.vactory_page.field_vactory_seo_status
+    - field.field.node.vactory_page.field_vactory_tags
     - node.type.vactory_page
   module:
     - comment
@@ -19,19 +20,24 @@ bundle: vactory_page
 mode: mur
 content:
   comment:
-    weight: 1
+    type: comment_default
     label: hidden
     settings:
       view_mode: default
       pager_id: 0
     third_party_settings: {  }
-    type: comment_default
+    weight: 1
     region: content
-  links:
-    weight: 0
-    region: content
+  flag_liked_content:
     settings: {  }
     third_party_settings: {  }
+    weight: 10
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   addtoany: true
   field_content_access_groups: true
@@ -41,6 +47,7 @@ hidden:
   field_vactory_meta_tags: true
   field_vactory_paragraphs: true
   field_vactory_seo_status: true
+  field_vactory_tags: true
   langcode: true
   mail_message: true
   mail_subject: true

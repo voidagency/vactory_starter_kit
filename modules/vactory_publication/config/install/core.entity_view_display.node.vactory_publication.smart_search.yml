@@ -4,6 +4,7 @@ dependencies:
   config:
     - core.entity_view_mode.node.smart_search
     - field.field.node.vactory_publication.body
+    - field.field.node.vactory_publication.comment
     - field.field.node.vactory_publication.field_vactory_call_to_action
     - field.field.node.vactory_publication.field_vactory_date
     - field.field.node.vactory_publication.field_vactory_document
@@ -12,6 +13,7 @@ dependencies:
     - field.field.node.vactory_publication.field_vactory_meta_tags
     - field.field.node.vactory_publication.field_vactory_publication_theme
     - field.field.node.vactory_publication.field_vactory_seo_status
+    - field.field.node.vactory_publication.field_vactory_tags
     - node.type.vactory_publication
     - responsive_image.styles.vactory_three_cols
   module:
@@ -19,51 +21,56 @@ dependencies:
     - media_responsive_thumbnail
     - text
     - user
-_core:
-  default_config_hash: Eh_N9E2zi26kl0BbmxDa61n1nhLz0BenTnoQe_CF4ao
 id: node.vactory_publication.smart_search
 targetEntityType: node
 bundle: vactory_publication
 mode: smart_search
 content:
   field_vactory_date:
-    weight: 2
+    type: datetime_custom
     label: hidden
     settings:
       timezone_override: ''
       date_format: 'd | M | Y'
     third_party_settings: {  }
-    type: datetime_custom
+    weight: 2
     region: content
   field_vactory_excerpt:
-    weight: 1
+    type: text_default
     label: hidden
     settings: {  }
     third_party_settings: {  }
-    type: text_default
+    weight: 1
     region: content
   field_vactory_media:
-    weight: 3
+    type: media_responsive_thumbnail
     label: hidden
     settings:
       responsive_image_style: vactory_three_cols
       image_link: ''
     third_party_settings: {  }
-    type: media_responsive_thumbnail
+    weight: 3
     region: content
-  links:
-    weight: 0
-    region: content
+  flag_liked_content:
     settings: {  }
     third_party_settings: {  }
+    weight: 10
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   addtoany: true
   body: true
+  comment: true
   field_vactory_call_to_action: true
   field_vactory_document: true
   field_vactory_meta_tags: true
   field_vactory_publication_theme: true
   field_vactory_seo_status: true
+  field_vactory_tags: true
   langcode: true
   notification_message: true
   notification_title: true

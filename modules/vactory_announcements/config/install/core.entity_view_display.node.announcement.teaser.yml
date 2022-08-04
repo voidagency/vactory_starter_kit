@@ -19,6 +19,7 @@ dependencies:
     - field.field.node.announcement.field_vactory_media
     - field.field.node.announcement.field_vactory_name
     - field.field.node.announcement.field_vactory_phone
+    - field.field.node.announcement.field_vactory_tags
     - node.type.announcement
   module:
     - user
@@ -27,10 +28,15 @@ targetEntityType: node
 bundle: announcement
 mode: teaser
 content:
-  links:
-    weight: 100
+  flag_liked_content:
     settings: {  }
     third_party_settings: {  }
+    weight: 10
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
     region: content
 hidden:
   addtoany: true
@@ -50,5 +56,6 @@ hidden:
   field_vactory_media: true
   field_vactory_name: true
   field_vactory_phone: true
+  field_vactory_tags: true
   langcode: true
   search_api_excerpt: true

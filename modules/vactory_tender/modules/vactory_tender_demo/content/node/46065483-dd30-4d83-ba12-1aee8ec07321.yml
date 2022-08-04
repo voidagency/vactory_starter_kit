@@ -1,0 +1,60 @@
+_meta:
+  version: '1.0'
+  entity_type: node
+  uuid: 46065483-dd30-4d83-ba12-1aee8ec07321
+  bundle: vactory_tender
+  default_langcode: fr
+  depends:
+    965da9aa-170d-499a-b3bd-35e1dc0f122f: media
+default:
+  revision_uid:
+    -
+      target_id: 1
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  title:
+    -
+      value: 'Offre N°03/2018'
+  created:
+    -
+      value: 1657299782
+  promote:
+    -
+      value: true
+  sticky:
+    -
+      value: false
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: fr
+      pathauto: 0
+  node_summary:
+    -
+      value: 'Offre N°03/2018'
+  content_translation_source:
+    -
+      value: und
+  content_translation_outdated:
+    -
+      value: false
+  field_vactory_date:
+    -
+      value: '2022-10-14'
+  field_vactory_excerpt:
+    -
+      value: "<p>Vivamus magna justo, lacinia eget consectetur sed, convallis at tellus. Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a. Donec rutrum congue leo eget malesuada. Cras ultricies ligula sed magna dictum porta. Quisque velit nisi, pretium ut lacinia in, elementum id enim. Curabitur arcu erat, accumsan id imperdiet et, porttitor at sem. Vivamus magna justo, lacinia eget consectetur sed, convallis at tellus. Quisque velit nisi, pretium ut lacinia in, elementum id enim. Quisque velit nisi, pretium ut lacinia in, elementum id enim. Sed porttitor lectus nibh. Pellentesque in ipsum id orci porta dapibus.</p>\r\n"
+      format: basic_html
+  field_vactory_media_file:
+    -
+      entity: 965da9aa-170d-499a-b3bd-35e1dc0f122f
+  field_vactory_reference:
+    -
+      value: 'Offre N°03/2018'

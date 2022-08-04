@@ -10,6 +10,7 @@ dependencies:
     - field.field.node.vactory_event.field_vactory_media
     - field.field.node.vactory_event.field_vactory_meta_tags
     - field.field.node.vactory_event.field_vactory_seo_status
+    - field.field.node.vactory_event.field_vactory_tags
     - field.field.node.vactory_event.field_vactory_taxonomy_1
     - field.field.node.vactory_event.field_vactory_taxonomy_2
     - node.type.vactory_event
@@ -28,75 +29,88 @@ mode: default
 content:
   body:
     type: text_default
-    weight: 6
-    region: content
     label: hidden
     settings: {  }
     third_party_settings: {  }
+    weight: 6
+    region: content
   comment:
     type: comment_default
-    weight: 7
-    region: content
     label: above
     settings:
       view_mode: default
       pager_id: 0
     third_party_settings: {  }
+    weight: 7
+    region: content
   field_vactory_date_interval:
-    weight: 1
+    type: daterange_default
     label: hidden
     settings:
-      separator: '-'
-      format_type: medium
       timezone_override: ''
+      format_type: medium
+      separator: '-'
     third_party_settings: {  }
-    type: daterange_default
+    weight: 1
     region: content
   field_vactory_excerpt:
-    weight: 4
+    type: vactory_field_excerpt_formatter
     label: hidden
     settings:
       trim_length: 350
     third_party_settings: {  }
-    type: vactory_field_excerpt_formatter
+    weight: 4
     region: content
   field_vactory_media:
-    weight: 5
+    type: media_responsive_thumbnail
     label: hidden
     settings:
       responsive_image_style: ''
       image_link: ''
     third_party_settings: {  }
-    type: media_responsive_thumbnail
+    weight: 5
     region: content
   field_vactory_meta_tags:
     type: metatag_empty_formatter
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
     weight: 8
     region: content
-    label: hidden
-    settings: {  }
+  field_vactory_tags:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
     third_party_settings: {  }
+    weight: 11
+    region: content
   field_vactory_taxonomy_1:
-    weight: 2
+    type: entity_reference_label
     label: hidden
     settings:
       link: false
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 2
     region: content
   field_vactory_taxonomy_2:
-    weight: 3
+    type: entity_reference_label
     label: hidden
     settings:
       link: false
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 3
     region: content
-  links:
-    weight: 0
-    region: content
+  flag_liked_content:
     settings: {  }
     third_party_settings: {  }
+    weight: 10
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   addtoany: true
   field_vactory_seo_status: true

@@ -4,6 +4,7 @@ dependencies:
   config:
     - core.entity_view_mode.node.mur
     - field.field.node.vactory_job_ads.body
+    - field.field.node.vactory_job_ads.comment
     - field.field.node.vactory_job_ads.field_vactory_address
     - field.field.node.vactory_job_ads.field_vactory_city
     - field.field.node.vactory_job_ads.field_vactory_contract
@@ -12,6 +13,7 @@ dependencies:
     - field.field.node.vactory_job_ads.field_vactory_meta_tags
     - field.field.node.vactory_job_ads.field_vactory_profession
     - field.field.node.vactory_job_ads.field_vactory_seo_status
+    - field.field.node.vactory_job_ads.field_vactory_tags
     - field.field.node.vactory_job_ads.field_vactory_telephone
     - node.type.vactory_job_ads
   module:
@@ -25,20 +27,26 @@ bundle: vactory_job_ads
 mode: mur
 content:
   body:
-    label: hidden
     type: vactory_field_excerpt_formatter
-    weight: 1
+    label: hidden
     settings:
       trim_length: 350
     third_party_settings: {  }
+    weight: 1
     region: content
-  links:
-    weight: 0
-    region: content
+  flag_liked_content:
     settings: {  }
     third_party_settings: {  }
+    weight: 10
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   addtoany: true
+  comment: true
   field_content_access_groups: true
   field_content_access_roles: true
   field_content_access_users: true
@@ -50,6 +58,7 @@ hidden:
   field_vactory_meta_tags: true
   field_vactory_profession: true
   field_vactory_seo_status: true
+  field_vactory_tags: true
   field_vactory_telephone: true
   langcode: true
   mail_message: true

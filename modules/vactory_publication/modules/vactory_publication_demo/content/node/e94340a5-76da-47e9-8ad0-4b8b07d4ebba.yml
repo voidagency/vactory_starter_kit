@@ -1,0 +1,86 @@
+_meta:
+  version: '1.0'
+  entity_type: node
+  uuid: e94340a5-76da-47e9-8ad0-4b8b07d4ebba
+  bundle: vactory_publication
+  default_langcode: fr
+  depends:
+    85e3eb48-d337-4215-bbc0-97e91be8c28b: file
+    0c86766e-e7b3-4841-b86a-e73c6104e9ea: media
+    a85cf035-3190-4da2-bcf8-566e6dc53d7a: taxonomy_term
+default:
+  revision_uid:
+    -
+      target_id: 1
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  title:
+    -
+      value: 'Publication #5'
+  created:
+    -
+      value: 1658398674
+  promote:
+    -
+      value: true
+  sticky:
+    -
+      value: false
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: /publications/publication-5
+      langcode: fr
+      pathauto: 1
+  node_summary:
+    -
+      value: 'Publication '
+  content_translation_source:
+    -
+      value: und
+  content_translation_outdated:
+    -
+      value: false
+  body:
+    -
+      value: "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus suscipit tortor eget felis porttitor volutpat. Curabitur aliquet quam id dui posuere blandit. Praesent sapien massa, convallis a pellentesque nec, egestas non nisi. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec velit neque, auctor sit am</p>\r\n\r\n<p><strong>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus suscipit tortor eget felis porttitor volutpat. Curabitur aliquet quam id dui posuere blandit. Praesent sapien massa, convallis a pellentesque nec, egestas non nisi. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec velit neque, auctor sit amet aliquam vel, ullamcorper sit amet ligula. Quisque velit nisi, pretium ut lacinia in, elementum id enim. Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a. Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a. Sed porttitor lectus nibh. Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui. Vivamus magna justo, lacinia eget consectetur sed, convallis at tellus.</strong>et aliquam vel, ullamcorper sit amet ligula. Quisque velit nisi, pretium ut lacinia in, elementum id enim. Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a. Mauris blandit aliquet elit, eget tincidunt nibh pulvinar a. Sed porttitor lectus nibh. Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui. Vivamus magna justo, lacinia eget consectetur sed, convallis at tellus.</p>\r\n"
+      format: basic_html
+      summary: ''
+  comment:
+    -
+      status: 0
+      cid: 0
+      last_comment_timestamp: 1658398732
+      last_comment_name: ''
+      last_comment_uid: 1
+      comment_count: 0
+  field_vactory_date:
+    -
+      value: '2022-07-21'
+  field_vactory_document:
+    -
+      entity: 85e3eb48-d337-4215-bbc0-97e91be8c28b
+      display: true
+      description: ''
+  field_vactory_excerpt:
+    -
+      value: "<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus suscipit tortor eget felis porttitor volutpat. Curabitur aliquet quam id dui posuere blandit. Praesent sapien massa, convallis a pellentesque nec,</p>\r\n\r\n<p>entum sed sit amet dui. Vivamus magna justo, lacinia eget consectetur sed, convallis at tellus.</p>\r\n"
+      format: basic_html
+  field_vactory_media:
+    -
+      entity: 0c86766e-e7b3-4841-b86a-e73c6104e9ea
+  field_vactory_publication_theme:
+    -
+      entity: a85cf035-3190-4da2-bcf8-566e6dc53d7a
+  field_vactory_seo_status:
+    -
+      status: ''
+      focus_keyword: ''
+      title: ''
+      description: ''

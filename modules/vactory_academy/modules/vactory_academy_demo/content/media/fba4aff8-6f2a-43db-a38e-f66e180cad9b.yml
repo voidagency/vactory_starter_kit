@@ -1,0 +1,32 @@
+_meta:
+  version: '1.0'
+  entity_type: media
+  uuid: fba4aff8-6f2a-43db-a38e-f66e180cad9b
+  bundle: remote_video
+  default_langcode: fr
+  depends:
+    0263402e-e9e7-43c0-aef1-4acf5c539285: user
+default:
+  status:
+    -
+      value: true
+  uid:
+    -
+      entity: 0263402e-e9e7-43c0-aef1-4acf5c539285
+  name:
+    -
+      value: 'Learn Photography [Full Course] by Australian Geographic Photographer Chris Bray'
+  created:
+    -
+      value: 1657212534
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: fr
+      pathauto: 0
+  field_media_oembed_video:
+    -
+      value: 'https://www.youtube.com/watch?v=LxO-6rlihSg'

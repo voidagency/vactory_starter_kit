@@ -1,0 +1,31 @@
+_meta:
+  version: '1.0'
+  entity_type: media
+  uuid: fec0066a-682e-47e2-83cb-87c4399c136c
+  bundle: image
+  default_langcode: fr
+  depends:
+    cca67690-f505-4e8f-8fd9-1b79e3f5aa9c: file
+default:
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  name:
+    -
+      value: photo-1547072164-e69aab7965cb.jpeg
+  created:
+    -
+      value: 1592426004
+  revision_translation_affected:
+    -
+      value: true
+  field_media_image:
+    -
+      entity: cca67690-f505-4e8f-8fd9-1b79e3f5aa9c
+      alt: 'News 6'
+      title: ''
+      width: 750
+      height: 501

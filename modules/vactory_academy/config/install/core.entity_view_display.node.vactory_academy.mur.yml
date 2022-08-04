@@ -17,57 +17,59 @@ dependencies:
     - field.field.node.vactory_academy.field_vactory_meta_tags
     - field.field.node.vactory_academy.field_vactory_paragraphs
     - field.field.node.vactory_academy.field_vactory_seo_status
+    - field.field.node.vactory_academy.field_vactory_tags
     - field.field.node.vactory_academy.field_vactory_theme
+    - field.field.node.vactory_academy.field_vactory_youtube_media
     - field.field.node.vactory_academy.field_vactory_youtube_videos
     - node.type.vactory_academy
-  enforced:
-    module:
-      - vactory_academy
   module:
     - comment
     - datetime
     - text
     - user
     - vactory_core
+  enforced:
+    module:
+      - vactory_academy
 id: node.vactory_academy.mur
 targetEntityType: node
 bundle: vactory_academy
 mode: mur
 content:
   body:
-    label: hidden
     type: text_default
-    weight: 1
+    label: hidden
     settings: {  }
     third_party_settings: {  }
+    weight: 1
     region: content
   comment:
-    weight: 6
+    type: comment_default
     label: hidden
     settings:
       view_mode: default
       pager_id: 0
     third_party_settings: {  }
-    type: comment_default
+    weight: 6
     region: content
   field_vactory_date:
-    weight: 4
+    type: datetime_default
     label: hidden
     settings:
-      format_type: medium
       timezone_override: ''
+      format_type: medium
     third_party_settings: {  }
-    type: datetime_default
+    weight: 4
     region: content
   field_vactory_excerpt:
-    weight: 2
+    type: text_default
     label: hidden
     settings: {  }
     third_party_settings: {  }
-    type: text_default
+    weight: 2
     region: content
   field_vactory_media:
-    weight: 3
+    type: lazy_image
     label: hidden
     settings:
       desktop_1x: vactory_three_cols_x1
@@ -80,18 +82,23 @@ content:
       mobile_2x: vactory_three_cols_x2
       lqip: lqip
     third_party_settings: {  }
-    type: lazy_image
+    weight: 3
     region: content
   flag_favorite_academy:
+    settings: {  }
+    third_party_settings: {  }
     weight: 5
     region: content
+  flag_liked_content:
     settings: {  }
     third_party_settings: {  }
+    weight: 10
+    region: content
   links:
+    settings: {  }
+    third_party_settings: {  }
     weight: 0
     region: content
-    settings: {  }
-    third_party_settings: {  }
 hidden:
   addtoany: true
   field_academy_duree: true
@@ -105,7 +112,9 @@ hidden:
   field_vactory_meta_tags: true
   field_vactory_paragraphs: true
   field_vactory_seo_status: true
+  field_vactory_tags: true
   field_vactory_theme: true
+  field_vactory_youtube_media: true
   field_vactory_youtube_videos: true
   langcode: true
   mail_message: true

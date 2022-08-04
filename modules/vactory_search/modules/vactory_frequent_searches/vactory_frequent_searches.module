@@ -78,3 +78,27 @@ function vactory_frequent_searches_views_pre_render(ViewExecutable $view) {
     }
   }
 }
+
+/**
+ * Implements hook_cron().
+ */
+function vactory_frequent_searches_cron() {
+  $service =\Drupal::service('vactory_frequent_searches.frequent_searches_controller');
+  $keywords_with_results = $service->fetchKeywordsWithResultsFromDatabase();
+  $keywords_with_no_results = $service->fetchKeywordsWithNoResultsFromDatabase();
+
+  if (!empty($keywords_with_results)) {
+    $service->exportToCsv($keywords_with_results, "with-results");
+    $service->deleteUsedKeywords();
+  }
+  else
+    \Drupal::messenger()->addWarning('There are no keywords with results to export.');
+
+  if (!empty($keywords_with_no_results)) {
+    $service->exportToCsv($keywords_with_no_results, "with-no-results");
+    $service->deleteAllUnuselessKeywords();
+  }
+  else
+    \Drupal::messenger()->addWarning('There are no keywords without results to export.');
+
+}

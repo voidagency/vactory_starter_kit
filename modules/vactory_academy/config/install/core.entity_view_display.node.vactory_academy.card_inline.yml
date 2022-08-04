@@ -16,18 +16,20 @@ dependencies:
     - field.field.node.vactory_academy.field_vactory_meta_tags
     - field.field.node.vactory_academy.field_vactory_paragraphs
     - field.field.node.vactory_academy.field_vactory_seo_status
+    - field.field.node.vactory_academy.field_vactory_tags
     - field.field.node.vactory_academy.field_vactory_theme
     - field.field.node.vactory_academy.field_vactory_youtube_media
+    - field.field.node.vactory_academy.field_vactory_youtube_videos
     - node.type.vactory_academy
     - responsive_image.styles.vactory_one_col
-  enforced:
-    module:
-      - vactory_academy
   module:
     - datetime
     - media_responsive_thumbnail
     - text
     - user
+  enforced:
+    module:
+      - vactory_academy
 id: node.vactory_academy.card_inline
 targetEntityType: node
 bundle: vactory_academy
@@ -35,61 +37,66 @@ mode: card_inline
 content:
   field_academy_duree:
     type: string
-    weight: 7
-    region: content
     label: hidden
     settings:
       link_to_entity: false
     third_party_settings: {  }
+    weight: 7
+    region: content
   field_vactory_date:
-    weight: 3
+    type: datetime_default
     label: hidden
     settings:
       timezone_override: ''
       format_type: html_date
     third_party_settings: {  }
-    type: datetime_default
+    weight: 3
     region: content
   field_vactory_excerpt:
-    weight: 1
+    type: text_trimmed
     label: hidden
     settings:
       trim_length: 270
     third_party_settings: {  }
-    type: text_trimmed
+    weight: 1
     region: content
   field_vactory_media:
     type: media_responsive_thumbnail
-    weight: 2
-    region: content
     label: hidden
     settings:
       responsive_image_style: vactory_one_col
       image_link: ''
     third_party_settings: {  }
+    weight: 2
+    region: content
   field_vactory_theme:
-    weight: 4
+    type: entity_reference_label
     label: hidden
     settings:
       link: false
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 4
     region: content
   flag_favorite_academy:
+    settings: {  }
+    third_party_settings: {  }
     weight: 5
     region: content
+  flag_liked_content:
     settings: {  }
     third_party_settings: {  }
+    weight: 10
+    region: content
   links:
+    settings: {  }
+    third_party_settings: {  }
     weight: 0
     region: content
+  rate_vote_widget:
     settings: {  }
     third_party_settings: {  }
-  rate_vote_widget:
     weight: 6
     region: content
-    settings: {  }
-    third_party_settings: {  }
 hidden:
   addtoany: true
   body: true
@@ -102,7 +109,9 @@ hidden:
   field_vactory_meta_tags: true
   field_vactory_paragraphs: true
   field_vactory_seo_status: true
+  field_vactory_tags: true
   field_vactory_youtube_media: true
+  field_vactory_youtube_videos: true
   langcode: true
   notification_message: true
   notification_title: true

@@ -20,12 +20,11 @@ dependencies:
     - field.field.node.vactory_academy_agency.field_vactory_meta_tags
     - field.field.node.vactory_academy_agency.field_vactory_paragraphs
     - field.field.node.vactory_academy_agency.field_vactory_seo_status
+    - field.field.node.vactory_academy_agency.field_vactory_tags
     - field.field.node.vactory_academy_agency.field_vactory_theme
+    - field.field.node.vactory_academy_agency.field_vactory_youtube_media
     - field.field.node.vactory_academy_agency.field_vactory_youtube_videos
     - node.type.vactory_academy_agency
-  enforced:
-    module:
-      - vactory_academy_agency
   module:
     - comment
     - datetime
@@ -33,55 +32,56 @@ dependencies:
     - text
     - user
     - vactory_core
-_core:
-  default_config_hash: ilXMZmNtWHXmQEKGXEfM3Msy7zLCrvu3NMOjhzIWVOY
+  enforced:
+    module:
+      - vactory_academy_agency
 id: node.vactory_academy_agency.mur
 targetEntityType: node
 bundle: vactory_academy_agency
 mode: mur
 content:
   body:
-    label: hidden
     type: text_default
-    weight: 1
+    label: hidden
     settings: {  }
     third_party_settings: {  }
+    weight: 1
     region: content
   comment:
-    weight: 2
+    type: comment_default
     label: hidden
     settings:
       view_mode: default
       pager_id: 0
     third_party_settings: {  }
-    type: comment_default
+    weight: 2
     region: content
   field_vactory_datetime:
-    weight: 3
+    type: datetime_default
     label: hidden
     settings:
-      format_type: medium
       timezone_override: ''
+      format_type: medium
     third_party_settings: {  }
-    type: datetime_default
+    weight: 3
     region: content
   field_vactory_excerpt:
-    weight: 4
+    type: text_default
     label: hidden
     settings: {  }
     third_party_settings: {  }
-    type: text_default
+    weight: 4
     region: content
   field_vactory_file_multiple:
-    weight: 6
+    type: file_default
     label: hidden
     settings:
       use_description_as_link_text: true
     third_party_settings: {  }
-    type: file_default
+    weight: 6
     region: content
   field_vactory_media:
-    weight: 5
+    type: lazy_image
     label: hidden
     settings:
       desktop_1x: vactory_three_cols_x1
@@ -94,13 +94,18 @@ content:
       mobile_2x: vactory_three_cols_x2
       lqip: lqip
     third_party_settings: {  }
-    type: lazy_image
+    weight: 5
     region: content
-  links:
-    weight: 0
-    region: content
+  flag_liked_content:
     settings: {  }
     third_party_settings: {  }
+    weight: 10
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   addtoany: true
   field_academy_agence: true
@@ -116,7 +121,9 @@ hidden:
   field_vactory_meta_tags: true
   field_vactory_paragraphs: true
   field_vactory_seo_status: true
+  field_vactory_tags: true
   field_vactory_theme: true
+  field_vactory_youtube_media: true
   field_vactory_youtube_videos: true
   langcode: true
   mail_message: true

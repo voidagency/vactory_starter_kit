@@ -172,6 +172,18 @@ class VactoryDynamicFormatter extends FormatterBase {
           $value = array_merge($value, $info['options']['#default_value']);
           $value = \Drupal::service('vactory.views.to_api')->normalize($value);
         }
+
+        // Collection.
+        if ($info['type'] === 'json_api_collection' && !empty($value)) {
+          $value = array_merge($value, $info['options']['#default_value']);
+          $value = \Drupal::service('vactory_decoupled.jsonapi.generator')->fetch($value);
+        }
+
+        // Webform.
+        if ($info['type'] === 'webform_decoupled' && !empty($value)) {
+          $webform_id = $value['id'];
+          $value['elements'] = \Drupal::service('vactory.webform.normalizer')->normalize($webform_id);
+        }
       }
       elseif (is_array($value)) {
         // Go deeper.
@@ -262,16 +274,18 @@ class VactoryDynamicFormatter extends FormatterBase {
        * @endcode
        */
       \Drupal::moduleHandler()->alter('dynamic_field_content', $content);
+      $cache = [
+        "max-age" => Cache::PERMANENT,
+      ];
+      \Drupal::moduleHandler()->alter('dynamic_field_cache', $cache);
       $render = [
-        '#theme'        => 'vactory_dynamic_main',
+        '#theme' => 'vactory_dynamic_main',
         '#entity_delta' => $delta,
-        '#item'         => $item,
-        '#content'      => $content,
-        '#platform'     => $platform,
+        '#item' => $item,
+        '#content' => $content,
+        '#platform' => $platform,
         '#widgets_path' => $widgets_path,
-        "#cache"        => [
-          "max-age" => Cache::PERMANENT,
-        ],
+        "#cache" => is_array($cache) ? $cache : [],
       ];
 
       $renderer = $this->renderer;

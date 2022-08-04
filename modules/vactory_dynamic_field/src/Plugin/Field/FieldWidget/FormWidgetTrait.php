@@ -160,6 +160,11 @@ trait FormWidgetTrait {
       $options['#default_value'] = $default_value;
     }
 
+    // JSON:API Collection default value.
+    if ($type === 'json_api_collection' && $default_value) {
+      $options['#default_value'] = array_merge($options['#default_value'], $default_value);
+    }
+
     $element_defaults = $this->getFormElementDefaults($type, $options);
 
     if ($type == 'image') {

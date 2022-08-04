@@ -6,6 +6,9 @@ dependencies:
     - core.entity_view_mode.node.mur
     - field.field.node.vactory_forum.body
     - field.field.node.vactory_forum.comment
+    - field.field.node.vactory_forum.field_forum_editeur
+    - field.field.node.vactory_forum.field_forum_expert
+    - field.field.node.vactory_forum.field_groupe_utilisateurs
     - field.field.node.vactory_forum.field_vactory_date
     - field.field.node.vactory_forum.field_vactory_excerpt
     - field.field.node.vactory_forum.field_vactory_forum_room
@@ -13,57 +16,56 @@ dependencies:
     - field.field.node.vactory_forum.field_vactory_forums_thematic
     - field.field.node.vactory_forum.field_vactory_media
     - field.field.node.vactory_forum.field_vactory_meta_tags
+    - field.field.node.vactory_forum.field_vactory_tags
     - node.type.vactory_forum
-  enforced:
-    module:
-      - vactory_forums
   module:
     - comment
     - datetime
     - text
     - user
     - vactory_core
-_core:
-  default_config_hash: BRoI8JR2Sqqxa6Zy-JZFVwK29z0W9Ll9Y7KiDFXlhMI
+  enforced:
+    module:
+      - vactory_forums
 id: node.vactory_forum.mur
 targetEntityType: node
 bundle: vactory_forum
 mode: mur
 content:
   body:
-    label: hidden
     type: text_default
-    weight: 1
-    region: content
+    label: hidden
     settings: {  }
     third_party_settings: {  }
+    weight: 1
+    region: content
   comment:
-    weight: 5
+    type: comment_default
     label: hidden
     settings:
       view_mode: default
       pager_id: 0
     third_party_settings: {  }
-    type: comment_default
+    weight: 5
     region: content
   field_vactory_date:
-    weight: 3
+    type: datetime_custom
     label: hidden
     settings:
       timezone_override: ''
       date_format: d/m/Y
     third_party_settings: {  }
-    type: datetime_custom
+    weight: 3
     region: content
   field_vactory_excerpt:
-    weight: 4
+    type: text_default
     label: hidden
     settings: {  }
     third_party_settings: {  }
-    type: text_default
+    weight: 4
     region: content
   field_vactory_media:
-    weight: 2
+    type: lazy_image
     label: hidden
     settings:
       desktop_1x: vactory_three_cols_x1
@@ -76,30 +78,39 @@ content:
       mobile_2x: vactory_three_cols_x2
       lqip: lqip
     third_party_settings: {  }
-    type: lazy_image
+    weight: 2
     region: content
-  links:
-    weight: 0
-    region: content
+  flag_liked_content:
     settings: {  }
     third_party_settings: {  }
-  taxonomy_forums:
-    type: entity_reference_label
+    weight: 10
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
     weight: 0
     region: content
+  taxonomy_forums:
+    type: entity_reference_label
     label: hidden
     settings:
       link: false
     third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   addtoany: true
   field_content_access_groups: true
   field_content_access_roles: true
   field_content_access_users: true
+  field_forum_editeur: true
+  field_forum_expert: true
+  field_groupe_utilisateurs: true
   field_vactory_forum_room: true
   field_vactory_forum_status: true
   field_vactory_forums_thematic: true
   field_vactory_meta_tags: true
+  field_vactory_tags: true
   langcode: true
   mail_message: true
   mail_subject: true

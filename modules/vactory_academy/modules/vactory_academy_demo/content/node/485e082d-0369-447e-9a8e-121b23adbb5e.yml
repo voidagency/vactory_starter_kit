@@ -1,0 +1,154 @@
+_meta:
+  version: '1.0'
+  entity_type: node
+  uuid: 485e082d-0369-447e-9a8e-121b23adbb5e
+  bundle: vactory_academy
+  default_langcode: fr
+  depends:
+    5fc7666c-bc63-4267-84cf-09fc431c7c79: user
+    0cd2f74c-3f32-43a9-ab6b-c4973733f05e: media
+    32f63e87-f6d2-4869-a9c5-e5405344f482: taxonomy_term
+    52dc1328-3113-4e8c-ae37-501846e831e1: media
+default:
+  revision_uid:
+    -
+      target_id: 1
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  title:
+    -
+      value: 'Formation Javascript'
+  created:
+    -
+      value: 1657277633
+  promote:
+    -
+      value: true
+  sticky:
+    -
+      value: false
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: /academy-courses/formation-javascript
+      langcode: fr
+      pathauto: 1
+  node_summary:
+    -
+      value: 'Formation Javascript'
+  content_translation_source:
+    -
+      value: und
+  content_translation_outdated:
+    -
+      value: false
+  comment:
+    -
+      status: 0
+      cid: 0
+      last_comment_timestamp: 1657277807
+      last_comment_name: ''
+      last_comment_uid: 1
+      comment_count: 0
+  field_academy_duree:
+    -
+      value: '2 jours'
+  field_vactory_academy_langue:
+    -
+      value: Français
+  field_vactory_date:
+    -
+      value: '2022-11-13'
+  field_vactory_excerpt:
+    -
+      value: "<p>JavaScript est l'un des langages de programmation les plus populaires dans le monde moderne. Il est principalement utilisé pour le développement Web, en particulier pour la création d'éléments front-end interactifs, mais il présente également d'autres cas d'utilisation. JavaScript est sans doute l'un des meilleurs langages de programmation. Vous devez apprendre JavaScript si vous souhaitez travailler dans n'importe quel domaine du développement Web.</p>\r\n"
+      format: basic_html
+  field_vactory_instructor:
+    -
+      entity: 5fc7666c-bc63-4267-84cf-09fc431c7c79
+  field_vactory_media:
+    -
+      entity: 0cd2f74c-3f32-43a9-ab6b-c4973733f05e
+  field_vactory_meta_tags:
+    -
+      value:
+        og_image: '[node:field_vactory_media:entity:field_media_image:vactory_opengraph_image_style:url]'
+        og_image_url: '[node:field_vactory_media:entity:field_media_image:vactory_opengraph_image_style:url]'
+        og_image_secure_url: '[node:field_vactory_media:entity:field_media_image:vactory_opengraph_image_style:url]'
+  field_vactory_paragraphs:
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: 25c66c2c-a3b6-4208-939d-de317da4adea
+          bundle: vactory_component
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1657277715
+          behavior_settings:
+            -
+              value: {  }
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_vactory_component:
+            -
+              widget_id: 'vactory_froala:6'
+              widget_data: '[{"title":"","description":{"value":"<ul>\r\n\t<li><a href=\"https:\/\/fr.bitdegree.org\/tutos\/javascript\/#heading-1\">1.&nbsp;Apprendre Javascript en Commen\u00e7ant par les bases<\/a><\/li>\r\n\t<li><a href=\"https:\/\/fr.bitdegree.org\/tutos\/javascript\/#heading-2\">2.&nbsp;T\u00e9l\u00e9charger un \u00e9diteur de code<\/a><\/li>\r\n\t<li><a href=\"https:\/\/fr.bitdegree.org\/tutos\/javascript\/#heading-3\">3.&nbsp;Suivre un cours en ligne de qualit\u00e9<\/a><\/li>\r\n\t<li><a href=\"https:\/\/fr.bitdegree.org\/tutos\/javascript\/#heading-4\">4.&nbsp;N''ayez pas peur de pratiquer<\/a><\/li>\r\n\t<li><a href=\"https:\/\/fr.bitdegree.org\/tutos\/javascript\/#heading-5\">5.&nbsp;Connectez-vous \u00e0 un mentor<\/a><\/li>\r\n\t<li><a href=\"https:\/\/fr.bitdegree.org\/tutos\/javascript\/#heading-6\">6.&nbsp;Assurez-vous de prendre des notes<\/a><\/li>\r\n\t<li><a href=\"https:\/\/fr.bitdegree.org\/tutos\/javascript\/#heading-7\">7.&nbsp;Comprenez chaque ligne de votre code<\/a><\/li>\r\n\t<li><a href=\"https:\/\/fr.bitdegree.org\/tutos\/javascript\/#heading-8\">8.&nbsp;Toujours avoir un guide de r\u00e9f\u00e9rence en main&nbsp;<\/a><\/li>\r\n\t<li><a href=\"https:\/\/fr.bitdegree.org\/tutos\/javascript\/#heading-9\">9.<\/a><\/li>\r\n\t<li><a href=\"https:\/\/fr.bitdegree.org\/tutos\/javascript\/#heading-10\">10.&nbsp;9. Trouver des gens avec qui apprendre Javascript<\/a><\/li>\r\n\t<li><a href=\"https:\/\/fr.bitdegree.org\/tutos\/javascript\/#heading-11\">11.&nbsp;10. Utilisez diff\u00e9rents types de ressources<\/a><\/li>\r\n\t<li><a href=\"https:\/\/fr.bitdegree.org\/tutos\/javascript\/#heading-12\">12.&nbsp;Conclusion<\/a><\/li>\r\n<\/ul>\r\n","format":"full_html"}}]'
+          field_vactory_flag:
+            -
+              value: false
+          field_vactory_flag_2:
+            -
+              value: false
+          field_vactory_title:
+            -
+              value: 'Programme détaillé de la Formation Javascript'
+  field_vactory_seo_status:
+    -
+      status: ''
+      focus_keyword: ''
+      title: ''
+      description: ''
+  field_vactory_theme:
+    -
+      entity: 32f63e87-f6d2-4869-a9c5-e5405344f482
+  field_vactory_youtube_media:
+    -
+      entity: 52dc1328-3113-4e8c-ae37-501846e831e1

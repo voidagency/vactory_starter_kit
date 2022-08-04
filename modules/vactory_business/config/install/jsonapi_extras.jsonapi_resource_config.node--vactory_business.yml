@@ -3,320 +3,328 @@ status: true
 dependencies:
   config:
     - node.type.vactory_business
+_core:
+  default_config_hash: 45YYCRbvwFk3zvJIn1mE-mgXEkT8q_ASeBDQ0vtv20Y
 id: node--vactory_business
 disabled: false
 path: node/fiche_business
 resourceType: node--vactory_business
 resourceFields:
   nid:
+    disabled: false
     fieldName: nid
     publicName: nid
     enhancer:
       id: ''
-    disabled: false
   uuid:
+    disabled: false
     fieldName: uuid
     publicName: uuid
     enhancer:
       id: ''
-    disabled: false
   vid:
+    disabled: false
     fieldName: vid
     publicName: vid
     enhancer:
       id: ''
-    disabled: false
   langcode:
+    disabled: false
     fieldName: langcode
     publicName: langcode
     enhancer:
       id: vactory_langcode
-    disabled: false
   type:
+    disabled: false
     fieldName: type
     publicName: type
     enhancer:
       id: ''
-    disabled: false
   revision_timestamp:
+    disabled: false
     fieldName: revision_timestamp
     publicName: revision_timestamp
     enhancer:
       id: ''
-    disabled: false
   revision_uid:
+    disabled: false
     fieldName: revision_uid
     publicName: revision_uid
     enhancer:
       id: ''
-    disabled: false
   revision_log:
+    disabled: false
     fieldName: revision_log
     publicName: revision_log
     enhancer:
       id: ''
-    disabled: false
   status:
+    disabled: false
     fieldName: status
     publicName: status
     enhancer:
       id: ''
-    disabled: false
   uid:
+    disabled: false
     fieldName: uid
     publicName: uid
     enhancer:
       id: ''
-    disabled: false
   title:
+    disabled: false
     fieldName: title
     publicName: title
     enhancer:
       id: ''
-    disabled: false
   created:
+    disabled: false
     fieldName: created
     publicName: created
     enhancer:
       id: ''
-    disabled: false
   changed:
+    disabled: false
     fieldName: changed
     publicName: changed
     enhancer:
       id: ''
-    disabled: false
   promote:
+    disabled: false
     fieldName: promote
     publicName: promote
     enhancer:
       id: ''
-    disabled: false
   sticky:
+    disabled: false
     fieldName: sticky
     publicName: sticky
     enhancer:
       id: ''
-    disabled: false
   default_langcode:
+    disabled: false
     fieldName: default_langcode
     publicName: default_langcode
     enhancer:
       id: ''
-    disabled: false
   revision_default:
+    disabled: false
     fieldName: revision_default
     publicName: revision_default
     enhancer:
       id: ''
-    disabled: false
   revision_translation_affected:
+    disabled: false
     fieldName: revision_translation_affected
     publicName: revision_translation_affected
     enhancer:
       id: ''
-    disabled: false
   metatag:
+    disabled: false
     fieldName: metatag
     publicName: metatag
     enhancer:
       id: ''
-    disabled: false
-  metatag_normalized:
-    fieldName: metatag_normalized
-    publicName: metatag_normalized
-    enhancer:
-      id: ''
-    disabled: false
   path:
+    disabled: false
     fieldName: path
     publicName: path
     enhancer:
       id: vactory_link
-    disabled: false
   publish_on:
+    disabled: false
     fieldName: publish_on
     publicName: publish_on
     enhancer:
       id: ''
-    disabled: false
   unpublish_on:
+    disabled: false
     fieldName: unpublish_on
     publicName: unpublish_on
     enhancer:
       id: ''
-    disabled: false
   menu_link:
+    disabled: false
     fieldName: menu_link
     publicName: menu_link
     enhancer:
-      id: ''
+      id: vactory_link
+  node_banner_image:
     disabled: false
-  node_banner:
-    fieldName: node_banner
-    publicName: node_banner
+    fieldName: node_banner_image
+    publicName: node_banner_image
+    enhancer:
+      id: vactory_file_image
+  node_banner_mobile_image:
+    disabled: false
+    fieldName: node_banner_mobile_image
+    publicName: node_banner_mobile_image
+    enhancer:
+      id: vactory_file_image
+  node_banner_title:
+    disabled: false
+    fieldName: node_banner_title
+    publicName: node_banner_title
     enhancer:
       id: ''
-    disabled: false
-  node_banner_disabled:
-    fieldName: node_banner_disabled
-    publicName: node_banner_disabled
-    enhancer:
-      id: ''
-    disabled: false
-  internal_node_banner:
-    fieldName: internal_node_banner
-    publicName: internal_node_banner
-    enhancer:
-      id: ''
-    disabled: false
-  node_class:
-    fieldName: node_class
-    publicName: node_class
-    enhancer:
-      id: ''
-    disabled: false
-  node_summary:
-    fieldName: node_summary
-    publicName: node_summary
-    enhancer:
-      id: ''
-    disabled: false
-  node_settings:
-    fieldName: node_settings
-    publicName: node_settings
-    enhancer:
-      id: ''
-    disabled: false
-  node_body_class:
-    fieldName: node_body_class
-    publicName: node_body_class
-    enhancer:
-      id: ''
-    disabled: false
-  internal_user:
-    fieldName: internal_user
-    publicName: internal_user
-    enhancer:
-      id: ''
-    disabled: false
-  internal_blocks:
-    fieldName: internal_blocks
-    publicName: internal_blocks
-    enhancer:
-      id: ''
-    disabled: false
-  internal_comment:
-    fieldName: internal_comment
-    publicName: internal_comment
-    enhancer:
-      id: ''
-    disabled: false
-  internal_breadcrumb:
-    fieldName: internal_breadcrumb
-    publicName: internal_breadcrumb
-    enhancer:
-      id: ''
-    disabled: false
   vcc_normalized:
+    disabled: false
     fieldName: vcc_normalized
     publicName: vcc_normalized
     enhancer:
       id: ''
+  internal_user:
     disabled: false
-  vcc:
-    fieldName: vcc
-    publicName: vcc
+    fieldName: internal_user
+    publicName: internal_user
     enhancer:
       id: ''
+  internal_blocks:
     disabled: false
+    fieldName: internal_blocks
+    publicName: internal_blocks
+    enhancer:
+      id: ''
+  internal_comment:
+    disabled: false
+    fieldName: internal_comment
+    publicName: internal_comment
+    enhancer:
+      id: ''
+  internal_breadcrumb:
+    disabled: false
+    fieldName: internal_breadcrumb
+    publicName: internal_breadcrumb
+    enhancer:
+      id: ''
+  internal_extra:
+    disabled: false
+    fieldName: internal_extra
+    publicName: internal_extra
+    enhancer:
+      id: ''
+  node_settings:
+    disabled: false
+    fieldName: node_settings
+    publicName: node_settings
+    enhancer:
+      id: ''
+  node_bg_image:
+    disabled: false
+    fieldName: node_bg_image
+    publicName: node_bg_image
+    enhancer:
+      id: ''
+  node_class:
+    disabled: false
+    fieldName: node_class
+    publicName: node_class
+    enhancer:
+      id: ''
+  node_summary:
+    disabled: false
+    fieldName: node_summary
+    publicName: node_summary
+    enhancer:
+      id: ''
+  node_body_class:
+    disabled: false
+    fieldName: node_body_class
+    publicName: node_body_class
+    enhancer:
+      id: ''
   content_translation_source:
+    disabled: false
     fieldName: content_translation_source
     publicName: content_translation_source
     enhancer:
       id: ''
-    disabled: false
   content_translation_outdated:
+    disabled: false
     fieldName: content_translation_outdated
     publicName: content_translation_outdated
     enhancer:
       id: ''
-    disabled: false
   body:
+    disabled: false
     fieldName: body
     publicName: body
     enhancer:
       id: ''
-    disabled: false
   field_business_pays:
+    disabled: false
     fieldName: field_business_pays
     publicName: field_business_pays
     enhancer:
       id: vactory_pays
-    disabled: false
   field_business_specialisations:
+    disabled: false
     fieldName: field_business_specialisations
     publicName: field_business_specialisations
     enhancer:
       id: ''
-    disabled: false
   field_business_users:
+    disabled: false
     fieldName: field_business_users
     publicName: field_business_users
     enhancer:
       id: ''
-    disabled: false
   field_business_ville:
+    disabled: false
     fieldName: field_business_ville
     publicName: field_business_ville
     enhancer:
       id: ''
-    disabled: false
   field_secteur_activite:
+    disabled: false
     fieldName: field_secteur_activite
     publicName: field_secteur_activite
     enhancer:
       id: ''
-    disabled: false
   field_site_web:
+    disabled: false
     fieldName: field_site_web
     publicName: field_site_web
     enhancer:
       id: ''
-    disabled: false
   field_social_networks:
+    disabled: false
     fieldName: field_social_networks
     publicName: field_social_networks
     enhancer:
       id: vactory_social_networks
-    disabled: false
   field_statut_juridique:
+    disabled: false
     fieldName: field_statut_juridique
     publicName: field_statut_juridique
     enhancer:
       id: ''
-    disabled: false
   field_taille_entreprise:
+    disabled: false
     fieldName: field_taille_entreprise
     publicName: field_taille_entreprise
     enhancer:
       id: ''
-    disabled: false
   field_vactory_address:
+    disabled: false
     fieldName: field_vactory_address
     publicName: field_vactory_address
     enhancer:
       id: ''
-    disabled: false
   field_vactory_date:
+    disabled: false
     fieldName: field_vactory_date
     publicName: field_vactory_date
     enhancer:
       id: ''
+  field_vactory_image:
     disabled: false
+    fieldName: field_vactory_image
+    publicName: field_vactory_image
+    enhancer:
+      id: vactory_file_image
   field_vactory_telephone:
+    disabled: false
     fieldName: field_vactory_telephone
     publicName: field_vactory_telephone
     enhancer:
       id: ''
-    disabled: false

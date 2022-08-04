@@ -15,6 +15,7 @@ dependencies:
     - field.field.node.vactory_governance.field_vactory_media
     - field.field.node.vactory_governance.field_vactory_name
     - field.field.node.vactory_governance.field_vactory_seo_status
+    - field.field.node.vactory_governance.field_vactory_tags
     - field.field.node.vactory_governance.field_vactory_taxonomy_1
     - field.field.node.vactory_governance.field_vactory_telephone
     - node.type.vactory_governance
@@ -30,62 +31,60 @@ mode: card
 content:
   body:
     type: vactory_field_excerpt_formatter
-    weight: 4
-    region: content
     label: hidden
     settings:
       trim_length: '270'
     third_party_settings: {  }
+    weight: 4
+    region: content
   field_gov_social_media:
-    weight: 3
+    type: social_media_links_field_default
     label: hidden
     settings:
       appearance: {  }
       link_attributes: {  }
     third_party_settings: {  }
-    type: social_media_links_field_default
+    weight: 3
     region: content
   field_image:
-    weight: 3
+    type: responsive_image
     label: hidden
     settings:
       responsive_image_style: vactory_three_cols
       image_link: ''
     third_party_settings: {  }
-    type: responsive_image
+    weight: 3
     region: content
   field_show_in_one_row:
     type: boolean
+    label: hidden
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
     weight: 6
     region: content
-    label: hidden
-    settings:
-      format: default
-      format_custom_false: ''
-      format_custom_true: ''
-    third_party_settings: {  }
   field_show_link_to_bio:
     type: boolean
-    weight: 8
-    region: content
     label: hidden
     settings:
       format: default
       format_custom_false: ''
       format_custom_true: ''
     third_party_settings: {  }
+    weight: 8
+    region: content
   field_show_on_roles:
     type: entity_reference_label
-    weight: 7
-    region: content
     label: hidden
     settings:
       link: true
     third_party_settings: {  }
+    weight: 7
+    region: content
   field_vactory_media:
     type: lazy_image
-    weight: 5
-    region: content
     label: hidden
     settings:
       desktop_1x: vactory_two_cols_x1
@@ -98,27 +97,29 @@ content:
       mobile_2x: vactory_two_cols_x2
       lqip: lqip
     third_party_settings: {  }
+    weight: 5
+    region: content
   field_vactory_name:
-    weight: 2
+    type: string
     label: hidden
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 2
     region: content
   field_vactory_taxonomy_1:
-    weight: 1
+    type: entity_reference_label
     label: hidden
     settings:
       link: false
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 1
     region: content
   links:
-    weight: 0
-    region: content
     settings: {  }
     third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   addtoany: true
   field_gov_address: true
@@ -126,6 +127,7 @@ hidden:
   field_vactory_email: true
   field_vactory_fax: true
   field_vactory_seo_status: true
+  field_vactory_tags: true
   field_vactory_telephone: true
   langcode: true
   notification_message: true

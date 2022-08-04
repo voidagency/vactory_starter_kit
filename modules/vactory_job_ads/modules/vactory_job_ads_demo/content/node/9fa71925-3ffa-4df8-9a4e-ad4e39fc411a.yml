@@ -1,0 +1,91 @@
+_meta:
+  version: '1.0'
+  entity_type: node
+  uuid: 9fa71925-3ffa-4df8-9a4e-ad4e39fc411a
+  bundle: vactory_job_ads
+  default_langcode: fr
+  depends:
+    26b30cc0-d128-4fb4-bc9f-7e010a4606f4: taxonomy_term
+    2977d63b-c76e-4067-b26c-c97d04691cc6: taxonomy_term
+    8d4c7a0c-d1b2-4220-b137-8885d1e04189: taxonomy_term
+default:
+  revision_uid:
+    -
+      target_id: 1
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  title:
+    -
+      value: 'Chef de projet SI'
+  created:
+    -
+      value: 1657617280
+  promote:
+    -
+      value: true
+  sticky:
+    -
+      value: false
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: /jobs/chef-de-projet-si
+      langcode: fr
+      pathauto: 1
+  node_summary:
+    -
+      value: 'Chef de projet SI'
+  content_translation_source:
+    -
+      value: und
+  content_translation_outdated:
+    -
+      value: false
+  body:
+    -
+      value: "<p>Le chef de projet assure en toute autonomie la responsabilité, vis-à-vis du client et de l’entreprise, du suivi de la bonne conduite et de la réussite de ses projets et/ou activités en assistante technique, dans un esprit de service et de qualité. Les problématiques de gestion de projet sont de nature diverse et complexe. Elles font intervenir également des parties prenantes aux intérêts parfois divergents, et elles nécessitent de savoir convaincre, influencer et faire adhérer.</p>\r\n"
+      format: basic_html
+      summary: ''
+  comment:
+    -
+      status: 0
+      cid: 0
+      last_comment_timestamp: 1657617364
+      last_comment_name: ''
+      last_comment_uid: 1
+      comment_count: 0
+  field_vactory_address:
+    -
+      value: "<p>Nulla porttitor accumsan tincidunt. Vivamus suscipit tortor eg</p>\r\n"
+      format: basic_html
+  field_vactory_city:
+    -
+      entity: 26b30cc0-d128-4fb4-bc9f-7e010a4606f4
+  field_vactory_contract:
+    -
+      entity: 2977d63b-c76e-4067-b26c-c97d04691cc6
+  field_vactory_description:
+    -
+      value: "<ul>\r\n\t<li>Piloter un ou plusieurs projet(s) de taille moyenne et/ou activités en assistance technique.</li>\r\n\t<li>Garantir le respect des engagements opérationnels et contractuels de ses projets.</li>\r\n\t<li>Gérer les risques sur son périmètre et mettre en place les plans d’action inhérents.</li>\r\n\t<li>Participer fortement au recrutement des consultants et experts de l’entreprise.</li>\r\n\t<li>Participer à l’élaboration des propositions techniques et/ou commerciales en relation avec son expertise de gestion de projet et background technique. Prendre en charge...</li>\r\n</ul>\r\n"
+      format: basic_html
+  field_vactory_email:
+    -
+      value: void.france@void.fr
+  field_vactory_profession:
+    -
+      entity: 8d4c7a0c-d1b2-4220-b137-8885d1e04189
+  field_vactory_seo_status:
+    -
+      status: ''
+      focus_keyword: ''
+      title: ''
+      description: ''
+  field_vactory_telephone:
+    -
+      value: '+212523323343'

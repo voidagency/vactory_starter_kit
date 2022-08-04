@@ -1,0 +1,33 @@
+_meta:
+  version: '1.0'
+  entity_type: file
+  uuid: 9ebe406a-aff7-4bc9-95f4-6094c231a0be
+  bundle: image
+  default_langcode: fr
+default:
+  uid:
+    -
+      target_id: 1
+  filename:
+    -
+      value: 1018620_4a33.jpeg
+  uri:
+    -
+      value: 'public://2022-07/1018620_4a33_0.jpeg'
+  filemime:
+    -
+      value: image/jpeg
+  filesize:
+    -
+      value: 94994
+  status:
+    -
+      value: true
+  created:
+    -
+      value: 1657272529
+  path:
+    -
+      alias: ''
+      langcode: fr
+      pathauto: 1

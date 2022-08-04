@@ -1,0 +1,33 @@
+_meta:
+  version: '1.0'
+  entity_type: file
+  uuid: 364c35ea-9396-48b8-a65e-c3c0ac35e469
+  bundle: image
+  default_langcode: fr
+default:
+  uid:
+    -
+      target_id: 1
+  filename:
+    -
+      value: 1462428_639f_7.jpeg
+  uri:
+    -
+      value: 'public://2022-07/1462428_639f_7.jpeg'
+  filemime:
+    -
+      value: image/jpeg
+  filesize:
+    -
+      value: 87731
+  status:
+    -
+      value: true
+  created:
+    -
+      value: 1657212824
+  path:
+    -
+      alias: ''
+      langcode: fr
+      pathauto: 1
