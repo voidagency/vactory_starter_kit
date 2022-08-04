@@ -3,14 +3,18 @@
  */
 
 jQuery(document).ready(function ($) {
-  var $window = $(window); // 1. Window Object.
-  var $featuredMedia = $("#featured-media"); // 1. The Video Container.
-  var $featuredVideo = $("#featured-video"); // 2. The Youtube Video.
+  var $window = $(window), // 1. Window Object.
+    $featuredMedia = $("#featured-media"), // 1. The Video Container.
+    $featuredVideo = $("#featured-video"), // 2. The Youtube Video.
+    player, // 3. Youtube player object.
+    top, // 4. The video position from the top of the document;
+    offset, //5. offset.
+    stickyCloseButton = $("#close-sticky-video");
 
-  var player; // 3. Youtube player object.
-  var top = $featuredMedia.offset().top; // 4. The video position from the top of the document;
-  var offset = top + $featuredMedia.outerHeight(); //5. offset.
-  var stickyCloseButton = $("#close-sticky-video");
+  function videoPosition() {
+    top = Math.floor($featuredMedia.position().top);
+    offset = Math.floor(top - $featuredMedia.outerHeight());
+  }
 
   function onPlayerStateChange(event) {
     var isPlay = 1 === event.data;
@@ -21,19 +25,18 @@ jQuery(document).ready(function ($) {
       $featuredVideo.removeClass("is-paused");
       $featuredVideo.addClass("is-playing");
     }
-    // if (isPause) {
-    //   $featuredVideo.removeClass("is-playing");
-    //   $featuredVideo.toggleClass("is-paused");
-    // }
-    // if (isEnd) {
-    //   $featuredVideo.removeClass("is-playing", "is-paused");
-    // }
+    if (isPause) {
+      $featuredVideo.removeClass("is-playing");
+      $featuredVideo.addClass("is-paused");
+    }
+    if (isEnd) {
+      $featuredVideo.removeClass("is-playing", "is-paused");
+    }
   }
 
   function closeStickyVideo() {
     stickyCloseButton.removeClass("is-active");
     $featuredVideo.removeClass("is-sticky");
-    $featuredVideo.removeClass("is-playing");
     player.pauseVideo();
   }
 
@@ -46,23 +49,29 @@ jQuery(document).ready(function ($) {
     stickyCloseButton.on("click", closeStickyVideo);
   };
 
+  videoPosition();
+
   $window.on("resize", function () {
-    top = $featuredMedia.offset().top;
-    offset = Math.floor(top + $featuredMedia.outerHeight() / 2);
+    videoPosition();
   });
+
   $window.on("scroll", function () {
-    if (matchMedia("(min-width: 992px)").matches) {
-      $featuredVideo.toggleClass(
-        "is-sticky",
-        $featuredVideo.hasClass("is-playing")
-      );
-      stickyCloseButton.toggleClass(
-        "is-active",
-        $featuredVideo.hasClass("is-sticky")
-      );
+    videoPosition();
+    $featuredVideo.toggleClass(
+      "is-sticky",
+      $window.scrollTop() > top && $featuredVideo.hasClass("is-playing")
+    );
+    stickyCloseButton.toggleClass(
+      "is-active",
+      $window.scrollTop() > top && $featuredVideo.hasClass("is-sticky")
+    );
+    if ($window.scrollTop() > offset) {
+      player.mute();
+      player.playVideo();
     } else {
-      $featuredVideo.removeClass("is-sticky");
-      stickyCloseButton.removeClass("is-active");
+      if ($featuredVideo.hasClass("is-playing")) {
+        player.pauseVideo();
+      }
     }
   });
 });
