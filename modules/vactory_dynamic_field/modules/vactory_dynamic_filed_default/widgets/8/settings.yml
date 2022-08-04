@@ -1,0 +1,40 @@
+name: 'D08 - List Cards Mosaic'
+multiple: TRUE
+category: 'Content'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: 'Title'
+    options:
+      '#required': TRUE
+  description:
+    type: textarea
+    label: 'Description'
+  link:
+    type: url_extended
+    label: 'Lien du bouton'
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': TRUE
+  image_alt:
+    type: text
+    label: 'Image alt'
+  video:
+    type: text
+    label: 'Video url'
+    options:
+      '#description': '<b><i class="link">How ?</i></b><br><b>URL Example</b>: https://www.youtube.com/watch?v=BZDyr2OpWBU'
+extra_fields:
+  intro:
+    type: textarea
+    lable: 'Introduction'
+  btn_more:
+    type: url_extended
+    label: 'More button'
+  slider:
+    type: checkbox
+    label: 'Show slider'
+
