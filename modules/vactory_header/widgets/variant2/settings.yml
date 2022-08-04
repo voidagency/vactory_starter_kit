@@ -1,11 +1,7 @@
-name: 'Header - Default'
+name: 'Header - Variant 2'
 multiple: TRUE
 category: 'Headers'
 enabled: TRUE
-fields:
-  cta:
-      type: url_extended
-      label: 'Add extra button'
 extra_fields:
   header_logo:
       type: image
@@ -18,6 +14,6 @@ extra_fields:
       label: "Enable account button"
   use_menu:
       type: text
-      label: "Menu ID"
+      label: "Menu Main ID"
       options:
         '#description': 'Menu machine name. Default to main'

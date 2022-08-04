@@ -1,4 +1,4 @@
-name: 'Header - Default'
+name: 'Header - Variant 3'
 multiple: TRUE
 category: 'Headers'
 enabled: TRUE
@@ -16,8 +16,13 @@ extra_fields:
   show_account:
       type: checkbox
       label: "Enable account button"
-  use_menu:
+  use_menu_main:
       type: text
-      label: "Menu ID"
+      label: "Menu Main ID"
       options:
         '#description': 'Menu machine name. Default to main'
+  use_menu_top:
+      type: text
+      label: "Menu Top ID"
+      options:
+        '#description': 'Top Menu machine name'
