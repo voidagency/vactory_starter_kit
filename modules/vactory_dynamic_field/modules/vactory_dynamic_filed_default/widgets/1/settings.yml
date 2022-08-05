@@ -9,9 +9,9 @@ fields:
   description:
         type: textarea
         label: 'Description'
-  label:
+  lead:
         type: textarea
-        label: 'label Text'
+        label: 'Lead Text'
   link:
       type: url_extended
       label: 'Read More Link'
