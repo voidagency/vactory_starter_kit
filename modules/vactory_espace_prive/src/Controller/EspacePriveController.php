@@ -108,7 +108,8 @@ class EspacePriveController extends ControllerBase {
    * Returns email form for reset password.
    */
   public function resetPassword() {
-    $is_anonymous = \Drupal::currentUser()->isAnonymous();
+    $current_user = \Drupal::currentUser();
+    $is_anonymous = $current_user->isAnonymous();
     if ($is_anonymous) {
       $password_form = \Drupal::formBuilder()->getForm(UserPasswordForm::class);
       return [
@@ -116,7 +117,7 @@ class EspacePriveController extends ControllerBase {
         '#password_form' => $password_form,
       ];
     }
-    return $this->redirect('vactory_espace_prive.profile');
+    return $this->redirect('vactory_espace_prive.profile',["user" => $current_user->id()]);
   }
 
   /**
