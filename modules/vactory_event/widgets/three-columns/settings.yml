@@ -27,6 +27,7 @@ fields:
           - fields[media--image]=name,thumbnail
           - fields[file--image]=filename,uri
           - include=field_vactory_taxonomy_1,field_vactory_taxonomy_2,field_vactory_media,field_vactory_media.thumbnail
+          - filter[status][value]=1
           # - page[limit]=3
           # - sort=-created
   link:

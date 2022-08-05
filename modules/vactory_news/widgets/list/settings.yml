@@ -20,5 +20,6 @@ fields:
           - page[limit]=9
           - sort[sort-vactory-date][path]=field_vactory_date
           - sort[sort-vactory-date][direction]=DESC
+          - filter[status][value]=1
         vocabularies:
           vactory_news_theme: vactory_news_theme
