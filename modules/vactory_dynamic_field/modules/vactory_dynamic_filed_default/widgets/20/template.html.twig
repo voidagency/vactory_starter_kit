@@ -1,0 +1,23 @@
+{% set toolbox_mode = (extra_fields.mode == 1)? 'toolbox-contact description' : 'toolbox-contact' %}
+
+<div class='{{ toolbox_mode }}'>
+    <ul>
+        {% for item in content %}
+            {% set link_attributes = create_attribute() %}
+            {% set link_attributes = item.link.attributes.id is not empty ? link_attributes.setAttribute('id', item.link.attributes.id ) : link_attributes %}
+            {% set link_attributes = item.link.attributes.class is not empty ? link_attributes.setAttribute('class', item.link.attributes.class  ~ ' text') : link_attributes.setAttribute('class','text') %}
+            {% set link_attributes = item.link.attributes.target is not empty ? link_attributes.setAttribute('target', item.link.attributes.target ) : link_attributes %}
+            {% set link_attributes = item.link.attributes.rel is not empty ? link_attributes.setAttribute('rel', item.link.attributes.rel ) : link_attributes %}
+            <li class="d-block">
+                <div class="list-itel-inner">
+                    <a href="{{ item.link.url }}" {{ link_attributes }} > 
+                        <span class="{{ item.icon }} icon-wrapper"></span>
+                        <p>
+                            {{ item.description }}
+                        </p>    
+                    </a>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+</div>

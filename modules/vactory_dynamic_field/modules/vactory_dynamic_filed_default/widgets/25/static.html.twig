@@ -1,0 +1,22 @@
+<div class="text-center my-5 p-1">
+    <div class="row vf-slick-slider" 
+        data-toshow="1"
+        data-dots="false"
+        data-arrows="true"
+        data-mobile-centermode="false">
+        {% for item in 0..3 %}
+            {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/150/150.jpg" %}
+            <div class="col-lg-4 col-md-6 pt-3 pb-3">
+                <div class="mx-auto mb-2 animated fadeInDown">
+                    <img src="{{ placehold }}" class="rounded-circle img-fluid d-inline">
+                </div>
+                <p class="mx-5 animated fadeInLeft"><i class='icon-quote-left'></i>
+                 Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore.
+                </p>
+                <h4 class="mb-2 animated fadeInUp">Maria Kate</h4>
+                <p class="animated fadeInUp">Delectus impedit</p>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
