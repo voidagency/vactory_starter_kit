@@ -30,7 +30,7 @@ fields:
 extra_fields:
   intro:
     type: textarea
-    lable: 'Introduction'
+    label: 'Introduction'
   btn_more:
     type: url_extended
     label: 'More button'

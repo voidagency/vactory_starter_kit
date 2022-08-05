@@ -25,7 +25,7 @@ fields:
 extra_fields:
   intro:
     type: textarea
-    lable: 'Introduction'
+    label: 'Introduction'
   mode:
     type: checkbox
     label: 'Active reverse mode'
