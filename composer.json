@@ -27,7 +27,7 @@
     "drupal/coffee": "1.x-dev@dev",
     "drupal/components": "^2.0",
     "drupal/config_update": "1.7",
-    "drupal/ctools": "^3.4",
+    "drupal/ctools": "~3.9.0",
     "drupal/email_registration": "1.1",
     "drupal/entity_reference_revisions": "^1.8",
     "drupal/entityqueue": "^1.2",
