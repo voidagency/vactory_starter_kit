@@ -30,6 +30,12 @@ function vactory_espace_prive_theme($existing, $type, $theme, $path) {
         'profile_form' => NULL,
       ],
     ],
+     'espace_prive_edit_pwd' => [
+      'template' => 'espace-prive-edit-pwd',
+      'variables' => [
+        'edit_password_form' => NULL,
+      ],
+     ],
     'espace_prive_password' => [
       'template' => 'espace-prive-password',
       'variables' => [

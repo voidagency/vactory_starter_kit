@@ -1,0 +1,33 @@
+<div class="user-edit-profile tab-content has-border py-2 py-md-4 px-1 px-sm-2 px-ld-3">
+	<form {{ attributes }}>
+		{{ edit_password_form.form_build_id }}
+		{{ edit_password_form.form_token }}
+		{{ edit_password_form.form_id }}
+
+    <div class="card mb-4">
+      <h5 class="card-header">{{ 'Modifier le mot de passe' | t }}</h5>
+      <div class="card-body">
+        <div class="row w-100">
+          <div class="col-md-12">
+            <div class="input-icon at-icon">
+              {{ edit_password_form.account.mail }}
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="input-icon lock-icon">
+              {{ edit_password_form.account.current_pass }}
+            </div>
+          </div>
+          <div class="col-md-12">
+            <div class="input-icon lock-icon">
+              {{ edit_password_form.account.pass }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="actions">
+      {{ edit_password_form.actions.submit }}
+    </div>
+  </form>
+</div>

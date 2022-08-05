@@ -85,7 +85,7 @@ class EspacePriveController extends ControllerBase {
   }
 
   /**
-   * Returns Profile edit form for current user.
+   * Returns Profile edit form for the current user.
    */
   public function cleanedProfile() {
     $current_user = \Drupal::currentUser();
@@ -103,6 +103,26 @@ class EspacePriveController extends ControllerBase {
     }
     throw new NotFoundHttpException();
   }
+
+  /**
+  * Returns Password Edit Form for the current user
+   */
+   public function editPassword() {
+    $current_user = \Drupal::currentUser();
+    if (!$current_user->isAnonymous()) {
+      $user = \Drupal::service('entity_type.manager')->getStorage('user')
+        ->load($current_user->id());
+      $formObject = \Drupal::entityTypeManager()
+        ->getFormObject('user', 'default')
+        ->setEntity($user);
+      $edit_password_form = \Drupal::formBuilder()->getForm($formObject);
+      return [
+        '#theme' => 'espace_prive_edit_pwd',
+        '#edit_password_form' => $edit_password_form,
+      ];
+    }
+    throw new NotFoundHttpException();
+   }
 
   /**
    * Returns email form for reset password.
