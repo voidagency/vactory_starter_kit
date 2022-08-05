@@ -268,4 +268,3 @@ function vactory_mail_black_list_validation($form, FormStateInterface $form_stat
   }
 }
 
-

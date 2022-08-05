@@ -116,6 +116,8 @@ class EspacePriveController extends ControllerBase {
         ->getFormObject('user', 'default')
         ->setEntity($user);
       $edit_password_form = \Drupal::formBuilder()->getForm($formObject);
+      unset($edit_password_form["#theme"]);
+      $edit_password_form["#theme"][] = "edit_pwd_form";
       return [
         '#theme' => 'espace_prive_edit_pwd',
         '#edit_password_form' => $edit_password_form,
