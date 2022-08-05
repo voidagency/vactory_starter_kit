@@ -1,0 +1,24 @@
+name: 'D10 - Full image with description'
+multiple: FALSE
+category: 'Content'
+enabled: TRUE
+fields:
+  intro:
+    type: textarea
+    label: 'Introduction'
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': TRUE
+  image_alt:
+    type: text
+    label: 'Image alt'
+  description:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'full_html'
+  btn_more:
+    type: url_extended
+    label: 'More button'
