@@ -103,3 +103,33 @@ function vactory_starter_kit_install() {
   // Run a complete cache flush.
   drupal_flush_all_caches();
 }
+
+/**
+ * Implement hook_update_N().
+ */
+function vactory_starter_kit_update_9400(&$sandbox) {
+  $entityUpdateManager = \Drupal::entityDefinitionUpdateManager();
+  $field_tags = BaseFieldDefinition::create('entity_reference')
+    ->setLabel(t('Tags'))
+    ->setSettings([
+      'target_type' => 'taxonomy_term',
+      'handler_settings' => ['target_bundles' => ['taxonomy_term' => 'tags']],
+    ])
+    ->setTranslatable(TRUE)
+    ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
+    ->setDisplayOptions('form', [
+      'type' => 'options_select',
+      'weight' => -6,
+      'settings' => [],
+    ])
+    ->setDisplayConfigurable('form', TRUE)
+    ->setDisplayConfigurable('view', TRUE)
+    ->setDisplayConfigurable('field', TRUE);
+
+  $entityUpdateManager->installFieldStorageDefinition(
+    'field_vactory_tags',
+    'node',
+    'node',
+    $field_tags
+  );
+}
