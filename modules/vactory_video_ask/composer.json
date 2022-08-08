@@ -1,0 +1,11 @@
+{
+    "name": "voidagency/vactory_video_ask",
+    "type": "drupal-custom-module",
+    "authors": [
+        {
+            "name": "Abdelkoddous",
+            "email": "a.elidrissi@void.fr"
+        }
+    ],
+    "require": {}
+}

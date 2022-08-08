@@ -1,0 +1,7 @@
+name: Vactory Webform Mailchimp Handler
+description: Expose a webform handler for adding members to mail chimp form using mailchimp API.
+type: module
+package: Vactory
+core_version_requirement: ^8.9 || ^9
+dependencies:
+  - webform:webform

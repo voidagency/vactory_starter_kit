@@ -1,4 +1,9 @@
-style:
+vactory_quiz_style:
   css:
     theme:
-      scss/vactory_quiz.css: { }
+      ./assets/css/vactory_quiz.css: {}
+
+vactory_quiz_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_quiz-rtl.css: {}

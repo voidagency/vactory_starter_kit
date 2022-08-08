@@ -1,0 +1,10 @@
+services:
+  vactory_whatsapp.api:
+    class: Drupal\vactory_whatsapp\WhatsappApi
+    arguments:
+      - '@http_client'
+      - '@config.factory'
+  vactory_whatsapp.api.manager:
+    class: Drupal\vactory_whatsapp\WhatsappApiManager
+    arguments:
+      - '@vactory_whatsapp.api'

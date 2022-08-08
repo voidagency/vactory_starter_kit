@@ -1,0 +1,9 @@
+vactory_academy_agency_style:
+  css:
+    theme:
+      ./assets/css/vactory_academy_agency.css: {}
+
+vactory_academy_agency_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_academy_agency-rtl.css: {}

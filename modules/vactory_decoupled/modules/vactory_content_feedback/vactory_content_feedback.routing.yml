@@ -1,0 +1,7 @@
+vactory_content_feedback.update:
+  path: '/_feedback_update'
+  defaults:
+    _controller: '\Drupal\vactory_content_feedback\Controller\VactoryContentFeedbackController::index'
+  methods:  [POST]
+  requirements:
+    _permission: 'give feedback'

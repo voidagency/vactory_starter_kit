@@ -1,0 +1,8 @@
+vactory_video_ask.post:
+  path: 'videoask/post'
+  defaults:
+    _controller: '\Drupal\vactory_video_ask\Controller\VactoryVideoAskApi::postResult'
+  methods:  [POST]
+  requirements:
+    _access: 'TRUE'
+

@@ -1,0 +1,29 @@
+
+.card.notifications {
+  height: auto;
+  margin-bottom: 20px;
+}
+
+.notifications-link {
+  font-size: 12px;
+  font-weight: bold;
+  .notifications-count-wrapper {
+    position: relative;
+    i[class^="icon-"] {
+      font-size: 30px;
+      margin-left: 0;
+    }
+    .notifications-count {
+
+      background-color: $red;
+      color: white;
+      position: absolute;
+      top: 0;
+      right: 0;
+      transform: translate(50%, -50%);
+      font-size: 14px;
+      line-height: 1.2;
+      padding: 2px;
+    }
+  }
+}

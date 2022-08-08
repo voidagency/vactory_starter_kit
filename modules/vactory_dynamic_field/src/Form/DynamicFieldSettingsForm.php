@@ -47,6 +47,14 @@ class DynamicFieldSettingsForm extends ConfigFormBase {
       '#description' => t('Uncheck it to have a templates listing with thumbnail.'),
     ];
 
+    $form['excluded_widgets'] = [
+      '#type' => 'textarea',
+      '#title' => t('Excluded widgets'),
+      '#attributes' => ['data-yaml-editor' => 'true'],
+      '#default_value' => $this->config('vactory_dynamic_field.settings')->get('excluded_widgets'),
+      '#description' => $this->t('You can check this video https://www.loom.com/share/33c314e4373f4ad395cc21908f10b7b5 to see how it works.')
+    ];
+
     return $form;
   }
 
@@ -56,6 +64,7 @@ class DynamicFieldSettingsForm extends ConfigFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $this->config('vactory_dynamic_field.settings')
       ->set('is_dropdown_select_templates', $form_state->getValue('is_dropdown_select_templates'))
+      ->set('excluded_widgets', $form_state->getValue('excluded_widgets'))
       ->save();
     parent::submitForm($form, $form_state);
   }

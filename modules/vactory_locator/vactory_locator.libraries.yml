@@ -1,17 +1,27 @@
+vactory_locator_style:
+  css:
+    theme:
+      ./assets/css/vactory_locator.css: {}
+
+vactory_locator_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_locator-rtl.css: {}
+
 vactory_locator.locator:
   css:
     theme:
-      scss/agencies.css: {}
-
+      ./assets/css/agencies.css: {}
   js:
     https://cdn.rawgit.com/googlemaps/js-marker-clusterer/gh-pages/src/markerclusterer.js: {type: external }
-    js/locator.js: {}
+    ./assets/js/locator.js: {}
   dependencies:
     - core/jquery
     - core/drupalSettings
+
 backgroundLoader:
   js:
-    js/bg_loader.js: {}
+    ./assets/js/bg_loader.js: {}
   dependencies:
     - core/jquery
     - core/drupalSettings

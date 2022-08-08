@@ -1,0 +1,7 @@
+name: Vactory Whatsapp
+type: module
+description: Whatsapp API integration
+package: Vactory
+core: 8.x
+core_version_requirement: ^8 || ^9
+configure: vactory_whatsapp.settings_form

@@ -67,34 +67,33 @@
 {% if classes is not defined %}
     {% set classes = [] %}
 {% endif %}
-{% set classes = classes|merge(['card']) %}
+{% set classes = classes|merge(['card', 'card--inline', 'card--tender']) %}
 {% set file_url = show_form == true ? url('vactory_tender.form_page', {'crypted_nid': tender_node_id }) : file_url(tender_file_uri) %}
 
 <article {{ attributes.addClass(classes) }}>
-    <div class="card-col position-relative card-body--inline">
-        <div class="card-body">
-            {{ contextual_links }}
-            {{ title_prefix }}
-            <h4{{ title_attributes }} class="card-title">
-                <span class="link font-semibold text-uppercase font-20">{{ label }}</span>
-            </h4>
-            {{ title_suffix }}
-            <h6 class="card-subtitle mb-2">
-                <span class="badge badge-primary">{{ content.field_vactory_reference }}</span>
-            </h6>
+  <div class="card__body">
+    {{ contextual_links }}
+    {{ title_prefix }}
+    <h3{{ title_attributes }} class="card__title">
+      <span>{{ label }}</span>
+    </h3>
+    {{ title_suffix }}
 
-            <p class="card-text">{{ content.field_vactory_excerpt }}</p>
-
-            <p class="card-text">
-                <a href="{{ file_url }}" class="btn btn-outline-primary" {{ not show_form ? 'download' : ''}}><i class="icon-download_link"></i> {{ 'Télécharger le dossier'|t }}</a>
-                {% if tender_result_uri is defined %}
-                    <a href="{{ file_url(tender_result_uri) }}" class="btn btn-outline-primary" download><i class="icon-file-text"></i> {{ 'Voir les résultats'|t }}</a>
-                {% endif %}
-            </p>
-            <p class="card-text">
-                <em>{{ 'Date de publication:'|t }}</em>
-                <strong class="text-muted">{{ content.field_vactory_date }}</strong>
-            </p>
-        </div>
+    <div class="card__meta">
+        <span class="card__tag">{{ content.field_vactory_reference }}</span>
     </div>
+
+      <div class="card__description">{{ noWrapper(content.field_vactory_excerpt) }}</div>
+
+      <div class="card__read-more">
+          <a href="{{ file_url }}" class="btn btn-outline-primary" {{ not show_form ? 'download' : ''}}><i class="icon-download_link"></i> {{ 'Télécharger le dossier'|t }}</a>
+          {% if tender_result_uri is defined %}
+              <a href="{{ file_url(tender_result_uri) }}" class="btn btn-outline-primary" download><i class="icon-file-text"></i> {{ 'Voir les résultats'|t }}</a>
+          {% endif %}
+      </div>
+      <div class="card__publish-date mt-2">
+          <em>{{ 'Date de publication:'|t }}</em>
+          <strong class="text-muted">{{ noWrapper(content.field_vactory_date) }}</strong>
+      </div>
+  </div>
 </article>

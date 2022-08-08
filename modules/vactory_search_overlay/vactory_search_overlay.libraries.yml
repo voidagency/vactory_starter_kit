@@ -1,13 +1,34 @@
+vactory_search_overlay_v1_style:
+  css:
+    theme:
+      ./assets/css/vactory_search_overlay_v1.css: {}
+
+vactory_search_overlay_v1_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_search_overlay_v1-rtl.css: {}
+
+vactory_search_overlay_v2_style:
+  css:
+    theme:
+      ./assets/css/vactory_search_overlay_v2.css: {}
+
+vactory_search_overlay_v2_style_rtl:
+  css:
+    theme:
+      ./assets/css/vactory_search_overlay_v2-rtl.css: {}
+
+
 vactory_search_overlay.variant1:
   js:
-    js/variant1.js: {}
+    ./assets/js/variant1.js: {}
   dependencies:
     - core/jquery
     - core/drupalSettings
     - core/drupal.ajax
 vactory_search_overlay.variant2:
   js:
-    js/variant2.js: {}
+    ./assets/js/variant2.js: {}
   dependencies:
     - core/jquery
     - core/drupalSettings

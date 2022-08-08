@@ -1,0 +1,38 @@
+.vf-slider-content-avec-background .slick-arrow {
+  border-color: #FFF;
+  color: #FFF;
+}
+
+.vf-slider-content-avec-background .vf-slider-content-bg {
+  background-size: cover;
+  position: relative;
+}
+
+.vf-slider-content-avec-background .vf-slider-content-bg:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.vf-slider-content-avec-background .vf-content-bg-slides {
+  height: 350px;
+  height: 21.875rem;
+}
+
+.vf-slider-content-avec-background .vf-content-bg-slides .slick-list.draggable {
+  height: 100%;
+}
+
+.vf-slider-content-avec-background .vf-bg-content {
+  color: #fff;
+  max-width: 500px;
+  max-width: 31.25rem;
+}
+
+.vf-slider-content-avec-background .vf-bg-content--title, .vf-slider-content-avec-background .vf-bg-content--text {
+  color: #fff;
+}

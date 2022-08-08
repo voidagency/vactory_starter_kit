@@ -65,22 +65,24 @@
 #}
 
 {% embed "@twigComponents/article/article-smart-search.twig" with {
-  'classes': ['vf-card--news'],
+  'classes': ['card--forums'],
   'title': label,
   'url': url,
-  'image': addAttributes(content.field_vactory_media, {'class': ['vf-card__image', 'img-fluid']}),
+  'image': addAttributes(noWrapper(content.field_vactory_media), {'class': ['img-fluid']}),
   'subtitle': content_type_label,
   'intro': content.field_vactory_excerpt.0,
   'summary': node.node_summary.value,
   'date_string': content.field_vactory_date.0['#markup']
 } %}
   {% block subtitle %}
-    <span class="badge badge-primary ml-2">{{ content_type_label }}</span>
-    {% if node.field_vactory_forum_status.value == "1" %}
-      <span class="badge badge-pill badge-success p-2 mr-1" title="{{ 'Forum actif'|t }}"> </span>
-    {% else %}
-      <span class="badge badge-pill badge-secondary p-2 mr-1" title="{{ 'Forum fermé'|t }}"> </span>
-    {% endif %}
+    <div class="card__meta">
+      <span class="card__tag badge badge-primary">{{ content_type_label }}</span>
+      {% if node.field_vactory_forum_status.value == "1" %}
+        <span class="badge badge-pill badge-success p-2 mr-1" title="{{ 'Forum actif'|t }}"> </span>
+      {% else %}
+        <span class="badge badge-pill badge-secondary p-2 mr-1" title="{{ 'Forum fermé'|t }}"> </span>
+      {% endif %}
+    </div>
   {% endblock %}
 {% endembed %}
 

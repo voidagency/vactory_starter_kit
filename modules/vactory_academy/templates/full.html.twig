@@ -65,7 +65,6 @@
 #}
 {% set academy_videos = content.field_vactory_file_multiple['#items'].value is defined ? content.field_vactory_file_multiple['#items'].value : '' %}
 {% set videos = content.field_vactory_youtube_media.0 is defined ? content.field_vactory_youtube_media.0['#media'].field_media_oembed_video.0.value : null %}
-
 <div class="block-top bg-secondary text-white position-relative pt-2 pb-4 row">
     <div class='col-md-12 mb-md-3 wrapper-flag_favorite'>
         {% if is_anonymous %}
@@ -166,15 +165,15 @@
   </div>
 </div>
 <div class="block-detail mb-4 mt-4 row">
-  <div class="col-md-8 ">
+  <div class="col-md-7 ">
     <div class="row">
         {{content.field_vactory_paragraphs	}}
     </div>
   </div>
-  <div class="col-md-4 text-center">
-    <h2>{{ content.rate_vote_widget["#results"].fivestar.vote_average  }}</h2>
+  <div class="col-md-5 text-center">
+    {% set rating = rate_average is defined ? rate_average : 0.00 %}
+    <h2>{{ rating }}</h2>
    <div class="star-rating">
-      {% set rating = content.rate_vote_widget["#results"].fivestar.vote_average %}
       {% for i in 0..4 %}
         {% if rating >=1 %}
           <span class="favorite-star checked-full"></span>
@@ -189,7 +188,7 @@
     <p>{{ 'Note du cours'|t }}</p>
     {% if not is_anonymous %}
       <div class='star-vote'>
-        {{ content.rate_vote_widget}}
+        {{ content.rate_rate_voting }}
       </div>
       <p>{{ 'Votre Vote'|t }}</p>
     {% endif %}

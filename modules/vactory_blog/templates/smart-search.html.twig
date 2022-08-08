@@ -65,10 +65,10 @@
 #}
 
 {% embed "@twigComponents/article/article-smart-search.twig" with {
-  'classes': ['vf-card--news'],
+  'classes': ['card--blog'],
   'title': label,
   'url': url,
-  'image': addAttributes(content.field_vactory_media, {'class': ['vf-card__image', 'img-fluid']}),
+  'image': addAttributes(noWrapper(content.field_vactory_media), {'class': ['img-fluid']}),
   'subtitle': content_type_label,
   'intro': content.field_vactory_excerpt.0,
   'summary': node.node_summary.value,
