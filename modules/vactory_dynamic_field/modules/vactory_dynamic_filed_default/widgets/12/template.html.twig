@@ -1,0 +1,38 @@
+<div class="row t-block-push-small-positionned">
+  {% for item in content %}
+    {% set column = (item.mode) ? 'col-12' : 'col-md-6' %}
+    <div class="{{ column }} d-flex">
+        {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : '' %}
+        {% set lqip_image = image_uri|image_style('lqip') %}
+        {% set fluid_image = file_url(image_uri) %}
+
+        {% set link_attributes = create_attribute() %}
+        {% set link_attributes = item.link.attributes.id is not empty ? link_attributes.setAttribute('id', item.link.attributes.id ) : link_attributes %}
+        {% set link_attributes = item.link.attributes.class is not empty ? link_attributes.setAttribute('class', item.link.attributes.class  ~ ' btn btn-primary') : link_attributes.setAttribute('class','btn btn-primary') %}
+        {% set link_attributes = item.link.attributes.target is not empty ? link_attributes.setAttribute('target', item.link.attributes.target ) : link_attributes %}
+        {% set link_attributes = item.link.attributes.rel is not empty ? link_attributes.setAttribute('rel', item.link.attributes.rel ) : link_attributes %}
+
+      <div
+        class="vf-push vf-push-small-positionned lazyload"
+        data-bg="{{ fluid_image }}"
+        style="background-image:url('{{ lqip_image }}')" >
+        <div class="vf-push-body">
+          <div class="inner">
+            {% if item.titre is not empty %}
+              <h4 class="h4">{{ item.titre }}</h4>
+            {% endif %}
+            {% if item.description is not empty %}
+              <p>
+                {{ item.description }}
+              </p>
+            {% endif %}
+            {% if (item.link.url is not empty and item.link.title is not empty) %}
+              <a href="{{ item.link.url }}" {{ link_attributes }} > {{ item.link.title }} </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+
+</div>
