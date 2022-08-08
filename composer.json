@@ -189,9 +189,6 @@
       "stevenmaguire/oauth2-microsoft": {
         "Fix Bearer Authorization - Update ResourceOwner": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/9e6eca9bcbd95e7bed7859d54a0c4623a6112e5a/oauth2-microsoft-authorization-ressource-owner.patch"
       },
-      "drupal/media_library_form_element": {
-        "Fixing multiple modals closing": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/9e6eca9bcbd95e7bed7859d54a0c4623a6112e5a/locator_media_library_images.patch"
-      },
       "drupal/viewsreference": {
         "Exposed filters not working for Views in Paragraphs": "https://www.drupal.org/files/issues/2020-05-13/viewsreference-exposed_filters_not_working-3129609-3.patch"
       },
