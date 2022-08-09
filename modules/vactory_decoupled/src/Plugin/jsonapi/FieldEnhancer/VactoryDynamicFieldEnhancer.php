@@ -263,7 +263,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
             // Add cache.
             $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $media->getCacheTags());
             $this->cacheability->setCacheTags($cacheTags);
-            $fid = (int) $media->get('field_media_document')->getString();
+            $fid = (int) $media->get('field_media_file')->getString();
             $file = File::load($fid);
             if ($file) {
               // Add cache.
