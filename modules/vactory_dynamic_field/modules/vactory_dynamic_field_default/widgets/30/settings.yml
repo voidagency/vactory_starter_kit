@@ -1,0 +1,19 @@
+name: '77 - Froala - Features 3 Blocks Title & Description With CTA'
+multiple: TRUE
+category: 'Froala'
+enabled: TRUE
+limit: 3
+fields:
+  title:
+    type: text
+    label: 'Titre'
+  description:
+    type: textarea
+    label: 'Description'
+  link:
+    type: url_extended
+    label: 'Lien'
+extra_fields:
+  title:
+      type: text
+      label: 'Titre'
