@@ -429,6 +429,8 @@ function generate_locator_path_alias($locator_storage, $locator_path_alias_orogi
 }
 
 function vactory_locator_df_jsonapi_output_alter(&$content) {
+  if ($content['template'] == 'vactory_locator:default'){
+
   $config = \Drupal::config('vactory_locator.settings');
 
   $map_api_key = $config->get('map_api_key');
@@ -448,5 +450,6 @@ function vactory_locator_df_jsonapi_output_alter(&$content) {
     ];
   }
   $content['categories'] = $categories;
+  }
 
 }
