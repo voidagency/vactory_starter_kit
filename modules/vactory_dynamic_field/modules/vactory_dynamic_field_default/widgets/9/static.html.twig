@@ -1,0 +1,32 @@
+<div class="t-publication-wrapper">
+  {% for item in 0..2 %}
+    {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/100/100.jpg" %}
+    <div class="t-publication-content">
+      <div class="row align-items-lg-center">
+        <div class="col-lg-2 col-md-3 col-12">
+          <div class="t-image-wrapper d-flex align-items-center justify-content-center justify-content-lg-start">
+            <img data-src="{{ placehold }}"
+                 src="{{ content.image_placeholder }}"
+                 class="img-fluid lazyload"
+                 alt="Image Alt">
+          </div>
+        </div>
+        <div class="col-lg-10 col-md-9 col-12">
+          <div
+            class="t-publication-details d-flex flex-lg-row flex-column align-items-lg-center justify-content-lg-between">
+            <div class="t-publication-details-text">
+              <h3 class="text-large">Title</h3>
+              <p class="text-small t-publication-authors">John Doe</p>
+              <p class="t-publicatoin-description">Lorem Ipsum is simply dummy text of the printing and
+                typesetting industry. Lorem Ipsum is simply dummy... </p>
+            </div>
+            <div>
+              <a class="permalink" href="#"
+              >Read More</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>

@@ -1,14 +1,21 @@
 name: 'Header - Default'
-multiple: FALSE
+multiple: TRUE
 category: 'Headers'
 enabled: TRUE
 fields:
+  cta:
+      type: url_extended
+      label: 'Add extra button'
+extra_fields:
+  header_logo:
+      type: image
+      label: "Header's logo"
   show_language_dropdown:
       type: checkbox
       label: "Display language dropdown"
   show_account:
       type: checkbox
-      label: "Display language dropdown"
+      label: "Enable account button"
   use_menu:
       type: text
       label: "Menu ID"

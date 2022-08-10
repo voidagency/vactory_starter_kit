@@ -1,0 +1,20 @@
+
+<div class="v-chiffre">
+  <div class="row">
+    {% for item in content %}
+      <div class="col-sm-6 col-md-3 pb-3 pb-md-0">
+        <div class="v-chiffre__wrapper">
+          {% if item.chiffre is not empty %}
+            <h3 class="v-chiffre__heading">{{item.chiffre}}</h3>
+          {% endif %}
+          {% if item.titre is not empty %}
+            <h4 class="v-chiffre__title">{{item.titre}}</h4>
+          {% endif %}
+          {% if item.description is not empty %}
+            <p class="v-chiffre__description">{{item.description}}</p>
+          {% endif %}
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>

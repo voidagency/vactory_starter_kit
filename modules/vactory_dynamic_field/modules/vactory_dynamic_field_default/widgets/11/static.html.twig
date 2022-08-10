@@ -1,0 +1,29 @@
+<div class="t-boxes-with-image-title-and-introduction">
+  <div class="intro">
+    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's
+    standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make
+    a type specimen book. It has survived not only five centuries.
+  </div>
+  <div class="vf-slick-slider row justify-content-center"
+       data-toshow="4" data-arrows="true" data-dots="false">
+    {% for item in 0..2 %}
+      {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/255/240.jpg" %}
+      <div class="col-lg-3 text-center">
+        <div class="t-box-image">
+          <a href="#">
+            <div class="lazy-wrapper">
+              <img class="lazyload"
+                   src="{{ content.image_placeholder }}"
+                   data-src="{{ placehold }}">
+            </div>
+          </a>
+        </div>
+        <div class="t-box-title p-3">
+          <a href="#">
+            <h5>Title</h5>
+          </a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>

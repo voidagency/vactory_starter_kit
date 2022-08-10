@@ -1,0 +1,55 @@
+<div class="testimonial-card text-center my-5 p-1">
+  <p class="mx-auto mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+    Fugit, error amet numquam iure provident voluptate esse quasi, veritatis totam voluptas nostrum quisquam
+    eum porro a pariatur veniam.</p>
+    <div class="row vf-slick-slider" 
+        data-toshow="3"
+        data-dots="false"
+        data-arrows="true"
+        data-mobile-centermode="false">
+        {% for item in 0..6 %}
+            {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/150/150.jpg" %}
+            <div class="col-lg-4 col-md-6 pt-3 pb-3">
+                <div class="card">
+                    <div class="card-image mx-auto mb-0 mt-4">
+                        <img src="{{ placehold }}" class="rounded-circle img-fluid no-effect">
+                    </div>
+                    <div class="card-body">
+                        <div class='info'>
+                            <h4>Maria Kate</h4>
+                            <p><i class='icon-quote-left mr-1'></i>Delectus impedit saepe officiisab aliquam repellat rem unde ducimus.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+
+<div class="testimonial-card text-center my-5 p-1">
+  <p class="mx-auto mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+    Fugit, error amet numquam iure provident voluptate esse quasi, veritatis totam voluptas nostrum quisquam
+    eum porro a pariatur veniam.</p>
+    <div class="row vf-slick-slider" 
+        data-toshow="3"
+        data-dots="false"
+        data-arrows="true"
+        data-mobile-centermode="false">
+        {% for item in 0..6 %}
+            {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/150/150.jpg" %}
+            <div class="col-lg-4 col-md-6 pt-3 pb-3">
+                <div class="card d-flex flex-column-reverse">
+                    <div class="card-image mx-auto mt-0 mb-4">
+                        <img src="{{ placehold }}" class="rounded-circle img-fluid no-effect">
+                    </div>
+                    <div class="card-body d-flex flex-column-reverse">
+                        <div class='info'>
+                            <h4>Maria Kate</h4>
+                            <p><i class='icon-quote-left mr-1'></i>Delectus impedit saepe officiisab aliquam repellat rem unde ducimus.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>

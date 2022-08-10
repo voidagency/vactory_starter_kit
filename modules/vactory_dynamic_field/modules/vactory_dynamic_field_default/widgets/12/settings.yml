@@ -1,0 +1,34 @@
+name: "D12 - Push text par dessus l'image"
+multiple: TRUE
+category: 'Content'
+enabled: TRUE
+fields:
+  image:
+    type: image
+    label: 'Thumbnail'
+    options:
+      '#required': TRUE
+  titre:
+    type: text
+    label: 'Titre'
+    options:
+      '#required': TRUE
+  description:
+    type: textarea
+    label: 'Description'
+  link:
+    type: url_extended
+    label: 'Lien'
+extra_fields:
+  intro:
+    type: textarea
+    label: 'Introduction'
+  btn_more:
+    type: url_extended
+    label: 'More button'
+  mode:
+    type: checkbox
+    label: "Afficher l'image en Full"
+  mode_text:
+    type: checkbox
+    label: "Afficher description au survol"

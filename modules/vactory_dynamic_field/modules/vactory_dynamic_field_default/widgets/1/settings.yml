@@ -1,0 +1,17 @@
+name: 'D01 - Jumbotron'
+multiple: FALSE
+category: 'Content'
+enabled: TRUE
+fields:
+  title:
+      type: text
+      label: 'Title'
+  description:
+        type: textarea
+        label: 'Description'
+  lead:
+        type: textarea
+        label: 'Lead Text'
+  link:
+      type: url_extended
+      label: 'Read More Link'

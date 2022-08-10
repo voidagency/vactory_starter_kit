@@ -26,6 +26,7 @@ fields:
           - fields[media--image]=name,thumbnail
           - fields[file--image]=filename,uri
           - include=field_vactory_news_theme,field_vactory_media,field_vactory_media.thumbnail
+          - filter[status][value]=1
   link:
     type: url_extended
     label: 'Lien'

@@ -1,0 +1,28 @@
+name: 'D13 - background with card'
+category: Content
+multiple: FALSE
+enabled: TRUE
+fields:
+  intro:
+    type: textarea
+    label: 'Introduction'
+  btn_more:
+    type: url_extended
+    label: 'More button'
+  mode:
+    type: checkbox
+    label: 'Inverser template'
+  image:
+    type: image
+    label: 'background image'
+  title:
+    type: text
+    label: 'Titre'
+    options:
+      '#required': TRUE
+  description:
+    type: textarea
+    label: 'description'
+  link:
+    type: url_extended
+    label: 'lien'
