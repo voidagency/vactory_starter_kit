@@ -21,7 +21,12 @@ services:
       - { name: event_subscriber }
   vactory_core.tools:
     class: Drupal\vactory_core\Services\VactoryDevTools
-    arguments: []
+    arguments:
+      - '@entity_field.manager'
+      - '@keyvalue'
+      - '@language_manager'
+      - '@file_system'
+      - '@config.factory'
   vactory_core.path:
     class: Drupal\vactory_core\PathProcessor\VactoryCorePathProcessor
     arguments: []
