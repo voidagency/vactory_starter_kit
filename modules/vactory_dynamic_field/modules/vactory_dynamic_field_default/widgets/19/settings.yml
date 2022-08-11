@@ -1,8 +1,7 @@
-name: '36 - Froala - Team 9 Block Picto Inline Name & Role'
+name: 'D19 - Team V3'
 multiple: TRUE
 category: 'Teams'
 enabled: TRUE
-limit: 9
 fields:
   image:
     type: image
@@ -24,6 +23,11 @@ fields:
     type: textarea
     label: 'Description'
 extra_fields:
-  title:
-      type: text
-      label: 'Titre'
+  cols:
+    type: select
+    label: 'Nombre du columns'
+    options:
+      '#required': TRUE
+      '#options':
+        - '2': '2 Columns'
+        - '3': '3 Columns'
