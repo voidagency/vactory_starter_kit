@@ -1,6 +1,6 @@
 name: 'D09 - Team V1'
 multiple: TRUE
-category: 'Team'
+category: 'Teams'
 enabled: TRUE
 fields:
   image:
