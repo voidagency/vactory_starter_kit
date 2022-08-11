@@ -1,37 +1,42 @@
-<div class="testimonial-single text-center my-5 p-1">
-    {% if extra_fields.intro is not empty %}
-        <div class="row text-center justify-content-center mb-3">
-            <div class="col-md-10 col-lg-8">
-            {% if extra_fields.intro is not empty %}
-                <p>{{ extra_fields.intro }}</p>
-            {% endif %}
-            </div>
-        </div>
-    {% endif %}
-    <div class="row vf-slick-slider" 
-        data-toshow="1"
-        data-dots="false"
-        data-arrows="true"
-        data-mobile-centermode="false">
-        {% for item in content %}
-            {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : '' %}
-            {% set profile_image = image_uri|image_style('medium') %}
-            {% set lqip_image = image_uri|image_style('lqip') %}
-            {% set image_alt = (item.image_alt is not empty) ? item.image_alt : item.image.alt_image %}
-            <div class="pt-3 pb-3">
-                <div class="mx-auto mb-2 lazy-small-square">
-                    <img alt="{{ image_alt }}"
-                        class="lazyload rounded-circle d-inline"
-                        src="{{ lqip_image }}"
-                        data-src="{{ profile_image }}">
-                </div>
-                <p class="mx-5"><i class='icon-quote-left mr-1'></i>{{ item.description }}</p>
-                <h4 class="mb-2">
-                    {{ item.name }}
-                </h4>
-                <p>{{ item.role }}</p>
-            </div>
-        {% endfor %}
-    </div>       
-</div>
+<div class='row rapport-wrapper'>
+    {% for item in content %}
+        {% set image_uri = (item.background_img.0 is defined) ? get_image(item.background_img.0) : '' %}
+        {% set fluid_image = file_url(image_uri) %}
+        {% set margin = (item.mode == 1)? 'm-0' : ' ' %}
 
+        {% set link_attributes = create_attribute() %}
+        {% set link_attributes = item.link.attributes.id is not empty ? link_attributes.setAttribute('id', item.link.attributes.id ) : link_attributes %}
+        {% set link_attributes = item.link.attributes.class is not empty ? link_attributes.setAttribute('class', item.link.attributes.class  ~ ' icon-arrow_forward') : link_attributes.setAttribute('class','icon-arrow_forward') %}
+        {% set link_attributes = item.link.attributes.target is not empty ? link_attributes.setAttribute('target', item.link.attributes.target ) : link_attributes %}
+        {% set link_attributes = item.link.attributes.rel is not empty ? link_attributes.setAttribute('rel', item.link.attributes.rel ) : link_attributes %}
+
+        <div class='col-12 {{item.col}} rapport-card'>
+            {% if item.link.url is not empty and item.mode == 0 %}
+                <a href="{{ item.link.url }}" {{ link_attributes }} >
+            {% endif %}
+                <div class='rapport-card_item d-flex flex-column justify-content-between' style="background-image: url('{{ fluid_image }}');background: {{ item.background_color }};">
+                    <div>{{item.tag}}</div>
+                    {% if item.mode == 1 %}
+                        <div class='rapport-card_video'>
+                            <a data-fancybox href="{{ item.link.url }}" >
+                                <i class='icon-play'></i>
+                            </a>
+                        </div>
+                    {% endif %}
+                    <div class='rapport-card_description {{ margin }}'>
+                        <h2>{{item.titre}}</h2>
+                        {{item.description}}
+                    </div>
+                    {% if item.file is not empty %}
+                        <a href='{{item.file}}' > {{ 'Télécharger '|t }} <i class='icon-download'></i></a>
+                    {% endif %}
+                </div>
+            {% if item.link.url is not empty and item.mode == 0 %}
+                <a href="{{ item.link.url }}" {{ link_attributes }} >
+            {% endif %}
+            {% if item.link is not empty and item.mode == 0 %}
+                </a>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>

@@ -1,28 +1,46 @@
-name: 'DF: Testimonials image,name,description & role'
+name: 'DF - Mosaiq / Rapport Annuel'
 multiple: TRUE
-category: 'Testimonials'
+category: 'Rapport Annuel'
 enabled: TRUE
 fields:
+  tag:
+    type: text
+    label: 'Tag'
+    options:
+      '#required': TRUE
+  titre:
+    type: text
+    label: 'Titre'
   description:
-    type: textarea
+    type: text_format
     label: 'Description'
-  name:
-    type: text
-    label: 'Name'
     options:
-      '#required': TRUE
-  role:
-    type: text
-    label: 'Role'
-  image:
+      '#required': true
+      '#format': 'full_html'
+  link:
+    type: url_extended
+    label: 'Lien'
+  mode:
+    type: checkbox
+    label: 'Active vidéo play'
+  file:
+    type: file
+    label: 'Télécharger un fichier'
+  background_img:
     type: image
-    label: 'Image Profile'
+    label: 'Background image'
+  background_color:
+    type: jquery_colorpicker
+    label: 'Color de fond'
+  col:
+    type: select
+    label: 'Largeur de push'
     options:
       '#required': TRUE
-  image_alt:
-      type: text
-      label: 'Text alternatif'
-extra_fields:
-  intro:
-    type: textarea
-    label: 'Introduction'
+      '#options':
+        - 'col-md-12': '1/1'
+        - 'col-md-6': '1/2'
+        - 'col-md-4': '1/3'
+        - 'col-md-3': '1/4'
+        - 'col-md-8': '2/3'
+

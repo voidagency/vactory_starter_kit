@@ -1,42 +1,56 @@
-<div class='row rapport-wrapper'>
-    {% for item in content %}
-        {% set image_uri = (item.background_img.0 is defined) ? get_image(item.background_img.0) : '' %}
-        {% set fluid_image = file_url(image_uri) %}
-        {% set margin = (item.mode == 1)? 'm-0' : ' ' %}
-
-        {% set link_attributes = create_attribute() %}
-        {% set link_attributes = item.link.attributes.id is not empty ? link_attributes.setAttribute('id', item.link.attributes.id ) : link_attributes %}
-        {% set link_attributes = item.link.attributes.class is not empty ? link_attributes.setAttribute('class', item.link.attributes.class  ~ ' icon-arrow_forward') : link_attributes.setAttribute('class','icon-arrow_forward') %}
-        {% set link_attributes = item.link.attributes.target is not empty ? link_attributes.setAttribute('target', item.link.attributes.target ) : link_attributes %}
-        {% set link_attributes = item.link.attributes.rel is not empty ? link_attributes.setAttribute('rel', item.link.attributes.rel ) : link_attributes %}
-
-        <div class='col-12 {{item.col}} rapport-card'>
-            {% if item.link.url is not empty and item.mode == 0 %}
-                <a href="{{ item.link.url }}" {{ link_attributes }} >
-            {% endif %}
-                <div class='rapport-card_item d-flex flex-column justify-content-between' style="background-image: url('{{ fluid_image }}');background: {{ item.background_color }};">
-                    <div>{{item.tag}}</div>
-                    {% if item.mode == 1 %}
-                        <div class='rapport-card_video'>
-                            <a data-fancybox href="{{ item.link.url }}" >
-                                <i class='icon-play'></i>
-                            </a>
-                        </div>
-                    {% endif %}
-                    <div class='rapport-card_description {{ margin }}'>
-                        <h2>{{item.titre}}</h2>
-                        {{item.description}}
-                    </div>
-                    {% if item.file is not empty %}
-                        <a href='{{item.file}}' > {{ 'Télécharger '|t }} <i class='icon-download'></i></a>
-                    {% endif %}
-                </div>
-            {% if item.link.url is not empty and item.mode == 0 %}
-                <a href="{{ item.link.url }}" {{ link_attributes }} >
-            {% endif %}
-            {% if item.link is not empty and item.mode == 0 %}
-                </a>
-            {% endif %}
+{% if extra_fields.intro is not empty %}
+    <div class="row text-center justify-content-center mb-3">
+        <div class="col-md-10 col-lg-8">
+        {% if extra_fields.intro is not empty %}
+            <p>{{ extra_fields.intro }}</p>
+        {% endif %}
         </div>
-    {% endfor %}
+    </div>
+{% endif %}
+<div class='testimonials-carousel'>
+    <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+        <div class="carousel-inner">
+            {% for item in content %}
+                {% if loop.first %}
+                    {% set activeItem = 'active' %}
+                {% else %}  
+                    {% set activeItem = ' ' %}  
+                {% endif %}     
+                
+                <div class="carousel-item mb-4 {{ activeItem }}">
+                    <div class="text-h3">{{ item.description.value|raw }}</div>
+                    <p class="text-h3"><strong>{{ item.name }}</strong>&nbsp; &nbsp;&nbsp;<em>{{ item.role }}</em></p>
+                </div>
+            {% endfor %}
+        </div>
+        <ol class="carousel-indicators">
+            {% for item in content %}
+                {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : '' %}
+                {% set profile_image = image_uri|image_style('medium') %}
+                {% set lqip_image = image_uri|image_style('lqip') %}
+                {% set image_alt = (item.image_alt is not empty) ? item.image_alt : item.image.alt_image %}
+                {% if loop.first %}
+                    {% set activeItem = 'active' %}
+                {% else %}  
+                    {% set activeItem = ' ' %}  
+                {% endif %}    
+    
+                <li data-target="#carouselExampleIndicators" data-slide-to="{{ loop.index - 1 }}" class='lazy-wrapper {{ activeItem }}'>
+                    <img alt="{{ image_alt }}"
+                        class="lazyload img-fluid"
+                        src="{{ lqip_image }}"
+                        data-src="{{ profile_image }}">
+                </li>
+                
+            {% endfor %}
+        </ol>
+        <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+            <span class="icon-chevron-left" aria-hidden="true"></span>
+            <span class="sr-only">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+            <span class="icon-chevron-right" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
 </div>
