@@ -2,15 +2,76 @@
 
 namespace Drupal\vactory_core\Services;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Config\InstallStorage;
+use Drupal\Core\Entity\EntityFieldManagerInterface;
+use Drupal\Core\File\FileSystemInterface;
+use Drupal\Core\KeyValueStore\KeyValueFactoryInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
+use Drupal\entityqueue\Entity\EntitySubqueue;
+use Drupal\field\Entity\FieldConfig;
+
 /**
  * Service for vactory tools.
  */
 class VactoryDevTools {
 
   /**
+   * Field manager service.
+   *
+   * @var \Drupal\Core\Entity\EntityFieldManagerInterface
+   */
+  protected $entityFieldManager;
+
+  /**
+   * Key value factory service.
+   *
+   * @var \Drupal\Core\KeyValueStore\KeyValueFactoryInterface
+   */
+  protected $keyValueFactory;
+
+  /**
+   * Language manager service.
+   *
+   * @var \Drupal\Core\Language\LanguageManagerInterface
+   */
+  protected $languageManager;
+
+  /**
+   * File system service.
+   *
+   * @var \Drupal\Core\File\FileSystemInterface
+   */
+  protected $fileSystem;
+
+  /**
+   * Config factory service.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected $configFactory;
+
+  /**
+   * {@inheritDoc}
+   */
+  public function __construct(
+    EntityFieldManagerInterface $entityFieldManager,
+    KeyValueFactoryInterface $keyValueFactory,
+    LanguageManagerInterface $languageManager,
+    FileSystemInterface $fileSystem,
+    ConfigFactoryInterface $configFactory
+  ) {
+    $this->entityFieldManager = $entityFieldManager;
+    $this->keyValueFactory = $keyValueFactory;
+    $this->languageManager = $languageManager;
+    $this->fileSystem = $fileSystem;
+    $this->configFactory = $configFactory;
+  }
+
+  /**
    * Data encryption.
    */
-  function encrypt($data) {
+  public function encrypt($data) {
     $key = '7O9KM8O44nO9cmZL';
     return bin2hex(openssl_encrypt($data, "aes-128-ecb", $key, OPENSSL_RAW_DATA));
   }
@@ -18,9 +79,57 @@ class VactoryDevTools {
   /**
    * Data decryption.
    */
-  function decrypt($data) {
+  public function decrypt($data) {
     $key = '7O9KM8O44nO9cmZL';
     return openssl_decrypt(pack("H*", $data), "aes-128-ecb", $key, OPENSSL_RAW_DATA);
+  }
+
+  /**
+   * Clean entity config field from database.
+   */
+  public function cleanEntityConfigFields($entity_type, $bundle) {
+    $fields = $this->entityFieldManager->getFieldDefinitions($entity_type, $bundle);
+    $fields = array_keys(array_filter($fields, function ($field) {
+      return $field instanceof FieldConfig;
+    }));
+    $field_map_kv_store = $this->keyValueFactory->get('entity.definitions.bundle_field_map');
+    $map = $field_map_kv_store->get($entity_type);
+    foreach ($fields as $field_name) {
+      unset($map[$field_name]['bundles'][$bundle]);
+    }
+    $field_map_kv_store->set($entity_type, $map);
+  }
+
+  /**
+   * Clean given module configs.
+   */
+  public function cleanModuleConfigs($module) {
+    $languages = array_keys($this->languageManager->getLanguages());
+    $install_details = [];
+    foreach ($languages as $langcode) {
+      $lang_install_dir = drupal_get_path('module', $module) . '/' . InstallStorage::CONFIG_INSTALL_DIRECTORY . '/language/' . $langcode;
+      if (file_exists($lang_install_dir)) {
+        $lang_install_details =  $this->fileSystem->scanDirectory($lang_install_dir, "/\.(yml)$/");
+        $install_details = array_merge($install_details, $lang_install_details);
+      }
+    }
+    $install_dir = drupal_get_path('module', $module) . '/' . InstallStorage::CONFIG_INSTALL_DIRECTORY;
+    if (file_exists($install_dir)) {
+      $install_details =  $this->fileSystem->scanDirectory($install_dir, "/\.(yml)$/");
+    }
+
+    if (!empty($install_details)) {
+      foreach ($install_details as $config_value) {
+        if (strpos($config_value->name, 'entityqueue.entity_queue') === 0) {
+          $queue_name = explode('.', $config_value->name)[2];
+          $queue = EntitySubqueue::load($queue_name);
+          if ($queue) {
+            $queue->delete();
+          }
+        }
+        $this->configFactory->getEditable($config_value->name)->delete();
+      }
+    }
   }
 
   /**
