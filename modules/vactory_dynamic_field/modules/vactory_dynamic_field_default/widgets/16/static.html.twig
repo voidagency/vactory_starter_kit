@@ -1,0 +1,17 @@
+
+<div class="row widget-links">
+    {% for item in 0..3 %}
+        {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/86/86.jpg" %}
+        <div class="col-lg-6 mb-3">
+            <a href="#" target="_blank" class="col-12 d-flex">
+                <div class="image-link">
+                    <img class="lazyload"
+                        src="{{ content.image_placeholder }}"
+                        data-src="{{ placehold }}"
+                        alt="Image Alt">
+                </div>
+            <div class="description-link">Lorem ipsum dolor sit amet, consectetu elit sed do eiusmod tempor m ipsum dolor.</div>
+            </a>
+        </div>
+    {% endfor %}
+  </div>

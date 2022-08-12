@@ -7,4 +7,5 @@ dependencies:
   - vactory_core
   - vactory_field
   - vactory_views
+  - jsonapi_extras
 package: Vactory

@@ -1,0 +1,15 @@
+name: '7 - Froala - Content Paragraphs 2 Cols'
+multiple: TRUE
+category: 'Froala'
+enabled: TRUE
+limit: 2
+fields:
+  description:
+    type: text_format
+    label: 'Paragraph'
+    options:
+      '#format': 'full_html'
+extra_fields:
+  title:
+    type: text
+    label: 'Titre'
