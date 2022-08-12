@@ -1,0 +1,24 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for ileseguin news module.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_welcome_theme($existing, $type, $theme, $path) {
+  return [
+    'welcome_user' => [
+      'template' => 'block/welcome_user',
+      'variables' => [
+        "content" => [
+        'value' => "",
+        'user' => "",
+        'description' => "",
+        ],
+      ],
+    ],
+  ];
+}
