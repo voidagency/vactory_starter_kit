@@ -1,22 +1,51 @@
-<div class="text-center my-5 p-1">
-    <div class="row vf-slick-slider" 
-        data-toshow="1"
-        data-dots="false"
-        data-arrows="true"
-        data-mobile-centermode="false">
-        {% for item in 0..3 %}
-            {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/150/150.jpg" %}
-            <div class="col-lg-4 col-md-6 pt-3 pb-3">
-                <div class="mx-auto mb-2 animated fadeInDown">
-                    <img src="{{ placehold }}" class="rounded-circle img-fluid d-inline">
+<div class="row rapport-wrapper">
+    {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/300/300.jpg" %}
+    <div class="col-12 col-md-8 rapport-card">
+        <div class="rapport-card_item d-flex flex-column justify-content-between" style="background-image: url('{{placehold}}');">
+            <div>Morbi</div>
+                <div class="rapport-card_description  ">
+                    <h2>Fusce pharetra</h2>
+                    <p>Fusce neque. Pellentesque egestas, neque sit amet convallis pulvinar</p>
                 </div>
-                <p class="mx-5 animated fadeInLeft"><i class='icon-quote-left'></i>
-                 Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore.
-                </p>
-                <h4 class="mb-2 animated fadeInUp">Maria Kate</h4>
-                <p class="animated fadeInUp">Delectus impedit</p>
-            </div>
-        {% endfor %}
+                <a href=""> Télécharger  <i class="icon-download"></i></a>     
+            </div>      
+        </div>
+                 
+        <div class="col-12 col-md-4 rapport-card">
+            <a href="http://wwww.domain.tld" target="_self">
+                <div class="rapport-card_item d-flex flex-column justify-content-between" style="background-image: url('{{placehold}}');">
+                    <div>Phasellus</div>
+                    <div class="rapport-card_description  ">
+                        <h2>Pellentesque posuere</h2>
+                        <p>Vestibulum purus quam, scelerisque ut, mollis sed, nonummy id, metus.&nbsp;</p>
+                    </div> 
+                </div>
+            </a>
+        </div>
+        
+        <div class="col-12 col-md-4 rapport-card">
+            <div class="rapport-card_item d-flex flex-column justify-content-between" style="background:#b0480c;">
+                <div>Vivamus</div>
+                <div class="rapport-card_description  ">
+                    <h2>Cras risus</h2>
+                    <p>Quisque rutrum. Fusce egestas elit eget lorem. In hac habitasse platea dictumst.</p>
+                </div>
+                <a href=""> Télécharger  <i class="icon-download"></i></a>    
+            </div>     
+        </div>
+             
+                
+        <div class="col-12 col-md-8 rapport-card">
+            <div class="rapport-card_item d-flex flex-column justify-content-between" style="background-image: url('{{placehold}}');">
+                <div>Vestibulum</div>
+                <div class="rapport-card_video">
+                    <a data-fancybox="" href="https://www.youtube.com/watch?v=uLcS7uIlqPo&amp;t=5s">
+                        <i class="icon-play"></i>
+                    </a>
+                </div>  
+                <div class="rapport-card_description m-0">
+                    <p>Vivamus euismod mauris. Phasellus ullamcorper ipsum rutrum nunc.&nbsp;</p>
+                </div>     
+            </div>      
+        </div>
     </div>
-</div>
-

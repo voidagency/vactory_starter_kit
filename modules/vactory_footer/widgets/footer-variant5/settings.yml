@@ -1,0 +1,30 @@
+name: "Footer variant 5"
+multiple: TRUE
+category: "Layout"
+enabled: TRUE
+fields:
+  cta_social:
+    type: url_extended
+    label: "Social media links"
+extra_fields:
+  logo:
+    type: image
+    label: Footer's logo
+  use_menu:
+    type: text
+    label: "Menu Main ID"
+    options:
+      "#description": "Menu machine name. Default to main"
+  copyrights:
+    type: text
+    label: "copyrights Text"
+  left_content:
+    type: text_format
+    label: 'Content under logo ( left side )'
+    options:
+      "#format": full_html
+  right_content:
+    type: text_format
+    label: "Content under footer meu ( right side )"
+    options:
+      "#format": full_html

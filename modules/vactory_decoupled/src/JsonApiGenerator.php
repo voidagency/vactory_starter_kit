@@ -12,6 +12,7 @@ use Drupal\Core\Cache\Cache;
  * @api
  */
 class JsonApiGenerator {
+
   protected $client;
 
   /**
@@ -46,7 +47,7 @@ class JsonApiGenerator {
       $subqueue_items_ids = array_map(function ($item) {
         return $item['target_id'];
       }, $subqueue_items);
-      
+
       if (count($subqueue_items_ids) > 0) {
         $filters[] = "filter[_subqueue][condition][path]=" . $entity_queue_field_id;
         $filters[] = "filter[_subqueue][condition][operator]=IN";
@@ -58,13 +59,12 @@ class JsonApiGenerator {
         }
       }
     }
-
     $parsed = [];
     foreach ($filters as $line) {
       [$name, $qsvalue] = explode("=", $line, 2);
       $parsed[trim($name)] = urldecode(trim($qsvalue));
     }
- 
+
     parse_str(http_build_query($parsed), $query_filters);
 
     $response = $this->client->serialize($resource, $query_filters);
@@ -81,12 +81,14 @@ class JsonApiGenerator {
     if (!empty($entity_queue) && count($subqueue_items_ids) > 0) {
       $items = $client_data->data ?? [];
       $result = array_map(static fn($entity_queue_id) => current(array_values(
-          array_filter($items, static fn($entity) => intval($entity->attributes->{$entity_queue_field_id}) === intval($entity_queue_id))
+        array_filter($items, static fn($entity) => intval($entity->attributes->{$entity_queue_field_id}) === intval($entity_queue_id))
         )), $subqueue_items_ids);
-
-      $client_data->data = $result;
+      $result = array_filter($result, function ($e) {
+        return $e; //when this value is false the element is removed.
+      });
+      $client_data->data = array_values($result);
     }
-
+    
     return [
       'data' => $client_data,
       'cache' => $response['cache'],
@@ -116,7 +118,7 @@ class JsonApiGenerator {
         $term = $entityRepository
           ->getTranslationFromContext($term);
 
-          $cacheTags = Cache::mergeTags($cacheTags, $term->getCacheTags());
+        $cacheTags = Cache::mergeTags($cacheTags, $term->getCacheTags());
         array_push($result[$vid], [
           'id' => $term->id(),
           'uuid' => $term->uuid(),
@@ -129,7 +131,7 @@ class JsonApiGenerator {
 
     return [
       "data" => $result,
-      "cache_tags" => $cacheTags
+      "cache_tags" => $cacheTags,
     ];
   }
 

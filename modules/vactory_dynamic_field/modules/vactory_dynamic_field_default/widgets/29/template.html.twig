@@ -1,0 +1,18 @@
+<div class="fdb-block">
+  <div class="row">
+    <div class="col text-center">
+      {% if extra_fields.title is not empty %}
+        <h2>{{ extra_fields.title }}</h2>
+      {% endif %}
+      <div class="row text-left pt-4">
+        {% for item in content %}
+          {% if content.0.description is not empty %}
+            <div class="col-12 col-md-6">
+              <div class="text-h3">{{ item.description.value|raw }}</div>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
