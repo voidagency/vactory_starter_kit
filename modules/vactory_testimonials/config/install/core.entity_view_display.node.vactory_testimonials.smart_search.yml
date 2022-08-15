@@ -13,7 +13,6 @@ dependencies:
     - field.field.node.vactory_testimonials.field_vactory_seo_status
     - field.field.node.vactory_testimonials.field_vactory_tags
     - node.type.vactory_testimonials
-    - responsive_image.styles.vactory_three_cols
   module:
     - datetime
     - media_responsive_thumbnail
