@@ -2,7 +2,9 @@
 
 namespace Drupal\vactory_cloudinary\Services;
 
-use Cloudinary\Api;
+use Cloudinary\Api\ApiResponse;
+use Cloudinary\Api\Exception\NotFound;
+use Cloudinary\Api\Upload\UploadApi;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\File\Exception\FileWriteException;
@@ -60,6 +62,26 @@ class VactoryCloudinaryManager {
   protected $cloudinarySdkSettings;
 
   /**
+   * Cloudinary upload API
+   */
+  protected $uploadApi;
+
+  /**
+   * Cloudinary cloud name.
+   */
+  protected $cloudName;
+
+  /**
+   * Cloudinary API key.
+   */
+  protected $apiKey;
+
+  /**
+   * Cloudinary API secret.
+   */
+  protected $apiSecret;
+
+  /**
    * Vactory cloudinary service constructor.
    */
   public function __construct(
@@ -75,6 +97,16 @@ class VactoryCloudinaryManager {
     $this->moduleHandler = $moduleHandler;
     $this->configFactory = $configFactory;
     $this->cloudinarySdkSettings = $this->configFactory->get('cloudinary_sdk.settings');
+    $config = $this->configFactory->get('cloudinary_sdk.settings');
+    $this->cloudName = $config->get('cloudinary_sdk_cloud_name');
+    $this->apiKey = $config->get('cloudinary_sdk_api_key');
+    $this->apiSecret = $config->get('cloudinary_sdk_api_secret');
+    $configuration = [
+      'api_key' => $this->apiKey,
+      'api_secret' => $this->apiSecret,
+      'cloud_name' => $this->cloudName,
+    ];
+    $this->uploadApi = new UploadApi($configuration);
   }
 
   /**
@@ -90,22 +122,23 @@ class VactoryCloudinaryManager {
   }
 
   /**
+   * From Drupal to cloudinary.
+   */
+  public function moveToCloudinary(FileInterface $source, $destination, $resource_type) {
+    $this->uploadFile($source->getFileUri(), $resource_type);
+    $this->updateFileEntity($source, $destination);
+    if (strpos($destination, 'cloudinary://') === 0) {
+      unlink($source->getFileUri());
+    }
+  }
+
+  /**
    * Update file entity.
    */
-  public function updateFileEntity($source, $uri, $destination) {
+  public function updateFileEntity($source, $uri) {
     $file = clone $source;
     $file->setFileUri($uri);
-    // If we are renaming around an existing file (rather than a directory),
-    // use its basename for the filename.
-    if (is_file($destination)) {
-      $file->setFilename($this->fileSystem->basename($destination));
-    }
-
     $file->save();
-
-    // Inform modules that the file has been moved.
-    $this->moduleHandler->invokeAll('file_move', [$file, $source]);
-
     return $file;
   }
 
@@ -159,19 +192,28 @@ class VactoryCloudinaryManager {
    */
   public function getCloudinaryRessource($uri) {
     $public_id = $this->getPublicId($uri);
-    // Use cloudinary API to get source file content.
-    $api = new Api();
-    $cloud_name = $this->cloudinarySdkSettings->get('cloudinary_sdk_cloud_name');
-    $api_key = $this->cloudinarySdkSettings->get('cloudinary_sdk_api_key');
-    $api_secret = $this->cloudinarySdkSettings->get('cloudinary_sdk_api_secret');
-    $data = (array) $api->resource($public_id, [
-      'resource_type' => 'image',
-      'cloud_name' => $cloud_name,
-      'api_key' => $api_key,
-      'api_secret' => $api_secret,
-    ]);
-    $resource = cloudinary_stream_wrapper_resource_file_structure($data);
+    /** @var ApiResponse $response */
+    $response = $this->uploadApi->explicit($public_id, ['type' => 'upload']);
+    $resource = $response->getArrayCopy();
     return $resource;
+  }
+
+  /**
+   * Upload file to cloudinary.
+   */
+  public function uploadFile($uri, $resource_type) {
+    $options = $this->getBasicOptions($uri);
+    $options['resource_type'] = $resource_type;
+    $this->uploadApi->upload($uri, $options);
+  }
+
+  /**
+   * Cloudinary API basic option.
+   */
+  public function getBasicOptions($uri) {
+    return [
+      'public_id' => $this->getPublicId($uri),
+    ];
   }
 
 }
