@@ -1,0 +1,170 @@
+<div class="fdb-block">
+  <div class="row align-items-center justify-content-center">
+
+    {% for item in 0..1 %}
+    {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/50/50.jpg" %}
+    {% if loop.index == 2 %}
+    <div class="col-md-6 mt-4 mt-md-0">
+      {% else %}
+      <div class="col-md-6">
+        {% endif %}
+
+        <div class="fdb-box fdb-touch">
+          <div class="text-h3 mb-4">"Far far away, behind the word mountains, far from the countries Vokalia and
+            Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the
+            Semantics."
+          </div>
+          <p>
+            <img alt="Image Alt" height="50"
+                    class="rounded-circle d-inline lazyload"
+                    src="{{ content.image_placeholder }}"
+                    data-src="{{ placehold }}">
+            <strong class="ml-3">Person Name</strong>
+          </p>
+        </div>
+
+      </div>
+
+      {% endfor %}
+
+    </div>
+  </div>
+
+<div class="fdb-block">
+  <div class="d-flex align-items-center justify-content-center vf-slick-slider" 
+    data-toshow="2"
+    data-dots="false"
+    data-arrows="true"
+    data-mobile-centermode="false">
+
+    {% for item in 0..3 %}
+    {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/50/50.jpg" %}
+        <div class="fdb-box fdb-touch">
+          <div class="text-h3 mb-4">"Far far away, behind the word mountains, far from the countries Vokalia and
+            Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the
+            Semantics."
+          </div>
+          <p>
+            <img alt="Image Alt" height="50"
+                    class="rounded-circle d-inline lazyload"
+                    src="{{ content.image_placeholder }}"
+                    data-src="{{ placehold }}">
+            <strong class="ml-3">Person Name</strong>
+          </p>
+        </div>
+      {% endfor %}
+  </div>      
+</div>
+
+<div class="fdb-block">
+  <div class="d-flex align-items-center justify-content-center vf-slick-slider" 
+      data-toshow="2"
+      data-dots="false"
+      data-arrows="true"
+      data-mobile-centermode="false">
+
+      {% for item in 0..3 %}
+      {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/50/50.jpg" %}
+          <div class="fdb-box fdb-touch">
+            <div class="text-h3 mb-4">"Far far away, behind the word mountains, far from the countries Vokalia and
+              Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the
+              Semantics."
+            </div>
+            <p class='text-center'>
+              <img alt="Image Alt" height="50"
+                      class="rounded-circle d-inline lazyload"
+                      src="{{ content.image_placeholder }}"
+                      data-src="{{ placehold }}">
+              <strong class="ml-3">Person Name</strong>
+            </p>
+          </div>
+      {% endfor %}
+    </div>
+
+    
+
+  </div>
+</div>
+
+
+
+<div class="fdb-block">
+  <div class="d-flex align-items-center justify-content-center vf-slick-slider" 
+    data-toshow="2"
+    data-dots="false"
+    data-arrows="true"
+    data-mobile-centermode="false">
+
+    {% for item in 0..3 %}
+    {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/50/50.jpg" %}
+        <div class="fdb-box fdb-touch">
+          <p class='text-center'>
+            <img alt="Image Alt" height="50"
+                    class="rounded-circle d-inline lazyload"
+                    src="{{ content.image_placeholder }}"
+                    data-src="{{ placehold }}">
+            <strong class="ml-3">Person Name</strong>
+          </p>
+          <div class="text-h3 mb-4">"Far far away, behind the word mountains, far from the countries Vokalia and
+            Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the
+            Semantics."
+          </div>
+        </div>
+    {% endfor %}
+  </div>
+</div>  
+
+
+
+<div class="fdb-block">
+  <div class="d-flex align-items-center justify-content-center vf-slick-slider" 
+    data-toshow="2"
+    data-dots="false"
+    data-arrows="true"
+    data-mobile-centermode="false">
+
+    {% for item in 0..3 %}
+    {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/50/50.jpg" %}
+    <div class="fdb-box fdb-touch">
+      <p class='text-center'>
+        <img alt="Image Alt" height="50"
+                class="rounded-circle d-inline lazyload"
+                src="{{ content.image_placeholder }}"
+                data-src="{{ placehold }}">
+        <strong class="mt-3 d-block">Person Name</strong>
+      </p>
+      <div class="text-h3 mb-4">"Far far away, behind the word mountains, far from the countries Vokalia and
+        Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the
+        Semantics."
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</div> 
+
+
+<div class="fdb-block">
+  <div class="d-flex align-items-center justify-content-center vf-slick-slider" 
+    data-toshow="2"
+    data-dots="false"
+    data-arrows="true"
+    data-mobile-centermode="false">
+
+    {% for item in 0..3 %}
+    {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/50/50.jpg" %}
+      <div class="fdb-box fdb-touch">
+        <div class="text-h3 mb-4">"Far far away, behind the word mountains, far from the countries Vokalia and
+          Consonantia, there live the blind texts. Separated they live in Bookmarksgrove right at the coast of the
+          Semantics."
+        </div>
+        <p class='text-center'>
+          <img alt="Image Alt" height="50"
+                  class="rounded-circle d-inline lazyload"
+                  src="{{ content.image_placeholder }}"
+                  data-src="{{ placehold }}">
+          <strong class="mt-3 d-block">Person Name</strong>
+        </p>
+      </div>
+    {% endfor %}
+  </div>
+</div> 
