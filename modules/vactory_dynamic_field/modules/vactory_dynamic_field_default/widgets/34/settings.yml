@@ -1,19 +1,19 @@
-name: 'DF: Testimonials image, description & name'
+name: 'DF - Testimonials 2 Cols Description, Image & Name'
 multiple: TRUE
 category: 'Testimonials'
 enabled: TRUE
 fields:
   description:
-    type: textarea
+    type: text_format
     label: 'Description'
+    options:
+      '#format': 'full_html'
+      '#required': TRUE
   name:
     type: text
     label: 'Name'
     options:
       '#required': TRUE
-  role:
-    type: text
-    label: 'Role'
   image:
     type: image
     label: 'Image Profile'
@@ -26,16 +26,6 @@ extra_fields:
   intro:
     type: textarea
     label: 'Introduction'
-  mode:
+  reverse_mode:
     type: checkbox
-    label: 'Active reverse mode'
-  slideToShowTablet:
-    type: number
-    label: 'how many slide to show in tablet view'
-    options:
-      '#required': TRUE
-  slideToShowDesktop:
-    type: number
-    label: 'how many slide to show in desktop view'
-    options:
-      '#required': TRUE
+    label: 'Active mode invers'
