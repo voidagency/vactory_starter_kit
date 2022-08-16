@@ -62,7 +62,7 @@ class JsonApiGenerator {
     $parsed = [];
     foreach ($filters as $line) {
       [$name, $qsvalue] = explode("=", $line, 2);
-      $parsed[trim($name)] = urldecode(trim($qsvalue));
+      $parsed[trim($name)] = urldecode(trim(\Drupal::token()->replace($qsvalue, [])));
     }
 
     parse_str(http_build_query($parsed), $query_filters);

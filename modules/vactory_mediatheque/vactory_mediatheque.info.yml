@@ -8,5 +8,4 @@ dependencies:
   - vactory_field
   - vactory_views
   - scheduler
-  - vactory_paragraphs_bg_wrapper
 package: Vactory
