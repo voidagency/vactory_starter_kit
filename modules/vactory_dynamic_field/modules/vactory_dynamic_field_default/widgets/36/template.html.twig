@@ -1,0 +1,74 @@
+{% if dir == 'rtl' %}
+  {{ attach_library('bmci_dynamic_field/df_style1_rtl') }}
+{% else %}
+  {{ attach_library('bmci_dynamic_field/df_style1') }}
+{% endif %}
+
+{{ attach_library('core/drupal.ajax') }}
+
+{{ attach_library('bmci_dynamic_field/share-button') }}
+{{ attach_library('bmci_cablage/bmci_cablage.suivre_dossier') }}
+
+
+{% set placement_tooltip = dir == 'rtl' ? 'right' : 'left' %}
+
+
+<div class="vc-toolbox bmci-toolbox">
+  <div class="bmci-toolbox--mobile">
+    {% for item in content %}
+      {% if item.active_button > 0 and item.link.title is not empty %}
+      {% elseif item.link.url is not empty and item.icon is not empty %}
+        <a href="{{ item.link.url }}" class="bmci-toolbox--link {{item.link.attributes.class}}" id="{{item.link.attributes.id}}" aria-label="{{ item.link.title }}"
+          {% if item.link.title is not empty %}
+            data-toggle="tooltip" data-placement="{{ placement_tooltip }}" title="{{ item.link.title }}"
+          {% endif %}
+        >
+          <i class="{{ item.icon }}"></i>
+          {% if item.label is not empty %}
+            <span class="d-inline d-lg-none">{{ item.label }}</span>
+          {% elseif item.link.title is not empty %}
+            <span class="d-inline d-lg-none">{{ item.link.title }}</span>
+          {% endif %}
+        </a>
+      {% endif %}
+    {% endfor %}
+    {% if extra_fields.share > 0 %}
+    <div class="bmci-toolbox--link d-lg-fle d-none">
+      {{ vactory_render('block', 'addtoany_block') }}
+    </div>
+    <a class="bmci-toolbox--link mn-share-button d-none d-lg-none"
+       data-url="{{ page_url }}"
+       data-title="{{ page_title }}"
+       data-description="{{page_description.0.value }}">
+      <i class="icon-partager"></i>
+      <span class="d-inline d-lg-none">{{ 'Share'|t }}</span>
+    </a>
+    {% endif %}
+  </div>
+  <div class="bmci-toolbox-buttons">
+    {% for item in content %}
+      {% if item.active_button > 0 and item.link.title is not empty %}
+        <a class="use-ajax btn btn-primary bmci-toolbox--button {{item.link.attributes.class}}"
+           id="{{item.link.attributes.id}}"
+           data-dialog-type="modal"
+           data-dialog-options="{&quot;width&quot;:500,&quot;dialogClass&quot;:&quot;votre-avis-hide-title&quot;}"
+           href="{{ item.link.url }}">{{ item.link.title }}</a>
+      {% elseif item.link.url is not empty and item.icon is not empty %}
+      {% endif %}
+    {% endfor %}
+  </div>
+</div>
+
+
+{#
+  <div class="bmci-toolbox--mobile d-flex d-md-none">
+  {% for item in content %}
+    {% if item.active_button > 0 and item.link.title is not empty %}
+    {% elseif item.link.url is not empty and item.icon is not empty %}
+      <a href="{{ item.link.url }}" class="bmci-toolbox--mobile--link">
+        <i class="{{ item.icon }}"></i>
+      </a>
+    {% endif %}
+  {% endfor %}
+</div>
+#}

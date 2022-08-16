@@ -1,0 +1,28 @@
+name: 'BMCI Votre Avis'
+multiple: TRUE
+category: 'Toolbox'
+enabled: TRUE
+fields:
+  idIcon:
+    type: text
+    label: "id icon v_next"
+  icon:
+    type: select
+    label: 'icons V8'
+    options:
+      '#options':
+        - 'icon-simulateur': 'icon simulateur'
+        - 'icon-projets': 'icon projets'
+        - 'icon-aide': 'icon aide'
+        - 'icon-site': 'icon site'
+  link:
+    type: url_extended
+    label: 'Lien'
+  label:
+    type: text
+    label: 'text du lien pour mobile'
+  active_button:
+    type: checkbox
+    label: 'Afficher Avec style button'
+
+
