@@ -1,8 +1,7 @@
-name: '7 - Froala - Content Paragraphs 2 Cols'
+name: 'D29 - Content Paragraphs 2 Cols'
 multiple: TRUE
-category: 'Froala'
+category: 'Content'
 enabled: TRUE
-limit: 2
 fields:
   description:
     type: text_format
@@ -10,6 +9,11 @@ fields:
     options:
       '#format': 'full_html'
 extra_fields:
-  title:
-    type: text
-    label: 'Titre'
+  col:
+    type: select
+    label: 'Cols'
+    options:
+      '#required': TRUE
+      '#options':
+        - '2': '2 clos'
+        - '3': '3 cols'
