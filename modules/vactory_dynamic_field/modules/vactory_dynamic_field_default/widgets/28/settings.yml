@@ -1,6 +1,6 @@
-name: '57 - Froala - CTA Title & Description'
+name: 'D28 - Content with CTA'
 multiple: FALSE
-category: 'Call to action'
+category: 'Content'
 enabled: TRUE
 fields:
   title:
