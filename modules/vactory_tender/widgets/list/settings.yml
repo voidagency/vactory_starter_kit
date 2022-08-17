@@ -11,29 +11,14 @@ fields:
       '#default_value':
         resource: node--vactory_tender
         filters:
-          - fields[node--vactory_tender]=drupal_internal__nid,path,title,field_vactory_date,field_vactory_media_document,field_vactory_excerpt,field_vactory_media_file,field_vactory_reference
+          - fields[node--vactory_tender]=drupal_internal__nid,path,title,field_vactory_date,field_vactory_media_document,field_vactory_excerpt,field_vactory_media_file,field_vactory_reference,field_vactory_tags
+          - fields[taxonomy_term--tags]=tid,name
           - fields[media--file]=name,field_media_file
           - fields[file--document]=filename,uri
-          - include=field_vactory_media_document,field_vactory_media_document.field_media_file,field_vactory_media_file,field_vactory_media_file.field_media_file
+          - include=field_vactory_media_document,field_vactory_media_document.field_media_file,field_vactory_media_file,field_vactory_media_file.field_media_file,field_vactory_tags
           - page[offset]=0
           - page[limit]=9
-          - sort=-created
+          - sort[sort-vactory-date][path]=field_vactory_date
+          - sort[sort-vactory-date][direction]=DESC
           - filter[status][value]=1
         vocabularies: {}
-#  views:
-#    type: dynamic_views
-#    label: 'Views'
-#    options:
-#      '#required': TRUE
-#      '#default_value':
-#        views_id: vactory_tenders
-#        views_display_id: block_list
-#        fields:
-#          id: id
-#          uuid: key
-#          title: title
-#          url: url
-#          field_vactory_excerpt: excerpt
-#          field_vactory_reference: reference
-#          field_vactory_date: date
-#          field_vactory_media_file: invitation
