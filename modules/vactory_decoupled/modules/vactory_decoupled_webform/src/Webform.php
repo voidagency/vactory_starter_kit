@@ -89,7 +89,6 @@ class Webform
     $properties = [];
     $properties['text'] = isset($item['#submit__label']) ? $item['#submit__label'] : (isset($item['#title']) ? $item['#title'] : '');
     $properties['type'] = $item['#type'];
-    $properties['type'] = $item['#type'];
     return $properties;
   }
 
