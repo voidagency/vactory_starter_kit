@@ -5,9 +5,9 @@
   {% for item in content %}
     {% if item.active_button > 0 and item.link.title is not empty %}
     {% elseif item.link.url is not empty and item.icon is not empty %}
-      <a href="{{ item.link.url }}" class="bmci-toolbox--link" aria-label="{{ item.link.title }}">
+      <a href="{{ item.link.url }}" class="sticky-toolbox--link" aria-label="{{ item.link.title }}">
         <div>
-          <amp-img src="{{ '/themes/bmci_amp/assets/img/' ~  item.icon ~ ".png" }}" class="img" width="27" height="27"></amp-img>
+          <amp-img src="{{ '/themes/sticky_amp/assets/img/' ~  item.icon ~ ".png" }}" class="img" width="27" height="27"></amp-img>
         </div>
         {% if item.link.title is not empty %}
           <span class="d-inline d-lg-none">{{ item.label }}</span>

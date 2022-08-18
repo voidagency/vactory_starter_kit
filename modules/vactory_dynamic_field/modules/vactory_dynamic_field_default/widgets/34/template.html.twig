@@ -1,3 +1,9 @@
+{% if dir == 'rtl' %}
+    {{ attach_library('vactory_dynamic_field_default/df_default_widget_34_rtl') }}
+{% else %}
+    {{ attach_library('vactory_dynamic_field_default/df_default_widget_34') }}
+{% endif %}
+
 {% set reverse_mode = (extra_fields.reverse_mode == 1)? 'd-flex flex-column-reverse' : ' ' %}
 {% if extra_fields.intro is not empty %}
     <div class="row text-center justify-content-center mb-3">
@@ -9,7 +15,7 @@
     </div>
 {% endif %}
 <div class="fdb-block">
-    <div class="row vf-slick-slider" 
+    <div class="row vf-slick-slider"
         data-toshow="2"
         data-dots="false"
         data-arrows="true"
@@ -17,7 +23,7 @@
 
         {% for item in content %}
 
-            
+
             <div class="col-md-6">
 
             {% set image_uri =(item.image.0 is defined) ? get_image(item.image.0) : '' %}

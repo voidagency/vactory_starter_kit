@@ -1,5 +1,8 @@
-
-{{ attach_library('vactory_dynamic_field_wysiwyg_templates/widget52') }}
+{% if dir == 'rtl' %}
+  {{ attach_library('vactory_dynamic_field_default/df_default_widget_21_rtl') }}
+{% else %}
+  {{ attach_library('vactory_dynamic_field_default/df_default_widget_21') }}
+{% endif %}
 
 {# {% set is_mobile_sticky = (extra_fields.sticky == 1) ? ' is-mobile-sticky' : '' %}
 

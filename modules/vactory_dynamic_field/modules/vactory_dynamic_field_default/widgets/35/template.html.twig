@@ -1,3 +1,9 @@
+{% if dir == 'rtl' %}
+  {{ attach_library('vactory_dynamic_field_default/df_default_widget_35_rtl') }}
+{% else %}
+  {{ attach_library('vactory_dynamic_field_default/df_default_widget_35') }}
+{% endif %}
+
 {% set reverse_mode = (extra_fields.reverse_mode == 1)? 'd-flex flex-row-reverse' : ' ' %}
 {% set qoute = (extra_fields.reverse_mode == 1)? 'qoute-left' : 'qoute-right' %}
 
@@ -12,7 +18,7 @@
 {% endif %}
 <div class="fdb-block">
     <div class="container">
-        <div class="row vf-slick-slider" 
+        <div class="row vf-slick-slider"
             data-toshow="2"
             data-dots="false"
             data-arrows="true"
@@ -26,15 +32,15 @@
                 {% set image_profile = image_uri|image_style('medium') %}
                 {% set lqip_image = image_uri|image_style('lqip') %}
                 {% set alt_image = (item.image_alt) ? item.image_alt : item.image.alt_image %}
-                
+
                     <div class="fdb-box shadow-sm {{qoute}}">
                             {% if extra_fields.mode_top == 1 %}
                                 <div class="d-flex flex-column">
                                     <div class="ml-auto mr-auto w-50">
-                            {% else %}   
+                            {% else %}
                                 <div class="row {{ reverse_mode }}">
                                     <div class="col-8 col-sm-6 col-md-4">
-                            {% endif %} 
+                            {% endif %}
                                 {% if item.image.0 is not empty %}
                                     <img alt="{{ alt_image }}"
                                         class="img-fluid lazyload rounded-circle"
@@ -45,9 +51,9 @@
 
                             {% if extra_fields.mode_top == 1 %}
                                 <div class="mt-4">
-                            {% else %}   
+                            {% else %}
                                 <div class="col-md-8 mt-4 mt-md-0">
-                            {% endif %} 
+                            {% endif %}
                                 {% if item.description is not empty %}
                                     <p class="text-h3">{{ item.description }}</p>
                                 {% endif %}

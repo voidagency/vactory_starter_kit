@@ -1,0 +1,134 @@
+.toolbox-contact {
+  position: fixed;
+  top: 40%;
+  right: 0;
+  background: #007bff;
+  z-index: 1;
+}
+
+.toolbox-contact ul {
+  padding: 0;
+}
+
+.toolbox-contact li {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  color: #fff;
+}
+
+.toolbox-contact li .text {
+  color: #fff;
+  text-decoration: none;
+  text-align: center;
+  padding: 10px;
+  padding: 0.625rem;
+}
+
+.toolbox-contact li .list-itel-inner {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.toolbox-contact li .icon-wrapper {
+  padding: 5px;
+  padding: 0.3125rem;
+  -webkit-box-flex: 0;
+      -ms-flex: 0 0 0px;
+          flex: 0 0 0;
+  display: inline-table;
+}
+
+.toolbox-contact li .icon-wrapper::before {
+  font-size: 24px;
+  font-size: 1.5rem;
+}
+
+.toolbox-contact li:first-child {
+  border-bottom: 1px solid #fff;
+  border-bottom: 0.0625rem solid #fff;
+}
+
+.toolbox-contact li:last-child {
+  border-top: 1px solid #fff;
+  border-top: 0.0625rem solid #fff;
+}
+
+.toolbox-contact.description {
+  width: 233px;
+  width: 14.5625rem;
+  -webkit-transform: translateX(81%);
+      -ms-transform: translateX(81%);
+          transform: translateX(81%);
+  -webkit-transition: .3s transform;
+  -o-transition: .3s transform;
+  transition: .3s transform;
+}
+
+.toolbox-contact.description:hover {
+  -webkit-transform: translateX(0);
+      -ms-transform: translateX(0);
+          transform: translateX(0);
+}
+
+.toolbox-contact.description li .icon-wrapper {
+  padding: 20px 10px;
+  padding: 1.25rem 0.625rem;
+  background: #6c757d;
+  margin-right: 12px;
+  margin-right: 0.75rem;
+}
+
+.toolbox-contact.description li .icon-wrapper::before {
+  font-size: 24px;
+  font-size: 1.5rem;
+}
+
+.toolbox-contact.description li .text {
+  padding: 0;
+  font-size: 15px;
+  font-size: 0.9375rem;
+  line-height: 16px;
+  line-height: 1rem;
+  padding-right: 12px;
+  padding-right: 0.75rem;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  text-align: left;
+}
+
+@media (min-width: 992px) {
+  .toolbox-contact li {
+    position: relative;
+  }
+  .toolbox-contact.description li .text:after {
+    -webkit-transition: width .4s;
+    -o-transition: width .4s;
+    transition: width .4s;
+    width: 0;
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    z-index: -1;
+    background: #6c757d;
+  }
+  .toolbox-contact.description li .text:hover:after {
+    width: 100%;
+  }
+}
+
+@media only screen and (min-width: 992px) and (min-device-width: 768px) and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 1) {
+  .toolbox-contact.description li .text {
+    position: initial;
+  }
+  .toolbox-contact.description li .text:after {
+    display: none;
+  }
+}

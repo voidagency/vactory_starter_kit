@@ -1,0 +1,127 @@
+df_default_widget_20:
+  css:
+    theme:
+      ./widgets/20/assets/style.css: {}
+
+df_default_widget_20_rtl:
+  css:
+    theme:
+      ./widgets/20/assets/style-rtl.css: {}
+
+###############################################################################
+
+df_default_widget_21:
+  css:
+    theme:
+      ./widgets/21/assets/style.css: {}
+  js:
+    ./widgets/21/assets/script.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
+
+df_default_widget_21_rtl:
+  css:
+    theme:
+      ./widgets/21/assets/style-rtl.css: {}
+  js:
+    ./widgets/21/assets/script.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
+
+###############################################################################
+
+df_default_widget_22:
+  css:
+    theme:
+      ./widgets/22/assets/style.css: {}
+
+df_default_widget_22_rtl:
+  css:
+    theme:
+      ./widgets/22/assets/style-rtl.css: {}
+
+###############################################################################
+
+df_default_widget_23:
+  css:
+    theme:
+      ./widgets/23/assets/style.css: {}
+
+df_default_widget_23_rtl:
+  css:
+    theme:
+      ./widgets/23/assets/style-rtl.css: {}
+
+###############################################################################
+
+df_default_widget_24:
+  css:
+    theme:
+      ./widgets/24/assets/style.css: {}
+
+df_default_widget_24_rtl:
+  css:
+    theme:
+      ./widgets/24/assets/style-rtl.css: {}
+
+###############################################################################
+
+df_default_widget_25:
+  css:
+    theme:
+      ./widgets/25/assets/style.css: {}
+
+df_default_widget_25_rtl:
+  css:
+    theme:
+      ./widgets/25/assets/style-rtl.css: {}
+
+###############################################################################
+
+df_default_widget_33:
+  css:
+    theme:
+      ./widgets/33/assets/style.css: {}
+
+df_default_widget_33_rtl:
+  css:
+    theme:
+      ./widgets/33/assets/style-rtl.css: {}
+
+###############################################################################
+
+df_default_widget_34:
+  css:
+    theme:
+      ./widgets/34/assets/style.css: {}
+
+df_default_widget_34_rtl:
+  css:
+    theme:
+      ./widgets/34/assets/style-rtl.css: {}
+
+###############################################################################
+
+df_default_widget_35:
+  css:
+    theme:
+      ./widgets/35/assets/style.css: {}
+
+df_default_widget_35_rtl:
+  css:
+    theme:
+      ./widgets/35/assets/style-rtl.css: {}
+
+###############################################################################
+
+df_default_widget_36:
+  css:
+    theme:
+      ./widgets/36/assets/style.css: {}
+
+df_default_widget_36_rtl:
+  css:
+    theme:
+      ./widgets/36/assets/style-rtl.css: {}
