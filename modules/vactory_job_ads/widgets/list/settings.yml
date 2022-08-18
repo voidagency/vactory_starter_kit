@@ -3,25 +3,46 @@ multiple: FALSE
 category: 'Job Ads'
 enabled: TRUE
 fields:
-  views:
-    type: dynamic_views
-    label: 'Views'
+  collection:
+    type: json_api_collection
+    label: 'JSON:API'
     options:
       '#required': TRUE
       '#default_value':
-        views_id: vactory_job_ads
-        views_display_id: block_list
-        fields:
-          id: id
-          uuid: key
-          title: title
-          url: url
-          created: created
-          field_vactory_description: profileDescription
-          field_vactory_city: city
-          field_vactory_contract: contract
-          field_vactory_profession: profession
+        resource: node--vactory_job_ads
+        filters:
+        - fields[node--vactory_job_ads]=drupal_internal__nid,path,title,field_vactory_description,field_vactory_address,field_vactory_email,field_vactory_telephone,field_vactory_contract,field_vactory_profession,field_vactory_city
+        - fields[taxonomy_term--vactory_job_ads_city]=tid,name
+        - fields[taxonomy_term--vactory_job_ads_contract]=tid,name
+        - fields[taxonomy_term--vactory_job_ads_profession]=tid,name
+        - include=field_vactory_contract,field_vactory_profession,field_vactory_city
+        - page[offset]=0
+        - page[limit]=6
+        - filter[status][value]=1
         vocabularies:
           vactory_job_ads_city: vactory_job_ads_city
           vactory_job_ads_contract: vactory_job_ads_contract
           vactory_job_ads_profession: vactory_job_ads_profession
+
+#  views:
+#    type: dynamic_views
+#    label: 'Views'
+#    options:
+#      '#required': TRUE
+#      '#default_value':
+#        views_id: vactory_job_ads
+#        views_display_id: block_list
+#        fields:
+#          id: id
+#          uuid: key
+#          title: title
+#          url: url
+#          created: created
+#          field_vactory_description: profileDescription
+#          field_vactory_city: city
+#          field_vactory_contract: contract
+#          field_vactory_profession: profession
+#        vocabularies:
+#          vactory_job_ads_city: vactory_job_ads_city
+#          vactory_job_ads_contract: vactory_job_ads_contract
+#          vactory_job_ads_profession: vactory_job_ads_profession
