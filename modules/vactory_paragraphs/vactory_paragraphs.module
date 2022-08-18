@@ -78,6 +78,24 @@ function vactory_paragraphs_entity_base_field_info(EntityTypeInterface $entity_t
         'weight' => -10,
       ]);
 
+    $fields['container_spacing'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Spacing'))
+      ->setRevisionable(TRUE)
+      ->setTranslatable(TRUE)
+      //->setRequired(TRUE)
+      ->setDefaultValue('small_space')
+      ->setSetting('allowed_values', [
+        'small_space'   => 'Small space',
+        'big_space' => 'Big space',
+        'no_space' => 'No spacing',
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayOptions('form', [
+        'type'   => 'options_select',
+        'weight' => -10,
+      ]);
+
     $css_class_description = '<br> <strong> my-X  </strong> : ( marges varticles ) <br>';
     $css_class_description .= '<strong> py-X </strong> :  ( paddings verticales ) <br>';
     $css_class_description .= '<strong> NB: </strong> : A noter X peut prendre une valeur de 0 à 5 <br><br>';
@@ -182,6 +200,9 @@ function vactory_paragraphs_field_widget_form_alter(&$element, FormStateInterfac
   if (!empty($field_name) && $field_name == 'field_background_color') {
     $color = $element['color']['#default_value'];
     $element['color']['#default_value'] = isset($color) && !empty($color) && $color != '#FFFFFF' ? $color : '#FF0000';
+  }
+  if (!empty($field_name) && $field_name == 'container_spacing') {
+    $element['#default_value'] = isset($element['#default_value']) && !empty($element['#default_value']) ? $element['#default_value'] : 'small_space';
   }
   if (isset($context['form']['#entity_type']) && $context['form']['#entity_type'] == 'paragraph') {
     if (isset($element['#field_parents']) && in_array('field_vactory_paragraph_tab', $element['#field_parents'], TRUE)) {

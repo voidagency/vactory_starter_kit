@@ -28,19 +28,20 @@ third_party_settings:
         - paragraph_identifier
         - field_multi_paragraph_type
         - paragraph_container
+        - container_spacing
         - paragraph_css_class
         - group_fond
+      label: Apparence
+      region: content
       parent_name: ''
       weight: 6
       format_type: details
       format_settings:
-        id: ''
         classes: ''
-        description: ''
+        id: ''
         open: false
+        description: ''
         required_fields: true
-      label: Apparence
-      region: content
     group_fond:
       children:
         - field_background_color
@@ -48,130 +49,137 @@ third_party_settings:
         - group_positionner_l_image
         - group_display
         - paragraph_background_parallax
-      parent_name: group_apparence
-      weight: 5
-      format_type: details
-      region: content
-      format_settings:
-        id: ''
-        classes: ''
-        description: ''
-        open: false
-        required_fields: false
       label: 'Couleur/Image de Fond'
+      region: content
+      parent_name: group_apparence
+      weight: 6
+      format_type: details
+      format_settings:
+        classes: ''
+        id: ''
+        open: false
+        description: ''
+        required_fields: false
     group_display:
       children:
         - field_paragraph_hide_lg
         - field_paragraph_hide_sm
+      label: Display
+      region: content
       parent_name: group_fond
       weight: 12
       format_type: details
-      region: content
       format_settings:
-        id: ''
         classes: ''
+        id: ''
+        open: false
         description: ''
         required_fields: true
-        open: false
-      label: Display
     group_positionner_l_image:
       children:
         - field_position_image_x
         - field_position_image_y
         - field_size_image
+      label: 'Positionner l''image'
+      region: content
       parent_name: group_fond
       weight: 11
       format_type: details
-      region: content
       format_settings:
-        id: ''
         classes: ''
+        id: ''
+        open: false
         description: ''
         required_fields: true
-        open: false
-      label: 'Positionner l''image'
 id: paragraph.vactory_paragraph_multi_template.default
 targetEntityType: paragraph
 bundle: vactory_paragraph_multi_template
 mode: default
 content:
-  field_background_color:
+  container_spacing:
+    type: options_select
+    weight: 4
+    region: content
     settings: {  }
+    third_party_settings: {  }
+  field_background_color:
     type: jquery_colorpicker
     weight: 9
     region: content
-    third_party_settings: {  }
-  field_multi_paragraph_type:
-    weight: 2
     settings: {  }
     third_party_settings: {  }
+  field_multi_paragraph_type:
     type: options_buttons
+    weight: 2
     region: content
+    settings: {  }
+    third_party_settings: {  }
   field_paragraph_hide_lg:
+    type: boolean_checkbox
     weight: 8
+    region: content
     settings:
       display_label: true
     third_party_settings: {  }
-    type: boolean_checkbox
-    region: content
   field_paragraph_hide_sm:
+    type: boolean_checkbox
     weight: 10
+    region: content
     settings:
       display_label: true
     third_party_settings: {  }
-    type: boolean_checkbox
-    region: content
   field_paragraph_introduction:
+    type: string_textarea
     weight: 4
+    region: content
     settings:
       rows: 5
       placeholder: ''
     third_party_settings: {  }
-    type: string_textarea
-    region: content
   field_position_image_x:
+    type: options_select
     weight: 9
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_select
-    region: content
   field_position_image_y:
+    type: options_select
     weight: 10
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_select
-    region: content
   field_size_image:
+    type: options_select
     weight: 11
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_select
-    region: content
   field_titre_ancre:
+    type: string_textfield
     weight: 3
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_vactory_flag:
+    type: boolean_checkbox
     weight: 1
+    region: content
     settings:
       display_label: true
     third_party_settings: {  }
-    type: boolean_checkbox
-    region: content
   field_vactory_flag_2:
+    type: boolean_checkbox
     weight: 2
+    region: content
     settings:
       display_label: true
     third_party_settings: {  }
-    type: boolean_checkbox
-    region: content
   field_vactory_paragraph_tab:
     type: entity_reference_paragraphs
     weight: 5
+    region: content
     settings:
       title: Paragraphe
       title_plural: Paragraphs
@@ -180,15 +188,14 @@ content:
       form_display_mode: default
       default_paragraph_type: vactory_paragraph_tab
     third_party_settings: {  }
-    region: content
   field_vactory_title:
+    type: string_textfield
     weight: 0
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   paragraph_background_color:
     type: jquery_colorpicker
     weight: 6
@@ -205,10 +212,10 @@ content:
     third_party_settings: {  }
   paragraph_background_parallax:
     type: boolean_checkbox
-    settings:
-      display_label: true
     weight: 13
     region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   paragraph_container:
     type: options_select
@@ -218,7 +225,7 @@ content:
     third_party_settings: {  }
   paragraph_css_class:
     type: string_textfield
-    weight: 4
+    weight: 5
     region: content
     settings:
       size: 60
@@ -226,11 +233,11 @@ content:
     third_party_settings: {  }
   paragraph_identifier:
     type: string_textfield
+    weight: 1
+    region: content
     settings:
       size: 60
       placeholder: ''
-    weight: 1
-    region: content
     third_party_settings: {  }
 hidden:
   created: true
