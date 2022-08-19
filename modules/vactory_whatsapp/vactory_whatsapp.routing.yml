@@ -5,3 +5,11 @@ vactory_whatsapp.settings_form:
     _form: 'Drupal\vactory_whatsapp\Form\SettingsForm'
   requirements:
     _permission: 'administer site configuration'
+vactory_whatsapp.webhook:
+  path: '/whatsapp/webhook'
+  defaults:
+    _title: 'Whatsapp webhook'
+    _controller: '\Drupal\vactory_whatsapp\Controller\WhatsappWebhookCallback::handler'
+  requirements:
+    _permission: 'access content'
+
