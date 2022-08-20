@@ -23,9 +23,8 @@ class WhatsappWebhookCallback extends ControllerBase {
     $token = $request->query->get('hub_verify_token');
     $challenge = $request->query->get('hub_challenge');
     $content = $request->getContent();
-    $content = $this->content();
-    //if (!empty($content)) {
-      //$content = Json::decode($content);
+    if (!empty($content)) {
+      $content = Json::decode($content);
       if (isset($content['object']) && isset($content['entry']) && $content['object'] === 'whatsapp_business_account') {
         $changes = $content['entry'][0]['changes'];
         foreach ($changes as $change) {
@@ -41,7 +40,7 @@ class WhatsappWebhookCallback extends ControllerBase {
           }
         }
       }
-    //}
+    }
     if ($verify_token === $token) {
       return new Response($challenge, 200);
     }
