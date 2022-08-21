@@ -39,6 +39,7 @@ class WhatsappWebhookCallback extends ControllerBase {
             }
           }
         }
+        return new Response('', 200);
       }
     }
     if ($verify_token === $token) {

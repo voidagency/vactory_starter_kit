@@ -24,36 +24,36 @@ class WhatsappCallbackExample extends WhatsappWebhookManagerBase {
    * {@inheritDoc}
    */
   public function callback(array $change) {
-    $message = $change['value']['messages'][0]['text']['body'] ?? NULL;
-    $phone_id = $change['value']['metadata']['phone_number_id'] ?? NULL;
-    $phone_number = $change['value']['messages'][0]['from'] ?? NULL;
-    $name = $change['value']['contacts'][0]['profile']['name'] ?? 'Whatsapp user';
-    $email = $phone_number ? "$phone_number@whatsapp.dv" : "user@whatsapp.dv";
-    /** @var WhatsappApiManager $whatsapp_manager */
-    $whatsapp_manager = \Drupal::service('vactory_whatsapp.api.manager');
-    $config = \Drupal::state()->get($phone_id);
-    $isInteractif = $config['isInteractif'] ?? NULL;
-    $isContactAnswer = $config['isContactAnswer'] ?? NULL;
-    switch ($message) {
-      case strtolower(trim($message)) === "activer" && !$isContactAnswer:
-        $config = [
-          'isInteractif' => TRUE,
-          'isContactAnswer' => FALSE,
-        ];
-        \Drupal::state()->get($phone_id, $config);
-        $whatsapp_manager->sendTemplateMessage($phone_number, 'menu_list');
-        break;
-      case strtolower(trim($message)) === "news" && !$isContactAnswer:
-        if ($isInteractif) {
-          $whatsapp_manager->sendTemplateMessage($phone_number, 'news_listing');
-        }
-        break;
-      case strtolower(trim($message)) === "account" && !$isContactAnswer:
-        if ($isInteractif) {
-          if ($phone_number) {
+    if (isset($change['value']['messages'])) {
+      $message = $change['value']['messages'][0]['text']['body'] ?? NULL;
+      $phone_id = $change['value']['metadata']['phone_number_id'] ?? NULL;
+      $phone_number = $change['value']['messages'][0]['from'] ?? NULL;
+      $name = $change['value']['contacts'][0]['profile']['name'] ?? 'Whatsapp user';
+      $email = $phone_number ? "$phone_number@whatsapp.dv" : "user@whatsapp.dv";
+      /** @var WhatsappApiManager $whatsapp_manager */
+      $whatsapp_manager = \Drupal::service('vactory_whatsapp.api.manager');
+      $config = \Drupal::state()->get($phone_id);
+      $isInteractif = $config['isInteractif'] ?? FALSE;
+      $isContactAnswer = $config['isContactAnswer'] ?? FALSE;
+      switch ($message) {
+        case strtolower(trim($message, '*')) === "activer" && !$isContactAnswer:
+          $config = [
+            'isInteractif' => TRUE,
+            'isContactAnswer' => FALSE,
+          ];
+          \Drupal::state()->set($phone_id, $config);
+          $whatsapp_manager->sendTemplateMessage($phone_number, 'menu_list', [], 'fr');
+          break;
+        case strtolower(trim($message, '*')) === "news" && !$isContactAnswer:
+          if ($isInteractif) {
+            $whatsapp_manager->sendTemplateMessage($phone_number, 'news_listing', [], 'fr');
+          }
+          break;
+        case strtolower(trim($message, '*')) === "account" && !$isContactAnswer:
+          if ($isInteractif && $phone_number) {
             $phone_number_a = $phone_number;
             $phone_number_b = $phone_number;
-            if (str_starts_with($phone_number, '212')) {
+            if (strpos($phone_number, '212') === 0) {
               $phone_number_b = "+$phone_number";
               $num = substr_replace($phone_number, '', 0, 3);
               $phone_number_a = "0$num";
@@ -81,43 +81,44 @@ class WhatsappCallbackExample extends WhatsappWebhookManagerBase {
                 ],
               ];
               if (!$blocked) {
-                $whatsapp_manager->sendTemplateMessage($phone_number, 'account_check', $status);
+                $whatsapp_manager->sendTemplateMessage($phone_number, 'account_check', $status, 'fr');
               }
               if ($blocked) {
                 $status[0]['parameters'][0]['text'] = 'Bloqué';
-                $whatsapp_manager->sendTemplateMessage($phone_number, 'account_check', $status);
+                $whatsapp_manager->sendTemplateMessage($phone_number, 'account_check', $status, 'fr');
               }
-            }
-            else {
-              $whatsapp_manager->sendTemplateMessage($phone_number, 'account_missed');
+            } else {
+              $whatsapp_manager->sendTemplateMessage($phone_number, 'account_missed', [], 'fr');
             }
           }
-        }
-        break;
-      case strtolower(trim($message)) === "contact":
-        if ($isInteractif) {
-          if (!$isContactAnswer) {
-            $whatsapp_manager->sendTemplateMessage($phone_number, 'contact_message');
-            $config = [
-              'isInteractif' => TRUE,
-              'isContactAnswer' => TRUE,
-            ];
-            \Drupal::state()->set($phone_id, $config);
+          break;
+        case strtolower(trim($message, '*')) === "contact":
+          if ($isInteractif) {
+            if (!$isContactAnswer) {
+              $whatsapp_manager->sendTemplateMessage($phone_number, 'contact_message', [], 'fr');
+              $config = [
+                'isInteractif' => TRUE,
+                'isContactAnswer' => TRUE,
+              ];
+              \Drupal::state()->set($phone_id, $config);
+            }
           }
-        }
-        break;
-      case strtolower(trim($message)) === "menu":
-        if ($isInteractif) {
-          $whatsapp_manager->sendTemplateMessage($phone_number, 'menu_list');
-        }
-        break;
-      case strtolower(trim($message)) === "quitter":
-        \Drupal::state()->set($phone_id, FALSE);
-        break;
-      default:
-        if ($isInteractif) {
+          break;
+        case strtolower(trim($message, '*')) === "menu":
+          if ($isInteractif) {
+            $whatsapp_manager->sendTemplateMessage($phone_number, 'menu_list', [], 'fr');
+          }
+          break;
+        case strtolower(trim($message, '*')) === "quitter":
+          $config = [
+            'isInteractif' => FALSE,
+            'isContactAnswer' => FALSE,
+          ];
+          \Drupal::state()->set($phone_id, $config);
+          break;
+        case !empty($message) && $isInteractif:
           if (!$isContactAnswer) {
-            $whatsapp_manager->sendTemplateMessage($phone_number, 'default_enable');
+            $whatsapp_manager->sendTemplateMessage($phone_number, 'default_enable', [], 'fr');
           }
           if ($isContactAnswer) {
             $this->createWebformSubmission($phone_number, $name, $email, $message, $whatsapp_manager);
@@ -127,7 +128,8 @@ class WhatsappCallbackExample extends WhatsappWebhookManagerBase {
             ];
             \Drupal::state()->set($phone_id, $config);
           }
-        }
+          break;
+      }
     }
   }
 
@@ -160,12 +162,12 @@ class WhatsappCallbackExample extends WhatsappWebhookManagerBase {
           ],
         ],
       ];
-      $whatsapp_manager->sendTemplateMessage($phone_number, 'contact_confirmation', $recieved_msg);
+      $whatsapp_manager->sendTemplateMessage($phone_number, 'contact_confirmation', $recieved_msg, 'fr');
     }
     else {
       $message = 'Oups! je suis vraiment désolé car les soumissions de formulaire de contact sont clôturées';
       $whatsapp_manager->sendTextMessage($phone_number, $message);
-      $whatsapp_manager->sendTemplateMessage($phone_number, 'menu');
+      $whatsapp_manager->sendTemplateMessage($phone_number, 'menu', [], 'fr');
     }
   }
 
