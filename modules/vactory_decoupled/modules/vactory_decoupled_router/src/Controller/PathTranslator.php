@@ -183,6 +183,7 @@ class PathTranslator extends ControllerBase
 
     $output['jsonapi'] = [
       'individual' => $individual->getGeneratedUrl(),
+      'resourceName' => $type_name,
     ];
 
     return $output;
