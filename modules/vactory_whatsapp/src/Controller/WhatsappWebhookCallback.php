@@ -23,6 +23,8 @@ class WhatsappWebhookCallback extends ControllerBase {
     $token = $request->query->get('hub_verify_token');
     $challenge = $request->query->get('hub_challenge');
     $content = $request->getContent();
+    $config = \Drupal::config('vactory_whatsapp.settings');
+    $whatsapp_webhook_plugins = $config->get('whatsapp_webhook_plugins');
     if (!empty($content)) {
       $content = Json::decode($content);
       if (isset($content['object']) && isset($content['entry']) && $content['object'] === 'whatsapp_business_account') {
@@ -33,7 +35,8 @@ class WhatsappWebhookCallback extends ControllerBase {
           $whatsapp_webhook_manager = \Drupal::service('plugin.manager.vactory_whatsapp_webhook');
           $definitions = $whatsapp_webhook_manager->getDefinitionsByField($field);
           foreach ($definitions as $definition) {
-            if (isset($definition['class']) && class_exists($definition['class'])) {
+            $enabled = $whatsapp_webhook_plugins[$definition['id']]['enable'] ?? FALSE;
+            if ($enabled && $whatsapp_webhook_plugins[$definition['id']]['enable'] && isset($definition['class']) && class_exists($definition['class'])) {
               $instance = $whatsapp_webhook_manager->createInstance($definition['id']);
               $instance->callback($change);
             }
@@ -49,6 +52,7 @@ class WhatsappWebhookCallback extends ControllerBase {
   }
 
   public function content() {
+    // Example of whatsapp business response for message field.
     return [
       'object' => 'whatsapp_business_account',
       'entry' => [

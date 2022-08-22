@@ -29,19 +29,26 @@ class SettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $config = $this->config('vactory_whatsapp.settings');
-    $token = $config->get('token');
-    $business_accound_id = $config->get('business_accound_id');
     $options = [$this->t('No template has been found')];
+    $state = \Drupal::state();
+    $token = $state->get('vactory_whatsapp_token', '');
+    $template_id = $state->get('vactory_whatsapp_template_id', '');
+    $phone_num_id = $state->get('vactory_whatsapp_phone_num_id', '');
+    $business_accound_id = $state->get('vactory_whatsapp_business_accound_id', '');
     if (!empty($token) && !empty($business_accound_id)) {
       $uri = "https://graph.facebook.com/v14.0/${business_accound_id}/message_templates?access_token=${token}";
-      $client = \Drupal::httpClient()->get($uri);
-      $response = Json::decode($client->getBody()->getContents());
-      if (isset($response['data'])) {
-        $options = [];
-        foreach ($response['data'] as $template) {
-          $options[$template['name']] = "${template['name']} (${template['status']})";
+      try {
+        $client = \Drupal::httpClient()->get($uri);
+        $response = Json::decode($client->getBody()->getContents());
+        if (isset($response['data'])) {
+          $options = [];
+          foreach ($response['data'] as $template) {
+            $options[$template['name']] = "${template['name']} (${template['status']})";
+          }
         }
+      }
+      catch (\Exception $e) {
+        \Drupal::messenger()->addError($e->getMessage());
       }
     }
 
@@ -51,21 +58,21 @@ class SettingsForm extends ConfigFormBase {
     $form['token'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Whatsapp business API permanent token'),
-      '#default_value' => $config->get('token'),
+      '#default_value' => $token,
       '#maxlength' => 255,
       '#required' => TRUE,
     ];
     $form['phone_num_id'] = [
       '#type' => 'textfield',
       '#title' => $this->t('From Phone number ID'),
-      '#default_value' => $config->get('phone_num_id'),
+      '#default_value' => $phone_num_id,
       '#required' => TRUE,
       '#description' => 'Please visit your whatsapp business account to get the Phone num id on https://developers.facebook.com/apps/{APP_ID}/whatsapp-business/wa-dev-console'
     ];
     $form['business_accound_id'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Whatsapp business account ID'),
-      '#default_value' => $config->get('business_accound_id'),
+      '#default_value' => $business_accound_id,
       '#required' => TRUE,
       '#description' => 'Please visit your whatsapp business account to get the Business account id on https://developers.facebook.com/apps/{APP_ID}/whatsapp-business/wa-dev-console'
     ];
@@ -73,7 +80,7 @@ class SettingsForm extends ConfigFormBase {
       '#type' => 'select',
       '#title' => $this->t('Default template ID'),
       '#options' => $options,
-      '#default_value' => $config->get('template_id'),
+      '#default_value' => $template_id,
     ];
     return parent::buildForm($form, $form_state);
   }
@@ -82,12 +89,11 @@ class SettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $this->config('vactory_whatsapp.settings')
-      ->set('token', $form_state->getValue('token'))
-      ->set('template_id', $form_state->getValue('template_id'))
-      ->set('phone_num_id', $form_state->getValue('phone_num_id'))
-      ->set('business_accound_id', $form_state->getValue('business_accound_id'))
-      ->save();
+    $state = \Drupal::state();
+    $state->set('vactory_whatsapp_token', $form_state->getValue('token'));
+    $state->set('vactory_whatsapp_template_id', $form_state->getValue('template_id'));
+    $state->set('vactory_whatsapp_phone_num_id', $form_state->getValue('phone_num_id'));
+    $state->set('vactory_whatsapp_business_accound_id', $form_state->getValue('business_accound_id'));
     parent::submitForm($form, $form_state);
   }
 

@@ -1,12 +1,11 @@
 <?php
 
-namespace Drupal\vactory_whatsapp_example\Plugin\WhatsappWebhookCallback;
+namespace Drupal\vactory_whatsapp\Plugin\WhatsappWebhookCallback;
 
 use Drupal\user\UserInterface;
 use Drupal\vactory_whatsapp\WhatsappApiManager;
 use Drupal\vactory_whatsapp\WhatsappWebhookManagerBase;
 use Drupal\webform\Entity\Webform;
-use Drupal\webform\Entity\WebformSubmission;
 use Drupal\webform\WebformSubmissionForm;
 
 /**
