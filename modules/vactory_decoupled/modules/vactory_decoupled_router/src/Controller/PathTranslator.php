@@ -98,13 +98,13 @@ class PathTranslator extends ControllerBase
     $output = [];
     $info = NULL;
     try {
-      // Drupal routes.
-      $match_info = $this->router->match($path);
+      // System routes.
+      $info = $this->getRouteFromRequest($request);
+      $match_info = $this->router->match($info['path']);
     } catch (\Exception $exception) {
       try {
-        // System routes.
-        $info = $this->getRouteFromRequest($request);
-        $match_info = $this->router->match($info['path']);
+        // Drupal routes.
+        $match_info = $this->router->match($path);
       } catch (\Exception $e) {
         $this->response->setStatusCode(404);
         $output['message'] = "Not route found for $path";

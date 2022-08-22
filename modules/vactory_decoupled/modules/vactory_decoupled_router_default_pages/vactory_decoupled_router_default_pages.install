@@ -16,7 +16,7 @@ function _get_vactory_decoupled_router_default_pages() {
             'title' => 'Error Page',
         ],
         'account' => [
-            'path' => '/account/me',
+            'path' => '/account',
             'title' => 'Account',
         ],
         'account_login' => [
