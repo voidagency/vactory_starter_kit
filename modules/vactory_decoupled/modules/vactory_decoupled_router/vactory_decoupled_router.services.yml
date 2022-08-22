@@ -1,0 +1,4 @@
+services:
+  logger.channel.vactory_decoupled_router:
+      parent: logger.channel_base
+      arguments: ['vactory_decoupled_router']

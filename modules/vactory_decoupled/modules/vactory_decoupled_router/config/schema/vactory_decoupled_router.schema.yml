@@ -1,0 +1,16 @@
+vactory_decoupled_router.vactory_route.*:
+  type: config_entity
+  label: 'Route config'
+  mapping:
+    id:
+      type: string
+      label: 'ID'
+    label:
+      type: label
+      label: 'Label'
+    path:
+      type: string
+      label: 'Path'
+    alias:
+      type: string
+      label: 'Alias'
