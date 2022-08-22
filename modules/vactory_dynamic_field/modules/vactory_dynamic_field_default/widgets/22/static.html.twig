@@ -1,8 +1,14 @@
+{% if dir == 'rtl' %}
+    {{ attach_library('vactory_dynamic_field_default/df_default_widget_22_rtl') }}
+{% else %}
+    {{ attach_library('vactory_dynamic_field_default/df_default_widget_22') }}
+{% endif %}
+
 <div class="testimonial-grid my-5 p-1">
   <p class="mx-auto mb-5">Lorem ipsum dolor sit amet, consectetur adipisicing elit.
     Fugit, error amet numquam iure provident voluptate esse quasi, veritatis totam voluptas nostrum quisquam
     eum porro a pariatur veniam.</p>
-    <div class="row vf-slick-slider" 
+    <div class="row vf-slick-slider"
         data-toshow="3"
         data-dots="false"
         data-arrows="true"
@@ -31,7 +37,7 @@
   <p class="mx-auto mb-5 text-center">Lorem ipsum dolor sit amet, consectetur adipisicing elit.
     Fugit, error amet numquam iure provident voluptate esse quasi, veritatis totam voluptas nostrum quisquam
     eum porro a pariatur veniam.</p>
-    <div class="row vf-slick-slider" 
+    <div class="row vf-slick-slider"
         data-toshow="3"
         data-dots="false"
         data-arrows="true"

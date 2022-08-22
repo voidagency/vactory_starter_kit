@@ -1,3 +1,9 @@
+{% if dir == 'rtl' %}
+    {{ attach_library('vactory_dynamic_field_default/df_default_widget_20_rtl') }}
+{% else %}
+    {{ attach_library('vactory_dynamic_field_default/df_default_widget_20') }}
+{% endif %}
+
 {% set toolbox_mode = (extra_fields.mode == 1)? 'toolbox-contact description' : 'toolbox-contact' %}
 
 <div class='{{ toolbox_mode }}'>
@@ -10,11 +16,11 @@
             {% set link_attributes = item.link.attributes.rel is not empty ? link_attributes.setAttribute('rel', item.link.attributes.rel ) : link_attributes %}
             <li class="d-block">
                 <div class="list-itel-inner">
-                    <a href="{{ item.link.url }}" {{ link_attributes }} > 
+                    <a href="{{ item.link.url }}" {{ link_attributes }} >
                         <span class="{{ item.icon }} icon-wrapper"></span>
                         <p>
                             {{ item.description }}
-                        </p>    
+                        </p>
                     </a>
                 </div>
             </li>
