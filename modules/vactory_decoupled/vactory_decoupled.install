@@ -52,3 +52,19 @@ function vactory_decoupled_update_9002()
   \Drupal::entityDefinitionUpdateManager()
     ->installFieldStorageDefinition('internal_extra', 'node', 'node', $storage_definition);
 }
+
+/**
+ * Add internal machine name field.
+ */
+function vactory_decoupled_update_9003()
+{
+  $storage_definition = BaseFieldDefinition::create('string')
+    ->setLabel(t('Machine name'))
+    ->setDescription(t('Machine name for internal use.'))
+    ->setTranslatable(FALSE)
+    ->setRevisionable(FALSE)
+    ->setDisplayConfigurable('form', TRUE);
+
+  \Drupal::entityDefinitionUpdateManager()
+    ->installFieldStorageDefinition('machine_name', 'node', 'node', $storage_definition);
+}
