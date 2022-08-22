@@ -1,44 +1,52 @@
-{% set link_attributes = create_attribute() %}
-{% set link_attributes = content.0.link.attributes.id is not empty ? link_attributes.setAttribute('id', content.0.link.attributes.id ) : link_attributes %}
-{% set link_attributes = content.0.link.attributes.class is not empty ? link_attributes.setAttribute('class', content.0.link.attributes.class ) : link_attributes %}
-{% set link_attributes = content.0.link.attributes.target is not empty ? link_attributes.setAttribute('target', content.0.link.attributes.target ) : link_attributes %}
-{% set link_attributes = content.0.link.attributes.rel is not empty ? link_attributes.setAttribute('rel', content.0.link.attributes.rel ) : link_attributes %}
 
-<div class="fdb-block">
-    <div class="container">
-                {% if  extra_fields.title is not empty %}
-                <div class="row text-center">
-                  <div class="col">
-                     <h2 class="text-light">{{ extra_fields.title }}</h2>
-                  </div>
-                </div>
-                {% endif %}
-        <div class="row text-center justify-content-sm-center no-gutters">
-            {% for item in content %}
-
-                {% if loop.index >= 2 %}
-                    <div class="col-12 col-sm-10 col-md-8 col-lg-7 col-xl-3 m-auto pt-5 pt-xl-0">
-                {% else %}
-                    <div class="col-12 col-sm-10 col-md-8 col-lg-7 col-xl-3 m-auto">
-                {% endif %}
-
-                    <div class="fdb-box fdb-touch">
-                        {% if  item.title is not empty %}
-                            <h2>{{ item.title }}</h2>
-                        {% endif %}
-                        {% if  item.description is not empty %}
-                            <p>{{ item.description }}</p>
-                        {% endif %}
-                        {% if  content.0.link.url is not empty and content.0.link.title is not empty %}
-                             <p class="mt-4">
-                                <a  href="{{ content.0.link.url }}" {{ link_attributes }} > {{ content.0.link.title }} </a>
-                            </p>
-                        {% endif %}
-                    </div>
-
-                </div>
-
-            {% endfor %}
-        </div>
+{% if  extra_fields.intro is not empty %}
+    <div class="text-center">
+        {{ extra_fields.intro }}
     </div>
+{% endif %}
+<div class="row text-center justify-content-sm-center pt-5">
+    {% for item in content %}
+        {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : '' %}
+        {% set profile_image = image_uri|image_style('medium') %}
+        {% set lqip_image = image_uri|image_style('lqip') %}
+        {% set alt_image = (item.image_alt) ? item.image_alt : item.image.alt_image %}
+        <div class="col-12 col-lg-4 m-auto shadow mt-5 px-4 pb-4">
+            {% if  item.image.0 is not empty %}
+                <img alt="{{ alt_image }}"
+                    class="lazyload img-fluid rounded-circle w-50 mt-n5"
+                    src="{{ lqip_image }}"
+                    data-src="{{ profile_image }}">
+            {% endif %}
+            {% if  item.name is not empty %}
+                <h5>{{ item.name }}</h5>
+            {% endif %}
+            {% if  item.role is not empty %}
+                <h6>{{ item.role }}</h6>
+            {% endif %}
+            {% if  item.linkedin is not empty %}
+                <a href='{{ item.linkedin  }}' target='_blank' class='icon icon-linkedin'></a>
+            {% endif %}
+            {% if  item.twitter is not empty %}
+                <a href='{{ item.twitter  }}' target='_blank' class='icon icon-twitter'></a>
+            {% endif %}
+            {% if  item.youtube is not empty %}
+                <a href='{{ item.youtube  }}' target='_blank' class='icon icon-youtube'></a>
+            {% endif %}
+        </div>
+
+    {% endfor %}
 </div>
+
+{% if extra_fields.btn_more is not empty %}
+
+{% set moreLink_attributes = create_attribute() %}
+{% set moreLink_attributes = extra_fields.btn_more.attributes.id is not empty ? moreLink_attributes.setAttribute('id', extra_fields.btn_more.attributes.id ) : moreLink_attributes %}
+{% set moreLink_attributes = extra_fields.btn_more.attributes.target is not empty ? moreLink_attributes.setAttribute('target', extra_fields.btn_more.attributes.target ) : moreLink_attributes %}
+{% set moreLink_attributes = extra_fields.btn_more.attributes.target is not empty ? moreLink_attributes.setAttribute('class', extra_fields.btn_more.attributes.class ~ 'btn btn-primary')  : moreLink_attributes.setAttribute('class','btn btn-primary') %}
+{% set moreLink_attributes = extra_fields.btn_more.attributes.rel is not empty ? moreLink_attributes.setAttribute('rel', extra_fields.btn_more.attributes.rel ) : moreLink_attributes %}
+  <div class="text-center mt-4">
+    <a href="{{  extra_fields.btn_more.url }}"  {{ moreLink_attributes }}>
+      {{ extra_fields.btn_more.title }}
+    </a>
+  </div>
+{% endif %}

@@ -1,0 +1,47 @@
+.box {
+  background: #fff;
+  -webkit-transition: all 0.2s ease;
+  -o-transition: all 0.2s ease;
+  transition: all 0.2s ease;
+  border: 2px dashed #dadada;
+  border: 0.125rem dashed #dadada;
+  margin-top: 10px;
+  margin-top: 0.625rem;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+  border-radius: 5px;
+  border-radius: 0.3125rem;
+  background-clip: padding-box;
+  padding: 0 20px 20px 20px;
+  padding: 0 1.25rem 1.25rem 1.25rem;
+  min-height: 340px;
+  min-height: 21.25rem;
+}
+
+.box .box-title {
+  color: #fff;
+  font-size: 24px;
+  font-size: 1.5rem;
+  font-weight: 300;
+  text-transform: uppercase;
+}
+
+.box .box-content {
+  padding: 16px;
+  padding: 1rem;
+  border-radius: 0 0 2px 2px;
+  border-radius: 0 0 0.125rem 0.125rem;
+  background-clip: padding-box;
+  -webkit-box-sizing: border-box;
+          box-sizing: border-box;
+}
+
+.box .box-content p {
+  color: #515c66;
+  text-transform: none;
+}
+
+.box:hover {
+  border: 2px solid #525c7a;
+  border: 0.125rem solid #525c7a;
+}

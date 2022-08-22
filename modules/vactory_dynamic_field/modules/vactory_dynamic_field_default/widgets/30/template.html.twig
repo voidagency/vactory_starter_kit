@@ -15,14 +15,24 @@
                 {% endif %}
         <div class="row text-center justify-content-sm-center no-gutters">
             {% for item in content %}
+                {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : '' %}
+                {% set profile_image = image_uri|image_style('medium') %}
+                {% set lqip_image = image_uri|image_style('lqip') %}
+                {% set alt_image = (item.image_alt) ? item.image_alt : item.image.alt_image %}
 
                 {% if loop.index >= 2 %}
-                    <div class="col-12 col-sm-10 col-md-8 col-lg-7 col-xl-3 m-auto pt-5 pt-xl-0">
+                    <div class="col-12 col-sm-10 col-md-8 col-lg-7 col-xl-4 m-auto pt-5 pt-xl-0">
                 {% else %}
-                    <div class="col-12 col-sm-10 col-md-8 col-lg-7 col-xl-3 m-auto">
+                    <div class="col-12 col-sm-10 col-md-8 col-lg-7 col-xl-4 m-auto">
                 {% endif %}
 
                     <div class="fdb-box fdb-touch">
+                        {% if  item.image.0 is not empty %}
+                            <img alt="{{ alt_image }}"
+                                class="lazyload img-fluid rounded-circle w-50"
+                                src="{{ lqip_image }}"
+                                data-src="{{ profile_image }}">
+                        {% endif %}
                         {% if  item.title is not empty %}
                             <h2>{{ item.title }}</h2>
                         {% endif %}
