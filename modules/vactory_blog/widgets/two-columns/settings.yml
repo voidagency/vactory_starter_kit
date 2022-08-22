@@ -11,22 +11,24 @@ fields:
     label: 'Description'
     options:
       '#format': 'basic_html'
-  views:
-    type: dynamic_views
-    label: 'Views'
+  collection:
+    type: json_api_collection
+    label: 'JSON:API'
     options:
       '#required': TRUE
       '#default_value':
-        views_id: vactory_blog
-        views_display_id: block_two_columns
-        fields:
-          id: id
-          uuid: key
-          title: title
-          url: url
-          field_vactory_excerpt: excerpt
-          field_blog_category: category
-          field_vactory_media: image
+        resource: node--vactory_blog
+        filters:
+          - fields[node--vactory_blog]=drupal_internal__nid,path,title,field_blog_category,field_vactory_excerpt,field_blog_tags,field_vactory_media
+          - fields[taxonomy_term--vactory_blog_categories]=tid,name
+          - fields[taxonomy_term--vactory_blog_tags]=tid,name
+          - fields[media--image]=name,thumbnail
+          - fields[file--image]=filename,uri
+          - include=field_blog_category,field_blog_tags,field_vactory_media,field_vactory_media.thumbnail
+          - page[offset]=0
+          - page[limit]=2
+          - sort=-created
+          - filter[status][value]=1
   link:
     type: url_extended
     label: 'Lien'
