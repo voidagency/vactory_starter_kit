@@ -1,0 +1,44 @@
+vactory_decoupled_router.path_translation:
+  path: '/api/router'
+  defaults:
+    _title: 'Translates an incoming path into a formatted response.'
+    _controller: '\Drupal\vactory_decoupled_router\Controller\PathTranslator::translate'
+  methods: [GET]
+  # options:
+  #   _auth: ['basic_auth', 'cookie', 'oauth2']
+  requirements:
+    _permission: 'access content'
+    _format: json
+
+
+entity.vactory_route.collection:
+  path: '/admin/config/system/vactory_router'
+  defaults:
+    _entity_list: 'vactory_route'
+    _title: 'Routes configuration'
+  requirements:
+    _permission: 'administer site configuration'
+
+entity.vactory_route.add_form:
+  path: '/admin/config/system/vactory_router/add'
+  defaults:
+    _entity_form: 'vactory_route.add'
+    _title: 'Add Route'
+  requirements:
+    _permission: 'administer site configuration'
+
+entity.vactory_route.edit_form:
+  path: '/admin/config/system/vactory_router/{vactory_route}'
+  defaults:
+    _entity_form: 'vactory_route.edit'
+    _title: 'Edit Route'
+  requirements:
+    _permission: 'administer site configuration'
+
+entity.vactory_route.delete_form:
+  path: '/admin/config/system/vactory_router/{vactory_route}/delete'
+  defaults:
+    _entity_form: 'vactory_route.delete'
+    _title: 'Delete Route'
+  requirements:
+    _permission: 'administer site configuration'

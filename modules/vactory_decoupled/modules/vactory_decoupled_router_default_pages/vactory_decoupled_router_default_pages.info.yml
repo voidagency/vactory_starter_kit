@@ -1,0 +1,9 @@
+name: Vactory Decoupled Router Default Pages
+description: 'Create pages and routes.'
+type: module
+core_version_requirement: '^8.9 || ^9'
+dependencies:
+  - vactory_decoupled_router
+version: 8.x-1.0
+package: Vactory
+core_incompatible: false
