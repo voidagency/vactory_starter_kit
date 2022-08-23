@@ -19,7 +19,13 @@ class WhatsappWebhookSettings extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = \Drupal::config('vactory_whatsapp.settings');
     $whatsapp_webhooks_plugins = $config->get('whatsapp_webhook_plugins');
+    $state = \Drupal::state();
     $form = parent::buildForm($form, $form_state);
+    $form['webhook_token'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Webhook token'),
+      '#default_value' => $state->get('vactory_whatsapp_webhook_token', 'vactory'),
+    ];
     $form['whatsapp_webhook_plugins'] = [
       '#type' => 'table',
       '#header' => [
@@ -51,5 +57,7 @@ class WhatsappWebhookSettings extends ConfigFormBase {
     $config = \Drupal::configFactory()->getEditable('vactory_whatsapp.settings');
     $config->set('whatsapp_webhook_plugins', $form_state->getValue('whatsapp_webhook_plugins'))
       ->save();
+    $state = \Drupal::state();
+    $state->set('vactory_whatsapp_webhook_token', $form_state->getValue('webhook_token'));
   }
 }
