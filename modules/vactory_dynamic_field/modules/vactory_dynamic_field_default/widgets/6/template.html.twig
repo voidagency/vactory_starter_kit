@@ -1,47 +1,50 @@
-<div class="t-3cols-image-title-text-permalinks">
-  <div class="row vf-slick-slider vf-slick-mobile slick-padding justify-content-lg-center slick-arrows-mobile"
-       data-arrows="true"
-       data-mobile-arrows="true"
-  >
+{% set classes = (extra_fields.slider == 1 ) ? 'vf-slick-slider' : 'justify-content-lg-center' %}
+{% if extra_fields.intro is not empty %}
+  <div class='mb-3 text-center'> {{ extra_fields.intro }} </div>
+{% endif %}
+<div class="shadow-sm p-3">
+  <div class="row {{classes}}"
+        data-toshow="1"
+        data-dots="false"
+        data-arrows="true"
+        data-mobile-centermode="false">
     {% for item in content %}
       {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : "" %}
       {% set lqip_image = image_uri|image_style('lqip') %}
       {% set fluid_image = file_url(image_uri) %}
       {% set _imgVideo = (item.video is not empty) ? 'js-img-video' : null %}
-      {% set imageAlt = (content.0.image_alt) ? content.0.image_alt : content.0.image.alt_image %}
+      {% set imageAlt = (item.image_alt) ? item.image_alt : item.image.alt_image %}
       {% set link_target = (item.link_target > 0) ? '_blank' : '_self' %}
-      {% set lazyClass = (item.video is empty and item.link is empty) ? 'lazy-wrapper' : '' %}
 
       {% set link_attributes = create_attribute() %}
-      {% set link_attributes = item.link.attributes.id is not empty ? link_attributes.setAttribute('id', item.link.attributes.id ) : link.attributes %}
-      {% set link_attributes = item.link.attributes.target is not empty ? link_attributes.setAttribute('target', item.link.attributes.target ) : link.attributes %}
-      {% set link_attributes = item.link.attributes.rel is not empty ? link_attributes.setAttribute('rel', item.link.attributes.rel ) : link.attributes %}
-
-      <div class="col-md-4 {{ _imgVideo }}">
-        <div class="t-block-image-description">
-          <div class="t-3b-image block-image {{ lazyClass }}">
+      {% set link_attributes = item.link.attributes.id is not empty ? link_attributes.setAttribute('id', item.link.attributes.id ) : link_attributes %}
+      {% set link_attributes = item.link.attributes.target is not empty ? link_attributes.setAttribute('target', item.link.attributes.target ) : link_attributes %}
+      {% set link_attributes = item.link.attributes.rel is not empty ? link_attributes.setAttribute('rel', item.link.attributes.rel ) : link_attributes %}
+      {% set link_attributes = item.link.attributes.class is not empty ? link_attributes.setAttribute('class', item.link.attributes.class ) : link_attributes %}
+      <div class="col-12">
+        <div class="row">
+          <div class="col-12 col-md-4 {{ _imgVideo }}">
             {% if item.video is not empty %}
-              <a class="image-scale lazy-wrapper" data-fancybox href="{{ "https://www.youtube-nocookie.com/embed/" ~ item.video }}">
+              <a data-fancybox href="{{ item.video }}">
             {% elseif  item.link.url is not empty %}
-                {% set link_attributes = item.link.attributes.class is not empty ? link_attributes.setAttribute('class', item.link.attributes.class ~ ' image-scale lazy-wrapper' ) : link_attributes.setAttribute('class','image-scale lazy-wrapper' ) %}
                 <a href="{{  item.link.url }}"  {{ link_attributes }}>
             {% endif %}
+              <div class='lazy-wrapper'>
                 <img data-src="{{ fluid_image }}"
                      src="{{ lqip_image }}"
                      class="img-fluid lazyload"
                      alt="{{ imageAlt }}">
+              </div>
                   {% if item.video is not empty or item.link is not empty %} </a>{% endif %}
           </div>
-          <div class="t-3cols-description">
+          <div class="col-12 col-md-8">
             {% if item.title is not empty %}
               <h3 class="h4">{{ item.title }}</h3>
             {% endif %}
             {% if item.description is not empty %}
               <p>{{ item.description }}</p>
             {% endif %}
-            {% if item.video is not empty %}
-              <a class="permalink" data-fancybox href="{{ "https://www.youtube-nocookie.com/embed/" ~ item.video }}">{{ 'Voir la video' | t }}</a>
-            {% elseif item.link.url is not empty and item.link.title is not empty %}
+            {% if item.link.url is not empty and item.link.title is not empty %}
               {% set link_attributes = item.link.attributes.class is not empty ? link_attributes.setAttribute('class', item.link.attributes.class ~ ' permalink' ) : link_attributes.setAttribute('class','permalink' ) %}
               <a href="{{  item.link.url }}"  {{ link_attributes }}> {{ item.link.title }} </a>
             {% endif %}
@@ -51,3 +54,17 @@
     {% endfor %}
   </div>
 </div>
+
+{% if extra_fields.btn_more is not empty %}
+
+{% set moreLink_attributes = create_attribute() %}
+{% set moreLink_attributes = extra_fields.btn_more.attributes.id is not empty ? moreLink_attributes.setAttribute('id', extra_fields.btn_more.attributes.id ) : moreLink_attributes %}
+{% set moreLink_attributes = extra_fields.btn_more.attributes.target is not empty ? moreLink_attributes.setAttribute('target', extra_fields.btn_more.attributes.target ) : moreLink_attributes %}
+{% set moreLink_attributes = extra_fields.btn_more.attributes.target is not empty ? moreLink_attributes.setAttribute('class', extra_fields.btn_more.attributes.class ~ 'btn btn-primary')  : moreLink_attributes.setAttribute('class','btn btn-primary') %}
+{% set moreLink_attributes = extra_fields.btn_more.attributes.rel is not empty ? moreLink_attributes.setAttribute('rel', extra_fields.btn_more.attributes.rel ) : moreLink_attributes %}
+  <div class="text-center mt-4">
+    <a href="{{  extra_fields.btn_more.url }}"  {{ moreLink_attributes }}>
+      {{ extra_fields.btn_more.title }}
+    </a>
+  </div>
+{% endif %}
