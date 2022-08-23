@@ -1,3 +1,8 @@
+{% if dir == 'rtl' %}
+    {{ attach_library('vactory_dynamic_field_default/df_default_widget_4_rtl') }}
+{% else %}
+    {{ attach_library('vactory_dynamic_field_default/df_default_widget_4') }}
+{% endif %}
 <div class="container">
     <div class="row">
         {% for item in content %}
@@ -15,7 +20,7 @@
                     <hr/>
                     <p>{{ item.description }}</p>
                     <br/>
-                    <a  href="{{ item.link.url }}" {{ link_attributes }} > {{ item.link.title }} </a> 
+                    <a  href="{{ item.link.url }}" {{ link_attributes }} > {{ item.link.title }} </a>
                 </div>
             </div>
         </div>

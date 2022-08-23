@@ -1,0 +1,36 @@
+.testimonial-card .card::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  height: 120px;
+  height: 7.5rem;
+  background: #2196f3;
+  left: 0;
+  z-index: 0;
+  border-top-left-radius: 6px;
+  border-top-left-radius: 0.375rem;
+  border-top-right-radius: 6px;
+  border-top-right-radius: 0.375rem;
+}
+
+.testimonial-card .card.flex-column-reverse::after {
+  top: inherit;
+  bottom: 0;
+  border-radius: 0;
+  border-bottom-left-radius: 6px;
+  border-bottom-left-radius: 0.375rem;
+  border-bottom-right-radius: 6px;
+  border-bottom-right-radius: 0.375rem;
+}
+
+.testimonial-card .card-image {
+  z-index: 1;
+  border: 6px solid #fff;
+  border: 0.375rem solid #fff;
+  border-radius: 50%;
+  width: 150px;
+  width: 9.375rem;
+  height: 150px;
+  height: 9.375rem;
+}

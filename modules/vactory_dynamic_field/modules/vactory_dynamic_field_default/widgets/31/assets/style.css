@@ -1,0 +1,171 @@
+@-webkit-keyframes sticky-up {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    -webkit-transform: translateY(0);
+            transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes sticky-up {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    -webkit-transform: translateY(0);
+            transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.content-media--video {
+  background-color: #ddd;
+  display: block;
+  position: relative;
+  padding: 0 0 56.25% 0;
+}
+
+.content-media--video iframe {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+}
+
+#featured-video {
+  -webkit-transition: width .2s ease-in-out, height .2s ease-in-out, -webkit-transform .38s ease-in-out;
+  transition: width .2s ease-in-out, height .2s ease-in-out, -webkit-transform .38s ease-in-out;
+  -o-transition: width .2s ease-in-out, height .2s ease-in-out, transform .38s ease-in-out;
+  transition: width .2s ease-in-out, height .2s ease-in-out, transform .38s ease-in-out;
+  transition: width .2s ease-in-out, height .2s ease-in-out, transform .38s ease-in-out, -webkit-transform .38s ease-in-out;
+  /** Use .sticky */
+}
+
+#featured-video.is-sticky {
+  position: fixed;
+  bottom: 20px;
+  bottom: 1.25rem;
+  left: auto;
+  right: 20px;
+  right: 1.25rem;
+  max-width: 354px;
+  max-width: 22.125rem;
+  max-height: 200px;
+  max-height: 12.5rem;
+  width: 354px;
+  width: 22.125rem;
+  height: 200px;
+  height: 12.5rem;
+  -webkit-box-shadow: 3px 5px 13px 0 rgba(0, 0, 0, 0.12);
+          box-shadow: 3px 5px 13px 0 rgba(0, 0, 0, 0.12);
+  -webkit-box-shadow: 0.1875rem 0.3125rem 0.8125rem 0 rgba(0, 0, 0, 0.12);
+          box-shadow: 0.1875rem 0.3125rem 0.8125rem 0 rgba(0, 0, 0, 0.12);
+  -webkit-transform: translateY(100%);
+      -ms-transform: translateY(100%);
+          transform: translateY(100%);
+  -webkit-animation: sticky-up .5s ease forwards;
+          animation: sticky-up .5s ease forwards;
+}
+
+#close-sticky-video {
+  display: none;
+  position: fixed;
+  bottom: 240px;
+  bottom: 15rem;
+  right: 20px;
+  right: 1.25rem;
+  -webkit-box-shadow: 3px 5px 13px 0 rgba(0, 0, 0, 0.12);
+          box-shadow: 3px 5px 13px 0 rgba(0, 0, 0, 0.12);
+  -webkit-box-shadow: 0.1875rem 0.3125rem 0.8125rem 0 rgba(0, 0, 0, 0.12);
+          box-shadow: 0.1875rem 0.3125rem 0.8125rem 0 rgba(0, 0, 0, 0.12);
+  background-color: #fff;
+  border-radius: 50%;
+  -webkit-transform: translateY(100%);
+      -ms-transform: translateY(100%);
+          transform: translateY(100%);
+  -webkit-transition: -webkit-transform .38s ease-in-out;
+  transition: -webkit-transform .38s ease-in-out;
+  -o-transition: transform .38s ease-in-out;
+  transition: transform .38s ease-in-out;
+  transition: transform .38s ease-in-out, -webkit-transform .38s ease-in-out;
+  -webkit-animation: sticky-up .5s ease forwards;
+          animation: sticky-up .5s ease forwards;
+  padding: 10px;
+  padding: 0.625rem;
+  border: 0;
+  width: 40px;
+  width: 2.5rem;
+  height: 40px;
+  height: 2.5rem;
+  font-size: 12px;
+  font-size: 0.75rem;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+#close-sticky-video.is-active {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.sticky-bloc {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+}
+
+.sticky-bloc--wrapper {
+  display: block;
+  position: relative;
+  padding: 0 0 56.25% 0;
+}
+
+.sticky-bloc .js-img-video {
+  height: 100%;
+  width: 100%;
+}
+
+.sticky-bloc .js-img-video img {
+  height: 100%;
+  width: 100%;
+}
+
+.sticky-bloc iframe {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.sticky-bloc.sticky {
+  position: fixed;
+  z-index: 2;
+  bottom: 40px;
+  bottom: 2.5rem;
+  right: 20px;
+  right: 1.25rem;
+  left: auto;
+  width: 354px;
+  width: 22.125rem;
+  height: 200px;
+  height: 12.5rem;
+  -webkit-box-shadow: 3px 5px 13px 0 rgba(0, 0, 0, 0.12);
+          box-shadow: 3px 5px 13px 0 rgba(0, 0, 0, 0.12);
+  -webkit-box-shadow: 0.1875rem 0.3125rem 0.8125rem 0 rgba(0, 0, 0, 0.12);
+          box-shadow: 0.1875rem 0.3125rem 0.8125rem 0 rgba(0, 0, 0, 0.12);
+  -webkit-transform: translateY(100%);
+      -ms-transform: translateY(100%);
+          transform: translateY(100%);
+  -webkit-animation: sticky-up .5s ease forwards;
+          animation: sticky-up .5s ease forwards;
+}

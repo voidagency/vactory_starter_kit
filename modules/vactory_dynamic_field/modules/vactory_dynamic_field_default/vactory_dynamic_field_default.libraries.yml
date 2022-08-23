@@ -1,3 +1,109 @@
+df_default_widget_4:
+  css:
+    component:
+      widgets/4/assets/style.css: {}
+
+df_default_widget_4_rtl:
+  css:
+    theme:
+      ./widgets/4/assets/style-rtl.css: {}
+###############################################################################
+
+df_default_widget_5:
+  css:
+    component:
+      widgets/5/assets/style.css: {}
+
+df_default_widget_5_rtl:
+  css:
+    theme:
+      ./widgets/5/assets/style-rtl.css: {}
+
+###############################################################################
+
+df_default_widget_7:
+  css:
+    component:
+      widgets/7/assets/style.css: {}
+
+df_default_widget_7_rtl:
+  css:
+    theme:
+      ./widgets/7/assets/style-rtl.css: {}
+
+###############################################################################
+
+df_default_widget_9:
+  css:
+    component:
+      widgets/9/assets/style.css: {}
+
+df_default_widget_9_rtl:
+  css:
+    theme:
+      ./widgets/9/assets/style-rtl.css: {}
+
+###############################################################################
+
+df_default_widget_12:
+  css:
+    component:
+      widgets/12/assets/style.css: {}
+
+df_default_widget_12_rtl:
+  css:
+    theme:
+      ./widgets/12/assets/style-rtl.css: {}
+
+###############################################################################
+
+df_default_widget_13:
+  css:
+    component:
+      widgets/13/assets/style.css: {}
+
+df_default_widget_13_rtl:
+  css:
+    theme:
+      ./widgets/13/assets/style-rtl.css: {}
+
+###############################################################################
+
+df_default_widget_114:
+  css:
+    component:
+      widgets/14/assets/style.css: {}
+
+df_default_widget_14_rtl:
+  css:
+    theme:
+      ./widgets/14/assets/style-rtl.css: {}
+
+###############################################################################
+
+df_default_widget_15:
+  css:
+    component:
+      widgets/15/assets/style.css: {}
+
+df_default_widget_15_rtl:
+  css:
+    theme:
+      ./widgets/15/assets/style-rtl.css: {}
+
+###############################################################################
+
+df_default_widget_16:
+  css:
+    component:
+      widgets/16/assets/style.css: {}
+
+df_default_widget_16_rtl:
+  css:
+    theme:
+      ./widgets/16/assets/style-rtl.css: {}
+###############################################################################
+
 df_default_widget_20:
   css:
     theme:
@@ -77,6 +183,18 @@ df_default_widget_25_rtl:
   css:
     theme:
       ./widgets/25/assets/style-rtl.css: {}
+
+###############################################################################
+
+df_default_widget_31:
+  css:
+    component:
+      widgets/31/assets/style.css: {}
+
+df_default_widget_31_rtl:
+  css:
+    theme:
+      ./widgets/31/assets/style-rtl.css: {}
 
 ###############################################################################
 
