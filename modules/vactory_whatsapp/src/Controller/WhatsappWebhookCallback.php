@@ -18,12 +18,13 @@ class WhatsappWebhookCallback extends ControllerBase {
    * Builds the response.
    */
   public function handler(Request $request) {
-    $verify_token = 'vactory';
+    $config = \Drupal::config('vactory_whatsapp.settings');
+    $state = \Drupal::state();
+    $verify_token = $state->get('vactory_whatsapp_webhook_token', 'vactory');
     $mode = $request->query->get('hub_mode');
     $token = $request->query->get('hub_verify_token');
     $challenge = $request->query->get('hub_challenge');
     $content = $request->getContent();
-    $config = \Drupal::config('vactory_whatsapp.settings');
     $whatsapp_webhook_plugins = $config->get('whatsapp_webhook_plugins');
     if (!empty($content)) {
       $content = Json::decode($content);
