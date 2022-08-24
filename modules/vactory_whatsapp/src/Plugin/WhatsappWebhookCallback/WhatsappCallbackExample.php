@@ -156,12 +156,18 @@ class WhatsappCallbackExample extends WhatsappWebhookManagerBase {
           'parameters' => [
             [
               'type' => 'text',
-              'text' => $message,
+              'text' => substr(trim(preg_replace('/\s\s+/', ' ', $message)), 0, 60) . '...',
             ],
           ],
         ],
       ];
-      $whatsapp_manager->sendTemplateMessage($phone_number, 'contact_confirmation', $recieved_msg, 'fr');
+      try {
+        $whatsapp_manager->sendTemplateMessage($phone_number, 'contact_confirmation', $recieved_msg, 'fr');
+      }
+      catch (\Exception $e) {
+        $message = "Done! j'ai créé une soumission pour vous sur le formulaire de contact.";
+        $whatsapp_manager->sendTextMessage($phone_number, $message);
+      }
     }
     else {
       $message = 'Oups! je suis vraiment désolé car les soumissions de formulaire de contact sont clôturées';
