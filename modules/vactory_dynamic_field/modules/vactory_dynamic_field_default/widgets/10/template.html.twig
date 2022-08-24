@@ -18,5 +18,19 @@
          src="{{ lqip_image }}"
          data-src="{{ fluid_image }}">
   </div>
+  {% if content.0.btn_more is not empty %}
+
+    {% set moreLink_attributes = create_attribute() %}
+    {% set moreLink_attributes = content.0.btn_more.attributes.id is not empty ? moreLink_attributes.setAttribute('id', content.0.btn_more.attributes.id ) : moreLink_attributes %}
+    {% set moreLink_attributes = content.0.btn_more.attributes.target is not empty ? moreLink_attributes.setAttribute('target', content.0.btn_more.attributes.target ) : moreLink_attributes %}
+    {% set moreLink_attributes = content.0.btn_more.attributes.target is not empty ? moreLink_attributes.setAttribute('class', content.0.btn_more.attributes.class ~ 'btn btn-primary')  : moreLink_attributes.setAttribute('class','btn btn-primary') %}
+    {% set moreLink_attributes = content.0.btn_more.attributes.rel is not empty ? moreLink_attributes.setAttribute('rel', content.0.btn_more.attributes.rel ) : moreLink_attributes %}
+      <div class="text-center mt-4">
+        <a href="{{  content.0.btn_more.url }}"  {{ moreLink_attributes }}>
+          {{ content.0.btn_more.title }}
+        </a>
+      </div>
+    {% endif %}
+
 </div>
 

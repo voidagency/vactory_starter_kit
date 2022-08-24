@@ -3,6 +3,7 @@ status: true
 dependencies:
   config:
     - core.entity_view_mode.node.card
+    - field.field.node.vactory_mediatheque.field_body
     - field.field.node.vactory_mediatheque.field_mediatheque_date
     - field.field.node.vactory_mediatheque.field_mediatheque_theme
     - field.field.node.vactory_mediatheque.field_mediatheque_type
@@ -77,6 +78,7 @@ content:
     region: content
 hidden:
   addtoany: true
+  field_body: true
   field_content_access_custom: true
   field_content_access_groups: true
   field_content_access_roles: true

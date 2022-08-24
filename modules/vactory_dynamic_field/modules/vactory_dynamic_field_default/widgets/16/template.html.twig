@@ -1,3 +1,9 @@
+{% if dir == 'rtl' %}
+    {{ attach_library('vactory_dynamic_field_default/df_default_widget_16_rtl') }}
+{% else %}
+    {{ attach_library('vactory_dynamic_field_default/df_default_widget_16') }}
+{% endif %}
+
 <div class="row widget-links">
   {% for item in content %}
 
@@ -12,9 +18,9 @@
   {% set link_attributes = item.link.attributes.target is not empty ? link_attributes.setAttribute('target', item.link.attributes.target ) : link_attributes %}
   {% set link_attributes = item.link.attributes.rel is not empty ? link_attributes.setAttribute('rel', item.link.attributes.rel ) : link_attributes %}
 
-  <div class='col-lg-6 widget-links_item'> 
+  <div class='col-lg-6 widget-links_item'>
     <a  href="{{ item.link.url }}" {{ link_attributes }} >
-      <div class="image-link lazy-wrapper"> 
+      <div class="image-link lazy-wrapper">
         <img alt="{{ image_alt }}"
           class="img-fluid lazyload"
           src="{{ lqip_image }}"

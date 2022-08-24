@@ -44,6 +44,13 @@ function vactory_decoupled_form_node_form_alter(&$form, FormStateInterface $form
     ];
     $form['node_settings']['#group'] = 'node_settings_group';
   }
+
+  if (isset($form['machine_name'])) {
+    $form['machine_name']['#access'] = \Drupal::currentUser()
+    ->hasPermission('administer field node settings');
+    $form['machine_name']['#group'] = 'node_settings_group';
+  }
+
 }
 
 
@@ -265,6 +272,15 @@ function vactory_decoupled_entity_base_field_info(EntityTypeInterface $entity_ty
       ])
       ->setDisplayConfigurable('form', FALSE)
       ->setDisplayConfigurable('view', FALSE);
+  }
+
+  if ($entity_type->id() === 'node') {
+    $fields['machine_name'] = BaseFieldDefinition::create('string')
+      ->setLabel('Machine name')
+      ->setDescription('Machine name for internal use.')
+      ->setTranslatable(FALSE)
+      ->setRevisionable(FALSE)
+      ->setDisplayConfigurable('form', TRUE);
   }
 
   return $fields;

@@ -1,6 +1,16 @@
+{% if dir == 'rtl' %}
+    {{ attach_library('vactory_dynamic_field_default/df_default_widget_12_rtl') }}
+{% else %}
+    {{ attach_library('vactory_dynamic_field_default/df_default_widget_12') }}
+{% endif %}
+
+{% set column = extra_fields.mode == 1 ? 'col-12' : 'col-md-6' %}
+{% set text_hover = extra_fields.mode_text == 1 ? 'inner-hover':  null %}
+{% if extra_fields.intro is not empty %}
+  <div class='mb-3 text-center'> {{ extra_fields.intro }} </div>
+{% endif %}
 <div class="row t-block-push-small-positionned">
   {% for item in content %}
-    {% set column = (item.mode) ? 'col-12' : 'col-md-6' %}
     <div class="{{ column }} d-flex">
         {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : '' %}
         {% set lqip_image = image_uri|image_style('lqip') %}
@@ -17,10 +27,10 @@
         data-bg="{{ fluid_image }}"
         style="background-image:url('{{ lqip_image }}')" >
         <div class="vf-push-body">
-          <div class="inner">
             {% if item.titre is not empty %}
               <h4 class="h4">{{ item.titre }}</h4>
             {% endif %}
+          <div class="inner {{ text_hover }}">
             {% if item.description is not empty %}
               <p>
                 {{ item.description }}
@@ -34,5 +44,18 @@
       </div>
     </div>
   {% endfor %}
-
 </div>
+
+{% if extra_fields.btn_more is not empty %}
+
+{% set moreLink_attributes = create_attribute() %}
+{% set moreLink_attributes = extra_fields.btn_more.attributes.id is not empty ? moreLink_attributes.setAttribute('id', extra_fields.btn_more.attributes.id ) : moreLink_attributes %}
+{% set moreLink_attributes = extra_fields.btn_more.attributes.target is not empty ? moreLink_attributes.setAttribute('target', extra_fields.btn_more.attributes.target ) : moreLink_attributes %}
+{% set moreLink_attributes = extra_fields.btn_more.attributes.target is not empty ? moreLink_attributes.setAttribute('class', extra_fields.btn_more.attributes.class ~ 'btn btn-primary')  : moreLink_attributes.setAttribute('class','btn btn-primary') %}
+{% set moreLink_attributes = extra_fields.btn_more.attributes.rel is not empty ? moreLink_attributes.setAttribute('rel', extra_fields.btn_more.attributes.rel ) : moreLink_attributes %}
+  <div class="text-center mt-4">
+    <a href="{{  extra_fields.btn_more.url }}"  {{ moreLink_attributes }}>
+      {{ extra_fields.btn_more.title }}
+    </a>
+  </div>
+{% endif %}
