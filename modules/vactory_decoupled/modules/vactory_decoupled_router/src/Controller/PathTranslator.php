@@ -96,6 +96,7 @@ class PathTranslator extends ControllerBase
     $this->response = JsonResponse::create([],200);
 
     $output = [];
+    $output['status'] = 200;
     $info = NULL;
     try {
       // System routes.
@@ -106,7 +107,11 @@ class PathTranslator extends ControllerBase
         // Drupal routes.
         $match_info = $this->router->match($path);
       } catch (\Exception $e) {
-        $this->response->setStatusCode(404);
+        // $this->response->setStatusCode(404);
+        $info = [
+          '_route' => 'error_page',
+        ];
+        $output['status'] = 404;
         $output['message'] = "Not route found for $path";
         $match_info = $error_match_info;
       }
@@ -118,7 +123,11 @@ class PathTranslator extends ControllerBase
       $this->logger->notice('A route has been found but it has no entity information.');
       /** @var \Drupal\Core\Entity\EntityInterface $entity */
       $entity = $this->findEntity($error_match_info);
-      $this->response->setStatusCode(500);
+      $info = [
+        '_route' => 'error_page',
+      ];
+      $output['status'] = 500;
+      // $this->response->setStatusCode(500);
     }
 
     if ($entity->getEntityType() instanceof ContentEntityType) {
@@ -126,7 +135,11 @@ class PathTranslator extends ControllerBase
       if (!$can_view->isAllowed()) {
         /** @var \Drupal\Core\Entity\EntityInterface $entity */
         $entity = $this->findEntity($error_match_info);
-        $this->response->setStatusCode(403);
+        $info = [
+          '_route' => 'error_page',
+        ];
+        $output['status'] = 403;
+        // $this->response->setStatusCode(403);
         $output['message'] = "User is not allowed to view $path";
       }
     }
@@ -217,12 +230,6 @@ class PathTranslator extends ControllerBase
   private function getRouteFromRequest(Request $request)
   {
     $path = $this->getPathFromRequest($request);
-
-    // Remove langcode prefix from path & restore it later.
-    $request_path = urldecode(trim($path, '/'));
-    $path_args = explode('/', $request_path);
-    $prefix = array_shift($path_args);
-    $path = preg_replace("/^\/${prefix}/", "", $path);
    
     // @todo: cache this ?
     $routes = new Routing\RouteCollection();
@@ -243,7 +250,7 @@ class PathTranslator extends ControllerBase
     ];
     unset($match_info['_query']['_route']);
     $route = $this->systemRoutes[$match_info['_route']];
-    $match_info['path'] = '/' . $prefix . $route->getPath();
+    $match_info['path'] = $route->getPath();
     $match_info['alias'] = $route->getAlias();
     $match_info['request_path'] = $path;
 
