@@ -452,9 +452,12 @@ trait FormWidgetTrait {
       'mode'             => 'default',
     ]);
 
+    // Get website file system default schema.
+    $default_scheme = \Drupal::config('system.file')->get('default_scheme');
+
     // Add field to component.
     $form_display->setComponent($field_name, [
-      'type' => 'media_library_widget',
+      'type' => $default_scheme !== 'cloudinary' ? 'media_library_widget' : 'cloudinary_media_library_widget',
     ]);
 
     /**
