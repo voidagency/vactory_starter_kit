@@ -1,0 +1,56 @@
+<div class="vf-slider vf-slider--variant1">
+  <div class="vf-slider__items items vf-slick-slider slick-arrows-mobile"
+       data-toshow="1"
+       data-toscroll="1"
+       data-autoplay="true"
+       data-arrows="true"
+       data-mobile-arrows="true"
+  >
+    {% for item in content %}
+      <div class="slick-item">
+        <div class="vf-slider__item">
+          {% if item.image.0 is not empty %}
+            {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : '' %}
+            {% set lqip_image = image_uri|image_style('lqip') %}
+            {% set image = image_uri|image_style('vactory_slider1_image') %}
+            {% set image_alt = (item.image_alt) ? item.image_alt : item.image.alt_image %}
+
+            {% set link_attributes = create_attribute() %}
+            {% set link_attributes = item.link.attributes.id is not empty ? link_attributes.setAttribute('id', item.link.attributes.id ) : link_attributes %}
+            {% set link_attributes = item.link.attributes.class is not empty ? link_attributes.setAttribute('class', item.link.attributes.class ~ 'btn btn-outline-primary') : link_attributes.setAttribute('class', 'btn btn-outline-primary') %}
+            {% set link_attributes = item.link.attributes.target is not empty ? link_attributes.setAttribute('target', item.link.attributes.target ) : link_attributes %}
+            {% set link_attributes = item.link.attributes.rel is not empty ? link_attributes.setAttribute('rel', item.link.attributes.rel ) : link_attributes %}
+
+            <div class="vf-slider__image lazy-wrapper">
+              <img alt="{{ image_alt }}"
+                   class="img-fluid lazyload"
+                   src="{{ lqip_image }}"
+                   data-src="{{ image }}">
+            </div>
+          {% endif %}
+
+          <div class="vf-slider__content">
+            {% if item.title is not empty %}
+              <h3 class="vf-slider__title">{{ item.title }}</h3>
+            {% endif %}
+            {% if item.content is not empty %}
+              <div class="vf-slider__body">
+                <p>
+                  {{ item.content }}
+                </p>
+              </div>
+            {% endif %}
+
+            {% if item.link.url is not empty and item.link.title is not empty %}
+              <div class="vf-slider__cta">
+                <a href="{{ item.link.url  }}" {{ link_attributes }}>{{ item.link.title }}</a>
+              </div>
+            {% endif %}
+          </div>
+
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  <div class="slider-dots"></div>
+</div>

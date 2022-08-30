@@ -1,0 +1,17 @@
+name: 'Youtube video'
+multiple: FALSE
+category: 'Video help'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: 'Titre'
+  image:
+    type: image
+    label: 'Image'
+  video:
+    type: text
+    label: 'Video'
+    options:
+      '#required': TRUE
+      '#description': '<b><i class="link">How ?</i></b><br><b>URL Example</b>: https://www.youtube.com/watch?v=BZDyr2OpWBU <br> <b>Value to insert</b>: BZDyr2OpWBU'
