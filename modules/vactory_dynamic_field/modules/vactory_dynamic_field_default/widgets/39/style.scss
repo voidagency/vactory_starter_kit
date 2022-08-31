@@ -1,0 +1,252 @@
+/* VARIABLES */
+$bg-tab-content: $primary; // override
+$bg-tab-head-item: rgba(0, 0, 0, 0.5);
+$bg-tab-head-active: $primary;
+$border-tab-head: 0;
+$border-tab-head-item-active: 0;
+$border-tab-head-color: transparent;
+$padding-tab-content: 0 0 0 0;
+$tab-content-background: $primary; // override from tabs.scss
+
+/* STYLES */
+
+.vf-slider--tabs-slider {
+  min-height: 707px;
+  position: relative;
+  background: #8d8d8d;
+
+  &.onload {
+    &:before {
+      content: ' ';
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      background: url(../img/rings.svg) no-repeat center center;
+      background-size: 80px;
+      z-index: 3;
+    }
+
+    &:after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #8d8d8d;
+      z-index: 2;
+    }
+
+    .tabs-container,
+    .backgrounds {
+      opacity: 0;
+      transition: opacity .2s ease-in;
+    }
+  }
+
+  // Reset.
+  .nav-tabs,
+  .nav-tabs .nav-link {
+    border: 0;
+  }
+
+  /* Backgrounds */
+  .background {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    transition: opacity 0.5s ease-out;
+    opacity: 0;
+
+    &.is-image {
+      background-size: cover;
+      background-position: left top;
+    }
+
+    &.is-video {
+      background-size: cover;
+    }
+
+    &.is-active {
+      opacity: 1;
+    }
+  }
+
+  .tabs-container {
+    max-width: 534px;
+    right: 10%;
+    top: 230px;
+    position: absolute;
+    opacity: 0;
+    transform: translateY(150px);
+    transition: opacity .8s cubic-bezier(.215, .61, .355, 1), transform .8s cubic-bezier(.215, .61, .355, 1);
+
+    .has-loaded & {
+      opacity: 1;
+      transition-delay: 1s;
+      transform: none;
+    }
+  }
+
+
+  /* tabs head */
+  .nav-tabs {
+    .nav-link {
+      max-width: 176px;
+      border: 0;
+      color: #FFF;
+      border-radius: 0;
+      background: $bg-tab-head-item;
+
+      @include rem(font-size, 18px);
+      @include rem(line-height, 18px);
+      font-family: $font-family-base;
+      @include rem(padding, 9px 12px);
+
+      // Remove border for not active.
+      &:not(.active) {
+        border-color: transparent;
+      }
+    }
+
+    .nav-item {
+      @include rem(margin-left, 3px);
+      margin-bottom: 0;
+
+      &:first-child {
+        margin-left: 0;
+      }
+    }
+  }
+
+  /* Tab content */
+  .tab-content {
+    padding: $padding-tab-content;
+    background: $tab-content-background;
+
+    h2 {
+      text-align: left;
+      text-transform: none;
+      @include rem(margin-bottom, 16px);
+    }
+
+    > .tab-pane {
+      color: #FFF;
+      background: $bg-tab-content;
+      @include rem(padding, 30px 40px);
+
+      p {
+        @include rem(font-size, 16px);
+      }
+
+      .btn {
+        background: transparent;
+
+        &:hover {
+          background: white;
+        }
+      }
+    }
+  }
+}
+
+@include media-breakpoint-up(md) {
+  .vf-slider--tabs-slider {
+    .nav-tabs {
+      flex-wrap: unset;
+      flex-direction: row;
+
+      .nav-item {
+        flex: 1 1 0;
+
+        .nav-link {
+          height: 68px;
+          max-width: inherit;
+          display: flex;
+          align-items: center;
+        }
+      }
+    }
+  }
+
+  /* Backgrounds */
+  .background {
+    &.is-image {
+      background-position: center top;
+    }
+  }
+}
+
+@include media-breakpoint-down(lg) {
+  .vf-slider--tabs-slider .tabs-container {
+    right: 2%;
+  }
+}
+
+@include media-breakpoint-down(sm) {
+  .vf-slider--tabs-slider {
+    height: 501px;
+    min-height: 501px;
+
+    .tabs-container {
+      right: 10px;
+      bottom: 10px;
+      left: 10px;
+      top: inherit;
+    }
+
+    .nav-tabs {
+      @include rem(margin-bottom, 15px);
+      @include rem(padding, 0 20px);
+
+      .nav-item {
+        background: transparent;
+
+        .nav-link {
+          @include rem(font-size, 20px);
+          @include rem(padding, 6px 8px 3px);
+          @include rem(line-height, 18px);
+          background: transparent !important;
+          border: 1px solid transparent;
+          @include rem(margin-right, 10px);
+
+          &.active {
+            border: 1px solid $white;
+          }
+        }
+      }
+    }
+
+    /* Tab content */
+    .tab-content {
+      padding: $padding-tab-content;
+      background: transparent;
+
+      > .tab-pane {
+        background: transparent;
+        @include rem(padding, 0 20px 20px);
+      }
+
+      .subtitle-tab {
+        @include rem(font-size, 14px);
+        @include rem(margin, 0 0 10px);
+        text-transform: uppercase;
+      }
+
+      .h2 {
+        @include rem(margin, 0 0 10px);
+        text-transform: uppercase;
+      }
+
+      p {
+        @include rem(margin-bottom, 10px);
+      }
+    }
+
+
+  }
+}

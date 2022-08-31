@@ -1,0 +1,41 @@
+{# https://codyhouse.co/demo/pointy-slider/index.html #}
+
+{{ attach_library('vactory_dynamic_field_sliders/variant2') }}
+
+<div class="vf-slider--pointy-slider">
+  <ul class="cd-slider">
+    {% for item in content %}
+      {% set is_visible = (loop.first) ? 'is-visible' : '' %}
+      {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : '' %}
+      {% set lqip_image = image_uri|image_style('lqip') %}
+      {% set image = image_uri|image_style('vactory_slider2_image') %}
+
+      {% set link_attributes = create_attribute() %}
+      {% set link_attributes = item.link.attributes.id is not empty ? link_attributes.setAttribute('id', item.link.attributes.id ) : link_attributes %}
+      {% set link_attributes = item.link.attributes.class is not empty ? link_attributes.setAttribute('class', item.link.attributes.class ~ 'btn') : link_attributes.setAttribute('class', 'btn') %}
+      {% set link_attributes = item.link.attributes.target is not empty ? link_attributes.setAttribute('target', item.link.attributes.target ) : link_attributes %}
+      {% set link_attributes = item.link.attributes.rel is not empty ? link_attributes.setAttribute('rel', item.link.attributes.rel ) : link_attributes %}
+
+      <li class="{{ is_visible }}">
+        <div class="cd-half-block image lazyload"
+             data-bg="{{ image }}"
+             style="background-image: url('{{ lqip_image }}');"></div>
+
+        <div class="cd-half-block content">
+          <div class="animated">
+            {% if item.title is not empty %}
+              <h2>{{ item.title }}</h2>
+            {% endif %}
+
+            {% if item.content.value is not empty %}
+              <div>{{ item.content.value | raw }}</div>
+            {% endif %}
+            {% if item.link.url is not empty and item.link.title is not empty %}
+              <a  href="{{ item.link.url }}" {{ link_attributes }} > {{ item.link.title }} </a>
+            {% endif %}
+          </div>
+        </div>
+      </li> <!-- .cd-half-block.content -->
+    {% endfor %}
+  </ul> <!-- .cd-slider -->
+</div> <!-- .vf-slider--pointy-slider -->

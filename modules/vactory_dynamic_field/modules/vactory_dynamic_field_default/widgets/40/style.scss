@@ -1,0 +1,42 @@
+// @component
+// modules/custom/vactory_slider/scss/variant-1.scss
+// Slider
+// -----------------------------------------------------------------------------
+
+$vf-slider1-item-border-color: #ececec !default;
+
+.vf-slider {
+  position: relative;
+
+  &__item {
+    position: relative;
+    height: auto;
+    display: flex;
+    border: 1px solid $vf-slider1-item-border-color;
+
+    @include media-breakpoint-only(xs) {
+      flex-direction: column;
+    }
+  }
+
+  &__image {
+    flex-basis: 40%;
+
+    @include media-breakpoint-only(xs) {
+      flex-basis: initial;
+    }
+  }
+
+  &__content {
+    flex-basis: 60%;
+    @include rem(padding, 20px);
+    @include media-breakpoint-only(xs) {
+      flex-basis: initial;
+    }
+  }
+
+  &__cta {
+    @include rem(margin-top, 20px);
+  }
+
+}
