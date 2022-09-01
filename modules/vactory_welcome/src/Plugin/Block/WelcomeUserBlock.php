@@ -3,9 +3,11 @@
 namespace Drupal\vactory_welcome\plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\taxonomy\Entity\Term;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Drupal\Core\Datetime\DrupalDateTime;
+
 
 /**
  * Class EspacePriveBlock.
@@ -20,8 +22,36 @@ use Drupal\Core\Datetime\DrupalDateTime;
 class WelcomeUserBlock extends BlockBase {
 
   /**
-   * Welcome message block build().
+   * Function block form.
    */
+  // public function blockForm($form, FormStateInterface $form_state) {
+  //   parent::blockForm($form, $form_state);
+
+  //   $form['welcome_description'] = [
+  //     '#type' => 'text_format',
+  //     '#title' => 'Enter a welcome description',
+  //     '#description' => $this->t('Enter a message, a quote or anything you want to tell to the user about'),
+  //     // '#default_value' => $config->get('welcome_description'),
+  //   ];
+  //   $form['welcome_description']['tree_token'] = get_token_tree();
+
+
+  //   return $form;
+
+  // }
+
+  // /**
+  //  * Function block submit.
+  //  */
+  // public function blockSubmit($form, FormStateInterface $form_state) {
+  //   parent::blockSubmit($form, $form_state);
+  //   $this->configuration['rapport_digital_year'] = $form_state->getValue('rapport_digital_year');
+  // }
+
+  // /**
+  //  * Welcome message block build().
+  //  */
+
   public function build() {
 
     $welcome_terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')
@@ -66,5 +96,6 @@ class WelcomeUserBlock extends BlockBase {
     ];
     throw new NotFoundHttpException();
   }
+
 
 }
