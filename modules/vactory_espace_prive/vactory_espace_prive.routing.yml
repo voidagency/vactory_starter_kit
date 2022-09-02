@@ -18,7 +18,7 @@ vactory_espace_prive.profile:
     _controller: '\Drupal\vactory_espace_prive\Controller\EspacePriveController::profile'
     _title: 'Mon profil'
   requirements:
-    _access: 'TRUE'
+    _permission: 'access content'
   options:
     no_cache: 'TRUE'
     parameters:
@@ -29,6 +29,15 @@ vactory_espace_prive.cleaned_profile:
   defaults:
     _controller: '\Drupal\vactory_espace_prive\Controller\EspacePriveController::cleanedProfile'
     _title: 'Mon profil'
+  requirements:
+    _role: 'authenticated'
+  options:
+    no_cache: 'TRUE'
+vactory_espace_prive.edit_password:
+  path: '/espace-prive/edit-password'
+  defaults:
+    _controller: '\Drupal\vactory_espace_prive\Controller\EspacePriveController::editPassword'
+    _title: 'Modifier le mot de passe'
   requirements:
     _role: 'authenticated'
   options:

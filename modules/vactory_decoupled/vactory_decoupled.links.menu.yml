@@ -1,0 +1,5 @@
+entity.vactory_secure.route.collection:
+  title: 'Vactory Secure Routes'
+  parent: system.admin_config_system
+  description: 'Configure secure routes'
+  route_name: vactory_decoupled.secure_routes

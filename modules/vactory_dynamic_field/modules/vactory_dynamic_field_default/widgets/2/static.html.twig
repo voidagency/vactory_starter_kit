@@ -1,0 +1,31 @@
+{# Sets Unique ID for Accordion. #}
+{% set accordion_id = 'accordion-4' %}
+<p class="intro accordion-intro">
+  Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet autem culpa ea error
+  facilis fugit illo nihil nisi placeat quas qui, quia repudiandae similique tempora
+  vitae? Ea id neque reprehenderit!
+</p>
+<h3 class="accordion-title">Exemple Accordion Title</h3>
+<div class="accordion" id="{{ accordion_id }}">
+  {% for i in 0..3 %}
+    <div class="card">
+      <div class="card-header" id="heading{{ accordion_id }}-{{ i + 1 }}">
+        <h5 class="mb-0">
+          <button class="btn btn-link collapsed" type="button" data-toggle="collapse"
+                  data-target="#collapse{{ accordion_id }}-{{ i + 1 }}"
+                  aria-expanded="{% if i == 0 %} true {% else %} false {% endif %}"
+                  aria-controls="collapse{{ accordion_id }}-{{ i + 1 }}">Title
+          </button>
+        </h5>
+      </div>
+
+      <div id="collapse{{ accordion_id }}-{{ i + 1 }}" class="collapse {#% if i == 0 %} show {% endif %#}"
+           aria-labelledby="heading{{ accordion_id }}-{{ i + 1 }}" data-parent="#{{ accordion_id }}">
+        <div class="card-body">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem
+          Ipsum has
+          been the industry's standard dummy text ever since the 1500s.
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>

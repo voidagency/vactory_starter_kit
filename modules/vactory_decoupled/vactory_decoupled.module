@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Drupal\simple_oauth\Entities\AccessTokenEntity;
 use Drupal\user\Entity\User;
 use Drupal\Component\Render\PlainTextOutput;
-
+use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Component\Utility\UrlHelper;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
@@ -44,6 +44,13 @@ function vactory_decoupled_form_node_form_alter(&$form, FormStateInterface $form
     ];
     $form['node_settings']['#group'] = 'node_settings_group';
   }
+
+  if (isset($form['machine_name'])) {
+    $form['machine_name']['#access'] = \Drupal::currentUser()
+    ->hasPermission('administer field node settings');
+    $form['machine_name']['#group'] = 'node_settings_group';
+  }
+
 }
 
 
@@ -105,6 +112,18 @@ function vactory_decoupled_form_alter(&$form, FormStateInterface $form_state, $f
     // Add a submit handler to redirect to the Gatsby page.
     $form['actions']['save_view_gatsby']['#submit'][] = 'gatsby_node_form_submit';
   }
+
+  $form['actions']['submit']['#submit'][] = 'nextjs_node_form_submit';
+
+}
+
+/**
+ * Submit handler for viewing the nextjs page.
+ */
+function nextjs_node_form_submit(&$form, FormStateInterface $form_state) {
+  //@todo : config form.
+  // Redirect to content page after (Add or update or delete the node)
+  $form_state->setRedirect('view.content.page_1');
 }
 
 /**
@@ -255,6 +274,15 @@ function vactory_decoupled_entity_base_field_info(EntityTypeInterface $entity_ty
       ->setDisplayConfigurable('view', FALSE);
   }
 
+  if ($entity_type->id() === 'node') {
+    $fields['machine_name'] = BaseFieldDefinition::create('string')
+      ->setLabel('Machine name')
+      ->setDescription('Machine name for internal use.')
+      ->setTranslatable(FALSE)
+      ->setRevisionable(FALSE)
+      ->setDisplayConfigurable('form', TRUE);
+  }
+
   return $fields;
 }
 
@@ -382,12 +410,13 @@ function _auth_make_unitials_from_single_word($name)
  */
 function vactory_decoupled_mail_alter(&$message) {
   $route = \Drupal::routeMatch()->getRouteName();
+  $langcode = $message['langcode'];
+  $token_service = \Drupal::token();
+  $mail_config = \Drupal::config('user.mail');
+  $language_manager = \Drupal::languageManager();
+  $language = $language_manager->getLanguage($langcode);
+
   if (strpos($route, 'jsonapi_') === 0) {
-    $token_service = \Drupal::token();
-    $mail_config = \Drupal::config('user.mail');
-    $language_manager = \Drupal::languageManager();
-    $langcode = $message['langcode'];
-    $language = $language_manager->getLanguage($langcode);
     if ($message['id'] === 'user_password_reset') {
       $key = 'password_reset';
       $variables = ['user' => $message['params']['account']];
@@ -397,17 +426,22 @@ function vactory_decoupled_mail_alter(&$message) {
       $message['subject'] = '';
       $message['body'] = [];
       $message['subject'] .= PlainTextOutput::renderFromHtml($token_service->replace($mail_config->get($key . '.subject'), $variables, $token_options));
-      $markup = ['#markup' => $token_service->replace($mail_config->get($key . '.body'), $variables, $token_options)];
-      $message['body'][] = \Drupal::service('renderer')->render($markup);
+      $message['body'][] = new FormattableMarkup($token_service->replace($mail_config->get($key . '.body'), $variables, $token_options), []);
       $language_manager->setConfigOverrideLanguage($original_language);
     }
     if ($message['id'] == 'user_register_no_approval_required') {
       $key = 'register_no_approval_required';
+      $message['body'] = [];
       $variables = ['user' => $message['params']['account']];
       $token_options = ['langcode' => $langcode, 'callback' => '_vactory_decoupled_user_mail_tokens', 'clear' => TRUE];
-      $markup = ['#markup' => $token_service->replace($mail_config->get($key . '.body'), $variables, $token_options)];
-      $message['body'][0] = \Drupal::service('renderer')->render($markup);
+      $message['body'][] = new FormattableMarkup($token_service->replace($mail_config->get($key . '.body'), $variables, $token_options), []);
     }
+  }
+  if ($message['id'] == 'user_status_activated' && !empty(Settings::get('BASE_FRONTEND_URL'))) {
+    $message['body'] = [];
+    $variables = ['user' => $message['params']['account']];
+    $token_options = ['langcode' => $langcode, 'callback' => '_vactory_decoupled_user_mail_tokens', 'clear' => TRUE];
+    $message['body'][] = new FormattableMarkup($token_service->replace($mail_config->get('status_activated')['body'], $variables, $token_options), []);
   }
 }
 
@@ -418,13 +452,13 @@ function vactory_decoupled_mail_alter(&$message) {
  */
 function _vactory_decoupled_user_mail_tokens(&$replacements, $data, $options) {
   if (isset($data['user'])) {
-    $frontend_url = Settings::get('FRONTEND_URL', "http://localhost:3000");
+    $frontend_url = Settings::get('BASE_FRONTEND_URL', "http://localhost:3000");
     $nextjs_user_pages_path_prefix = Settings::get('NEXTJS_USER_PAGES_PATH_PREFIX', "user");
     $language = \Drupal::languageManager()->getCurrentLanguage()->getId();
     $langcode = $language ?? $data['user']->getPreferredLangcode();
     $replacements['[user:one-time-login-url]'] = _vactory_decoupled_user_pass_reset_url($data['user'], $options);
     $replacements['[user:cancel-url]'] = user_cancel_url($data['user'], $options);
-    $replacements['[site:login-url]'] = $frontend_url . "/$langcode/$$nextjs_user_pages_path_prefix";
+    $replacements['[site:login-url]'] = $frontend_url . "/$langcode/$nextjs_user_pages_path_prefix";
   }
 }
 
@@ -435,7 +469,7 @@ function _vactory_decoupled_user_mail_tokens(&$replacements, $data, $options) {
  * @return string
  */
 function _vactory_decoupled_user_pass_reset_url($account, $options = []) {
-  $frontend_url = Settings::get('FRONTEND_URL', "http://localhost:3000");
+  $frontend_url = Settings::get('BASE_FRONTEND_URL', "http://localhost:3000");
   $nextjs_user_pages_path_prefix = Settings::get('NEXTJS_USER_PAGES_PATH_PREFIX', "user");
 
   $timestamp = \Drupal::time()->getRequestTime();
@@ -448,7 +482,7 @@ function _vactory_decoupled_user_pass_reset_url($account, $options = []) {
   ];
 
   $query_string = http_build_query($data, "", "&", PHP_QUERY_RFC3986);
-  return $frontend_url . "/$langcode/$nextjs_user_pages_path_prefix/one-time-login?" . $query_string;
+  return $frontend_url . "/$langcode/account/reset-password?" . $query_string;
 }
 
 /**
@@ -558,18 +592,18 @@ function vactory_decoupled_entity_delete(EntityInterface $entity) {
  */
 function clear_next_cache($query = []) {
 
-  $front_end_url = Settings::get('FRONTEND_URL');
+  $front_end_url = Settings::get('BASE_FRONTEND_URL');
   $cache_secret = Settings::get('FRONTEND_CACHE_KEY');
 
   if (!isset($front_end_url) || $front_end_url == '') {
     \Drupal::logger('clear_next_cache')
-      ->error('FRONTEND_URL env variable is undefined');
+      ->warning('BASE_FRONTEND_URL env variable is undefined');
     return FALSE;
   }
 
   if (!isset($cache_secret) || $cache_secret == '') {
     \Drupal::logger('clear_next_cache')
-      ->error('FRONTEND_CACHE_KEY env variable is undefined');
+      ->warning('FRONTEND_CACHE_KEY env variable is undefined');
     return FALSE;
   }
 

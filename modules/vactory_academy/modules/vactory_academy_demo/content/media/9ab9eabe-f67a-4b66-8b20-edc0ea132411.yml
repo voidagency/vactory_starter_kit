@@ -1,0 +1,37 @@
+_meta:
+  version: '1.0'
+  entity_type: media
+  uuid: 9ab9eabe-f67a-4b66-8b20-edc0ea132411
+  bundle: image
+  default_langcode: fr
+  depends:
+    0263402e-e9e7-43c0-aef1-4acf5c539285: user
+    364c35ea-9396-48b8-a65e-c3c0ac35e469: file
+default:
+  status:
+    -
+      value: true
+  uid:
+    -
+      entity: 0263402e-e9e7-43c0-aef1-4acf5c539285
+  name:
+    -
+      value: 1462428_639f_7.jpeg
+  created:
+    -
+      value: 1657212824
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: fr
+      pathauto: 0
+  field_media_image:
+    -
+      entity: 364c35ea-9396-48b8-a65e-c3c0ac35e469
+      alt: test
+      title: ''
+      width: 560
+      height: 315

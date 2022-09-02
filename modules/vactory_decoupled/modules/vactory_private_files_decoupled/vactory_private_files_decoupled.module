@@ -1,0 +1,45 @@
+<?php
+
+/**
+ * @file
+ * Primary hooks for vactory_private_files_decoupled module.
+ */
+
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Access\AccessResultInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Session\AccountInterface;
+
+/**
+ * Implements hook_ENTITY_TYPE_access().
+ */
+function vactory_private_files_decoupled_file_access(EntityInterface $entity, string $operation, AccountInterface $account): AccessResultInterface {
+  // Handles only download operation of private file or image.
+  if ($operation != 'download') {
+    return AccessResult::neutral();
+  }
+
+  // Handles only routes for private files or images.
+  $request = \Drupal::request();
+  $route_name = $request->get('_route');
+  if (!in_array($route_name, [
+    'system.private_file_download',
+    'system.files',
+    'image.style_private',
+    'file_entity.file_download',
+  ])) {
+    return AccessResult::neutral();
+  }
+
+  // Token and timestamp must be available.
+  $token = $request->query->get('sessionId');
+  $timestamp = (int) $request->query->get('timestamp');
+  if (!$token || !$timestamp) {
+    return AccessResult::neutral();
+  }
+  $uri = $entity->downloadUrl();
+  /** @var \Drupal\vactory_private_files_decoupled\Access\PrivateFileTokenGenerator $private_file_token_generator */
+  $private_file_token_generator = \Drupal::service('vactory_private_files_decoupled.access');
+  // Grant access if token is valid.
+  return AccessResult::allowedIf($private_file_token_generator->validate($token, $uri->toString(), $timestamp));
+}

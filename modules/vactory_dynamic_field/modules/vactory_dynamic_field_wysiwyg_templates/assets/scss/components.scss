@@ -92,13 +92,14 @@ $bg-push-default: $white;
     background-color: $white;
   }
 
-  h2, .h4 {
+  h2,
+  .h4 {
     font-weigh: 600;
     @include rem(margin-bottom, 8px);
     text-transform: none;
   }
 
-  .js-img-video .block-image > a:after {
+  .js-img-video .block-image>a:after {
     background-color: transparent;
   }
 }
@@ -152,7 +153,7 @@ $bg-push-default: $white;
     height: 85px;
     width: auto;
 
-    & + p {
+    &+p {
       @include rem(margin, 11px auto 0);
       max-width: 196px;
     }
@@ -165,7 +166,7 @@ $bg-push-default: $white;
     @include rem(font-size, 72px);
     @include rem(line-height, 77px);
 
-    & + p {
+    &+p {
       margin: 0 auto;
       max-width: 196px;
     }
@@ -245,7 +246,7 @@ $bg-push-default: $white;
 .t-video-block {
 
   .video {
-    width:914px;
+    width: 914px;
     height: 514px;
   }
 
@@ -287,6 +288,7 @@ $bg-push-default: $white;
       z-index: 2;
       opacity: .8;
     }
+
     &:hover {
       &:before {
         color: $primary;
@@ -300,11 +302,13 @@ $bg-push-default: $white;
   position: relative;
   display: block;
   overflow: hidden;
-  &:hover{
+
+  &:hover {
     img {
       transform: scale(1.1);
     }
   }
+
   img {
     @include img-fluid;
     width: 100%;
@@ -330,6 +334,7 @@ $bg-push-default: $white;
 // Template 9
 .t-three-card-with-cta {
   @include bg-shadow(#fff, 0 2px 8px 0 rgba(0, 0, 0, 0.06), 15px, 15px, none, 6px);
+
   .t-item {
     @include rem(margin-bottom, 24px);
     text-align: center;
@@ -427,12 +432,12 @@ $bg-push-default: $white;
 
 // Template 13 // Template 14
 .t-slider-cards {
-  > h3 {
+  >h3 {
     @include rem(margin-bottom, 24px);
     text-align: center;
   }
 
-  > .row {
+  >.row {
     &:not(.slick-initialized) {
       @include row-make-equal-height();
     }
@@ -445,6 +450,7 @@ $bg-push-default: $white;
 
     .t-box-img-wrapper {
       @include rem(margin-bottom, 25px);
+
       img {
         max-width: 70px;
         width: 70px;
@@ -469,7 +475,7 @@ $bg-push-default: $white;
 
 // Template 15
 .t-temoignage-box {
-  > .row:not(.slick-initialized) {
+  >.row:not(.slick-initialized) {
     @include row-make-equal-height();
   }
 
@@ -555,7 +561,7 @@ $bg-push-default: $white;
             color: $primary;
           }
 
-          & + a {
+          &+a {
             @include rem(margin-left, 11px);
             @include rem(margin-right, 11px);
             @include rem(margin-bottom, 8px);
@@ -576,7 +582,8 @@ $bg-push-default: $white;
               display: none;
             }
 
-            &, a {
+            &,
+            a {
               color: $white;
               @include rem(font-size, 16px);
               @include rem(line-height, 18px);
@@ -613,7 +620,8 @@ $bg-push-default: $white;
     @include bg-shadow(#fff, 0 2px 8px 0 rgba(0, 0, 0, 0.06), 24px, 24px, none, 6px);
     position: relative;
     width: 100%;
-    > div {
+
+    >div {
       height: 100%;
     }
 
@@ -639,7 +647,7 @@ $bg-push-default: $white;
 
 // Template 18
 .t-boxed-text-with-icon {
-  > h3 {
+  >h3 {
     text-align: center;
     @include rem(margin-bottom, 24px);
   }
@@ -696,6 +704,7 @@ $bg-push-default: $white;
   .t-block-partners-wrapper {
     .card-partner {
       @include rem(margin-bottom, 20px);
+
       .t-bloc-item-partner {
         max-width: 100%;
         width: 100%;
@@ -707,16 +716,19 @@ $bg-push-default: $white;
       }
 
     }
+
     .t-bloc-item-partner {
       padding: 0 15px;
+
       @include if-ie() {
         flex-basis: 212px;
       }
+
       .t-partner-image {
         //height: 100%;
         width: 100%;
 
-        > a {
+        >a {
           position: absolute;
           top: 0;
           left: 0;
@@ -724,20 +736,25 @@ $bg-push-default: $white;
           height: 100%;
         }
       }
-      a, img {
+
+      a,
+      img {
         margin: 0 auto;
         width: 100%;
       }
     }
+
     .slick-list {
       @include rem(margin, 0 0 20px 0);
     }
+
     .slick-slide {
       .t-partner-image {
         height: auto;
         margin-bottom: 20px;
       }
     }
+
     .slick-track {
       display: flex;
       align-items: center;
@@ -843,6 +860,7 @@ $bg-push-default: $white;
   .intro {
     margin: 0 auto 0;
   }
+
   a {
     color: $black;
 
@@ -850,6 +868,7 @@ $bg-push-default: $white;
       color: $primary;
     }
   }
+
   [class^="col-"] {
     @include rem(margin-bottom, 30px);
 
@@ -859,6 +878,7 @@ $bg-push-default: $white;
   }
 
 }
+
 .block-illustration {
   height: 90px;
   display: block;
@@ -891,9 +911,7 @@ img.media-border {
 
 
 // Template 28
-.t-intro-three-push-withtext {
-
-}
+.t-intro-three-push-withtext {}
 
 .t-slider-two-three-columns {
   img {
@@ -906,18 +924,22 @@ img.media-border {
 .t-three-push-withtext {
   @include rem(margin-bottom, 20px);
   @include rem(padding, 10px);
+
   //max-width: 280px;
   .card-image {
     img {
       //max-width: 180px;
     }
+
     height: 100%;
   }
+
   .card-body {
     height: auto;
     margin-top: auto;
   }
 }
+
 .card-level2 {
   @include bg-shadow(#FFF, 6px 6px 6px 0 rgba(0, 0, 0, 0.1), 10px, 10px, 0, 0);
   height: 100%;
@@ -934,11 +956,12 @@ img.media-border {
 // Template 31
 .t-key-figures {
   padding-bottom: 0;
+
   .slick-slide {
     @include rem(padding-bottom, 20px);
   }
 
-  > [class^="col-"] {
+  >[class^="col-"] {
     @include rem(margin, 0 0 30px 0);
   }
 
@@ -969,11 +992,12 @@ img.media-border {
   img {
     margin-left: auto;
     margin-right: auto;
+
     &.lazyloaded {
       width: auto;
       height: auto;
     }
-    
+
   }
 }
 
@@ -984,6 +1008,7 @@ img.media-border {
       margin-bottom: 0;
     }
   }
+
   .vf-push-small-positionned {
     text-align: center;
     color: $white;
@@ -991,6 +1016,7 @@ img.media-border {
     background-size: cover;
     background-repeat: no-repeat;
     width: 100%;
+
     &:before {
       content: '';
       position: absolute;
@@ -1015,6 +1041,7 @@ img.media-border {
       @include rem(margin-bottom, 20px);
     }
   }
+
   .vf-push {
     @include rem(margin, 0 0 15px 0);
     background: $bg-push-default;
@@ -1034,9 +1061,11 @@ img.media-border {
 
       a {
         color: $black;
+
         &:hover {
           color: $primary;
         }
+
         &:before {
           content: '';
           position: absolute;
@@ -1059,16 +1088,17 @@ img.media-border {
 }
 
 // Template  33
-.introduction + .t-text-img-tierce {
+.introduction+.t-text-img-tierce {
   .row:first-child {
     border-top: 1px solid #E4E4E4;
   }
 }
+
 .t-text-img-tierce {
   .row {
     @include rem(padding, 20px 0);
 
-    + .row {
+    +.row {
       border-top: 1px solid #E4E4E4;
     }
 
@@ -1082,9 +1112,10 @@ img.media-border {
 .t-box-background-title-description-clickable {
   .t-box-background-wrapper {
     position: relative;
-    @include rem(height,212px);
+    @include rem(height, 212px);
     overflow: hidden;
-    > a {
+
+    >a {
       position: absolute;
       top: 0;
       left: 0;
@@ -1092,6 +1123,7 @@ img.media-border {
       height: 100%;
       z-index: 3;
     }
+
     &:before {
       content: '';
       position: absolute;
@@ -1103,6 +1135,7 @@ img.media-border {
       display: block;
       z-index: 1;
     }
+
     &:after {
       content: '';
       position: absolute;
@@ -1115,35 +1148,44 @@ img.media-border {
       opacity: 0;
       transition: opacity .3s, transform .3s;
     }
+
     img {
       //position: relative;
     }
+
     &:hover {
       &:after {
         transform: scale(1);
         opacity: 1;
       }
+
       h2 {
         transform: translate3d(0, 0, 0);
       }
+
       p {
         opacity: 1;
         transform: scale(1);
         display: block;
       }
     }
-    h2, p {
+
+    h2,
+    p {
       color: white;
     }
+
     h2 {
       transform: translate3d(0, 50%, 0);
       transition: transform .3s;
     }
+
     p {
       opacity: 0;
       transform: scale(0);
       transition: opacity .3s, transform .3s;
     }
+
     .t-box-background-content {
       position: absolute;
       top: 40px;
@@ -1172,7 +1214,8 @@ img.media-border {
   .up {
     @include rem(margin-top, -40px);
   }
-  > .container {
+
+  >.container {
     background-color: $white;
     position: relative;
   }
@@ -1199,13 +1242,16 @@ img.media-border {
     i {
       @include rem(font-size, 40px);
     }
+
     h5 {
       text-transform: uppercase;
       @include rem(font-size, 20px);
       text-align: center;
+
       a {
         color: $gray-800;
       }
+
       a:before {
         content: '';
         position: absolute;
@@ -1221,9 +1267,9 @@ img.media-border {
 // template 41
 
 .widget-links {
-  a{
-    box-shadow: 7px 7px 23px 0 rgba(0,0,0,0.19);
-    @include rem(padding,25px);
+  a {
+    box-shadow: 7px 7px 23px 0 rgba(0, 0, 0, 0.19);
+    @include rem(padding, 25px);
     height: 100%;
   }
 
@@ -1235,16 +1281,18 @@ img.media-border {
     @include rem(max-width, 86px);
     @include rem(min-height, 61px);
   }
+
   .description-link {
     color: black;
     @include rem(padding-left, 20px);
     @include rem(padding-right, 34px);
     margin-top: auto;
     margin-bottom: auto;
+
     &::after {
       content: $icon-chevron-right;
       font-family: $icomoon-font-family;
-      color:$primary;
+      color: $primary;
       font-size: 25px;
       font-weight: bold;
       right: 25px;
@@ -1253,6 +1301,7 @@ img.media-border {
       transform: translateY(-50%);
     }
   }
+
   &_item {
     margin-bottom: 30px;
   }
@@ -1266,27 +1315,33 @@ img.media-border {
     text-align: center;
     width: 80%;
   }
+
   .carousel-indicators {
     position: relative;
     list-style: none;
     display: flex;
     justify-content: center;
+
     .active {
       background: transparent;
+
       img {
         opacity: 1;
       }
     }
+
     li {
       padding: 5px;
       width: 60px;
       height: 60px;
       background-color: transparent;
       text-indent: 0;
+
       &::before,
       &::after {
         display: none;
       }
+
       img {
         border-radius: 50%;
         opacity: .6;
@@ -1309,8 +1364,9 @@ img.media-border {
       right: 0;
       z-index: 0;
       border-top-right-radius: 6px;
-	    border-top-left-radius: 6px;
+      border-top-left-radius: 6px;
     }
+
     &.flex-column-reverse {
       &::after {
         top: inherit;
@@ -1318,9 +1374,10 @@ img.media-border {
         border-radius: 0;
         border-bottom-right-radius: 6px;
         border-bottom-left-radius: 6px;
-      } 
+      }
     }
   }
+
   .card-image {
     z-index: 1;
     border: 6px solid $white;
@@ -1329,6 +1386,7 @@ img.media-border {
     height: 150px;
   }
 }
+
 //Template 44
 .testimonial-single {
   .lazy-small-square {
@@ -1348,6 +1406,7 @@ img.media-border {
       box-shadow: 0px 5px 10px 5px rgba(48, 49, 51, 0.1);
       margin-top: -40px;
     }
+
     &.flex-column-reverse {
       .card-image {
         margin-bottom: -40px;
@@ -1364,13 +1423,16 @@ img.media-border {
   top: 40%;
   right: 0;
   background: $primary;
-  z-index: 1;//99
+  z-index: 1; //99
+
   ul {
     padding: 0;
   }
+
   li {
     display: flex;
     color: $white;
+
     .text {
       color: $white;
       text-decoration: none;
@@ -1381,7 +1443,7 @@ img.media-border {
     .list-itel-inner {
       display: flex;
     }
-    
+
 
     .icon-wrapper {
       @include rem(padding, 5px);
@@ -1401,23 +1463,27 @@ img.media-border {
       border-top: 1px solid $white;
     }
   }
+
   &.description {
     @include rem(width, 233px);
     transform: translateX(81%);
-    transition: .3s transform; 
+    transition: .3s transform;
+
     &:hover {
       transform: translateX(0);
     }
+
     li {
       .icon-wrapper {
         padding: 20px 10px;
         background: $secondary;
         margin-right: 12px;
-  
+
         &::before {
           font-size: 24px;
         }
       }
+
       .text {
         padding: 0;
         font-size: 15px;
@@ -1435,21 +1501,25 @@ img.media-border {
 
 .rapport-card {
   position: relative;
-  @include rem(padding ,10px);
-  @include rem(height ,326px);
+  @include rem(padding, 10px);
+  @include rem(height, 326px);
+
   * {
     color: $white;
   }
+
   &_item {
     background-size: cover;
     background-position: left bottom;
     height: 100%;
-    @include rem(padding ,20px);
+    @include rem(padding, 20px);
   }
+
   &_description {
     margin-bottom: auto;
     margin-top: auto;
   }
+
   &_video {
     a {
       position: absolute;
@@ -1457,6 +1527,7 @@ img.media-border {
       height: 100%;
       top: 0;
       left: 0;
+
       i {
         position: absolute;
         top: 50%;
@@ -1466,7 +1537,7 @@ img.media-border {
         padding: 0px 10px;
         text-align: center;
         border-radius: 6px;
-        transform: translate(-50%,-50%);
+        transform: translate(-50%, -50%);
       }
     }
   }
@@ -1474,7 +1545,8 @@ img.media-border {
 
 @include media-breakpoint-up(lg) {
 
-  .t-video-block, .t-media-block {
+  .t-video-block,
+  .t-media-block {
     .play-video {
       border: 20px solid #2196f3;
     }
@@ -1489,9 +1561,11 @@ img.media-border {
         @include rem(line-height, 27px);
       }
     }
+
     .block-image {
       margin-bottom: 0;
     }
+
     h2 {
       @include rem(margin-bottom, 10px);
     }
@@ -1568,7 +1642,7 @@ img.media-border {
     }
 
     .t-box {
-      width: 100%;//max-width:207px;
+      width: 100%; //max-width:207px;
       height: 100%;
 
       img {
@@ -1657,7 +1731,7 @@ img.media-border {
       background-color: transparent;
     }
 
-    > .row {
+    >.row {
       margin-left: 0;
       margin-right: 0;
     }
@@ -1669,7 +1743,7 @@ img.media-border {
         line-height: 1;
       }
 
-      .row ~ .text-small {
+      .row~.text-small {
         @include rem(margin-bottom, 20px);
       }
     }
@@ -1742,7 +1816,7 @@ img.media-border {
       font-weight: bold;
     }
 
-    > h3 {
+    >h3 {
       @include rem(margin-bottom, 30px);
       text-align: left;
     }
@@ -1782,18 +1856,22 @@ img.media-border {
       max-width: 632px;
       height: 100%;
     }
+
     .slick-slide {
       @include rem(padding, 0 35px);
     }
+
     .t-2b-image-bg {
       @include rem(padding, 30px 30px 80px);
       margin-bottom: 0;
       width: 100%;
       height: 100%;
+
       .t-video-title {
         top: 40px;
         left: 40px;
       }
+
       img {
         max-width: 100%;
       }
@@ -1802,7 +1880,7 @@ img.media-border {
 
   // template 18
   .t-boxed-text-with-icon {
-    > h3 {
+    >h3 {
       @include rem(margin-bottom, 30px);
       text-align: left;
     }
@@ -1816,17 +1894,20 @@ img.media-border {
   .t-bloc-partners {
     .t-bloc-item-partner {
       flex: 1;
+
       @include if-ie() {
         a {
           flex: 1;
         }
       }
     }
+
     .t-block-partners-wrapper {
       .slick-list {
         @include rem(margin, 0 74px 20px 74px);
       }
     }
+
     img {
       @include if-ie() {
         flex-basis: 100%;
@@ -1879,12 +1960,14 @@ img.media-border {
     }
 
   }
+
   .block-illustration {
     height: 90px;
     display: flex;
     justify-content: center;
     align-items: center;
     position: relative;
+
     &:before {
       content: '';
       position: absolute;
@@ -1897,11 +1980,12 @@ img.media-border {
     }
   }
 
-// Template 28
+  // Template 28
   .t-three-push-withtext {
     @include rem(margin-bottom, 40px);
     max-width: 100%;
   }
+
   .card-level2 {
     @include rem(padding, 30px);
   }
@@ -1921,6 +2005,7 @@ img.media-border {
         @include rem(margin-bottom, 30px);
       }
     }
+
     .vf-push {
       @include rem(margin, 0 0 30px 0);
 
@@ -1944,9 +2029,11 @@ img.media-border {
       @include rem(padding, 40px 0);
     }
   }
+
   // Template 36
   .t-card-inline-inversed-parent {
     .card--inline {
+
       .card-image--inline,
       .card-body--inline {
         flex-basis: 50%;
@@ -1959,15 +2046,18 @@ img.media-border {
     .t-background-image {
       height: 402px;
     }
-    > .up {
+
+    >.up {
       @include rem(margin-top, -70px);
     }
   }
+
   // template 41
   .widget-links {
     .description-link {
       font-weight: bold;
       @include rem(padding-left, 34px);
+
       &::before {
         content: '';
         @include rem(padding, 56px);
@@ -1978,19 +2068,24 @@ img.media-border {
         border-left: 1px solid $gray-200;
         transition: 500ms background;
       }
+
       &::after {
         right: 50px;
       }
     }
+
     a {
-      @include rem(padding,38px 113px 38px 38px);
+      @include rem(padding, 38px 113px 38px 38px);
+
       &:hover {
-        box-shadow: 10px 10px 30px 10px rgba(0,0,0,0.19);
+        box-shadow: 10px 10px 30px 10px rgba(0, 0, 0, 0.19);
+
         .description-link {
           &::before {
             content: '';
             background: $primary;
           }
+
           &::after {
             content: $icon-more;
             color: $white;
@@ -2000,12 +2095,14 @@ img.media-border {
       }
     }
   }
+
   // template 46
 
   .toolbox-contact {
     li {
       position: relative;
     }
+
     &.description {
       li {
         .text {
@@ -2020,21 +2117,19 @@ img.media-border {
             z-index: -1;
             background: $secondary;
           }
-  
+
           &:hover {
             &:after {
               width: 100%;
             }
           }
-  
-          @media only screen
-          and (min-device-width: 768px)
-          and (max-device-width: 1024px)
-          and (-webkit-min-device-pixel-ratio: 1) {
-              position: initial;
-              &:after {
-                display: none;
-              }
+
+          @media only screen and (min-device-width: 768px) and (max-device-width: 1024px) and (-webkit-min-device-pixel-ratio: 1) {
+            position: initial;
+
+            &:after {
+              display: none;
+            }
           }
         }
       }
@@ -2042,3 +2137,117 @@ img.media-border {
   }
 }
 
+//Template 49
+
+@keyframes sticky-up {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.content-media--video {
+  background-color: #ddd;
+  display: block;
+  position: relative;
+  padding: 0 0 56.25% 0;
+
+  iframe {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+  }
+}
+
+#featured-video {
+  transition: width .2s ease-in-out, height .2s ease-in-out, transform .38s ease-in-out;
+
+  /** Use .sticky */
+  &.is-sticky {
+    position: fixed;
+    bottom: 20px;
+    left: auto;
+    right: 20px;
+    max-width: 354px;
+    max-height: 200px;
+    width: 354px;
+    height: 200px;
+    box-shadow: 3px 5px 13px 0 rgba(0, 0, 0, 0.12);
+    transform: translateY(100%);
+    animation: sticky-up .5s ease forwards;
+  }
+}
+
+#close-sticky-video {
+  display: none;
+  position: fixed;
+  bottom: 240px;
+  right: 20px;
+  box-shadow: 3px 5px 13px 0 rgba(0, 0, 0, 0.12);
+  background-color: $white;
+  border-radius: 50%;
+  transform: translateY(100%);
+  transition: transform .38s ease-in-out;
+  animation: sticky-up .5s ease forwards;
+  padding: 10px;
+  border: 0;
+  width: 40px;
+  height: 40px;
+  font-size: 12px;
+  align-items: center;
+  justify-content: center;
+
+  &.is-active {
+    display: flex;
+  }
+}
+
+.sticky-bloc {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+
+  &--wrapper {
+    display: block;
+    position: relative;
+    padding: 0 0 56.25% 0;
+  }
+
+  .js-img-video {
+    height: 100%;
+    width: 100%;
+
+    img {
+      height: 100%;
+      width: 100%;
+    }
+  }
+
+  iframe {
+    max-width: 100%;
+    max-height: 100%;
+  }
+
+  &.sticky {
+    position: fixed;
+    z-index: 2;
+    bottom: 40px;
+    right: 20px;
+    left: auto;
+    width: 354px;
+    height: 200px;
+    box-shadow: 3px 5px 13px 0 rgba(0, 0, 0, 0.12);
+    transform: translateY(100%);
+    animation: sticky-up .5s ease forwards;
+  }
+}

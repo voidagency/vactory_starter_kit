@@ -112,7 +112,6 @@ class VactoryReplaceWithCloudinaryUrl extends FilterBase implements ContainerFac
               $element->setAttribute('src', $url);
               $element->removeAttribute('height');
               $element->removeAttribute('width');
-              //$resource = $this->cloudinaryManager->getCloudinaryRessource($uri);
             }
             else {
               $stream_wrapper = $this->streamWrapperManager->getViaUri($uri);

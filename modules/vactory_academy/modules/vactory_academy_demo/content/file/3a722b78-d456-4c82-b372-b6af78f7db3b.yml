@@ -1,0 +1,35 @@
+_meta:
+  version: '1.0'
+  entity_type: file
+  uuid: 3a722b78-d456-4c82-b372-b6af78f7db3b
+  bundle: image
+  default_langcode: fr
+  depends:
+    0263402e-e9e7-43c0-aef1-4acf5c539285: user
+default:
+  uid:
+    -
+      entity: 0263402e-e9e7-43c0-aef1-4acf5c539285
+  filename:
+    -
+      value: login_0.png
+  uri:
+    -
+      value: 'public://pictures/2022-07/login_0.png'
+  filemime:
+    -
+      value: image/png
+  filesize:
+    -
+      value: 66316
+  status:
+    -
+      value: true
+  created:
+    -
+      value: 1657271949
+  path:
+    -
+      alias: ''
+      langcode: fr
+      pathauto: 0

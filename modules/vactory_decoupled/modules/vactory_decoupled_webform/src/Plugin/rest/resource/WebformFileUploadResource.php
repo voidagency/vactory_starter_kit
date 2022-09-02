@@ -24,7 +24,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
  *   label = @Translation("Vactory Webform File Upload"),
  *   serialization_class = "Drupal\file\Entity\File",
  *   uri_paths = {
- *     "https://www.drupal.org/link-relations/create" = "/webform_rest/{webform_id}/upload/{field_name}"
+ *     "create" = "/webform_rest/{webform_id}/upload/{field_name}"
  *   }
  * )
  */
@@ -81,7 +81,7 @@ class WebformFileUploadResource extends FileUploadResource {
 
       $validators = $this->getElementValidators($element);
 
-      $prepared_filename = $this->prepareFilename($filename, $validators);
+      $prepared_filename = uniqid() . '-' . $this->prepareFilename($filename, $validators);
 
       // Create the file.
       if (substr($destination, -1) === '/') {

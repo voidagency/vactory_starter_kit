@@ -1,0 +1,5 @@
+entity.vactory_route.add_form:
+  route_name: 'entity.vactory_route.add_form'
+  title: 'Add route'
+  appears_on:
+    - entity.vactory_route.collection

@@ -1,3 +1,4 @@
+password_lifetime: 15
 path_login: '/espace-prive/login'
 path_register: '/espace-prive/register'
 path_profile: '/espace-prive/profile'

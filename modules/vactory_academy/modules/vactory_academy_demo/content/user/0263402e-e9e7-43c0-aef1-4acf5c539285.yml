@@ -1,0 +1,80 @@
+_meta:
+  version: '1.0'
+  entity_type: user
+  uuid: 0263402e-e9e7-43c0-aef1-4acf5c539285
+  default_langcode: fr
+  depends:
+    3a722b78-d456-4c82-b372-b6af78f7db3b: file
+default:
+  preferred_langcode:
+    -
+      value: fr
+  preferred_admin_langcode:
+    -
+      value: fr
+  name:
+    -
+      value: h.bahlaouane
+  pass:
+    -
+      value: $S$E.kHzFYZk6aMxdPfhTQCvO.EjeUcxqsgmglCoB39zgq.0Rvd0PXL
+      existing: ''
+      pre_hashed: false
+  mail:
+    -
+      value: h.bahlaouane@void.fr
+  timezone:
+    -
+      value: Africa/Casablanca
+  status:
+    -
+      value: true
+  created:
+    -
+      value: 1657212384
+  access:
+    -
+      value: 0
+  login:
+    -
+      value: 0
+  init:
+    -
+      value: h.bahlaouane@void.fr
+  roles:
+    -
+      target_id: vactory_academy_instructor
+  path:
+    -
+      alias: ''
+      langcode: fr
+      pathauto: 0
+  field_about_the_author:
+    -
+      value: "<p>Donec sodales sagittis magna.. Donec id justo. Ut non enim eleifend felis pretium feugiat. Aenean posuere, tortor sed cursus feugiat, nunc augue blandit nunc, eu sollicitudin urna dolor sagittis lacus. Sed cursus turpis vitae tortor. Nullam accumsan lorem in dui. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Fusce fermentum. Mauris sollicitudin fermentum libero.</p>\r\n"
+      format: basic_html
+  field_first_name:
+    -
+      value: Hamza
+  field_last_name:
+    -
+      value: Bahlaouane
+  field_last_password_reset:
+    -
+      value: '2022-07-07T16:47:00'
+  field_password_expiration:
+    -
+      value: false
+  field_pending_expire_sent:
+    -
+      value: 0
+  field_user_profession:
+    -
+      value: Formateur
+  user_picture:
+    -
+      entity: 3a722b78-d456-4c82-b372-b6af78f7db3b
+      alt: ''
+      title: ''
+      width: 300
+      height: 300

@@ -12,6 +12,7 @@ use Drupal\Core\Site\Settings;
 use Drupal\Core\Url;
 use Drupal\file\Entity\File;
 use Drupal\media\Entity\Media;
+use Drupal\media\MediaInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -103,15 +104,38 @@ class VactoryDynamicFormatter extends FormatterBase {
         // File media.
         if ($info['type'] === 'file' && !empty($value)) {
           $file_link = NULL;
-          $media = Media::load($value);
-          if (isset($media) && !empty($media) && isset($media->field_media_file->target_id) && !empty($media->field_media_file->target_id)) {
-            $fid = $media->field_media_file->target_id;
-            $file = File::load($fid);
-            if (isset($file) && !empty($file)) {
-              $absolute_url = file_create_url($file->getFileUri());
-              $file_link = file_url_transform_relative($absolute_url);
+          if (!is_array($value)) {
+            $media = Media::load($value);
+            if (isset($media) && !empty($media) && isset($media->field_media_file->target_id) && !empty($media->field_media_file->target_id)) {
+              $fid = $media->field_media_file->target_id;
+              $file = File::load($fid);
+              if (isset($file) && !empty($file)) {
+                $absolute_url = file_create_url($file->getFileUri());
+                $file_link = file_url_transform_relative($absolute_url);
+              }
             }
           }
+          if (is_array($value)) {
+            // PDF cloudinary case.
+            $value = array_filter($value, function ($el) {
+              return isset($el['selection'][0]);
+            });
+            $key = array_keys($value)[0];
+            if (isset($value[$key]['selection'])) {
+              $file = reset($value[$key]['selection']);
+              $mid = $file['target_id'];
+              $media = Media::load($mid);
+              if (isset($media) && $media instanceof MediaInterface) {
+                $fid = (int) $media->get('field_media_file')->getString();
+                $file = File::load($fid);
+                if ($file) {
+                  $absolute_url = file_create_url($file->getFileUri());
+                  $file_link = file_url_transform_relative($absolute_url);
+                }
+              }
+            }
+          }
+
           $value = $file_link;
         }
 
@@ -274,16 +298,18 @@ class VactoryDynamicFormatter extends FormatterBase {
        * @endcode
        */
       \Drupal::moduleHandler()->alter('dynamic_field_content', $content);
+      $cache = [
+        "max-age" => Cache::PERMANENT,
+      ];
+      \Drupal::moduleHandler()->alter('dynamic_field_cache', $cache);
       $render = [
-        '#theme'        => 'vactory_dynamic_main',
+        '#theme' => 'vactory_dynamic_main',
         '#entity_delta' => $delta,
-        '#item'         => $item,
-        '#content'      => $content,
-        '#platform'     => $platform,
+        '#item' => $item,
+        '#content' => $content,
+        '#platform' => $platform,
         '#widgets_path' => $widgets_path,
-        "#cache"        => [
-          "max-age" => Cache::PERMANENT,
-        ],
+        "#cache" => is_array($cache) ? $cache : [],
       ];
 
       $renderer = $this->renderer;

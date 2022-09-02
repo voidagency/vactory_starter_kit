@@ -1,0 +1,32 @@
+_meta:
+  version: '1.0'
+  entity_type: media
+  uuid: 8e87411e-f661-43bc-bec0-6ecb7a40e358
+  bundle: remote_video
+  default_langcode: fr
+  depends:
+    5fc7666c-bc63-4267-84cf-09fc431c7c79: user
+default:
+  status:
+    -
+      value: true
+  uid:
+    -
+      entity: 5fc7666c-bc63-4267-84cf-09fc431c7c79
+  name:
+    -
+      value: 'Drupal 8 Beginner, Lesson 1: Introduction to the Course'
+  created:
+    -
+      value: 1657272443
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: fr
+      pathauto: 0
+  field_media_oembed_video:
+    -
+      value: 'https://www.youtube.com/watch?v=-DYSucV1_9w&list=PLtaXuX0nEZk9MKY_ClWcPkGtOEGyLTyCO'

@@ -1,0 +1,14 @@
+{# Sets Unique ID for Tabs. #}
+{% set tab_id = 'nav-tab-' ~ random(999) %}
+<nav>
+  <div class="nav nav-tabs" id="{{ tab_id }}" role="tablist">
+    {% for key, item in content if key|first != '#' %}
+      <a class="nav-item nav-link {% if loop.first %} active {% endif %}" data-toggle="tab" href="#{{ tab_id }}-{{ key + 1 }}" role="tab" aria-controls="{{ tab_id }}-{{ key + 1 }}" aria-selected="{% if loop.first %} true {% else %} false {% endif %}">{{ item.title }}</a>
+    {% endfor %}
+  </div>
+</nav>
+<div class="tab-content" id="{{ tab_id }}-Content">
+  {% for key, item in content if key|first != '#' %}
+    <div class="tab-pane fade {% if loop.first %} active show {% endif %}" id="{{ tab_id }}-{{ key + 1 }}" role="tabpanel" aria-labelledby="{{ tab_id }}-{{ key + 1 }}">{{ item.description }}</div>
+  {% endfor %}
+</div>

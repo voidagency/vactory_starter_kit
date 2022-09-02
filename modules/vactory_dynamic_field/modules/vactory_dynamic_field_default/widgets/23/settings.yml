@@ -1,0 +1,19 @@
+name: 'DF: Numbre-step / Title / Description'
+multiple: TRUE
+category: 'Chiffre'
+enabled: TRUE
+fields:
+  chiffre:
+    type: text
+    label: 'Chiffre'
+    options:
+      '#required': TRUE
+  titre:
+    type: text
+    label: 'Titre'
+  description:
+    type: textarea
+    label: 'Description'
+  cta:
+    type: url_extended
+    label: 'Link / en savoir plus'

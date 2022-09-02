@@ -15,6 +15,7 @@ dependencies:
     - field.field.node.vactory_business.field_vactory_address
     - field.field.node.vactory_business.field_vactory_date
     - field.field.node.vactory_business.field_vactory_image
+    - field.field.node.vactory_annual_report.field_vactory_tags
     - field.field.node.vactory_business.field_vactory_telephone
     - image.style.thumbnail
     - node.type.vactory_business
@@ -64,6 +65,16 @@ content:
     third_party_settings: {  }
     type: entity_reference_autocomplete
     region: content
+  field_vactory_tags:
+    type: entity_reference_autocomplete
+    weight: 41
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_business_users:
     weight: 25
     settings:

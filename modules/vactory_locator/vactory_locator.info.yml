@@ -35,3 +35,4 @@ dependencies:
   - views_autocomplete_filters
   - vactory_views
   - views
+  - vactory_google_places

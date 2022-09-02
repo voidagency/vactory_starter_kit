@@ -1,0 +1,33 @@
+_meta:
+  version: '1.0'
+  entity_type: file
+  uuid: ff47270c-e1a1-4c87-9c37-7bbaf6041f76
+  bundle: image
+  default_langcode: fr
+default:
+  uid:
+    -
+      target_id: 1
+  filename:
+    -
+      value: event1.jpeg
+  uri:
+    -
+      value: 'public://2022-07/event1.jpeg'
+  filemime:
+    -
+      value: image/jpeg
+  filesize:
+    -
+      value: 443168
+  status:
+    -
+      value: true
+  created:
+    -
+      value: 1657187467
+  path:
+    -
+      alias: ''
+      langcode: fr
+      pathauto: 1

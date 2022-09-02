@@ -11,44 +11,43 @@ dependencies:
     - field.field.node.vactory_testimonials.field_vactory_profils
     - field.field.node.vactory_testimonials.field_vactory_role
     - field.field.node.vactory_testimonials.field_vactory_seo_status
+    - field.field.node.vactory_testimonials.field_vactory_tags
     - node.type.vactory_testimonials
   module:
     - datetime
     - text
     - user
     - vactory_core
-_core:
-  default_config_hash: 0gwaRpCczXbQdcjvYgK221zr4Z1cFdlHO2Cxlh0os3g
 id: node.vactory_testimonials.mur
 targetEntityType: node
 bundle: vactory_testimonials
 mode: mur
 content:
   body:
-    label: hidden
     type: text_default
-    weight: 1
+    label: hidden
     settings: {  }
     third_party_settings: {  }
+    weight: 1
     region: content
   field_vactory_date:
-    weight: 4
+    type: datetime_default
     label: above
     settings:
-      format_type: medium
       timezone_override: ''
+      format_type: medium
     third_party_settings: {  }
-    type: datetime_default
+    weight: 4
     region: content
   field_vactory_excerpt:
-    weight: 3
+    type: text_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: text_default
+    weight: 3
     region: content
   field_vactory_media:
-    weight: 2
+    type: lazy_image
     label: hidden
     settings:
       desktop_1x: vactory_three_cols_x1
@@ -61,13 +60,13 @@ content:
       mobile_2x: vactory_three_cols_x2
       lqip: lqip
     third_party_settings: {  }
-    type: lazy_image
+    weight: 2
     region: content
   links:
-    weight: 0
-    region: content
     settings: {  }
     third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   addtoany: true
   field_content_access_groups: true
@@ -77,6 +76,7 @@ hidden:
   field_vactory_profils: true
   field_vactory_role: true
   field_vactory_seo_status: true
+  field_vactory_tags: true
   langcode: true
   mail_message: true
   mail_subject: true

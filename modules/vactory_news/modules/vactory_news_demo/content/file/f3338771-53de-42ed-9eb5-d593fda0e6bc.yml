@@ -1,0 +1,44 @@
+_meta:
+  version: '1.0'
+  entity_type: file
+  uuid: f3338771-53de-42ed-9eb5-d593fda0e6bc
+  bundle: image
+  default_langcode: fr
+default:
+  uid:
+    -
+      target_id: 1
+  filename:
+    -
+      value: photo-1476242906366-d8eb64c2f661.jpeg
+  uri:
+    -
+      value: 'public://2020-06/photo-1476242906366-d8eb64c2f661_5.jpeg'
+  filemime:
+    -
+      value: image/jpeg
+  filesize:
+    -
+      value: 80534
+  status:
+    -
+      value: true
+  created:
+    -
+      value: 1592425761
+  path:
+    -
+      alias: ''
+      langcode: fr
+      pathauto: 0
+  metatag_normalized:
+    -
+      tag: meta
+      attributes:
+        name: title
+        content: '| Vactory'
+    -
+      tag: link
+      attributes:
+        rel: canonical
+        href: 'http://default/fr/accueil'

@@ -1,0 +1,23 @@
+<div class="row vf-slick-slider vf-slick-mobile slick-padding wow"
+     data-mobile-centermode="true"
+     data-mobile-centerpadding="40px">
+  {% for item in content %}
+    <div class="col-md-4 shadow text-center p-4">
+      <div class="">
+        {% if item.number is not empty %}
+          <div class="font-weight-bold h3 mb-2">
+              <span>{{item.textPrefix}}</span>
+              <span class="js-number-animate" data-number="{{ item.number }}">{{ 0 }}</span>
+              <span>{{item.textSuffix}}</span>
+          </div>
+        {% endif %}
+        {% if item.name is not empty %}
+          <p class="font-weight-bold mb-2">{{ item.name }}</p>
+        {% endif %}
+        {% if item.description is not empty %}
+          <p>{{ item.description }}</p>
+        {% endif %}
+      </div>
+    </div>
+  {% endfor %}
+</div>

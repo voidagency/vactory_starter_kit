@@ -1,0 +1,37 @@
+_meta:
+  version: '1.0'
+  entity_type: media
+  uuid: de3f6f4e-d9e7-4345-9d72-a0f3a1491201
+  bundle: image
+  default_langcode: fr
+  depends:
+    5fc7666c-bc63-4267-84cf-09fc431c7c79: user
+    782dd81c-7fd5-46d7-b505-752a9ba24ee3: file
+default:
+  status:
+    -
+      value: true
+  uid:
+    -
+      entity: 5fc7666c-bc63-4267-84cf-09fc431c7c79
+  name:
+    -
+      value: 2030028_f6ef_2.jpeg
+  created:
+    -
+      value: 1657207908
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: fr
+      pathauto: 0
+  field_media_image:
+    -
+      entity: 782dd81c-7fd5-46d7-b505-752a9ba24ee3
+      alt: test
+      title: ''
+      width: 560
+      height: 315

@@ -1,0 +1,63 @@
+_meta:
+  version: '1.0'
+  entity_type: node
+  uuid: d8eb8b37-ab43-4e74-8655-dc9c59c09bb4
+  bundle: vactory_tender
+  default_langcode: fr
+  depends:
+    965da9aa-170d-499a-b3bd-35e1dc0f122f: media
+default:
+  revision_uid:
+    -
+      target_id: 1
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  title:
+    -
+      value: 'Offre N°01/2017'
+  created:
+    -
+      value: 1657299620
+  promote:
+    -
+      value: true
+  sticky:
+    -
+      value: false
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: fr
+      pathauto: 0
+  node_summary:
+    -
+      value: 'Offre N°01/2017'
+  content_translation_source:
+    -
+      value: und
+  content_translation_outdated:
+    -
+      value: false
+  field_vactory_date:
+    -
+      value: '2022-10-23'
+  field_vactory_excerpt:
+    -
+      value: "<p>Vestibulum ac diam sit amet quam vehicula elementum sed sit amet dui. Vivamus magna justo, lacinia eget consectetur sed, convallis at tellus. Vivamus magna justo, lacinia eget consectetur sed, convallis at tellus. Proin eget tortor risus. Curabitur aliquet quam id dui posuere blandit. Curabitur non nulla sit amet nisl tempus convallis quis ac lectus. Vivamus suscipit tortor eget felis porttitor volutpat. Proin eget tortor risus. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia Curae; Donec velit neque, auctor sit amet aliquam vel, ullamcorper sit amet ligula. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed porttitor lectus nibh.</p>\r\n"
+      format: basic_html
+  field_vactory_media_document:
+    -
+      entity: 965da9aa-170d-499a-b3bd-35e1dc0f122f
+  field_vactory_media_file:
+    -
+      entity: 965da9aa-170d-499a-b3bd-35e1dc0f122f
+  field_vactory_reference:
+    -
+      value: 'Offre N°01/2017'

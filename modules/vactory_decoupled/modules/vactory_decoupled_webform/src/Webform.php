@@ -5,6 +5,7 @@ namespace Drupal\vactory_decoupled_webform;
 
 use Drupal\webform\Element\WebformTermReferenceTrait;
 use Drupal\webform\Entity\WebformSubmission;
+use Drupal\webform\WebformTokenManager;
 
 /**
  * Simplifies the process of generating an API version of a webform.
@@ -16,6 +17,17 @@ class Webform
   use WebformTermReferenceTrait;
 
   protected $webform;
+
+  /**
+   * The webform token manager.
+   *
+   * @var \Drupal\webform\WebformTokenManager
+   */
+  protected $webformTokenManager;
+
+  public function __construct(WebformTokenManager $webformTokenManager) {
+    $this->webformTokenManager = $webformTokenManager;
+  }
 
   /**
    * Return the requested entity as an structured array.
@@ -42,13 +54,42 @@ class Webform
     $schema = [];
 
     foreach ($items as $key => $item) {
-      if ($key === 'actions') {
+      if (isset($item['#type']) && $item['#type'] === 'webform_actions') {
+        $schema['buttons']['actions'][$key] = $this->SubmitbuttonsToUiSchema($item);
         continue;
       }
       $schema[$key] = $this->itemToUiSchema($key, $item, $items);
     }
 
+    // Add reset button.
+    $schema['buttons']['reset'] = $this->resetButtonToUiSchema();
     return $schema;
+  }
+
+  /**
+   * Add reset button to ui schema.
+   *
+   * @return array
+   */
+  public function resetButtonToUiSchema() {
+    $properties = [];
+    $properties['hidden'] = !$this->webform->getSetting('form_reset');
+    $properties['text'] = t('Reset');
+    return $properties;
+  }
+
+  /**
+   * Add Buttons to ui schema.
+   *
+   * @param $item
+   *
+   * @return array
+   */
+  public function SubmitbuttonsToUiSchema($item) {
+    $properties = [];
+    $properties['text'] = isset($item['#submit__label']) ? $item['#submit__label'] : (isset($item['#title']) ? $item['#title'] : '');
+    $properties['type'] = $item['#type'];
+    return $properties;
   }
 
   /**
@@ -64,6 +105,14 @@ class Webform
     $properties = [];
     if (isset($item['#required']) || isset($item['#pattern'])) {
       $properties['validation'] = [];
+    }
+
+    if (isset($item['#default_value'])) {
+      $properties['default_value'] = $this->webformTokenManager->replace($item['#default_value'], NULL, [], []);
+    }
+
+    if (isset($item['#title_display'])) {
+      $properties['title_display'] = $item['#title_display'];
     }
 
     // @todo: webform_terms_of_service

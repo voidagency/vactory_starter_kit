@@ -298,7 +298,11 @@ function vactory_notifications_form_node_form_alter(&$form) {
   $form['generate_notification']['#group'] = 'node_notifications';
   $route_name = Drupal::routeMatch()->getRouteName();
   $langcode = Drupal::languageManager()->getCurrentLanguage()->getId();
-  $notification_config_translation = Drupal::languageManager()->getLanguageConfigOverride($langcode, 'vactory_notifications.settings');
+  $default_langcode = Drupal::languageManager()->getDefaultLanguage()->getId();
+  $notification_config_translation = Drupal::configFactory()->getEditable('vactory_notifications.settings');
+  if ($langcode !== $default_langcode) {
+    $notification_config_translation = Drupal::languageManager()->getLanguageConfigOverride($langcode, 'vactory_notifications.settings');
+  }
   if (!isset($form['notification_title']['widget'][0]['value']['#default_value']) || $route_name === 'entity.node.content_translation_add') {
     $form['notification_title']['widget'][0]['value']['#default_value'] = $notification_config_translation->get('notifications_default_title') ?? $notifications_config->get('notifications_default_title');
   }

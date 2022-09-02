@@ -1,0 +1,4 @@
+services:
+  vactory_private_files_decoupled.access:
+    class: Drupal\vactory_private_files_decoupled\Access\PrivateFileTokenGenerator
+    arguments: ['@private_key', '@datetime.time']

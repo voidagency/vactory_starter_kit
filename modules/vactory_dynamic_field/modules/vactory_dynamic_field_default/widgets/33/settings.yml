@@ -1,0 +1,31 @@
+name: "DF: Temoignage rating"
+multiple: TRUE
+category: "Testimonials"
+enabled: TRUE
+fields:
+  image:
+    type: image
+    label: "Profile Image"
+  name:
+    type: text
+    label: "name"
+  post:
+    type: text
+    label: "post"
+  rate:
+    type: number
+    label: "rating from 1 to 5"
+  description:
+    type: textarea
+    label: "Description"
+    options:
+      "#format": full_html
+extra_fields:
+  slider:
+    type: checkbox
+    label: "activate slider"
+  intro:
+    type: text_format
+    label: 'Introduction'
+    options:
+      "#format": full_html

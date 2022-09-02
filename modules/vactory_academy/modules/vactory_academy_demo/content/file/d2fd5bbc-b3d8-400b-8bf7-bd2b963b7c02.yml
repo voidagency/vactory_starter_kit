@@ -1,0 +1,35 @@
+_meta:
+  version: '1.0'
+  entity_type: file
+  uuid: d2fd5bbc-b3d8-400b-8bf7-bd2b963b7c02
+  bundle: image
+  default_langcode: fr
+  depends:
+    0263402e-e9e7-43c0-aef1-4acf5c539285: user
+default:
+  uid:
+    -
+      entity: 0263402e-e9e7-43c0-aef1-4acf5c539285
+  filename:
+    -
+      value: FPvBejtIsKVC-R_eX8CLXxrUOgEcZ-sNZrBuEBv9zL8.jpg
+  uri:
+    -
+      value: 'public://oembed_thumbnails/FPvBejtIsKVC-R_eX8CLXxrUOgEcZ-sNZrBuEBv9zL8.jpg'
+  filemime:
+    -
+      value: image/jpeg
+  filesize:
+    -
+      value: 29770
+  status:
+    -
+      value: true
+  created:
+    -
+      value: 1657276494
+  path:
+    -
+      alias: ''
+      langcode: fr
+      pathauto: 1

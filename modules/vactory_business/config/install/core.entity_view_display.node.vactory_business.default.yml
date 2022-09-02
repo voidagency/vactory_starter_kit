@@ -15,6 +15,7 @@ dependencies:
     - field.field.node.vactory_business.field_vactory_address
     - field.field.node.vactory_business.field_vactory_date
     - field.field.node.vactory_business.field_vactory_image
+    - field.field.node.vactory_annual_report.field_vactory_tags
     - field.field.node.vactory_business.field_vactory_telephone
     - node.type.vactory_business
   module:
@@ -30,122 +31,129 @@ bundle: vactory_business
 mode: default
 content:
   body:
-    label: hidden
     type: text_default
-    weight: 101
+    label: hidden
     settings: {  }
     third_party_settings: {  }
+    weight: 101
     region: content
   field_business_pays:
-    weight: 110
+    type: address_country_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: address_country_default
+    weight: 110
     region: content
   field_business_specialisations:
-    weight: 114
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 114
     region: content
   field_business_users:
-    weight: 112
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 112
     region: content
   field_business_ville:
-    weight: 115
+    type: string
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 115
     region: content
   field_secteur_activite:
-    weight: 102
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 102
     region: content
   field_site_web:
-    weight: 106
+    type: string
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 106
     region: content
   field_social_networks:
-    weight: 111
+    type: social_media_links_field_default
     label: above
     settings:
       appearance: {  }
       link_attributes: {  }
     third_party_settings: {  }
-    type: social_media_links_field_default
+    weight: 111
     region: content
   field_statut_juridique:
-    weight: 104
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 104
     region: content
   field_taille_entreprise:
-    weight: 105
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 105
     region: content
   field_vactory_address:
-    weight: 109
+    type: text_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: text_default
+    weight: 109
     region: content
   field_vactory_date:
-    weight: 103
+    type: datetime_default
     label: above
     settings:
-      format_type: medium
       timezone_override: ''
+      format_type: medium
     third_party_settings: {  }
-    type: datetime_default
+    weight: 103
     region: content
   field_vactory_image:
-    weight: 117
+    type: image
     label: above
     settings:
-      image_style: ''
       image_link: ''
+      image_style: ''
     third_party_settings: {  }
-    type: image
+    weight: 117
     region: content
   field_vactory_telephone:
-    weight: 113
+    type: string
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 113
     region: content
-  links:
-    weight: 100
+  flag_liked_content:
     settings: {  }
     third_party_settings: {  }
+    weight: 10
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
     region: content
 hidden:
+  addtoany: true
+  field_vactory_tags: true
   langcode: true
   search_api_excerpt: true

@@ -186,6 +186,9 @@ class PointsEditEventsSubscriber implements EventSubscriberInterface {
         if ($role_match && $node_type_match && !$action_processed) {
           $filtered_rules[$index] = $rule;
         }
+        if (!$no_repeat) {
+          $filtered_rules[$index] = $rule;
+        }
       }
     }
     return $filtered_rules;
@@ -201,7 +204,9 @@ class PointsEditEventsSubscriber implements EventSubscriberInterface {
     $title = $config->get('notifications')[$rule['points_info']['operation']]['notification_title'];
     $message = $config->get('notifications')[$rule['points_info']['operation']]['notification_message'];
     $entity = $event->getEntity();
-    $entity = $this->entityRepository->getTranslationFromContext($entity, $langcode);
+    if ($entity) {
+      $entity = $this->entityRepository->getTranslationFromContext($entity, $langcode);
+    }
     $points = $rule['points_info']['points'];
     $action_label = $rule['action']['action_label'];
     $entity_title = isset($entity) ? $entity->label() : '';

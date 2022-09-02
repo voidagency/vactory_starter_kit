@@ -1,0 +1,37 @@
+
+<div class='mb-3 text-center'>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s </div>
+<div class="shadow-sm p-3">
+  <div class="row vf-slick-slider"
+        data-toshow="1"
+        data-dots="false"
+        data-arrows="true"
+        data-mobile-centermode="false">
+    {% for item in 0..2 %}
+    {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/330/200.jpg" %}
+     <div class="col-12">
+        <div class="row">
+          <div class="col-12 col-md-4">
+              <a href="#">
+                <div class='lazy-wrapper'>
+                  <img
+                      src="{{ placehold }}"
+                      class="img-fluid lazyload"
+                      alt="placehold">
+                </div>
+              </a>
+          </div>
+          <div class="col-12 col-md-8">
+            <h3 class="h4">Title</h3>
+            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+              Lorem Ipsum has been the industry's standard dummy text ever since the 1500s</p>
+            <a class="permalink" href="#">Read More</a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="text-center mt-4">
+    <a class="btn btn-primary" href="#">Read More</a>
+  </div>

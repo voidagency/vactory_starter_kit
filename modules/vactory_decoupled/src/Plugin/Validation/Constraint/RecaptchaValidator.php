@@ -3,6 +3,7 @@
 namespace Drupal\vactory_decoupled\Plugin\Validation\Constraint;
 
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Drupal\Core\Routing\AdminContext;
 use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Validator\Constraint;
@@ -23,13 +24,21 @@ class RecaptchaValidator extends ConstraintValidator implements ContainerInjecti
   protected $currentUser;
 
   /**
+   * The admin context.
+   *
+   * @var
+   */
+  protected $admin_context;
+
+  /**
    * Creates a new RecaptchaValidator instance.
    *
    * @param \Drupal\Core\Session\AccountInterface $current_user
    *   The current user.
    */
-  public function __construct(AccountInterface $current_user) {
+  public function __construct(AccountInterface $current_user, AdminContext $admin_context) {
     $this->currentUser = $current_user;
+    $this->admin_context = $admin_context;
   }
 
   /**
@@ -37,7 +46,8 @@ class RecaptchaValidator extends ConstraintValidator implements ContainerInjecti
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('current_user')
+      $container->get('current_user'),
+      $container->get('router.admin_context')
     );
   }
 
@@ -50,12 +60,12 @@ class RecaptchaValidator extends ConstraintValidator implements ContainerInjecti
     $is_admin = $this->currentUser->hasPermission('skip CAPTCHA');
 
     if (in_array($method, [
-      'GET',
-      'HEAD',
-      'CONNECT',
-      'TRACE',
-      'OPTIONS',
-    ], TRUE) || $is_admin) {
+        'GET',
+        'HEAD',
+        'CONNECT',
+        'TRACE',
+        'OPTIONS',
+      ], TRUE) || $is_admin || $this->admin_context->isAdminRoute()) {
       return;
     }
     $raw_data = $request->getContent();
@@ -67,14 +77,14 @@ class RecaptchaValidator extends ConstraintValidator implements ContainerInjecti
         ->atPath('g_recaptcha_response')
         ->setCode('factory-7a99-4df7-8ce9-46e416a1e60b')
         ->addViolation();
-//      $this->context->addViolation($constraint->required, ['%value' => $value]);
+      //      $this->context->addViolation($constraint->required, ['%value' => $value]);
     }
     else {
       if (!$this->isValid($value)) {
         $this->context->buildViolation($constraint->notValid)
           ->atPath('g-recaptcha-response')
           ->addViolation();
-//        $this->context->addViolation($constraint->notValid, ['%value' => $value]);
+        //        $this->context->addViolation($constraint->notValid, ['%value' => $value]);
       }
     }
   }

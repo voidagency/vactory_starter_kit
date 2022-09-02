@@ -1,0 +1,33 @@
+_meta:
+  version: '1.0'
+  entity_type: file
+  uuid: c9bb6362-634c-4d09-bafe-669a2ed7c6b7
+  bundle: image
+  default_langcode: fr
+default:
+  uid:
+    -
+      target_id: 1
+  filename:
+    -
+      value: 828554_7408_2.jpeg
+  uri:
+    -
+      value: 'public://2022-07/828554_7408_2.jpeg'
+  filemime:
+    -
+      value: image/jpeg
+  filesize:
+    -
+      value: 61706
+  status:
+    -
+      value: true
+  created:
+    -
+      value: 1657277314
+  path:
+    -
+      alias: ''
+      langcode: fr
+      pathauto: 1

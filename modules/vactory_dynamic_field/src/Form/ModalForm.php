@@ -271,7 +271,7 @@ class ModalForm extends FormBase {
             $element_options = isset($field_info['options']) ? $field_info['options'] : [];
 
             $ds_field_name = '';
-            if ($element_type == 'image') {
+            if ($element_type == 'image' || $element_type == 'file') {
               // Save a copy of current parent.
               $form_parents = $form['#parents'] ?? [];
               $form['#parents'] = [
@@ -301,7 +301,7 @@ class ModalForm extends FormBase {
               $this->textformatFields[] = ['components', 'extra_field', $field_id, $field_key];
             }
 
-            if ($element_type == 'image') {
+            if ($element_type == 'image' || $element_type == 'file') {
               // Restore parent for other fields.
               $form['#parents'] = $form_parents;
             }
@@ -314,7 +314,7 @@ class ModalForm extends FormBase {
           $element_options = isset($field['options']) ? $field['options'] : [];
 
           $ds_field_name = '';
-          if ($element_type == 'image') {
+          if ($element_type == 'image' || $element_type == 'file') {
             // Save a copy of current parent.
             $form_parents = $form['#parents'] ?? [];
             $form['#parents'] = ['components', 'extra_field', $field_id];
@@ -338,7 +338,7 @@ class ModalForm extends FormBase {
             $this->textformatFields[] = ['components', 'extra_field', $field_id];
           }
 
-          if ($element_type == 'image') {
+          if ($element_type == 'image' || $element_type == 'file') {
             // Restore parent for other fields.
             $form['#parents'] = $form_parents;
           }
@@ -416,7 +416,7 @@ class ModalForm extends FormBase {
             $element_options = isset($field_info['options']) ? $field_info['options'] : [];
 
             $ds_field_name = '';
-            if ($element_type == 'image') {
+            if ($element_type == 'image' || $element_type == 'file') {
               // Save a copy of current parent.
               $form_parents = $form['#parents'] ?? [];
               $form['#parents'] = ['components', $i, $field_id, $field_key];
@@ -456,7 +456,7 @@ class ModalForm extends FormBase {
           $element_options = isset($field['options']) ? $field['options'] : [];
 
           $ds_field_name = '';
-          if ($element_type == 'image' || $element_type == 'remote_video') {
+          if ($element_type == 'image' || $element_type == 'remote_video' || $element_type == 'file') {
             // Save a copy of current parent.
             $form_parents = $form['#parents'] ?? [];
             $form['#parents'] = ['components', $i, $field_id];
@@ -481,7 +481,7 @@ class ModalForm extends FormBase {
             $this->textformatFields[] = ['components', $i, $field_id];
           }
 
-          if ($element_type == 'image' || $element_type == 'remote_video') {
+          if ($element_type == 'image' || $element_type == 'remote_video' || $element_type == 'file') {
             // Restore parent for other fields.
             $form['#parents'] = $form_parents;
           }

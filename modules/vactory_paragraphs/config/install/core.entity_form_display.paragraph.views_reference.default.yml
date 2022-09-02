@@ -21,20 +21,21 @@ third_party_settings:
     group_apparence:
       children:
         - paragraph_container
+        - container_spacing
         - paragraph_identifier
         - paragraph_css_class
         - group_fond
+      label: Apparence
+      region: content
       parent_name: ''
       weight: 2
       format_type: details
-      region: content
       format_settings:
-        id: ''
         classes: ''
-        description: ''
+        id: ''
         open: false
+        description: ''
         required_fields: true
-      label: Apparence
     group_fond:
       children:
         - field_background_color
@@ -42,105 +43,111 @@ third_party_settings:
         - group_positionner_l_image
         - group_display
         - paragraph_background_parallax
+      label: 'Couleur/Image de Fond'
+      region: content
       parent_name: group_apparence
       weight: 7
       format_type: details
-      region: content
       format_settings:
-        id: ''
         classes: ''
-        description: ''
+        id: ''
         open: false
+        description: ''
         required_fields: false
-      label: 'Couleur/Image de Fond'
     group_display:
       children:
         - field_paragraph_hide_lg
         - field_paragraph_hide_sm
+      label: Display
+      region: content
       parent_name: group_fond
       weight: 3
       format_type: details
-      region: content
       format_settings:
-        id: ''
         classes: ''
+        id: ''
+        open: false
         description: ''
         required_fields: true
-        open: false
-      label: Display
     group_positionner_l_image:
       children:
         - field_position_image_x
         - field_position_image_y
         - field_size_image
+      label: 'Positionner l''image'
+      region: content
       parent_name: group_fond
       weight: 2
       format_type: details
-      region: content
       format_settings:
-        id: ''
         classes: ''
+        id: ''
+        open: false
         description: ''
         required_fields: true
-        open: false
-      label: 'Positionner l''image'
 id: paragraph.views_reference.default
 targetEntityType: paragraph
 bundle: views_reference
 mode: default
 content:
-  field_background_color:
+  container_spacing:
+    type: options_select
+    weight: 4
+    region: content
     settings: {  }
+    third_party_settings: {  }
+  field_background_color:
     type: jquery_colorpicker
     weight: 0
     region: content
+    settings: {  }
     third_party_settings: {  }
   field_paragraph_hide_lg:
+    type: boolean_checkbox
     weight: 7
+    region: content
     settings:
       display_label: true
     third_party_settings: {  }
-    type: boolean_checkbox
-    region: content
   field_paragraph_hide_sm:
+    type: boolean_checkbox
     weight: 8
+    region: content
     settings:
       display_label: true
     third_party_settings: {  }
-    type: boolean_checkbox
-    region: content
   field_position_image_x:
+    type: options_select
     weight: 4
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_select
-    region: content
   field_position_image_y:
+    type: options_select
     weight: 6
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_select
-    region: content
   field_size_image:
+    type: options_select
     weight: 7
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_select
-    region: content
   field_vactory_title:
+    type: string_textfield
     weight: 0
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   field_views_reference:
+    type: viewsreference_select
     weight: 1
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: viewsreference_select
-    region: content
   paragraph_background_color:
     type: jquery_colorpicker
     weight: 11
@@ -157,10 +164,10 @@ content:
     third_party_settings: {  }
   paragraph_background_parallax:
     type: boolean_checkbox
-    settings:
-      display_label: true
     weight: 4
     region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   paragraph_container:
     type: options_select
@@ -170,7 +177,7 @@ content:
     third_party_settings: {  }
   paragraph_css_class:
     type: string_textfield
-    weight: 5
+    weight: 6
     region: content
     settings:
       size: 60
@@ -178,11 +185,11 @@ content:
     third_party_settings: {  }
   paragraph_identifier:
     type: string_textfield
+    weight: 5
+    region: content
     settings:
       size: 60
       placeholder: ''
-    weight: 4
-    region: content
     third_party_settings: {  }
 hidden:
   created: true

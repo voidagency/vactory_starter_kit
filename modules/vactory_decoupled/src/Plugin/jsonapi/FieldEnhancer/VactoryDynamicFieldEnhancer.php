@@ -10,6 +10,7 @@ use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\jsonapi_extras\Plugin\ResourceFieldEnhancerBase;
 use Drupal\media\Entity\Media;
+use Drupal\media\MediaInterface;
 use Shaper\Util\Context;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Component\Utility\NestedArray;
@@ -263,7 +264,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
             // Add cache.
             $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $media->getCacheTags());
             $this->cacheability->setCacheTags($cacheTags);
-            $fid = (int) $media->get('field_media_document')->getString();
+            $fid = (int) $media->get('field_media_file')->getString();
             $file = File::load($fid);
             if ($file) {
               // Add cache.
@@ -288,7 +289,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
 
         // Collection.
         if ($info['type'] === 'json_api_collection' && !empty($value)) {
-          $value = array_merge($value, $info['options']['#default_value']);
+          $value = array_merge($info['options']['#default_value'], $value);
           $response = \Drupal::service('vactory_decoupled.jsonapi.generator')->fetch($value);
           $cache = $response['cache'];
           unset($response['cache']);
@@ -304,6 +305,23 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
           $value['elements'] = \Drupal::service('vactory.webform.normalizer')->normalize($webform_id);
         }
 
+        if ($info['type'] === 'remote_video' && !empty($value)) {
+          $value = reset($value);
+          $mid = $value['selection'][0]['target_id'] ?? '';
+          $media = !empty($mid) ? $this->entityTypeManager->getStorage('media')->load($mid) : NULL;
+          if ($media instanceof MediaInterface) {
+            $value = [
+              'id' => $media->uuid(),
+              'name' => $media->getName(),
+              'url' => $media->get('field_media_oembed_video')->value,
+            ];
+          }
+        }
+
+        $cacheability = $this->cacheability;
+        // Apply other modules formatters if exist on current component.
+        \Drupal::moduleHandler()->alter('decoupled_df_format', $value, $info, $cacheability);
+        $this->cacheability = $cacheability;
       }
       elseif (is_array($value)) {
         // Go deeper.

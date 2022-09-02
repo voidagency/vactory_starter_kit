@@ -16,6 +16,7 @@ dependencies:
     - field.field.node.vactory_business.field_vactory_address
     - field.field.node.vactory_business.field_vactory_date
     - field.field.node.vactory_business.field_vactory_image
+    - field.field.node.vactory_annual_report.field_vactory_tags
     - field.field.node.vactory_business.field_vactory_telephone
     - node.type.vactory_business
   module:
@@ -27,19 +28,25 @@ bundle: vactory_business
 mode: teaser
 content:
   body:
-    label: hidden
     type: text_summary_or_trimmed
-    weight: 101
+    label: hidden
     settings:
       trim_length: 600
     third_party_settings: {  }
+    weight: 101
     region: content
-  links:
-    weight: 100
+  flag_liked_content:
     settings: {  }
     third_party_settings: {  }
+    weight: 10
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
     region: content
 hidden:
+  addtoany: true
   field_business_pays: true
   field_business_specialisations: true
   field_business_users: true
@@ -52,6 +59,7 @@ hidden:
   field_vactory_address: true
   field_vactory_date: true
   field_vactory_image: true
+  field_vactory_tags: true
   field_vactory_telephone: true
   langcode: true
   search_api_excerpt: true

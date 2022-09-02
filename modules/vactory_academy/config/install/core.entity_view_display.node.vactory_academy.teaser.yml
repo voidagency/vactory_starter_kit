@@ -16,42 +16,49 @@ dependencies:
     - field.field.node.vactory_academy.field_vactory_meta_tags
     - field.field.node.vactory_academy.field_vactory_paragraphs
     - field.field.node.vactory_academy.field_vactory_seo_status
+    - field.field.node.vactory_academy.field_vactory_tags
     - field.field.node.vactory_academy.field_vactory_theme
     - field.field.node.vactory_academy.field_vactory_youtube_media
+    - field.field.node.vactory_academy.field_vactory_youtube_videos
     - node.type.vactory_academy
-  enforced:
-    module:
-      - vactory_academy
   module:
     - text
     - user
+  enforced:
+    module:
+      - vactory_academy
 id: node.vactory_academy.teaser
 targetEntityType: node
 bundle: vactory_academy
 mode: teaser
 content:
   body:
-    label: hidden
     type: text_summary_or_trimmed
-    weight: 101
+    label: hidden
     settings:
       trim_length: 600
     third_party_settings: {  }
+    weight: 101
     region: content
   flag_favorite_academy:
-    weight: 10
     settings: {  }
     third_party_settings: {  }
+    weight: 10
+    region: content
+  flag_liked_content:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 10
     region: content
   links:
+    settings: {  }
+    third_party_settings: {  }
     weight: 100
     region: content
-    settings: {  }
-    third_party_settings: {  }
   rate_vote_widget:
-    weight: 100
     settings: {  }
     third_party_settings: {  }
+    weight: 100
     region: content
 hidden:
   addtoany: true
@@ -68,8 +75,10 @@ hidden:
   field_vactory_meta_tags: true
   field_vactory_paragraphs: true
   field_vactory_seo_status: true
+  field_vactory_tags: true
   field_vactory_theme: true
   field_vactory_youtube_media: true
+  field_vactory_youtube_videos: true
   langcode: true
   notification_message: true
   notification_title: true

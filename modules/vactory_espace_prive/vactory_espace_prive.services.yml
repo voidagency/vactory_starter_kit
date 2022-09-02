@@ -3,3 +3,8 @@ services:
     class: Drupal\vactory_espace_prive\Routing\EspacePriveRouteSubscriber
     tags:
       - { name: event_subscriber }
+  vactory_espace_prive.manager:
+    class: Drupal\vactory_espace_prive\Services\EspacePriveManager
+    arguments:
+      - '@entity_type.manager'
+      - '@config.factory'

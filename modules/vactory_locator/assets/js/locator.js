@@ -249,7 +249,7 @@
      * @param {element}
      */
     app.loadMap = function (element) {
-      $.getScript('https://maps.googleapis.com/maps/api/js?region=MA&key=' + settings.googleApiKey, function () {
+      $.getScript('https://maps.googleapis.com/maps/api/js?region=MA&libraries=places&key=' + settings.googleApiKey, function () {
         app.map = new google.maps.Map(element, {
           center: {
             lat: (settings.defaultPosition.latitude != '') ? Number(settings.defaultPosition.latitude) : 31,
@@ -777,7 +777,6 @@
 
 
       app.listenEvent(app.events.DATA_LOADED, function () {
-
         // render the location list Element
         app.renderLocationsList();
       });
@@ -885,7 +884,6 @@
         }
 
       });
-
     };
 
 
@@ -905,7 +903,6 @@
         app.triggerEvent(app.events.FILTER_REQUESTED);
       }
     });
-
 
     return app.each(function () {
 
@@ -947,16 +944,71 @@
 
 
 (function ($, Drupal, drupalSettings) {
+  var initApp = null;
+
+  function googlePlacesAutocompleteInitialize(e) {
+    var app = e.currentTarget._app;
+    var options = {};
+    var input_places = $('.input-places-search');
+    if (typeof drupalSettings.google_places != 'undefined') {
+      var code = drupalSettings.google_places.enabled_countries;
+      if(code.length > 0) {
+        options = {
+          componentRestrictions: { country: code} //Country Code
+        };
+      }
+    }
+    var autocomplete = null;
+    input_places.each(function (i) {
+      autocomplete = new google.maps.places.Autocomplete(this, options);
+      google.maps.event.addListener(autocomplete, 'place_changed', function(e) {
+        var place = autocomplete.getPlace();
+        var address_components = place.address_components.map(function (el) {
+          return el.long_name.toLowerCase();
+        });
+        initApp = !initApp ? $.extend(true,{},app) : initApp;
+        app.data.results = initApp.data.results.filter(function(el) {
+          return address_components.includes(el.field_locator_city_1.toLowerCase());
+        });
+        app.data.total_rows = app.data.results.length;
+        if (app.data.results.length) {
+          app.map.setCenter({
+            lat: parseInt(app.data.results[0].field_locator_info.lat),
+            lng: parseInt(app.data.results[0].field_locator_info.lon)
+          });
+          app.map.setZoom(7);
+        }
+        app.triggerEvent(app.events.FILTER_REQUESTED);
+        input_places.on('input', function(e) {
+          e.stopPropagation();
+          if (!e.target.value.length) {
+            app.data.results = initApp.data.results;
+            app.data.total_rows = app.data.results.length;
+            app.map.setCenter({
+              lat: 31,
+              lng: -7.36133
+            });
+            app.map.setZoom(6);
+            app.triggerEvent(app.events.FILTER_REQUESTED);
+          }
+        });
+        input_places.on('select', function(e) {
+          e.target.value = '';
+          input_places.trigger('input');
+        });
+      });
+    });
+  }
+
 
   Drupal.behaviors.vactory_locator = {
 
     attach: function (context, settings) {
-
+      var app = null;
       // Ajax call case.
       if (context !== document) {
         return;
       }
-
       var options = {
         googleApiKey: drupalSettings.vactory_locator.map_key,
         apiUrl: drupalSettings.vactory_locator.url,
@@ -995,14 +1047,18 @@
           $(".container_map").hide();
           $(".location-map-wrapper").show();
           $('.block-location').show();
-          $('#vactory_locator_map').VactoryLocator(options);
+          app = $('#vactory_locator_map').VactoryLocator(options);
           $(".block-location-wrapper").show();
         });
       }
       else {
-        $('#vactory_locator_map').VactoryLocator(options);
+        app = $('#vactory_locator_map').VactoryLocator(options);
         $(".location-map-wrapper").show();
         $('.block-location').show();
+      }
+      if (drupalSettings.vactory_locator.isGooglePlaces) {
+        window.addEventListener('load', googlePlacesAutocompleteInitialize);
+        window._app = app;
       }
     }
   };

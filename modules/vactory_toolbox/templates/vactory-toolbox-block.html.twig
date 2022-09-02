@@ -5,17 +5,15 @@
 
 	<ul class="menu-level--{{ level|default(default_level) }}">
 		{% for menu_item in menu %}
-			{# Check if this is the active item. #}
-			{% set active = (menu_item.active) ? ' is-active' : '' %}
 
 			{# Check if this item is in the active trail. #}
-			{% set active = active ~ ((menu_item.active_trail) ? ' is-active-trail' : '') %}
+			{% set active = menu_item.active_trail ? 'active' : '' %}
 
 			{# Check if this item has childs. #}
 			{% set has_sub = ((menu_item.submenu or menu_item.fields.field_injected_block.plugin_id is not empty) ? 'has-sub' : '') %}
 
-			<li class="menu__item{{ active }} menu__item--{{ level|default(default_level) }} {{ has_sub }} {{ menu_item.options.attributes.wrapper_class }}">
-				<a href="{{ menu_item.url }}" id="{{ menu_item.options.attributes.id }}" class="menu__link{{ active }} {{ menu_item.options.attributes.class|join(' ') }}">{{ menu_item.text }}</a>
+			<li class="menu__item {{ active }} menu__item--{{ level|default(default_level) }} {{ has_sub }} {{ menu_item.options.attributes.wrapper_class }}">
+				<a href="{{ menu_item.url }}" id="{{ menu_item.options.attributes.id }}" class="menu__link {{ active }} {{ menu_item.options.attributes.class|join(' ') }}">{{ menu_item.text }}</a>
 				{# Call the block injected menu if exist. #}
 				{% if menu_item.fields.field_injected_block.plugin_id is not empty %}
 					<div class="menu-sub--{{ level|default(default_level) }}">
@@ -46,6 +44,7 @@
 	bundle|clean_class
 ]
 %}
+
 <div{{ attributes.addClass(classes)|without('id') }}>
 	{% block content %}
 		{% set source = content.field_links_source.0['#markup'] is defined ? content.field_links_source.0['#markup'] : '' %}

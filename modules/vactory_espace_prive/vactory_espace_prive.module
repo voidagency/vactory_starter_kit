@@ -30,6 +30,12 @@ function vactory_espace_prive_theme($existing, $type, $theme, $path) {
         'profile_form' => NULL,
       ],
     ],
+     'espace_prive_edit_pwd' => [
+      'template' => 'espace-prive-edit-pwd',
+      'variables' => [
+        'edit_password_form' => NULL,
+      ],
+     ],
     'espace_prive_password' => [
       'template' => 'espace-prive-password',
       'variables' => [
@@ -225,4 +231,40 @@ function vactory_espace_prive_managed_file_process(array &$element, FormStateInt
   return $element;
 }
 
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_espace_prive_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $user_forms = [
+    'user_form',
+    'user_register_form',
+  ];
+  if (in_array($form_id, $user_forms) && isset($form['field_reset_password_date'])) {
+    $form['field_reset_password_date']['#access'] = FALSE;
+  }
+}
+
+/**
+ * Implements hook_cron().
+ */
+function vactory_espace_prive_cron() {
+  Drupal::service('vactory_espace_prive.manager')->resetWebmastersPasswords();
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function vactory_espace_prive_form_user_register_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $form['#validate'][] = 'vactory_mail_black_list_validation';
+}
+
+/**
+ * Validate mail black list callback.
+ */
+function vactory_mail_black_list_validation($form, FormStateInterface $form_state) {
+  $valid = \Drupal::service('vactory_espace_prive.manager')->validateEmail($form_state->getValue('mail'));
+  if (!$valid) {
+    $form_state->setErrorByName('mail', t('The email domain is not valid'));
+  }
+}
 
