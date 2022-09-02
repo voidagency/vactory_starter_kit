@@ -1,0 +1,35 @@
+{{ attach_library('vactory_dynamic_field_sliders/variant4') }}
+
+<div class="vf-slider vf-slider--full-background">
+  <div class="slider vf-slick-slider"
+       data-mobile-centermode="false"
+       data-mobile-autoplay="true"
+       data-mobile-dots="true"
+       data-mobile-arrows="true"
+      data-autoplay="true"
+  >
+    {% for i in 0..5 %}
+      {% set is_visible = (loop.first) ? 'is-visible' : '' %}
+      {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/1200/600.jpg" %}
+      <div class="image" onclick="location.href='#'">
+        <div class="background" data-desktop="{{ placehold }}"
+             data-mobile="{{ placehold }}"
+             data-item="{{ loop.index }}">
+        </div>
+        <div class="content">
+          <div class="slider-content container">
+            <h1 class="vf-slider--full-background-title">This is the title {{ loop.index }}</h1>
+
+            <p class="vf-slider--full-background-description">
+              This is the description of full background slider number {{ loop.index }}
+            </p>
+
+            <a href="#" class="btn btn-outline-primary">Read more</a>
+
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  <div class="slick-controls d-lg-none"></div>
+</div>

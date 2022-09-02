@@ -85,10 +85,10 @@ class WhatsappApi implements WhatsappApiInterface {
    */
   public function init(string $to): WhatsappApiInterface
   {
-    $config = $this->configFactory->get('vactory_whatsapp.settings');
-    $this->templateName = $config->get('template_id');
-    $phone_num_id = $this->phoneNumId = $config->get('phone_num_id');
-    $this->permanentToken = $config->get('token');
+    $state = \Drupal::state();
+    $this->templateName = $state->get('vactory_whatsapp_template_id');
+    $phone_num_id = $this->phoneNumId = $state->get('vactory_whatsapp_phone_num_id');
+    $this->permanentToken = $state->get('vactory_whatsapp_token');
     if (empty($phone_num_id) || empty($this->permanentToken)) {
       throw new WhatsappApiException('Module vactory_whatsapp has not been configured yet');
     }

@@ -33,6 +33,15 @@ vactory_espace_prive.cleaned_profile:
     _role: 'authenticated'
   options:
     no_cache: 'TRUE'
+vactory_espace_prive.edit_password:
+  path: '/espace-prive/edit-password'
+  defaults:
+    _controller: '\Drupal\vactory_espace_prive\Controller\EspacePriveController::editPassword'
+    _title: 'Modifier le mot de passe'
+  requirements:
+    _role: 'authenticated'
+  options:
+    no_cache: 'TRUE'
 vactory_espace_prive.password:
   path: '/espace-prive/password'
   defaults:

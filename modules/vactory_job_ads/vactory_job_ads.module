@@ -9,9 +9,12 @@ define('VACTORY_JOB_ADS_CANDIDATE_VIA_EMAIL', 0);
 define('VACTORY_JOB_ADS_CANDIDATE_VIA_FORM', 1);
 define('VACTORY_JOB_ADS_CANDIDATE_VIA_USER_SPACE', 2);
 
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Url;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\Node;
+use Drupal\node\NodeTypeInterface;
 
 /**
  * Implements hook_theme().
@@ -19,38 +22,38 @@ use Drupal\node\Entity\Node;
 function vactory_job_ads_theme() {
   return [
     // Node > Vactory Job Ads.
-    'node__vactory_job_ads__card_inline'                       => [
+    'node__vactory_job_ads__card_inline' => [
       'base hook' => 'node',
-      'template'  => 'card-inline',
+      'template' => 'card-inline',
     ],
 
     // Node > Full Page.
-    'node__vactory_job_ads__full'                              => [
+    'node__vactory_job_ads__full' => [
       'base hook' => 'node',
-      'template'  => 'full',
+      'template' => 'full',
     ],
 
     // Node > Smart search.
-    'node__vactory_job_ads__smart_search'        => [
+    'node__vactory_job_ads__smart_search' => [
       'base hook' => 'node',
-      'template'  => 'smart-search',
+      'template' => 'smart-search',
     ],
     // Node > Mur.
-    'node__vactory_job_ads__mur'        => [
+    'node__vactory_job_ads__mur' => [
       'base hook' => 'node',
-      'template'  => 'mur',
+      'template' => 'mur',
     ],
 
     // View > Job Ads.
     'views_view_unformatted__vactory_job_ads__vactory_job_ads' => [
       'base hook' => 'views_view_unformatted',
-      'template'  => 'page-list',
+      'template' => 'page-list',
     ],
     // webform--vactory-job-application
     // Webform > Job Ads.
-    'webform__vactory_job_application'                         => [
+    'webform__vactory_job_application' => [
       'base hook' => 'webform',
-      'template'  => 'application-form',
+      'template' => 'application-form',
     ],
   ];
 }
@@ -72,6 +75,27 @@ function vactory_job_ads_form_alter(&$form, FormStateInterface $form_state, $for
       $form['elements']['job_ad']['#default_value'] = (!$node instanceof Node) ?: $node->label();
       $form['elements']['job_ad']['#disabled'] = FALSE;
       $form['elements']['job_ad']['#type'] = 'hidden';
+    }
+  }
+  if ($form_id == 'node_type_edit_form') {
+    $type = $form_state->getFormObject()->getEntity();
+    if ($type->id() == 'vactory_job_ads') {
+      $form['job_ads_candidature'] = [
+        '#type' => 'details',
+        '#title' => t('Candidatures Spontanées'),
+        '#group' => 'additional_settings',
+      ];
+      $default_value = $type->getThirdPartySetting('vactory_job_ads', 'candidature_node', '') != '' ? (Node::load($type->getThirdPartySetting('vactory_job_ads', 'candidature_node', '')) ?? '') : '';
+      $form['job_ads_candidature']['candidature_node'] = [
+        '#title' => t('Node vers la page du candidature spontanées'),
+        '#type' => 'entity_autocomplete',
+        '#target_type' => 'node',
+        '#selection_settings' => [
+          'target_bundles' => ['vactory_page'],
+        ],
+        '#default_value' => $default_value,
+      ];
+      $form['#entity_builders'][] = 'vactory_job_ads_form_node_type_form_builder';
     }
   }
 }
@@ -128,9 +152,36 @@ function vactory_job_ads_preprocess_node(&$variables) {
     $apply_link = Url::fromUri('internal:/user/login', [
       'query' => [
         'destination' => $destination,
-        'ja_msg'      => 1,
+        'ja_msg' => 1,
       ],
     ]);
   }
   $variables['apply_link'] = $apply_link;
+}
+
+/**
+ * Entity builder for the node type form with scheduler options.
+ */
+function vactory_job_ads_form_node_type_form_builder($entity_type, NodeTypeInterface $type, &$form, FormStateInterface $form_state) {
+  $type->setThirdPartySetting('vactory_job_ads', 'candidature_node', $form_state->getValue('candidature_node'));
+}
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function vactory_job_ads_entity_base_field_info(EntityTypeInterface $entity_type) {
+  $fields = [];
+  if ($entity_type->id() === 'node') {
+    $fields['candidature_spontanee_url'] = BaseFieldDefinition::create('string')
+      ->setComputed(TRUE)
+      ->setReadOnly(TRUE)
+      ->setTargetEntityTypeId($entity_type->id())
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE)
+      ->setClass('Drupal\vactory_job_ads\Field\InternalCandidatureSpontaneeEntityFieldItemList')
+      ->setTranslatable(FALSE)
+      ->setRequired(FALSE);
+  }
+
+  return $fields;
 }

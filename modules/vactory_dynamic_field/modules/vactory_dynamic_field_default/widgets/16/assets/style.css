@@ -1,0 +1,99 @@
+@charset "UTF-8";
+.widget-links a {
+  -webkit-box-shadow: 7px 7px 23px 0 rgba(0, 0, 0, 0.19);
+          box-shadow: 7px 7px 23px 0 rgba(0, 0, 0, 0.19);
+  -webkit-box-shadow: 0.4375rem 0.4375rem 1.4375rem 0 rgba(0, 0, 0, 0.19);
+          box-shadow: 0.4375rem 0.4375rem 1.4375rem 0 rgba(0, 0, 0, 0.19);
+  padding: 25px;
+  padding: 1.5625rem;
+  height: 100%;
+}
+
+.widget-links .image-link {
+  margin-top: auto;
+  margin-bottom: auto;
+  text-align: center;
+  min-width: 75px;
+  min-width: 4.6875rem;
+  max-width: 86px;
+  max-width: 5.375rem;
+  min-height: 61px;
+  min-height: 3.8125rem;
+}
+
+.widget-links .description-link {
+  color: black;
+  padding-left: 20px;
+  padding-left: 1.25rem;
+  padding-right: 34px;
+  padding-right: 2.125rem;
+  margin-top: auto;
+  margin-bottom: auto;
+}
+
+.widget-links .description-link::after {
+  content: "";
+  font-family: "vactory";
+  color: #007bff;
+  font-size: 25px;
+  font-size: 1.5625rem;
+  font-weight: bold;
+  right: 25px;
+  right: 1.5625rem;
+  position: absolute;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+      -ms-transform: translateY(-50%);
+          transform: translateY(-50%);
+}
+
+.widget-links_item {
+  margin-bottom: 30px;
+  margin-bottom: 1.875rem;
+}
+
+@media (min-width: 992px) {
+  .widget-links .description-link {
+    font-weight: bold;
+    padding-left: 34px;
+    padding-left: 2.125rem;
+  }
+  .widget-links .description-link::before {
+    content: '';
+    padding: 56px;
+    padding: 3.5rem;
+    position: absolute;
+    top: 0;
+    right: 0;
+    height: 100%;
+    border-left: 1px solid #e9ecef;
+    border-left: 0.0625rem solid #e9ecef;
+    -webkit-transition: 500ms background;
+    -o-transition: 500ms background;
+    transition: 500ms background;
+  }
+  .widget-links .description-link::after {
+    right: 50px;
+    right: 3.125rem;
+  }
+  .widget-links a {
+    padding: 38px 113px 38px 38px;
+    padding: 2.375rem 7.0625rem 2.375rem 2.375rem;
+  }
+  .widget-links a:hover {
+    -webkit-box-shadow: 10px 10px 30px 10px rgba(0, 0, 0, 0.19);
+            box-shadow: 10px 10px 30px 10px rgba(0, 0, 0, 0.19);
+    -webkit-box-shadow: 0.625rem 0.625rem 1.875rem 0.625rem rgba(0, 0, 0, 0.19);
+            box-shadow: 0.625rem 0.625rem 1.875rem 0.625rem rgba(0, 0, 0, 0.19);
+  }
+  .widget-links a:hover .description-link::before {
+    content: '';
+    background: #007bff;
+  }
+  .widget-links a:hover .description-link::after {
+    content: "";
+    color: #fff;
+    right: 45px;
+    right: 2.8125rem;
+  }
+}

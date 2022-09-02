@@ -1,0 +1,54 @@
+.t-publication-wrapper {
+  box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.18);
+  background-color: $white;
+  padding: 0 15px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+
+  .t-publication-content {
+    padding: 15px 0;
+
+    &:not(:last-child) {
+      border-bottom: 1px solid #a29f9c;
+    }
+
+    .t-image-wrapper {
+      margin-bottom: 20px;
+
+      img {
+        width: 100px;
+        max-width: 100px;
+        margin: 0 auto;
+      }
+    }
+
+    .t-publication-details-text {
+      margin-bottom: 5px;
+
+      h3,
+      .t-publication-authors {
+        margin-bottom: 5px;
+      }
+
+      .t-publicatoin-description {
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+@include media-breakpoint-up(lg) {
+  .t-publication-wrapper {
+    padding: 0 30px;
+
+    .t-publication-content {
+      .t-image-wrapper {
+        margin-bottom: 0;
+      }
+
+      .t-publication-details-text {
+        margin-bottom: 0;
+      }
+    }
+  }
+}

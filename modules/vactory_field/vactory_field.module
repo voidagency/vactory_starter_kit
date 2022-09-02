@@ -5,8 +5,10 @@
  * Contain related hooks.
  */
 
+use Drupal\block\BlockInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\media\Entity\Media;
 use Drupal\node\NodeInterface;
 use Drupal\file\Entity\File;
@@ -153,4 +155,51 @@ function vactory_field_preprocess_html(&$variables) {
     }
   }
 
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function vactory_field_form_block_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $block = $form_state->getFormObject()->getEntity();
+  $form['third_party_settings']['#tree'] = TRUE;
+  $form['third_party_settings']['#type'] = 'details';
+  $form['third_party_settings']['#title'] = t('Appearance');
+  $form['third_party_settings']['vactory_field']['block_container'] = [
+    '#type' => 'select',
+    '#title' => t('Width'),
+    '#options' => [
+      'full_width'   => 'Full Width',
+      'narrow_width' => 'Narrow Width',
+      'no_container' => 'No Container',
+    ],
+    '#description' => t('select the block container.'),
+    '#default_value' => $block->getThirdPartySetting('vactory_field', 'block_container') ?? 'narrow_width',
+  ];
+
+  $form['third_party_settings']['vactory_field']['container_spacing'] = [
+    '#type' => 'select',
+    '#title' => t('Spacing'),
+    '#options' => [
+      'small_space'   => 'Small space',
+      'big_space' => 'Big space',
+      'no_space' => 'No spacing',
+    ],
+    '#description' => t('Select the container spacing'),
+    '#default_value' => $block->getThirdPartySetting('vactory_field', 'container_spacing') ?? 'small_space',
+  ];
+}
+
+
+/**
+ * override hook_ENTITY_TYPE_presave().
+ */
+function vactory_field_block_presave(BlockInterface $entity) {
+  // delete field values from third Party Settings when it is empty.
+  if (empty($entity->getThirdPartySetting('vactory_field', 'block_container'))) {
+    $entity->unsetThirdPartySetting('vactory_field', 'block_container');
+  }
+  if (empty($entity->getThirdPartySetting('vactory_field', 'container_spacing'))) {
+    $entity->unsetThirdPartySetting('vactory_field', 'container_spacing');
+  }
 }

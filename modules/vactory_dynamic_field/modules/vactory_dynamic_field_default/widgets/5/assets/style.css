@@ -1,0 +1,29 @@
+.t-3cols-image-title-text-permalinks h2,
+.t-3cols-image-title-text-permalinks h4 {
+  font-weight: 600;
+  margin-bottom: 8px;
+  margin-bottom: 0.5rem;
+  text-transform: none;
+}
+
+.t-3cols-image-title-text-permalinks .t-block-image-description {
+  height: 100%;
+  background-color: #fff;
+  -webkit-box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.04);
+          box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.04);
+  -webkit-box-shadow: 0 0.125rem 0.5rem 0 rgba(0, 0, 0, 0.04);
+          box-shadow: 0 0.125rem 0.5rem 0 rgba(0, 0, 0, 0.04);
+  border-radius: 4px;
+  border-radius: 0.25rem;
+  overflow: hidden;
+}
+
+.t-3cols-image-title-text-permalinks .t-3cols-description {
+  padding: 9px 24px 27px 24px;
+  padding: 0.5625rem 1.5rem 1.6875rem 1.5rem;
+  background-color: #fff;
+}
+
+.t-3cols-image-title-text-permalinks .js-img-video .block-image > a:after {
+  background-color: transparent;
+}
