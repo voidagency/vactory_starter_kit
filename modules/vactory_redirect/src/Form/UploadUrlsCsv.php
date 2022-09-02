@@ -7,7 +7,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\file\Entity\File;
 
 /**
- * Configure example settings for this site.
+ * Configure vactory_redirect settings for this site.
  */
 class UploadUrlsCsv extends ConfigFormBase {
 
