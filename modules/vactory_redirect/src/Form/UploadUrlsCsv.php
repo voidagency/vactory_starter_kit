@@ -4,22 +4,23 @@ namespace Drupal\vactory_redirect\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\File\FileSystemInterface;
-use Drupal\Core\File\Exception\InvalidStreamWrapperException;
-use Drupal\Core\File\Exception\DirectoryNotReadyException;
+use Drupal\file\Entity\File;
 
 /**
- * Configure vactory_redirect settings for this site.
+ * Configure example settings for this site.
  */
 class UploadUrlsCsv extends ConfigFormBase {
 
+  /**
+   * String Config settings.
+   */
   const SETTINGS = 'vactory_redirect.settings';
 
   /**
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'vactory_redirect';
+    return 'vactory_redirect_settings';
   }
 
   /**
@@ -35,45 +36,45 @@ class UploadUrlsCsv extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-     $form['submit'] = [
-      '#type' => 'submit',
-      '#value' => $this->t('Upload csv'),
+    $form['redirect_file'] = [
+      '#type'              => 'managed_file',
+      '#title'             => $this->t('Upload redirect CSV file.'),
+      '#default_value' => !empty($this->config('vactory_redirect.settings')->get('redirect_file')) ? $this->config('vactory_redirect.settings')->get('redirect_file') : '',
+      '#upload_location'   => 'public://redirections',
+      '#upload_validators' => [
+        'file_validate_extensions' => ['csv'],
+      ],
+      '#description' => t("Charger un fichier csv contenant une liste des redirection 301 souhaitées") . ' <a href="/profiles/contrib/vactory_starter_kit/modules/vactory_redirect/examples/file.csv">' . t('Télécharger le modèle CSV') . '</a>.',
     ];
-    return $form;
+    return parent::buildForm($form, $form_state);
+  }
+
+  /**
+   * Form validation.
+   */
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    $values = $form_state->getValues();
+    if (isset($values['redirect_file']) && empty($values['redirect_file'])) {
+      $form_state->setErrorByName('redirect_file', $this->t("No file chosen"));
+    }
   }
 
   /**
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $uri = "redirections/urls.csv";
-    $examples = "profiles/contrib/vactory_starter_kit/modules/vactory_redirect/examples/file.csv";
-    $destination = "private://redirections/" ;
-    if (!file_exists($destination)) {
-      mkdir('private://redirections/', 0777, true);
-    }
-    if (file_exists($uri)) {
-      $urls_file = file_get_contents($uri);
-      file_put_contents($examples, $urls_file);
-    }
-    $file = file_get_contents($examples);
-    /** @var \Drupal\file\FileRepositoryInterface $fileRepository */
-    $fileRepository = \Drupal::service('file.repository');
-    try {
-      $return = $fileRepository->writeData($file,  $destination  . basename($uri) , FileSystemInterface::EXISTS_RENAME) ;
-      if($return) {
-        \Drupal::messenger()->addMessage($this->t('File uploaded successfully.'));
-      }
-      return $return;
-    }
-    catch (InvalidStreamWrapperException $e) {
-      \Drupal::messenger()->addError(t('The data could not be saved because the destination is invalid. More information is available in the system log.'));
-      return FALSE;
-    }
-    catch (DirectoryNotReadyException $e) {
-      \Drupal::messenger()->addError(t('Destination directory is not ready : Either it does not exist, or is not writable.'));
-      return FALSE;
-    }
+    $values = $form_state->getValues();
+
+    $fid = reset($form_state->getValue('redirect_file'));
+    $file = File::load($fid);
+    $file->setPermanent();
+    $file->save();
+
+    // Save configuration settings.
+    $this->config('vactory_redirect.settings')
+      ->set('redirect_file', $values['redirect_file'])
+      ->save();
+
     parent::submitForm($form, $form_state);
   }
 
