@@ -482,7 +482,7 @@ function _vactory_decoupled_user_pass_reset_url($account, $options = []) {
   ];
 
   $query_string = http_build_query($data, "", "&", PHP_QUERY_RFC3986);
-  return $frontend_url . "/$langcode/$nextjs_user_pages_path_prefix/one-time-login?" . $query_string;
+  return $frontend_url . "/$langcode/account/reset-password?" . $query_string;
 }
 
 /**
