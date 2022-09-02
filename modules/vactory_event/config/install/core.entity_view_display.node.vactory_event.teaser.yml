@@ -9,6 +9,8 @@ dependencies:
     - field.field.node.vactory_event.field_vactory_excerpt
     - field.field.node.vactory_event.field_vactory_media
     - field.field.node.vactory_event.field_vactory_meta_tags
+    - field.field.node.vactory_event.field_vactory_seo_status
+    - field.field.node.vactory_event.field_vactory_tags
     - field.field.node.vactory_event.field_vactory_taxonomy_1
     - field.field.node.vactory_event.field_vactory_taxonomy_2
     - node.type.vactory_event
@@ -21,18 +23,23 @@ bundle: vactory_event
 mode: teaser
 content:
   body:
-    label: hidden
     type: text_summary_or_trimmed
-    weight: 101
+    label: hidden
     settings:
       trim_length: 600
     third_party_settings: {  }
+    weight: 101
     region: content
-  links:
-    weight: 100
-    region: content
+  flag_liked_content:
     settings: {  }
     third_party_settings: {  }
+    weight: 10
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
 hidden:
   addtoany: true
   comment: true
@@ -40,6 +47,8 @@ hidden:
   field_vactory_excerpt: true
   field_vactory_media: true
   field_vactory_meta_tags: true
+  field_vactory_seo_status: true
+  field_vactory_tags: true
   field_vactory_taxonomy_1: true
   field_vactory_taxonomy_2: true
   langcode: true

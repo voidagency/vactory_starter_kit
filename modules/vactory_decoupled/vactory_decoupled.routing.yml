@@ -66,6 +66,14 @@ vactory_decoupled.import_translation:
   requirements:
     _permission: 'translate interface'
 
+vactory_decoupled.secure_routes:
+  path: 'admin/config/system/secure-routes'
+  defaults:
+    _form: 'Drupal\vactory_decoupled\Form\SecureRoutesForm'
+    _title: 'Secure Routes'
+  requirements:
+    _permission: 'administer site configuration'
+
 vactory_decoupled.firebase_key:
   path: 'admin/config/firebase/key'
   defaults:

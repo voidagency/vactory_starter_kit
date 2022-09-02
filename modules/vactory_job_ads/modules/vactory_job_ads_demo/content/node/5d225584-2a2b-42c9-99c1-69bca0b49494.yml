@@ -1,0 +1,91 @@
+_meta:
+  version: '1.0'
+  entity_type: node
+  uuid: 5d225584-2a2b-42c9-99c1-69bca0b49494
+  bundle: vactory_job_ads
+  default_langcode: fr
+  depends:
+    26b30cc0-d128-4fb4-bc9f-7e010a4606f4: taxonomy_term
+    e961a106-d4b2-41a3-b611-c1f30d08092d: taxonomy_term
+    8d4c7a0c-d1b2-4220-b137-8885d1e04189: taxonomy_term
+default:
+  revision_uid:
+    -
+      target_id: 1
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  title:
+    -
+      value: 'Responsable Technique'
+  created:
+    -
+      value: 1657616750
+  promote:
+    -
+      value: true
+  sticky:
+    -
+      value: false
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: /jobs/responsable-technique
+      langcode: fr
+      pathauto: 1
+  node_summary:
+    -
+      value: 'Responsable Technique'
+  content_translation_source:
+    -
+      value: und
+  content_translation_outdated:
+    -
+      value: false
+  body:
+    -
+      value: "<p>On est une agence web de marketing digital qui met son expertise au service de l’accompagnement de grandes marques, de PME/PMI et des entrepreneurs désireux de lancer de nouveaux projets, de nouveaux produits ou de propulser leur activité.</p>\r\n"
+      format: basic_html
+      summary: ''
+  comment:
+    -
+      status: 0
+      cid: 0
+      last_comment_timestamp: 1657616853
+      last_comment_name: ''
+      last_comment_uid: 1
+      comment_count: 0
+  field_vactory_address:
+    -
+      value: "<p>26 rue Vestibulum ac diam sit amet quam vehicula&nbsp;</p>\r\n"
+      format: basic_html
+  field_vactory_city:
+    -
+      entity: 26b30cc0-d128-4fb4-bc9f-7e010a4606f4
+  field_vactory_contract:
+    -
+      entity: e961a106-d4b2-41a3-b611-c1f30d08092d
+  field_vactory_description:
+    -
+      value: "<p>MISSIONS PRINCIPALES :</p>\r\n\r\n<ul>\r\n\t<li>• Organiser et contrôler les étapes de développement technique ;</li>\r\n\t<li>• L’analyse fonctionnelle des besoins, l’étude des opportunités et de la faisabilité technologique des projets ;</li>\r\n\t<li>• Apporter son expertise technique lors des réponses aux appels d’offre ;</li>\r\n\t<li>• L’élaboration de cahiers des charges et la rédaction des spécifications techniques y afférentes ; • Recruter et encadrer les..</li>\r\n</ul>\r\n"
+      format: basic_html
+  field_vactory_email:
+    -
+      value: void.france@void.fr
+  field_vactory_profession:
+    -
+      entity: 8d4c7a0c-d1b2-4220-b137-8885d1e04189
+  field_vactory_seo_status:
+    -
+      status: ''
+      focus_keyword: ''
+      title: ''
+      description: ''
+  field_vactory_telephone:
+    -
+      value: '+212523323343'

@@ -1,0 +1,35 @@
+_meta:
+  version: '1.0'
+  entity_type: file
+  uuid: 1e116e13-6995-4e4d-8038-fd9ea1a8887c
+  bundle: image
+  default_langcode: fr
+  depends:
+    5fc7666c-bc63-4267-84cf-09fc431c7c79: user
+default:
+  uid:
+    -
+      entity: 5fc7666c-bc63-4267-84cf-09fc431c7c79
+  filename:
+    -
+      value: XGkwHHlFpu5dBzm0uRx8AMA5GU4njwBQCgqMGmtt7EU.jpg
+  uri:
+    -
+      value: 'public://oembed_thumbnails/XGkwHHlFpu5dBzm0uRx8AMA5GU4njwBQCgqMGmtt7EU.jpg'
+  filemime:
+    -
+      value: image/jpeg
+  filesize:
+    -
+      value: 24284
+  status:
+    -
+      value: true
+  created:
+    -
+      value: 1657276494
+  path:
+    -
+      alias: ''
+      langcode: fr
+      pathauto: 1

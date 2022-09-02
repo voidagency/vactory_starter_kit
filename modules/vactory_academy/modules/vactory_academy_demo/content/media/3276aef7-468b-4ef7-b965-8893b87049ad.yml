@@ -1,0 +1,37 @@
+_meta:
+  version: '1.0'
+  entity_type: media
+  uuid: 3276aef7-468b-4ef7-b965-8893b87049ad
+  bundle: image
+  default_langcode: fr
+  depends:
+    5fc7666c-bc63-4267-84cf-09fc431c7c79: user
+    9ebe406a-aff7-4bc9-95f4-6094c231a0be: file
+default:
+  status:
+    -
+      value: true
+  uid:
+    -
+      entity: 5fc7666c-bc63-4267-84cf-09fc431c7c79
+  name:
+    -
+      value: 1018620_4a33.jpeg
+  created:
+    -
+      value: 1657272529
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: fr
+      pathauto: 0
+  field_media_image:
+    -
+      entity: 9ebe406a-aff7-4bc9-95f4-6094c231a0be
+      alt: test
+      title: ''
+      width: 560
+      height: 315

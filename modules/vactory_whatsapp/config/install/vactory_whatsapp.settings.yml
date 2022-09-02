@@ -1,0 +1,3 @@
+whatsapp_webhook_plugins:
+  vactory_whatsapp_callback_example:
+    enable: '1'

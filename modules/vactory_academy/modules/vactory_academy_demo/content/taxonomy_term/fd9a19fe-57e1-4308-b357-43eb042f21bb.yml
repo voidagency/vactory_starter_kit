@@ -1,0 +1,43 @@
+_meta:
+  version: '1.0'
+  entity_type: taxonomy_term
+  uuid: fd9a19fe-57e1-4308-b357-43eb042f21bb
+  bundle: vactory_academy_themes
+  default_langcode: fr
+default:
+  status:
+    -
+      value: true
+  name:
+    -
+      value: Photographie
+  description:
+    -
+      value: "<p>Photographie</p>\r\n"
+      format: basic_html
+  weight:
+    -
+      value: 0
+  parent:
+    -
+      target_id: 0
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: ''
+      langcode: fr
+      pathauto: 0
+  content_translation_source:
+    -
+      value: und
+  content_translation_outdated:
+    -
+      value: false
+  content_translation_uid:
+    -
+      target_id: 1
+  content_translation_created:
+    -
+      value: 1657212332

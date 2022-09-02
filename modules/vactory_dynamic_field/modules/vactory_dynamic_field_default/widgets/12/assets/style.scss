@@ -1,0 +1,118 @@
+.t-block-push-small-positionned {
+  [class^="col-"]:nth-last-child(1) {
+    .vf-push {
+      margin-bottom: 0;
+    }
+  }
+
+  .vf-push-small-positionned {
+    text-align: center;
+    color: $white;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    width: 100%;
+
+    &:before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      right: 0;
+      background: $black;
+      opacity: 0.6;
+    }
+
+    .vf-push-body {
+      z-index: 2;
+      position: relative;
+      min-height: 250px;
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .h4 {
+      @include rem(margin-bottom, 20px);
+    }
+  }
+
+  .vf-push {
+    @include rem(margin, 0 0 15px 0);
+    background: $white;
+    position: relative;
+
+    [class^="col-md"] & {
+      height: auto;
+      @include rem(margin-bottom, 15px);
+    }
+
+    .vf-push-body {
+      @include rem(padding, 15px);
+    }
+
+    .vf-push-title {
+      @include rem(margin-bottom, 10px);
+
+      a {
+        color: $black;
+
+        &:hover {
+          color: $primary;
+        }
+
+        &:before {
+          content: "";
+          position: absolute;
+          left: 0;
+          right: 0;
+          top: 0;
+          bottom: 0;
+        }
+      }
+    }
+
+    &:hover {
+      .vf-push-media {
+        img {
+          transform: scale(1.1);
+        }
+      }
+    }
+  }
+}
+
+@include media-breakpoint-up(lg) {
+  .t-block-push-small-positionned {
+    [class^="col-"]:nth-last-child(1) {
+      .vf-push {
+        @include rem(margin-bottom, 30px);
+      }
+    }
+
+    .vf-push {
+      @include rem(margin, 0 0 30px 0);
+
+      [class^="col-md"] & {
+        margin-bottom: 0;
+      }
+
+      .vf-push-body {
+        @include rem(padding, 38px 40px);
+        .inner-hover {
+          display: none;
+        }
+        &:hover {
+          .inner-hover {
+            display: block;
+          }
+        }
+      }
+
+      .vf-push-title {
+        @include rem(margin-bottom, 21px);
+      }
+    }
+  }
+}

@@ -1,0 +1,34 @@
+<div class='mb-3 text-center'> Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s</div>
+<div class="shadow-sm p-3">
+  <div class="row vf-slick-slider"
+        data-toshow="1"
+        data-dots="false"
+        data-arrows="true"
+        data-mobile-centermode="false">
+    {% for item in 0..2 %}
+      {% set reverse = (loop.index % 2 == 0) ? 'flex-row-reverse' : ''%}
+      <div class="col-12 mb-2">
+        <div class="row {{ reverse }}">
+          <div class="col-12 col-md-6">
+            <a class="image-scale" href="#">
+              <img data-src="{{ placehold }}"
+                   src=" {{ content.image_placeholder }} "
+                   alt="Image Alt"
+                   class="img-fluid lazyload">
+            </a>
+          </div>
+          <div class="col-12 col-md-6">
+            <h3 class="h4">Title</h3>
+            <p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+              Lorem Ipsum has been the industry's standard dummy text ever since the 1500s</p>
+            <a class="permalink" href="#">Read More</a>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+
+ <div class="text-center mt-4">
+  <a class="permalink" href="#">Read More</a>
+</div>

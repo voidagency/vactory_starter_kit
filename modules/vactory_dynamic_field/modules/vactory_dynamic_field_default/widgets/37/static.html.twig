@@ -1,0 +1,31 @@
+{# https://codyhouse.co/demo/pointy-slider/index.html #}
+
+{{ attach_library('vactory_dynamic_field_sliders/variant2') }}
+
+
+<div class="vf-slider--pointy-slider" style="height: 500px;">
+  <ul class="cd-slider">
+    {% for i in 0..2 %}
+      {% set is_visible = (loop.first) ? 'is-visible' : '' %}
+      {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/1200/600.jpg" %}
+
+      <li class="{{ is_visible }}">
+        <div class="cd-half-block image lazyload"
+             data-bg="{{ placehold }}"
+             style="background-image: url('{{ content.image_placeholder }}');"></div>
+        <div class="cd-half-block content">
+          <div class="animated">
+
+            <h2>Title</h2>
+            <div>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has
+              been the industry's standard dummy text ever since the 1500s,
+            </div>
+            <a href="#" class="btn">Read more</a>
+          </div>
+        </div>
+      </li> <!-- .cd-half-block.content -->
+    {% endfor %}
+  </ul> <!-- .cd-slider -->
+</div> <!-- .vf-slider--pointy-slider -->
+
+

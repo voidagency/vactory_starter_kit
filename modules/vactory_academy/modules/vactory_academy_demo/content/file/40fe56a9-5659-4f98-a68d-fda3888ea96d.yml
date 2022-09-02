@@ -1,0 +1,33 @@
+_meta:
+  version: '1.0'
+  entity_type: file
+  uuid: 40fe56a9-5659-4f98-a68d-fda3888ea96d
+  bundle: image
+  default_langcode: fr
+default:
+  uid:
+    -
+      target_id: 1
+  filename:
+    -
+      value: telechargement.png
+  uri:
+    -
+      value: 'public://2022-07/telechargement.png'
+  filemime:
+    -
+      value: image/png
+  filesize:
+    -
+      value: 6308
+  status:
+    -
+      value: true
+  created:
+    -
+      value: 1657277755
+  path:
+    -
+      alias: ''
+      langcode: fr
+      pathauto: 1

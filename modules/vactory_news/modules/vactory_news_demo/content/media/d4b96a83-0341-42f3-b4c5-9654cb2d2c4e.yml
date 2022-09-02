@@ -1,0 +1,31 @@
+_meta:
+  version: '1.0'
+  entity_type: media
+  uuid: d4b96a83-0341-42f3-b4c5-9654cb2d2c4e
+  bundle: image
+  default_langcode: fr
+  depends:
+    f3338771-53de-42ed-9eb5-d593fda0e6bc: file
+default:
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  name:
+    -
+      value: photo-1476242906366-d8eb64c2f661.jpeg
+  created:
+    -
+      value: 1592425761
+  revision_translation_affected:
+    -
+      value: true
+  field_media_image:
+    -
+      entity: f3338771-53de-42ed-9eb5-d593fda0e6bc
+      alt: 'News 2'
+      title: ''
+      width: 1308
+      height: 649

@@ -5,6 +5,8 @@
  * Install file.
  */
 
+use Drupal\Core\Field\BaseFieldDefinition;
+
 /**
  * Implements vactory_paragraphs: Copy paragraph background color values.
  */
@@ -20,4 +22,35 @@ function vactory_paragraphs_update_8100(&$sandbox) {
 
   $field_storage_definitions = Drupal::entityDefinitionUpdateManager()->getFieldStorageDefinition('paragraph_background_color', 'paragraph');
   Drupal::entityDefinitionUpdateManager()->uninstallFieldStorageDefinition($field_storage_definitions);
+}
+
+/**
+ * Implements vactory_paragraphs: Install container spacing field.
+ */
+function vactory_paragraphs_update_9400(&$sandbox) {
+  $field_definition = BaseFieldDefinition::create('list_string')
+    ->setLabel(t('Spacing'))
+    ->setRevisionable(TRUE)
+    ->setTranslatable(TRUE)
+    ->setDefaultValue('small_space')
+    ->setSetting('allowed_values', [
+      'small_space'   => 'Small space',
+      'big_space' => 'Big space',
+      'no_space' => 'No spacing',
+    ]);
+  Drupal::entityDefinitionUpdateManager()->installFieldStorageDefinition('container_spacing', 'paragraph', 'vactory_paragraphs', $field_definition);
+
+  // Update paragraphs form displays.
+  $paragraphs_types = array_keys(\Drupal::service('entity_type.bundle.info')->getBundleInfo('paragraph'));
+  foreach ($paragraphs_types as $paragraph_type) {
+    $name = "core.entity_form_display.paragraph.${paragraph_type}.default";
+    $config = Drupal::configFactory()->getEditable($name);
+    $third_party_settings = $config->get('third_party_settings');
+    if (isset($third_party_settings['field_group']['group_appearance'])) {
+      $third_party_settings['field_group']['group_appearance']['children'][] = 'container_spacing';
+      $third_party_settings['field_group']['group_appearance']['children'] = array_unique($third_party_settings['field_group']['group_appearance']['children']);
+      $config->set('third_party_settings', $third_party_settings)
+        ->save();
+    }
+  }
 }

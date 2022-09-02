@@ -1,0 +1,29 @@
+name: 'Share links block'
+multiple: FALSE
+category: 'share links'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: "Title"
+  facebook:
+    type: checkbox
+    label: "Partage sur facebook"
+  twitter:
+    type: checkbox
+    label: "Partage sur twitter"
+  linkedin:
+    type: checkbox
+    label: "Partage sur linkedin"
+  whatsapp:
+    type: checkbox
+    label: "Partage sur whatsapp"
+  mail:
+    type: checkbox
+    label: "Partage sur mail"
+  pinterest:
+    type: checkbox
+    label: "Partage sur pinterest"
+  telegram:
+    type: checkbox
+    label: "Partage sur telegram"

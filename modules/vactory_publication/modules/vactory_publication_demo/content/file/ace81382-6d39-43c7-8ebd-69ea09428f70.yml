@@ -1,0 +1,33 @@
+_meta:
+  version: '1.0'
+  entity_type: file
+  uuid: ace81382-6d39-43c7-8ebd-69ea09428f70
+  bundle: image
+  default_langcode: fr
+default:
+  uid:
+    -
+      target_id: 1
+  filename:
+    -
+      value: pub.png
+  uri:
+    -
+      value: 'public://2022-07/pub.png'
+  filemime:
+    -
+      value: image/png
+  filesize:
+    -
+      value: 155450
+  status:
+    -
+      value: true
+  created:
+    -
+      value: 1658398190
+  path:
+    -
+      alias: ''
+      langcode: fr
+      pathauto: 1

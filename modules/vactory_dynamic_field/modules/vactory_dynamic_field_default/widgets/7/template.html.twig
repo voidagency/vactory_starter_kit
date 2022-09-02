@@ -1,0 +1,69 @@
+{% if dir == 'rtl' %}
+    {{ attach_library('vactory_dynamic_field_default/df_default_widget_7_rtl') }}
+{% else %}
+    {{ attach_library('vactory_dynamic_field_default/df_default_widget_7') }}
+{% endif %}
+
+{% set classes = (extra_fields.slider == 1 ) ? 'vf-slick-slider' : 'justify-content-lg-center' %}
+<div class="t-slider-cards t-3-cols">
+  {% if extra_fields.intro is not empty %}
+    <div class='mb-3 text-center'> {{ extra_fields.intro }} </div>
+  {% endif %}
+  <div class="row {{classes}}"
+       data-mobile-arrows="true"
+       data-toshow="3">
+    {% for item in content %}
+      {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : "" %}
+      {% set lqip_image = image_uri|image_style('lqip') %}
+      {% set fluid_image = file_url(image_uri) %}
+
+      {% set link_attributes = create_attribute() %}
+      {% set link_attributes = item.link.attributes.id is not empty ? link_attributes.setAttribute('id', item.link.attributes.id ) : link_attributes %}
+      {% set link_attributes = item.link.attributes.class is not empty ? link_attributes.setAttribute('class', item.link.attributes.class ~ ' btn btn-primary') :  link_attributes.setAttribute('class', 'btn btn-primary') %}
+      {% set link_attributes = item.link.attributes.target is not empty ? link_attributes.setAttribute('target', item.link.attributes.target ) : link_attributes %}
+      {% set link_attributes = item.link.attributes.rel is not empty ? link_attributes.setAttribute('rel', item.link.attributes.rel ) : link_attributes %}
+
+      {% set imageAlt = (item.image_alt) ? item.image_alt : item.image.alt_image %}
+      <div class="col-md-4">
+        <div class="t-box">
+          {% if item.image is not empty %}
+            <div class="t-box-img-wrapper">
+              <img class="img-fluid lazyload"
+                   alt="{{ imageAlt }}"
+                   src="{{ lqip_image }}"
+                   data-src="{{ fluid_image }}"/>
+              {% endif %}
+            </div>
+          {% if item.title is not empty %}
+            <h3 class="t-card-title">{{ item.title }}</h3>
+          {% endif %}
+          <div class="t-box-description-link">
+            {% if item.description is not empty %}
+              <div class="t-box-description">
+                {{ item.description }}
+              </div>
+            {% endif %}
+            {% if item.link.url is not empty and item.link.title is not empty %}
+              <a href="{{ item.link.url }}" {{ link_attributes }} > {{ item.link.title }} </a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  <div class="slick-controls d-lg-none"></div>
+</div>
+
+{% if extra_fields.btn_more is not empty %}
+
+{% set moreLink_attributes = create_attribute() %}
+{% set moreLink_attributes = extra_fields.btn_more.attributes.id is not empty ? moreLink_attributes.setAttribute('id', extra_fields.btn_more.attributes.id ) : moreLink_attributes %}
+{% set moreLink_attributes = extra_fields.btn_more.attributes.target is not empty ? moreLink_attributes.setAttribute('target', extra_fields.btn_more.attributes.target ) : moreLink_attributes %}
+{% set moreLink_attributes = extra_fields.btn_more.attributes.target is not empty ? moreLink_attributes.setAttribute('class', extra_fields.btn_more.attributes.class ~ 'btn btn-primary')  : moreLink_attributes.setAttribute('class','btn btn-primary') %}
+{% set moreLink_attributes = extra_fields.btn_more.attributes.rel is not empty ? moreLink_attributes.setAttribute('rel', extra_fields.btn_more.attributes.rel ) : moreLink_attributes %}
+  <div class="text-center mt-4">
+    <a href="{{  extra_fields.btn_more.url }}"  {{ moreLink_attributes }}>
+      {{ extra_fields.btn_more.title }}
+    </a>
+  </div>
+{% endif %}

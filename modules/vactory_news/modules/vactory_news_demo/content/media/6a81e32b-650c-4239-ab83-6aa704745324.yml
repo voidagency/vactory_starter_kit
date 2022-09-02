@@ -1,0 +1,31 @@
+_meta:
+  version: '1.0'
+  entity_type: media
+  uuid: 6a81e32b-650c-4239-ab83-6aa704745324
+  bundle: image
+  default_langcode: fr
+  depends:
+    3f19a15c-680f-4e0b-a81d-75c2db506599: file
+default:
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  name:
+    -
+      value: photo-1585241936939-be4099591252.jpeg
+  created:
+    -
+      value: 1592425864
+  revision_translation_affected:
+    -
+      value: true
+  field_media_image:
+    -
+      entity: 3f19a15c-680f-4e0b-a81d-75c2db506599
+      alt: 'News 4'
+      title: ''
+      width: 750
+      height: 500

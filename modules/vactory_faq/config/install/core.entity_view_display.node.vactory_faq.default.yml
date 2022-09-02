@@ -5,6 +5,7 @@ dependencies:
     - field.field.node.vactory_faq.body
     - field.field.node.vactory_faq.field_faq
     - field.field.node.vactory_faq.field_vactory_seo_status
+    - field.field.node.vactory_faq.field_vactory_tags
     - field.field.node.vactory_faq.field_vactory_taxonomy_1
     - node.type.vactory_faq
   module:
@@ -19,27 +20,41 @@ bundle: vactory_faq
 mode: default
 content:
   field_vactory_seo_status:
-    weight: 101
+    type: yoastseo_empty_formatter
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: yoastseo_empty_formatter
+    weight: 101
     region: content
-  field_vactory_taxonomy_1:
-    weight: 102
+  field_vactory_tags:
+    type: entity_reference_label
     label: above
     settings:
       link: true
-    third_party_settings: { }
-    type: entity_reference_label
+    third_party_settings: {  }
+    weight: 103
     region: content
-  links:
-    weight: 100
+  field_vactory_taxonomy_1:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 102
+    region: content
+  flag_liked_content:
     settings: {  }
     third_party_settings: {  }
+    weight: 10
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
     region: content
 hidden:
   addtoany: true
   body: true
   field_faq: true
   langcode: true
+  search_api_excerpt: true

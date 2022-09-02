@@ -1,0 +1,518 @@
+_meta:
+  version: '1.0'
+  entity_type: node
+  uuid: 9cd27fa5-0bc3-42f8-a79f-f0c37ca99459
+  bundle: vactory_page
+  default_langcode: fr
+default:
+  revision_uid:
+    -
+      target_id: 1
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  title:
+    -
+      value: 'Publication - Demo'
+  created:
+    -
+      value: 1658400447
+  promote:
+    -
+      value: true
+  sticky:
+    -
+      value: false
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: /publication-demo
+      langcode: fr
+      pathauto: 1
+  node_summary:
+    -
+      value: 'Publication - Demo'
+  content_translation_source:
+    -
+      value: und
+  content_translation_outdated:
+    -
+      value: false
+  comment:
+    -
+      status: 0
+      cid: 0
+      last_comment_timestamp: 1658401449
+      last_comment_name: ''
+      last_comment_uid: 1
+      comment_count: 0
+  field_exclude_from_search:
+    -
+      value: false
+  field_vactory_paragraphs:
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: 77cb3e03-779b-40f2-877c-9d8f1eb91128
+          bundle: vactory_paragraph_block
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1658400744
+          behavior_settings:
+            -
+              value: {  }
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_vactory_block:
+            -
+              plugin_id: 'views_block:vactory_publication-block_masonry'
+              settings:
+                id: 'views_block:vactory_publication-block_masonry'
+                label: ''
+                label_display: visible
+                provider: views
+                views_label: ''
+                items_per_page: none
+          field_vactory_flag:
+            -
+              value: false
+          field_vactory_flag_2:
+            -
+              value: false
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: 7eb12b29-8f17-4e5d-bfa6-b7e09e22b709
+          bundle: vactory_paragraph_block
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1658400756
+          behavior_settings:
+            -
+              value: {  }
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_vactory_block:
+            -
+              plugin_id: 'views_block:vactory_publication-block_slider_large'
+              settings:
+                id: 'views_block:vactory_publication-block_slider_large'
+                label: ''
+                label_display: visible
+                provider: views
+                views_label: ''
+                items_per_page: none
+          field_vactory_flag:
+            -
+              value: false
+          field_vactory_flag_2:
+            -
+              value: false
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: e49644cb-8d59-4abe-8748-15f139965748
+          bundle: vactory_paragraph_block
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1658400768
+          behavior_settings:
+            -
+              value: {  }
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_vactory_block:
+            -
+              plugin_id: 'views_block:vactory_publication-block_slider_small'
+              settings:
+                id: 'views_block:vactory_publication-block_slider_small'
+                label: ''
+                label_display: visible
+                provider: views
+                views_label: ''
+                items_per_page: none
+          field_vactory_flag:
+            -
+              value: false
+          field_vactory_flag_2:
+            -
+              value: false
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: fdf429d6-3522-441b-8e83-1dc7aa6966bf
+          bundle: vactory_paragraph_block
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1658401500
+          behavior_settings:
+            -
+              value: {  }
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_vactory_block:
+            -
+              plugin_id: 'views_block:vactory_publication-block_three_columns'
+              settings:
+                id: 'views_block:vactory_publication-block_three_columns'
+                label: ''
+                label_display: visible
+                provider: views
+                views_label: ''
+                items_per_page: none
+          field_vactory_flag:
+            -
+              value: false
+          field_vactory_flag_2:
+            -
+              value: false
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: e81fe94f-29b1-4c6e-b4b2-c87f5ea38600
+          bundle: vactory_paragraph_block
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1658400920
+          behavior_settings:
+            -
+              value: {  }
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_vactory_block:
+            -
+              plugin_id: 'views_block:vactory_publication-block_two_columns'
+              settings:
+                id: 'views_block:vactory_publication-block_two_columns'
+                label: ''
+                label_display: visible
+                provider: views
+                views_label: ''
+                items_per_page: none
+          field_vactory_flag:
+            -
+              value: false
+          field_vactory_flag_2:
+            -
+              value: false
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: 091c9912-1db3-47b9-ab73-d76114e2a1df
+          bundle: views_reference
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1658400934
+          behavior_settings:
+            -
+              value: {  }
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_views_reference:
+            -
+              target_id: vactory_publication
+              display_id: listing_masonry
+              data: 'a:5:{s:5:"pager";N;s:6:"offset";N;s:5:"limit";N;s:8:"argument";N;s:5:"title";N;}'
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: c2b0adf1-20f9-4a72-8c75-7dbc393a827a
+          bundle: views_reference
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1658400953
+          behavior_settings:
+            -
+              value: {  }
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_views_reference:
+            -
+              target_id: vactory_publication
+              display_id: listing_one_column
+              data: 'a:5:{s:5:"pager";N;s:6:"offset";N;s:5:"limit";N;s:8:"argument";N;s:5:"title";N;}'
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: 4f713115-ad96-4a82-bcc6-3920ab2980b1
+          bundle: views_reference
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1658401433
+          behavior_settings:
+            -
+              value: {  }
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_views_reference:
+            -
+              target_id: vactory_publication
+              display_id: listing_three_columns
+              data: 'a:5:{s:5:"pager";N;s:6:"offset";N;s:5:"limit";N;s:8:"argument";N;s:5:"title";N;}'
+  field_vactory_seo_status:
+    -
+      status: '0'
+      focus_keyword: ''
+      title: ''
+      description: ''

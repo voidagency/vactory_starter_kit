@@ -1,63 +1,94 @@
 langcode: en
 status: true
 dependencies:
-  enforced:
-    module:
-      - vactory_annual_report
   config:
+    - field.field.node.vactory_annual_report.body
+    - field.field.node.vactory_annual_report.field_ar_background_color
     - field.field.node.vactory_annual_report.field_ar_content_body
+    - field.field.node.vactory_annual_report.field_ar_element_width
+    - field.field.node.vactory_annual_report.field_ar_layout
     - field.field.node.vactory_annual_report.field_ar_media_type
     - field.field.node.vactory_annual_report.field_ar_thematic
+    - field.field.node.vactory_annual_report.field_border_color
+    - field.field.node.vactory_annual_report.field_has_corner
+    - field.field.node.vactory_annual_report.field_rapport_digital_annee
+    - field.field.node.vactory_annual_report.field_vactory_excerpt
+    - field.field.node.vactory_annual_report.field_vactory_media
     - field.field.node.vactory_annual_report.field_vactory_paragraphs
+    - field.field.node.vactory_annual_report.field_vactory_tags
     - node.type.vactory_annual_report
   module:
     - entity_reference_revisions
     - user
     - vactory_dynamic_field
+  enforced:
+    module:
+      - vactory_annual_report
 id: node.vactory_annual_report.default
-
 targetEntityType: node
 bundle: vactory_annual_report
 mode: default
 content:
   field_ar_content_body:
-    weight: 107
+    type: field_wysiwyg_dynamic_formatter
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: field_wysiwyg_dynamic_formatter
+    weight: 107
     region: content
   field_ar_media_type:
-    weight: 102
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 102
     region: content
   field_ar_thematic:
-    weight: 103
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 103
     region: content
   field_vactory_paragraphs:
-    weight: 106
+    type: entity_reference_revisions_entity_view
     label: above
     settings:
       view_mode: default
       link: ''
     third_party_settings: {  }
-    type: entity_reference_revisions_entity_view
+    weight: 106
     region: content
-  links:
-    weight: 100
+  field_vactory_tags:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 108
     region: content
+  flag_liked_content:
     settings: {  }
     third_party_settings: {  }
+    weight: 10
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
 hidden:
   addtoany: true
+  body: true
+  field_ar_background_color: true
+  field_ar_element_width: true
+  field_ar_layout: true
+  field_border_color: true
+  field_has_corner: true
+  field_rapport_digital_annee: true
+  field_vactory_excerpt: true
+  field_vactory_media: true
   langcode: true
   search_api_excerpt: true

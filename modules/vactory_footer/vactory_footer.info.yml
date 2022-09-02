@@ -15,4 +15,5 @@ dependencies:
 #  - social_media_links
 #  - system
   - vactory_core
+  - vactory_dynamic_field
 #  - vactory_mailchimp

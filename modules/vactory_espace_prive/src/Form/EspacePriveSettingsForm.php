@@ -44,6 +44,13 @@ class EspacePriveSettingsForm extends ConfigFormBase {
     $form = parent::buildForm($form, $form_state);
     $config = $this->config('vactory_espace_prive.settings');
 
+    $form['password_lifetime'] = [
+      '#type' => 'number',
+      '#title' => $this->t("Webmaster's password lifetime (in days)"),
+      '#min' => 0,
+      '#description' => $this->t('Set the webmaster users password lifetime in days (by default 15 days), to disable password expiration set lifetime to 0'),
+      '#default_value' => !empty($config->get('password_lifetime')) ? $config->get('password_lifetime') : 15,
+    ];
     $form['espace_prive_paths'] = [
       '#type' => 'fieldset',
       '#title' => t("Chemins Espace Privée"),
@@ -113,7 +120,11 @@ class EspacePriveSettingsForm extends ConfigFormBase {
       '#title' => t('Description de la page'),
       '#default_value' => $config->get('metatag_login_description'),
     ];
-
+    $form['domain_black_list'] = [
+      '#type' => 'textarea',
+      '#default_value' => !empty($config->get('domain_black_list')) ? $config->get('domain_black_list') : '',
+      '#description' => $this->t('Enter black listed domains separated by ";" character. Ex: hotmail.com;yopmail.com'),
+    ];
     return $form;
   }
 
@@ -122,6 +133,8 @@ class EspacePriveSettingsForm extends ConfigFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $config = $this->config('vactory_espace_prive.settings');
+    $domains = $form_state->getValue('domain_black_list');
+    $domains = !empty($domains) ? str_replace(' ', '', $domains) : '';
     $config->set('path_login', $form_state->getValue('path_login'))
       ->set('path_login', $form_state->getValue('path_login'))
       ->set('path_register', $form_state->getValue('path_register'))
@@ -132,6 +145,8 @@ class EspacePriveSettingsForm extends ConfigFormBase {
       ->set('metatag_register_description', $form_state->getValue('metatag_register_description'))
       ->set('metatag_login_title', $form_state->getValue('metatag_login_title'))
       ->set('metatag_login_description', $form_state->getValue('metatag_login_description'))
+      ->set('password_lifetime', $form_state->getValue('password_lifetime'))
+      ->set('domain_black_list', $domains)
       ->save();
     parent::submitForm($form, $form_state);
     drupal_flush_all_caches();

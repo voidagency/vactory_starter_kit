@@ -15,6 +15,7 @@ dependencies:
     - field.field.node.vactory_governance.field_vactory_media
     - field.field.node.vactory_governance.field_vactory_name
     - field.field.node.vactory_governance.field_vactory_seo_status
+    - field.field.node.vactory_governance.field_vactory_tags
     - field.field.node.vactory_governance.field_vactory_taxonomy_1
     - field.field.node.vactory_governance.field_vactory_telephone
     - node.type.vactory_governance
@@ -28,28 +29,28 @@ bundle: vactory_governance
 mode: smart_search
 content:
   field_image:
-    weight: 4
+    type: image
     label: hidden
     settings:
-      image_style: ''
       image_link: ''
+      image_style: ''
     third_party_settings: {  }
-    type: image
+    weight: 4
     region: content
   field_vactory_media:
     type: media_responsive_thumbnail
-    weight: 1
-    region: content
     label: hidden
     settings:
       responsive_image_style: vactory_three_cols
       image_link: ''
     third_party_settings: {  }
-  links:
-    weight: 0
+    weight: 1
     region: content
+  links:
     settings: {  }
     third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   addtoany: true
   body: true
@@ -63,6 +64,7 @@ hidden:
   field_vactory_fax: true
   field_vactory_name: true
   field_vactory_seo_status: true
+  field_vactory_tags: true
   field_vactory_taxonomy_1: true
   field_vactory_telephone: true
   langcode: true

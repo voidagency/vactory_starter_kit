@@ -120,11 +120,11 @@ class VactoryWhatsappTestForm extends FormBase {
     $template_id = $form_state->getValue('template_id');
     $template_params = $form_state->getValue('template_params');
     $message_text = $form_state->getValue('message_text');
-    $config = $this->configFactory->get('vactory_whatsapp.settings');
+    $state = \Drupal::state();
     if ($method === 'template') {
       $template_params = Json::decode($template_params);
       $template_params = $template_params ? $template_params : [];
-      $template_id = empty($template_id) ? $config->get('template_id') : $template_id;
+      $template_id = empty($template_id) ? $state->get('vactory_whatsapp_template_id') : $template_id;
       $langcode = $this->languageManager->getCurrentLanguage()->getId();
       try {
         // Send template message Case.

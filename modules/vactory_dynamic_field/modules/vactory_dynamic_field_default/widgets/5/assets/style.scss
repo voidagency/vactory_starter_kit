@@ -1,0 +1,22 @@
+.t-3cols-image-title-text-permalinks {
+  h2,
+  h4 {
+    font-weight: 600;
+    margin-bottom: 8px;
+    text-transform: none;
+  }
+  .t-block-image-description {
+    height: 100%;
+    background-color: $white;
+    box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.04);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .t-3cols-description {
+    padding: 9px 24px 27px 24px;
+    background-color: $white;
+  }
+  .js-img-video .block-image > a:after {
+    background-color: transparent;
+  }
+}

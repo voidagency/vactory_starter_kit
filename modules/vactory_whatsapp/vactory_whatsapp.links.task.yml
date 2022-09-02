@@ -1,4 +1,8 @@
 vactory_whatsapp.settings:
   route_name: vactory_whatsapp.settings_form
   base_route: vactory_whatsapp.settings_form
-  title: Settings
+  title: Whatsapp Business API Settings
+vactory_whatsapp_webhhok.settings:
+  route_name: vactory_whatsapp_webhook.settings_form
+  base_route: vactory_whatsapp.settings_form
+  title: Whatsapp Webhooks Settings

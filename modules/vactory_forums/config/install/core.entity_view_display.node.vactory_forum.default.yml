@@ -5,6 +5,8 @@ dependencies:
     - core.entity_view_display.comment.comment.default
     - field.field.node.vactory_forum.body
     - field.field.node.vactory_forum.comment
+    - field.field.node.vactory_forum.field_forum_editeur
+    - field.field.node.vactory_forum.field_forum_expert
     - field.field.node.vactory_forum.field_groupe_utilisateurs
     - field.field.node.vactory_forum.field_vactory_date
     - field.field.node.vactory_forum.field_vactory_excerpt
@@ -13,11 +15,9 @@ dependencies:
     - field.field.node.vactory_forum.field_vactory_forums_thematic
     - field.field.node.vactory_forum.field_vactory_media
     - field.field.node.vactory_forum.field_vactory_meta_tags
+    - field.field.node.vactory_forum.field_vactory_tags
     - node.type.vactory_forum
     - responsive_image.styles.vactory_one_col
-  enforced:
-    module:
-      - vactory_forums
   module:
     - comment
     - datetime
@@ -26,112 +26,130 @@ dependencies:
     - options
     - text
     - user
+  enforced:
+    module:
+      - vactory_forums
 id: node.vactory_forum.default
 targetEntityType: node
 bundle: vactory_forum
 mode: default
 content:
   body:
-    label: hidden
     type: text_default
-    weight: 1
-    region: content
+    label: hidden
     settings: {  }
     third_party_settings: {  }
+    weight: 1
+    region: content
   comment:
-    weight: 11
+    type: comment_default
     label: hidden
     settings:
       view_mode: default
       pager_id: 0
     third_party_settings: {  }
-    type: comment_default
+    weight: 11
     region: content
   field_groupe_utilisateurs:
-    weight: 13
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 13
     region: content
   field_vactory_date:
-    weight: 5
+    type: datetime_custom
     label: hidden
     settings:
       timezone_override: ''
       date_format: d/m/Y
     third_party_settings: {  }
-    type: datetime_custom
+    weight: 5
     region: content
   field_vactory_excerpt:
-    weight: 6
+    type: text_default
     label: hidden
     settings: {  }
     third_party_settings: {  }
-    type: text_default
+    weight: 6
     region: content
   field_vactory_forum_room:
-    weight: 12
+    type: entity_reference_label
     label: hidden
     settings:
       link: false
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 12
     region: content
   field_vactory_forum_status:
-    weight: 7
+    type: list_key
     label: hidden
     settings: {  }
     third_party_settings: {  }
-    type: list_key
+    weight: 7
     region: content
   field_vactory_forums_thematic:
-    weight: 10
+    type: entity_reference_label
     label: hidden
     settings:
       link: false
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 10
     region: content
   field_vactory_media:
-    weight: 4
+    type: media_responsive_thumbnail
     label: hidden
     settings:
       responsive_image_style: vactory_one_col
       image_link: ''
     third_party_settings: {  }
-    type: media_responsive_thumbnail
+    weight: 4
     region: content
   field_vactory_meta_tags:
-    weight: 8
+    type: metatag_empty_formatter
     label: hidden
     settings: {  }
     third_party_settings: {  }
-    type: metatag_empty_formatter
+    weight: 8
+    region: content
+  field_vactory_tags:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 14
+    region: content
+  flag_liked_content:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 10
     region: content
   langcode:
     type: language
-    weight: 9
-    region: content
     label: hidden
     settings:
       link_to_entity: false
       native_language: false
     third_party_settings: {  }
-  links:
-    weight: 3
+    weight: 9
     region: content
+  links:
     settings: {  }
     third_party_settings: {  }
+    weight: 3
+    region: content
   taxonomy_forums:
     type: entity_reference_label
-    weight: 0
-    region: content
     label: hidden
     settings:
       link: false
     third_party_settings: {  }
+    weight: 0
+    region: content
 hidden:
   addtoany: true
+  field_forum_editeur: true
+  field_forum_expert: true
   search_api_excerpt: true

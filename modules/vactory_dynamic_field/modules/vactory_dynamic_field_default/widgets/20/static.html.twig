@@ -1,0 +1,22 @@
+{% if dir == 'rtl' %}
+    {{ attach_library('vactory_dynamic_field_default/df_default_widget_20_rtl') }}
+{% else %}
+    {{ attach_library('vactory_dynamic_field_default/df_default_widget_20') }}
+{% endif %}
+
+<div class="toolbox-contact">
+    <ul>
+        {% for item in 0..2 %}
+            <li class="d-block">
+                <div class="list-itel-inner">
+                    <a href="#" class="text">
+                        <span class="icon-chat icon-wrapper"></span>
+                        <p>
+                            contact
+                        </p>
+                    </a>
+                </div>
+            </li>
+        {% endfor %}
+    </ul>
+</div>

@@ -170,9 +170,9 @@ trait FormWidgetTrait {
       $options['#default_value'] = $default_value;
     }
 
-    // Dynamic Views default value.
+    // JSON:API Collection default value.
     if ($type === 'json_api_collection' && $default_value) {
-      $options['#default_value'] = $default_value;
+      $options['#default_value'] = array_merge($options['#default_value'], $default_value);
     }
 
     $element_defaults = $this->getFormElementDefaults($type, $options);
@@ -206,8 +206,7 @@ trait FormWidgetTrait {
       if (!empty($default_value)) {
         if (!is_array($default_value)) {
           $video_default_value[] = $default_value;
-        }
-        else {
+        } else {
           $key = array_keys($default_value)[0];
           if (isset($default_value[$key]['selection'])) {
             foreach ($default_value[$key]['selection'] as $media) {
@@ -216,11 +215,38 @@ trait FormWidgetTrait {
           }
         }
       }
-
       return $this->getVideoFieldForm($field_name, [
         'label' => $label,
         'default_value' => $video_default_value,
         'required' => $element_defaults['#required']  ?? FALSE,
+        'cardinality' => 1,
+      ], $form, $form_state);
+    }
+
+    if ($type === 'file') {
+      $file_default_value = [];
+      if (!empty($default_value)) {
+        if (!is_array($default_value)) {
+          $file_default_value[] = $default_value;
+        }
+        else {
+          $default_value = array_filter($default_value, function ($el) {
+            return isset($el['selection'][0]);
+          });
+          if (!empty($default_value)) {
+            $key = array_keys($default_value)[0];
+            if (isset($default_value[$key]['selection'])) {
+              foreach ($default_value[$key]['selection'] as $media) {
+                $file_default_value[] = $media['target_id'];
+              }
+            }
+          }
+        }
+      }
+      return $this->getFileFieldForm($field_name, [
+        'label' => $label,
+        'default_value' => $file_default_value,
+        'required' => $element_defaults['#required'] ?? FALSE,
         'cardinality' => 1,
       ], $form, $form_state);
     }
@@ -433,9 +459,9 @@ trait FormWidgetTrait {
 
     $configuration = array_merge(
       [
-        'label'         => 'Image',
+        'label'         => $configuration['label'],
         'default_value' => [],
-        'required'      => FALSE,
+        'required'      => $configuration['required'] ?? FALSE,
         'cardinality'   => 1,
       ],
       $configuration
@@ -486,9 +512,15 @@ trait FormWidgetTrait {
       'mode'             => 'default',
     ]);
 
+    // Get website file system default schema.
+    $default_scheme = \Drupal::config('system.file')->get('default_scheme');
+
     // Add field to component.
     $form_display->setComponent($field_name, [
-      'type' => 'media_library_widget',
+      'type' => $default_scheme !== 'cloudinary' ? 'media_library_widget' : 'cloudinary_media_library_widget',
+      'settings' => [
+        'resource_type' => $media_type === 'file' && $default_scheme !== 'cloudinary' ? 'raw' : $media_type,
+      ],
     ]);
 
     /**

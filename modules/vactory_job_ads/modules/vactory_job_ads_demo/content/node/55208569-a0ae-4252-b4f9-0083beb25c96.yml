@@ -1,0 +1,91 @@
+_meta:
+  version: '1.0'
+  entity_type: node
+  uuid: 55208569-a0ae-4252-b4f9-0083beb25c96
+  bundle: vactory_job_ads
+  default_langcode: fr
+  depends:
+    26b30cc0-d128-4fb4-bc9f-7e010a4606f4: taxonomy_term
+    e961a106-d4b2-41a3-b611-c1f30d08092d: taxonomy_term
+    29d7f846-1d96-4197-b40f-2afbb9e8fbde: taxonomy_term
+default:
+  revision_uid:
+    -
+      target_id: 1
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  title:
+    -
+      value: 'Senior Expertise Comptable'
+  created:
+    -
+      value: 1657617384
+  promote:
+    -
+      value: true
+  sticky:
+    -
+      value: false
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: /jobs/senior-expertise-comptable
+      langcode: fr
+      pathauto: 1
+  node_summary:
+    -
+      value: 'Senior Expertise Comptable'
+  content_translation_source:
+    -
+      value: und
+  content_translation_outdated:
+    -
+      value: false
+  body:
+    -
+      value: "<p>&nbsp;</p>\r\n\r\n<p>En tant que Consultant Senior en Expertise comptable, vous serez en charge d'un portefeuille diversifié de sociétés marocaines et françaises.</p>\r\n"
+      format: basic_html
+      summary: ''
+  comment:
+    -
+      status: 0
+      cid: 0
+      last_comment_timestamp: 1657617442
+      last_comment_name: ''
+      last_comment_uid: 1
+      comment_count: 0
+  field_vactory_address:
+    -
+      value: "<p>Cras ultricies ligula sed magna dictum porta. Vivamus</p>\r\n"
+      format: basic_html
+  field_vactory_city:
+    -
+      entity: 26b30cc0-d128-4fb4-bc9f-7e010a4606f4
+  field_vactory_contract:
+    -
+      entity: e961a106-d4b2-41a3-b611-c1f30d08092d
+  field_vactory_description:
+    -
+      value: "<p>Vos principales missions seront :</p>\r\n\r\n<ul>\r\n\t<li>Assurer la révision des comptes Elaborer les déclarations fiscales périodiques (IS, IR, TVA...)</li>\r\n\t<li>Préparer les arrêtés annuels des comptes Superviser une équipe de comptables Gérer la communication avec les clients</li>\r\n\t<li>Assurer les divers travaux juridiques (Approbation des comptes, constitution de société...)</li>\r\n\t<li>Compétences requises : Expérience de 3 à 5 ans au sein d'un cabinet d'expertise comptable Expérience solide en comptabilité et fiscalité de base (TVA, IR, IS, Liasse fiscale…) Maîtrise de la paie (la maîtrise du logiciel Sage Paie est souhaitable) Connaissances en juridique ( Constitution, transfert de siège, augmentation du capital social…) Maîtrise du français à l'écrit et à l'oral Capacités rédactionnelles</li>\r\n</ul>\r\n"
+      format: basic_html
+  field_vactory_email:
+    -
+      value: void.france@void.fr
+  field_vactory_profession:
+    -
+      entity: 29d7f846-1d96-4197-b40f-2afbb9e8fbde
+  field_vactory_seo_status:
+    -
+      status: ''
+      focus_keyword: ''
+      title: ''
+      description: ''
+  field_vactory_telephone:
+    -
+      value: '+212523323343'

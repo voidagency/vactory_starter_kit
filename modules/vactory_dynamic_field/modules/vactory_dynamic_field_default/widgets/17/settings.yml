@@ -1,0 +1,10 @@
+name: 'D17 - Contenu libre'
+category: 'Content'
+multiple: FALSE
+enabled: TRUE
+fields:
+  content:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'full_html'

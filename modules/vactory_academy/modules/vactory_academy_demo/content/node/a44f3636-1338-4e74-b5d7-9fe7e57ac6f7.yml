@@ -1,0 +1,267 @@
+_meta:
+  version: '1.0'
+  entity_type: node
+  uuid: a44f3636-1338-4e74-b5d7-9fe7e57ac6f7
+  bundle: vactory_academy
+  default_langcode: fr
+  depends:
+    0263402e-e9e7-43c0-aef1-4acf5c539285: user
+    9ab9eabe-f67a-4b66-8b20-edc0ea132411: media
+    fd9a19fe-57e1-4308-b357-43eb042f21bb: taxonomy_term
+    fba4aff8-6f2a-43db-a38e-f66e180cad9b: media
+default:
+  revision_uid:
+    -
+      target_id: 1
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  title:
+    -
+      value: 'Photography Masterclass : Un guide complet de la photographie'
+  created:
+    -
+      value: 1657212426
+  promote:
+    -
+      value: true
+  sticky:
+    -
+      value: false
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: /academy-courses/photography-masterclass-un-guide-complet-de-la-photographie
+      langcode: fr
+      pathauto: 1
+  node_summary:
+    -
+      value: 'Le meilleur cours de photographie professionnelle en ligne : Comment prendre des photos étonnantes pour les photographes débutants et avancés'
+  content_translation_source:
+    -
+      value: und
+  content_translation_outdated:
+    -
+      value: false
+  comment:
+    -
+      status: 0
+      cid: 0
+      last_comment_timestamp: 1657213079
+      last_comment_name: ''
+      last_comment_uid: 1
+      comment_count: 0
+  field_academy_duree:
+    -
+      value: 2h
+  field_vactory_academy_langue:
+    -
+      value: Français
+  field_vactory_excerpt:
+    -
+      value: "<p>Le meilleur cours de photographie professionnelle en ligne : Comment prendre des photos étonnantes pour les photographes débutants et avancés</p>\r\n"
+      format: basic_html
+  field_vactory_instructor:
+    -
+      entity: 0263402e-e9e7-43c0-aef1-4acf5c539285
+  field_vactory_media:
+    -
+      entity: 9ab9eabe-f67a-4b66-8b20-edc0ea132411
+  field_vactory_meta_tags:
+    -
+      value:
+        og_image: '[node:field_vactory_media:entity:field_media_image:vactory_opengraph_image_style:url]'
+        og_image_url: '[node:field_vactory_media:entity:field_media_image:vactory_opengraph_image_style:url]'
+        og_image_secure_url: '[node:field_vactory_media:entity:field_media_image:vactory_opengraph_image_style:url]'
+  field_vactory_paragraphs:
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: cc015685-b0d3-4c26-9967-247a442c587e
+          bundle: vactory_component
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1657212941
+          behavior_settings:
+            -
+              value: {  }
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_vactory_component:
+            -
+              widget_id: 'vactory_froala:7'
+              widget_data: '{"extra_field":{"title":""},"0":{"description":{"value":"<p>&nbsp;<\/p>\r\n\r\n<ul>\r\n\t<li>Vous saurez comment composer vos images de mani\u00e8re esth\u00e9tique gr\u00e2ce aux r\u00e8gles de base de la photographie.<\/li>\r\n\t<li>Vous saurez comment \u00e9clairer vos sujets au flash et \u00e0 la lumi\u00e8re naturelle.<\/li>\r\n\t<li>Vous saurez comment \u00e9diter vos photos comme un professionnel.<br \/>\r\n\t&nbsp;<\/li>\r\n<\/ul>\r\n","format":"full_html"},"_weight":"1"}}'
+          field_vactory_flag:
+            -
+              value: true
+          field_vactory_flag_2:
+            -
+              value: false
+          field_vactory_title:
+            -
+              value: 'Ce que vous apprendrez'
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: ee53b2c5-bf1d-411e-b4b3-52f672036b58
+          bundle: vactory_component
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1657212998
+          behavior_settings:
+            -
+              value: {  }
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_vactory_component:
+            -
+              widget_id: 'vactory_froala:7'
+              widget_data: '{"extra_field":{"title":""},"0":{"description":{"value":"<blockquote>\r\n<p>&nbsp;<\/p>\r\n\r\n<ul>\r\n\t<li>Vous devez \u00eatre enthousiaste \u00e0 l''id\u00e9e d''apprendre la photographie, et pr\u00eat \u00e0 passer \u00e0 l''action !<\/li>\r\n\t<li>Aucun appareil photo sophistiqu\u00e9 n''est requis, mais n''importe quel appareil (m\u00eame un smartphone) vous aidera \u00e0 apprendre en vous incitant \u00e0 pratiquer.<\/li>\r\n\t<li>Aucune connaissance pr\u00e9alable de la photographie n''est requise - ce cours s''adresse aux d\u00e9butants absolus.<br \/>\r\n\t&nbsp;<\/li>\r\n<\/ul>\r\n<\/blockquote>\r\n","format":"full_html"},"_weight":"1"}}'
+          field_vactory_flag:
+            -
+              value: true
+          field_vactory_flag_2:
+            -
+              value: false
+          field_vactory_title:
+            -
+              value: Prérequis
+    -
+      entity:
+        _meta:
+          version: '1.0'
+          entity_type: paragraph
+          uuid: c7d0de0e-1e43-49ce-a162-39ce6ecf6b3c
+          bundle: vactory_component
+          default_langcode: fr
+        default:
+          status:
+            -
+              value: true
+          created:
+            -
+              value: 1657213047
+          behavior_settings:
+            -
+              value: {  }
+          paragraph_container:
+            -
+              value: narrow_width
+          paragraph_background_parallax:
+            -
+              value: false
+          content_translation_source:
+            -
+              value: und
+          content_translation_outdated:
+            -
+              value: false
+          field_paragraph_hide_lg:
+            -
+              value: false
+          field_paragraph_hide_sm:
+            -
+              value: false
+          field_position_image_x:
+            -
+              value: centrer
+          field_position_image_y:
+            -
+              value: centrer
+          field_size_image:
+            -
+              value: cover
+          field_vactory_component:
+            -
+              widget_id: 'vactory_froala:6'
+              widget_data: '[{"title":"","description":{"value":"<p><strong><em>This online photography course will teach you how to take amazing images and even sell them, whether you use a smartphone, mirrorless or&nbsp;DSLR camera.<\/em><\/strong><\/p>\r\n\r\n<p><em>Over 173,292&nbsp;students enrolled in the previous version of this course, with over 14,000 top ratings!&nbsp;<\/em><strong><em>This new version is even better!<\/em><\/strong><\/p>\r\n\r\n<p>This photography&nbsp;course is designed to teach you the ins and outs of photography, even if you have little to no experience with it, to help create profitable images that help you stand out from the crowd and sell.<\/p>\r\n\r\n<p><strong>Master Photography Techniques to Create Extraordinary Images!<\/strong><\/p>\r\n\r\n<p>While there are plenty of digital photography courses that focus on specific styles or how to use gear, it''s hard to find a comprehensive course like this one, which is for beginner to advanced photographers.<\/p>\r\n\r\n<p>This course is designed for all levels of photographers who want to improve their skills, take stellar images, and make money with their photos - especially great for any DSLR or mirrorless camera user.<\/p>\r\n\r\n<p><strong>What will you learn:<\/strong><\/p>\r\n\r\n<ul>\r\n\t<li>\r\n\t<p>Understand how cameras work and what gear you need<\/p>\r\n\t<\/li>\r\n\t<li>\r\n\t<p>Master shooting in manual mode and understanding your camera<\/p>\r\n\t<\/li>\r\n\t<li>\r\n\t<p>Know what equipment you should buy no matter what your budget is<\/p>\r\n\t<\/li>\r\n\t<li>\r\n\t<p>Follow our practical demonstrations to see how we shoot in real-world scenarios<\/p>\r\n\t<\/li>\r\n\t<li>\r\n\t<p>Use composition, lighting, and proper settings to take better photos<\/p>\r\n\t<\/li>\r\n\t<li>\r\n\t<p>Edit photos professionally to make them look even better<\/p>\r\n\t<\/li>\r\n\t<li>\r\n\t<p>Learn start a photography business and make money from your new skills<\/p>\r\n\t<\/li>\r\n<\/ul>\r\n\r\n<p><strong>Styles of photography you will learn:<\/strong><\/p>\r\n\r\n<ul>\r\n\t<li>\r\n\t<p>Portrait photography<\/p>\r\n\t<\/li>\r\n\t<li>\r\n\t<p>Long exposure photography<\/p>\r\n\t<\/li>\r\n\t<li>\r\n\t<p>Landscape photography<\/p>\r\n\t<\/li>\r\n\t<li>\r\n\t<p>Product photography<\/p>\r\n\t<\/li>\r\n\t<li>\r\n\t<p>Low light photography<\/p>\r\n\t<\/li>\r\n\t<li>\r\n\t<p>Sports and action photography<\/p>\r\n\t<\/li>\r\n\t<li>\r\n\t<p>Street photography<\/p>\r\n\t<\/li>\r\n\t<li>\r\n\t<p>Architecture photography<\/p>\r\n\t<\/li>\r\n\t<li>\r\n\t<p>Event and wedding photography<\/p>\r\n\t<\/li>\r\n\t<li>\r\n\t<p>Aerial and drone photography<\/p>\r\n\t<\/li>\r\n\t<li>\r\n\t<p>Wildlife photography<\/p>\r\n\t<\/li>\r\n\t<li>\r\n\t<p>Night photography<\/p>\r\n\t<\/li>\r\n\t<li>\r\n\t<p>DSLR&nbsp;photography<\/p>\r\n\t<\/li>\r\n\t<li>\r\n\t<p>Mirrorless photography<\/p>\r\n\t<\/li>\r\n\t<li>\r\n\t<p>Smartphone photography<\/p>\r\n\t<\/li>\r\n\t<li>\r\n\t<p>and more!<\/p>\r\n\t<\/li>\r\n<\/ul>\r\n\r\n<p><strong>Improve Your Photography Techniques, Acquire Clients, And Make More Money<\/strong><\/p>\r\n\r\n<p>Regardless of what your level of experience is or what type of camera you use, this in-depth course is designed to provide you with everything you need to take your photography skills to the next level.<\/p>\r\n\r\n<p>Whether you prefer taking photos of nature, animals, or people, a great photographer knows how to compose a shot, light it, and edit it. By honing these skills, you can sell your photos so you can turn your passion into a career. This course shows you how.<\/p>\r\n\r\n<p>Unlike other photography classes that are more limited in scope, this complete course teaches you how to take amazing photos and how to make money by selling them.<\/p>\r\n\r\n<p><strong>Contents and Overview<\/strong><\/p>\r\n\r\n<p>This course is aimed at teaching photographers what it takes to improve your techniques to earn more money.<\/p>\r\n\r\n<p>You''ll start with the basics and tackle how a camera operates, the types of cameras and lenses available, and equipment you''ll need for accomplishing your goals. You''ll then dive into the different styles of photography you can focus on.<\/p>\r\n\r\n<p>You''ll learn about your camera settings (DSLR, mirrorless, or other), including how to shoot in manual mode. You''ll use stabilization tools and master how to properly compose and light a scene. You''ll even learn how to take great photos with a smartphone or tablet and how to edit images.<\/p>\r\n\r\n<p>So you can sell your photos, you''ll learn how to brand yourself, create a portfolio and website, and find freelance work or a full-time position. Gain insight into licensing, fair use, and more. And if you want to get into wedding photography, you''ll learn how to start your own business.<\/p>\r\n\r\n<p>By the end of this master course, your confidence as a photographer will soar. You''ll have a thorough understanding of your camera and gear so you can use them to their fullest potential to take unforgettable photos and start a profitable photography career.<\/p>\r\n\r\n<p><strong>What camera should you use?<\/strong><\/p>\r\n\r\n<p>A DSLR camera or mirrorless camera is a great option for taking this course. It doesn''t have to be an expensive or fancy model. Any interchangeable lens camera like a DSLR or mirrorless is fine. You can even use a smartphone or point and shoot camera, although you may not have all the manual settings and options that we cover in this course.<\/p>\r\n\r\n<p><strong>Who are the Instructors?<\/strong><\/p>\r\n\r\n<p>Phil Ebiner, Sam Shimizu-Jones, and Will Carnahan - all professionals making a living from their photographic skills, have come together to create this amazing new course.&nbsp;<\/p>\r\n\r\n<p>Phil &amp; Sam, creators of the original Photography Masterclass, took the feedback left from students to make this course even better. Will has come on board to share his passion and in-depth knowledge of photography with you.<\/p>\r\n\r\n<p><strong>With 3 instructors, you''ll get premium support and feedback to help you become a better photographer!<\/strong><\/p>\r\n\r\n<p>Our happiness guarantee...<\/p>\r\n\r\n<p>We have a&nbsp;<strong>30-day 100% money back guarantee,&nbsp;<\/strong>so if you aren''t happy with your purchase, we will refund your course -&nbsp;<em>no questions asked!<\/em><\/p>\r\n\r\n<p><strong>We can''t wait to see you in the course!<\/strong><\/p>\r\n\r\n<p>Enroll now, and we''ll help you take better photos than ever before!<\/p>\r\n\r\n<p>Phil, Sam, &amp; Will<\/p>\r\n\r\n<p>\u00c0 qui ce cours s''adresse-t-il&nbsp;?<\/p>\r\n\r\n<ul>\r\n\t<li>Anyone who wants to take better photos<\/li>\r\n\t<li>Absolute beginners who want to become skilled photographers<\/li>\r\n\t<li>Moms, dads, kids, grandparents, and anyone else who wants to document their lives in a beautiful way<\/li>\r\n\t<li>Amateur photographers wanting to improve their skills<\/li>\r\n\t<li>Photographers looking to make money with their skills<\/li>\r\n<\/ul>\r\n\r\n<p>&nbsp;<\/p>\r\n","format":"full_html"}}]'
+          field_vactory_flag:
+            -
+              value: true
+          field_vactory_flag_2:
+            -
+              value: false
+          field_vactory_title:
+            -
+              value: Description
+  field_vactory_seo_status:
+    -
+      status: ''
+      focus_keyword: ''
+      title: ''
+      description: ''
+  field_vactory_theme:
+    -
+      entity: fd9a19fe-57e1-4308-b357-43eb042f21bb
+  field_vactory_youtube_media:
+    -
+      entity: fba4aff8-6f2a-43db-a38e-f66e180cad9b

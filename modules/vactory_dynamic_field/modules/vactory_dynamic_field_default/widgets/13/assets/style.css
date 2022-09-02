@@ -1,0 +1,8 @@
+.t-background-with-card {
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+
+.t-background-with-card .t-background-with-card-details {
+  background-color: #fff;
+}

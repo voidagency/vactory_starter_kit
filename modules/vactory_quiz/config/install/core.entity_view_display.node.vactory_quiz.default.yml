@@ -4,38 +4,52 @@ dependencies:
   config:
     - field.field.node.vactory_quiz.body
     - field.field.node.vactory_quiz.field_quiz_questions
+    - field.field.node.vactory_quiz.field_vactory_tags
     - node.type.vactory_quiz
-  enforced:
-    module:
-      - vactory_quiz
   module:
     - text
     - user
     - vactory_quiz
+  enforced:
+    module:
+      - vactory_quiz
 id: node.vactory_quiz.default
 targetEntityType: node
 bundle: vactory_quiz
 mode: default
 content:
   body:
-    label: hidden
     type: text_default
-    weight: 101
+    label: hidden
     settings: {  }
     third_party_settings: {  }
+    weight: 101
     region: content
   field_quiz_questions:
-    weight: 102
+    type: vactory_quiz_question_formatter
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: vactory_quiz_question_formatter
+    weight: 102
     region: content
-  links:
-    weight: 100
+  field_vactory_tags:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 103
     region: content
+  flag_liked_content:
     settings: {  }
     third_party_settings: {  }
+    weight: 10
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
 hidden:
   addtoany: true
   field_content_access_groups: true

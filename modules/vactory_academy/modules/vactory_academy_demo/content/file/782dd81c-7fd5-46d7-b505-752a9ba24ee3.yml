@@ -1,0 +1,33 @@
+_meta:
+  version: '1.0'
+  entity_type: file
+  uuid: 782dd81c-7fd5-46d7-b505-752a9ba24ee3
+  bundle: image
+  default_langcode: fr
+default:
+  uid:
+    -
+      target_id: 1
+  filename:
+    -
+      value: 2030028_f6ef_2.jpeg
+  uri:
+    -
+      value: 'public://2022-07/2030028_f6ef_2.jpeg'
+  filemime:
+    -
+      value: image/jpeg
+  filesize:
+    -
+      value: 101513
+  status:
+    -
+      value: true
+  created:
+    -
+      value: 1657207908
+  path:
+    -
+      alias: ''
+      langcode: fr
+      pathauto: 1

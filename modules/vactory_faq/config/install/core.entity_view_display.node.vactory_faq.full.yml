@@ -5,6 +5,8 @@ dependencies:
     - core.entity_view_mode.node.full
     - field.field.node.vactory_faq.body
     - field.field.node.vactory_faq.field_faq
+    - field.field.node.vactory_faq.field_vactory_seo_status
+    - field.field.node.vactory_faq.field_vactory_tags
     - field.field.node.vactory_faq.field_vactory_taxonomy_1
     - node.type.vactory_faq
   module:
@@ -20,14 +22,14 @@ bundle: vactory_faq
 mode: full
 content:
   body:
-    label: hidden
     type: text_default
-    weight: 101
+    label: hidden
     settings: {  }
     third_party_settings: {  }
+    weight: 101
     region: content
   field_faq:
-    weight: 102
+    type: faqfield_accordion
     label: hidden
     settings:
       active: 0
@@ -38,21 +40,29 @@ content:
         easing: linear
         duration: 200
     third_party_settings: {  }
-    type: faqfield_accordion
+    weight: 102
     region: content
   field_vactory_taxonomy_1:
-    weight: 102
+    type: entity_reference_label
     label: above
     settings:
       link: true
-    third_party_settings: { }
-    type: entity_reference_label
+    third_party_settings: {  }
+    weight: 102
     region: content
-  links:
-    weight: 100
-    region: content
+  flag_liked_content:
     settings: {  }
     third_party_settings: {  }
+    weight: 10
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
 hidden:
   addtoany: true
+  field_vactory_seo_status: true
+  field_vactory_tags: true
   langcode: true
+  search_api_excerpt: true

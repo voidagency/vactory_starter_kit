@@ -1,0 +1,45 @@
+.testimonials-carousel .carousel-inner {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+  width: 80%;
+}
+
+.testimonials-carousel .carousel-indicators {
+  position: relative;
+  list-style: none;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+}
+
+.testimonials-carousel .carousel-indicators .active {
+  background: transparent;
+}
+
+.testimonials-carousel .carousel-indicators .active img {
+  opacity: 1;
+}
+
+.testimonials-carousel .carousel-indicators li {
+  padding: 5px;
+  padding: 0.3125rem;
+  width: 60px;
+  width: 3.75rem;
+  height: 60px;
+  height: 3.75rem;
+  background-color: transparent;
+  text-indent: 0;
+}
+
+.testimonials-carousel .carousel-indicators li::before, .testimonials-carousel .carousel-indicators li::after {
+  display: none;
+}
+
+.testimonials-carousel .carousel-indicators li img {
+  border-radius: 50%;
+  opacity: .6;
+}

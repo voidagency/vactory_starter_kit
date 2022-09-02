@@ -1,0 +1,10 @@
+vactory_private_files_decoupled.files.get:
+  path: '/api/user/private-files'
+  defaults:
+    _controller: '\Drupal\vactory_private_files_decoupled\Controller\PrivateFilesController::getUserPrivateFiles'
+  methods:  [GET]
+  requirements:
+    _role: 'authenticated'
+  options:
+    no_cache: 'TRUE'
+    _auth: [ 'oauth2' ]

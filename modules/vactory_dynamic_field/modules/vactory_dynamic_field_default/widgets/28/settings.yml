@@ -1,0 +1,16 @@
+name: 'D28 - Content with CTA'
+multiple: FALSE
+category: 'Content'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: 'Titre'
+  description:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'full_html'
+  link:
+    type: url_extended
+    label: 'Lien'

@@ -1,0 +1,91 @@
+_meta:
+  version: '1.0'
+  entity_type: node
+  uuid: 34bada38-773d-4fd6-88bd-390a646f7cab
+  bundle: vactory_job_ads
+  default_langcode: fr
+  depends:
+    9f10be5c-e6f0-4894-8089-966a82fbf136: taxonomy_term
+    e961a106-d4b2-41a3-b611-c1f30d08092d: taxonomy_term
+    aaf63bbf-962b-4ba3-a7a9-f6de7672c794: taxonomy_term
+default:
+  revision_uid:
+    -
+      target_id: 1
+  status:
+    -
+      value: true
+  uid:
+    -
+      target_id: 1
+  title:
+    -
+      value: 'Contrôleur Qualité'
+  created:
+    -
+      value: 1657616517
+  promote:
+    -
+      value: true
+  sticky:
+    -
+      value: false
+  revision_translation_affected:
+    -
+      value: true
+  path:
+    -
+      alias: /jobs/controleur-qualite
+      langcode: fr
+      pathauto: 1
+  node_summary:
+    -
+      value: 'Contrôleur Qualité'
+  content_translation_source:
+    -
+      value: und
+  content_translation_outdated:
+    -
+      value: false
+  body:
+    -
+      value: "<ul>\r\n\t<li>Pour l’un de ses clients dans le secteur touristique, nous sommes à recherche un(e) Contrôleur qualité à Agadi</li>\r\n</ul>\r\n"
+      format: basic_html
+      summary: ''
+  comment:
+    -
+      status: 0
+      cid: 0
+      last_comment_timestamp: 1657616732
+      last_comment_name: ''
+      last_comment_uid: 1
+      comment_count: 0
+  field_vactory_address:
+    -
+      value: "<p>15 Vestibulum ac diam sit amet quam vehicula</p>\r\n"
+      format: basic_html
+  field_vactory_city:
+    -
+      entity: 9f10be5c-e6f0-4894-8089-966a82fbf136
+  field_vactory_contract:
+    -
+      entity: e961a106-d4b2-41a3-b611-c1f30d08092d
+  field_vactory_description:
+    -
+      value: "<ul>\r\n\t<li>&nbsp;Formaliser et respecter une procédure qualité • Contrôler la conformité aux spécifications des process, matières, pièces et/ou produits • Détecter des défauts et réparer un produit • Contrôler le respect des règles (notamment QHSE) et procédures</li>\r\n\t<li>Sélectionner et contrôler la qualité d'une matière première ... Collecter, réceptionner, entreposer des produits</li>\r\n</ul>\r\n"
+      format: basic_html
+  field_vactory_email:
+    -
+      value: void.france@void.fr
+  field_vactory_profession:
+    -
+      entity: aaf63bbf-962b-4ba3-a7a9-f6de7672c794
+  field_vactory_seo_status:
+    -
+      status: ''
+      focus_keyword: ''
+      title: ''
+      description: ''
+  field_vactory_telephone:
+    -
+      value: '+212523323343'

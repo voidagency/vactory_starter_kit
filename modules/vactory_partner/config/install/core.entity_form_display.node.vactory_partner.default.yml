@@ -2,18 +2,19 @@ langcode: en
 status: true
 dependencies:
   config:
-  - field.field.node.vactory_partner.body
-  - field.field.node.vactory_partner.field_vactory_call_to_action
-  - field.field.node.vactory_partner.field_vactory_media
-  - field.field.node.vactory_partner.field_vactory_seo_status
-  - image.style.thumbnail
-  - node.type.vactory_partner
+    - field.field.node.vactory_partner.body
+    - field.field.node.vactory_partner.field_vactory_call_to_action
+    - field.field.node.vactory_partner.field_vactory_media
+    - field.field.node.vactory_partner.field_vactory_seo_status
+    - field.field.node.vactory_partner.field_vactory_tags
+    - node.type.vactory_partner
   module:
-  - link
-  - media_library
-  - path
-  - text
-  - yoast_seo
+    - link
+    - media_library
+    - path
+    - scheduler
+    - text
+    - yoast_seo
 id: node.vactory_partner.default
 targetEntityType: node
 bundle: vactory_partner
@@ -22,12 +23,12 @@ content:
   body:
     type: text_textarea_with_summary
     weight: 121
+    region: content
     settings:
       rows: 9
       summary_rows: 3
       placeholder: ''
     third_party_settings: {  }
-    region: content
   created:
     type: datetime_timestamp
     weight: 10
@@ -35,33 +36,64 @@ content:
     settings: {  }
     third_party_settings: {  }
   field_vactory_call_to_action:
+    type: link_default
     weight: 123
+    region: content
     settings:
       placeholder_url: ''
       placeholder_title: ''
     third_party_settings: {  }
-    type: link_default
-    region: content
   field_vactory_media:
+    type: media_library_widget
     weight: 125
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: media_library_widget
-    region: content
   field_vactory_seo_status:
+    type: yoast_seo_widget
     weight: 124
+    region: content
     settings:
       edit_title: false
       edit_description: false
     third_party_settings: {  }
-    type: yoast_seo_widget
+  field_vactory_tags:
+    type: entity_reference_autocomplete
+    weight: 126
     region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   langcode:
     type: language_select
     weight: 2
     region: content
     settings:
       include_locked: true
+    third_party_settings: {  }
+  node_banner_image:
+    type: media_library_widget
+    weight: 0
+    region: content
+    settings:
+      media_types: {  }
+    third_party_settings: {  }
+  node_banner_mobile_image:
+    type: media_library_widget
+    weight: 0
+    region: content
+    settings:
+      media_types: {  }
+    third_party_settings: {  }
+  node_bg_image:
+    type: media_library_widget
+    weight: 0
+    region: content
+    settings:
+      media_types: {  }
     third_party_settings: {  }
   path:
     type: path
@@ -71,10 +103,10 @@ content:
     third_party_settings: {  }
   promote:
     type: boolean_checkbox
-    settings:
-      display_label: true
     weight: 15
     region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   publish_on:
     type: datetime_timestamp_no_default
@@ -84,17 +116,17 @@ content:
     third_party_settings: {  }
   status:
     type: boolean_checkbox
-    settings:
-      display_label: true
     weight: 120
     region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   sticky:
     type: boolean_checkbox
-    settings:
-      display_label: true
     weight: 16
     region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   title:
     type: string_textfield
@@ -112,11 +144,11 @@ content:
   uid:
     type: entity_reference_autocomplete
     weight: 5
+    region: content
     settings:
       match_operator: CONTAINS
       size: 60
       placeholder: ''
-    region: content
     third_party_settings: {  }
   unpublish_on:
     type: datetime_timestamp_no_default

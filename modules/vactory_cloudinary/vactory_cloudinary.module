@@ -5,10 +5,9 @@
  * Module related hooks.
  */
 
-use Drupal\Component\Serialization\Json;
-use Drupal\Core\File\FileSystem;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\file_entity\FileEntityInterface;
+use Drupal\vactory_cloudinary\Services\VactoryCloudinaryManager;
 use Symfony\Component\Console\Output\ConsoleOutput;
 
 /**
@@ -67,7 +66,7 @@ function vactory_cloudinary_move_file(FileEntityInterface $file, $source, &$stat
         $source_file_exist = isset($resource['secure_url']) && file_get_contents($resource['secure_url']);
       }
       if ($uri !== $destination && $source_file_exist) {
-        $is_moved = $source === 'cloudinary' ? $vactory_cloudinary_manager->moveFromCloudinary($file, $destination, $path, $resource['secure_url']) : move_file_to_cloudinary($file, $destination, $path, $file_system, $vactory_cloudinary_manager);
+        $is_moved = $source === 'cloudinary' ? $vactory_cloudinary_manager->moveFromCloudinary($file, $destination, $path, $resource['secure_url']) : move_file_to_cloudinary($file, $destination, $vactory_cloudinary_manager);
         $to = $source === 'cloudinary' ? 'Drupal file system' : 'cloudinary';
         if ($is_moved) {
           $moved_files_count++;
@@ -121,35 +120,7 @@ function vactory_cloudinary_move_file_finished($success, $results, $operations) 
 /**
  * Create folder function.
  */
-function move_file_to_cloudinary(FileEntityInterface $file, $destination, $path, FileSystem $file_system, $vactory_cloudinary_manager) {
-  $dirname = $file_system->dirname($path);
-  if (!file_move($file, $destination, 1)) {
-    if (!empty($dirname) && $dirname !== '.') {
-      //$settings = \Drupal::config('cloudinary_sdk.settings');
-      $state = Drupal::service('state');
-      $cloud_name = $state->get('cloudinary_sdk_cloud_name');
-      $api_key = $state->get('cloudinary_sdk_api_key');
-      $api_secret = $state->get('cloudinary_sdk_api_secret');
-      $http_client = Drupal::httpClient();
-      // Create folder on cloudinary.
-      $response = $http_client->post('https://' . $api_key . ':' . $api_secret . '@api.cloudinary.com/v1_1/' . $cloud_name . '/folders/' . $dirname)
-        ->getBody()
-        ->getContents();
-      if (!empty($response)) {
-        $response = Json::decode($response);
-        if (isset($response['success']) && $response['success']) {
-          // Try file move again after cloudinary folder creation.
-          $uri = $vactory_cloudinary_manager->moveFileWithoutUnlink($file->getFileUri(), $destination);
-          $old_uri = $file->getFileUri();
-          if ($vactory_cloudinary_manager->updateFileEntity($file, $uri, $destination)) {
-            // File has been moved successfully so delete it from Drupal system.
-            unlink($old_uri);
-            return TRUE;
-          }
-        }
-      }
-    }
-    return FALSE;
-  }
+function move_file_to_cloudinary(FileEntityInterface $file, $destination, VactoryCloudinaryManager $vactory_cloudinary_manager) {
+  $vactory_cloudinary_manager->moveToCloudinary($file, $destination, 'image');
   return TRUE;
 }
