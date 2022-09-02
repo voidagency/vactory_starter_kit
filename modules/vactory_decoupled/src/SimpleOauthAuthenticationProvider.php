@@ -28,6 +28,13 @@ class SimpleOauthAuthenticationProvider extends BaseSimpleOauthAuthenticationPro
    */
   private $jwtConfiguration;
 
+    /**
+     * The Social Auth user manager.
+     *
+     * @var \Drupal\social_auth\User\UserManager
+     */
+    protected $userManager;
+
   /**
    * {@inheritdoc}
    *
@@ -42,6 +49,7 @@ class SimpleOauthAuthenticationProvider extends BaseSimpleOauthAuthenticationPro
       $provider = $request->headers->get("X-Auth-Provider");
       $authorization = $request->headers->get('authorization');
       $jwt = trim(str_replace('Bearer ', '', $authorization));
+      $this->userManager = \Drupal::service("vactory_decoupled.user_manager");
 
       if ($provider === "keycloak") {
         return $this->authenticateKeycloak($jwt);
@@ -71,16 +79,9 @@ class SimpleOauthAuthenticationProvider extends BaseSimpleOauthAuthenticationPro
     $first_name = $payload["given_name"];
     $last_name = $payload["family_name"];
     $email = $payload["email"];
-    $picture = $payload["picture"];
+    $picture_url = $payload["picture"];
     $username = (!empty($email)) ? $email : "${id}@google.com";
     $mail = (!empty($email)) ? $email : "${id}@google.com";
-    $values = [
-      'status' => 1,
-      'name' => $username,
-      'mail' => $mail,
-      'field_first_name' => $first_name,
-      'field_last_name' => $last_name,
-    ];
 
     $user = user_load_by_name($username);
     if (!$user) {
@@ -91,6 +92,13 @@ class SimpleOauthAuthenticationProvider extends BaseSimpleOauthAuthenticationPro
         'field_first_name' => $first_name,
         'field_last_name' => $last_name,
       ];
+
+        if (!empty($picture_url) && $this->userManager->userPictureEnabled()) {
+            $file = $this->userManager->downloadProfilePic($picture_url, $id);
+            if ($file) {
+                $values['user_picture'] = $file->id();
+            }
+        }
 
       $user = User::create($values);
       $user->save();
@@ -112,16 +120,9 @@ class SimpleOauthAuthenticationProvider extends BaseSimpleOauthAuthenticationPro
     $name = $payload["name"];
     list($first_name, $last_name) = array_pad( explode( ' ', $name ), 4, '' );
     $email = $payload["email"];
-    $picture = $payload["picture"];
+    $picture_url = $payload["picture"];
     $username = (!empty($email)) ? $email : "${id}@facebook.com";
     $mail = (!empty($email)) ? $email : "${id}@facebook.com";
-    $values = [
-      'status' => 1,
-      'name' => $username,
-      'mail' => $mail,
-      'field_first_name' => $first_name,
-      'field_last_name' => $last_name,
-    ];
 
     $user = user_load_by_name($username);
     if (!$user) {
@@ -132,6 +133,13 @@ class SimpleOauthAuthenticationProvider extends BaseSimpleOauthAuthenticationPro
         'field_first_name' => $first_name,
         'field_last_name' => $last_name,
       ];
+
+        if (isset($picture_url["data"]["url"]) && $this->userManager->userPictureEnabled()) {
+            $file = $this->userManager->downloadProfilePic($picture_url["data"]["url"], $id);
+            if ($file) {
+                $values['user_picture'] = $file->id();
+            }
+        }
 
       $user = User::create($values);
       $user->save();
@@ -185,4 +193,5 @@ class SimpleOauthAuthenticationProvider extends BaseSimpleOauthAuthenticationPro
 
       return $user;
   }
+  
 }
