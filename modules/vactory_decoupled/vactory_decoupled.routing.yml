@@ -133,3 +133,11 @@ vactory_decoupled.firebase_key_controller:
   methods: [GET]
   requirements:
     _permission: 'access content'
+
+vactory_decoupled.login_token:
+  path: '/oauth/login-token'
+  defaults:
+    _controller: 'Drupal\simple_oauth\Controller\Oauth2Token::token'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
