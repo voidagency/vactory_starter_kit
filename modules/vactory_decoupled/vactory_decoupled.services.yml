@@ -67,3 +67,10 @@ services:
       - '@event_dispatcher'
       - '@token'
       - '@file_system'
+
+  cache.vactory_decoupled_oauth:
+    class: Drupal\Core\Cache\CacheBackendInterface
+    tags:
+      - { name: cache.bin }
+    factory: ['@cache_factory', 'get']
+    arguments: [vactory_decoupled_oauth]
