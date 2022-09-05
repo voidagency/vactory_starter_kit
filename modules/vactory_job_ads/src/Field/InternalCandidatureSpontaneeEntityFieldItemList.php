@@ -33,7 +33,7 @@ class InternalCandidatureSpontaneeEntityFieldItemList extends FieldItemList
     }
     $node = Node::load($candidature_nid);
 
-    $this->list[0] = $this->createItem(0, $node->toUrl()->setRouteParameter('nid', $entity->id())->toString());
+    $this->list[0] = $this->createItem(0, $node->toUrl()->setRouteParameter('job', crypter('vactory_job_ads:' . $entity->id()))->toString());
   }
 
 }

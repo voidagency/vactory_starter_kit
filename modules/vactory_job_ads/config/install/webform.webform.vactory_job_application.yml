@@ -1,9 +1,11 @@
 langcode: en
 status: open
 dependencies: {  }
+_core:
+  default_config_hash: dfgLGbPhKF_zHFgLvaq_GF5k2KKe6xl96eWHAFiGeyQ
+weight: 0
 open: null
 close: null
-weight: 0
 uid: 1
 template: false
 archive: false
@@ -11,7 +13,50 @@ id: vactory_job_application
 title: 'Job Application'
 description: ''
 category: ''
-elements: "job_ad:\n  '#type': textfield\n  '#title': 'Job Ad'\n  '#title_display': inline\n  '#disabled': true\nfirst_name:\n  '#type': textfield\n  '#title': 'First Name'\n  '#required': true\n  '#required_error': 'Enter your first name *'\nlast_name:\n  '#type': textfield\n  '#title': 'Last Name'\n  '#required': true\n  '#required_error': 'Enter your last name *'\nemail_:\n  '#type': email\n  '#title': Email\n  '#required': true\nphone_number:\n  '#type': tel\n  '#title': 'Phone Number'\n  '#required': true\nmessage:\n  '#type': textarea\n  '#title': Message\ncurriculum_vitae:\n  '#type': webform_document_file\n  '#title': 'Curriculum Vitae'\n  '#required': true\n  '#max_filesize': '3'\n  '#file_extensions': 'pdf doc docx'\ncover_letter:\n  '#type': webform_document_file\n  '#title': 'Cover Letter'\n  '#max_filesize': '3'\n  '#file_extensions': 'pdf doc docx'\n  '#sanitize': true\nactions:\n  '#type': webform_actions\n  '#title': 'Submit button(s)'\n  '#submit__label': 'Apply '\n"
+elements: |-
+  job_ad:
+    '#type': hidden
+    '#title': 'Job Ad'
+    '#disabled': 0
+    '#input_hide': 0
+    '#required': true
+  first_name:
+    '#type': textfield
+    '#title': 'First Name'
+    '#required': true
+    '#required_error': 'Enter your first name *'
+  last_name:
+    '#type': textfield
+    '#title': 'Last Name'
+    '#required': true
+    '#required_error': 'Enter your last name *'
+  email_:
+    '#type': email
+    '#title': Email
+    '#required': true
+  phone_number:
+    '#type': tel
+    '#title': 'Phone Number'
+    '#required': true
+  message:
+    '#type': textarea
+    '#title': Message
+  curriculum_vitae:
+    '#type': webform_document_file
+    '#title': 'Curriculum Vitae'
+    '#required': true
+    '#max_filesize': '3'
+    '#file_extensions': 'pdf doc docx'
+  cover_letter:
+    '#type': webform_document_file
+    '#title': 'Cover Letter'
+    '#max_filesize': '3'
+    '#file_extensions': 'pdf doc docx'
+    '#sanitize': true
+  actions:
+    '#type': webform_actions
+    '#title': 'Submit button(s)'
+    '#submit__label': 'Apply '
 css: ''
 javascript: ''
 settings:
@@ -22,35 +67,39 @@ settings:
   page_confirm_path: ''
   form_title: both
   form_submit_once: false
-  form_exception_message: ''
   form_open_message: ''
   form_close_message: ''
+  form_exception_message: ''
   form_previous_submissions: true
   form_confidential: false
   form_confidential_message: ''
-  form_remote_addr: true
   form_convert_anonymous: false
   form_prepopulate: true
   form_prepopulate_source_entity: false
   form_prepopulate_source_entity_required: false
   form_prepopulate_source_entity_type: ''
-  form_reset: true
+  form_unsaved: false
+  form_disable_back: false
+  form_submit_back: false
   form_disable_autocomplete: false
   form_novalidate: false
   form_disable_inline_errors: false
   form_required: false
-  form_unsaved: false
-  form_disable_back: false
-  form_submit_back: false
   form_autofocus: true
   form_details_toggle: false
+  form_reset: true
   form_access_denied: default
   form_access_denied_title: ''
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
   submission_label: ''
+  submission_exception_message: ''
+  submission_locked_message: ''
   submission_log: false
+  submission_excluded_elements: {  }
+  submission_exclude_empty: false
+  submission_exclude_empty_checkbox: false
   submission_views: {  }
   submission_views_replace: {  }
   submission_user_columns: {  }
@@ -59,11 +108,6 @@ settings:
   submission_access_denied_title: ''
   submission_access_denied_message: ''
   submission_access_denied_attributes: {  }
-  submission_exception_message: ''
-  submission_locked_message: ''
-  submission_excluded_elements: {  }
-  submission_exclude_empty: false
-  submission_exclude_empty_checkbox: false
   previous_submission_message: ''
   previous_submissions_message: ''
   autofill: false
@@ -92,9 +136,9 @@ settings:
   draft_saved_message: ''
   draft_loaded_message: ''
   confirmation_type: message
+  confirmation_url: ''
   confirmation_title: ''
   confirmation_message: "<pre style=\"color : green;\">\r\nYour application has been successfully submitted.</pre>"
-  confirmation_url: ''
   confirmation_attributes: {  }
   confirmation_back: true
   confirmation_back_label: ''
@@ -118,11 +162,12 @@ settings:
   results_disabled: false
   results_disabled_ignore: false
   token_update: false
+  form_remote_addr: true
 access:
   create:
     roles:
-      - anonymous
-      - authenticated
+    - anonymous
+    - authenticated
     users: {  }
     permissions: {  }
   view_any:
@@ -168,35 +213,39 @@ access:
 handlers:
   submission_mail:
     id: email
-    label: 'Submission mail'
     handler_id: submission_mail
+    label: 'Submission mail'
+    notes: ''
     status: true
     conditions: {  }
     weight: 0
     settings:
       states:
-        - completed
+      - completed
       to_mail: _default
       to_options: {  }
-      cc_mail: ''
-      cc_options: {  }
       bcc_mail: ''
       bcc_options: {  }
+      cc_mail: ''
+      cc_options: {  }
       from_mail: _default
       from_options: {  }
       from_name: _default
+      reply_to: ''
+      return_path: ''
+      sender_mail: ''
+      sender_name: ''
       subject: '[webform_submission:values:job_ad:raw]'
       body: _default
       excluded_elements: {  }
       ignore_access: false
       exclude_empty: true
       exclude_empty_checkbox: false
+      exclude_attachments: false
       html: true
       attachments: false
       twig: false
-      debug: false
-      reply_to: ''
-      return_path: ''
-      sender_mail: ''
-      sender_name: ''
       theme_name: ''
+      parameters: {  }
+      debug: false
+variants: {  }
