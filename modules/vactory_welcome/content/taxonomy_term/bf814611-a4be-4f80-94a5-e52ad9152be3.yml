@@ -11,10 +11,6 @@ default:
   name:
     -
       value: 'Good Morning'
-  description:
-    -
-      value: "<p>“If you’re changing the world, you’re working on important things. You’re excited to get up in the morning.”</p>\r\n\r\n<p>–&nbsp;<strong>Larry Page</strong></p>\r\n"
-      format: basic_html
   weight:
     -
       value: 0
@@ -43,5 +39,5 @@ default:
       value: 1660213048
   field_time_range_v:
     -
-      value: '2022-08-12T04:00:00'
-      end_value: '2022-08-12T11:00:00'
+      value: '2022-09-05T04:00:00'
+      end_value: '2022-09-05T11:00:00'

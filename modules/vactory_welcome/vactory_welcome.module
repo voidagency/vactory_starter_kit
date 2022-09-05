@@ -15,8 +15,6 @@ function vactory_welcome_theme($existing, $type, $theme, $path) {
       'variables' => [
         "content" => [
         'value' => "",
-        'user' => "",
-        'description' => "",
         ],
       ],
     ],

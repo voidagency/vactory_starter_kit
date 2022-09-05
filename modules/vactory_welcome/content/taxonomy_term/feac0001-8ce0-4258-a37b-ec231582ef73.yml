@@ -11,10 +11,6 @@ default:
   name:
     -
       value: 'Good Night'
-  description:
-    -
-      value: "<p>“The sky grew darker, painted blue on blue, one stroke at a time, into deeper and deeper shades of night.”<br />\r\n―&nbsp;Haruki Murakami,</p>\r\n"
-      format: basic_html
   weight:
     -
       value: 3
@@ -43,5 +39,5 @@ default:
       value: 1660213221
   field_time_range_v:
     -
-      value: '2022-08-11T23:00:00'
-      end_value: '2022-08-12T04:00:00'
+      value: '2022-09-04T23:00:00'
+      end_value: '2022-09-05T04:00:00'

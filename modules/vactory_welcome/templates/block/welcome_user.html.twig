@@ -1,5 +1,4 @@
 {{ attach_library('vactory_welcome/scripts') }}
-<!-- Modal -->
 <div class="modal fade" id="vactoryWelcomeModal" tabindex="-1" role="dialog" aria-labelledby="vactoryWelcomeModalLabel" aria-hidden="true">
 <div class="modal-dialog" role="document" style="
 	  right: 30px;
@@ -9,14 +8,10 @@
 	">
 		<div class="modal-content">
 			<div class="modal-header">
-				<h5 class="modal-title" id="vactoryWelcomeModalLabel"><b>{{ content["#value"] }},
-					{{ content["#user"]|capitalize }}</b></h5>
+				<h5 class="modal-title" id="vactoryWelcomeModalLabel">{{ content["#value"]|raw }}
 				<button type="button" class="close close-welcome" data-dismiss="modal" aria-label="Close">
 					<span aria-hidden="true">&times;</span>
 				</button>
-			</div>
-			<div class="modal-body">
-				{{ content["#description"]|raw }}
 			</div>
 		</div>
 	</div>

@@ -11,10 +11,6 @@ default:
   name:
     -
       value: 'Good Evening'
-  description:
-    -
-      value: "<p>“Evening is a time of real experimentation. You never want to look the same way.”</p>\r\n\r\n<p>―&nbsp;Donna Karan.</p>\r\n"
-      format: basic_html
   weight:
     -
       value: 2
@@ -43,5 +39,5 @@ default:
       value: 1660213182
   field_time_range_v:
     -
-      value: '2022-08-12T17:00:00'
-      end_value: '2022-08-12T22:00:00'
+      value: '2022-09-05T17:00:00'
+      end_value: '2022-09-05T22:00:00'

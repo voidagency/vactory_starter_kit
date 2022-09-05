@@ -11,10 +11,6 @@ default:
   name:
     -
       value: 'Good Afternoon'
-  description:
-    -
-      value: "<p>“The afternoon knows what the morning never suspected.”<br />\r\n―&nbsp;Jonathan Grimwood</p>\r\n"
-      format: basic_html
   weight:
     -
       value: 1
@@ -43,5 +39,5 @@ default:
       value: 1660213124
   field_time_range_v:
     -
-      value: '2022-08-12T11:00:00'
-      end_value: '2022-08-12T17:00:00'
+      value: '2022-09-05T11:00:00'
+      end_value: '2022-09-05T17:00:00'

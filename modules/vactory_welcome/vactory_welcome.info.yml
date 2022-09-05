@@ -1,6 +1,6 @@
 name: 'Vactory Welcome.'
 type: module
-description: 'Block of a Hello message to the user depending on the time of the day'
+description: 'Block of a welcoming speech displayed to the user depending on the time of the day'
 package: Vactory
 core: 8.x
 core_version_requirement: ^8 || ^9
