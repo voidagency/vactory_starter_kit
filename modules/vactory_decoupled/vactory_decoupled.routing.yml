@@ -47,16 +47,16 @@ vactory_decoupled.menus:
   requirements:
     _permission: 'access content'
 
-vactory_decoupled.search:
-  path: '/_search'
-  defaults:
-    _controller: '\Drupal\vactory_decoupled\Controller\SearchController::index'
-    _disable_route_normalizer: 'TRUE'
-  methods: [GET]
-  requirements:
-    _permission: 'access content'
-  options:
-    _is_jsonapi: 1
+# vactory_decoupled.search:
+#   path: '/_search'
+#   defaults:
+#     _controller: '\Drupal\vactory_decoupled\Controller\SearchController::index'
+#     _disable_route_normalizer: 'TRUE'
+#   methods: [GET]
+#   requirements:
+#     _permission: 'access content'
+#   options:
+#     _is_jsonapi: 1
 
 vactory_decoupled.import_translation:
   path: 'admin/config/regional/translate/import_frontend'

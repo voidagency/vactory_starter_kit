@@ -1,0 +1,7 @@
+vactory_decoupled_search.search_api_page:
+  path: '/api/search'
+  defaults:
+    _controller: '\Drupal\vactory_decoupled_search\Controller\SearchController::index'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
