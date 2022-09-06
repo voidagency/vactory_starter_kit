@@ -519,7 +519,7 @@ trait FormWidgetTrait {
     $form_display->setComponent($field_name, [
       'type' => $default_scheme !== 'cloudinary' ? 'media_library_widget' : 'cloudinary_media_library_widget',
       'settings' => [
-        'resource_type' => $media_type === 'file' && $default_scheme !== 'cloudinary' ? 'raw' : $media_type,
+        'resource_type' => $media_type === 'file' && $default_scheme === 'cloudinary' ? 'raw' : $media_type,
       ],
     ]);
 

@@ -109,20 +109,28 @@ class VactoryDynamicFormatter extends FormatterBase {
             $uri = '';
             if (isset($media) && !empty($media)) {
               if ($media->hasField('field_media_video_file')) {
-                $url = $media->field_media_video_file->entity->getFileUri();
-                $video_url = \Drupal::service('file_url_generator')->generateAbsoluteString($url);
-                $fid = $media->get('thumbnail')->target_id;
-                $uri = File::load($fid)->getFileUri();
-                $content = [
-                  'name' => $media->get('name')->value,
-                  'video_url' => $video_url,
-                  'thumbnail' => [
-                    'uri' => $uri,
-                    'height' => $media->get('thumbnail')->height,
-                    'width' => $media->get('thumbnail')->width,
-                  ],
-                ];
-                $value = $content;
+                $video_id = $media->field_media_video_file->target_id;
+                if ($video_id) {
+                  $video = File::load($video_id);
+                  $url = $video->getFileUri();
+                  $video_url = \Drupal::service('file_url_generator')->generateAbsoluteString($url);
+                  $fid = $media->get('thumbnail')->target_id;
+                  $file = File::load($fid);
+                  $uri = '';
+                  if ($file) {
+                    $uri = $file->getFileUri();
+                  }
+                  $content = [
+                    'name' => $media->get('name')->value,
+                    'video_url' => $video_url,
+                    'thumbnail' => [
+                      'uri' => $uri,
+                      'height' => $media->get('thumbnail')->height,
+                      'width' => $media->get('thumbnail')->width,
+                    ],
+                  ];
+                  $value = $content;
+                }
               }
             }
           }
