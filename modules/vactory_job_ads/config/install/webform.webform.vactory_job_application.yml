@@ -138,7 +138,7 @@ settings:
   confirmation_type: message
   confirmation_url: ''
   confirmation_title: ''
-  confirmation_message: "<pre style=\"color : green;\">\r\nYour application has been successfully submitted.</pre>"
+  confirmation_message: "Your application has been successfully submitted."
   confirmation_attributes: {  }
   confirmation_back: true
   confirmation_back_label: ''

@@ -66,7 +66,7 @@ function vactory_job_ads_theme() {
 function vactory_job_ads_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   if ($form_id == 'webform_submission_vactory_job_application_add_form') {
     $job = \Drupal::request()->query->get('job');
-    $nid = str_replace('vactory_job_ads:', '', decrypter($job));
+    $nid = str_replace('vactory_job_ads:', '', \Drupal::service('vactory_core.tools')->decrypt($job));
     $node = Node::load($nid);
     if ($node) {
       $form['elements']['job_ad']['#default_value'] = $job;
@@ -108,7 +108,7 @@ function vactory_job_ads_form_alter(&$form, FormStateInterface $form_state, $for
  */
 function vactory_job_ads_form_validate(&$form, FormStateInterface $form_state) {
   $job = $form_state->getValue('job_ad');
-  $nid = str_replace('vactory_job_ads:', '', decrypter($job));
+  $nid = str_replace('vactory_job_ads:', '', \Drupal::service('vactory_core.tools')->decrypt($job));
   $node = Node::load($nid);
   if (!isset($node)) {
     $form_state->setError($form, "Une erreur s'est produite et le traitement ne s'est pas terminé.");
@@ -136,7 +136,7 @@ function vactory_job_ads_preprocess_node(&$variables) {
   // Get node fields.
   $recruiter_email = $node->get('field_vactory_email')->getString();
   $nid = $node->get('nid')->getValue()[0]['value'];
-  $job = crypter('vactory_job_ads:' . $nid);
+  $job = \Drupal::service('vactory_core.tools')->encrypt('vactory_job_ads:' . $nid);
   // Get candidate form.
   /** @var \Drupal\webform\Entity\Webform $webform */
   $candidate_form = \Drupal::entityTypeManager()
@@ -222,7 +222,7 @@ function vactory_job_ads_webform_submission_presave(WebformSubmissionInterface $
 
   if ($original_data['state'] !== $current_data['state']) {
     $flag = FALSE;
-    $decryted_job_ad = decrypter($current_data['job_ad']);
+    $decryted_job_ad = \Drupal::service('vactory_core.tools')->decrypt($current_data['job_ad']);
     if ($decryted_job_ad != null) {
       $decryted_job_ad = str_replace('vactory_job_ads:', '', $decryted_job_ad);
       $job_ads = \Drupal::entityTypeManager()->getStorage('node')->loadByProperties(['nid' => $decryted_job_ad, 'type' => 'vactory_job_ads']);
@@ -238,24 +238,4 @@ function vactory_job_ads_webform_submission_presave(WebformSubmissionInterface $
     }
   }
 
-}
-
-/**
- * Function crypter() definition.
- */
-function crypter($data) {
-  $key = "bcbe3c6e100eb213";
-  $cipher = "DES-ECB";
-  $data = openssl_encrypt($data, $cipher, $key);
-  return $data;
-}
-
-/**
- * Function decrypter() definition.
- */
-function decrypter($data) {
-  $key = "bcbe3c6e100eb213";
-  $cipher = "DES-ECB";
-  $data = openssl_decrypt($data, $cipher, $key);
-  return $data;
 }
