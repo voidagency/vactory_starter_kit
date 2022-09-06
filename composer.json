@@ -154,7 +154,8 @@
     "drupal/textfield_counter": "^2.0",
     "drupal/default_content": "^2.0@alpha",
     "mailchimp/marketing": "^3.0",
-    "drupal/cloudinary": "^2.0@alpha"
+    "drupal/cloudinary": "^2.0@alpha",
+    "drupal/video_embed_field": "^2.4"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.3"
@@ -227,6 +228,9 @@
       },
       "drupal/captcha": {
         "Fix captcha error message translation": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/f66e3eaaa67a0d0e1de3d55aec61ca327b192d4a/fix-captcha-error-message-translation.patch"
+      },
+      "drupal/cloudinary": {
+        "Cloudinary video media library compatibility fix": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/f8b1871b3e6dac919f09f96b44176a816d8bb4a2/cloudinary-video-media-library-compatibility-fix.patch"
       }
     }
   },
