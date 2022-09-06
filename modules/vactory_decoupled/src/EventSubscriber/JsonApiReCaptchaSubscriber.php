@@ -68,9 +68,9 @@ class JsonApiReCaptchaSubscriber implements EventSubscriberInterface
   {
     $request = $event->getRequest();
 
-    if ($request->getRequestFormat() !== 'api_json') {
+    /*if ($request->getRequestFormat() !== 'api_json') {
       return;
-    }
+    }*/
 
     if (strtoupper($request->getMethod()) !== "POST") {
       return;
@@ -90,7 +90,7 @@ class JsonApiReCaptchaSubscriber implements EventSubscriberInterface
     }
 
     $payload = json_decode($request->getContent(), true);
-    $recaptcha_token = $payload['g-recaptcha-response'];
+    $recaptcha_token = isset($payload['g-recaptcha-response']) ? $payload['g-recaptcha-response'] : $request->get('g-recaptcha-response', "");
     $isValid = $this->isValidRecaptchaToken($recaptcha_token);
 
     // Bail out.
