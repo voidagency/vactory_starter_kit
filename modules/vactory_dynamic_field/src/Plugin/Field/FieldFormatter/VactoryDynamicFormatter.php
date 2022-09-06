@@ -101,6 +101,40 @@ class VactoryDynamicFormatter extends FormatterBase {
           $value = $image_data;
         }
 
+        // Video media.
+        if ($info['type'] === 'video' && !empty($value)) {
+          if (is_array($value) && isset(array_values($value)[0]['selection'][0]['target_id'])) {
+            $media_id = array_values($value)[0]['selection'][0]['target_id'];
+            $media = Media::load($media_id);
+            $uri = '';
+            if (isset($media) && !empty($media)) {
+              if ($media->hasField('field_media_video_file')) {
+                $video_id = $media->field_media_video_file->target_id;
+                if ($video_id) {
+                  $video = File::load($video_id);
+                  $url = $video->getFileUri();
+                  $video_url = \Drupal::service('file_url_generator')->generateAbsoluteString($url);
+                  $fid = $media->get('thumbnail')->target_id;
+                  $file = File::load($fid);
+                  $uri = '';
+                  if ($file) {
+                    $uri = $file->getFileUri();
+                  }
+                  $content = [
+                    'name' => $media->get('name')->value,
+                    'video_url' => $video_url,
+                    'thumbnail' => [
+                      'uri' => $uri,
+                      'height' => $media->get('thumbnail')->height,
+                      'width' => $media->get('thumbnail')->width,
+                    ],
+                  ];
+                  $value = $content;
+                }
+              }
+            }
+          }
+        }
         // File media.
         if ($info['type'] === 'file' && !empty($value)) {
           $file_link = NULL;

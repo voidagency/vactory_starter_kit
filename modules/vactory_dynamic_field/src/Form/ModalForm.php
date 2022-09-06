@@ -456,7 +456,7 @@ class ModalForm extends FormBase {
           $element_options = isset($field['options']) ? $field['options'] : [];
 
           $ds_field_name = '';
-          if ($element_type == 'image' || $element_type == 'remote_video' || $element_type == 'file') {
+          if ($element_type == 'image' || $element_type == 'remote_video' || $element_type =='file' || $element_type == 'video') {
             // Save a copy of current parent.
             $form_parents = $form['#parents'] ?? [];
             $form['#parents'] = ['components', $i, $field_id];
@@ -480,8 +480,7 @@ class ModalForm extends FormBase {
           if ($element_type == 'text_format') {
             $this->textformatFields[] = ['components', $i, $field_id];
           }
-
-          if ($element_type == 'image' || $element_type == 'remote_video' || $element_type == 'file') {
+          if ($element_type == 'image' || $element_type == 'remote_video' || $element_type == 'file' || $element_type == 'video') {
             // Restore parent for other fields.
             $form['#parents'] = $form_parents;
           }
