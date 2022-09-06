@@ -53,3 +53,24 @@ services:
     arguments: ['@config.factory']
     tags:
       - { name: event_subscriber }
+
+  vactory_decoupled.user_manager:
+    class: Drupal\vactory_decoupled\UserManager
+    arguments:
+      - '@entity_type.manager'
+      - '@messenger'
+      - '@logger.factory'
+      - '@config.factory'
+      - '@entity_field.manager'
+      - '@transliteration'
+      - '@language_manager'
+      - '@event_dispatcher'
+      - '@token'
+      - '@file_system'
+
+  cache.vactory_decoupled_oauth:
+    class: Drupal\Core\Cache\CacheBackendInterface
+    tags:
+      - { name: cache.bin }
+    factory: ['@cache_factory', 'get']
+    arguments: [vactory_decoupled_oauth]
