@@ -20,3 +20,31 @@ function vactory_welcome_theme($existing, $type, $theme, $path) {
     ],
   ];
 }
+
+/**
+ * Implements hook_df_jsonapi_output_alter().
+ */
+function vactory_welcome_df_jsonapi_output_alter(&$content) {
+  if ($content['template'] === 'vactory_welcome:welcome') {
+    if (isset($content['components'][0]['message'])) {
+      $content['components'][0]['message'] = \Drupal::token()->replace($content['components'][0]['message']);
+    }
+    if (isset($content['components'][0]['description']['value']['#text'])) {
+      $content['components'][0]['description']['value']['#text'] = \Drupal::token()->replace($content['components'][0]['description']['value']['#text']);
+    }
+  }
+}
+
+/**
+ * Implements hook_dynamic_field_content_alter().
+ */
+function vactory_welcome_dynamic_field_content_alter(&$content) {
+  if ($content['template'] === 'welcome') {
+    if (isset($content['components'][0]['message'])) {
+      $content['components'][0]['message'] = \Drupal::token()->replace($content['components'][0]['message']);
+    }
+    if (isset($content['components'][0]['description']['value']['#text'])) {
+      $content['components'][0]['description']['value']['#text'] = \Drupal::token()->replace($content['components'][0]['description']['value']['#text']);
+    }
+  }
+}

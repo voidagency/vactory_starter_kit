@@ -220,6 +220,28 @@ class ModalForm extends FormBase {
       '#weight' => -10,
     ];
 
+    // Form infos.
+    if (isset($settings['infos'])) {
+      $form['infos'] = [
+        '#type'          => 'fieldset',
+        '#title'         => $this->t('Infos'),
+        '#title_display' => 'invisible',
+        '#attributes'    => [
+          'style' => 'background: aliceblue; margin-bottom: 10px;',
+        ],
+      ];
+
+      foreach ($settings['infos'] as $id => $info) {
+        if ($info['type'] === 'tokens_tree') {
+          $form['infos'][$id] = [
+            '#theme' => 'token_tree_link',
+            '#show_restricted' => TRUE,
+            '#weight' => 90,
+          ];
+        }
+      }
+    }
+
     $form['components'] = [
       '#type'  => 'fieldgroup',
       '#title' => $settings['name'],
