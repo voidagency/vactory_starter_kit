@@ -32,8 +32,8 @@ class InternalCandidatureSpontaneeEntityFieldItemList extends FieldItemList
       return;
     }
     $node = Node::load($candidature_nid);
-
-    $this->list[0] = $this->createItem(0, $node->toUrl()->setRouteParameter('nid', $entity->id())->toString());
+    $job_id_crypted = \Drupal::service('vactory_core.tools')->encrypt('vactory_job_ads:' . $entity->id());
+    $this->list[0] = $this->createItem(0, $node->toUrl()->setRouteParameter('job', $job_id_crypted)->toString());
   }
 
 }

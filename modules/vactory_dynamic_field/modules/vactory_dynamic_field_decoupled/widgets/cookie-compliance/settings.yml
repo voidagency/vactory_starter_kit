@@ -1,0 +1,29 @@
+name: 'Cookie Compliance'
+multiple: FALSE
+category: 'cookie compliance'
+enabled: TRUE
+fields:
+  body:
+    type: text_format
+    label: 'Body'
+    options:
+      '#format': 'full_html'
+      '#required': TRUE
+  action_label:
+    type: text
+    label: "Agree button label"
+    options:
+      '#required': TRUE
+  group_privacy_policy:
+    g_title: 'Privacy policy'
+    privacy_policy_link:
+      type: url_extended
+      label: 'Privacy policy link'
+  group_advanced:
+    g_title: 'Advanced'
+    cookie_lifetime:
+      type: text
+      label: 'Cookie lifetime (days)'
+      options:
+        '#required': TRUE
+        '#default_value': 100

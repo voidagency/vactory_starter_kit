@@ -14,6 +14,7 @@ use Drupal\Core\Site\Settings;
 use Drupal\Core\Url;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\jsonapi_extras\Entity\JsonapiResourceConfig;
 use Drupal\node\Entity\Node;
 use Drupal\user\UserInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -639,4 +640,37 @@ function clear_next_cache($query = []) {
     \Drupal::logger('clear_next_cache')->warning($error_msg);
     return FALSE;
   }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function vactory_decoupled_form_jsonapi_resource_config_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $config_resource = $form_state->getFormObject()->getEntity();
+  $default_roles = $config_resource->getThirdPartySetting('vactory_decoupled', 'roles', []);
+  $form['access'] = [
+    '#type' => 'details',
+    '#title' => t('Access'),
+  ];
+  $roles = \Drupal::entityTypeManager()->getStorage('user_role')
+    ->loadMultiple();
+  $roles = array_map(function ($role) {
+    return $role->label();
+  }, $roles);
+  $form['access']['roles'] = [
+    '#type' => 'checkboxes',
+    '#title' => t('Roles'),
+    '#options' => $roles,
+    '#description' => t('Users with given roles could access this resource, if no role has been selected then do nothing (of course an api key or jsonapi token is required when the original jsonapi resource is protected)'),
+    '#default_value' => $default_roles,
+  ];
+  $form['#entity_builders'][] = 'vactory_decoupled_jsonapi_resource_config_builder';
+}
+
+/**
+ * Jsonapi resource config entity builder callback.
+ */
+function vactory_decoupled_jsonapi_resource_config_builder($entity_type, JsonapiResourceConfig $config_resource, &$form, FormStateInterface $form_state) {
+  $roles = $form_state->getValue('roles');
+  $config_resource->setThirdPartySetting('vactory_decoupled', 'roles', $roles);
 }
