@@ -44,6 +44,13 @@ function vactory_decoupled_form_node_form_alter(&$form, FormStateInterface $form
     ];
     $form['node_settings']['#group'] = 'node_settings_group';
   }
+
+  if (isset($form['machine_name'])) {
+    $form['machine_name']['#access'] = \Drupal::currentUser()
+    ->hasPermission('administer field node settings');
+    $form['machine_name']['#group'] = 'node_settings_group';
+  }
+
 }
 
 
@@ -267,6 +274,15 @@ function vactory_decoupled_entity_base_field_info(EntityTypeInterface $entity_ty
       ->setDisplayConfigurable('view', FALSE);
   }
 
+  if ($entity_type->id() === 'node') {
+    $fields['machine_name'] = BaseFieldDefinition::create('string')
+      ->setLabel('Machine name')
+      ->setDescription('Machine name for internal use.')
+      ->setTranslatable(FALSE)
+      ->setRevisionable(FALSE)
+      ->setDisplayConfigurable('form', TRUE);
+  }
+
   return $fields;
 }
 
@@ -466,7 +482,7 @@ function _vactory_decoupled_user_pass_reset_url($account, $options = []) {
   ];
 
   $query_string = http_build_query($data, "", "&", PHP_QUERY_RFC3986);
-  return $frontend_url . "/$langcode/$nextjs_user_pages_path_prefix/one-time-login?" . $query_string;
+  return $frontend_url . "/$langcode/account/reset-password?" . $query_string;
 }
 
 /**

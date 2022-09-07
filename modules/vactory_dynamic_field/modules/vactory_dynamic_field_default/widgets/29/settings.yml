@@ -1,0 +1,19 @@
+name: 'D29 - Content Paragraphs 2 Cols'
+multiple: TRUE
+category: 'Content'
+enabled: TRUE
+fields:
+  description:
+    type: text_format
+    label: 'Paragraph'
+    options:
+      '#format': 'full_html'
+extra_fields:
+  col:
+    type: select
+    label: 'Cols'
+    options:
+      '#required': TRUE
+      '#options':
+        - '2': '2 clos'
+        - '3': '3 cols'

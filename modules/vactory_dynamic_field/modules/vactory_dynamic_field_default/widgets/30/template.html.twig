@@ -1,0 +1,54 @@
+{% set link_attributes = create_attribute() %}
+{% set link_attributes = content.0.link.attributes.id is not empty ? link_attributes.setAttribute('id', content.0.link.attributes.id ) : link_attributes %}
+{% set link_attributes = content.0.link.attributes.class is not empty ? link_attributes.setAttribute('class', content.0.link.attributes.class ) : link_attributes %}
+{% set link_attributes = content.0.link.attributes.target is not empty ? link_attributes.setAttribute('target', content.0.link.attributes.target ) : link_attributes %}
+{% set link_attributes = content.0.link.attributes.rel is not empty ? link_attributes.setAttribute('rel', content.0.link.attributes.rel ) : link_attributes %}
+
+<div class="fdb-block">
+    <div class="container">
+                {% if  extra_fields.title is not empty %}
+                <div class="row text-center">
+                  <div class="col">
+                     <h2 class="text-light">{{ extra_fields.title }}</h2>
+                  </div>
+                </div>
+                {% endif %}
+        <div class="row text-center justify-content-sm-center no-gutters">
+            {% for item in content %}
+                {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : '' %}
+                {% set profile_image = image_uri|image_style('medium') %}
+                {% set lqip_image = image_uri|image_style('lqip') %}
+                {% set alt_image = (item.image_alt) ? item.image_alt : item.image.alt_image %}
+
+                {% if loop.index >= 2 %}
+                    <div class="col-12 col-sm-10 col-md-8 col-lg-7 col-xl-4 m-auto pt-5 pt-xl-0">
+                {% else %}
+                    <div class="col-12 col-sm-10 col-md-8 col-lg-7 col-xl-4 m-auto">
+                {% endif %}
+
+                    <div class="fdb-box fdb-touch">
+                        {% if  item.image.0 is not empty %}
+                            <img alt="{{ alt_image }}"
+                                class="lazyload img-fluid rounded-circle w-50"
+                                src="{{ lqip_image }}"
+                                data-src="{{ profile_image }}">
+                        {% endif %}
+                        {% if  item.title is not empty %}
+                            <h2>{{ item.title }}</h2>
+                        {% endif %}
+                        {% if  item.description is not empty %}
+                            <p>{{ item.description }}</p>
+                        {% endif %}
+                        {% if  content.0.link.url is not empty and content.0.link.title is not empty %}
+                             <p class="mt-4">
+                                <a  href="{{ content.0.link.url }}" {{ link_attributes }} > {{ content.0.link.title }} </a>
+                            </p>
+                        {% endif %}
+                    </div>
+
+                </div>
+
+            {% endfor %}
+        </div>
+    </div>
+</div>

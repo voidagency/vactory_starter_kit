@@ -1,0 +1,29 @@
+name: 'Footer variant 3'
+multiple: TRUE
+category: 'Layout'
+enabled: TRUE
+fields:
+  cta_social:
+      type: url_extended
+      label: 'Social media links'
+extra_fields:
+  logo:
+    type: image
+    label: Footer's logo
+  use_menu:
+      type: text
+      label: "Menu Main ID"
+      options:
+        '#description': 'Menu machine name. Default to main'
+  enableFooterBottom:
+    type: checkbox
+    label: "Afficher Footer Bottom"
+  copyrights:
+    type: text
+    label: 'copyrights text'
+  signateur:
+    type: text_format
+    label: 'Page signateur, ex: "Agence digitale VOID"'
+    options:
+      "#format": full_html
+

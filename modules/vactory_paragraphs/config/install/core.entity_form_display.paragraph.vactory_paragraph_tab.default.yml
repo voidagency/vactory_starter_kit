@@ -14,40 +14,41 @@ third_party_settings:
     group_apparence:
       children:
         - paragraph_container
+        - container_spacing
         - paragraph_css_class
-        - field_background_color
         - paragraph_background_image
         - paragraph_background_parallax
+        - field_background_color
+      label: Apparence
+      region: hidden
       parent_name: ''
       weight: 5
       format_type: details
       format_settings:
-        id: ''
         classes: ''
-        description: ''
+        id: ''
         open: false
+        description: ''
         required_fields: true
-      label: Apparence
-      region: hidden
 id: paragraph.vactory_paragraph_tab.default
 targetEntityType: paragraph
 bundle: vactory_paragraph_tab
 mode: default
 content:
   field_tab_templates:
+    type: field_wysiwyg_dynamic_widget
     weight: 2
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: field_wysiwyg_dynamic_widget
-    region: content
   field_vactory_title:
+    type: string_textfield
     weight: 0
+    region: content
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
-    region: content
   paragraph_identifier:
     type: string_textfield
     weight: 1
@@ -57,6 +58,7 @@ content:
       placeholder: ''
     third_party_settings: {  }
 hidden:
+  container_spacing: true
   created: true
   field_background_color: true
   paragraph_background_color: true

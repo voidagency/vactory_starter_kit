@@ -1,3 +1,9 @@
+{% if dir == 'rtl' %}
+    {{ attach_library('vactory_dynamic_field_default/df_default_widget_13_rtl') }}
+{% else %}
+    {{ attach_library('vactory_dynamic_field_default/df_default_widget_13') }}
+{% endif %}
+
 {% set image_uri = (content.0.image.0 is defined) ? get_image(content.0.image.0) : "" %}
 {% set lqip_image = image_uri|image_style('lqip') %}
 {% set fluid_image = file_url(image_uri) %}

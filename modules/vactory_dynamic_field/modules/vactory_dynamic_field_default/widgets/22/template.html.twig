@@ -1,3 +1,10 @@
+{% if dir == 'rtl' %}
+    {{ attach_library('vactory_dynamic_field_default/df_default_widget_22_rtl') }}
+{% else %}
+    {{ attach_library('vactory_dynamic_field_default/df_default_widget_22') }}
+{% endif %}
+
+
 {% set reverse_mode = (extra_fields.mode == 1)? 'd-flex flex-column-reverse' : ' ' %}
 {% set margin_image = (extra_fields.mode == 1)? 'mt-0' : 'mb-0' %}
 
@@ -11,7 +18,7 @@
             </div>
         </div>
     {% endif %}
-    <div class="row vf-slick-slider" 
+    <div class="row vf-slick-slider"
         data-toshow="3"
         data-dots="false"
         data-arrows="true"

@@ -2,8 +2,10 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.node.vactory_mediatheque.field_body
     - field.field.node.vactory_mediatheque.field_mediatheque_date
     - field.field.node.vactory_mediatheque.field_mediatheque_theme
+    - field.field.node.vactory_mediatheque.field_mediatheque_type
     - field.field.node.vactory_mediatheque.field_mediatheque_video
     - field.field.node.vactory_mediatheque.field_medium_year
     - field.field.node.vactory_mediatheque.field_vactory_excerpt
@@ -17,11 +19,19 @@ dependencies:
     - media_responsive_thumbnail
     - text
     - user
+    - vactory_cross_content
 id: node.vactory_mediatheque.default
 targetEntityType: node
 bundle: vactory_mediatheque
 mode: default
 content:
+  field_body:
+    type: text_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 114
+    region: content
   field_mediatheque_theme:
     type: entity_reference_label
     label: above
@@ -29,6 +39,14 @@ content:
       link: true
     third_party_settings: {  }
     weight: 102
+    region: content
+  field_mediatheque_type:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 113
     region: content
   field_mediatheque_video:
     type: entity_reference_entity_view
@@ -93,6 +111,10 @@ content:
     region: content
 hidden:
   addtoany: true
+  field_content_access_custom: true
+  field_content_access_groups: true
+  field_content_access_roles: true
+  field_content_access_users: true
   field_mediatheque_date: true
   field_medium_year: true
   langcode: true

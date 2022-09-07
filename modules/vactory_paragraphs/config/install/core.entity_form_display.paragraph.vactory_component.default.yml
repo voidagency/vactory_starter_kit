@@ -25,18 +25,19 @@ third_party_settings:
       children:
         - paragraph_identifier
         - paragraph_container
+        - container_spacing
         - paragraph_css_class
         - group_fond
+      label: Appearance
+      region: content
       parent_name: ''
       weight: 5
       format_type: details
       format_settings:
-        id: ''
         classes: ''
+        id: ''
         open: false
         required_fields: true
-      label: Appearance
-      region: content
     group_fond:
       children:
         - field_background_color
@@ -44,132 +45,138 @@ third_party_settings:
         - group_positionner_l_image_horizo
         - group_display_image_
         - paragraph_background_parallax
-      parent_name: group_appearance
-      weight: 3
-      format_type: details
+      label: 'Couleur/Image de Fond'
       region: content
+      parent_name: group_appearance
+      weight: 4
+      format_type: details
       format_settings:
-        id: ''
         classes: ''
+        id: ''
+        open: false
         description: ''
         required_fields: false
-        open: false
-      label: 'Couleur/Image de Fond'
     group_display_image_:
       children:
         - field_paragraph_hide_sm
         - field_paragraph_hide_lg
+      label: Display
+      region: content
       parent_name: group_fond
       weight: 3
       format_type: details
-      region: content
       format_settings:
-        description: ''
-        id: ''
         classes: ''
-        required_fields: false
+        id: ''
         open: false
-      label: Display
+        description: ''
+        required_fields: false
     group_positionner_l_image_horizo:
       children:
         - field_position_image_y
         - field_position_image_x
         - field_size_image
+      label: 'Positionner l''image'
+      region: content
       parent_name: group_fond
       weight: 2
       format_type: details
-      region: content
       format_settings:
-        description: ''
-        id: ''
         classes: ''
-        required_fields: false
+        id: ''
         open: false
-      label: 'Positionner l''image'
+        description: ''
+        required_fields: false
 id: paragraph.vactory_component.default
 targetEntityType: paragraph
 bundle: vactory_component
 mode: default
 content:
-  field_background_color:
+  container_spacing:
+    type: options_select
+    weight: 2
+    region: content
     settings: {  }
+    third_party_settings: {  }
+  field_background_color:
     type: jquery_colorpicker
     weight: 0
     region: content
+    settings: {  }
     third_party_settings: {  }
   field_paragraph_hide_lg:
+    type: boolean_checkbox
     weight: 11
+    region: content
     settings:
       display_label: true
     third_party_settings: {  }
-    type: boolean_checkbox
-    region: content
   field_paragraph_hide_sm:
+    type: boolean_checkbox
     weight: 10
+    region: content
     settings:
       display_label: true
     third_party_settings: {  }
-    type: boolean_checkbox
-    region: content
   field_position_image_x:
+    type: options_select
     weight: 14
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_select
-    region: content
   field_position_image_y:
+    type: options_select
     weight: 13
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_select
-    region: content
   field_size_image:
-    weight: 16
-    settings: {  }
-    third_party_settings: {  }
     type: options_select
+    weight: 16
     region: content
-  field_titre_ancre:
-    weight: 3
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-    type: string_textfield
-    region: content
-  field_vactory_component:
-    weight: 4
     settings: {  }
     third_party_settings: {  }
-    type: field_wysiwyg_dynamic_widget
+  field_titre_ancre:
+    type: string_textfield
+    weight: 3
     region: content
-  field_vactory_flag:
-    weight: 1
-    settings:
-      display_label: true
-    third_party_settings: {  }
-    type: boolean_checkbox
-    region: content
-  field_vactory_flag_2:
-    weight: 2
-    settings:
-      display_label: true
-    third_party_settings: {  }
-    type: boolean_checkbox
-    region: content
-  field_vactory_title:
-    weight: 0
     settings:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-    type: string_textfield
+  field_vactory_component:
+    type: field_wysiwyg_dynamic_widget
+    weight: 4
     region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_vactory_flag:
+    type: boolean_checkbox
+    weight: 1
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  field_vactory_flag_2:
+    type: boolean_checkbox
+    weight: 2
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  field_vactory_title:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   moderation_state:
     type: moderation_state_default
     weight: 4
-    settings: {  }
     region: content
+    settings: {  }
     third_party_settings: {  }
   paragraph_background_color:
     type: jquery_colorpicker
@@ -187,10 +194,10 @@ content:
     third_party_settings: {  }
   paragraph_background_parallax:
     type: boolean_checkbox
-    settings:
-      display_label: true
     weight: 4
     region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   paragraph_container:
     type: options_select
@@ -200,7 +207,7 @@ content:
     third_party_settings: {  }
   paragraph_css_class:
     type: string_textfield
-    weight: 2
+    weight: 3
     region: content
     settings:
       size: 60
@@ -208,11 +215,11 @@ content:
     third_party_settings: {  }
   paragraph_identifier:
     type: string_textfield
+    weight: 0
+    region: content
     settings:
       size: 60
       placeholder: ''
-    weight: 0
-    region: content
     third_party_settings: {  }
   translation:
     weight: 8

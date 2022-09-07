@@ -10,6 +10,7 @@ use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\jsonapi_extras\Plugin\ResourceFieldEnhancerBase;
 use Drupal\media\Entity\Media;
+use Drupal\media\MediaInterface;
 use Shaper\Util\Context;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Component\Utility\NestedArray;
@@ -302,6 +303,19 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
         if ($info['type'] === 'webform_decoupled' && !empty($value)) {
           $webform_id = $value['id'];
           $value['elements'] = \Drupal::service('vactory.webform.normalizer')->normalize($webform_id);
+        }
+
+        if ($info['type'] === 'remote_video' && !empty($value)) {
+          $value = reset($value);
+          $mid = $value['selection'][0]['target_id'] ?? '';
+          $media = !empty($mid) ? $this->entityTypeManager->getStorage('media')->load($mid) : NULL;
+          if ($media instanceof MediaInterface) {
+            $value = [
+              'id' => $media->uuid(),
+              'name' => $media->getName(),
+              'url' => $media->get('field_media_oembed_video')->value,
+            ];
+          }
         }
 
         $cacheability = $this->cacheability;

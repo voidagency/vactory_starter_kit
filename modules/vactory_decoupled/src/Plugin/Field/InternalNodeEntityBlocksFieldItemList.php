@@ -26,7 +26,6 @@ class InternalNodeEntityBlocksFieldItemList extends FieldItemList
     /** @var BlocksManager $block_manager */
     $block_manager = \Drupal::service('vactory_decoupled.blocksManager');
 
-
     if (!in_array($entity_type, ['node'])) {
       return;
     }
@@ -47,6 +46,7 @@ class InternalNodeEntityBlocksFieldItemList extends FieldItemList
 
     $value = $block_manager->getBlocksByNode($entity->id(), $banner_plugin_filter);
 
+    // @see https://api.drupal.org/api/drupal/core%21modules%21system%21tests%21modules%21entity_test%21src%21Plugin%21Field%21ComputedTestCacheableStringItemList.php/class/ComputedTestCacheableStringItemList/9.3.x?title=&title_1=&object_type=&order=title&sort=desc
     $this->list[0] = $this->createItem(0, $value);
   }
 }

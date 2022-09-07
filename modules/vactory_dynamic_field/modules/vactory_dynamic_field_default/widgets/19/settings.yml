@@ -1,0 +1,33 @@
+name: 'D19 - Team V3'
+multiple: TRUE
+category: 'Teams'
+enabled: TRUE
+fields:
+  image:
+    type: image
+    label: 'Image Profile'
+    options:
+      '#required': TRUE
+  image_alt:
+      type: text
+      label: 'Text alternatif'
+  name:
+    type: text
+    label: 'Name'
+    options:
+      '#required': TRUE
+  role:
+    type: text
+    label: 'Role'
+  description:
+    type: textarea
+    label: 'Description'
+extra_fields:
+  cols:
+    type: select
+    label: 'Nombre du columns'
+    options:
+      '#required': TRUE
+      '#options':
+        - '2': '2 Columns'
+        - '3': '3 Columns'

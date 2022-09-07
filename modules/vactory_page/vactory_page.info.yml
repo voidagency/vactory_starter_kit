@@ -9,4 +9,5 @@ dependencies:
   - vactory_core
   - vactory_field
   - vactory_paragraphs
+  - scheduler
 package: Vactory Core

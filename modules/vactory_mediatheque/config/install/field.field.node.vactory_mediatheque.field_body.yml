@@ -1,0 +1,22 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_body
+    - node.type.vactory_mediatheque
+  module:
+    - text
+id: node.vactory_mediatheque.field_body
+field_name: field_body
+entity_type: node
+bundle: vactory_mediatheque
+label: Body
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  display_summary: true
+  required_summary: false
+field_type: text_with_summary

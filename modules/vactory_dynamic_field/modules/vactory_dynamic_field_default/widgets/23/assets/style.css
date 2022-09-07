@@ -1,0 +1,13 @@
+.v-chiffre__heading {
+  font-size: 100px;
+  font-size: 6.25rem;
+  line-height: 110px;
+  line-height: 6.875rem;
+  margin-bottom: 20px;
+  margin-bottom: 1.25rem;
+  color: rgba(0, 0, 0, 0.07);
+}
+
+.v-chiffre__description {
+  color: #85868c;
+}

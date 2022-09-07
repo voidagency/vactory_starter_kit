@@ -3,8 +3,10 @@ status: true
 dependencies:
   config:
     - core.entity_view_mode.node.card
+    - field.field.node.vactory_mediatheque.field_body
     - field.field.node.vactory_mediatheque.field_mediatheque_date
     - field.field.node.vactory_mediatheque.field_mediatheque_theme
+    - field.field.node.vactory_mediatheque.field_mediatheque_type
     - field.field.node.vactory_mediatheque.field_mediatheque_video
     - field.field.node.vactory_mediatheque.field_medium_year
     - field.field.node.vactory_mediatheque.field_vactory_excerpt
@@ -76,7 +78,13 @@ content:
     region: content
 hidden:
   addtoany: true
+  field_body: true
+  field_content_access_custom: true
+  field_content_access_groups: true
+  field_content_access_roles: true
+  field_content_access_users: true
   field_mediatheque_date: true
+  field_mediatheque_type: true
   field_medium_year: true
   field_vactory_paragraphs: true
   field_vactory_tags: true

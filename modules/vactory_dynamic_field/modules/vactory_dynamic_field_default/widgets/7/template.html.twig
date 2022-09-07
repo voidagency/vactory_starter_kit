@@ -1,8 +1,15 @@
+{% if dir == 'rtl' %}
+    {{ attach_library('vactory_dynamic_field_default/df_default_widget_7_rtl') }}
+{% else %}
+    {{ attach_library('vactory_dynamic_field_default/df_default_widget_7') }}
+{% endif %}
+
+{% set classes = (extra_fields.slider == 1 ) ? 'vf-slick-slider' : 'justify-content-lg-center' %}
 <div class="t-slider-cards t-3-cols">
-  {% if extra_fields.bigtitle is not empty %}
-    <h3>{{ extra_fields.bigtitle }}</h3>
+  {% if extra_fields.intro is not empty %}
+    <div class='mb-3 text-center'> {{ extra_fields.intro }} </div>
   {% endif %}
-  <div class="row vf-slick-slider"
+  <div class="row {{classes}}"
        data-mobile-arrows="true"
        data-toshow="3">
     {% for item in content %}
@@ -33,7 +40,7 @@
           <div class="t-box-description-link">
             {% if item.description is not empty %}
               <div class="t-box-description">
-                {{ item.description.value|raw }}
+                {{ item.description }}
               </div>
             {% endif %}
             {% if item.link.url is not empty and item.link.title is not empty %}
@@ -46,3 +53,17 @@
   </div>
   <div class="slick-controls d-lg-none"></div>
 </div>
+
+{% if extra_fields.btn_more is not empty %}
+
+{% set moreLink_attributes = create_attribute() %}
+{% set moreLink_attributes = extra_fields.btn_more.attributes.id is not empty ? moreLink_attributes.setAttribute('id', extra_fields.btn_more.attributes.id ) : moreLink_attributes %}
+{% set moreLink_attributes = extra_fields.btn_more.attributes.target is not empty ? moreLink_attributes.setAttribute('target', extra_fields.btn_more.attributes.target ) : moreLink_attributes %}
+{% set moreLink_attributes = extra_fields.btn_more.attributes.target is not empty ? moreLink_attributes.setAttribute('class', extra_fields.btn_more.attributes.class ~ 'btn btn-primary')  : moreLink_attributes.setAttribute('class','btn btn-primary') %}
+{% set moreLink_attributes = extra_fields.btn_more.attributes.rel is not empty ? moreLink_attributes.setAttribute('rel', extra_fields.btn_more.attributes.rel ) : moreLink_attributes %}
+  <div class="text-center mt-4">
+    <a href="{{  extra_fields.btn_more.url }}"  {{ moreLink_attributes }}>
+      {{ extra_fields.btn_more.title }}
+    </a>
+  </div>
+{% endif %}

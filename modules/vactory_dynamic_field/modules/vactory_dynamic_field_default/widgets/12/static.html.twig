@@ -1,4 +1,16 @@
+{% if dir == 'rtl' %}
+    {{ attach_library('vactory_dynamic_field_default/df_default_widget_12_rtl') }}
+{% else %}
+    {{ attach_library('vactory_dynamic_field_default/df_default_widget_12') }}
+{% endif %}
+
 <div class="row t-block-push-small-positionned">
+  <div class="intro">
+    Lorem Ipsum is simply dummy text of the printing and typesetting industry.
+    Lorem Ipsum has been the industry's standard dummy text ever since the
+    1500s, when an unknown printer took a galley of type and scrambled it to
+    make a type specimen book. It has survived not only five centuries.
+  </div>
   {% for item in 0..1 %}
     {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/1110/250.jpg" %}
     <div class="col-12 d-flex">
@@ -19,5 +31,7 @@
       </div>
     </div>
   {% endfor %}
-
+  <div class="text-center mt-4">
+    <a class="permalink" href="#">Read More</a>
+  </div>
 </div>
