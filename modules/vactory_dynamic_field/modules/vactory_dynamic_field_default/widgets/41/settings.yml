@@ -1,0 +1,41 @@
+name: 'S04 - Full background slider'
+multiple: TRUE
+category: 'Sliders'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: 'Title'
+    options:
+      '#required': TRUE
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': TRUE
+  image_mobile:
+    type: image
+    label: 'Mobile Image'
+  video:
+    type: text
+    label: 'Video'
+    options:
+      '#description': '<b><i class="link">How ?</i></b><br><b>URL Example</b>: https://www.youtube.com/watch?v=BZDyr2OpWBU <br> <b>Value to insert</b>: BZDyr2OpWBU'
+  content:
+    type: textarea
+    label: 'Description'
+    options:
+  link:
+    type: url_extended
+    label: 'Read More Link'
+    placeholder_value: 'https://www.google.com'
+extra_fields:
+  weight: 999
+  group_gonfig:
+    g_title: 'Configuration Slider'
+    autoLoop:
+      type: checkbox
+      label: 'Auto Slide'
+    loopSpeed:
+      type: number
+      label: 'Slide Speed'

@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\vactory_decoupled\Controller;
+namespace Drupal\vactory_decoupled_search\Controller;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Controller\ControllerBase;
@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * Class SearchController
  *
- * @package Drupal\vactory_decoupled\Controller
+ * @package Drupal\vactory_decoupled_search\Controller
  */
 class SearchController extends ControllerBase
 {
@@ -96,7 +96,7 @@ class SearchController extends ControllerBase
       return new JsonResponse([
         'resources' => [],
         'count' => 0,
-        'metatags' => $this->getMetatag(),
+        // 'metatags' => $this->getMetatag(),
         'status' => 400
       ]);
     }
@@ -173,9 +173,9 @@ class SearchController extends ControllerBase
         $needed = ['url', 'title', 'type', 'node_summary'];
       }
 
-      if (intval($includeSummary) == '1') {
+      // if (intval($includeSummary) == '1') {
         array_push($needed, 'node_summary');
-      }
+      // }
       $flatData = [];
       foreach ($element->getFields(TRUE) as $key => $item) {
         if (in_array($key, $needed)) {
@@ -191,6 +191,9 @@ class SearchController extends ControllerBase
         }
       }
       $flatData['excerpt'] = $element->getExcerpt();
+      if (!$flatData['excerpt']) {
+        $flatData['excerpt'] = $flatData['node_summary'];
+      }
 
       $formated_results[] = $flatData;
       return $flatData;

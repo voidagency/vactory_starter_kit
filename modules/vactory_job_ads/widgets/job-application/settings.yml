@@ -1,6 +1,6 @@
-name: 'Candidature Spontanée'
+name: 'Job Application'
 multiple: FALSE
-category: 'Formulaires'
+category: 'Job Ads'
 enabled: TRUE
 fields:
   webform:
@@ -8,6 +8,8 @@ fields:
     label: 'Formulaire'
     options:
       '#required': TRUE
+      '#default_value':
+        webform_id: vactory_job_application
 extra_fields:
   title:
     type: text

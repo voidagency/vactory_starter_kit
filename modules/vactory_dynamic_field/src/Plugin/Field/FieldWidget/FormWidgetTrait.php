@@ -45,7 +45,7 @@ trait FormWidgetTrait {
       ];
     }
 
-    if (in_array($type, ['image', 'file', 'remote_video'])) {
+    if (in_array($type, ['image', 'file', 'remote_video', 'video'])) {
       $default_options = [
         '#type' => 'media_library',
       ];
@@ -63,6 +63,16 @@ trait FormWidgetTrait {
             'file_validate_extensions' => ['jpg gif png jpeg svg'],
           ],
         ] + $default_options;
+    }
+
+    if ($type == 'video') {
+      $default_options = [
+        '#upload_location'   => $default_stream_wrapper . '://widgets/videos',
+        '#allowed_bundles' => ['video'],
+        '#upload_validators' => [
+          'file_validate_extensions' => ['mp4', 'avi', 'flv', 'wmv', 'mov'],
+        ],
+      ] + $default_options;
     }
 
     if ($type === 'file') {
@@ -186,6 +196,56 @@ trait FormWidgetTrait {
       return $this->getImageFieldForm($field_name, [
         'label' => $label,
         'default_value' => $image_default_value,
+        'required' => $element_defaults['#required'] ?? FALSE,
+        'cardinality' => 1,
+      ], $form, $form_state);
+    }
+
+    if ($type == 'video') {
+      $video_default_value = [];
+      if (!empty($default_value)) {
+        if (!is_array($default_value)) {
+          $video_default_value[] = $default_value;
+        } else {
+          $key = array_keys($default_value)[0];
+          if (isset($default_value[$key]['selection'])) {
+            foreach ($default_value[$key]['selection'] as $media) {
+              $video_default_value[] = $media['target_id'];
+            }
+          }
+        }
+      }
+      return $this->getVideoFieldForm($field_name, [
+        'label' => $label,
+        'default_value' => $video_default_value,
+        'required' => $element_defaults['#required']  ?? FALSE,
+        'cardinality' => 1,
+      ], $form, $form_state);
+    }
+
+    if ($type === 'file') {
+      $file_default_value = [];
+      if (!empty($default_value)) {
+        if (!is_array($default_value)) {
+          $file_default_value[] = $default_value;
+        }
+        else {
+          $default_value = array_filter($default_value, function ($el) {
+            return isset($el['selection'][0]);
+          });
+          if (!empty($default_value)) {
+            $key = array_keys($default_value)[0];
+            if (isset($default_value[$key]['selection'])) {
+              foreach ($default_value[$key]['selection'] as $media) {
+                $file_default_value[] = $media['target_id'];
+              }
+            }
+          }
+        }
+      }
+      return $this->getFileFieldForm($field_name, [
+        'label' => $label,
+        'default_value' => $file_default_value,
         'required' => $element_defaults['#required'] ?? FALSE,
         'cardinality' => 1,
       ], $form, $form_state);
@@ -399,9 +459,9 @@ trait FormWidgetTrait {
 
     $configuration = array_merge(
       [
-        'label'         => 'Image',
+        'label'         => $configuration['label'],
         'default_value' => [],
-        'required'      => FALSE,
+        'required'      => $configuration['required'] ?? FALSE,
         'cardinality'   => 1,
       ],
       $configuration
@@ -452,9 +512,15 @@ trait FormWidgetTrait {
       'mode'             => 'default',
     ]);
 
+    // Get website file system default schema.
+    $default_scheme = \Drupal::config('system.file')->get('default_scheme');
+
     // Add field to component.
     $form_display->setComponent($field_name, [
-      'type' => 'media_library_widget',
+      'type' => $default_scheme !== 'cloudinary' ? 'media_library_widget' : 'cloudinary_media_library_widget',
+      'settings' => [
+        'resource_type' => $media_type === 'file' && $default_scheme === 'cloudinary' ? 'raw' : $media_type,
+      ],
     ]);
 
     /**

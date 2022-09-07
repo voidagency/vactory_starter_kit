@@ -47,16 +47,16 @@ vactory_decoupled.menus:
   requirements:
     _permission: 'access content'
 
-vactory_decoupled.search:
-  path: '/_search'
-  defaults:
-    _controller: '\Drupal\vactory_decoupled\Controller\SearchController::index'
-    _disable_route_normalizer: 'TRUE'
-  methods: [GET]
-  requirements:
-    _permission: 'access content'
-  options:
-    _is_jsonapi: 1
+# vactory_decoupled.search:
+#   path: '/_search'
+#   defaults:
+#     _controller: '\Drupal\vactory_decoupled\Controller\SearchController::index'
+#     _disable_route_normalizer: 'TRUE'
+#   methods: [GET]
+#   requirements:
+#     _permission: 'access content'
+#   options:
+#     _is_jsonapi: 1
 
 vactory_decoupled.import_translation:
   path: 'admin/config/regional/translate/import_frontend'
@@ -65,6 +65,14 @@ vactory_decoupled.import_translation:
     _title: 'Frontend Translation Import'
   requirements:
     _permission: 'translate interface'
+
+vactory_decoupled.secure_routes:
+  path: 'admin/config/system/secure-routes'
+  defaults:
+    _form: 'Drupal\vactory_decoupled\Form\SecureRoutesForm'
+    _title: 'Secure Routes'
+  requirements:
+    _permission: 'administer site configuration'
 
 vactory_decoupled.firebase_key:
   path: 'admin/config/firebase/key'
@@ -125,3 +133,11 @@ vactory_decoupled.firebase_key_controller:
   methods: [GET]
   requirements:
     _permission: 'access content'
+
+vactory_decoupled.login_token:
+  path: '/oauth/login-token'
+  defaults:
+    _controller: 'Drupal\simple_oauth\Controller\Oauth2Token::token'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'

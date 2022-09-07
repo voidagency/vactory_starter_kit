@@ -3,7 +3,6 @@ status: true
 dependencies:
   config:
     - field.field.node.vactory_mediatheque.field_body
-    - field.field.node.vactory_mediatheque.field_contenu_lie
     - field.field.node.vactory_mediatheque.field_mediatheque_date
     - field.field.node.vactory_mediatheque.field_mediatheque_theme
     - field.field.node.vactory_mediatheque.field_mediatheque_type
@@ -23,8 +22,6 @@ dependencies:
     - scheduler
     - text
     - vactory_cross_content
-_core:
-  default_config_hash: opligOGUPtp1TuU75JqYcFksBmY2R3uIBBzGMFjx78E
 id: node.vactory_mediatheque.default
 targetEntityType: node
 bundle: vactory_mediatheque
@@ -75,12 +72,6 @@ content:
       match_limit: 10
       size: 60
       placeholder: ''
-    third_party_settings: {  }
-  field_contenu_lie:
-    type: field_cross_content_widget
-    weight: 37
-    region: content
-    settings: {  }
     third_party_settings: {  }
   field_mediatheque_date:
     type: datetime_default

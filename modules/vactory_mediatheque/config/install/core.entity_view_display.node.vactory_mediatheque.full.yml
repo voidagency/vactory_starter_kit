@@ -4,7 +4,6 @@ dependencies:
   config:
     - core.entity_view_mode.node.full
     - field.field.node.vactory_mediatheque.field_body
-    - field.field.node.vactory_mediatheque.field_contenu_lie
     - field.field.node.vactory_mediatheque.field_mediatheque_date
     - field.field.node.vactory_mediatheque.field_mediatheque_theme
     - field.field.node.vactory_mediatheque.field_mediatheque_type
@@ -21,8 +20,6 @@ dependencies:
     - media_responsive_thumbnail
     - text
     - user
-_core:
-  default_config_hash: WCL-_OUZK-A4OcJvwLZG5NxIgKt_k1PO8zgI34ru5eU
 id: node.vactory_mediatheque.full
 targetEntityType: node
 bundle: vactory_mediatheque
@@ -96,7 +93,6 @@ hidden:
   field_content_access_groups: true
   field_content_access_roles: true
   field_content_access_users: true
-  field_contenu_lie: true
   field_mediatheque_date: true
   field_mediatheque_type: true
   field_medium_year: true

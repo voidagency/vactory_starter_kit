@@ -14,6 +14,7 @@ use Drupal\Core\Site\Settings;
 use Drupal\Core\Url;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\jsonapi_extras\Entity\JsonapiResourceConfig;
 use Drupal\node\Entity\Node;
 use Drupal\user\UserInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -44,6 +45,13 @@ function vactory_decoupled_form_node_form_alter(&$form, FormStateInterface $form
     ];
     $form['node_settings']['#group'] = 'node_settings_group';
   }
+
+  if (isset($form['machine_name'])) {
+    $form['machine_name']['#access'] = \Drupal::currentUser()
+    ->hasPermission('administer field node settings');
+    $form['machine_name']['#group'] = 'node_settings_group';
+  }
+
 }
 
 
@@ -267,6 +275,15 @@ function vactory_decoupled_entity_base_field_info(EntityTypeInterface $entity_ty
       ->setDisplayConfigurable('view', FALSE);
   }
 
+  if ($entity_type->id() === 'node') {
+    $fields['machine_name'] = BaseFieldDefinition::create('string')
+      ->setLabel('Machine name')
+      ->setDescription('Machine name for internal use.')
+      ->setTranslatable(FALSE)
+      ->setRevisionable(FALSE)
+      ->setDisplayConfigurable('form', TRUE);
+  }
+
   return $fields;
 }
 
@@ -466,7 +483,7 @@ function _vactory_decoupled_user_pass_reset_url($account, $options = []) {
   ];
 
   $query_string = http_build_query($data, "", "&", PHP_QUERY_RFC3986);
-  return $frontend_url . "/$langcode/$nextjs_user_pages_path_prefix/one-time-login?" . $query_string;
+  return $frontend_url . "/$langcode/account/reset-password?" . $query_string;
 }
 
 /**
@@ -623,4 +640,37 @@ function clear_next_cache($query = []) {
     \Drupal::logger('clear_next_cache')->warning($error_msg);
     return FALSE;
   }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function vactory_decoupled_form_jsonapi_resource_config_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $config_resource = $form_state->getFormObject()->getEntity();
+  $default_roles = $config_resource->getThirdPartySetting('vactory_decoupled', 'roles', []);
+  $form['access'] = [
+    '#type' => 'details',
+    '#title' => t('Access'),
+  ];
+  $roles = \Drupal::entityTypeManager()->getStorage('user_role')
+    ->loadMultiple();
+  $roles = array_map(function ($role) {
+    return $role->label();
+  }, $roles);
+  $form['access']['roles'] = [
+    '#type' => 'checkboxes',
+    '#title' => t('Roles'),
+    '#options' => $roles,
+    '#description' => t('Users with given roles could access this resource, if no role has been selected then do nothing (of course an api key or jsonapi token is required when the original jsonapi resource is protected)'),
+    '#default_value' => $default_roles,
+  ];
+  $form['#entity_builders'][] = 'vactory_decoupled_jsonapi_resource_config_builder';
+}
+
+/**
+ * Jsonapi resource config entity builder callback.
+ */
+function vactory_decoupled_jsonapi_resource_config_builder($entity_type, JsonapiResourceConfig $config_resource, &$form, FormStateInterface $form_state) {
+  $roles = $form_state->getValue('roles');
+  $config_resource->setThirdPartySetting('vactory_decoupled', 'roles', $roles);
 }

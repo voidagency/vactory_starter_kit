@@ -8,3 +8,6 @@
   cursor: move;
   transform: translate(0, -50%);
 }
+.field__item video {
+  max-width: 100% !important;
+}
