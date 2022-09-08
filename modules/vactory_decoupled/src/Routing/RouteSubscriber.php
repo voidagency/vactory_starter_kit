@@ -25,8 +25,8 @@ class RouteSubscriber extends RouteSubscriberBase {
           $resource_config = reset($resource_config);
           // Get resource config authorized roles.
           $roles = $resource_config->getThirdPartySetting('vactory_decoupled', 'roles', []);
+          $roles = array_filter($roles);
           if (!empty($roles)) {
-            $roles = array_filter($roles);
             $requirements = $route->getRequirements();
             $requirements['_role'] = implode('+', $roles);
             $route->setRequirements($requirements);
