@@ -40,6 +40,7 @@ class VactoryIconPicker extends FormElement
   public static function processVactoryIconPicker(&$element, FormStateInterface $form_state, &$form)
   {
     $element['#type'] = 'select';
+    $element['#multiple'] = FALSE;
     $element['#attributes'] = [
       'class' => ['vactory--icon-picker'],
     ];
