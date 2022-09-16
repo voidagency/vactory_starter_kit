@@ -259,26 +259,34 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
 
         // Document media.
         if ($info['type'] === 'file' && !empty($value)) {
-          $media = Media::load($value);
-          if ($media) {
-            // Add cache.
-            $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $media->getCacheTags());
-            $this->cacheability->setCacheTags($cacheTags);
-            $fid = (int) $media->get('field_media_file')->getString();
-            $file = File::load($fid);
-            if ($file) {
-              // Add cache.
-              $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $file->getCacheTags());
-              $this->cacheability->setCacheTags($cacheTags);
-              $uri = $file->getFileUri();
-              $value = [
-                '_default' => \Drupal::service('file_url_generator')->generateAbsoluteString($uri),
-                'uri' => StreamWrapperManager::getTarget($uri),
-                'fid' => $media->id(),
-                'file_name' => $media->label(),
-              ];
+          $key = array_keys($value)[0];
+          $file_data = [];
+          if (isset($value[$key]['selection'])) {
+            foreach ($value[$key]['selection'] as $media) {
+              $file = Media::load($media['target_id']);
+              if ($file) {
+                $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $file->getCacheTags());
+                $this->cacheability->setCacheTags($cacheTags);
+                $fid = (int) $file->get('field_media_file')->getString();
+                $document = File::load($fid);
+                if ($document) {
+                  // Add cache.
+                  $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $document->getCacheTags());
+                  $this->cacheability->setCacheTags($cacheTags);
+                  $uri = $document->getFileUri();
+                  $file_data[] = [
+                    '_default' => \Drupal::service('file_url_generator')->generateAbsoluteString($uri),
+                    'uri' => StreamWrapperManager::getTarget($uri),
+                    'fid' => $file->id(),
+                    'file_name' => $file->label(),
+                  ];
+                }
+              } else {
+                $file_data['_error'] = 'Media file ID: ' . $media['target_id'] . ' Not Found';
+              }
             }
           }
+          $value = $file_data;
         }
 
         // Views.
