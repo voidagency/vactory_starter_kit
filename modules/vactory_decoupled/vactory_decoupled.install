@@ -68,3 +68,25 @@ function vactory_decoupled_update_9003()
   \Drupal::entityDefinitionUpdateManager()
     ->installFieldStorageDefinition('machine_name', 'node', 'node', $storage_definition);
 }
+
+/**
+ * Add taxonomy term field term_slug.
+ */
+function vactory_decoupled_update_9004()
+{
+  $storage_definition = BaseFieldDefinition::create('string')
+    ->setLabel(t('Slug'))
+      ->setDescription(t('Term slug'))
+      ->setTranslatable(TRUE)
+      ->setRevisionable(TRUE)
+      ->setRequired(FALSE)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayOptions('form', [
+        'type'     => 'string_textfield',
+        'weight'   => 0,
+      ])
+      ->setDisplayConfigurable('view', FALSE);
+
+  \Drupal::entityDefinitionUpdateManager()
+    ->installFieldStorageDefinition('term_2_slug', 'taxonomy_term', 'taxonomy_term', $storage_definition);
+}

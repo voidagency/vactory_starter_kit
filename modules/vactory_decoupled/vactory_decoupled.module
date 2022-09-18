@@ -254,6 +254,19 @@ function vactory_decoupled_entity_base_field_info(EntityTypeInterface $entity_ty
       ->setTargetEntityTypeId($entity_type->id())
       ->setDisplayConfigurable('form', FALSE)
       ->setDisplayConfigurable('view', FALSE);
+
+      $fields['term_2_slug'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Slug'))
+      ->setDescription(t('Term slug'))
+      ->setTranslatable(TRUE)
+      ->setRevisionable(TRUE)
+      ->setRequired(FALSE)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayOptions('form', [
+        'type'     => 'string_textfield',
+        'weight'   => 0,
+      ])
+      ->setDisplayConfigurable('view', FALSE);
   }
 
   if ($entity_type->id() === 'node') {
