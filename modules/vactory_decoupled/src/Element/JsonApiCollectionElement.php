@@ -129,6 +129,19 @@ class JsonApiCollectionElement extends FormElement {
       ],
     ];
 
+    $uuid_service = \Drupal::service('uuid');
+
+    $element['id'] = [
+      '#type' => 'textfield',
+      '#title' => t('ID'),
+      '#placeholder' => 'drupal_internal__nid',
+      '#description' => t('A unique identifier. E.g vactory_news_latest_articles_filtred_by_annonce or vactory_news_list. This id is passed to hook_json_api_collection_alter'),
+      '#default_value' => $element['#default_value']['id'] ?? $uuid_service->generate(),
+      '#wrapper_attributes' => [
+        'style' => $has_access ? NULL : 'display:none',
+      ],
+    ];
+
     return $element;
   }
 

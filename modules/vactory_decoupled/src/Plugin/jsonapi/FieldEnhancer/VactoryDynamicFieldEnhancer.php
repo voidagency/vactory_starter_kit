@@ -149,6 +149,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
     }
 
     // Restore cache.
+    $this->cacheability->addCacheContexts(['url.query_args:q']);
     $context[CacheableNormalizerInterface::SERIALIZATION_CONTEXT_CACHEABILITY] = $this->cacheability;
 
     return $data;
