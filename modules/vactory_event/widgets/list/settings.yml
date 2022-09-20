@@ -9,6 +9,7 @@ fields:
     options:
       '#required': TRUE
       '#default_value':
+        id: "vactory_event_list"
         resource: node--vactory_event
         filters:
           - fields[node--vactory_event]=drupal_internal__nid,path,title,field_vactory_taxonomy_1,field_vactory_taxonomy_2,field_vactory_date_interval,field_vactory_tags,field_vactory_media,field_vactory_excerpt
