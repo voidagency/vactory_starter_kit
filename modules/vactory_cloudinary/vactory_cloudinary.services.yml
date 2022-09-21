@@ -18,3 +18,10 @@ services:
       - '@logger.factory'
       - '@module_handler'
       - '@config.factory'
+  cloudinary_stream_wrapper.override:
+    class: \Drupal\vactory_cloudinary\StreamWrapper\CloudinaryStreamWrapperOverride
+    decorates: stream_wrapper.cloudinary
+    public: false
+    decoration_priority: 7
+    arguments:
+      - '@cloudinary_stream_wrapper.override.inner'

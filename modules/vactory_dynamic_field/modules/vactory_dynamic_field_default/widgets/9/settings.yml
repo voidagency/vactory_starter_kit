@@ -1,0 +1,40 @@
+name: 'D09 - Team V1'
+multiple: TRUE
+category: 'Teams'
+enabled: TRUE
+fields:
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': true
+  image_alt:
+    type: text
+    label: 'Image alt'
+  title:
+    type: text
+    label: 'Titre'
+    options:
+      '#required': true
+  authors:
+    type: text
+    label: 'Auteurs'
+    options:
+      '#required': true
+  description:
+    type: text
+    label: 'Description'
+    options:
+      '#required': true
+  link:
+    type: url_extended
+    label: 'Lien'
+    options:
+      '#required': true
+extra_fields:
+  intro:
+    type: textarea
+    label: 'Introduction'
+  btn_more:
+    type: url_extended
+    label: 'More button'

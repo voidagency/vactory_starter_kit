@@ -12,6 +12,7 @@ use Drupal\Core\Cache\Cache;
  * @api
  */
 class JsonApiGenerator {
+
   protected $client;
 
   /**
@@ -32,12 +33,20 @@ class JsonApiGenerator {
    *
    */
   public function fetch(array $config) {
+    $id = $config['id'] ?? '';
     $resource = $config['resource'];
     $filters = $config['filters'];
     $exposed_vocabularies = $config['vocabularies'];
     $entity_queue = $config['entity_queue'] ?? '';
     $entity_queue_field_id = $config['entity_queue_field_id'] ?? '';
     $subqueue_items_ids = [];
+
+    // Filters may be altered using hook_json_api_collection_alter
+    // @see JsonApiGenerator.php
+    // We need to keep a copy of the original filters to be used
+    // by the frontend Component.
+    // The client component only care about what has been set in the DF yml setting.
+    $original_filters = $filters;
 
     // Add a filter for entity queue.
     if (!empty($entity_queue)) {
@@ -46,7 +55,7 @@ class JsonApiGenerator {
       $subqueue_items_ids = array_map(function ($item) {
         return $item['target_id'];
       }, $subqueue_items);
-      
+
       if (count($subqueue_items_ids) > 0) {
         $filters[] = "filter[_subqueue][condition][path]=" . $entity_queue_field_id;
         $filters[] = "filter[_subqueue][condition][operator]=IN";
@@ -62,10 +71,36 @@ class JsonApiGenerator {
     $parsed = [];
     foreach ($filters as $line) {
       [$name, $qsvalue] = explode("=", $line, 2);
-      $parsed[trim($name)] = urldecode(trim($qsvalue));
+      $parsed[trim($name)] = urldecode(trim(\Drupal::token()->replace($qsvalue, [])));
     }
- 
+
+    $original_filters_parsed = [];
+    foreach ($original_filters as $line) {
+      [$name, $qsvalue] = explode("=", $line, 2);
+      $original_filters_parsed[trim($name)] = urldecode(trim(\Drupal::token()->replace($qsvalue, [])));
+    }
+
+    if (\Drupal::request()->query->get("q")) {
+      /*
+       * Allow other modules to override json_api_collection filters.
+       *
+       * @code
+       * Implements hook_json_api_collection_alter().
+       * function myModule_json_api_collection_alter(&$filters, &$context) {
+       * }
+       * @endcode
+       */
+
+      $hook_context = [
+        'query' => \Drupal::request()->query->get("q"),
+        'id' => $id,
+      ];
+
+      \Drupal::moduleHandler()->alter('json_api_collection', $parsed, $hook_context);
+    }
+
     parse_str(http_build_query($parsed), $query_filters);
+    parse_str(http_build_query($original_filters_parsed), $query_original_filters);
 
     $response = $this->client->serialize($resource, $query_filters);
     $exposedTerms = $this->getExposedTerms($exposed_vocabularies);
@@ -81,16 +116,19 @@ class JsonApiGenerator {
     if (!empty($entity_queue) && count($subqueue_items_ids) > 0) {
       $items = $client_data->data ?? [];
       $result = array_map(static fn($entity_queue_id) => current(array_values(
-          array_filter($items, static fn($entity) => intval($entity->attributes->{$entity_queue_field_id}) === intval($entity_queue_id))
+        array_filter($items, static fn($entity) => intval($entity->attributes->{$entity_queue_field_id}) === intval($entity_queue_id))
         )), $subqueue_items_ids);
-
-      $client_data->data = $result;
+      $result = array_filter($result, function ($e) {
+        return $e; //when this value is false the element is removed.
+      });
+      $client_data->data = array_values($result);
     }
-
+    
     return [
       'data' => $client_data,
       'cache' => $response['cache'],
       'filters' => $query_filters,
+      'original_filters' => $query_original_filters,
       'taxonomies' => $exposedTerms['data'],
     ];
   }
@@ -101,7 +139,7 @@ class JsonApiGenerator {
 
     $entityTypeManager = \Drupal::service('entity_type.manager');
     $taxonomyTermStorage = $entityTypeManager->getStorage('taxonomy_term');
-    $slugManager = \Drupal::service('vactory_core.slug_manager');
+    // $slugManager = \Drupal::service('vactory_core.slug_manager');
     $entityRepository = \Drupal::service('entity.repository');
     $bundles = (array) $vocabularies;
     $bundles = array_filter($bundles, function ($value) {
@@ -116,11 +154,11 @@ class JsonApiGenerator {
         $term = $entityRepository
           ->getTranslationFromContext($term);
 
-          $cacheTags = Cache::mergeTags($cacheTags, $term->getCacheTags());
+        $cacheTags = Cache::mergeTags($cacheTags, $term->getCacheTags());
         array_push($result[$vid], [
           'id' => $term->id(),
           'uuid' => $term->uuid(),
-          'slug' => $slugManager->taxonomy2Slug($term),
+          'slug' => $term->get("term_2_slug")->getString(),
           'label' => $term->label(),
         ]);
       }
@@ -129,7 +167,7 @@ class JsonApiGenerator {
 
     return [
       "data" => $result,
-      "cache_tags" => $cacheTags
+      "cache_tags" => $cacheTags,
     ];
   }
 

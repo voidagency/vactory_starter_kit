@@ -1,0 +1,28 @@
+<div class="t-coverflow-full js-img-video">
+  <div class="row vf-slick-slider full-slider"
+       data-toshow="1"
+       data-arrows="false"
+       data-variablewidth="true"
+       data-centermode="true"
+       data-mobile-variablewidth="false"
+       data-mobile-centermode="true"
+       data-mobile-centerpadding="20px">
+    {% for item in 0..2 %}
+      {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/480/210.jpg" %}
+      <div class="col-md-6">
+        <div class="t-item t-2b-image-bg block-image ">
+            <p class="t-video-title"> Title</p>
+            <a class="image-scale" data-fancybox href="#">
+              <div class="lazy-wrapper">
+                <img data-src="{{ placehold }}"
+                     src="{{ content.image_placeholder }}"
+                     alt="Image ALt"
+                     class="img-fluid lazyload">
+              </div>
+            </a>
+
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>

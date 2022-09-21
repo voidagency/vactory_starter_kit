@@ -1,0 +1,7 @@
+langcode: en
+status: true
+dependencies: {  }
+name: 'Médiathèque - Types'
+vid: mediatheque_types
+description: ''
+weight: 0

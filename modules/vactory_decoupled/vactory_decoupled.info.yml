@@ -15,4 +15,6 @@ dependencies:
   - media
   - vactory_page
   - vactory_paragraphs
+  - social_auth
+  - features
 version: 8.x-1.0

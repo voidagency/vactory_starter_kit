@@ -1,0 +1,25 @@
+name: 'D11 - List Image with title'
+multiple: TRUE
+category: 'Content'
+enabled: TRUE
+fields:
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': TRUE
+  image_alt:
+    type: text
+    label: "Text alternative de l'image"
+  link:
+    type: url_extended
+    label: 'Titre / Lien'
+    options:
+      '#required': TRUE
+extra_fields:
+  intro:
+    type: textarea
+    label: 'Introduction'
+  btn_more:
+    type: url_extended
+    label: 'More button'

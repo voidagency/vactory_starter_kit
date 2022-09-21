@@ -1,0 +1,41 @@
+.t-slider-cards {
+  >h3 {
+    @include rem(margin-bottom, 24px);
+    text-align: center;
+  }
+
+  >.row {
+    &:not(.slick-initialized) {
+      @include row-make-equal-height();
+    }
+  }
+
+  .t-box {
+    @include bg-shadow(#fff, 0 2px 8px 0 rgba(0, 0, 0, 0.06), 30px, 30px, none, 6px);
+    height: 100%;
+    width: 100%;
+
+    .t-box-img-wrapper {
+      @include rem(margin-bottom, 25px);
+
+      img {
+        max-width: 70px;
+        width: 70px;
+      }
+    }
+  }
+
+  .t-card-title {
+    color: #7fa4c5;
+    @include rem(margin-bottom, 10px);
+    font-weight: bold;
+    @include rem(font-size, 16px);
+    @include rem(line-height, 22px);
+  }
+
+  .t-box-description {
+    &:not(:last-child) {
+      @include rem(margin-bottom, 20px);
+    }
+  }
+}

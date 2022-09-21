@@ -1,0 +1,73 @@
+{% if dir == 'rtl' %}
+    {{ attach_library('vactory_dynamic_field_default/df_default_widget_9_rtl') }}
+{% else %}
+    {{ attach_library('vactory_dynamic_field_default/df_default_widget_9') }}
+{% endif %}
+
+{% if extra_fields.intro is not empty %}
+  <div class='mb-3 text-center'> {{ extra_fields.intro }} </div>
+{% endif %}
+<div class="t-publication-wrapper">
+  {% for item in content %}
+    {% set image_uri = (item.image.0 is defined) ? get_image(item.image.0) : "" %}
+    {% set fluid_image = file_url(image_uri) %}
+    {% set lqip_image = image_uri|image_style('lqip') %}
+    {% set imageAlt = (item.image_alt) ? item.image_alt : item.image.alt_image %}
+
+    {% set link_attributes = create_attribute() %}
+    {% set link_attributes = item.link.attributes.id is not empty ? link_attributes.setAttribute('id', item.link.attributes.id ) : link_attributes %}
+    {% set link_attributes = item.link.attributes.class is not empty ? link_attributes.setAttribute('class', item.link.attributes.class  ~ ' text-nowrap permalink') : link_attributes.setAttribute('class','text-nowrap permalink') %}
+    {% set link_attributes = item.link.attributes.target is not empty ? link_attributes.setAttribute('target', item.link.attributes.target ) : link_attributes %}
+    {% set link_attributes = item.link.attributes.rel is not empty ? link_attributes.setAttribute('rel', item.link.attributes.rel ) : link_attributes %}
+
+    <div class="t-publication-content">
+      <div class="row align-items-lg-center">
+        <div class="col-lg-2 col-md-3 col-12">
+          {% if item.image is not empty %}
+            <div class="t-image-wrapper d-flex align-items-center justify-content-center justify-content-lg-start">
+              <img data-src="{{ fluid_image }}"
+                   src="{{ lqip_image }}"
+                   class="img-fluid lazyload"
+                   alt="{{ imageAlt }}">
+            </div>
+          {% endif %}
+        </div>
+        <div class="col-lg-10 col-md-9 col-12">
+          <div
+            class="t-publication-details d-flex flex-lg-row flex-column align-items-lg-center justify-content-lg-between">
+            <div class="t-publication-details-text">
+              {% if item.title is not empty %}
+                <h3 class="text-large">{{ item.title }}</h3>
+              {% endif %}
+              {% if item.authors is not empty %}
+                <p class="text-small t-publication-authors">{{ item.authors }}</p>
+              {% endif %}
+              {% if item.description is not empty %}
+                <p class="t-publicatoin-description">{{ item.description }}</p>
+              {% endif %}
+            </div>
+            {% if item.link.url is not empty and item.link.title is not empty %}
+              <div>
+                <a href="{{ item.link.url }}" {{ link_attributes }} > {{ item.link.title }} </a>
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+{% if extra_fields.btn_more is not empty %}
+
+{% set moreLink_attributes = create_attribute() %}
+{% set moreLink_attributes = extra_fields.btn_more.attributes.id is not empty ? moreLink_attributes.setAttribute('id', extra_fields.btn_more.attributes.id ) : moreLink_attributes %}
+{% set moreLink_attributes = extra_fields.btn_more.attributes.target is not empty ? moreLink_attributes.setAttribute('target', extra_fields.btn_more.attributes.target ) : moreLink_attributes %}
+{% set moreLink_attributes = extra_fields.btn_more.attributes.target is not empty ? moreLink_attributes.setAttribute('class', extra_fields.btn_more.attributes.class ~ 'btn btn-primary')  : moreLink_attributes.setAttribute('class','btn btn-primary') %}
+{% set moreLink_attributes = extra_fields.btn_more.attributes.rel is not empty ? moreLink_attributes.setAttribute('rel', extra_fields.btn_more.attributes.rel ) : moreLink_attributes %}
+  <div class="text-center mt-4">
+    <a href="{{  extra_fields.btn_more.url }}"  {{ moreLink_attributes }}>
+      {{ extra_fields.btn_more.title }}
+    </a>
+  </div>
+{% endif %}

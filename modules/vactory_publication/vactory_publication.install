@@ -66,3 +66,13 @@ function vactory_publication_update_8101() {
     \Drupal::logger('vactory_publication')->notice($message);
   }
 }
+
+/**
+ * Implements hook_uninstall().
+ */
+function vactory_publication_uninstall($is_syncing) {
+  // Clean vactory publication content type config fields.
+  Drupal::service('vactory_core.tools')->cleanEntityConfigFields('node', 'vactory_publication');
+  // CLean module install configs.
+  Drupal::service('vactory_core.tools')->cleanModuleConfigs('vactory_publication');
+}

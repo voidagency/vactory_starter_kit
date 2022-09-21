@@ -1,0 +1,85 @@
+{{ attach_library('vactory_dynamic_field_sliders/variant5') }}
+
+<div class="tabs-slider loading d-flex align-items-center">
+
+  <div class="backgrounds">
+    {% for i in 0..4 %}
+      {% set is_active = (loop.first) ? 'is-active' : '' %}
+      {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/1200/600.jpg" %}
+
+      {% if item.video is not empty %}
+        <div id="slider-background-video{{ loop.index }}" class="d-lg-block d-none background is-video {{ is_active }}"
+             data-item="{{ loop.index }}"></div>
+        <div class="ytplayer"
+             data-property="{
+                 videoURL:'http://youtu.be/HZUTTbTe3uQ',
+                 containment:'#slider-background-video{{ loop.index }}',
+                 showYTLogo: false,
+                 ratio:'16/9',
+                 autoPlay:false,
+                 showControls: false,
+                 quality: 'large',
+                 mute:true,
+                 startAt:0,
+                 loop: 1,
+                 opacity:1
+                 }">
+        </div>
+        <div class="d-block d-lg-none background is-image {{ is_active }}"
+             data-image="{{ placehold }}"
+             data-imagemobile="{{ placehold }}" data-item="{{ loop.index }}"></div>
+      {% else %}
+        <div class="background is-image {{ is_active }}"
+             data-image="{{ placehold }}"
+             data-imagemobile="{{ placehold }}"
+             data-item="{{ loop.index }}"></div>
+      {% endif %}
+    {% endfor %}
+  </div>
+
+  <div class="tabs-container container d-lg-flex align-items-lg-center">
+    <ul class="nav nav-tabs d-none d-lg-flex flex-column" id="sliderTab" role="tablist">
+      <div class="header__line-h loaded d-lg-block d-none"></div>
+      {% for i in 0..2 %}
+        {% set is_active = (loop.first) ? 'active' : '' %}
+        <li class="nav-item">
+          <a class="nav-link {{ is_active }}"
+             id="slider-tab-{{ loop.index }}" data-item="{{ loop.index }}" data-toggle="tab"
+             href="#slider-content-vertical-{{ loop.index }}" role="tab" aria-selected="true">
+              <h2 class="title-carrousel">
+                Title {{ loop.index }}
+                <span>Second title {{ loop.index }}</span>
+              </h2>
+          </a>
+        </li>
+      {% endfor %}
+    </ul>
+
+    <div class="tab-content vf-slick-slider vf-slick-mobile slick-arrows-mobile" id="sliderTabContent"
+         data-mobile-arrows="true"
+        data-mobile-autoplay="true">
+      {% for i in 0..2 %}
+        {% set is_active = (loop.first) ? 'show active' : '' %}
+        <div class="tab-pane fade p-lg-3 {{ is_active }}"
+             id="slider-content-vertical-{{ loop.index }}" role="tabpanel">
+          <div class="tab-pan-desc">
+            <div class="d-block d-lg-none t-item-title">
+                <h2 class="title-carrousel">
+                  Big Title {{ loop.index }}
+                    <span>Second Title {{ loop.index }}</span>
+                </h2>
+            </div>
+              <div class="t-pan-details">
+                  <p>Lorem Ipsum is simply dummy text for u</p>
+              </div>
+          </div>
+            <a href="#"
+               class="btn btn-with-icon icon-heart">
+              Read More
+            </a>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  <a href="#" class="link-scroll">Scroll Down</a>
+</div>

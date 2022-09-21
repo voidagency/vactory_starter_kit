@@ -8,3 +8,6 @@ services:
     class: Drupal\vactory_whatsapp\WhatsappApiManager
     arguments:
       - '@vactory_whatsapp.api'
+  plugin.manager.vactory_whatsapp_webhook:
+    class: Drupal\vactory_whatsapp\WhatsappWebhookManager
+    parent: default_plugin_manager

@@ -1,0 +1,43 @@
+.rapport-card {
+  position: relative;
+  @include rem(padding, 10px);
+  @include rem(height, 326px);
+
+  * {
+    color: $white;
+  }
+
+  &_item {
+    background-size: cover;
+    background-position: left bottom;
+    height: 100%;
+    @include rem(padding, 20px);
+  }
+
+  &_description {
+    margin-bottom: auto;
+    margin-top: auto;
+  }
+
+  &_video {
+    a {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+
+      i {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        font-size: 33px;
+        background: $primary;
+        padding: 0px 10px;
+        text-align: center;
+        border-radius: 6px;
+        transform: translate(-50%, -50%);
+      }
+    }
+  }
+}

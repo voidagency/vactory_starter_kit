@@ -1,0 +1,24 @@
+name: 'D15 - Chiffres clés'
+multiple: TRUE
+category: 'Key figures'
+enabled: TRUE
+fields:
+  number:
+    type: text
+    label: 'Chiffre'
+    options:
+      '#required': true
+  textPrefix:
+    type: text
+    label: 'Text avant le chiffre'
+  textSuffix:
+    type: text
+    label: 'Text après le chiffre'
+  name:
+    type: text
+    label: 'Title'
+    options:
+      '#required': true
+  description:
+    type: textarea
+    label: 'Description'

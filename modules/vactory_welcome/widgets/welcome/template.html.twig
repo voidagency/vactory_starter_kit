@@ -1,0 +1,22 @@
+{{ attach_library('vactory_welcome/scripts') }}
+
+<div class="modal fade" id="vactoryWelcomeModal" tabindex="-1" role="dialog" aria-labelledby="vactoryWelcomeModalLabel" aria-hidden="true">
+	<div class="modal-dialog" role="document" style="
+	  right: 30px;
+	  margin: 0;
+	  position: absolute;
+	  bottom: 30px;
+	">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="vactoryWelcomeModalLabel">{{ content.0.message }}</h5>
+				<button type="button" class="close close-welcome" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				{{ content.0.description.value['#text']|raw }}
+			</div>
+		</div>
+	</div>
+</div>

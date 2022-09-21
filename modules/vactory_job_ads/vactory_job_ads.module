@@ -9,9 +9,14 @@ define('VACTORY_JOB_ADS_CANDIDATE_VIA_EMAIL', 0);
 define('VACTORY_JOB_ADS_CANDIDATE_VIA_FORM', 1);
 define('VACTORY_JOB_ADS_CANDIDATE_VIA_USER_SPACE', 2);
 
+use Drupal\Core\Entity\EntityStorageException;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Url;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\Node;
+use Drupal\node\NodeTypeInterface;
+use Drupal\webform\WebformSubmissionInterface;
 
 /**
  * Implements hook_theme().
@@ -19,38 +24,38 @@ use Drupal\node\Entity\Node;
 function vactory_job_ads_theme() {
   return [
     // Node > Vactory Job Ads.
-    'node__vactory_job_ads__card_inline'                       => [
+    'node__vactory_job_ads__card_inline' => [
       'base hook' => 'node',
-      'template'  => 'card-inline',
+      'template' => 'card-inline',
     ],
 
     // Node > Full Page.
-    'node__vactory_job_ads__full'                              => [
+    'node__vactory_job_ads__full' => [
       'base hook' => 'node',
-      'template'  => 'full',
+      'template' => 'full',
     ],
 
     // Node > Smart search.
-    'node__vactory_job_ads__smart_search'        => [
+    'node__vactory_job_ads__smart_search' => [
       'base hook' => 'node',
-      'template'  => 'smart-search',
+      'template' => 'smart-search',
     ],
     // Node > Mur.
-    'node__vactory_job_ads__mur'        => [
+    'node__vactory_job_ads__mur' => [
       'base hook' => 'node',
-      'template'  => 'mur',
+      'template' => 'mur',
     ],
 
     // View > Job Ads.
     'views_view_unformatted__vactory_job_ads__vactory_job_ads' => [
       'base hook' => 'views_view_unformatted',
-      'template'  => 'page-list',
+      'template' => 'page-list',
     ],
     // webform--vactory-job-application
     // Webform > Job Ads.
-    'webform__vactory_job_application'                         => [
+    'webform__vactory_job_application' => [
       'base hook' => 'webform',
-      'template'  => 'application-form',
+      'template' => 'application-form',
     ],
   ];
 }
@@ -60,19 +65,53 @@ function vactory_job_ads_theme() {
  */
 function vactory_job_ads_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   if ($form_id == 'webform_submission_vactory_job_application_add_form') {
-    $nid = (int) \Drupal::request()->query->get('nid');
+    $job = \Drupal::request()->query->get('job');
+    $nid = str_replace('vactory_job_ads:', '', \Drupal::service('vactory_core.tools')->decrypt($job));
     $node = Node::load($nid);
     if ($node) {
-      foreach (array_keys($form['actions']) as $action) {
-        if ($action != 'preview' && isset($form['actions'][$action]['#type']) && $form['actions'][$action]['#type'] === 'submit') {
-          $form['actions'][$action]['#submit'][] = 'vactory_job_ads_form_submit';
-        }
-      }
-
-      $form['elements']['job_ad']['#default_value'] = (!$node instanceof Node) ?: $node->label();
+      $form['elements']['job_ad']['#default_value'] = $job;
+      $form['elements']['job_ad']['#job_title'] = (!$node instanceof Node) ?: $node->label();
       $form['elements']['job_ad']['#disabled'] = FALSE;
       $form['elements']['job_ad']['#type'] = 'hidden';
     }
+    else {
+      $form['elements']['actions']['#disabled'] = TRUE;
+    }
+    $form['#validate'][] = 'vactory_job_ads_form_validate';
+  }
+  if ($form_id == 'node_type_edit_form') {
+    $type = $form_state->getFormObject()->getEntity();
+    if ($type->id() == 'vactory_job_ads') {
+      $form['job_ads_candidature'] = [
+        '#type' => 'details',
+        '#title' => t('Job Application Config'),
+        '#group' => 'additional_settings',
+      ];
+      $default_value = $type->getThirdPartySetting('vactory_job_ads', 'candidature_node', '') != '' ? (Node::load($type->getThirdPartySetting('vactory_job_ads', 'candidature_node', '')) ?? '') : '';
+      $form['job_ads_candidature']['candidature_node'] = [
+        '#title' => t('Job Application Node'),
+        '#type' => 'entity_autocomplete',
+        '#target_type' => 'node',
+        '#selection_settings' => [
+          'target_bundles' => ['vactory_page'],
+        ],
+        '#default_value' => $default_value,
+      ];
+      $form['#entity_builders'][] = 'vactory_job_ads_form_node_type_form_builder';
+    }
+  }
+}
+
+/**
+ * @param $form
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ */
+function vactory_job_ads_form_validate(&$form, FormStateInterface $form_state) {
+  $job = $form_state->getValue('job_ad');
+  $nid = str_replace('vactory_job_ads:', '', \Drupal::service('vactory_core.tools')->decrypt($job));
+  $node = Node::load($nid);
+  if (!isset($node)) {
+    $form_state->setError($form, "Une erreur s'est produite et le traitement ne s'est pas terminé.");
   }
 }
 
@@ -97,7 +136,7 @@ function vactory_job_ads_preprocess_node(&$variables) {
   // Get node fields.
   $recruiter_email = $node->get('field_vactory_email')->getString();
   $nid = $node->get('nid')->getValue()[0]['value'];
-
+  $job = \Drupal::service('vactory_core.tools')->encrypt('vactory_job_ads:' . $nid);
   // Get candidate form.
   /** @var \Drupal\webform\Entity\Webform $webform */
   $candidate_form = \Drupal::entityTypeManager()
@@ -117,20 +156,86 @@ function vactory_job_ads_preprocess_node(&$variables) {
   elseif ($candidate_mode == VACTORY_JOB_ADS_CANDIDATE_VIA_FORM ||
     ($candidate_mode == VACTORY_JOB_ADS_CANDIDATE_VIA_USER_SPACE && $user_is_logged_in)) {
     $apply_link = $candidate_form_url->setOption('query', [
-      'nid' => $nid,
+      'job' => $job,
     ]);
   }
   elseif ($candidate_mode == VACTORY_JOB_ADS_CANDIDATE_VIA_USER_SPACE && $user_is_anonymous) {
     // Get the destination.
     $destination = $candidate_form_url->setOption('query', [
-      'nid' => $nid,
+      'job' => $job,
     ])->toString();
     $apply_link = Url::fromUri('internal:/user/login', [
       'query' => [
         'destination' => $destination,
-        'ja_msg'      => 1,
+        'ja_msg' => 1,
       ],
     ]);
   }
   $variables['apply_link'] = $apply_link;
+}
+
+/**
+ * Entity builder for the node type form with scheduler options.
+ */
+function vactory_job_ads_form_node_type_form_builder($entity_type, NodeTypeInterface $type, &$form, FormStateInterface $form_state) {
+  $type->setThirdPartySetting('vactory_job_ads', 'candidature_node', $form_state->getValue('candidature_node'));
+}
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function vactory_job_ads_entity_base_field_info(EntityTypeInterface $entity_type) {
+  $fields = [];
+  if ($entity_type->id() === 'node') {
+    $fields['candidature_spontanee_url'] = BaseFieldDefinition::create('string')
+      ->setComputed(TRUE)
+      ->setReadOnly(TRUE)
+      ->setTargetEntityTypeId($entity_type->id())
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE)
+      ->setClass('Drupal\vactory_job_ads\Field\InternalCandidatureSpontaneeEntityFieldItemList')
+      ->setTranslatable(FALSE)
+      ->setRequired(FALSE);
+  }
+
+  return $fields;
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave() for webform_submission entities.
+ *
+ * @throws \Exception
+ */
+function vactory_job_ads_webform_submission_presave(WebformSubmissionInterface $webform_submission) {
+  if ($webform_submission->getWebform()->id() !== 'vactory_job_application') {
+    return;
+  }
+
+  // Get original data (with default state) and current data.
+  $original_data = $webform_submission->getOriginalData() + ['state' => NULL];
+  $current_data = $webform_submission->getData();
+
+  // If submission is completed and state is not set then set state to completed.
+  if ($webform_submission->isCompleted() && empty($current_data['state'])) {
+    $current_data['state'] = 'completed';
+  }
+
+  if ($original_data['state'] !== $current_data['state']) {
+    $flag = FALSE;
+    $decryted_job_ad = \Drupal::service('vactory_core.tools')->decrypt($current_data['job_ad']);
+    if ($decryted_job_ad != null) {
+      $decryted_job_ad = str_replace('vactory_job_ads:', '', $decryted_job_ad);
+      $job_ads = \Drupal::entityTypeManager()->getStorage('node')->loadByProperties(['nid' => $decryted_job_ad, 'type' => 'vactory_job_ads']);
+      $job_ads = reset($job_ads);
+      if (isset($job_ads)) {
+        $current_data['job_ad'] = $job_ads->label();
+        $webform_submission->setData($current_data);
+        $flag = TRUE;
+      }
+    }
+    if (!$flag) {
+      throw new EntityStorageException(t("Le champ job ad est requis."), 0001);
+    }
+  }
+
 }
