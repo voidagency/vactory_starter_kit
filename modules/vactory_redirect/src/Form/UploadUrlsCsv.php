@@ -2,6 +2,7 @@
 
 namespace Drupal\vactory_redirect\Form;
 
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\file\Entity\File;
@@ -36,10 +37,11 @@ class UploadUrlsCsv extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
+    $config = $this->config('vactory_redirect.settings');
     $form['redirect_file'] = [
       '#type'              => 'managed_file',
       '#title'             => $this->t('Upload redirect CSV file.'),
-      '#default_value' => !empty($this->config('vactory_redirect.settings')->get('redirect_file')) ? $this->config('vactory_redirect.settings')->get('redirect_file') : '',
+      '#default_value' => !empty($config->get('redirect_file')) ? $config->get('redirect_file') : '',
       '#upload_location'   => 'public://redirections',
       '#upload_validators' => [
         'file_validate_extensions' => ['csv'],
@@ -70,10 +72,17 @@ class UploadUrlsCsv extends ConfigFormBase {
     $file->setPermanent();
     $file->save();
 
+    $new_filename = "redirections/urls.csv";
+    $stream_wrapper = \Drupal::service('stream_wrapper_manager')->getScheme($file->getFileUri());
+    $new_filename_uri = "{$stream_wrapper}://{$new_filename}";
+    $file = \Drupal::service('file.repository')->move($file, $new_filename_uri, FileSystemInterface::EXISTS_REPLACE);
     // Save configuration settings.
+
     $this->config('vactory_redirect.settings')
-      ->set('redirect_file', $values['redirect_file'])
+      ->set('redirect_file', [$file->id()])
       ->save();
+
+    apcu_delete('redirection_csv');
 
     parent::submitForm($form, $form_state);
   }
