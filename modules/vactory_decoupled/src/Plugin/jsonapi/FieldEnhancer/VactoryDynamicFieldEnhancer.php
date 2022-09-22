@@ -327,6 +327,26 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
           }
         }
 
+        if ($info['type'] === 'node_queue' && !empty($value)) {
+          $config['resource'] = $value['resource'] ?? '';
+          $config['filters'] = is_string($value['filters']) ? explode("\n", $value['filters']) : $value['filters'];
+          $config['vocabularies'] = [];
+          $config['filters'][] = 'filter[df-node-nid][condition][path]=nid';
+          $config['filters'][] = 'filter[df-node-nid][condition][operator]=IN';
+          $i = 1;
+          foreach ($value['nodes'] as $nid) {
+            $config['filters'][] = "filter[df-node-nid][condition][value][$i]=". $nid['target_id'];
+            $i++;
+          }
+          $response = \Drupal::service('vactory_decoupled.jsonapi.generator')->fetch($config);
+          $cache = $response['cache'];
+          unset($response['cache']);
+
+          $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $cache['tags']);
+          $this->cacheability->setCacheTags($cacheTags);
+          $value = $response;
+        }
+
         $cacheability = $this->cacheability;
         // Apply other modules formatters if exist on current component.
         \Drupal::moduleHandler()->alter('decoupled_df_format', $value, $info, $cacheability);
