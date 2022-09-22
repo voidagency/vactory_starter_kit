@@ -1,0 +1,6 @@
+name: 'Vactory Redirect'
+description: 'Allows users to redirect from old URLs to new URLs.'
+type: module
+package: Vactory
+core: 8.x
+core_version_requirement: ^8 || ^9
