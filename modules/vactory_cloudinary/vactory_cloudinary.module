@@ -130,9 +130,7 @@ function move_file_to_cloudinary(FileEntityInterface $file, $destination, Vactor
  */
 function vactory_cloudinary_entity_type_alter(array &$entity_types){
   if (isset($entity_types['file'])) {
-    $entity_types['file']->setHandlerClass('form',[
-      'edit' => 'Drupal\vactory_cloudinary\Form\FileEditForm',
-    ]);
+    $entity_types['file']->setFormClass('edit', 'Drupal\vactory_cloudinary\Form\FileEditForm');
   }
 }
 
