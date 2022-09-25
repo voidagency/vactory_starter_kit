@@ -9,6 +9,7 @@ fields:
     options:
       '#required': TRUE
       '#default_value':
+        id: "vactory_testimonials_list"
         resource: node--vactory_testimonials
         filters:
           - fields[node--vactory_testimonials]=drupal_internal__nid,path,title,field_vactory_address,body,field_vactory_date,field_vactory_excerpt,field_vactory_media,field_vactory_profils,field_vactory_role,field_vactory_tags
