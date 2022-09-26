@@ -1,0 +1,20 @@
+name: 'Node Queue'
+multiple: TRUE
+category: 'Decoupled'
+enabled: TRUE
+fields:
+  nodes:
+    type: node_queue
+    label: 'Node Queue'
+extra_fields:
+  title:
+    type: text
+    label: "Titre"
+  description:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'basic_html'
+  link:
+    type: url_extended
+    label: 'Lien'
