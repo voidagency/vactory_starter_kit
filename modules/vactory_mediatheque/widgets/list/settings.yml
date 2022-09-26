@@ -9,6 +9,7 @@ fields:
     options:
       '#required': TRUE
       '#default_value':
+        id: "vactory_mediatheque_list"
         resource: node--vactory_mediatheque
         filters:
           - fields[node--vactory_mediatheque]=drupal_internal__nid,path,title,field_mediatheque_date,field_vactory_excerpt,field_vactory_media,field_mediatheque_theme,field_vactory_tags,field_mediatheque_type,field_mediatheque_video,field_vactory_media_document

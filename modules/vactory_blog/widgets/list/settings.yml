@@ -9,6 +9,7 @@ fields:
     options:
       '#required': TRUE
       '#default_value':
+        id: "vactory_blog_list"
         resource: node--vactory_blog
         filters:
           - fields[node--vactory_blog]=drupal_internal__nid,path,title,field_blog_category,field_vactory_excerpt,field_blog_tags,field_vactory_media

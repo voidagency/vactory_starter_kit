@@ -315,3 +315,37 @@ function vactory_academy_preprocess_rate_widget(&$variables) {
     }
   }
 }
+
+/**
+ * Implements hook_json_api_collection_alter().
+ */
+function vactory_academy_json_api_collection_alter(&$filters, &$context) {
+  if ($context['id'] === 'vactory_academy_list') {
+    $query = $context['query'];
+
+    if (isset($query["page"])) {
+      $filters["page[offset]"] = intval($query["page"]) > 0 ? intval($query["page"]) - 1 : 0;
+    }
+
+    if (isset($query["theme"]) && $query["theme"] !== "all") {
+      $theme = $query["theme"];
+      $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties([
+        'vid' => 'vactory_academy_themes',
+        'term_2_slug' => $query["theme"]
+      ]);
+
+      if (!$terms) {
+        throw new \Exception("[Academy - hook_json_api_collection_alter] term '$theme' not found.");
+      }
+
+      if ($terms) {
+        $term = reset($terms);
+        $id = $term->id();
+        $filters["filter[academy_internal_theme][condition][path]"] = "field_vactory_theme.drupal_internal__tid";
+        $filters["filter[academy_internal_theme][condition][operator]"] = "=";
+        $filters["filter[academy_internal_theme][condition][value]"] = $id;
+      }
+
+    }
+  }
+}
