@@ -223,7 +223,7 @@ function vactory_event_json_api_collection_alter(&$filters, &$context) {
     if (isset($query["theme"]) && $query["theme"] !== "all") {
       $theme = $query["theme"];
       $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties([
-        'vid' => 'field_vactory_taxonomy_1',
+        'vid' => 'vactory_event_category',
         'term_2_slug' => $query["theme"]
       ]);
 
@@ -241,10 +241,10 @@ function vactory_event_json_api_collection_alter(&$filters, &$context) {
 
     }
     if (isset($query["city"]) && $query["city"] !== "all") {
-      $theme = $query["theme"];
+      $theme = $query["city"];
       $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties([
-        'vid' => 'field_vactory_taxonomy_2',
-        'term_2_slug' => $query["theme"]
+        'vid' => 'vactory_event_citys',
+        'term_2_slug' => $query["city"]
       ]);
 
       if (!$terms) {
