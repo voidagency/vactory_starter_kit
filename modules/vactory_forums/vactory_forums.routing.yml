@@ -1,0 +1,15 @@
+vactory_forums.search_api_page:
+  path: '/api/forums/search'
+  defaults:
+    _controller: '\Drupal\vactory_forums\Controller\ForumSearchController::index'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+vactory_forums.update_node_views_count:
+  path: '/api/_updateNodeViewsCount/{nid}'
+  defaults:
+    _controller: '\Drupal\vactory_forums\Controller\ViewsCountController::index'
+  methods: [PATCH]
+  requirements:
+    _permission: 'access content'
+    nid: ^\d+$

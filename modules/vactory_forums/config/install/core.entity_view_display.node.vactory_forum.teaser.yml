@@ -7,6 +7,7 @@ dependencies:
     - field.field.node.vactory_forum.comment
     - field.field.node.vactory_forum.field_forum_editeur
     - field.field.node.vactory_forum.field_forum_expert
+    - field.field.node.vactory_forum.field_forum_views_count
     - field.field.node.vactory_forum.field_groupe_utilisateurs
     - field.field.node.vactory_forum.field_vactory_date
     - field.field.node.vactory_forum.field_vactory_excerpt
@@ -49,8 +50,13 @@ content:
 hidden:
   addtoany: true
   comment: true
+  field_content_access_custom: true
+  field_content_access_groups: true
+  field_content_access_roles: true
+  field_content_access_users: true
   field_forum_editeur: true
   field_forum_expert: true
+  field_forum_views_count: true
   field_groupe_utilisateurs: true
   field_vactory_date: true
   field_vactory_excerpt: true
