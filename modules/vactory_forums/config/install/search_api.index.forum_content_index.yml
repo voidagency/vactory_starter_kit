@@ -2,8 +2,6 @@ langcode: en
 status: true
 dependencies:
   config:
-    - field.storage.node.body
-    - field.storage.node.field_vactory_excerpt
     - search_api.server.default_server
   module:
     - vactory_field
@@ -14,22 +12,6 @@ name: 'Forum Content Index'
 description: ''
 read_only: false
 field_settings:
-  body:
-    label: Body
-    datasource_id: 'entity:node'
-    property_path: body
-    type: text
-    dependencies:
-      config:
-        - field.storage.node.body
-  field_vactory_excerpt:
-    label: Description
-    datasource_id: 'entity:node'
-    property_path: field_vactory_excerpt
-    type: text
-    dependencies:
-      config:
-        - field.storage.node.field_vactory_excerpt
   node_summary:
     label: 'Page description'
     datasource_id: 'entity:node'

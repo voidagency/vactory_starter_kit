@@ -2,9 +2,3 @@ name: 'Search Results'
 multiple: TRUE
 category: 'Forum'
 enabled: TRUE
-fields:
-  introduction:
-    type: text_format
-    label: 'Introduction'
-    options:
-      '#format': 'full_html'
