@@ -39,7 +39,7 @@ class InternalCandidatureSpontaneeEntityFieldItemList extends FieldItemList
         $node_trans = $entity_repository->getTranslationFromContext($node);
         $entity_tans = $entity_repository->getTranslationFromContext($entity);
         if (isset($node_trans) && isset($entity_tans)) {
-          $job_id_crypted = \Drupal::service('vactory_core.tools')->encrypt('vactory_job_ads:' . $node->id());
+          $job_id_crypted = \Drupal::service('vactory_core.tools')->encrypt('vactory_job_ads:' . $entity_tans->id());
           $this->list[0] = $this->createItem(0, $node_trans->toUrl()->setRouteParameter('title', $entity_tans->label())
             ->setRouteParameter('job', $job_id_crypted)
             ->toString());
