@@ -130,7 +130,7 @@ function nextjs_node_form_submit(&$form, FormStateInterface $form_state) {
  * Invalidate nodes cache on block admin display submit.
  */
 function block_admin_display_submit($form, FormStateInterface $form_state) {
-  Cache::invalidateTags(['node_list']);
+  // Cache::invalidateTags(['node_list']);
 }
 
 /**
@@ -512,7 +512,7 @@ function vactory_decoupled_validation_constraint_alter(array &$definitions) {
  * Implements hook_ENTITY_TYPE_presave().
  */
 function vactory_decoupled_block_presave(EntityInterface $entity) {
-  Cache::invalidateTags(['node_list']);
+  // Cache::invalidateTags(['node_list']);
 }
 
 /**

@@ -11,7 +11,7 @@ services:
     arguments: ['@vactory_decoupled.breadcrumb.default', '@database', '@router.no_access_checks', '@entity.repository']
   vactory_decoupled.blocksManager:
     class: Drupal\vactory_decoupled\BlocksManager
-    arguments: ['@plugin.manager.block', '@theme.manager', '@entity_type.manager', '@plugin.manager.condition', '@jsonapi_extras.entity.to_jsonapi']
+    arguments: ['@plugin.manager.block', '@theme.manager', '@entity_type.manager', '@plugin.manager.condition', '@vactory_decoupled.jsonapi.client']
 
   vactory_decoupled.url_resolver:
     class: Drupal\vactory_decoupled\UrlResolver
