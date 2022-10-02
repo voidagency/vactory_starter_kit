@@ -653,3 +653,14 @@ function clear_next_cache($query = []) {
     return FALSE;
   }
 }
+
+/**
+ * Implements hook_jsonapi_default_enhancers_info().
+ */
+function vactory_decoupled_jsonapi_default_enhancers_info() {
+  return [
+    'internal_blocks' => [
+      'enhancer' => 'vactory_blocks',
+    ],
+  ];
+}
