@@ -213,9 +213,6 @@
       "drupal/easy_install": {
         "optional details": "https://www.drupal.org/files/issues/2020-07-25/Solution.patch"
       },
-      "drupal/nocurrent_pass": {
-        "Settings are not applied if use not a standard path": "https://www.drupal.org/files/issues/2018-10-09/user-from-session-3005310-2.patch"
-      },
       "drupal/webform": {
         "Invoke alter hook after webform handlers execution": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/9e6eca9bcbd95e7bed7859d54a0c4623a6112e5a/webform-post-handlers-hook.patch"
       },
