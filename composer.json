@@ -226,7 +226,7 @@
         "Fix captcha error message translation": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/f66e3eaaa67a0d0e1de3d55aec61ca327b192d4a/fix-captcha-error-message-translation.patch"
       },
       "drupal/jsonapi_extra": {
-        "Default field enhancer for fields": "https://gist.githubusercontent.com/voidagency/4861a0f0343a45cf0582553fc80c6b59/raw/aa23147b0f4712a0cc616f89d2c0a4d893c48722/jsonapi_default_field_enhancer_for_fields.patch"
+        "Default field enhancer for fields": "https://gist.githubusercontent.com/voidagency/4861a0f0343a45cf0582553fc80c6b59/raw/2342d707c2b6708f2c18a69b870fcad1d5242df3/jsonapi_default_field_enhancer_for_fields.patch"
       }
     }
   },
