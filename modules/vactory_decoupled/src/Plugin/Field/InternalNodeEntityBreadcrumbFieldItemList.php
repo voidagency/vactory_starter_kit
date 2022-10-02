@@ -65,9 +65,15 @@ class InternalNodeEntityBreadcrumbFieldItemList extends FieldItemList {
     assert($renderer instanceof RendererInterface);
     $breadcrumbs_data = $renderer->executeInRenderContext(new RenderContext(), static function () use ($links, $breadcrumbs_data) {
       foreach ($links as $link) {
-        $text = $link->getText();
-        $url = $link->getUrl()->toString();
-        $url = str_replace('/backend', '', $url);
+        if ($link instanceof Link) {
+          $text = $link->getText();
+          $url = $link->getUrl()->toString();
+          $url = str_replace('/backend', '', $url);
+        }
+        else {
+          $text = $link;
+          $url = '#';
+        }
 
         array_push($breadcrumbs_data, [
           'url'  => $url,
@@ -82,7 +88,21 @@ class InternalNodeEntityBreadcrumbFieldItemList extends FieldItemList {
 
   private function getFromPath($entity) {
     $links = [];
-    $links[] = Link::fromTextAndUrl($entity->label(), $entity->toUrl());
+    $path = '/node/'. $entity->id();
+    $alias = \Drupal::service('path_alias.manager')->getAliasByPath($path);
+    if ($alias === $path) {
+      $links[] = Link::fromTextAndUrl($entity->label(), $entity->toUrl());
+    }
+    else {
+      $alias = trim($alias, '/');
+      $pieces = explode('/', $alias);
+      $pieces = array_map(function ($piece) {
+        return ucfirst(str_replace('-', ' ', $piece));
+      }, $pieces);
+      foreach ($pieces as $piece) {
+        $links[] = $piece;
+      }
+    }
     return $links;
   }
 

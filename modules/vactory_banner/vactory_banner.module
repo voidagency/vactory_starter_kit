@@ -118,7 +118,7 @@ function vactory_banner_entity_base_field_info(EntityTypeInterface $entity_type)
       ->setTargetEntityTypeId('node')
       ->setTranslatable(TRUE)
       ->setDisplayOptions('form', [
-        'type'   => 'media_library_widget',
+        'type'   =>'media_library_widget',
         'weight' => 0,
       ]);
 
@@ -158,6 +158,63 @@ function vactory_banner_preprocess_node(&$variables) {
     $variables['banner']['banner_title'] = isset($banner_title) ? $banner_title : '';
     $variables['banner']['banner_image'] = isset($banner_image) ? $banner_image : '';
     $variables['banner']['banner_image_mobile'] = isset($banner_image_mobile) ? $banner_image_mobile : '';
+  }
+}
+
+/**
+ * Implements hook_field_widget_form_alter().
+ */
+function vactory_banner_field_widget_form_alter(&$element, \Drupal\Core\Form\FormStateInterface $form_state, $context) {
+  $banner_images_fields = [
+    'node_banner_image',
+    'node_banner_mobile_image',
+  ];
+  // Get website file system default schema.
+  $default_scheme = \Drupal::config('system.file')->get('default_scheme');
+  if (
+    $default_scheme === 'cloudinary' &&
+    isset($context['widget']) &&
+    $context['widget']->getPluginId() === 'media_library_widget' &&
+    isset($context['items']) &&
+    in_array($context['items']->getName(), $banner_images_fields)
+  ) {
+    $cardinality = $element['#cardinality'] ?? 1;
+
+    $sdk_settings = Drupal::config('cloudinary_sdk.settings');
+    $widget_settings = Drupal::config('cloudinary_media_library_widget.settings');
+
+    $settings = [
+    'cloud_name' => $sdk_settings->get('cloudinary_sdk_cloud_name'),
+    'api_key' => $sdk_settings->get('cloudinary_sdk_api_key'),
+    'bundle' => 'image',
+    'multiple' => $cardinality != 1,
+    'resource_type' => 'image',
+    'use_saml' => $widget_settings->get('cloudinary_saml_auth'),
+    ];
+
+    $starting_folder = $widget_settings->get('cloudinary_starting_folder');
+
+    if ($starting_folder !== '/') {
+      $settings['starting_folder'] = $starting_folder;
+    }
+
+    $element['#attributes']['class'][] = 'js-cloudinary-library-widget';
+    $element['#attributes']['data-field-name'] = $context['items']->getName();
+    $element['media_library_selection']['#attributes']['class'][] = 'js-cloudinary-library-selection';
+    $element['media_library_update_widget']['#attributes']['class'][] = 'js-cloudinary-library-update-widget';
+
+    $element['open_button'] = [
+      '#type' => 'container',
+      '#attributes' => ['class' => ['js-cloudinary-library-open-button']],
+      '#attached' => [
+        'library' => ['cloudinary_media_library_widget/widget'],
+        'drupalSettings' => [
+          'cloudinary_media_library_widget' => [
+            $context['items']->getName() => $settings,
+          ],
+        ],
+      ],
+    ];
   }
 }
 

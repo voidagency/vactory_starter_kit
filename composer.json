@@ -43,7 +43,7 @@
     "drupal/menu_link_attributes": "^1.1.0",
     "drupal/metatag": "^1.14",
     "drupal/yoast_seo": "^2.0.0-alpha4",
-    "drupal/nocurrent_pass": "^1.0.0",
+    "drupal/nocurrent_pass": "^1.2.0",
     "drupal/paragraphs": "^1.14",
     "drupal/pathauto": "^1.10",
     "drupal/persistent_login": "^1.3",
@@ -154,7 +154,9 @@
     "drupal/textfield_counter": "^2.0",
     "drupal/default_content": "^2.0@alpha",
     "mailchimp/marketing": "^3.0",
-    "drupal/cloudinary": "^2.0@alpha"
+    "drupal/time_range": "^2.0",
+    "drupal/cloudinary": "^2.0@alpha",
+    "drupal/video_embed_field": "^2.4"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.3"
@@ -227,6 +229,9 @@
       },
       "drupal/jsonapi_extra": {
         "Default field enhancer for fields": "https://gist.githubusercontent.com/voidagency/4861a0f0343a45cf0582553fc80c6b59/raw/2342d707c2b6708f2c18a69b870fcad1d5242df3/jsonapi_default_field_enhancer_for_fields.patch"
+      },
+      "drupal/cloudinary": {
+        "Cloudinary video media library compatibility fix": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/f8b1871b3e6dac919f09f96b44176a816d8bb4a2/cloudinary-video-media-library-compatibility-fix.patch"
       }
     }
   },

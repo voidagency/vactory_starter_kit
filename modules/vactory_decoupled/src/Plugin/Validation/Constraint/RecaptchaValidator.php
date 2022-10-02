@@ -5,11 +5,11 @@ namespace Drupal\vactory_decoupled\Plugin\Validation\Constraint;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Routing\AdminContext;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\recaptcha\ReCaptcha\RequestMethod\Drupal8Post;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use ReCaptcha\ReCaptcha;
-use ReCaptcha\RequestMethod\Drupal8Post;
 
 /**
  * Validates the Recaptcha constraint.

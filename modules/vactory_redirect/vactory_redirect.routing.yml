@@ -1,0 +1,7 @@
+vactory_redirect.upload_urls_csv:
+  path: '/admin/config/system/upload_urls_csv'
+  defaults:
+    _title: 'Uploading the urls.csv file'
+    _form: 'Drupal\vactory_redirect\Form\UploadUrlsCsv'
+  requirements:
+    _permission: 'administer site configuration'

@@ -220,6 +220,28 @@ class ModalForm extends FormBase {
       '#weight' => -10,
     ];
 
+    // Form infos.
+    if (isset($settings['infos'])) {
+      $form['infos'] = [
+        '#type'          => 'fieldset',
+        '#title'         => $this->t('Infos'),
+        '#title_display' => 'invisible',
+        '#attributes'    => [
+          'style' => 'background: aliceblue; margin-bottom: 10px;',
+        ],
+      ];
+
+      foreach ($settings['infos'] as $id => $info) {
+        if ($info['type'] === 'tokens_tree') {
+          $form['infos'][$id] = [
+            '#theme' => 'token_tree_link',
+            '#show_restricted' => TRUE,
+            '#weight' => 90,
+          ];
+        }
+      }
+    }
+
     $form['components'] = [
       '#type'  => 'fieldgroup',
       '#title' => $settings['name'],
@@ -456,7 +478,7 @@ class ModalForm extends FormBase {
           $element_options = isset($field['options']) ? $field['options'] : [];
 
           $ds_field_name = '';
-          if ($element_type == 'image' || $element_type == 'remote_video' || $element_type == 'file') {
+          if ($element_type == 'image' || $element_type == 'remote_video' || $element_type =='file' || $element_type == 'video') {
             // Save a copy of current parent.
             $form_parents = $form['#parents'] ?? [];
             $form['#parents'] = ['components', $i, $field_id];
@@ -480,8 +502,7 @@ class ModalForm extends FormBase {
           if ($element_type == 'text_format') {
             $this->textformatFields[] = ['components', $i, $field_id];
           }
-
-          if ($element_type == 'image' || $element_type == 'remote_video' || $element_type == 'file') {
+          if ($element_type == 'image' || $element_type == 'remote_video' || $element_type == 'file' || $element_type == 'video') {
             // Restore parent for other fields.
             $form['#parents'] = $form_parents;
           }
