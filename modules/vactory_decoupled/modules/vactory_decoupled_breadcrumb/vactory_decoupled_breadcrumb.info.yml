@@ -1,0 +1,5 @@
+name: Decoupled breadcrumb
+description: Provides simple console to configure decoupled breadcrumb
+type: module
+core: 8.x
+core_version_requirement: ^8 || ^9

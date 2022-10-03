@@ -2,8 +2,10 @@
 
 namespace Drupal\vactory_decoupled\Plugin\Field;
 
+use Drupal\Component\Render\MarkupInterface;
 use Drupal\Core\Field\FieldItemList;
 use Drupal\Core\Link;
+use Drupal\Core\Render\Markup;
 use Drupal\Core\Render\RenderContext;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\TypedData\ComputedItemListTrait;
@@ -21,7 +23,7 @@ class InternalNodeEntityBreadcrumbFieldItemList extends FieldItemList {
    *
    * @var string
    */
-  private $menuName = 'main';
+  private $menuNames = [];
 
   /**
    * {@inheritdoc}
@@ -39,13 +41,17 @@ class InternalNodeEntityBreadcrumbFieldItemList extends FieldItemList {
       return;
     }
 
+    $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
+    $config = \Drupal::config('vactory_decoupled_breadcrumb.settings');
+    $this->menuNames = $config->get('enabled_menu');
+
     // Attempt to grab links from menu.
     $links = $this->getFromMenu($entity);
 
-    if (empty($links)) {
+    // if (empty($links)) {
       // Attempt to load from content type.
-      $links = $this->getFromContentTypeMenu($entity);
-    }
+    //  $links = $this->getFromContentTypeMenu($entity);
+    // }
 
     if (empty($links)) {
       // Attempt to load from path.
@@ -53,9 +59,17 @@ class InternalNodeEntityBreadcrumbFieldItemList extends FieldItemList {
     }
 
     if (!empty($links)) {
-      // Add home.
-      array_unshift($links, Link::createFromRoute($this->t('Home', [])
-        ->render(), '<front>', []));
+      $show_current_langcode = $config->get('show_current_langcode');
+      if ($show_current_langcode) {
+        // Add current langcode.
+        array_unshift($links, Link::createFromRoute(strtoupper($langcode), '<front>', []));
+      }
+      $show_home = $config->get('show_home');
+      if ($show_home) {
+        $home_title = $config->get('home_title');
+        // Add home.
+        array_unshift($links, Link::createFromRoute($home_title, '<front>', []));
+      }
     }
 
     // Format items.
@@ -63,16 +77,28 @@ class InternalNodeEntityBreadcrumbFieldItemList extends FieldItemList {
     /* @var \Drupal\Core\Link $link */
     $renderer = \Drupal::service('renderer');
     assert($renderer instanceof RendererInterface);
-    $breadcrumbs_data = $renderer->executeInRenderContext(new RenderContext(), static function () use ($links, $breadcrumbs_data) {
+    try {
+      $entity = $entity->getTranslation($langcode);
+    }
+    catch (\InvalidArgumentException $e) {}
+    $node_title = $entity->getTitle();
+    $show_current_page = $config->get('show_current_page');
+    $breadcrumbs_data = $renderer->executeInRenderContext(new RenderContext(), static function () use ($links, $breadcrumbs_data, $show_current_page, $node_title) {
       foreach ($links as $link) {
         if ($link instanceof Link) {
-          $text = $link->getText();
+          $text = $link->getText() instanceof MarkupInterface ? $link->getText()->__toString() : $link->getText();
           $url = $link->getUrl()->toString();
           $url = str_replace('/backend', '', $url);
         }
         else {
-          $text = $link;
+          $text = $link instanceof MarkupInterface ? $link->__toString() : $link;
           $url = '#';
+        }
+
+        if (!$show_current_page) {
+          if (strtolower($node_title) === strtolower($text)) {
+            continue;
+          }
         }
 
         array_push($breadcrumbs_data, [
@@ -100,7 +126,7 @@ class InternalNodeEntityBreadcrumbFieldItemList extends FieldItemList {
         return ucfirst(str_replace('-', ' ', $piece));
       }, $pieces);
       foreach ($pieces as $piece) {
-        $links[] = $piece;
+        $links[] = t($piece);
       }
     }
     return $links;
@@ -151,15 +177,20 @@ class InternalNodeEntityBreadcrumbFieldItemList extends FieldItemList {
 
   private function getFromMenu($entity) {
     $links = [];
+    $menu_links = [];
     $active_link = NULL;
     $menuLinkManager = \Drupal::service('plugin.manager.menu.link');
     $entityTypeManager = \Drupal::service('entity_type.manager');
     $menuLinkContentStorage = $entityTypeManager->getStorage('menu_link_content');
     $entityRepository = \Drupal::service('entity.repository');
 
-    $menu_links = $menuLinkManager->loadLinksByRoute('entity.node.canonical', [
-      "node" => $entity->id(),
-    ], $this->menuName);
+    foreach ($this->menuNames as $menuName) {
+      $m_links = $menuLinkManager->loadLinksByRoute('entity.node.canonical', [
+        "node" => $entity->id(),
+      ], $menuName);
+      $menu_links = [...$menu_links, ...array_values($m_links)];
+    }
+
 
     if (empty($menu_links)) {
       return $links;

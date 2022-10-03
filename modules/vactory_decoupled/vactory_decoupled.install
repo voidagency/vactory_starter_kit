@@ -90,3 +90,10 @@ function vactory_decoupled_update_9004()
   \Drupal::entityDefinitionUpdateManager()
     ->installFieldStorageDefinition('term_2_slug', 'taxonomy_term', 'taxonomy_term', $storage_definition);
 }
+
+/**
+ * Enable vactory decoupled breadcrumb.
+ */
+function vactory_decoupled_update_9005(&$sandbox) {
+  \Drupal::service('module_installer')->install(['vactory_decoupled_breadcrumb']);
+}
