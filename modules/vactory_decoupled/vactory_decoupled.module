@@ -60,6 +60,9 @@ function vactory_decoupled_form_node_form_alter(&$form, FormStateInterface $form
  */
 function vactory_decoupled_form_alter(&$form, FormStateInterface $form_state, $form_id)
 {
+  if ($form_id === 'webform_edit_form') {
+    $form['actions']['submit']['#submit'][] = 'clear_node_list_cache_after_updating_webform_elements';
+  }
   if ($form_id === 'locale_translate_edit_form') {
     $form['#submit'][] = 'clear_next_cache_translation';
   }
@@ -515,6 +518,15 @@ function vactory_decoupled_validation_constraint_alter(array &$definitions) {
 function vactory_decoupled_block_presave(EntityInterface $entity) {
   // Cache::invalidateTags(['node_list']);
 }
+
+/**
+ * Clear node list cache after updating webform elements.
+ */
+function clear_node_list_cache_after_updating_webform_elements(&$form, FormStateInterface $form_state) {
+  Cache::invalidateTags(['node_list']);
+}
+
+
 
 /**
  * Implements hook_entity_update().
