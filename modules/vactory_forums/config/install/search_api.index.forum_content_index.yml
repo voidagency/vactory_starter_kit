@@ -1,0 +1,59 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - search_api.server.default_server
+  module:
+    - vactory_field
+    - node
+    - search_api
+id: forum_content_index
+name: 'Forum Content Index'
+description: ''
+read_only: false
+field_settings:
+  node_summary:
+    label: 'Page description'
+    datasource_id: 'entity:node'
+    property_path: node_summary
+    type: text
+    dependencies:
+      module:
+        - vactory_field
+  title:
+    label: Title
+    datasource_id: 'entity:node'
+    property_path: title
+    type: string
+    dependencies:
+      module:
+        - node
+  url:
+    label: URI
+    property_path: search_api_url
+    type: string
+    configuration:
+      absolute: false
+datasource_settings:
+  'entity:node':
+    bundles:
+      default: false
+      selected:
+        - vactory_forum
+    languages:
+      default: true
+      selected: {  }
+processor_settings:
+  add_url: {  }
+  aggregated_field: {  }
+  entity_type: {  }
+  language_with_fallback: {  }
+  rendered_item: {  }
+tracker_settings:
+  default:
+    indexing_order: fifo
+options:
+  cron_limit: 50
+  index_directly: true
+  track_changes_in_references: true
+server: default_server

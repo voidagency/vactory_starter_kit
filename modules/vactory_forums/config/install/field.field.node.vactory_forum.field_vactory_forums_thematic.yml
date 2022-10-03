@@ -1,13 +1,13 @@
 langcode: en
 status: true
 dependencies:
-  enforced:
-    module:
-      - vactory_forums
   config:
     - field.storage.node.field_vactory_forums_thematic
     - node.type.vactory_forum
     - taxonomy.vocabulary.vactory_forums_thematic
+  enforced:
+    module:
+      - vactory_forums
 id: node.vactory_forum.field_vactory_forums_thematic
 field_name: field_vactory_forums_thematic
 entity_type: node
