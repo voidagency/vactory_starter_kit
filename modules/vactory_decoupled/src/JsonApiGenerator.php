@@ -2,7 +2,7 @@
 
 namespace Drupal\vactory_decoupled;
 
-use Drupal\entityqueue\Entity\EntityQueue;
+// use Drupal\entityqueue\Entity\EntityQueue;
 use Drupal\entityqueue\Entity\EntitySubqueue;
 use Drupal\Core\Cache\Cache;
 
@@ -41,8 +41,7 @@ class JsonApiGenerator {
     $entity_queue_field_id = $config['entity_queue_field_id'] ?? '';
     $subqueue_items_ids = [];
 
-    // Filters may be altered using hook_json_api_collection_alter
-    // @see JsonApiGenerator.php
+    // Filters may be altered using hook_json_api_collection_alter which is triggered below.
     // We need to keep a copy of the original filters to be used
     // by the frontend Component.
     // The client component only care about what has been set in the DF yml setting.
@@ -80,24 +79,24 @@ class JsonApiGenerator {
       $original_filters_parsed[trim($name)] = urldecode(trim(\Drupal::token()->replace($qsvalue, [])));
     }
 
-    if (\Drupal::request()->query->get("q")) {
-      /*
-       * Allow other modules to override json_api_collection filters.
-       *
-       * @code
-       * Implements hook_json_api_collection_alter().
-       * function myModule_json_api_collection_alter(&$filters, &$context) {
-       * }
-       * @endcode
-       */
+    /*
+      * Allow other modules to override json_api_collection filters.
+      *
+      * @code
+      * Implements hook_json_api_collection_alter().
+      * function myModule_json_api_collection_alter(&$filters, &$context) {
+      *   $query = \Drupal::request()->query->get("q");
+      *   $id = $context['id'];
+      *   ... do something, like altering the filters
+      * }
+      * @endcode
+      */
 
-      $hook_context = [
-        'query' => \Drupal::request()->query->get("q"),
-        'id' => $id,
-      ];
+    $hook_context = [
+      'id' => $id,
+    ];
 
-      \Drupal::moduleHandler()->alter('json_api_collection', $parsed, $hook_context);
-    }
+    \Drupal::moduleHandler()->alter('json_api_collection', $parsed, $hook_context);
 
     parse_str(http_build_query($parsed), $query_filters);
     parse_str(http_build_query($original_filters_parsed), $query_original_filters);

@@ -268,8 +268,13 @@ function vactory_news_jsonapi_vcc_normalized_node_alter(&$normalized_node, $cont
  * Implements hook_json_api_collection_alter().
  */
 function vactory_news_json_api_collection_alter(&$filters, &$context) {
+  $query = \Drupal::request()->query->get("q");
+
+  if (empty($query)) {
+    return;
+  }
+
   if ($context['id'] === 'vactory_news_list') {
-    $query = $context['query'];
 
     if (isset($query["page"])) {
       $filters["page[offset]"] = intval($query["page"]) > 0 ? intval($query["page"]) - 1 : 0;

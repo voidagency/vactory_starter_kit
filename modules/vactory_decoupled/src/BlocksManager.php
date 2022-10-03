@@ -12,7 +12,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Executable\ExecutableManagerInterface;
 use Drupal\Core\Theme\ThemeManagerInterface;
-use Drupal\jsonapi_extras\EntityToJsonApi;
+use Drupal\Core\Cache\Cache;
 use Drupal\node\Entity\Node;
 
 /**
@@ -53,9 +53,9 @@ class BlocksManager
   /**
    * The JSON:API version generator of an entity..
    *
-   * @var EntityToJsonApi
+   * @var JsonApiClient
    */
-  protected $entityToJsonApi;
+  protected $jsonApiClient;
 
   /**
    * {@inheritdoc}
@@ -65,14 +65,14 @@ class BlocksManager
     ThemeManagerInterface $theme_manager,
     EntityTypeManagerInterface $entity_type_manager,
     ExecutableManagerInterface $condition_plugin_manager,
-    EntityToJsonApi $entity_to_jsonapi
+    JsonApiClient $json_api_client
   )
   {
     $this->pluginManagerBlock = $block_manager;
     $this->themeManager = $theme_manager;
     $this->entityTypeManager = $entity_type_manager;
     $this->conditionPluginManager = $condition_plugin_manager;
-    $this->entityToJsonApi = $entity_to_jsonapi;
+    $this->jsonApiClient = $json_api_client;
   }
 
   public function getBlocksByNode($nid, $filter = [])
@@ -196,6 +196,7 @@ class BlocksManager
 
       // Determine block classification to distinguish between blocks.
       $classification = 'default';
+      $block_content = $this->getContent($block->getPluginId());
       $block_info = [
         'id' => $block->getOriginalId(),
         'label' => $block->label(),
@@ -203,7 +204,8 @@ class BlocksManager
         'plugin' => $block->getPluginId(),
         'weight' => $block->getWeight(),
         'classification' => $classification,
-        'content' => $this->getContent($block->getPluginId()),
+        'content' => $block_content['block'],
+        'block_cache' => $block_content['cache'],
         'visibilityConditions' => $visibilityCollection,
         'classes' => $block->getThirdPartySetting('block_class', 'classes'),
         'container' => $block->getThirdPartySetting('vactory_field', 'block_container') ?? 'narrow_width',
@@ -261,16 +263,36 @@ class BlocksManager
     if (!empty($contentBlock)) {
       if (is_array($contentBlock)) {
         $contentBlock = reset($contentBlock);
+
+        $blockCache = [
+          'cache-tags' => $contentBlock->getCacheTags(),
+          'max-age' => $contentBlock->getCacheMaxAge(),
+          'contexts' => $contentBlock->getCacheContexts(),
+        ];
         try {
-          $normalizedBlock = $this->entityToJsonApi->normalize($contentBlock);
-          if (isset($normalizedBlock['data']['attributes']['field_dynamic_block_components'])) {
-            $contentBlock = $normalizedBlock['data']['attributes']['field_dynamic_block_components'];
+          $filters = [
+            "fields" => [
+              "block_content--vactory_block_component" => "block_machine_name,field_dynamic_block_components"
+            ],
+          ];
+
+          $response = $this->jsonApiClient->serializeIndividual($contentBlock, $filters);
+          $response_cache_tags = $response['cache']['tags'] ?? [];
+          $blockCache['cache-tags'] = Cache::mergeTags($blockCache['cache-tags'], $response_cache_tags);
+
+          $client_data = json_decode($response['data'], TRUE);
+
+          if (isset($client_data['data']['attributes']['field_dynamic_block_components'])) {
+            $contentBlock = $client_data['data']['attributes']['field_dynamic_block_components'];
           }
         } catch (\Exception $e) {
           \Drupal::logger('vactory_decoupled')->error('Block @block_id not found', ['@block_id' => $uuid]);
         }
       }
-      return $contentBlock;
+      return [
+        'block' => $contentBlock,
+        'cache' => $blockCache,
+      ];
     }
 
     return NULL;

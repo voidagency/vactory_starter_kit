@@ -93,10 +93,82 @@ class JsonApiClient {
     $route_type = 'collection';
     $route_name = sprintf('jsonapi.%s.%s', $resource_type->getTypeName(), $route_type);
 
-    $route_options = [];
     $jsonapi_url = Url::fromRoute($route_name)
       ->toString(TRUE)
       ->getGeneratedUrl();
+
+    // Get current page informations and pass them through the next request.
+    $params = \Drupal::routeMatch()->getParameters();
+    if ($params) {
+      $params_query = \Drupal::request()->query->get("q") ?? [];
+      if ($resource_type_param = $params->get('resource_type')) {
+        $params_query["entity_bundle"] = $resource_type_param->getBundle();
+      }
+
+      if ($entity_param = $params->get('entity')) {
+        // Sending uuid query string be4419f2-c6f0-4bfa-a8a2-5b21081126d9
+        // breaks and violate the JSON:API spec.
+        // $params_query["entity_uuid"] = $entity_param->uuid();
+        $params_query["entity_id"] = $entity_param->id();
+      }
+
+      $query['q'] = $params_query;
+    }
+
+    $request = Request::create(
+      $jsonapi_url,
+      'GET',
+      $query,
+      $this->currentRequest->cookies->all(),
+      [],
+      $this->currentRequest->server->all()
+    );
+    if ($this->session) {
+      $request->setSession($this->session);
+    }
+
+    // This is used to retrieve Cacheability Metadata from JSON:API
+    $request->headers->set("X-Internal-Cacheability-Debug", "true");
+    \Drupal::logger('vactory_decoupled')->info('Request created: @url', ['@url' => urldecode($request->getUri())]);
+
+    $response = $this->httpKernel->handle($request, HttpKernelInterface::SUB_REQUEST);
+
+    return [
+      "data" => $response->getContent(),
+      "cache" => [
+        "tags" => explode(" ", $response->headers->get('x-drupal-cache-tags'))
+      ]
+    ];
+  }
+
+  // @todo: need a caller type here.
+  // this should be added a q[request_type]=json_api_collection|blocks ...
+  public function serializeIndividual($entity, $query = []) {
+    // @todo: clean json response, specialy "links" pay attention to pagination
+    $resource_type = $this->resourceTypeRepository->get($entity->getEntityTypeId(), $entity->bundle());
+    $route_name = sprintf('jsonapi.%s.individual', $resource_type->getTypeName());
+    $route_options = [];
+    $jsonapi_url = Url::fromRoute($route_name, ['entity' => $entity->uuid()], $route_options)
+      ->toString(TRUE)
+      ->getGeneratedUrl();
+
+    // Get current page informations and pass them through the next request.
+    $params = \Drupal::routeMatch()->getParameters();
+    if ($params) {
+      $params_query = \Drupal::request()->query->get("q") ?? [];
+      if ($resource_type_param = $params->get('resource_type')) {
+        $params_query["entity_bundle"] = $resource_type_param->getBundle();
+      }
+
+      if ($entity_param = $params->get('entity')) {
+        // Sending uuid query string be4419f2-c6f0-4bfa-a8a2-5b21081126d9
+        // breaks and violate the JSON:API spec.
+        // $params_query["entity_uuid"] = $entity_param->uuid();
+        $params_query["entity_id"] = $entity_param->id();
+      }
+
+      $query['q'] = $params_query;
+    }
 
     $request = Request::create(
       $jsonapi_url,
