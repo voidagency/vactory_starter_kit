@@ -5,5 +5,3 @@ id: editeur_forum
 label: 'Éditeur Forum'
 weight: 7
 is_admin: null
-permissions:
-  - 'create vactory_forum content'
