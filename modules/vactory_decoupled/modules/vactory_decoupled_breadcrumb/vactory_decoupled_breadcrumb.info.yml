@@ -3,3 +3,5 @@ description: Provides simple console to configure decoupled breadcrumb
 type: module
 core: 8.x
 core_version_requirement: ^8 || ^9
+configure: vactory_decoupled_breadcrumb.settings
+

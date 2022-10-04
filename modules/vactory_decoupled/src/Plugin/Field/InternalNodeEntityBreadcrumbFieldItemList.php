@@ -66,7 +66,8 @@ class InternalNodeEntityBreadcrumbFieldItemList extends FieldItemList {
       }
       $show_home = $config->get('show_home');
       if ($show_home) {
-        $home_title = $config->get('home_title');
+        $config_translation = \Drupal::languageManager()->getLanguageConfigOverride($langcode, 'vactory_decoupled_breadcrumb.settings');
+        $home_title = $config_translation->get('home_title') ?? $config->get('home_title');
         // Add home.
         array_unshift($links, Link::createFromRoute($home_title, '<front>', []));
       }
