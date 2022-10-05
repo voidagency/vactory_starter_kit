@@ -2,7 +2,7 @@
 
 namespace Drupal\vactory_decoupled;
 
-use Drupal\entityqueue\Entity\EntityQueue;
+// use Drupal\entityqueue\Entity\EntityQueue;
 use Drupal\entityqueue\Entity\EntitySubqueue;
 use Drupal\Core\Cache\Cache;
 
@@ -33,12 +33,19 @@ class JsonApiGenerator {
    *
    */
   public function fetch(array $config) {
+    $id = $config['id'] ?? '';
     $resource = $config['resource'];
     $filters = $config['filters'];
     $exposed_vocabularies = $config['vocabularies'];
     $entity_queue = $config['entity_queue'] ?? '';
     $entity_queue_field_id = $config['entity_queue_field_id'] ?? '';
     $subqueue_items_ids = [];
+
+    // Filters may be altered using hook_json_api_collection_alter which is triggered below.
+    // We need to keep a copy of the original filters to be used
+    // by the frontend Component.
+    // The client component only care about what has been set in the DF yml setting.
+    $original_filters = $filters;
 
     // Add a filter for entity queue.
     if (!empty($entity_queue)) {
@@ -59,13 +66,40 @@ class JsonApiGenerator {
         }
       }
     }
+
     $parsed = [];
     foreach ($filters as $line) {
       [$name, $qsvalue] = explode("=", $line, 2);
       $parsed[trim($name)] = urldecode(trim(\Drupal::token()->replace($qsvalue, [])));
     }
 
+    $original_filters_parsed = [];
+    foreach ($original_filters as $line) {
+      [$name, $qsvalue] = explode("=", $line, 2);
+      $original_filters_parsed[trim($name)] = urldecode(trim(\Drupal::token()->replace($qsvalue, [])));
+    }
+
+    /*
+      * Allow other modules to override json_api_collection filters.
+      *
+      * @code
+      * Implements hook_json_api_collection_alter().
+      * function myModule_json_api_collection_alter(&$filters, &$context) {
+      *   $query = \Drupal::request()->query->get("q");
+      *   $id = $context['id'];
+      *   ... do something, like altering the filters
+      * }
+      * @endcode
+      */
+
+    $hook_context = [
+      'id' => $id,
+    ];
+
+    \Drupal::moduleHandler()->alter('json_api_collection', $parsed, $hook_context);
+
     parse_str(http_build_query($parsed), $query_filters);
+    parse_str(http_build_query($original_filters_parsed), $query_original_filters);
 
     $response = $this->client->serialize($resource, $query_filters);
     $exposedTerms = $this->getExposedTerms($exposed_vocabularies);
@@ -93,6 +127,7 @@ class JsonApiGenerator {
       'data' => $client_data,
       'cache' => $response['cache'],
       'filters' => $query_filters,
+      'original_filters' => $query_original_filters,
       'taxonomies' => $exposedTerms['data'],
     ];
   }
@@ -103,7 +138,7 @@ class JsonApiGenerator {
 
     $entityTypeManager = \Drupal::service('entity_type.manager');
     $taxonomyTermStorage = $entityTypeManager->getStorage('taxonomy_term');
-    $slugManager = \Drupal::service('vactory_core.slug_manager');
+    // $slugManager = \Drupal::service('vactory_core.slug_manager');
     $entityRepository = \Drupal::service('entity.repository');
     $bundles = (array) $vocabularies;
     $bundles = array_filter($bundles, function ($value) {
@@ -122,7 +157,7 @@ class JsonApiGenerator {
         array_push($result[$vid], [
           'id' => $term->id(),
           'uuid' => $term->uuid(),
-          'slug' => $slugManager->taxonomy2Slug($term),
+          'slug' => $term->get("term_2_slug")->getString(),
           'label' => $term->label(),
         ]);
       }

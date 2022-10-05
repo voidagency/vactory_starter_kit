@@ -51,6 +51,8 @@ class InternalUserEntityFieldItemList extends FieldItemList
       if (!$user) {
         continue;
       }
+      
+      $user = \Drupal::service('entity.repository')->getTranslationFromContext($user);
 
       // Process Image.
       $image_value = NULL;

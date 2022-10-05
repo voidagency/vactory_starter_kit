@@ -7,6 +7,7 @@ dependencies:
     - field.field.node.vactory_forum.comment
     - field.field.node.vactory_forum.field_forum_editeur
     - field.field.node.vactory_forum.field_forum_expert
+    - field.field.node.vactory_forum.field_forum_views_count
     - field.field.node.vactory_forum.field_groupe_utilisateurs
     - field.field.node.vactory_forum.field_vactory_date
     - field.field.node.vactory_forum.field_vactory_excerpt
@@ -49,6 +50,14 @@ content:
       pager_id: 0
     third_party_settings: {  }
     weight: 11
+    region: content
+  field_forum_views_count:
+    type: string
+    label: above
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 15
     region: content
   field_groupe_utilisateurs:
     type: entity_reference_label
@@ -150,6 +159,10 @@ content:
     region: content
 hidden:
   addtoany: true
+  field_content_access_custom: true
+  field_content_access_groups: true
+  field_content_access_roles: true
+  field_content_access_users: true
   field_forum_editeur: true
   field_forum_expert: true
   search_api_excerpt: true

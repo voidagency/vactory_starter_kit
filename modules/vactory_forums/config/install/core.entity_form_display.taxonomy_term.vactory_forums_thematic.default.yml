@@ -1,11 +1,11 @@
 langcode: en
 status: true
 dependencies:
+  config:
+    - taxonomy.vocabulary.vactory_forums_thematic
   enforced:
     module:
       - vactory_forums
-  config:
-    - taxonomy.vocabulary.vactory_forums_thematic
 id: taxonomy_term.vactory_forums_thematic.default
 targetEntityType: taxonomy_term
 bundle: vactory_forums_thematic
@@ -28,10 +28,18 @@ content:
     third_party_settings: {  }
   status:
     type: boolean_checkbox
-    settings:
-      display_label: true
     weight: 3
     region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  term_2_slug:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
     third_party_settings: {  }
   translation:
     weight: 2

@@ -1,0 +1,6 @@
+show_home: 1
+home_title: Home
+show_current_page: 1
+show_current_langcode: 0
+enabled_menu:
+  main: main

@@ -32,8 +32,21 @@ class InternalCandidatureSpontaneeEntityFieldItemList extends FieldItemList
       return;
     }
     $node = Node::load($candidature_nid);
-    $job_id_crypted = \Drupal::service('vactory_core.tools')->encrypt('vactory_job_ads:' . $entity->id());
-    $this->list[0] = $this->createItem(0, $node->toUrl()->setRouteParameter('job', $job_id_crypted)->toString());
+    if (isset($node)) {
+      $entity_repository = \Drupal::service('entity.repository');
+      $current_lang = \Drupal::languageManager()->getCurrentLanguage()->getId();
+      if ($node->hasTranslation($current_lang )) {
+        $node_trans = $entity_repository->getTranslationFromContext($node);
+        $entity_tans = $entity_repository->getTranslationFromContext($entity);
+        if (isset($node_trans) && isset($entity_tans)) {
+          $job_id_crypted = \Drupal::service('vactory_core.tools')->encrypt('vactory_job_ads:' . $entity_tans->id());
+          $this->list[0] = $this->createItem(0, $node_trans->toUrl()->setRouteParameter('title', $entity_tans->label())
+            ->setRouteParameter('job', $job_id_crypted)
+            ->toString());
+        }
+      }
+    }
+
   }
 
 }

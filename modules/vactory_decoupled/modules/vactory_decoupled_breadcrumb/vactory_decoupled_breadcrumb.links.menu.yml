@@ -1,0 +1,5 @@
+vactory_decoupled_breadcrumb.settings:
+  title: Decoupled breadcrumb settings
+  description: Console for decoupled breadcrumb configuration
+  route_name: vactory_decoupled_breadcrumb.settings
+  weight: 10

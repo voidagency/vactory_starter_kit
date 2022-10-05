@@ -1,12 +1,12 @@
 langcode: en
 status: true
 dependencies:
-  enforced:
-    module:
-      - vactory_forums
   module:
     - node
     - taxonomy
+  enforced:
+    module:
+      - vactory_forums
 id: node.field_vactory_forum_room
 field_name: field_vactory_forum_room
 entity_type: node

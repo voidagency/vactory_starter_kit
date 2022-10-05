@@ -8,7 +8,6 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\node\Entity\Node;
-use http\Cookie;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -64,29 +63,17 @@ class ViewsCountController extends ControllerBase {
    * @throws InvalidPluginDefinitionException
    * @throws PluginNotFoundException
    */
-  public function index(Request $request) {
-      $target = (int) $request->request->get('nid');
-      $oneTimeView = (int) $this->currentUser->id();
-      if (!isset($target) || empty($target)) {
+  public function index(int $nid) {
+      if (!isset($nid) || empty($nid)) {
         return new JsonResponse([
           'resources' => $this->t('Empty PARAMS!'),
           'status'    => 404
         ]);
       }
       /* @var Node */
-      $node = $this->entityTypeManager->getStorage('node')->load($target);
-      if (isset($_COOKIE['alreadyseen' . $target])) {
-        $alreadySeen = $_COOKIE['alreadyseen' . $target];
-        if (!$node->hasField('field_forum_views_count') || (isset($alreadySeen))) {
-          return new JsonResponse([
-            'resources' => $this->t('Article Already Seen!'),
-            'status'    => 400
-          ]);
-        }
-      }
+      $node = $this->entityTypeManager->getStorage('node')->load($nid);
       $value = $node->get('field_forum_views_count')->value ?? 0;
       $node->set('field_forum_views_count', (int) $value + 1)->save();
-      setcookie('alreadyseen' . $target, $oneTimeView);
       return new JsonResponse([
         'resources' => $this->t('Count changed succesfully'),
         'status'    => 200

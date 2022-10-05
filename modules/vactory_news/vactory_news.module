@@ -263,3 +263,46 @@ function vactory_news_jsonapi_vcc_normalized_node_alter(&$normalized_node, $cont
     }
   }
 }
+
+/**
+ * Implements hook_json_api_collection_alter().
+ */
+function vactory_news_json_api_collection_alter(&$filters, &$context) {
+  $query = \Drupal::request()->query->get("q");
+
+  if (empty($query)) {
+    return;
+  }
+
+  if ($context['id'] === 'vactory_news_list') {
+
+    if (isset($query["page"])) {
+      $filters["page[offset]"] = intval($query["page"]) > 0 ? intval($query["page"]) - 1 : 0;
+    }
+
+    if (isset($query["sort"]) && in_array(strtolower($query["sort"]), ["asc", "desc"])) {
+      $filters["sort[sort-vactory-date][direction]"] = strtolower($query["sort"]);
+    }
+
+    if (isset($query["theme"]) && $query["theme"] !== "all") {
+      $theme = $query["theme"];
+      $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties([
+        'vid' => 'vactory_news_theme',
+        'term_2_slug' => $query["theme"]
+      ]);
+
+      if (!$terms) {
+        throw new \Exception("[News - hook_json_api_collection_alter] term '$theme' not found.");
+      }
+
+      if ($terms) {
+        $term = reset($terms);
+        $id = $term->id();
+        $filters["filter[internal_category][condition][path]"] = "field_vactory_news_theme.drupal_internal__tid";
+        $filters["filter[internal_category][condition][operator]"] = "=";
+        $filters["filter[internal_category][condition][value]"] = $id;
+      }
+
+    }
+  }
+}
