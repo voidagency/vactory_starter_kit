@@ -8,8 +8,13 @@ use Drupal\Core\Link;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Render\RenderContext;
 use Drupal\Core\Render\RendererInterface;
+use Drupal\Core\Routing\RouteProvider;
 use Drupal\Core\TypedData\ComputedItemListTrait;
+use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
+use Drupal\path_alias\AliasManager;
+use Symfony\Component\Routing\Route;
+use Symfony\Component\Routing\RouteCollection;
 
 /**
  * Breadcrumb per node.
@@ -82,9 +87,11 @@ class InternalNodeEntityBreadcrumbFieldItemList extends FieldItemList {
       $entity = $entity->getTranslation($langcode);
     }
     catch (\InvalidArgumentException $e) {}
-    $node_title = $entity->getTitle();
     $show_current_page = $config->get('show_current_page');
-    $breadcrumbs_data = $renderer->executeInRenderContext(new RenderContext(), static function () use ($links, $breadcrumbs_data, $show_current_page, $node_title) {
+    if (!$show_current_page) {
+      array_pop($links);
+    }
+    $breadcrumbs_data = $renderer->executeInRenderContext(new RenderContext(), static function () use ($links, $breadcrumbs_data) {
       foreach ($links as $link) {
         if ($link instanceof Link) {
           $text = $link->getText() instanceof MarkupInterface ? $link->getText()->__toString() : $link->getText();
@@ -94,12 +101,6 @@ class InternalNodeEntityBreadcrumbFieldItemList extends FieldItemList {
         else {
           $text = $link instanceof MarkupInterface ? $link->__toString() : $link;
           $url = '#';
-        }
-
-        if (!$show_current_page) {
-          if (strtolower($node_title) === strtolower($text)) {
-            continue;
-          }
         }
 
         array_push($breadcrumbs_data, [
@@ -123,11 +124,26 @@ class InternalNodeEntityBreadcrumbFieldItemList extends FieldItemList {
     else {
       $alias = trim($alias, '/');
       $pieces = explode('/', $alias);
-      $pieces = array_map(function ($piece) {
+      $normalized_pieces = array_map(function ($piece) {
         return ucfirst(str_replace('-', ' ', $piece));
       }, $pieces);
-      foreach ($pieces as $piece) {
-        $links[] = t($piece);
+      $cumul = '/';
+      /** @var AliasManager $alias_manager */
+      $alias_manager = \Drupal::service('path_alias.manager');
+      /** @var RouteProvider $route_provider */
+      $route_provider = \Drupal::service('router.route_provider');
+      foreach ($normalized_pieces as $key => $piece) {
+        $cumul .= $pieces[$key];
+        $path = $alias_manager->getPathByAlias($cumul);
+        $found_routes = $route_provider->getRoutesByPattern($path);
+        $route_iterator = $found_routes->getIterator();
+        if (count($route_iterator)) {
+          $links[] = Link::fromTextAndUrl(t($piece), Url::fromUserInput($cumul));
+          $cumul .= '/';
+        }
+        else {
+          $links[] = t($piece);
+        }
       }
     }
     return $links;
