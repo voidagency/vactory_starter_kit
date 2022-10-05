@@ -96,6 +96,18 @@ class JsonApiGenerator {
       'id' => $id,
     ];
 
+    // Get current page information and pass them through the hook context.
+    $params = \Drupal::routeMatch()->getParameters();
+    if ($params) {
+      if ($resource_type_param = $params->get('resource_type')) {
+        $hook_context["entity_bundle"] = $resource_type_param->getBundle();
+      }
+
+      if ($entity_param = $params->get('entity')) {
+        $hook_context["entity_id"] = $entity_param->id();
+      }
+    }
+
     \Drupal::moduleHandler()->alter('json_api_collection', $parsed, $hook_context);
 
     parse_str(http_build_query($parsed), $query_filters);
@@ -122,7 +134,7 @@ class JsonApiGenerator {
       });
       $client_data->data = array_values($result);
     }
-    
+
     return [
       'data' => $client_data,
       'cache' => $response['cache'],
