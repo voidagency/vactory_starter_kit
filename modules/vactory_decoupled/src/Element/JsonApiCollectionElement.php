@@ -274,4 +274,15 @@ class JsonApiCollectionElement extends FormElement {
     return $options;
   }
 
+  /**
+   * Get Entity Storage.
+   *
+   * @return \Drupal\Core\Entity\EntityStorageInterface
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   */
+  protected static function getEntityStorage($entity_type) {
+    return \Drupal::entityTypeManager()->getStorage($entity_type);
+  }
+
 }
