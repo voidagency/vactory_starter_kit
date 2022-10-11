@@ -41,6 +41,17 @@ class JsonApiGenerator {
     $entity_queue_field_id = $config['entity_queue_field_id'] ?? '';
     $subqueue_items_ids = [];
 
+    // Handle jsonapi filters tokens.
+    $nested_filters = [];
+    foreach ($filters as $filter) {
+      if (strpos($filter, '[') === 0 && strpos($filter, ']') === strlen($filter)-1) {
+        // Token case.
+        $filter = \Drupal::token()->replace($filter, []);
+        $nested_filters = [...$nested_filters, ...explode("\n", $filter)];
+      }
+    }
+    $filters = [...$filters, ...$nested_filters];
+
     // Filters may be altered using hook_json_api_collection_alter which is triggered below.
     // We need to keep a copy of the original filters to be used
     // by the frontend Component.
