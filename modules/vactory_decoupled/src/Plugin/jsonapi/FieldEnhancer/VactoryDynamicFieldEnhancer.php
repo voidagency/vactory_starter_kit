@@ -258,6 +258,36 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
           $value = $image_data;
         }
 
+        // Video media.
+        if ($info['type'] === 'video' && !empty($value)) {
+          $key = array_keys($value)[0];
+          $image_data = [];
+          if (isset($value[$key]['selection'])) {
+            foreach ($value[$key]['selection'] as $media) {
+              $file = Media::load($media['target_id']);
+              if ($file) {
+                // Add cache.
+                $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $file->getCacheTags());
+                $this->cacheability->setCacheTags($cacheTags);
+                $uri = $file->field_media_video_file->entity->getFileUri();
+                $video_item['_default'] = \Drupal::service('file_url_generator')->generateAbsoluteString($uri);
+                $video_item['uri'] = StreamWrapperManager::getTarget($uri);
+                $video_item['fid'] = $file->thumbnail->entity->fid->value;
+                $video_item['file_name'] = $file->label();
+                $video_item['base_url'] = $image_app_base_url;
+                if (!empty($file->get('field_media_video_file')->getValue())) {
+                  $image_item['meta'] = $file->get('field_media_video_file')->first()->getValue();
+                }
+              } else {
+                $video_item['_error'] = 'Media file ID: ' . $media['target_id'] . ' Not Found';
+              }
+
+              $video_data[] = $video_item;
+            }
+          }
+          $value = $video_data;
+        }
+
         // Document media.
         if ($info['type'] === 'file' && !empty($value)) {
           $key = array_keys($value)[0];
