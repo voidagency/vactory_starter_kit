@@ -2,7 +2,6 @@
 
 namespace Drupal\vactory_decoupled_webform;
 
-
 use Drupal\webform\Element\WebformTermReferenceTrait;
 use Drupal\webform\Entity\WebformSubmission;
 use Drupal\webform\WebformTokenManager;
@@ -12,8 +11,8 @@ use Drupal\webform\WebformTokenManager;
  *
  * @api
  */
-class Webform
-{
+class Webform {
+
   use WebformTermReferenceTrait;
 
   protected $webform;
@@ -25,7 +24,9 @@ class Webform
    */
   protected $webformTokenManager;
 
-  const CONTAINERS = ['webform_flexbox', 'container', 'fieldset', 'details'];
+  const LAYOUTS = ['webform_flexbox', 'container', 'fieldset', 'details'];
+
+  const PAGE = 'webform_wizard_page';
 
   public function __construct(WebformTokenManager $webformTokenManager) {
     $this->webformTokenManager = $webformTokenManager;
@@ -35,11 +36,11 @@ class Webform
    * Return the requested entity as an structured array.
    *
    * @param $webform_id
+   *
    * @return array
    *   The JSON structure of the requested resource.
    */
-  public function normalize($webform_id)
-  {
+  public function normalize($webform_id) {
     $this->webform = \Drupal\webform\Entity\Webform::load($webform_id);
     $elements = $this->webform->getElementsInitialized();
     $schema = $this->itemsToSchema($elements);
@@ -52,37 +53,42 @@ class Webform
    * Creates a JSON Schema out of Webform Items.
    *
    * @param $items
+   *
    * @return array
    */
-  public function itemsToSchema($items)
-  {
+  public function itemsToSchema($items) {
     $schema = [];
-
     foreach ($items as $key => $item) {
       if (isset($item['#type']) && $item['#type'] === 'webform_actions') {
         $schema['buttons']['actions'][$key] = $this->SubmitbuttonsToUiSchema($item);
         continue;
       }
-      if (in_array($item['#type'], self::CONTAINERS)) {
-        $schema[$key] = $this->containersToUiSchema($key, $item, $items);
+      if (in_array($item['#type'], self::LAYOUTS)) {
+        $schema[$key] = $this->layoutToUiSchema($key, $item, $items);
       }
       else {
-        $schema[$key] = $this->itemToUiSchema($key, $item, $items);
+        if ($item['#type'] === self::PAGE) {
+          $schema['pages'][$key] = $this->PagesToUiSchema($key, $item, $items);
+        }
+        else {
+          $schema[$key] = $this->itemToUiSchema($key, $item, $items);
+        }
       }
     }
+
     return $schema;
   }
 
   /**
-   * Containers to ui schema.
+   * Layouts to ui schema.
    */
-  public function containersToUiSchema($key, $item, $items) {
+  public function layoutToUiSchema($key, $item, $items) {
     $fields = [];
     $flexTotal = 0;
     foreach ($items[$key] as $key => $field) {
       if (strpos($key, "#") !== 0) {
         if (array_key_exists('#webform_parent_flexbox', $field) && $field['#webform_parent_flexbox']) {
-          $flexTotal+= array_key_exists('#flex', $field) ? $field['#flex'] : 1;
+          $flexTotal += array_key_exists('#flex', $field) ? $field['#flex'] : 1;
         }
         $fields[$key] = $field;
       }
@@ -126,6 +132,33 @@ class Webform
   }
 
   /**
+   * Layouts to ui schema.
+   */
+  public function PagesToUiSchema($key, $item, $items) {
+    $fields = [];
+    foreach ($items[$key] as $key => $field) {
+      if (strpos($key, "#") !== 0) {
+        $fields[$key] = $field;
+      }
+    }
+
+    $properties = [
+      'type' => $item['#type'],
+      'title' => $item['#title'] ?? '',
+    ];
+
+    (isset($item['#attributes']['class']) && !empty($item['#attributes']['class'])) ? $properties['class'] = implode(" ", $item['#attributes']['class']) : "";
+    (isset($item['#prev_button_label']) && !empty($item['#prev_button_label'])) ? $properties['prev_button_label'] = $item['#prev_button_label'] : NULL;
+    (isset($item['#next_button_label']) && !empty($item['#next_button_label'])) ? $properties['next_button_label'] = $item['#next_button_label'] : NULL;
+
+    if ($fields !== []) {
+      $properties['childs'] = $this->itemsToSchema($fields);
+    }
+
+    return $properties;
+  }
+
+  /**
    * Add reset button to ui schema.
    *
    * @return array
@@ -157,10 +190,10 @@ class Webform
    * @param $field_name
    * @param $item
    * @param $items
+   *
    * @return array
    */
-  private function itemToUiSchema($field_name, $item, $items)
-  {
+  private function itemToUiSchema($field_name, $item, $items) {
     $properties = [];
     if (isset($item['#required']) || isset($item['#pattern'])) {
       $properties['validation'] = [];
@@ -206,7 +239,7 @@ class Webform
 
     $htmlInputTypes = [
       'tel' => 'tel',
-      'hidden' => 'hidden'
+      'hidden' => 'hidden',
     ];
 
     $type = $item['#type'];
@@ -214,12 +247,12 @@ class Webform
     $properties['type'] = $ui_type;
     (isset($item['#title']) && !is_null($item['#title'])) ? $properties['label'] = $item['#title'] : NULL;
     (array_key_exists('#webform_parent_flexbox', $item) && $item['#webform_parent_flexbox']) ? $properties['flex'] = (array_key_exists('#flex', $item) ? $item['#flex'] : 1) : 1;
-    (isset($item['#placeholder']) && !is_null($item['#placeholder'])) ? $properties['placeholder'] = (string)t($item['#placeholder']) : NULL;
-    (isset($item['#description']) && !is_null($item['#description'])) ? $properties['helperText'] = (string)t($item['#description']) : NULL;
+    (isset($item['#placeholder']) && !is_null($item['#placeholder'])) ? $properties['placeholder'] = (string) t($item['#placeholder']) : NULL;
+    (isset($item['#description']) && !is_null($item['#description'])) ? $properties['helperText'] = (string) t($item['#description']) : NULL;
     (isset($item['#readonly']) && !is_null($item['#readonly'])) ? $properties['readOnly'] = $item['#readonly'] : NULL;
     (isset($htmlInputTypes[$type]) && !is_null($htmlInputTypes[$type])) ? $properties['htmlInputType'] = $htmlInputTypes[$type] : NULL;
     (isset($item['#options']) && !is_null($item['#options'])) ? $properties['options'] = $this->formatOptions($item['#options'] ?? []) : NULL;
-    (isset($item['#empty_option']) && !is_null($item['#empty_option'])) ? $properties['emptyOption'] = (string)t($item['#empty_option']) : NULL;
+    (isset($item['#empty_option']) && !is_null($item['#empty_option'])) ? $properties['emptyOption'] = (string) t($item['#empty_option']) : NULL;
     (isset($item['#empty_value']) && !is_null($item['#empty_value'])) ? $properties['emptyValue'] = $item['#empty_value'] : NULL;
     (isset($item['#options_display']) && !is_null($item['#options_display'])) ? $properties['optionsDisplay'] = $item['#options_display'] : NULL;
     (isset($item['#options_all']) && !is_null($item['#options_all'])) ? $properties['optionsAll'] = $item['#options_all'] : NULL;
@@ -228,7 +261,7 @@ class Webform
 
     if (isset($item['#required'])) {
       $properties['validation']['required'] = TRUE;
-      (isset($item['#required_error']) && !is_null($item['#required_error'])) ? $properties['validation']['requiredError'] = (string)t($item['#required_error']) : NULL;
+      (isset($item['#required_error']) && !is_null($item['#required_error'])) ? $properties['validation']['requiredError'] = (string) t($item['#required_error']) : NULL;
     }
 
     if (isset($item['#pattern'])) {
@@ -249,8 +282,8 @@ class Webform
     ) {
       if (!isset($properties['validation']['pattern'])) {
         $properties['validation']['pattern'] = "/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i";
-        $properties['validation']['patternError'] = (string)t("Le champ @field n'est pas valide", [
-          '@field' => $properties['label']
+        $properties['validation']['patternError'] = (string) t("Le champ @field n'est pas valide", [
+          '@field' => $properties['label'],
         ]);
       }
     }
@@ -259,8 +292,8 @@ class Webform
       foreach ($items as $key => $element) {
         if (isset($element['#type']) && $element['#type'] === 'email') {
           $properties['validation']['sameAs'] = $key;
-          $properties['validation']['sameAsError'] = (string)t("Le champ @field n'est pas valide", [
-            '@field' => $properties['label']
+          $properties['validation']['sameAsError'] = (string) t("Le champ @field n'est pas valide", [
+            '@field' => $properties['label'],
           ]);
           break;
         }
@@ -274,7 +307,8 @@ class Webform
 
       if (!empty($element['#breadcrumb'])) {
         $properties['options'] = $this->formatOptions(static::getOptionsBreadcrumb($item, ''));
-      } else {
+      }
+      else {
         $properties['options'] = $this->formatOptions(static::getOptionsTree($item, ''));
       }
     }
@@ -286,7 +320,7 @@ class Webform
     ) {
       $emptyOption = [
         'label' => $properties['emptyOption'],
-        'value' => ''
+        'value' => '',
       ];
 
       if (
@@ -351,10 +385,10 @@ class Webform
   /**
    * @param $items
    * @param bool $reverse
+   *
    * @return array
    */
-  private function formatOptions($items, $reverse = FALSE)
-  {
+  private function formatOptions($items, $reverse = FALSE) {
     $options = [];
 
     foreach ($items as $value => $label) {
@@ -376,8 +410,7 @@ class Webform
    * @return \Drupal\Core\Render\Element\ElementInterface
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
-  protected function getElementPlugin(array $element)
-  {
+  protected function getElementPlugin(array $element) {
     /** @var \Drupal\Core\Render\ElementInfoManager $plugin_manager */
     $plugin_manager = \Drupal::service('plugin.manager.webform.element');
     $plugin_definition = $plugin_manager->getDefinition($element['#type']);
