@@ -6,4 +6,4 @@ vactory_decoupled_webform.webform_submit:
   requirements:
     _permission: 'access content'
   options:
-    _auth: ['oauth2']
+    _auth: [ 'oauth2' ]

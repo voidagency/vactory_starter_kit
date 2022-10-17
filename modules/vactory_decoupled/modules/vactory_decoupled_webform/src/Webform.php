@@ -76,6 +76,19 @@ class Webform {
       }
     }
 
+    if (array_key_exists('pages', $schema)) {
+      $schema['pages']['settings']['preview']['enable'] = isset($this->webform->getSettings()['preview']) && !empty($this->webform->getSettings()['preview']) ? $this->webform->getSettings()['preview'] > 0 : FALSE;
+      $schema['pages']['settings']['preview']['label'] = isset($this->webform->getSettings()['preview_label']) && !empty($this->webform->getSettings()['preview_label']) ? $this->webform->getSettings()['preview_label'] : '';
+      $schema['pages']['settings']['preview']['title'] = isset($this->webform->getSettings()['preview_title']) && !empty($this->webform->getSettings()['preview_title']) ? $this->webform->getSettings()['preview_title'] : '';
+      $schema['pages']['settings']['preview']['message'] = isset($this->webform->getSettings()['preview_message']) && !empty($this->webform->getSettings()['preview_message']) ? $this->webform->getSettings()['preview_message'] : '';
+      $schema['pages']['settings']['preview']['excluded_elements'] = isset($this->webform->getSettings()['preview_excluded_elements']) && !empty($this->webform->getSettings()['preview_excluded_elements']) ? $this->webform->getSettings()['preview_excluded_elements'] : [];
+      $schema['pages']['settings']['preview']['excluded_elements'] = isset($this->webform->getSettings()['preview_excluded_elements']) && !empty($this->webform->getSettings()['preview_excluded_elements']) ? $this->webform->getSettings()['preview_excluded_elements'] : [];
+      $schema['pages']['settings']['wizard']['prev_button_label'] = isset($this->webform->getSettings()['wizard_prev_button_label']) && !empty($this->webform->getSettings()['wizard_prev_button_label']) ? $this->webform->getSettings()['wizard_prev_button_label'] : '';
+      $schema['pages']['settings']['wizard']['next_button_label'] = isset($this->webform->getSettings()['wizard_next_button_label']) && !empty($this->webform->getSettings()['wizard_next_button_label']) ? $this->webform->getSettings()['wizard_next_button_label'] : '';
+    }
+//    $schema['draft']['settings']['draft'] = isset($this->webform->getSettings()['draft']) && !empty($this->webform->getSettings()['draft']) ? $this->webform->getSettings()['draft'] : 'none';
+//    $schema['draft']['settings']['draft_auto_save'] = isset($this->webform->getSettings()['draft']) && !empty($this->webform->getSettings()['draft_auto_save']) ? $this->webform->getSettings()['draft_auto_save'] : FALSE;
+
     return $schema;
   }
 

@@ -8,3 +8,13 @@ vactory_private_files_decoupled.files.get:
   options:
     no_cache: 'TRUE'
     _auth: [ 'oauth2' ]
+vactory_private_files_decoupled.files.webform:
+  path: '/api/webform/private-files'
+  defaults:
+    _controller: '\Drupal\vactory_private_files_decoupled\Controller\PrivateFilesController::generateUrlForPrivateFileFromFids'
+  methods:  [GET]
+  requirements:
+    _permission: 'access content'
+  options:
+    no_cache: 'TRUE'
+    _auth: [ 'oauth2' ]
