@@ -14,6 +14,7 @@ use Drupal\Core\Site\Settings;
 use Drupal\Core\Url;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\jsonapi_extras\Entity\JsonapiResourceConfig;
 use Drupal\node\Entity\Node;
 use Drupal\user\UserInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -59,6 +60,9 @@ function vactory_decoupled_form_node_form_alter(&$form, FormStateInterface $form
  */
 function vactory_decoupled_form_alter(&$form, FormStateInterface $form_state, $form_id)
 {
+  if ($form_id === 'webform_edit_form') {
+    $form['actions']['submit']['#submit'][] = 'clear_node_list_cache_after_updating_webform_elements';
+  }
   if ($form_id === 'locale_translate_edit_form') {
     $form['#submit'][] = 'clear_next_cache_translation';
   }
@@ -130,7 +134,7 @@ function nextjs_node_form_submit(&$form, FormStateInterface $form_state) {
  * Invalidate nodes cache on block admin display submit.
  */
 function block_admin_display_submit($form, FormStateInterface $form_state) {
-  Cache::invalidateTags(['node_list']);
+  // Cache::invalidateTags(['node_list']);
 }
 
 /**
@@ -252,6 +256,19 @@ function vactory_decoupled_entity_base_field_info(EntityTypeInterface $entity_ty
       ->setReadOnly(TRUE)
       ->setTargetEntityTypeId($entity_type->id())
       ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE);
+
+      $fields['term_2_slug'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Slug'))
+      ->setDescription(t('Term slug'))
+      ->setTranslatable(TRUE)
+      ->setRevisionable(TRUE)
+      ->setRequired(FALSE)
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayOptions('form', [
+        'type'     => 'string_textfield',
+        'weight'   => 0,
+      ])
       ->setDisplayConfigurable('view', FALSE);
   }
 
@@ -499,8 +516,17 @@ function vactory_decoupled_validation_constraint_alter(array &$definitions) {
  * Implements hook_ENTITY_TYPE_presave().
  */
 function vactory_decoupled_block_presave(EntityInterface $entity) {
+  // Cache::invalidateTags(['node_list']);
+}
+
+/**
+ * Clear node list cache after updating webform elements.
+ */
+function clear_node_list_cache_after_updating_webform_elements(&$form, FormStateInterface $form_state) {
   Cache::invalidateTags(['node_list']);
 }
+
+
 
 /**
  * Implements hook_entity_update().
@@ -639,4 +665,48 @@ function clear_next_cache($query = []) {
     \Drupal::logger('clear_next_cache')->warning($error_msg);
     return FALSE;
   }
+}
+
+/**
+ * Implements hook_jsonapi_default_enhancers_info().
+ */
+function vactory_decoupled_jsonapi_default_enhancers_info() {
+  return [
+    'internal_blocks' => [
+      'enhancer' => 'vactory_blocks',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function vactory_decoupled_form_jsonapi_resource_config_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $config_resource = $form_state->getFormObject()->getEntity();
+  $default_roles = $config_resource->getThirdPartySetting('vactory_decoupled', 'roles', []);
+  $form['access'] = [
+    '#type' => 'details',
+    '#title' => t('Access'),
+  ];
+  $roles = \Drupal::entityTypeManager()->getStorage('user_role')
+    ->loadMultiple();
+  $roles = array_map(function ($role) {
+    return $role->label();
+  }, $roles);
+  $form['access']['roles'] = [
+    '#type' => 'checkboxes',
+    '#title' => t('Roles'),
+    '#options' => $roles,
+    '#description' => t('Users with given roles could access this resource, if no role has been selected then do nothing (of course an api key or jsonapi token is required when the original jsonapi resource is protected)'),
+    '#default_value' => $default_roles,
+  ];
+  $form['#entity_builders'][] = 'vactory_decoupled_jsonapi_resource_config_builder';
+}
+
+/**
+ * Jsonapi resource config entity builder callback.
+ */
+function vactory_decoupled_jsonapi_resource_config_builder($entity_type, JsonapiResourceConfig $config_resource, &$form, FormStateInterface $form_state) {
+  $roles = $form_state->getValue('roles');
+  $config_resource->setThirdPartySetting('vactory_decoupled', 'roles', $roles);
 }

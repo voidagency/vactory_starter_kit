@@ -103,3 +103,78 @@ function vactory_mediatheque_preprocess_node__vactory_mediatheque__card(&$variab
     $variables['content']['youtube_id'] = $youtube_id['v'];
   }
 }
+
+/**
+ * Implements hook_json_api_collection_alter().
+ */
+function vactory_mediatheque_json_api_collection_alter(&$filters, &$context) {
+  if ($context['id'] === 'vactory_mediatheque_list') {
+    $query = $context['query'];
+
+    if (isset($query["page"])) {
+      $filters["page[offset]"] = intval($query["page"]) > 0 ? intval($query["page"]) - 1 : 0;
+    }
+
+    if (isset($query["year"]) && $query["year"] !== "all") {
+      $theme = $query["year"];
+      $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties([
+        'vid' => 'medium_year',
+        'term_2_slug' => $query["year"]
+      ]);
+
+      if (!$terms) {
+        throw new \Exception("[Mediatheque - hook_json_api_collection_alter] term '$theme' not found.");
+      }
+
+      if ($terms) {
+        $term = reset($terms);
+        $id = $term->id();
+        $filters["filter[mediatheque_internal_year][condition][path]"] = "field_medium_year.drupal_internal__tid";
+        $filters["filter[mediatheque_internal_year][condition][operator]"] = "=";
+        $filters["filter[mediatheque_internal_year][condition][value]"] = $id;
+      }
+
+    }
+    if (isset($query["type"]) && $query["type"] !== "all") {
+      $theme = $query["type"];
+      $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties([
+        'vid' => 'mediatheque_types',
+        'term_2_slug' => $query["type"]
+      ]);
+
+      if (!$terms) {
+        throw new \Exception("[Mediatheque - hook_json_api_collection_alter] term '$theme' not found.");
+      }
+
+      if ($terms) {
+        $term = reset($terms);
+        $id = $term->id();
+        $filters["filter[mediatheque_internal_type][condition][path]"] = "field_mediatheque_type.drupal_internal__tid";
+        $filters["filter[mediatheque_internal_type][condition][operator]"] = "=";
+        $filters["filter[mediatheque_internal_type][condition][value]"] = $id;
+      }
+
+    }
+
+    if (isset($query["theme"]) && $query["theme"] !== "all") {
+      $theme = $query["theme"];
+      $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties([
+        'vid' => 'mediatheque_theme_albums',
+        'term_2_slug' => $query["theme"]
+      ]);
+
+      if (!$terms) {
+        throw new \Exception("[Mediatheque - hook_json_api_collection_alter] term '$theme' not found.");
+      }
+
+      if ($terms) {
+        $term = reset($terms);
+        $id = $term->id();
+        $filters["filter[mediatheque_internal_theme][condition][path]"] = "field_mediatheque_theme.drupal_internal__tid";
+        $filters["filter[mediatheque_internal_theme][condition][operator]"] = "=";
+        $filters["filter[mediatheque_internal_theme][condition][value]"] = $id;
+      }
+
+    }
+  }
+}

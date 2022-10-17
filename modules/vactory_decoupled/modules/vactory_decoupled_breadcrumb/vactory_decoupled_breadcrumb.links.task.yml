@@ -1,0 +1,5 @@
+vactory_decoupled_breadcrumb.settings:
+  route_name: vactory_decoupled_breadcrumb.settings
+  base_route: vactory_decoupled_breadcrumb.settings
+  title: Settings
+

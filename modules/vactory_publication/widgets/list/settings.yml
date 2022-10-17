@@ -9,6 +9,7 @@ fields:
     options:
       '#required': TRUE
       '#default_value':
+        id: "vactory_publication_list"
         resource: node--vactory_publication
         filters:
           - fields[node--vactory_publication]=drupal_internal__nid,path,title,field_vactory_date,field_vactory_document,field_vactory_call_to_action,field_vactory_excerpt,field_vactory_media,field_vactory_publication_theme,field_vactory_tags

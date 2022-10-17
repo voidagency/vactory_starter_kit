@@ -5,5 +5,3 @@ id: expert_forum
 label: 'Expert Forum'
 weight: 8
 is_admin: null
-permissions:
-  - 'create vactory_forum content'

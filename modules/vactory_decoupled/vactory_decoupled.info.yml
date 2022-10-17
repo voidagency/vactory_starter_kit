@@ -16,4 +16,6 @@ dependencies:
   - vactory_page
   - vactory_paragraphs
   - social_auth
+  - features
+  - vactory_decoupled_breadcrumb
 version: 8.x-1.0

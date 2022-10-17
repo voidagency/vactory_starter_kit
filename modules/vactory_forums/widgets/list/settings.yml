@@ -3,18 +3,25 @@ multiple: FALSE
 category: 'Forum'
 enabled: TRUE
 fields:
-  title:
-    type: text
-    label: "Titre"
-  taxonomy:
-    type: text
-    label: 'Section'
-  limit:
-    type: number
-    label: 'Limit'
-  link:
-    type: url_extended
-    label: 'Lien'
-  is_listing:
-    type: checkbox
-    label: 'Is listing'
+  collection:
+    type: json_api_collection
+    label: 'JSON:API'
+    options:
+      '#required': TRUE
+      '#default_value':
+        id: "vactory_forums_list"
+        resource: node--vactory_forum
+        filters:
+          - fields[node--vactory_forum]=drupal_internal__nid,body,created,title,field_vactory_forum_status,field_vactory_date,field_vactory_excerpt,field_forum_editeur,field_forum_expert,field_vactory_forums_thematic,field_vactory_media,path,field_forum_views_count,internal_comment
+          - fields[taxonomy_term--vactory_forums_thematic]=tid,name
+          - fields[media--image]=name,thumbnail
+          - fields[file--image]=filename,uri
+          - fields[user-user]=field_first_name,field_last_name,field_user_profession,field_about_the_author,user_picture
+          - include=field_vactory_forums_thematic,field_vactory_media,field_vactory_media.thumbnail,field_forum_editeur,field_forum_expert,field_forum_expert.user_picture
+          - page[offset]=0
+          - page[limit]=9
+          - sort[sort-views-count][path]=field_forum_views_count
+          - sort[sort-views-count][direction]=DESC
+          - filter[status][value]=1
+        vocabularies:
+          vactory_forums_thematic: vactory_forums_thematic

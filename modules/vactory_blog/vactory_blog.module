@@ -42,3 +42,57 @@ function vactory_blog_theme($existing, $type, $theme, $path) {
     ],
   ];
 }
+
+/**
+ * Implements hook_json_api_collection_alter().
+ */
+function vactory_blog_json_api_collection_alter(&$filters, &$context) {
+  if ($context['id'] === 'vactory_blog_list') {
+    $query = $context['query'];
+
+    if (isset($query["page"])) {
+      $filters["page[offset]"] = intval($query["page"]) > 0 ? intval($query["page"]) - 1 : 0;
+    }
+
+    if (isset($query["theme"]) && $query["theme"] !== "all") {
+      $theme = $query["theme"];
+      $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties([
+        'vid' => 'vactory_blog_categories',
+        'term_2_slug' => $query["theme"]
+      ]);
+
+      if (!$terms) {
+        throw new \Exception("[Blog - hook_json_api_collection_alter] term '$theme' not found.");
+      }
+
+      if ($terms) {
+        $term = reset($terms);
+        $id = $term->id();
+        $filters["filter[blog_internal_category][condition][path]"] = "field_blog_category.drupal_internal__tid";
+        $filters["filter[blog_internal_category][condition][operator]"] = "=";
+        $filters["filter[blog_internal_category][condition][value]"] = $id;
+      }
+
+    }
+    if (isset($query["tag"]) && $query["tag"] !== "all") {
+      $theme = $query["tag"];
+      $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties([
+        'vid' => 'vactory_blog_tags',
+        'term_2_slug' => $query["tag"]
+      ]);
+
+      if (!$terms) {
+        throw new \Exception("[Blog - hook_json_api_collection_alter] term '$theme' not found.");
+      }
+
+      if ($terms) {
+        $term = reset($terms);
+        $id = $term->id();
+        $filters["filter[blog_internal_tag][condition][path]"] = "field_blog_tags.drupal_internal__tid";
+        $filters["filter[blog_internal_tag][condition][operator]"] = "=";
+        $filters["filter[blog_internal_tag][condition][value]"] = $id;
+      }
+
+    }
+  }
+}

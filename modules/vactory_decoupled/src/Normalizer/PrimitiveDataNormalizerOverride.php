@@ -28,13 +28,13 @@ class PrimitiveDataNormalizerOverride extends PrimitiveDataNormalizer {
    * {@inheritDoc}
    */
    public function normalize($object, $format = NULL, array $context = []) {
-     $route_name = \Drupal::routeMatch()->getRouteName();
-     if (preg_match('#jsonapi\.(.)*\.individual$#', $route_name)) {
-       if (isset($context['cacheability']) && $context['cacheability'] instanceof CacheableMetadata) {
-         $context['cacheability']->addCacheTags(['node_list']);
-         $this->addCacheableDependency($context, $object);
-       }
-     }
+    //  $route_name = \Drupal::routeMatch()->getRouteName();
+    //  if (preg_match('#jsonapi\.(.)*\.individual$#', $route_name)) {
+    //    if (isset($context['cacheability']) && $context['cacheability'] instanceof CacheableMetadata) {
+    //      $context['cacheability']->addCacheTags(['node_list']);
+    //      $this->addCacheableDependency($context, $object);
+    //    }
+    //  }
      return parent::normalize($object, $format, $context);
    }
 
