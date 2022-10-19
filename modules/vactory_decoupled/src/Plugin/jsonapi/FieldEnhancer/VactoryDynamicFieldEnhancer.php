@@ -261,7 +261,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
         // Video media.
         if ($info['type'] === 'video' && !empty($value)) {
           $key = array_keys($value)[0];
-          $image_data = [];
+          $video_data = [];
           if (isset($value[$key]['selection'])) {
             foreach ($value[$key]['selection'] as $media) {
               $file = Media::load($media['target_id']);
@@ -276,7 +276,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
                 $video_item['file_name'] = $file->label();
                 $video_item['base_url'] = $image_app_base_url;
                 if (!empty($file->get('field_media_video_file')->getValue())) {
-                  $image_item['meta'] = $file->get('field_media_video_file')->first()->getValue();
+                  $video_item['meta'] = $file->get('field_media_video_file')->first()->getValue();
                 }
               } else {
                 $video_item['_error'] = 'Media file ID: ' . $media['target_id'] . ' Not Found';
