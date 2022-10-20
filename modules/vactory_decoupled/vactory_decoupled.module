@@ -675,6 +675,9 @@ function vactory_decoupled_jsonapi_default_enhancers_info() {
     'internal_blocks' => [
       'enhancer' => 'vactory_blocks',
     ],
+    'field_vactory_meta_tags' => [
+      'enhancer' => 'vactory_metatag',
+    ],
   ];
 }
 
