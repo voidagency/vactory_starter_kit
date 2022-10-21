@@ -2,6 +2,7 @@
 
 namespace Drupal\vactory_decoupled_webform;
 
+use Drupal\Core\Session\AccountProxy;
 use Drupal\webform\Element\WebformTermReferenceTrait;
 use Drupal\webform\Entity\WebformSubmission;
 use Drupal\webform\WebformTokenManager;
@@ -17,6 +18,10 @@ class Webform {
 
   protected $webform;
 
+  protected $currentUser;
+
+  protected $defaultValues = [];
+
   /**
    * The webform token manager.
    *
@@ -28,8 +33,9 @@ class Webform {
 
   const PAGE = 'webform_wizard_page';
 
-  public function __construct(WebformTokenManager $webformTokenManager) {
+  public function __construct(WebformTokenManager $webformTokenManager, AccountProxy $accountProxy) {
     $this->webformTokenManager = $webformTokenManager;
+    $this->currentUser = $accountProxy->getAccount();
   }
 
   /**
@@ -43,10 +49,53 @@ class Webform {
   public function normalize($webform_id) {
     $this->webform = \Drupal\webform\Entity\Webform::load($webform_id);
     $elements = $this->webform->getElementsInitialized();
+    $draft = $this->draftSettingsToSchema();
     $schema = $this->itemsToSchema($elements);
+    if (isset($schema['pages'])) {
+      if (isset($draft['sid'])) {
+        $schema['draft']['current_page'] = array_key_exists($draft['currentPage'], $schema['pages']) ? $i = array_search($draft['currentPage'], array_keys($schema['pages'])) : 0;
+      }
+      if (count($draft) > 0) {
+        $schema['draft'] = $draft;
+      }
+    }
     // Add reset button.
     $schema['buttons']['reset'] = $this->resetButtonToUiSchema();
     return $schema;
+  }
+
+  /**
+   * Return draft settings to schema.
+   */
+  public function draftSettingsToSchema() {
+    if ($this->currentUser->isAnonymous()) {
+      return [];
+    }
+    if (!isset($this->webform->getSettings()['draft']) || empty($this->webform->getSettings()['draft'])) {
+      return [];
+    }
+
+    if ($this->webform->getSettings()['draft'] !== 'authenticated') {
+      return [];
+
+    }
+
+    $draft['enable'] = TRUE;
+    $submissions = \Drupal::entityTypeManager()
+      ->getStorage('webform_submission')
+      ->loadByProperties([
+        'uid' => $this->currentUser->id(),
+        'webform_id' => $this->webform->id(),
+        'in_draft' => TRUE,
+      ]);
+    $submission = reset($submissions);
+    if ($submission) {
+      $this->defaultValues = $submission->getRawData();
+      $draft['currentPage'] = $submission->getCurrentPage();
+      $draft['sid'] = $submission->id();
+    }
+    return $draft;
+
   }
 
   /**
@@ -77,17 +126,18 @@ class Webform {
     }
 
     if (array_key_exists('pages', $schema)) {
-      $schema['pages']['settings']['preview']['enable'] = isset($this->webform->getSettings()['preview']) && !empty($this->webform->getSettings()['preview']) ? $this->webform->getSettings()['preview'] > 0 : FALSE;
-      $schema['pages']['settings']['preview']['label'] = isset($this->webform->getSettings()['preview_label']) && !empty($this->webform->getSettings()['preview_label']) ? $this->webform->getSettings()['preview_label'] : '';
-      $schema['pages']['settings']['preview']['title'] = isset($this->webform->getSettings()['preview_title']) && !empty($this->webform->getSettings()['preview_title']) ? $this->webform->getSettings()['preview_title'] : '';
-      $schema['pages']['settings']['preview']['message'] = isset($this->webform->getSettings()['preview_message']) && !empty($this->webform->getSettings()['preview_message']) ? $this->webform->getSettings()['preview_message'] : '';
-      $schema['pages']['settings']['preview']['excluded_elements'] = isset($this->webform->getSettings()['preview_excluded_elements']) && !empty($this->webform->getSettings()['preview_excluded_elements']) ? $this->webform->getSettings()['preview_excluded_elements'] : [];
-      $schema['pages']['settings']['preview']['excluded_elements'] = isset($this->webform->getSettings()['preview_excluded_elements']) && !empty($this->webform->getSettings()['preview_excluded_elements']) ? $this->webform->getSettings()['preview_excluded_elements'] : [];
-      $schema['pages']['settings']['wizard']['prev_button_label'] = isset($this->webform->getSettings()['wizard_prev_button_label']) && !empty($this->webform->getSettings()['wizard_prev_button_label']) ? $this->webform->getSettings()['wizard_prev_button_label'] : '';
-      $schema['pages']['settings']['wizard']['next_button_label'] = isset($this->webform->getSettings()['wizard_next_button_label']) && !empty($this->webform->getSettings()['wizard_next_button_label']) ? $this->webform->getSettings()['wizard_next_button_label'] : '';
+      $schema['pages']['webform_preview']['preview']['enable'] = isset($this->webform->getSettings()['preview']) && !empty($this->webform->getSettings()['preview']) ? $this->webform->getSettings()['preview'] > 0 : FALSE;
+      $schema['pages']['webform_preview']['preview']['label'] = isset($this->webform->getSettings()['preview_label']) && !empty($this->webform->getSettings()['preview_label']) ? $this->webform->getSettings()['preview_label'] : '';
+      $schema['pages']['webform_preview']['preview']['title'] = isset($this->webform->getSettings()['preview_title']) && !empty($this->webform->getSettings()['preview_title']) ? $this->webform->getSettings()['preview_title'] : '';
+      $schema['pages']['webform_preview']['preview']['message'] = isset($this->webform->getSettings()['preview_message']) && !empty($this->webform->getSettings()['preview_message']) ? $this->webform->getSettings()['preview_message'] : '';
+      $schema['pages']['webform_preview']['preview']['excluded_elements'] = isset($this->webform->getSettings()['preview_excluded_elements']) && !empty($this->webform->getSettings()['preview_excluded_elements']) ? $this->webform->getSettings()['preview_excluded_elements'] : [];
+      $schema['pages']['webform_preview']['preview']['excluded_elements'] = isset($this->webform->getSettings()['preview_excluded_elements']) && !empty($this->webform->getSettings()['preview_excluded_elements']) ? $this->webform->getSettings()['preview_excluded_elements'] : [];
+      $schema['pages']['webform_preview']['preview']['preview_exclude_empty'] = isset($this->webform->getSettings()['preview_exclude_empty']) && !empty($this->webform->getSettings()['preview_exclude_empty']) ? $this->webform->getSettings()['preview_exclude_empty'] : FALSE;
+      $schema['pages']['webform_preview']['wizard']['prev_button_label'] = isset($this->webform->getSettings()['wizard_prev_button_label']) && !empty($this->webform->getSettings()['wizard_prev_button_label']) ? $this->webform->getSettings()['wizard_prev_button_label'] : '';
+      $schema['pages']['webform_preview']['wizard']['next_button_label'] = isset($this->webform->getSettings()['wizard_next_button_label']) && !empty($this->webform->getSettings()['wizard_next_button_label']) ? $this->webform->getSettings()['wizard_next_button_label'] : '';
     }
-//    $schema['draft']['settings']['draft'] = isset($this->webform->getSettings()['draft']) && !empty($this->webform->getSettings()['draft']) ? $this->webform->getSettings()['draft'] : 'none';
-//    $schema['draft']['settings']['draft_auto_save'] = isset($this->webform->getSettings()['draft']) && !empty($this->webform->getSettings()['draft_auto_save']) ? $this->webform->getSettings()['draft_auto_save'] : FALSE;
+    //    $schema['draft']['settings']['draft'] = isset($this->webform->getSettings()['draft']) && !empty($this->webform->getSettings()['draft']) ? $this->webform->getSettings()['draft'] : 'none';
+    //    $schema['draft']['settings']['draft_auto_save'] = isset($this->webform->getSettings()['draft']) && !empty($this->webform->getSettings()['draft_auto_save']) ? $this->webform->getSettings()['draft_auto_save'] : FALSE;
 
     return $schema;
   }
@@ -212,8 +262,8 @@ class Webform {
       $properties['validation'] = [];
     }
 
-    if (isset($item['#default_value'])) {
-      $properties['default_value'] = $this->webformTokenManager->replace($item['#default_value'], NULL, [], []);
+    if (isset($item['#default_value']) || isset($this->defaultValues[$field_name])) {
+      $properties['default_value'] = $this->webformTokenManager->replace($this->defaultValues[$field_name] ?? $item['#default_value'], NULL, [], []);
     }
 
     if (isset($item['#title_display'])) {
