@@ -16,8 +16,10 @@ fields:
       '#required': TRUE
 extra_fields:
   intro:
-    type: textarea
+    type: text_format
     label: 'Introduction'
+    options:
+      "#format": full_html
   bigtitle:
     type: text
     label: "Titre d'accordion"
