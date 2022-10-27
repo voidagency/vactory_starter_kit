@@ -1,0 +1,5 @@
+vactory_user_migrate.settings:
+  title: Vactory User Migrate Settings
+  parent: system.admin_config_vactory-user
+  route_name: vactory_user_migrate.settings
+  weight: 10

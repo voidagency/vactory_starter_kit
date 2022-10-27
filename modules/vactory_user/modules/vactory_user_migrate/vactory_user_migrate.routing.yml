@@ -1,0 +1,7 @@
+vactory_user_migrate.settings:
+  path: '/admin/config/vactory-user/migrate'
+  defaults:
+    _title: 'Vactory User Migrate Settings'
+    _form: 'Drupal\vactory_user_migrate\Form\SettingsForm'
+  requirements:
+    _permission: 'administer site configuration'
