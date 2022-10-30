@@ -1,0 +1,52 @@
+id: vactory_user_migrate
+label: 'Vactory Users'
+migration_group: vactory
+dependencies:
+  enforced:
+    module:
+    - vactory_user_migrate
+source:
+  plugin: csv
+  path: private://user-migrate/users.csv
+  header_row_count: 1
+  ids: [Email]
+  delimiter: ","
+process:
+  status:
+    plugin: vactory_trim
+    source: Active
+  name:
+    plugin: vactory_email_username
+    source: Email
+  mail:
+    plugin: vactory_trim
+    source: Email
+  pass:
+    plugin: hash_password
+    source: Password
+  field_telephone:
+    plugin: vactory_trim
+    source: Phone
+  field_first_name:
+    plugin: vactory_trim
+    source: FirstName
+  field_last_name:
+    plugin: vactory_trim
+    source: LastName
+  field_date_of_birth:
+    -
+      plugin: vactory_trim
+      source: DateOfBirth
+    -
+      plugin: format_date
+      from_format: 'd/m/Y'
+      to_format: 'Y-m-d'
+  user_picture:
+    -
+      plugin: vactory_trim
+      source: Picture
+    -
+      plugin: vactory_file
+destination:
+  plugin: entity:user
+  default_bundle: user

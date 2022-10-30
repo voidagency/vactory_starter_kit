@@ -1,0 +1,8 @@
+name: 'Form Confirmation'
+multiple: FALSE
+category: 'Formulaires'
+enabled: TRUE
+fields:
+  link:
+    type: textfield
+    label: 'Back To Form'

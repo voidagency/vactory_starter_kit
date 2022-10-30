@@ -1,0 +1,10 @@
+block.block.*.third_party.block_page_class:
+  type: mapping
+  label: Block page class third party settings
+  mapping:
+    body_classes:
+      type: string
+      label: Additional classes for the body
+    html_classes:
+      type: string
+      label: Additional classes for the html

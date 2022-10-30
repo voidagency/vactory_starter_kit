@@ -268,13 +268,20 @@ function vactory_news_jsonapi_vcc_normalized_node_alter(&$normalized_node, $cont
  * Implements hook_json_api_collection_alter().
  */
 function vactory_news_json_api_collection_alter(&$filters, &$context) {
-  $query = \Drupal::request()->query->get("q");
 
-  if (empty($query)) {
-    return;
+  if ($context['id'] === 'vactory_news_pre_filtered_block') {
+    if ($filters['optional_filters_data']['taxonomy_term']['vactory_news_theme']) {
+      $filters["filter[internal_thematic][condition][path]"] = "field_vactory_news_theme.drupal_internal__tid";
+      $filters["filter[internal_thematic][condition][operator]"] = "=";
+      $filters["filter[internal_thematic][condition][value]"] = $filters['optional_filters_data']['taxonomy_term']['vactory_news_theme'];
+    }
   }
 
   if ($context['id'] === 'vactory_news_list') {
+    $query = \Drupal::request()->query->get("q");
+    if (empty($query)) {
+      return;
+    }
 
     if (isset($query["page"])) {
       $filters["page[offset]"] = intval($query["page"]) > 0 ? intval($query["page"]) - 1 : 0;
@@ -305,4 +312,5 @@ function vactory_news_json_api_collection_alter(&$filters, &$context) {
 
     }
   }
+
 }

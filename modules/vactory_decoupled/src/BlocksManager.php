@@ -208,6 +208,8 @@ class BlocksManager
         'block_cache' => $block_content['cache'],
         'visibilityConditions' => $visibilityCollection,
         'classes' => $block->getThirdPartySetting('block_class', 'classes'),
+        'body_classes' => $block->getThirdPartySetting('block_page_class', 'body_classes') ?? '',
+        'html_classes' => $block->getThirdPartySetting('block_page_class', 'html_classes') ?? '',
         'container' => $block->getThirdPartySetting('vactory_field', 'block_container') ?? 'narrow_width',
         'container_spacing' => $block->getThirdPartySetting('vactory_field', 'container_spacing') ?? 'small_space',
       ];

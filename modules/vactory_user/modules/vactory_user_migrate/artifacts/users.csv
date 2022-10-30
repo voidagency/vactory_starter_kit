@@ -1,0 +1,4 @@
+Email,Password,Phone,FirstName,LastName,DateOfBirth,Active,Picture
+toto@void.fr,toto$void.fr,0766666666,Toto,Tata,19/09/2000,1,https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg
+foo@void.fr,foo$void.fr,0755555555,Foo,Faa,19/10/2001,1,https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg
+bar@void.fr,barvoid.fr,0744444444,Bar,Bor,19/10/2002,1,https://images.pexels.com/photos/220453/pexels-photo-220453.jpeg

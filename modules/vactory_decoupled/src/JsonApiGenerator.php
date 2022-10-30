@@ -81,13 +81,15 @@ class JsonApiGenerator {
     $parsed = [];
     foreach ($filters as $line) {
       [$name, $qsvalue] = explode("=", $line, 2);
-      $parsed[trim($name)] = urldecode(trim(\Drupal::token()->replace($qsvalue, [])));
+      $parsed[trim($name)] = urldecode(trim(\Drupal::token()
+        ->replace($qsvalue, [])));
     }
 
     $original_filters_parsed = [];
     foreach ($original_filters as $line) {
       [$name, $qsvalue] = explode("=", $line, 2);
-      $original_filters_parsed[trim($name)] = urldecode(trim(\Drupal::token()->replace($qsvalue, [])));
+      $original_filters_parsed[trim($name)] = urldecode(trim(\Drupal::token()
+        ->replace($qsvalue, [])));
     }
 
     /*
@@ -118,9 +120,10 @@ class JsonApiGenerator {
         $hook_context["entity_id"] = $entity_param->id();
       }
     }
-
-    \Drupal::moduleHandler()->alter('json_api_collection', $parsed, $hook_context);
-
+    $parsed['optional_filters_data'] = $config['optional_filters_data'] ?? [];
+    \Drupal::moduleHandler()
+      ->alter('json_api_collection', $parsed, $hook_context);
+    unset($parsed['optional_filters_data']);
     parse_str(http_build_query($parsed), $query_filters);
     parse_str(http_build_query($original_filters_parsed), $query_original_filters);
 

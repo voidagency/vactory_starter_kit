@@ -48,7 +48,7 @@ class InternalNodeEntityBreadcrumbFieldItemList extends FieldItemList {
 
     $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
     $config = \Drupal::config('vactory_decoupled_breadcrumb.settings');
-    $this->menuNames = $config->get('enabled_menu');
+    $this->menuNames = $config->get('enabled_menu') ?? [];
 
     // Attempt to grab links from menu.
     $links = $this->getFromMenu($entity);

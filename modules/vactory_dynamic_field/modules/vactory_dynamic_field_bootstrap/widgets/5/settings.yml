@@ -1,11 +1,22 @@
-name: 'Bootstrap - Tabs'
+name: "Bootstrap - Tabs"
 multiple: TRUE
-category: 'Grouping'
+category: "Grouping"
 enabled: TRUE
+extra_fields:
+  bigtitle:
+    type: text
+    label: "Grand titre"
+  intro:
+    type: text_format
+    label: 'Introduction'
+    options:
+      "#format": full_html
 fields:
   title:
-      type: text
-      label: 'Title'
+    type: text
+    label: "Title"
   description:
-        type: textarea
-        label: 'Description'
+    type: text_format
+    label: "Description"
+    options:
+      "#format": full_html

@@ -208,6 +208,19 @@ function vactory_decoupled_entity_base_field_info(EntityTypeInterface $entity_ty
   }
 
   if ($entity_type->id() === 'node') {
+    $fields['internal_metatag'] = BaseFieldDefinition::create('map')
+      ->setLabel(t('Node Metatags'))
+      ->setDescription(t('Defined metatags per node'))
+      ->setTranslatable(FALSE)
+      ->setClass('\Drupal\vactory_decoupled\Plugin\Field\InternalNodeMetatagsFieldItemList')
+      ->setComputed(TRUE)
+      ->setReadOnly(TRUE)
+      ->setTargetEntityTypeId($entity_type->id())
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE);
+  }
+
+  if ($entity_type->id() === 'node') {
     $fields['internal_comment'] = BaseFieldDefinition::create('map')
       ->setLabel(t('Node comment'))
       ->setDescription(t('Defined comment per node'))
@@ -675,6 +688,9 @@ function vactory_decoupled_jsonapi_default_enhancers_info() {
     'internal_blocks' => [
       'enhancer' => 'vactory_blocks',
     ],
+    // 'field_vactory_meta_tags' => [
+    //   'enhancer' => 'vactory_metatag',
+    // ],
   ];
 }
 
