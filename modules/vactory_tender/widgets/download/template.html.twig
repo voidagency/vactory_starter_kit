@@ -1,0 +1,23 @@
+{% set link_attributes = create_attribute() %}
+{% set link_attributes = content.0.link.attributes.id is not empty ? link_attributes.setAttribute('id', content.0.link.attributes.id ) : link_attributes %}
+{% set link_attributes = content.0.link.attributes.class is not empty ? link_attributes.setAttribute('class', content.0.link.attributes.class ~ ' btn btn-primary') : link_attributes.setAttribute('class','btn btn-primary') %}
+{% set link_attributes = content.0.link.attributes.target is not empty ? link_attributes.setAttribute('target', content.0.link.attributes.target ) : link_attributes %}
+{% set link_attributes = content.0.link.attributes.rel is not empty ? link_attributes.setAttribute('rel', content.0.link.attributes.rel ) : link_attributes %}
+
+<div class="fdb-block">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-10 text-center">
+            {% if content.0.title is not empty %}
+                <h2>{{ content.0.title }}</h2>
+            {% endif %}
+            {% if content.0.description is not empty %}
+                <div>{{ content.0.description.value|raw }}</div>
+            {% endif %}
+            {% if content.0.link.url is not empty and content.0.link.title is not empty %}
+                 <p class="mt-5 mt-sm-4">
+                    <a href="{{ content.0.link.url }}" {{ link_attributes }} > {{ content.0.link.title }} </a>
+                </p>
+            {% endif %}
+        </div>
+    </div>
+</div>
