@@ -1,0 +1,49 @@
+.rapport-card {
+  position: relative;
+  padding: 10px;
+  padding: 0.625rem;
+  height: 326px;
+  height: 20.375rem;
+}
+
+.rapport-card * {
+  color: #fff;
+}
+
+.rapport-card_item {
+  background-size: cover;
+  background-position: left bottom;
+  height: 100%;
+  padding: 20px;
+  padding: 1.25rem;
+}
+
+.rapport-card_description {
+  margin-bottom: auto;
+  margin-top: auto;
+}
+
+.rapport-card_video a {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+}
+
+.rapport-card_video a i {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: 33px;
+  font-size: 2.0625rem;
+  background: #007bff;
+  padding: 0px 10px;
+  padding: 0 0.625rem;
+  text-align: center;
+  border-radius: 6px;
+  border-radius: 0.375rem;
+  -webkit-transform: translate(-50%, -50%);
+      -ms-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%);
+}

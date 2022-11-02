@@ -1,6 +1,11 @@
-<div class="t-slider-cards t-3-cols">
-  <h3>Big Title</h3>
+{% if dir == 'rtl' %}
+    {{ attach_library('vactory_dynamic_field_default/df_default_widget_7_rtl') }}
+{% else %}
+    {{ attach_library('vactory_dynamic_field_default/df_default_widget_7') }}
+{% endif %}
 
+<div class="t-slider-cards t-3-cols">
+  <div class='mb-3 text-center'>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s </div>
   <div class="row vf-slick-slider"
        data-mobile-arrows="true"
        data-toshow="3">
@@ -28,3 +33,8 @@
   </div>
   <div class="slick-controls d-lg-none"></div>
 </div>
+
+<div class="text-center mt-4">
+    <a class="btn btn-primary" href="#">Read More</a>
+  </div>
+

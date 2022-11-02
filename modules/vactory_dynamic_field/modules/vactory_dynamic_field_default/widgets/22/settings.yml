@@ -29,3 +29,13 @@ extra_fields:
   mode:
     type: checkbox
     label: 'Active reverse mode'
+  slideToShowTablet:
+    type: number
+    label: 'how many slide to show in tablet view'
+    options:
+      '#required': TRUE
+  slideToShowDesktop:
+    type: number
+    label: 'how many slide to show in desktop view'
+    options:
+      '#required': TRUE

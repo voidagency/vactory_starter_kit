@@ -1,0 +1,36 @@
+<div class="vf-slider vf-slider--variant1">
+  <div class="vf-slider__items items vf-slick-slider slick-arrows-mobile"
+       data-toshow="1"
+       data-toscroll="1"
+       data-autoplay="true"
+       data-arrows="true"
+       data-mobile-arrows="true"
+  >
+    {% for i in 0..4 %}
+      {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/400/200.jpg" %}
+      <div class="slick-item">
+        <div class="vf-slider__item">
+          <div class="vf-slider__image lazy-wrapper">
+            <img alt="Image alternate"
+                 class="img-fluid lazyload"
+                 src="{{ content.image_placeholder }}"
+                 data-src="{{ placehold }}">
+          </div>
+          <div class="vf-slider__content">
+            <h3 class="vf-slider__title">Title</h3>
+            <div class="vf-slider__body">
+              <p>
+                Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the
+                industry's standard dummy text ever since the 1500s.
+              </p>
+            </div>
+            <div class="vf-slider__cta">
+              <a href="#" class="btn btn-primary">Read more</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  <div class="slick-controls d-lg-none"></div>
+</div>

@@ -1,0 +1,5 @@
+scripts:
+  js:
+    js/app.js: {}
+  dependencies:
+    - core/jquery

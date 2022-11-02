@@ -1,13 +1,13 @@
 langcode: en
 status: true
 dependencies:
-  enforced:
-    module:
-      - vactory_forums
   config:
     - node.type.vactory_forum
   module:
     - content_translation
+  enforced:
+    module:
+      - vactory_forums
 third_party_settings:
   content_translation:
     enabled: true

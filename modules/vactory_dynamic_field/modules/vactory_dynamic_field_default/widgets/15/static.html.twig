@@ -22,3 +22,26 @@
 
   {% endfor %}
 </div>
+
+
+<div class="row vf-slick-slider vf-slick-mobile slick-padding wow"
+     data-mobile-centermode="true"
+     data-mobile-centerpadding="40px">
+  {% for item in 0..2 %}
+    <div class="col-md-4 shadow">
+      <div>
+
+          <div class="font-weight-bold h3 mb-2">
+              <span> + </span>
+              <span class="js-number-animate" data-number="{{ 70 }}">{{ 0 }}</span>
+              <span> M </span>
+          </div>
+
+          <p class="font-weight-bold mb-2"> Sunt autem quibusdam </p>
+
+          <p>Nam at tortor in tellus interdum sagittis. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc, quis gravida magna mi a libero. Vestibulum ullamcorper mauris at ligula</p>
+
+      </div>
+    </div>
+  {% endfor %}
+</div>

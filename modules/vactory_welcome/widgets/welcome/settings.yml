@@ -1,0 +1,17 @@
+name: 'Welcome message'
+multiple: FALSE
+category: 'Welcome'
+enabled: TRUE
+infos:
+  tokens:
+    type: tokens_tree
+fields:
+  message:
+    type: textfield
+    label: 'Message'
+    options:
+      '#placeholder': '[vactory_welcome:message] [current-user:field_first_name:value]'
+      '#description': 'The welcome message, tokens are supported click Browse available tokens link to see existing tokens. <br> NB: Example in placeholder "[vactory_welcome:message] [current-user:field_first_name:value]" will be interpreted as <strong>Good morning John</strong> (Where john is the current user first name, and good mornig is the generated message depending on which hour John has visited the page)'
+  description:
+        type: text_format
+        label: 'Description'

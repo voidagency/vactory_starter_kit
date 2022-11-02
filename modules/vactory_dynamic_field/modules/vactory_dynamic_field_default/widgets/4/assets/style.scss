@@ -1,0 +1,30 @@
+.box {
+  background: $white;
+  transition: all 0.2s ease;
+  border: 2px dashed #dadada;
+  @include rem(margin-top, 10px);
+  box-sizing: border-box;
+  border-radius: 5px;
+  background-clip: padding-box;
+  @include rem(padding, 0 20px 20px 20px);
+  min-height: 340px;
+  .box-title {
+    color: #fff;
+    @include rem(font-size, 24px);
+    font-weight: 300;
+    text-transform: uppercase;
+  }
+  .box-content {
+    @include rem(padding, 16px);
+    border-radius: 0 0 2px 2px;
+    background-clip: padding-box;
+    box-sizing: border-box;
+    p {
+      color: #515c66;
+      text-transform: none;
+    }
+  }
+  &:hover {
+    border: 2px solid #525c7a;
+  }
+}

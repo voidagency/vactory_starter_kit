@@ -1,0 +1,5 @@
+vactoy_decoupled_breadcrumb.settings:
+  title: 'Vactory Decoupled Breadcrumb Settings'
+  base_route_name: vactory_decoupled_breadcrumb.settings
+  names:
+    - vactory_decoupled_breadcrumb.settings

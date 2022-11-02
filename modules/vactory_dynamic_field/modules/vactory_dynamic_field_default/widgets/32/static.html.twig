@@ -1,0 +1,30 @@
+
+    <div class="text-center">
+        Etiam rhoncus. Curabitur suscipit suscipit tellus. Sed in libero ut nibh placerat accumsan. Donec vitae orci sed dolor rutrum auctor. In ac felis quis tortor malesuada pretium. Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean tellus metus, bibendum sed, posuere ac, mattis non, nunc. Fusce vel dui. Sed consequat, leo eget bibendum sodales, augue velit cursus nunc, quis gravida magna mi a libero. Etiam imperdiet imperdiet orci.
+    </div>
+
+<div class="row text-center justify-content-sm-center pt-5">
+    {% for i in 0..1 %}
+        {% set placehold = "https://picsum.photos/id/" ~ random(1, 200) ~ "/160/160.jpg" %}
+        <div class="col-12 col-lg-4 m-auto shadow mt-5 px-4 pb-4">
+           <img alt="Image Alt"
+                class="img-fluid rounded-circle lazyload"
+                src="{{ content.image_placeholder }}"
+                data-src="{{ placehold }}">
+                <h5> Etiam rhoncus</h5>
+                <h6> Etiam rhoncus</h6>
+                <a href='#' target='_blank' class='icon icon-linkedin'></a>
+
+                <a href='#' target='_blank' class='icon icon-twitter'></a>
+
+                <a href='#' target='_blank' class='icon icon-youtube'></a>
+
+        </div>
+
+    {% endfor %}
+</div>
+  <div class="text-center mt-4">
+    <a href="#">
+      Etiam rhoncus
+    </a>
+  </div>

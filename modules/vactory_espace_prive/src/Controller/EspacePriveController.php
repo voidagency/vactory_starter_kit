@@ -85,7 +85,7 @@ class EspacePriveController extends ControllerBase {
   }
 
   /**
-   * Returns Profile edit form for current user.
+   * Returns Profile edit form for the current user.
    */
   public function cleanedProfile() {
     $current_user = \Drupal::currentUser();
@@ -105,10 +105,33 @@ class EspacePriveController extends ControllerBase {
   }
 
   /**
+  * Returns Password Edit Form for the current user
+   */
+   public function editPassword() {
+    $current_user = \Drupal::currentUser();
+    if (!$current_user->isAnonymous()) {
+      $user = \Drupal::service('entity_type.manager')->getStorage('user')
+        ->load($current_user->id());
+      $formObject = \Drupal::entityTypeManager()
+        ->getFormObject('user', 'default')
+        ->setEntity($user);
+      $edit_password_form = \Drupal::formBuilder()->getForm($formObject);
+      unset($edit_password_form["#theme"]);
+      $edit_password_form["#theme"][] = "edit_pwd_form";
+      return [
+        '#theme' => 'espace_prive_edit_pwd',
+        '#edit_password_form' => $edit_password_form,
+      ];
+    }
+    throw new NotFoundHttpException();
+   }
+
+  /**
    * Returns email form for reset password.
    */
   public function resetPassword() {
-    $is_anonymous = \Drupal::currentUser()->isAnonymous();
+    $current_user = \Drupal::currentUser();
+    $is_anonymous = $current_user->isAnonymous();
     if ($is_anonymous) {
       $password_form = \Drupal::formBuilder()->getForm(UserPasswordForm::class);
       return [
@@ -116,7 +139,7 @@ class EspacePriveController extends ControllerBase {
         '#password_form' => $password_form,
       ];
     }
-    return $this->redirect('vactory_espace_prive.profile');
+    return $this->redirect('vactory_espace_prive.profile',["user" => $current_user->id()]);
   }
 
   /**

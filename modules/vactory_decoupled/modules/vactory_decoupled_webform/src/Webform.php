@@ -25,6 +25,8 @@ class Webform
    */
   protected $webformTokenManager;
 
+  const CONTAINERS = ['webform_flexbox', 'container', 'fieldset', 'details'];
+
   public function __construct(WebformTokenManager $webformTokenManager) {
     $this->webformTokenManager = $webformTokenManager;
   }
@@ -40,7 +42,10 @@ class Webform
   {
     $this->webform = \Drupal\webform\Entity\Webform::load($webform_id);
     $elements = $this->webform->getElementsInitialized();
-    return $this->itemsToSchema($elements);
+    $schema = $this->itemsToSchema($elements);
+    // Add reset button.
+    $schema['buttons']['reset'] = $this->resetButtonToUiSchema();
+    return $schema;
   }
 
   /**
@@ -54,13 +59,96 @@ class Webform
     $schema = [];
 
     foreach ($items as $key => $item) {
-      if ($key === 'actions') {
+      if (isset($item['#type']) && $item['#type'] === 'webform_actions') {
+        $schema['buttons']['actions'][$key] = $this->SubmitbuttonsToUiSchema($item);
         continue;
       }
-      $schema[$key] = $this->itemToUiSchema($key, $item, $items);
+      if (in_array($item['#type'], self::CONTAINERS)) {
+        $schema[$key] = $this->containersToUiSchema($key, $item, $items);
+      }
+      else {
+        $schema[$key] = $this->itemToUiSchema($key, $item, $items);
+      }
+    }
+    return $schema;
+  }
+
+  /**
+   * Containers to ui schema.
+   */
+  public function containersToUiSchema($key, $item, $items) {
+    $fields = [];
+    $flexTotal = 0;
+    foreach ($items[$key] as $key => $field) {
+      if (strpos($key, "#") !== 0) {
+        if (array_key_exists('#webform_parent_flexbox', $field) && $field['#webform_parent_flexbox']) {
+          $flexTotal+= array_key_exists('#flex', $field) ? $field['#flex'] : 1;
+        }
+        $fields[$key] = $field;
+      }
     }
 
-    return $schema;
+    $properties = [
+      'type' => $item['#type'],
+      'title' => $item['#title'] ?? '',
+    ];
+
+    if (isset($item['#align_items'])) {
+      $properties['align_items'] = $item['#align_items'];
+    }
+
+    if (isset($item['#title_display'])) {
+      $properties['title_display'] = $item['#title_display'];
+    }
+
+    if (isset($item['#description'])) {
+      $properties['description'] = $item['#description'];
+
+      if (isset($item['#description_display'])) {
+        $properties['description_display'] = $item['#description_display'];
+      }
+    }
+
+    if (array_key_exists('#webform_parent_flexbox', $item) && $item['#webform_parent_flexbox']) {
+      $properties['flex'] = array_key_exists('#flex', $item) ? $item['#flex'] : 1;
+    }
+
+    (isset($item['#attributes']['class']) && !empty($item['#attributes']['class'])) ? $properties['class'] = implode(" ", $item['#attributes']['class']) : "";
+
+    if ($fields !== []) {
+      $properties['childs'] = $this->itemsToSchema($fields);
+      if ($flexTotal > 1) {
+        $properties['childs']['flexTotal'] = $flexTotal;
+      }
+    }
+
+    return $properties;
+  }
+
+  /**
+   * Add reset button to ui schema.
+   *
+   * @return array
+   */
+  public function resetButtonToUiSchema() {
+    $properties = [];
+    $properties['hidden'] = !$this->webform->getSetting('form_reset');
+    $properties['text'] = t('Reset');
+    return $properties;
+  }
+
+  /**
+   * Add Buttons to ui schema.
+   *
+   * @param $item
+   *
+   * @return array
+   */
+  public function SubmitbuttonsToUiSchema($item) {
+    $properties = [];
+    $properties['text'] = isset($item['#submit__label']) ? $item['#submit__label'] : (isset($item['#title']) ? $item['#title'] : '');
+    $properties['type'] = $item['#type'];
+    return $properties;
   }
 
   /**
@@ -80,6 +168,10 @@ class Webform
 
     if (isset($item['#default_value'])) {
       $properties['default_value'] = $this->webformTokenManager->replace($item['#default_value'], NULL, [], []);
+    }
+
+    if (isset($item['#title_display'])) {
+      $properties['title_display'] = $item['#title_display'];
     }
 
     // @todo: webform_terms_of_service
@@ -121,6 +213,7 @@ class Webform
     $ui_type = $types[$type];
     $properties['type'] = $ui_type;
     (isset($item['#title']) && !is_null($item['#title'])) ? $properties['label'] = $item['#title'] : NULL;
+    (array_key_exists('#webform_parent_flexbox', $item) && $item['#webform_parent_flexbox']) ? $properties['flex'] = (array_key_exists('#flex', $item) ? $item['#flex'] : 1) : 1;
     (isset($item['#placeholder']) && !is_null($item['#placeholder'])) ? $properties['placeholder'] = (string)t($item['#placeholder']) : NULL;
     (isset($item['#description']) && !is_null($item['#description'])) ? $properties['helperText'] = (string)t($item['#description']) : NULL;
     (isset($item['#readonly']) && !is_null($item['#readonly'])) ? $properties['readOnly'] = $item['#readonly'] : NULL;
@@ -131,6 +224,7 @@ class Webform
     (isset($item['#options_display']) && !is_null($item['#options_display'])) ? $properties['optionsDisplay'] = $item['#options_display'] : NULL;
     (isset($item['#options_all']) && !is_null($item['#options_all'])) ? $properties['optionsAll'] = $item['#options_all'] : NULL;
     (isset($item['#options_none']) && !is_null($item['#options_none'])) ? $properties['optionsNone'] = $item['#options_none'] : NULL;
+    (isset($item['#attributes']['class']) && !empty($item['#attributes']['class'])) ? $properties['class'] = implode(" ", $item['#attributes']['class']) : "";
 
     if (isset($item['#required'])) {
       $properties['validation']['required'] = TRUE;

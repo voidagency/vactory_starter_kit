@@ -1,0 +1,37 @@
+name: 'Vactory Timeout'
+multiple: FALSE
+category: 'Timeout'
+enabled: TRUE
+fields:
+  redirect_url:
+    type: text
+    label: Redirect url/path
+    options:
+      '#required': TRUE
+  timeout:
+    type: number
+    label: Timeout in seconds
+    options:
+      '#min': 15
+      '#required': TRUE
+  confirm_popup:
+    type: checkbox
+    label: Show confirm redirect popup
+  confirm_text:
+    type: text
+    label: Confirmation popup text
+    options:
+      '#placeholder': 'Ex: ⚠️ Attention! vous serez redirigé vers une autre page!'
+    conditions:
+      visible:
+        'components[0][confirm_popup]':
+          checked: TRUE
+  cancel_text:
+    type: text
+    label: Cancel button text
+    options:
+      '#placeholder': 'Ex: Rester sur cette page'
+    conditions:
+      visible:
+        'components[0][confirm_popup]':
+          checked: TRUE

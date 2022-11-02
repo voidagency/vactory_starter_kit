@@ -2,3 +2,9 @@ name: 'Search input'
 multiple: FALSE
 category: 'Forum'
 enabled: TRUE
+fields:
+  forum_search_path:
+    type: url_extended
+    label: 'Forum Search Link'
+    options:
+      '#required': TRUE

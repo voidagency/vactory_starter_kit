@@ -1,0 +1,51 @@
+<?php
+
+/**
+ * @file
+ * Adding classes to blocks.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\block\BlockInterface;
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ */
+function vactory_decoupled_page_class_attribute_block_presave(BlockInterface $entity) {
+  if (empty($entity->getThirdPartySetting('block_page_class', 'body_classes'))) {
+    $entity->unsetThirdPartySetting('block_page_class', 'body_classes');
+  }
+  if (empty($entity->getThirdPartySetting('block_page_class', 'html_classes'))) {
+    $entity->unsetThirdPartySetting('block_page_class', 'html_classes');
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function vactory_decoupled_page_class_attribute_form_block_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if (\Drupal::currentUser()->hasPermission('administer page classes attributes')) {
+
+    /** @var \Drupal\block\BlockInterface $block */
+    $block = $form_state->getFormObject()->getEntity();
+
+    // This will automatically be saved in the third party settings.
+    $form['third_party_settings']['#tree'] = TRUE;
+    $form['third_party_settings']['block_page_class']['body_classes'] = [
+      '#type' => 'textfield',
+      '#title' => t('BODY ELEMENT CSS class(es)'),
+      '#description' => t('Customize the styling of the page by adding CSS classes to BODY element. Separate multiple classes by spaces.'),
+      '#default_value' => $block->getThirdPartySetting('block_page_class', 'body_classes'),
+      '#maxlength' => 255,
+    ];
+
+    $form['third_party_settings']['block_page_class']['html_classes'] = [
+      '#type' => 'textfield',
+      '#title' => t('HTML ELEMENT CSS class(es)'),
+      '#description' => t('Customize the styling of the page by adding CSS classes to HTML element. Separate multiple classes by spaces.'),
+      '#default_value' => $block->getThirdPartySetting('block_page_class', 'html_classes'),
+      '#maxlength' => 255,
+    ];
+
+  }
+}

@@ -1,9 +1,14 @@
-name: '77 - Froala - Features 3 Blocks Title & Description With CTA'
+name: 'D30 - Features blocks'
 multiple: TRUE
-category: 'Froala'
+category: 'Content'
 enabled: TRUE
-limit: 3
 fields:
+  image:
+    type: image
+    label: 'Picto'
+  image_alt:
+      type: text
+      label: 'Text alternatif'
   title:
     type: text
     label: 'Titre'
@@ -13,7 +18,3 @@ fields:
   link:
     type: url_extended
     label: 'Lien'
-extra_fields:
-  title:
-      type: text
-      label: 'Titre'

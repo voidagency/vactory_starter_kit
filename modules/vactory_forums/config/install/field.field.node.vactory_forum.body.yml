@@ -1,14 +1,14 @@
 langcode: en
 status: true
 dependencies:
-  enforced:
-    module:
-      - vactory_forums
   config:
     - field.storage.node.body
     - node.type.vactory_forum
   module:
     - text
+  enforced:
+    module:
+      - vactory_forums
 id: node.vactory_forum.body
 field_name: body
 entity_type: node

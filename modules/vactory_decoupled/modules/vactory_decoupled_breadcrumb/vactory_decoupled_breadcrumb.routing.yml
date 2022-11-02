@@ -1,0 +1,7 @@
+vactory_decoupled_breadcrumb.settings:
+  path: '/admin/config/decoupled-breadcrumb'
+  defaults:
+    _title: 'Decoupled breadcrumb settings'
+    _form: 'Drupal\vactory_decoupled_breadcrumb\Form\SettingsForm'
+  requirements:
+    _permission: 'administer site configuration'

@@ -1,0 +1,14 @@
+name: 'Rooms'
+multiple: TRUE
+category: 'Forum'
+enabled: TRUE
+fields:
+  section:
+    type: json_api_section_forums
+    label: 'Forum Section'
+    options:
+      '#required': TRUE
+extra_fields:
+  forum_cta:
+    type: url_extended
+    label: 'Lien vers forums'

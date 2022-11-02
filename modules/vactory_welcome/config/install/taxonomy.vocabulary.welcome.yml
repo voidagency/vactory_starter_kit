@@ -1,0 +1,7 @@
+langcode: en
+status: true
+dependencies: {  }
+name: 'Welcome Term'
+vid: welcome
+description: ''
+weight: 0
