@@ -87,6 +87,7 @@ class WebformController extends ControllerBase
     if ($webform_submission instanceof WebformSubmissionInterface) {
       return new JsonResponse([
         'sid' => $webform_submission->id(),
+        'crypted_sid' => \Drupal::service('vactory_core.tools')->encrypt('vactory_tender' . $webform_submission->id()),
         'settings' => self::getWhitelistedSettings($webform),
       ]);
     } else {
