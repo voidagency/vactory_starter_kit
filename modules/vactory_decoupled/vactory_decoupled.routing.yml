@@ -1,18 +1,18 @@
-vactory_decoupled.image:
-  path: '/app-image/{cached_uri}/{width}/{height}/{fid}/{filename}'
-  defaults:
-    _controller: '\Drupal\vactory_decoupled\Controller\ImageController::image'
-    _disable_route_normalizer: 'TRUE'
-  requirements:
-    _permission: 'access content'
+# vactory_decoupled.image:
+#   path: '/app-image/{cached_uri}/{width}/{height}/{fid}/{filename}'
+#   defaults:
+#     _controller: '\Drupal\vactory_decoupled\Controller\ImageController::image'
+#     _disable_route_normalizer: 'TRUE'
+#   requirements:
+#     _permission: 'access content'
 
-vactory_decoupled.create_image_style:
-  path: '/app-image/create-style'
-  defaults:
-    _controller: '\Drupal\vactory_decoupled\Controller\ImageStyleController::image'
-    _disable_route_normalizer: 'TRUE'
-  requirements:
-    _permission: 'access content'
+# vactory_decoupled.create_image_style:
+#   path: '/app-image/create-style'
+#   defaults:
+#     _controller: '\Drupal\vactory_decoupled\Controller\ImageStyleController::image'
+#     _disable_route_normalizer: 'TRUE'
+#   requirements:
+#     _permission: 'access content'
 
 vactory_decoupled.translations:
   path: '/_translations'
@@ -23,21 +23,21 @@ vactory_decoupled.translations:
   requirements:
     _permission: 'access content'
 
-vactory_decoupled.blocks:
-  path: '/_blocks'
-  defaults:
-    _controller: '\Drupal\vactory_decoupled\Controller\BlocksController::index'
-  methods: [GET]
-  requirements:
-    _permission: 'access content'
+# vactory_decoupled.blocks:
+#   path: '/_blocks'
+#   defaults:
+#     _controller: '\Drupal\vactory_decoupled\Controller\BlocksController::index'
+#   methods: [GET]
+#   requirements:
+#     _permission: 'access content'
 
-vactory_decoupled.breadcrumb:
-  path: '/_breadcrumb'
-  defaults:
-    _controller: '\Drupal\vactory_decoupled\Controller\BreadcrumbController::index'
-  methods: [GET]
-  requirements:
-    _permission: 'access content'
+# vactory_decoupled.breadcrumb:
+#   path: '/_breadcrumb'
+#   defaults:
+#     _controller: '\Drupal\vactory_decoupled\Controller\BreadcrumbController::index'
+#   methods: [GET]
+#   requirements:
+#     _permission: 'access content'
 
 vactory_decoupled.menus:
   path: '/_menus'
@@ -141,3 +141,12 @@ vactory_decoupled.login_token:
   methods: [POST]
   requirements:
     _access: 'TRUE'
+
+vactory_decoupled.store_log_message:
+  path: '/api/capture-log'
+  defaults:
+    _controller: '\Drupal\vactory_decoupled\Controller\LogController::storeLogMessage'
+    _disable_route_normalizer: 'TRUE'
+  methods: [POST]
+  requirements:
+    _permission: 'access content'
