@@ -243,3 +243,22 @@ df_default_widget_36_rtl:
   css:
     theme:
       ./widgets/36/assets/style-rtl.css: {}
+
+###############################################################################
+
+df_default_widget_47_script:
+  js:
+    ./widgets/47/assets/script.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+
+df_default_widget_47:
+  css:
+    theme:
+      ./widgets/47/assets/style.css: {}
+
+df_default_widget_47_rtl:
+  css:
+    theme:
+      ./widgets/47/assets/style-rtl.css: {}
