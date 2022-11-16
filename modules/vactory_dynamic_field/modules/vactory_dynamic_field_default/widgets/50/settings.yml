@@ -24,3 +24,11 @@ fields:
   link:
     type: url_extended
     label: 'Link'
+   position:
+    type: select
+    label: "Content position"
+    options:
+      "#options":
+        - "right": "Right"
+        - "center": "Center"
+        - "left": "Left"
