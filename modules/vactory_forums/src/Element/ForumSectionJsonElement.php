@@ -46,6 +46,7 @@ class ForumSectionJsonElement extends JsonApiCollectionElement {
       'fields[media--image]=name,thumbnail' . "\n" .
       'fields[file--image]=filename,uri'. "\n" .
       'filter[status][value]=1'. "\n" .
+      'filter[langcode][value]=[language:langcode]'. "\n" .
       'page[offset]=0'. "\n" .
       'page[limit]=5'. "\n" .
       'sort[sort-vactory-date][path]=field_forum_views_count'. "\n" .

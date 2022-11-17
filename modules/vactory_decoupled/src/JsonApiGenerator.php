@@ -130,6 +130,7 @@ class JsonApiGenerator {
     $response = $this->client->serialize($resource, $query_filters);
     $exposedTerms = $this->getExposedTerms($exposed_vocabularies);
     $response['cache']['tags'] = Cache::mergeTags($response['cache']['tags'], $exposedTerms['cache_tags']);
+    $response['cache']['contexts'] = ['languages:language_interface', 'languages:language_url'];
 
     $client_data = json_decode($response['data']);
 

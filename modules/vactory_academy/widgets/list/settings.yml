@@ -25,6 +25,7 @@ fields:
           - sort[sort-vactory-date][path]=field_vactory_date
           - sort[sort-vactory-date][direction]=DESC
           - filter[status][value]=1
+          - filter[langcode][value]=[language:langcode]
         vocabularies:
           vactory_academy_themes: vactory_academy_themes
 

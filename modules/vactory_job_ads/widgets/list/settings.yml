@@ -19,6 +19,7 @@ fields:
         - page[offset]=0
         - page[limit]=6
         - filter[status][value]=1
+        - filter[langcode][value]=[language:langcode]
         vocabularies:
           vactory_job_ads_city: vactory_job_ads_city
           vactory_job_ads_contract: vactory_job_ads_contract

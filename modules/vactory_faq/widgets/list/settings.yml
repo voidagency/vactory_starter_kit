@@ -18,5 +18,6 @@ fields:
           - page[limit]=9
           - sort=-created
           - filter[status][value]=1
+          - filter[langcode][value]=[language:langcode]
         vocabularies:
           faq_section: faq_section
