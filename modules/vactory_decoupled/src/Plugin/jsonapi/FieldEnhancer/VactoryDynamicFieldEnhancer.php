@@ -341,6 +341,8 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
         // Webform.
         if ($info['type'] === 'webform_decoupled' && !empty($value)) {
           $webform_id = $value['id'];
+          $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), ['webform_submission_list', 'config:webform_list']);
+          $this->cacheability->setCacheTags($cacheTags);
           $value['elements'] = \Drupal::service('vactory.webform.normalizer')->normalize($webform_id);
         }
 

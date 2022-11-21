@@ -4,6 +4,7 @@ namespace Drupal\vactory_private_files_decoupled\Controller;
 
 use DateTime;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\file\Entity\File;
 use Drupal\vactory_private_files_decoupled\Access\PrivateFileTokenGenerator;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -84,27 +85,69 @@ class PrivateFilesController extends ControllerBase {
     if ($files == []) {
       return [];
     }
-    $results = [];
-    foreach ($files as $file) {
-      $uri = $file->downloadUrl();
-      $query = $uri->getOptions()['query'];
-      $sessionId = $this->privateFileTokenGenerator->get($uri->toString(), $this->currentTimeStamp);
-      $query['sessionId'] = $sessionId;
-      $query['timestamp'] = $this->currentTimeStamp;
-      $uri->setOption('query', $query);
-      $results[] = [
-        '_default' => $uri->toString(),
-        'extension' => $file->getMimeType(),
-        'fid' => $file->id(),
-        'file_name' => $file->label(),
-      ];
-    }
+
+    $results = $this->getPrivateFiles($files);
 
     return new JsonResponse([
       'files' => $results,
       'count' => count($results),
     ], Response::HTTP_OK);
 
+  }
+
+  /**
+   * Get Private Files From Fids.
+   */
+  public function generateUrlForPrivateFileFromFids(Request $request) {
+    $fids = $request->query->get('files', []);
+    if ($fids == []) {
+      return [];
+    }
+    $fids = explode(',', $fids);
+    if ($this->currentUser->isAuthenticated()) {
+      $fids = \Drupal::entityQuery('file')
+        ->condition('uid', $this->currentUser->id())
+        ->condition('fid', $fids, 'IN')
+        ->execute();
+    }
+
+    $files = File::loadMultiple($fids);
+    if (!isset($files) || empty($files)) {
+      return [];
+    }
+
+    $results = $this->getPrivateFiles($files);
+    return new JsonResponse([
+      'files' => $results,
+    ], Response::HTTP_OK);
+  }
+
+  public function getPrivateFiles($files) {
+    $results = [];
+    foreach ($files as $file) {
+      if ($this->currentUser->isAuthenticated()) {
+        $uri = $file->downloadUrl();
+        $query = $uri->getOptions()['query'];
+        $sessionId = $this->privateFileTokenGenerator->get($uri->toString(), $this->currentTimeStamp);
+        $query['sessionId'] = $sessionId;
+        $query['timestamp'] = $this->currentTimeStamp;
+        $uri->setOption('query', $query);
+        $results[] = [
+          '_default' => $uri->toString(),
+          'extension' => $file->getMimeType(),
+          'fid' => $file->id(),
+          'file_name' => $file->label(),
+        ];
+      }
+      else {
+        $results[] = [
+          'fid' => $file->id(),
+          'file_name' => $file->label(),
+        ];
+      }
+
+    }
+    return $results;
   }
 
 }
