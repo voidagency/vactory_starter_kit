@@ -1,0 +1,13 @@
+name: 'Toolbox trigger'
+multiple: TRUE
+category: 'Toolbox'
+enabled: TRUE
+fields:
+  link:
+    type: url_extended
+    label: 'item title & link'
+  icon:
+    type: vactory_icon_picker
+    label: 'Icon'
+    options:
+      '#required': TRUE
