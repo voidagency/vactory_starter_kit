@@ -1,0 +1,69 @@
+<?php
+
+use Drupal\Core\Render\RenderContext;
+
+/**
+ * @file
+ * Primary module hooks for Vactory Decoupled Facets module.
+ *
+ * @DCG
+ * This file is no longer required in Drupal 8.
+ * @see https://www.drupal.org/node/2217931
+ */
+
+function vactory_decoupled_facets_preprocess_page(&$v) {
+
+//  /* @var \Drupal\views\ViewExecutable */
+//  $resultSet = [];
+//  $view = \Drupal::entityTypeManager()->getStorage('view')
+//    ->load('search')
+//    ->getExecutable();
+//
+//  $view->setDisplay('page_1');
+//
+//  $view->initDisplay();
+//  $view->execute();
+//  $facetManager = \Drupal::service('facets.manager');
+//  $facets = $facetManager->getFacetsByFacetSourceId('search_api:views_page__search__page_1');
+//  $meta = [];
+//  foreach ($facets as $facet) {
+//    // No need to build the facet if it does not need to be visible.
+//    if ($facet->getOnlyVisibleWhenFacetSourceIsVisible() && (!$facet->getFacetSource() || !$facet->getFacetSource()->isRenderedInCurrentRequest())) {
+//      continue;
+//    }
+//    // Let the facet_manager build the facets, it returns each facet wrapped
+//    // in an array for some reason. For better readability get rid of that.
+//    $facet_results = $facetManager->build($facet);
+//    $facet_data = reset($facet_results);
+//
+//    // If there are no results, the facet manager adds empty behavior render
+//    // array data. We need to strip that out.
+//    if (count($facet->getResults()) === 0) {
+//      $facet_data = reset($facet_data);
+//    }
+//
+//    if ($facet_data) {
+//      $meta[] = $facet_data;
+//    }
+//  }
+//  dump($meta);
+
+  //    $view->preExecute();
+//
+//  /* It can either be calculated via offset or current page */
+//  $view_render_array = NULL;
+//  $rendered_view = NULL;
+//  $rendered = \Drupal::service('renderer');
+//  $rendered->executeInRenderContext(new RenderContext(), function () use ($view, &$view_render_array, &$rendered_view) {
+//    $view_render_array = $view->render($view->current_display);
+////    dump($view_render_array);die;
+//    //    $rendered_view = $view_render_array['#markup']->jsonSerialize();
+//  });
+//
+//  $result = $rendered_view;
+//  $resultSet['resources'] = json_decode($result, TRUE);
+//  $resultSet['count'] = $view->total_rows;
+//
+//  dump($resultSet);
+
+}
