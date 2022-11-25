@@ -7,6 +7,7 @@ dependencies:
   - webform
   - jsonapi_extras
   - rest
+  - vactory_private_files_decoupled
 version: 8.x-1.0
 package: Vactory
 core_incompatible: false
