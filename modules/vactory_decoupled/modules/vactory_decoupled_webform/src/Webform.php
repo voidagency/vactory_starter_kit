@@ -483,7 +483,7 @@ class Webform {
         $item['value'] = $operator_exists ? $condition[$selector][$item['operator']] : $condition[$item['operator']];
         array_push($conditions_to_append, $item);
       }
-      count($conditions_to_append) > 1 ? $states[$state]['operator'] = $operator : NULL;
+      $states[$state]['operator'] = $operator;
       $states[$state]['checks'] = $conditions_to_append;
     }
     return $states;
