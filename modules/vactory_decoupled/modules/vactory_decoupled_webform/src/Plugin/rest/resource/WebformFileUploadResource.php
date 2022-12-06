@@ -106,7 +106,7 @@ class WebformFileUploadResource extends FileUploadResource {
       // Begin building file entity.
       $file = File::create([]);
       $file->setOwnerId($this->currentUser->id());
-      $file->setFilename($prepared_filename);
+      $file->setFilename($filename);
       $file->setMimeType($this->mimeTypeGuesser->guess($prepared_filename));
       $file->setFileUri($file_uri);
       // Set the size. This is done in File::preSave() but we validate the file
