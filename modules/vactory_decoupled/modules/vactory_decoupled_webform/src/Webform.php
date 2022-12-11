@@ -5,6 +5,7 @@ namespace Drupal\vactory_decoupled_webform;
 use Drupal\Core\Session\AccountProxy;
 use Drupal\webform\Element\WebformTermReferenceTrait;
 use Drupal\webform\Entity\WebformSubmission;
+use Drupal\webform\WebformSubmissionConditionsValidator;
 use Drupal\webform\WebformTokenManager;
 
 /**
@@ -442,7 +443,50 @@ class Webform {
       $properties['attributes'] = $item['#wrapper_attributes'];
     }
 
+    if (isset($item['#states'])) {
+      $properties['states'] = $this->getFormElementStates($item);
+    }
+
     return $properties;
+  }
+
+  /**
+   * Returns form element states.
+   */
+  private function getFormElementStates($item) {
+    $states = [];
+    foreach ($item['#states'] as $state => $conditions) {
+      $operator = 'and';
+      $conditions_to_append = [];
+      $operator_exists = FALSE;
+      foreach ($conditions as $key => $condition) {
+        $item = [];
+        if (in_array('or', $conditions) || in_array('xor', $conditions)) {
+          $operator_exists = TRUE;
+          if ($condition == 'or' || $condition == 'xor') {
+            $operator = $condition;
+            continue;
+          }
+          $selector = array_keys($condition)[0];
+        }
+        else {
+          $selector = $key;
+        }
+
+        $input_name = WebformSubmissionConditionsValidator::getSelectorInputName($selector);
+        if (!$input_name) {
+          continue;
+        }
+        $element_key = WebformSubmissionConditionsValidator::getInputNameAsArray($input_name, 0);
+        $item['element'] = $element_key;
+        $item['operator'] = $operator_exists ? array_keys($condition[$selector])[0] : array_keys($condition)[0];
+        $item['value'] = $operator_exists ? $condition[$selector][$item['operator']] : $condition[$item['operator']];
+        array_push($conditions_to_append, $item);
+      }
+      $states[$state]['operator'] = $operator;
+      $states[$state]['checks'] = $conditions_to_append;
+    }
+    return $states;
   }
 
   /**
