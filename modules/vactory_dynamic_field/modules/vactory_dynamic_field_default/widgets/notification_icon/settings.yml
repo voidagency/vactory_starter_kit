@@ -1,0 +1,23 @@
+name: 'notification icon with badge'
+multiple: TRUE
+category: 'Notification'
+enabled: TRUE
+fields:
+  show_notification:
+    type: checkbox
+    label: "show notification"
+  collection:
+    type: json_api_collection
+    label: 'JSON:API'
+    options:
+      '#required': TRUE
+      '#default_value':
+        id: "notification_entity"
+        resource: notifications_entity--notifications_entity
+        filters:
+          - fields[notifications_entity--notifications_entity]=name,user_id,notification_message,notification_concerned_users,notification_viewers,created,drupal_internal__id
+          - fields[user--user]=id,name,user_id
+          - include=user_id
+          - filter[status][value]=1
+        # vocabularies:
+        #   vactory_news_theme: vactory_news_theme
