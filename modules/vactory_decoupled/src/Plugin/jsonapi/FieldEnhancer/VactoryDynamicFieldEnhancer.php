@@ -11,6 +11,7 @@ use Drupal\image\Entity\ImageStyle;
 use Drupal\jsonapi_extras\Plugin\ResourceFieldEnhancerBase;
 use Drupal\media\Entity\Media;
 use Drupal\media\MediaInterface;
+use Drupal\vactory_decoupled\MediaFilesManager;
 use Shaper\Util\Context;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Component\Utility\NestedArray;
@@ -59,6 +60,13 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
    */
   protected $imageStyles;
 
+  /**
+   * The decoupled media files manager service.
+   *
+   * @var \Drupal\vactory_decoupled\MediaFilesManager
+   */
+  protected $mediaFilesManager;
+
   protected $siteConfig;
 
   protected $cacheability;
@@ -66,13 +74,21 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, array $plugin_definition, EntityTypeManagerInterface $entity_type_manager, $plateform_provider) {
+  public function __construct(
+    array $configuration,
+    $plugin_id,
+    array $plugin_definition,
+    EntityTypeManagerInterface $entity_type_manager,
+    $plateform_provider,
+    MediaFilesManager $mediaFilesManager
+  ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->entityTypeManager = $entity_type_manager;
     $this->language = \Drupal::languageManager()->getCurrentLanguage()->getId();
     $this->platformProvider = $plateform_provider;
     $this->imageStyles = ImageStyle::loadMultiple();
     $this->siteConfig = \Drupal::config('system.site');
+    $this->mediaFilesManager = $mediaFilesManager;
   }
 
   /**
@@ -84,7 +100,8 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
       $plugin_id,
       $plugin_definition,
       $container->get('entity_type.manager'),
-      $container->get('vactory_dynamic_field.vactory_provider_manager')
+      $container->get('vactory_dynamic_field.vactory_provider_manager'),
+      $container->get('vacory_decoupled.media_file_manager')
     );
   }
 
@@ -238,8 +255,8 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
                 $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $file->getCacheTags());
                 $this->cacheability->setCacheTags($cacheTags);
                 $uri = $file->thumbnail->entity->getFileUri();
-                $image_item['_default'] = \Drupal::service('file_url_generator')->generateAbsoluteString($uri);
-                $image_item['_lqip'] = $this->imageStyles['lqip']->buildUrl($uri);
+                $image_item['_default'] = $this->mediaFilesManager->getMediaAbsoluteUrl($uri);
+                $image_item['_lqip'] = $this->mediaFilesManager->convertToMediaAbsoluteUrl($this->imageStyles['lqip']->buildUrl($uri));
                 $image_item['uri'] = StreamWrapperManager::getTarget($uri);
                 $image_item['fid'] = $file->thumbnail->entity->fid->value;
                 $image_item['file_name'] = $file->label();
@@ -270,7 +287,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
                 $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $file->getCacheTags());
                 $this->cacheability->setCacheTags($cacheTags);
                 $uri = $file->field_media_video_file->entity->getFileUri();
-                $video_item['_default'] = \Drupal::service('file_url_generator')->generateAbsoluteString($uri);
+                $video_item['_default'] = $this->mediaFilesManager->getMediaAbsoluteUrl($uri);
                 $video_item['uri'] = StreamWrapperManager::getTarget($uri);
                 $video_item['fid'] = $file->thumbnail->entity->fid->value;
                 $video_item['file_name'] = $file->label();
@@ -306,7 +323,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
                   $this->cacheability->setCacheTags($cacheTags);
                   $uri = $document->getFileUri();
                   $file_data[] = [
-                    '_default' => \Drupal::service('file_url_generator')->generateAbsoluteString($uri),
+                    '_default' => $this->mediaFilesManager->getMediaAbsoluteUrl($uri),
                     'uri' => StreamWrapperManager::getTarget($uri),
                     'fid' => $file->id(),
                     'file_name' => $file->label(),

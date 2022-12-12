@@ -33,6 +33,7 @@ class InternalUserEntityFieldItemList extends FieldItemList
     }
 
     $entityFieldManager = \Drupal::service('entity_field.manager');
+    $media_file_manager = \Drupal::service('vacory_decoupled.media_file_manager');
     $fields = $entityFieldManager->getFieldDefinitions($entity_type, $bundle);
 
     $value = [];
@@ -67,8 +68,8 @@ class InternalUserEntityFieldItemList extends FieldItemList
         $uri = $file_entity->getFileUri();
 
         $image_value = [
-          '_default' => \Drupal::service('file_url_generator')->generateAbsoluteString($uri),
-          '_lqip' => $lqipImageStyle->buildUrl($uri),
+          '_default' => $media_file_manager->getMediaAbsoluteUrl($uri),
+          '_lqip' => $media_file_manager->convertToMediaAbsoluteUrl($lqipImageStyle->buildUrl($uri)),
           'uri' => StreamWrapperManager::getTarget($uri),
           'fid' => $file_entity->id(),
           'file_name' => $file_entity->label(),
