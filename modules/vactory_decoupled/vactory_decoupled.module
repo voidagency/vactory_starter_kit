@@ -724,15 +724,26 @@ function vactory_decoupled_jsonapi_resource_config_builder($entity_type, Jsonapi
  * Implements hook_preprocess_HOOK().
  */
 function vactory_decoupled_preprocess_html(&$variables) {
+  $route_name = \Drupal::routeMatch()->getRouteName();
+  if ($route_name === 'system.404') {
+    redirectToFrontend();
+  }
   if ($base_media_url = Settings::get('BASE_MEDIA_URL', '')) {
     $current_domain = \Drupal::request()->getHttpHost();
     $media_url_info = parse_url($base_media_url);
     if (isset($media_url_info['host']) && $media_url_info['host'] === $current_domain) {
-      if ($frontend_url = Settings::get('BASE_FRONTEND_URL', '')) {
-        $requested_path = \Drupal::request()->getPathInfo();
-        $response = new RedirectResponse("${frontend_url}${requested_path}");
-        $response->send();
-      }
+      redirectToFrontend();
     }
+  }
+}
+
+/**
+ * Redirect to frontend url.
+ */
+function redirectToFrontend() {
+  if ($frontend_url = Settings::get('BASE_FRONTEND_URL', '')) {
+    $requested_path = \Drupal::request()->getPathInfo();
+    $response = new RedirectResponse("${frontend_url}${requested_path}");
+    $response->send();
   }
 }
