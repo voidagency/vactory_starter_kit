@@ -726,7 +726,7 @@ function vactory_decoupled_jsonapi_resource_config_builder($entity_type, Jsonapi
 function vactory_decoupled_preprocess_html(&$variables) {
   $route_name = \Drupal::routeMatch()->getRouteName();
   if ($route_name === 'system.404') {
-    redirectToFrontend();
+    redirectToFrontend(TRUE);
   }
   if ($base_media_url = Settings::get('BASE_MEDIA_URL', '')) {
     $current_domain = \Drupal::request()->getHttpHost();
@@ -740,9 +740,9 @@ function vactory_decoupled_preprocess_html(&$variables) {
 /**
  * Redirect to frontend url.
  */
-function redirectToFrontend() {
+function redirectToFrontend($from_404 = FALSE) {
   if ($frontend_url = Settings::get('BASE_FRONTEND_URL', '')) {
-    $requested_path = \Drupal::request()->getPathInfo();
+    $requested_path = $from_404 ? \Drupal::request()->getPathInfo() : '/not-found';
     $response = new RedirectResponse("${frontend_url}${requested_path}");
     $response->send();
   }

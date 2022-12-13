@@ -26,15 +26,22 @@ class MediaFilesManager {
    */
   public function getMediaAbsoluteUrl($uri) {
     $url = $this->fileUrlGenerator->generateAbsoluteString($uri);
-    if ($base_media_url = Settings::get('BASE_MEDIA_URL', '')) {
-      $relative_path = $this->fileUrlGenerator->generateString($uri);
-      $url = $base_media_url . $relative_path;
+    $base_url = \Drupal::request()->getSchemeAndHttpHost();
+    if (strpos($url, $base_url) === 0) {
+      if ($base_media_url = Settings::get('BASE_MEDIA_URL', '')) {
+        $relative_path = $this->fileUrlGenerator->generateString($uri);
+        $url = $base_media_url . $relative_path;
+      }
     }
     return $url;
   }
 
+  /**
+   * Convert to media absolute url.
+   */
   public function convertToMediaAbsoluteUrl($url) {
-    if (strpos($url, 'http') === 0) {
+    $base_url = \Drupal::request()->getSchemeAndHttpHost();
+    if (strpos($url, $base_url) === 0) {
       $url_info = parse_url($url);
       $path = $url_info['path'] ?? '';
       $query = $url_info['query'] ?? '';
