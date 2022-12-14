@@ -29,6 +29,7 @@ fields:
           - page[limit]=9
           - sort=-created
           - filter[status][value]=1
+          - filter[langcode][value]=[language:langcode]
         vocabularies:
           vactory_governance_role: vactory_governance_role
 

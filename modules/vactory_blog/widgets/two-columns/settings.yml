@@ -29,6 +29,7 @@ fields:
           - page[limit]=2
           - sort=-created
           - filter[status][value]=1
+          - filter[langcode][value]=[language:langcode]
   link:
     type: url_extended
     label: 'Lien'

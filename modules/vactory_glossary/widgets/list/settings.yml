@@ -19,6 +19,7 @@ fields:
         - page[limit]=9
         - sort=title
         - filter[status][value]=1
+        - filter[langcode][value]=[language:langcode]
         vocabularies:
           vactory_glossary: vactory_glossary
           tags: tags

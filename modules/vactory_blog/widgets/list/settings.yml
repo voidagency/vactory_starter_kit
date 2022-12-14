@@ -22,6 +22,7 @@ fields:
           - page[limit]=9
           - sort=-created
           - filter[status][value]=1
+          - filter[langcode][value]=[language:langcode]
         vocabularies:
           vactory_blog_categories: vactory_blog_categories
           vactory_blog_tags: vactory_blog_tags
