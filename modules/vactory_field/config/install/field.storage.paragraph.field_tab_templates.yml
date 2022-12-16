@@ -2,8 +2,8 @@ langcode: en
 status: true
 dependencies:
   module:
-    - paragraphs
-    - vactory_dynamic_field
+  - paragraphs
+  - vactory_dynamic_field
 id: paragraph.field_tab_templates
 field_name: field_tab_templates
 entity_type: paragraph
