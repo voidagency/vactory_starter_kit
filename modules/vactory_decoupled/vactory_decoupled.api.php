@@ -5,6 +5,8 @@
  * Hooks specific to the Vactory decoupled module.
  */
 
+use Drupal\Core\Cache\CacheableMetadata;
+
 /**
  * Alter the internal block classification.
  *
@@ -30,13 +32,32 @@ function hook_internal_block_classification_alter(string &$classification, array
  *   The component value.
  * @param array $info
  *   DF settings infos.
- * @param \Drupal\Core\Cache\CacheableMetadata $cacheability
+ * @param CacheableMetadata $cacheability
  *   DF settings infos.
  */
-function hook_decoupled_df_format_alter(&$value, $info, \Drupal\Core\Cache\CacheableMetadata &$cacheability) {
+function hook_decoupled_df_format_alter(&$value, $info, CacheableMetadata &$cacheability) {
   if ($info['type'] === 'webform_decoupled' && !empty($value)) {
     $webform_id = $value['id'];
     $value['elements'] = \Drupal::service('vactory.webform.normalizer')->normalize($webform_id);
     $cacheability->setCacheTags(['webform_list']);
+  }
+}
+
+/**
+ * Alter entity reference select options.
+ *
+ * @param array $entities
+ *   Array of entities.
+ * @param array $info
+ *   DF info.
+ * @param CacheableMetadata $cacheability
+ *   Related cacheability object.
+ */
+function hook_decoupled_entity_reference_options_alter(array &$entities, array &$info, CacheableMetadata $cacheability) {
+  if (isset($info['uuid']) && $info['uuid'] = 'vactory_news:listing') {
+    // Filter options (remove term with label Action).
+    $entities = array_filter($entities, function ($entity) {
+      return $entity->label() !== 'Action';
+    });
   }
 }

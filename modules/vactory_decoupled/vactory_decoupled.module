@@ -723,7 +723,7 @@ function vactory_decoupled_jsonapi_resource_config_builder($entity_type, Jsonapi
 /**
  * Implements hook_preprocess_HOOK().
  */
-function vactory_decoupled_preprocess_html(&$variables) {
+function vactory_decoupled_preprocess_page(&$variables) {
   $route_name = \Drupal::routeMatch()->getRouteName();
   if ($route_name === 'system.404') {
     redirectToFrontend(TRUE);

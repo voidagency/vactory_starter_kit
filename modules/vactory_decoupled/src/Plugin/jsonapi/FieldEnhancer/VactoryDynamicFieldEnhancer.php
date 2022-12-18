@@ -2,6 +2,8 @@
 
 namespace Drupal\vactory_decoupled\Plugin\jsonapi\FieldEnhancer;
 
+use Drupal\bourse_data\Services\BourseDataManager;
+use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\StreamWrapper\StreamWrapperManager;
@@ -38,6 +40,13 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
+
+  /**
+   * The entity repository service.
+   *
+   * @var \Drupal\Core\Entity\EntityRepositoryInterface
+   */
+  protected $entityRepository;
 
   /**
    * Language Id.
@@ -80,7 +89,8 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
     array $plugin_definition,
     EntityTypeManagerInterface $entity_type_manager,
     $plateform_provider,
-    MediaFilesManager $mediaFilesManager
+    MediaFilesManager $mediaFilesManager,
+    EntityRepositoryInterface $entityRepository
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->entityTypeManager = $entity_type_manager;
@@ -89,6 +99,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
     $this->imageStyles = ImageStyle::loadMultiple();
     $this->siteConfig = \Drupal::config('system.site');
     $this->mediaFilesManager = $mediaFilesManager;
+    $this->entityRepository = $entityRepository;
   }
 
   /**
@@ -101,7 +112,8 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
       $plugin_definition,
       $container->get('entity_type.manager'),
       $container->get('vactory_dynamic_field.vactory_provider_manager'),
-      $container->get('vacory_decoupled.media_file_manager')
+      $container->get('vacory_decoupled.media_file_manager'),
+      $container->get('entity.repository')
     );
   }
 
@@ -187,7 +199,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
       ->setAbsolute()->toString();
     foreach ($component as $field_key => &$value) {
       $info = NestedArray::getValue($settings, array_merge((array) $parent_keys, [$field_key]));
-
+      $info['uuid'] = $settings['uuid'];
       if ($info && isset($info['type'])) {
         // Manage external/internal links.
         if ($info['type'] === 'url_extended') {
@@ -206,7 +218,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
 
           // URL Parts.
           if (isset($value['attributes']['path_terms']) && !empty($value['attributes']['path_terms'])) {
-            $entityRepository = \Drupal::service('entity.repository');
+            $entityRepository = $this->entityRepository;
             $slugManager = \Drupal::service('vactory_core.slug_manager');
             $path_terms = $value['attributes']['path_terms'];
 
@@ -241,6 +253,44 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
           ];
 
           $value = ['value' => $build];
+        }
+
+        // Decoupled entity reference options.
+        if ($info['type'] === 'decoupled_entity_reference') {
+          $entity_repository = $this->entityRepository;
+          $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
+          $entity_type_id = $value['entity_reference']['entity_type'] ?? '';
+          $bundle = $value['entity_reference']['bundle'] ?? '';
+          $value = [];
+          if (!empty($entity_type_id) && !empty($bundle)) {
+            $tags = [
+              "${entity_type_id}_list:${bundle}"
+            ];
+            $this->cacheability->setCacheTags(array_merge($this->cacheability->getCacheTags(), $tags));
+            $type_field = $entity_type_id === 'taxonomy_term' ? 'vid' : 'type';
+            $entities = $this->entityTypeManager->getStorage($entity_type_id)
+              ->loadByProperties([
+                $type_field => $bundle,
+              ]);
+            $entities = array_map(function ($entity) use ($entity_repository, $langcode) {
+              return $entity_repository->getTranslationFromContext($entity, $langcode);
+            }, $entities);
+
+            $info['is_options_locked'] = FALSE;
+            \Drupal::moduleHandler()->alter('decoupled_entity_reference_options', $entities, $info, $this->cacheability);
+            if (isset($info['is_options_locked']) && !$info['is_options_locked']) {
+              // Format options here.
+              $entities = array_map(function ($entity) {
+                return [
+                  'id' => $entity->id(),
+                  'uuid' => $entity->uuid(),
+                  'label' => $entity->label(),
+                ];
+              }, $entities);
+              $entities = array_values($entities);
+            }
+          }
+          $value = $entities;
         }
 
         // Image media.

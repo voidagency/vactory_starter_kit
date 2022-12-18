@@ -121,6 +121,7 @@ class JsonApiGenerator {
       }
     }
     $parsed['optional_filters_data'] = $config['optional_filters_data'] ?? [];
+    $hook_context['cache_tags'] = [];
     \Drupal::moduleHandler()
       ->alter('json_api_collection', $parsed, $hook_context);
     unset($parsed['optional_filters_data']);
@@ -129,7 +130,7 @@ class JsonApiGenerator {
 
     $response = $this->client->serialize($resource, $query_filters);
     $exposedTerms = $this->getExposedTerms($exposed_vocabularies);
-    $response['cache']['tags'] = Cache::mergeTags($response['cache']['tags'], $exposedTerms['cache_tags']);
+    $response['cache']['tags'] = Cache::mergeTags($response['cache']['tags'], $exposedTerms['cache_tags'], $hook_context['cache_tags']);
 
     $client_data = json_decode($response['data']);
 
