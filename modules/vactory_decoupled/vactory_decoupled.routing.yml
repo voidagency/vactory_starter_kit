@@ -118,6 +118,15 @@ vactory_decoupled.get_unique_username_by_email:
   requirements:
     _permission: 'access content'
 
+vactory_decoupled.get_user_account_config:
+  path: '/api/get-user-registration-config'
+  defaults:
+    _controller: '\Drupal\vactory_decoupled\Controller\UserRegistrationConfigController::getAccountRegistrationConfig'
+    _disable_route_normalizer: 'TRUE'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+
 vactory_decoupled.one_time_token:
   path: '/oauth/one-time-token'
   defaults:
