@@ -185,6 +185,10 @@ class Webform {
 
     (isset($item['#attributes']['class']) && !empty($item['#attributes']['class'])) ? $properties['class'] = implode(" ", $item['#attributes']['class']) : "";
 
+    if (isset($item['#states'])) {
+      $properties['states'] = $this->getFormElementStates($item);
+    }
+
     if ($fields !== []) {
       $properties['childs'] = $this->itemsToSchema($fields);
       if ($flexTotal > 1) {
