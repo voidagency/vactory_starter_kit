@@ -271,6 +271,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
             $entities = $this->entityTypeManager->getStorage($entity_type_id)
               ->loadByProperties([
                 $type_field => $bundle,
+                'status' => 1,
               ]);
             $entities = array_map(function ($entity) use ($entity_repository, $langcode) {
               return $entity_repository->getTranslationFromContext($entity, $langcode);
