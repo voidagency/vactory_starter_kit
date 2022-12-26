@@ -61,3 +61,19 @@ function hook_decoupled_entity_reference_options_alter(array &$entities, array &
     });
   }
 }
+
+/**
+ * Alter internal blocks cacheability.
+ *
+ * @param CacheableMetadata $cacheability
+ *   Related cacheability object.
+ * @param $entity
+ *   Related node entity.
+ * @param $value
+ *   Array of internal blocks infos.
+ */
+function hook_internal_blocks_cacheability_alter(CacheableMetadata $cacheability, $entity, $value) {
+  if ($entity instanceof \Drupal\node\NodeInterface && $entity->bundle() === 'vactory_page') {
+    $cacheability->addCacheTags(['locator_entity_list']);
+  }
+}
