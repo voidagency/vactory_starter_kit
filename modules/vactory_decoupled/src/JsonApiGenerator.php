@@ -114,7 +114,7 @@ class JsonApiGenerator {
     $params = \Drupal::routeMatch()->getParameters();
     if ($params) {
       if ($resource_type_param = $params->get('resource_type')) {
-        $params_query["entity_bundle"] = $resource_type_param instanceof ResourceType ?  $resource_type_param->getBundle() : $resource_type_param;
+        $hook_context["entity_bundle"] = $resource_type_param instanceof ResourceType ?  $resource_type_param->getBundle() : $resource_type_param;
       }
 
       if ($entity_param = $params->get('entity')) {
