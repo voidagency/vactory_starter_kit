@@ -5,6 +5,7 @@ namespace Drupal\vactory_decoupled;
 // use Drupal\entityqueue\Entity\EntityQueue;
 use Drupal\entityqueue\Entity\EntitySubqueue;
 use Drupal\Core\Cache\Cache;
+use Drupal\jsonapi\ResourceType\ResourceType;
 
 /**
  * Simplifies the process of generating an API version using DF.
@@ -113,7 +114,7 @@ class JsonApiGenerator {
     $params = \Drupal::routeMatch()->getParameters();
     if ($params) {
       if ($resource_type_param = $params->get('resource_type')) {
-        $hook_context["entity_bundle"] = $resource_type_param->getBundle();
+        $params_query["entity_bundle"] = $resource_type_param instanceof ResourceType ?  $resource_type_param->getBundle() : $resource_type_param;
       }
 
       if ($entity_param = $params->get('entity')) {
