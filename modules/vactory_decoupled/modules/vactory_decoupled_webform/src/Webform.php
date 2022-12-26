@@ -30,7 +30,13 @@ class Webform {
    */
   protected $webformTokenManager;
 
-  const LAYOUTS = ['webform_flexbox', 'container', 'fieldset', 'details'];
+  const LAYOUTS = [
+    'webform_flexbox',
+    'container',
+    'fieldset',
+    'details',
+    'webform_section',
+  ];
 
   const PAGE = 'webform_wizard_page';
 
