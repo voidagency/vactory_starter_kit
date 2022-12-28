@@ -30,7 +30,13 @@ class Webform {
    */
   protected $webformTokenManager;
 
-  const LAYOUTS = ['webform_flexbox', 'container', 'fieldset', 'details'];
+  const LAYOUTS = [
+    'webform_flexbox',
+    'container',
+    'fieldset',
+    'details',
+    'webform_section',
+  ];
 
   const PAGE = 'webform_wizard_page';
 
@@ -184,6 +190,10 @@ class Webform {
     }
 
     (isset($item['#attributes']['class']) && !empty($item['#attributes']['class'])) ? $properties['class'] = implode(" ", $item['#attributes']['class']) : "";
+
+    if (isset($item['#states'])) {
+      $properties['states'] = $this->getFormElementStates($item);
+    }
 
     if ($fields !== []) {
       $properties['childs'] = $this->itemsToSchema($fields);
