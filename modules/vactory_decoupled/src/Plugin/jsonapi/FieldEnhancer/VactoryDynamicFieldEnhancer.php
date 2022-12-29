@@ -2,9 +2,10 @@
 
 namespace Drupal\vactory_decoupled\Plugin\jsonapi\FieldEnhancer;
 
-use Drupal\bourse_data\Services\BourseDataManager;
 use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\StreamWrapper\StreamWrapperManager;
 use Drupal\Core\Url;
@@ -13,14 +14,16 @@ use Drupal\image\Entity\ImageStyle;
 use Drupal\jsonapi_extras\Plugin\ResourceFieldEnhancerBase;
 use Drupal\media\Entity\Media;
 use Drupal\media\MediaInterface;
+use Drupal\vactory_core\SlugManager;
+use Drupal\vactory_decoupled\JsonApiGenerator;
 use Drupal\vactory_decoupled\MediaFilesManager;
+use Drupal\vactory_dynamic_field\ViewsToApi;
 use Shaper\Util\Context;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Component\Utility\UrlHelper;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\Core\Cache\Cache;
-use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\serialization\Normalizer\CacheableNormalizerInterface;
 
 /**
@@ -81,6 +84,41 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
   protected $cacheability;
 
   /**
+   * JsonAPI generator service
+   *
+   * @var \Drupal\vactory_decoupled\JsonApiGenerator
+   */
+  protected $jsonApiGenerator;
+
+  /**
+   * slug manager service
+   *
+   * @var \Drupal\vactory_core\SlugManager
+   */
+  protected $slugManager;
+
+  /**
+   * Module handler service
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
+   * Language manager service
+   *
+   * @var \Drupal\Core\Language\LanguageManagerInterface
+   */
+  protected $languageManager;
+
+  /**
+   * Vactory views to api service
+   *
+   * @var \Drupal\vactory_dynamic_field\ViewsToApi
+   */
+  protected $viewsToApi;
+
+  /**
    * {@inheritdoc}
    */
   public function __construct(
@@ -90,16 +128,26 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
     EntityTypeManagerInterface $entity_type_manager,
     $plateform_provider,
     MediaFilesManager $mediaFilesManager,
-    EntityRepositoryInterface $entityRepository
+    EntityRepositoryInterface $entityRepository,
+    JsonApiGenerator $jsonApiGenerator,
+    SlugManager $slugManager,
+    ModuleHandlerInterface $moduleHandler,
+    LanguageManagerInterface $languageManager,
+    ViewsToApi $viewsToApi
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->entityTypeManager = $entity_type_manager;
-    $this->language = \Drupal::languageManager()->getCurrentLanguage()->getId();
+    $this->language = $languageManager->getCurrentLanguage()->getId();
     $this->platformProvider = $plateform_provider;
     $this->imageStyles = ImageStyle::loadMultiple();
     $this->siteConfig = \Drupal::config('system.site');
     $this->mediaFilesManager = $mediaFilesManager;
     $this->entityRepository = $entityRepository;
+    $this->jsonApiGenerator = $jsonApiGenerator;
+    $this->slugManager = $slugManager;
+    $this->moduleHandler = $moduleHandler;
+    $this->languageManager = $languageManager;
+    $this->viewsToApi = $viewsToApi;
   }
 
   /**
@@ -113,7 +161,12 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
       $container->get('entity_type.manager'),
       $container->get('vactory_dynamic_field.vactory_provider_manager'),
       $container->get('vacory_decoupled.media_file_manager'),
-      $container->get('entity.repository')
+      $container->get('entity.repository'),
+      $container->get('vactory_decoupled.jsonapi.generator'),
+      $container->get('vactory_core.slug_manager'),
+      $container->get('module_handler'),
+      $container->get('language_manager'),
+      $container->get('vactory.views.to_api')
     );
   }
 
@@ -172,7 +225,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
        * }
        * @endcode
        */
-      \Drupal::moduleHandler()->alter('df_jsonapi_output', $content);
+      $this->moduleHandler->alter('df_jsonapi_output', $content);
 
       $data['widget_data'] = json_encode($content);
     }
@@ -219,7 +272,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
           // URL Parts.
           if (isset($value['attributes']['path_terms']) && !empty($value['attributes']['path_terms'])) {
             $entityRepository = $this->entityRepository;
-            $slugManager = \Drupal::service('vactory_core.slug_manager');
+            $slugManager = $this->slugManager;
             $path_terms = $value['attributes']['path_terms'];
 
             $value['url'] .= preg_replace_callback(
@@ -258,7 +311,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
         // Decoupled entity reference options.
         if ($info['type'] === 'decoupled_entity_reference') {
           $entity_repository = $this->entityRepository;
-          $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
+          $langcode = $this->languageManager->getCurrentLanguage()->getId();
           $entity_type_id = $value['entity_reference']['entity_type'] ?? '';
           $bundle = $value['entity_reference']['bundle'] ?? '';
           $value = [];
@@ -278,7 +331,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
             }, $entities);
 
             $info['is_options_locked'] = FALSE;
-            \Drupal::moduleHandler()->alter('decoupled_entity_reference_options', $entities, $info, $this->cacheability);
+            $this->moduleHandler->alter('decoupled_entity_reference_options', $entities, $info, $this->cacheability);
             if (isset($info['is_options_locked']) && !$info['is_options_locked']) {
               // Format options here.
               $entities = array_map(function ($entity) {
@@ -391,13 +444,13 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
         // Views.
         if ($info['type'] === 'dynamic_views' && !empty($value)) {
           $value = array_merge($value, $info['options']['#default_value']);
-          $value['data'] = \Drupal::service('vactory.views.to_api')->normalize($value);
+          $value['data'] = $this->viewsToApi->normalize($value);
         }
 
         // Collection.
         if ($info['type'] === 'json_api_collection' && !empty($value)) {
           $value = array_merge($info['options']['#default_value'], $value);
-          $response = \Drupal::service('vactory_decoupled.jsonapi.generator')->fetch($value);
+          $response = $this->jsonApiGenerator->fetch($value);
           $cache = $response['cache'];
           unset($response['cache']);
 
@@ -438,7 +491,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
             $config['filters'][] = "filter[df-node-nid][condition][value][$i]=". $nid['target_id'];
             $i++;
           }
-          $response = \Drupal::service('vactory_decoupled.jsonapi.generator')->fetch($config);
+          $response = $this->jsonApiGenerator->fetch($config);
           $cache = $response['cache'];
           unset($response['cache']);
 
@@ -449,7 +502,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
 
         $cacheability = $this->cacheability;
         // Apply other modules formatters if exist on current component.
-        \Drupal::moduleHandler()->alter('decoupled_df_format', $value, $info, $cacheability);
+        $this->moduleHandler->alter('decoupled_df_format', $value, $info, $cacheability);
         $this->cacheability = $cacheability;
       }
       elseif (is_array($value)) {

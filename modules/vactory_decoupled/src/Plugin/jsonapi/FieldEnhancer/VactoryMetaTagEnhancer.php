@@ -3,8 +3,10 @@
 namespace Drupal\vactory_decoupled\Plugin\jsonapi\FieldEnhancer;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\jsonapi_extras\Plugin\ResourceFieldEnhancerBase;
+use Drupal\metatag\MetatagManagerInterface;
 use Drupal\node\Entity\Node;
 use Shaper\Util\Context;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -28,11 +30,27 @@ class VactoryMetaTagEnhancer extends ResourceFieldEnhancerBase implements Contai
   protected $entityTypeManager;
 
   /**
+   * The meta tag manager service.
+   *
+   * @var \Drupal\metatag\MetatagManagerInterface
+   */
+  protected $metatagManager;
+
+  /**
+   * Module handler service
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, array $plugin_definition, EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct(array $configuration, $plugin_id, array $plugin_definition, EntityTypeManagerInterface $entity_type_manager, MetatagManagerInterface $metatagManager, ModuleHandlerInterface $moduleHandler) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->entityTypeManager = $entity_type_manager;
+    $this->metatagManager = $metatagManager;
+    $this->moduleHandler = $moduleHandler;
 //    debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 //      exit;
   }
@@ -45,7 +63,9 @@ class VactoryMetaTagEnhancer extends ResourceFieldEnhancerBase implements Contai
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('metatag.manager'),
+      $container->get('module_handler')
     );
   }
 
@@ -60,7 +80,7 @@ class VactoryMetaTagEnhancer extends ResourceFieldEnhancerBase implements Contai
       return $data;
     }
 
-    $metatag_manager = \Drupal::service('metatag.manager');
+    $metatag_manager = $this->metatagManager;
     $metatags = metatag_get_default_tags($entity);
     foreach ($metatag_manager->tagsFromEntity($entity) as $tag => $data) {
       $metatags[$tag] = $data;
@@ -70,7 +90,7 @@ class VactoryMetaTagEnhancer extends ResourceFieldEnhancerBase implements Contai
       'entity' => $entity,
     ];
 
-    \Drupal::service('module_handler')->alter('metatags', $metatags, $context);
+    $this->moduleHandler->alter('metatags', $metatags, $context);
 
     $tags = $metatag_manager->generateRawElements($metatags, $entity);
     $normalized_tags = [];

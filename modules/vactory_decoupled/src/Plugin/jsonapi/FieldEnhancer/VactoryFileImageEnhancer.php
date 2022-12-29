@@ -77,8 +77,7 @@ class VactoryFileImageEnhancer extends ResourceFieldEnhancerBase implements Cont
         ->setAbsolute()->toString();
       $lqipImageStyle = ImageStyle::load('lqip');
 
-      $medias = \Drupal::entityTypeManager()
-        ->getStorage('file')
+      $medias = $this->entityTypeManager->getStorage('file')
         ->loadByProperties(['uri' => $origin_uri]);
       $media = reset($medias);
 

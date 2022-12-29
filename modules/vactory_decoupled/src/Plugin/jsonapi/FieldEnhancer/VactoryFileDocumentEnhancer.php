@@ -76,8 +76,7 @@ class VactoryFileDocumentEnhancer extends ResourceFieldEnhancerBase implements C
     if (isset($data['value']) && !empty($data['value'])) {
       $origin_uri = $data['value'];
 
-      $medias = \Drupal::entityTypeManager()
-        ->getStorage('file')
+      $medias = $this->entityTypeManager->getStorage('file')
         ->loadByProperties(['uri' => $origin_uri]);
       $media = reset($medias);
 
