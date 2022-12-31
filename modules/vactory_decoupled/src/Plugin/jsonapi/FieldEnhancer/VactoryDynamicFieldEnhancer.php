@@ -321,11 +321,15 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
             ];
             $this->cacheability->setCacheTags(array_merge($this->cacheability->getCacheTags(), $tags));
             $type_field = $entity_type_id === 'taxonomy_term' ? 'vid' : 'type';
+            $status = $this->entityTypeManager->getDefinition($entity_type_id)->getKey('status');
+            $properties = [
+              $type_field => $bundle,
+            ];
+            if ($status) {
+              $properties['status'] = 1;
+            }
             $entities = $this->entityTypeManager->getStorage($entity_type_id)
-              ->loadByProperties([
-                $type_field => $bundle,
-                'status' => 1,
-              ]);
+              ->loadByProperties($properties);
             $entities = array_map(function ($entity) use ($entity_repository, $langcode) {
               return $entity_repository->getTranslationFromContext($entity, $langcode);
             }, $entities);
