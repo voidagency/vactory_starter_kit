@@ -2,83 +2,92 @@
 
 /**
  * @file
- * Install, update and uninstall functions for the Vactory Decoupled Search module.
+ * Install, update and uninstall functions for the Vactory Decoupled Search
+ *   module.
  */
+
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\node\Entity\Node;
 
 
 function _get_vactory_decoupled_search_default_pages() {
-    return [
-        'search' => [
-            'path' => '/search',
-            'title' => 'Search Results',
-        ],
-    ];
+  return [
+    'search' => [
+      'path' => '/search',
+      'title' => 'Search Results',
+    ],
+    'search_v2' => [
+      'path' => '/search-v2',
+      'title' => 'Search Results V2',
+    ],
+  ];
 }
 
-function _vactory_decoupled_search_create_default_node($machine_name, $title, $path)
-{
-    $node = Node::create([
-        'type'     => 'vactory_page',
-        'title'    => $title,
-        'langcode' => LanguageInterface::LANGCODE_NOT_SPECIFIED,
-        'uid'      => 1,
-    ])
-        ->set('machine_name', $machine_name)
-        ->setPublished();
-    $node->save();
+function _vactory_decoupled_search_create_default_node($machine_name, $title, $path) {
+  $node = Node::create([
+    'type' => 'vactory_page',
+    'title' => $title,
+    'langcode' => LanguageInterface::LANGCODE_NOT_SPECIFIED,
+    'uid' => 1,
+  ])
+    ->set('machine_name', $machine_name)
+    ->setPublished();
+  $node->save();
 
-    $route = \Drupal::entityTypeManager()->getStorage('vactory_route')->create([
-        'id' => $machine_name,
-        'label' => $title,
-        'path' => "/node/" . $node->id(),
-        'alias' => $path,
-    ]);
-    $route->save();
+  $route = \Drupal::entityTypeManager()->getStorage('vactory_route')->create([
+    'id' => $machine_name,
+    'label' => $title,
+    'path' => "/node/" . $node->id(),
+    'alias' => $path,
+  ]);
+  $route->save();
 
-    return $node;
+  return $node;
 }
 
 /**
  * Implements hook_install().
  */
-function vactory_decoupled_search_install()
-{
-    foreach (_get_vactory_decoupled_search_default_pages() as $machine_name => $page) {
-        $nodes = \Drupal::entityTypeManager()->getStorage('node')->loadByProperties(['machine_name' => $machine_name]);
+function vactory_decoupled_search_install() {
+  foreach (_get_vactory_decoupled_search_default_pages() as $machine_name => $page) {
+    $nodes = \Drupal::entityTypeManager()
+      ->getStorage('node')
+      ->loadByProperties(['machine_name' => $machine_name]);
 
-        if (empty($nodes)) {
-            _vactory_decoupled_search_create_default_node($machine_name, $page['title'], $page['path']);
-        }
+    if (empty($nodes)) {
+      _vactory_decoupled_search_create_default_node($machine_name, $page['title'], $page['path']);
     }
+  }
 
-    // Run a complete cache flush.
-    drupal_flush_all_caches();
+  // Run a complete cache flush.
+  drupal_flush_all_caches();
 }
 
 /**
  * Implements hook_uninstall().
  */
-function vactory_decoupled_search_uninstall()
-{
-    // Delete routes.
-    $routes = \Drupal::entityTypeManager()->getStorage('vactory_route')->loadByProperties([
-        'id' => 'search'
+function vactory_decoupled_search_uninstall() {
+  // Delete routes.
+  $routes = \Drupal::entityTypeManager()
+    ->getStorage('vactory_route')
+    ->loadByProperties([
+      'id' => 'search',
     ]);
-    foreach ($routes as $route) {
-        $route->delete();
-    }
+  foreach ($routes as $route) {
+    $route->delete();
+  }
 
-    // Delete nodes.
-    foreach (_get_vactory_decoupled_search_default_pages() as $machine_name => $page) {
-        $nodes = \Drupal::entityTypeManager()->getStorage('node')->loadByProperties([
-            'type' => 'vactory_page',
-            'machine_name' => $machine_name,
-        ]);
+  // Delete nodes.
+  foreach (_get_vactory_decoupled_search_default_pages() as $machine_name => $page) {
+    $nodes = \Drupal::entityTypeManager()
+      ->getStorage('node')
+      ->loadByProperties([
+        'type' => 'vactory_page',
+        'machine_name' => $machine_name,
+      ]);
 
-        foreach ($nodes as $node) {
-            $node->delete();
-        }
+    foreach ($nodes as $node) {
+      $node->delete();
     }
+  }
 }
