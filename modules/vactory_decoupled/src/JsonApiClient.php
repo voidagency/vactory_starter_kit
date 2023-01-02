@@ -103,7 +103,7 @@ class JsonApiClient {
     if ($params) {
       $params_query = \Drupal::request()->query->get("q") ?? [];
       if ($resource_type_param = $params->get('resource_type')) {
-        $params_query["entity_bundle"] = $resource_type_param->getBundle();
+        $params_query["entity_bundle"] = $resource_type_param instanceof ResourceType ?  $resource_type_param->getBundle() : $resource_type_param;
       }
 
       if ($entity_param = $params->get('entity')) {
