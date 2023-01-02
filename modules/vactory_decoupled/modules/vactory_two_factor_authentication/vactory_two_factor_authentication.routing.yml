@@ -1,0 +1,26 @@
+vactory_two_factor_authentication.send:
+  path: '/vactory-two-factor-authentication/send'
+  defaults:
+    _title: '2FA Send SMS'
+    _controller: '\Drupal\vactory_two_factor_authentication\Controller\VactoryTwoFactorAuthenticationController::sendTwoFactorAuthenticationCode'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+vactory_two_factor_authentication.get:
+  path: '/vactory-two-factor-authentication/verify'
+  defaults:
+    _title: '2FA Get SMS'
+    _controller: '\Drupal\vactory_two_factor_authentication\Controller\VactoryTwoFactorAuthenticationController::verifyOtpCode'
+  methods: [GET]
+  options:
+    no_cache: 'TRUE'
+  requirements:
+    _permission: 'access content'
+
+vactory_two_factor_authentication.settings:
+  path: '/admin/config/system/2fa/settings'
+  defaults:
+    _title: 'Two Factor Authentication Settings'
+    _form: 'Drupal\vactory_two_factor_authentication\Form\SettingsForm'
+  requirements:
+    _permission: 'administer 2fa configuration'

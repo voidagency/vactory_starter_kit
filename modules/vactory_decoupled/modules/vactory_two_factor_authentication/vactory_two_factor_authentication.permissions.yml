@@ -1,0 +1,3 @@
+administer 2fa configuratio:
+  title: 'Administer 2fa configuratio'
+  restrict access: TRUE

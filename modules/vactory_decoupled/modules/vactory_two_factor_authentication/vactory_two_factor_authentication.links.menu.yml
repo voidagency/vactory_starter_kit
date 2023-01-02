@@ -1,0 +1,6 @@
+vactory_two_factor_authentication.settings:
+  title: Two Factor Authentication Settings
+  parent: system.admin_config_system
+  route_name: vactory_two_factor_authentication.settings
+  description: 'Configure Two Factor Authentication.'
+  weight: 10

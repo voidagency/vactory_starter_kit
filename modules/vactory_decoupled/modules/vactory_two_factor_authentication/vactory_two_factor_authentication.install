@@ -1,0 +1,20 @@
+<?php
+
+/**
+ * @file
+ * Install file.
+ */
+
+use Drupal\Core\Field\BaseFieldDefinition;
+
+/**
+ * Add optional user field to offre_historiques entity.
+ */
+function vactory_two_factor_authentication_update_9419() {
+  $storage_definition = BaseFieldDefinition::create('string')
+    ->setLabel(t('User 2FA data'))
+    ->setTranslatable(FALSE);
+
+  \Drupal::entityDefinitionUpdateManager()
+    ->installFieldStorageDefinition('user_2fa_data', 'user', 'user', $storage_definition);
+}
