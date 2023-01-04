@@ -160,7 +160,7 @@ function user_has_acces_to_forum($node) {
  */
 function vactory_forums_json_api_collection_alter(&$filters, &$context) {
   if ($context['id'] === 'vactory_forums_list') {
-    $query = $context['query'];
+    $query = \Drupal::request()->query->get("q");
 
     if (isset($query["page"])) {
       $filters["page[offset]"] = intval($query["page"]) > 0 ? (intval($query["page"]) - 1) * $filters["page[limit]"] : 0;
@@ -193,7 +193,7 @@ function vactory_forums_json_api_collection_alter(&$filters, &$context) {
   }
 
   if ($context['id'] === 'vactory_forums_list_with_filters') {
-    $query = $context['query'];
+    $query = \Drupal::request()->query->get("q");
 
     $pageLimit = isset($filters["page[limit]"]) ? $filters["page[limit]"] : 10;
 
