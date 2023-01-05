@@ -2,7 +2,9 @@
 
 namespace Drupal\vactory_decoupled\Plugin\Field;
 
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Field\FieldItemList;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\TypedData\ComputedItemListTrait;
 use Drupal\node\Entity\Node;
 use Drupal\vactory_decoupled\BlocksManager;
@@ -14,6 +16,8 @@ class InternalNodeEntityBlocksFieldItemList extends FieldItemList
 {
 
   use ComputedItemListTrait;
+
+  protected ?CacheableMetadata $cacheMetadata = NULL;
 
   /**
    * {@inheritdoc}
@@ -51,6 +55,31 @@ class InternalNodeEntityBlocksFieldItemList extends FieldItemList
     $value = $block_manager->getBlocksByNode($entity->id(), $plugin_filter);
 
     // @see https://api.drupal.org/api/drupal/core%21modules%21system%21tests%21modules%21entity_test%21src%21Plugin%21Field%21ComputedTestCacheableStringItemList.php/class/ComputedTestCacheableStringItemList/9.3.x?title=&title_1=&object_type=&order=title&sort=desc
+    $this->cacheMetadata = new CacheableMetadata();
+    \Drupal::moduleHandler()->alter('internal_blocks_cacheability', $this->cacheMetadata, $entity, $value);
     $this->list[0] = $this->createItem(0, $value);
+  }
+
+  public function access($operation = 'view', AccountInterface $account = NULL, $return_as_object = FALSE)
+  {
+    $access = parent::access($operation, $account, TRUE);
+
+    if ($return_as_object) {
+      // Here you witness a pure hack. The thing is that JSON:API
+      // normalization does not compute cacheable metadata for
+      // computed relations like this one.
+      /** @see \Drupal\jsonapi\JsonApiResource\ResourceIdentifier */
+      /** @see \Drupal\jsonapi\Normalizer\ResourceIdentifierNormalizer */
+      // However, thanks to the access check, its result is added
+      // as a cacheable dependency to the normalization.
+      /** @see \Drupal\jsonapi\Normalizer\ResourceObjectNormalizer::serializeField() */
+      $this->ensureComputedValue();
+      \assert($this->cacheMetadata instanceof CacheableMetadata);
+      $access->addCacheableDependency($this->cacheMetadata);
+
+      return $access;
+    }
+
+    return $access->isAllowed();
   }
 }

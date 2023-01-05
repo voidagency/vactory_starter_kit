@@ -342,9 +342,6 @@ function vactory_decoupled_entity_type_alter(array &$entity_types) {
  * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
  */
 function get_oauth_user_infos(UserInterface $user) {
-  /** @var \Drupal\Core\File\FileUrlGeneratorInterface $file_url_generator */
-  $file_url_generator = \Drupal::service('file_url_generator');
-
   $full_name = $user->getDisplayName();
   $first_name = $user->get('field_first_name')->getString();
   $last_name = $user->get('field_last_name')->getString();
@@ -360,7 +357,8 @@ function get_oauth_user_infos(UserInterface $user) {
       ->getStorage('image_style')
       ->load('avatar');
     $derivative_uri = $style->buildUri($pictureUri);
-    $avatar = $file_url_generator->generateAbsoluteString($style->buildUrl($pictureUri));
+
+    $avatar = \Drupal::service('vacory_decoupled.media_file_manager')->convertToMediaAbsoluteUrl($style->buildUrl($pictureUri));
     if (!file_exists($derivative_uri)) {
       $style->createDerivative($pictureUri, $derivative_uri);
     }
@@ -720,4 +718,32 @@ function vactory_decoupled_form_jsonapi_resource_config_edit_form_alter(&$form, 
 function vactory_decoupled_jsonapi_resource_config_builder($entity_type, JsonapiResourceConfig $config_resource, &$form, FormStateInterface $form_state) {
   $roles = $form_state->getValue('roles');
   $config_resource->setThirdPartySetting('vactory_decoupled', 'roles', $roles);
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_decoupled_preprocess_page(&$variables) {
+  $route_name = \Drupal::routeMatch()->getRouteName();
+  if ($route_name === 'system.404') {
+    redirectToFrontend(TRUE);
+  }
+  if ($base_media_url = Settings::get('BASE_MEDIA_URL', '')) {
+    $current_domain = \Drupal::request()->getHttpHost();
+    $media_url_info = parse_url($base_media_url);
+    if (isset($media_url_info['host']) && $media_url_info['host'] === $current_domain) {
+      redirectToFrontend();
+    }
+  }
+}
+
+/**
+ * Redirect to frontend url.
+ */
+function redirectToFrontend($from_404 = FALSE) {
+  if ($frontend_url = Settings::get('BASE_FRONTEND_URL', '')) {
+    $requested_path = $from_404 ? \Drupal::request()->getPathInfo() : '/not-found';
+    $response = new RedirectResponse("${frontend_url}${requested_path}");
+    $response->send();
+  }
 }
