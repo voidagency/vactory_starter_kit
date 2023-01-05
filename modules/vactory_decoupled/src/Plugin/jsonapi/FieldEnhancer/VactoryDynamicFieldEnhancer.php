@@ -326,7 +326,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
               $type_field => $bundle,
             ];
             if ($status) {
-              $properties['status'] = 1;
+              $properties[$status] = 1;
             }
             $entities = $this->entityTypeManager->getStorage($entity_type_id)
               ->loadByProperties($properties);
