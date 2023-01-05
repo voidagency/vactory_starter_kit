@@ -1,0 +1,9 @@
+name: Push Notification
+type: module
+description: Sends push notifications to users (APN, FCM).
+package: Vactory
+core: 8.x
+core_version_requirement: ^8 || ^9
+configure: vactory_push_notification.settings
+dependencies:
+  - drupal:views

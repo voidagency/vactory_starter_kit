@@ -1,0 +1,55 @@
+vactory_push_notification.settings:
+  path: '/admin/config/services/vactory-push-notification'
+  defaults:
+    _title: 'Push notification settings'
+    _form: 'Drupal\vactory_push_notification\Form\SettingsForm'
+  options:
+    _admin_route: TRUE
+  requirements:
+    _permission: 'administer vactory push notification settings'
+
+vactory_push_notification.regenerate_keys:
+  path: '/admin/config/services/vactory-push-notification/regenerate'
+  defaults:
+    _title: 'Regenerate push notification auth keys'
+    _form: '\Drupal\vactory_push_notification\Form\ConfirmRegenerateKeys'
+  options:
+    _admin_route: TRUE
+  requirements:
+    _permission: 'administer vactory push notification settings'
+
+vactory_push_notification.bundle_configure:
+  path: '/admin/config/services/vactory-push-notification/{bundle}/configure'
+  defaults:
+    _title: 'Content type configuration'
+    _form: 'Drupal\vactory_push_notification\Form\BundleConfigForm'
+  options:
+    _admin_route: TRUE
+  requirements:
+    _permission: 'administer vactory push notification settings'
+
+vactory_push_notification.test_notification:
+  path: '/admin/config/services/vactory-push-notification/test'
+  defaults:
+    _title: 'Test notification'
+    _form: 'Drupal\vactory_push_notification\Form\TestNotification'
+  requirements:
+    _permission: 'allow to send test vactory notification'
+
+vactory_push_notification.subscribe:
+  path: '/push_notifications_subscribe'
+  defaults:
+    _controller: '\Drupal\vactory_push_notification\Controller\PushNotificationController::subscribe'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+
+vactory_push_notification.clear_subscribe:
+  path: '/admin/config/services/vactory-push-notification/subscriptions/clear'
+  defaults:
+    _title: 'Clear push notification subscribers'
+    _form: '\Drupal\vactory_push_notification\Form\ConfirmClearSubscribers'
+  options:
+    _admin_route: TRUE
+  requirements:
+    _permission: 'administer vactory push notification subscriptions'

@@ -1,0 +1,11 @@
+vactory_push_notification.settings:
+  title: 'Settings'
+  route_name: vactory_push_notification.settings
+  base_route: vactory_push_notification.settings
+  weight: 0
+
+vactory_push_notification.test_notification:
+  title: 'Test'
+  route_name: vactory_push_notification.test_notification
+  base_route: vactory_push_notification.settings
+  weight: 1

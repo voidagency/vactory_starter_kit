@@ -1,0 +1,9 @@
+administer vactory push notification settings:
+  title: 'Administer Push Notification settings'
+
+administer vactory push notification subscriptions:
+  title: 'Administer Push Notification subscriptions'
+  description: 'This includes view the list and to clear all the entries.'
+
+allow to send test vactory notification:
+  title: 'Allow to send a test notification'

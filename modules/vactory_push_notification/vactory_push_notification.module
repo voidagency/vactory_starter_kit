@@ -1,0 +1,50 @@
+<?php
+
+/**
+ * @file
+ * Module hooks.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+
+
+/**
+ * Implements hook_entity_insert().
+ *
+ * Send a notification when a new content is inserted (the content type
+ * should be enabled in the module settings).
+ */
+function vactory_push_notification_entity_insert(EntityInterface $entity) {
+  $bundles = \Drupal::config('vactory_push_notification.settings')->get('bundles');
+  $bundle = $entity->bundle();
+  if (isset($bundles[$bundle]) && $bundles[$bundle]) {
+    /** @var \Drupal\vactory_push_notification\NotificationQueue $sender */
+    $sender = \Drupal::service('vactory_push_notification.queue');
+    $sender->start($entity);
+  }
+}
+
+/**
+ * Implements hook_cron().
+ *
+ * Process a notification queue by cron.
+ */
+function vactory_push_notification_cron() {
+  $queue = \Drupal::queue('vactory_push_queue');
+
+  /** @var \Drupal\vactory_push_notification\Plugin\QueueWorker\PushQueueWorker $worker */
+  $worker = Drupal::service('plugin.manager.queue_worker')
+    ->createInstance('vactory_push_queue');
+
+  // Process queue items during only specified amount of time.
+  $finish = strtotime('+ 5 min');
+  while (time() < $finish && ($item = $queue->claimItem())) {
+    try {
+      $worker->processItem($item->data);
+      $queue->deleteItem($item);
+    }
+    catch (\Exception $e) {
+      watchdog_exception('vactory_push_notification', $e, $e->getMessage());
+    }
+  }
+}

@@ -1,0 +1,6 @@
+vactory_push_notification.clear_subscribe:
+  route_name: vactory_push_notification.clear_subscribe
+  title: 'Clear subscribers'
+  appears_on:
+    - view.vactory_push_notification_subscriptions.page_1
+

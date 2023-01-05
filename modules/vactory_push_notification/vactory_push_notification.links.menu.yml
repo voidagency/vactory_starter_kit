@@ -1,0 +1,11 @@
+vactory_push_notification.settings:
+  title: 'Push notification'
+  description: 'Push notification settings.'
+  route_name: vactory_push_notification.settings
+  parent: system.admin_config_services
+
+vactory_push_notification.test_notification:
+  title: 'Test notification'
+  description: 'Send a test notification to subscribed users.'
+  route_name: vactory_push_notification.test_notification
+  parent: vactory_push_notification.settings
