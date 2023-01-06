@@ -3,11 +3,9 @@
 namespace Drupal\vactory_push_notification;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Url;
-use Minishlink\WebPush\VAPID;
 
 /**
- * Manages public and private keys.
+ * Manages APN and FCM keys.
  */
 class KeysHelper {
 
@@ -21,12 +19,12 @@ class KeysHelper {
   /**
    * @var string
    */
-  private $publicKey;
+  private $apnKey;
 
   /**
    * @var string
    */
-  private $privateKey;
+  private $fcmKey;
 
   /**
    * HelperService constructor.
@@ -39,79 +37,40 @@ class KeysHelper {
   }
 
   /**
-   * Returns a public key.
+   * Returns a APN key.
    *
    * @return string
-   *   The public key.
+   *   The APN key.
    */
-  public function getPublicKey() {
-    if (!$this->publicKey) {
-      $this->publicKey = $this->config->get('public_key');
+  public function getApnKey() {
+    if (!$this->apnKey) {
+      $this->apnKey = $this->config->get('apn_key');
     }
-    return $this->publicKey;
+    return $this->apnKey;
   }
 
   /**
-   * Returns a private key.
+   * Returns a FCM key.
    *
    * @return string
-   *   The private key.
+   *   The FCM key.
    */
-  public function getPrivateKey() {
-    if (!$this->privateKey) {
-      $this->privateKey = $this->config->get('private_key');
+  public function getFcmKey() {
+    if (!$this->fcmKey) {
+      $this->fcmKey = $this->config->get('fcm_key');
     }
-    return $this->privateKey;
+    return $this->fcmKey;
   }
 
   /**
-   * Generates a public and private keys.
-   *
-   * @return array
-   *   The list of two keys indexed by 'publicKey' and 'privateKey'.
-   *
-   * @throws \ErrorException
-   */
-  public function generateKeys() {
-    $keys = VAPID::createVapidKeys();
-    $this->publicKey = $keys['publicKey'];
-    $this->privateKey = $keys['privateKey'];
-    return $this;
-  }
-
-  /**
-   * Returns whether keys (public and private) defined.
+   * Returns whether keys (APN and FCM) defined.
    *
    * @return bool
    */
   public function isKeysDefined() {
-    $public = $this->getPublicKey();
-    $private = $this->getPublicKey();
-    return $public && $private;
-  }
-
-  /**
-   * Returns an array suitable for VAPID::validate().
-   *
-   * @see VAPID::validate()
-   *
-   * @throws \Drupal\vactory_push_notification\AuthKeysException
-   *   When public or/and private keys isn't defined.
-   *
-   * @return array
-   */
-  public function getVapidAuth() {
-    $this->validateKeys();
-
-    return [
-      'VAPID' => [
-        'subject' => Url::fromRoute('<front>', [], [
-          'absolute' => TRUE
-        ])->toString(),
-        'publicKey' => $this->getPublicKey(),
-        'privateKey' => $this->getPrivateKey(),
-      ],
-    ];
+    $apn = $this->getApnKey();
+    $fcm = $this->getFcmKey();
+    return $apn && $fcm;
   }
 
   /**
@@ -121,12 +80,12 @@ class KeysHelper {
    */
   protected function validateKeys() {
     if (!$this->isKeysDefined()) {
-      throw new AuthKeysException('Public and private keys are required.');
+      throw new AuthKeysException('FCM and APN keys are required.');
     }
   }
 
   /**
-   * Save public and private keys to the module config settings.
+   * Save APN and FCM keys to the module config settings.
    *
    * @return $this
    *
@@ -136,26 +95,26 @@ class KeysHelper {
     $this->validateKeys();
 
     $this->config
-      ->set('public_key', $this->getPublicKey())
-      ->set('private_key', $this->getPrivateKey())
+      ->set('apn_key', $this->getApnKey())
+      ->set('fcm_key', $this->getFcmKey())
       ->save();
 
     return $this;
   }
 
   /**
-   * Set public and private keys.
+   * Set APN and FCM keys.
    *
-   * @param string $public_key
-   *   The public key.
-   * @param string $private_key
-   *   The private key.
+   * @param string $apn_key
+   *   The APN key.
+   * @param string $apn_key
+   *   The FCM key.
    *
    * @return $this
    */
-  public function setKeys($public_key, $private_key) {
-    $this->publicKey = $public_key;
-    $this->privateKey = $private_key;
+  public function setKeys($apn_key, $fcm_key) {
+    $this->apnKey = $apn_key;
+    $this->fcmKey = $fcm_key;
     return $this;
   }
 

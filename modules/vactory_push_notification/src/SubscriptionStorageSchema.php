@@ -18,7 +18,6 @@ class SubscriptionStorageSchema extends SqlContentEntityStorageSchema {
     $field_name = $storage_definition->getName();
 
     switch ($field_name) {
-      case 'key':
       case 'token':
         $schema['fields'][$field_name]['not null'] = TRUE;
         $this->addSharedTableFieldUniqueKey($storage_definition, $schema);

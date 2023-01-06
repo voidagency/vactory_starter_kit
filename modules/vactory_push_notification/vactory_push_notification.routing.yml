@@ -37,7 +37,7 @@ vactory_push_notification.test_notification:
     _permission: 'allow to send test vactory notification'
 
 vactory_push_notification.subscribe:
-  path: '/push_notifications_subscribe'
+  path: '/api/push-notifications/subscribe'
   defaults:
     _controller: '\Drupal\vactory_push_notification\Controller\PushNotificationController::subscribe'
   methods: [POST]

@@ -37,13 +37,6 @@ class PushSender implements PushSenderInterface {
   protected $config;
 
   /**
-   * The TTL converter.
-   *
-   * @var \Drupal\vactory_push_notification\TTL
-   */
-  protected $ttl;
-
-  /**
    * PushSender constructor.
    *
    * @param \Drupal\vactory_push_notification\KeysHelper $keysHelper
@@ -52,19 +45,15 @@ class PushSender implements PushSenderInterface {
    *   The subscription purge service.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory service.
-   * @param \Drupal\vactory_push_notification\TTL $ttl
-   *   The TTL converter.
    */
   public function __construct(
     KeysHelper $keysHelper,
     SubscriptionPurge $purge,
-    ConfigFactoryInterface $config_factory,
-    TTL $ttl
+    ConfigFactoryInterface $config_factory
   ) {
     $this->keyHelper = $keysHelper;
     $this->purge = $purge;
     $this->config = $config_factory->get('vactory_push_notification.settings');
-    $this->ttl = $ttl;
   }
 
   /**
@@ -75,7 +64,6 @@ class PushSender implements PushSenderInterface {
    *
    * @throws \Drupal\vactory_push_notification\AuthKeysException
    * @throws \ErrorException
-   * @throws \Drupal\vactory_push_notification\InvalidTTLException
    */
   public function getWebPush() {
     if (!$this->webPush) {
@@ -94,12 +82,14 @@ class PushSender implements PushSenderInterface {
    *
    * @throws \Drupal\vactory_push_notification\AuthKeysException
    * @throws \ErrorException
-   * @throws \Drupal\vactory_push_notification\InvalidTTLException
    */
   public function send(NotificationItem $item) {
     if (empty($item->ids)) {
       return;
     }
+    
+    dpm($item, "PushSender::send()");
+    return;
     $webPush = $this->getWebPush();
     $subscriptions = $this->createSubscriptions($item);
     foreach ($subscriptions as $subscription) {
@@ -118,14 +108,10 @@ class PushSender implements PushSenderInterface {
    * @return array
    *   The list of options.
    *
-   * @throws \Drupal\vactory_push_notification\InvalidTTLException
-   *
    * @see https://github.com/web-push-libs/web-push-php#notifications-and-default-options
    */
   public function getPushOptions() {
-    $ttl = $this->config->get('push_ttl') ?: 100;
     return [
-      'TTL' => $this->ttl->toMinutes($ttl),
       'urgency' => 'normal',
     ];
   }

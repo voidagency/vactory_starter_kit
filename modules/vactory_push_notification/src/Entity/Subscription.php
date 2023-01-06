@@ -39,25 +39,15 @@ class Subscription extends ContentEntityBase implements SubscriptionInterface {
   /**
    * {@inheritdoc}
    */
-  public static function preCreate(EntityStorageInterface $storage_controller, array &$values) {
-    parent::preCreate($storage_controller, $values);
-    $values += [
-      'user_id' => \Drupal::currentUser()->id(),
-    ];
+  public function getUser() {
+    return $this->get('user');
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getPublicKey() {
-    return $this->get('key')->value;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setPublicKey($key) {
-    $this->set('key', $key);
+  public function setUser($user) {
+    $this->set('user', $user);
     return $this;
   }
 
@@ -112,13 +102,10 @@ class Subscription extends ContentEntityBase implements SubscriptionInterface {
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     $fields = parent::baseFieldDefinitions($entity_type);
 
-    $fields['key'] = BaseFieldDefinition::create('string')
-      ->setLabel(t('Key'))
-      ->setDescription(t('Key'))
-      ->setSettings([
-        'max_length' => 191,
-      ])
-      ->setRequired(TRUE);
+    $fields['user'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('User ID'))
+      ->setDescription(t('The ID of the user.'))
+      ->setSetting('target_type', 'user');
 
     $fields['token'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Token'))

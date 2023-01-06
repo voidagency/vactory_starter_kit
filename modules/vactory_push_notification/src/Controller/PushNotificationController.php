@@ -11,7 +11,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
-use Base64Url\Base64Url;
 
 /**
  * Provides a push notification responses.
@@ -72,23 +71,22 @@ class PushNotificationController extends ControllerBase {
       throw new ServiceUnavailableHttpException();
     }
 
-    $key = $request->get('key');
     $token = $request->get('token');
     $endpoint = $request->get('endpoint');
+    $userId = \Drupal::currentUser()->id();
 
-    // @todo: validate key using $key try catch.
-    //$userPublicKey = Base64Url::decode($userPublicKey);
 
-    if (!empty($key) && !empty($token) && !empty($endpoint)) {
+    if (!empty($token) && !empty($endpoint)) {
       $ids = \Drupal::entityQuery('vactory_wpn_subscription')
-        ->condition('key', $key)
+        ->condition('endpoint', $endpoint)
         ->condition('token', $token)
+        ->condition('user', $userId)
         ->execute();
       if (empty($ids)) {
         $subscription = Subscription::create([
-          'key'      => $key,
-          'token'    => $token,
           'endpoint' => $endpoint,
+          'token'    => $token,
+          'user'    => $userId,
         ]);
         $subscription->save();
       }

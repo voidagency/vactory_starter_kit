@@ -10,7 +10,6 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RedirectDestinationInterface;
 use Drupal\Core\Url;
 use Drupal\vactory_push_notification\KeysHelper;
-use Drupal\vactory_push_notification\TTL;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -31,13 +30,6 @@ class SettingsForm extends ConfigFormBase {
   protected $bundleInfo;
 
   /**
-   * The Push TTL converter.
-   *
-   * @var \Drupal\vactory_push_notification\TTL
-   */
-  protected $ttl;
-
-  /**
    * @var \Drupal\Core\Routing\RedirectDestinationInterface
    */
   protected $redirectDestination;
@@ -56,8 +48,6 @@ class SettingsForm extends ConfigFormBase {
    *   The push keys helper service.
    * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $bundle_info
    *   The entity type bundle info service.
-   * @param \Drupal\vactory_push_notification\TTL $ttl
-   *   The push TTL converter.
    * @param \Drupal\Core\Routing\RedirectDestinationInterface $redirectDestination
    *   The redirect destination.
    * @param \Drupal\Core\Entity\EntityFieldManagerInterface $entityFieldManager
@@ -67,14 +57,12 @@ class SettingsForm extends ConfigFormBase {
     ConfigFactoryInterface $config_factory,
     KeysHelper $keys_helper,
     EntityTypeBundleInfoInterface $bundle_info,
-    TTL $ttl,
     RedirectDestinationInterface $redirectDestination,
     EntityFieldManagerInterface $entityFieldManager
   ) {
     parent::__construct($config_factory);
     $this->keysHelper = $keys_helper;
     $this->bundleInfo = $bundle_info;
-    $this->ttl = $ttl;
     $this->redirectDestination = $redirectDestination;
     $this->entityFieldManager = $entityFieldManager;
   }
@@ -87,7 +75,6 @@ class SettingsForm extends ConfigFormBase {
       $container->get('config.factory'),
       $container->get('vactory_push_notification.keys_helper'),
       $container->get('entity_type.bundle.info'),
-      $container->get('vactory_push_notification.ttl'),
       $container->get('redirect.destination'),
       $container->get('entity_field.manager')
     );
@@ -132,27 +119,20 @@ class SettingsForm extends ConfigFormBase {
       '#open' => !$is_keys_defined, // Open when no keys, close when keys exist.
       '#title' => $this->t('Auth parameters'),
     ];
-    $form['auth']['public_key'] = [
+    $form['auth']['apn_key'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Public Key'),
-      '#default_value' => $this->keysHelper->getPublicKey(),
+      '#title' => $this->t('APN Key'),
+      '#default_value' => $this->keysHelper->getApnKey(),
       '#required' => TRUE,
       '#maxlength' => 100,
     ];
-    $form['auth']['private_key'] = [
+    $form['auth']['fcm_key'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Private Key'),
-      '#default_value' => $this->keysHelper->getPrivateKey(),
+      '#title' => $this->t('FCM Key'),
+      '#default_value' => $this->keysHelper->getFcmKey(),
       '#required' => TRUE,
       '#maxlength' => 100,
     ];
-    $form['auth']['generate'] = [
-      '#type' => 'submit',
-      '#value' => $this->t($is_keys_defined ? 'Regenerate keys' : 'Generate keys'),
-      '#limit_validation_errors' => [], // Skip required fields validation.
-    ];
-    $form['auth']['generate']['#submit'] = $is_keys_defined ?
-      ['::regenerateKeys'] : ['::generateKeys'];
 
     $form['content'] = [
       '#type' => 'details',
@@ -167,12 +147,7 @@ class SettingsForm extends ConfigFormBase {
       '#open' => TRUE,
       '#title' => $this->t('Configuration'),
     ];
-    $form['config']['push_ttl'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Push TTL'),
-      '#description' => $this->t('TTL is how long a push message is retained by the push service in case the user browser is not yet accessible. You may want to use a very long time for important notifications. Notifications with TTL equals 0 will be delivered only if the user is currently connected. Please use the following modificator: "h" for hours, "d" for days, default value is minutes.'),
-      '#default_value' => $config->get('push_ttl') ?: '30m',
-    ];
+
     $form['config']['queue_batch_size'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Queue batch size'),
@@ -282,12 +257,6 @@ class SettingsForm extends ConfigFormBase {
     if (!($val >= 10 && $val <= 1000)) {
       $form_state->setErrorByName('body_length', $this->t('Body length must be in range 10..100 inclusively.'));
     }
-
-    // Validate the 'push ttl' parameter.
-    $val = $form_state->getValue('push_ttl');
-    if (!$this->ttl->validate($val)) {
-      $form_state->setErrorByName('push_ttl', $this->t('Incorrent TTL value.'));
-    }
   }
 
   /**
@@ -297,38 +266,20 @@ class SettingsForm extends ConfigFormBase {
     $config = $this->config('vactory_push_notification.settings');
 
     // Save the keys.
-    $public_key = $form_state->getValue('public_key');
-    $private_key = $form_state->getValue('private_key');
-    if ($public_key != $this->keysHelper->getPublicKey() ||
-          $private_key != $this->keysHelper->getPrivateKey()) {
-      $this->keysHelper->setKeys($public_key, $private_key)->save();
+    $apn_key = $form_state->getValue('apn_key');
+    $fcm_key = $form_state->getValue('fcm_key');
+    if ($apn_key != $this->keysHelper->getApnKey() ||
+          $fcm_key != $this->keysHelper->getFcmKey()) {
+      $this->keysHelper->setKeys($apn_key, $fcm_key)->save();
     }
 
     $config
       ->set('queue_batch_size', $form_state->getValue('queue_batch_size'))
       ->set('body_length', $form_state->getValue('body_length'))
-      ->set('push_ttl', $form_state->getValue('push_ttl'))
       ->set('bundles', $form_state->getValue('bundles'))
       ->save();
 
     $this->messenger()->addStatus($this->t('Push notification settings have been updated.'));
-  }
-
-  /**
-   * Form submit callback for keys generation.
-   */
-  public function generateKeys(array &$form, FormStateInterface $form_state) {
-    $this->keysHelper
-      ->generateKeys()
-      ->save();
-    $this->messenger()->addStatus($this->t('Public and private keys have been generated.'));
-  }
-
-  /**
-   * Form submit callback for confirm keys regeneration.
-   */
-  public function regenerateKeys(array &$form, FormStateInterface $form_state) {
-    $form_state->setRedirect('vactory_push_notification.regenerate_keys');
   }
 
 }

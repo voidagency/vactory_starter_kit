@@ -14,21 +14,21 @@ use Drupal\user\EntityOwnerInterface;
 interface SubscriptionInterface extends ContentEntityInterface {
 
   /**
-   * Gets the subscription public key.
+   * Gets the subscription user.
    *
    * @return string
    */
-  public function getPublicKey();
+  public function getUser();
 
   /**
-   * Sets the subscription public key.
+   * Sets the subscription user.
    *
-   * @param string $key
-   *   The subscription key.
+   * @param string $user
+   *   The subscription user.
    *
    * @return $this
    */
-  public function setPublicKey($key);
+  public function setUser($user);
 
   /**
    * Gets the subscription token.

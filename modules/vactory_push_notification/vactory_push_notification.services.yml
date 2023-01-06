@@ -13,11 +13,8 @@ services:
 
   vactory_push_notification.sender:
     class: Drupal\vactory_push_notification\PushSender
-    arguments: ['@vactory_push_notification.keys_helper', '@vactory_push_notification.purge', '@config.factory', '@vactory_push_notification.ttl']
+    arguments: ['@vactory_push_notification.keys_helper', '@vactory_push_notification.purge', '@config.factory']
 
   vactory_push_notification.purge:
     class: Drupal\vactory_push_notification\SubscriptionPurge
     arguments: ['@entity_type.manager', '@logger.channel.vactory_push_notification']
-
-  vactory_push_notification.ttl:
-    class: Drupal\vactory_push_notification\TTL
