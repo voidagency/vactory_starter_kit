@@ -17,11 +17,6 @@ class Push
     protected $client;
 
     /**
-     * @var array
-     */
-    protected $auth;
-
-    /**
      * @var null|array Array of array of Notifications
      */
     protected $notifications;
@@ -37,15 +32,22 @@ class Push
     protected $automaticPadding = Encryption::MAX_COMPATIBILITY_PAYLOAD_LENGTH;
 
     /**
+     * Push Service Plugins
+     * 
+     * @var \Drupal\vactory_push_notification\PushServiceInterface[]
+     */
+    protected $plugins = [];
+
+    /**
      * WebPush constructor.
      *
-     * @param array    $auth           Some servers needs authentication
+     * @param array    $plugins           push service plugins
      * @param array    $defaultOptions TTL, urgency, topic, batchSize
      * @param int|null $timeout        Timeout of POST request
      *
      * @throws \ErrorException
      */
-    public function __construct(array $auth = [], array $defaultOptions = [], ?int $timeout = 30, array $clientOptions = [])
+    public function __construct(array $plugins = [], array $defaultOptions = [], ?int $timeout = 30, array $clientOptions = [])
     {
         $extensions = [
             'curl' => '[WebPush] curl extension is not loaded but is required. You can fix this in your php.ini.',
@@ -66,7 +68,7 @@ class Push
             trigger_error("[WebPush] mbstring.func_overload is enabled for str* functions. You must disable it if you want to send push notifications with payload or use VAPID. You can fix this in your php.ini.", E_USER_NOTICE);
         }
 
-        $this->auth = $auth;
+        $this->plugins = $plugins;
 
         $this->setDefaultOptions($defaultOptions);
 
@@ -88,7 +90,7 @@ class Push
     {
         if (isset($payload)) {
             if (Utils::safeStrlen($payload) > Encryption::MAX_PAYLOAD_LENGTH) {
-                throw new \ErrorException('Size of payload must not be greater than '.Encryption::MAX_PAYLOAD_LENGTH.' octets.');
+                throw new \ErrorException('Size of payload must not be greater than ' . Encryption::MAX_PAYLOAD_LENGTH . ' octets.');
             }
         }
 
@@ -170,27 +172,20 @@ class Push
             \assert($notification instanceof Notification);
             $subscription = $notification->getSubscription();
             $endpoint = $subscription->getEndpoint();
-            $apiKey = $endpoint === "ios" ? "API-KEY-IOS" : "API-KEY-ANDROID"; // TODO: grab key from config based on endpoint
             $token = $subscription->getToken();
-            // $contentEncoding = $subscription->getContentEncoding();
             $payload = $notification->getPayload();
-            // $options = $notification->getOptions($this->getDefaultOptions());
-            // $auth = $notification->getAuth($this->auth);
 
-            // todo: plugin manager
-            $serviceUrl = $endpoint === "ios" ? "https://webhook.site/8aaff31b-90ac-4e5f-8425-6150a5946489" : "https://webhook.site/8aaff31b-90ac-4e5f-8425-6150a5946489";
-            $headers = ['X-Foo' => 'Bar'];
-            $content = json_encode([
-                'endpoint' => $endpoint,
+            // todo: endpoint should be plugin_id
+            $plugin_id = $endpoint === "ios" ? "APN" : "FCM"; // todo: no need for this check
+            $plugin = $this->plugins[$plugin_id];
+
+            $requests[] = $plugin->getRequest([
                 'token' => $token,
-                'apiKey' => $apiKey,
-                'payload' => json_encode($payload)
+                'payload' => $payload
             ]);
 
-            $requests[] = new Request('POST', $serviceUrl, $headers, $content);
-
             // try {
-            //     $requests[] = new Request('POST', $serviceUrl, $headers, $content);
+            //     $requests[] = $plugin->getRequest($content);
             // } catch (\Exception $e) {
             //     dpm($e); // todo: remove
             // }
@@ -220,7 +215,7 @@ class Push
     public function setAutomaticPadding($automaticPadding): Push
     {
         if ($automaticPadding > Encryption::MAX_PAYLOAD_LENGTH) {
-            throw new \Exception('Automatic padding is too large. Max is '.Encryption::MAX_PAYLOAD_LENGTH.'. Recommended max is '.Encryption::MAX_COMPATIBILITY_PAYLOAD_LENGTH.' for compatibility reasons (see README).');
+            throw new \Exception('Automatic padding is too large. Max is ' . Encryption::MAX_PAYLOAD_LENGTH . '. Recommended max is ' . Encryption::MAX_COMPATIBILITY_PAYLOAD_LENGTH . ' for compatibility reasons (see README).');
         } elseif ($automaticPadding < 0) {
             throw new \Exception('Padding length should be positive or zero.');
         } elseif ($automaticPadding === true) {

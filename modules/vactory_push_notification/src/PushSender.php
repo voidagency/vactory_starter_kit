@@ -37,6 +37,13 @@ class PushSender implements PushSenderInterface {
   protected $config;
 
   /**
+   * Push Service Plugins
+   * 
+   * @var \Drupal\vactory_push_notification\PushServiceInterface[]
+   */
+  protected $plugins = [];
+
+  /**
    * PushSender constructor.
    *
    * @param \Drupal\vactory_push_notification\KeysHelper $keysHelper
@@ -49,11 +56,22 @@ class PushSender implements PushSenderInterface {
   public function __construct(
     KeysHelper $keysHelper,
     SubscriptionPurge $purge,
-    ConfigFactoryInterface $config_factory
+    ConfigFactoryInterface $config_factory,
+    PushServicesPluginManager $push_services_plugin_manager
   ) {
     $this->keyHelper = $keysHelper;
     $this->purge = $purge;
     $this->config = $config_factory->get('vactory_push_notification.settings');
+
+    $definitions = $push_services_plugin_manager->getDefinitions();
+    $plugins = [];
+    foreach ($definitions as $definition) {
+      $plugin_id = $definition['id'];
+      $plugin = $push_services_plugin_manager->createInstance($plugin_id);
+      $plugins[$plugin_id] = $plugin;
+    }
+
+    $this->plugins = $plugins;
   }
 
   /**
@@ -67,9 +85,8 @@ class PushSender implements PushSenderInterface {
    */
   public function getPush() {
     if (!$this->push) {
-      $auth = [];
       $options = [];
-      $this->push = new Push($auth, $options);
+      $this->push = new Push($this->plugins, $options);
     }
     return $this->push;
   }
