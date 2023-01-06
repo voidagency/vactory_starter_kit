@@ -743,7 +743,7 @@ function vactory_decoupled_preprocess_page(&$variables) {
 function redirectToFrontend($from_404 = FALSE) {
   if ($frontend_url = Settings::get('BASE_FRONTEND_URL', '')) {
     $requested_path = $from_404 ? \Drupal::request()->getPathInfo() : '/not-found';
-    $response = new RedirectResponse("${frontend_url}${requested_path}");
+    $response = new RedirectResponse("{$frontend_url}{$requested_path}");
     $response->send();
   }
 }

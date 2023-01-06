@@ -211,13 +211,13 @@ class LazyImageFormatter extends ResponsiveImageFormatter {
       $data_src = [];
 
       // Add original image.
-      $file_url = file_create_url($file_uri);
-      $data_src['original'] = file_url_transform_relative($file_url);
+      $file_url = \Drupal::service('file_url_generator')->generateAbsoluteString($file_uri);
+      $data_src['original'] = \Drupal::service('file_url_generator')->transformRelative($file_url);
 
       // Setup image styles for this URI.
       foreach ($image_styles as $key => $image_style) {
         $url = $image_style->buildUrl($file_uri);
-        $data_src[$key] = file_url_transform_relative($url);
+        $data_src[$key] = \Drupal::service('file_url_generator')->transformRelative($url);
       }
 
       $elements[$delta] = [

@@ -363,7 +363,7 @@ class SubscribeToFormationDAM extends FormBase {
       $fid = $media->field_media_image->target_id;
       $file = File::load($fid);
       if ($file) {
-        $content['image_uri'] = file_create_url($file->get('uri')->value);
+        $content['image_uri'] = \Drupal::service('file_url_generator')->generateAbsoluteString($file->get('uri')->value);
       }
       // Get formation preview.
       $formation_type_preview = [

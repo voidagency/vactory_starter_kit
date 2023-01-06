@@ -372,7 +372,7 @@ class ModalForm extends FormBase {
     $component_wrapper_type = 'fieldset';
     if (isset($settings['multiple']) && (bool) $settings['multiple'] === TRUE) {
       global $base_url;
-      $drag_icon = $base_url . '/' . drupal_get_path('module', 'vactory_dynamic_field') . '/icons/icon-drag-move.svg';
+      $drag_icon = $base_url . '/' . \Drupal::service('extension.path.resolver')->getPath('module', 'vactory_dynamic_field') . '/icons/icon-drag-move.svg';
       $icon_drag = '<img src="' . $drag_icon . '" class="df-components-sortable-handler"/>';
       $component_wrapper_type = 'details';
       $is_multiple = TRUE;
@@ -705,11 +705,11 @@ class ModalForm extends FormBase {
           $options = [];
           if (is_array($widgets) || is_object($widgets)) {
             foreach ($widgets as $widget_id => $widget) {
-              $undefined_screenshot = drupal_get_path('module', 'vactory_dynamic_field') . '/images/undefined-screenshot.jpg';
+              $undefined_screenshot = \Drupal::service('extension.path.resolver')->getPath('module', 'vactory_dynamic_field') . '/images/undefined-screenshot.jpg';
               $widget_preview = [
                 '#theme' => 'vactory_dynamic_select_template',
                 '#content' => [
-                  'screenshot_url' => !empty($widget['screenshot']) ? $widget['screenshot'] : file_create_url($undefined_screenshot),
+                  'screenshot_url' => !empty($widget['screenshot']) ? $widget['screenshot'] : \Drupal::service('file_url_generator')->generateAbsoluteString($undefined_screenshot),
                   'name' => $widget['name'],
                 ],
               ];

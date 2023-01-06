@@ -134,8 +134,8 @@ class SettingsForm extends ConfigFormBase {
     $form['global_settings']['toast_template'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Toast template'),
-      '#description' => $this->t('Enter Toast template twig file path here, Default to ' . drupal_get_path('module', 'vactory_notifications') . '/templates/notifications-toast.html.twig'),
-      '#default_value' => $config->get('toast_template') ? $config->get('toast_template') : drupal_get_path('module', 'vactory_notifications') . '/templates/notifications-toast.html.twig',
+      '#description' => $this->t('Enter Toast template twig file path here, Default to ' . \Drupal::service('extension.path.resolver')->getPath('module', 'vactory_notifications') . '/templates/notifications-toast.html.twig'),
+      '#default_value' => $config->get('toast_template') ? $config->get('toast_template') : \Drupal::service('extension.path.resolver')->getPath('module', 'vactory_notifications') . '/templates/notifications-toast.html.twig',
       '#states' => [
         'visible' => [
           'input[name="enable_toast"]' => ['checked' => TRUE],

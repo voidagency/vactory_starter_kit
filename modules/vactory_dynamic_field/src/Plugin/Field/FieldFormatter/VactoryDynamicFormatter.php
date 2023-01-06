@@ -144,8 +144,8 @@ class VactoryDynamicFormatter extends FormatterBase {
               $fid = $media->field_media_file->target_id;
               $file = File::load($fid);
               if (isset($file) && !empty($file)) {
-                $absolute_url = file_create_url($file->getFileUri());
-                $file_link = file_url_transform_relative($absolute_url);
+                $absolute_url = \Drupal::service('file_url_generator')->generateAbsoluteString($file->getFileUri());
+                $file_link = \Drupal::service('file_url_generator')->transformRelative($absolute_url);
               }
             }
           }
@@ -163,8 +163,8 @@ class VactoryDynamicFormatter extends FormatterBase {
                 $fid = (int) $media->get('field_media_file')->getString();
                 $file = File::load($fid);
                 if ($file) {
-                  $absolute_url = file_create_url($file->getFileUri());
-                  $file_link = file_url_transform_relative($absolute_url);
+                  $absolute_url = \Drupal::service('file_url_generator')->generateAbsoluteString($file->getFileUri());
+                  $file_link = \Drupal::service('file_url_generator')->transformRelative($absolute_url);
                 }
               }
             }

@@ -108,7 +108,7 @@ class VactoryReplaceWithCloudinaryUrl extends FilterBase implements ContainerFac
             $uri = $results[0]->uri;
             $fid = $results[0]->fid;
             if ($replace_policy === 'drupal_to_cloudinary') {
-              $url = file_create_url(File::load($fid)->getFileUri());
+              $url = \Drupal::service('file_url_generator')->generateAbsoluteString(File::load($fid)->getFileUri());
               $element->setAttribute('src', $url);
               $element->removeAttribute('height');
               $element->removeAttribute('width');

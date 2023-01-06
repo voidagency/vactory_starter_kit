@@ -424,7 +424,7 @@ function vactory_appointment_mail($key, &$message, $params) {
       // Email subject.
       $message['subject'] = t('Prise de Rendez-vous chez') . ' ' . $site_name . ' - ' . $appointment_type->getName();
       // Email body content.
-      $message['body'][] = render($mail_body);
+      $message['body'][] = \Drupal::service('renderer')->render($mail_body);
       break;
 
     default:

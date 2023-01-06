@@ -91,13 +91,13 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
         // Add screenshoot.
         $data['screenshot'] = FALSE;
         if (file_exists($screenshot_path)) {
-          $data['screenshot'] = file_create_url($screenshot_path);
+          $data['screenshot'] = \Drupal::service('file_url_generator')->generateAbsoluteString($screenshot_path);
         }
         elseif (file_exists($screenshot_path_fallback)) {
-          $data['screenshot'] = file_create_url($screenshot_path_fallback);
+          $data['screenshot'] = \Drupal::service('file_url_generator')->generateAbsoluteString($screenshot_path_fallback);
         }
         elseif (file_exists($screenshot_url_gif)) {
-          $data['screenshot'] = file_create_url($screenshot_url_gif);
+          $data['screenshot'] = \Drupal::service('file_url_generator')->generateAbsoluteString($screenshot_url_gif);
         }
 
         // Add static widget - demo content.
@@ -161,13 +161,13 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
         // Add screenshoot.
         $data['screenshot'] = FALSE;
         if (file_exists($screenshot_path)) {
-          $data['screenshot'] = file_create_url($screenshot_path);
+          $data['screenshot'] = \Drupal::service('file_url_generator')->generateAbsoluteString($screenshot_path);
         }
         elseif (file_exists($screenshot_path_fallback)) {
-          $data['screenshot'] = file_create_url($screenshot_path_fallback);
+          $data['screenshot'] = \Drupal::service('file_url_generator')->generateAbsoluteString($screenshot_path_fallback);
         }
         elseif (file_exists($screenshot_url_gif)) {
-          $data['screenshot'] = file_create_url($screenshot_url_gif);
+          $data['screenshot'] = \Drupal::service('file_url_generator')->generateAbsoluteString($screenshot_url_gif);
         }
 
         // Add static widget - demo content.
@@ -237,13 +237,13 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
     // Add screenshoot.
     $data['screenshot'] = FALSE;
     if (file_exists($screenshot_url)) {
-      $data['screenshot'] = file_create_url($screenshot_url);
+      $data['screenshot'] = \Drupal::service('file_url_generator')->generateAbsoluteString($screenshot_url);
     }
     elseif (file_exists($screenshot_url_fallback)) {
-      $data['screenshot'] = file_create_url($screenshot_url_fallback);
+      $data['screenshot'] = \Drupal::service('file_url_generator')->generateAbsoluteString($screenshot_url_fallback);
     }
     elseif (file_exists($screenshot_url_gif)) {
-      $data['screenshot'] = file_create_url($screenshot_url_gif);
+      $data['screenshot'] = \Drupal::service('file_url_generator')->generateAbsoluteString($screenshot_url_gif);
     }
 
     // Add static widget - demo content.

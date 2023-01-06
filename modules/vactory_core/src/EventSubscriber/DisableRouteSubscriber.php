@@ -4,7 +4,7 @@ namespace Drupal\vactory_core\EventSubscriber;
 
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\EventDispatcher\Event;
+use Drupal\Component\EventDispatcher\Event;
 
 /**
  * Listens to the dynamic route events.
@@ -23,7 +23,7 @@ class DisableRouteSubscriber implements EventSubscriberInterface {
   /**
    * A method to be called whenever a kernel.request event is dispatched.
    *
-   * @param \Symfony\Component\EventDispatcher\Event $event
+   * @param \Drupal\Component\EventDispatcher\Event $event
    *   The event triggered by the request.
    */
   public function onRequest(Event $event) {
@@ -35,7 +35,7 @@ class DisableRouteSubscriber implements EventSubscriberInterface {
    *
    * Like the onRequest event, it  passes in a response.
    *
-   * @param \Symfony\Component\EventDispatcher\Event $event
+   * @param \Drupal\Component\EventDispatcher\Event $event
    *   The event triggered by the response.
    */
   public function onResponse(Event $event) {
@@ -45,7 +45,7 @@ class DisableRouteSubscriber implements EventSubscriberInterface {
   /**
    * Process events generically invoking rabbit hole behaviors if necessary.
    *
-   * @param \Symfony\Component\EventDispatcher\Event $event
+   * @param \Drupal\Component\EventDispatcher\Event $event
    *   The event to process.
    */
   private function processEvent(Event $event) {
