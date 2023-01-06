@@ -322,6 +322,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
             $this->cacheability->setCacheTags(array_merge($this->cacheability->getCacheTags(), $tags));
             $type_field = $entity_type_id === 'taxonomy_term' ? 'vid' : 'type';
             $status = $this->entityTypeManager->getDefinition($entity_type_id)->getKey('status');
+            $status = !$status ? $this->entityTypeManager->getDefinition($entity_type_id)->getKey('published') : $status;
             $properties = [
               $type_field => $bundle,
             ];
