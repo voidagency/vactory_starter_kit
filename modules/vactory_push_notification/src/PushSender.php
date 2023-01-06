@@ -4,8 +4,8 @@ namespace Drupal\vactory_push_notification;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\vactory_push_notification\Entity\Subscription;
-use Minishlink\WebPush\WebPush;
-use Minishlink\WebPush\Subscription as PushSubscription;
+use Drupal\vactory_push_notification\Lib\Push;
+use Drupal\vactory_push_notification\Lib\Subscription as PushSubscription;
 
 /**
  * Sends push notifications.
@@ -20,9 +20,9 @@ class PushSender implements PushSenderInterface {
   protected $keyHelper;
 
   /**
-   * @var \Minishlink\WebPush\WebPush
+   * @var \Drupal\vactory_push_notification\Lib\Push
    */
-  protected $webPush;
+  protected $push;
 
   /**
    * @var \Drupal\vactory_push_notification\SubscriptionPurge
@@ -59,19 +59,19 @@ class PushSender implements PushSenderInterface {
   /**
    * Returns the push sender engine.
    *
-   * @return \Minishlink\WebPush\WebPush
+   * @return \Drupal\vactory_push_notification\Lib\Push
    *   The sender engine.
    *
    * @throws \Drupal\vactory_push_notification\AuthKeysException
    * @throws \ErrorException
    */
-  public function getWebPush() {
-    if (!$this->webPush) {
-      $auth = $this->keyHelper->getVapidAuth();
-      $options = $this->getPushOptions();
-      $this->webPush = new WebPush($auth, $options);
+  public function getPush() {
+    if (!$this->push) {
+      $auth = [];
+      $options = [];
+      $this->push = new Push($auth, $options);
     }
-    return $this->webPush;
+    return $this->push;
   }
 
   /**
@@ -88,32 +88,19 @@ class PushSender implements PushSenderInterface {
       return;
     }
     
-    dpm($item, "PushSender::send()");
-    return;
-    $webPush = $this->getWebPush();
+    $webPush = $this->getPush();
+
     $subscriptions = $this->createSubscriptions($item);
+
     foreach ($subscriptions as $subscription) {
-      $webPush->sendNotification($subscription['subscription'], $subscription['payload']);
+      $webPush->queueNotification($subscription['subscription'], $subscription['payload']);
     }
 
-    /** @var \Minishlink\WebPush\MessageSentReport $report */
+    /** @var \Drupal\vactory_push_notification\Lib\MessageSentReport $report */
     foreach ($webPush->flush(count($subscriptions)) as $report) {
       $this->purge->delete($report);
     }
-  }
 
-  /**
-   * Gets the default push options.
-   *
-   * @return array
-   *   The list of options.
-   *
-   * @see https://github.com/web-push-libs/web-push-php#notifications-and-default-options
-   */
-  public function getPushOptions() {
-    return [
-      'urgency' => 'normal',
-    ];
   }
 
   /**
@@ -122,7 +109,7 @@ class PushSender implements PushSenderInterface {
    * @param \Drupal\vactory_push_notification\NotificationItem $item
    *   The notification item.
    *
-   * @return \Minishlink\WebPush\Subscription[]
+   * @return \Drupal\vactory_push_notification\Lib\Subscription[]
    *   A list of push subscriptions.
    *
    * @throws \ErrorException
@@ -136,8 +123,7 @@ class PushSender implements PushSenderInterface {
       $notifications[] = [
         'subscription' => PushSubscription::create([
           'endpoint' => $subscription->getEndpoint(),
-          'publicKey' => $subscription->getPublicKey(),
-          'authToken' => $subscription->getToken(),
+          'token' => $subscription->getToken(),
         ]),
         'payload' => $item->payload(),
       ];

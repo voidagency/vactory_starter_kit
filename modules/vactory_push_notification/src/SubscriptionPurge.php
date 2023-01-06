@@ -4,7 +4,7 @@ namespace Drupal\vactory_push_notification;
 
 use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Minishlink\WebPush\MessageSentReport;
+use Drupal\vactory_push_notification\Lib\MessageSentReport;
 use Psr\Log\LoggerInterface;
 
 /**
