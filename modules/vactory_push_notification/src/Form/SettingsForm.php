@@ -112,27 +112,35 @@ class SettingsForm extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildForm($form, $form_state);
     $config = $this->config('vactory_push_notification.settings');
-    $is_keys_defined = $this->keysHelper->isKeysDefined();
+    // $is_keys_defined = $this->keysHelper->isKeysDefined();
 
-    $form['auth'] = [
-      '#type' => 'details',
-      '#open' => !$is_keys_defined, // Open when no keys, close when keys exist.
-      '#title' => $this->t('Auth parameters'),
-    ];
-    $form['auth']['apn_key'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('APN Key'),
-      '#default_value' => $this->keysHelper->getApnKey(),
-      '#required' => TRUE,
-      '#maxlength' => 100,
-    ];
-    $form['auth']['fcm_key'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('FCM Key'),
-      '#default_value' => $this->keysHelper->getFcmKey(),
-      '#required' => TRUE,
-      '#maxlength' => 100,
-    ];
+    $push_services_plugin_manager = \Drupal::service('plugin.manager.vactory_push_services');
+    $definitions = $push_services_plugin_manager->getDefinitions();
+
+    foreach ($definitions as $definition) {
+      $plugin_id = $definition['id'];
+      $plugin = $push_services_plugin_manager->createInstance($plugin_id);
+      $form = $plugin->buildForm($form, $form_state);
+    }
+
+
+    // $form['auth'] = [
+    //   '#type' => 'details',
+    //   '#open' => !$is_keys_defined, // Open when no keys, close when keys exist.
+    //   '#title' => $this->t('Auth parameters'),
+    // ];
+    // $form['auth']['apn_key'] = [
+    //   '#type' => 'textarea',
+    //   '#title' => $this->t('APN Key'),
+    //   '#default_value' => $this->keysHelper->getApnKey(),
+    //   '#required' => TRUE,
+    // ];
+    // $form['auth']['fcm_key'] = [
+    //   '#type' => 'textarea',
+    //   '#title' => $this->t('FCM Key'),
+    //   '#default_value' => $this->keysHelper->getFcmKey(),
+    //   '#required' => TRUE,
+    // ];
 
     $form['content'] = [
       '#type' => 'details',
@@ -266,18 +274,27 @@ class SettingsForm extends ConfigFormBase {
     $config = $this->config('vactory_push_notification.settings');
 
     // Save the keys.
-    $apn_key = $form_state->getValue('apn_key');
-    $fcm_key = $form_state->getValue('fcm_key');
-    if ($apn_key != $this->keysHelper->getApnKey() ||
-          $fcm_key != $this->keysHelper->getFcmKey()) {
-      $this->keysHelper->setKeys($apn_key, $fcm_key)->save();
-    }
+    // $apn_key = $form_state->getValue('apn_key');
+    // $fcm_key = $form_state->getValue('fcm_key');
+    // if ($apn_key != $this->keysHelper->getApnKey() ||
+    //       $fcm_key != $this->keysHelper->getFcmKey()) {
+    //   $this->keysHelper->setKeys($apn_key, $fcm_key)->save();
+    // }
 
     $config
       ->set('queue_batch_size', $form_state->getValue('queue_batch_size'))
       ->set('body_length', $form_state->getValue('body_length'))
       ->set('bundles', $form_state->getValue('bundles'))
       ->save();
+
+    $push_services_plugin_manager = \Drupal::service('plugin.manager.vactory_push_services');
+    $definitions = $push_services_plugin_manager->getDefinitions();
+
+    foreach ($definitions as $definition) {
+      $plugin_id = $definition['id'];
+      $plugin = $push_services_plugin_manager->createInstance($plugin_id);
+      $plugin->saveForm($form, $form_state);
+    }
 
     $this->messenger()->addStatus($this->t('Push notification settings have been updated.'));
   }

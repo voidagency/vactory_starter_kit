@@ -6,7 +6,7 @@ namespace Drupal\vactory_push_notification\Lib;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
-use GuzzleHttp\Psr7\Request;
+// use GuzzleHttp\Psr7\Request;
 use Psr\Http\Message\ResponseInterface;
 
 class Push
@@ -135,9 +135,17 @@ class Push
 
         foreach ($batches as $batch) {
             // for each endpoint server type
-            $requests = $this->prepare($batch);
+            $requests = [];
+            try {
+                $requests = $this->prepare($batch);
+            } catch (\Exception $e) {
+                $requests = [];
+                dpm($e);
+            }
 
             $promises = [];
+
+
 
             foreach ($requests as $request) {
                 $promises[] = $this->client->sendAsync($request)
@@ -157,7 +165,9 @@ class Push
             }
 
             foreach ($promises as $promise) {
-                yield $promise->wait();
+                $d = $promise->wait();
+                // dpm($d);
+                yield $d;
             }
         }
     }
@@ -185,7 +195,10 @@ class Push
             ]);
 
             // try {
-            //     $requests[] = $plugin->getRequest($content);
+            //     $requests[] = $plugin->getRequest([
+            //         'token' => $token,
+            //         'payload' => $payload
+            //     ]);
             // } catch (\Exception $e) {
             //     dpm($e); // todo: remove
             // }

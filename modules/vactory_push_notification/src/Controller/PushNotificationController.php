@@ -67,9 +67,9 @@ class PushNotificationController extends ControllerBase {
   public function subscribe(Request $request) {
 
     // Cannot accept a user confirmation when push keys are empty.
-    if (!$this->keysHelper->isKeysDefined()) {
-      throw new ServiceUnavailableHttpException();
-    }
+    // if (!$this->keysHelper->isKeysDefined()) {
+    //   throw new ServiceUnavailableHttpException();
+    // }
 
     $token = $request->get('token');
     $endpoint = $request->get('endpoint');

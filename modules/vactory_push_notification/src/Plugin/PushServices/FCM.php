@@ -4,6 +4,8 @@ namespace Drupal\vactory_push_notification\Plugin\PushServices;
 
 use Drupal\vactory_push_notification\PushServiceBase;
 use GuzzleHttp\Psr7\Request;
+use Drupal\Core\Form\FormStateInterface;
+
 
 /**
  * Provides FCM send functionality.
@@ -15,6 +17,21 @@ use GuzzleHttp\Psr7\Request;
  */
 class FCM extends PushServiceBase
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function buildForm(array $form, FormStateInterface $form_state)
+    {
+        return $form;
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public function saveForm(array &$form, FormStateInterface $form_state)
+    {
+    }
+
     /**
      * {@inheritdoc}
      */

@@ -122,10 +122,12 @@ class TestNotification extends FormBase {
       '#size' => 64,
       '#weight' => '0',
       '#required' => TRUE,
+      '#default_value' => 'Hello notification'
     ];
     $form['test']['body'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Message'),
+      '#default_value' => 'Body notification',
       '#description' => $this->t('Keep in mind that your message will be trimmed to <strong>%chars</strong> characters. You can adjust that value on <a href=":url">Settings</a> page.', [
         '%chars' => $this->config->get('body_length') ?: 100,
         ':url' => Url::fromRoute('vactory_push_notification.settings')->toString(),

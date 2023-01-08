@@ -158,7 +158,10 @@
     "mailchimp/marketing": "^3.0",
     "drupal/time_range": "^2.0",
     "drupal/cloudinary": "^2.0@alpha",
-    "drupal/video_embed_field": "^2.4"
+    "drupal/video_embed_field": "^2.4",
+    "web-token/jwt-core": "^2.2",
+    "web-token/jwt-key-mgmt": "^2.2",
+    "web-token/jwt-signature-algorithm-ecdsa": "^2.2"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.3"

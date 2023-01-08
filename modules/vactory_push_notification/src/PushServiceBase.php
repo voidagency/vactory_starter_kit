@@ -6,12 +6,16 @@ use Drupal\Component\Plugin\PluginBase;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Core\StringTranslation\TranslationInterface;
 
 /**
  * A base class to help developers implement their own Push Service plugins.
  */
 abstract class PushServiceBase extends PluginBase implements PushServiceInterface, ContainerFactoryPluginInterface
 {
+  use StringTranslationTrait;
 
   /**
    * The config factory.
@@ -40,7 +44,8 @@ abstract class PushServiceBase extends PluginBase implements PushServiceInterfac
       $plugin_id,
       $plugin_definition,
       $container->get('config.factory'),
-      $container->get('vactory_push_notification.keys_helper')
+      $container->get('vactory_push_notification.keys_helper'),
+      $container->get('string_translation')
     );
     return $self;
   }
@@ -48,9 +53,18 @@ abstract class PushServiceBase extends PluginBase implements PushServiceInterfac
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, ConfigFactoryInterface $config_factory, KeysHelper $keys_helper)
+  public function __construct(
+    array $configuration,
+    $plugin_id,
+    $plugin_definition,
+    ConfigFactoryInterface $config_factory,
+    KeysHelper $keys_helper,
+    TranslationInterface $translation
+    )
   {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
+    // Store the translation service.
+    $this->setStringTranslation($translation);
     $this->configFactory = $config_factory;
     $this->keysHelper = $keys_helper;
   }
@@ -104,6 +118,9 @@ abstract class PushServiceBase extends PluginBase implements PushServiceInterfac
   {
     return $this->pluginDefinition['title'];
   }
+
+  abstract public function buildForm(array $form, FormStateInterface $form_state);
+  abstract public function saveForm(array &$form, FormStateInterface $form_state);
 
   /**
    * {@inheritdoc}
