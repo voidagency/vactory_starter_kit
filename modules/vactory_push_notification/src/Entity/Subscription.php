@@ -35,6 +35,12 @@ use Drupal\Core\Entity\EntityTypeInterface;
  * )
  */
 class Subscription extends ContentEntityBase implements SubscriptionInterface {
+  /**
+   * {@inheritdoc}
+   */
+  public function getAppId() {
+    return $this->get('app_id');
+  }
 
   /**
    * {@inheritdoc}
@@ -101,6 +107,14 @@ class Subscription extends ContentEntityBase implements SubscriptionInterface {
    */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     $fields = parent::baseFieldDefinitions($entity_type);
+
+    $fields['app_id'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('App Id'))
+      ->setDescription(t('App ID.'))
+      ->setSettings([
+        'max_length' => 512,
+      ])
+      ->setRequired(TRUE);
 
     $fields['user'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('User ID'))

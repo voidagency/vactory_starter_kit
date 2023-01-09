@@ -14,6 +14,13 @@ use Drupal\user\EntityOwnerInterface;
 interface SubscriptionInterface extends ContentEntityInterface {
 
   /**
+   * Gets the subscription AppId.
+   *
+   * @return string
+   */
+  public function getAppId();
+
+  /**
    * Gets the subscription user.
    *
    * @return string

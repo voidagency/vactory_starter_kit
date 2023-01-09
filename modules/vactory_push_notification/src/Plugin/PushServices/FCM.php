@@ -22,6 +22,27 @@ class FCM extends PushServiceBase
      */
     public function buildForm(array $form, FormStateInterface $form_state)
     {
+        $config = $this->config('vactory_push_notification.fcm');
+
+        $form['fcm'] = [
+            '#type' => 'details',
+            '#open' => true,
+            '#title' => $this->t('FCM parameters'),
+        ];
+
+        $form['fcm']['fcm_key'] = [
+            '#type' => 'textarea',
+            '#title' => $this->t('FCM API Key'),
+            '#default_value' => $config->get('fcm_key'),
+            '#required' => TRUE,
+        ];
+        $form['fcm']['fcm_experience_id'] = [
+            '#type' => 'textfield',
+            '#title' => $this->t('FCM EXPO Experience ID'),
+            '#default_value' => $config->get('experienceId'),
+            '#required' => TRUE,
+        ];
+
         return $form;
     }
 
@@ -30,6 +51,10 @@ class FCM extends PushServiceBase
      */
     public function saveForm(array &$form, FormStateInterface $form_state)
     {
+        \Drupal::configFactory()->getEditable('vactory_push_notification.fcm')
+            ->set('fcm_key', $form_state->getValue('fcm_key'))
+            ->set('experienceId', $form_state->getValue('fcm_experience_id'))
+            ->save();
     }
 
     /**
@@ -37,13 +62,36 @@ class FCM extends PushServiceBase
      */
     public function getRequest($data)
     {
-        $serviceUrl = "https://webhook.site/8aaff31b-90ac-4e5f-8425-6150a5946489";
-        $headers = ['X-Service' => 'FCM'];
+        $config = $this->config('vactory_push_notification.fcm');
+        $token = $config->get('fcm_key');
+        $experienceId = $config->get('experienceId');
+
+
+        $serviceUrl = "https://fcm.googleapis.com/fcm/send";
+        $headers = [
+            "Content-Type" => "application/json",
+            'Authorization' => 'key=' . trim($token)
+        ];
+
+        $notification_payload = json_decode($data['payload'], TRUE);
+
         $content = json_encode([
-            'endpoint' => 'ANDROID',
-            'token' => $data['token'],
-            'apiKey' => $this->keysHelper->getFcmKey(), // todo: get from config
-            'payload' => json_encode($data['payload'])
+            'to' => $data['token'],
+            'priority' => "normal",
+            'data' => [
+                "experienceId" => $experienceId,
+                "scopeKey" => $experienceId,
+                "title" => $notification_payload['title'],
+                "message" => $notification_payload['body'],
+                "link" => [
+                    "type" => "screen",
+                    "param" => [
+                        "foo" => "bar",
+                        "service" => "FCM",
+                    ],
+                    "path" => "NotFound"
+                ],
+            ]
         ]);
 
         return new Request('POST', $serviceUrl, $headers, $content);

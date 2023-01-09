@@ -69,7 +69,7 @@ class APN extends PushServiceBase
             '#title' => $this->t('Enable production'),
             '#default_value' => $config->get('apn_prod_env'),
             '#description' => $this->t('By default we use Sandbox, check this to enable production service.'),
-          ];
+        ];
 
         return $form;
     }
@@ -87,7 +87,7 @@ class APN extends PushServiceBase
             ->set('apn_prod_env', $form_state->getValue('apn_prod_env'))
             ->save();
 
-        \Drupal::messenger()->addStatus($this->t('APN settings have been updated.'));
+        // \Drupal::messenger()->addStatus($this->t('APN settings have been updated.'));
     }
 
     /**
@@ -133,14 +133,25 @@ class APN extends PushServiceBase
         $headers = [
             'apns-topic' => $package_id,
             // 'apns-push-type' => 'alert',
-            'Authorization' => 'Bearer ' . trim($token) . 'sfssdds'
+            'Authorization' => 'Bearer ' . trim($token)
         ];
 
         $notification_payload = json_decode($data['payload'], TRUE);
 
         $content = json_encode([
             'aps' => [
-                'alert' => $notification_payload
+                'alert' => [
+                    "title" => $notification_payload['title'],
+                    "body" => $notification_payload['body'],
+                    "link" => [
+                        "type" => "screen",
+                        "param" => [
+                            "foo" => "bar",
+                            "service" => "APN",
+                        ],
+                        "path" => "NotFound"
+                    ],
+                ]
             ]
         ]);
 
