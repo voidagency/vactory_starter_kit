@@ -17,6 +17,7 @@ use Drupal\media\MediaInterface;
 use Drupal\vactory_core\SlugManager;
 use Drupal\vactory_decoupled\JsonApiGenerator;
 use Drupal\vactory_decoupled\MediaFilesManager;
+use Drupal\vactory_decoupled_webform\Webform;
 use Drupal\vactory_dynamic_field\ViewsToApi;
 use Shaper\Util\Context;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -119,6 +120,13 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
   protected $viewsToApi;
 
   /**
+   * Vactory webform service.
+   *
+   * @var \Drupal\vactory_decoupled_webform\Webform
+   */
+  protected $webformNormalizer;
+
+  /**
    * {@inheritdoc}
    */
   public function __construct(
@@ -133,7 +141,8 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
     SlugManager $slugManager,
     ModuleHandlerInterface $moduleHandler,
     LanguageManagerInterface $languageManager,
-    ViewsToApi $viewsToApi
+    ViewsToApi $viewsToApi,
+    Webform $webformNormalizer
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->entityTypeManager = $entity_type_manager;
@@ -148,6 +157,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
     $this->moduleHandler = $moduleHandler;
     $this->languageManager = $languageManager;
     $this->viewsToApi = $viewsToApi;
+    $this->webformNormalizer = $webformNormalizer;
   }
 
   /**
@@ -166,7 +176,8 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
       $container->get('vactory_core.slug_manager'),
       $container->get('module_handler'),
       $container->get('language_manager'),
-      $container->get('vactory.views.to_api')
+      $container->get('vactory.views.to_api'),
+      $container->get('vactory.webform.normalizer')
     );
   }
 
@@ -469,7 +480,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
           $webform_id = $value['id'];
           $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), ['webform_submission_list', 'config:webform_list']);
           $this->cacheability->setCacheTags($cacheTags);
-          $value['elements'] = \Drupal::service('vactory.webform.normalizer')->normalize($webform_id);
+          $value['elements'] = $this->webformNormalizer->normalize($webform_id);
         }
 
         if ($info['type'] === 'remote_video' && !empty($value)) {

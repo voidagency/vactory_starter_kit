@@ -3,6 +3,7 @@
 namespace Drupal\vactory_decoupled_router\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -40,6 +41,13 @@ class PathTranslator extends ControllerBase
   private $jsonapi_resource_type_respository;
 
   /**
+   * Entity type manager service.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
    * System routes.
    */
   protected $systemRoutes = [];
@@ -55,13 +63,14 @@ class PathTranslator extends ControllerBase
   public function __construct(
     LoggerInterface $logger,
     UrlMatcherInterface $router,
-    ResourceTypeRepository $jsonapi_resource_type_respository
+    ResourceTypeRepository $jsonapi_resource_type_respository,
+    EntityTypeManagerInterface $entityTypeManager
   ) {
     $this->logger = $logger;
     $this->router = $router;
     $this->jsonapi_resource_type_respository = $jsonapi_resource_type_respository;
-
-    $this->systemRoutes = \Drupal::entityTypeManager()->getStorage('vactory_route')->loadMultiple();
+    $this->entityTypeManager = $entityTypeManager;
+    $this->systemRoutes = $this->entityTypeManager->getStorage('vactory_route')->loadMultiple();
   }
 
   /**
@@ -72,7 +81,8 @@ class PathTranslator extends ControllerBase
     return new static(
       $container->get('logger.channel.vactory_decoupled_router'),
       $container->get('router.no_access_checks'),
-      $container->get('jsonapi.resource_type.repository')
+      $container->get('jsonapi.resource_type.repository'),
+      $container->get('entity_type.manager')
     );
   }
 

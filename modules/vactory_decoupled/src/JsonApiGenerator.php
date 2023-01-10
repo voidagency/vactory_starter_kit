@@ -3,6 +3,10 @@
 namespace Drupal\vactory_decoupled;
 
 // use Drupal\entityqueue\Entity\EntityQueue;
+use Drupal\Core\Entity\EntityRepositoryInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\Utility\Token;
 use Drupal\entityqueue\Entity\EntitySubqueue;
 use Drupal\Core\Cache\Cache;
 use Drupal\jsonapi\ResourceType\ResourceType;
@@ -17,10 +21,48 @@ class JsonApiGenerator {
   protected $client;
 
   /**
+   * Entity type manager service.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
+   * Entity repository service.
+   *
+   * @var \Drupal\Core\Entity\EntityRepositoryInterface
+   */
+  protected $entityRepository;
+
+  /**
+   * Drupal token service.
+   *
+   * @var \Drupal\Core\Utility\Token
+   */
+  protected $token;
+
+  /**
+   * Module handler service.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
    * {@inheritdoc}
    */
-  public function __construct(JsonApiClient $client) {
+  public function __construct(
+    JsonApiClient $client,
+    EntityTypeManagerInterface $entityTypeManager,
+    EntityRepositoryInterface $entityRepository,
+    Token $token,
+    ModuleHandlerInterface $moduleHandler
+  ) {
     $this->client = $client;
+    $this->entityTypeManager = $entityTypeManager;
+    $this->entityRepository = $entityRepository;
+    $this->token = $token;
+    $this->moduleHandler = $moduleHandler;
   }
 
   /**
@@ -47,7 +89,7 @@ class JsonApiGenerator {
     foreach ($filters as $filter) {
       if (strpos($filter, '[') === 0 && strpos($filter, ']') === strlen($filter)-1) {
         // Token case.
-        $filter = \Drupal::token()->replace($filter, []);
+        $filter = $this->token->replace($filter, []);
         $nested_filters = [...$nested_filters, ...explode("\n", $filter)];
       }
     }
@@ -82,15 +124,13 @@ class JsonApiGenerator {
     $parsed = [];
     foreach ($filters as $line) {
       [$name, $qsvalue] = explode("=", $line, 2);
-      $parsed[trim($name)] = urldecode(trim(\Drupal::token()
-        ->replace($qsvalue, [])));
+      $parsed[trim($name)] = urldecode(trim($this->token->replace($qsvalue, [])));
     }
 
     $original_filters_parsed = [];
     foreach ($original_filters as $line) {
       [$name, $qsvalue] = explode("=", $line, 2);
-      $original_filters_parsed[trim($name)] = urldecode(trim(\Drupal::token()
-        ->replace($qsvalue, [])));
+      $original_filters_parsed[trim($name)] = urldecode(trim($this->token->replace($qsvalue, [])));
     }
 
     /*
@@ -123,8 +163,7 @@ class JsonApiGenerator {
     }
     $parsed['optional_filters_data'] = $config['optional_filters_data'] ?? [];
     $hook_context['cache_tags'] = [];
-    \Drupal::moduleHandler()
-      ->alter('json_api_collection', $parsed, $hook_context);
+    $this->moduleHandler->alter('json_api_collection', $parsed, $hook_context);
     unset($parsed['optional_filters_data']);
     parse_str(http_build_query($parsed), $query_filters);
     parse_str(http_build_query($original_filters_parsed), $query_original_filters);
@@ -164,10 +203,7 @@ class JsonApiGenerator {
     $result = [];
     $cacheTags = [];
 
-    $entityTypeManager = \Drupal::service('entity_type.manager');
-    $taxonomyTermStorage = $entityTypeManager->getStorage('taxonomy_term');
-    // $slugManager = \Drupal::service('vactory_core.slug_manager');
-    $entityRepository = \Drupal::service('entity.repository');
+    $taxonomyTermStorage = $this->entityTypeManager->getStorage('taxonomy_term');
     $bundles = (array) $vocabularies;
     $bundles = array_filter($bundles, function ($value) {
       return $value != '0';
@@ -178,8 +214,7 @@ class JsonApiGenerator {
       $terms = $taxonomyTermStorage->loadTree($vid, 0, NULL, TRUE);
       $result[$vid] = [];
       foreach ($terms as $term) {
-        $term = $entityRepository
-          ->getTranslationFromContext($term);
+        $term = $this->entityRepository->getTranslationFromContext($term);
 
         $cacheTags = Cache::mergeTags($cacheTags, $term->getCacheTags());
         array_push($result[$vid], [
