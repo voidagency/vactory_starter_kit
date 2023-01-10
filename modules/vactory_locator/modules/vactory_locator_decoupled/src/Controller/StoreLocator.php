@@ -25,7 +25,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 class StoreLocator extends ControllerBase {
 
   /**
-   * The renderer.
+   * The Store locator service.
    *
    * @var \Drupal\vactory_locator_decoupled\StoreLocatoreManagerInterface
    */
@@ -58,7 +58,7 @@ class StoreLocator extends ControllerBase {
   protected $renderer;
 
   /**
-   * SearchController constructor.
+   * StoreLocator constructor.
    *
    * @param \Drupal\vactory_locator_decoupled\StoreLocatoreManagerInterface $store_locator_manager
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
@@ -138,8 +138,7 @@ class StoreLocator extends ControllerBase {
 
     /* @var \Drupal\views\ViewExecutable */
     $view = $this->entityTypeManager->getStorage('view')
-      ->load('vactory_locator')
-      ->getExecutable();
+      ->load('vactory_locator')->getExecutable();
 
     $view->setDisplay('store_locator_display');
 
@@ -182,15 +181,8 @@ class StoreLocator extends ControllerBase {
   protected function normalizer(ViewExecutable $view) {
     $resultSet = [];
 
-//    @TODO: still needs debugging why cache does not hit in the view.
-    $view_render_array = NULL;
+    $view_render_array = [];
     $rendered_view = NULL;
-    $this->renderer->executeInRenderContext(new RenderContext(), function () use ($view, &$view_render_array, &$rendered_view) {
-      $view_render_array = $view->render($view->current_display);
-      $rendered_view = $view_render_array['#markup']->jsonSerialize();
-    });
-
-    $result = $rendered_view;
     $cache['#cache'] = [
       'max-age' => Cache::PERMANENT,
       'contexts' => [
@@ -198,12 +190,18 @@ class StoreLocator extends ControllerBase {
       ],
     ];
 
+    $this->renderer->executeInRenderContext(new RenderContext(), function () use ($view, &$view_render_array, &$rendered_view) {
+      $view_render_array = $view->render($view->current_display);
+      $rendered_view = $view_render_array['#markup']->jsonSerialize();
+    });
+
+    $result = $rendered_view;
+
     $resultSet['resources'] = json_decode($result, TRUE);
     $resultSet['count'] = $view->total_rows;
 
     /* In case metatags are filter dependant */
-//    $resultSet['metatags'] = json_decode($this->getMetatag($view), TRUE);
-
+    //$resultSet['metatags'] = json_decode($this->getMetatag($view), TRUE);
     $response = CacheableJsonResponse::create($resultSet,Response::HTTP_OK);
     $response->addCacheableDependency(CacheableMetadata::createFromRenderArray($view_render_array));
     $response->addCacheableDependency(CacheableMetadata::createFromRenderArray($cache));

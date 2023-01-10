@@ -4,8 +4,9 @@ vactory_locator_decoupled.store_locator:
     _controller: '\Drupal\vactory_locator_decoupled\Controller\StoreLocator::index'
   methods: [GET]
   requirements:
-    _permission: 'access content'
-
+    _access: 'TRUE'
+  options:
+    no_cache: FALSE
 
 
 vactory_locator_decoupled.cities_api:

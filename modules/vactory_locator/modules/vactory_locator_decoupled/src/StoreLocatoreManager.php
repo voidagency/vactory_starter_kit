@@ -77,7 +77,7 @@ class StoreLocatoreManager implements StoreLocatoreManagerInterface {
   //     'query' => [
   //       'place_id' => $place_id,
   //       'language' => "fr",
-  //       'key' => $this->configFactory->getEditable('elsan_settings.settings')->get('map_api_key'),
+  //       'key' => getenv('OPEN_CAGE_API'),
   //       'fields' => 'name,geometry'
   //     ],
   //   ]);
@@ -108,7 +108,7 @@ class StoreLocatoreManager implements StoreLocatoreManagerInterface {
         'query' => [
           'q' => $query,
           'language' => $this->language,
-          'key' => '93d769dcb6354d099cc722f28582f10d',
+          'key' => getenv('OPEN_CAGE_API'),
           'no_annotations' => 1,
           'country' => 'MA,FR',
           'fields' => 'label,latitude,longitude,name',
@@ -150,7 +150,7 @@ class StoreLocatoreManager implements StoreLocatoreManagerInterface {
           'input' => Xss::filter($request->query->get('city')),
           'types' => '(regions)',
           'language' => "fr",
-          'key' => "AIzaSyCIrwx3zTWKJUbANkcg3ENfyX4NciZLsx4",
+          'key' => getenv('GOOGLE_PLACES_API'),
           'sessiontoken' => $this->v4($request),
           'components' => 'country:ma',
         ],
@@ -165,7 +165,7 @@ class StoreLocatoreManager implements StoreLocatoreManagerInterface {
           self::CID . ':' . $query,
         ]
       ];
-      if ($response['status'] != 'OK') {
+      if ($response['status'] !== 'OK') {
         $this->messenger->addError(t('Requête invalide!'));
         return new JsonResponse(['message' => t('Invalid Request!')], 500);
       }
