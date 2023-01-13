@@ -47,9 +47,10 @@ class InternalNodeEntityBlocksFieldItemList extends FieldItemList
   public static function createInstance($definition, $name = NULL, TraversableTypedDataInterface $parent = NULL)
   {
     $instance = parent::createInstance($definition, $name, $parent);
-    $instance->blockManager = \Drupal::getContainer()->get('vactory_decoupled.blocksManager');
-    $instance->entityTypeManager = \Drupal::getContainer()->get('entity_type.manager');
-    $instance->moduleHandler = \Drupal::getContainer()->get('module_handler');
+    $container = \Drupal::getContainer();
+    $instance->blockManager = $container->get('vactory_decoupled.blocksManager');
+    $instance->entityTypeManager = $container->get('entity_type.manager');
+    $instance->moduleHandler = $container->get('module_handler');
     return $instance;
   }
 

@@ -2,9 +2,12 @@
 
 namespace Drupal\vactory_decoupled\Plugin\Field;
 
+use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Field\FieldItemList;
 use Drupal\Core\TypedData\ComputedItemListTrait;
+use Drupal\Core\TypedData\TraversableTypedDataInterface;
 use Drupal\taxonomy\Entity\Term;
+use Drupal\vactory_core\SlugManager;
 
 /**
  * Term slug.
@@ -13,6 +16,32 @@ class InternalTermEntitySlugFieldItemList extends FieldItemList
 {
 
   use ComputedItemListTrait;
+
+  /**
+   * slug manager service.
+   *
+   * @var SlugManager
+   */
+  protected $slugManager;
+
+  /**
+   * Entity repository service.
+   *
+   * @var EntityRepositoryInterface
+   */
+  protected $entityRepository;
+
+  /**
+   * {@inheritDoc}
+   */
+  public static function createInstance($definition, $name = NULL, TraversableTypedDataInterface $parent = NULL)
+  {
+    $instance = parent::createInstance($definition, $name, $parent);
+    $container = \Drupal::getContainer();
+    $instance->entityRepository = $container->get('entity.repository');
+    $instance->slugManager = $container->get('vactory_core.slug_manager');
+    return $instance;
+  }
 
   /**
    * {@inheritdoc}
@@ -31,12 +60,8 @@ class InternalTermEntitySlugFieldItemList extends FieldItemList
       return;
     }
 
-    $entityRepository = \Drupal::service('entity.repository');
-    $slugManager = \Drupal::service('vactory_core.slug_manager');
+    $term = $this->entityRepository->getTranslationFromContext($entity);
 
-    $term = $entityRepository
-      ->getTranslationFromContext($entity);
-
-    $this->list[0] = $this->createItem(0, $slugManager->taxonomy2Slug($term));
+    $this->list[0] = $this->createItem(0, $this->slugManager->taxonomy2Slug($term));
   }
 }
