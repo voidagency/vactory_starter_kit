@@ -6,6 +6,7 @@ use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Field\FieldItemList;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\TypedData\ComputedItemListTrait;
+use Drupal\Core\TypedData\TraversableTypedDataInterface;
 use Drupal\node\Entity\Node;
 use Drupal\vactory_decoupled\BlocksManager;
 
@@ -20,6 +21,41 @@ class InternalNodeEntityBlocksFieldItemList extends FieldItemList
   protected ?CacheableMetadata $cacheMetadata = NULL;
 
   /**
+   * Block manager service.
+   *
+   * @var \Drupal\vactory_decoupled\BlocksManager
+   */
+  protected $blockManager;
+
+  /**
+   * Entity type manager service.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
+   * Module handler service.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
+   * {@inheritDoc}
+   */
+  public static function createInstance($definition, $name = NULL, TraversableTypedDataInterface $parent = NULL)
+  {
+    $instance = parent::createInstance($definition, $name, $parent);
+    $container = \Drupal::getContainer();
+    $instance->blockManager = $container->get('vactory_decoupled.blocksManager');
+    $instance->entityTypeManager = $container->get('entity_type.manager');
+    $instance->moduleHandler = $container->get('module_handler');
+    return $instance;
+  }
+
+
+  /**
    * {@inheritdoc}
    */
   protected function computeValue()
@@ -28,7 +64,7 @@ class InternalNodeEntityBlocksFieldItemList extends FieldItemList
     $entity = $this->getEntity();
     $entity_type = $entity->getEntityTypeId();
     /** @var BlocksManager $block_manager */
-    $block_manager = \Drupal::service('vactory_decoupled.blocksManager');
+    /*$block_manager = \Drupal::service('vactory_decoupled.blocksManager');*/
 
     if (!in_array($entity_type, ['node'])) {
       return;
@@ -40,7 +76,7 @@ class InternalNodeEntityBlocksFieldItemList extends FieldItemList
     ];
 
     // Exclude Banner blocks.
-    $banner_blocks = \Drupal::entityTypeManager()->getStorage('block_content')
+    $banner_blocks = $this->entityTypeManager->getStorage('block_content')
       ->loadByProperties(['type' => 'vactory_decoupled_banner']);
     if (!empty($banner_blocks)) {
       $banner_blocks_plugins = array_map(function ($banner_block) {
@@ -52,11 +88,11 @@ class InternalNodeEntityBlocksFieldItemList extends FieldItemList
     // Exclude Cross Content Blocks.
     array_push($plugin_filter['plugins'], 'vactory_cross_content');
 
-    $value = $block_manager->getBlocksByNode($entity->id(), $plugin_filter);
+    $value = $this->blockManager->getBlocksByNode($entity->id(), $plugin_filter);
 
     // @see https://api.drupal.org/api/drupal/core%21modules%21system%21tests%21modules%21entity_test%21src%21Plugin%21Field%21ComputedTestCacheableStringItemList.php/class/ComputedTestCacheableStringItemList/9.3.x?title=&title_1=&object_type=&order=title&sort=desc
     $this->cacheMetadata = new CacheableMetadata();
-    \Drupal::moduleHandler()->alter('internal_blocks_cacheability', $this->cacheMetadata, $entity, $value);
+    $this->moduleHandler->alter('internal_blocks_cacheability', $this->cacheMetadata, $entity, $value);
     $this->list[0] = $this->createItem(0, $value);
   }
 
@@ -82,4 +118,5 @@ class InternalNodeEntityBlocksFieldItemList extends FieldItemList
 
     return $access->isAllowed();
   }
+
 }

@@ -21,6 +21,7 @@ use Drupal\user\Entity\Role;
 use Drupal\vactory_notifications\Entity\NotificationsEntity;
 use Drupal\views\ViewExecutable;
 use Drupal\user\Entity\User;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 /**
  * Implements hook_theme().
@@ -419,29 +420,26 @@ function get_token_tree() {
 }
 
 /**
- * Implements hook_cron().
+ * Clear expired notifications entities batch operation.
  */
-function vactory_notifications_cron() {
-  $notifications = NotificationsEntity::loadMultiple();
-  $languages = \Drupal::languageManager()->getLanguages();
-  foreach ($notifications as $notification) {
-    $created = DrupalDateTime::createFromTimestamp($notification->get('created')->value);
-    $current_date = DrupalDateTime::createFromTimestamp(time(), new \DateTimeZone('UTC'));
-    $date_diff = $created->getPhpDateTime()
-      ->diff($current_date->getPhpDateTime())->days;
-    $config = Drupal::configFactory()->get('vactory_notifications.settings');
-    // Check if the current notification lifetime is finish then delete it.
-    if ($date_diff > $config->get('notifications_lifetime')) {
-      // Delete notification translations if exist.
-      foreach ($languages as $language) {
-        try {
-          $notification->removeTranslation($language->getId());
-        } catch (\InvalidArgumentException $e) {
-        }
-      }
-      // Delete the notification entity.
-      $notification->delete();
-    }
+function vactory_notifications_batch_delete($ids, &$context) {
+  if (!empty($ids)) {
+    $notifications_storage = Drupal::entityTypeManager()->getStorage('notifications_entity');
+    $entities = $notifications_storage->loadMultiple($ids);
+    $notifications_storage->delete($entities);
+  }
+}
+
+/**
+ * Implements batch finished callback.
+ */
+function vactory_notification_clean_finished($success, $results, $operations) {
+  $console_output = new ConsoleOutput();
+  if ($success) {
+    $console_output->writeln('<info>Expired notifications entities has been successfully cleaned</info>');
+  }
+  else {
+    $console_output->writeln('<error>Finished with an error.</error>');
   }
 }
 

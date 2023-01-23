@@ -41,6 +41,10 @@ services:
     class: Drupal\vactory_decoupled\JsonApiGenerator
     arguments:
       - '@vactory_decoupled.jsonapi.client'
+      - '@entity_type.manager'
+      - '@entity.repository'
+      - '@token'
+      - '@module_handler'
 
   vactory_decoupled.finish_response_subscriber:
     class: Drupal\vactory_decoupled\EventSubscriber\FinishResponseSubscriber

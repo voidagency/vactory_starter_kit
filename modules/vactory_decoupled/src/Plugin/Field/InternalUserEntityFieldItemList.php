@@ -2,13 +2,16 @@
 
 namespace Drupal\vactory_decoupled\Plugin\Field;
 
+use Drupal\Core\Entity\EntityFieldManagerInterface;
+use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Field\FieldItemList;
 use Drupal\Core\StreamWrapper\StreamWrapperManager;
 use Drupal\Core\TypedData\ComputedItemListTrait;
+use Drupal\Core\TypedData\TraversableTypedDataInterface;
 use Drupal\Core\Url;
-use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\user\Entity\User;
+use Drupal\vactory_decoupled\MediaFilesManager;
 
 /**
  * Defines a user list class for better normalization targeting.
@@ -17,6 +20,40 @@ class InternalUserEntityFieldItemList extends FieldItemList
 {
 
   use ComputedItemListTrait;
+
+  /**
+   * Entity field manager service.
+   *
+   * @var EntityFieldManagerInterface
+   */
+  protected $entityFieldManager;
+
+  /**
+   * Vactory decoupled media file manager service.
+   *
+   * @var MediaFilesManager
+   */
+  protected $mediaFilesManager;
+
+  /**
+   * Entity repository service.
+   *
+   * @var EntityRepositoryInterface
+   */
+  protected $entityRepository;
+
+  /**
+   * {@inheritDoc}
+   */
+  public static function createInstance($definition, $name = NULL, TraversableTypedDataInterface $parent = NULL)
+  {
+    $instance = parent::createInstance($definition, $name, $parent);
+    $container = \Drupal::getContainer();
+    $instance->entityFieldManager = $container->get('entity_field.manager');
+    $instance->mediaFilesManager = $container->get('vacory_decoupled.media_file_manager');
+    $instance->entityRepository = $container->get('entity.repository');
+    return $instance;
+  }
 
   /**
    * {@inheritdoc}
@@ -32,9 +69,7 @@ class InternalUserEntityFieldItemList extends FieldItemList
       return;
     }
 
-    $entityFieldManager = \Drupal::service('entity_field.manager');
-    $media_file_manager = \Drupal::service('vacory_decoupled.media_file_manager');
-    $fields = $entityFieldManager->getFieldDefinitions($entity_type, $bundle);
+    $fields = $this->entityFieldManager->getFieldDefinitions($entity_type, $bundle);
 
     $value = [];
     foreach ($fields as $name => $definition) {
@@ -53,14 +88,12 @@ class InternalUserEntityFieldItemList extends FieldItemList
         continue;
       }
       
-      $user = \Drupal::service('entity.repository')->getTranslationFromContext($user);
+      $user = $this->entityRepository->getTranslationFromContext($user);
 
       // Process Image.
       $image_value = NULL;
-      $image = $user->get('user_picture')->getValue();
-      if (isset($image[0]['target_id']) && !empty($image[0]['target_id'])) {
-        $fid = (int)$image[0]['target_id'];
-        $file_entity = File::load($fid);
+      $file_entity = $user->get('user_picture')->entity;
+      if (!empty($file_entity)) {
         $image_app_base_url = Url::fromUserInput('/app-image/')
           ->setAbsolute()->toString();
         $lqipImageStyle = ImageStyle::load('lqip');
@@ -68,8 +101,8 @@ class InternalUserEntityFieldItemList extends FieldItemList
         $uri = $file_entity->getFileUri();
 
         $image_value = [
-          '_default' => $media_file_manager->getMediaAbsoluteUrl($uri),
-          '_lqip' => $media_file_manager->convertToMediaAbsoluteUrl($lqipImageStyle->buildUrl($uri)),
+          '_default' => $this->mediaFilesManager->getMediaAbsoluteUrl($uri),
+          '_lqip' => $this->mediaFilesManager->convertToMediaAbsoluteUrl($lqipImageStyle->buildUrl($uri)),
           'uri' => StreamWrapperManager::getTarget($uri),
           'fid' => $file_entity->id(),
           'file_name' => $file_entity->label(),

@@ -55,7 +55,7 @@ class VactorySocialNetworksEnhancer extends ResourceFieldEnhancerBase implements
   protected function doUndoTransform($data, Context $context)
   {
     $data = isset($data['platform_values']) ? $data['platform_values'] : [];
-    $platforms = \Drupal::service('plugin.manager.social_media_links.platform')->getPlatforms();
+    $platforms = $this->mediaLinkPlateformManager->getPlatforms();
     foreach ($data as $plateform_id => &$platform) {
       $url_prefix = $platforms[$plateform_id]['urlPrefix'];
       $platform['fullUrl'] = $url_prefix .  $platform['value'] ;
