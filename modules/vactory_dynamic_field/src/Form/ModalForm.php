@@ -7,6 +7,7 @@ use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Ajax\CloseDialogCommand;
 use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Entity\EntityFieldManager;
+use Drupal\Core\Extension\ExtensionPathResolver;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Ajax\AjaxResponse;
@@ -96,6 +97,13 @@ class ModalForm extends FormBase {
   protected $textformatFields;
 
   /**
+   * Extension path resolver service.
+   *
+   * @var \Drupal\Core\Extension\ExtensionPathResolver
+   */
+  protected $extensionPathResolver;
+
+  /**
    * Constructs a new ExampleConfigEntityExternalForm.
    *
    * @param \Drupal\vactory_dynamic_field\WidgetsManagerInterface $widgets_manager
@@ -103,10 +111,15 @@ class ModalForm extends FormBase {
    * @param \Drupal\Core\Entity\EntityFieldManager $entity_field_manager
    *   The entity field manager.
    */
-  public function __construct(WidgetsManagerInterface $widgets_manager, EntityFieldManager $entity_field_manager) {
+  public function __construct(
+    WidgetsManagerInterface $widgets_manager,
+    EntityFieldManager $entity_field_manager,
+    ExtensionPathResolver $extensionPathResolver
+  ) {
     $this->textformatFields = [];
     $this->widgetsManager = $widgets_manager;
     $this->entityFieldManager = $entity_field_manager;
+    $this->extensionPathResolver = $extensionPathResolver;
     $this->isDropdownSelectMode = \Drupal::config('vactory_dynamic_field.settings')->get('is_dropdown_select_templates');
   }
 
@@ -116,7 +129,8 @@ class ModalForm extends FormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('vactory_dynamic_field.vactory_provider_manager'),
-      $container->get('entity_field.manager')
+      $container->get('entity_field.manager'),
+      $container->get('extension.path.resolver')
     );
   }
 
@@ -372,7 +386,7 @@ class ModalForm extends FormBase {
     $component_wrapper_type = 'fieldset';
     if (isset($settings['multiple']) && (bool) $settings['multiple'] === TRUE) {
       global $base_url;
-      $drag_icon = $base_url . '/' . \Drupal::service('extension.path.resolver')->getPath('module', 'vactory_dynamic_field') . '/icons/icon-drag-move.svg';
+      $drag_icon = $base_url . '/' . $this->extensionPathResolver->getPath('module', 'vactory_dynamic_field') . '/icons/icon-drag-move.svg';
       $icon_drag = '<img src="' . $drag_icon . '" class="df-components-sortable-handler"/>';
       $component_wrapper_type = 'details';
       $is_multiple = TRUE;
@@ -705,7 +719,7 @@ class ModalForm extends FormBase {
           $options = [];
           if (is_array($widgets) || is_object($widgets)) {
             foreach ($widgets as $widget_id => $widget) {
-              $undefined_screenshot = \Drupal::service('extension.path.resolver')->getPath('module', 'vactory_dynamic_field') . '/images/undefined-screenshot.jpg';
+              $undefined_screenshot = $this->extensionPathResolver->getPath('module', 'vactory_dynamic_field') . '/images/undefined-screenshot.jpg';
               $widget_preview = [
                 '#theme' => 'vactory_dynamic_select_template',
                 '#content' => [

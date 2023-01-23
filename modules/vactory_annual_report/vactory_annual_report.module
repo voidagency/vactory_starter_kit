@@ -15,6 +15,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
  * Implements hook_theme().
  */
 function vactory_annual_report_theme($existing, $type, $theme, $path) {
+  $path_resolver = \Drupal::service('extension.path.resolver');
   return [
     // Node, Card.
     'node__vactory_annual_report__card'             => [
@@ -73,24 +74,24 @@ function vactory_annual_report_theme($existing, $type, $theme, $path) {
     "node__vactory_annual_report__card__background_with_content" => [
       'base hook' => 'node',
       "template" => "component--background-with-content",
-      "path" => \Drupal::service('extension.path.resolver')->getPath('module', 'vactory_annual_report') . '/templates/components',
+      "path" => $path_resolver->getPath('module', 'vactory_annual_report') . '/templates/components',
     ],
     "node__vactory_annual_report__card__background" => [
       'base hook' => 'node',
       "template" => "component--background",
-      "path" => \Drupal::service('extension.path.resolver')->getPath('module', 'vactory_annual_report') . '/templates/components',
+      "path" => $path_resolver->getPath('module', 'vactory_annual_report') . '/templates/components',
 
     ],
     "node__vactory_annual_report__card__key_number" => [
       'base hook' => 'node',
       "template" => "component--key-number",
-      "path" => \Drupal::service('extension.path.resolver')->getPath('module', 'vactory_annual_report') . '/templates/components',
+      "path" => $path_resolver->getPath('module', 'vactory_annual_report') . '/templates/components',
 
     ],
     "node__vactory_annual_report__card__key_number_with_text" => [
       'base hook' => 'node',
       "template" => "component--key-number-with-text",
-      "path" => \Drupal::service('extension.path.resolver')->getPath('module', 'vactory_annual_report') . '/templates/components',
+      "path" => $path_resolver->getPath('module', 'vactory_annual_report') . '/templates/components',
     ],
     "block_thematique_filter_block" => [
       "template" => 'block-filter-thematic-links',
