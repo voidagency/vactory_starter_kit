@@ -352,6 +352,7 @@ class SubscribeToFormationDAM extends FormBase {
     $types_formation = \Drupal::entityTypeManager()->getStorage('taxonomy_term')
       ->loadByProperties(['vid' => 'academy_types_formation']);
     $options = [];
+    $renderer = \Drupal::service('renderer');
     foreach ($types_formation as $type_formation) {
       // Get the term translation.
       $type_formation = \Drupal::service('entity.repository')
@@ -370,8 +371,7 @@ class SubscribeToFormationDAM extends FormBase {
         '#theme' => 'vactory_academy_agency_types',
         '#content' => $content,
       ];
-      $options[$type] = \Drupal::service('renderer')
-        ->render($formation_type_preview);
+      $options[$type] = $renderer->render($formation_type_preview);
     }
     // Page title.
     $form['title'] = $this->setPageTitle($this->t('Formations et Webinars'));
@@ -465,6 +465,7 @@ class SubscribeToFormationDAM extends FormBase {
   public function getFormationsAsOptions($courses, $agency_id) {
     $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
     $options = [];
+    $renderer = \Drupal::service('renderer');
     foreach ($courses as $nid => $course) {
       // Get academy node translation.
       $translated_course = \Drupal::service('entity.repository')
@@ -516,8 +517,7 @@ class SubscribeToFormationDAM extends FormBase {
         '#content' => $content,
       ];
       // Add academy node to user select options.
-      $options[$nid] = \Drupal::service('renderer')
-        ->render($course_preview);
+      $options[$nid] = $renderer->render($course_preview);
     }
     return $options;
   }

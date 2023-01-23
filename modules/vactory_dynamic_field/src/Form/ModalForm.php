@@ -695,6 +695,7 @@ class ModalForm extends FormBase {
         '#description' => $this->t('Set default content for the selected template.'),
       ];
 
+      $renderer = \Drupal::service('renderer');
       foreach ($widgets_list as $category => $widgets) {
         if (!empty($widgets)) {
           if (empty($category)) {
@@ -727,8 +728,7 @@ class ModalForm extends FormBase {
                   'name' => $widget['name'],
                 ],
               ];
-              $options[$widget['uuid']] = \Drupal::service('renderer')
-                ->render($widget_preview);
+              $options[$widget['uuid']] = $renderer->render($widget_preview);
             }
           }
           $form['templates_tabs'][$category]['template'] = [
