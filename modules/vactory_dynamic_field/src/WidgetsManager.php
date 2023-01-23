@@ -60,6 +60,7 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
       $widgets[$platform_id] = [];
     }
 
+    $file_url_generator = \Drupal::service('file_url_generator');
     foreach ($plugins as $platform_id => $platform) {
       $widget_path = $platform->getWidgetsPath();
       $finder = new Finder();
@@ -91,13 +92,13 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
         // Add screenshoot.
         $data['screenshot'] = FALSE;
         if (file_exists($screenshot_path)) {
-          $data['screenshot'] = \Drupal::service('file_url_generator')->generateAbsoluteString($screenshot_path);
+          $data['screenshot'] = $file_url_generator->generateAbsoluteString($screenshot_path);
         }
         elseif (file_exists($screenshot_path_fallback)) {
-          $data['screenshot'] = \Drupal::service('file_url_generator')->generateAbsoluteString($screenshot_path_fallback);
+          $data['screenshot'] = $file_url_generator->generateAbsoluteString($screenshot_path_fallback);
         }
         elseif (file_exists($screenshot_url_gif)) {
-          $data['screenshot'] = \Drupal::service('file_url_generator')->generateAbsoluteString($screenshot_url_gif);
+          $data['screenshot'] = $file_url_generator->generateAbsoluteString($screenshot_url_gif);
         }
 
         // Add static widget - demo content.
@@ -124,6 +125,7 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
     $widgets = [];
     $plugins = $this->getPluginsList();
 
+    $file_url_generator = \Drupal::service('file_url_generator');
     foreach ($plugins as $platform_id => $platform) {
 
       // Add only widgets from allowed providers.
@@ -161,13 +163,13 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
         // Add screenshoot.
         $data['screenshot'] = FALSE;
         if (file_exists($screenshot_path)) {
-          $data['screenshot'] = \Drupal::service('file_url_generator')->generateAbsoluteString($screenshot_path);
+          $data['screenshot'] = $file_url_generator->generateAbsoluteString($screenshot_path);
         }
         elseif (file_exists($screenshot_path_fallback)) {
-          $data['screenshot'] = \Drupal::service('file_url_generator')->generateAbsoluteString($screenshot_path_fallback);
+          $data['screenshot'] = $file_url_generator->generateAbsoluteString($screenshot_path_fallback);
         }
         elseif (file_exists($screenshot_url_gif)) {
-          $data['screenshot'] = \Drupal::service('file_url_generator')->generateAbsoluteString($screenshot_url_gif);
+          $data['screenshot'] = $file_url_generator->generateAbsoluteString($screenshot_url_gif);
         }
 
         // Add static widget - demo content.
@@ -225,6 +227,7 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
     $screenshot_url_gif = $widget_path . '/' . $id . '/screenshot.gif';
     $static_widget_path = $widget_path . '/' . $id . '/static.html.twig';
 
+    $file_url_generator = \Drupal::service('file_url_generator');
     try {
       $data = Yaml::decode(file_get_contents($settings_path)) ?: [];
     }
@@ -237,13 +240,13 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
     // Add screenshoot.
     $data['screenshot'] = FALSE;
     if (file_exists($screenshot_url)) {
-      $data['screenshot'] = \Drupal::service('file_url_generator')->generateAbsoluteString($screenshot_url);
+      $data['screenshot'] = $file_url_generator->generateAbsoluteString($screenshot_url);
     }
     elseif (file_exists($screenshot_url_fallback)) {
-      $data['screenshot'] = \Drupal::service('file_url_generator')->generateAbsoluteString($screenshot_url_fallback);
+      $data['screenshot'] = $file_url_generator->generateAbsoluteString($screenshot_url_fallback);
     }
     elseif (file_exists($screenshot_url_gif)) {
-      $data['screenshot'] = \Drupal::service('file_url_generator')->generateAbsoluteString($screenshot_url_gif);
+      $data['screenshot'] = $file_url_generator->generateAbsoluteString($screenshot_url_gif);
     }
 
     // Add static widget - demo content.

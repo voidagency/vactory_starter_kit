@@ -183,6 +183,7 @@ class VactoryLocatorBlock extends BlockBase implements BlockPluginInterface {
     /* to get the values for the colapse fields */
     $values = $form_state->getValues();
 
+    $file_url_generator = \Drupal::service('file_url_generator');
     if ($values['map_markers']['locator_marker']) {
       /* Fetch the array of the file stored temporarily in database */
       // $image = $form_state->getValue('locator_marker');
@@ -204,7 +205,7 @@ class VactoryLocatorBlock extends BlockBase implements BlockPluginInterface {
         /* Save the file in database */
         $file->save();
 
-        $marker_url = \Drupal::service('file_url_generator')->transformRelative(\Drupal::service('stream_wrapper_manager')->getViaUri($file->getFileUri())->getExternalUrl());
+        $marker_url = $file_url_generator->transformRelative(\Drupal::service('stream_wrapper_manager')->getViaUri($file->getFileUri())->getExternalUrl());
 
       }
     }
@@ -218,7 +219,7 @@ class VactoryLocatorBlock extends BlockBase implements BlockPluginInterface {
         $file = File::load($fid);
         $file->setPermanent();
         $file->save();
-        $cluster_url = \Drupal::service('file_url_generator')->transformRelative(\Drupal::service('stream_wrapper_manager')->getViaUri($file->getFileUri())->getExternalUrl());
+        $cluster_url = $file_url_generator->transformRelative(\Drupal::service('stream_wrapper_manager')->getViaUri($file->getFileUri())->getExternalUrl());
       }
     }
 
@@ -230,7 +231,7 @@ class VactoryLocatorBlock extends BlockBase implements BlockPluginInterface {
         $file = File::load($fid);
         $file->setPermanent();
         $file->save();
-        $overlay_url = \Drupal::service('file_url_generator')->transformRelative(\Drupal::service('stream_wrapper_manager')->getViaUri($file->getFileUri())->getExternalUrl());
+        $overlay_url = $file_url_generator->transformRelative(\Drupal::service('stream_wrapper_manager')->getViaUri($file->getFileUri())->getExternalUrl());
       }
     }
 
@@ -242,7 +243,7 @@ class VactoryLocatorBlock extends BlockBase implements BlockPluginInterface {
         $file = File::load($fid);
         $file->setPermanent();
         $file->save();
-        $overlay_url_mobile = \Drupal::service('file_url_generator')->transformRelative(\Drupal::service('stream_wrapper_manager')->getViaUri($file->getFileUri())->getExternalUrl());
+        $overlay_url_mobile = $file_url_generator->transformRelative(\Drupal::service('stream_wrapper_manager')->getViaUri($file->getFileUri())->getExternalUrl());
       }
     }
     $this->configuration['locator_category'] = $form_state->getValue('locator_category');

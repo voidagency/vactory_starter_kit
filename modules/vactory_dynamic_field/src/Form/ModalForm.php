@@ -719,12 +719,13 @@ class ModalForm extends FormBase {
           ];
           $options = [];
           if (is_array($widgets) || is_object($widgets)) {
+            $file_url_generator = \Drupal::service('file_url_generator');
             foreach ($widgets as $widget_id => $widget) {
               $undefined_screenshot = $this->extensionPathResolver->getPath('module', 'vactory_dynamic_field') . '/images/undefined-screenshot.jpg';
               $widget_preview = [
                 '#theme' => 'vactory_dynamic_select_template',
                 '#content' => [
-                  'screenshot_url' => !empty($widget['screenshot']) ? $widget['screenshot'] : \Drupal::service('file_url_generator')->generateAbsoluteString($undefined_screenshot),
+                  'screenshot_url' => !empty($widget['screenshot']) ? $widget['screenshot'] : $file_url_generator->generateAbsoluteString($undefined_screenshot),
                   'name' => $widget['name'],
                 ],
               ];

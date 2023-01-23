@@ -4,6 +4,8 @@ namespace Drupal\vactory_cloudinary\Plugin\Filter;
 
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Database\Connection;
+use Drupal\Core\File\FileUrlGenerator;
+use Drupal\Core\File\FileUrlGeneratorInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\StreamWrapper\StreamWrapperManagerInterface;
@@ -50,6 +52,13 @@ class VactoryReplaceWithCloudinaryUrl extends FilterBase implements ContainerFac
   protected $cloudinaryManager;
 
   /**
+   * File url generator service.
+   *
+   * @var FileUrlGeneratorInterface
+   */
+  protected $fileUrlGenerator;
+
+  /**
    * {@inheritDoc}
    */
   public function __construct(
@@ -58,12 +67,14 @@ class VactoryReplaceWithCloudinaryUrl extends FilterBase implements ContainerFac
     $plugin_definition,
     StreamWrapperManagerInterface $streamWrapperManager,
     Connection $database,
-    VactoryCloudinaryManager $cloudinaryManager
+    VactoryCloudinaryManager $cloudinaryManager,
+    FileUrlGeneratorInterface $fileUrlGenerator
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->streamWrapperManager = $streamWrapperManager;
     $this->database = $database;
     $this->cloudinaryManager = $cloudinaryManager;
+    $this->fileUrlGenerator = $fileUrlGenerator;
   }
 
   /**
@@ -76,7 +87,8 @@ class VactoryReplaceWithCloudinaryUrl extends FilterBase implements ContainerFac
       $plugin_definition,
       $container->get('stream_wrapper_manager'),
       $container->get('database'),
-      $container->get('vactory_cloudinary.manager')
+      $container->get('vactory_cloudinary.manager'),
+      $container->get('file_url_generator')
     );
   }
 
@@ -108,7 +120,7 @@ class VactoryReplaceWithCloudinaryUrl extends FilterBase implements ContainerFac
             $uri = $results[0]->uri;
             $fid = $results[0]->fid;
             if ($replace_policy === 'drupal_to_cloudinary') {
-              $url = \Drupal::service('file_url_generator')->generateAbsoluteString(File::load($fid)->getFileUri());
+              $url = $this->fileUrlGenerator->generateAbsoluteString(File::load($fid)->getFileUri());
               $element->setAttribute('src', $url);
               $element->removeAttribute('height');
               $element->removeAttribute('width');

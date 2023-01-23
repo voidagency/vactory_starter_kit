@@ -354,6 +354,7 @@ class VactorySubscribeToFormation extends FormBase {
     $options = [];
     $renderer = \Drupal::service('renderer');
     $entity_repository = \Drupal::service('entity.repository');
+    $file_url_generator = \Drupal::service('file_url_generator');
     foreach ($types_formation as $type_formation) {
       // Get the term translation.
       $type_formation = $entity_repository->getTranslationFromContext($type_formation, $langcode);
@@ -364,7 +365,7 @@ class VactorySubscribeToFormation extends FormBase {
       $fid = $media->field_media_image->target_id;
       $file = File::load($fid);
       if ($file) {
-        $content['image_uri'] = \Drupal::service('file_url_generator')->generateAbsoluteString($file->get('uri')->value);
+        $content['image_uri'] = $file_url_generator->generateAbsoluteString($file->get('uri')->value);
       }
       // Get formation preview.
       $formation_type_preview = [
