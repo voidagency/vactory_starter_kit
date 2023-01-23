@@ -101,7 +101,7 @@ class FormationInscriptionController extends ControllerBase {
                 $datalayer_attributes[$key] = 'Ancien client';
               }
               elseif (in_array($key, $client_infos_fields)) {
-                $datalayer_attributes[$key] = "{$$key}";
+                $datalayer_attributes[$key] = "{$key}";
               }
             }
           }
