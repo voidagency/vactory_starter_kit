@@ -234,9 +234,6 @@
       },
       "drupal/cloudinary": {
         "Cloudinary video media library compatibility fix": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/f8b1871b3e6dac919f09f96b44176a816d8bb4a2/cloudinary-video-media-library-compatibility-fix.patch"
-      },
-      "drupal/jsonapi_search_api": {
-        "Add each facet as a cache dependency on preExecute": "https://www.drupal.org/files/issues/2020-10-15/3176987-4.patch"
       }
     }
   },
