@@ -11,7 +11,6 @@
     "webflo/drupal-finder": "^1.0.0",
     "symfony/finder": "~2.8|~3.0|~4.0",
     "webmozart/path-util": "^2.3",
-    "facebook/graph-sdk": "~5.0",
     "google/apiclient": "~2.0",
     "commerceguys/addressing": "~1.0",
     "commerceguys/intl": "^0.7.5",
