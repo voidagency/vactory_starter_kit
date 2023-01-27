@@ -144,12 +144,12 @@ class APN extends PushServiceBase
                     "title" => $notification_payload['title'],
                     "body" => $notification_payload['body'],
                     "link" => [
-                        "type" => "screen",
+                        "type" => "router",
                         "param" => [
-                            "foo" => "bar",
+                            "path" => $notification_payload['url'],
                             "service" => "APN",
                         ],
-                        "path" => "NotFound"
+                        "path" => $notification_payload['url']
                     ],
                 ]
             ]

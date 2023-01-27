@@ -146,6 +146,7 @@ class TestNotification extends FormBase {
     $form['test']['url'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Url'),
+      '#default_value' => 'fr/actualites',
       '#description' => $this->t('Enter the URL on which user will redirect after clicking on the notification.'),
       '#maxlength' => 512,
       '#size' => 64,

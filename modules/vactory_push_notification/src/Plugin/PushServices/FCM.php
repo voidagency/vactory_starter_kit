@@ -84,12 +84,12 @@ class FCM extends PushServiceBase
                 "title" => $notification_payload['title'],
                 "message" => $notification_payload['body'],
                 "link" => [
-                    "type" => "screen",
+                    "type" => "router",
                     "param" => [
-                        "foo" => "bar",
+                        "path" => $notification_payload['url'],
                         "service" => "FCM",
                     ],
-                    "path" => "NotFound"
+                    "path" => $notification_payload['url']
                 ],
             ]
         ]);
