@@ -68,7 +68,7 @@ class MediaVideoElement extends FormElement {
         $file = File::load($fid);
         $file->setPermanent();
         $file->save();
-        $url = file_url_transform_relative(\Drupal::service('stream_wrapper_manager')->getViaUri($file->getFileUri())->getExternalUrl());
+        $url = \Drupal::service('file_url_generator')->transformRelative(\Drupal::service('stream_wrapper_manager')->getViaUri($file->getFileUri())->getExternalUrl());
         $video = [
           'id' => $mid,
           'url' => $url,

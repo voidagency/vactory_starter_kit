@@ -18,7 +18,7 @@ class UniteGallery extends VactoryDynamicFieldPluginBase {
    * {@inheritdoc}
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, $widgetsPath) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition, drupal_get_path('module', 'vactory_dynamic_field_unitegallery') . '/widgets');
+    parent::__construct($configuration, $plugin_id, $plugin_definition, \Drupal::service('extension.path.resolver')->getPath('module', 'vactory_dynamic_field_unitegallery') . '/widgets');
   }
 
 }

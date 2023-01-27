@@ -33,7 +33,7 @@ function vactory_appbanners_page_attachments(array &$attachments) {
 
   if ($icon) {
     $file = \Drupal\file\Entity\File::load($icon);
-    $icon_url = file_create_url($file->getFileUri());
+    $icon_url = \Drupal::service('file_url_generator')->generateAbsoluteString($file->getFileUri());
 
     $element = [
       '#tag'        => 'link',

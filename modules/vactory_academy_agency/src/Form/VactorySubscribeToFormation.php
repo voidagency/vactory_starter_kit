@@ -352,10 +352,12 @@ class VactorySubscribeToFormation extends FormBase {
     $types_formation = \Drupal::entityTypeManager()->getStorage('taxonomy_term')
       ->loadByProperties(['vid' => 'academy_types_formation']);
     $options = [];
+    $renderer = \Drupal::service('renderer');
+    $entity_repository = \Drupal::service('entity.repository');
+    $file_url_generator = \Drupal::service('file_url_generator');
     foreach ($types_formation as $type_formation) {
       // Get the term translation.
-      $type_formation = \Drupal::service('entity.repository')
-        ->getTranslationFromContext($type_formation, $langcode);
+      $type_formation = $entity_repository->getTranslationFromContext($type_formation, $langcode);
       $type = $type_formation->get('field_type_formation')->value;
       $content['title'] = $type_formation->get('name')->value;
       $mid = $type_formation->get('field_type_formation_image')->target_id;
@@ -363,15 +365,14 @@ class VactorySubscribeToFormation extends FormBase {
       $fid = $media->field_media_image->target_id;
       $file = File::load($fid);
       if ($file) {
-        $content['image_uri'] = file_create_url($file->get('uri')->value);
+        $content['image_uri'] = $file_url_generator->generateAbsoluteString($file->get('uri')->value);
       }
       // Get formation preview.
       $formation_type_preview = [
         '#theme' => 'vactory_academy_agency_types',
         '#content' => $content,
       ];
-      $options[$type] = \Drupal::service('renderer')
-        ->render($formation_type_preview);
+      $options[$type] = $renderer->render($formation_type_preview);
     }
     // Page title.
     $form['title'] = $this->setPageTitle($this->t('Formations et Webinars'));
@@ -465,10 +466,11 @@ class VactorySubscribeToFormation extends FormBase {
   public function getFormationsAsOptions($courses, $agency_id) {
     $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
     $options = [];
+    $renderer = \Drupal::service('renderer');
+    $entity_repository = \Drupal::service('entity.repository');
     foreach ($courses as $nid => $course) {
       // Get academy node translation.
-      $translated_course = \Drupal::service('entity.repository')
-        ->getTranslationFromContext($course, $langcode);
+      $translated_course = $entity_repository->getTranslationFromContext($course, $langcode);
       // Get academy title.
       $title = $translated_course->get('title')->value;
       // Get academy places count.
@@ -493,8 +495,7 @@ class VactorySubscribeToFormation extends FormBase {
       $module = $module_id ? \Drupal::entityTypeManager()->getStorage('taxonomy_term')->load($module_id) : NULL;
       if ($module) {
         // Get academy module translation.
-        $translated_module = \Drupal::service('entity.repository')
-          ->getTranslationFromContext($module, $langcode);
+        $translated_module = $entity_repository->getTranslationFromContext($module, $langcode);
         $module_name = $translated_module->getName();
       }
       // Get academy description.
@@ -516,8 +517,7 @@ class VactorySubscribeToFormation extends FormBase {
         '#content' => $content,
       ];
       // Add academy node to user select options.
-      $options[$nid] = \Drupal::service('renderer')
-        ->render($course_preview);
+      $options[$nid] = $renderer->render($course_preview);
     }
     return $options;
   }

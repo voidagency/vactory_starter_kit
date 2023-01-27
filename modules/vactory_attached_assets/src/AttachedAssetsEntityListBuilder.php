@@ -26,7 +26,7 @@ class AttachedAssetsEntityListBuilder extends ConfigEntityListBuilder {
   public function buildRow(EntityInterface $entity) {
     $row['label'] = $entity->label();
     $row['id'] = $entity->id();
-    $row['type'] = $entity->getType();
+    $row['type'] = $entity->getEntityType();
     // You probably want a few more properties here...
     return $row + parent::buildRow($entity);
   }
