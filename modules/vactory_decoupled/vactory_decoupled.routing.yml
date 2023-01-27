@@ -5,6 +5,7 @@ vactory_decoupled.image:
     _disable_route_normalizer: 'TRUE'
   requirements:
     _permission: 'access content'
+    _format: 'json'
 
 vactory_decoupled.create_image_style:
   path: '/app-image/create-style'
@@ -13,6 +14,7 @@ vactory_decoupled.create_image_style:
     _disable_route_normalizer: 'TRUE'
   requirements:
     _permission: 'access content'
+    _format: 'json'
 
 vactory_decoupled.translations:
   path: '/_translations'
@@ -22,6 +24,7 @@ vactory_decoupled.translations:
   methods: [GET]
   requirements:
     _permission: 'access content'
+    _format: 'json'
 
 vactory_decoupled.blocks:
   path: '/_blocks'
@@ -30,6 +33,7 @@ vactory_decoupled.blocks:
   methods: [GET]
   requirements:
     _permission: 'access content'
+    _format: 'json'
 
 vactory_decoupled.breadcrumb:
   path: '/_breadcrumb'
@@ -38,6 +42,7 @@ vactory_decoupled.breadcrumb:
   methods: [GET]
   requirements:
     _permission: 'access content'
+    _format: 'json'
 
 vactory_decoupled.menus:
   path: '/_menus'
@@ -46,6 +51,7 @@ vactory_decoupled.menus:
   methods: [GET]
   requirements:
     _permission: 'access content'
+    _format: 'json'
 
 # vactory_decoupled.search:
 #   path: '/_search'
@@ -90,6 +96,7 @@ vactory_decoupled.vcc:
   methods: [GET]
   requirements:
     _permission: 'access content'
+    _format: 'json'
   options:
     _is_jsonapi: 1
 
@@ -100,6 +107,7 @@ vactory_decoupled.pays.api:
     _disable_route_normalizer: 'TRUE'
   requirements:
     _permission: 'access content'
+    _format: 'json'
 
 vactory_decoupled.social_media.api:
   path: /api/available-social-media
@@ -108,6 +116,7 @@ vactory_decoupled.social_media.api:
     _disable_route_normalizer: 'TRUE'
   requirements:
     _permission: 'access content'
+    _format: 'json'
 
 vactory_decoupled.get_unique_username_by_email:
   path: '/api/get-unique-username-by-email'
@@ -117,6 +126,17 @@ vactory_decoupled.get_unique_username_by_email:
   methods: [GET]
   requirements:
     _permission: 'access content'
+    _format: 'json'
+
+vactory_decoupled.get_user_account_config:
+  path: '/api/get-user-registration-config'
+  defaults:
+    _controller: '\Drupal\vactory_decoupled\Controller\UserRegistrationConfigController::getAccountRegistrationConfig'
+    _disable_route_normalizer: 'TRUE'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+    _format: 'json'
 
 vactory_decoupled.one_time_token:
   path: '/oauth/one-time-token'
@@ -125,6 +145,7 @@ vactory_decoupled.one_time_token:
   methods: [POST]
   requirements:
     _access: 'TRUE'
+    _format: 'json'
 
 vactory_decoupled.firebase_key_controller:
   path: '/_firebase-key'
@@ -133,6 +154,7 @@ vactory_decoupled.firebase_key_controller:
   methods: [GET]
   requirements:
     _permission: 'access content'
+    _format: 'json'
 
 vactory_decoupled.login_token:
   path: '/oauth/login-token'
@@ -141,3 +163,4 @@ vactory_decoupled.login_token:
   methods: [POST]
   requirements:
     _access: 'TRUE'
+    _format: 'json'

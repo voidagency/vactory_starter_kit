@@ -30,25 +30,24 @@ use Drupal\menu_item_extras\Entity\MenuItemExtrasMenuLinkContent;
 /**
  * Implements hook_form_BASE_FORM_ID_alter().
  */
-function vactory_decoupled_form_node_form_alter(&$form, FormStateInterface $form_state)
-{
+function vactory_decoupled_form_node_form_alter(&$form, FormStateInterface $form_state) {
   // Node Settings.
   if (isset($form['node_settings'])) {
     $form['node_settings_group'] = [
-      '#type'        => 'details',
-      '#title'       => t('Node settings'),
-      '#group'       => 'advanced',
-      '#open'        => FALSE,
-      '#access'      => \Drupal::currentUser()
+      '#type' => 'details',
+      '#title' => t('Node settings'),
+      '#group' => 'advanced',
+      '#open' => FALSE,
+      '#access' => \Drupal::currentUser()
         ->hasPermission('administer field node settings'),
-      '#attributes'  => ['class' => ['node-settings-form']],
+      '#attributes' => ['class' => ['node-settings-form']],
     ];
     $form['node_settings']['#group'] = 'node_settings_group';
   }
 
   if (isset($form['machine_name'])) {
     $form['machine_name']['#access'] = \Drupal::currentUser()
-    ->hasPermission('administer field node settings');
+      ->hasPermission('administer field node settings');
     $form['machine_name']['#group'] = 'node_settings_group';
   }
 
@@ -58,11 +57,7 @@ function vactory_decoupled_form_node_form_alter(&$form, FormStateInterface $form
 /**
  * Implements hook_form_alter().
  */
-function vactory_decoupled_form_alter(&$form, FormStateInterface $form_state, $form_id)
-{
-  if ($form_id === 'webform_edit_form') {
-    $form['actions']['submit']['#submit'][] = 'clear_node_list_cache_after_updating_webform_elements';
-  }
+function vactory_decoupled_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   if ($form_id === 'locale_translate_edit_form') {
     $form['#submit'][] = 'clear_next_cache_translation';
   }
@@ -96,7 +91,7 @@ function vactory_decoupled_form_alter(&$form, FormStateInterface $form_state, $f
   $disabledTypes = Settings::get('PREVIEW_DISABLED_TYPES', [
     'vactory_page_listing',
     'vactory_government_member',
-    'vactory_banner'
+    'vactory_banner',
   ]);
 
   if (in_array($type, $disabledTypes)) {
@@ -142,14 +137,14 @@ function block_admin_display_submit($form, FormStateInterface $form_state) {
  */
 function gatsby_node_form_submit(&$form, FormStateInterface $form_state) {
   $path = $form_state->getValue('path');
-  $url = !empty($path[0]['alias']) ? '/' .$path[0]['langcode'] . $path[0]['alias'] : $path[0]['source'];
+  $url = !empty($path[0]['alias']) ? '/' . $path[0]['langcode'] . $path[0]['alias'] : $path[0]['source'];
   $nid = $form_state->getValue('nid');
   $siteConfig = \Drupal::config('system.site');
   $front_uri = $siteConfig->get('page.front');
   $frontend_url = Settings::get('BASE_FRONTEND_URL', FALSE);
 
   if ($front_uri === '/node/' . $nid) {
-    $url = Url::fromRoute('<front>')->toString() ;
+    $url = Url::fromRoute('<front>')->toString();
   }
 
   // Redirect to the alias if it exists, otherwise use the node URL.
@@ -271,7 +266,7 @@ function vactory_decoupled_entity_base_field_info(EntityTypeInterface $entity_ty
       ->setDisplayConfigurable('form', FALSE)
       ->setDisplayConfigurable('view', FALSE);
 
-      $fields['term_2_slug'] = BaseFieldDefinition::create('string')
+    $fields['term_2_slug'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Slug'))
       ->setDescription(t('Term slug'))
       ->setTranslatable(TRUE)
@@ -279,8 +274,8 @@ function vactory_decoupled_entity_base_field_info(EntityTypeInterface $entity_ty
       ->setRequired(FALSE)
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayOptions('form', [
-        'type'     => 'string_textfield',
-        'weight'   => 0,
+        'type' => 'string_textfield',
+        'weight' => 0,
       ])
       ->setDisplayConfigurable('view', FALSE);
   }
@@ -294,8 +289,8 @@ function vactory_decoupled_entity_base_field_info(EntityTypeInterface $entity_ty
       ->setDefaultValue('')
       ->setRequired(FALSE)
       ->setDisplayOptions('form', [
-        'type'     => 'string_textarea',
-        'weight'   => 1,
+        'type' => 'string_textarea',
+        'weight' => 1,
         'settings' => [
           'rows' => 4,
         ],
@@ -347,9 +342,6 @@ function vactory_decoupled_entity_type_alter(array &$entity_types) {
  * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
  */
 function get_oauth_user_infos(UserInterface $user) {
-  /** @var \Drupal\Core\File\FileUrlGeneratorInterface $file_url_generator */
-  $file_url_generator = \Drupal::service('file_url_generator');
-
   $full_name = $user->getDisplayName();
   $first_name = $user->get('field_first_name')->getString();
   $last_name = $user->get('field_last_name')->getString();
@@ -361,9 +353,12 @@ function get_oauth_user_infos(UserInterface $user) {
 
   if (user_picture_enabled() && !$user->get('user_picture')->isEmpty()) {
     $pictureUri = $user->get('user_picture')->entity->getFileUri();
-    $style = \Drupal::entityTypeManager()->getStorage('image_style')->load('avatar');
+    $style = \Drupal::entityTypeManager()
+      ->getStorage('image_style')
+      ->load('avatar');
     $derivative_uri = $style->buildUri($pictureUri);
-    $avatar = $file_url_generator->generateAbsoluteString($style->buildUrl($pictureUri));
+
+    $avatar = \Drupal::service('vacory_decoupled.media_file_manager')->convertToMediaAbsoluteUrl($style->buildUrl($pictureUri));
     if (!file_exists($derivative_uri)) {
       $style->createDerivative($pictureUri, $derivative_uri);
     }
@@ -409,10 +404,10 @@ function vactory_decoupled_simple_oauth_private_claims_alter(&$private_claims, A
  * Generate initials from a name
  *
  * @param string $name
+ *
  * @return string
  */
-function _auth_generate_intials_from_name($name)
-{
+function _auth_generate_intials_from_name($name) {
   $words = explode(' ', $name);
   if (count($words) >= 2) {
     return strtoupper(substr($words[0], 0, 1) . substr(end($words), 0, 1));
@@ -424,10 +419,10 @@ function _auth_generate_intials_from_name($name)
  * Make initials from a word with no spaces
  *
  * @param string $name
+ *
  * @return string
  */
-function _auth_make_unitials_from_single_word($name)
-{
+function _auth_make_unitials_from_single_word($name) {
   preg_match_all('#([A-Z]+)#', $name, $capitals);
   if (count($capitals[1]) >= 2) {
     return substr(implode('', $capitals[1]), 0, 2);
@@ -452,7 +447,11 @@ function vactory_decoupled_mail_alter(&$message) {
       $variables = ['user' => $message['params']['account']];
       $original_language = $language_manager->getConfigOverrideLanguage();
       $language_manager->setConfigOverrideLanguage($language);
-      $token_options = ['langcode' => $langcode, 'callback' => '_vactory_decoupled_user_mail_tokens', 'clear' => TRUE];
+      $token_options = [
+        'langcode' => $langcode,
+        'callback' => '_vactory_decoupled_user_mail_tokens',
+        'clear' => TRUE,
+      ];
       $message['subject'] = '';
       $message['body'] = [];
       $message['subject'] .= PlainTextOutput::renderFromHtml($token_service->replace($mail_config->get($key . '.subject'), $variables, $token_options));
@@ -463,14 +462,22 @@ function vactory_decoupled_mail_alter(&$message) {
       $key = 'register_no_approval_required';
       $message['body'] = [];
       $variables = ['user' => $message['params']['account']];
-      $token_options = ['langcode' => $langcode, 'callback' => '_vactory_decoupled_user_mail_tokens', 'clear' => TRUE];
+      $token_options = [
+        'langcode' => $langcode,
+        'callback' => '_vactory_decoupled_user_mail_tokens',
+        'clear' => TRUE,
+      ];
       $message['body'][] = new FormattableMarkup($token_service->replace($mail_config->get($key . '.body'), $variables, $token_options), []);
     }
   }
   if ($message['id'] == 'user_status_activated' && !empty(Settings::get('BASE_FRONTEND_URL'))) {
     $message['body'] = [];
     $variables = ['user' => $message['params']['account']];
-    $token_options = ['langcode' => $langcode, 'callback' => '_vactory_decoupled_user_mail_tokens', 'clear' => TRUE];
+    $token_options = [
+      'langcode' => $langcode,
+      'callback' => '_vactory_decoupled_user_mail_tokens',
+      'clear' => TRUE,
+    ];
     $message['body'][] = new FormattableMarkup($token_service->replace($mail_config->get('status_activated')['body'], $variables, $token_options), []);
   }
 }
@@ -526,22 +533,6 @@ function vactory_decoupled_validation_constraint_alter(array &$definitions) {
 }
 
 /**
- * Implements hook_ENTITY_TYPE_presave().
- */
-function vactory_decoupled_block_presave(EntityInterface $entity) {
-  // Cache::invalidateTags(['node_list']);
-}
-
-/**
- * Clear node list cache after updating webform elements.
- */
-function clear_node_list_cache_after_updating_webform_elements(&$form, FormStateInterface $form_state) {
-  Cache::invalidateTags(['node_list']);
-}
-
-
-
-/**
  * Implements hook_entity_update().
  * Clear drupal cache => clear frontend cache.
  */
@@ -551,7 +542,7 @@ function vactory_decoupled_cache_flush() {
 
 function clear_next_cache_translation(&$form, FormStateInterface $form_state) {
   $query = [
-    'invalidate'  => 'translation',
+    'invalidate' => 'translation',
   ];
   clear_next_cache($query);
 }
@@ -565,22 +556,24 @@ function vactory_decoupled_entity_update(EntityInterface $entity) {
   // @todo: do we need to keep going in this function ?
   // Updating a node will also update menu ?
   if ($entity instanceof Node && !$entity->isNew()) {
-      $query = get_node_info($entity);
-      clear_next_cache($query);
+    $query = get_node_info($entity);
+    clear_next_cache($query);
   }
 
   if ($entity instanceof MenuItemExtrasMenuLinkContent && !isset($loaded)) {
-      $loaded = 1;
-      clear_next_cache([
-        'menu'       => $entity->bundle(),
-        'invalidate' => 'menu',
-      ]);
-  }
-  else if ($entity instanceof Drupal\system\Entity\Menu) {
+    $loaded = 1;
     clear_next_cache([
-      'menu'       => $entity->id(),
+      'menu' => $entity->bundle(),
       'invalidate' => 'menu',
     ]);
+  }
+  else {
+    if ($entity instanceof Drupal\system\Entity\Menu) {
+      clear_next_cache([
+        'menu' => $entity->id(),
+        'invalidate' => 'menu',
+      ]);
+    }
   }
 }
 
@@ -603,8 +596,8 @@ function get_node_info($entity) {
   // @todo: if no alias fall back to /node/id
 
   return $query = [
-    'id'         => $nid,
-    'langcode'   => $langcode,
+    'id' => $nid,
+    'langcode' => $langcode,
     // 'alias'      => $alias,
     'invalidate' => 'node',
   ];
@@ -616,7 +609,7 @@ function get_node_info($entity) {
 function vactory_decoupled_entity_delete(EntityInterface $entity) {
   if ($entity instanceof MenuItemExtrasMenuLinkContent) {
     $query = [
-      'menu'       => $entity->bundle(),
+      'menu' => $entity->bundle(),
       'invalidate' => 'menu',
     ];
     clear_next_cache($query);
@@ -725,4 +718,32 @@ function vactory_decoupled_form_jsonapi_resource_config_edit_form_alter(&$form, 
 function vactory_decoupled_jsonapi_resource_config_builder($entity_type, JsonapiResourceConfig $config_resource, &$form, FormStateInterface $form_state) {
   $roles = $form_state->getValue('roles');
   $config_resource->setThirdPartySetting('vactory_decoupled', 'roles', $roles);
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_decoupled_preprocess_page(&$variables) {
+  $route_name = \Drupal::routeMatch()->getRouteName();
+  if ($route_name === 'system.404') {
+    redirectToFrontend(TRUE);
+  }
+  if ($base_media_url = Settings::get('BASE_MEDIA_URL', '')) {
+    $current_domain = \Drupal::request()->getHttpHost();
+    $media_url_info = parse_url($base_media_url);
+    if (isset($media_url_info['host']) && $media_url_info['host'] === $current_domain) {
+      redirectToFrontend();
+    }
+  }
+}
+
+/**
+ * Redirect to frontend url.
+ */
+function redirectToFrontend($from_404 = FALSE) {
+  if ($frontend_url = Settings::get('BASE_FRONTEND_URL', '')) {
+    $requested_path = $from_404 ? \Drupal::request()->getPathInfo() : '/not-found';
+    $response = new RedirectResponse("{$frontend_url}{$requested_path}");
+    $response->send();
+  }
 }

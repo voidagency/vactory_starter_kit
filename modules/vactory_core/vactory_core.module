@@ -155,7 +155,7 @@ function vactory_core_tokens($type, $tokens, array $data, array $options, Bubble
           $theme_name = \Drupal::service('theme.manager')
             ->getActiveTheme()
             ->getName();
-          $replacements[$original] = file_create_url(substr(theme_get_setting('logo.url', $theme_name), 1));
+          $replacements[$original] = \Drupal::service('file_url_generator')->generateAbsoluteString(substr(theme_get_setting('logo.url', $theme_name), 1));
           break;
 
         case 'node_summary':

@@ -7,6 +7,11 @@
 
 use Drupal\Core\Url;
 use Drupal\views\ViewExecutable;
+use Drupal\Core\StreamWrapper\StreamWrapperManager;
+use Drupal\image\Entity\ImageStyle;
+use Drupal\media\Entity\Media;
+use Drupal\taxonomy\Entity\Term;
+use Drupal\file\Entity\File;
 
 /**
  * Implements hook_theme().
@@ -259,6 +264,122 @@ function vactory_event_json_api_collection_alter(&$filters, &$context) {
         $filters["filter[event_internal_city][condition][value]"] = $id;
       }
 
+    }
+  }
+}
+
+
+/**
+ * A custom hook to alter the node access.
+ *
+ * @param array $normalized_node
+ *   An array that contains normalized node fields to be altered.
+ * @param string $context
+ *   Extra data has two keys:
+ *     node: the related node object.
+ *     node_type: the related node content type machine name.
+ * @param string $base_node_type
+ *   Base node content type machine name.
+ */
+function vactory_event_jsonapi_vcc_normalized_node_alter(&$normalized_node, $context, $base_node_type)
+{
+  if ($base_node_type === 'vactory_event') {
+    /** @var \Drupal\node\NodeInterface $node */
+    $node = $context['node'];
+    $node_type = $context['node_type'];
+    if ($node_type === 'vactory_event') {
+      // Get image.
+      $lqipImageStyle = ImageStyle::load('lqip');
+      $output_field_name = 'field_vactory_media';
+      $mid = $node->get($output_field_name)->getString();
+      $result[$output_field_name] = NULL;
+      if (!empty($mid)) {
+        $mid = (int) $mid;
+        $media = Media::load($mid);
+        if (
+          $media &&
+          $media->bundle() === 'image' &&
+          isset($media->get('field_media_image')->getValue()[0]['target_id'])
+        ) {
+          $fid = $media->get('field_media_image')->getValue()[0]['target_id'];
+          $file = File::load($fid);
+          if ($file != NULL) {
+            $uri = $file->getFileUri();
+            $fileResult = [];
+            $media_file_manager = \Drupal::service('vacory_decoupled.media_file_manager');
+            $fileResult['_default'] = $media_file_manager->getMediaAbsoluteUrl($uri);
+            $fileResult['_lqip'] = $media_file_manager->convertToMediaAbsoluteUrl($lqipImageStyle->buildUrl($uri));
+            $fileResult['uri'] = StreamWrapperManager::getTarget($uri);
+            $fileResult['fid'] = $fid;
+            $fileResult['file_name'] = $media->label();
+            $fileResult['meta'] = $media->get('field_media_image')
+              ->first()
+              ->getValue();
+            $result[$output_field_name] = $fileResult;
+          }
+        }
+      }
+
+
+      // Get date.
+      $dateFormats = \Drupal::entityTypeManager()
+        ->getStorage('date_format')
+        ->loadMultiple();
+      $dateFormatter = \Drupal::service('date.formatter');
+      $resultDate = [];
+      $date = $node->get('field_vactory_date_interval')->getValue();
+      if (isset($date[0])) {
+        $start_date = DateTime::createFromFormat('Y-m-d', $date[0]['value']);
+        $end_date = DateTime::createFromFormat('Y-m-d', $date[0]['end_value']);
+        if ($start_date != '' && $end_date != '') {
+          $start_date_timestamp = $start_date->getTimestamp();
+          $end_date_timestamp = $end_date->getTimestamp();
+          // Get date.
+          $date_formats = array_keys($dateFormats);
+          $resultDate['value']['timestamp'] = $start_date_timestamp;
+          $resultDate['end_value']['timestamp'] = $end_date_timestamp;
+          foreach ($date_formats as $key => $date_format) {
+            $resultDate['value'][$date_format] = $dateFormatter->format($start_date_timestamp, $date_format);
+            $resultDate['end_value'][$date_format] = $dateFormatter->format($end_date_timestamp, $date_format);
+          }
+        }
+      }
+
+      // Get term.
+      $term_field_name = 'field_vactory_taxonomy_1';
+      $event_term_tid = $node->get($term_field_name)->target_id ?? NULL;
+      $term_label = '';
+      if ($event_term_tid != NULL) {
+        $new_term = Term::load($event_term_tid);
+        if ($new_term != NULL) {
+          $new_term_trans = $term = \Drupal::service('entity.repository')
+            ->getTranslationFromContext($new_term);
+          $term_label = $new_term_trans->label();
+        }
+      }
+
+      $term_field_name2 = 'field_vactory_taxonomy_2';
+      $city_term_tid = $node->get($term_field_name2)->target_id ?? NULL;
+      $city_label = '';
+      if ($city_term_tid != NULL) {
+        $new_term = Term::load($city_term_tid);
+        if ($new_term != NULL) {
+          $new_term_trans = $term = \Drupal::service('entity.repository')
+            ->getTranslationFromContext($new_term);
+          $city_label = $new_term_trans->label();
+        }
+      }
+
+      $normalized_node = [
+        'id' => $node->id(),
+        'image' => $result[$output_field_name],
+        'date' => $resultDate,
+        'tag' => $term_label,
+        'city' => $city_label,
+        'title' => $node->label(),
+        'excerpt' => $node->get('field_vactory_excerpt')->getValue(),
+        'url' => $node->toUrl()->toString(),
+      ];
     }
   }
 }

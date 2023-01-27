@@ -1,0 +1,7 @@
+name: 'Vactory Newsletter'
+type: module
+core_version_requirement: '^8.9 || ^9'
+dependencies:
+  - jsonapi_extras
+  - webform
+  - vactory_dynamic_field

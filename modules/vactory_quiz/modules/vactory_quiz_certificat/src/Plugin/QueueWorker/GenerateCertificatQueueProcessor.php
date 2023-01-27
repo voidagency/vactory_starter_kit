@@ -189,7 +189,7 @@ class GenerateCertificatQueueProcessor extends QueueWorkerBase implements Contai
           if ($enable_email) {
             $user_email = $user->getEmail();
             $translated_quiz = $this->entityRepository->getTranslationFromContext($quiz, $this->languageManager->getCurrentLanguage()->getId());
-            $file_url = Url::fromUri(file_create_url($file_infos['uri']), ['absolute' => TRUE])->toString();
+            $file_url = Url::fromUri(\Drupal::service('file_url_generator')->generateAbsoluteString($file_infos['uri']), ['absolute' => TRUE])->toString();
             $node_url_options = [
               'absolute' => TRUE,
               'language' => $this->languageManager->getCurrentLanguage(),

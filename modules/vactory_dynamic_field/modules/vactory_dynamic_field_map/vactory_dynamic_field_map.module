@@ -19,10 +19,11 @@ function vactory_dynamic_field_map_preprocess_vactory_dynamic_main(&$variables) 
     $data = [];
 
     if (is_array($variables['content']['components'])) {
+      $file_url_generator = \Drupal::service('file_url_generator');
       foreach ($variables['content']['components'] as $item) {
         /* @var \Drupal\media\Entity\Media $file */
         $file = (isset($item['pin'][0])) ? Media::load((int) $item['pin'][0]) : NULL;
-        $pin_url = (isset($file->get('thumbnail')->entity)) ? file_create_url($file->get('thumbnail')->entity->getFileUri()) : '';
+        $pin_url = (isset($file->get('thumbnail')->entity)) ? $file_url_generator->generateAbsoluteString($file->get('thumbnail')->entity->getFileUri()) : '';
 
         $data['locations'][] = [
           'title'       => $item['title'] ?? '',

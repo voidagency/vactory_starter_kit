@@ -4,6 +4,7 @@ namespace Drupal\vactory_decoupled\Plugin\Field;
 
 use Drupal\Core\Field\FieldItemList;
 use Drupal\Core\TypedData\ComputedItemListTrait;
+use Drupal\Core\TypedData\TraversableTypedDataInterface;
 use Drupal\node\Entity\Node;
 
 /**
@@ -13,6 +14,36 @@ class InternalNodeMetatagsFieldItemList extends FieldItemList
 {
 
   use ComputedItemListTrait;
+
+  /**
+   * Entity repository service.
+   *
+   * @var \Drupal\Core\Entity\EntityRepositoryInterface
+   */
+  protected $entityRepository;
+
+  /**
+   * Meta tag manager service.
+   *
+   * @var \Drupal\metatag\MetatagManagerInterface
+   */
+  protected $metatagManager;
+
+  /**
+   * Module handler service.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  public static function createInstance($definition, $name = NULL, TraversableTypedDataInterface $parent = NULL)
+  {
+    $instance = parent::createInstance($definition, $name, $parent);
+    $instance->entityRepository = \Drupal::getContainer()->get('entity.repository');
+    $instance->metatagManager = \Drupal::getContainer()->get('metatag.manager');
+    $instance->moduleHandler = \Drupal::getContainer()->get('module_handler');
+    return $instance;
+  }
 
   /**
    * {@inheritdoc}
@@ -31,12 +62,11 @@ class InternalNodeMetatagsFieldItemList extends FieldItemList
       return;
     }
 
-    $entity = \Drupal::service('entity.repository')->getTranslationFromContext($entity);
+    $entity = $this->entityRepository->getTranslationFromContext($entity);
 
-    $metatag_manager = \Drupal::service('metatag.manager');
     $metatags = metatag_get_default_tags($entity);
 
-    foreach ($metatag_manager->tagsFromEntity($entity) as $tag => $data) {
+    foreach ($this->metatagManager->tagsFromEntity($entity) as $tag => $data) {
       $metatags[$tag] = $data;
     }
 
@@ -44,9 +74,9 @@ class InternalNodeMetatagsFieldItemList extends FieldItemList
       'entity' => $entity,
     ];
 
-    \Drupal::service('module_handler')->alter('metatags', $metatags, $context);
+    $this->moduleHandler->alter('metatags', $metatags, $context);
 
-    $tags = $metatag_manager->generateRawElements($metatags, $entity);
+    $tags = $this->metatagManager->generateRawElements($metatags, $entity);
     $normalized_tags = [];
     foreach ($tags as $key => $tag) {
       $normalized_tags[] = [

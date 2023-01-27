@@ -273,6 +273,6 @@ function views_reference_get_enabled_displays(array &$form, FormStateInterface $
   $display_id_field['#options'] = $options;
   $display_id_field['#required'] = TRUE;
   $response = new AjaxResponse();
-  $response->addCommand(new ReplaceCommand('#' . $display_element_id, render($display_id_field)));
+  $response->addCommand(new ReplaceCommand('#' . $display_element_id, \Drupal::service('renderer')->render($display_id_field)));
   return $response;
 }

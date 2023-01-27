@@ -36,14 +36,14 @@ class SettingsForm extends ConfigFormBase {
     $phone_num_id = $state->get('vactory_whatsapp_phone_num_id', '');
     $business_accound_id = $state->get('vactory_whatsapp_business_accound_id', '');
     if (!empty($token) && !empty($business_accound_id)) {
-      $uri = "https://graph.facebook.com/v14.0/${business_accound_id}/message_templates?access_token=${token}";
+      $uri = "https://graph.facebook.com/v14.0/{$business_accound_id}/message_templates?access_token={$token}";
       try {
         $client = \Drupal::httpClient()->get($uri);
         $response = Json::decode($client->getBody()->getContents());
         if (isset($response['data'])) {
           $options = [];
           foreach ($response['data'] as $template) {
-            $options[$template['name']] = "${template['name']} (${template['status']})";
+            $options[$template['name']] = "{$template['name']} ({$template['status']})";
           }
         }
       }

@@ -41,6 +41,10 @@ services:
     class: Drupal\vactory_decoupled\JsonApiGenerator
     arguments:
       - '@vactory_decoupled.jsonapi.client'
+      - '@entity_type.manager'
+      - '@entity.repository'
+      - '@token'
+      - '@module_handler'
 
   vactory_decoupled.finish_response_subscriber:
     class: Drupal\vactory_decoupled\EventSubscriber\FinishResponseSubscriber
@@ -74,3 +78,7 @@ services:
       - { name: cache.bin }
     factory: ['@cache_factory', 'get']
     arguments: [vactory_decoupled_oauth]
+
+  vacory_decoupled.media_file_manager:
+    class: Drupal\vactory_decoupled\MediaFilesManager
+    arguments: ['@file_url_generator']

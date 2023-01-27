@@ -229,7 +229,7 @@ function vactory_locator_views_post_render(ViewExecutable $view, &$output, Cache
               $fid = $media->get('field_media_image')[0]->get('target_id')->getValue();
               $file = $file_storage->load($fid);
               if ($file) {
-                $url = file_url_transform_relative(\Drupal::service('stream_wrapper_manager')->getViaUri($file->getFileUri())->getExternalUrl());
+                $url = \Drupal::service('file_url_generator')->transformRelative(\Drupal::service('stream_wrapper_manager')->getViaUri($file->getFileUri())->getExternalUrl());
               }
             }
             $width = (isset($translated_term->get('field_locator_marker_height')->getValue()[0]['value'])) ? $translated_term->get('field_locator_marker_height')->getValue()[0]['value'] : '';

@@ -580,13 +580,13 @@ class AppointmentSubmitForm extends FormBase {
       ->execute();
     $users = User::loadMultiple($ids);
     $options = [];
+    $renderer = \Drupal::service('renderer');
     foreach ($users as $user) {
       $adviser_preview = [
         '#theme' => 'appointment_adviser_preview',
         '#user' => $user,
       ];
-      $options[$user->id()] = \Drupal::service('renderer')
-        ->render($adviser_preview);
+      $options[$user->id()] = $renderer->render($adviser_preview);
     }
     $existing_values = $form_state->get('existing_values');
     $existing_adviser = isset($existing_values[$current_page]) ? $existing_values[$current_page]['adviser'] : '';

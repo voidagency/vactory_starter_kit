@@ -7,6 +7,7 @@ use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\File\FileUrlGeneratorInterface;
 use Drupal\Core\Render\RenderContext;
 use Drupal\Core\Site\Settings;
 use Drupal\Core\Url;
@@ -51,6 +52,13 @@ class VactoryDynamicFormatter extends FormatterBase {
   protected $loggerChannelFactory;
 
   /**
+   * File url generator service.
+   *
+   * @var FileUrlGeneratorInterface
+   */
+  protected $fileUrlGenerator;
+
+  /**
    * {@inheritDoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
@@ -58,6 +66,7 @@ class VactoryDynamicFormatter extends FormatterBase {
     $instance->renderer = $container->get('renderer');
     $instance->platformProvider = $container->get('vactory_dynamic_field.vactory_provider_manager');
     $instance->loggerChannelFactory = $container->get('logger.factory');
+    $instance->fileUrlGenerator = $container->get('file_url_generator');
     return $instance;
   }
 
@@ -113,7 +122,7 @@ class VactoryDynamicFormatter extends FormatterBase {
                 if ($video_id) {
                   $video = File::load($video_id);
                   $url = $video->getFileUri();
-                  $video_url = \Drupal::service('file_url_generator')->generateAbsoluteString($url);
+                  $video_url = $this->fileUrlGenerator->generateAbsoluteString($url);
                   $fid = $media->get('thumbnail')->target_id;
                   $file = File::load($fid);
                   $uri = '';
@@ -144,8 +153,8 @@ class VactoryDynamicFormatter extends FormatterBase {
               $fid = $media->field_media_file->target_id;
               $file = File::load($fid);
               if (isset($file) && !empty($file)) {
-                $absolute_url = file_create_url($file->getFileUri());
-                $file_link = file_url_transform_relative($absolute_url);
+                $absolute_url = $this->fileUrlGenerator->generateAbsoluteString($file->getFileUri());
+                $file_link = $this->fileUrlGenerator->transformRelative($absolute_url);
               }
             }
           }
@@ -163,8 +172,8 @@ class VactoryDynamicFormatter extends FormatterBase {
                 $fid = (int) $media->get('field_media_file')->getString();
                 $file = File::load($fid);
                 if ($file) {
-                  $absolute_url = file_create_url($file->getFileUri());
-                  $file_link = file_url_transform_relative($absolute_url);
+                  $absolute_url = $this->fileUrlGenerator->generateAbsoluteString($file->getFileUri());
+                  $file_link = $this->fileUrlGenerator->transformRelative($absolute_url);
                 }
               }
             }

@@ -2,20 +2,23 @@ langcode: en
 status: true
 dependencies:
   module:
-    - options
-    - paragraphs
+  - options
+  - paragraphs
 id: paragraph.field_multi_paragraph_type
 field_name: field_multi_paragraph_type
 entity_type: paragraph
 type: list_string
 settings:
   allowed_values:
-    -
-      value: tab
-      label: 'Tab display'
-    -
-      value: accordion
-      label: 'Accordion display'
+  -
+    value: none
+    label: None
+  -
+    value: tab
+    label: 'Tab display'
+  -
+    value: accordion
+    label: 'Accordion display'
   allowed_values_function: ''
 module: options
 locked: false
