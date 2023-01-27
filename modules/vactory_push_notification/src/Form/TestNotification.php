@@ -151,13 +151,45 @@ class TestNotification extends FormBase {
       '#size' => 64,
       '#weight' => '0',
     ];
-    $form['send'] = [
+
+    $form['actions'] = [
+      '#type' => 'actions',
+    ];
+    $form['actions']['send'] = [
       '#type' => 'submit',
       '#value' => $this->t('Send'),
       '#button_type' => 'primary',
     ];
 
+    // $form['actions']['run'] = [
+    //   '#type' => 'submit',
+    //   '#value' => $this->t('Run Queue'),
+    //   '#limit_validation_errors' => [],
+    //   '#submit' => ['::runQueue'],
+    // ];
+
     return $form;
+  }
+
+  public function runQueue(array &$form, FormStateInterface $form_state) {
+    $queue = \Drupal::queue('vactory_push_queue');
+
+    /** @var \Drupal\vactory_push_notification\Plugin\QueueWorker\PushQueueWorker $worker */
+    $worker = \Drupal::service('plugin.manager.queue_worker')
+      ->createInstance('vactory_push_queue');
+
+    // Process queue items during only specified amount of time.
+    $finish = strtotime('+ 5 min');
+    while (time() < $finish && ($item = $queue->claimItem())) {
+      try {
+        $worker->processItem($item->data);
+        $queue->deleteItem($item);
+      }
+      catch (\Exception $e) {
+        watchdog_exception('vactory_push_notification', $e, $e->getMessage());
+      }
+    }
+    $this->messenger()->addStatus($this->t('Queue Run.'));
   }
 
   /**
@@ -179,22 +211,46 @@ class TestNotification extends FormBase {
 
     // TODO: make a batch process.
 
-    $this->queue->startWithItem($item);
+    // $this->queue->startWithItem($item);
     $queue = $this->queue->getQueue();
-    $worker = $this->queueWorkerManger->createInstance('vactory_push_queue');
+    $queue->createItem($item);
+    $this->queue->startWithItem($item);
 
-    while ($unprocessed = $queue->claimItem()) {
+    // $queue = \Drupal::queue('vactory_push_queue');
+
+    /** @var \Drupal\vactory_push_notification\Plugin\QueueWorker\PushQueueWorker $worker */
+    $worker = \Drupal::service('plugin.manager.queue_worker')
+      ->createInstance('vactory_push_queue');
+
+      //startWithItem
+
+    // Process queue items during only specified amount of time.
+    $finish = strtotime('+ 5 min');
+    while (time() < $finish && ($item = $queue->claimItem())) {
       try {
-        $worker->processItem($unprocessed->data);
-        $queue->deleteItem($unprocessed);
-      }
-      catch (SuspendQueueException $e) {
-        $queue->releaseItem($item);
+        $worker->processItem($item->data);
+        $queue->deleteItem($item);
       }
       catch (\Exception $e) {
-
+        watchdog_exception('vactory_push_notification', $e, $e->getMessage());
       }
     }
+
+    $this->messenger()->addStatus($this->t('Notification added to queue. Run Queue to process.'));
+    // $worker = $this->queueWorkerManger->createInstance('vactory_push_queue');
+
+    // while ($unprocessed = $queue->claimItem()) {
+    //   try {
+    //     $worker->processItem($unprocessed->data);
+    //     $queue->deleteItem($unprocessed);
+    //   }
+    //   catch (SuspendQueueException $e) {
+    //     $queue->releaseItem($item);
+    //   }
+    //   catch (\Exception $e) {
+
+    //   }
+    // }
   }
 
 }

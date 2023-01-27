@@ -105,6 +105,8 @@ class PushSender implements PushSenderInterface {
       return;
     }
     
+    // todo: move to top
+    $isDevelEnabled = \Drupal::service('module_handler')->moduleExists('devel');
     $webPush = $this->getPush();
 
     $subscriptions = $this->createSubscriptions($item);
@@ -115,7 +117,10 @@ class PushSender implements PushSenderInterface {
 
     /** @var \Drupal\vactory_push_notification\Lib\MessageSentReport $report */
     foreach ($webPush->flush(count($subscriptions)) as $report) {
-      $this->purge->delete($report);
+      if ($isDevelEnabled) {
+        dpm($report);
+      }
+      // $this->purge->delete($report);
     }
 
   }

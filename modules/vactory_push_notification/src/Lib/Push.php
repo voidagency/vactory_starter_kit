@@ -119,6 +119,7 @@ class Push
      */
     public function flush(?int $batchSize = null): \Generator
     {
+        // dpm("sdfsdfsf");
         if (empty($this->notifications)) {
             yield from [];
             return;
@@ -140,13 +141,10 @@ class Push
                 $requests = $this->prepare($batch);
             } catch (\Exception $e) {
                 $requests = [];
-                dpm($e);
+                // dpm($e);
             }
 
             $promises = [];
-
-
-
             foreach ($requests as $request) {
                 $promises[] = $this->client->sendAsync($request)
                     ->then(function ($response) use ($request) {

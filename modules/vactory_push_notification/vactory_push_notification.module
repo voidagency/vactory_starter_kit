@@ -7,7 +7,6 @@
 
 use Drupal\Core\Entity\EntityInterface;
 
-
 /**
  * Implements hook_entity_insert().
  *

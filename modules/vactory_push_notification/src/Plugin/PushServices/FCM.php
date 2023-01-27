@@ -70,7 +70,7 @@ class FCM extends PushServiceBase
         $serviceUrl = "https://fcm.googleapis.com/fcm/send";
         $headers = [
             "Content-Type" => "application/json",
-            'Authorization' => 'key=' . trim($token)
+            'Authorization' => 'key=' . trim($token) . "sfdsdfdfsdf"
         ];
 
         $notification_payload = json_decode($data['payload'], TRUE);

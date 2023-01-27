@@ -79,15 +79,6 @@ class MessageSentReport implements \JsonSerializable
         return $this->request->getUri()->__toString();
     }
 
-    public function isSubscriptionExpired(): bool
-    {
-        if (!$this->response) {
-            return false;
-        }
-
-        return \in_array($this->response->getStatusCode(), [404, 410], true);
-    }
-
     public function getReason(): string
     {
         return $this->reason;
@@ -117,7 +108,6 @@ class MessageSentReport implements \JsonSerializable
     {
         return [
             'success'  => $this->isSuccess(),
-            'expired'  => $this->isSubscriptionExpired(),
             'reason'   => $this->reason,
             'endpoint' => $this->getEndpoint(),
             'payload'  => $this->request->getBody()->getContents(),
