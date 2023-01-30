@@ -747,3 +747,29 @@ function redirectToFrontend($from_404 = FALSE) {
     $response->send();
   }
 }
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_decoupled_preprocess_html(&$variables) {
+  $route_name = Drupal::routeMatch()->getRouteName();
+  $exluded_routes = [
+    'user.login',
+    'user.register',
+    'user.pass',
+    'user.reset.form',
+    'vactory_espace_prive.welcome',
+    'entity.user.canonical',
+  ];
+  if (!in_array($route_name, $exluded_routes)) {
+    $langcode = Drupal::languageManager()->getCurrentLanguage()->getId();
+    $current_path = \Drupal::service('path.current')->getPath();
+    $alias = \Drupal::service('path_alias.manager')->getAliasByPath($current_path);
+    $frontend_url = Settings::get('BASE_FRONTEND_URL', '');
+    if (!empty($frontend_url)) {
+      $frontend_url = trim($frontend_url, '/') . "/{$langcode}" . $alias;
+    }
+    $variables['iframe_url'] = $frontend_url;
+    $variables['is_decoupled'] = TRUE;
+  }
+}
