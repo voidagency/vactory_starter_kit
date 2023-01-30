@@ -143,7 +143,7 @@ class StoreLocator extends ControllerBase {
     $view->setDisplay('store_locator_display');
 
     $view->initDisplay();
-//    $view->preExecute();
+    $view->preExecute();
 
     /* It can either be calculated via offset or current page */
     $view->setOffset(!is_null($pager) ? $pager * $limit : 0);
