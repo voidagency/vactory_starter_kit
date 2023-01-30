@@ -156,8 +156,8 @@ class StoreLocator extends ControllerBase {
         /* This snipet is for the sort only option */
         if (isset($view->sort['field_vactory_locator_geofield_proximity'])) {
           $view->sort['field_vactory_locator_geofield_proximity']->options['source_configuration']['origin'] = [
-            'lat' => $lon_lat['result']['lat'],
-            'lon' => $lon_lat['result']['lng'],
+            'lat' => (string) $lon_lat['result']['lat'],
+            'lon' => (string) $lon_lat['result']['lng'],
           ];
         }
       }
