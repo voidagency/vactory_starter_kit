@@ -1,0 +1,133 @@
+<?php
+
+use Drupal\field\Entity\FieldConfig;
+use Drupal\field\Entity\FieldStorageConfig;
+use Drupal\vactory_locator_decoupled\StoreLocatoreManagerInterface;
+use Drupal\Core\Language\LanguageInterface;
+use Drupal\node\Entity\Node;
+
+
+/**
+ * Implements hook_install().
+ */
+function vactory_locator_decoupled_install($is_syncing) {
+  if (!\Drupal::moduleHandler()->moduleExists('geofield')) {
+    $installer = \Drupal::service('module_installer');
+    $installer->install(['geofield']);
+  }
+
+  foreach (StoreLocatoreManagerInterface::ENTITY_TYPES as $entity_type) {
+    foreach (StoreLocatoreManagerInterface::BUNDLES as $bundle) {
+      $field_name = 'field_' . $bundle . '_' . StoreLocatoreManagerInterface::FIELD_NAME;
+      $field = FieldConfig::loadByName($entity_type, $bundle, $field_name);
+      if (empty($field)) {
+        $field_storage = FieldStorageConfig::loadByName($entity_type, $field_name);
+        if (empty($field_storage)) {
+          $field_storage = FieldStorageConfig::create([
+            'field_name' => $field_name,
+            'entity_type' => $entity_type,
+            'type' => 'geofield',
+          ]);
+          $field_storage->save();
+        }
+        $field = FieldConfig::create([
+          'field_storage' => $field_storage,
+          'bundle' => $bundle,
+          'label' => t('Geofield'),
+        ]);
+        $field->save();
+
+      }
+    }
+  }
+
+  foreach (_get_vactory_locator_decoupled_default_pages() as $machine_name => $page) {
+    $nodes = \Drupal::entityTypeManager()
+      ->getStorage('node')
+      ->loadByProperties(['machine_name' => $machine_name]);
+
+    if (empty($nodes)) {
+      _vactory_locator_decoupled_create_default_node($machine_name, $page['title'], $page['path']);
+    }
+  }
+
+  // Run a complete cache flush.
+  drupal_flush_all_caches();
+
+}
+
+
+function _get_vactory_locator_decoupled_default_pages() {
+  return [
+    'store_locator' => [
+      'path' => '/store-locator',
+      'title' => 'Store Locator',
+    ],
+  ];
+}
+
+function _vactory_locator_decoupled_create_default_node($machine_name, $title, $path) {
+  $node = Node::create([
+    'type' => 'vactory_page',
+    'title' => $title,
+    'langcode' => LanguageInterface::LANGCODE_NOT_SPECIFIED,
+    'uid' => 1,
+  ])
+    ->set('machine_name', $machine_name)
+    ->setPublished();
+  $node->save();
+
+  $route = \Drupal::entityTypeManager()->getStorage('vactory_route')->create([
+    'id' => $machine_name,
+    'label' => $title,
+    'path' => "/node/" . $node->id(),
+    'alias' => $path,
+  ]);
+  $route->save();
+
+  return $node;
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function vactory_locator_decoupled_uninstall() {
+  // Delete routes.
+  $routes = \Drupal::entityTypeManager()
+    ->getStorage('vactory_route')
+    ->loadByProperties([
+      'id' => 'store_locator'
+    ]);
+  foreach ($routes as $route) {
+    $route->delete();
+  }
+
+  // Delete nodes.
+  foreach (_get_vactory_locator_decoupled_default_pages() as $machine_name => $page) {
+    $nodes = \Drupal::entityTypeManager()
+      ->getStorage('node')
+      ->loadByProperties([
+        'type' => 'vactory_page',
+        'machine_name' => $machine_name,
+      ]);
+
+    foreach ($nodes as $node) {
+      $node->delete();
+    }
+
+    foreach (StoreLocatoreManagerInterface::ENTITY_TYPES as $entity_type) {
+      foreach (StoreLocatoreManagerInterface::BUNDLES as $bundle) {
+
+        $field_name = 'field_' . $bundle . '_' . StoreLocatoreManagerInterface::FIELD_NAME;
+
+        if ($field_instance = FieldConfig::loadByName($entity_type, $bundle, $field_name)) {
+          $field_instance->delete();
+        }
+
+        if ($field = FieldStorageConfig::loadByName($entity_type, $field_name)) {
+          $field->delete();
+        }
+      }
+    }
+  }
+}
