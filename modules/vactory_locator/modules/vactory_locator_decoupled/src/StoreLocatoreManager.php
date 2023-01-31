@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 class StoreLocatoreManager implements StoreLocatoreManagerInterface {
-  
+
 
   /**
    * @var \Drupal\Core\Messenger\MessengerInterface
@@ -77,7 +77,7 @@ class StoreLocatoreManager implements StoreLocatoreManagerInterface {
   //     'query' => [
   //       'place_id' => $place_id,
   //       'language' => "fr",
-  //       'key' => getenv('OPEN_CAGE_API'),
+  //       'key' => getenv('GOOGLE_PLACES_API'),
   //       'fields' => 'name,geometry'
   //     ],
   //   ]);

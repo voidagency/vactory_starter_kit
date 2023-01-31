@@ -143,7 +143,7 @@ class StoreLocator extends ControllerBase {
     $view->setDisplay('store_locator_display');
 
     $view->initDisplay();
-//    $view->preExecute();
+    $view->preExecute();
 
     /* It can either be calculated via offset or current page */
     $view->setOffset(!is_null($pager) ? $pager * $limit : 0);
@@ -156,8 +156,8 @@ class StoreLocator extends ControllerBase {
         /* This snipet is for the sort only option */
         if (isset($view->sort['field_vactory_locator_geofield_proximity'])) {
           $view->sort['field_vactory_locator_geofield_proximity']->options['source_configuration']['origin'] = [
-            'lat' => $lon_lat['result']['lat'],
-            'lon' => $lon_lat['result']['lng'],
+            'lat' => (string) $lon_lat['result']['lat'],
+            'lon' => (string) $lon_lat['result']['lng'],
           ];
         }
       }
