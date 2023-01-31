@@ -284,7 +284,7 @@ function vactory_news_json_api_collection_alter(&$filters, &$context) {
     }
 
     if (isset($query["page"])) {
-      $filters["page[offset]"] = intval($query["page"]) > 0 ? intval($query["page"]) - 1 : 0;
+      $filters["page[offset]"] = intval($query["page"]) > 0 ? (intval($query["page"]) - 1) * $filters["page[limit]"] : 0;
     }
 
     if (isset($query["sort"]) && in_array(strtolower($query["sort"]), ["asc", "desc"])) {
