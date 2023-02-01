@@ -93,8 +93,8 @@ class SimpleOauthAuthenticationProvider extends BaseSimpleOauthAuthenticationPro
         $last_name = $payload["family_name"];
         $email = $payload["email"];
         $picture_url = $payload["picture"];
-        $username = (!empty($email)) ? $email : "${id}@google.com";
-        $mail = (!empty($email)) ? $email : "${id}@google.com";
+        $username = (!empty($email)) ? $email : "{$id}@google.com";
+        $mail = (!empty($email)) ? $email : "{$id}@google.com";
 
         $user = user_load_by_name($username);
         if (!$user) {
@@ -141,8 +141,8 @@ class SimpleOauthAuthenticationProvider extends BaseSimpleOauthAuthenticationPro
         list($first_name, $last_name) = array_pad(explode(' ', $name), 4, '');
         $email = $payload["email"];
         $picture_url = $payload["picture"];
-        $username = (!empty($email)) ? $email : "${id}@facebook.com";
-        $mail = (!empty($email)) ? $email : "${id}@facebook.com";
+        $username = (!empty($email)) ? $email : "{$id}@facebook.com";
+        $mail = (!empty($email)) ? $email : "{$id}@facebook.com";
 
         $user = user_load_by_name($username);
         if (!$user) {

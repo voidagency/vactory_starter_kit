@@ -47,8 +47,8 @@ class MediaFilesManager {
       $query = $url_info['query'] ?? '';
       if (!empty($path)) {
         if ($base_media_url = Settings::get('BASE_MEDIA_URL', '')) {
-          $query = !empty($query) ? "?${query}": $query;
-          $path = "${path}${query}";
+          $query = !empty($query) ? "?{$query}": $query;
+          $path = "{$path}{$query}";
           $url = $base_media_url . $path;
         }
       }

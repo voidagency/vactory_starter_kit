@@ -66,7 +66,7 @@ class DocumentsEnMasseForm extends FormBase {
     foreach ($values['documents']['uploaded_files'] as $file) {
       $handle = fopen($file['path'], 'r');
       if ($handle) {
-        $file = file_save_data($handle, $default_stream_wrapper . '://documents-en-masse/' . $time . '/' . $file['filename']);
+        $file = \Drupal::service('file.repository')->writeData($handle, $default_stream_wrapper . '://documents-en-masse/' . $time . '/' . $file['filename']);
         fclose($handle);
         if ($file) {
           $file->setPermanent();

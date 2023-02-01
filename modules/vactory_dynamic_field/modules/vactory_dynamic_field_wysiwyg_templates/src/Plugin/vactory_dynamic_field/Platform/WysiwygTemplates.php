@@ -16,7 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class WysiwygTemplates extends VactoryDynamicFieldPluginBase {
 
   public function __construct(array $configuration, $plugin_id, $plugin_definition, $widgetsPath) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition, drupal_get_path('module', 'vactory_dynamic_field_wysiwyg_templates') . '/widgets');
+    parent::__construct($configuration, $plugin_id, $plugin_definition, \Drupal::service('extension.path.resolver')->getPath('module', 'vactory_dynamic_field_wysiwyg_templates') . '/widgets');
   }
 
 }

@@ -148,7 +148,7 @@ class Vactory {
         $variables = $this->entityTypeManager->getViewBuilder('block')
           ->view($block);
         if ($variables) {
-          return render($variables);
+          return \Drupal::service('renderer')->render($variables);
         }
       }
     }
@@ -176,7 +176,7 @@ class Vactory {
           ->view($block);
 
         if ($variables) {
-          return render($variables);
+          return \Drupal::service('renderer')->render($variables);
         }
       }
     }

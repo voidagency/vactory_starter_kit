@@ -2,8 +2,11 @@
 
 namespace Drupal\vactory_decoupled\Plugin\Field;
 
+use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Field\FieldItemList;
+use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\TypedData\ComputedItemListTrait;
+use Drupal\Core\TypedData\TraversableTypedDataInterface;
 use Drupal\node\Entity\Node;
 use Drupal\Core\Url;
 
@@ -14,6 +17,32 @@ class InternalNodeEntityExtraFieldItemList extends FieldItemList
 {
 
   use ComputedItemListTrait;
+
+  /**
+   * Language manager service.
+   *
+   * @var LanguageManagerInterface
+   */
+  protected $languageManager;
+
+  /**
+   * Entity repository service.
+   *
+   * @var EntityRepositoryInterface
+   */
+  protected $entityRepository;
+
+  /**
+   * {@inheritDoc}
+   */
+  public static function createInstance($definition, $name = NULL, TraversableTypedDataInterface $parent = NULL)
+  {
+    $instance = parent::createInstance($definition, $name, $parent);
+    $container = \Drupal::getContainer();
+    $instance->entityRepository = $container->get('entity.repository');
+    $instance->languageManager = $container->get('language_manager');
+    return $instance;
+  }
 
   /**
    * {@inheritdoc}
@@ -46,7 +75,7 @@ class InternalNodeEntityExtraFieldItemList extends FieldItemList
     $front_uri = $siteConfig->get('page.front');
     $internal_uri = "/node/" . $entity->id();
 
-    $langcodes = \Drupal::languageManager()->getLanguages();
+    $langcodes = $this->languageManager->getLanguages();
     $langcodesList = array_keys($langcodes);
     $data = [];
 
@@ -55,14 +84,14 @@ class InternalNodeEntityExtraFieldItemList extends FieldItemList
       foreach ($langcodesList as $langcode) {
         $data[$langcode] =
         Url::fromRoute('<front>', [], [
-          'language' => \Drupal::languageManager()->getLanguage($langcode),
+          'language' => $this->languageManager->getLanguage($langcode),
         ])->toString();
       }
     }
     else {
       foreach ($langcodesList as $langcode) {
         if ($entity->hasTranslation($langcode)) {
-          $translation = \Drupal::service('entity.repository')->getTranslationFromContext($entity, $langcode);
+          $translation = $this->entityRepository->getTranslationFromContext($entity, $langcode);
           $data[$langcode] =
             $translation->toUrl('canonical', [
               'language' => $translation->language(),

@@ -202,7 +202,7 @@ class TwigExtension extends \Twig_Extension {
         ->view($block);
 
       if ($variables) {
-        return render($variables);
+        return \Drupal::service('renderer')->render($variables);
       }
     }
     return FALSE;
@@ -307,7 +307,7 @@ class TwigExtension extends \Twig_Extension {
         'filename' => $image->label(),
         'filemime' => $image->get('filemime')->value,
         'uri' => $image->get('uri')->value,
-        'url' => file_create_url($image->get('uri')->value),
+        'url' => \Drupal::service('file_url_generator')->generateAbsoluteString($image->get('uri')->value),
         'alt' => $image->hasField('field_image_alt_text') && !empty($image->get('field_image_alt_text')->value) ? $image->get('field_image_alt_text')->value : '',
         'title' => $image->hasField('field_image_title_text') && !empty($image->get('field_image_title_text')->value) ? $image->get('field_image_title_text')->value : '',
       ];
@@ -401,7 +401,7 @@ class TwigExtension extends \Twig_Extension {
       }
     }
     else {
-        $image_url = file_create_url($uri);
+        $image_url = \Drupal::service('file_url_generator')->generateAbsoluteString($uri);
     }
 
     if ($lazyLoading || !empty($picture_urls)) {
@@ -438,7 +438,7 @@ class TwigExtension extends \Twig_Extension {
     if (!$file) {
       return;
     }
-    $path = file_create_url($file->thumbnail->entity->getFileUri());
+    $path = \Drupal::service('file_url_generator')->generateAbsoluteString($file->thumbnail->entity->getFileUri());
     return $path;
   }
 
