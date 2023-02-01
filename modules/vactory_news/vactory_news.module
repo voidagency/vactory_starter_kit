@@ -202,9 +202,9 @@ function vactory_news_jsonapi_vcc_normalized_node_alter(&$normalized_node, $cont
           if ($file != NULL) {
             $uri = $file->getFileUri();
             $fileResult = [];
-            $fileResult['_default'] = \Drupal::service('file_url_generator')
-              ->generateAbsoluteString($uri);
-            $fileResult['_lqip'] = $lqipImageStyle->buildUrl($uri);
+            $media_file_manager = \Drupal::service('vacory_decoupled.media_file_manager');
+            $fileResult['_default'] = $media_file_manager->getMediaAbsoluteUrl($uri);
+            $fileResult['_lqip'] = $media_file_manager->convertToMediaAbsoluteUrl($lqipImageStyle->buildUrl($uri));
             $fileResult['uri'] = StreamWrapperManager::getTarget($uri);
             $fileResult['fid'] = $fid;
             $fileResult['file_name'] = $media->label();

@@ -69,7 +69,7 @@ df_default_widget_13_rtl:
 
 ###############################################################################
 
-df_default_widget_114:
+df_default_widget_14:
   css:
     component:
       widgets/14/assets/style.css: {}
@@ -243,3 +243,22 @@ df_default_widget_36_rtl:
   css:
     theme:
       ./widgets/36/assets/style-rtl.css: {}
+
+###############################################################################
+
+df_default_widget_49_script:
+  js:
+    ./widgets/49/assets/script.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+
+df_default_widget_49:
+  css:
+    theme:
+      ./widgets/49/assets/style.css: {}
+
+df_default_widget_49_rtl:
+  css:
+    theme:
+      ./widgets/49/assets/style-rtl.css: {}

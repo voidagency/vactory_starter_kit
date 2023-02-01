@@ -2,13 +2,13 @@ langcode: en
 status: true
 dependencies:
   config:
-    - field.storage.paragraph.field_vactory_title
-    - paragraphs.paragraphs_type.vactory_paragraph_tab
+  - field.storage.paragraph.field_vactory_title
+  - paragraphs.paragraphs_type.vactory_paragraph_tab
 id: paragraph.vactory_paragraph_tab.field_vactory_title
 field_name: field_vactory_title
 entity_type: paragraph
 bundle: vactory_paragraph_tab
-label: Title
+label: Titre
 description: ''
 required: true
 translatable: true
