@@ -109,10 +109,10 @@ function vactory_mediatheque_preprocess_node__vactory_mediatheque__card(&$variab
  */
 function vactory_mediatheque_json_api_collection_alter(&$filters, &$context) {
   if ($context['id'] === 'vactory_mediatheque_list') {
-    $query = $context['query'];
+    $query = \Drupal::request()->query->get("q");
 
     if (isset($query["page"])) {
-      $filters["page[offset]"] = intval($query["page"]) > 0 ? intval($query["page"]) - 1 : 0;
+      $filters["page[offset]"] = intval($query["page"]) > 0 ? (intval($query["page"]) - 1) * $filters["page[limit]"] : 0;
     }
 
     if (isset($query["year"]) && $query["year"] !== "all") {

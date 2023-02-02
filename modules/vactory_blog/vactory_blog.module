@@ -17,34 +17,34 @@ use Drupal\file\Entity\File;
 function vactory_blog_theme($existing, $type, $theme, $path) {
   return [
     // Node > card.
-    'node__vactory_blog__card'        => [
+    'node__vactory_blog__card' => [
       'base hook' => 'node',
-      'template'  => 'card',
+      'template' => 'card',
     ],
     // Node > card inline.
     'node__vactory_blog__card_inline' => [
       'base hook' => 'node',
-      'template'  => 'card-inline',
+      'template' => 'card-inline',
     ],
     // Node > Masonry.
-    'node__vactory_blog__masonry'     => [
+    'node__vactory_blog__masonry' => [
       'base hook' => 'node',
-      'template'  => 'masonry',
+      'template' => 'masonry',
     ],
     // Node > full.
-    'node__vactory_blog__full'        => [
+    'node__vactory_blog__full' => [
       'base hook' => 'node',
-      'template'  => 'full',
+      'template' => 'full',
     ],
     // Node > Smart search.
-    'node__vactory_blog__smart_search'        => [
+    'node__vactory_blog__smart_search' => [
       'base hook' => 'node',
-      'template'  => 'smart-search',
+      'template' => 'smart-search',
     ],
     // Node > mur.
-    'node__vactory_blog__mur'        => [
+    'node__vactory_blog__mur' => [
       'base hook' => 'node',
-      'template'  => 'mur',
+      'template' => 'mur',
     ],
   ];
 }
@@ -54,18 +54,19 @@ function vactory_blog_theme($existing, $type, $theme, $path) {
  */
 function vactory_blog_json_api_collection_alter(&$filters, &$context) {
   if ($context['id'] === 'vactory_blog_list') {
-    $query = $context['query'];
+    $query = \Drupal::request()->query->get("q");
 
     if (isset($query["page"])) {
-      $filters["page[offset]"] = intval($query["page"]) > 0 ? intval($query["page"]) - 1 : 0;
+      $filters["page[offset]"] = intval($query["page"]) > 0 ? (intval($query["page"]) - 1) * $filters["page[limit]"] : 0;
     }
-
     if (isset($query["theme"]) && $query["theme"] !== "all") {
       $theme = $query["theme"];
-      $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties([
-        'vid' => 'vactory_blog_categories',
-        'term_2_slug' => $query["theme"]
-      ]);
+      $terms = \Drupal::entityTypeManager()
+        ->getStorage('taxonomy_term')
+        ->loadByProperties([
+          'vid' => 'vactory_blog_categories',
+          'term_2_slug' => $query["theme"],
+        ]);
 
       if (!$terms) {
         throw new \Exception("[Blog - hook_json_api_collection_alter] term '$theme' not found.");
@@ -82,10 +83,12 @@ function vactory_blog_json_api_collection_alter(&$filters, &$context) {
     }
     if (isset($query["tag"]) && $query["tag"] !== "all") {
       $theme = $query["tag"];
-      $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties([
-        'vid' => 'vactory_blog_tags',
-        'term_2_slug' => $query["tag"]
-      ]);
+      $terms = \Drupal::entityTypeManager()
+        ->getStorage('taxonomy_term')
+        ->loadByProperties([
+          'vid' => 'vactory_blog_tags',
+          'term_2_slug' => $query["tag"],
+        ]);
 
       if (!$terms) {
         throw new \Exception("[Blog - hook_json_api_collection_alter] term '$theme' not found.");
