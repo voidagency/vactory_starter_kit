@@ -158,4 +158,11 @@ class DecoupledEntityReferenceSelectElement extends FormElement {
     NestedArray::setValue($form_state->getStorage(), $parents, $field_state);
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public static function validateElement(&$element, FormStateInterface $form_state, &$complete_form) {
+    // Add element validation here.
+  }
+
 }
