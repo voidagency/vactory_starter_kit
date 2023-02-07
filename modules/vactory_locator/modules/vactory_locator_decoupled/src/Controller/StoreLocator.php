@@ -145,10 +145,14 @@ class StoreLocator extends ControllerBase {
     $view->initDisplay();
     $view->preExecute();
 
-    /* It can either be calculated via offset or current page */
-    $view->setOffset(!is_null($pager) ? $pager * $limit : 0);
-    $view->setCurrentPage($pager);
+    /* It can either be calculated via offset or current page but no need to
+      use it since the view is already handling the limit.
+    */
+//    $view->setOffset(!is_null($pager) ? $pager * $limit : 0);
     $view->setItemsPerPage($limit);
+
+    $view->setCurrentPage($pager);
+
 
     if (isset($locality)) {
       $lon_lat = $this->manager->searchGeo($locality) ?? '';
@@ -167,6 +171,7 @@ class StoreLocator extends ControllerBase {
       $view->setArguments(['field_locator_category_target_id' => $category]);
     }
 
+    $view->get_total_rows = TRUE;
 
     return $this->normalizer($view);
   }
@@ -195,14 +200,18 @@ class StoreLocator extends ControllerBase {
       $rendered_view = $view_render_array['#markup']->jsonSerialize();
     });
 
+
     $result = $rendered_view;
+
+
 
     $resultSet['resources'] = json_decode($result, TRUE);
     $resultSet['count'] = $view->total_rows;
 
     /* In case metatags are filter dependant */
-    //$resultSet['metatags'] = json_decode($this->getMetatag($view), TRUE);
+//    $resultSet['metatags'] = json_decode($this->getMetatag($view), TRUE);
     $response = CacheableJsonResponse::create($resultSet,Response::HTTP_OK);
+//
     $response->addCacheableDependency(CacheableMetadata::createFromRenderArray($view_render_array));
     $response->addCacheableDependency(CacheableMetadata::createFromRenderArray($cache));
 
