@@ -1,0 +1,17 @@
+name: "Marquee"
+category: "Animated DFs"
+enabled: TRUE
+fields:
+  numberPerView:
+    type: number
+    label: "Number per view"
+    options:
+      "#required": TRUE
+  pauseOnHover:
+    type: checkbox
+    label: "Pause on hover"
+  content:
+    type: text
+    label: "Text to display"
+    options:
+      "#required": TRUE

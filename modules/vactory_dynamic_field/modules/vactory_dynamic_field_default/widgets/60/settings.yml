@@ -1,0 +1,42 @@
+name: "Three card with image"
+category: "Animated DFs"
+multiple: true
+enabled: TRUE
+fields:
+  icon_name:
+    type: text
+    label: Icon
+    options:
+      "#required": TRUE
+  card_title:
+    type: text
+    label: "Card title"
+    options:
+      "#required": TRUE
+  card_content:
+    type: text_format
+    label: "Card content"
+    options:
+      "#format": full_html
+  link:
+    type: url_extended
+    label: "Link"
+
+extra_fields:
+  title:
+    type: text
+    label: 'title'
+    options:
+      "#required": TRUE
+  content:
+    type: textarea
+    label: 'Content'
+    options:
+      "#required": TRUE
+  image:
+    type: image
+    label: "Image"
+    options:
+      "#required": TRUE
+
+
