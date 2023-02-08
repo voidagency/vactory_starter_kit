@@ -92,6 +92,12 @@ class InternalNodeEntityBlocksFieldItemList extends FieldItemList
 
     // @see https://api.drupal.org/api/drupal/core%21modules%21system%21tests%21modules%21entity_test%21src%21Plugin%21Field%21ComputedTestCacheableStringItemList.php/class/ComputedTestCacheableStringItemList/9.3.x?title=&title_1=&object_type=&order=title&sort=desc
     $this->cacheMetadata = new CacheableMetadata();
+    $tags = [
+      'config:block_list',
+      'block_list',
+      'block_content_list',
+    ];
+    $this->cacheMetadata->addCacheTags($tags);
     $this->moduleHandler->alter('internal_blocks_cacheability', $this->cacheMetadata, $entity, $value);
     $this->list[0] = $this->createItem(0, $value);
   }
