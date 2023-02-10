@@ -240,6 +240,9 @@
       },
       "drupal/flag": {
         "Fix deprecated php 8.1 str_replace": "https://www.drupal.org/files/issues/2022-02-25/3266574-2.patch"
+      },
+      "drupal/paragraphs": {
+        "Core 9.5.0 causing broken-looking styling (Legacy widget, with Seven)": "https://www.drupal.org/files/issues/2023-01-06/core-absolute-position-affecting-paragraphs-3331203-3.patch"
       }
     }
   },
