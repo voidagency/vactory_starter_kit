@@ -314,7 +314,7 @@ class VactoryDynamicFormatter extends FormatterBase {
 
         // Sort data.
         usort($widget_data, function ($item1, $item2) {
-          return $item1['_weight'] <=> $item2['_weight'];
+          return (int) ($item1['_weight'] <=> $item2['_weight']);
         });
 
         $content['components'] = [];

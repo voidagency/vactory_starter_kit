@@ -213,7 +213,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
 
       // Sort data.
       usort($widget_data, function ($item1, $item2) {
-        return $item1['_weight'] <=> $item2['_weight'];
+        return (int) ($item1['_weight'] <=> $item2['_weight']);
       });
 
       foreach ($widget_data as &$component) {
@@ -350,7 +350,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
               usort($entities, function ($a, $b) {
                 $weight_a = $a->get('weight')->value;
                 $weight_b = $b->get('weight')->value;
-                return $weight_a <=> $weight_b;
+                return (int) ($weight_a <=> $weight_b);
               });
             }
 

@@ -102,7 +102,7 @@ class BlocksManager
     }
 
     usort($blocks, function ($item1, $item2) {
-      return $item1['weight'] <=> $item2['weight'];
+      return (int) ($item1['weight'] <=> $item2['weight']);
     });
 
     return $this->getVisibleBlocks($blocks, $nid);

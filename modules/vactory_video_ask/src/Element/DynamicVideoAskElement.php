@@ -88,10 +88,10 @@ class DynamicVideoAskElement extends FormElement {
     $user_input_values = $form_state->getUserInput();
     // Sort screens:
     usort($default_value, function ($item1, $item2) {
-      return $item1['_weight'] <=> $item2['_weight'];
+      return (int) ($item1['_weight'] <=> $item2['_weight']);
     });
     usort($user_input_values, function ($item1, $item2) {
-      return $item1['_weight'] <=> $item2['_weight'];
+      return (int) ($item1['_weight'] <=> $item2['_weight']);
     });
 
     // Get icon drag.

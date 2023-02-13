@@ -217,7 +217,7 @@ class JsonApiGenerator {
         usort($terms, function ($a, $b) {
           $weight_a = $a->get('weight')->value;
           $weight_b = $b->get('weight')->value;
-          return $weight_a <=> $weight_b;
+          return (int) ($weight_a <=> $weight_b);
         });
       }
       foreach ($terms as $term) {

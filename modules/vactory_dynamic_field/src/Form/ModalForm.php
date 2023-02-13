@@ -182,7 +182,7 @@ class ModalForm extends FormBase {
 
       // Sort data.
       usort($this->widgetData, function ($item1, $item2) {
-        return $item1['_weight'] <=> $item2['_weight'];
+        return (int) ($item1['_weight'] <=> $item2['_weight']);
       });
 
       // Restore extra_field.
