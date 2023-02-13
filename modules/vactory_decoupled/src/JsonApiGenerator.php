@@ -213,6 +213,13 @@ class JsonApiGenerator {
     foreach ($bundles as $vid) {
       $terms = $taxonomyTermStorage->loadTree($vid, 0, NULL, TRUE);
       $result[$vid] = [];
+      if (!empty($terms)) {
+        usort($terms, function ($a, $b) {
+          $weight_a = $a->get('weight')->value;
+          $weight_b = $b->get('weight')->value;
+          return $weight_a <=> $weight_b;
+        });
+      }
       foreach ($terms as $term) {
         $term = $this->entityRepository->getTranslationFromContext($term);
 

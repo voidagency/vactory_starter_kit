@@ -346,6 +346,14 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
               return $entity_repository->getTranslationFromContext($entity, $langcode);
             }, $entities);
 
+            if (!empty($entities) && $entity_type_id === 'taxonomy_term') {
+              usort($entities, function ($a, $b) {
+                $weight_a = $a->get('weight')->value;
+                $weight_b = $b->get('weight')->value;
+                return $weight_a <=> $weight_b;
+              });
+            }
+
             $info['is_options_locked'] = FALSE;
             $this->moduleHandler->alter('decoupled_entity_reference_options', $entities, $info, $this->cacheability);
             if (isset($info['is_options_locked']) && !$info['is_options_locked']) {
