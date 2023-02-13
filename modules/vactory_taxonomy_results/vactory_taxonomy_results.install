@@ -1,0 +1,40 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Vactory taxonomy terms results module.
+ */
+
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Field\FieldStorageDefinitionInterface;
+
+/**
+ * Implements hook_module_preuninstall().
+ */
+function vactory_taxonomy_results_module_preuninstall($module) {
+  if ($module === 'vactory_taxonomy_results') {
+    // Purge deleted field data.
+    field_cron();
+  }
+}
+
+
+/**
+ * Implements hook_update_N().
+ */
+function vactory_taxonomy_results_update_9400(&$sandbox) {
+  $storage_definition = BaseFieldDefinition::create('entity_reference')
+    ->setLabel(t('Term results count'))
+    ->setDescription(t('Term results count'))
+    ->setTranslatable(FALSE)
+    ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
+    ->setSetting('target_type', 'term_result_count')
+    ->setSetting('handler', 'default')
+    ->setDisplayConfigurable('form', FALSE)
+    ->setDisplayConfigurable('view', FALSE)
+    ->setRevisionable(FALSE)
+    ->setProvider('vactory_taxonomy_results');
+
+  \Drupal::entityDefinitionUpdateManager()
+    ->installFieldStorageDefinition('results_count', 'taxonomy_term', 'vactory_taxonomy_results', $storage_definition);
+}

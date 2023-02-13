@@ -1,0 +1,170 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Vactory taxonomy terms results module.
+ */
+
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Entity\ContentEntityBase;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Field\FieldStorageDefinitionInterface;
+use Drupal\Core\Session\AccountInterface;
+
+/**
+ * Implements hook_entity_presave().
+ */
+function vactory_taxonomy_results_entity_presave(EntityInterface $entity) {
+  if ($entity instanceof ContentEntityBase) {
+    $entity_type = $entity->getEntityTypeId();
+    $config = Drupal::config('vactory_taxonomy_results.settings');
+    $enabled_bundles = $config->get('enabled_bundles');
+    if (!isset($enabled_bundles[$entity_type])) {
+      return;
+    }
+    $bundle = $entity->bundle();
+    if (!in_array($bundle, $enabled_bundles[$entity_type])) {
+      return;
+    }
+    $entityFieldManager = \Drupal::service('entity_field.manager');
+    $fields = $entityFieldManager->getFieldDefinitions($entity_type, $bundle);
+    $taxonomy_term_fields = array_filter($fields, function ($field) {
+      return $field->getType() === 'entity_reference' && $field->getSettings()['target_type'] === 'taxonomy_term';
+    });
+
+    /** @var \Drupal\vactory_taxonomy_results\TermResultCounterManager $term_result_counter_manager */
+    $term_result_counter_manager = Drupal::service('plugin.manager.term_results_counter');
+    $definitions = $term_result_counter_manager->getDefinitions();
+    foreach ($taxonomy_term_fields as $field_name => $field_definition) {
+      foreach ($definitions as $definition) {
+        if (isset($definition['id']) && method_exists($definition['class'], 'termResultCount')) {
+          $instance = $term_result_counter_manager->createInstance($definition['id']);
+          $instance->termResultCount($entity, $field_name);
+        }
+      }
+    }
+  }
+}
+
+function vactory_taxonomy_results_count_batch($ids, $entity_type_id, $langcodes, &$contex) {
+  $contex['message'] = t("Calculate taxonomy term result count for {$entity_type_id} entity type");
+  $entities = Drupal::entityTypeManager()->getStorage($entity_type_id)
+    ->loadMultiple($ids);
+  /** @var \Drupal\vactory_taxonomy_results\Services\TermResultCounterHelper $taxonomy_result_helper */
+  $taxonomy_result_helper = Drupal::service('vactory_taxonomy_results.helper');
+  $entity_field_manager = \Drupal::service('entity_field.manager');
+  $entity_repository = \Drupal::service('entity.repository');
+  $term_result_counter_manager = \Drupal::service('plugin.manager.term_results_counter');
+  $definitions = $term_result_counter_manager->getDefinitions();
+  $instances = [];
+  foreach ($definitions as $definition) {
+    if (isset($definition['id']) && method_exists($definition['class'], 'termResultCount')) {
+      $instances[$definition['id']] = $term_result_counter_manager->createInstance($definition['id']);
+    }
+  }
+  foreach ($entities as $entity) {
+    $bundle = $entity->bundle();
+    $fields = $entity_field_manager->getFieldDefinitions($entity_type_id, $bundle);
+    $taxonomy_term_fields = array_filter($fields, function ($field) {
+      return $field->getType() === 'entity_reference' && $field->getSettings()['target_type'] === 'taxonomy_term';
+    });
+    foreach ($taxonomy_term_fields as $field_name => $field_definition) {
+      foreach ($langcodes as $langcode) {
+        if ($entity->hasTranslation($langcode)) {
+          $entity_translation = $entity_repository->getTranslationFromContext($entity, $langcode);
+          // Get field taxonomy term reference value(s).
+          $tids = $entity_translation->get($field_name)->getValue();
+          $tids = array_map(function ($value) {
+            return $value['target_id'];
+          }, $tids);
+          foreach ($tids as $tid) {
+            foreach ($instances as $plugin_id => $instance) {
+              if ($plugin_id === 'default') {
+                $taxonomy_result_helper->incrementTermResultCount($tid, $entity_type_id, $bundle, 'default', $langcode);
+                continue;
+              }
+              if ($plugin_id !== 'default') {
+                $instance->termResultCount($entity, $field_name);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function vactory_taxonomy_results_entity_base_field_info(EntityTypeInterface $entity_type) {
+  $fields = [];
+  if ($entity_type->id() === 'taxonomy_term') {
+    $fields['results_count'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Term results count'))
+      ->setDescription(t('Term results count'))
+      ->setTranslatable(FALSE)
+      ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
+      ->setSetting('target_type', 'term_result_count')
+      ->setSetting('handler', 'default')
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE)
+      ->setRevisionable(FALSE)
+      ->setProvider('vactory_taxonomy_results');
+  }
+
+  return $fields;
+}
+
+/**
+ * Implements hook_jsonapi_entity_filter_access().
+ */
+function vactory_taxonomy_results_jsonapi_entity_filter_access(EntityTypeInterface $entity_type, AccountInterface $account) {
+  if ($entity_type->id() === 'term_result_count') {
+    $permissions = [
+      'access content',
+    ];
+    return ([
+      JSONAPI_FILTER_AMONG_ALL => AccessResult::allowedIfHasPermissions($account, $permissions, 'OR'),
+    ]);
+  }
+}
+
+function vactory_taxonomy_results_excluded_entities() {
+  return [
+    'file',
+    'crop',
+    'comment',
+    'consumer',
+    'entity_subqueue',
+    'flagging',
+    'media',
+    'menu_link_content',
+    'path_alias',
+    'redirect',
+    'search_api_task',
+    'shortcut',
+    'oauth2_token',
+    'social_auth',
+    'taxonomy_term',
+    'vactory_dynamic_field',
+    'vote',
+    'vote_result',
+    'webform_submission',
+    'paragraph',
+    'notifications_entity',
+    'taxonomy_term',
+    'term_result_count',
+  ];
+}
+
+function vactory_taxonomy_results_cleaner_batch($ids, &$context) {
+  $context['message'] = t('Cleaning existing term results count entities...');
+  $term_result_storage = Drupal::entityTypeManager()->getStorage('term_result_count');
+  $entities = $term_result_storage->loadMultiple($ids);
+  if (!empty($entities)) {
+    $term_result_storage->delete($entities);
+  }
+}

@@ -1,0 +1,14 @@
+entity.term_result_count.edit_form:
+  title: Edit
+  route_name: entity.term_result_count.edit_form
+  base_route: entity.term_result_count.canonical
+entity.term_result_count.delete_form:
+  title: Delete
+  route_name: entity.term_result_count.delete_form
+  base_route: entity.term_result_count.canonical
+  weight: 10
+entity.term_result_count.collection:
+  title: Term Results Count
+  route_name: entity.term_result_count.collection
+  base_route: system.admin_content
+  weight: 10
