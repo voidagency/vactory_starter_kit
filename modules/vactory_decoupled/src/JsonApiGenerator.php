@@ -221,23 +221,61 @@ class JsonApiGenerator {
         });
       }
       foreach ($terms as $term) {
+        $published = $term->get('status')->value;
+        if (!$published) {
+          continue;
+        }
         $term = $this->entityRepository->getTranslationFromContext($term);
 
         $cacheTags = Cache::mergeTags($cacheTags, $term->getCacheTags());
-        array_push($result[$vid], [
+        $term_data = [
           'id' => $term->id(),
           'uuid' => $term->uuid(),
           'slug' => $term->get("term_2_slug")->getString(),
           'label' => $term->label(),
-        ]);
+          'results' => [],
+        ];
+        if ($term->hasField('results_count')) {
+          $this->injectTaxonomyResultsCount($term, $term_data, $cacheTags);
+        }
+        array_push($result[$vid], $term_data);
       }
-
     }
 
     return [
       "data" => $result,
       "cache_tags" => $cacheTags,
     ];
+  }
+
+  public function injectTaxonomyResultsCount($term, &$term_data, &$cacheTags) {
+    $result_count_ids = $term->get('results_count')->getValue();
+    if (!empty($result_count_ids)) {
+      $result_count_ids = array_map(function ($el) {
+        return $el['target_id'];
+      }, $result_count_ids);
+      if (!empty($result_count_ids)) {
+        $results_count = $this->entityTypeManager->getStorage('term_result_count')
+          ->loadMultiple($result_count_ids);
+        if (!empty($results_count)) {
+          foreach ($results_count as $result_count) {
+            $plugin = $result_count->get('plugin')->value;
+            $entity_type = $result_count->get('entity_type')->value;
+            $bundle = $result_count->get('bundle')->value;
+            $count = $result_count->get('count')->value;
+            if (!empty($plugin) && !empty($entity_type) && !empty($bundle) && !empty($count)) {
+              $cacheTags = Cache::mergeTags($cacheTags, $result_count->getCacheTags());
+              $term_data['results'][] = [
+                'plugin' => $plugin,
+                'entity_type' => $entity_type,
+                'bundle' => $bundle,
+                'count' => $count,
+              ];
+            }
+          }
+        }
+      }
+    }
   }
 
 }

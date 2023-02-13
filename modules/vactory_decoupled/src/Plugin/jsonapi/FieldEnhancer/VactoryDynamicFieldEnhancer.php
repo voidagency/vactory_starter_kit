@@ -350,7 +350,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
               usort($entities, function ($a, $b) {
                 $weight_a = $a->get('weight')->value;
                 $weight_b = $b->get('weight')->value;
-                return (int) ($weight_a <=> $weight_b);
+                return ($weight_a <=> $weight_b);
               });
             }
 
@@ -358,14 +358,19 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
             $this->moduleHandler->alter('decoupled_entity_reference_options', $entities, $info, $this->cacheability);
             if (isset($info['is_options_locked']) && !$info['is_options_locked']) {
               // Format options here.
-              $entities = array_map(function ($entity) {
-                return [
+              $data = [];
+              $tags = $this->cacheability->getCacheTags();
+              foreach ($entities as $id => $entity) {
+                $data[$id] = [
                   'id' => $entity->id(),
                   'uuid' => $entity->uuid(),
                   'label' => $entity->label(),
                 ];
-              }, $entities);
-              $entities = array_values($entities);
+                if ($entity->getEntityTypeId() === 'taxonomy_term' && $entity->hasField('results_count')) {
+                  $this->injectTaxonomyResultsCount($entity, $data[$id], $tags);
+                }
+              }
+              $entities = array_values($data);
             }
           }
           $value = $entities;
@@ -532,6 +537,37 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
       elseif (is_array($value)) {
         // Go deeper.
         $this->applyFormatters(array_merge((array) $parent_keys, [$field_key]), $settings, $value);
+      }
+    }
+  }
+
+  public function injectTaxonomyResultsCount($term, &$term_data, $tags) {
+    $result_count_ids = $term->get('results_count')->getValue();
+    if (!empty($result_count_ids)) {
+      $result_count_ids = array_map(function ($el) {
+        return $el['target_id'];
+      }, $result_count_ids);
+      if (!empty($result_count_ids)) {
+        $results_count = $this->entityTypeManager->getStorage('term_result_count')
+          ->loadMultiple($result_count_ids);
+        if (!empty($results_count)) {
+          foreach ($results_count as $result_count) {
+            $plugin = $result_count->get('plugin')->value;
+            $entity_type = $result_count->get('entity_type')->value;
+            $bundle = $result_count->get('bundle')->value;
+            $count = $result_count->get('count')->value;
+            if (!empty($plugin) && !empty($entity_type) && !empty($bundle) && !empty($count)) {
+              $cacheTags = Cache::mergeTags($tags, $result_count->getCacheTags());
+              $this->cacheability->setCacheTags($cacheTags);
+              $term_data['results'][] = [
+                'plugin' => $plugin,
+                'entity_type' => $entity_type,
+                'bundle' => $bundle,
+                'count' => $count,
+              ];
+            }
+          }
+        }
       }
     }
   }

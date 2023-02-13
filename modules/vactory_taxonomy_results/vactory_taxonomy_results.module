@@ -168,3 +168,13 @@ function vactory_taxonomy_results_cleaner_batch($ids, &$context) {
     $term_result_storage->delete($entities);
   }
 }
+
+/**
+ * Implements hook_module_preuninstall().
+ */
+function vactory_taxonomy_results_module_preuninstall($module) {
+  if ($module === 'vactory_taxonomy_results') {
+    // Purge deleted field data.
+    field_cron();
+  }
+}

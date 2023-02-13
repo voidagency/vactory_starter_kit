@@ -9,17 +9,6 @@ use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 
 /**
- * Implements hook_module_preuninstall().
- */
-function vactory_taxonomy_results_module_preuninstall($module) {
-  if ($module === 'vactory_taxonomy_results') {
-    // Purge deleted field data.
-    field_cron();
-  }
-}
-
-
-/**
  * Implements hook_update_N().
  */
 function vactory_taxonomy_results_update_9400(&$sandbox) {

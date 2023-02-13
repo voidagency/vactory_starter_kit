@@ -86,12 +86,12 @@ class TermResultCounterHelper {
       $term = Term::load($tid);
       if ($term) {
         $value = $term->get('results_count')->getValue();
-        $status = $term->get('status')->getValue();
+        $status = $term->get('status')->value;
         $value[] = [
           'target_id' => $termResultCountId,
         ];
         $term->set('results_count', $value)
-          ->set('status', intval($status))
+          ->set('status', $status)
           ->save();
       }
     }
