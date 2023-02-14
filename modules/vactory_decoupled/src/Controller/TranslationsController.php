@@ -2,7 +2,13 @@
 
 namespace Drupal\vactory_decoupled\Controller;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Language\LanguageManagerInterface;
+use Drupal\Core\Menu\MenuLinkTreeInterface;
+use Drupal\locale\StringDatabaseStorage;
+use Drupal\path_alias\AliasManagerInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 // @todo: add form to add string
@@ -12,12 +18,47 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class TranslationsController extends ControllerBase {
 
   /**
+   * Language manager service.
+   *
+   * @var LanguageManagerInterface
+   */
+  protected $languageManager;
+
+  /**
+   * Language manager service.
+   *
+   * @var \Drupal\locale\StringDatabaseStorage
+   */
+    protected $stringDatabaseStorage;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(
+    LanguageManagerInterface $languageManager,
+    StringDatabaseStorage $stringDatabaseStorage
+  ) {
+    $this->aliasManager = $languageManager;
+    $this->stringDatabaseStorage = $stringDatabaseStorage;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('language_manager'),
+      $container->get('locale.storage')
+    );
+  }
+
+  /**
    * Output all drupal translations.
    *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
    */
   public function index() {
-    $languages = \Drupal::languageManager()->getLanguages();
+    $languages = $this->languageManager->getLanguages();
 
     $translations = array_map(function ($langcode) {
       return [
@@ -45,8 +86,7 @@ class TranslationsController extends ControllerBase {
       "translated"   => TRUE,
       "untranslated" => TRUE,
     ];
-    $result = \Drupal::service('locale.storage')
-      ->getTranslations($conditions, $options);
+    $result = $this->stringDatabaseStorage->getTranslations($conditions, $options);
     $b = array_map(function ($t) {
       return [
         'source'      => $t->source,

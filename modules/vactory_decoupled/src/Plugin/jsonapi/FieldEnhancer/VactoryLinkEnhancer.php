@@ -3,7 +3,9 @@
 namespace Drupal\vactory_decoupled\Plugin\jsonapi\FieldEnhancer;
 
 use Drupal\Component\Utility\UrlHelper;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Url;
 use Drupal\jsonapi_extras\Plugin\ResourceFieldEnhancerBase;
@@ -35,16 +37,39 @@ class VactoryLinkEnhancer extends ResourceFieldEnhancerBase implements Container
    */
   protected $language;
 
+  /**
+   * Language manager service.
+   *
+   * @var LanguageManagerInterface
+   */
+  protected $languageManager;
+
+  /**
+   * Config factory service.
+   *
+   * @var ConfigFactoryInterface
+   */
+  protected $configFactory;
+
   protected $siteConfig;
 
   /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, array $plugin_definition, EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct(
+    array $configuration,
+    $plugin_id,
+    array $plugin_definition,
+    EntityTypeManagerInterface $entity_type_manager,
+    LanguageManagerInterface $languageManager,
+    ConfigFactoryInterface $configFactory
+  ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->entityTypeManager = $entity_type_manager;
-    $this->language = \Drupal::languageManager()->getCurrentLanguage()->getId();
-    $this->siteConfig = \Drupal::config('system.site');
+    $this->configFactory = $configFactory;
+    $this->languageManager = $languageManager;
+    $this->language = $this->languageManager->getCurrentLanguage()->getId();
+    $this->siteConfig = $this->configFactory->get('system.site');
   }
 
   /**
@@ -55,7 +80,9 @@ class VactoryLinkEnhancer extends ResourceFieldEnhancerBase implements Container
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('language_manager'),
+      $container->get('config.factory')
     );
   }
 

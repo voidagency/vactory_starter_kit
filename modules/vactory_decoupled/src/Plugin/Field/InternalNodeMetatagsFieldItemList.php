@@ -39,9 +39,10 @@ class InternalNodeMetatagsFieldItemList extends FieldItemList
   public static function createInstance($definition, $name = NULL, TraversableTypedDataInterface $parent = NULL)
   {
     $instance = parent::createInstance($definition, $name, $parent);
-    $instance->entityRepository = \Drupal::getContainer()->get('entity.repository');
-    $instance->metatagManager = \Drupal::getContainer()->get('metatag.manager');
-    $instance->moduleHandler = \Drupal::getContainer()->get('module_handler');
+    $container = \Drupal::getContainer();
+    $instance->entityRepository = $container->get('entity.repository');
+    $instance->metatagManager = $container->get('metatag.manager');
+    $instance->moduleHandler = $container->get('module_handler');
     return $instance;
   }
 
@@ -66,7 +67,9 @@ class InternalNodeMetatagsFieldItemList extends FieldItemList
 
     $metatags = metatag_get_default_tags($entity);
 
-    foreach ($this->metatagManager->tagsFromEntity($entity) as $tag => $data) {
+    $tags_from_entity = $this->metatagManager->tagsFromEntity($entity);
+
+    foreach ($tags_from_entity as $tag => $data) {
       $metatags[$tag] = $data;
     }
 

@@ -2,6 +2,7 @@
 
 namespace Drupal\vactory_decoupled\Plugin\jsonapi\FieldEnhancer;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
@@ -127,6 +128,13 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
   protected $webformNormalizer;
 
   /**
+   * Config factory service.
+   *
+   * @var ConfigFactoryInterface
+   */
+  protected $configFactory;
+
+  /**
    * {@inheritdoc}
    */
   public function __construct(
@@ -142,14 +150,15 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
     ModuleHandlerInterface $moduleHandler,
     LanguageManagerInterface $languageManager,
     ViewsToApi $viewsToApi,
-    Webform $webformNormalizer
+    Webform $webformNormalizer,
+    ConfigFactoryInterface $configFactory
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->entityTypeManager = $entity_type_manager;
     $this->language = $languageManager->getCurrentLanguage()->getId();
     $this->platformProvider = $plateform_provider;
     $this->imageStyles = ImageStyle::loadMultiple();
-    $this->siteConfig = \Drupal::config('system.site');
+    $this->siteConfig = $configFactory->get('system.site');
     $this->mediaFilesManager = $mediaFilesManager;
     $this->entityRepository = $entityRepository;
     $this->jsonApiGenerator = $jsonApiGenerator;
@@ -177,7 +186,8 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
       $container->get('module_handler'),
       $container->get('language_manager'),
       $container->get('vactory.views.to_api'),
-      $container->get('vactory.webform.normalizer')
+      $container->get('vactory.webform.normalizer'),
+      $container->get('config.factory')
     );
   }
 

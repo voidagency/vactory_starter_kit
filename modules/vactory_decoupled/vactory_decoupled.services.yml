@@ -19,6 +19,7 @@ services:
 
   vactory_decoupled.route_subscriber:
     class: Drupal\vactory_decoupled\Routing\RouteSubscriber
+    arguments: ['@entity_type.manager']
     tags:
       - { name: event_subscriber }
 
@@ -49,7 +50,7 @@ services:
 
   vactory_decoupled.jsonapi_recaptcha_subscriber:
     class: Drupal\vactory_decoupled\EventSubscriber\JsonApiReCaptchaSubscriber
-    arguments: ['@config.factory']
+    arguments: ['@config.factory', '@logger.factory']
     tags:
       - { name: event_subscriber }
 
