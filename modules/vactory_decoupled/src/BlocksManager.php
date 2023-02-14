@@ -11,6 +11,8 @@ use Drupal\Core\Condition\ConditionPluginCollection;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Executable\ExecutableManagerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\Logger\LoggerChannelFactory;
 use Drupal\Core\Theme\ThemeManagerInterface;
 use Drupal\Core\Cache\Cache;
 use Drupal\node\Entity\Node;
@@ -58,6 +60,20 @@ class BlocksManager
   protected $jsonApiClient;
 
   /**
+   * Module handler service.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
+   * Logger service.
+   *
+   * @var \Drupal\Core\Logger\LoggerChannelFactory
+   */
+  protected $logger;
+
+  /**
    * {@inheritdoc}
    */
   public function __construct(
@@ -65,7 +81,9 @@ class BlocksManager
     ThemeManagerInterface $theme_manager,
     EntityTypeManagerInterface $entity_type_manager,
     ExecutableManagerInterface $condition_plugin_manager,
-    JsonApiClient $json_api_client
+    JsonApiClient $json_api_client,
+    ModuleHandlerInterface $moduleHandler,
+    LoggerChannelFactory $logger
   )
   {
     $this->pluginManagerBlock = $block_manager;
@@ -73,6 +91,8 @@ class BlocksManager
     $this->entityTypeManager = $entity_type_manager;
     $this->conditionPluginManager = $condition_plugin_manager;
     $this->jsonApiClient = $json_api_client;
+    $this->moduleHandler = $moduleHandler;
+    $this->logger = $logger;
   }
 
   public function getBlocksByNode($nid, $filter = [])
@@ -214,7 +234,7 @@ class BlocksManager
         'container_spacing' => $block->getThirdPartySetting('vactory_field', 'container_spacing') ?? 'small_space',
       ];
       // Invoke internal block classification alter
-      \Drupal::moduleHandler()->invokeAll('internal_block_classification_alter', [&$classification, $block_info]);
+      $this->moduleHandler->invokeAll('internal_block_classification_alter', [&$classification, $block_info]);
       $block_info['classification'] = $classification;
       return $block_info;
     }, $blocks_list);
@@ -288,7 +308,7 @@ class BlocksManager
             $contentBlock = $client_data['data']['attributes']['field_dynamic_block_components'];
           }
         } catch (\Exception $e) {
-          \Drupal::logger('vactory_decoupled')->error('Block @block_id not found', ['@block_id' => $uuid]);
+          $this->logger->get('vactory_decoupled')->error('Block @block_id not found', ['@block_id' => $uuid]);
         }
       }
       return [

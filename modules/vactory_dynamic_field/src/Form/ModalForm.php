@@ -281,7 +281,7 @@ class ModalForm extends FormBase {
           // Wrapp fields in a collapsible fieldset.
           $form['components']['extra_field'][$field_id] = [
             '#type' => 'details',
-            '#title' => $field['g_title'],
+            '#title' => $field['g_title'] ?? '',
             '#collapsible' => TRUE,
             '#collapsed' => TRUE,
           ];
@@ -301,7 +301,7 @@ class ModalForm extends FormBase {
           }
 
           foreach ($field as $field_key => $field_info) {
-            $element_type = $field_info['type'];
+            $element_type = $field_info['type'] ?? NULL;
             $element_label = t('@field_label', ['@field_label' => $field_info['label']]);
             $element_default_value = (isset($this->widgetData['extra_field'][$field_id][$field_key])) ? $this->widgetData['extra_field'][$field_id][$field_key] : NULL;
             $element_options = isset($field_info['options']) ? $field_info['options'] : [];
