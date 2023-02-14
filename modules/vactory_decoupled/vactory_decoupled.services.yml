@@ -11,7 +11,7 @@ services:
     arguments: ['@vactory_decoupled.breadcrumb.default', '@database', '@router.no_access_checks', '@entity.repository']
   vactory_decoupled.blocksManager:
     class: Drupal\vactory_decoupled\BlocksManager
-    arguments: ['@plugin.manager.block', '@theme.manager', '@entity_type.manager', '@plugin.manager.condition', '@vactory_decoupled.jsonapi.client']
+    arguments: ['@plugin.manager.block', '@theme.manager', '@entity_type.manager', '@plugin.manager.condition', '@vactory_decoupled.jsonapi.client', '@module_handler', '@logger.factory']
 
   vactory_decoupled.url_resolver:
     class: Drupal\vactory_decoupled\UrlResolver
@@ -19,6 +19,7 @@ services:
 
   vactory_decoupled.route_subscriber:
     class: Drupal\vactory_decoupled\Routing\RouteSubscriber
+    arguments: ['@entity_type.manager']
     tags:
       - { name: event_subscriber }
 
@@ -29,6 +30,8 @@ services:
       - '@jsonapi.resource_type.repository'
       - '@session'
       - '@request_stack'
+      - '@current_route_match'
+      - '@logger.factory'
 
   vactory_decoupled.jsonapi.generator:
     class: Drupal\vactory_decoupled\JsonApiGenerator
@@ -47,7 +50,7 @@ services:
 
   vactory_decoupled.jsonapi_recaptcha_subscriber:
     class: Drupal\vactory_decoupled\EventSubscriber\JsonApiReCaptchaSubscriber
-    arguments: ['@config.factory']
+    arguments: ['@config.factory', '@logger.factory']
     tags:
       - { name: event_subscriber }
 

@@ -1,7 +1,7 @@
 services:
   authentication.vactory_api_key_auth:
     class: Drupal\vactory_api_key_auth\Authentication\Provider\ApiKeyAuth
-    arguments: ['@config.factory', '@entity_type.manager']
+    arguments: ['@config.factory', '@entity_type.manager', '@current_route_match']
     tags:
       - { name: authentication_provider, provider_id: api_key_auth, global: TRUE, priority: 36 }
   vactory_api_key_auth.page_cache_request_policy.disallow_api_key_requests:

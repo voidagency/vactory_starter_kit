@@ -4,6 +4,7 @@ namespace Drupal\vactory_decoupled\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Menu\MenuLinkTreeInterface;
 use Drupal\Core\Url;
 use \Drupal\path_alias\AliasManagerInterface;
 use Drupal\Core\Menu\MenuTreeParameters;
@@ -28,6 +29,13 @@ class MenusController extends ControllerBase {
    * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
   protected $configFactory;
+
+  /**
+   * Menu link tree service.
+   *
+   * @var \Drupal\Core\Menu\MenuLinkTreeInterface
+   */
+  protected $menuLinkTree;
 
   /**
    * A list of menu items.
@@ -55,9 +63,12 @@ class MenusController extends ControllerBase {
    */
   public function __construct(
     AliasManagerInterface $alias_manager,
-    ConfigFactoryInterface $config_factory) {
+    ConfigFactoryInterface $config_factory,
+    MenuLinkTreeInterface $menuLinkTree
+  ) {
     $this->aliasManager = $alias_manager;
     $this->configFactory = $config_factory;
+    $this->menuLinkTree = $menuLinkTree;
   }
 
   /**
@@ -66,7 +77,8 @@ class MenusController extends ControllerBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('path_alias.manager'),
-      $container->get('config.factory')
+      $container->get('config.factory'),
+      $container->get('menu.link_tree')
     );
   }
 
@@ -94,7 +106,7 @@ class MenusController extends ControllerBase {
     }
 
     // Load the tree based on this set of parameters.
-    $menu_tree = \Drupal::menuTree();
+    $menu_tree = $this->menuLinkTree;
     $tree = $menu_tree->load($menu_name, $parameters);
 
     // Return if the menu does not exist or has no entries.
@@ -172,8 +184,8 @@ class MenusController extends ControllerBase {
    * @return array
    */
   protected function getElementValue(MenuLinkInterface $link) {
-    $siteConfig = \Drupal::config('system.site');
-    $entityRepo = \Drupal::service('entity.repository');
+    $siteConfig = $this->configFactory->get('system.site');
+    $entityRepo = $this->configFactory->get('entity.repository');
     $front_uri = $siteConfig->get('page.front');
     $returnArray = [];
 
