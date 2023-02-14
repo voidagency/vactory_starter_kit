@@ -4,9 +4,9 @@ namespace Drupal\vactory_decoupled\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Menu\MenuLinkTreeInterface;
 use Drupal\Core\Url;
-use \Drupal\path_alias\AliasManagerInterface;
 use Drupal\Core\Menu\MenuTreeParameters;
 use Drupal\Core\Menu\MenuLinkInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -15,13 +15,6 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 class MenusController extends ControllerBase {
-
-  /**
-   * A instance of the alias manager.
-   *
-   * @var \Drupal\Core\Path\AliasManagerInterface
-   */
-  protected $aliasManager;
 
   /**
    * A instance of the config factory.
@@ -36,6 +29,13 @@ class MenusController extends ControllerBase {
    * @var \Drupal\Core\Menu\MenuLinkTreeInterface
    */
   protected $menuLinkTree;
+
+  /**
+   * Entity repository service.
+   *
+   * @var EntityRepositoryInterface
+   */
+  protected $entityRepository;
 
   /**
    * A list of menu items.
@@ -62,13 +62,13 @@ class MenusController extends ControllerBase {
    * {@inheritdoc}
    */
   public function __construct(
-    AliasManagerInterface $alias_manager,
     ConfigFactoryInterface $config_factory,
-    MenuLinkTreeInterface $menuLinkTree
+    MenuLinkTreeInterface $menuLinkTree,
+    EntityRepositoryInterface $entityRepository
   ) {
-    $this->aliasManager = $alias_manager;
     $this->configFactory = $config_factory;
     $this->menuLinkTree = $menuLinkTree;
+    $this->entityRepository = $entityRepository;
   }
 
   /**
@@ -76,9 +76,9 @@ class MenusController extends ControllerBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('path_alias.manager'),
       $container->get('config.factory'),
-      $container->get('menu.link_tree')
+      $container->get('menu.link_tree'),
+      $container->get('entity.repository')
     );
   }
 
@@ -185,7 +185,7 @@ class MenusController extends ControllerBase {
    */
   protected function getElementValue(MenuLinkInterface $link) {
     $siteConfig = $this->configFactory->get('system.site');
-    $entityRepo = $this->configFactory->get('entity.repository');
+    $entityRepo = $this->entityRepository;
     $front_uri = $siteConfig->get('page.front');
     $returnArray = [];
 

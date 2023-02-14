@@ -2,12 +2,9 @@
 
 namespace Drupal\vactory_decoupled\Controller;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Language\LanguageManagerInterface;
-use Drupal\Core\Menu\MenuLinkTreeInterface;
 use Drupal\locale\StringDatabaseStorage;
-use Drupal\path_alias\AliasManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -38,7 +35,7 @@ class TranslationsController extends ControllerBase {
     LanguageManagerInterface $languageManager,
     StringDatabaseStorage $stringDatabaseStorage
   ) {
-    $this->aliasManager = $languageManager;
+    $this->languageManager = $languageManager;
     $this->stringDatabaseStorage = $stringDatabaseStorage;
   }
 
