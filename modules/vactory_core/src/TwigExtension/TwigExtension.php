@@ -311,6 +311,7 @@ class TwigExtension extends \Twig_Extension {
         'alt' => $image->hasField('field_image_alt_text') && !empty($image->get('field_image_alt_text')->value) ? $image->get('field_image_alt_text')->value : '',
         'title' => $image->hasField('field_image_title_text') && !empty($image->get('field_image_title_text')->value) ? $image->get('field_image_title_text')->value : '',
       ];
+      $image_meta_data = $image_meta_data ?? [];
       return array_merge($file_info, $image_meta_data);
     }
     return NULL;
