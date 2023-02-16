@@ -4,3 +4,5 @@ services:
     arguments:
     - '@webform.token_manager'
     - '@current_user'
+    - '@plugin.manager.webform.element'
+    - '@entity_type.manager'

@@ -51,6 +51,7 @@ class InternalNodeEntityBlocksFieldItemList extends FieldItemList
     $instance->blockManager = $container->get('vactory_decoupled.blocksManager');
     $instance->entityTypeManager = $container->get('entity_type.manager');
     $instance->moduleHandler = $container->get('module_handler');
+    $instance->cacheMetadata = new CacheableMetadata();
     return $instance;
   }
 
@@ -91,7 +92,6 @@ class InternalNodeEntityBlocksFieldItemList extends FieldItemList
     $value = $this->blockManager->getBlocksByNode($entity->id(), $plugin_filter);
 
     // @see https://api.drupal.org/api/drupal/core%21modules%21system%21tests%21modules%21entity_test%21src%21Plugin%21Field%21ComputedTestCacheableStringItemList.php/class/ComputedTestCacheableStringItemList/9.3.x?title=&title_1=&object_type=&order=title&sort=desc
-    $this->cacheMetadata = new CacheableMetadata();
     $tags = [
       'config:block_list',
       'block_list',
