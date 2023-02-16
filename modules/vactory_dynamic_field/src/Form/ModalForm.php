@@ -302,7 +302,8 @@ class ModalForm extends FormBase {
 
           foreach ($field as $field_key => $field_info) {
             $element_type = $field_info['type'] ?? NULL;
-            $element_label = t('@field_label', ['@field_label' => $field_info['label']]);
+            $label = $field_info['label'] ?? '';
+            $element_label = t('@field_label', ['@field_label' => $label]);
             $element_default_value = (isset($this->widgetData['extra_field'][$field_id][$field_key])) ? $this->widgetData['extra_field'][$field_id][$field_key] : NULL;
             $element_options = isset($field_info['options']) ? $field_info['options'] : [];
 
@@ -446,7 +447,8 @@ class ModalForm extends FormBase {
               continue;
             }
             $element_type = $field_info['type'];
-            $element_label = t('@field_label', ['@field_label' => $field_info['label']]);
+            $label = $field_info['label'] ?? '';
+            $element_label = t('@field_label', ['@field_label' => $label]);
 
             $element_default_value = (isset($this->widgetData[$i][$field_id][$field_key])) ? $this->widgetData[$i][$field_id][$field_key] : NULL;
             $element_options = isset($field_info['options']) ? $field_info['options'] : [];
