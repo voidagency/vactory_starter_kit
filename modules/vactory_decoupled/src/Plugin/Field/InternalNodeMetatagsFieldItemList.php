@@ -6,6 +6,7 @@ use Drupal\Core\Field\FieldItemList;
 use Drupal\Core\TypedData\ComputedItemListTrait;
 use Drupal\Core\TypedData\TraversableTypedDataInterface;
 use Drupal\node\Entity\Node;
+use Drupal\vactory_decoupled\VactoryDecoupledHelper;
 
 /**
  * Metatags per node.
@@ -36,6 +37,13 @@ class InternalNodeMetatagsFieldItemList extends FieldItemList
    */
   protected $moduleHandler;
 
+  /**
+   * Vactory decoupled helper service.
+   *
+   * @var \Drupal\vactory_decoupled\VactoryDecoupledHelper
+   */
+  protected $vactoryDecoupledHelper;
+
   public static function createInstance($definition, $name = NULL, TraversableTypedDataInterface $parent = NULL)
   {
     $instance = parent::createInstance($definition, $name, $parent);
@@ -43,6 +51,7 @@ class InternalNodeMetatagsFieldItemList extends FieldItemList
     $instance->entityRepository = $container->get('entity.repository');
     $instance->metatagManager = $container->get('metatag.manager');
     $instance->moduleHandler = $container->get('module_handler');
+    $instance->vactoryDecoupledHelper = $container->get('vactory_decoupled.helper');
     return $instance;
   }
 
@@ -65,7 +74,7 @@ class InternalNodeMetatagsFieldItemList extends FieldItemList
 
     $entity = $this->entityRepository->getTranslationFromContext($entity);
 
-    $metatags = metatag_get_default_tags($entity);
+    $metatags = $this->vactoryDecoupledHelper->metatagGetDefaultTags($entity);
 
     $tags_from_entity = $this->metatagManager->tagsFromEntity($entity);
 
