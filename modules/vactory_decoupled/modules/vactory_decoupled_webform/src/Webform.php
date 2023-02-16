@@ -2,9 +2,11 @@
 
 namespace Drupal\vactory_decoupled_webform;
 
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxy;
 use Drupal\webform\Element\WebformTermReferenceTrait;
 use Drupal\webform\Entity\WebformSubmission;
+use Drupal\webform\Plugin\WebformElementManager;
 use Drupal\webform\WebformSubmissionConditionsValidator;
 use Drupal\webform\WebformTokenManager;
 
@@ -30,6 +32,20 @@ class Webform {
    */
   protected $webformTokenManager;
 
+  /**
+   * Webform element manager.
+   *
+   * @var \Drupal\webform\Plugin\WebformElementManager
+   */
+  protected $webformElementManager;
+
+  /**
+   * Entity type manager.
+   *
+   * @var EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
   const LAYOUTS = [
     'webform_flexbox',
     'container',
@@ -40,9 +56,16 @@ class Webform {
 
   const PAGE = 'webform_wizard_page';
 
-  public function __construct(WebformTokenManager $webformTokenManager, AccountProxy $accountProxy) {
+  public function __construct(
+    WebformTokenManager $webformTokenManager,
+    AccountProxy $accountProxy,
+    WebformElementManager $webformElementManager,
+    EntityTypeManagerInterface $entityTypeManager
+  ) {
     $this->webformTokenManager = $webformTokenManager;
     $this->currentUser = $accountProxy->getAccount();
+    $this->webformElementManager = $webformElementManager;
+    $this->entityTypeManager = $entityTypeManager;
   }
 
   /**
@@ -78,18 +101,18 @@ class Webform {
     if ($this->currentUser->isAnonymous()) {
       return [];
     }
-    if (!isset($this->webform->getSettings()['draft']) || empty($this->webform->getSettings()['draft'])) {
+    $webform_settings = $this->webform->getSettings();
+    if (!isset($webform_settings['draft']) || empty($webform_settings['draft'])) {
       return [];
     }
 
-    if ($this->webform->getSettings()['draft'] !== 'authenticated') {
+    if ($webform_settings['draft'] !== 'authenticated') {
       return [];
 
     }
 
     $draft['enable'] = TRUE;
-    $submissions = \Drupal::entityTypeManager()
-      ->getStorage('webform_submission')
+    $submissions = $this->entityTypeManager->getStorage('webform_submission')
       ->loadByProperties([
         'uid' => $this->currentUser->id(),
         'webform_id' => $this->webform->id(),
@@ -133,15 +156,16 @@ class Webform {
     }
 
     if (array_key_exists('pages', $schema)) {
-      $schema['pages']['webform_preview']['preview']['enable'] = isset($this->webform->getSettings()['preview']) && !empty($this->webform->getSettings()['preview']) ? $this->webform->getSettings()['preview'] > 0 : FALSE;
-      $schema['pages']['webform_preview']['preview']['label'] = isset($this->webform->getSettings()['preview_label']) && !empty($this->webform->getSettings()['preview_label']) ? $this->webform->getSettings()['preview_label'] : '';
-      $schema['pages']['webform_preview']['preview']['title'] = isset($this->webform->getSettings()['preview_title']) && !empty($this->webform->getSettings()['preview_title']) ? $this->webform->getSettings()['preview_title'] : '';
-      $schema['pages']['webform_preview']['preview']['message'] = isset($this->webform->getSettings()['preview_message']) && !empty($this->webform->getSettings()['preview_message']) ? $this->webform->getSettings()['preview_message'] : '';
-      $schema['pages']['webform_preview']['preview']['excluded_elements'] = isset($this->webform->getSettings()['preview_excluded_elements']) && !empty($this->webform->getSettings()['preview_excluded_elements']) ? $this->webform->getSettings()['preview_excluded_elements'] : [];
-      $schema['pages']['webform_preview']['preview']['excluded_elements'] = isset($this->webform->getSettings()['preview_excluded_elements']) && !empty($this->webform->getSettings()['preview_excluded_elements']) ? $this->webform->getSettings()['preview_excluded_elements'] : [];
-      $schema['pages']['webform_preview']['preview']['preview_exclude_empty'] = isset($this->webform->getSettings()['preview_exclude_empty']) && !empty($this->webform->getSettings()['preview_exclude_empty']) ? $this->webform->getSettings()['preview_exclude_empty'] : FALSE;
-      $schema['pages']['webform_preview']['wizard']['prev_button_label'] = isset($this->webform->getSettings()['wizard_prev_button_label']) && !empty($this->webform->getSettings()['wizard_prev_button_label']) ? $this->webform->getSettings()['wizard_prev_button_label'] : '';
-      $schema['pages']['webform_preview']['wizard']['next_button_label'] = isset($this->webform->getSettings()['wizard_next_button_label']) && !empty($this->webform->getSettings()['wizard_next_button_label']) ? $this->webform->getSettings()['wizard_next_button_label'] : '';
+      $webform_settings = $this->webform->getSettings();
+      $schema['pages']['webform_preview']['preview']['enable'] = isset($webform_settings['preview']) && !empty($webform_settings['preview']) ? $webform_settings['preview'] > 0 : FALSE;
+      $schema['pages']['webform_preview']['preview']['label'] = isset($webform_settings['preview_label']) && !empty($webform_settings['preview_label']) ? $webform_settings['preview_label'] : '';
+      $schema['pages']['webform_preview']['preview']['title'] = isset($webform_settings['preview_title']) && !empty($webform_settings['preview_title']) ? $webform_settings['preview_title'] : '';
+      $schema['pages']['webform_preview']['preview']['message'] = isset($webform_settings['preview_message']) && !empty($webform_settings['preview_message']) ? $webform_settings['preview_message'] : '';
+      $schema['pages']['webform_preview']['preview']['excluded_elements'] = isset($webform_settings['preview_excluded_elements']) && !empty($webform_settings['preview_excluded_elements']) ? $webform_settings['preview_excluded_elements'] : [];
+      $schema['pages']['webform_preview']['preview']['excluded_elements'] = isset($webform_settings['preview_excluded_elements']) && !empty($webform_settings['preview_excluded_elements']) ? $webform_settings['preview_excluded_elements'] : [];
+      $schema['pages']['webform_preview']['preview']['preview_exclude_empty'] = isset($webform_settings['preview_exclude_empty']) && !empty($webform_settings['preview_exclude_empty']) ? $webform_settings['preview_exclude_empty'] : FALSE;
+      $schema['pages']['webform_preview']['wizard']['prev_button_label'] = isset($webform_settings['wizard_prev_button_label']) && !empty($webform_settings['wizard_prev_button_label']) ? $webform_settings['wizard_prev_button_label'] : '';
+      $schema['pages']['webform_preview']['wizard']['next_button_label'] = isset($webform_settings['wizard_next_button_label']) && !empty($webform_settings['wizard_next_button_label']) ? $webform_settings['wizard_next_button_label'] : '';
     }
     //    $schema['draft']['settings']['draft'] = isset($this->webform->getSettings()['draft']) && !empty($this->webform->getSettings()['draft']) ? $this->webform->getSettings()['draft'] : 'none';
     //    $schema['draft']['settings']['draft_auto_save'] = isset($this->webform->getSettings()['draft']) && !empty($this->webform->getSettings()['draft_auto_save']) ? $this->webform->getSettings()['draft_auto_save'] : FALSE;
@@ -529,10 +553,9 @@ class Webform {
    */
   protected function getElementPlugin(array $element) {
     /** @var \Drupal\Core\Render\ElementInfoManager $plugin_manager */
-    $plugin_manager = \Drupal::service('plugin.manager.webform.element');
-    $plugin_definition = $plugin_manager->getDefinition($element['#type']);
+    $plugin_definition = $this->webformElementManager->getDefinition($element['#type']);
 
-    $element_plugin = $plugin_manager->createInstance($element['#type'], $plugin_definition);
+    $element_plugin = $this->webformElementManager->createInstance($element['#type'], $plugin_definition);
 
     return $element_plugin;
   }

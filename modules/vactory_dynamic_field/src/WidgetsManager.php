@@ -65,7 +65,8 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
    */
   protected function getPluginsList() {
     $options = [];
-    foreach ($this->getDefinitions() as $id => $definition) {
+    $definitions = $this->getDefinitions();
+    foreach ($definitions as $id => $definition) {
       $plugin = $this->createInstance($id);
       $options[$definition['id']] = $plugin;
     }

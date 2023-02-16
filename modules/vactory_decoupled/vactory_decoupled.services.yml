@@ -78,3 +78,10 @@ services:
   vacory_decoupled.media_file_manager:
     class: Drupal\vactory_decoupled\MediaFilesManager
     arguments: ['@file_url_generator']
+
+  vactory_decoupled.helper:
+    class: Drupal\vactory_decoupled\VactoryDecoupledHelper
+    arguments:
+      - '@entity_type.manager'
+      - '@metatag.manager'
+      - '@language_manager'

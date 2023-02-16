@@ -122,7 +122,7 @@ class PathTranslator extends ControllerBase
           '_route' => 'error_page',
         ];
         $output['status'] = 404;
-        $output['message'] = "Not route found for $path";
+        $output['message'] = "No route found for $path";
         $match_info = $error_match_info;
       }
     }
