@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 class StoreLocatoreManager implements StoreLocatoreManagerInterface {
-
+  
 
   /**
    * @var \Drupal\Core\Messenger\MessengerInterface
@@ -169,9 +169,7 @@ class StoreLocatoreManager implements StoreLocatoreManagerInterface {
         $this->messenger->addError(t('Requête invalide!'));
         return new JsonResponse(['message' => t('Invalid Request!')], 500);
       }
-      $results = array_map(function ($arr) {
-        return ['content' => $arr['description'], 'value' => $arr['place_id']];
-      }, $response['predictions']);
+      $results = array_map(static fn($arr) => ['content' => $arr['description'], 'value' => $arr['place_id']], $response['predictions']);
 
       $response = CacheableJsonResponse::create($results, $res->getStatusCode());
       $response->getCacheableMetadata()->addCacheableDependency(CacheableMetadata::createFromRenderArray($cache));
@@ -183,4 +181,5 @@ class StoreLocatoreManager implements StoreLocatoreManagerInterface {
 
     }
   }
+
 }
