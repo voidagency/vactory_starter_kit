@@ -2,9 +2,14 @@
 
 namespace Drupal\vactory_academy\Field;
 
-use Drupal;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Field\FieldItemList;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\TypedData\ComputedItemListTrait;
+use Drupal\Core\TypedData\TraversableTypedDataInterface;
+use Drupal\node\Entity\Node;
+use Drupal\serialization\Normalizer\CacheableNormalizerInterface;
+
 
 /**
  * Item list for a computed is_flagged field.
@@ -13,6 +18,25 @@ use Drupal\Core\TypedData\ComputedItemListTrait;
 class IsFlaggedEntityFieldItemList extends FieldItemList
 {
   use ComputedItemListTrait;
+
+  protected ?CacheableMetadata $cacheMetadata = NULL;
+
+  /**
+   * Flag Services.
+   *
+   * @var \Drupal\vactory_academy\AcademyFlagService
+   */
+  protected $flagAcademy;
+
+  public static function createInstance($definition, $name = NULL, TraversableTypedDataInterface $parent = NULL)
+  {
+    $instance = parent::createInstance($definition, $name, $parent);
+    $container = \Drupal::getContainer();
+    $instance->flagAcademy = $container->get('vactory_academy.flag');
+    $instance->cacheMetadata = new CacheableMetadata();
+    return $instance;
+  }
+
 
   /**
    * {@inheritdoc}
@@ -25,13 +49,32 @@ class IsFlaggedEntityFieldItemList extends FieldItemList
     if ($bundle != 'vactory_academy') {
         return;
     }
-    $ids = \Drupal::entityQuery('flagging')
-        ->condition('flag_id', 'favorite_academy')
-        ->condition('uid', Drupal::currentUser()->id())
-        ->condition('entity_id', $entity->id())
-        ->execute();
 
-    $this->list[0] = $this->createItem(0, $ids ? true : false);
+    $this->cacheMetadata->addCacheContexts(['user']);
+    $this->cacheMetadata->addCacheTags(['flagging_list']);
+
+    $this->list[0] = $this->createItem(0, $this->flagAcademy->isCurrentUserFlaggedNode($entity));
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function access($operation = 'view', AccountInterface $account = NULL, $return_as_object = FALSE)
+  {
+    $access = parent::access($operation, $account, TRUE);
+
+    if ($return_as_object) {
+      /** @see \Drupal\jsonapi\JsonApiResource\ResourceIdentifier */
+      /** @see \Drupal\jsonapi\Normalizer\ResourceIdentifierNormalizer */
+      /** @see \Drupal\jsonapi\Normalizer\ResourceObjectNormalizer::serializeField() */
+      $this->ensureComputedValue();
+      \assert($this->cacheMetadata instanceof CacheableMetadata);
+      $access->addCacheableDependency($this->cacheMetadata);
+
+      return $access;
+    }
+
+    return $access->isAllowed();
   }
 
 }
