@@ -89,7 +89,7 @@ process:
       value_key: name
       source: 'PAYS'
   field_locator_city:
-    - plugin: entity_lookup
+    - plugin: entity_generate
       entity_type: taxonomy_term
       bundle_key: vid
       bundle: locator_city
