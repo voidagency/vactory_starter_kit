@@ -268,7 +268,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
    * @param array $component
    *   Component.
    */
-  private function applyFormatters($parent_keys, $settings, &$component) {
+  protected function applyFormatters($parent_keys, $settings, &$component) {
     $image_app_base_url = Url::fromUserInput('/app-image/')
       ->setAbsolute()->toString();
     foreach ($component as $field_key => &$value) {

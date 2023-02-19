@@ -77,8 +77,8 @@ class InternalNodeEntityBlocksFieldItemList extends FieldItemList
     ];
 
     // Exclude Banner blocks.
-    $banner_blocks = $this->entityTypeManager->getStorage('block_content')
-      ->loadByProperties(['type' => 'vactory_decoupled_banner']);
+    $blockContentStorage = $this->entityTypeManager->getStorage('block_content');
+    $banner_blocks = $blockContentStorage->loadByProperties(['type' => 'vactory_decoupled_banner']);
     if (!empty($banner_blocks)) {
       $banner_blocks_plugins = array_map(function ($banner_block) {
         return 'block_content:' . $banner_block->uuid();
@@ -89,7 +89,7 @@ class InternalNodeEntityBlocksFieldItemList extends FieldItemList
     // Exclude Cross Content Blocks.
     array_push($plugin_filter['plugins'], 'vactory_cross_content');
 
-    $value = $this->blockManager->getBlocksByNode($entity->id(), $plugin_filter);
+    $value = $this->blockManager->getBlocksByNode($entity->id(), $plugin_filter, $blockContentStorage);
 
     // @see https://api.drupal.org/api/drupal/core%21modules%21system%21tests%21modules%21entity_test%21src%21Plugin%21Field%21ComputedTestCacheableStringItemList.php/class/ComputedTestCacheableStringItemList/9.3.x?title=&title_1=&object_type=&order=title&sort=desc
     $tags = [

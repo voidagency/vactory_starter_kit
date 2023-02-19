@@ -95,7 +95,7 @@ class BlocksManager
     $this->logger = $logger;
   }
 
-  public function getBlocksByNode($nid, $filter = [])
+  public function getBlocksByNode($nid, $filter = [], $blockContentStorage = NULL)
   {
     $blocks = [];
 
@@ -104,7 +104,10 @@ class BlocksManager
     }
 
     try {
-      $blocks = $this->getThemeBlocks();
+      if (empty($blockContentStorage)) {
+        $blockContentStorage = $this->entityTypeManager->getStorage('block_content');
+      }
+      $blocks = $this->getThemeBlocks($blockContentStorage);
       if (isset($filter['operator']) && isset($filter['plugins']) && !empty($filter['plugins'])) {
         // Apply filter if exist.
         $blocks = array_filter($blocks, function ($block) use ($filter) {
@@ -169,7 +172,7 @@ class BlocksManager
    * @throws InvalidPluginDefinitionException
    * @throws PluginNotFoundException
    */
-  protected function getThemeBlocks()
+  protected function getThemeBlocks($blockContentStorage = NULL)
   {
     $name = __CLASS__ . '_' . __METHOD__;
     $blocks = &drupal_static($name, []);
@@ -177,7 +180,9 @@ class BlocksManager
     if ($blocks) {
       return $blocks;
     }
-
+    if (empty($blockContentStorage)) {
+      $blockContentStorage = $this->entityTypeManager->getStorage('block_content');
+    }
     $blocksManager = $this->entityTypeManager->getStorage('block');
     $theme = $this->themeManager->getActiveTheme()->getName();
     $conditionPluginManager = $this->conditionPluginManager;
@@ -203,7 +208,7 @@ class BlocksManager
       return (strpos($block->getPluginId(), 'block_content:') !== false || strpos($block->getPluginId(), 'vactory_cross_content') !== false);
     });
 
-    $blocks = array_map(function ($block) use ($conditionPluginManager) {
+    $blocks = array_map(function ($block) use ($conditionPluginManager, $blockContentStorage) {
       $visibility = $block->getVisibility();
 
       if (isset($visibility['request_path'])) {
@@ -216,7 +221,7 @@ class BlocksManager
 
       // Determine block classification to distinguish between blocks.
       $classification = 'default';
-      $block_content = $this->getContent($block->getPluginId());
+      $block_content = $this->getContent($block->getPluginId(), $blockContentStorage);
       $block_info = [
         'id' => $block->getOriginalId(),
         'label' => $block->label(),
@@ -250,14 +255,14 @@ class BlocksManager
    * @throws InvalidPluginDefinitionException
    * @throws PluginNotFoundException
    */
-  protected function getContent(string $plugin)
+  protected function getContent(string $plugin, $blockContentStorage = NULL)
   {
     $data = [];
 
     if (strpos($plugin, ':') !== FALSE) {
       list($plugin_type, $plugin_uuid) = explode(':', $plugin);
       if ($plugin_type === 'block_content') {
-        $data = $this->getContentBlock($plugin_uuid);
+        $data = $this->getContentBlock($plugin_uuid, $blockContentStorage);
       }
     }
 
@@ -276,12 +281,12 @@ class BlocksManager
    * @throws InvalidPluginDefinitionException
    * @throws PluginNotFoundException
    */
-  private function getContentBlock(string $uuid)
+  private function getContentBlock(string $uuid, $blockContentStorage = NULL)
   {
-    $contentBlock = $this->entityTypeManager
-      ->getStorage('block_content')
-      ->loadByProperties(['uuid' => $uuid]);
-
+    if (empty($blockContentStorage)) {
+      $blockContentStorage = $this->entityTypeManager->getStorage('block_content');
+    }
+    $contentBlock = $blockContentStorage->loadByProperties(['uuid' => $uuid]);
     if (!empty($contentBlock)) {
       if (is_array($contentBlock)) {
         $contentBlock = reset($contentBlock);
