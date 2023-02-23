@@ -10,6 +10,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Render\RenderContext;
 use Drupal\Core\Render\RendererInterface;
+use Drupal\facets\Exception\Exception;
 use Drupal\metatag\MetatagManagerInterface;
 use Drupal\vactory_locator_decoupled\StoreLocatoreManagerInterface;
 use Drupal\views\ViewExecutable;
@@ -65,6 +66,7 @@ class StoreLocator extends ControllerBase {
    * @param \Drupal\Core\Language\LanguageManagerInterface $languageManager
    * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
    * @param \Drupal\metatag\MetatagManagerInterface $metatagManager
+   * @param \Drupal\Core\Render\RendererInterface $renderer
    */
   public function __construct(StoreLocatoreManagerInterface $store_locator_manager,
                               EntityTypeManagerInterface $entityTypeManager,
@@ -200,11 +202,7 @@ class StoreLocator extends ControllerBase {
       $rendered_view = $view_render_array['#markup']->jsonSerialize();
     });
 
-
     $result = $rendered_view;
-
-
-
     $resultSet['resources'] = json_decode($result, TRUE);
     $resultSet['count'] = $view->total_rows;
 
@@ -234,4 +232,41 @@ class StoreLocator extends ControllerBase {
     return $this->manager->getCities($request);
   }
 
-}
+  /**
+   * Defines an api to handle grouping of entities for now its handled via a view on
+   * cities can be upgraded to handle multiple groupings.
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *
+   * @return JsonResponse|CacheableJsonResponse
+   */
+  public function getGrouping (Request $request) {
+    $locality = $request->query->get('city');
+    try {
+
+      /* @var \Drupal\views\ViewExecutable $view */
+      $view = $this->entityTypeManager->getStorage('view')
+        ->load('vactory_locator_cities')->getExecutable();
+      $view->setDisplay('locator_cities_api');
+
+      $view->initDisplay();
+      $view->preExecute();
+
+      if (isset($locality)) {
+        $lon_lat = $this->manager->searchGeo($locality) ?? '';
+        if (isset($lon_lat) && !empty($lon_lat)) {
+          /* This snipet is for the sort only option */
+          if (isset($view->sort['field_geofield_city_proximity'])) {
+            $view->sort['field_geofield_city_proximity']->options['source_configuration']['origin'] = [
+              'lat' => (string) $lon_lat['result']['lat'],
+              'lon' => (string) $lon_lat['result']['lng'],
+            ];
+          }
+        }
+      }
+      return $this->normalizer($view);
+    } catch (\Exception $e) {
+      return new JsonResponse([], Response::HTTP_INTERNAL_SERVER_ERROR);
+    }
+  }
+
+  }

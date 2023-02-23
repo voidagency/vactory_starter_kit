@@ -2,9 +2,11 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.taxonomy_term.locator_city.field_geofield_city
     - field.field.taxonomy_term.locator_city.field_locator_country
     - taxonomy.vocabulary.locator_city
   module:
+    - geofield
     - text
 id: taxonomy_term.locator_city.default
 targetEntityType: taxonomy_term
@@ -12,19 +14,28 @@ bundle: locator_city
 mode: default
 content:
   description:
-    label: hidden
     type: text_default
-    weight: 0
-    region: content
+    label: hidden
     settings: {  }
     third_party_settings: {  }
+    weight: 0
+    region: content
+  field_geofield_city:
+    type: geofield_default
+    label: above
+    settings:
+      output_format: wkt
+      output_escape: true
+    third_party_settings: {  }
+    weight: 2
+    region: content
   field_locator_country:
-    weight: 1
+    type: entity_reference_label
     label: above
     settings:
       link: true
     third_party_settings: {  }
-    type: entity_reference_label
+    weight: 1
     region: content
 hidden:
   langcode: true
