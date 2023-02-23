@@ -41,6 +41,7 @@ services:
       - '@entity.repository'
       - '@token'
       - '@module_handler'
+      - '@current_route_match'
 
   vactory_decoupled.finish_response_subscriber:
     class: Drupal\vactory_decoupled\EventSubscriber\FinishResponseSubscriber

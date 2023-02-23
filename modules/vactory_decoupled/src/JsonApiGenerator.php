@@ -4,8 +4,10 @@ namespace Drupal\vactory_decoupled;
 
 // use Drupal\entityqueue\Entity\EntityQueue;
 use Drupal\Core\Entity\EntityRepositoryInterface;
+use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Utility\Token;
 use Drupal\entityqueue\Entity\EntitySubqueue;
 use Drupal\Core\Cache\Cache;
@@ -49,6 +51,23 @@ class JsonApiGenerator {
   protected $moduleHandler;
 
   /**
+   * Route match service.
+   *
+   * @var RouteMatchInterface
+   */
+  protected $routeMatch;
+
+  /**
+   * @var EntityStorageInterface
+   */
+  protected $termStorage;
+
+  /**
+   * @var EntityStorageInterface
+   */
+  protected $termResultStorage;
+
+  /**
    * {@inheritdoc}
    */
   public function __construct(
@@ -56,13 +75,19 @@ class JsonApiGenerator {
     EntityTypeManagerInterface $entityTypeManager,
     EntityRepositoryInterface $entityRepository,
     Token $token,
-    ModuleHandlerInterface $moduleHandler
+    ModuleHandlerInterface $moduleHandler,
+    RouteMatchInterface $routeMatch
   ) {
     $this->client = $client;
     $this->entityTypeManager = $entityTypeManager;
     $this->entityRepository = $entityRepository;
     $this->token = $token;
     $this->moduleHandler = $moduleHandler;
+    $this->routeMatch = $routeMatch;
+    $this->termStorage = $this->entityTypeManager->getStorage('taxonomy_term');
+    if ($this->moduleHandler->moduleExists('vactory_taxonomy_results')) {
+      $this->termResultStorage = $this->entityTypeManager->getStorage('term_result_count');
+    }
   }
 
   /**
@@ -151,7 +176,7 @@ class JsonApiGenerator {
     ];
 
     // Get current page information and pass them through the hook context.
-    $params = \Drupal::routeMatch()->getParameters();
+    $params = $this->routeMatch->getParameters();
     if ($params) {
       if ($resource_type_param = $params->get('resource_type')) {
         $hook_context["entity_bundle"] = $resource_type_param instanceof ResourceType ?  $resource_type_param->getBundle() : $resource_type_param;
@@ -203,7 +228,6 @@ class JsonApiGenerator {
     $result = [];
     $cacheTags = [];
 
-    $taxonomyTermStorage = $this->entityTypeManager->getStorage('taxonomy_term');
     $bundles = (array) $vocabularies;
     $bundles = array_filter($bundles, function ($value) {
       return $value != '0';
@@ -211,7 +235,7 @@ class JsonApiGenerator {
     $bundles = array_keys($bundles);
 
     foreach ($bundles as $vid) {
-      $terms = $taxonomyTermStorage->loadTree($vid, 0, NULL, TRUE);
+      $terms = $this->termStorage->loadTree($vid, 0, NULL, TRUE);
       $result[$vid] = [];
       if (!empty($terms)) {
         usort($terms, function ($a, $b) {
@@ -255,8 +279,7 @@ class JsonApiGenerator {
         return $el['target_id'];
       }, $result_count_ids);
       if (!empty($result_count_ids)) {
-        $results_count = $this->entityTypeManager->getStorage('term_result_count')
-          ->loadMultiple($result_count_ids);
+        $results_count = $this->termResultStorage->loadMultiple($result_count_ids);
         if (!empty($results_count)) {
           foreach ($results_count as $result_count) {
             $plugin = $result_count->get('plugin')->value;
