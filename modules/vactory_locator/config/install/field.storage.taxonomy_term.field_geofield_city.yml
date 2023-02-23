@@ -3,10 +3,10 @@ status: true
 dependencies:
   module:
     - geofield
-    - vactory_locator
-id: locator_entity.field_vactory_locator_geofield
-field_name: field_vactory_locator_geofield
-entity_type: locator_entity
+    - taxonomy
+id: taxonomy_term.field_geofield_city
+field_name: field_geofield_city
+entity_type: taxonomy_term
 type: geofield
 settings:
   backend: geofield_backend_default
@@ -17,4 +17,3 @@ translatable: true
 indexes: {  }
 persist_with_no_fields: false
 custom_storage: false
-
