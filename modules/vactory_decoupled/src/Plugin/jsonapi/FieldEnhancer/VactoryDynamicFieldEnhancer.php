@@ -4,6 +4,7 @@ namespace Drupal\vactory_decoupled\Plugin\jsonapi\FieldEnhancer;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityRepositoryInterface;
+use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
@@ -135,6 +136,16 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
   protected $configFactory;
 
   /**
+   * @var EntityStorageInterface
+   */
+  protected $mediaStorage;
+
+  /**
+   * @var EntityStorageInterface
+   */
+  protected $termResultCount;
+
+  /**
    * {@inheritdoc}
    */
   public function __construct(
@@ -167,6 +178,9 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
     $this->languageManager = $languageManager;
     $this->viewsToApi = $viewsToApi;
     $this->webformNormalizer = $webformNormalizer;
+    $this->mediaStorage = $this->entityTypeManager->getStorage('media');
+    $this->termResultCount = $this->entityTypeManager->getStorage('term_result_count')
+    ;
   }
 
   /**
@@ -226,13 +240,15 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
         return (int) ($item1['_weight'] <=> $item2['_weight']);
       });
 
+      $image_app_base_url = Url::fromUserInput('/app-image/')
+        ->setAbsolute()->toString();
       foreach ($widget_data as &$component) {
-        $this->applyFormatters(['fields'], $settings, $component);
+        $this->applyFormatters(['fields'], $settings, $component, $image_app_base_url);
         $content['components'][] = $component;
       }
 
       if (array_key_exists('extra_field', $content) && is_array($content['extra_field'])) {
-        $this->applyFormatters(['extra_fields'], $settings, $content['extra_field']);
+        $this->applyFormatters(['extra_fields'], $settings, $content['extra_field'], $image_app_base_url);
       }
 
       $content['template'] = $widget_id;
@@ -246,7 +262,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
        * }
        * @endcode
        */
-      $this->moduleHandler->alter('df_jsonapi_output', $content);
+    $this->moduleHandler->alter('df_jsonapi_output', $content);
 
       $data['widget_data'] = json_encode($content);
     }
@@ -268,9 +284,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
    * @param array $component
    *   Component.
    */
-  protected function applyFormatters($parent_keys, $settings, &$component) {
-    $image_app_base_url = Url::fromUserInput('/app-image/')
-      ->setAbsolute()->toString();
+  protected function applyFormatters($parent_keys, $settings, &$component, $image_app_base_url) {
     foreach ($component as $field_key => &$value) {
       $info = NestedArray::getValue($settings, array_merge((array) $parent_keys, [$field_key]));
       $info['uuid'] = $settings['uuid'];
@@ -393,7 +407,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
           $image_data = [];
           if (isset($value[$key]['selection'])) {
             foreach ($value[$key]['selection'] as $media) {
-              $file = Media::load($media['target_id']);
+              $file = $this->mediaStorage->load($media['target_id']);
               if ($file) {
                 // Add cache.
                 $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $file->getCacheTags());
@@ -425,7 +439,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
           $video_data = [];
           if (isset($value[$key]['selection'])) {
             foreach ($value[$key]['selection'] as $media) {
-              $file = Media::load($media['target_id']);
+              $file = $this->mediaStorage->load($media['target_id']);
               if ($file) {
                 // Add cache.
                 $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $file->getCacheTags());
@@ -455,7 +469,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
           $file_data = [];
           if (isset($value[$key]['selection'])) {
             foreach ($value[$key]['selection'] as $media) {
-              $file = Media::load($media['target_id']);
+              $file = $this->mediaStorage->load($media['target_id']);
               if ($file) {
                 $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $file->getCacheTags());
                 $this->cacheability->setCacheTags($cacheTags);
@@ -510,7 +524,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
         if ($info['type'] === 'remote_video' && !empty($value)) {
           $value = reset($value);
           $mid = $value['selection'][0]['target_id'] ?? '';
-          $media = !empty($mid) ? $this->entityTypeManager->getStorage('media')->load($mid) : NULL;
+          $media = !empty($mid) ? $this->mediaStorage->load($mid) : NULL;
           if ($media instanceof MediaInterface) {
             $value = [
               'id' => $media->uuid(),
@@ -547,7 +561,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
       }
       elseif (is_array($value)) {
         // Go deeper.
-        $this->applyFormatters(array_merge((array) $parent_keys, [$field_key]), $settings, $value);
+        $this->applyFormatters(array_merge((array) $parent_keys, [$field_key]), $settings, $value, $image_app_base_url);
       }
     }
   }
@@ -559,8 +573,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
         return $el['target_id'];
       }, $result_count_ids);
       if (!empty($result_count_ids)) {
-        $results_count = $this->entityTypeManager->getStorage('term_result_count')
-          ->loadMultiple($result_count_ids);
+        $results_count = $this->termResultCount->loadMultiple($result_count_ids);
         if (!empty($results_count)) {
           foreach ($results_count as $result_count) {
             $plugin = $result_count->get('plugin')->value;
