@@ -198,7 +198,9 @@ class LazyImageFormatter extends ResponsiveImageFormatter {
     // Setup cache.
     $cache_tags = [];
     foreach ($image_styles as $key => $image_style) {
-      $cache_tags = Cache::mergeTags($cache_tags, $image_style->getCacheTags());
+      if ($image_style) {
+        $cache_tags = Cache::mergeTags($cache_tags, $image_style->getCacheTags());
+      }
     }
 
     $file_url_generator = \Drupal::service('file_url_generator');
@@ -217,8 +219,10 @@ class LazyImageFormatter extends ResponsiveImageFormatter {
 
       // Setup image styles for this URI.
       foreach ($image_styles as $key => $image_style) {
-        $url = $image_style->buildUrl($file_uri);
-        $data_src[$key] = $file_url_generator->transformRelative($url);
+        if ($image_style) {
+          $url = $image_style->buildUrl($file_uri);
+          $data_src[$key] = $file_url_generator->transformRelative($url);
+        }
       }
 
       $elements[$delta] = [
