@@ -73,7 +73,7 @@
     "drupal/migrate_tools": "^5.1",
     "drupal/migrate_source_csv": "^3.1.0",
     "drupal/link_target": "^1.2.0",
-    "drupal/linkit": "^5.0-beta11",
+    "drupal/linkit": "^6.0@beta",
     "drupal/merge_translations": "^1.1",
     "drupal/stage_file_proxy": "^1.0",
     "drupal/wysiwyg_template": "2.3.0",
