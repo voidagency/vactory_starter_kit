@@ -142,7 +142,9 @@ class JsonApiClient {
 
     // This is used to retrieve Cacheability Metadata from JSON:API
     $request->headers->set("X-Internal-Cacheability-Debug", "true");
-    $this->logger->get('vactory_decoupled')->info('Request created: @url', ['@url' => urldecode($request->getUri())]);
+    if (Settings::get('log_jsonapi_generator_requests', FALSE)) {
+      $this->logger->get('vactory_decoupled')->info('Request created: @url', ['@url' => urldecode($request->getUri())]);
+    }
 
     $response = $this->httpKernel->handle($request, HttpKernelInterface::SUB_REQUEST);
 
