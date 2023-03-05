@@ -7,6 +7,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\RevisionableInterface;
 use Drupal\Core\Logger\LoggerChannelFactory;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Site\Settings;
 use Drupal\Core\Url;
 use Drupal\jsonapi\ResourceType\ResourceType;
 use Drupal\jsonapi\ResourceType\ResourceTypeRepositoryInterface;
@@ -196,7 +197,10 @@ class JsonApiClient {
 
     // This is used to retrieve Cacheability Metadata from JSON:API
     $request->headers->set("X-Internal-Cacheability-Debug", "true");
-    $this->logger->get('vactory_decoupled')->info('Request created: @url', ['@url' => urldecode($request->getUri())]);
+
+    if (Settings::get('log_jsonapi_generator_requests', FALSE)) {
+      $this->logger->get('vactory_decoupled')->info('Request created: @url', ['@url' => urldecode($request->getUri())]);
+    }
 
     $response = $this->httpKernel->handle($request, HttpKernelInterface::SUB_REQUEST);
 
