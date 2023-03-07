@@ -2,5 +2,8 @@ version: 2
 updates:
   - package-ecosystem: "composer"
     directory: "/"
+    commit-message: 
+      prefix: "Composer" 
+      include: "scope" 
     schedule:
       interval: "daily"
