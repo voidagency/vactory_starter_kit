@@ -179,7 +179,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
     $this->viewsToApi = $viewsToApi;
     $this->webformNormalizer = $webformNormalizer;
     $this->mediaStorage = $this->entityTypeManager->getStorage('media');
-    $this->termResultCount = $this->entityTypeManager->getStorage('term_result_count')
+    $this->termResultCount = $this->moduleHandler->moduleExists('vactory_taxonomy_results') ? $this->entityTypeManager->getStorage('term_result_count') : NULL;
     ;
   }
 
@@ -572,7 +572,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
       $result_count_ids = array_map(function ($el) {
         return $el['target_id'];
       }, $result_count_ids);
-      if (!empty($result_count_ids)) {
+      if (!empty($result_count_ids) && $this->termResultCount) {
         $results_count = $this->termResultCount->loadMultiple($result_count_ids);
         if (!empty($results_count)) {
           foreach ($results_count as $result_count) {
