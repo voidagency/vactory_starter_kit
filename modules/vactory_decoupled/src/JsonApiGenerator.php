@@ -115,7 +115,8 @@ class JsonApiGenerator {
       if (strpos($filter, '[') === 0 && strpos($filter, ']') === strlen($filter)-1) {
         // Token case.
         $filter = $this->token->replace($filter, []);
-        $nested_filters = [...$nested_filters, ...explode("\n", $filter)];
+        $filter_pieces = is_string($filter) ? explode("\n", $filter) : [];
+        $nested_filters = [...$nested_filters, ...$filter_pieces];
       }
     }
     $filters = [...$filters, ...$nested_filters];

@@ -85,7 +85,7 @@ class JsonApiReCaptchaSubscriber implements EventSubscriberInterface
     }
 
     $secure_routes_raw = $this->config->get('vactory_decoupled.settings')->get('routes', '');
-    $secure_routes = explode("\n", $secure_routes_raw);
+    $secure_routes = is_string($secure_routes_raw) ? explode("\n", $secure_routes_raw) : [];
     $secure_routes = array_map(function ($route) {
       return trim($route);
     }, $secure_routes);

@@ -121,7 +121,7 @@ class ApiKeyAuth implements AuthenticationProviderInterface {
   public function getKey(Request $request) {
     // Exempt edit/delete form route.
     $route_name = $this->routeMatch->getRouteName();
-    if (strstr($route_name, 'entity.api_key')) {
+    if (is_string($route_name) && strstr($route_name, 'entity.api_key')) {
       return FALSE;
     }
 

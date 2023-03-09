@@ -474,7 +474,7 @@ class Webform {
     if ($ui_type === 'rawhtml') {
       $properties['html'] = $item['#text'];
       $properties['format'] = $item['#format'];
-      $properties['attributes'] = $item['#wrapper_attributes'];
+      $properties['attributes'] = $item['#wrapper_attributes'] ?? [];
     }
 
     if (isset($item['#states'])) {
