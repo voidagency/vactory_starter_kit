@@ -240,7 +240,7 @@ class BlocksManager
         'weight' => $block->getWeight(),
         'classification' => $classification,
         'content' => $block_content['block'] ?? '',
-        'block_cache' => $block_content['cache'] ?? [],
+        //'block_cache' => $block_content['cache'] ?? [],
         'visibilityConditions' => $visibilityCollection,
         'classes' => $block->getThirdPartySetting('block_class', 'classes'),
         'body_classes' => $block->getThirdPartySetting('block_page_class', 'body_classes') ?? '',

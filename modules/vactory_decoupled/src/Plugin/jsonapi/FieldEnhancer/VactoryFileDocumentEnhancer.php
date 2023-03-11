@@ -84,7 +84,6 @@ class VactoryFileDocumentEnhancer extends ResourceFieldEnhancerBase implements C
 
       $data['value'] = [
         '_default' => $this->mediaFilesManager->getMediaAbsoluteUrl($uri),
-        'uri' => StreamWrapperManager::getTarget($uri),
         'fid' => $media->id(),
         'file_name' => $media->label(),
       ];

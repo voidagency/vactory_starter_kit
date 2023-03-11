@@ -73,9 +73,9 @@ class VactoryFileImageEnhancer extends ResourceFieldEnhancerBase implements Cont
     if (isset($data['value']) && !empty($data['value'])) {
       $origin_uri = $data['value'];
 
-      $image_app_base_url = Url::fromUserInput('/app-image/')
+      /*$image_app_base_url = Url::fromUserInput('/app-image/')
         ->setAbsolute()->toString();
-      $lqipImageStyle = ImageStyle::load('lqip');
+      $lqipImageStyle = ImageStyle::load('lqip');*/
 
       $medias = $this->entityTypeManager->getStorage('file')
         ->loadByProperties(['uri' => $origin_uri]);
@@ -84,11 +84,11 @@ class VactoryFileImageEnhancer extends ResourceFieldEnhancerBase implements Cont
       $uri = $media->getFileUri();
       $data['value'] = [
         '_default'  => $this->mediaFilesManager->getMediaAbsoluteUrl($uri),
-        '_lqip'     => $this->mediaFilesManager->convertToMediaAbsoluteUrl($lqipImageStyle->buildUrl($uri)),
-        'uri'       => StreamWrapperManager::getTarget($uri),
-        'fid'       => $media->id(),
+        //'_lqip'     => $this->mediaFilesManager->convertToMediaAbsoluteUrl($lqipImageStyle->buildUrl($uri)),
+        //'uri'       => StreamWrapperManager::getTarget($uri),
+        //'fid'       => $media->id(),
         'file_name' => $media->label(),
-        'base_url'  => $image_app_base_url,
+        //'base_url'  => $image_app_base_url,
         'meta' => $media->getAllMetadata()
       ];
 

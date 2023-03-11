@@ -240,15 +240,15 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
         return (int) ($item1['_weight'] <=> $item2['_weight']);
       });
 
-      $image_app_base_url = Url::fromUserInput('/app-image/')
-        ->setAbsolute()->toString();
+      /*$image_app_base_url = Url::fromUserInput('/app-image/')
+        ->setAbsolute()->toString();*/
       foreach ($widget_data as &$component) {
-        $this->applyFormatters(['fields'], $settings, $component, $image_app_base_url);
+        $this->applyFormatters(['fields'], $settings, $component);
         $content['components'][] = $component;
       }
 
       if (array_key_exists('extra_field', $content) && is_array($content['extra_field'])) {
-        $this->applyFormatters(['extra_fields'], $settings, $content['extra_field'], $image_app_base_url);
+        $this->applyFormatters(['extra_fields'], $settings, $content['extra_field']);
       }
 
       $content['template'] = $widget_id;
@@ -284,7 +284,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
    * @param array $component
    *   Component.
    */
-  protected function applyFormatters($parent_keys, $settings, &$component, $image_app_base_url) {
+  protected function applyFormatters($parent_keys, $settings, &$component) {
     foreach ($component as $field_key => &$value) {
       $info = NestedArray::getValue($settings, array_merge((array) $parent_keys, [$field_key]));
       $info['uuid'] = $settings['uuid'];
@@ -332,12 +332,12 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
 
         // Text Preprocessor.
         if ($info['type'] === 'text_format') {
-          $format = $info['options']['#format'] ?? 'full_html';
+          //$format = $info['options']['#format'] ?? 'full_html';
 
           $build = [
-            '#type'   => 'processed_text',
+            //'#type'   => 'processed_text',
             '#text'   => $value['value'],
-            '#format' => $format,
+            //'#format' => $format,
           ];
 
           $value = ['value' => $build];
@@ -414,11 +414,11 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
                 $this->cacheability->setCacheTags($cacheTags);
                 $uri = $file->thumbnail->entity->getFileUri();
                 $image_item['_default'] = $this->mediaFilesManager->getMediaAbsoluteUrl($uri);
-                $image_item['_lqip'] = $this->mediaFilesManager->convertToMediaAbsoluteUrl($this->imageStyles['lqip']->buildUrl($uri));
-                $image_item['uri'] = StreamWrapperManager::getTarget($uri);
-                $image_item['fid'] = $file->thumbnail->entity->fid->value;
+                //$image_item['_lqip'] = $this->mediaFilesManager->convertToMediaAbsoluteUrl($this->imageStyles['lqip']->buildUrl($uri));
+                //$image_item['uri'] = StreamWrapperManager::getTarget($uri);
+                //$image_item['fid'] = $file->thumbnail->entity->fid->value;
                 $image_item['file_name'] = $file->label();
-                $image_item['base_url'] = $image_app_base_url;
+                //$image_item['base_url'] = $image_app_base_url;
                 if (!empty($file->get('field_media_image')->getValue())) {
                   $image_item['meta'] = $file->get('field_media_image')->first()->getValue();
                 }
@@ -446,10 +446,10 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
                 $this->cacheability->setCacheTags($cacheTags);
                 $uri = $file->field_media_video_file->entity->getFileUri();
                 $video_item['_default'] = $this->mediaFilesManager->getMediaAbsoluteUrl($uri);
-                $video_item['uri'] = StreamWrapperManager::getTarget($uri);
-                $video_item['fid'] = $file->thumbnail->entity->fid->value;
+                //$video_item['uri'] = StreamWrapperManager::getTarget($uri);
+                //$video_item['fid'] = $file->thumbnail->entity->fid->value;
                 $video_item['file_name'] = $file->label();
-                $video_item['base_url'] = $image_app_base_url;
+                //$video_item['base_url'] = $image_app_base_url;
                 if (!empty($file->get('field_media_video_file')->getValue())) {
                   $video_item['meta'] = $file->get('field_media_video_file')->first()->getValue();
                 }
@@ -482,7 +482,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
                   $uri = $document->getFileUri();
                   $file_data[] = [
                     '_default' => $this->mediaFilesManager->getMediaAbsoluteUrl($uri),
-                    'uri' => StreamWrapperManager::getTarget($uri),
+                    //'uri' => StreamWrapperManager::getTarget($uri),
                     'fid' => $file->id(),
                     'file_name' => $file->label(),
                   ];
@@ -561,7 +561,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
       }
       elseif (is_array($value)) {
         // Go deeper.
-        $this->applyFormatters(array_merge((array) $parent_keys, [$field_key]), $settings, $value, $image_app_base_url);
+        $this->applyFormatters(array_merge((array) $parent_keys, [$field_key]), $settings, $value);
       }
     }
   }
