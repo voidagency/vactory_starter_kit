@@ -1,0 +1,14 @@
+name: "line by line text animation"
+multiple: True
+category: "Animated DFs"
+enabled: TRUE
+fields:
+  text:
+    type: text
+    label: "Text"
+    options:
+      "#required": TRUE
+extra_fields:
+  cta:
+    type: url_extended
+    label: "Call to action"
