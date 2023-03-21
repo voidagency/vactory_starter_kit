@@ -64,8 +64,7 @@ class ApiKeyAccessCheck implements AccessInterface {
    */
   protected function authenticate($key) {
     // Load config entity.
-    $api_key_entities = \Drupal::entityTypeManager()
-      ->getStorage('api_key')
+    $api_key_entities = $this->entityTypeManager->getStorage('api_key')
       ->loadByProperties(['key' => $key]);
 
     return reset($api_key_entities);

@@ -20,7 +20,7 @@ use Drupal\vactory_api_key_auth\ApiKeyInterface;
  *     },
  *   },
  *   config_prefix = "api_key",
- *   admin_permission = "administer api key",
+ *   admin_permission = "administer vactory_api_key_auth",
  *   entity_keys = {
  *     "id" = "id",
  *     "label" = "label",

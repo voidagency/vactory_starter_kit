@@ -1,0 +1,29 @@
+
+{{ attach_library('vactory_dynamic_field_wysiwyg_templates/widget52') }}
+
+{# {% set is_mobile_sticky = (extra_fields.sticky == 1) ? ' is-mobile-sticky' : '' %}
+
+<div class="toolbox__wrapper{{is_mobile_sticky}}"> #}
+<div class="toolbox__wrapper{{is_mobile_sticky}}">
+  <ul class="toolbox">
+    {% for item in content %}
+
+      {% set is_active = (item.active == 1) ? ' is-active' : '' %}
+      {% set hide_mobile = (item.hide == 1) ? ' mobile-hidden' : '' %}
+
+      {% set link_attributes = create_attribute() %}
+      {% set link_attributes = item.link.attributes.id is not empty ? link_attributes.setAttribute('id', item.link.attributes.id ) : link_attributes %}
+      {% set link_attributes = item.link.attributes.class is not empty ? link_attributes.setAttribute('class', item.link.attributes.class  ~ ' text') : link_attributes.setAttribute('class','text') %}
+      {% set link_attributes = item.link.attributes.target is not empty ? link_attributes.setAttribute('target', item.link.attributes.target ) : link_attributes %}
+      {% set link_attributes = item.link.attributes.rel is not empty ? link_attributes.setAttribute('rel', item.link.attributes.rel ) : link_attributes %}
+
+      <li class="toolbox__item{{is_active}}{{hide_mobile}}">
+          <a href="{{ item.link.url }}" {{ link_attributes }} >
+            <span class="{{ item.icon }} toolbox__icon"></span>
+            <span class="toolbox__title">{{ item.link.title }}</span>
+          </a>
+      </li>
+
+    {% endfor %}
+  </ul>
+</div>

@@ -77,16 +77,16 @@ function vactory_glossary_form_alter(&$form, FormStateInterface $form_state, $fo
  */
 function fr_sort($a, $b) {
   if (isset($a->link) && isset($b->link)) {
-    return strcmp($a->link, $b->link);
+    return (int) strcmp($a->link, $b->link);
   }
   elseif (isset($a->link)) {
-    return strcmp($a->link, $b['link']);
+    return (int) strcmp($a->link, $b['link']);
   }
   elseif (isset($b->link)) {
-    return strcmp($a['link'], $b->link);
+    return (int) strcmp($a['link'], $b->link);
   }
   else {
-    return strcmp($a['link'], $b['link']);
+    return (int) strcmp($a['link'], $b['link']);
   }
 }
 
@@ -100,16 +100,16 @@ function ar_sort($a, $b) {
   ];
 
   if (isset($a->link) && isset($b->link)) {
-    return array_search($a->link, $letters) > array_search($b->link, $letters);
+    return (int) (array_search($a->link, $letters) > array_search($b->link, $letters));
   }
   elseif (isset($a->link)) {
-    return array_search($a->link, $letters) > array_search($b['link'], $letters);
+    return (int) (array_search($a->link, $letters) > array_search($b['link'], $letters));
   }
   elseif (isset($b->link)) {
-    return array_search($a['link'], $letters) > array_search($b->link, $letters);
+    return (int) (array_search($a['link'], $letters) > array_search($b->link, $letters));
   }
   else {
-    return array_search($a['link'], $letters) > array_search($b['link'], $letters);
+    return (int) (array_search($a['link'], $letters) > array_search($b['link'], $letters));
   }
 }
 

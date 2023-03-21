@@ -1,0 +1,6 @@
+services:
+  plugin.manager.term_results_counter:
+    class: Drupal\vactory_taxonomy_results\TermResultCounterManager
+    parent: default_plugin_manager
+  vactory_taxonomy_results.helper:
+    class: Drupal\vactory_taxonomy_results\Services\TermResultCounterHelper

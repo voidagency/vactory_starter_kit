@@ -94,6 +94,7 @@ class ImageSitemapGenerator {
     $default_langcode = \Drupal::languageManager()->getDefaultLanguage();
     $langcode = $language->getId();
     $image_sitemap = isset($context['results']['image_sitemap']) ? $context['results']['image_sitemap'] : [];
+    $file_url_generator = \Drupal::service('file_url_generator');
     foreach ($image_fields as $image_field_info) {
       if (!$image_field_info['translatable']) {
         $langcode = $default_langcode;
@@ -123,7 +124,7 @@ class ImageSitemapGenerator {
               $node_url = Url::fromRoute('entity.node.canonical', ['node' => $node->id()], ['language' => $language, 'absolute' => TRUE])->toString();
               $image_sitemap[$langcode][$nid]['node'] = $node_url;
               $image_sitemap[$langcode][$nid]['images'][] = [
-                'image_loc' => \Drupal::service('file_url_generator')->generateAbsoluteString($used_image->uri),
+                'image_loc' => $file_url_generator->generateAbsoluteString($used_image->uri),
                 'image_title' => $used_image->filename,
               ];
             }
@@ -143,6 +144,7 @@ class ImageSitemapGenerator {
    */
   public static function  imageSitemapGenerateBatchProcess(&$context) {
     $image_sitemap = isset($context['results']['image_sitemap']) ? $context['results']['image_sitemap'] : [];
+    $file_url_generator = \Drupal::service('file_url_generator');
     foreach ($image_sitemap as $langcode => $sitemap_infos) {
       $total_urls = 0;
       $output = '<?xml version="1.0" encoding="UTF-8"?>';
@@ -158,7 +160,7 @@ class ImageSitemapGenerator {
       }
       $output .= '</urlset>';
       // File build path.
-      $path = \Drupal::service('file_url_generator')->generateAbsoluteString(\Drupal::service('file_system')->realpath("public://image_sitemap"));
+      $path = $file_url_generator->generateAbsoluteString(\Drupal::service('file_system')->realpath("public://image_sitemap"));
       if (!is_dir($path)) {
         \Drupal::service('file_system')->mkdir($path);
       }

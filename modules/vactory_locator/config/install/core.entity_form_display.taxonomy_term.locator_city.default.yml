@@ -2,9 +2,11 @@ langcode: en
 status: true
 dependencies:
   config:
+    - field.field.taxonomy_term.locator_city.field_geofield_city
     - field.field.taxonomy_term.locator_city.field_locator_country
     - taxonomy.vocabulary.locator_city
   module:
+    - geofield
     - path
     - text
 id: taxonomy_term.locator_city.default
@@ -17,15 +19,22 @@ content:
     weight: 2
     region: content
     settings:
-      placeholder: ''
       rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+  field_geofield_city:
+    type: geofield_latlon
+    weight: 7
+    region: content
+    settings:
+      html5_geolocation: false
     third_party_settings: {  }
   field_locator_country:
+    type: options_select
     weight: 1
+    region: content
     settings: {  }
     third_party_settings: {  }
-    type: options_select
-    region: content
   langcode:
     type: language_select
     weight: 3
@@ -49,10 +58,18 @@ content:
     third_party_settings: {  }
   status:
     type: boolean_checkbox
-    settings:
-      display_label: true
     weight: 6
     region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  term_2_slug:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
     third_party_settings: {  }
   translation:
     weight: 4

@@ -149,7 +149,7 @@ function vactory_field_preprocess_html(&$variables) {
       if (isset($media) && !empty($media)) {
         $fid = $media->field_media_image->target_id;
         $file = File::load($fid);
-        $image_url = file_url_transform_relative(\Drupal::service('stream_wrapper_manager')->getViaUri($file->getFileUri())->getExternalUrl());
+        $image_url = \Drupal::service('file_url_generator')->transformRelative(\Drupal::service('stream_wrapper_manager')->getViaUri($file->getFileUri())->getExternalUrl());
         $variables['node_bg_image'] = $image_url;
       }
     }

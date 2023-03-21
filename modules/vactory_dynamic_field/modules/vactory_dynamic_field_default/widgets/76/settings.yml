@@ -1,0 +1,40 @@
+name: "Animated Card - V1"
+multiple: true
+limit: 4
+category: "Animated DFs"
+enabled: TRUE
+fields:
+  icon:
+    type: text
+    label: "Icon"
+    options:
+      "#required": TRUE
+  title:
+    type: text
+    label: "Text"
+    options:
+      "#required": TRUE
+  content:
+    type: textarea
+    label: "Content"
+    options:
+      "#required": TRUE
+  link:
+    type: url_extended
+    label: "link"
+extra_fields:
+  title:
+    type: text
+    label: "Title"
+    options:
+      "#required": TRUE
+  content:
+    type: "textarea"
+    label: "Content"
+    options:
+      "#format": full_html
+      "#required": TRUE
+  cta:
+    type: url_extended
+    label: "Call to action"
+

@@ -4,6 +4,7 @@ namespace Drupal\vactory_decoupled\Plugin\Field;
 
 use Drupal\Core\Field\FieldItemList;
 use Drupal\Core\TypedData\ComputedItemListTrait;
+use Drupal\Core\TypedData\TraversableTypedDataInterface;
 
 /**
  * Defines a comment list class for better normalization targeting.

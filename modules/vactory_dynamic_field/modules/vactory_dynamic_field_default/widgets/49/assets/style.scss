@@ -1,0 +1,81 @@
+.uix-toolbox {
+  $self: &;
+  // #{$self}
+
+  position: fixed;
+  z-index: 999;
+  bottom: 80px;
+  right: 20px;
+
+  &__trigger {
+    position: relative;
+    z-index: 99;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    background-color: $primary;
+    color: $white;
+    border-radius: 50%;
+    box-shadow: 0 2px 2px 0 rgba($black, .14),
+    0 3px 1px -2px rgba($black, .12),
+    0 1px 5px 0 rgba($black, 20);
+    outline: 0;
+    border: 0;
+    cursor: pointer;
+  }
+
+  &__items-list {
+    display: flex;
+    flex-direction: column;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    transition: .5s;
+    visibility: hidden;
+    opacity: 0;
+    height: 0;
+
+    &.visible {
+      visibility: visible;
+      opacity: 1;
+      height: 100%;
+      margin-bottom: 10px;
+    }
+  }
+
+  &__item__button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    border-radius: 50%;
+    box-shadow: 0 2px 2px 0 rgba($black, .14),
+      0 3px 1px -2px rgba($black, .12),
+      0 1px 5px 0 rgba($black, 20);
+    margin: 5px;
+    cursor: pointer;
+    width: 50px;
+    height: 50px;
+    background-color: $primary;
+    color: $white;
+    transition: .5s;
+    transform: scale(.4) translateY(40px) translateX(0px);
+
+    &.visible {
+      transform: scale(1) translateY(0px) translateX(0px) !important;
+    }
+  }
+
+  &__item__title {
+    position: absolute;
+    right: 60px;
+    white-space: nowrap;
+    font-size: 12px;
+    color: $white;
+    background-color: rgba($black, .6);
+    padding: 4px 16px;
+    border-radius: 18px;
+  }
+}

@@ -1,0 +1,7 @@
+vactory_taxonomy_results.settings:
+  path: '/admin/config/system/taxonomy-results-count'
+  defaults:
+    _title: 'Taxonomy results count settings'
+    _form: '\Drupal\vactory_taxonomy_results\Form\SettingsForm'
+  requirements:
+    _permission: 'administer site configuration'

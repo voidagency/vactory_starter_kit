@@ -4,7 +4,9 @@ namespace Drupal\vactory_decoupled\Plugin\Field;
 
 use Drupal\Core\Field\FieldItemList;
 use Drupal\Core\TypedData\ComputedItemListTrait;
+use Drupal\Core\TypedData\TraversableTypedDataInterface;
 use Drupal\node\Entity\Node;
+use Drupal\vactory_decoupled\VactoryDecoupledHelper;
 
 /**
  * Metatags per node.
@@ -13,6 +15,45 @@ class InternalNodeMetatagsFieldItemList extends FieldItemList
 {
 
   use ComputedItemListTrait;
+
+  /**
+   * Entity repository service.
+   *
+   * @var \Drupal\Core\Entity\EntityRepositoryInterface
+   */
+  protected $entityRepository;
+
+  /**
+   * Meta tag manager service.
+   *
+   * @var \Drupal\metatag\MetatagManagerInterface
+   */
+  protected $metatagManager;
+
+  /**
+   * Module handler service.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
+   * Vactory decoupled helper service.
+   *
+   * @var \Drupal\vactory_decoupled\VactoryDecoupledHelper
+   */
+  protected $vactoryDecoupledHelper;
+
+  public static function createInstance($definition, $name = NULL, TraversableTypedDataInterface $parent = NULL)
+  {
+    $instance = parent::createInstance($definition, $name, $parent);
+    $container = \Drupal::getContainer();
+    $instance->entityRepository = $container->get('entity.repository');
+    $instance->metatagManager = $container->get('metatag.manager');
+    $instance->moduleHandler = $container->get('module_handler');
+    $instance->vactoryDecoupledHelper = $container->get('vactory_decoupled.helper');
+    return $instance;
+  }
 
   /**
    * {@inheritdoc}
@@ -31,12 +72,13 @@ class InternalNodeMetatagsFieldItemList extends FieldItemList
       return;
     }
 
-    $entity = \Drupal::service('entity.repository')->getTranslationFromContext($entity);
+    $entity = $this->entityRepository->getTranslationFromContext($entity);
 
-    $metatag_manager = \Drupal::service('metatag.manager');
-    $metatags = metatag_get_default_tags($entity);
+    $metatags = $this->vactoryDecoupledHelper->metatagGetDefaultTags($entity);
 
-    foreach ($metatag_manager->tagsFromEntity($entity) as $tag => $data) {
+    $tags_from_entity = $this->metatagManager->tagsFromEntity($entity);
+
+    foreach ($tags_from_entity as $tag => $data) {
       $metatags[$tag] = $data;
     }
 
@@ -44,9 +86,9 @@ class InternalNodeMetatagsFieldItemList extends FieldItemList
       'entity' => $entity,
     ];
 
-    \Drupal::service('module_handler')->alter('metatags', $metatags, $context);
+    $this->moduleHandler->alter('metatags', $metatags, $context);
 
-    $tags = $metatag_manager->generateRawElements($metatags, $entity);
+    $tags = $this->metatagManager->generateRawElements($metatags, $entity);
     $normalized_tags = [];
     foreach ($tags as $key => $tag) {
       $normalized_tags[] = [

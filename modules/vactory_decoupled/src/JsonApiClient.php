@@ -5,7 +5,11 @@ namespace Drupal\vactory_decoupled;
 use Drupal\Component\Serialization\Json;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\RevisionableInterface;
+use Drupal\Core\Logger\LoggerChannelFactory;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Site\Settings;
 use Drupal\Core\Url;
+use Drupal\jsonapi\ResourceType\ResourceType;
 use Drupal\jsonapi\ResourceType\ResourceTypeRepositoryInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -48,22 +52,29 @@ class JsonApiClient {
   protected $currentRequest;
 
   /**
-   * EntityToJsonApi constructor.
+   * Route match service.
    *
-   * @param \Symfony\Component\HttpKernel\HttpKernelInterface $http_kernel
-   *   The HTTP kernel.
-   * @param \Drupal\jsonapi\ResourceType\ResourceTypeRepositoryInterface $resource_type_repository
-   *   The resource type repository.
-   * @param \Symfony\Component\HttpFoundation\Session\SessionInterface $session
-   *   The session object.
-   * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
-   *   The stack of requests.
+   * @var \Drupal\Core\Routing\RouteMatchInterface
+   */
+  protected $routeMatch;
+
+  /**
+   * Logger service.
+   *
+   * @var \Drupal\Core\Logger\LoggerChannelFactory
+   */
+  protected $logger;
+
+  /**
+   * EntityToJsonApi constructor.
    */
   public function __construct(
     HttpKernelInterface $http_kernel,
     ResourceTypeRepositoryInterface $resource_type_repository,
     SessionInterface $session,
-    RequestStack $request_stack
+    RequestStack $request_stack,
+    RouteMatchInterface $routeMatch,
+    LoggerChannelFactory $logger
   ) {
     $this->httpKernel = $http_kernel;
     $this->resourceTypeRepository = $resource_type_repository;
@@ -71,6 +82,8 @@ class JsonApiClient {
     $this->session = $this->currentRequest->hasPreviousSession()
       ? $this->currentRequest->getSession()
       : $session;
+    $this->routeMatch = $routeMatch;
+    $this->logger = $logger;
   }
 
   /**
@@ -98,11 +111,11 @@ class JsonApiClient {
       ->getGeneratedUrl();
 
     // Get current page informations and pass them through the next request.
-    $params = \Drupal::routeMatch()->getParameters();
+    $params = $this->routeMatch->getParameters();
     if ($params) {
-      $params_query = \Drupal::request()->query->get("q") ?? [];
+      $params_query = $this->currentRequest->query->get("q") ?? [];
       if ($resource_type_param = $params->get('resource_type')) {
-        $params_query["entity_bundle"] = $resource_type_param->getBundle();
+        $params_query["entity_bundle"] = $resource_type_param instanceof ResourceType ?  $resource_type_param->getBundle() : $resource_type_param;
       }
 
       if ($entity_param = $params->get('entity')) {
@@ -129,7 +142,9 @@ class JsonApiClient {
 
     // This is used to retrieve Cacheability Metadata from JSON:API
     $request->headers->set("X-Internal-Cacheability-Debug", "true");
-    \Drupal::logger('vactory_decoupled')->info('Request created: @url', ['@url' => urldecode($request->getUri())]);
+    if (Settings::get('log_jsonapi_generator_requests', FALSE)) {
+      $this->logger->get('vactory_decoupled')->info('Request created: @url', ['@url' => urldecode($request->getUri())]);
+    }
 
     $response = $this->httpKernel->handle($request, HttpKernelInterface::SUB_REQUEST);
 
@@ -153,11 +168,11 @@ class JsonApiClient {
       ->getGeneratedUrl();
 
     // Get current page informations and pass them through the next request.
-    $params = \Drupal::routeMatch()->getParameters();
+    $params = $this->routeMatch->getParameters();
     if ($params) {
-      $params_query = \Drupal::request()->query->get("q") ?? [];
+      $params_query = $this->currentRequest->query->get("q") ?? [];
       if ($resource_type_param = $params->get('resource_type')) {
-        $params_query["entity_bundle"] = $resource_type_param->getBundle();
+        $params_query["entity_bundle"] = $resource_type_param instanceof ResourceType ?  $resource_type_param->getBundle() : $resource_type_param;
       }
 
       if ($entity_param = $params->get('entity')) {
@@ -184,7 +199,10 @@ class JsonApiClient {
 
     // This is used to retrieve Cacheability Metadata from JSON:API
     $request->headers->set("X-Internal-Cacheability-Debug", "true");
-    \Drupal::logger('vactory_decoupled')->info('Request created: @url', ['@url' => urldecode($request->getUri())]);
+
+    if (Settings::get('log_jsonapi_generator_requests', FALSE)) {
+      $this->logger->get('vactory_decoupled')->info('Request created: @url', ['@url' => urldecode($request->getUri())]);
+    }
 
     $response = $this->httpKernel->handle($request, HttpKernelInterface::SUB_REQUEST);
 

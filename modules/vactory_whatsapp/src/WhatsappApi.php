@@ -93,7 +93,7 @@ class WhatsappApi implements WhatsappApiInterface {
       throw new WhatsappApiException('Module vactory_whatsapp has not been configured yet');
     }
     $whatsapp_api_url = WhatsappApiInterface::API_BASE_URL;
-    $this->endpoint = "${whatsapp_api_url}/${phone_num_id}/messages";
+    $this->endpoint = "{$whatsapp_api_url}/{$phone_num_id}/messages";
     $this->templateParams = [];
     $this->messageObject = [
       'messaging_product' => 'whatsapp',

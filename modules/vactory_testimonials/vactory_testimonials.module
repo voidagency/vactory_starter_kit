@@ -11,39 +11,39 @@
 function vactory_testimonials_theme($existing, $type, $theme, $path) {
   return [
     // Node > Testimonials.
-    'node__vactory_testimonials__vactory_card_minimal'                    => [
+    'node__vactory_testimonials__vactory_card_minimal' => [
       'base hook' => 'node',
-      'template'  => 'card-minimal',
+      'template' => 'card-minimal',
     ],
 
     // Node > Mur.
-    'node__vactory_testimonials__mur'                    => [
+    'node__vactory_testimonials__mur' => [
       'base hook' => 'node',
-      'template'  => 'mur',
+      'template' => 'mur',
     ],
 
     // Node > Smart search.
-    'node__vactory_testimonials__smart_search'        => [
+    'node__vactory_testimonials__smart_search' => [
       'base hook' => 'node',
-      'template'  => 'smart-search',
+      'template' => 'smart-search',
     ],
 
     // Views > Testimonials.
-    'views_view_unformatted__vactory_testimonials__block_list'            => [
+    'views_view_unformatted__vactory_testimonials__block_list' => [
       'base hook' => 'views_view_unformatted',
-      'template'  => 'block-list',
+      'template' => 'block-list',
     ],
 
     // Views > Customized Testimonials.
     'views_view_unformatted__vactory_testimonials__block_list_customized' => [
       'base hook' => 'views_view_unformatted',
-      'template'  => 'block-list-secondary',
+      'template' => 'block-list-secondary',
     ],
 
     // Node > Testimonials Customized Mode.
-    'node__vactory_testimonials__vactory_card_minimal_secondary'          => [
+    'node__vactory_testimonials__vactory_card_minimal_secondary' => [
       'base hook' => 'node',
-      'template'  => 'card-minimal-secondary',
+      'template' => 'card-minimal-secondary',
     ],
   ];
 }
@@ -53,19 +53,20 @@ function vactory_testimonials_theme($existing, $type, $theme, $path) {
  */
 function vactory_testimonials_json_api_collection_alter(&$filters, &$context) {
   if ($context['id'] === 'vactory_testimonials_list') {
-    $query = $context['query'];
+    $query = \Drupal::request()->query->get("q");
 
     if (isset($query["page"])) {
-      $filters["page[offset]"] = intval($query["page"]) > 0 ? intval($query["page"]) - 1 : 0;
+      $filters["page[offset]"] = intval($query["page"]) > 0 ? (intval($query["page"]) - 1) * $filters["page[limit]"] : 0;
     }
-
 
     if (isset($query["profile"]) && $query["profile"] !== "all") {
       $theme = $query["profile"];
-      $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties([
-        'vid' => 'vactory_testimonials_profils',
-        'term_2_slug' => $query["profile"]
-      ]);
+      $terms = \Drupal::entityTypeManager()
+        ->getStorage('taxonomy_term')
+        ->loadByProperties([
+          'vid' => 'vactory_testimonials_profils',
+          'term_2_slug' => $query["profile"],
+        ]);
 
       if (!$terms) {
         throw new \Exception("[Testimonials - hook_json_api_collection_alter] term '$theme' not found.");

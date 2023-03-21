@@ -1,0 +1,5 @@
+entity.term_result_count.collection:
+  title: 'Term results count'
+  parent: system.admin_structure
+  description: 'Manage term result count entity.'
+  route_name: entity.term_result_count.collection

@@ -1,0 +1,4 @@
+services:
+  vactory_locator_decoupled.store_manager:
+    class: Drupal\vactory_locator_decoupled\StoreLocatoreManager
+    parent: default_plugin_manager

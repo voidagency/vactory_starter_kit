@@ -11,14 +11,13 @@
     "webflo/drupal-finder": "^1.0.0",
     "symfony/finder": "~2.8|~3.0|~4.0",
     "webmozart/path-util": "^2.3",
-    "facebook/graph-sdk": "~5.0",
     "google/apiclient": "~2.0",
     "commerceguys/addressing": "~1.0",
     "commerceguys/intl": "^0.7.5",
     "lullabot/amp": "^2.0.0",
     "drupal/address": "^1.9",
     "drupal/addtoany": "^1.16",
-    "drupal/advagg": "^4.1.0",
+    "drupal/advagg": "^5.0",
     "drupal/backup_migrate": "^5.1",
     "drupal/better_exposed_filters": "^5.0",
     "drupal/block_class": "^1.3.0",
@@ -45,6 +44,8 @@
     "drupal/yoast_seo": "^2.0.0-alpha4",
     "drupal/nocurrent_pass": "^1.2.0",
     "drupal/paragraphs": "^1.14",
+    "drupal/facets": "^2.0",
+    "drupal/jsonapi_search_api": "^1.0@RC",
     "drupal/pathauto": "^1.10",
     "drupal/persistent_login": "^1.3",
     "drupal/responsive_preview": "^1.0.0",
@@ -65,7 +66,7 @@
     "drupal/mailchimp": "^2.0",
     "drupal/user_registrationpassword": "^1.0.0-alpha5",
     "drupal/views_data_export": "^1.0.0",
-    "drupal/admin_toolbar": "^2.4",
+    "drupal/admin_toolbar": "^3.0",
     "drupal/redirect": "^1.6",
     "drupal/path_redirect_import": "^1.0@beta",
     "drupal/migrate_plus": "^5.3",
@@ -102,7 +103,7 @@
     "drupal/field_group": "^3.1",
     "drupal/csv_serialization": "^2.0",
     "drupal/votingapi": "^3.0@beta",
-    "drupal/amp": "3.x-dev@dev",
+    "drupal/amp": "^3.5",
     "drupal/crop": "^2.1",
     "drupal/devel": "^4.1",
     "drupal/draggableviews": "^2.0",
@@ -110,7 +111,7 @@
     "drupal/easy_install": "^10.4",
     "drupal/entity": "^1.2",
     "drupal/faqfield": "^7.0",
-    "drupal/flood_control": "^2.2",
+    "drupal/flood_control": "^2.3",
     "drupal/search_api": "^1.18",
     "drupal/upgrade_status": "^3.0",
     "drupal/google_tag": "^1.4",
@@ -121,9 +122,9 @@
     "drupal/scheduler": "^1.3",
     "drupal/seckit": "^2.0",
     "drupal/simplify_menu": "^2.1",
-    "drupal/smart_trim": "^1.3",
+    "drupal/smart_trim": "^2.0",
     "drupal/twig_field_value": "^2.0",
-    "drupal/twig_vardumper": "^2.2",
+    "drupal/twig_vardumper": "^3.1",
     "drupal/jquery_ui_checkboxradio": "^1.2",
     "drupal/social_api": "^3.0",
     "drupal/social_auth": "^3.0",
@@ -199,7 +200,8 @@
         "Swiftmailer fix renderPlan method cli breaks": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/e11467100b3dd3c3ee66026b5f6ee781712b214c/swiftmailer-prevent-cli-commands-break.patch"
       },
       "drupal/advagg": {
-        "Remove version comments from minified files.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/9e6eca9bcbd95e7bed7859d54a0c4623a6112e5a/advagg-remove-version-comment-from-minified-js.patch"
+        "Remove version comments from minified files.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/9e6eca9bcbd95e7bed7859d54a0c4623a6112e5a/advagg-remove-version-comment-from-minified-js.patch",
+        "Support PHP 8.1 && remove deprecated class" : "https://www.drupal.org/files/issues/2022-08-02/3258389-40.patch"
       },
       "drupal/colorapi": {
         "Enable colorapi field type by default": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/9e6eca9bcbd95e7bed7859d54a0c4623a6112e5a/colorapi-enable-colorapi-field-type-by-default.patch"
@@ -232,6 +234,15 @@
       },
       "drupal/cloudinary": {
         "Cloudinary video media library compatibility fix": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/f8b1871b3e6dac919f09f96b44176a816d8bb4a2/cloudinary-video-media-library-compatibility-fix.patch"
+      },
+      "drupal/amp": {
+        "Fix deprecated php 8.1 issue rtrim": "https://www.drupal.org/files/issues/2022-11-02/amp-stristr-warning-patch.diff"
+      },
+      "drupal/flag": {
+        "Fix deprecated php 8.1 str_replace": "https://www.drupal.org/files/issues/2022-02-25/3266574-2.patch"
+      },
+      "drupal/paragraphs": {
+        "Core 9.5.0 causing broken-looking styling (Legacy widget, with Seven)": "https://www.drupal.org/files/issues/2023-01-06/core-absolute-position-affecting-paragraphs-3331203-3.patch"
       }
     }
   },

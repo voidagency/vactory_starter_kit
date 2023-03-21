@@ -1,0 +1,13 @@
+name: "word by word text animation"
+multiple: FALSE
+category: "Animated DFs"
+enabled: TRUE
+fields:
+  text:
+    type: text
+    label: "Text"
+    options:
+      "#required": TRUE
+  cta:
+    type: url_extended
+    label: "Call to action"

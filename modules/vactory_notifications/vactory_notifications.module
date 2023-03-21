@@ -6,11 +6,14 @@
  */
 
 use Drupal\Component\Serialization\Json;
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
 use Drupal\node\NodeTypeInterface;
@@ -18,6 +21,7 @@ use Drupal\user\Entity\Role;
 use Drupal\vactory_notifications\Entity\NotificationsEntity;
 use Drupal\views\ViewExecutable;
 use Drupal\user\Entity\User;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 /**
  * Implements hook_theme().
@@ -73,7 +77,8 @@ function vactory_notification_generate($entity) {
   $notification_config = Drupal::config('vactory_notifications.settings');
   $token = Drupal::token();
   $default_langcode = Drupal::languageManager()->getDefaultLanguage()->getId();
-  $source_translated_node = Drupal::service('entity.repository')->getTranslationFromContext($entity, $default_langcode);
+  $source_translated_node = Drupal::service('entity.repository')
+    ->getTranslationFromContext($entity, $default_langcode);
   $node_notification_title = !empty($source_translated_node->get('notification_title')->value) ? $source_translated_node->get('notification_title')->value : $notification_config->get('notifications_default_title');
   $node_notification_message = !empty($source_translated_node->get('notification_message')->value) ? $source_translated_node->get('notification_message')->value : $notification_config->get('notifications_default_message');
   $notification_users_ids = $notification_manager->getNotificationsUsersIds($entity->bundle());
@@ -253,12 +258,12 @@ function vactory_notifications_entity_base_field_info(EntityTypeInterface $entit
       ->setLabel(t('Generate notification'))
       ->setDescription(t('Check this to generate a notification for this content'))
       ->setDefaultValue(1)
-      ->setDisplayOptions('form', array(
+      ->setDisplayOptions('form', [
         'type' => 'boolean_checkbox',
-        'settings' => array(
+        'settings' => [
           'display_label' => TRUE,
-        ),
-      ))
+        ],
+      ])
       ->setDisplayConfigurable('form', TRUE);
   }
   return $fields;
@@ -284,12 +289,12 @@ function vactory_notifications_form_alter(&$form, FormStateInterface $form_state
 function vactory_notifications_form_node_form_alter(&$form) {
   $notifications_config = Drupal::config('vactory_notifications.settings');
   $form['node_notifications'] = [
-    '#type'        => 'details',
-    '#title'       => t('Notifications settings'),
+    '#type' => 'details',
+    '#title' => t('Notifications settings'),
     '#description' => t('Override current node notifications title and message.'),
-    '#group'       => 'advanced',
-    '#open'        => FALSE,
-    '#access'      => \Drupal::currentUser()
+    '#group' => 'advanced',
+    '#open' => FALSE,
+    '#access' => \Drupal::currentUser()
       ->hasPermission('administer notifications'),
   ];
   $form['node_notifications']['notifications_tokens_tree'] = get_token_tree();
@@ -299,9 +304,11 @@ function vactory_notifications_form_node_form_alter(&$form) {
   $route_name = Drupal::routeMatch()->getRouteName();
   $langcode = Drupal::languageManager()->getCurrentLanguage()->getId();
   $default_langcode = Drupal::languageManager()->getDefaultLanguage()->getId();
-  $notification_config_translation = Drupal::configFactory()->getEditable('vactory_notifications.settings');
+  $notification_config_translation = Drupal::configFactory()
+    ->getEditable('vactory_notifications.settings');
   if ($langcode !== $default_langcode) {
-    $notification_config_translation = Drupal::languageManager()->getLanguageConfigOverride($langcode, 'vactory_notifications.settings');
+    $notification_config_translation = Drupal::languageManager()
+      ->getLanguageConfigOverride($langcode, 'vactory_notifications.settings');
   }
   if (!isset($form['notification_title']['widget'][0]['value']['#default_value']) || $route_name === 'entity.node.content_translation_add') {
     $form['notification_title']['widget'][0]['value']['#default_value'] = $notification_config_translation->get('notifications_default_title') ?? $notifications_config->get('notifications_default_title');
@@ -312,12 +319,12 @@ function vactory_notifications_form_node_form_alter(&$form) {
 
   // Mail notification.
   $form['node_mail'] = [
-    '#type'        => 'details',
-    '#title'       => t('Mail Notifications settings'),
+    '#type' => 'details',
+    '#title' => t('Mail Notifications settings'),
     '#description' => t('Override current node mail notifications subject and message.'),
-    '#group'       => 'advanced',
-    '#open'        => FALSE,
-    '#access'      => \Drupal::currentUser()
+    '#group' => 'advanced',
+    '#open' => FALSE,
+    '#access' => \Drupal::currentUser()
       ->hasPermission('administer notifications'),
   ];
   $form['node_mail']['notifications_tokens_tree'] = get_token_tree();
@@ -355,7 +362,8 @@ function vactory_notifications_views_pre_render(ViewExecutable $view) {
     $filters = $view->filter;
     if (isset($filters['notification_concerned_users'])) {
       $filter_value = $filters['notification_concerned_users']->value;
-      $uid = $filter_value['concerned_user'] === 'current_user' ? Drupal::currentUser()->id() : $filter_value['user'];
+      $uid = $filter_value['concerned_user'] === 'current_user' ? Drupal::currentUser()
+        ->id() : $filter_value['user'];
       if (!empty($uid)) {
         // Get not viewed yet notifications list.
         $query = \Drupal::entityQuery('notifications_entity')
@@ -412,29 +420,26 @@ function get_token_tree() {
 }
 
 /**
- * Implements hook_cron().
+ * Clear expired notifications entities batch operation.
  */
-function vactory_notifications_cron() {
-  $notifications = NotificationsEntity::loadMultiple();
-  $languages = \Drupal::languageManager()->getLanguages();
-  foreach ($notifications as $notification) {
-    $created = DrupalDateTime::createFromTimestamp($notification->get('created')->value);
-    $current_date = DrupalDateTime::createFromTimestamp(time(), new \DateTimeZone('UTC'));
-    $date_diff = $created->getPhpDateTime()->diff($current_date->getPhpDateTime())->days;
-    $config = Drupal::configFactory()->get('vactory_notifications.settings');
-    // Check if the current notification lifetime is finish then delete it.
-    if ($date_diff > $config->get('notifications_lifetime')) {
-      // Delete notification translations if exist.
-      foreach ($languages as $language) {
-        try {
-          $notification->removeTranslation($language->getId());
-        }
-        catch (\InvalidArgumentException $e) {
-        }
-      }
-      // Delete the notification entity.
-      $notification->delete();
-    }
+function vactory_notifications_batch_delete($ids, &$context) {
+  if (!empty($ids)) {
+    $notifications_storage = Drupal::entityTypeManager()->getStorage('notifications_entity');
+    $entities = $notifications_storage->loadMultiple($ids);
+    $notifications_storage->delete($entities);
+  }
+}
+
+/**
+ * Implements batch finished callback.
+ */
+function vactory_notification_clean_finished($success, $results, $operations) {
+  $console_output = new ConsoleOutput();
+  if ($success) {
+    $console_output->writeln('<info>Expired notifications entities has been successfully cleaned</info>');
+  }
+  else {
+    $console_output->writeln('<error>Finished with an error.</error>');
   }
 }
 
@@ -449,5 +454,29 @@ function vactory_notifications_mail($key, &$message, $params) {
       $message['body'][] = $params['message'];
       $message['options'] = $params['options'];
       break;
+  }
+}
+
+/**
+ * Implements hook_jsonapi_entity_filter_access().
+ */
+function vactory_notifications_jsonapi_entity_filter_access(EntityTypeInterface $entity_type, AccountInterface $account) {
+  if ($entity_type->id() === 'notifications_entity') {
+    return ([
+      JSONAPI_FILTER_AMONG_ALL => AccessResult::allowedIfHasPermission($account, 'view notifications'),
+    ]);
+  }
+}
+
+/**
+ * Implements hook_entity_access().
+ */
+function vactory_notifications_entity_access(EntityInterface $entity, $operation, AccountInterface $account) {
+  if ($entity instanceof NotificationsEntity) {
+    $concernedUsers = $entity->getConcernedUsers();
+    if (is_array($concernedUsers) && $concernedUsers != [] && in_array($account->id(), $concernedUsers)) {
+      return AccessResult::allowed();
+    }
+    return AccessResult::forbidden();
   }
 }

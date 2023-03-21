@@ -134,7 +134,7 @@ class VactoryHtml2PdfManager {
     $mpdf->WriteHTML($htmlContent);
     $file = $dirname . '/' . $file_name;
     $mpdf->Output($file, 'F');
-    $url = file_create_url($file);
+    $url = \Drupal::service('file_url_generator')->generateAbsoluteString($file);
     return [
       'url' => $url,
       'uri' => $file,

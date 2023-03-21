@@ -1,0 +1,21 @@
+{
+    "name": "voidagency/vactory_notifications",
+    "description": "This extension provides new commands for Drush.",
+    "type": "drupal-drush",
+    "authors": [
+        {
+            "name": "Brahim KHOUY",
+            "email": "b.khouy@void.fr"
+        }
+    ],
+    "require": {
+        "php": ">=5.6.0"
+    },
+    "extra": {
+        "drush": {
+            "services": {
+                "drush.services.yml": "^9"
+            }
+        }
+    }
+}
