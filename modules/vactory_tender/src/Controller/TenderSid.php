@@ -76,12 +76,12 @@ class TenderSid extends ControllerBase
     try {
       $decrypted_sid = $this->vactoryDevTools->decrypt($sid);
 
-      if ($decrypted_sid == null) {
-        $response['message'] = $this->t("Error: Not a valid sid");
-        return new JsonResponse($response, 400);
-      }
         $decrypted_sid = str_replace('vactory_tender', '', $decrypted_sid);
 
+        if ($decrypted_sid == null) {
+                $response['message'] = $this->t("Error: Not a valid sid");
+                return new JsonResponse($response, 400);
+        }
         // Load node from submission.
         $webform_submission = WebformSubmission::load($decrypted_sid);
 
@@ -97,15 +97,17 @@ class TenderSid extends ControllerBase
         }
         $data = $webform_submission->getData();
 
-        $node =  $this-> entityTypeManager->getStorage('node')->load($data['tender']);
+        $node = $this-> entityTypeManager->getStorage('node')->load($data['tender']);
         $mid = $node->get('field_vactory_media_file')
         ->getValue()[0]['target_id'];
         $media = Media::load($mid);
         $fid = $media->getSource()->getSourceFieldValue($media);
         $file = File::load($fid);
+
         if ($file) {
           $url = $this->streamWrapperManager->getViaUri($file->getFileUri())->getExternalUrl();
           return new JsonResponse($url, 200);
+
         } else {
           $response['message'] = $this->t("Error: Missing File");
           return new JsonResponse($response, 400);
