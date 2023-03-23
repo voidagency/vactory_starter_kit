@@ -1,0 +1,22 @@
+name: "Cta full image centred - V2"
+multiple: true
+category: "Animated DFs"
+enabled: TRUE
+fields:
+  image:
+    type: image
+    label: "image"
+    options:
+      "#required": TRUE
+  title:
+    type: text
+    label: "title"
+    options:
+      "#required": TRUE
+  content:
+    type: text_format
+    label: "Content"
+  link:
+    type: url_extended
+    label: "link"
+
