@@ -162,20 +162,23 @@ function vactory_blog_jsonapi_vcc_normalized_node_alter(&$normalized_node, $cont
       // Get term.
       $term_field_name = 'field_blog_category';
       $news_term_tid = $node->get($term_field_name)->target_id ?? NULL;
-      $term_label = '';
+      $term = '';
       if ($news_term_tid != NULL) {
         $new_term = Term::load($news_term_tid);
         if ($new_term != NULL) {
           $new_term_trans = $term = \Drupal::service('entity.repository')
             ->getTranslationFromContext($new_term);
-          $term_label = $new_term_trans->label();
+          $term = [
+            'name' => $new_term_trans->label(),
+            'slug' => $new_term_trans->get('term_2_slug')->value ?? '',
+          ];
         }
       }
 
       $normalized_node = [
         'id' => $node->id(),
         'image' => $result[$output_field_name],
-        'tag' => $term_label,
+        'tag' => $term,
         'title' => $node->label(),
         'excerpt' => $node->get('field_vactory_excerpt')->getValue(),
         'url' => $node->toUrl()->toString(),
