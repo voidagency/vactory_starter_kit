@@ -164,3 +164,10 @@ vactory_decoupled.login_token:
   requirements:
     _access: 'TRUE'
     _format: 'json'
+vactory_decoupled.check_shield:
+  path: '/api/check-shield'
+  defaults:
+    _controller: '\Drupal\vactory_decoupled\Controller\checkShieldController::checkShield'
+    _title: 'Check Shield module status'
+  requirements:
+    _permission: 'access content'
