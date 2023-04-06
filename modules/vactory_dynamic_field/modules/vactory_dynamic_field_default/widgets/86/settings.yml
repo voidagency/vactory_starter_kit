@@ -1,0 +1,23 @@
+name: "Timeline - V2"
+multiple: true
+category: "Animated DFs"
+enabled: TRUE
+fields:
+  image:
+    type: image
+    label: "image"
+    options:
+      "#required": TRUE
+  date:
+    type: text
+    label: "date"
+    options:
+      "#required": TRUE
+  content:
+    type: textarea
+    label: "Content"
+    options:
+      "#required": TRUE
+  link:
+    type: url_extended
+    label: "link"
