@@ -516,8 +516,12 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
         // Webform.
         if ($info['type'] === 'webform_decoupled' && !empty($value)) {
           $webform_id = $value['id'];
+          // Cache tags.
           $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), ['webform_submission_list', 'config:webform_list']);
           $this->cacheability->setCacheTags($cacheTags);
+          // Cache contexts.
+          $cacheContexts = Cache::mergeContexts($this->cacheability->getCacheContexts() , ['user']);
+          $this->cacheability->setCacheContexts($cacheContexts);
           $value['elements'] = $this->webformNormalizer->normalize($webform_id);
         }
 
