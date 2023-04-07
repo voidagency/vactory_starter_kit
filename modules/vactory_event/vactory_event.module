@@ -348,25 +348,31 @@ function vactory_event_jsonapi_vcc_normalized_node_alter(&$normalized_node, $con
       // Get term.
       $term_field_name = 'field_vactory_taxonomy_1';
       $event_term_tid = $node->get($term_field_name)->target_id ?? NULL;
-      $term_label = '';
+      $term_tag = '';
       if ($event_term_tid != NULL) {
         $new_term = Term::load($event_term_tid);
         if ($new_term != NULL) {
           $new_term_trans = $term = \Drupal::service('entity.repository')
             ->getTranslationFromContext($new_term);
-          $term_label = $new_term_trans->label();
+          $term_tag = [
+            'name' => $new_term_trans->label(),
+            'slug' => $new_term_trans->get('term_2_slug')->value ?? null,
+          ];
         }
       }
 
       $term_field_name2 = 'field_vactory_taxonomy_2';
       $city_term_tid = $node->get($term_field_name2)->target_id ?? NULL;
-      $city_label = '';
+      $city_tag = '';
       if ($city_term_tid != NULL) {
         $new_term = Term::load($city_term_tid);
         if ($new_term != NULL) {
           $new_term_trans = $term = \Drupal::service('entity.repository')
             ->getTranslationFromContext($new_term);
-          $city_label = $new_term_trans->label();
+          $city_tag = [
+            'name' => $new_term_trans->label(),
+            'slug' => $new_term_trans->get('term_2_slug')->value ?? null,
+          ];
         }
       }
 
@@ -374,8 +380,8 @@ function vactory_event_jsonapi_vcc_normalized_node_alter(&$normalized_node, $con
         'id' => $node->id(),
         'image' => $result[$output_field_name],
         'date' => $resultDate,
-        'tag' => $term_label,
-        'city' => $city_label,
+        'tag' => $term_tag,
+        'city' => $city_tag,
         'title' => $node->label(),
         'excerpt' => $node->get('field_vactory_excerpt')->getValue(),
         'url' => $node->toUrl()->toString(),
