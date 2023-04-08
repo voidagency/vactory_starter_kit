@@ -243,9 +243,6 @@
       },
       "drupal/paragraphs": {
         "Core 9.5.0 causing broken-looking styling (Legacy widget, with Seven)": "https://www.drupal.org/files/issues/2023-01-06/core-absolute-position-affecting-paragraphs-3331203-3.patch"
-      },
-      "drupal/jsonapi_search_api": {
-        "Invalide caches when facets changes": "https://gist.githubusercontent.com/khalidbouhouch77/0b6ff3d7cbb09300eb882b8a8dcc4db3/raw/abbb86706541e02b49c7c56faca5b695975f9660/invalide-cache-when-facets-changes.patch"
       }
     }
   },
