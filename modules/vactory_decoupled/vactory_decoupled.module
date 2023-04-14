@@ -514,7 +514,7 @@ function _vactory_decoupled_user_pass_reset_url($account, $options = []) {
   $langcode = $language ?? $account->getPreferredLangcode();
   $data = [
     'uid' => $account->id(),
-    'timestamp' => $timestamp,
+    'timestamp' => $timestamp + \Drupal::config('user.settings')->get('password_reset_timeout'),
     'hash' => user_pass_rehash($account, $timestamp),
   ];
 
