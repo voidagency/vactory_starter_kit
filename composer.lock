@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3a42d0e1c13ef8bf781b144410993b71",
+    "content-hash": "0bafe293d41150552bb609632d8e9ff4",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -9478,17 +9478,17 @@
         },
         {
             "name": "drupal/time_range",
-            "version": "2.0.1",
+            "version": "9.0.1",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/time_range.git",
-                "reference": "2.0.1"
+                "reference": "9.0.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/time_range-2.0.1.zip",
-                "reference": "2.0.1",
-                "shasum": "cba57c92bae0fda8a1fc7690ade0f3bce9e8b425"
+                "url": "https://ftp.drupal.org/files/projects/time_range-9.0.1.zip",
+                "reference": "9.0.1",
+                "shasum": "eabaf3f38dc40cf0929974f85b893eb5630d263b"
             },
             "require": {
                 "drupal/core": "^8 || ^9 || ^10"
@@ -9496,8 +9496,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "2.0.1",
-                    "datestamp": "1656671002",
+                    "version": "9.0.1",
+                    "datestamp": "1673027373",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -19556,5 +19556,5 @@
         "php": ">=7.3"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.3.0"
 }
