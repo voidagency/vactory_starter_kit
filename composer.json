@@ -78,7 +78,7 @@
     "drupal/stage_file_proxy": "^1.0",
     "drupal/wysiwyg_template": "2.3.0",
     "drupal/wysiwyg_template_core": "2.3.0",
-    "drupal/editor_advanced_link": "^1.8",
+    "drupal/editor_advanced_link": "^2.1",
     "drupal/media_responsive_thumbnail": "^1.5",
     "drupal/password_policy": "^3.0@beta",
     "drupal/block_blacklist": "^1.1.0",
