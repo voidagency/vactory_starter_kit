@@ -2,3 +2,6 @@ services:
   vactory_rate.vote:
     class: Drupal\vactory_rate\RateVote
     arguments: ['@entity_type.manager', '@plugin.manager.votingapi.resultfunction', '@database', '@rate.bot_detector', '@current_user', '@messenger']
+  vactory_rate.rate:
+    class: Drupal\vactory_rate\Controller\VoteController
+    arguments: ['@config.factory','@entity_type.manager', '@cache_tags.invalidator', '@renderer', '@vactory_rate.vote', '@plugin.manager.votingapi.resultfunction']
