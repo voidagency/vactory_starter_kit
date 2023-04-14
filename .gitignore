@@ -22,3 +22,6 @@
 bower_components
 node_modules
 vendor
+cghooks.lock
+.vscode
+

@@ -160,9 +160,19 @@
     "drupal/video_embed_field": "^2.4"
   },
   "require-dev": {
-    "squizlabs/php_codesniffer": "^3.3"
+    "squizlabs/php_codesniffer": "^3.3",
+    "drupal/coder": "8.3.13",
+    "brainmaestro/composer-git-hooks": "^2.8"
   },
   "extra": {
+    "hooks": {
+      "pre-commit": [
+        "source scripts/githooks/pre_commit.sh"
+      ],
+      "commit-msg": "source scripts/githooks/commit_message.sh",
+      "post-merge": "source scripts/githooks/post_merge.sh",
+      "pre-push": []
+    },
     "php-composter-phpcs-drupal": {
       "standard": "DrupalPractice"
     },
@@ -268,6 +278,14 @@
       }
     }
   ],
+  "scripts": {
+    "post-install-cmd": [
+      "vendor/bin/cghooks add --ignore-lock || echo 'cghooks not found'"
+    ],
+    "post-update-cmd": [
+      "vendor/bin/cghooks update || echo 'cghooks not found'"
+    ]
+  },
   "config": {
     "disable-tls": true,
     "secure-http": false
