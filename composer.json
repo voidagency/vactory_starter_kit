@@ -20,7 +20,7 @@
     "drupal/advagg": "^5.0",
     "drupal/backup_migrate": "^5.1",
     "drupal/better_exposed_filters": "^5.0",
-    "drupal/block_class": "^1.3.0",
+    "drupal/block_class": "^2.0.11",
     "drupal/block_field": "^1.0.0-rc1",
     "drupal/captcha": "^1.1",
     "drupal/coffee": "1.x-dev@dev",
