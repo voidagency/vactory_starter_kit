@@ -49,7 +49,7 @@ class VoteEntityFieldItemList extends FieldItemList
     $voting_results = $this->rate->results($entity_type, $entity_id);
     $results = json_decode($voting_results->getContent(),true);
     $this->cacheMetadata->addCacheContexts(['user']);
-    $this->cacheMetadata->addCacheTags(['vote']);
+    $this->cacheMetadata->addCacheTags(['vote_list']);
 
     $this->list[0] = $this->createItem(0, $results);
   }
