@@ -725,15 +725,21 @@ function vactory_decoupled_jsonapi_resource_config_builder($entity_type, Jsonapi
  */
 function vactory_decoupled_preprocess_page(&$variables) {
   $route_name = \Drupal::routeMatch()->getRouteName();
+  $current_domain = \Drupal::request()->getHttpHost();
   if ($route_name === 'system.404') {
+    // Redirect backend not found pages to frontend.
     redirectToFrontend(TRUE);
   }
   if ($base_media_url = Settings::get('BASE_MEDIA_URL', '')) {
-    $current_domain = \Drupal::request()->getHttpHost();
     $media_url_info = parse_url($base_media_url);
     if (isset($media_url_info['host']) && $media_url_info['host'] === $current_domain) {
+      // Redirect none existant media to frontend.
       redirectToFrontend();
     }
+  }
+  if (str_starts_with($current_domain, 'api.')) {
+    // Redirect website html pages access via api domain to frontend.
+    redirectToFrontend();
   }
 }
 
