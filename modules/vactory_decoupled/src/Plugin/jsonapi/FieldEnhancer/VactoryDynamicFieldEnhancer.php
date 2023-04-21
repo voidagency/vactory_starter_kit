@@ -510,6 +510,8 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
 
           $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $cache['tags']);
           $this->cacheability->setCacheTags($cacheTags);
+          $cacheContexts = Cache::mergeContexts($this->cacheability->getCacheContexts(), $cache['contexts']);
+          $this->cacheability->setCacheContexts($cacheContexts);
           $value = $response;
         }
 
@@ -553,6 +555,8 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
 
           $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $cache['tags']);
           $this->cacheability->setCacheTags($cacheTags);
+          $cacheContexts = Cache::mergeContexts($this->cacheability->getCacheContexts(), $cache['contexts']);
+          $this->cacheability->setCacheContexts($cacheContexts);
           $value = $response;
         }
 
