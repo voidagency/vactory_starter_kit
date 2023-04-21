@@ -190,6 +190,7 @@ class JsonApiGenerator {
     }
     $parsed['optional_filters_data'] = $config['optional_filters_data'] ?? [];
     $hook_context['cache_tags'] = [];
+    $hook_context['cache_contexts'] = [];
     $this->moduleHandler->alter('json_api_collection', $parsed, $hook_context);
     unset($parsed['optional_filters_data']);
     parse_str(http_build_query($parsed), $query_filters);
@@ -198,7 +199,8 @@ class JsonApiGenerator {
     $response = $this->client->serialize($resource, $query_filters);
     $exposedTerms = $this->getExposedTerms($exposed_vocabularies);
     $response['cache']['tags'] = Cache::mergeTags($response['cache']['tags'], $exposedTerms['cache_tags'], $hook_context['cache_tags']);
-
+    $response['cache']['contexts'] = Cache::mergeContexts($response['cache']['contexts'] ?? [], $hook_context['cache_contexts']);
+    
     $client_data = json_decode($response['data']);
 
     // For entityqueue, we cannot use JSON:API sorting mecanism as we don't have any field attached to entities
