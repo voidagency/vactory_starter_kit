@@ -43,7 +43,8 @@ class DynamicFieldSettingsForm extends ConfigFormBase {
     $form['is_dropdown_select_templates'] = [
       '#type' => 'checkbox',
       '#title' => t('Enable dropdown select templates mode.'),
-      '#default_value' => $this->config('vactory_dynamic_field.settings')->get('is_dropdown_select_templates'),
+      '#default_value' => $this->config('vactory_dynamic_field.settings')
+        ->get('is_dropdown_select_templates'),
       '#description' => t('Uncheck it to have a templates listing with thumbnail.'),
     ];
 
@@ -51,8 +52,9 @@ class DynamicFieldSettingsForm extends ConfigFormBase {
       '#type' => 'textarea',
       '#title' => t('Excluded widgets'),
       '#attributes' => ['data-yaml-editor' => 'true'],
-      '#default_value' => $this->config('vactory_dynamic_field.settings')->get('excluded_widgets'),
-      '#description' => $this->t('You can check this video https://www.loom.com/share/33c314e4373f4ad395cc21908f10b7b5 to see how it works.')
+      '#default_value' => $this->config('vactory_dynamic_field.settings')
+        ->get('excluded_widgets'),
+      '#description' => 'You can check this <a target="_blank" href="https://gist.githubusercontent.com/khalidbouhouch77/156d2f52b6d6d7c10712a5250326da12/raw/4dd765097dbc365f6b16348d827ee4f4145ac1f8/disble-dynamic-fields-examples.txt">link</a> to see some examples.',
     ];
 
     return $form;
