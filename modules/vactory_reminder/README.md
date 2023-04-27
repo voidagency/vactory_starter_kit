@@ -60,7 +60,7 @@ directory and annotated with `@Reminder` annotation:
 
        }
 
-Vactory reminder is by default providing two reminder plugins which are:
+#### Vactory reminder provides by default two reminder plugins which are:
 * Mail (With plugin ID "mail"): For sending emails.
 
   Require extra data params:
@@ -124,9 +124,6 @@ The module settings form is accessible under `/admin/config/vactory-reminder`
 ## Add a reminder task to queue
 The module expose a service to add new tasks to reminder queue:
 
-    // Reminder consumer ID (This will be used to get date interval from
-    // module settings), based on above example the date interval is +1 hour.
-    $consumer_id = 'vactory_academy_inscription_mail';
     // Reminder plugin ID.
     $plugin_id = 'mail';
     // Extra data example with an exact date case.
@@ -149,13 +146,49 @@ The module expose a service to add new tasks to reminder queue:
       added to queue',
     ];
 
-    // Create a reminder (Add to reminder queue).
-    $reminder_manager = Drupal::service('vactory_reminder.queue.manager');
-    $reminder_manager->reminderQueuePush(
-      $consumer_id,
-      $plugin_id,
-      $extra
-    );
+    // Now we have two options:
+
+    //---------------------------------------------------------------------//
+    //    Option 1: Invoke an existing consumer ID                         //
+    //---------------------------------------------------------------------//
+    // Reminder consumer ID (This will be used to get date interval from
+    // module settings), based on above example the date interval is +1 hour.
+      $consumer_id = 'vactory_academy_inscription_mail';
+      // Create a reminder (Add to reminder queue).
+      $reminder_manager = Drupal::service('vactory_reminder.queue.manager');
+      $reminder_manager->reminderQueuePush($consumer_id, $plugin_id, $extra);
+    //---------------------------------------------------------------------//
+    
+    //---------------------------------------------------------------------//
+    //    Option 2: Directly give a valid php time interval string         //
+    //---------------------------------------------------------------------//
+      $interval = '-1 day';
+      // Create a reminder (Add to reminder queue).
+      $reminder_manager = Drupal::service('vactory_reminder.queue.manager');
+      $reminder_manager->reminderQueuePush(NULL, $plugin_id, $extra, $interval);
+    //---------------------------------------------------------------------//
+
+    //---------------------------------------------------------------------//
+    //    Option 3: refer to an existing entity reminder interval field    //
+    //---------------------------------------------------------------------//
+    // Interval field infos should be specified in extra data array:
+      $extra = [
+        'date' => time(),
+        'interval' => [
+          'entity_type' => 'node',
+          'entity_id' => $node->id(),
+          'reminder_field_name' => 'field_reminder_interval',
+        ],
+        'subject' => 'Reminder Example',
+        'email' => 'b.khouy@void.fr',
+        'message' => 'Hello Brahim, this mail Has been sent one hour after being
+                      added to queue',
+      ];
+      // Create a reminder (Add to reminder queue).
+      $reminder_manager = Drupal::service('vactory_reminder.queue.manager');
+      $reminder_manager->reminderQueuePush(NULL, $plugin_id, $extra);
+    //---------------------------------------------------------------------//
+
 
 ## Cron
 The module add a new cron job which runs, by default, every 5 minutes.
