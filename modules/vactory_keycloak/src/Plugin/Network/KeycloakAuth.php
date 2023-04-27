@@ -7,6 +7,7 @@ use Drupal\social_api\SocialApiException;
 use Drupal\social_auth\Plugin\Network\NetworkBase;
 use Drupal\vactory_keycloak\Settings\KeycloakAuthSettings;
 use pviojo\OAuth2\Client\Provider\Keycloak;
+use GuzzleHttp\Client as HttpClient;
 
 /**
  * Defines a Network Plugin for Social Auth Keycloak.
@@ -44,7 +45,7 @@ class KeycloakAuth extends NetworkBase implements KeycloakAuthInterface {
       throw new SocialApiException(sprintf('The PHP League OAuth2 library for Keycloak not found. Class: %s.', $class_name));
     }
 
-    /* @var \Drupal\vactory_keycloak\Settings\KeycloakAuthSettings $settings */
+    /** @var \Drupal\vactory_keycloak\Settings\KeycloakAuthSettings $settings */
     $settings = $this->settings;
 
     if ($this->validateConfig($settings)) {
@@ -57,7 +58,12 @@ class KeycloakAuth extends NetworkBase implements KeycloakAuthInterface {
         'redirectUri'           => Url::fromRoute('vactory_keycloak.callback')->setAbsolute()->toString(),
       ];
 
-      return new Keycloak($league_settings);
+      return new Keycloak($league_settings, [
+        'httpClient' => new HttpClient([
+          'timeout' => 0,
+          'verify' => FALSE,
+        ]),
+      ]);
     }
 
     return FALSE;
