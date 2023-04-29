@@ -53,7 +53,7 @@ class VactoryLangCodeEnhancer extends ResourceFieldEnhancerBase implements Conta
       $configuration,
       $plugin_id,
       $plugin_definition,
-      '@language_manager'
+      $container->get('language_manager'),
     );
   }
 
