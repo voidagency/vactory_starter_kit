@@ -175,7 +175,7 @@ class ModalForm extends FormBase {
       // Which don't have _weight field yet.
       $widget_weight = 1;
       foreach ($this->widgetData as &$component) {
-        if (!isset($component['_weight'])) {
+        if (!isset($component['_weight']) && is_array($component)) {
           $component['_weight'] = $widget_weight++;
         }
       }
