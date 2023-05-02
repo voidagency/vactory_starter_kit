@@ -22,5 +22,4 @@ dependencies:
   - 'social_media_links:social_media_links_field'
   - 'vactory_banner:vactory_banner'
   - 'vactory_core:vactory_core'
-  - 'vactory_vcc:vactory_vcc'
 package: Vactory
