@@ -33,7 +33,7 @@ resourceFields:
     fieldName: langcode
     publicName: langcode
     enhancer:
-      id: vactory_langcode
+      id: ''
   type:
     disabled: false
     fieldName: type
