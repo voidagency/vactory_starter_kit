@@ -1,0 +1,6 @@
+name: Vactory UX Notes
+type: module
+description: Ce module permet aux utilisateurs de noter leurs expériences sur le site.
+package: Vactory
+core: 8.x
+core_version_requirement: ^8 || ^9
