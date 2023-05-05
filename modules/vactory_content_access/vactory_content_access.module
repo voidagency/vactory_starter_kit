@@ -5,6 +5,7 @@
  * Contain related hooks.
  */
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
@@ -127,7 +128,7 @@ function vactory_content_access_preprocess_node(&$variables) {
   $node = $variables['node'];
   if (!empty($node) && isset($node)) {
     $config = \Drupal::config('vactory_content_access.settings');
-    $node_types = NodeType::loadMultiple();
+    $node_types = \Drupal::service('entity_type.bundle.info')->getBundleInfo('node');
     $types = [];
     foreach ($node_types as $key => $value) {
       $is_access_content = $config->get($key . '_content_type');
@@ -163,20 +164,19 @@ function vactory_content_access_preprocess_node(&$variables) {
  */
 function vactory_content_access_node_access_records(NodeInterface $node) {
   $grants = [];
-  $config = \Drupal::config('vactory_content_access.settings');
-  $node_types = NodeType::loadMultiple();
-  $types = [];
-  foreach ($node_types as $key => $value) {
-    $is_access_listing = $config->get($key . '_listing_access');
-    if (isset($is_access_listing) && $is_access_listing == 1) {
-      array_push($types, $key);
-    }
-  }
-
   if ($node->isPublished()) {
+    $config = \Drupal::config('vactory_content_access.settings');
+    $node_types = \Drupal::service('entity_type.bundle.info')->getBundleInfo('node');
+    $types = [];
+    foreach ($node_types as $key => $value) {
+      $is_access_listing = $config->get($key . '_listing_access');
+      if (isset($is_access_listing) && $is_access_listing == 1) {
+        array_push($types, $key);
+      }
+    }
     if (in_array($node->bundle(), $types) && isPrivateNode($node)) {
       $grants[] = [
-        'realm' => 'access_content_access_realm',
+        'realm' => 'vactory_content_access',
         'gid' => $node->id(),
         'grant_view' => 1,
         'grant_update' => 0,
@@ -194,15 +194,15 @@ function vactory_content_access_node_access_records(NodeInterface $node) {
  */
 function isPrivateNode(NodeInterface $node) {
   $count = 0;
-  if ($node->hasField('field_content_access_groups') && $node->get('field_content_access_groups')->getValue() != []) {
+  if ($node->hasField('field_content_access_groups') && !empty($node->get('field_content_access_groups')->getValue())) {
     $count++;
   }
 
-  if ($node->hasField('field_content_access_users') && $node->get('field_content_access_users')->getValue() != []) {
+  if ($node->hasField('field_content_access_users') && !empty($node->get('field_content_access_users')->getValue())) {
     $count++;
   }
 
-  if ($node->hasField('field_content_access_roles') && $node->get('field_content_access_roles')->getValue() != []) {
+  if ($node->hasField('field_content_access_roles') && !empty($node->get('field_content_access_roles')->getValue())) {
     $count++;
   }
 
@@ -218,16 +218,6 @@ function isPrivateNode(NodeInterface $node) {
 function vactory_content_access_node_grants(AccountInterface $account, $op) {
   $grants = [];
   if ($op == 'view') {
-    $config = \Drupal::config('vactory_content_access.settings');
-    $node_types = NodeType::loadMultiple();
-    $types = [];
-    foreach ($node_types as $key => $value) {
-      $is_access_listing = $config->get($key . '_listing_access');
-      if (isset($is_access_listing) && $is_access_listing == 1) {
-        array_push($types, $key);
-      }
-    }
-
     $user = Drupal::entityTypeManager()->getStorage('user')
       ->load($account->id());
 
@@ -235,10 +225,19 @@ function vactory_content_access_node_grants(AccountInterface $account, $op) {
     $cid = 'vactory_users_grants_' . $user->id() . $user->get('name')->value;
     $user_grants = !empty(Drupal::cache()->get($cid)) ? Drupal::cache()->get($cid)->data : [];
     if (empty($user_grants)) {
+      $config = \Drupal::config('vactory_content_access.settings');
+      $node_types = \Drupal::service('entity_type.bundle.info')->getBundleInfo('node');
+      $types = [];
+      foreach ($node_types as $key => $value) {
+        $is_access_listing = $config->get($key . '_listing_access');
+        if (isset($is_access_listing) && $is_access_listing == 1) {
+          array_push($types, $key);
+        }
+      }
       // Get user grants IDs.
       $user_grants = get_user_grants($user, $types);
     }
-    $grants['access_content_access_realm'] = $user_grants;
+    $grants['vactory_content_access'] = $user_grants;
 
   }
   return $grants;
@@ -250,15 +249,16 @@ function vactory_content_access_node_grants(AccountInterface $account, $op) {
 function get_user_grants($user, $types) {
   $cid = 'vactory_users_grants_' . $user->id() . $user->get('name')->value;
   $user_grants = !empty(Drupal::cache()->get($cid)) ? Drupal::cache()->get($cid)->data : [];
-  $is_accessible_services = \Drupal::service('vactory_content_access.access_manager');
-  if (empty($user_grants)) {
+  if (empty($user_grants) && !empty($types)) {
     $user_grants = [];
     // Load all private content.
     $nodes = Drupal::entityTypeManager()->getStorage('node')
       ->loadByProperties([
         'status' => 1,
+        'type' => $types,
       ]);
     if (!empty($nodes)) {
+      $is_accessible_services = \Drupal::service('vactory_content_access.access_manager');
       foreach ($nodes as $node) {
         $is_accessible = $is_accessible_services->isAccessible($node, $types, 'field_content_access_groups', 'field_content_access_users', 'field_content_access_roles', $user);
         // Check if user has access to node then use node id as grant id.
@@ -274,21 +274,23 @@ function get_user_grants($user, $types) {
 }
 
 /**
- * Rebuild nodes access function.
+ * Implements hook_ENTITY_TYPE_presave().
  */
-function rebuild_nodes_access($nids, &$context) {
-  $message = 'Rebuild access ALL Nodes ...';
-  $results = [];
-  if (!empty($nids)) {
-    foreach ($nids as $nid) {
-      $node = Node::load($nid);
-      if (isset($node)) {
-        $results[] = $node->save();
-      }
-    }
+function vactory_content_access_node_presave(EntityInterface $entity) {
+  $config = \Drupal::config('vactory_content_access.settings');
+  $bundle = $entity->bundle();
+  $is_access_listing = $config->get($bundle . '_listing_access');
+  if ($is_access_listing) {
+    flush_user_access_cache();
   }
-  $context['message'] = $message;
-  $context['results'] = $results;
+}
+
+/**
+ * Flush vactory content access users grants cache.
+ */
+function flush_user_access_cache() {
+  Drupal::database()->query("DELETE FROM cache_default WHERE cid LIKE 'vactory_users_grants%'")
+    ->execute();
 }
 
 /**
@@ -297,20 +299,4 @@ function rebuild_nodes_access($nids, &$context) {
 function vactory_content_access_user_logout(AccountInterface $account) {
   $cid = 'vactory_users_grants_' . $account->id() . $account->getAccountName();
   Drupal::cache()->delete($cid);
-}
-
-/**
- * Rebuild nodes access function finished.
- */
-function rebuild_nodes_access_finished($success, $results, $operations) {
-  if ($success) {
-    $message = \Drupal::translation()->formatPlural(
-      count($results),
-      'One node processed.', '@count node processed.'
-    );
-  }
-  else {
-    $message = t('Finished with an error.');
-  }
-  \Drupal::messenger()->addStatus($message);
 }
