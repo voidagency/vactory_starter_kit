@@ -65,6 +65,12 @@ class AnchorBlock extends BlockBase {
       "#theme"        => "block_anchor",
       '#menu_links'   => $menu_links,
       '#custom_block' => $custom_block,
+      '#cache' => [
+        // Set the caching policy to match the default block caching policy.
+        'max-age' => 0,
+        'contexts' => ['url'],
+        'tags' => ['rendered'],
+      ],
     ];
   }
 

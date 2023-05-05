@@ -151,7 +151,8 @@ class JsonApiClient {
     return [
       "data" => $response->getContent(),
       "cache" => [
-        "tags" => explode(" ", $response->headers->get('x-drupal-cache-tags'))
+        "tags" => explode(" ", $response->headers->get('x-drupal-cache-tags')),
+        "contexts" => explode(" ", $response->headers->get('x-drupal-cache-contexts')),
       ]
     ];
   }

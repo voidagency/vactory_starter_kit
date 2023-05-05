@@ -5,7 +5,6 @@ dependencies:
     - menu_ui
     - scheduler
     - vactory_banner
-    - vactory_vcc
 third_party_settings:
   menu_ui:
     available_menus:
@@ -26,11 +25,6 @@ third_party_settings:
     unpublish_revision: false
   vactory_banner:
     banner: null
-  vactory_vcc:
-    enabled: 0
-    taxonomy: none
-    limit: '3'
-    more_link: ''
 name: 'Fiche Business'
 type: vactory_business
 description: 'Utiliser ce type de contenu pour créer des fiches business'

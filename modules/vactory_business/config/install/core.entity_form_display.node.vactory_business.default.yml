@@ -27,7 +27,6 @@ dependencies:
     - scheduler
     - social_media_links_field
     - text
-    - vactory_vcc
 id: node.vactory_business.default
 targetEntityType: node
 bundle: vactory_business

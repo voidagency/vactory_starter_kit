@@ -510,14 +510,20 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
 
           $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $cache['tags']);
           $this->cacheability->setCacheTags($cacheTags);
+          $cacheContexts = Cache::mergeContexts($this->cacheability->getCacheContexts(), $cache['contexts']);
+          $this->cacheability->setCacheContexts($cacheContexts);
           $value = $response;
         }
 
         // Webform.
         if ($info['type'] === 'webform_decoupled' && !empty($value)) {
           $webform_id = $value['id'];
+          // Cache tags.
           $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), ['webform_submission_list', 'config:webform_list']);
           $this->cacheability->setCacheTags($cacheTags);
+          // Cache contexts.
+          $cacheContexts = Cache::mergeContexts($this->cacheability->getCacheContexts() , ['user']);
+          $this->cacheability->setCacheContexts($cacheContexts);
           $value['elements'] = $this->webformNormalizer->normalize($webform_id);
         }
 
@@ -535,22 +541,22 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
         }
 
         if ($info['type'] === 'node_queue' && !empty($value)) {
-          $config['resource'] = $value['resource'] ?? '';
-          $config['filters'] = is_string($value['filters']) ? explode("\n", $value['filters']) : $value['filters'];
-          $config['vocabularies'] = [];
-          $config['filters'][] = 'filter[df-node-nid][condition][path]=nid';
-          $config['filters'][] = 'filter[df-node-nid][condition][operator]=IN';
+          $value = array_merge($info['options']['#default_value'], $value);
+          $value['filters'][] = 'filter[df-node-nid][condition][path]=nid';
+          $value['filters'][] = 'filter[df-node-nid][condition][operator]=IN';
           $i = 1;
           foreach ($value['nodes'] as $nid) {
-            $config['filters'][] = "filter[df-node-nid][condition][value][$i]=". $nid['target_id'];
+            $value['filters'][] = "filter[df-node-nid][condition][value][$i]=". $nid['target_id'];
             $i++;
           }
-          $response = $this->jsonApiGenerator->fetch($config);
+          $response = $this->jsonApiGenerator->fetch($value);
           $cache = $response['cache'];
           unset($response['cache']);
 
           $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $cache['tags']);
           $this->cacheability->setCacheTags($cacheTags);
+          $cacheContexts = Cache::mergeContexts($this->cacheability->getCacheContexts(), $cache['contexts']);
+          $this->cacheability->setCacheContexts($cacheContexts);
           $value = $response;
         }
 

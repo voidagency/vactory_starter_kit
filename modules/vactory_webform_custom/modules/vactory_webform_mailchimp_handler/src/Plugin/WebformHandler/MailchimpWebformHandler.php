@@ -287,7 +287,8 @@ class MailchimpWebformHandler extends WebformHandlerBase {
       ]);
 
       try {
-        $response = $client->lists->getAllLists();
+        // By default it fetchs 10 lists, now we set the count to 900.
+        $response = $client->lists->getAllLists(NULL, NULL, 900);
       }
       catch (RequestException $request_exception) {
       }

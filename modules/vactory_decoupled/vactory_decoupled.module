@@ -5,7 +5,8 @@
  * Primary module hooks for vactory_decoupled module.
  */
 
-use Drupal\Core\Cache\Cache;
+use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
+use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\Core\Entity\ContentEntityFormInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -16,6 +17,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\jsonapi_extras\Entity\JsonapiResourceConfig;
 use Drupal\node\Entity\Node;
+use Drupal\system\Entity\Menu;
 use Drupal\user\UserInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Drupal\simple_oauth\Entities\AccessTokenEntity;
@@ -53,7 +55,6 @@ function vactory_decoupled_form_node_form_alter(&$form, FormStateInterface $form
 
 }
 
-
 /**
  * Implements hook_form_alter().
  */
@@ -87,7 +88,7 @@ function vactory_decoupled_form_alter(&$form, FormStateInterface $form_state, $f
   }
 
   $type = $form_state->getFormObject()->getEntity()->bundle();
-  // @todo: make an interface for this.
+  // @todo Make an interface for this.
   $disabledTypes = Settings::get('PREVIEW_DISABLED_TYPES', [
     'vactory_page_listing',
     'vactory_government_member',
@@ -120,7 +121,7 @@ function vactory_decoupled_form_alter(&$form, FormStateInterface $form_state, $f
  * Submit handler for viewing the nextjs page.
  */
 function nextjs_node_form_submit(&$form, FormStateInterface $form_state) {
-  //@todo : config form.
+  // @todo Config form.
   // Redirect to content page after (Add or update or delete the node)
   $form_state->setRedirect('view.content.page_1');
 }
@@ -129,7 +130,7 @@ function nextjs_node_form_submit(&$form, FormStateInterface $form_state) {
  * Invalidate nodes cache on block admin display submit.
  */
 function block_admin_display_submit($form, FormStateInterface $form_state) {
-  // Cache::invalidateTags(['node_list']);
+  /* Cache::invalidateTags(['node_list']); */
 }
 
 /**
@@ -311,7 +312,6 @@ function vactory_decoupled_entity_base_field_info(EntityTypeInterface $entity_ty
   return $fields;
 }
 
-
 /**
  * Implements hook_field_formatter_info_alter().
  *
@@ -319,13 +319,11 @@ function vactory_decoupled_entity_base_field_info(EntityTypeInterface $entity_ty
  * map internal_breadcrumb computed field. for debug.
  */
 /*function vactory_decoupled_field_formatter_info_alter(array &$info) {
-  $info['text_default']['field_types'][] = 'map';
+$info['text_default']['field_types'][] = 'map';
 }*/
 
 /**
  * Implements hook_entity_type_alter().
- *
- * @param array $entity_types
  */
 function vactory_decoupled_entity_type_alter(array &$entity_types) {
   $entity_types['comment']->addConstraint('jsonapi_recaptcha');
@@ -336,10 +334,13 @@ function vactory_decoupled_entity_type_alter(array &$entity_types) {
  * Oauth extra user informations.
  *
  * @param \Drupal\user\UserInterface $user
+ *   User account.
  *
  * @return array
- * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
- * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+ *   User infos.
+ *
+ * @throws Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+ * @throws Drupal\Component\Plugin\Exception\PluginNotFoundException
  */
 function get_oauth_user_infos(UserInterface $user) {
   $full_name = $user->getDisplayName();
@@ -390,8 +391,10 @@ function vactory_decoupled_simple_oauth_private_claims_alter(&$private_claims, A
   $profile = [];
   try {
     $profile = get_oauth_user_infos($user);
-  } catch (\Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException $e) {
-  } catch (\Drupal\Component\Plugin\Exception\PluginNotFoundException $e) {
+  }
+  catch (InvalidPluginDefinitionException $e) {
+  }
+  catch (PluginNotFoundException $e) {
   }
 
   $private_claims = [
@@ -399,13 +402,8 @@ function vactory_decoupled_simple_oauth_private_claims_alter(&$private_claims, A
   ];
 }
 
-
 /**
- * Generate initials from a name
- *
- * @param string $name
- *
- * @return string
+ * Generate initials from a name.
  */
 function _auth_generate_intials_from_name($name) {
   $words = explode(' ', $name);
@@ -416,11 +414,7 @@ function _auth_generate_intials_from_name($name) {
 }
 
 /**
- * Make initials from a word with no spaces
- *
- * @param string $name
- *
- * @return string
+ * Make initials from a word with no spaces.
  */
 function _auth_make_unitials_from_single_word($name) {
   preg_match_all('#([A-Z]+)#', $name, $capitals);
@@ -483,9 +477,7 @@ function vactory_decoupled_mail_alter(&$message) {
 }
 
 /**
- * @param $replacements
- * @param $data
- * @param $options
+ * User mail token replacement.
  */
 function _vactory_decoupled_user_mail_tokens(&$replacements, $data, $options) {
   if (isset($data['user'])) {
@@ -500,10 +492,7 @@ function _vactory_decoupled_user_mail_tokens(&$replacements, $data, $options) {
 }
 
 /**
- * @param $account
- * @param array $options
- *
- * @return string
+ * User pass reset url.
  */
 function _vactory_decoupled_user_pass_reset_url($account, $options = []) {
   $frontend_url = Settings::get('BASE_FRONTEND_URL', "http://localhost:3000");
@@ -515,6 +504,7 @@ function _vactory_decoupled_user_pass_reset_url($account, $options = []) {
   $data = [
     'uid' => $account->id(),
     'timestamp' => $timestamp,
+    'hash_expire' => $timestamp + \Drupal::config('user.settings')->get('password_reset_timeout'),
     'hash' => user_pass_rehash($account, $timestamp),
   ];
 
@@ -534,12 +524,16 @@ function vactory_decoupled_validation_constraint_alter(array &$definitions) {
 
 /**
  * Implements hook_entity_update().
+ *
  * Clear drupal cache => clear frontend cache.
  */
 function vactory_decoupled_cache_flush() {
   clear_next_cache();
 }
 
+/**
+ * Clear frontend cache.
+ */
 function clear_next_cache_translation(&$form, FormStateInterface $form_state) {
   $query = [
     'invalidate' => 'translation',
@@ -553,7 +547,7 @@ function clear_next_cache_translation(&$form, FormStateInterface $form_state) {
 function vactory_decoupled_entity_update(EntityInterface $entity) {
   static $loaded;
 
-  // @todo: do we need to keep going in this function ?
+  // @todo Do we need to keep going in this function ?
   // Updating a node will also update menu ?
   if ($entity instanceof Node && !$entity->isNew()) {
     $query = get_node_info($entity);
@@ -568,7 +562,7 @@ function vactory_decoupled_entity_update(EntityInterface $entity) {
     ]);
   }
   else {
-    if ($entity instanceof Drupal\system\Entity\Menu) {
+    if ($entity instanceof Menu) {
       clear_next_cache([
         'menu' => $entity->id(),
         'invalidate' => 'menu',
@@ -576,7 +570,6 @@ function vactory_decoupled_entity_update(EntityInterface $entity) {
     }
   }
 }
-
 
 /**
  * Implements hook_entity_predelete().
@@ -588,13 +581,14 @@ function vactory_decoupled_entity_predelete(EntityInterface $entity) {
   }
 }
 
+/**
+ * Get given node info.
+ */
 function get_node_info($entity) {
   $nid = $entity->id();
   $langcode = $entity->language()->getId();
-  // $alias = \Drupal::service('path_alias.manager')
-  //   ->getAliasByPath('/node/' . $nid);
-  // @todo: if no alias fall back to /node/id
-
+  /* $alias = \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $nid); */
+  // @todo If no alias fall back to /node/id.
   return $query = [
     'id' => $nid,
     'langcode' => $langcode,
@@ -617,13 +611,9 @@ function vactory_decoupled_entity_delete(EntityInterface $entity) {
 }
 
 /**
- * @param array $query
  * Clears frontend cache.
- *
- * @return bool
  */
 function clear_next_cache($query = []) {
-
   $front_end_url = Settings::get('BASE_FRONTEND_URL');
   $cache_secret = Settings::get('FRONTEND_CACHE_KEY');
 
@@ -664,10 +654,12 @@ function clear_next_cache($query = []) {
       return FALSE;
     }
 
-  } catch (ServerException $e) {
+  }
+  catch (ServerException $e) {
     \Drupal::logger('clear_next_cache')->warning($error_msg);
     return FALSE;
-  } catch (RequestException $e) {
+  }
+  catch (RequestException $e) {
     \Drupal::logger('clear_next_cache')->warning($error_msg);
     return FALSE;
   }
@@ -681,9 +673,7 @@ function vactory_decoupled_jsonapi_default_enhancers_info() {
     'internal_blocks' => [
       'enhancer' => 'vactory_blocks',
     ],
-    // 'field_vactory_meta_tags' => [
-    //   'enhancer' => 'vactory_metatag',
-    // ],
+    /* 'field_vactory_meta_tags' => ['enhancer' => 'vactory_metatag',],*/
   ];
 }
 
@@ -725,15 +715,21 @@ function vactory_decoupled_jsonapi_resource_config_builder($entity_type, Jsonapi
  */
 function vactory_decoupled_preprocess_page(&$variables) {
   $route_name = \Drupal::routeMatch()->getRouteName();
+  $current_domain = \Drupal::request()->getHttpHost();
   if ($route_name === 'system.404') {
+    // Redirect backend not found pages to frontend.
     redirectToFrontend(TRUE);
   }
   if ($base_media_url = Settings::get('BASE_MEDIA_URL', '')) {
-    $current_domain = \Drupal::request()->getHttpHost();
     $media_url_info = parse_url($base_media_url);
     if (isset($media_url_info['host']) && $media_url_info['host'] === $current_domain) {
+      // Redirect none existant media to frontend.
       redirectToFrontend();
     }
+  }
+  if (str_starts_with($current_domain, 'api.')) {
+    // Redirect website html pages access via api domain to frontend.
+    redirectToFrontend();
   }
 }
 

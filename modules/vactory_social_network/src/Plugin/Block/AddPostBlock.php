@@ -26,6 +26,12 @@ class AddPostBlock extends BlockBase {
       '#content' => [
         'form' => $form,
       ],
+      '#cache' => [
+        // Set the caching policy to match the default block caching policy.
+        'max-age' => 0,
+        'contexts' => ['url'],
+        'tags' => ['rendered'],
+      ],
     ];
   }
 

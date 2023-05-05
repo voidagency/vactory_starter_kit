@@ -59,16 +59,24 @@ class ReminderQueueProcessor extends QueueWorkerBase implements ContainerFactory
    * {@inheritdoc}
    */
   public function processItem($data) {
-    if (!isset($data['consumer_id']) || !isset($data['plugin_id'])) {
-      throw new \Exception('The queue is broken.');
+    if (!isset($data['plugin_id']) || (!isset($data['consumer_id']) && !isset($data['interval']))) {
+      throw new \Exception('The queue is broken plugin_id, consumer_id and/or interval is undefined.');
     }
-    // Get consumer related date interval from module settings.
-    $config = \Drupal::config('vactory_reminder.settings');
-    $reminder_consumers = $config->get('reminder_consumers');
-    if (isset($reminder_consumers) && !isset($reminder_consumers[$data['consumer_id']])) {
-      throw new ReminderConsumerIdNotFoundException('Reminder Consumer ID "' . $data['consumer_id'] . '" not found');
+
+    if (isset($data['consumer_id'])) {
+      // Get consumer related date interval from module settings.
+      $config = \Drupal::config('vactory_reminder.settings');
+      $reminder_consumers = $config->get('reminder_consumers');
+      if (isset($reminder_consumers) && !isset($reminder_consumers[$data['consumer_id']])) {
+        throw new ReminderConsumerIdNotFoundException('Reminder Consumer ID "' . $data['consumer_id'] . '" not found');
+      }
+      $send_at = $reminder_consumers[$data['consumer_id']];
     }
-    $send_at = $reminder_consumers[$data['consumer_id']];
+
+    if (isset($data['interval'])) {
+      $send_at = $data['interval'];
+    }
+
     $plugin = $this->getPlugin($data['plugin_id']);
     if ($this->isDateTimeApproaching($data, $send_at)) {
       $plugin->processItem($data);

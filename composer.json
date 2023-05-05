@@ -79,7 +79,7 @@
     "drupal/wysiwyg_template": "2.3.0",
     "drupal/wysiwyg_template_core": "2.3.0",
     "drupal/editor_advanced_link": "^1.8",
-    "drupal/media_responsive_thumbnail": "1.2",
+    "drupal/media_responsive_thumbnail": "^1.5",
     "drupal/password_policy": "^3.0@beta",
     "drupal/block_blacklist": "^1.1.0",
     "drupal/views_bulk_operations": "^4.1",
@@ -160,9 +160,19 @@
     "drupal/video_embed_field": "^2.4"
   },
   "require-dev": {
-    "squizlabs/php_codesniffer": "^3.3"
+    "squizlabs/php_codesniffer": "^3.3",
+    "drupal/coder": "8.3.13",
+    "brainmaestro/composer-git-hooks": "^2.8"
   },
   "extra": {
+    "hooks": {
+      "pre-commit": [
+        "source scripts/githooks/pre_commit.sh"
+      ],
+      "commit-msg": "source scripts/githooks/commit_message.sh",
+      "post-merge": "source scripts/githooks/post_merge.sh",
+      "pre-push": []
+    },
     "php-composter-phpcs-drupal": {
       "standard": "DrupalPractice"
     },
@@ -201,13 +211,13 @@
       },
       "drupal/advagg": {
         "Remove version comments from minified files.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/9e6eca9bcbd95e7bed7859d54a0c4623a6112e5a/advagg-remove-version-comment-from-minified-js.patch",
-        "Support PHP 8.1 && remove deprecated class" : "https://www.drupal.org/files/issues/2022-08-02/3258389-40.patch"
+        "Support PHP 8.1 && remove deprecated class": "https://www.drupal.org/files/issues/2022-08-02/3258389-40.patch"
       },
       "drupal/colorapi": {
         "Enable colorapi field type by default": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/9e6eca9bcbd95e7bed7859d54a0c4623a6112e5a/colorapi-enable-colorapi-field-type-by-default.patch"
       },
       "drupal/jquery_colorpicker": {
-        "jQuery color picker resolve vendor path": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/348f7580c779478baebca58bfb8b27fe5c55d1ed/jquery-color-picker-resolve-vendor-path.patch",
+        "jQuery color picker resolve vendor path": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/96e8296c666c925cefc9002b4129bafbc1ac5cf4/jquery-color-picker-resolve-vendor-path.patch",
         "jQuery color picker remove vendor dependencies": "https://gist.githubusercontent.com/khalidbouhouch77/c128e712544f303f0214857cb362c3c7/raw/bd6219096734da124dc2b7ed95e9e34bfff3122e/jquery-colorpicker-remove-vendor-dependencies.patch",
         "jQuery color picker update background (drupalSettings variable)": "https://gist.githubusercontent.com/khalidbouhouch77/bf02c4bc65240acea5b87a2ff5b5d719/raw/973efb8f4a7bdecd71f21e198de924e98feab66d/jquery-colorpicker-update-background.patch"
       },
@@ -243,6 +253,12 @@
       },
       "drupal/paragraphs": {
         "Core 9.5.0 causing broken-looking styling (Legacy widget, with Seven)": "https://www.drupal.org/files/issues/2023-01-06/core-absolute-position-affecting-paragraphs-3331203-3.patch"
+      },
+      "drupal/jsonapi_search_api": {
+        "Modifying a facet does not invalidate caches": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/9d8767dd9f024935e94290e89473f2e67bebf64a/fix-jsonapi-search-api-facets-cache-3176987.patch"
+      },
+      "drupal/lang_dropdown": {
+        "Fix TypeError: array_keys(): Argument #1 ($array) must be of type array": "https://www.drupal.org/files/issues/2023-03-16/lang_dropdown-2-0-0--3348277-16.patch"
       }
     }
   },
@@ -265,6 +281,14 @@
       }
     }
   ],
+  "scripts": {
+    "post-install-cmd": [
+      "vendor/bin/cghooks add --ignore-lock || echo 'cghooks not found'"
+    ],
+    "post-update-cmd": [
+      "vendor/bin/cghooks update || echo 'cghooks not found'"
+    ]
+  },
   "config": {
     "disable-tls": true,
     "secure-http": false
