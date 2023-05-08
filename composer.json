@@ -68,7 +68,7 @@
     "drupal/views_data_export": "^1.0.0",
     "drupal/admin_toolbar": "^3.0",
     "drupal/redirect": "^1.6",
-    "drupal/path_redirect_import": "^1.0@beta",
+    "drupal/path_redirect_import": "^2.0@beta",
     "drupal/migrate_plus": "^5.3",
     "drupal/migrate_tools": "^5.1",
     "drupal/migrate_source_csv": "^3.1.0",
