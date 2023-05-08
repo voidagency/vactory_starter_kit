@@ -1,0 +1,11 @@
+name: 'Full'
+multiple: FALSE
+category: 'Project progress'
+enabled: TRUE
+fields:
+  title_icon:
+    type: text
+    label: "Icone du titre"
+  title:
+      type: text
+      label: "Titre"

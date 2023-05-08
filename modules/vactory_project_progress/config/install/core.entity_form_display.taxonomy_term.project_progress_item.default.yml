@@ -1,0 +1,111 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.field.taxonomy_term.project_progress_item.field_categorie
+    - field.field.taxonomy_term.project_progress_item.field_coefficient
+    - field.field.taxonomy_term.project_progress_item.field_description
+    - field.field.taxonomy_term.project_progress_item.field_link_1
+    - field.field.taxonomy_term.project_progress_item.field_link_2
+    - field.field.taxonomy_term.project_progress_item.field_selecteur
+    - field.field.taxonomy_term.project_progress_item.field_vcc_tags
+    - taxonomy.vocabulary.project_progress_item
+  module:
+    - link
+    - path
+    - text
+id: taxonomy_term.project_progress_item.default
+targetEntityType: taxonomy_term
+bundle: project_progress_item
+mode: default
+content:
+  field_categorie:
+    type: options_select
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_coefficient:
+    type: number
+    weight: 3
+    region: content
+    settings:
+      placeholder: ''
+    third_party_settings: {  }
+  field_description:
+    type: text_textarea
+    weight: 2
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+  field_link_1:
+    type: link_default
+    weight: 5
+    region: content
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+  field_link_2:
+    type: link_default
+    weight: 6
+    region: content
+    settings:
+      placeholder_url: ''
+      placeholder_title: ''
+    third_party_settings: {  }
+  field_selecteur:
+    type: string_textfield
+    weight: 4
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_vcc_tags:
+    type: entity_reference_autocomplete_tags
+    weight: 7
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  langcode:
+    type: language_select
+    weight: 8
+    region: content
+    settings:
+      include_locked: true
+    third_party_settings: {  }
+  name:
+    type: string_textfield
+    weight: 0
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  path:
+    type: path
+    weight: 10
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  status:
+    type: boolean_checkbox
+    weight: 11
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  translation:
+    weight: 9
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+hidden:
+  description: true

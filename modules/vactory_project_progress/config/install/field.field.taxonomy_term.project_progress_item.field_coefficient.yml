@@ -1,0 +1,22 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_coefficient
+    - taxonomy.vocabulary.project_progress_item
+id: taxonomy_term.project_progress_item.field_coefficient
+field_name: field_coefficient
+entity_type: taxonomy_term
+bundle: project_progress_item
+label: Coefficient
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  min: 0
+  max: 100
+  prefix: ''
+  suffix: ''
+field_type: integer

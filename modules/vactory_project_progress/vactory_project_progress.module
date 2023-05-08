@@ -1,0 +1,116 @@
+<?php
+
+/**
+ * @file
+ * Contain related hooks.
+ */
+
+use Drupal\views\Views;
+use Drupal\taxonomy\Entity\Term;
+
+/**
+ * Implements hook_df_jsonapi_output_alter().
+ */
+function vactory_project_progress_df_jsonapi_output_alter(&$content) {
+  $display_id = "block_project_progress_items";
+  if ($content['template'] === 'project_progress:reduced' || $content['template'] === 'project_progress:full') {
+    $name = "project_progress_items";
+    $taxonomy_id = $content['components'][0]['taxonomy'] ?? NULL;
+    $view = Views::getView($name);
+    if (!$view || !$view->access($display_id)) {
+      $content['data'] = [];
+      return;
+    }
+    $view->setDisplay($display_id);
+    if (!empty($taxonomy_id)) {
+      $view->setArguments([$taxonomy_id]);
+    }
+    $view->preExecute();
+    $view->execute();
+    $result = $view->result;
+    $items = [];
+    $project_categories = [];
+    $nodes = [];
+    foreach ($result as $row) {
+      $node = $row->_entity;
+      $node = \Drupal::service('entity.repository')
+        ->getTranslationFromContext($node);
+      $categorie = NULL;
+      if (isset($node->get('field_categorie')->getValue()[0]["target_id"])) {
+        $categorie = $node->get('field_categorie')->getValue()[0]["target_id"];
+        if (!in_array($categorie, $project_categories)) {
+          array_push($project_categories, $categorie);
+        }
+      }
+      $coefficient = NULL;
+      if (isset($node->get('field_coefficient')->value)) {
+        $coefficient = (int) $node->get('field_coefficient')->value;
+      }
+      $description = NULL;
+      if (isset($node->get('field_description')->value)) {
+        $description = $node->get('field_description')->value;
+      }
+      $selecteur = NULL;
+      if (isset($node->get('field_selecteur')->value)) {
+        $selecteur = $node->get('field_selecteur')->value;
+      }
+      $lien1 = NULL;
+      if (isset($node->get('field_link_1')->getValue()[0])) {
+        $lien1 = [
+          "url" => $node->get('field_link_1')->first()->getUrl()->toString(),
+          "title" => $node->get('field_link_1')->getValue()[0]["title"],
+        ];
+      }
+      $lien2 = NULL;
+      if (isset($node->get('field_link_2')->getValue()[0])) {
+        $lien2 = [
+          "url" => $node->get('field_link_2')->first()->getUrl()->toString(),
+          "title" => $node->get('field_link_2')->getValue()[0]["title"],
+        ];
+      }
+      // Nodes tags.
+      $tags = [];
+      foreach ((array) $node->field_vcc_tags->getValue() as $tag) {
+        $tags[] = $tag["target_id"];
+      }
+      array_push($items, [
+        "key" => $node->uuid(),
+        "label" => $node->label(),
+        "url" => $node->toUrl()->toString(),
+        "categorie" => $categorie,
+        "coefficient" => $coefficient,
+        "description" => $description,
+        "lien1" => $lien1,
+        "lien2" => $lien2,
+        "selecteur" => $selecteur,
+        "completed" => FALSE,
+        "tags" => $tags,
+      ]);
+    }
+
+    foreach ($project_categories as $tid) {
+      $term = Term::load($tid);
+      $term = \Drupal::service('entity.repository')
+        ->getTranslationFromContext($term);
+      $steps = [];
+      foreach ($items as $i) {
+        if ($i["categorie"] === $tid) {
+          array_push($steps, $i);
+        }
+      }
+
+      array_push($nodes, [
+        "key" => $term->uuid(),
+        "name" => $term->label(),
+        "title" => $term->get('field_title')->value,
+        "picto" => $term->get('field_picto')->value,
+        "formatted_text" => $term->get('field_formatted_text')->value,
+        "steps" => $steps,
+        "total_coeff" => 0,
+      ]);
+    }
+
+    $content['data'] = [$nodes];
+  }
+
+}

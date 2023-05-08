@@ -1,0 +1,7 @@
+langcode: fr
+status: true
+dependencies: {  }
+name: 'Mon projet - Catégorie'
+vid: project_progress_category
+description: ''
+weight: -9
