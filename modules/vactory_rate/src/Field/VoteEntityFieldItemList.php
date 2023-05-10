@@ -43,7 +43,7 @@ class VoteEntityFieldItemList extends FieldItemList
     $bundle = $entity->bundle();
     $entity_type = $entity->getEntityTypeId();
     $entity_id = $entity->id();
-    if ($bundle != 'vactory_academy') {
+    if ($bundle != 'vactory_academy' || $bundle != 'vactory_forum') {
         return;
     }
     $voting_results = $this->rate->results($entity_type, $entity_id);
