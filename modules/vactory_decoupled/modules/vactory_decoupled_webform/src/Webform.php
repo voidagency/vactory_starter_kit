@@ -243,6 +243,7 @@ class Webform {
     $properties = [
       'type' => $item['#type'],
       'title' => $item['#title'] ?? '',
+      'icon' => $item['#icon'] ?? '',
     ];
 
     (isset($item['#attributes']['class']) && !empty($item['#attributes']['class'])) ? $properties['class'] = implode(" ", $item['#attributes']['class']) : "";
