@@ -15,17 +15,3 @@ function vactory_video_ask_simple_oauth_private_claims_alter(&$private_claims, A
         $private_claims['profile']['videoask'] = json_decode($user->get('field_video_ask')->getString());
     }
 }
-
-
-
-/**
- * Implements hook_module_implements_alter().
- */
-function vactory_video_ask_module_implements_alter(&$implementations, $hook) {
-    if ($hook === 'simple_oauth_private_claims_alter') {
-        $group = $implementations['vactory_decoupled'];
-        unset($implementations['vactory_decoupled']);
-        $implementations = ['vactory_decoupled' => $group] + $implementations;
-    }
-
-}
