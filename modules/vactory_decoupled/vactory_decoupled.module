@@ -365,7 +365,7 @@ function get_oauth_user_infos(UserInterface $user) {
     }
   }
 
-  $user_info = [
+  return [
     'id' => $user->id(),
     'uuid' => $user->uuid(),
     'email' => $user->getEmail(),
@@ -379,12 +379,6 @@ function get_oauth_user_infos(UserInterface $user) {
     'isActive' => $user->isActive(),
     'isBlocked' => $user->isBlocked(),
   ];
-
-  if (\Drupal::moduleHandler()->moduleExists('vactory_video_ask')) {
-    $user_info["videoask"] = !empty($user->get('field_video_ask')->getString()) ? json_decode($user->get('field_video_ask')->getString(), true) : NULL;
-  }
-
-  return $user_info;
 }
 
 /**
