@@ -773,7 +773,7 @@ function vactory_decoupled_preprocess_html(&$variables) {
 /**
  * Implements hook_module_implements_alter().
  */
-function vactory_decoupled_ask_module_implements_alter(&$implementations, $hook) {
+function vactory_decoupled_module_implements_alter(&$implementations, $hook) {
     if ($hook === 'simple_oauth_private_claims_alter') {
         $group = $implementations['vactory_decoupled'];
         unset($implementations['vactory_decoupled']);
