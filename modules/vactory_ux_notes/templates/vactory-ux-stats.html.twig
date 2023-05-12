@@ -1,0 +1,27 @@
+<h2 style="font-size: 24px; font-weight: bold;">Moyenne: {{ moyenne }}</h2>
+<h2 style="font-size: 24px; font-weight: bold;">Total: {{ somme }}</h2>
+
+<table style="width: 100%; border-collapse: collapse;">
+  <thead>
+    <tr>
+      <th style="padding: 8px; border: 1px solid #ddd; text-align: left; background-color: #f2f2f2;">Note</th>
+      <th style="padding: 8px; border: 1px solid #ddd; text-align: left; background-color: #f2f2f2;">Propositions</th>
+      <th style="padding: 8px; border: 1px solid #ddd; text-align: left; background-color: #f2f2f2;">Points à améliorer</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for submission in submission_data %}
+      {% if submission['in_draft'] == 'false' %}
+        <tr>
+          <td style="padding: 8px; border: 1px solid #ddd; text-align: left;">{{ submission['note'] }}</td>
+          <td style="padding: 8px; border: 1px solid #ddd; text-align: left;">{{ submission['propositions'] }}</td>
+          <td style="padding: 8px; border: 1px solid #ddd; text-align: left;">
+            {% for point in submission['points_a_ameliorer'] %}
+              {{ point }}<br>
+            {% endfor %}
+          </td>
+        </tr>
+      {% endif %}
+    {% endfor %}
+  </tbody>
+</table>
