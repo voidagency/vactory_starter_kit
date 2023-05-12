@@ -1,7 +1,7 @@
 vactory_icon.admin_settings:
   path: '/admin/config/content/vactory-icon'
   defaults:
-    _form: '\Drupal\vactory_icon\Form\VactotyIconSettingsForm'
-    _title: 'Vactoty Icon Settings'
+    _form: '\Drupal\vactory_icon\Form\VactoryIconSettingsForm'
+    _title: 'Vactory Icon Settings'
   requirements:
     _permission: 'manage icons settings'
