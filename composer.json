@@ -103,7 +103,7 @@
     "drupal/field_group": "^3.1",
     "drupal/csv_serialization": "^2.0",
     "drupal/votingapi": "^3.0@beta",
-    "drupal/amp": "^3.5",
+    "drupal/amp": "^3.6",
     "drupal/crop": "^2.1",
     "drupal/devel": "^4.1",
     "drupal/draggableviews": "^2.0",
@@ -245,9 +245,6 @@
       },
       "drupal/cloudinary": {
         "Cloudinary video media library compatibility fix": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/f8b1871b3e6dac919f09f96b44176a816d8bb4a2/cloudinary-video-media-library-compatibility-fix.patch"
-      },
-      "drupal/amp": {
-        "Fix deprecated php 8.1 issue rtrim": "https://www.drupal.org/files/issues/2022-11-02/amp-stristr-warning-patch.diff"
       },
       "drupal/flag": {
         "Fix deprecated php 8.1 str_replace": "https://www.drupal.org/files/issues/2022-02-25/3266574-2.patch"
