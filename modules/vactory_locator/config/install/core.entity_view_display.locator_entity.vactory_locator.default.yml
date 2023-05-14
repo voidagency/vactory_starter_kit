@@ -25,6 +25,9 @@ dependencies:
     - telephone
     - text
     - vactory_google_map_field
+  enforced:
+    module:
+      - vactory_locator
 id: locator_entity.vactory_locator.default
 targetEntityType: locator_entity
 bundle: vactory_locator

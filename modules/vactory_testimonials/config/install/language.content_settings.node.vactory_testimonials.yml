@@ -5,6 +5,9 @@ dependencies:
     - node.type.vactory_testimonials
   module:
     - content_translation
+  enforced:
+    module:
+      - vactory_testimonials
 third_party_settings:
   content_translation:
     enabled: true

@@ -6,6 +6,9 @@ dependencies:
     - taxonomy.vocabulary.project_progress_item
   module:
     - link
+  enforced:
+    module:
+      - vactory_project_progress
 id: taxonomy_term.project_progress_item.field_link_1
 field_name: field_link_1
 entity_type: taxonomy_term

@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - focal_point
+  enforced:
+    module:
+      - vactory_banner
 name: banner_1280_155
 label: Banner_1280_155
 effects:

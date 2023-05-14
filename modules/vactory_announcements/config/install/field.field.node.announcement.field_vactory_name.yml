@@ -4,6 +4,9 @@ dependencies:
   config:
     - field.storage.node.field_vactory_name
     - node.type.announcement
+  enforced:
+    module:
+      - vactory_announcements
 id: node.announcement.field_vactory_name
 field_name: field_vactory_name
 entity_type: node

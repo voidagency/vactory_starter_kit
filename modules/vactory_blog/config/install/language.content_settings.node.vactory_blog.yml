@@ -5,6 +5,9 @@ dependencies:
     - node.type.vactory_blog
   module:
     - content_translation
+  enforced:
+    module:
+      - vactory_blog
 third_party_settings:
   content_translation:
     enabled: true

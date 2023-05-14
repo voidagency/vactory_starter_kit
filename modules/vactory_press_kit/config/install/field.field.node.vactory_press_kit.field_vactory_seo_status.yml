@@ -6,6 +6,9 @@ dependencies:
     - node.type.vactory_press_kit
   module:
     - yoast_seo
+  enforced:
+    module:
+      - vactory_press_kit
 id: node.vactory_press_kit.field_vactory_seo_status
 field_name: field_vactory_seo_status
 entity_type: node

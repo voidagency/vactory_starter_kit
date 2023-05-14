@@ -23,6 +23,9 @@ dependencies:
   module:
     - datetime
     - user
+  enforced:
+    module:
+      - vactory_announcements
 id: node.announcement.default
 targetEntityType: node
 bundle: announcement

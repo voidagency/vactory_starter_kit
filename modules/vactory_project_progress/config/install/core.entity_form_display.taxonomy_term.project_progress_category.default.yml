@@ -9,6 +9,9 @@ dependencies:
   module:
     - path
     - text
+  enforced:
+    module:
+      - vactory_project_progress
 id: taxonomy_term.project_progress_category.default
 targetEntityType: taxonomy_term
 bundle: project_progress_category

@@ -23,6 +23,9 @@ dependencies:
     - scheduler
     - text
     - yoast_seo
+  enforced:
+    module:
+      - vactory_job_ads
 id: node.vactory_job_ads.default
 targetEntityType: node
 bundle: vactory_job_ads

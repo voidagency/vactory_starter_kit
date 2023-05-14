@@ -12,6 +12,9 @@ dependencies:
   module:
     - user
     - vactory_field
+  enforced:
+    module:
+      - vactory_faq
 id: node.vactory_faq.smart_search
 targetEntityType: node
 bundle: vactory_faq

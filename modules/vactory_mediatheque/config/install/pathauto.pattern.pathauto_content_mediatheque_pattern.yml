@@ -4,6 +4,9 @@ dependencies:
   module:
     - language
     - node
+  enforced:
+    module:
+      - vactory_mediatheque
 id: pathauto_content_mediatheque_pattern
 label: 'Pathauto Content mediatheque Pattern'
 type: 'canonical_entities:node'

@@ -23,6 +23,9 @@ dependencies:
     - text
     - user
     - vactory_core
+  enforced:
+    module:
+      - vactory_governance
 id: node.vactory_governance.mur
 targetEntityType: node
 bundle: vactory_governance

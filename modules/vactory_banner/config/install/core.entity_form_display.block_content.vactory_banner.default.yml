@@ -16,6 +16,9 @@ dependencies:
     - jquery_colorpicker
     - media_library
     - text
+  enforced:
+    module:
+      - vactory_banner
 third_party_settings:
   field_group:
     group_background_settings:

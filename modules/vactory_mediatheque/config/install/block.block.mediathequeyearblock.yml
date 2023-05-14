@@ -5,6 +5,9 @@ dependencies:
     - vactory_mediatheque
   theme:
     - vactory
+  enforced:
+    module:
+      - vactory_mediatheque
 id: mediathequeyearblock
 theme: vactory
 region: content

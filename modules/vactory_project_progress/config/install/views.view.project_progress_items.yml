@@ -6,6 +6,9 @@ dependencies:
   module:
     - taxonomy
     - user
+  enforced:
+    module:
+      - vactory_project_progress
 id: project_progress_items
 label: 'Project progress'
 module: views

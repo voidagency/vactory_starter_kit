@@ -5,6 +5,9 @@ dependencies:
     - node
   config:
     - node.type.vactory_event
+  enforced:
+    module:
+      - vactory_event
 id: events_slider
 label: 'Events - Slider'
 handler: simple

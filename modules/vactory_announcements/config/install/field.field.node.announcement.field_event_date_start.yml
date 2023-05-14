@@ -6,6 +6,9 @@ dependencies:
     - node.type.announcement
   module:
     - datetime
+  enforced:
+    module:
+      - vactory_announcements
 id: node.announcement.field_event_date_start
 field_name: field_event_date_start
 entity_type: node

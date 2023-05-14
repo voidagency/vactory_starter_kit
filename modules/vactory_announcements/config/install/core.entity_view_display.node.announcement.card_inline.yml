@@ -26,6 +26,9 @@ dependencies:
     - media
     - smart_trim
     - user
+  enforced:
+    module:
+      - vactory_announcements
 id: node.announcement.card_inline
 targetEntityType: node
 bundle: announcement

@@ -6,6 +6,9 @@ dependencies:
     - node.type.vactory_governance
   module:
     - text
+  enforced:
+    module:
+      - vactory_governance
 id: node.vactory_governance.body
 field_name: body
 entity_type: node

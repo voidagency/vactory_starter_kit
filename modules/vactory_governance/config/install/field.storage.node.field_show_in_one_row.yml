@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - node
+  enforced:
+    module:
+      - vactory_governance
 id: node.field_show_in_one_row
 field_name: field_show_in_one_row
 entity_type: node

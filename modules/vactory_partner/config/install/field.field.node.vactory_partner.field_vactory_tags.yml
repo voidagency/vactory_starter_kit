@@ -5,6 +5,9 @@ dependencies:
     - field.storage.node.field_vactory_tags
     - node.type.vactory_partner
     - taxonomy.vocabulary.tags
+  enforced:
+    module:
+      - vactory_partner
 id: node.vactory_partner.field_vactory_tags
 field_name: field_vactory_tags
 entity_type: node

@@ -21,6 +21,9 @@ dependencies:
     - text
     - user
     - yoast_seo
+  enforced:
+    module:
+      - vactory_news
 id: node.vactory_news.amp
 targetEntityType: node
 bundle: vactory_news

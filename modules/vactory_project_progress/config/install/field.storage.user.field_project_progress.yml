@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - user
+  enforced:
+    module:
+      - vactory_project_progress
 id: user.field_project_progress
 field_name: field_project_progress
 entity_type: user

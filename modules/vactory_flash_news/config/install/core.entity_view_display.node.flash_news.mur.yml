@@ -13,8 +13,6 @@ dependencies:
   enforced:
     module:
       - vactory_flash_news
-_core:
-  default_config_hash: ywCTe7c0NV6yRpGEGQGqrdgsipSvDZLWl40Za_9kfyE
 id: node.flash_news.mur
 targetEntityType: node
 bundle: flash_news

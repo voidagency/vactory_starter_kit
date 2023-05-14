@@ -5,6 +5,9 @@ dependencies:
     - field.storage.taxonomy_term.field_vcc_tags
     - taxonomy.vocabulary.project_progress_item
     - taxonomy.vocabulary.tags
+  enforced:
+    module:
+      - vactory_project_progress
 id: taxonomy_term.project_progress_item.field_vcc_tags
 field_name: field_vcc_tags
 entity_type: taxonomy_term

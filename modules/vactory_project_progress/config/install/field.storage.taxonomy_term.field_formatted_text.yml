@@ -4,6 +4,9 @@ dependencies:
   module:
     - taxonomy
     - text
+  enforced:
+    module:
+      - vactory_project_progress
 id: taxonomy_term.field_formatted_text
 field_name: field_formatted_text
 entity_type: taxonomy_term

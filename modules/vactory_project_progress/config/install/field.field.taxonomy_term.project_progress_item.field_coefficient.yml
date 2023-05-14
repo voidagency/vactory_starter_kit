@@ -4,6 +4,9 @@ dependencies:
   config:
     - field.storage.taxonomy_term.field_coefficient
     - taxonomy.vocabulary.project_progress_item
+  enforced:
+    module:
+      - vactory_project_progress
 id: taxonomy_term.project_progress_item.field_coefficient
 field_name: field_coefficient
 entity_type: taxonomy_term

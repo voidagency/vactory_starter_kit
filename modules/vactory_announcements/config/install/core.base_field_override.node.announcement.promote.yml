@@ -3,6 +3,9 @@ status: true
 dependencies:
   config:
     - node.type.announcement
+  enforced:
+    module:
+      - vactory_announcements
 id: node.announcement.promote
 field_name: promote
 entity_type: node

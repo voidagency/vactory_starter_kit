@@ -5,6 +5,9 @@ dependencies:
     - field.storage.node.field_mediatheque_video
     - media.type.remote_video
     - node.type.vactory_mediatheque
+  enforced:
+    module:
+      - vactory_mediatheque
 id: node.vactory_mediatheque.field_mediatheque_video
 field_name: field_mediatheque_video
 entity_type: node

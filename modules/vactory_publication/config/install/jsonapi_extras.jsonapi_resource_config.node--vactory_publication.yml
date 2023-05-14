@@ -3,6 +3,9 @@ status: true
 dependencies:
   config:
     - node.type.vactory_publication
+  enforced:
+    module:
+      - vactory_publication
 id: node--vactory_publication
 disabled: false
 path: node/vactory_publication

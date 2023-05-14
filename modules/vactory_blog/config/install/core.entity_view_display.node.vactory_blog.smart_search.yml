@@ -16,6 +16,9 @@ dependencies:
     - media_responsive_thumbnail
     - user
     - vactory_field
+  enforced:
+    module:
+      - vactory_blog
 id: node.vactory_blog.smart_search
 targetEntityType: node
 bundle: vactory_blog
