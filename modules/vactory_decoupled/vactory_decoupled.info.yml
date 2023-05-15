@@ -18,4 +18,5 @@ dependencies:
   - social_auth
   - features
   - vactory_decoupled_breadcrumb
+  - vactory_decoupled_theme_switcher
 version: 8.x-1.0

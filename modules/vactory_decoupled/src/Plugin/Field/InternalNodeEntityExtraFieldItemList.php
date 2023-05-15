@@ -65,6 +65,10 @@ class InternalNodeEntityExtraFieldItemList extends FieldItemList
       'translations' => $this->getTranslations($entity),
     ];
 
+    $context = [
+      'entity' => $entity,
+    ];
+    \Drupal::moduleHandler()->alter('decoupled_extra_field_value', $value, $context);
 
     $this->list[0] = $this->createItem(0, $value);
   }
