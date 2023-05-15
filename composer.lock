@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "efe519c6d0aff6320dff10572db5627c",
+    "content-hash": "23b059d26f1353750cb057bac1a42ba0",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -9539,6 +9539,58 @@
             "homepage": "https://www.drupal.org/project/textfield_counter",
             "support": {
                 "source": "https://git.drupalcode.org/project/textfield_counter"
+            }
+        },
+        {
+            "name": "drupal/theme_switcher",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/theme_switcher.git",
+                "reference": "2.0.0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/theme_switcher-2.0.0.zip",
+                "reference": "2.0.0",
+                "shasum": "969d0d6784d0551db915bac43f04ac999de802ab"
+            },
+            "require": {
+                "drupal/core": "^8.9 || ^9 || ^10"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "2.0.0",
+                    "datestamp": "1679338745",
+                    "security-coverage": {
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "amarincolas",
+                    "homepage": "https://www.drupal.org/user/3529039"
+                },
+                {
+                    "name": "Anybody",
+                    "homepage": "https://www.drupal.org/user/291091"
+                },
+                {
+                    "name": "mkalkbrenner",
+                    "homepage": "https://www.drupal.org/user/124705"
+                }
+            ],
+            "description": "Switches active themes on specific conditions.",
+            "homepage": "https://www.drupal.org/project/theme_switcher",
+            "support": {
+                "source": "https://git.drupalcode.org/project/theme_switcher"
             }
         },
         {
@@ -19607,5 +19659,5 @@
         "php": ">=7.3"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.2.0"
 }
