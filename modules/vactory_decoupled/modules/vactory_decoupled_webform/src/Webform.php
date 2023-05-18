@@ -323,6 +323,7 @@ class Webform {
       'select' => 'select',
       'webform_select_other' => 'select',
       'webform_term_select' => 'select',
+      'webform_term_checkboxes' => 'checkboxes',
       'radios' => 'radios',
       'webform_radios_other' => 'radios',
       'checkboxes' => 'checkboxes',
@@ -359,7 +360,8 @@ class Webform {
     (isset($item['#attributes']['class']) && !empty($item['#attributes']['class'])) ? $properties['class'] = implode(" ", $item['#attributes']['class']) : "";
     (isset($item['#date_date_min']) && !is_null($item['#date_date_min'])) ? $properties['dateMin'] = $item['#date_date_min'] : NULL;
     (isset($item['#date_date_max']) && !is_null($item['#date_date_max'])) ? $properties['dateMax'] = $item['#date_date_max'] : NULL;
-    
+    $properties['isMultiple'] = isset($item['#multiple']);
+
     if (isset($item['#required'])) {
       $properties['validation']['required'] = TRUE;
       (isset($item['#required_error']) && !is_null($item['#required_error'])) ? $properties['validation']['requiredError'] = (string) t($item['#required_error']) : NULL;
@@ -401,7 +403,7 @@ class Webform {
       }
     }
 
-    if ($type === 'webform_term_select') {
+    if ($type === 'webform_term_select' || $type === 'webform_term_checkboxes') {
       if (empty($item['#vocabulary'])) {
         $properties['options'] = [];
       }
@@ -413,7 +415,7 @@ class Webform {
         $properties['options'] = $this->formatOptions(static::getOptionsTree($item, ''));
       }
     }
-
+    
     if (
       isset($properties['emptyOption']) &&
       !empty($properties['emptyOption']) &&
@@ -447,7 +449,6 @@ class Webform {
       $element_plugin = $this->getElementPlugin($element);
       $element_plugin->prepare($element, $webform_submission);
 
-      $properties['isMultiple'] = isset($item['#multiple']);
       if (isset($item['#multiple']) && is_integer($item['#multiple'])) {
         $properties['validation']['maxFiles'] = $item['#multiple'];
       }
