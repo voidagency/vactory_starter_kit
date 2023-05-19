@@ -1,0 +1,55 @@
+name: 'Events A venir & passe'
+multiple: FALSE
+category: 'Events'
+enabled: TRUE
+fields:
+  collection_a_venir:
+    type: json_api_collection
+    label: 'JSON:API'
+    options:
+      '#required': TRUE
+      '#default_value':
+        id: "vactory_event_list_a_venir"
+        resource: node--vactory_event
+        filters:
+          - fields[node--vactory_event]=drupal_internal__nid,path,title,field_vactory_taxonomy_1,field_vactory_taxonomy_2,field_vactory_date_interval,field_vactory_tags,field_vactory_media,field_vactory_excerpt
+          - fields[taxonomy_term--vactory_event_category]=tid,name
+          - fields[taxonomy_term--vactory_event_citys]=tid,name
+          - fields[taxonomy_term--tags]=tid,name
+          - fields[media--image]=name,thumbnail
+          - fields[file--image]=filename,uri
+          - include=field_vactory_taxonomy_1,field_vactory_taxonomy_2,field_vactory_tags,field_vactory_media,field_vactory_media.thumbnail
+          - page[offset]=0
+          - page[limit]=9
+          - sort=-created
+          - filter[date-filter][condition][path]=field_vactory_date_interval.end_value
+          - filter[date-filter][condition][operator]=>=
+          - filter[date-filter][condition][value]=[current-date:html_date]
+        vocabularies:
+          vactory_event_category: vactory_event_category
+          vactory_event_citys: vactory_event_citys
+  collection_passe:
+    type: json_api_collection
+    label: 'JSON:API'
+    options:
+      '#required': TRUE
+      '#default_value':
+        id: "vactory_event_list_passe"
+        resource: node--vactory_event
+        filters:
+          - fields[node--vactory_event]=drupal_internal__nid,path,title,field_vactory_taxonomy_1,field_vactory_taxonomy_2,field_vactory_date_interval,field_vactory_tags,field_vactory_media,field_vactory_excerpt
+          - fields[taxonomy_term--vactory_event_category]=tid,name
+          - fields[taxonomy_term--vactory_event_citys]=tid,name
+          - fields[taxonomy_term--tags]=tid,name
+          - fields[media--image]=name,thumbnail
+          - fields[file--image]=filename,uri
+          - include=field_vactory_taxonomy_1,field_vactory_taxonomy_2,field_vactory_tags,field_vactory_media,field_vactory_media.thumbnail
+          - page[offset]=0
+          - page[limit]=9
+          - sort=-created
+          - filter[date-filter][condition][path]=field_vactory_date_interval.end_value
+          - filter[date-filter][condition][operator]=<
+          - filter[date-filter][condition][value]=[current-date:html_date]
+        vocabularies:
+          vactory_event_category: vactory_event_category
+          vactory_event_citys: vactory_event_citys

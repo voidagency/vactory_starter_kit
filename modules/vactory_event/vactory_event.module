@@ -218,11 +218,26 @@ function vactory_event_preprocess_views_view(&$variables) {
  * Implements hook_json_api_collection_alter().
  */
 function vactory_event_json_api_collection_alter(&$filters, &$context) {
-  if ($context['id'] === 'vactory_event_list') {
-    $query = \Drupal::request()->query->get("q");
-
+  $query = \Drupal::request()->query->get("q");
+  $is_avenir = $context['id'] === 'vactory_event_list_a_venir' && isset($query["type"]) && $query["type"] == "avenir";
+  $is_passe = $context['id'] === 'vactory_event_list_passe' && isset($query["type"]) && $query["type"] == "passe";
+  if($context['id']=== 'next_event')
+  {
+    if (isset($query["date"])) {
+    $filters["filter[date-filter-next][condition][path]"] = "field_vactory_date_interval.value";
+    $filters["filter[date-filter-next][condition][operator]"] = ">";
+    $filters["filter[date-filter-next][condition][value]"] = $query["date"]; 
+    }
+  }
+  if ($context['id'] === 'vactory_event_list' || $is_avenir || $is_passe ) {
     if (isset($query["page"])) {
       $filters["page[offset]"] = intval($query["page"]) > 0 ? (intval($query["page"]) - 1) * $filters["page[limit]"] : 0;
+    }
+
+    if (isset($query["date"])) {
+      $filters["filter[date-filter][condition][path]"] = "field_vactory_date_interval.value";
+      $filters["filter[date-filter][condition][operator]"] = "=";
+      $filters["filter[date-filter][condition][value]"] = $query["date"]; 
     }
 
     if (isset($query["theme"]) && $query["theme"] !== "all") {
@@ -255,7 +270,6 @@ function vactory_event_json_api_collection_alter(&$filters, &$context) {
       if (!$terms) {
         throw new \Exception("[Events - hook_json_api_collection_alter] term '$theme' not found.");
       }
-
       if ($terms) {
         $term = reset($terms);
         $id = $term->id();
@@ -266,6 +280,7 @@ function vactory_event_json_api_collection_alter(&$filters, &$context) {
 
     }
   }
+  
 }
 
 
