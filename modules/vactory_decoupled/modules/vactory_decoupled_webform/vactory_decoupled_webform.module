@@ -12,6 +12,16 @@ use Drupal\Core\Form\FormStateInterface;
  */
 function vactory_decoupled_webform_webform_element_configuration_form_alter(array &$form, FormStateInterface $form_state) {
   $element_properties = $form_state->get('element_properties');
+  $webform_file_types = ['webform_document_file', 'webform_image_file'];
+  if (in_array($element_properties['type'], $webform_file_types)) {
+    $element_properties['default_file'] = $element_properties['default_file'] ?? '';
+    $form['file']['default_file'] = [
+      '#type' => 'textfield',
+      '#title' => t('Default file'),
+      '#default_value' => $element_properties['default_file'],
+      '#description' => t('Default file ID, tokens are supported'),
+    ];
+  }
   if ($element_properties['type'] === 'webform_wizard_page') {
     $element_properties['icon'] = $element_properties['icon'] ?? '';
     $form['form']['icon'] = [
@@ -19,6 +29,6 @@ function vactory_decoupled_webform_webform_element_configuration_form_alter(arra
       '#title' => 'Step icon',
       '#default_value' => $element_properties['icon'],
     ];
-    $form_state->set('element_properties', $element_properties);
   }
+  $form_state->set('element_properties', $element_properties);
 }
