@@ -5,6 +5,9 @@ dependencies:
     - taxonomy.vocabulary.business_taille_entreprise
   module:
     - content_translation
+  enforced:
+    module:
+      - vactory_business
 third_party_settings:
   content_translation:
     enabled: true

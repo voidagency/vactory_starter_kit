@@ -1,11 +1,11 @@
-langcode: fr
+langcode: en
 status: true
 dependencies:
   module:
     - media
     - node
-id: node.field_vactory_image
-field_name: field_vactory_image
+id: node.field_vactory_media_image
+field_name: field_vactory_media_image
 entity_type: node
 type: entity_reference
 settings:

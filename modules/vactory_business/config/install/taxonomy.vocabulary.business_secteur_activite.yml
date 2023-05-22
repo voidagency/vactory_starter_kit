@@ -1,6 +1,9 @@
 langcode: fr
 status: true
-dependencies: {  }
+dependencies:
+  enforced:
+    module:
+      - vactory_business
 name: 'Business - Secteur d''activité'
 vid: business_secteur_activite
 description: 'Utiliser ce vocabulaire pour ajouter des secteurs d''activité business'

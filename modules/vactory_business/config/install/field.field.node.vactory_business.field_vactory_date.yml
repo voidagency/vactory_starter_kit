@@ -6,6 +6,9 @@ dependencies:
     - node.type.vactory_business
   module:
     - datetime
+  enforced:
+    module:
+      - vactory_business
 id: node.vactory_business.field_vactory_date
 field_name: field_vactory_date
 entity_type: node

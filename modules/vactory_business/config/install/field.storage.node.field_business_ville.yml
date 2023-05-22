@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - node
+  enforced:
+    module:
+      - vactory_business
 id: node.field_business_ville
 field_name: field_business_ville
 entity_type: node

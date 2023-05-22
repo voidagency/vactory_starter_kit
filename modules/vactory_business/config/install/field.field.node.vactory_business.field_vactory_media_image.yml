@@ -1,31 +1,31 @@
-langcode: fr
+langcode: en
 status: true
 dependencies:
   config:
-    - field.storage.node.field_secteur_activite
+    - field.storage.node.field_vactory_media_image
+    - media.type.image
     - node.type.vactory_business
-    - taxonomy.vocabulary.business_secteur_activite
   enforced:
     module:
       - vactory_business
-id: node.vactory_business.field_secteur_activite
-field_name: field_secteur_activite
+id: node.vactory_business.field_vactory_media_image
+field_name: field_vactory_media_image
 entity_type: node
 bundle: vactory_business
-label: 'Secteur d''activité'
+label: Image
 description: ''
 required: false
 translatable: true
 default_value: {  }
 default_value_callback: ''
 settings:
-  handler: 'default:taxonomy_term'
+  handler: 'default:media'
   handler_settings:
     target_bundles:
-      business_secteur_activite: business_secteur_activite
+      image: image
     sort:
-      field: name
-      direction: asc
+      field: _none
+      direction: ASC
     auto_create: false
     auto_create_bundle: ''
 field_type: entity_reference
