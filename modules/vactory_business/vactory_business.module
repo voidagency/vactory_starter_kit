@@ -132,10 +132,12 @@ function vactory_business_decoupled_webform_data_presubmit_alter(array &$webform
         $nid = reset($nids);
         $node = Drupal::entityTypeManager()->getStorage('node')
           ->load($nid);
-        if ($node instanceof NodeInterface) {
-          if ($node->access('update', $account)) {
+        $node_translation = Drupal::service('entity.repository')
+          ->getTranslationFromContext($node);
+        if ($node_translation instanceof NodeInterface) {
+          if ($node_translation->access('update', $account)) {
             $mid = !empty($fid) ? create_media_from_fid($fid, $account, $node) : NULL;
-            $users = $node->get('field_business_users')->getValue();
+            $users = $node_translation->get('field_business_users')->getValue();
             $users[] = ['target_id' => $account->id()];
             $users = array_map(function ($value) {
               return $value['target_id'];
@@ -144,7 +146,7 @@ function vactory_business_decoupled_webform_data_presubmit_alter(array &$webform
             $users = array_map(function ($value) {
               return ['target_id' => $value];
             }, $users);
-            $node->set('title', $title)
+            $node_translation->set('title', $title)
               ->set('node_summary', $description)
               ->set('body', ['value' => $description])
               ->set('field_vactory_media_image', $mid)
@@ -163,9 +165,9 @@ function vactory_business_decoupled_webform_data_presubmit_alter(array &$webform
               $specialisations = array_map(function ($id) {
                 return ['target_id' => $id];
               }, $specialisations);
-              $node->set('field_business_specialisations', $specialisations);
+              $node_translation->set('field_business_specialisations', $specialisations);
             }
-            $node->save();
+            $node_translation->save();
           }
           else {
             $has_access = FALSE;
@@ -200,6 +202,13 @@ function vactory_business_decoupled_webform_data_presubmit_alter(array &$webform
             $node->set('field_business_specialisations', $specialisations);
           }
           $node->save();
+          $languages = Drupal::languageManager()->getLanguages();
+          foreach ($languages as $language) {
+            if (!$node->hasTranslation($language->getId())) {
+              $node->addTranslation($language->getId(), $node->toArray())
+                ->save();
+            }
+          }
         }
         else {
           $has_access = FALSE;

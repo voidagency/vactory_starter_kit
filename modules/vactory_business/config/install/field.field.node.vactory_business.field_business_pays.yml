@@ -16,25 +16,25 @@ bundle: vactory_business
 label: Pays
 description: ''
 required: false
-translatable: true
+translatable: false
 default_value: {  }
 default_value_callback: ''
 settings:
   available_countries:
     AF: AF
-    ZA: ZA
+    AX: AX
     AL: AL
     DZ: DZ
-    DE: DE
+    AS: AS
     AD: AD
     AO: AO
     AI: AI
     AQ: AQ
     AG: AG
-    SA: SA
     AR: AR
     AM: AM
     AW: AW
+    AC: AC
     AU: AU
     AT: AT
     AZ: AZ
@@ -42,16 +42,19 @@ settings:
     BH: BH
     BD: BD
     BB: BB
+    BY: BY
     BE: BE
     BZ: BZ
     BJ: BJ
     BM: BM
     BT: BT
-    BY: BY
     BO: BO
     BA: BA
     BW: BW
+    BV: BV
     BR: BR
+    IO: IO
+    VG: VG
     BN: BN
     BG: BG
     BF: BF
@@ -59,88 +62,79 @@ settings:
     KH: KH
     CM: CM
     CA: CA
+    IC: IC
     CV: CV
+    BQ: BQ
+    KY: KY
+    CF: CF
     EA: EA
+    TD: TD
     CL: CL
     CN: CN
-    CY: CY
+    CX: CX
+    CP: CP
+    CC: CC
     CO: CO
     KM: KM
     CG: CG
     CD: CD
-    KP: KP
-    KR: KR
+    CK: CK
     CR: CR
     CI: CI
     HR: HR
     CU: CU
     CW: CW
+    CY: CY
+    CZ: CZ
     DK: DK
     DG: DG
     DJ: DJ
     DM: DM
-    EG: EG
-    AE: AE
+    DO: DO
     EC: EC
+    EG: EG
+    SV: SV
+    GQ: GQ
     ER: ER
-    ES: ES
     EE: EE
     SZ: SZ
-    VA: VA
-    US: US
     ET: ET
+    FK: FK
+    FO: FO
     FJ: FJ
     FI: FI
     FR: FR
+    GF: GF
+    PF: PF
+    TF: TF
     GA: GA
     GM: GM
     GE: GE
-    GS: GS
+    DE: DE
     GH: GH
     GI: GI
     GR: GR
-    GD: GD
     GL: GL
+    GD: GD
     GP: GP
     GU: GU
     GT: GT
     GG: GG
     GN: GN
-    GQ: GQ
     GW: GW
     GY: GY
-    GF: GF
     HT: HT
-    HN: HN
-    HU: HU
-    BV: BV
-    CX: CX
-    CP: CP
-    AC: AC
-    IM: IM
-    NF: NF
-    AX: AX
-    KY: KY
-    IC: IC
-    CC: CC
-    CK: CK
-    FO: FO
     HM: HM
-    FK: FK
-    MP: MP
-    MH: MH
-    UM: UM
-    PN: PN
-    SB: SB
-    TC: TC
-    VG: VG
-    VI: VI
+    HN: HN
+    HK: HK
+    HU: HU
+    IS: IS
     IN: IN
     ID: ID
-    IQ: IQ
     IR: IR
+    IQ: IQ
     IE: IE
-    IS: IS
+    IM: IM
     IL: IL
     IT: IT
     JM: JM
@@ -149,31 +143,30 @@ settings:
     JO: JO
     KZ: KZ
     KE: KE
-    KG: KG
     KI: KI
     XK: XK
     KW: KW
-    RE: RE
+    KG: KG
     LA: LA
-    LS: LS
     LV: LV
     LB: LB
+    LS: LS
     LR: LR
     LY: LY
     LI: LI
     LT: LT
     LU: LU
-    MK: MK
+    MO: MO
     MG: MG
-    MY: MY
     MW: MW
+    MY: MY
     MV: MV
     ML: ML
     MT: MT
-    MA: MA
+    MH: MH
     MQ: MQ
-    MU: MU
     MR: MR
+    MU: MU
     YT: YT
     MX: MX
     FM: FM
@@ -182,80 +175,78 @@ settings:
     MN: MN
     ME: ME
     MS: MS
+    MA: MA
     MZ: MZ
     MM: MM
     NA: NA
     NR: NR
     NP: NP
+    NL: NL
+    NC: NC
+    NZ: NZ
     NI: NI
     NE: NE
     NG: NG
     NU: NU
+    NF: NF
+    KP: KP
+    MK: MK
+    MP: MP
     'NO': 'NO'
-    NC: NC
-    NZ: NZ
     OM: OM
-    UG: UG
-    UZ: UZ
     PK: PK
     PW: PW
+    PS: PS
     PA: PA
     PG: PG
     PY: PY
-    NL: NL
-    BQ: BQ
     PE: PE
     PH: PH
+    PN: PN
     PL: PL
-    PF: PF
-    PR: PR
     PT: PT
+    PR: PR
     QA: QA
-    HK: HK
-    MO: MO
-    CF: CF
-    DO: DO
+    RE: RE
     RO: RO
-    GB: GB
     RU: RU
     RW: RW
-    BL: BL
-    KN: KN
-    SM: SM
-    MF: MF
-    SX: SX
-    PM: PM
-    VC: VC
-    SH: SH
-    LC: LC
-    SV: SV
     WS: WS
-    AS: AS
+    SM: SM
     ST: ST
+    SA: SA
     SN: SN
     RS: RS
     SC: SC
     SL: SL
     SG: SG
+    SX: SX
     SK: SK
     SI: SI
+    SB: SB
     SO: SO
-    SD: SD
+    ZA: ZA
+    GS: GS
+    KR: KR
     SS: SS
+    ES: ES
     LK: LK
-    SE: SE
-    CH: CH
+    BL: BL
+    SH: SH
+    KN: KN
+    LC: LC
+    MF: MF
+    PM: PM
+    VC: VC
+    SD: SD
     SR: SR
     SJ: SJ
+    SE: SE
+    CH: CH
     SY: SY
-    TJ: TJ
     TW: TW
+    TJ: TJ
     TZ: TZ
-    TD: TD
-    CZ: CZ
-    TF: TF
-    IO: IO
-    PS: PS
     TH: TH
     TL: TL
     TG: TG
@@ -264,12 +255,21 @@ settings:
     TT: TT
     TA: TA
     TN: TN
-    TM: TM
     TR: TR
+    TM: TM
+    TC: TC
     TV: TV
+    UM: UM
+    VI: VI
+    UG: UG
     UA: UA
+    AE: AE
+    GB: GB
+    US: US
     UY: UY
+    UZ: UZ
     VU: VU
+    VA: VA
     VE: VE
     VN: VN
     WF: WF

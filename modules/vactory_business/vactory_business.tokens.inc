@@ -50,6 +50,9 @@ function vactory_business_tokens($type, $tokens, array $data, array $options, Bu
       $node = Drupal::entityTypeManager()->getStorage('node')
         ->load($nid);
       if ($node instanceof NodeInterface) {
+        $langcode = Drupal::languageManager()->getCurrentLanguage()->getId();
+        $node = Drupal::service('entity.repository')
+          ->getTranslationFromContext($node, $langcode);
         $fiche_business = $node;
       }
     }
