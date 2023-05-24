@@ -19,6 +19,9 @@ dependencies:
   module:
     - user
     - vactory_field
+  enforced:
+    module:
+      - vactory_job_ads
 id: node.vactory_job_ads.smart_search
 targetEntityType: node
 bundle: vactory_job_ads

@@ -5,6 +5,9 @@ dependencies:
     - vactory_locator.locator_entity_type.vactory_locator
   module:
     - content_translation
+  enforced:
+    module:
+      - vactory_locator
 third_party_settings:
   content_translation:
     enabled: true

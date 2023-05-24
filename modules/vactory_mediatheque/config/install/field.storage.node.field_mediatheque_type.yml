@@ -2,8 +2,11 @@ langcode: fr
 status: true
 dependencies:
   module:
-  - node
-  - taxonomy
+    - node
+    - taxonomy
+  enforced:
+    module:
+      - vactory_mediatheque
 id: node.field_mediatheque_type
 field_name: field_mediatheque_type
 entity_type: node

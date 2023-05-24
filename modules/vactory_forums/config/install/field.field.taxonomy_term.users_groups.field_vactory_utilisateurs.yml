@@ -4,6 +4,9 @@ dependencies:
   config:
     - field.storage.taxonomy_term.field_vactory_utilisateurs
     - taxonomy.vocabulary.users_groups
+  enforced:
+    module:
+      - vactory_forums
 id: taxonomy_term.users_groups.field_vactory_utilisateurs
 field_name: field_vactory_utilisateurs
 entity_type: taxonomy_term

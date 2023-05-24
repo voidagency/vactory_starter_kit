@@ -4,6 +4,9 @@ dependencies:
   module:
     - media
     - taxonomy
+  enforced:
+    module:
+      - vactory_locator
 id: taxonomy_term.field_locator_map_marker
 field_name: field_locator_map_marker
 entity_type: taxonomy_term

@@ -11,6 +11,9 @@ dependencies:
     - image
     - search_api
     - views_autocomplete_filters
+  enforced:
+    module:
+      - vactory_smart_search
 id: vactory_smart_search
 label: 'Vactory Smart Search'
 module: views

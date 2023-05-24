@@ -1,6 +1,9 @@
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  enforced:
+    module:
+      - vactory_welcome
 name: 'Welcome Term'
 vid: welcome
 description: ''

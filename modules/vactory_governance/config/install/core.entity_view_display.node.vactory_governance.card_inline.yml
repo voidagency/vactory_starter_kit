@@ -24,6 +24,9 @@ dependencies:
     - user
     - vactory_core
     - vactory_field
+  enforced:
+    module:
+      - vactory_governance
 id: node.vactory_governance.card_inline
 targetEntityType: node
 bundle: vactory_governance

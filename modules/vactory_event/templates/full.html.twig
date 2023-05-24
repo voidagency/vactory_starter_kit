@@ -101,6 +101,15 @@
 
   <div class="content">
     {{ hideLabel(addAttributes(content.body)) }}
+
+    {% if event_relance is defined %}
+      {% set current_page = path('<current>') %}
+      <div>
+        <a href="{{ path('entity.webform.canonical', {'webform': 'events_register', 'event_id': event_id, 'destination': current_page}) }}" class="btn btn-primary">
+          {{ 'Register now'|t }}
+        </a>
+      </div>
+    {% endif %}
   </div>
 
   <div class="pt-4">

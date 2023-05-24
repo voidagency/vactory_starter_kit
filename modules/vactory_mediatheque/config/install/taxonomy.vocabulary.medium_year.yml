@@ -1,6 +1,9 @@
 langcode: fr
 status: true
-dependencies: {  }
+dependencies:
+  enforced:
+    module:
+      - vactory_mediatheque
 name: 'Médiathèque - Année'
 vid: medium_year
 description: 'This Vocabulary is used for Media library content type'

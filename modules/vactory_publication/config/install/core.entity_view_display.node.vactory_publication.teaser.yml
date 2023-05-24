@@ -17,6 +17,9 @@ dependencies:
     - node.type.vactory_publication
   module:
     - user
+  enforced:
+    module:
+      - vactory_publication
 id: node.vactory_publication.teaser
 targetEntityType: node
 bundle: vactory_publication

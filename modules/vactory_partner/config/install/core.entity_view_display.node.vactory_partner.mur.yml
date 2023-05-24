@@ -13,6 +13,9 @@ dependencies:
     - text
     - user
     - vactory_core
+  enforced:
+    module:
+      - vactory_partner
 id: node.vactory_partner.mur
 targetEntityType: node
 bundle: vactory_partner

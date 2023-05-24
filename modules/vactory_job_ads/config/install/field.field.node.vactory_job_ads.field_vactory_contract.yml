@@ -5,6 +5,9 @@ dependencies:
     - field.storage.node.field_vactory_contract
     - node.type.vactory_job_ads
     - taxonomy.vocabulary.vactory_job_ads_contract
+  enforced:
+    module:
+      - vactory_job_ads
 id: node.vactory_job_ads.field_vactory_contract
 field_name: field_vactory_contract
 entity_type: node

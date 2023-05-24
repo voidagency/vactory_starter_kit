@@ -4,6 +4,9 @@ dependencies:
   module:
     - address
     - node
+  enforced:
+    module:
+      - vactory_business
 id: node.field_business_pays
 field_name: field_business_pays
 entity_type: node

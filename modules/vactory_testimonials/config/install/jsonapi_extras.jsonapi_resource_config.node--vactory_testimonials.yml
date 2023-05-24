@@ -5,6 +5,9 @@ dependencies:
     - node.type.vactory_testimonials
   module:
     - jsonapi_defaults
+  enforced:
+    module:
+      - vactory_testimonials
 third_party_settings:
   jsonapi_defaults:
     page_limit: 50

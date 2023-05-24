@@ -6,6 +6,9 @@ dependencies:
     - node.type.vactory_event
   module:
     - datetime_range
+  enforced:
+    module:
+      - vactory_event
 id: node.vactory_event.field_vactory_date_interval
 field_name: field_vactory_date_interval
 entity_type: node

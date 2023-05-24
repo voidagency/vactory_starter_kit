@@ -4,6 +4,9 @@ dependencies:
   module:
     - node
     - taxonomy
+  enforced:
+    module:
+      - vactory_announcements
 id: node.field_ad_display
 field_name: field_ad_display
 entity_type: node

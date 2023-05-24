@@ -1,6 +1,9 @@
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  enforced:
+    module:
+      - vactory_governance
 name: 'Government Member'
 type: vactory_governance
 description: 'Manage your government member content.'

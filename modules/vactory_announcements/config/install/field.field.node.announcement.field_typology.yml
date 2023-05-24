@@ -5,6 +5,9 @@ dependencies:
     - field.storage.node.field_typology
     - node.type.announcement
     - taxonomy.vocabulary.vactory_typologie
+  enforced:
+    module:
+      - vactory_announcements
 id: node.announcement.field_typology
 field_name: field_typology
 entity_type: node

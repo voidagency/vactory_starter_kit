@@ -1,0 +1,54 @@
+name: 'Reduced'
+multiple: FALSE
+category: 'Project progress'
+enabled: TRUE
+fields:
+  title:
+      type: text
+      label: "Titre du block"
+  title_icon:
+    type: vactory_icon_picker
+    label: "Icone du titre"
+  link:
+      type: url_extended
+      label: 'Lien'
+      options:
+        '#description': Lien vers la page d'edition de mon projet
+  link_icon:
+      type: vactory_icon_picker
+      label: 'Icone du lien'
+  dynamize:
+      type: checkbox
+      label: Dynamiser le block
+      options:
+        '#description':
+          Dynamiser le block en fonction d'etat d'avancement
+          du projet et si l'utilisateur est connecté ou non.<br/>
+          Si décoché, les champs ci-desous seront ignorés.
+  group_anonymous:
+    g_title: 'Anonymous Text'
+    text:
+      type: text_format
+      label: "Texte"
+      options:
+        '#format': basic_html
+  group_non_initialized:
+    g_title: 'Project Non Initialisé Text'
+    subtitle:
+      type: text
+      label: "Sous titre de la carte"
+    icon:
+      type: vactory_icon_picker
+      label: "Icone de la carte"
+    text:
+      type: text_format
+      label: "Texte de la carte"
+      options:
+        '#format': basic_html
+    link:
+      type: url_extended
+      label: "Lien de la carte"
+      options:
+        '#description': Si vide, le lien fourni en haut pour la page d'edition de mon projet sera utilisé
+    
+  

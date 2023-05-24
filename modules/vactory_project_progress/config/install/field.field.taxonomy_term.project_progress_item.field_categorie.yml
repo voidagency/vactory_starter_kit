@@ -1,0 +1,31 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_categorie
+    - taxonomy.vocabulary.project_progress_category
+    - taxonomy.vocabulary.project_progress_item
+  enforced:
+    module:
+      - vactory_project_progress
+id: taxonomy_term.project_progress_item.field_categorie
+field_name: field_categorie
+entity_type: taxonomy_term
+bundle: project_progress_item
+label: Catégorie
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:taxonomy_term'
+  handler_settings:
+    target_bundles:
+      project_progress_category: project_progress_category
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

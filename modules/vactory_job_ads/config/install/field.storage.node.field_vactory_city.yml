@@ -4,6 +4,9 @@ dependencies:
   module:
     - node
     - taxonomy
+  enforced:
+    module:
+      - vactory_job_ads
 id: node.field_vactory_city
 field_name: field_vactory_city
 entity_type: node

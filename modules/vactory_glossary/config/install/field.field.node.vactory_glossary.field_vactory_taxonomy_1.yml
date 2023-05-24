@@ -5,6 +5,9 @@ dependencies:
     - field.storage.node.field_vactory_taxonomy_1
     - node.type.vactory_glossary
     - taxonomy.vocabulary.vactory_glossary
+  enforced:
+    module:
+      - vactory_glossary
 id: node.vactory_glossary.field_vactory_taxonomy_1
 field_name: field_vactory_taxonomy_1
 entity_type: node

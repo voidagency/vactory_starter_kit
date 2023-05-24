@@ -6,6 +6,9 @@ dependencies:
     - taxonomy.vocabulary.users_groups
   module:
     - text
+  enforced:
+    module:
+      - vactory_forums
 id: taxonomy_term.users_groups.default
 targetEntityType: taxonomy_term
 bundle: users_groups

@@ -1,0 +1,27 @@
+name: 'Fiche business - Webform'
+category: 'Fiche business'
+multiple: FALSE
+enabled: TRUE
+fields:
+  webform:
+    type: webform_decoupled
+    label: 'Formulaire Fiche Business'
+    options:
+      '#required': TRUE
+extra_fields:
+  title:
+    type: text
+    label: "Titre"
+  intro:
+    type: text_format
+    label: 'Introduction'
+    options:
+      '#format': 'full_html'
+  fiche_alias:
+    type: text
+    label: "Current user fiche business node alias"
+    options:
+      '#default_value': '[vactory:fiche_business:path]'
+  link:
+    type: url_extended
+    label: 'Lien'

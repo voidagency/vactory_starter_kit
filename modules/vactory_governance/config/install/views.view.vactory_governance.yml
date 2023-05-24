@@ -14,6 +14,9 @@ dependencies:
     - taxonomy
     - user
     - vactory_views
+  enforced:
+    module:
+      - vactory_governance
 id: vactory_governance
 label: 'vactory Governance'
 module: views

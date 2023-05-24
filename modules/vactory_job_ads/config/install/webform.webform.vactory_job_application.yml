@@ -1,8 +1,9 @@
 langcode: en
 status: open
-dependencies: {  }
-_core:
-  default_config_hash: dfgLGbPhKF_zHFgLvaq_GF5k2KKe6xl96eWHAFiGeyQ
+dependencies:
+  enforced:
+    module:
+      - vactory_job_ads
 weight: 0
 open: null
 close: null

@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - node
+  enforced:
+    module:
+      - vactory_partner
 id: pathauto_content_partner_pattern
 label: 'Pathauto Content Partner Pattern'
 type: 'canonical_entities:node'

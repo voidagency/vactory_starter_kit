@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - focal_point
+  enforced:
+    module:
+      - vactory_testimonials
 name: testimonials_reversed_3col_x1
 label: 'Testimonials Three Cols @x1 (50x50)'
 effects:

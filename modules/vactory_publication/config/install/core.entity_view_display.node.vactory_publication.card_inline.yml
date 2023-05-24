@@ -21,6 +21,9 @@ dependencies:
     - smart_trim
     - user
     - vactory_core
+  enforced:
+    module:
+      - vactory_publication
 id: node.vactory_publication.card_inline
 targetEntityType: node
 bundle: vactory_publication

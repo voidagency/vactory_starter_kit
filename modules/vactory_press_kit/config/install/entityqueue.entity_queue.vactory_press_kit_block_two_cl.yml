@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - node
+  enforced:
+    module:
+      - vactory_press_kit
 id: vactory_press_kit_block_two_cl
 label: 'press kit Block Two Columns'
 handler: simple

@@ -1,0 +1,21 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_selecteur
+    - taxonomy.vocabulary.project_progress_item
+  enforced:
+    module:
+      - vactory_project_progress
+id: taxonomy_term.project_progress_item.field_selecteur
+field_name: field_selecteur
+entity_type: taxonomy_term
+bundle: project_progress_item
+label: Selecteur
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

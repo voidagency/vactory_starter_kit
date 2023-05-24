@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - node
+  enforced:
+    module:
+      - vactory_publication
 id: vactory_publication_slider_large
 label: 'Publication Slider Large'
 handler: simple

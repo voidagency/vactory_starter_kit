@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - node
+  enforced:
+    module:
+      - vactory_press_release
 id: vactory_press_release_slider_lar
 label: 'press release Slider Large'
 handler: simple

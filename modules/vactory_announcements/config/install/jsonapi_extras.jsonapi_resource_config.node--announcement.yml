@@ -3,6 +3,9 @@ status: true
 dependencies:
   config:
     - node.type.announcement
+  enforced:
+    module:
+      - vactory_announcements
 id: node--announcement
 disabled: false
 path: node/announcement

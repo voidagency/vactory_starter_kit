@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - node
+  enforced:
+    module:
+      - vactory_testimonials
 id: pathauto_content_testimonials_pattern
 label: 'Pathauto Content Testimonials Pattern'
 type: 'canonical_entities:node'

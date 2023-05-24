@@ -58,12 +58,16 @@ class KeycloakAuth extends NetworkBase implements KeycloakAuthInterface {
         'redirectUri'           => Url::fromRoute('vactory_keycloak.callback')->setAbsolute()->toString(),
       ];
 
-      return new Keycloak($league_settings, [
-        'httpClient' => new HttpClient([
-          'timeout' => 0,
-          'verify' => FALSE,
-        ]),
-      ]);
+      if ($settings->noCertVerification()) {
+        return new Keycloak($league_settings, [
+          'httpClient' => new HttpClient([
+            'timeout' => 0,
+            'verify' => FALSE,
+          ]),
+        ]);
+      }
+
+      return new Keycloak($league_settings);
     }
 
     return FALSE;

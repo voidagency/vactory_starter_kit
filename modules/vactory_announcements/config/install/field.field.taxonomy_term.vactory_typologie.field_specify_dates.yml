@@ -4,6 +4,9 @@ dependencies:
   config:
     - field.storage.taxonomy_term.field_specify_dates
     - taxonomy.vocabulary.vactory_typologie
+  enforced:
+    module:
+      - vactory_announcements
 id: taxonomy_term.vactory_typologie.field_specify_dates
 field_name: field_specify_dates
 entity_type: taxonomy_term

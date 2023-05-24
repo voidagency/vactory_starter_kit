@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - node
+  enforced:
+    module:
+      - vactory_press_release
 id: pathauto_content_press_releas_pattern
 label: 'Pathauto Content press release Pattern'
 type: 'canonical_entities:node'

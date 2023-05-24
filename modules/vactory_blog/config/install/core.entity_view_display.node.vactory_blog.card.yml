@@ -16,6 +16,9 @@ dependencies:
     - user
     - vactory_core
     - vactory_field
+  enforced:
+    module:
+      - vactory_blog
 id: node.vactory_blog.card
 targetEntityType: node
 bundle: vactory_blog

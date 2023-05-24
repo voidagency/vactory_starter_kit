@@ -1,6 +1,9 @@
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  enforced:
+    module:
+      - vactory_press_release
 name: 'Press release - Theme'
 vid: press_release_theme
 description: 'press release vocabulary.'

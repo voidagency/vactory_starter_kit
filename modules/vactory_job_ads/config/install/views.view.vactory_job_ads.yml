@@ -13,6 +13,9 @@ dependencies:
     - taxonomy
     - user
     - vactory_views
+  enforced:
+    module:
+      - vactory_job_ads
 id: vactory_job_ads
 label: 'Offres d''emploi'
 module: views

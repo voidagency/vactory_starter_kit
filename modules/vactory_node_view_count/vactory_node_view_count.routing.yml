@@ -5,3 +5,10 @@ vactory_node_view_count.increment_counter:
   methods: [PUT]
   requirements:
     _permission: 'access content'
+vactory_node_view_count.update_counter:
+  path: '/node/update-views-count'
+  defaults:
+    _controller: '\Drupal\vactory_node_view_count\Controller\VactoryNodeViewCountController::updateCounter'
+  methods: [PUT]
+  requirements:
+    _permission: 'access content'

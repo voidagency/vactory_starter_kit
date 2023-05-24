@@ -4,6 +4,9 @@ dependencies:
   module:
     - vactory_google_map_field
     - vactory_locator
+  enforced:
+    module:
+      - vactory_locator
 id: locator_entity.field_locator_info
 field_name: field_locator_info
 entity_type: locator_entity

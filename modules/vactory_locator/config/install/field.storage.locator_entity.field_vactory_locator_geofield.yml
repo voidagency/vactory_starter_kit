@@ -4,6 +4,9 @@ dependencies:
   module:
     - geofield
     - vactory_locator
+  enforced:
+    module:
+      - vactory_locator
 id: locator_entity.field_vactory_locator_geofield
 field_name: field_vactory_locator_geofield
 entity_type: locator_entity

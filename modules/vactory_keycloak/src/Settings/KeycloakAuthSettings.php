@@ -52,6 +52,11 @@ class KeycloakAuthSettings extends SettingsBase implements KeycloakAuthSettingsI
   protected $oauthRedirectUrl;
 
   /**
+   * No verify option.
+   */
+  protected $noVerify;
+
+  /**
    * {@inheritdoc}
    */
   public function getAppServerUrl() {
@@ -89,6 +94,16 @@ class KeycloakAuthSettings extends SettingsBase implements KeycloakAuthSettingsI
       $this->appClientSecret = $this->config->get('app_client_secret');
     }
     return $this->appClientSecret;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function noCertVerification() {
+    if (!$this->noVerify) {
+      $this->noVerify = $this->config->get('no_verify');
+    }
+    return $this->noVerify;
   }
 
 }

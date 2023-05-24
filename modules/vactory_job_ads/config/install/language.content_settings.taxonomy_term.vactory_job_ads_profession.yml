@@ -5,6 +5,9 @@ dependencies:
     - taxonomy.vocabulary.vactory_job_ads_profession
   module:
     - content_translation
+  enforced:
+    module:
+      - vactory_job_ads
 third_party_settings:
   content_translation:
     enabled: true

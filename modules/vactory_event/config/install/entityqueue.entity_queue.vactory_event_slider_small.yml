@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - node
+  enforced:
+    module:
+      - vactory_event
 id: vactory_event_slider_small
 label: 'Event Slider Small'
 handler: simple
