@@ -2,8 +2,12 @@
 
 /**
  * @file
+ * Module related hooks.
  */
 
+use Drupal\Core\Cache\Cache;
+use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\vactory_decoupled_theme_switcher\Form\ThemeSwitcherRuleForm;
 use Drupal\Core\Routing\RouteMatch;
 use Drupal\Core\Routing\RouteObjectInterface;
@@ -15,8 +19,7 @@ use Symfony\Component\HttpFoundation\ParameterBag;
 /**
  * Implements hook_entity_type_alter().
  */
-function vactory_decoupled_theme_switcher_entity_type_alter(array &$entity_types)
-{
+function vactory_decoupled_theme_switcher_entity_type_alter(array &$entity_types) {
   /** @var \Drupal\Core\Entity\EntityTypeInterface[] $entity_types */
   if (isset($entity_types['theme_switcher_rule'])) {
     $entity_types['theme_switcher_rule']
@@ -28,13 +31,7 @@ function vactory_decoupled_theme_switcher_entity_type_alter(array &$entity_types
 /**
  * Implements hook_decoupled_extra_field_value_alter().
  */
-function vactory_decoupled_theme_switcher_decoupled_extra_field_value_alter(&$value, $context)
-{
-  // todo: cache this.
-  // todo: add cacheTags for theme config.
-  // todo: test langcode
-  // todo: test homepage
-
+function vactory_decoupled_theme_switcher_decoupled_extra_field_value_alter(&$value, $context, CacheableMetadata $cacheability) {
   $nid = (int) $context['entity']->id();
   /** @var \Drupal\node\NodeInterface $node */
   $node = $context['entity'];
@@ -42,8 +39,8 @@ function vactory_decoupled_theme_switcher_decoupled_extra_field_value_alter(&$va
   $route->setOption('parameters', [
     'node' => [
       'type' => 'entity:node',
-      'converter' => 'paramconverter.entity'
-    ]
+      'converter' => 'paramconverter.entity',
+    ],
   ]);
   $route_match = new RouteMatch('entity.node.canonical', $route, ['node' => $node], ['node' => $nid]);
   $parameters = $route_match->getRawParameters();
@@ -66,17 +63,18 @@ function vactory_decoupled_theme_switcher_decoupled_extra_field_value_alter(&$va
   \Drupal::service('request_stack')->push($request);
 
   $negotiators = ['theme.negotiator.theme_switcher_negotiator'];
-  $theme = determineActiveTheme($negotiators, $route_match);
+  $theme = determine_active_theme($negotiators, $route_match);
 
   // Pop our request from stack.
   \Drupal::service('request_stack')->pop();
-  
   $value['theme'] = $theme;
+  $cacheability->addCacheTags(['theme_switcher']);
 }
 
-
-function determineActiveTheme(array $negotiators, $route_match)
-{
+/**
+ * Get active theme.
+ */
+function determine_active_theme(array $negotiators, $route_match) {
   $container = \Drupal::getContainer();
   $resolver = new ClassResolver();
   $resolver->setContainer($container);
@@ -90,6 +88,36 @@ function determineActiveTheme(array $negotiators, $route_match)
     }
   }
 
-  // return \Drupal::config('system.theme')->get('default');
   return "default";
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function vactory_decoupled_theme_switcher_form_theme_switcher_admin_overview_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $description = [
+    'description' => [
+      '#markup' => theme_switcher_conditions_description(),
+    ],
+  ];
+  $form = [...$description, ...$form];
+  $form['#submit'][] = 'decoupled_theme_switcher_rules_configuration_submit';
+}
+
+/**
+ * Theme switcher rules configuration custom submit.
+ */
+function decoupled_theme_switcher_rules_configuration_submit($form, FormStateInterface $form_state) {
+  Cache::invalidateTags(['theme_switcher']);
+}
+
+/**
+ * Get heme switcher conditions description.
+ */
+function theme_switcher_conditions_description() {
+  $description_html = '<h4>⚠️ Conditions logic</h4>';
+  $description_html .= '<p>👉 The logic operator between each switch theme rule conditions is: <strong>AND</strong></p>';
+  $description_html .= '<p>👉 The logic operator between all switch theme rules is: <strong>OR</strong></p>';
+  $description_html .= '<p>👉 Rules are prioritized by weight, when a condition is satisfied in two different rules then the rule with smallest weight has high priority</p>';
+  return $description_html;
 }
