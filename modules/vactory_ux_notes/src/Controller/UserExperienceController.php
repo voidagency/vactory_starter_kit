@@ -47,19 +47,45 @@ class UserExperienceController extends ControllerBase {
     $submission_data = [];
     $moyenne = 0;
     $somme = 0;
+    $notePercentages = [];
 
     foreach ($submissions as $submission) {
       $data = $submission->getData();
       $submission_data[] = $data;
-      $somme += $data['note'];
+      $note = $data['note'];
+      $somme += $note;
     }
 
-    $moyenne = count($submissions) > 0 ? round($somme / count($submissions), 2)  : 0;
+    // Calculate the percentage for each note value.
+    foreach ($submission_data as $data) {
+      $note = $data['note'];
+      if (isset($notePercentages[$note])) {
+        $notePercentages[$note]++;
+      }
+      else {
+        $notePercentages[$note] = 1;
+      }
+    }
+
+    $totalSubmissions = count($submission_data);
+
+    // Convert occurrences to percentages.
+    foreach ($notePercentages as &$occurrence) {
+      $occurrence = round(($occurrence / $totalSubmissions) * 100, 2);
+    }
+
+    // Sort note percentages in numerical order.
+    ksort($notePercentages, SORT_NUMERIC);
+
+    $moyenne = $totalSubmissions > 0 ? round($somme / $totalSubmissions, 2) : 0;
+
     return [
       '#theme' => 'vactory_ux_stats',
       '#submission_data' => $submission_data,
+      '#note_percentages' => $notePercentages,
       '#somme' => $somme,
       '#moyenne' => $moyenne,
+      '#total_rows' => $totalSubmissions,
     ];
   }
 
