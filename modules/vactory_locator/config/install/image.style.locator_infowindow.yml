@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - focal_point
+  enforced:
+    module:
+      - vactory_locator
 name: locator_infowindow
 label: 'Locator InfoWindow (200x200)'
 effects:

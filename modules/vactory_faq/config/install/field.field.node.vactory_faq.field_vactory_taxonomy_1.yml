@@ -5,6 +5,9 @@ dependencies:
     - field.storage.node.field_vactory_taxonomy_1
     - node.type.vactory_faq
     - taxonomy.vocabulary.faq_section
+  enforced:
+    module:
+      - vactory_faq
 id: node.vactory_faq.field_vactory_taxonomy_1
 field_name: field_vactory_taxonomy_1
 entity_type: node

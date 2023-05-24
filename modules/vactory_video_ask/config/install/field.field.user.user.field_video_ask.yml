@@ -6,6 +6,9 @@ dependencies:
     - field.storage.user.field_video_ask
   module:
     - user
+  enforced:
+    module:
+      - vactory_video_ask
 id: user.user.field_video_ask
 field_name: field_video_ask
 entity_type: user

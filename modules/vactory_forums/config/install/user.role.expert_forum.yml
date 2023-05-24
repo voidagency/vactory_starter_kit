@@ -1,6 +1,9 @@
 langcode: fr
 status: true
-dependencies: {  }
+dependencies:
+  enforced:
+    module:
+      - vactory_forums
 id: expert_forum
 label: 'Expert Forum'
 weight: 8

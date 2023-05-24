@@ -4,6 +4,9 @@ dependencies:
   config:
     - field.storage.locator_entity.field_agency_path
     - vactory_locator.locator_entity_type.vactory_locator
+  enforced:
+    module:
+      - vactory_locator
 id: locator_entity.vactory_locator.field_agency_path
 field_name: field_agency_path
 entity_type: locator_entity

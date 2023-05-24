@@ -6,6 +6,9 @@ dependencies:
     - node.type.vactory_event
   module:
     - metatag
+  enforced:
+    module:
+      - vactory_event
 id: node.vactory_event.field_vactory_meta_tags
 field_name: field_vactory_meta_tags
 entity_type: node

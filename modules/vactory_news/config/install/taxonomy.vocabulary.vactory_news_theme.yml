@@ -1,6 +1,9 @@
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  enforced:
+    module:
+      - vactory_news
 name: 'News - Theme'
 vid: vactory_news_theme
 description: 'News vocabulary.'

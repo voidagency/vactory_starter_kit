@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - node
+  enforced:
+    module:
+      - vactory_partner
 id: vactory_partner_list_block
 label: 'Partner List Block'
 handler: simple

@@ -6,6 +6,9 @@ dependencies:
     - node.type.vactory_partner
   module:
     - link
+  enforced:
+    module:
+      - vactory_partner
 id: node.vactory_partner.field_vactory_call_to_action
 field_name: field_vactory_call_to_action
 entity_type: node

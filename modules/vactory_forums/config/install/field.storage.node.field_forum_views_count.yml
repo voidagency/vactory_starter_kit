@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - node
+  enforced:
+    module:
+      - vactory_forums
 id: node.field_forum_views_count
 field_name: field_forum_views_count
 entity_type: node

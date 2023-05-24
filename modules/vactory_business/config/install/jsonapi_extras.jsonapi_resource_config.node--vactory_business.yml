@@ -3,8 +3,26 @@ status: true
 dependencies:
   config:
     - node.type.vactory_business
-_core:
-  default_config_hash: 45YYCRbvwFk3zvJIn1mE-mgXEkT8q_ASeBDQ0vtv20Y
+  module:
+    - jsonapi_defaults
+    - vactory_decoupled
+  enforced:
+    module:
+      - vactory_business
+third_party_settings:
+  jsonapi_defaults:
+    page_limit: 50
+  vactory_decoupled:
+    roles:
+      anonymous: 0
+      authenticated: 0
+      administrator: 0
+      super_administrator: 0
+      master: 0
+      webmaster: 0
+      vactory_academy_instructor: 0
+      editeur_forum: 0
+      expert_forum: 0
 id: node--vactory_business
 disabled: false
 path: node/fiche_business
@@ -148,6 +166,12 @@ resourceFields:
     publicName: menu_link
     enhancer:
       id: vactory_link
+  is_flagged:
+    disabled: false
+    fieldName: is_flagged
+    publicName: is_flagged
+    enhancer:
+      id: ''
   node_banner_image:
     disabled: false
     fieldName: node_banner_image
@@ -166,6 +190,30 @@ resourceFields:
     publicName: node_banner_title
     enhancer:
       id: ''
+  field_content_access_users:
+    disabled: false
+    fieldName: field_content_access_users
+    publicName: field_content_access_users
+    enhancer:
+      id: ''
+  field_content_access_roles:
+    disabled: false
+    fieldName: field_content_access_roles
+    publicName: field_content_access_roles
+    enhancer:
+      id: ''
+  field_content_access_groups:
+    disabled: false
+    fieldName: field_content_access_groups
+    publicName: field_content_access_groups
+    enhancer:
+      id: ''
+  field_content_access_custom:
+    disabled: false
+    fieldName: field_content_access_custom
+    publicName: field_content_access_custom
+    enhancer:
+      id: ''
   vcc_normalized:
     disabled: false
     fieldName: vcc_normalized
@@ -182,6 +230,12 @@ resourceFields:
     disabled: false
     fieldName: internal_blocks
     publicName: internal_blocks
+    enhancer:
+      id: ''
+  internal_metatag:
+    disabled: false
+    fieldName: internal_metatag
+    publicName: internal_metatag
     enhancer:
       id: ''
   internal_comment:
@@ -208,6 +262,12 @@ resourceFields:
     publicName: node_settings
     enhancer:
       id: ''
+  machine_name:
+    disabled: false
+    fieldName: machine_name
+    publicName: machine_name
+    enhancer:
+      id: ''
   node_bg_image:
     disabled: false
     fieldName: node_bg_image
@@ -230,6 +290,48 @@ resourceFields:
     disabled: false
     fieldName: node_body_class
     publicName: node_body_class
+    enhancer:
+      id: ''
+  candidature_spontanee_url:
+    disabled: false
+    fieldName: candidature_spontanee_url
+    publicName: candidature_spontanee_url
+    enhancer:
+      id: ''
+  notification_title:
+    disabled: false
+    fieldName: notification_title
+    publicName: notification_title
+    enhancer:
+      id: ''
+  notification_message:
+    disabled: false
+    fieldName: notification_message
+    publicName: notification_message
+    enhancer:
+      id: ''
+  mail_subject:
+    disabled: false
+    fieldName: mail_subject
+    publicName: mail_subject
+    enhancer:
+      id: ''
+  mail_message:
+    disabled: false
+    fieldName: mail_message
+    publicName: mail_message
+    enhancer:
+      id: ''
+  generate_notification:
+    disabled: false
+    fieldName: generate_notification
+    publicName: generate_notification
+    enhancer:
+      id: ''
+  vote:
+    disabled: false
+    fieldName: vote
+    publicName: vote
     enhancer:
       id: ''
   content_translation_source:
@@ -316,12 +418,18 @@ resourceFields:
     publicName: field_vactory_date
     enhancer:
       id: ''
-  field_vactory_image:
+  field_vactory_media_image:
     disabled: false
-    fieldName: field_vactory_image
-    publicName: field_vactory_image
+    fieldName: field_vactory_media_image
+    publicName: field_vactory_media_image
     enhancer:
-      id: vactory_file_image
+      id: ''
+  field_vactory_tags:
+    disabled: false
+    fieldName: field_vactory_tags
+    publicName: field_vactory_tags
+    enhancer:
+      id: ''
   field_vactory_telephone:
     disabled: false
     fieldName: field_vactory_telephone

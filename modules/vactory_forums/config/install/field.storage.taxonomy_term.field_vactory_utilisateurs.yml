@@ -4,6 +4,9 @@ dependencies:
   module:
     - taxonomy
     - user
+  enforced:
+    module:
+      - vactory_forums
 id: taxonomy_term.field_vactory_utilisateurs
 field_name: field_vactory_utilisateurs
 entity_type: taxonomy_term

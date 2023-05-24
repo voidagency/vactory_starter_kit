@@ -5,6 +5,9 @@ dependencies:
     - block_content.type.vactory_banner
     - field.storage.block_content.field_banner_image_mobile
     - media.type.image
+  enforced:
+    module:
+      - vactory_banner
 id: block_content.vactory_banner.field_banner_image_mobile
 field_name: field_banner_image_mobile
 entity_type: block_content

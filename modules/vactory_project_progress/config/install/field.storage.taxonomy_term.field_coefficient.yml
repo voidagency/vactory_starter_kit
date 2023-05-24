@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - taxonomy
+  enforced:
+    module:
+      - vactory_project_progress
 id: taxonomy_term.field_coefficient
 field_name: field_coefficient
 entity_type: taxonomy_term

@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - node
+  enforced:
+    module:
+      - vactory_business
 id: pathauto_content_business_pattern
 label: 'Pathauto Content Business Pattern'
 type: 'canonical_entities:node'

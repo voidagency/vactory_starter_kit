@@ -19,8 +19,9 @@ dependencies:
     - media_responsive_thumbnail
     - user
     - vactory_field
-_core:
-  default_config_hash: KGrLpgN1SXN7ErjBciaZuzGBBERi5-u6CnSNPUNlMHA
+  enforced:
+    module:
+      - vactory_event
 id: node.vactory_event.smart_search
 targetEntityType: node
 bundle: vactory_event

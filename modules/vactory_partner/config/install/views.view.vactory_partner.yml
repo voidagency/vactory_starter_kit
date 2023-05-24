@@ -12,6 +12,9 @@ dependencies:
     - node
     - user
     - vactory_views
+  enforced:
+    module:
+      - vactory_partner
 id: vactory_partner
 label: 'Vactory Partner'
 module: views

@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - node
+  enforced:
+    module:
+      - vactory_publication
 id: vactory_pub_block_masonry
 label: 'Publication Block Masonry'
 handler: simple

@@ -5,6 +5,9 @@ dependencies:
     - field.storage.taxonomy_term.field_categorie
     - taxonomy.vocabulary.project_progress_category
     - taxonomy.vocabulary.project_progress_item
+  enforced:
+    module:
+      - vactory_project_progress
 id: taxonomy_term.project_progress_item.field_categorie
 field_name: field_categorie
 entity_type: taxonomy_term

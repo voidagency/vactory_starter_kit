@@ -4,6 +4,9 @@ dependencies:
   config:
     - field.storage.node.field_facebook_account
     - node.type.announcement
+  enforced:
+    module:
+      - vactory_announcements
 id: node.announcement.field_facebook_account
 field_name: field_facebook_account
 entity_type: node

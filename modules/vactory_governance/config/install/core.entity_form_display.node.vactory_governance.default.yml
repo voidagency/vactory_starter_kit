@@ -28,6 +28,9 @@ dependencies:
     - social_media_links_field
     - text
     - yoast_seo
+  enforced:
+    module:
+      - vactory_governance
 third_party_settings:
   field_group:
     group_personal:

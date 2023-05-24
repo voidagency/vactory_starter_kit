@@ -5,6 +5,9 @@ dependencies:
     - field.storage.user.field_project_progress
   module:
     - user
+  enforced:
+    module:
+      - vactory_project_progress
 id: user.user.field_project_progress
 field_name: field_project_progress
 entity_type: user

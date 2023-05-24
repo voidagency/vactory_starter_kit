@@ -44,6 +44,9 @@ dependencies:
     - vactory_views
     - views_autocomplete_filters
     - views_bulk_operations
+  enforced:
+    module:
+      - vactory_locator
 id: vactory_locator
 label: Locator
 module: views

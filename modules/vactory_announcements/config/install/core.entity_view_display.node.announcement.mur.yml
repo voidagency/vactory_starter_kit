@@ -24,6 +24,9 @@ dependencies:
   module:
     - user
     - vactory_core
+  enforced:
+    module:
+      - vactory_announcements
 id: node.announcement.mur
 targetEntityType: node
 bundle: announcement

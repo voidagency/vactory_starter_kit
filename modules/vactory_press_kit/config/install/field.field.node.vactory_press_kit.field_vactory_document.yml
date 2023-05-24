@@ -6,6 +6,9 @@ dependencies:
     - node.type.vactory_press_kit
   module:
     - file
+  enforced:
+    module:
+      - vactory_press_kit
 id: node.vactory_press_kit.field_vactory_document
 field_name: field_vactory_document
 entity_type: node

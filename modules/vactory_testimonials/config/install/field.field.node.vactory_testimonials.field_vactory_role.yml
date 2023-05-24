@@ -4,6 +4,9 @@ dependencies:
   config:
     - field.storage.node.field_vactory_role
     - node.type.vactory_testimonials
+  enforced:
+    module:
+      - vactory_testimonials
 id: node.vactory_testimonials.field_vactory_role
 field_name: field_vactory_role
 entity_type: node

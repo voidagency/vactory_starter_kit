@@ -9,6 +9,9 @@ dependencies:
     - geofield
     - path
     - text
+  enforced:
+    module:
+      - vactory_locator
 id: taxonomy_term.locator_city.default
 targetEntityType: taxonomy_term
 bundle: locator_city

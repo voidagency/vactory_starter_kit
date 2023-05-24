@@ -3,6 +3,9 @@ status: true
 dependencies:
   config:
     - taxonomy.vocabulary.vactory_governance_role
+  enforced:
+    module:
+      - vactory_governance
 id: taxonomy_term.vactory_governance_role
 target_entity_type_id: taxonomy_term
 target_bundle: vactory_governance_role

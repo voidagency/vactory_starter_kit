@@ -3,6 +3,9 @@ status: true
 dependencies:
   config:
     - node.type.vactory_faq
+  enforced:
+    module:
+      - vactory_faq
 id: node--vactory_faq
 disabled: false
 path: node/vactory_faq

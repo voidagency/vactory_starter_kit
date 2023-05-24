@@ -12,6 +12,9 @@ dependencies:
   module:
     - text
     - user
+  enforced:
+    module:
+      - vactory_partner
 id: node.vactory_partner.teaser
 targetEntityType: node
 bundle: vactory_partner

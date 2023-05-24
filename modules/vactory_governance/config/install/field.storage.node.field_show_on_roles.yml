@@ -4,6 +4,9 @@ dependencies:
   module:
     - node
     - taxonomy
+  enforced:
+    module:
+      - vactory_governance
 id: node.field_show_on_roles
 field_name: field_show_on_roles
 entity_type: node

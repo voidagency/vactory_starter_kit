@@ -3,6 +3,9 @@ status: true
 dependencies:
   config:
     - taxonomy.vocabulary.business_statut_juridique
+  enforced:
+    module:
+      - vactory_business
 id: taxonomy_term.business_statut_juridique.default
 targetEntityType: taxonomy_term
 bundle: business_statut_juridique

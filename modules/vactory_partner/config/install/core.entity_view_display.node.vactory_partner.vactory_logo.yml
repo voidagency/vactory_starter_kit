@@ -13,6 +13,9 @@ dependencies:
     - link
     - user
     - vactory_core
+  enforced:
+    module:
+      - vactory_partner
 id: node.vactory_partner.vactory_logo
 targetEntityType: node
 bundle: vactory_partner

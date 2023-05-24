@@ -5,6 +5,9 @@ dependencies:
     - node
   config:
     - node.type.vactory_job_ads
+  enforced:
+    module:
+      - vactory_job_ads
 id: job_ads_two_columns
 label: 'Job Ads - Two Columns'
 handler: simple

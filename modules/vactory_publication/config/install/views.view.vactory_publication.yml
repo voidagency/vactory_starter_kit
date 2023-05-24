@@ -20,6 +20,9 @@ dependencies:
     - taxonomy
     - user
     - vactory_views
+  enforced:
+    module:
+      - vactory_publication
 id: vactory_publication
 label: 'Vactory Publication'
 module: views

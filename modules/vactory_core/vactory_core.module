@@ -436,3 +436,59 @@ function addCounterToTextElement(&$element) {
     $element['#attached']['drupalSettings']['textfieldCounter'][$key]['countHTMLCharacters'] = 0;
   }
 }
+
+/**
+ * Implements hook_preprocess_HOOK.
+ */
+function vactory_core_preprocess_pager(&$variables) {
+  if (isset($variables['items'])) {
+    $first = $variables['items']['first'] ?? [];
+    $previous = $variables['items']['previous'] ?? [];
+    $pages = $variables['items']['pages'] ?? [];
+    $next = $variables['items']['next'] ?? [];
+    $last = $variables['items']['last'] ?? [];
+    if (!empty($pages)) {
+      foreach ($pages as &$page) {
+        if (isset($page['href'])) {
+          vactory_core_clean_pager_query_param($page['href']);
+        }
+      }
+      $variables['items']['pages'] = $pages;
+    }
+    if (!empty($first) && isset($first['href'])) {
+      vactory_core_clean_pager_query_param($first['href']);
+      $variables['items']['first'] = $first;
+    }
+    if (!empty($previous) && isset($previous['href'])) {
+      vactory_core_clean_pager_query_param($previous['href']);
+      $variables['items']['previous'] = $previous;
+    }
+    if (!empty($next) && isset($next['href'])) {
+      vactory_core_clean_pager_query_param($next['href']);
+      $variables['items']['next'] = $next;
+    }
+    if (!empty($last) && isset($last['href'])) {
+      vactory_core_clean_pager_query_param($last['href']);
+      $variables['items']['last'] = $last;
+    }
+  }
+}
+
+/**
+ * Clean pager query param.
+ */
+function vactory_core_clean_pager_query_param(&$str) {
+  if (!empty($str) && strpos($str, '?') !== FALSE) {
+    $queryStringPieces = explode('?', $str);
+    if (isset($queryStringPieces[1])) {
+      $queryString = $queryStringPieces[1];
+      parse_str($queryString, $query_params);
+      if (isset($query_params['_wrapper_format'])) {
+        unset($query_params['_wrapper_format']);
+      }
+      $queryString = http_build_query($query_params);
+      $queryStringPieces[1] = $queryString;
+      $str = implode('?', $queryStringPieces);
+    }
+  }
+}

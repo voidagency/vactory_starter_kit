@@ -22,6 +22,9 @@ dependencies:
   module:
     - text
     - user
+  enforced:
+    module:
+      - vactory_governance
 id: node.vactory_governance.teaser
 targetEntityType: node
 bundle: vactory_governance

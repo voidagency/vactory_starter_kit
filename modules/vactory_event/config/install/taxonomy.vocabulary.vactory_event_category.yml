@@ -1,6 +1,9 @@
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  enforced:
+    module:
+      - vactory_event
 name: 'Event - Categories'
 vid: vactory_event_category
 description: 'Utilisez les catégories pour regrouper les événements sur des sujets similaires.'

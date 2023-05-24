@@ -20,6 +20,9 @@ dependencies:
     - text
     - user
     - vactory_core
+  enforced:
+    module:
+      - vactory_news
 id: node.vactory_news.mur
 targetEntityType: node
 bundle: vactory_news

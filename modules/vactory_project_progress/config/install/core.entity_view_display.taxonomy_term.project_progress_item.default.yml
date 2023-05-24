@@ -13,6 +13,9 @@ dependencies:
   module:
     - link
     - text
+  enforced:
+    module:
+      - vactory_project_progress
 id: taxonomy_term.project_progress_item.default
 targetEntityType: taxonomy_term
 bundle: project_progress_item

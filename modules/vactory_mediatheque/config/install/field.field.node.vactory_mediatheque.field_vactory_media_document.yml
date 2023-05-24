@@ -5,6 +5,9 @@ dependencies:
     - field.storage.node.field_vactory_media_document
     - media.type.file
     - node.type.vactory_mediatheque
+  enforced:
+    module:
+      - vactory_mediatheque
 id: node.vactory_mediatheque.field_vactory_media_document
 field_name: field_vactory_media_document
 entity_type: node
