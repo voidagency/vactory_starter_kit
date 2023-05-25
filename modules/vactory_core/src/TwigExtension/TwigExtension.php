@@ -202,7 +202,7 @@ class TwigExtension extends \Twig_Extension {
         ->view($block);
 
       if ($variables) {
-        return \Drupal::service('renderer')->render($variables);
+        return \Drupal::service('renderer')->renderPlain($variables);
       }
     }
     return FALSE;

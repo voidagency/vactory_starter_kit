@@ -99,7 +99,7 @@ function vactory_news_views_pre_view(ViewExecutable $view, $display_id, array &$
           'empty' => TRUE,
           'tokenize' => FALSE,
           'content' => \Drupal::service('renderer')
-            ->render($block_content),
+            ->renderPlain($block_content),
           'plugin_id' => 'text_custom',
         ];
         $view->setHandler($display_id, 'header', 'area_text_custom', $item);

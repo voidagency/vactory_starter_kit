@@ -133,7 +133,7 @@ class FrequentSearchesAdminForm extends FormBase {
     }
     $twigExtension = \Drupal::service('twig_tweak.twig_extension');
     $switcher_block = $twigExtension->drupalBlock('language_dropdown_block:language_interface', []);
-    $form['#prefix'] = \Drupal::service('renderer')->render($switcher_block);
+    $form['#prefix'] = \Drupal::service('renderer')->renderPlain($switcher_block);
 
     // Get The number of Unuseless keywords.
     $lang_id = $this->language_manager->getCurrentLanguage()->getId();

@@ -205,7 +205,7 @@ class QuizForm extends FormBase {
         '#theme' => 'quiz_answer_option',
         '#content' => $question_answer,
       ];
-      $options[$question_answer['answer_id']] = $this->renderer->render($option);
+      $options[$question_answer['answer_id']] = $this->renderer->renderPlain($option);
     }
     $form['question_body'] = [
       '#markup' => '<div class="d-flex mb-3"><strong class="mx-2">' . $current_question['question_number'] . '.</strong><div>' . $current_question['question_text_value'] . '</div></div>',

@@ -372,7 +372,7 @@ class VactorySubscribeToFormation extends FormBase {
         '#theme' => 'vactory_academy_agency_types',
         '#content' => $content,
       ];
-      $options[$type] = $renderer->render($formation_type_preview);
+      $options[$type] = $renderer->renderPlain($formation_type_preview);
     }
     // Page title.
     $form['title'] = $this->setPageTitle($this->t('Formations et Webinars'));
@@ -517,7 +517,7 @@ class VactorySubscribeToFormation extends FormBase {
         '#content' => $content,
       ];
       // Add academy node to user select options.
-      $options[$nid] = $renderer->render($course_preview);
+      $options[$nid] = $renderer->renderPlain($course_preview);
     }
     return $options;
   }
@@ -601,7 +601,7 @@ class VactorySubscribeToFormation extends FormBase {
     ];
     $block_content = $this->getGeneralConditions();
     $form['conditions_generales'] = [
-      '#markup' => \Drupal::service('renderer')->render($block_content),
+      '#markup' => \Drupal::service('renderer')->renderPlain($block_content),
     ];
     $form['form_wrapper_closer'] = [
       '#type' => 'markup',
