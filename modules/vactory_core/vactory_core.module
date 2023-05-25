@@ -483,12 +483,23 @@ function vactory_core_clean_pager_query_param(&$str) {
     if (isset($queryStringPieces[1])) {
       $queryString = $queryStringPieces[1];
       parse_str($queryString, $query_params);
+      if (isset($query_params['page']) && is_numeric($query_params['page']) && (int) $query_params['page'] === 0) {
+        unset($query_params['page']);
+      }
       if (isset($query_params['_wrapper_format'])) {
         unset($query_params['_wrapper_format']);
       }
       $queryString = http_build_query($query_params);
-      $queryStringPieces[1] = $queryString;
-      $str = implode('?', $queryStringPieces);
+      if (!empty($queryString)) {
+        $queryStringPieces[1] = $queryString;
+        $str = implode('?', $queryStringPieces);
+      }
+      if (empty($queryString)) {
+        $langcode = Drupal::languageManager()->getCurrentLanguage()->getId();
+        $current_path = \Drupal::service('path.current')->getPath();
+        $current_alias = \Drupal::service('path_alias.manager')->getAliasByPath($current_path);
+        $str = "/{$langcode}{$current_alias}";
+      }
     }
   }
 }
