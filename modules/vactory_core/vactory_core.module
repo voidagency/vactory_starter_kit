@@ -495,10 +495,15 @@ function vactory_core_clean_pager_query_param(&$str) {
         $str = implode('?', $queryStringPieces);
       }
       if (empty($queryString)) {
-        $langcode = Drupal::languageManager()->getCurrentLanguage()->getId();
-        $current_path = \Drupal::service('path.current')->getPath();
-        $current_alias = \Drupal::service('path_alias.manager')->getAliasByPath($current_path);
-        $str = "/{$langcode}{$current_alias}";
+        if (!empty($queryStringPieces[0])) {
+          $str = $queryStringPieces[0];
+        }
+        else {
+          $langcode = Drupal::languageManager()->getCurrentLanguage()->getId();
+          $current_path = \Drupal::service('path.current')->getPath();
+          $current_alias = \Drupal::service('path_alias.manager')->getAliasByPath($current_path);
+          $str = "/{$langcode}{$current_alias}";
+        }
       }
     }
   }
