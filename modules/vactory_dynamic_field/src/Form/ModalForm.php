@@ -731,7 +731,7 @@ class ModalForm extends FormBase {
                   'name' => $widget['name'],
                 ],
               ];
-              $options[$widget['uuid']] = $renderer->render($widget_preview);
+              $options[$widget['uuid']] = $renderer->renderPlain($widget_preview);
             }
           }
           $form['templates_tabs'][$category]['template'] = [

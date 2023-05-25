@@ -104,7 +104,7 @@ function vactory_announcements_mail($key, &$message, $params) {
       $message['subject'] = $params['subject'];
       // In order to parse html markup.
       $body = ['#markup' => $params['message']];
-      $message['body'][] = \Drupal::service('renderer')->render($body);
+      $message['body'][] = \Drupal::service('renderer')->renderPlain($body);
       $message['options'] = $params['options'];
       break;
   }
