@@ -736,7 +736,9 @@ function vactory_decoupled_preprocess_page(&$variables) {
 /**
  * Redirect to frontend url.
  */
+// phpcs:disable
 function redirectToFrontend($from_404 = FALSE) {
+  // phpcs:enable
   if ($frontend_url = Settings::get('BASE_FRONTEND_URL', '')) {
     $requested_path = $from_404 ? \Drupal::request()->getPathInfo() : '/not-found';
     $response = new RedirectResponse("{$frontend_url}{$requested_path}");
@@ -774,10 +776,25 @@ function vactory_decoupled_preprocess_html(&$variables) {
  * Implements hook_module_implements_alter().
  */
 function vactory_decoupled_module_implements_alter(&$implementations, $hook) {
-    if ($hook === 'simple_oauth_private_claims_alter') {
-        $group = $implementations['vactory_decoupled'];
-        unset($implementations['vactory_decoupled']);
-        $implementations = ['vactory_decoupled' => $group] + $implementations;
-    }
+  if ($hook === 'simple_oauth_private_claims_alter') {
+    $group = $implementations['vactory_decoupled'];
+    unset($implementations['vactory_decoupled']);
+    $implementations = ['vactory_decoupled' => $group] + $implementations;
+  }
+}
 
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ */
+function vactory_decoupled_taxonomy_term_presave(EntityInterface $entity) {
+  if ($entity->hasField('term_2_slug')) {
+    $term_slug = $entity->get('term_2_slug')->value;
+    if (empty($term_slug)) {
+      $name = $entity->getName();
+      $slug = \Drupal::service('transliteration')->transliterate($name);
+      $slug = !empty($slug) ? strtolower($slug) : $slug;
+      $slug = !empty($slug) ? str_replace([' ', "'"], '-', $slug) : $slug;
+      $entity->set('term_2_slug', $slug);
+    }
+  }
 }
