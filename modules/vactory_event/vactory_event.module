@@ -221,7 +221,7 @@ function vactory_event_json_api_collection_alter(&$filters, &$context) {
   $query = \Drupal::request()->query->get("q");
   $is_avenir = $context['id'] === 'vactory_event_list_a_venir' && isset($query["type"]) && $query["type"] == "avenir";
   $is_passe = $context['id'] === 'vactory_event_list_passe' && isset($query["type"]) && $query["type"] == "passe";
-  if($context['id']=== 'next_event')
+      if($context['id']=== 'next_event')
   {
     if (isset($query["date"])) {
     $filters["filter[date-filter-next][condition][path]"] = "field_vactory_date_interval.value";
