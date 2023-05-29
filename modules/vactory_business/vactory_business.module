@@ -1,0 +1,296 @@
+<?php
+
+/**
+ * @file
+ * Module related hooks.
+ */
+
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\file\FileInterface;
+use Drupal\media\Entity\Media;
+use Drupal\media\MediaInterface;
+use Drupal\node\Entity\Node;
+use Drupal\node\NodeInterface;
+use Drupal\node\NodeTypeInterface;
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_business_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if ($form_id <> "node_type_edit_form") {
+    return;
+  }
+  $form_object = $form_state->getFormObject()->getEntity();
+  $nid = $form_object->getThirdPartySetting('vactory_business', 'form_page', '');
+  $node = NULL;
+  if (!empty($nid)) {
+    $node = Drupal::entityTypeManager()->getStorage('node')
+      ->load($nid);
+  }
+  if ($form_object->id() === 'vactory_business') {
+    $form['fiche_business_form'] = [
+      '#type' => 'details',
+      '#title' => t('Fiche business form page'),
+      '#group' => 'additional_settings',
+    ];
+    $form['fiche_business_form']['form_page'] = [
+      '#title' => t('Fiche business form page'),
+      '#type' => 'entity_autocomplete',
+      '#target_type' => 'node',
+      '#selection_settings' => [
+        'target_bundles' => ['vactory_page'],
+      ],
+      '#default_value' => $node,
+    ];
+    $form['#entity_builders'][] = 'vactory_business_content_type_form_builder';
+  }
+}
+
+/**
+ * Entity builder for the fiche business content type form.
+ */
+function vactory_business_content_type_form_builder($entity_type, NodeTypeInterface $type, &$form, FormStateInterface $form_state) {
+  $type->setThirdPartySetting('vactory_business', 'form_page', $form_state->getValue('form_page'));
+}
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function vactory_business_entity_base_field_info(EntityTypeInterface $entity_type) {
+  $fields = [];
+
+  if ($entity_type->id() === 'node') {
+    $fields['form_path_alias'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Fiche business form path alias'))
+      ->setDescription(t('Fiche business form path alias'))
+      ->setTranslatable(FALSE)
+      ->setClass('\Drupal\vactory_business\Plugin\Field\FicheBusinessFormUrlItemList')
+      ->setComputed(TRUE)
+      ->setReadOnly(TRUE)
+      ->setTargetEntityTypeId($entity_type->id())
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE);
+  }
+
+  return $fields;
+}
+
+/**
+ * Implements hook_decoupled_webform_data_presubmit_alters().
+ */
+function vactory_business_decoupled_webform_data_presubmit_alter(array &$webform_data, &$error_message) {
+  if (isset($webform_data['webform_id']) && $webform_data['webform_id'] === 'fiche_business') {
+    // Get submitted values.
+    $title = $webform_data['projet'] ?? NULL;
+    $description = $webform_data['description'] ?? NULL;
+    $fid = $webform_data['image'] ?? NULL;
+    $secteur_activite = $webform_data['secteur_activite'] ?? NULL;
+    $date = $webform_data['annee_de_creation'] ?? NULL;
+    $statut_juridique = $webform_data['status_juridique'] ?? NULL;
+    $specialisations = $webform_data['specialisations'] ?? [];
+    $taille_entreprise = $webform_data['taille_entreprise'] ?? NULL;
+    $website = $webform_data['site_web'] ?? NULL;
+    $country = $webform_data['pays'] ?? NULL;
+    $city = $webform_data['ville'] ?? NULL;
+    $phone = $webform_data['telephone'] ?? NULL;
+    $address = $webform_data['adresse'] ?? NULL;
+    $social_network = [
+      'platform_values' => [
+        'facebook' => [
+          'value' => $webform_data['facebook'] ?? '',
+        ],
+        'linkedin' => [
+          'value' => $webform_data['linkedin'] ?? '',
+        ],
+        'youtube' => [
+          'value' => $webform_data['youtube'] ?? '',
+        ],
+        'twitter' => [
+          'value' => $webform_data['twitter'] ?? '',
+        ],
+        'instagram' => [
+          'value' => $webform_data['instagram'] ?? '',
+        ],
+      ],
+    ];
+    $account = Drupal::currentUser();
+    $has_access = TRUE;
+    if ($account->isAnonymous()) {
+      $has_access = FALSE;
+    }
+    if (!$account->isAnonymous()) {
+      $nids = Drupal::entityTypeManager()->getStorage('node')
+        ->getQuery()
+        ->condition('type', 'vactory_business')
+        ->condition('field_business_users', $account->id())
+        ->execute();
+      if (!empty($nids)) {
+        // Update node.
+        $nid = reset($nids);
+        $node = Drupal::entityTypeManager()->getStorage('node')
+          ->load($nid);
+        $node_translation = Drupal::service('entity.repository')
+          ->getTranslationFromContext($node);
+        if ($node_translation instanceof NodeInterface) {
+          if ($node_translation->access('update', $account)) {
+            $mid = !empty($fid) ? create_media_from_fid($fid, $account, $node) : NULL;
+            $users = $node_translation->get('field_business_users')->getValue();
+            $users[] = ['target_id' => $account->id()];
+            $users = array_map(function ($value) {
+              return $value['target_id'];
+            }, $users);
+            $users = array_unique($users);
+            $users = array_map(function ($value) {
+              return ['target_id' => $value];
+            }, $users);
+            $node_translation->set('title', $title)
+              ->set('node_summary', $description)
+              ->set('body', ['value' => $description])
+              ->set('field_vactory_media_image', $mid)
+              ->set('field_secteur_activite', $secteur_activite)
+              ->set('field_statut_juridique', $statut_juridique)
+              ->set('field_taille_entreprise', $taille_entreprise)
+              ->set('field_business_pays', $country)
+              ->set('field_business_ville', $city)
+              ->set('field_vactory_telephone', $phone)
+              ->set('field_vactory_address', $address)
+              ->set('field_site_web', $website)
+              ->set('field_social_networks', $social_network)
+              ->set('field_vactory_date', $date)
+              ->set('field_business_users', $users);
+            if (!empty($specialisations) && is_array($specialisations)) {
+              $specialisations = array_map(function ($id) {
+                return ['target_id' => $id];
+              }, $specialisations);
+              $node_translation->set('field_business_specialisations', $specialisations);
+            }
+            $node_translation->save();
+          }
+          else {
+            $has_access = FALSE;
+          }
+        }
+      }
+      else {
+        // Create node.
+        if ($account->hasPermission("create vactory_business content")) {
+          $mid = !empty($fid) ? create_media_from_fid($fid, $account) : NULL;
+          $node = Node::create(['type' => 'vactory_business']);
+          $users = [['target_id' => $account->id()]];
+          $node->set('title', $title)
+            ->set('node_summary', $description)
+            ->set('body', ['value' => $description])
+            ->set('field_vactory_media_image', $mid)
+            ->set('field_secteur_activite', $secteur_activite)
+            ->set('field_statut_juridique', $statut_juridique)
+            ->set('field_taille_entreprise', $taille_entreprise)
+            ->set('field_business_pays', $country)
+            ->set('field_business_ville', $city)
+            ->set('field_vactory_telephone', $phone)
+            ->set('field_vactory_address', $address)
+            ->set('field_site_web', $website)
+            ->set('field_social_networks', $social_network)
+            ->set('field_vactory_date', $date)
+            ->set('field_business_users', $users);
+          if (!empty($specialisations) && is_array($specialisations)) {
+            $specialisations = array_map(function ($id) {
+              return ['target_id' => $id];
+            }, $specialisations);
+            $node->set('field_business_specialisations', $specialisations);
+          }
+          $node->save();
+          $languages = Drupal::languageManager()->getLanguages();
+          foreach ($languages as $language) {
+            if (!$node->hasTranslation($language->getId())) {
+              $node->addTranslation($language->getId(), $node->toArray())
+                ->save();
+            }
+          }
+        }
+        else {
+          $has_access = FALSE;
+        }
+      }
+    }
+
+    if (!$has_access) {
+      $error_message = [
+        'error' => [
+          'message' => "You're not authorized to create/update business sheet content type",
+        ],
+      ];
+    }
+  }
+
+}
+
+/**
+ * Generate media from submitted image id.
+ */
+function create_media_from_fid($fid, AccountInterface $account, $node = NULL) {
+  if (!empty($fid)) {
+    if ($node instanceof NodeInterface) {
+      $mid = $node->get('field_vactory_media_image')->target_id;
+      if ($mid) {
+        $media = Media::load($mid);
+        if ($media instanceof MediaInterface) {
+          $media_fid = $media->get('field_media_image')->target_id;
+          if ($media_fid === $fid) {
+            return $media->id();
+          }
+        }
+      }
+    }
+    $file = Drupal::entityTypeManager()->getStorage('file')
+      ->load($fid);
+    if ($file instanceof FileInterface) {
+      if (!$file->isPermanent()) {
+        /** @var \Drupal\Core\File\FileSystemInterface $file_system */
+        $file_system = \Drupal::service('file_system');
+        $public_path = $file_system->realpath('public://');
+        $current_uri = $file->getFileUri();
+        $new_uri = 'public://' . $file->getFilename();
+        $new_path = $public_path . '/' . $file->getFilename();
+        $file_system->copy($current_uri, $new_path, TRUE);
+        $file->set('uri', $new_uri);
+        $file->setPermanent();
+        $file->save();
+      }
+      $mids = Drupal::entityTypeManager()->getStorage('media')
+        ->getQuery()
+        ->condition('field_media_image', $fid)
+        ->execute();
+      if (!empty($mids)) {
+        return reset($mids);
+      }
+      $media = Media::create([
+        'bundle' => 'image',
+        'uid' => $account->id(),
+        'field_media_image' => [
+          'target_id' => $fid,
+        ],
+      ]);
+      $media->save();
+
+      if ($media instanceof MediaInterface) {
+        return $media->id();
+      }
+    }
+  }
+
+  return NULL;
+}
+
+/**
+ * Implements hook_df_jsonapi_output_alter().
+ */
+function vactory_business_df_jsonapi_output_alter(&$content) {
+  if ($content['template'] === 'vactory_business:webform') {
+    if (isset($content['extra_field']['fiche_alias']) && !empty($content['extra_field']['fiche_alias'])) {
+      $content['extra_field']['fiche_alias'] = Drupal::token()->replace($content['extra_field']['fiche_alias'], []);
+    }
+  }
+}

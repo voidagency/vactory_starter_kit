@@ -7,4 +7,12 @@ vactory_icon.fonticonpicker:
     theme:
       libraries/fontIconPicker/css/base/jquery.fonticonpicker.min.css: {}
       libraries/fontIconPicker/css/themes/grey-theme/jquery.fonticonpicker.grey.min.css: {}
-#      libraries/fontIconPicker/fontello-7275ca86/css/fontello.css: {}
+      # libraries/fontIconPicker/fontello-7275ca86/css/fontello.css: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
+
+settings_form:
+  version: 1.0
+  js:
+    js/settings-form.js: { }

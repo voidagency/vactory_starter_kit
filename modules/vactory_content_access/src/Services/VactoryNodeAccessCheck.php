@@ -6,6 +6,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxy;
 use Drupal\node\Entity\Node;
 use Drupal\user\Entity\User;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 
 /**
  * Class for managing vactory content Access.
@@ -36,6 +37,13 @@ class VactoryNodeAccessCheck {
   protected $entityTypeManager;
 
   /**
+   * The module handler.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
    * PriveAccessCheck constructor.
    *
    * @param \Drupal\Core\Session\AccountProxy $account
@@ -43,9 +51,10 @@ class VactoryNodeAccessCheck {
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
    *   Entity type manager object.
    */
-  public function __construct(AccountProxy $account, EntityTypeManagerInterface $entityTypeManager) {
+  public function __construct(AccountProxy $account, EntityTypeManagerInterface $entityTypeManager, ModuleHandlerInterface $module_handler) {
     $this->currentUserId = $account->id();
     $this->entityTypeManager = $entityTypeManager;
+    $this->moduleHandler = $module_handler;
     $this->currentUserObject = $this->entityTypeManager->getStorage('user')
       ->load($this->currentUserId);
   }
@@ -92,6 +101,7 @@ class VactoryNodeAccessCheck {
           }
         }
       }
+
       // Check if accessible by role.
       if (!$is_accessible && $fieldAccessByRolesName) {
         $current_user_roles = $this->currentUserObject->getRoles();
@@ -112,7 +122,7 @@ class VactoryNodeAccessCheck {
       if (!empty($node->get('field_content_access_custom')->value)) {
         $key = $node->get('field_content_access_custom')->value;
         // Check if accessible by custom hook.
-        \Drupal::moduleHandler()->alter('vactory_content_access', $is_accessible, $key, $node);
+        $this->moduleHandler->alter('vactory_content_access', $is_accessible, $key, $node);
       }
       return $is_accessible;
     }

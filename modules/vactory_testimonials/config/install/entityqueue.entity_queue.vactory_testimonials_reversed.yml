@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - node
+  enforced:
+    module:
+      - vactory_testimonials
 id: vactory_testimonials_reversed
 label: 'Testimonials List Reversed'
 handler: simple

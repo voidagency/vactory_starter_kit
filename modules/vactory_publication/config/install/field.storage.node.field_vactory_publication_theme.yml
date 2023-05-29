@@ -4,6 +4,9 @@ dependencies:
   module:
     - node
     - taxonomy
+  enforced:
+    module:
+      - vactory_publication
 id: node.field_vactory_publication_theme
 field_name: field_vactory_publication_theme
 entity_type: node

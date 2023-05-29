@@ -9,12 +9,10 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\Core\StreamWrapper\StreamWrapperManager;
 use Drupal\Core\Url;
 use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\jsonapi_extras\Plugin\ResourceFieldEnhancerBase;
-use Drupal\media\Entity\Media;
 use Drupal\media\MediaInterface;
 use Drupal\vactory_core\SlugManager;
 use Drupal\vactory_decoupled\JsonApiGenerator;
@@ -217,8 +215,11 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
       $widget_id = $data['widget_id'];
       $widget_data = json_decode($data['widget_data'], TRUE);
       $settings = $this->platformProvider->loadSettings($widget_id);
-
       $content = [];
+
+      // Add auto populate info.
+      $content['auto_populate'] = $widget_data['auto-populate'] ?? FALSE;
+      unset($widget_data['auto-populate']);
 
       // Handle extra fields.
       if (isset($widget_data['extra_field'])) {

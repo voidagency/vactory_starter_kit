@@ -18,6 +18,9 @@ dependencies:
     - media_responsive_thumbnail
     - user
     - vactory_field
+  enforced:
+    module:
+      - vactory_testimonials
 id: node.vactory_testimonials.smart_search
 targetEntityType: node
 bundle: vactory_testimonials

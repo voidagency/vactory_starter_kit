@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - node
+  enforced:
+    module:
+      - vactory_press_kit
 id: vactory_press_kit_slider_sm
 label: 'press kit Slider Small'
 handler: simple

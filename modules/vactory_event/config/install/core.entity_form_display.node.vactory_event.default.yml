@@ -22,6 +22,9 @@ dependencies:
     - scheduler
     - text
     - yoast_seo
+  enforced:
+    module:
+      - vactory_event
 id: node.vactory_event.default
 targetEntityType: node
 bundle: vactory_event

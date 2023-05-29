@@ -18,6 +18,9 @@ dependencies:
     - smart_trim
     - user
     - vactory_core
+  enforced:
+    module:
+      - vactory_news
 id: node.vactory_news.masonry
 targetEntityType: node
 bundle: vactory_news

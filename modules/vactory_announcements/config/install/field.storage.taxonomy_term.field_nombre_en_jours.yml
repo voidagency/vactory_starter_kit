@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - taxonomy
+  enforced:
+    module:
+      - vactory_announcements
 id: taxonomy_term.field_nombre_en_jours
 field_name: field_nombre_en_jours
 entity_type: taxonomy_term

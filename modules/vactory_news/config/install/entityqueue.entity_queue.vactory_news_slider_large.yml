@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - node
+  enforced:
+    module:
+      - vactory_news
 id: vactory_news_slider_large
 label: 'News Slider Large'
 handler: simple

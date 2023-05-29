@@ -4,6 +4,7 @@ namespace Drupal\vactory_content_access\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Markup;
 use Drupal\node\Entity\NodeType;
 
 /**
@@ -70,30 +71,15 @@ class ContentAccessSettings extends ConfigFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $config = $this->config('vactory_content_access.settings');
     $existing_node_types = NodeType::loadMultiple();
-    $nids_rebuild = [];
     foreach ($existing_node_types as $key => $value) {
       $access_content_type = $form_state->getValue($key . '_content_type');
       $config->set($key . '_content_type', $access_content_type);
       $config->set($key . '_listing_access', $form_state->getValue($key . '_listing_access'));
       $config->set($key . '_redirect_to', $form_state->getValue($key . '_redirect_to'));
-      if ($access_content_type == 1) {
-        $nids = \Drupal::entityQuery('node')
-          ->condition('type', $key)
-          ->execute();
-        $nids = isset($nids) && !empty($nids) ? array_values($nids)[0] : [];
-        array_push($nids_rebuild, $nids);
-      }
     }
     $config->save();
-    $operations = [
-      ['rebuild_nodes_access', [$nids_rebuild]],
-    ];
-    $batch = [
-      'title' => $this->t('Rebuild access All Nodes ...'),
-      'operations' => $operations,
-      'finished' => 'rebuild_nodes_access_finished',
-    ];
-    batch_set($batch);
+    $message = 'Rebuild content access permissions is required: <a href="/admin/reports/status/rebuild">Rebuild content access now</a>';
+    \Drupal::messenger()->addStatus(Markup::create($message));
     parent::submitForm($form, $form_state);
   }
 

@@ -119,7 +119,7 @@ class VactoryHtml2PdfManager {
     // Get module settings object.
     $config = $this->configFactory->get('vactory_html2pdf.settings');
     // Get fonts from module settings.
-    $custom_fonts_directories = $this->state->get('vactory_html2pdf_font_dirs');
+    $custom_fonts_directories = $config->get('vactory_html2pdf_font_dirs');
     $custom_fonts_data = $config->get('fonts_data');
     // Get mpdf fonts dirs and data.
     $fontDirs = $this->mpdfDefaultConfig['fontDir'];

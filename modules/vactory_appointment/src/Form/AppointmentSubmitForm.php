@@ -586,7 +586,7 @@ class AppointmentSubmitForm extends FormBase {
         '#theme' => 'appointment_adviser_preview',
         '#user' => $user,
       ];
-      $options[$user->id()] = $renderer->render($adviser_preview);
+      $options[$user->id()] = $renderer->renderPlain($adviser_preview);
     }
     $existing_values = $form_state->get('existing_values');
     $existing_adviser = isset($existing_values[$current_page]) ? $existing_values[$current_page]['adviser'] : '';
@@ -733,7 +733,7 @@ class AppointmentSubmitForm extends FormBase {
     ];
     $block_content = $this->getGeneralConditions();
     $form['conditions_generales'] = [
-      '#markup' => \Drupal::service('renderer')->render($block_content),
+      '#markup' => \Drupal::service('renderer')->renderPlain($block_content),
     ];
     $form['form_wrapper_closer'] = [
       '#type' => 'markup',

@@ -5,6 +5,9 @@ dependencies:
     - node
   config:
     - node.type.vactory_governance
+  enforced:
+    module:
+      - vactory_governance
 id: gouvernance_slider
 label: 'Gouvernance - Slider'
 handler: simple

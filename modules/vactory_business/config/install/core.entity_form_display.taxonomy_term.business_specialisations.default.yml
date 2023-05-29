@@ -3,6 +3,9 @@ status: true
 dependencies:
   config:
     - taxonomy.vocabulary.business_specialisations
+  enforced:
+    module:
+      - vactory_business
 id: taxonomy_term.business_specialisations.default
 targetEntityType: taxonomy_term
 bundle: business_specialisations

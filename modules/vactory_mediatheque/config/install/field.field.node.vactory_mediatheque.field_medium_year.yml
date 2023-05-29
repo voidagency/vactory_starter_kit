@@ -5,6 +5,9 @@ dependencies:
     - field.storage.node.field_medium_year
     - node.type.vactory_mediatheque
     - taxonomy.vocabulary.medium_year
+  enforced:
+    module:
+      - vactory_mediatheque
 id: node.vactory_mediatheque.field_medium_year
 field_name: field_medium_year
 entity_type: node

@@ -1,0 +1,66 @@
+name: 'Video Ask'
+multiple: FALSE
+category: 'Video ask'
+enabled: TRUE
+extra_fields:
+  big_title:
+    type: text
+    label: "Grand titre"
+  icon:
+    type: text
+    label: "icon"
+  show_content:
+    type: checkbox
+    label: "Afficher le contenu"
+  show_btn:
+    type: checkbox
+    label: "Afficher le button sticky"
+    options:
+      "#description": "Afficher le button en sticky si l'utilisateur n'est pas terminer le questionnaire"
+  content_first_screen:
+    type: text_format
+    label: "contenu login premier page"
+    options:
+      "#format": full_html
+fields:
+  group_started:
+    g_title: 'When the user has started onBoarding'
+    title:
+      type: text
+      label: "Titre du block"
+    icon:
+      type: text
+      label: "icon"
+    content:
+      type: text_format
+      label: "Content"
+      options: 
+        "#format": full_html
+    image:
+      type: image
+      label: "Image"
+    Button_label:
+      type: text
+      label: "Button label"
+  group_not_started:
+    g_title: "When the user has NOT started onBoarding yet"
+    title:
+      type: text
+      label: "Titre du block"
+    icon:
+      type: text
+      label: "icon"
+    content:
+      type: text_format
+      label: "Content"
+      options: 
+        "#format": full_html
+    image:
+      type: image
+      label: "Image"
+    Button_label:
+      type: text
+      label: "Button label"
+  body:
+    type: dynamic_video_ask
+    label: "Dynamic video ask field"

@@ -28,7 +28,7 @@ function template_preprocess_vactory_views_slider(array &$variables) {
     '#attached' => ['library' => ['vactory_views/slider']],
   ];
 
-  \Drupal::service('renderer')->render($attached);
+  \Drupal::service('renderer')->renderPlain($attached);
   template_preprocess_views_view_unformatted($variables);
 }
 
@@ -80,6 +80,6 @@ function template_preprocess_vactory_views_masonry(array &$variables) {
     '#attached' => ['library' => ['vactory_views/masonry']],
   ];
 
-  \Drupal::service('renderer')->render($attached);
+  \Drupal::service('renderer')->renderPlain($attached);
   template_preprocess_views_view_unformatted($variables);
 }

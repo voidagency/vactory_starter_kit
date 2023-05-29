@@ -5,6 +5,9 @@ dependencies:
     - field.storage.node.field_vactory_taxonomy_2
     - node.type.vactory_event
     - taxonomy.vocabulary.vactory_event_citys
+  enforced:
+    module:
+      - vactory_event
 id: node.vactory_event.field_vactory_taxonomy_2
 field_name: field_vactory_taxonomy_2
 entity_type: node

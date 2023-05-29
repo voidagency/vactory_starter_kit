@@ -4,6 +4,9 @@ dependencies:
   module:
     - datetime
     - node
+  enforced:
+    module:
+      - vactory_mediatheque
 id: node.field_mediatheque_date
 field_name: field_mediatheque_date
 entity_type: node

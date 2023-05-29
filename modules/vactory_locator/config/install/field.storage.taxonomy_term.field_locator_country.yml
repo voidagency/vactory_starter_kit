@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - taxonomy
+  enforced:
+    module:
+      - vactory_locator
 id: taxonomy_term.field_locator_country
 field_name: field_locator_country
 entity_type: taxonomy_term

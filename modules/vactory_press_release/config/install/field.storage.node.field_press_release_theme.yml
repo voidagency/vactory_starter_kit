@@ -4,6 +4,9 @@ dependencies:
   module:
     - node
     - taxonomy
+  enforced:
+    module:
+      - vactory_press_release
 id: node.field_press_release_theme
 field_name: field_press_release_theme
 entity_type: node

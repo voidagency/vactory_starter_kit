@@ -5,6 +5,9 @@ dependencies:
     - field.storage.node.field_ad_display
     - node.type.announcement
     - taxonomy.vocabulary.affichage_de_l_annonce
+  enforced:
+    module:
+      - vactory_announcements
 id: node.announcement.field_ad_display
 field_name: field_ad_display
 entity_type: node

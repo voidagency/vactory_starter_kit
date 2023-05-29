@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - node
+  enforced:
+    module:
+      - vactory_press_kit
 id: vactory_press_kit_block_three_cl
 label: 'press kit Block Three Columns'
 handler: simple

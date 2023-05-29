@@ -192,6 +192,7 @@ class VoteController extends ControllerBase implements ContainerInjectionInterfa
       $entity_type_id,
       $entity_id
     );
+    $vote = 0;
     if (!empty($vote_ids)) {
       foreach ($vote_ids as $vote_id) {
         if($vote_storage->load($vote_id)->getVotedEntityId() === $entity_id)

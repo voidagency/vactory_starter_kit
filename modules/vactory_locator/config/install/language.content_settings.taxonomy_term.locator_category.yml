@@ -5,6 +5,9 @@ dependencies:
     - taxonomy.vocabulary.locator_category
   module:
     - content_translation
+  enforced:
+    module:
+      - vactory_locator
 third_party_settings:
   content_translation:
     enabled: true

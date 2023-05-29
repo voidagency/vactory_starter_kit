@@ -8,7 +8,6 @@ use Drupal\Core\Site\Settings;
 use Drupal\Core\TypedData\ComputedItemListTrait;
 use Drupal\Core\TypedData\TraversableTypedDataInterface;
 use Drupal\node\Entity\Node;
-use Drupal\vactory_decoupled\VactoryDecoupledHelper;
 
 /**
  * Metatags per node.
@@ -47,6 +46,20 @@ class InternalNodeMetatagsFieldItemList extends FieldItemList
   protected $vactoryDecoupledHelper;
 
   /**
+   * Alias manager service.
+   *
+   * @var \Drupal\path_alias\AliasManagerInterface
+   */
+  protected $aliasManager;
+
+  /**
+   * Config factory service.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected $configFactory;
+
+  /**
    * Current request.
    *
    * @var \Symfony\Component\HttpFoundation\Request
@@ -60,6 +73,8 @@ class InternalNodeMetatagsFieldItemList extends FieldItemList
     $instance->entityRepository = $container->get('entity.repository');
     $instance->metatagManager = $container->get('metatag.manager');
     $instance->moduleHandler = $container->get('module_handler');
+    $instance->aliasManager = $container->get('path_alias.manager');
+    $instance->configFactory = $container->get('config.factory');
     $instance->vactoryDecoupledHelper = $container->get('vactory_decoupled.helper');
     $instance->request = $container->get('request_stack')->getCurrentRequest();
     return $instance;
@@ -103,6 +118,9 @@ class InternalNodeMetatagsFieldItemList extends FieldItemList
     $host = $this->request->getSchemeAndHttpHost();
     $frontend_url = Settings::get('BASE_FRONTEND_URL', 'frontend_url');
     $media_url = Settings::get('BASE_MEDIA_URL', 'media_url');
+    $site_config = $this->configFactory->get('system.site');
+    $front_page = $site_config->get('page.front');
+    $front_page_alias = $this->aliasManager->getAliasByPath($front_page);
     foreach ($tags as $key => &$tag) {
       foreach ($tag['#attributes'] as $attribute => &$value) {
         $concerned_attr = in_array($attribute, ['href', 'content']);
@@ -114,6 +132,9 @@ class InternalNodeMetatagsFieldItemList extends FieldItemList
           $is_file = str_contains($last_piece, '.');
           $replacement = $is_file ? $media_url : $frontend_url;
           $value = str_replace($host, $replacement, $value);
+          // Replace front page alias with empty string.
+          $value = str_replace($front_page, '', $value);
+          $value = str_replace($front_page_alias, '', $value);
         }
       }
       $normalized_tags[] = [

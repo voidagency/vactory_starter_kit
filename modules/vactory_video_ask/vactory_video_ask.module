@@ -1,0 +1,17 @@
+<?php
+
+use Drupal\simple_oauth\Entities\AccessTokenEntity;
+use Drupal\user\Entity\User;
+
+
+/**
+ * Implements hook_simple_oauth_private_claims_alter().
+ */
+function vactory_video_ask_simple_oauth_private_claims_alter(&$private_claims, AccessTokenEntity $access_token_entity) {
+    $user_id = $access_token_entity->getUserIdentifier();
+    /** @var \Drupal\user\UserInterface $user */
+    $user = User::load($user_id);
+    if (!empty($user->get('field_video_ask')->getString())) {
+        $private_claims['profile']['videoask'] = json_decode($user->get('field_video_ask')->getString());
+    }
+}

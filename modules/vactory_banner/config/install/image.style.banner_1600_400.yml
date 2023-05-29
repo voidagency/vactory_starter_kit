@@ -1,6 +1,9 @@
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  enforced:
+    module:
+      - vactory_banner
 name: banner_1600_400
 label: Banner_1600_400
 effects:

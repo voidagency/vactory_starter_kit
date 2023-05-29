@@ -1,0 +1,10 @@
+langcode: fr
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_project_progress
+name: 'Mon projet - Catégorie'
+vid: project_progress_category
+description: ''
+weight: -9

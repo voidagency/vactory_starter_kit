@@ -16,4 +16,10 @@ vactory_rate.results:
     _controller: 'Drupal\vactory_rate\Controller\VoteController::results'
   requirements:
     _permission: 'access content'
-
+vactory_rate.entity:
+  path: '/admin/config/rate/add-entity'
+  defaults:
+    _form: '\Drupal\vactory_rate\Form\AddEntityForm'
+    _title: 'Ajouter une entité'
+  requirements:
+    _permission: 'access content'

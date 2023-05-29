@@ -6,6 +6,9 @@ dependencies:
     - taxonomy.vocabulary.welcome
   module:
     - datetime_range
+  enforced:
+    module:
+      - vactory_welcome
 id: taxonomy_term.welcome.field_time_range_v
 field_name: field_time_range_v
 entity_type: taxonomy_term

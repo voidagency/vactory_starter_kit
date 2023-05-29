@@ -25,6 +25,9 @@ dependencies:
     - social_media_links_field
     - text
     - user
+  enforced:
+    module:
+      - vactory_governance
 id: node.vactory_governance.full
 targetEntityType: node
 bundle: vactory_governance

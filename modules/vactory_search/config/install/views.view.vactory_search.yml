@@ -6,8 +6,9 @@ dependencies:
   module:
     - search_api
     - user
-_core:
-  default_config_hash: UEJ4I2wz22cso1mV1k8fSLU-eemrP0Q_QE6dt_3Pmvo
+  enforced:
+    module:
+      - vactory_search
 id: vactory_search
 label: 'Vactory Search'
 module: views

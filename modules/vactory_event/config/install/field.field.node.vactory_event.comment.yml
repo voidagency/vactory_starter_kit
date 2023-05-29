@@ -6,6 +6,9 @@ dependencies:
     - node.type.vactory_event
   module:
     - comment
+  enforced:
+    module:
+      - vactory_event
 id: node.vactory_event.comment
 field_name: comment
 entity_type: node

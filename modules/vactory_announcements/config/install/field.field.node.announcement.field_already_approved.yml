@@ -4,6 +4,9 @@ dependencies:
   config:
     - field.storage.node.field_already_approved
     - node.type.announcement
+  enforced:
+    module:
+      - vactory_announcements
 id: node.announcement.field_already_approved
 field_name: field_already_approved
 entity_type: node

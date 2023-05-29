@@ -4,6 +4,9 @@ dependencies:
   module:
     - node
     - taxonomy
+  enforced:
+    module:
+      - vactory_business
 id: node.field_statut_juridique
 field_name: field_statut_juridique
 entity_type: node

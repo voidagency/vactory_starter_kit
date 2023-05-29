@@ -5,6 +5,9 @@ dependencies:
     - field.storage.node.field_vactory_profession
     - node.type.vactory_job_ads
     - taxonomy.vocabulary.vactory_job_ads_profession
+  enforced:
+    module:
+      - vactory_job_ads
 id: node.vactory_job_ads.field_vactory_profession
 field_name: field_vactory_profession
 entity_type: node

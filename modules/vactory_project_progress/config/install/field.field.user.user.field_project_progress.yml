@@ -1,0 +1,22 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.storage.user.field_project_progress
+  module:
+    - user
+  enforced:
+    module:
+      - vactory_project_progress
+id: user.user.field_project_progress
+field_name: field_project_progress
+entity_type: user
+bundle: user
+label: 'Mon projet'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string_long

@@ -11,6 +11,9 @@ dependencies:
   module:
     - text
     - user
+  enforced:
+    module:
+      - vactory_glossary
 id: node.vactory_glossary.teaser
 targetEntityType: node
 bundle: vactory_glossary

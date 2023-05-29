@@ -19,6 +19,9 @@ dependencies:
     - user
     - vactory_core
     - yoast_seo
+  enforced:
+    module:
+      - vactory_press_release
 id: node.vactory_press_release.default
 targetEntityType: node
 bundle: vactory_press_release

@@ -1,6 +1,9 @@
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  enforced:
+    module:
+      - vactory_partner
 name: partner_image_style
 label: 'Partner logo x1 (autox40)'
 effects:

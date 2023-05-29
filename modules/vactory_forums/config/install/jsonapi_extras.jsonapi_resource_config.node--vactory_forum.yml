@@ -3,6 +3,9 @@ status: true
 dependencies:
   config:
     - node.type.vactory_forum
+  enforced:
+    module:
+      - vactory_forums
 id: node--vactory_forum
 disabled: false
 path: node/vactory_forum

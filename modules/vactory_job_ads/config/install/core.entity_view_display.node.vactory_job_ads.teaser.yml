@@ -20,6 +20,9 @@ dependencies:
     - smart_trim
     - text
     - user
+  enforced:
+    module:
+      - vactory_job_ads
 id: node.vactory_job_ads.teaser
 targetEntityType: node
 bundle: vactory_job_ads

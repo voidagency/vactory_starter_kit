@@ -1,6 +1,9 @@
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  enforced:
+    module:
+      - vactory_publication
 name: 'Publication - Theme'
 vid: vactory_publication_theme
 description: 'Publication vocabulary.'

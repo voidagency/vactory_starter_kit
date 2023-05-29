@@ -6,6 +6,9 @@ dependencies:
     - vactory_locator.locator_entity_type.vactory_locator
   module:
     - telephone
+  enforced:
+    module:
+      - vactory_locator
 id: locator_entity.vactory_locator.field_locator_fax
 field_name: field_locator_fax
 entity_type: locator_entity

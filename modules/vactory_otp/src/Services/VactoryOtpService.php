@@ -139,7 +139,7 @@ class VactoryOtpService {
       '#body'  => $message_body,
     ];
 
-    $mail_body = \Drupal::service('renderer')->render($theme_body);
+    $mail_body = \Drupal::service('renderer')->renderPlain($theme_body);
     $params['message'] = $mail_body;
     $params['subject'] = $subject;
     $params['options']['title'] = $subject;

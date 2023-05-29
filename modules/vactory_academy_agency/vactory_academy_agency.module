@@ -74,7 +74,7 @@ function vactory_academy_agency_entity_presave(EntityInterface $entity) {
     $agency_id = $entity->get('field_agence_formation')->target_id;
     $available_places = get_available_nb_place($academy_node, $agency_id);
     if ($available_places > 0) {
-
+      $vactory_tools = \Drupal::service('vactory_core.tools');
       // Mail notifications.
       $langcode = Drupal::languageManager()->getCurrentLanguage()->getId();
       $formation = \Drupal::service('entity.repository')
@@ -95,8 +95,8 @@ function vactory_academy_agency_entity_presave(EntityInterface $entity) {
         'first_name' => $prenom,
         'last_name' => $nom,
         'account_infos' => [
-          'email' => encrypt($email),
-          'phone' => encrypt($phone),
+          'email' => $vactory_tools->encrypt($email),
+          'phone' => $vactory_tools->encrypt($phone),
           'first_name' => $prenom,
           'last_name' => $nom,
         ],
@@ -294,7 +294,7 @@ function vactory_academy_agency_mail($key, &$message, $params) {
             'url' => $params['formation']['url'],
           ],
           'google_calendar_url' => $add_to_google_calendar->toString(),
-          'create_account_url' => get_create_account_link($params['account_infos']),
+          'create_account_url' => vactory_academy_agency_get_create_account_link($params['account_infos']),
           'site_name' => $site_config->get('name'),
         ],
       ];
@@ -342,6 +342,7 @@ function vactory_academy_agency_preprocess_node__vactory_academy_agency__card_in
     $agence = Drupal::entityTypeManager()->getStorage('locator_entity')
       ->load($agency_id);
     if ($agence) {
+      $vactory_tools = \Drupal::service('vactory_core.tools');
       $agency_translation = Drupal::service('entity.repository')->getTranslationFromContext($agence, $langcode);
       $agency_name = $agency_translation->get('name')->value;
       $formation_date = $node->get('field_vactory_datetime')->value;
@@ -358,7 +359,7 @@ function vactory_academy_agency_preprocess_node__vactory_academy_agency__card_in
       $is_disponible = $disponible_place > 0;
       $variables['agency_name'] = $agency_name;
       $variables['formation_date'] = $formation_date;
-      $variables['encrypted_nid'] = encrypt($node->id());
+      $variables['encrypted_nid'] = $vactory_tools->encrypt($node->id());
       $variables['is_disponible'] = $is_disponible;
       $variables['is_subscribed_to_formation'] = is_user_subscribed_to_formation($node, $current_user->id());
       $variables['#cache'] = ['tags' => ['node:' . $node->id()]];
@@ -458,4 +459,18 @@ function vactory_academy_agency_views_query_alter(ViewExecutable $view, QueryPlu
       }
     }
   }
+}
+
+/**
+ * Generate create account URL.
+ */
+function vactory_academy_agency_get_create_account_link($account_infos) {
+  $is_anonymous = Drupal::currentUser()->isAnonymous();
+  if ($is_anonymous) {
+    $is_espace_prive_enabled = Drupal::moduleHandler()->moduleExists('vactory_espace_prive');
+    $route_name = $is_espace_prive_enabled ? 'vactory_espace_prive.register' : 'user.register';
+    $url = Url::fromRoute($route_name, $account_infos);
+    return $url->toString();
+  }
+  return NULL;
 }

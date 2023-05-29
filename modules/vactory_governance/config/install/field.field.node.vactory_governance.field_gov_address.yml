@@ -6,6 +6,9 @@ dependencies:
     - node.type.vactory_governance
   module:
     - address
+  enforced:
+    module:
+      - vactory_governance
 id: node.vactory_governance.field_gov_address
 field_name: field_gov_address
 entity_type: node

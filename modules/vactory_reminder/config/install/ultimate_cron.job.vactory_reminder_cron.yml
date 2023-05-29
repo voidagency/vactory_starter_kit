@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - vactory_reminder
+  enforced:
+    module:
+      - vactory_reminder
 title: 'Default cron handler'
 id: vactory_reminder_cron
 weight: 0

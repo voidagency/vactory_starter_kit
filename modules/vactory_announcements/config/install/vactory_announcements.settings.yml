@@ -3,3 +3,7 @@ notification_message: "Une annonce est en attente d'approbation sur !site_name.<
 v_notification_title: 'Votre annonce à bien été validée'
 v_notification_message: "<p>!name,<br />\r\nVotre annonce sur !site_name a été validée. Conformément à votre choix, elle sera visible en ligne pour une durée de !period_validity.<br />\r\nSi vous souhaitez la consulter, !link_annonce.<br />\r\nSi vous souhaitez la supprimer, !link_delete.</p>\r\n"
 notification_mail_receiver: { }
+dependencies:
+  enforced:
+    module:
+      - vactory_announcements
