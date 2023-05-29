@@ -267,7 +267,8 @@ class VactorySubscribeToFormation extends FormBase {
     // Submit button type next or previous.
     $triggering_element_type = $triggering_element_parents[0];
     // Submit button page index.
-    $triggering_element_page = in_array($triggering_element_type, ['next', 'previous']) ? $triggering_element_parents[1] : NULL;
+    $element_types = ['next', 'previous'];
+    $triggering_element_page = in_array($triggering_element_type, $element_types) ? $triggering_element_parents[1] : NULL;
     $submitted_page_index = $triggering_element_page;
     // Update the page index.
     if ($triggering_element_type == 'next') {
@@ -428,7 +429,7 @@ class VactorySubscribeToFormation extends FormBase {
     if (!empty($courses) && count($courses) > $nb_blocked_course) {
       $options = $this->getFormationsAsOptions($courses, $this->agencyID);
       // Page title.
-      $form['title'] = $this->setPageTitle(t("Formations en présentiel, dans le centre @agence - Dar Al Macharii", ['@agence' => $this->agencyName]));
+      $form['title'] = $this->setPageTitle(t("Formations en présentiel, dans le centre @agence", ['@agence' => $this->agencyName]));
       // Select agency academies radios element.
       $form['agency_academies'] = [
         '#type' => 'radios',
@@ -449,7 +450,7 @@ class VactorySubscribeToFormation extends FormBase {
     }
     else {
       // Page title.
-      $form['title'] = $this->setPageTitle(t("Découvrez toutes les formations de Dar Al Macharii chaque mercredi..."));
+      $form['title'] = $this->setPageTitle(t("Découvrez toutes nos formations en présentiel"));
       // In case the current agency has no academy node.
       $message = $this->t("Un programme de formations vous sera proposé très prochainement.");
       $form['message'] = [

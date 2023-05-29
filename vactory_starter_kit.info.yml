@@ -86,7 +86,7 @@ install:
   - entity_reference_revisions
   - improved_multi_select
   - mailsystem
-  - swiftmailer
+  - symfony_mailer
   - crop
   - file_entity
   - focal_point

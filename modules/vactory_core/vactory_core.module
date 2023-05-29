@@ -6,6 +6,7 @@
  */
 
 use Drupal\Component\Render\FormattableMarkup;
+use Drupal\Component\Render\MarkupInterface;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Field\Plugin\Field\FieldWidget\StringTextareaWidget;
@@ -17,6 +18,8 @@ use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Url;
 use Drupal\jquery_colorpicker\Plugin\Field\FieldWidget\JQueryColorpickerWidget;
+use Drupal\symfony_mailer\Address;
+use Drupal\symfony_mailer\EmailInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -81,6 +84,8 @@ function vactory_core_entity_type_build(array &$entity_types) {
 
 /**
  * Implements hook_mail_alter().
+ *
+ * @deprecated To be remove once swiftmailer contrib module has been removed.
  */
 function vactory_core_mail_alter(&$message) {
   switch ($message['key']) {
@@ -100,7 +105,6 @@ function vactory_core_mail_alter(&$message) {
         $message['body'][$key] = new FormattableMarkup($body, []);
       }
       break;
-
   }
 
   // Redirect all site mails (except reset password mail),
@@ -112,6 +116,29 @@ function vactory_core_mail_alter(&$message) {
     $prefix = t('Destination addresse(s)');
     $to = $prefix . ': ' . $mail_dist;
     $message['to'] = $to . '<' . $mail_redirect . '>';
+  }
+}
+
+/**
+ * Implements hook_mailer_build().
+ */
+function vactory_core_mailer_build(EmailInterface $email) {
+  // Redirect all site mails (except reset password mail),
+  // When vactory_mail_redirect is defined.
+  $route_name = Drupal::routeMatch()->getRouteName();
+  $mail_redirect = Settings::get('vactory_mail_redirect', FALSE);
+  if ($mail_redirect && !empty($mail_redirect) && $route_name !== 'user.pass') {
+    $subject = $email->getSubject();
+    $to = $email->getTo();
+    $subject = $subject instanceof MarkupInterface ? $subject->__toString() : $subject;
+    $to = array_map(function ($address) {
+      return $address->getEmail();
+    }, $to);
+    $to = implode(' ', $to);
+    $subject .= " (To: {$to})";
+    $address = new Address($mail_redirect, 'Mail Redirect');
+    $email->setTo($address);
+    $email->setSubject($subject);
   }
 }
 

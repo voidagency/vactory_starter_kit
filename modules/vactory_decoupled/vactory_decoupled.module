@@ -17,6 +17,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\jsonapi_extras\Entity\JsonapiResourceConfig;
 use Drupal\node\Entity\Node;
+use Drupal\symfony_mailer\EmailInterface;
 use Drupal\system\Entity\Menu;
 use Drupal\user\UserInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -426,6 +427,8 @@ function _auth_make_unitials_from_single_word($name) {
 
 /**
  * Implements hook_mail_alter().
+ *
+ * @deprecated To be removed once swiftmailer contrib module has been removed.
  */
 function vactory_decoupled_mail_alter(&$message) {
   $route = \Drupal::routeMatch()->getRouteName();
@@ -473,6 +476,61 @@ function vactory_decoupled_mail_alter(&$message) {
       'clear' => TRUE,
     ];
     $message['body'][] = new FormattableMarkup($token_service->replace($mail_config->get('status_activated')['body'], $variables, $token_options), []);
+  }
+}
+
+/**
+ * Implements hook_mailer_build().
+ */
+function vactory_decoupled_mailer_build(EmailInterface $email) {
+  $params = $email->getParams();
+  $legacy_message = $params['legacy_message'] ?? [];
+  if (!empty($legacy_message)) {
+    $route = \Drupal::routeMatch()->getRouteName();
+    $langcode = $legacy_message['langcode'];
+    $token_service = \Drupal::token();
+    $mail_config = \Drupal::config('user.mail');
+    $language_manager = \Drupal::languageManager();
+    $language = $language_manager->getLanguage($langcode);
+    if (strpos($route, 'jsonapi_') === 0) {
+      if ($legacy_message['id'] === 'user_password_reset') {
+        $key = 'password_reset';
+        $variables = ['user' => $legacy_message['params']['account']];
+        $original_language = $language_manager->getConfigOverrideLanguage();
+        $language_manager->setConfigOverrideLanguage($language);
+        $token_options = [
+          'langcode' => $langcode,
+          'callback' => '_vactory_decoupled_user_mail_tokens',
+          'clear' => TRUE,
+        ];
+        $subject = PlainTextOutput::renderFromHtml($token_service->replace($mail_config->get($key . '.subject'), $variables, $token_options));
+        $body = new FormattableMarkup($token_service->replace($mail_config->get($key . '.body'), $variables, $token_options), []);
+        $email->setSubject($subject);
+        $email->setBody($body);
+        $language_manager->setConfigOverrideLanguage($original_language);
+      }
+      if ($legacy_message['id'] == 'user_register_no_approval_required') {
+        $key = 'register_no_approval_required';
+        $variables = ['user' => $legacy_message['params']['account']];
+        $token_options = [
+          'langcode' => $langcode,
+          'callback' => '_vactory_decoupled_user_mail_tokens',
+          'clear' => TRUE,
+        ];
+        $body = new FormattableMarkup($token_service->replace($mail_config->get($key . '.body'), $variables, $token_options), []);
+        $email->setBody($body);
+      }
+    }
+    if ($legacy_message['id'] == 'user_status_activated' && !empty(Settings::get('BASE_FRONTEND_URL'))) {
+      $variables = ['user' => $legacy_message['params']['account']];
+      $token_options = [
+        'langcode' => $langcode,
+        'callback' => '_vactory_decoupled_user_mail_tokens',
+        'clear' => TRUE,
+      ];
+      $body = new FormattableMarkup($token_service->replace($mail_config->get('status_activated')['body'], $variables, $token_options), []);
+      $email->setBody($body);
+    }
   }
 }
 

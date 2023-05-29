@@ -36,3 +36,4 @@ dependencies:
   - vactory_views
   - views
   - vactory_google_places
+  - geofield
