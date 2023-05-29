@@ -493,6 +493,8 @@ class Webform {
         $properties['maxSizeMb'] = intval($item['#max_filesize']);
       }
 
+      $properties['filePreview'] = isset($item['#file_preview']);
+
       if (
         isset($element['#upload_validators']) &&
         isset($element['#upload_validators']['file_validate_extensions'][0])

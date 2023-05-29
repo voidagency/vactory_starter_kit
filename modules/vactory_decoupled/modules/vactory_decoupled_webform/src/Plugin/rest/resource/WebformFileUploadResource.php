@@ -75,7 +75,8 @@ class WebformFileUploadResource extends FileUploadResource {
       $destination = $element['#upload_location'];
 
       // Check the destination file path is writable.
-      if (!\Drupal::service('file_system')->prepareDirectory($destination, FileSystemInterface::CREATE_DIRECTORY)) {
+      if (!\Drupal::service('file_system')
+        ->prepareDirectory($destination, FileSystemInterface::CREATE_DIRECTORY)) {
         throw new HttpException(500, 'Destination file path is not writable');
       }
 
@@ -94,7 +95,8 @@ class WebformFileUploadResource extends FileUploadResource {
       $temp_file_path = $this->streamUploadData();
 
       // This will take care of altering $file_uri if a file already exists.
-      \Drupal::service('file_system')->getDestinationFilename($temp_file_path, $file_uri);
+      \Drupal::service('file_system')
+        ->getDestinationFilename($temp_file_path, $file_uri);
 
       // Lock based on the prepared file URI.
       $lock_id = $this->generateLockIdFromFileUri($file_uri);
@@ -120,18 +122,25 @@ class WebformFileUploadResource extends FileUploadResource {
       // Move the file to the correct location after validation. Use
       // FILE_EXISTS_ERROR as the file location has already been determined above
       // in file_unmanaged_prepare().
-      if (!\Drupal::service('file_system')->move($temp_file_path, $file_uri, FileSystemInterface::EXISTS_ERROR)) {
+      if (!\Drupal::service('file_system')
+        ->move($temp_file_path, $file_uri, FileSystemInterface::EXISTS_ERROR)) {
         throw new HttpException(500, 'Temporary file could not be moved to file location');
       }
 
       $file->save();
+
+      $previewInfos = \Drupal::service('vactory_private_files_decoupled')
+        ->generatePrivateFileUrl($file);
 
       $this->lock->release($lock_id);
 
       // 201 Created responses return the newly created entity in the response
       // body. These responses are not cacheable, so we add no cacheability
       // metadata here.
-      return new ModifiedResourceResponse($file, 201);
+      return new ModifiedResourceResponse([
+        'file' => $file,
+        'preview' => $previewInfos,
+      ], 201);
 
 
     }
