@@ -151,7 +151,7 @@ function vactory_event_preprocess_views_view(&$variables) {
   if ($view instanceof ViewExecutable && $view->id() === 'vactory_event' && $view->display_handler->getPluginId() === 'block') {
     $args = $view->args;
     $arguments_infos = $view->argument;
-    if (count($args) > 2 && isset($args[2]) && is_array($args[2]) ) {
+    if (count($args) > 2 && isset($args[2]) && is_array($args[2])) {
       $meta_data = $args[2];
       $args[0] = $meta_data['category_term_id'];
       $term = Drupal::entityTypeManager()->getStorage('taxonomy_term')
@@ -186,7 +186,7 @@ function vactory_event_preprocess_views_view(&$variables) {
                 foreach ($field_names as $field_name) {
                   $filter_index = array_search($field_name, $arguments_infos);
                   $filter_name = '';
-                  // In case of parent term and view taxonomy tid depth filter exist.
+                  // In case parent term & view taxonomy tid depth filter exist.
                   if (!$has_parent && !empty($taxonomy_tid_depth_filter)) {
                     $filter_name = reset($taxonomy_tid_depth_filter)['id'];
                     $filter_name = !isset($more_link_params[$filter_name]) ? $filter_name : '';
@@ -221,15 +221,14 @@ function vactory_event_json_api_collection_alter(&$filters, &$context) {
   $query = \Drupal::request()->query->get("q");
   $is_avenir = $context['id'] === 'vactory_event_list_a_venir' && isset($query["type"]) && $query["type"] == "avenir";
   $is_passe = $context['id'] === 'vactory_event_list_passe' && isset($query["type"]) && $query["type"] == "passe";
-      if($context['id']=== 'next_event')
-  {
+  if ($context['id'] === 'next_event') {
     if (isset($query["date"])) {
-    $filters["filter[date-filter-next][condition][path]"] = "field_vactory_date_interval.value";
-    $filters["filter[date-filter-next][condition][operator]"] = ">";
-    $filters["filter[date-filter-next][condition][value]"] = $query["date"]; 
+      $filters["filter[date-filter-next][condition][path]"] = "field_vactory_date_interval.value";
+      $filters["filter[date-filter-next][condition][operator]"] = ">";
+      $filters["filter[date-filter-next][condition][value]"] = $query["date"];
     }
   }
-  if ($context['id'] === 'vactory_event_list' || $is_avenir || $is_passe ) {
+  if ($context['id'] === 'vactory_event_list' || $is_avenir || $is_passe) {
     if (isset($query["page"])) {
       $filters["page[offset]"] = intval($query["page"]) > 0 ? (intval($query["page"]) - 1) * $filters["page[limit]"] : 0;
     }
@@ -237,14 +236,14 @@ function vactory_event_json_api_collection_alter(&$filters, &$context) {
     if (isset($query["date"])) {
       $filters["filter[date-filter][condition][path]"] = "field_vactory_date_interval.value";
       $filters["filter[date-filter][condition][operator]"] = "=";
-      $filters["filter[date-filter][condition][value]"] = $query["date"]; 
+      $filters["filter[date-filter][condition][value]"] = $query["date"];
     }
 
     if (isset($query["theme"]) && $query["theme"] !== "all") {
       $theme = $query["theme"];
       $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties([
         'vid' => 'vactory_event_category',
-        'term_2_slug' => $query["theme"]
+        'term_2_slug' => $query["theme"],
       ]);
 
       if (!$terms) {
@@ -264,7 +263,7 @@ function vactory_event_json_api_collection_alter(&$filters, &$context) {
       $theme = $query["city"];
       $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties([
         'vid' => 'vactory_event_citys',
-        'term_2_slug' => $query["city"]
+        'term_2_slug' => $query["city"],
       ]);
 
       if (!$terms) {
@@ -280,9 +279,7 @@ function vactory_event_json_api_collection_alter(&$filters, &$context) {
 
     }
   }
-  
 }
-
 
 /**
  * A custom hook to alter the node access.
@@ -296,8 +293,7 @@ function vactory_event_json_api_collection_alter(&$filters, &$context) {
  * @param string $base_node_type
  *   Base node content type machine name.
  */
-function vactory_event_jsonapi_vcc_normalized_node_alter(&$normalized_node, $context, $base_node_type)
-{
+function vactory_event_jsonapi_vcc_normalized_node_alter(array &$normalized_node, $context, $base_node_type) {
   if ($base_node_type === 'vactory_event') {
     /** @var \Drupal\node\NodeInterface $node */
     $node = $context['node'];
@@ -334,8 +330,6 @@ function vactory_event_jsonapi_vcc_normalized_node_alter(&$normalized_node, $con
           }
         }
       }
-
-
       // Get date.
       $dateFormats = \Drupal::entityTypeManager()
         ->getStorage('date_format')
@@ -371,7 +365,7 @@ function vactory_event_jsonapi_vcc_normalized_node_alter(&$normalized_node, $con
             ->getTranslationFromContext($new_term);
           $term_tag = [
             'name' => $new_term_trans->label(),
-            'slug' => $new_term_trans->get('term_2_slug')->value ?? null,
+            'slug' => $new_term_trans->get('term_2_slug')->value ?? NULL,
           ];
         }
       }
@@ -386,7 +380,7 @@ function vactory_event_jsonapi_vcc_normalized_node_alter(&$normalized_node, $con
             ->getTranslationFromContext($new_term);
           $city_tag = [
             'name' => $new_term_trans->label(),
-            'slug' => $new_term_trans->get('term_2_slug')->value ?? null,
+            'slug' => $new_term_trans->get('term_2_slug')->value ?? NULL,
           ];
         }
       }
