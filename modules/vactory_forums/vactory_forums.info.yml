@@ -10,4 +10,5 @@ dependencies:
   - comment
   - vactory_cross_content
   - vactory_field
+  - vactory_decoupled_search
 
