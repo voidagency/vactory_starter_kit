@@ -281,6 +281,14 @@ class DynamicVideoAskElement extends FormElement {
                 $user_input_values[$i]['layout']['image']['media_library_selection'] : ((isset($default_value[$i]['layout']['image']) && !empty($default_value[$i]['layout']['image']))
                   ? $default_value[$i]['layout']['image']['id'] : NULL),
             ];
+            $element['screen_details'][$i]['layout']['image_mobile'] = [
+              '#type' => 'media_library',
+              '#title' => t('Image Mobile'),
+              '#allowed_bundles' => ['image'],
+              '#default_value' => (isset($user_input_values[$i]['layout']['image_mobile']) && !empty($user_input_values[$i]['layout']['image_mobile'])) ?
+                $user_input_values[$i]['layout']['image_mobile']['media_library_selection'] : ((isset($default_value[$i]['layout']['image_mobile']) && !empty($default_value[$i]['layout']['image_mobile']))
+                  ? $default_value[$i]['layout']['image_mobile']['id'] : NULL),
+            ];
             break;
 
           case 'video':
@@ -616,7 +624,7 @@ class DynamicVideoAskElement extends FormElement {
       if (isset($values[$key]['layout']) && !empty($values[$key]['layout'])) {
         $bg = $values[$key]['layout']['background'];
         if ($bg == 'image') {
-          $mid = $values[$key]['layout']['image'];
+          $mid = $values[$key]['layout']['image'] ?? '';
           if (isset($mid) && !empty($mid)) {
             $media = $mediaStorage->load($mid);
             if (isset($media) && !empty($media)) {
@@ -627,11 +635,24 @@ class DynamicVideoAskElement extends FormElement {
               ];;
             }
           }
+
+          // Image mobile.
+          $mmid = $values[$key]['layout']['image_mobile'] ?? '';
+          if (isset($mmid) && !empty($mmid)) {
+            $media = $mediaStorage->load($mmid);
+            if (isset($media) && !empty($media)) {
+              $uri = $media->thumbnail->entity->getFileUri();
+              $values[$key]['layout']['image_mobile'] = [
+                'id' => $mmid,
+                'url' => $mediaFilesManager->getMediaAbsoluteUrl($uri),
+              ];;
+            }
+          }
         }
 
         // Load remote video.
         if ($bg == 'video') {
-          $mid = $values[$key]['layout']['video'];
+          $mid = $values[$key]['layout']['video'] ?? '';
           if (isset($mid) && !empty($mid)) {
             $media = $mediaStorage->load($mid);
             if (isset($media) && !empty($media)) {
