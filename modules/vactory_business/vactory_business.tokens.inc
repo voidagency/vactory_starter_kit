@@ -86,6 +86,7 @@ function vactory_business_tokens($type, $tokens, array $data, array $options, Bu
                         'name' => $file->get('filename')->value,
                         'size' => $file->get('filesize')->value,
                         'type' => $file->get('filemime')->value,
+                        'previewUrl' => $file->downloadUrl()->toString(),
                       ]);
                     }
                   }
