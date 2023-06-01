@@ -1,0 +1,124 @@
+{{ attach_library('vactory_ux_notes/style') }}
+
+<div>
+	<div class="d-flex pb-2">
+		<span class="badge badge-primary mt-auto mb-auto">
+			Moyenne :
+		</span>
+		<div class="star-rating ml-3">
+			{% set rating = moyenne %}
+			{% for i in 0..4 %}
+				{% if rating >=1 %}
+					<span class="favorite-star checked-full"></span>
+				{% elseif rating <1  and rating >0 %}
+					<span class="favorite-star checked-half"></span>
+				{% else %}
+					<span class="favorite-star"></span>
+				{% endif %}
+				{% set rating = rating - 1 %}
+			{% endfor %}
+		</div>
+
+		{% if rating is not null %}
+			<span class='ml-2'>{{ moyenne }}
+				{{ 'Notes'|t }}</span>
+		{% endif %}
+	</div>
+</div>
+<div class="d-flex">
+
+
+	<div class="m-3">
+		<h3>Pourcentage</h3>
+		<div class="table-container">
+			<table>
+				<thead>
+					<tr>
+						<th>Note</th>
+						<th>Rating</th>
+						<th>Pourcentage</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% for note, occurrence in note_percentages %}
+						{% if note is not null or note is not empty %}
+							<tr>
+								<td>{{ note }}</td>
+								<td>
+									<div class="star-rating">
+										{% set rating = note %}
+										{% for i in 0..4 %}
+											{% if rating >= 1 %}
+												<span class="favorite-star checked-full"></span>
+											{% elseif rating < 1 and rating > 0 %}
+												<span class="favorite-star checked-half"></span>
+											{% else %}
+												<span class="favorite-star"></span>
+											{% endif %}
+											{% set rating = rating - 1 %}
+										{% endfor %}
+									</div>
+								</td>
+								<td>{{ occurrence }}%</td>
+							</tr>
+						{% endif %}
+					{% endfor %}
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<div class="m-5">
+		<h3>Main propositions</h3>
+		<div>
+			<ul>
+				{% set proposition_counter = 0 %}
+				{% for submission in submission_data %}
+					{% if submission['in_draft'] == 'false' and submission['propositions']|length > 0 %}
+						{% if proposition_counter < 5 %}
+							<li>{{ submission['propositions'] }}</li>
+							{% set proposition_counter = proposition_counter + 1 %}
+						{% endif %}
+					{% endif %}
+				{% endfor %}
+			</ul>
+		</div>
+	</div>
+
+	<div class="m-5">
+		<h3>
+			Table
+		</h3>
+		<div class="table-container">
+			<table>
+				<thead>
+					<tr>
+						<th>Note</th>
+						<th>Propositions</th>
+						<th>Points à améliorer</th>
+					</tr>
+				</thead>
+				<tbody>
+					{% set row_counter = 0 %}
+					{% for submission in submission_data %}
+						{% if submission['in_draft'] == 'false' %}
+							{% if row_counter < 5 %}
+								<tr>
+									<td>{{ submission['note'] }}</td>
+									<td>{{ submission['propositions'] }}</td>
+									<td>
+										{% for point in submission['points_a_ameliorer'] %}
+											{{ point }}<br>
+										{% endfor %}
+									</td>
+								</tr>
+								{% set row_counter = row_counter + 1 %}
+							{% endif %}
+						{% endif %}
+					{% endfor %}
+				</tbody>
+			</table>
+			<a href="/admin/structure/webform/manage/ux_note_form/results/submissions">Show more results</a>
+		</div>
+	</div>
+</div>
