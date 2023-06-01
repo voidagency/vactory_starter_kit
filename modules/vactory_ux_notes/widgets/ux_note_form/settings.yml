@@ -5,6 +5,11 @@ enabled: TRUE
 fields:
   group_rating_experience:
     g_title: 'Rate your experience'
+    timeout:
+      type: number
+      options:
+        '#min': 0
+        '#description': Timeout in seconds after which the UX notes popup appears to users
     title:
       type: text
       label: 'Title'
