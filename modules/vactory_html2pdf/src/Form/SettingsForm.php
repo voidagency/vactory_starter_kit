@@ -61,7 +61,7 @@ class SettingsForm extends ConfigFormBase {
   /**
    * {@inheritDoc}
    */
-  function validateForm(array &$form, FormStateInterface $form_state) {
+  public function validateForm(array &$form, FormStateInterface $form_state) {
     parent::validateForm($form, $form_state);
     $font_directories = $form_state->getValue('font_directories');
     if (!empty($font_directories)) {
@@ -113,9 +113,9 @@ class SettingsForm extends ConfigFormBase {
       }
     }
 
-    \Drupal::state()->set('vactory_html2pdf_font_dirs', $real_font_directories);
     $config->set('font_directories', $form_state->getValue('font_directories'))
       ->set('fonts_data', $fonts_data)
+      ->set('vactory_html2pdf_font_dirs', $real_font_directories)
       ->save();
   }
 

@@ -20,7 +20,7 @@ use Drupal\node\NodeTypeInterface;
  * Implements hook_form_alter().
  */
 function vactory_business_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  if ($form_id <> "node_type_edit_form") {
+  if ($form_id !== "node_type_edit_form") {
     return;
   }
   $form_object = $form_state->getFormObject()->getEntity();
@@ -87,11 +87,17 @@ function vactory_business_decoupled_webform_data_presubmit_alter(array &$webform
     $title = $webform_data['projet'] ?? NULL;
     $description = $webform_data['description'] ?? NULL;
     $fid = $webform_data['image'] ?? NULL;
-    $secteur_activite = $webform_data['secteur_activite'] ?? NULL;
+    $secteur_activite = isset($webform_data['secteur_activite']) && !empty($webform_data['secteur_activite']) ? $webform_data['taille_entreprise'] : NULL;
     $date = $webform_data['annee_de_creation'] ?? NULL;
-    $statut_juridique = $webform_data['status_juridique'] ?? NULL;
-    $specialisations = $webform_data['specialisations'] ?? [];
-    $taille_entreprise = $webform_data['taille_entreprise'] ?? NULL;
+    $statut_juridique = isset($webform_data['status_juridique']) && !empty($webform_data['status_juridique']) ? $webform_data['status_juridique'] : NULL;
+    $specialisations = $webform_data['specialisations'] ?? NULL;
+    if (is_array($specialisations)) {
+      $specialisations = array_filter($specialisations, function ($el) {
+        return !empty($el);
+      });
+    }
+    $specialisations = !empty($specialisations) ? $specialisations : NULL;
+    $taille_entreprise = isset($webform_data['taille_entreprise']) && !empty($webform_data['taille_entreprise']) ? $webform_data['taille_entreprise'] : NULL;
     $website = $webform_data['site_web'] ?? NULL;
     $country = $webform_data['pays'] ?? NULL;
     $city = $webform_data['ville'] ?? NULL;

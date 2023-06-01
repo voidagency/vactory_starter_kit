@@ -22,6 +22,12 @@ class VoteEntityFieldItemList extends FieldItemList {
    * {@inheritdoc}
    */
   protected $rate;
+  /**
+   * The configuration factory.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected $configFactory;
 
   /**
    * {@inheritdoc}
@@ -30,6 +36,7 @@ class VoteEntityFieldItemList extends FieldItemList {
     $instance = parent::createInstance($definition, $name, $parent);
     $container = \Drupal::getContainer();
     $instance->rate = $container->get('vactory_rate.rate');
+    $instance->configFactory = $container->get('config.factory');
     $instance->cacheMetadata = new CacheableMetadata();
     return $instance;
   }
@@ -43,9 +50,14 @@ class VoteEntityFieldItemList extends FieldItemList {
     $bundle = $entity->bundle();
     $entity_type = $entity->getEntityTypeId();
     $entity_id = $entity->id();
-    if ($bundle != 'vactory_academy' && $bundle != 'vactory_forum') {
+
+    $config = $this->configFactory->get('vactory_rate.settings');
+
+    $selected_content_types = $config->get('content_types') ?: [];
+    if (!in_array($bundle, $selected_content_types)) {
       return;
     }
+
     $voting_results = $this->rate->results($entity_type, $entity_id);
     $results = json_decode($voting_results->getContent(), TRUE);
     $this->cacheMetadata->addCacheContexts(['user']);

@@ -10,4 +10,5 @@ dependencies:
   - vactory_field
   - vactory_paragraphs
   - scheduler
+  - vactory_banner
 package: Vactory Core

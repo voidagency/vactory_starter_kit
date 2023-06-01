@@ -35,7 +35,7 @@ class VactoryAdsShortcode extends ShortcodeBase {
       if ($block_entity) {
         $block_view = \Drupal::entityTypeManager()->getViewBuilder('block_content')->view($block_entity, $attributes['view']);
         if ($block_view) {
-          return \Drupal::service('renderer')->render($block_view);
+          return \Drupal::service('renderer')->renderPlain($block_view);
         }
       }
     }
