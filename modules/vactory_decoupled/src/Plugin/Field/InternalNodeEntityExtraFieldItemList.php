@@ -66,10 +66,20 @@ class InternalNodeEntityExtraFieldItemList extends FieldItemList {
       'translations' => $this->getTranslations($entity),
     ];
 
+    $excluded = $entity->get('cache_exclude')->value;
+    if (!$excluded) {
+      $config = \Drupal::config('vactory_decoupled.settings');
+      $excluded_types = $config->get('cache_excluded_types') ?? [];
+      if (in_array($entity->bundle(), $excluded_types)) {
+        $excluded = TRUE;
+      }
+    }
+    $value['cache_exclude'] = (boolean) $excluded;
     $context = [
       'entity' => $entity,
     ];
     \Drupal::moduleHandler()->alter('decoupled_extra_field_value', $value, $context, $this->cacheMetadata);
+    $this->cacheMetadata->addCacheTags(['config:vactory_decoupled.settings']);
     $this->list[0] = $this->createItem(0, $value);
   }
 

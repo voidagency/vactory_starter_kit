@@ -46,6 +46,7 @@ function vactory_decoupled_form_node_form_alter(&$form, FormStateInterface $form
       '#attributes' => ['class' => ['node-settings-form']],
     ];
     $form['node_settings']['#group'] = 'node_settings_group';
+    $form['cache_exclude']['#group'] = 'node_settings_group';
   }
 
   if (isset($form['machine_name'])) {
@@ -202,9 +203,7 @@ function vactory_decoupled_entity_base_field_info(EntityTypeInterface $entity_ty
       ->setTargetEntityTypeId($entity_type->id())
       ->setDisplayConfigurable('form', FALSE)
       ->setDisplayConfigurable('view', FALSE);
-  }
 
-  if ($entity_type->id() === 'node') {
     $fields['internal_metatag'] = BaseFieldDefinition::create('map')
       ->setLabel(t('Node Metatags'))
       ->setDescription(t('Defined metatags per node'))
@@ -215,9 +214,7 @@ function vactory_decoupled_entity_base_field_info(EntityTypeInterface $entity_ty
       ->setTargetEntityTypeId($entity_type->id())
       ->setDisplayConfigurable('form', FALSE)
       ->setDisplayConfigurable('view', FALSE);
-  }
 
-  if ($entity_type->id() === 'node') {
     $fields['internal_comment'] = BaseFieldDefinition::create('map')
       ->setLabel(t('Node comment'))
       ->setDescription(t('Defined comment per node'))
@@ -228,9 +225,7 @@ function vactory_decoupled_entity_base_field_info(EntityTypeInterface $entity_ty
       ->setTargetEntityTypeId($entity_type->id())
       ->setDisplayConfigurable('form', FALSE)
       ->setDisplayConfigurable('view', FALSE);
-  }
 
-  if ($entity_type->id() === 'node') {
     $fields['internal_breadcrumb'] = BaseFieldDefinition::create('map')
       ->setLabel(t('Node breadcrumb'))
       ->setDescription(t('Defined breadcrumb per node'))
@@ -241,9 +236,7 @@ function vactory_decoupled_entity_base_field_info(EntityTypeInterface $entity_ty
       ->setTargetEntityTypeId($entity_type->id())
       ->setDisplayConfigurable('form', FALSE)
       ->setDisplayConfigurable('view', FALSE);
-  }
 
-  if ($entity_type->id() === 'node') {
     $fields['internal_extra'] = BaseFieldDefinition::create('map')
       ->setLabel(t('Node extra'))
       ->setDescription(t('Extra data per node'))
@@ -254,6 +247,42 @@ function vactory_decoupled_entity_base_field_info(EntityTypeInterface $entity_ty
       ->setTargetEntityTypeId($entity_type->id())
       ->setDisplayConfigurable('form', FALSE)
       ->setDisplayConfigurable('view', FALSE);
+
+    $fields['node_settings'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Node Settings'))
+      ->setDescription(t('Add extra parameters in JSON Format : { "isHomePage": true, "taxonomy": 4, "limit": 6 }'))
+      ->setRevisionable(TRUE)
+      ->setTranslatable(TRUE)
+      ->setDefaultValue('')
+      ->setRequired(FALSE)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textarea',
+        'weight' => 1,
+        'settings' => [
+          'rows' => 4,
+        ],
+      ])
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE);
+
+    $fields['cache_exclude'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Exclude from frontend cache'))
+      ->setDescription(t('Check this to exclude current node from being cached in frontend'))
+      ->setDefaultValue(0)
+      ->setDisplayOptions('form', [
+        'type' => 'boolean_checkbox',
+        'settings' => [
+          'display_label' => TRUE,
+        ],
+      ])
+      ->setDisplayConfigurable('form', TRUE);
+
+    $fields['machine_name'] = BaseFieldDefinition::create('string')
+      ->setLabel('Machine name')
+      ->setDescription('Machine name for internal use.')
+      ->setTranslatable(FALSE)
+      ->setRevisionable(FALSE)
+      ->setDisplayConfigurable('form', TRUE);
   }
 
   if ($entity_type->id() === 'taxonomy_term') {
@@ -281,35 +310,6 @@ function vactory_decoupled_entity_base_field_info(EntityTypeInterface $entity_ty
       ])
       ->setDisplayConfigurable('view', FALSE);
   }
-
-  if ($entity_type->id() === 'node') {
-    $fields['node_settings'] = BaseFieldDefinition::create('string_long')
-      ->setLabel(t('Node Settings'))
-      ->setDescription(t('Add extra parameters in JSON Format : { "isHomePage": true, "taxonomy": 4, "limit": 6 }'))
-      ->setRevisionable(TRUE)
-      ->setTranslatable(TRUE)
-      ->setDefaultValue('')
-      ->setRequired(FALSE)
-      ->setDisplayOptions('form', [
-        'type' => 'string_textarea',
-        'weight' => 1,
-        'settings' => [
-          'rows' => 4,
-        ],
-      ])
-      ->setDisplayConfigurable('form', FALSE)
-      ->setDisplayConfigurable('view', FALSE);
-  }
-
-  if ($entity_type->id() === 'node') {
-    $fields['machine_name'] = BaseFieldDefinition::create('string')
-      ->setLabel('Machine name')
-      ->setDescription('Machine name for internal use.')
-      ->setTranslatable(FALSE)
-      ->setRevisionable(FALSE)
-      ->setDisplayConfigurable('form', TRUE);
-  }
-
   return $fields;
 }
 
