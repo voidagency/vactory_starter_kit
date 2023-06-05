@@ -6,7 +6,7 @@ use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Class EspacePriveSettingsForm.
+ * Espace Prive Settings Form.
  *
  * @package Drupal\vactory_espace_prive\Form
  */
@@ -58,6 +58,11 @@ class EspacePriveSettingsForm extends ConfigFormBase {
     $form['espace_prive_metatag'] = [
       '#type' => 'details',
       '#title' => t("Espace privé Metatag"),
+      '#collapsed' => TRUE,
+    ];
+    $form['espace_prive_password_suggestion'] = [
+      '#type' => 'details',
+      '#title' => t("Suggestion de mot de passe"),
       '#collapsed' => TRUE,
     ];
     $form['espace_prive_metatag']['register_page'] = [
@@ -120,6 +125,11 @@ class EspacePriveSettingsForm extends ConfigFormBase {
       '#title' => t('Description de la page'),
       '#default_value' => $config->get('metatag_login_description'),
     ];
+    $form['espace_prive_password_suggestion']['enable_password_suggestion'] = [
+      '#type' => 'checkbox',
+      '#title' => t("Activer la suggestion des mots de passe"),
+      '#default_value' => !empty($config->get('enable_password_suggestion')) ? $config->get('enable_password_suggestion') : FALSE,
+    ];
     $form['domain_black_list'] = [
       '#type' => 'textarea',
       '#default_value' => !empty($config->get('domain_black_list')) ? $config->get('domain_black_list') : '',
@@ -146,6 +156,7 @@ class EspacePriveSettingsForm extends ConfigFormBase {
       ->set('metatag_login_title', $form_state->getValue('metatag_login_title'))
       ->set('metatag_login_description', $form_state->getValue('metatag_login_description'))
       ->set('password_lifetime', $form_state->getValue('password_lifetime'))
+      ->set('enable_password_suggestion', $form_state->getValue('enable_password_suggestion'))
       ->set('domain_black_list', $domains)
       ->save();
     parent::submitForm($form, $form_state);
