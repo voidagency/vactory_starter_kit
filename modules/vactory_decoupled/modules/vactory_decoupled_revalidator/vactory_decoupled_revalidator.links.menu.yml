@@ -1,0 +1,4 @@
+entity.revalidator_entity_type.overview:
+  title: Vactory Revalidate front cache
+  parent: system.admin_structure
+  route_name: entity.revalidator_entity_type.collection
