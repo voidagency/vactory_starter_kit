@@ -201,6 +201,8 @@ class PathTranslator extends ControllerBase
         'type' => $entity_type_id,
         'bundle' => $entity->bundle(),
         'label' => $entity->label(),
+        'uuid' => $entity->uuid(),
+        'id' => $entity->id() ?? NULL,
       ],
     ];
 
