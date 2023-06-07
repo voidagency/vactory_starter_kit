@@ -76,7 +76,7 @@ class WebformController extends ControllerBase {
     if (!empty($error_message)) {
       return new JsonResponse($error_message, 400);
     }
-    if ($webform_data['sid']) {
+    if (isset($webform_data['sid']) && !empty($webform_data['sid'])) {
       $webform_submission = WebformSubmission::load($webform_data['sid']);
       $webform_submission->setCurrentPage($webform_data['current_page'] ?? NULL);
       $webform_submission->set('in_draft', $webform_data['in_draft'] == 'true');
