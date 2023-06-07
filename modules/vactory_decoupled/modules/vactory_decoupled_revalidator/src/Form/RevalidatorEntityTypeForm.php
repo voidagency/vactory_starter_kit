@@ -14,7 +14,7 @@ use Drupal\vactory_decoupled_revalidator\RevalidatorManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Base form for next_entity_type_config.
+ * Base form for revalidator_entity_type_config.
  */
 class RevalidatorEntityTypeForm extends EntityForm {
 

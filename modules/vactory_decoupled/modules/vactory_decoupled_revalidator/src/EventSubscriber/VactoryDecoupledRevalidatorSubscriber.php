@@ -38,9 +38,6 @@ class VactoryDecoupledRevalidatorSubscriber implements EventSubscriberInterface 
 
   /**
    * Revalidates the entity.
-   *
-   * @param \Drupal\next\Event\EntityActionEvent $event
-   *   The event.
    */
   public function onAction(EntityRevalidateEventInterface $event) {
     if ($revalidator = $this->getRevalidator($event->getEntity())) {
