@@ -12,3 +12,11 @@ vactory_migrate_ui.export_data:
     _title: 'Export Migration'
   requirements:
     _permission: 'Export Migration'
+
+vactory_migrate_ui.import:
+  path: '/admin/structure/migration/vactory_import'
+  defaults:
+    _form: 'Drupal\vactory_migrate_ui\Form\Import'
+    _title: 'Vactory Migration Import'
+  requirements:
+    _role: 'administrator'

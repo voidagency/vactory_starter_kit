@@ -1,0 +1,24 @@
+services:
+  vactory_migrate.entity_info:
+    class: Drupal\vactory_migrate\Services\EntityInfo
+    arguments:
+      - '@config.factory'
+      - '@entity_type.manager'
+      - '@entity_field.manager'
+
+  vactory_migrate.rollback:
+    class: Drupal\vactory_migrate\Services\Rollback
+    arguments:
+      - '@vactory_migrate.entity_info'
+      - '@database'
+
+  vactory_migrate.import:
+    class: Drupal\vactory_migrate\Services\Import
+    arguments:
+      - '@plugin.manager.migration'
+
+  vactory_migrate.commands:
+    class: \Drupal\vactory_migrate\Commands\Commands
+    tags:
+      - { name: drush.command }
+    arguments: ['@vactory_migrate.rollback']
