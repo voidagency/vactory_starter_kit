@@ -20,7 +20,7 @@ function vactory_decoupled_espace_prive_decoupled_webform_data_presubmit_alter(a
     if ($exist) {
       $error_message = [
         'error' => [
-          'message' => "The mail is already in existence, try another one",
+          'message' => t("The mail is already in existence, try another one"),
         ],
       ];
       return;
@@ -44,7 +44,9 @@ function vactory_decoupled_espace_prive_decoupled_webform_data_presubmit_alter(a
         ->getEditable('user_registrationpassword.settings')
         ->get('registration') ?? [];
 
-    if ($approval_settings === UserInterface::REGISTER_VISITORS && ($user_registrationpassword_type == UserRegistrationPassword::NO_VERIFICATION || $user_registrationpassword_type == UserRegistrationPassword::VERIFICATION_DEFAULT)) {
+    if ($approval_settings === UserInterface::REGISTER_VISITORS &&
+      ($user_registrationpassword_type == UserRegistrationPassword::NO_VERIFICATION ||
+        $user_registrationpassword_type == UserRegistrationPassword::VERIFICATION_DEFAULT)) {
       $user_data['status'] = 1;
     }
 
@@ -54,7 +56,7 @@ function vactory_decoupled_espace_prive_decoupled_webform_data_presubmit_alter(a
     } catch (\Exception $exception) {
       $error_message = [
         'error' => [
-          'message' => "Une erreur s'est produite",
+          'message' => t("Une erreur s'est produite"),
         ],
       ];
       return;
