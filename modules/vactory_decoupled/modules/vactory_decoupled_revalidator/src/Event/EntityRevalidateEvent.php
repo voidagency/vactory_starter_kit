@@ -53,7 +53,7 @@ class EntityRevalidateEvent extends Event implements EntityRevalidateEventInterf
    * @throws \Drupal\Core\Entity\EntityMalformedException
    */
   public static function createFromEntity(EntityInterface $entity, string $action): self {
-    $url = $entity->hasLinkTemplate('canonical') ? $entity->toUrl()
+    $url = $entity->id() && $entity->hasLinkTemplate('canonical') ? $entity->toUrl()
       ->toString(TRUE)
       ->getGeneratedUrl() : NULL;
     return new static($entity, $action, $url);
