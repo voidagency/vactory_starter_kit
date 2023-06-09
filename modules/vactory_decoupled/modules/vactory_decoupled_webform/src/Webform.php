@@ -370,6 +370,7 @@ class Webform {
       'date' => 'date',
       'webform_time' => 'time',
       'processed_text' => 'rawhtml',
+      'password' => 'password',
     ];
 
     $htmlInputTypes = [
