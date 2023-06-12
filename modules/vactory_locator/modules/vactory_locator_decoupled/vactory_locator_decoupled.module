@@ -1,0 +1,29 @@
+<?php
+
+/**
+ * @file
+ * Primary hooks.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\vactory_locator_decoupled\StoreLocatoreManagerInterface;
+
+
+/**
+ * Implements hook_entity_presave().
+ */
+function vactory_locator_decoupled_entity_presave(EntityInterface $entity) {
+
+  if (in_array($entity->bundle(), StoreLocatoreManagerInterface::BUNDLES)) {
+    $entity->hasField('field_locator_info');
+    $location = $entity->get('field_locator_info')->getValue() ?? [];
+    $field_name = 'field_vactory_locator_' . StoreLocatoreManagerInterface::FIELD_NAME;
+    $value = Drupal::service('geofield.wkt_generator')->wktBuildPoint([trim($location['0']['lon']), trim($location['0']['lat'])]);
+    $entity->set($field_name, [
+      'value' => $value,
+      'lat'   => trim($location['0']['lat']),
+      'lon'   => trim($location['0']['lon']),
+    ]);
+  }
+}
+

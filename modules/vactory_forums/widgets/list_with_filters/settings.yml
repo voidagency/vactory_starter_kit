@@ -3,6 +3,21 @@ multiple: FALSE
 category: 'Forum'
 enabled: TRUE
 fields:
+  title:
+    type: text
+    label: "Titre"
+  title_icon:
+    type: vactory_icon_picker
+    label: "Icone du titre"
+  subtitle:
+    type: text
+    label: "Sous Titre"
+  action:
+    type: url_extended
+    label: "Link"
+  hide_filters:
+    type: checkbox
+    label: "Hide Filters"
   collection:
     type: json_api_collection
     label: 'JSON:API'

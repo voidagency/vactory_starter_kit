@@ -16,7 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class Froala extends VactoryDynamicFieldPluginBase {
 
   public function __construct(array $configuration, $plugin_id, $plugin_definition, $widgetsPath) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition, drupal_get_path('module', 'vactory_dynamic_field_froala') . '/widgets');
+    parent::__construct($configuration, $plugin_id, $plugin_definition, \Drupal::service('extension.path.resolver')->getPath('module', 'vactory_dynamic_field_froala') . '/widgets');
   }
 
 }

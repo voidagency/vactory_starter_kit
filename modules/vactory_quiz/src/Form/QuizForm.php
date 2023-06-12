@@ -205,7 +205,7 @@ class QuizForm extends FormBase {
         '#theme' => 'quiz_answer_option',
         '#content' => $question_answer,
       ];
-      $options[$question_answer['answer_id']] = $this->renderer->render($option);
+      $options[$question_answer['answer_id']] = $this->renderer->renderPlain($option);
     }
     $form['question_body'] = [
       '#markup' => '<div class="d-flex mb-3"><strong class="mx-2">' . $current_question['question_number'] . '.</strong><div>' . $current_question['question_text_value'] . '</div></div>',
@@ -251,7 +251,7 @@ class QuizForm extends FormBase {
         return $answer['answer_id'];
       }, $correct_answers);
       $user_answer = $form_state->getValue('user_answer');
-      $user_answer = !is_array($user_answer) ? !empty($user_answer) ? [$user_answer] : [] : $user_answer;
+      $user_answer = !is_array($user_answer) ? (!empty($user_answer) ? [$user_answer] : []) : $user_answer;
       $user_answer = array_filter($user_answer, function ($answer) {
         return $answer !== 0;
       });
@@ -329,7 +329,7 @@ class QuizForm extends FormBase {
     $certificat_url = NULL;
     if (isset($results['certificat']) && !empty($results['certificat']) && file_exists($results['certificat'])) {
       // Certificat already generated so get related uri from history.
-      $certificat_url = file_create_url($results['certificat']);
+      $certificat_url = \Drupal::service('file_url_generator')->generateAbsoluteString($results['certificat']);
     }
     elseif (
       !isset($results['certificat']) ||

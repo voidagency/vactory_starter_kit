@@ -6,6 +6,7 @@
  */
 
 use Drupal\Component\Render\FormattableMarkup;
+use Drupal\Component\Render\MarkupInterface;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Field\Plugin\Field\FieldWidget\StringTextareaWidget;
@@ -17,6 +18,8 @@ use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Url;
 use Drupal\jquery_colorpicker\Plugin\Field\FieldWidget\JQueryColorpickerWidget;
+use Drupal\symfony_mailer\Address;
+use Drupal\symfony_mailer\EmailInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -81,6 +84,8 @@ function vactory_core_entity_type_build(array &$entity_types) {
 
 /**
  * Implements hook_mail_alter().
+ *
+ * @deprecated To be remove once swiftmailer contrib module has been removed.
  */
 function vactory_core_mail_alter(&$message) {
   switch ($message['key']) {
@@ -100,7 +105,6 @@ function vactory_core_mail_alter(&$message) {
         $message['body'][$key] = new FormattableMarkup($body, []);
       }
       break;
-
   }
 
   // Redirect all site mails (except reset password mail),
@@ -112,6 +116,29 @@ function vactory_core_mail_alter(&$message) {
     $prefix = t('Destination addresse(s)');
     $to = $prefix . ': ' . $mail_dist;
     $message['to'] = $to . '<' . $mail_redirect . '>';
+  }
+}
+
+/**
+ * Implements hook_mailer_build().
+ */
+function vactory_core_mailer_build(EmailInterface $email) {
+  // Redirect all site mails (except reset password mail),
+  // When vactory_mail_redirect is defined.
+  $route_name = Drupal::routeMatch()->getRouteName();
+  $mail_redirect = Settings::get('vactory_mail_redirect', FALSE);
+  if ($mail_redirect && !empty($mail_redirect) && $route_name !== 'user.pass') {
+    $subject = $email->getSubject();
+    $to = $email->getTo();
+    $subject = $subject instanceof MarkupInterface ? $subject->__toString() : $subject;
+    $to = array_map(function ($address) {
+      return $address->getEmail();
+    }, $to);
+    $to = implode(' ', $to);
+    $subject .= " (To: {$to})";
+    $address = new Address($mail_redirect, 'Mail Redirect');
+    $email->setTo($address);
+    $email->setSubject($subject);
   }
 }
 
@@ -155,7 +182,7 @@ function vactory_core_tokens($type, $tokens, array $data, array $options, Bubble
           $theme_name = \Drupal::service('theme.manager')
             ->getActiveTheme()
             ->getName();
-          $replacements[$original] = file_create_url(substr(theme_get_setting('logo.url', $theme_name), 1));
+          $replacements[$original] = \Drupal::service('file_url_generator')->generateAbsoluteString(substr(theme_get_setting('logo.url', $theme_name), 1));
           break;
 
         case 'node_summary':
@@ -189,7 +216,8 @@ function vactory_core_form_alter(&$form, FormStateInterface &$form_state, $form_
 
   // Set default OpenGraph image url token.
   $route_match = Drupal::service('current_route_match');
-  if (in_array($route_match->getRouteName(), ['entity.node.edit_form', 'node.add'])) {
+  $concerned_routes = ['entity.node.edit_form', 'node.add'];
+  if (in_array($route_match->getRouteName(), $concerned_routes)) {
     $route_params = $route_match->getParameters();
     $node_type = !empty($route_params->get('node')) ? $route_params->get('node')->bundle() : $route_params->get('node_type')->get('type');
     $opengraph_default_images = Drupal::service('config.factory')
@@ -212,7 +240,11 @@ function vactory_core_form_alter(&$form, FormStateInterface &$form_state, $form_
     unset($form['promote'], $form['sticky']);
   }
 
-  if (in_array($route_name, ['entity.menu.add_link_form', 'entity.menu_link_content.canonical'])) {
+  $concerned_routes = [
+    'entity.menu.add_link_form',
+    'entity.menu_link_content.canonical',
+  ];
+  if (in_array($route_name, $concerned_routes)) {
     // Auto generate css ID for menu links.
     if (isset($form['options']['attributes']['id']) && empty($form['options']['attributes']['id']['#default_value'])) {
       $timestamp = (new DateTime())->getTimestamp();
@@ -290,10 +322,10 @@ function vactory_core_theme_suggestions_page_alter(array &$suggestions, array $v
   // If there is HTTP Exception..
   if ($exception = $request->attributes->get('exception')) {
     if (
-    !(
-      gettype($exception) == 'object' &&
-      ($exception instanceof NotFoundHttpException || $exception instanceof AccessDeniedHttpException)
-    )
+      !(
+        gettype($exception) == 'object' &&
+        ($exception instanceof NotFoundHttpException || $exception instanceof AccessDeniedHttpException)
+      )
     ) {
       return;
     }
@@ -406,7 +438,9 @@ function vactory_core_field_widget_form_alter(&$element, FormStateInterface $for
 /**
  * Attach textfield counter library to given element.
  */
+// phpcs:disable
 function addCounterToTextElement(&$element) {
+  // phpcs:enable
   $delta = $element['#delta'];
   $key = 'text-field-' . $delta;
   if (isset($element['value'])) {
@@ -434,5 +468,77 @@ function addCounterToTextElement(&$element) {
     $element['#attached']['drupalSettings']['textfieldCounter'][$key]['textCountStatusMessage'] = '<span class="current_count">@current_length</span>/<span class="maxlength_count">@maxlength</span>';
     $element['#attached']['drupalSettings']['textfieldCounter'][$key]['preventSubmit'] = TRUE;
     $element['#attached']['drupalSettings']['textfieldCounter'][$key]['countHTMLCharacters'] = 0;
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_core_preprocess_pager(&$variables) {
+  if (isset($variables['items'])) {
+    $first = $variables['items']['first'] ?? [];
+    $previous = $variables['items']['previous'] ?? [];
+    $pages = $variables['items']['pages'] ?? [];
+    $next = $variables['items']['next'] ?? [];
+    $last = $variables['items']['last'] ?? [];
+    if (!empty($pages)) {
+      foreach ($pages as &$page) {
+        if (isset($page['href'])) {
+          vactory_core_clean_pager_query_param($page['href']);
+        }
+      }
+      $variables['items']['pages'] = $pages;
+    }
+    if (!empty($first) && isset($first['href'])) {
+      vactory_core_clean_pager_query_param($first['href']);
+      $variables['items']['first'] = $first;
+    }
+    if (!empty($previous) && isset($previous['href'])) {
+      vactory_core_clean_pager_query_param($previous['href']);
+      $variables['items']['previous'] = $previous;
+    }
+    if (!empty($next) && isset($next['href'])) {
+      vactory_core_clean_pager_query_param($next['href']);
+      $variables['items']['next'] = $next;
+    }
+    if (!empty($last) && isset($last['href'])) {
+      vactory_core_clean_pager_query_param($last['href']);
+      $variables['items']['last'] = $last;
+    }
+  }
+}
+
+/**
+ * Clean pager query param.
+ */
+function vactory_core_clean_pager_query_param(&$str) {
+  if (!empty($str) && strpos($str, '?') !== FALSE) {
+    $queryStringPieces = explode('?', $str);
+    if (isset($queryStringPieces[1])) {
+      $queryString = $queryStringPieces[1];
+      parse_str($queryString, $query_params);
+      if (isset($query_params['page'])) {
+        if (!is_numeric($query_params['page']) && strpos($query_params['page'], ',') !== FALSE) {
+          $query_params['page'] = explode(',', $query_params['page'])[0];
+        }
+        if (is_numeric($query_params['page']) && (int) $query_params['page'] === 0) {
+          unset($query_params['page']);
+        }
+      }
+      if (isset($query_params['_wrapper_format'])) {
+        unset($query_params['_wrapper_format']);
+      }
+      $queryString = http_build_query($query_params);
+      if (!empty($queryString)) {
+        $queryStringPieces[1] = $queryString;
+        $str = implode('?', $queryStringPieces);
+      }
+      if (empty($queryString)) {
+        $str = "";
+        if (!empty($queryStringPieces[0])) {
+          $str = $queryStringPieces[0];
+        }
+      }
+    }
   }
 }

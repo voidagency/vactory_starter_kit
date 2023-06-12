@@ -1,0 +1,13 @@
+version: 2
+updates:
+  - package-ecosystem: "composer"
+    directory: "/"
+    commit-message: 
+      prefix: "Composer" 
+      include: "scope" 
+    schedule:
+      interval: "daily"
+    target-branch: "2.x" 
+    reviewers: 
+      - b-khouy 
+      - voidagency 

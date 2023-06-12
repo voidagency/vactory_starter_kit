@@ -20,7 +20,7 @@ fields:
         resource: node--vactory_news
         filters:
           - fields[node--vactory_news]=drupal_internal__nid,path,title,field_vactory_news_theme,field_vactory_media,field_vactory_excerpt,field_vactory_date
-          - fields[taxonomy_term--vactory_news_theme]=tid,name
+          - fields[taxonomy_term--vactory_news_theme]=tid,name,term_2_slug
           - fields[media--image]=name,thumbnail
           - fields[file--image]=filename,uri
           - include=field_vactory_news_theme,field_vactory_media,field_vactory_media.thumbnail

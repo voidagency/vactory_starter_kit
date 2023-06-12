@@ -97,7 +97,7 @@ function vactory_tender_page_attachments_alter(array &$attachments) {
       if ($node instanceof NodeInterface && $node->bundle() == 'vactory_tender') {
         $fid = $node->get('field_vactory_media_file')->getValue()[0]['target_id'];
         $file_uri = File::load($fid)->getFileUri();
-        $file_url = file_create_url($file_uri);
+        $file_url = \Drupal::service('file_url_generator')->generateAbsoluteString($file_uri);
 
         $meta_redirect = [
           [

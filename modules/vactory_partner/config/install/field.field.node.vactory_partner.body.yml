@@ -6,6 +6,9 @@ dependencies:
     - node.type.vactory_partner
   module:
     - text
+  enforced:
+    module:
+      - vactory_partner
 id: node.vactory_partner.body
 field_name: body
 entity_type: node

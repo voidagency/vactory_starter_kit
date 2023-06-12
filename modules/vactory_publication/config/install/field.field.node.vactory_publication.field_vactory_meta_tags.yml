@@ -6,6 +6,9 @@ dependencies:
     - node.type.vactory_publication
   module:
     - metatag
+  enforced:
+    module:
+      - vactory_publication
 id: node.vactory_publication.field_vactory_meta_tags
 field_name: field_vactory_meta_tags
 entity_type: node

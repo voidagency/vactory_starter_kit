@@ -13,6 +13,9 @@ dependencies:
   module:
     - media_responsive_thumbnail
     - user
+  enforced:
+    module:
+      - vactory_partner
 id: node.vactory_partner.smart_search
 targetEntityType: node
 bundle: vactory_partner

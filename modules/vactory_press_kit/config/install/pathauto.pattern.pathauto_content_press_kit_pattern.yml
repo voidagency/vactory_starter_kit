@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - node
+  enforced:
+    module:
+      - vactory_press_kit
 id: pathauto_content_press_kit_pattern
 label: 'Pathauto Content press kit Pattern'
 type: 'canonical_entities:node'

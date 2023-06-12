@@ -17,6 +17,9 @@ dependencies:
   module:
     - text
     - user
+  enforced:
+    module:
+      - vactory_event
 id: node.vactory_event.teaser
 targetEntityType: node
 bundle: vactory_event

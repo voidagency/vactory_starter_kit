@@ -23,6 +23,9 @@ dependencies:
     - node.type.announcement
   module:
     - user
+  enforced:
+    module:
+      - vactory_announcements
 id: node.announcement.teaser
 targetEntityType: node
 bundle: announcement

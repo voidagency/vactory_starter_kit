@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
- * Class FormationInscriptionController.
+ * Formation inscription controller.
  *
  * @package Drupal\vactory_academy_agency\Controller
  */
@@ -21,7 +21,8 @@ class FormationInscriptionController extends ControllerBase {
    */
   public function subscribeToFormation($nid, Request $request) {
     if (!empty($nid)) {
-      $nid = decrypt($nid);
+      $vactory_tools = \Drupal::service('vactory_core.tools');
+      $nid = $vactory_tools->decrypt($nid);
       $node = \Drupal::entityTypeManager()->getStorage('node')
         ->load($nid);
       if (isset($node) && $node instanceof NodeInterface && $node->bundle() == 'vactory_academy_agency') {
@@ -101,7 +102,7 @@ class FormationInscriptionController extends ControllerBase {
                 $datalayer_attributes[$key] = 'Ancien client';
               }
               elseif (in_array($key, $client_infos_fields)) {
-                $datalayer_attributes[$key] = "${$key}";
+                $datalayer_attributes[$key] = "{$key}";
               }
             }
           }

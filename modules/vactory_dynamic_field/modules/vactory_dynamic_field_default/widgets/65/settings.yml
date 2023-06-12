@@ -1,0 +1,24 @@
+name: "CTA with full image Centered"
+multiple: FALSE
+category: "Animated DFs"
+enabled: TRUE
+fields:
+  image:
+    type: image
+    label: "Image"
+    options:
+      "#required": TRUE
+  title:
+    type: text
+    label: "Title"
+    options:
+      "#required": TRUE
+  content:
+    type: text_format
+    label: "Content"
+    options:
+      "#format": full_html
+      "#required": TRUE
+  cta:
+    type: url_extended
+    label: "Call to action"

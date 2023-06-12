@@ -6,6 +6,9 @@ dependencies:
     - node.type.vactory_job_ads
   module:
     - text
+  enforced:
+    module:
+      - vactory_job_ads
 id: node.vactory_job_ads.field_vactory_address
 field_name: field_vactory_address
 entity_type: node

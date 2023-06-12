@@ -4,6 +4,9 @@ dependencies:
   config:
     - block_content.type.vactory_banner
     - field.storage.block_content.field_vactory_flag
+  enforced:
+    module:
+      - vactory_banner
 id: block_content.vactory_banner.field_vactory_flag
 field_name: field_vactory_flag
 entity_type: block_content

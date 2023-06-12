@@ -20,6 +20,9 @@ dependencies:
     - text
     - user
     - vactory_cross_content
+  enforced:
+    module:
+      - vactory_mediatheque
 id: node.vactory_mediatheque.default
 targetEntityType: node
 bundle: vactory_mediatheque

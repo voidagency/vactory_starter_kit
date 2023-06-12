@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - focal_point
+  enforced:
+    module:
+      - vactory_testimonials
 name: vactory_testimonials_1
 label: 'Testimonials One Col @x1 (120x120)'
 effects:

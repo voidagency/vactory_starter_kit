@@ -1,8 +1,12 @@
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  enforced:
+    module:
+      - vactory_testimonials
 name: 'Testimonials - Profils'
 vid: vactory_testimonials_profils
 description: 'Taxonomy for Vactory Testimonials'
 hierarchy: 0
 weight: 0
+

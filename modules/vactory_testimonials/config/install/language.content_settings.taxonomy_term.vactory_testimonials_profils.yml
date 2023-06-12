@@ -5,6 +5,9 @@ dependencies:
     - taxonomy.vocabulary.vactory_testimonials_profils
   module:
     - content_translation
+  enforced:
+    module:
+      - vactory_testimonials
 third_party_settings:
   content_translation:
     enabled: true

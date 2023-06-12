@@ -14,6 +14,9 @@ dependencies:
     - block_field
     - colorapi
     - text
+  enforced:
+    module:
+      - vactory_banner
 id: block_content.vactory_banner.default
 targetEntityType: block_content
 bundle: vactory_banner

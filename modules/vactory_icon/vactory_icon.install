@@ -10,12 +10,12 @@
  */
 function vactory_icon_requirements($phase) {
   $requirements = [];
-  $fid = \Drupal::config('vactory_icon.settings')->get('fid');
+  $provider_plugin = \Drupal::config('vactory_icon.settings')->get('provider_plugin');
 
-  if ($phase == 'runtime' && !$fid) {
+  if ($phase == 'runtime' && !$provider_plugin) {
     $requirements['vactory_icon'] = [
       'title' => t('Icons'),
-      'description' => t('Iconmoon zip file is missing. Please upload one at /admin/config/content/vactory-icon'),
+      'description' => t('No icon provider plugin has been found, Please configure the desired icon provider plugin at /admin/config/content/vactory-icon'),
       'severity' => REQUIREMENT_WARNING,
     ];
   }
@@ -23,3 +23,13 @@ function vactory_icon_requirements($phase) {
   return $requirements;
 }
 
+/**
+ * Implements hook_update_N().
+ */
+function vactory_icon_update_9501(&$sandbox) {
+  $fid = \Drupal::config('vactory_icon.settings')->get('fid');
+  if (!$fid) {
+    \Drupal::configFactory()->getEditable('vactory_icon.settings')
+      ->set('icomoon_fid', $fid)->save();
+  }
+}

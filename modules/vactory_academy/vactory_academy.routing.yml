@@ -1,0 +1,21 @@
+vactory_academy.api_flagging.http:
+  path: '/api/flagging'
+  defaults:
+    _controller: '\Drupal\vactory_academy\Controller\ApiFlagging::flag'
+  methods: [POST]
+  requirements:
+    _permission: 'access content'
+    _format: 'json'
+  options:
+    _auth: ['oauth2']
+vactory_academy.api_unflagging.http:
+  path: '/api/unflagging'
+  defaults:
+    _controller: '\Drupal\vactory_academy\Controller\ApiFlagging::unFlag'
+  methods: [POST]
+  requirements:
+    _permission: 'access content'
+    _format: 'json'
+  options:
+    _auth: ['oauth2']
+

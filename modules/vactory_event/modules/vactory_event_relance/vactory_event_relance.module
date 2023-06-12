@@ -1,0 +1,57 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for vactory_event_relance module.
+ *
+ * @DCG
+ * This file is no longer required in Drupal 8.
+ * @see https://www.drupal.org/node/2217931
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_event_relance_preprocess_node(&$variables) {
+  /** @var \Drupal\node\Entity\Node $node */
+  $node = $variables['node'];
+
+  if ($node->getType() !== 'vactory_event') {
+    return;
+  }
+
+  $event_id = Drupal::service('vactory_core.tools')
+    ->encrypt($node->id());
+  $variables['event_relance'] = TRUE;
+  $variables['event_id'] = $event_id;
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_event_relance_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if (isset($form['#webform_id']) && $form['#webform_id'] == 'events_register' && str_contains($form_id, "webform_handler") === FALSE) {
+    $event_id = Drupal::request()->query->get('event_id');
+    if (empty($event_id)) {
+      throw new NotFoundHttpException();
+    }
+    $langcode = Drupal::languageManager()->getCurrentLanguage()->getId();
+    $nid = Drupal::service('vactory_core.tools')
+      ->decrypt($event_id);
+    $node = Drupal::entityTypeManager()->getStorage('node')
+      ->load($nid);
+    if ($node) {
+      $node = Drupal::service('entity.repository')
+        ->getTranslationFromContext($node, $langcode);
+      $date = $node->get('field_vactory_date_interval')->value;
+      $date = (new DateTime($date))->format('d/m/Y - H:i');
+      $form['elements']['node_id']['#default_value'] = $node->id();
+      $form['elements']['titre']['#default_value'] = $node->label();
+      $form['elements']['event_date']['#default_value'] = $date;
+      $form['elements']['language']['#default_value'] = $langcode;
+    }
+  }
+}

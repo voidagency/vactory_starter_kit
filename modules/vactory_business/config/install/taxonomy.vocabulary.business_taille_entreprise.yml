@@ -1,6 +1,9 @@
 langcode: fr
 status: true
-dependencies: {  }
+dependencies:
+  enforced:
+    module:
+      - vactory_business
 name: 'Business - Taille d''entreprise'
 vid: business_taille_entreprise
 description: 'Utiliser ce vocabulaire pour ajouter des terms taille d''entreprise business'

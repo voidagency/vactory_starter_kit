@@ -72,4 +72,11 @@ class ForumSectionJsonElement extends JsonApiCollectionElement {
     return $elements;
   }
 
+  /**
+   * {@inheritdoc}
+   */
+  public static function validateElement(&$element, FormStateInterface $form_state, &$complete_form) {
+    // Add element validation here.
+  }
+
 }

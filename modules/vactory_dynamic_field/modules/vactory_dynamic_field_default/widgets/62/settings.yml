@@ -1,0 +1,37 @@
+name: "Sticky cards"
+category: "Animated DFs"
+multiple: true
+enabled: TRUE
+extra_fields:
+  title:
+    type: text
+    label: "title"
+    options:
+      "#required": TRUE
+  content:
+    type: textarea
+    label: "Description"
+    options:
+      "#required": TRUE
+  cta:
+    type: url_extended
+    label: "Link"
+fields:
+  icon:
+    type: text
+    label: "Icon name"
+    options:
+      "#required": TRUE
+  title:
+    type: text
+    label: "Card title"
+    options:
+      "#required": TRUE
+  content:
+    type: text_format
+    label: "Card content"
+    options:
+      "#format": full_html
+  link:
+    type: url_extended
+    label: "Link"

@@ -27,6 +27,9 @@ dependencies:
     - telephone
     - text
     - vactory_google_map_field
+  enforced:
+    module:
+      - vactory_locator
 third_party_settings:
   field_group:
     group_locator_adress:

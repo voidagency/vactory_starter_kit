@@ -2,10 +2,14 @@
 
 namespace Drupal\vactory_decoupled_webform;
 
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxy;
 use Drupal\webform\Element\WebformTermReferenceTrait;
 use Drupal\webform\Entity\WebformSubmission;
+use Drupal\webform\Plugin\WebformElementManager;
+use Drupal\webform\WebformSubmissionConditionsValidator;
 use Drupal\webform\WebformTokenManager;
+use Drupal\webform\Entity\Webform as WebformEntity;
 
 /**
  * Simplifies the process of generating an API version of a webform.
@@ -16,10 +20,25 @@ class Webform {
 
   use WebformTermReferenceTrait;
 
+  /**
+   * Webform entity.
+   *
+   * @var \Drupal\webform\WebformInterface
+   */
   protected $webform;
 
+  /**
+   * Current user account.
+   *
+   * @var \Drupal\Core\Session\AccountInterface
+   */
   protected $currentUser;
 
+  /**
+   * Webform default values.
+   *
+   * @var array
+   */
   protected $defaultValues = [];
 
   /**
@@ -29,25 +48,56 @@ class Webform {
    */
   protected $webformTokenManager;
 
-  const LAYOUTS = ['webform_flexbox', 'container', 'fieldset', 'details'];
+  /**
+   * Webform element manager.
+   *
+   * @var \Drupal\webform\Plugin\WebformElementManager
+   */
+  protected $webformElementManager;
+
+  /**
+   * Entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  const LAYOUTS = [
+    'webform_flexbox',
+    'container',
+    'fieldset',
+    'details',
+    'webform_section',
+  ];
 
   const PAGE = 'webform_wizard_page';
 
-  public function __construct(WebformTokenManager $webformTokenManager, AccountProxy $accountProxy) {
+  /**
+   * {@inheritDoc}
+   */
+  public function __construct(
+    WebformTokenManager $webformTokenManager,
+    AccountProxy $accountProxy,
+    WebformElementManager $webformElementManager,
+    EntityTypeManagerInterface $entityTypeManager
+  ) {
     $this->webformTokenManager = $webformTokenManager;
     $this->currentUser = $accountProxy->getAccount();
+    $this->webformElementManager = $webformElementManager;
+    $this->entityTypeManager = $entityTypeManager;
   }
 
   /**
    * Return the requested entity as an structured array.
    *
-   * @param $webform_id
+   * @param string $webform_id
+   *   The webform id.
    *
    * @return array
    *   The JSON structure of the requested resource.
    */
   public function normalize($webform_id) {
-    $this->webform = \Drupal\webform\Entity\Webform::load($webform_id);
+    $this->webform = WebformEntity::load($webform_id);
     $elements = $this->webform->getElementsInitialized();
     $draft = $this->draftSettingsToSchema();
     $schema = $this->itemsToSchema($elements);
@@ -71,18 +121,18 @@ class Webform {
     if ($this->currentUser->isAnonymous()) {
       return [];
     }
-    if (!isset($this->webform->getSettings()['draft']) || empty($this->webform->getSettings()['draft'])) {
+    $webform_settings = $this->webform->getSettings();
+    if (!isset($webform_settings['draft']) || empty($webform_settings['draft'])) {
       return [];
     }
 
-    if ($this->webform->getSettings()['draft'] !== 'authenticated') {
+    if ($webform_settings['draft'] !== 'authenticated') {
       return [];
 
     }
 
     $draft['enable'] = TRUE;
-    $submissions = \Drupal::entityTypeManager()
-      ->getStorage('webform_submission')
+    $submissions = $this->entityTypeManager->getStorage('webform_submission')
       ->loadByProperties([
         'uid' => $this->currentUser->id(),
         'webform_id' => $this->webform->id(),
@@ -101,15 +151,17 @@ class Webform {
   /**
    * Creates a JSON Schema out of Webform Items.
    *
-   * @param $items
+   * @param array $items
+   *   Webform items.
    *
    * @return array
+   *   Related schema.
    */
-  public function itemsToSchema($items) {
+  public function itemsToSchema(array $items) {
     $schema = [];
     foreach ($items as $key => $item) {
       if (isset($item['#type']) && $item['#type'] === 'webform_actions') {
-        $schema['buttons']['actions'][$key] = $this->SubmitbuttonsToUiSchema($item);
+        $schema['buttons']['actions'][$key] = $this->submitbuttonsToUiSchema($item);
         continue;
       }
       if (in_array($item['#type'], self::LAYOUTS)) {
@@ -117,7 +169,7 @@ class Webform {
       }
       else {
         if ($item['#type'] === self::PAGE) {
-          $schema['pages'][$key] = $this->PagesToUiSchema($key, $item, $items);
+          $schema['pages'][$key] = $this->pagesToUiSchema($key, $item, $items);
         }
         else {
           $schema[$key] = $this->itemToUiSchema($key, $item, $items);
@@ -126,18 +178,19 @@ class Webform {
     }
 
     if (array_key_exists('pages', $schema)) {
-      $schema['pages']['webform_preview']['preview']['enable'] = isset($this->webform->getSettings()['preview']) && !empty($this->webform->getSettings()['preview']) ? $this->webform->getSettings()['preview'] > 0 : FALSE;
-      $schema['pages']['webform_preview']['preview']['label'] = isset($this->webform->getSettings()['preview_label']) && !empty($this->webform->getSettings()['preview_label']) ? $this->webform->getSettings()['preview_label'] : '';
-      $schema['pages']['webform_preview']['preview']['title'] = isset($this->webform->getSettings()['preview_title']) && !empty($this->webform->getSettings()['preview_title']) ? $this->webform->getSettings()['preview_title'] : '';
-      $schema['pages']['webform_preview']['preview']['message'] = isset($this->webform->getSettings()['preview_message']) && !empty($this->webform->getSettings()['preview_message']) ? $this->webform->getSettings()['preview_message'] : '';
-      $schema['pages']['webform_preview']['preview']['excluded_elements'] = isset($this->webform->getSettings()['preview_excluded_elements']) && !empty($this->webform->getSettings()['preview_excluded_elements']) ? $this->webform->getSettings()['preview_excluded_elements'] : [];
-      $schema['pages']['webform_preview']['preview']['excluded_elements'] = isset($this->webform->getSettings()['preview_excluded_elements']) && !empty($this->webform->getSettings()['preview_excluded_elements']) ? $this->webform->getSettings()['preview_excluded_elements'] : [];
-      $schema['pages']['webform_preview']['preview']['preview_exclude_empty'] = isset($this->webform->getSettings()['preview_exclude_empty']) && !empty($this->webform->getSettings()['preview_exclude_empty']) ? $this->webform->getSettings()['preview_exclude_empty'] : FALSE;
-      $schema['pages']['webform_preview']['wizard']['prev_button_label'] = isset($this->webform->getSettings()['wizard_prev_button_label']) && !empty($this->webform->getSettings()['wizard_prev_button_label']) ? $this->webform->getSettings()['wizard_prev_button_label'] : '';
-      $schema['pages']['webform_preview']['wizard']['next_button_label'] = isset($this->webform->getSettings()['wizard_next_button_label']) && !empty($this->webform->getSettings()['wizard_next_button_label']) ? $this->webform->getSettings()['wizard_next_button_label'] : '';
+      $webform_settings = $this->webform->getSettings();
+      $schema['pages']['webform_preview']['preview']['enable'] = isset($webform_settings['preview']) && !empty($webform_settings['preview']) ? $webform_settings['preview'] > 0 : FALSE;
+      $schema['pages']['webform_preview']['preview']['label'] = isset($webform_settings['preview_label']) && !empty($webform_settings['preview_label']) ? $webform_settings['preview_label'] : '';
+      $schema['pages']['webform_preview']['preview']['title'] = isset($webform_settings['preview_title']) && !empty($webform_settings['preview_title']) ? $webform_settings['preview_title'] : '';
+      $schema['pages']['webform_preview']['preview']['message'] = isset($webform_settings['preview_message']) && !empty($webform_settings['preview_message']) ? $webform_settings['preview_message'] : '';
+      $schema['pages']['webform_preview']['preview']['excluded_elements'] = isset($webform_settings['preview_excluded_elements']) && !empty($webform_settings['preview_excluded_elements']) ? $webform_settings['preview_excluded_elements'] : [];
+      $schema['pages']['webform_preview']['preview']['excluded_elements'] = isset($webform_settings['preview_excluded_elements']) && !empty($webform_settings['preview_excluded_elements']) ? $webform_settings['preview_excluded_elements'] : [];
+      $schema['pages']['webform_preview']['preview']['preview_exclude_empty'] = isset($webform_settings['preview_exclude_empty']) && !empty($webform_settings['preview_exclude_empty']) ? $webform_settings['preview_exclude_empty'] : FALSE;
+      $schema['pages']['webform_preview']['wizard']['prev_button_label'] = isset($webform_settings['wizard_prev_button_label']) && !empty($webform_settings['wizard_prev_button_label']) ? $webform_settings['wizard_prev_button_label'] : '';
+      $schema['pages']['webform_preview']['wizard']['next_button_label'] = isset($webform_settings['wizard_next_button_label']) && !empty($webform_settings['wizard_next_button_label']) ? $webform_settings['wizard_next_button_label'] : '';
     }
-    //    $schema['draft']['settings']['draft'] = isset($this->webform->getSettings()['draft']) && !empty($this->webform->getSettings()['draft']) ? $this->webform->getSettings()['draft'] : 'none';
-    //    $schema['draft']['settings']['draft_auto_save'] = isset($this->webform->getSettings()['draft']) && !empty($this->webform->getSettings()['draft_auto_save']) ? $this->webform->getSettings()['draft_auto_save'] : FALSE;
+    /*    $schema['draft']['settings']['draft'] = isset($this->webform->getSettings()['draft']) && !empty($this->webform->getSettings()['draft']) ? $this->webform->getSettings()['draft'] : 'none';*/
+    /*    $schema['draft']['settings']['draft_auto_save'] = isset($this->webform->getSettings()['draft']) && !empty($this->webform->getSettings()['draft_auto_save']) ? $this->webform->getSettings()['draft_auto_save'] : FALSE; */
 
     return $schema;
   }
@@ -184,6 +237,10 @@ class Webform {
 
     (isset($item['#attributes']['class']) && !empty($item['#attributes']['class'])) ? $properties['class'] = implode(" ", $item['#attributes']['class']) : "";
 
+    if (isset($item['#states'])) {
+      $properties['states'] = $this->getFormElementStates($item);
+    }
+
     if ($fields !== []) {
       $properties['childs'] = $this->itemsToSchema($fields);
       if ($flexTotal > 1) {
@@ -197,7 +254,7 @@ class Webform {
   /**
    * Layouts to ui schema.
    */
-  public function PagesToUiSchema($key, $item, $items) {
+  public function pagesToUiSchema($key, $item, $items) {
     $fields = [];
     foreach ($items[$key] as $key => $field) {
       if (strpos($key, "#") !== 0) {
@@ -208,6 +265,7 @@ class Webform {
     $properties = [
       'type' => $item['#type'],
       'title' => $item['#title'] ?? '',
+      'icon' => $item['#icon'] ?? '',
     ];
 
     (isset($item['#attributes']['class']) && !empty($item['#attributes']['class'])) ? $properties['class'] = implode(" ", $item['#attributes']['class']) : "";
@@ -225,6 +283,7 @@ class Webform {
    * Add reset button to ui schema.
    *
    * @return array
+   *   Related schema.
    */
   public function resetButtonToUiSchema() {
     $properties = [];
@@ -236,11 +295,13 @@ class Webform {
   /**
    * Add Buttons to ui schema.
    *
-   * @param $item
+   * @param array $item
+   *   Webform items.
    *
    * @return array
+   *   Related schema.
    */
-  public function SubmitbuttonsToUiSchema($item) {
+  public function submitbuttonsToUiSchema(array $item) {
     $properties = [];
     $properties['text'] = isset($item['#submit__label']) ? $item['#submit__label'] : (isset($item['#title']) ? $item['#title'] : '');
     $properties['type'] = $item['#type'];
@@ -250,28 +311,38 @@ class Webform {
   /**
    * Creates a UI Schema out of a Webform Item.
    *
-   * @param $field_name
-   * @param $item
-   * @param $items
+   * @param string $field_name
+   *   Field name.
+   * @param array $item
+   *   Current item.
+   * @param array $items
+   *   Webform items.
    *
    * @return array
+   *   Related schema.
    */
-  private function itemToUiSchema($field_name, $item, $items) {
+  private function itemToUiSchema($field_name, array $item, array $items) {
     $properties = [];
     if (isset($item['#required']) || isset($item['#pattern'])) {
       $properties['validation'] = [];
     }
 
     if (isset($item['#default_value']) || isset($this->defaultValues[$field_name])) {
-      $properties['default_value'] = $this->webformTokenManager->replace($this->defaultValues[$field_name] ?? $item['#default_value'], NULL, [], []);
+      $properties['default_value'] = $this->defaultValueTokensReplace($item, $field_name);
+    }
+
+    if (isset($item['#default_file'])) {
+      $properties['default_value'] = $this->defaultValueTokensReplace($item, $field_name, '#default_file');
+      if (!empty($properties['default_value'])) {
+        $properties['default_value'] = json_decode($properties['default_value']);
+      }
     }
 
     if (isset($item['#title_display'])) {
       $properties['title_display'] = $item['#title_display'];
     }
 
-    // @todo: webform_terms_of_service
-
+    // @todo Webform_terms_of_service.
     $types = [
       'textfield' => 'text',
       'email' => 'text',
@@ -287,6 +358,7 @@ class Webform {
       'select' => 'select',
       'webform_select_other' => 'select',
       'webform_term_select' => 'select',
+      'webform_term_checkboxes' => 'checkboxes',
       'radios' => 'radios',
       'webform_radios_other' => 'radios',
       'checkboxes' => 'checkboxes',
@@ -298,6 +370,7 @@ class Webform {
       'date' => 'date',
       'webform_time' => 'time',
       'processed_text' => 'rawhtml',
+      'password' => 'password',
     ];
 
     $htmlInputTypes = [
@@ -308,6 +381,7 @@ class Webform {
     $type = $item['#type'];
     $ui_type = $types[$type];
     $properties['type'] = $ui_type;
+    // phpcs:disable
     (isset($item['#title']) && !is_null($item['#title'])) ? $properties['label'] = $item['#title'] : NULL;
     (array_key_exists('#webform_parent_flexbox', $item) && $item['#webform_parent_flexbox']) ? $properties['flex'] = (array_key_exists('#flex', $item) ? $item['#flex'] : 1) : 1;
     (isset($item['#placeholder']) && !is_null($item['#placeholder'])) ? $properties['placeholder'] = (string) t($item['#placeholder']) : NULL;
@@ -321,7 +395,9 @@ class Webform {
     (isset($item['#options_all']) && !is_null($item['#options_all'])) ? $properties['optionsAll'] = $item['#options_all'] : NULL;
     (isset($item['#options_none']) && !is_null($item['#options_none'])) ? $properties['optionsNone'] = $item['#options_none'] : NULL;
     (isset($item['#attributes']['class']) && !empty($item['#attributes']['class'])) ? $properties['class'] = implode(" ", $item['#attributes']['class']) : "";
-
+    (isset($item['#date_date_min']) && !is_null($item['#date_date_min'])) ? $properties['dateMin'] = $item['#date_date_min'] : NULL;
+    (isset($item['#date_date_max']) && !is_null($item['#date_date_max'])) ? $properties['dateMax'] = $item['#date_date_max'] : NULL;
+    $properties['isMultiple'] = isset($item['#multiple']);
     if (isset($item['#required'])) {
       $properties['validation']['required'] = TRUE;
       (isset($item['#required_error']) && !is_null($item['#required_error'])) ? $properties['validation']['requiredError'] = (string) t($item['#required_error']) : NULL;
@@ -338,7 +414,7 @@ class Webform {
     if (isset($item['#max'])) {
       $properties['validation']['max'] = $item['#max'];
     }
-
+    // phpcs:enable
     if (
       $type === 'email' ||
       $type === 'webform_email_confirm'
@@ -363,7 +439,7 @@ class Webform {
       }
     }
 
-    if ($type === 'webform_term_select') {
+    if ($type === 'webform_term_select' || $type === 'webform_term_checkboxes') {
       if (empty($item['#vocabulary'])) {
         $properties['options'] = [];
       }
@@ -405,12 +481,11 @@ class Webform {
       $webform_submission = WebformSubmission::create([
         'webform_id' => $this->webform->id(),
       ]);
-      // Prepare upload location and validators for the element
+      // Prepare upload location and validators for the element.
       $element_plugin = $this->getElementPlugin($element);
       $element_plugin->prepare($element, $webform_submission);
 
-      $properties['isMultiple'] = isset($item['#multiple']);
-      if (isset($item['#multiple']) && is_integer($item['#multiple'])) {
+      if (isset($item['#multiple']) && is_int($item['#multiple'])) {
         $properties['validation']['maxFiles'] = $item['#multiple'];
       }
 
@@ -418,6 +493,8 @@ class Webform {
         $properties['validation']['maxSizeBytes'] = 1024 * 1024 * intval($item['#max_filesize']);
         $properties['maxSizeMb'] = intval($item['#max_filesize']);
       }
+
+      $properties['filePreview'] = isset($item['#file_preview']);
 
       if (
         isset($element['#upload_validators']) &&
@@ -429,7 +506,7 @@ class Webform {
         foreach ($extensions as $ext) {
           array_push($doted_extensions, "." . $ext);
         }
-        $filenamed_extensions = join(",", $doted_extensions);
+        $filenamed_extensions = implode(",", $doted_extensions);
         $properties['validation']['extensions'] = $filenamed_extensions;
         $properties['extensionsClean'] = $field_extensions;
       }
@@ -439,17 +516,78 @@ class Webform {
     if ($ui_type === 'rawhtml') {
       $properties['html'] = $item['#text'];
       $properties['format'] = $item['#format'];
-      $properties['attributes'] = $item['#wrapper_attributes'];
+      $properties['attributes'] = $item['#wrapper_attributes'] ?? [];
+    }
+
+    if (isset($item['#states'])) {
+      $properties['states'] = $this->getFormElementStates($item);
     }
 
     return $properties;
   }
 
   /**
-   * @param $items
-   * @param bool $reverse
-   *
-   * @return array
+   * Default value tokens replace.
+   */
+  private function defaultValueTokensReplace($item, $field_name, $default_value_key = '#default_value') {
+    $default_value = $this->webformTokenManager->replace($this->defaultValues[$field_name] ?? $item[$default_value_key], NULL, [], []);
+    if (isset($item['#multiple']) && isset($default_value[0])) {
+      $default_value = explode(',', $default_value[0]);
+    }
+
+    // Html special chars decode when exists.
+    if (is_array($default_value)) {
+      $default_value = array_map(function ($value) {
+        return htmlspecialchars_decode($value);
+      }, $default_value);
+    }
+    if (is_string($default_value)) {
+      $default_value = htmlspecialchars_decode($default_value);
+    }
+    return $default_value;
+  }
+
+  /**
+   * Returns form element states.
+   */
+  private function getFormElementStates($item) {
+    $states = [];
+    foreach ($item['#states'] as $state => $conditions) {
+      $operator = 'and';
+      $conditions_to_append = [];
+      $operator_exists = FALSE;
+      foreach ($conditions as $key => $condition) {
+        $item = [];
+        if (in_array('or', $conditions) || in_array('xor', $conditions)) {
+          $operator_exists = TRUE;
+          if ($condition == 'or' || $condition == 'xor') {
+            $operator = $condition;
+            continue;
+          }
+          $selector = array_keys($condition)[0];
+        }
+        else {
+          $selector = $key;
+        }
+
+        $input_name = WebformSubmissionConditionsValidator::getSelectorInputName($selector);
+        if (!$input_name) {
+          continue;
+        }
+        $element_key = WebformSubmissionConditionsValidator::getInputNameAsArray($input_name, 0);
+        $item['element'] = $element_key;
+        $item['operator'] = $operator_exists ? array_keys($condition[$selector])[0] : array_keys($condition)[0];
+        $item['value'] = $operator_exists ? $condition[$selector][$item['operator']] : $condition[$item['operator']];
+        array_push($conditions_to_append, $item);
+      }
+      $states[$state]['operator'] = $operator;
+      $states[$state]['checks'] = $conditions_to_append;
+    }
+    return $states;
+  }
+
+  /**
+   * Format options.
    */
   private function formatOptions($items, $reverse = FALSE) {
     $options = [];
@@ -471,17 +609,17 @@ class Webform {
    *   The element for which to get the plugin.
    *
    * @return \Drupal\Core\Render\Element\ElementInterface
+   *   Element interface.
+   *
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
   protected function getElementPlugin(array $element) {
     /** @var \Drupal\Core\Render\ElementInfoManager $plugin_manager */
-    $plugin_manager = \Drupal::service('plugin.manager.webform.element');
-    $plugin_definition = $plugin_manager->getDefinition($element['#type']);
+    $plugin_definition = $this->webformElementManager->getDefinition($element['#type']);
 
-    $element_plugin = $plugin_manager->createInstance($element['#type'], $plugin_definition);
+    $element_plugin = $this->webformElementManager->createInstance($element['#type'], $plugin_definition);
 
     return $element_plugin;
   }
-
 
 }

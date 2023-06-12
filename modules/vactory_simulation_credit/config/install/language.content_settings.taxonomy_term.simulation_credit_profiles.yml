@@ -5,6 +5,9 @@ dependencies:
     - taxonomy.vocabulary.simulation_credit_profiles
   module:
     - content_translation
+  enforced:
+    module:
+      - vactory_simulation_credit
 third_party_settings:
   content_translation:
     enabled: true

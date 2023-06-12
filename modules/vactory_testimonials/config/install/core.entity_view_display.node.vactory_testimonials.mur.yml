@@ -18,6 +18,9 @@ dependencies:
     - text
     - user
     - vactory_core
+  enforced:
+    module:
+      - vactory_testimonials
 id: node.vactory_testimonials.mur
 targetEntityType: node
 bundle: vactory_testimonials

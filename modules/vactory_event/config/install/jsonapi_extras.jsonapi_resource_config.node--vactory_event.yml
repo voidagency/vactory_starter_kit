@@ -3,6 +3,9 @@ status: true
 dependencies:
   config:
     - node.type.vactory_event
+  enforced:
+    module:
+      - vactory_event
 id: node--vactory_event
 disabled: false
 path: node/vactory_event

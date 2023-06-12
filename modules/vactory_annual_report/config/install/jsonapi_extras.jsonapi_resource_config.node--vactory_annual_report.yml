@@ -3,6 +3,9 @@ status: true
 dependencies:
   config:
     - node.type.vactory_annual_report
+  enforced:
+    module:
+      - vactory_annual_report
 id: node--vactory_annual_report
 disabled: false
 path: node/vactory_annual_report

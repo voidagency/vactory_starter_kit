@@ -55,7 +55,7 @@ dynamic.form_modal:
       ./assets/css/form-modal.css: {}
   dependencies:
     - vactory_dynamic_field/dynamic.libraries.jquery.select2
-
+    - vactory_dynamic_field/dynamic.modal
 pop_in:
   js:
     ./assets/js/pop-in.js: {}

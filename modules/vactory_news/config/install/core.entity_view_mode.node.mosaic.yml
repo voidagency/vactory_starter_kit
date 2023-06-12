@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - node
+  enforced:
+    module:
+      - vactory_news
 id: node.mosaic
 label: Mosaique
 targetEntityType: node

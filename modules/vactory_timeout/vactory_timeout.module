@@ -41,6 +41,7 @@ function vactory_timeout_page_attachments(array &$page) {
       ->getParameter('agency_path') : $agence;
     $agence = empty($agence) ? Drupal::routeMatch()
       ->getParameter('agence_path') : $agence;
+    $agence = $agence ?? '';
     $landing_page = str_replace('%', $agence, $landing_page);
     // Check if there are some query params.
     // If so, pass them to the landing page.

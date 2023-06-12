@@ -6,6 +6,9 @@ dependencies:
     - node.type.vactory_event
   module:
     - text
+  enforced:
+    module:
+      - vactory_event
 id: node.vactory_event.body
 field_name: body
 entity_type: node

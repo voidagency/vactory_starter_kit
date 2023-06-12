@@ -1,0 +1,31 @@
+entity.revalidator_entity_type.collection:
+  path: '/admin/structure/revalidator-entity-type'
+  defaults:
+    _entity_list: 'revalidator_entity_type'
+    _title: 'Vactory revalidate front cache'
+  requirements:
+    _permission: 'administer revalidator_entity_type'
+
+entity.revalidator_entity_type.add_form:
+  path: '/admin/structure/revalidator_entity_type/add'
+  defaults:
+    _entity_form: 'revalidator_entity_type.add'
+    _title: 'Add a revalidator entity type'
+  requirements:
+    _permission: 'administer revalidator_entity_type'
+
+entity.revalidator_entity_type.edit_form:
+  path: '/admin/structure/revalidator-entity-type/{revalidator_entity_type}'
+  defaults:
+    _entity_form: 'revalidator_entity_type.edit'
+    _title: 'Edit a revalidator entity type'
+  requirements:
+    _permission: 'administer revalidator_entity_type'
+
+entity.revalidator_entity_type.delete_form:
+  path: '/admin/structure/revalidator-entity-type/{revalidator_entity_type}/delete'
+  defaults:
+    _entity_form: 'revalidator_entity_type.delete'
+    _title: 'Delete a revalidator entity type'
+  requirements:
+    _permission: 'administer revalidator_entity_type'

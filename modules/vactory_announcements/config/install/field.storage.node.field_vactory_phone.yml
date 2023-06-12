@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - node
+  enforced:
+    module:
+      - vactory_announcements
 id: node.field_vactory_phone
 field_name: field_vactory_phone
 entity_type: node

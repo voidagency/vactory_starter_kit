@@ -22,3 +22,10 @@ command.managed_file_upload_complete_event_command:
     - core/jquery
     - core/jquery.once
 
+password_suggestion:
+  js:
+    js/password-suggestion.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupalSettings

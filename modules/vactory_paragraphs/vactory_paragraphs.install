@@ -43,7 +43,7 @@ function vactory_paragraphs_update_9400(&$sandbox) {
   // Update paragraphs form displays.
   $paragraphs_types = array_keys(\Drupal::service('entity_type.bundle.info')->getBundleInfo('paragraph'));
   foreach ($paragraphs_types as $paragraph_type) {
-    $name = "core.entity_form_display.paragraph.${paragraph_type}.default";
+    $name = "core.entity_form_display.paragraph.{$paragraph_type}.default";
     $config = Drupal::configFactory()->getEditable($name);
     $third_party_settings = $config->get('third_party_settings');
     if (isset($third_party_settings['field_group']['group_appearance'])) {

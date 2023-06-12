@@ -1,0 +1,15 @@
+name: 'Vactory project progress'
+type: module
+core_version_requirement: '^8.9 || ^9'
+dependencies:
+  - 'allowed_formats:allowed_formats'
+  - 'drupal:content_translation'
+  - 'drupal:field'
+  - 'drupal:language'
+  - 'drupal:link'
+  - 'drupal:path'
+  - 'drupal:taxonomy'
+  - 'drupal:text'
+  - 'drupal:user'
+  - 'drupal:views'
+  - 'vactory_project_progress:vactory_project_progress'

@@ -1,6 +1,9 @@
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  enforced:
+    module:
+      - vactory_job_ads
 name: 'Job Ads - Profession'
 vid: vactory_job_ads_profession
 description: 'Taxonomy for Vactory job Ads Profession'

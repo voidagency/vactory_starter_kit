@@ -6,6 +6,9 @@ dependencies:
     - field.storage.block_content.field_vactory_blocks_multiple
   module:
     - block_field
+  enforced:
+    module:
+      - vactory_banner
 id: block_content.vactory_banner.field_vactory_blocks_multiple
 field_name: field_vactory_blocks_multiple
 entity_type: block_content

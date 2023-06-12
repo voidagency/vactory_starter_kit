@@ -7,6 +7,9 @@ dependencies:
     - vactory_field
     - node
     - search_api
+  enforced:
+    module:
+      - vactory_forums
 id: forum_content_index
 name: 'Forum Content Index'
 description: ''

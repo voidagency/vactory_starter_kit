@@ -1,0 +1,420 @@
+langcode: fr
+status: open
+dependencies:
+  module:
+    - vactory_event_relance
+  enforced:
+    module:
+      - vactory_event_relance
+weight: 0
+open: null
+close: null
+uid: 1
+template: false
+archive: false
+id: events_register
+title: 'Events register'
+description: 'Le formulaire d&#39;inscription aux &eacute;v&eacute;nements &agrave; venir.'
+category: ''
+elements: |-
+  node_id:
+    '#type': hidden
+    '#title': 'Node ID'
+  titre:
+    '#type': hidden
+    '#title': Titre
+    '#store': 0
+  event_date:
+    '#type': hidden
+    '#title': Date
+    '#store': 0
+  language:
+    '#type': hidden
+    '#title': Language
+  civilite:
+    '#type': radios
+    '#title': Civilité
+    '#title_display': inline
+    '#options':
+      mme: Mme
+      m: M
+    '#options_display': side_by_side
+    '#required': true
+    '#wrapper_attributes':
+      class:
+        - 'skinned-control webform-states-required'
+  nom:
+    '#type': textfield
+    '#title': Nom
+    '#title_display': inline
+    '#required': true
+  prenom:
+    '#type': textfield
+    '#title': Prénom
+    '#title_display': inline
+    '#required': true
+  ville:
+    '#type': webform_term_select
+    '#title': Ville
+    '#title_display': inline
+    '#required': true
+    '#vocabulary': vactory_event_citys
+    '#breadcrumb': true
+    '#breadcrumb_delimiter': ''
+    '#tree_delimiter': ''
+    '#store': 0
+  fonction:
+    '#type': textfield
+    '#title': Fonction
+    '#title_display': inline
+    '#required': true
+  adresse_mail:
+    '#type': textfield
+    '#title': Email
+    '#title_display': inline
+    '#required': true
+  telephone:
+    '#type': tel
+    '#title': Téléphone
+    '#title_display': inline
+  donnees_personnel:
+    '#type': processed_text
+    '#text': |
+      <p>Les données à caractère personnel recueillies dans ce formulaire font l'objet, aux fins de réponse à votre demande, d'un traitement de la part de Vactory.</p>
+    '#store': 0
+    '#format': full_html
+  confirmation:
+    '#type': checkbox
+    '#title': 'Je confirme avoir lu et j’accepte les conditions relatives au traitement des données personnelles me concernant, et je donne mon accord express pour leur traitement par le groupe Vactory.'
+    '#description': |-
+      <div class="D6j0vc">
+      <div id="center_col">
+      <div id="taw">
+      <div aria-level="2" class="LGOjhe" data-attrid="wa:/description" data-hveid="CAUQAA" role="heading">&nbsp;</div>
+      </div>
+      </div>
+      </div>
+    '#required': true
+    '#wrapper_attributes':
+      class:
+        - skinned-control
+    '#store': 0
+css: ''
+javascript: ''
+settings:
+  ajax: false
+  ajax_scroll_top: form
+  ajax_progress_type: ''
+  ajax_effect: ''
+  ajax_speed: null
+  page: true
+  page_submit_path: /events/register
+  page_confirm_path: ''
+  page_theme_name: ''
+  form_title: both
+  form_submit_once: false
+  form_open_message: ''
+  form_close_message: ''
+  form_exception_message: ''
+  form_previous_submissions: false
+  form_confidential: false
+  form_confidential_message: ''
+  form_disable_remote_addr: false
+  form_convert_anonymous: false
+  form_prepopulate: false
+  form_prepopulate_source_entity: false
+  form_prepopulate_source_entity_required: false
+  form_prepopulate_source_entity_type: ''
+  form_unsaved: false
+  form_disable_back: false
+  form_submit_back: false
+  form_disable_autocomplete: false
+  form_novalidate: false
+  form_disable_inline_errors: false
+  form_required: false
+  form_autofocus: false
+  form_details_toggle: false
+  form_reset: false
+  form_access_denied: default
+  form_access_denied_title: ''
+  form_access_denied_message: ''
+  form_access_denied_attributes: {  }
+  form_file_limit: ''
+  form_attributes: {  }
+  form_method: ''
+  form_action: ''
+  share: false
+  share_node: false
+  share_theme_name: ''
+  share_title: true
+  share_page_body_attributes: {  }
+  submission_label: ''
+  submission_exception_message: ''
+  submission_locked_message: ''
+  submission_log: false
+  submission_excluded_elements: {  }
+  submission_exclude_empty: false
+  submission_exclude_empty_checkbox: false
+  submission_views: {  }
+  submission_views_replace: {  }
+  submission_user_columns: {  }
+  submission_user_duplicate: false
+  submission_access_denied: default
+  submission_access_denied_title: ''
+  submission_access_denied_message: ''
+  submission_access_denied_attributes: {  }
+  previous_submission_message: ''
+  previous_submissions_message: ''
+  autofill: false
+  autofill_message: ''
+  autofill_excluded_elements: {  }
+  wizard_progress_bar: true
+  wizard_progress_pages: false
+  wizard_progress_percentage: false
+  wizard_progress_link: false
+  wizard_progress_states: false
+  wizard_start_label: ''
+  wizard_preview_link: false
+  wizard_confirmation: true
+  wizard_confirmation_label: ''
+  wizard_auto_forward: true
+  wizard_auto_forward_hide_next_button: false
+  wizard_keyboard: true
+  wizard_track: ''
+  wizard_prev_button_label: ''
+  wizard_next_button_label: ''
+  wizard_toggle: false
+  wizard_toggle_show_label: ''
+  wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
+  preview: 0
+  preview_label: ''
+  preview_title: ''
+  preview_message: ''
+  preview_attributes: {  }
+  preview_excluded_elements: {  }
+  preview_exclude_empty: true
+  preview_exclude_empty_checkbox: false
+  draft: none
+  draft_multiple: false
+  draft_auto_save: false
+  draft_saved_message: ''
+  draft_loaded_message: ''
+  draft_pending_single_message: ''
+  draft_pending_multiple_message: ''
+  confirmation_type: url_message
+  confirmation_url: networking/evenements/a-venir
+  confirmation_title: ''
+  confirmation_message: 'Merci pour votre inscription ! Votre demande de participation est bien prise en compte.'
+  confirmation_attributes: {  }
+  confirmation_back: true
+  confirmation_back_label: ''
+  confirmation_back_attributes: {  }
+  confirmation_exclude_query: false
+  confirmation_exclude_token: false
+  confirmation_update: false
+  limit_total: null
+  limit_total_interval: null
+  limit_total_message: ''
+  limit_total_unique: false
+  limit_user: null
+  limit_user_interval: null
+  limit_user_message: ''
+  limit_user_unique: false
+  entity_limit_total: null
+  entity_limit_total_interval: null
+  entity_limit_user: null
+  entity_limit_user_interval: null
+  purge: none
+  purge_days: null
+  results_disabled: false
+  results_disabled_ignore: false
+  results_customize: false
+  token_view: false
+  token_update: false
+  token_delete: false
+  serial_disabled: false
+access:
+  create:
+    roles:
+      - anonymous
+      - authenticated
+    users: {  }
+    permissions: {  }
+  view_any:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  update_any:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  delete_any:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  purge_any:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  view_own:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  update_own:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  delete_own:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  administer:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  test:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+  configuration:
+    roles: {  }
+    users: {  }
+    permissions: {  }
+handlers:
+  confirmation_participation:
+    id: email
+    handler_id: confirmation_participation
+    label: 'Confirmation de participation'
+    notes: ''
+    status: true
+    conditions:
+      enabled:
+        ':input[name="external_event"]':
+          value: '0'
+    weight: 2
+    settings:
+      states:
+        - completed
+      to_mail: '[webform_submission:values:adresse_mail:raw]'
+      to_options: {  }
+      bcc_mail: ''
+      bcc_options: {  }
+      cc_mail: ''
+      cc_options: {  }
+      from_mail: admin@vactory.com
+      from_options: {  }
+      from_name: 'Vactory'
+      reply_to: ''
+      return_path: ''
+      sender_mail: ''
+      sender_name: ''
+      subject: 'Votre inscription au webinaire « [webform_submission:values:titre] est confirmée'
+      body: "<p style=\"font-size:14px;font-family:Arial,sans-serif;color: #000000\">Bonjour {{ webform_token('[webform_submission:values:civilite]', webform_submission, [], options) }} {{ webform_token('[webform_submission:values:prenom]', webform_submission, [], options) }} {{ webform_token('[webform_submission:values:nom]', webform_submission, [], options) }},</p>\r\n\r\n<p style=\"font-size:14px;font-family:Arial,sans-serif;color: #000000\">Nous vous remercions pour votre inscription au webinaire Entreprises : « {{ webform_token('[webform_submission:values:titre]', webform_submission, [], options) }} ».</p>\r\n{% if webform_token('[webform_submission:values:lien_participation]', webform_submission) %}\r\n <p style=\"font-size:14px;font-family:Arial,sans-serif;color: #000000\">Pour suivre l’échange, nous vous invitons à vous connecter le {{ webform_token('[webform_submission:values:date_event]', webform_submission, [], options) }} sur le lien suivant : {{ webform_token('[webform_submission:values:lien_participation]', webform_submission, [], options) }}</p>\r\n{% endif %}\r\n<p style=\"font-size:14px;font-family:Arial,sans-serif;color: #000000\">Cordialement,</p>\r\n<p style=\"font-size:14px;font-family:Arial,sans-serif;color: #000000\">Marché des Entreprises</p>\r\n<p style=\"font-size:14px;font-family:Arial,sans-serif;color: #000000\">Vactory</p>\r\n\r\n"
+      excluded_elements: {  }
+      ignore_access: false
+      exclude_empty: true
+      exclude_empty_checkbox: false
+      exclude_attachments: false
+      html: true
+      attachments: false
+      twig: true
+      theme_name: ''
+      parameters: {  }
+      debug: false
+  nouvelle_participation:
+    id: email
+    handler_id: nouvelle_participation
+    label: 'Nouvelle participation'
+    notes: ''
+    status: false
+    conditions: {  }
+    weight: 2
+    settings:
+      states:
+        - completed
+      to_mail: 'admin@void.fr'
+      to_options: {  }
+      bcc_mail: ''
+      bcc_options: {  }
+      cc_mail: ''
+      cc_options: {  }
+      from_mail: '[webform_submission:values:email:raw]'
+      from_options: {  }
+      from_name: '[webform_submission:values:nom] [webform_submission:values:prenom]'
+      reply_to: ''
+      return_path: ''
+      sender_mail: ''
+      sender_name: ''
+      subject: 'Nouvelle participation à l''événement : [webform_submission:values:titre]'
+      body: "<p>Bonjour</p>\r\n<p>Une nouvelle participation à l'événement : <b>{{ webform_token('[webform_submission:values:titre]', webform_submission, [], options) }} vient d'être soumise.</p>\r\n<p>Les valeurs soumises sont :</p>\r\n<p><b>Nom : </b> {{ webform_token('[webform_submission:values:nom]', webform_submission, [], options) }}</p>\r\n<p><b>Prénom : </b>{{ webform_token('[webform_submission:values:prenom]', webform_submission, [], options) }}</p>\r\n<p><b>Nom de l'entreprise : </b>{{ webform_token('[webform_submission:values:nom_de_l_entreprise]', webform_submission, [], options) }}</p>\r\n<p><b>Secteur d'activité : </b>{{ webform_token('[webform_submission:values:secteur_d_activite]', webform_submission, [], options) }} </p>\r\n<p><b>Taille de l'entreprise : </b>{{ webform_token('[webform_submission:values:taille_de_l_entreprise]', webform_submission, [], options) }}</p>\r\n<p><b>Fonction : </b>{{ webform_token('[webform_submission:values:fonction]', webform_submission, [], options) }}</p>\r\n<p><b>Email : </b>{{ webform_token('[webform_submission:values:email]', webform_submission, [], options) }}</p>\r\n<p><b>Téléphone : </b>{{ webform_token('[webform_submission:values:telephone]', webform_submission, [], options) }}</p>\r\n\r\n<p>Cordialement,</p>\r\n\r\n"
+      excluded_elements: {  }
+      ignore_access: false
+      exclude_empty: true
+      exclude_empty_checkbox: false
+      exclude_attachments: false
+      html: true
+      attachments: false
+      twig: true
+      theme_name: ''
+      parameters: {  }
+      debug: false
+  confirmation_participation_event_externe:
+    id: email
+    handler_id: confirmation_participation_event_externe
+    label: 'Confirmation de participation à un event externe'
+    notes: ''
+    status: true
+    conditions:
+      enabled:
+        ':input[name="external_event"]':
+          value: '1'
+    weight: 3
+    settings:
+      states:
+        - completed
+      to_mail: '[webform_submission:values:adresse_mail:raw]'
+      to_options: {  }
+      bcc_mail: ''
+      bcc_options: {  }
+      cc_mail: ''
+      cc_options: {  }
+      from_mail: admin@vactory.com
+      from_options: {  }
+      from_name: 'Vactory'
+      reply_to: ''
+      return_path: ''
+      sender_mail: ''
+      sender_name: ''
+      subject: '(Event externe) Votre inscription au webinaire « [webform_submission:values:titre] est confirmée'
+      body: "<p style=\"font-size:14px;font-family:Arial,sans-serif;color: #000000\">Bonjour {{ webform_token('[webform_submission:values:civilite]', webform_submission, [], options) }} {{ webform_token('[webform_submission:values:prenom]', webform_submission, [], options) }} {{ webform_token('[webform_submission:values:nom]', webform_submission, [], options) }},</p>\r\n\r\n<p style=\"font-size:14px;font-family:Arial,sans-serif;color: #000000\">Nous vous remercions pour votre inscription au webinaire Entreprises : « {{ webform_token('[webform_submission:values:titre]', webform_submission, [], options) }} ».</p>\r\n<p style=\"font-size:14px;font-family:Arial,sans-serif;color: #000000\">Cordialement,</p>\r\n<p style=\"font-size:14px;font-family:Arial,sans-serif;color: #000000\">Marché des Entreprises</p>\r\n<p style=\"font-size:14px;font-family:Arial,sans-serif;color: #000000\">Vactory</p>\r\n\r\n"
+      excluded_elements: {  }
+      ignore_access: false
+      exclude_empty: true
+      exclude_empty_checkbox: false
+      exclude_attachments: false
+      html: true
+      attachments: false
+      twig: true
+      theme_name: ''
+      parameters: {  }
+      debug: false
+  event_relance_reminder:
+    id: event_relance_reminder
+    handler_id: event_relance_reminder
+    label: 'Event relance reminder'
+    notes: ''
+    status: true
+    conditions: {  }
+    weight: 3
+    settings:
+      fields:
+        date_field_name: field_vactory_date_interval
+        subject: 'Rappel évènement'
+        from_email: admin@vactory.com
+        from_name: 'Brahim KHOUY'
+        message:
+          value: "<p>Bonjour,<br />\r\nN'oubliez pas&nbsp;l'évènement \"[webform_submission:values:titre]\" qui est programmé&nbsp;le&nbsp;[webform_submission:values:event_date]</p>\r\n"
+          format: full_html
+variants: {  }

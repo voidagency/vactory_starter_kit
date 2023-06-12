@@ -1,0 +1,24 @@
+name: "Testimonials - V1"
+multiple: true
+category: "Animated DFs"
+enabled: TRUE
+fields:
+  image:
+    type: image
+    label: "imgae"
+    options:
+      "#required": TRUE
+  testimonial:
+    type: textarea
+    label: "Testimonial"
+    options:
+      "#required": TRUE
+  author:
+    type: text
+    label: "Author"
+    options:
+      "#required": TRUE
+  position:
+    type: text
+    label: "Position"
+

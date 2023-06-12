@@ -18,6 +18,9 @@ dependencies:
     - taxonomy
     - user
     - vactory_views
+  enforced:
+    module:
+      - vactory_blog
 id: vactory_blog
 label: 'Vactory Blog'
 module: views

@@ -6,6 +6,9 @@ dependencies:
     - taxonomy.vocabulary.affichage_de_l_annonce
   module:
     - text
+  enforced:
+    module:
+      - vactory_announcements
 id: taxonomy_term.affichage_de_l_annonce.default
 targetEntityType: taxonomy_term
 bundle: affichage_de_l_annonce

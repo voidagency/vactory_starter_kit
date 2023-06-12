@@ -86,7 +86,7 @@ install:
   - entity_reference_revisions
   - improved_multi_select
   - mailsystem
-  - swiftmailer
+  - symfony_mailer
   - crop
   - file_entity
   - focal_point
@@ -147,6 +147,8 @@ install:
   - minifyhtml
   - responsive_favicons
   - amp
+  - amp_rdf
+  - amp_toolbar
   - smart_trim
   - dropzonejs
   - password_policy

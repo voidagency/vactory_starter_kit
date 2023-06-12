@@ -3,6 +3,9 @@ status: true
 dependencies:
   config:
     - entityqueue.entity_queue.vactory_blog_block_masonry
+  enforced:
+    module:
+      - vactory_blog
 id: entity_subqueue.vactory_blog_block_masonry
 target_entity_type_id: entity_subqueue
 target_bundle: vactory_blog_block_masonry

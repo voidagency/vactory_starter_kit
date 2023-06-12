@@ -5,6 +5,9 @@ dependencies:
     - field.storage.taxonomy_term.field_locator_map_marker
     - media.type.image
     - taxonomy.vocabulary.locator_category
+  enforced:
+    module:
+      - vactory_locator
 id: taxonomy_term.locator_category.field_locator_map_marker
 field_name: field_locator_map_marker
 entity_type: taxonomy_term

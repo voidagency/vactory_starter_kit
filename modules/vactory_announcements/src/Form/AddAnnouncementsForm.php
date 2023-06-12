@@ -137,7 +137,7 @@ class AddAnnouncementsForm extends FormBase {
     $form['container']['first_group']['rowImage'] = [
       '#prefix' => '<div class="form-control-file">',
       '#suffix' => '</div>',
-      '#title' => \Drupal::service('renderer')->render($image_title),
+      '#title' => \Drupal::service('renderer')->renderPlain($image_title),
       '#type' => 'item',
     ];
     $form['container']['first_group']['rowImage']['image'] = [

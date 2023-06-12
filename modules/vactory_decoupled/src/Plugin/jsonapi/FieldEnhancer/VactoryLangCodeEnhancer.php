@@ -2,6 +2,7 @@
 
 namespace Drupal\vactory_decoupled\Plugin\jsonapi\FieldEnhancer;
 
+use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\jsonapi_extras\Plugin\ResourceFieldEnhancerBase;
 use Shaper\Util\Context;
@@ -27,12 +28,20 @@ class VactoryLangCodeEnhancer extends ResourceFieldEnhancerBase implements Conta
   protected $language;
 
   /**
+   * Language manager service.
+   *
+   * @var LanguageManagerInterface
+   */
+  protected $languageManager;
+
+  /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, array $plugin_definition)
+  public function __construct(array $configuration, $plugin_id, array $plugin_definition, LanguageManagerInterface $languageManager)
   {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->language = \Drupal::languageManager()->getCurrentLanguage()->getId();
+    $this->languageManager = $languageManager;
+    $this->language = $this->languageManager->getCurrentLanguage()->getId();
   }
 
   /**
@@ -43,7 +52,8 @@ class VactoryLangCodeEnhancer extends ResourceFieldEnhancerBase implements Conta
     return new static(
       $configuration,
       $plugin_id,
-      $plugin_definition
+      $plugin_definition,
+      $container->get('language_manager'),
     );
   }
 

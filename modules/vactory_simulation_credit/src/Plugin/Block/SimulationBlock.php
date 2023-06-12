@@ -21,6 +21,12 @@ class SimulationBlock extends BlockBase {
   public function build() {
     return [
       '#theme' => 'simulation_block',
+      '#cache' => [
+        // Set the caching policy to match the default block caching policy.
+        'max-age' => 0,
+        'contexts' => ['url'],
+        'tags' => ['rendered'],
+      ],
     ];
   }
 

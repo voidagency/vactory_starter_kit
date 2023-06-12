@@ -8,9 +8,6 @@ use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element\FormElement;
-use Drupal\file\Entity\File;
-use Drupal\media\Entity\Media;
-use \Drupal\Core\File\FileUrlGenerator;
 
 /**
  * Provide an URL form element with link attributes.
@@ -49,7 +46,7 @@ class DynamicVideoAskElement extends FormElement {
    * Video Ask form element process callback.
    */
   public static function processDynamicVideoAsk(&$element, FormStateInterface $form_state, &$form) {
-    $default_value = isset($element['#default_value']['screen_details']) ? $element['#default_value']['screen_details'] : '';
+    $default_value = isset($element['#default_value']['screen_details']) ? $element['#default_value']['screen_details'] : [];
     $parents = $element['#parents'];
     $id_prefix = implode('-', $parents);
     $wrapper_id = Html::getUniqueId($id_prefix . '-add-more-wrapper');
@@ -85,18 +82,27 @@ class DynamicVideoAskElement extends FormElement {
       'multiple_choices' => t('Multiple Choices'),
     ];
 
-    $user_input_values = $form_state->getUserInput();
+    $user_input_values = $form_state->getUserInput() ?? [];
     // Sort screens:
-    usort($default_value, function ($item1, $item2) {
-      return $item1['_weight'] <=> $item2['_weight'];
-    });
-    usort($user_input_values, function ($item1, $item2) {
-      return $item1['_weight'] <=> $item2['_weight'];
-    });
+    if (is_array($default_value) && !empty($default_value)) {
+      usort($default_value, function ($item1, $item2) {
+        return (int) ($item1['_weight'] <=> $item2['_weight']);
+      });
+    }
+
+    if (is_array($user_input_values) && !empty($user_input_values)) {
+      usort($user_input_values, function ($item1, $item2) {
+        if (isset($item1['_weight']) && isset($item2['_weight'])) {
+          return (int) ($item1['_weight'] <=> $item2['_weight']);
+        }
+        return 0;
+      });
+    }
 
     // Get icon drag.
     $base_url = \Drupal::request()->getSchemeAndHttpHost();
-    $module_path = \Drupal::service('extension.path.resolver')->getPath('module', 'vactory_video_ask');
+    $module_path = \Drupal::service('extension.path.resolver')
+      ->getPath('module', 'vactory_video_ask');
     $drag_icon_url = $base_url . '/' . $module_path . '/icons/icon-drag-move.svg';
     $drag_icon = '<img src="' . $drag_icon_url . '" class="va-screens-sortable-handler"/>';
 
@@ -116,10 +122,10 @@ class DynamicVideoAskElement extends FormElement {
       // Screen weight element.
       $weight_value = isset($default_value[$i]['_weight']) && !empty($default_value[$i]['_weight']) ? $default_value[$i]['_weight'] : $i + 1;
       $element['screen_details'][$i]['_weight'] = [
-        '#type'          => 'number',
-        '#title'         => 'Weight',
-        '#min'           => 1,
-        '#size'          => 5,
+        '#type' => 'number',
+        '#title' => 'Weight',
+        '#min' => 1,
+        '#size' => 5,
         '#default_value' => $weight_value,
         '#attributes' => [
           'class' => ['va-screens-weight'],
@@ -152,10 +158,10 @@ class DynamicVideoAskElement extends FormElement {
         '#title' => t('Id screen'),
         '#required' => TRUE,
         '#default_value' => (isset($user_input_values[$i]['id']) && !empty($user_input_values[$i]['id'])) ?
-        $user_input_values[$i]['id'] : ((isset($default_value[$i]['id']) && !empty($default_value[$i]['id'])) ? $default_value[$i]['id'] : 'screen_'.($i+1)),
+          $user_input_values[$i]['id'] : ((isset($default_value[$i]['id']) && !empty($default_value[$i]['id'])) ? $default_value[$i]['id'] : 'screen_' . ($i + 1)),
       ];
 
-      $quiz_wrapper = "quiz_group_selector_".$i;
+      $quiz_wrapper = "quiz_group_selector_" . $i;
 
       $element['screen_details'][$i]['quiz'] = [
         '#type' => 'details',
@@ -181,16 +187,16 @@ class DynamicVideoAskElement extends FormElement {
 
 
       $element['update_quiz_details_' . $i] = [
-        '#type'                    => 'submit',
-        '#value'                   => t('Update Quiz widget'),
+        '#type' => 'submit',
+        '#value' => t('Update Quiz widget'),
         '#name' => 'update_quiz_details_' . $i,
         '#attributes' => [
           'style' => ['display:none;'],
         ],
-        '#ajax'                    => [
+        '#ajax' => [
           'callback' => [static::class, 'updateQuizWidget'],
-          'wrapper'  => $quiz_wrapper,
-          'event'    => 'click',
+          'wrapper' => $quiz_wrapper,
+          'event' => 'click',
           'id' => $i,
         ],
         '#limit_validation_errors' => [],
@@ -206,7 +212,7 @@ class DynamicVideoAskElement extends FormElement {
           '#title' => t('Id unique de quiz'),
           '#required' => TRUE,
           '#default_value' => (isset($user_input_values[$i]['quiz']['quiz_id']) && !empty($user_input_values[$i]['quiz']['quiz_id'])) ?
-            $user_input_values[$i]['quiz']['quiz_id'] : ((isset($default_value[$i]['quiz']['quiz_id']) && !empty($default_value[$i]['quiz']['quiz_id'])) ? $default_value[$i]['quiz']['quiz_id'] : "quiz_".$i),
+            $user_input_values[$i]['quiz']['quiz_id'] : ((isset($default_value[$i]['quiz']['quiz_id']) && !empty($default_value[$i]['quiz']['quiz_id'])) ? $default_value[$i]['quiz']['quiz_id'] : "quiz_" . $i),
         ];
 
 
@@ -240,21 +246,21 @@ class DynamicVideoAskElement extends FormElement {
           'wrapper' => $background_wrapper,
         ],
         '#default_value' => (isset($user_input_values[$i]['layout']['background']) && !empty($user_input_values[$i]['layout']['background'])) ?
-        $user_input_values[$i]['layout']['background'] : ((isset($default_value[$i]['layout']['background']) && !empty($default_value[$i]['layout']['background']))
+          $user_input_values[$i]['layout']['background'] : ((isset($default_value[$i]['layout']['background']) && !empty($default_value[$i]['layout']['background']))
             ? $default_value[$i]['layout']['background'] : '-1'),
       ];
 
       $element['update_background_' . $i] = [
-        '#type'                    => 'submit',
-        '#value'                   => t('Update widget'),
+        '#type' => 'submit',
+        '#value' => t('Update widget'),
         '#name' => 'update_background_' . $i,
         '#attributes' => [
           'style' => ['display:none;'],
         ],
-        '#ajax'                    => [
+        '#ajax' => [
           'callback' => [static::class, 'updateWidgetLayoutBackground'],
-          'wrapper'  => $background_wrapper,
-          'event'    => 'click',
+          'wrapper' => $background_wrapper,
+          'event' => 'click',
           'id' => $i,
         ],
         '#limit_validation_errors' => [],
@@ -269,11 +275,19 @@ class DynamicVideoAskElement extends FormElement {
             $element['screen_details'][$i]['layout']['image'] = [
               '#type' => 'media_library',
               '#title' => t('Image'),
-              '#allowed_bundles' => ['onboarding_image'],
+              '#allowed_bundles' => ['image'],
               '#required' => TRUE,
               '#default_value' => (isset($user_input_values[$i]['layout']['image']) && !empty($user_input_values[$i]['layout']['image'])) ?
-              $user_input_values[$i]['layout']['image']['media_library_selection'] : ((isset($default_value[$i]['layout']['image']) && !empty($default_value[$i]['layout']['image']))
-              ? $default_value[$i]['layout']['image']['id'] : NULL),
+                $user_input_values[$i]['layout']['image']['media_library_selection'] : ((isset($default_value[$i]['layout']['image']) && !empty($default_value[$i]['layout']['image']))
+                  ? $default_value[$i]['layout']['image']['id'] : NULL),
+            ];
+            $element['screen_details'][$i]['layout']['image_mobile'] = [
+              '#type' => 'media_library',
+              '#title' => t('Image Mobile'),
+              '#allowed_bundles' => ['image'],
+              '#default_value' => (isset($user_input_values[$i]['layout']['image_mobile']) && !empty($user_input_values[$i]['layout']['image_mobile'])) ?
+                $user_input_values[$i]['layout']['image_mobile']['media_library_selection'] : ((isset($default_value[$i]['layout']['image_mobile']) && !empty($default_value[$i]['layout']['image_mobile']))
+                  ? $default_value[$i]['layout']['image_mobile']['id'] : NULL),
             ];
             break;
 
@@ -281,11 +295,11 @@ class DynamicVideoAskElement extends FormElement {
             $element['screen_details'][$i]['layout']['video'] = [
               '#type' => 'media_library',
               '#title' => t('Video'),
-              '#allowed_bundles' => ['onboarding_video'],
+              '#allowed_bundles' => ['remote_video'],
               '#required' => TRUE,
               '#default_value' => (isset($user_input_values[$i]['layout']['video']) && !empty($user_input_values[$i]['layout']['video'])) ?
-              $user_input_values[$i]['layout']['video']['media_library_selection'] : ((isset($default_value[$i]['layout']['video']) && !empty($default_value[$i]['layout']['video']))
-              ? $default_value[$i]['layout']['video']['id'] : NULL),
+                $user_input_values[$i]['layout']['video']['media_library_selection'] : ((isset($default_value[$i]['layout']['video']) && !empty($default_value[$i]['layout']['video']))
+                  ? $default_value[$i]['layout']['video']['id'] : NULL),
             ];
             break;
 
@@ -296,8 +310,8 @@ class DynamicVideoAskElement extends FormElement {
         '#title' => t('Text'),
         '#format' => 'full_html',
         '#default_value' => (isset($user_input_values[$i]['layout']['text']) && !empty($user_input_values[$i]['layout']['text'])) ?
-        $user_input_values[$i]['layout']['text']['value'] : ((isset($default_value[$i]['layout']['text']) && !empty($default_value[$i]['layout']['text']))
-          ? $default_value[$i]['layout']['text']['value'] : ''),
+          $user_input_values[$i]['layout']['text']['value'] : ((isset($default_value[$i]['layout']['text']) && !empty($default_value[$i]['layout']['text']))
+            ? $default_value[$i]['layout']['text']['value'] : ''),
       ];
 
       $response_wrapper = 'response_layout_selector_' . $i;
@@ -321,21 +335,21 @@ class DynamicVideoAskElement extends FormElement {
           'wrapper' => $response_wrapper,
         ],
         '#default_value' => (isset($user_input_values[$i]['response']) && !empty($user_input_values[$i]['response'])) ?
-        $user_input_values[$i]['response'] : ((isset($default_value[$i]['response']) && !empty($default_value[$i]['response']))
-          ? $default_value[$i]['response'] : ''),
+          $user_input_values[$i]['response'] : ((isset($default_value[$i]['response']) && !empty($default_value[$i]['response']))
+            ? $default_value[$i]['response'] : ''),
       ];
 
       $element['update_type_response_' . $i] = [
-        '#type'                    => 'submit',
-        '#value'                   => t('Update type response'),
+        '#type' => 'submit',
+        '#value' => t('Update type response'),
         '#name' => 'update_type_response_' . $i,
         '#attributes' => [
           'style' => ['display:none;'],
         ],
-        '#ajax'                    => [
+        '#ajax' => [
           'callback' => [static::class, 'updateWidgetTypeResponse'],
-          'wrapper'  => $response_wrapper,
-          'event'    => 'click',
+          'wrapper' => $response_wrapper,
+          'event' => 'click',
         ],
         '#limit_validation_errors' => [],
         '#submit' => [[static::class, 'updateItemsTypeResponse']],
@@ -368,14 +382,14 @@ class DynamicVideoAskElement extends FormElement {
               '#title' => t('Multiple choices'),
               '#multiple_choice_id' => $i,
               '#default_value' => (isset($default_value[$i]['response']['settings']) && !empty($default_value[$i]['response']['settings']))
-              ? $default_value[$i]['response']['settings'] : [],
+                ? $default_value[$i]['response']['settings'] : [],
             ];
             break;
 
         }
       }
 
-      $extra_button_wrapper = "extra_button_group_selector_".$i;
+      $extra_button_wrapper = "extra_button_group_selector_" . $i;
 
       $element['screen_details'][$i]['response']['extra_button'] = [
         '#type' => 'fieldset',
@@ -412,16 +426,16 @@ class DynamicVideoAskElement extends FormElement {
 
 
       $element['update_extra_button_' . $i] = [
-        '#type'                    => 'submit',
-        '#value'                   => t('Update Extra Button'),
+        '#type' => 'submit',
+        '#value' => t('Update Extra Button'),
         '#name' => 'update_extra_button_' . $i,
         '#attributes' => [
           'style' => ['display:none;'],
         ],
-        '#ajax'                    => [
+        '#ajax' => [
           'callback' => [static::class, 'updateExtraButton'],
-          'wrapper'  => $extra_button_wrapper,
-          'event'    => 'click',
+          'wrapper' => $extra_button_wrapper,
+          'event' => 'click',
           'id' => $i,
         ],
         '#limit_validation_errors' => [],
@@ -429,16 +443,16 @@ class DynamicVideoAskElement extends FormElement {
       ];
 
       $element['delete_screen_' . $i] = [
-        '#type'                    => 'submit',
-        '#value'                   => t('Delete screen'),
+        '#type' => 'submit',
+        '#value' => t('Delete screen'),
         '#name' => 'delete_screen_' . $i,
         '#attributes' => [
           'style' => ['display:none;'],
         ],
-        '#ajax'                    => [
+        '#ajax' => [
           'callback' => [static::class, 'updateScreensWidget'],
           'wrapper' => $wrapper_id,
-          'event'    => 'click',
+          'event' => 'click',
         ],
         '#limit_validation_errors' => [],
         '#submit' => [[static::class, 'updateScreensAfterDelete']],
@@ -511,6 +525,7 @@ class DynamicVideoAskElement extends FormElement {
     $response->addCommand(new InvokeCommand("[name=update_background_$i]", 'trigger', ['click']));
     return $response;
   }
+
   /**
    * On change quiz function.
    */
@@ -522,6 +537,7 @@ class DynamicVideoAskElement extends FormElement {
     $response->addCommand(new InvokeCommand("[name=update_quiz_details_$i]", 'trigger', ['click']));
     return $response;
   }
+
   /**
    * On change Extra button.
    */
@@ -600,43 +616,51 @@ class DynamicVideoAskElement extends FormElement {
           }
         }
       }
+      $mediaFilesManager = \Drupal::service('vacory_decoupled.media_file_manager');
+      $mediaStorage = \Drupal::service('entity_type.manager')
+        ->getStorage('media');
 
-      // Load image and video.
+      // Load image.
       if (isset($values[$key]['layout']) && !empty($values[$key]['layout'])) {
         $bg = $values[$key]['layout']['background'];
         if ($bg == 'image') {
-          $mid = $values[$key]['layout']['image'];
+          $mid = $values[$key]['layout']['image'] ?? '';
           if (isset($mid) && !empty($mid)) {
-            $media = Media::load($mid);
+            $media = $mediaStorage->load($mid);
             if (isset($media) && !empty($media)) {
-              $fid = $media->field_image_onboarding->target_id;
-              $file = File::load($fid);
-              $file->setPermanent();
-              $file->save();
-              $url = \Drupal::service('file_url_generator')->transformRelative(\Drupal::service('stream_wrapper_manager')->getViaUri($file->getFileUri())->getExternalUrl());
-              $image = [
+              $uri = $media->thumbnail->entity->getFileUri();
+              $values[$key]['layout']['image'] = [
                 'id' => $mid,
-                'url' => $url,
-              ];
-              $values[$key]['layout']['image'] = $image;
+                'url' => $mediaFilesManager->getMediaAbsoluteUrl($uri),
+              ];;
+            }
+          }
+
+          // Image mobile.
+          $mmid = $values[$key]['layout']['image_mobile'] ?? '';
+          if (isset($mmid) && !empty($mmid)) {
+            $media = $mediaStorage->load($mmid);
+            if (isset($media) && !empty($media)) {
+              $uri = $media->thumbnail->entity->getFileUri();
+              $values[$key]['layout']['image_mobile'] = [
+                'id' => $mmid,
+                'url' => $mediaFilesManager->getMediaAbsoluteUrl($uri),
+              ];;
             }
           }
         }
+
+        // Load remote video.
         if ($bg == 'video') {
-          $mid = $values[$key]['layout']['video'];
+          $mid = $values[$key]['layout']['video'] ?? '';
           if (isset($mid) && !empty($mid)) {
-            $media = Media::load($mid);
+            $media = $mediaStorage->load($mid);
             if (isset($media) && !empty($media)) {
-              $fid = $media->field_video_onboarding->target_id;
-              $file = File::load($fid);
-              $file->setPermanent();
-              $file->save();
-              $url = \Drupal::service('file_url_generator')->transformRelative(\Drupal::service('stream_wrapper_manager')->getViaUri($file->getFileUri())->getExternalUrl());
-              $video = [
+              $values[$key]['layout']['video'] = [
                 'id' => $mid,
-                'url' => $url,
-              ];
-              $values[$key]['layout']['video'] = $video;
+                'name' => $media->getName(),
+                'url' => $media->get('field_media_oembed_video')->value,
+              ];;
             }
           }
         }
@@ -712,6 +736,7 @@ class DynamicVideoAskElement extends FormElement {
     $i = $matches[0][0];
     return $element['screen_details'][$i]['quiz'];
   }
+
   /**
    * Update Extra button.
    */

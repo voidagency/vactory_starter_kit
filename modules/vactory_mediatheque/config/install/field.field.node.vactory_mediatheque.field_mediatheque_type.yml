@@ -5,6 +5,9 @@ dependencies:
     - field.storage.node.field_mediatheque_type
     - node.type.vactory_mediatheque
     - taxonomy.vocabulary.mediatheque_types
+  enforced:
+    module:
+      - vactory_mediatheque
 id: node.vactory_mediatheque.field_mediatheque_type
 field_name: field_mediatheque_type
 entity_type: node

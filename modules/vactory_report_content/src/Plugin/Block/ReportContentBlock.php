@@ -73,6 +73,12 @@ class ReportContentBlock extends BlockBase implements ContainerFactoryPluginInte
     $content['current_path_alias'] = $current_path_alias;
     $block = [
       '#theme' => 'block_vactory_report_content',
+      '#cache' => [
+        // Set the caching policy to match the default block caching policy.
+        'max-age' => 0,
+        'contexts' => ['url'],
+        'tags' => ['rendered'],
+      ],
     ];
 
     if (!$current_user->hasPermission('report published content') && !$is_admin) {

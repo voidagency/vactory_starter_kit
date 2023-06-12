@@ -5,6 +5,9 @@ dependencies:
     - field.storage.taxonomy_term.field_locator_country
     - taxonomy.vocabulary.locator_city
     - taxonomy.vocabulary.locator_country
+  enforced:
+    module:
+      - vactory_locator
 id: taxonomy_term.locator_city.field_locator_country
 field_name: field_locator_country
 entity_type: taxonomy_term

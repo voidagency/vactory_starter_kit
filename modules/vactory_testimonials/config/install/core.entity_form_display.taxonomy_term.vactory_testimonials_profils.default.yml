@@ -6,6 +6,9 @@ dependencies:
   module:
     - path
     - text
+  enforced:
+    module:
+      - vactory_testimonials
 id: taxonomy_term.vactory_testimonials_profils.default
 targetEntityType: taxonomy_term
 bundle: vactory_testimonials_profils

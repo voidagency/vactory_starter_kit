@@ -395,6 +395,5 @@ class VccController extends ControllerBase {
         ->normalize($entity);
       return $json_n;
     }, $data);
-    dump($response);
   }
 }

@@ -3,6 +3,9 @@ status: true
 dependencies:
   config:
     - entityqueue.entity_queue.vactory_testimonials_slider
+  enforced:
+    module:
+      - vactory_testimonials
 id: entity_subqueue.vactory_testimonials_slider
 target_entity_type_id: entity_subqueue
 target_bundle: vactory_testimonials_slider

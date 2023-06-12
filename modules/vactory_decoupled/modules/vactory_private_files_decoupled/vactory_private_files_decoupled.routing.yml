@@ -5,6 +5,7 @@ vactory_private_files_decoupled.files.get:
   methods:  [GET]
   requirements:
     _role: 'authenticated'
+    _format: 'json'
   options:
     no_cache: 'TRUE'
     _auth: [ 'oauth2' ]
@@ -15,6 +16,7 @@ vactory_private_files_decoupled.files.webform:
   methods:  [GET]
   requirements:
     _permission: 'access content'
+    _format: 'json'
   options:
     no_cache: 'TRUE'
     _auth: [ 'oauth2' ]

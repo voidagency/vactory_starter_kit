@@ -1,0 +1,23 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_geofield_city
+    - taxonomy.vocabulary.locator_city
+  module:
+    - geofield
+  enforced:
+    module:
+      - vactory_locator
+id: taxonomy_term.locator_city.field_geofield_city
+field_name: field_geofield_city
+entity_type: taxonomy_term
+bundle: locator_city
+label: geofield_city
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: geofield

@@ -1,1 +1,5 @@
 vactory_job_ads_candidate_mode: '1'
+dependencies:
+  enforced:
+    module:
+      - vactory_job_ads

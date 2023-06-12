@@ -5,6 +5,9 @@ dependencies:
     - field.storage.node.field_press_release_theme
     - node.type.vactory_press_release
     - taxonomy.vocabulary.press_release_theme
+  enforced:
+    module:
+      - vactory_press_release
 id: node.vactory_press_release.field_press_release_theme
 field_name: field_press_release_theme
 entity_type: node

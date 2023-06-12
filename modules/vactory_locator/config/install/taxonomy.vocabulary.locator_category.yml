@@ -1,6 +1,9 @@
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  enforced:
+    module:
+      - vactory_locator
 name: 'Locator - Category'
 vid: locator_category
 description: 'Category for locator items'

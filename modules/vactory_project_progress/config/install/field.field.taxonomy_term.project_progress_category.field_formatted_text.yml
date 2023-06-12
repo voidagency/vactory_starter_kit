@@ -1,0 +1,29 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_formatted_text
+    - taxonomy.vocabulary.project_progress_category
+  module:
+    - allowed_formats
+    - text
+  enforced:
+    module:
+      - vactory_project_progress
+third_party_settings:
+  allowed_formats:
+    allowed_formats:
+      - plain_text
+      - full_html
+id: taxonomy_term.project_progress_category.field_formatted_text
+field_name: field_formatted_text
+entity_type: taxonomy_term
+bundle: project_progress_category
+label: 'Completion Message'
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: text_long

@@ -3,6 +3,9 @@ status: true
 dependencies:
   config:
     - entityqueue.entity_queue.vactory_testimonials_reversed
+  enforced:
+    module:
+      - vactory_testimonials
 id: entity_subqueue.vactory_testimonials_reversed
 target_entity_type_id: entity_subqueue
 target_bundle: vactory_testimonials_reversed

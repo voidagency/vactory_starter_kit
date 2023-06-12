@@ -1,12 +1,12 @@
 langcode: en
 status: true
 dependencies:
-  enforced:
-    module:
-      - vactory_notifications
   module:
     - user
     - vactory_notifications
+  enforced:
+    module:
+      - vactory_notifications
 id: notifications
 label: Notifications
 module: views
@@ -219,9 +219,26 @@ display:
           separator: ', '
           field_api_classes: false
       pager:
-        type: none
+        type: full
         options:
           offset: 0
+          items_per_page: 10
+          total_pages: null
+          id: 0
+          tags:
+            next: ›
+            previous: ‹
+            first: «
+            last: »
+          expose:
+            items_per_page: false
+            items_per_page_label: 'Éléments par page'
+            items_per_page_options: '5, 10, 25, 50'
+            items_per_page_options_all: false
+            items_per_page_options_all_label: '- Tout -'
+            offset: false
+            offset_label: Décalage
+          quantity: 5
       exposed_form:
         type: basic
         options:
@@ -404,6 +421,7 @@ display:
       contexts:
         - 'languages:language_content'
         - 'languages:language_interface'
+        - url.query_args
         - user
         - user.permissions
       tags: {  }
@@ -414,13 +432,16 @@ display:
     position: 1
     display_options:
       display_extenders:
-        metatag_display_extender: {  }
+        metatag_display_extender:
+          metatags: {  }
+          tokenize: false
       path: notifications
     cache_metadata:
       max-age: -1
       contexts:
         - 'languages:language_content'
         - 'languages:language_interface'
+        - url.query_args
         - user
         - user.permissions
       tags: {  }

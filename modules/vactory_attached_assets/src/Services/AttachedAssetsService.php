@@ -86,7 +86,7 @@ class AttachedAssetsService {
       $type = $attachedAsset->getType();
       $fid = $attachedAsset->getFileId()[0];
       $file = File::load($fid);
-      $url = file_url_transform_relative(file_create_url($file->getFileUri()));
+      $url = \Drupal::service('file_url_generator')->transformRelative(\Drupal::service('file_url_generator')->generateAbsoluteString($file->getFileUri()));
 
       if ($type == 'style') {
         $asset['type'] = 'css';

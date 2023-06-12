@@ -5,6 +5,9 @@ dependencies:
     - field.storage.node.field_vactory_media
     - media.type.image
     - node.type.vactory_press_kit
+  enforced:
+    module:
+      - vactory_press_kit
 id: node.vactory_press_kit.field_vactory_media
 field_name: field_vactory_media
 entity_type: node

@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - node
+  enforced:
+    module:
+      - vactory_publication
 id: vactory_pub_block_two_columns
 label: 'Publication Block Two Columns'
 handler: simple

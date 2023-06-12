@@ -1,0 +1,29 @@
+name: 'Favorite listing'
+multiple: FALSE
+category: 'Academy'
+enabled: TRUE
+fields:
+  collection:
+    type: json_api_collection
+    label: 'JSON:API'
+    options:
+      '#required': TRUE
+      '#default_value':
+        id: "vactory_academy_favorite"
+        resource: node--vactory_academy
+        filters:
+          - fields[node--vactory_academy]=drupal_internal__nid,path,title,field_vactory_date,field_vactory_excerpt,field_academy_duree,field_vactory_instructor,field_vactory_media,field_vactory_academy_langue,field_vactory_file,field_vactory_theme,field_vactory_youtube_videos,field_vactory_file_multiple,field_vactory_tags,is_flagged,vote
+          - fields[taxonomy_term--vactory_academy_themes]=tid,name
+          - fields[taxonomy_term--tags]=tid,name
+          - fields[user--user]=drupal_internal__uid,display_name,created,field_about_the_author,field_date_of_birth,field_first_name,field_last_name,field_telephone
+          - fields[media--image]=name,thumbnail
+          - fields[file--image]=filename,uri
+          - fields[file--document]=filename,uri
+          - include=field_vactory_instructor,field_vactory_theme,field_vactory_media,field_vactory_media.thumbnail,field_vactory_file,field_vactory_file_multiple,field_vactory_tags
+          - page[offset]=0
+          - page[limit]=9
+          - sort[sort-vactory-date][path]=field_vactory_date
+          - sort[sort-vactory-date][direction]=DESC
+          - filter[status][value]=1
+        vocabularies:
+          vactory_academy_themes: vactory_academy_themes

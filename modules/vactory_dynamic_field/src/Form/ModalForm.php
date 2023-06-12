@@ -7,6 +7,7 @@ use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Ajax\CloseDialogCommand;
 use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Entity\EntityFieldManager;
+use Drupal\Core\Extension\ExtensionPathResolver;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Ajax\AjaxResponse;
@@ -96,6 +97,13 @@ class ModalForm extends FormBase {
   protected $textformatFields;
 
   /**
+   * Extension path resolver service.
+   *
+   * @var \Drupal\Core\Extension\ExtensionPathResolver
+   */
+  protected $extensionPathResolver;
+
+  /**
    * Constructs a new ExampleConfigEntityExternalForm.
    *
    * @param \Drupal\vactory_dynamic_field\WidgetsManagerInterface $widgets_manager
@@ -103,10 +111,15 @@ class ModalForm extends FormBase {
    * @param \Drupal\Core\Entity\EntityFieldManager $entity_field_manager
    *   The entity field manager.
    */
-  public function __construct(WidgetsManagerInterface $widgets_manager, EntityFieldManager $entity_field_manager) {
+  public function __construct(
+    WidgetsManagerInterface $widgets_manager,
+    EntityFieldManager $entity_field_manager,
+    ExtensionPathResolver $extensionPathResolver
+  ) {
     $this->textformatFields = [];
     $this->widgetsManager = $widgets_manager;
     $this->entityFieldManager = $entity_field_manager;
+    $this->extensionPathResolver = $extensionPathResolver;
     $this->isDropdownSelectMode = \Drupal::config('vactory_dynamic_field.settings')->get('is_dropdown_select_templates');
   }
 
@@ -116,7 +129,8 @@ class ModalForm extends FormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('vactory_dynamic_field.vactory_provider_manager'),
-      $container->get('entity_field.manager')
+      $container->get('entity_field.manager'),
+      $container->get('extension.path.resolver')
     );
   }
 
@@ -161,14 +175,14 @@ class ModalForm extends FormBase {
       // Which don't have _weight field yet.
       $widget_weight = 1;
       foreach ($this->widgetData as &$component) {
-        if (!isset($component['_weight'])) {
+        if (!isset($component['_weight']) && is_array($component)) {
           $component['_weight'] = $widget_weight++;
         }
       }
 
       // Sort data.
       usort($this->widgetData, function ($item1, $item2) {
-        return $item1['_weight'] <=> $item2['_weight'];
+        return (int) ($item1['_weight'] <=> $item2['_weight']);
       });
 
       // Restore extra_field.
@@ -267,7 +281,7 @@ class ModalForm extends FormBase {
           // Wrapp fields in a collapsible fieldset.
           $form['components']['extra_field'][$field_id] = [
             '#type' => 'details',
-            '#title' => $field['g_title'],
+            '#title' => $field['g_title'] ?? '',
             '#collapsible' => TRUE,
             '#collapsed' => TRUE,
           ];
@@ -287,8 +301,9 @@ class ModalForm extends FormBase {
           }
 
           foreach ($field as $field_key => $field_info) {
-            $element_type = $field_info['type'];
-            $element_label = t('@field_label', ['@field_label' => $field_info['label']]);
+            $element_type = $field_info['type'] ?? NULL;
+            $label = $field_info['label'] ?? '';
+            $element_label = t('@field_label', ['@field_label' => $label]);
             $element_default_value = (isset($this->widgetData['extra_field'][$field_id][$field_key])) ? $this->widgetData['extra_field'][$field_id][$field_key] : NULL;
             $element_options = isset($field_info['options']) ? $field_info['options'] : [];
 
@@ -372,7 +387,7 @@ class ModalForm extends FormBase {
     $component_wrapper_type = 'fieldset';
     if (isset($settings['multiple']) && (bool) $settings['multiple'] === TRUE) {
       global $base_url;
-      $drag_icon = $base_url . '/' . drupal_get_path('module', 'vactory_dynamic_field') . '/icons/icon-drag-move.svg';
+      $drag_icon = $base_url . '/' . $this->extensionPathResolver->getPath('module', 'vactory_dynamic_field') . '/icons/icon-drag-move.svg';
       $icon_drag = '<img src="' . $drag_icon . '" class="df-components-sortable-handler"/>';
       $component_wrapper_type = 'details';
       $is_multiple = TRUE;
@@ -432,7 +447,8 @@ class ModalForm extends FormBase {
               continue;
             }
             $element_type = $field_info['type'];
-            $element_label = t('@field_label', ['@field_label' => $field_info['label']]);
+            $label = $field_info['label'] ?? '';
+            $element_label = t('@field_label', ['@field_label' => $label]);
 
             $element_default_value = (isset($this->widgetData[$i][$field_id][$field_key])) ? $this->widgetData[$i][$field_id][$field_key] : NULL;
             $element_options = isset($field_info['options']) ? $field_info['options'] : [];
@@ -681,6 +697,7 @@ class ModalForm extends FormBase {
         '#description' => $this->t('Set default content for the selected template.'),
       ];
 
+      $renderer = \Drupal::service('renderer');
       foreach ($widgets_list as $category => $widgets) {
         if (!empty($widgets)) {
           if (empty($category)) {
@@ -704,17 +721,17 @@ class ModalForm extends FormBase {
           ];
           $options = [];
           if (is_array($widgets) || is_object($widgets)) {
+            $file_url_generator = \Drupal::service('file_url_generator');
             foreach ($widgets as $widget_id => $widget) {
-              $undefined_screenshot = drupal_get_path('module', 'vactory_dynamic_field') . '/images/undefined-screenshot.jpg';
+              $undefined_screenshot = $this->extensionPathResolver->getPath('module', 'vactory_dynamic_field') . '/images/undefined-screenshot.jpg';
               $widget_preview = [
                 '#theme' => 'vactory_dynamic_select_template',
                 '#content' => [
-                  'screenshot_url' => !empty($widget['screenshot']) ? $widget['screenshot'] : file_create_url($undefined_screenshot),
+                  'screenshot_url' => !empty($widget['screenshot']) ? $widget['screenshot'] : $file_url_generator->generateAbsoluteString($undefined_screenshot),
                   'name' => $widget['name'],
                 ],
               ];
-              $options[$widget['uuid']] = \Drupal::service('renderer')
-                ->render($widget_preview);
+              $options[$widget['uuid']] = $renderer->renderPlain($widget_preview);
             }
           }
           $form['templates_tabs'][$category]['template'] = [

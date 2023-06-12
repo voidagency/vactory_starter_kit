@@ -5,3 +5,4 @@ vactory_decoupled_search.search_api_page:
   methods: [GET]
   requirements:
     _permission: 'access content'
+    _format: 'json'

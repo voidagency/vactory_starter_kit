@@ -5,6 +5,9 @@ dependencies:
     - field.storage.node.field_vactory_tags
     - node.type.vactory_press_kit
     - taxonomy.vocabulary.tags
+  enforced:
+    module:
+      - vactory_press_kit
 id: node.vactory_press_kit.field_vactory_tags
 field_name: field_vactory_tags
 entity_type: node

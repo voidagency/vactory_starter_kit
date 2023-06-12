@@ -3,6 +3,9 @@ status: true
 dependencies:
   config:
     - node.type.vactory_news
+  enforced:
+    module:
+      - vactory_news
 id: node--vactory_news
 disabled: false
 path: node/vactory_news

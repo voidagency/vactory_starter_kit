@@ -6,6 +6,9 @@ dependencies:
     - node.type.vactory_testimonials
   module:
     - text
+  enforced:
+    module:
+      - vactory_testimonials
 id: node.vactory_testimonials.body
 field_name: body
 entity_type: node
