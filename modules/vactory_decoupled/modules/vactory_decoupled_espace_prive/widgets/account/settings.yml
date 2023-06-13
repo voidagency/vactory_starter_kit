@@ -1,0 +1,15 @@
+name: "Account"
+multiple: FALSE
+category: 'Espace privé'
+enabled: TRUE
+fields:
+  user:
+    type: json_api_collection
+    label: 'JSON:API'
+    options:
+      '#required': TRUE
+      '#default_value':
+        resource: user--user
+        filters:
+          - include=user_picture
+          - filter[drupal_internal__uid][value]=[current-user:uid]
