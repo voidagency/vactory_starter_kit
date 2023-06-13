@@ -58,8 +58,10 @@ class Path extends ConfigurableRevalidatorBase implements RevalidatorInterface {
       '#type' => 'textarea',
       '#title' => t('Paths to revalidate'),
       '#default_value' => $this->configuration['additional_paths'],
-      '#description' => t('Paths to revalidate on entity add/update/delete. Enter one path per line. Example %example.', [
+      '#description' => t('Paths to revalidate on entity add/update/delete. Enter one path per line. Example %example, %example_2, %example_3.', [
         '%example' => '/homepage',
+        '%example_2' => '/node/1',
+        '%example_3' => '/news/*'
       ]),
     ];
 
@@ -97,17 +99,53 @@ class Path extends ConfigurableRevalidatorBase implements RevalidatorInterface {
     if (!count($paths)) {
       return $revalidated;
     }
+    $container = \Drupal::getContainer();
+    $languages = $container->get('language_manager')->getLanguages();
+    $aliasManager = $container->get('path_alias.manager');
+
+    foreach ($paths as $key => $path) {
+      if ($this->isNodePath($path)) {
+        foreach ($languages as $language) {
+          try {
+            $alias = $aliasManager->getAliasByPath($path, $language->getId());
+            $paths[] = $alias;
+          } catch (\Exception $exception) {
+            \Drupal::logger('vactory_decoupled_revalidator')
+              ->error($exception->getMessage());
+          }
+
+        }
+        unset($paths[$key]);
+      }
+    }
 
     try {
       clear_next_cache([
-        'slugs' => $paths,
+        'slugs' => array_unique($paths),
         'invalidate' => 'slugs',
       ]);
       $revalidated = TRUE;
     } catch (\Exception $exception) {
-
+      \Drupal::logger('vactory_decoupled_revalidator')
+        ->error($exception->getMessage());
     }
 
     return $revalidated;
   }
+
+  /**
+   * Checks if a path matches the pattern /node/:nid.
+   */
+  function isNodePath($path) {
+    // Define the regular expression pattern.
+    $pattern = '/^\/node\/\d+$/';
+
+    // Check if the path matches the pattern.
+    if (preg_match($pattern, $path)) {
+      return TRUE;
+    }
+
+    return FALSE;
+  }
+
 }
