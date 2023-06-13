@@ -3,8 +3,12 @@
 namespace Drupal\vactory_cross_content\Field;
 
 use Drupal\block\Entity\Block;
+use Drupal\Core\Cache\Cache;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Field\FieldItemList;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\TypedData\ComputedItemListTrait;
+use Drupal\Core\TypedData\TraversableTypedDataInterface;
 use Drupal\node\Entity\NodeType;
 use Drupal\node\NodeInterface;
 
@@ -14,6 +18,19 @@ use Drupal\node\NodeInterface;
 class InternalVCCFieldItemList extends FieldItemList {
 
   use ComputedItemListTrait;
+
+  // phpcs:disable
+  protected ?CacheableMetadata $cacheMetadata = NULL;
+  // phpcs:enable
+
+  /**
+   * {@inheritDoc}
+   */
+  public static function createInstance($definition, $name = NULL, TraversableTypedDataInterface $parent = NULL) {
+    $instance = parent::createInstance($definition, $name, $parent);
+    $instance->cacheMetadata = new CacheableMetadata();
+    return $instance;
+  }
 
   /**
    * {@inheritdoc}
@@ -75,7 +92,12 @@ class InternalVCCFieldItemList extends FieldItemList {
             $value['nodes'] = [];
             /** @var NodeInterface $node */
             $entity_repository = \Drupal::service('entity.repository');
+            $cacheTags = [];
+            $cacheContexts = [];
             foreach ($nodes as $node) {
+              $cacheTags = Cache::mergeTags($cacheTags, $node->getCacheTags());
+              $cacheContexts = Cache::mergeContexts($cacheContexts, $node->getCacheContexts());
+
               $node_trans = $entity_repository->getTranslationFromContext($node);
               if (isset($node_trans)) {
                 $normalized_node = [
@@ -91,10 +113,42 @@ class InternalVCCFieldItemList extends FieldItemList {
                 $value['nodes'][] = $normalized_node;
               }
             }
+            $this->cacheMetadata->addCacheTags($cacheTags);
+            $this->cacheMetadata->addCacheContexts($cacheContexts);
           }
         }
       }
+
     }
+
     $this->list[0] = $this->createItem(0, $value);
   }
+
+  /**
+   * {@inheritDoc}
+   */
+  public function access($operation = 'view', AccountInterface $account = NULL, $return_as_object = FALSE) {
+    $access = parent::access($operation, $account, TRUE);
+
+    if ($return_as_object) {
+      // phpcs:disable
+      // Here you witness a pure hack. The thing is that JSON:API
+      // Normalization does not compute cacheable metadata for
+      // Computed relations like this one
+      /** @see \Drupal\jsonapi\JsonApiResource\ResourceIdentifier */
+      /** @see \Drupal\jsonapi\Normalizer\ResourceIdentifierNormalizer */
+      // However, thanks to the access check, its result is added
+      // As a cacheable dependency to the normalization.
+      /** @see \Drupal\jsonapi\Normalizer\ResourceObjectNormalizer::serializeField() */
+      // phpcs:enable
+      $this->ensureComputedValue();
+      \assert($this->cacheMetadata instanceof CacheableMetadata);
+      $access->addCacheableDependency($this->cacheMetadata);
+
+      return $access;
+    }
+
+    return $access->isAllowed();
+  }
+
 }
