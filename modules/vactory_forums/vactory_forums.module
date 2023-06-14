@@ -5,11 +5,8 @@
  * Module related hooks.
  */
 
-use Drupal\Core\Cache\Cache;
-use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\node\NodeInterface;
-use Drupal\taxonomy\Entity\Term;
 use Drupal\views\ViewExecutable;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -129,10 +126,12 @@ function user_has_acces_to_forum($node) {
       foreach ($tids as $t) {
         $tid = $t['target_id'];
         // Load users.
-        $users = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties([
-          'vid' => 'users_groups',
-          'tid' => $tid,
-        ]);
+        $users = \Drupal::entityTypeManager()
+          ->getStorage('taxonomy_term')
+          ->loadByProperties([
+            'vid' => 'users_groups',
+            'tid' => $tid,
+          ]);
         $users = array_values($users);
         foreach ($users as $key => $user) {
           $users_tax = $user->get('field_vactory_utilisateurs')->getValue();
@@ -166,16 +165,21 @@ function vactory_forums_json_api_collection_alter(&$filters, &$context) {
       $filters["page[offset]"] = intval($query["page"]) > 0 ? (intval($query["page"]) - 1) * $filters["page[limit]"] : 0;
     }
 
-    if (isset($query["sort"]) && in_array(strtolower($query["sort"]), ["asc", "desc"])) {
+    if (isset($query["sort"]) && in_array(strtolower($query["sort"]), [
+        "asc",
+        "desc",
+      ])) {
       $filters["sort[sort-vactory-date][direction]"] = strtolower($query["sort"]);
     }
 
     if (isset($query["room"]) && $query["room"] !== "all") {
       $room = $query["room"];
-      $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties([
-        'vid' => 'vactory_forum_room',
-        'term_2_slug' => $room,
-      ]);
+      $terms = \Drupal::entityTypeManager()
+        ->getStorage('taxonomy_term')
+        ->loadByProperties([
+          'vid' => 'vactory_forum_room',
+          'term_2_slug' => $room,
+        ]);
 
       if (!$terms) {
         throw new \Exception("[Forums - hook_json_api_collection_alter] term '$room' not found.");
@@ -201,7 +205,10 @@ function vactory_forums_json_api_collection_alter(&$filters, &$context) {
       $filters["page[offset]"] = intval($query["page"]) > 0 ? (intval($query["page"]) - 1) * $pageLimit : 0;
     }
 
-    if (isset($query["sort"]) && in_array(strtolower($query["sort"]), ["asc", "desc"])) {
+    if (isset($query["sort"]) && in_array(strtolower($query["sort"]), [
+        "asc",
+        "desc",
+      ])) {
       $filters["sort[sort-created][path]"] = "created";
       $filters["sort[sort-created][direction]"] = strtolower($query["sort"]);
     }
@@ -220,10 +227,12 @@ function vactory_forums_json_api_collection_alter(&$filters, &$context) {
 
     if (isset($query["theme"]) && $query["theme"] !== "all") {
       $thematic = $query["theme"];
-      $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties([
-        'vid' => 'vactory_forums_thematic',
-        'term_2_slug' => $thematic,
-      ]);
+      $terms = \Drupal::entityTypeManager()
+        ->getStorage('taxonomy_term')
+        ->loadByProperties([
+          'vid' => 'vactory_forums_thematic',
+          'term_2_slug' => $thematic,
+        ]);
 
       if (!$terms) {
         throw new \Exception("[Forums - hook_json_api_collection_alter] term '$thematic' not found.");
@@ -240,37 +249,12 @@ function vactory_forums_json_api_collection_alter(&$filters, &$context) {
     }
   }
 
-}
-
-/**
- * Implements hook_decoupled_df_format_alter.
- */
-function vactory_forums_decoupled_df_format_alter(&$value, $info, CacheableMetadata &$cacheability) {
-  if ($info['type'] === 'json_api_section_forums' && !empty($value)) {
-    $config['resource'] = $value['resource'] ?? '';
-    $config['filters'] = is_string($value['filters']) ? explode("\n", $value['filters']) : $value['filters'];
-    $config['vocabularies'] = [];
-    $config['filters'][] = 'filter[forum-room-filter][condition][path]=field_vactory_forum_room.drupal_internal__tid';
-    $config['filters'][] = 'filter[forum-room-filter][condition][operator]=%3D';
-    $config['filters'][] = 'filter[forum-room-filter][condition][value]=' . $value['room'];
-    $response = \Drupal::service('vactory_decoupled.jsonapi.generator')->fetch($config);
-    $cache = $response['cache'];
-    unset($response['cache']);
-
-    $cacheTags = Cache::mergeTags($cacheability->getCacheTags(), $cache['tags']);
-    $cacheability->setCacheTags($cacheTags);
-    // Load room title.
-    $room = Term::load($value['room']);
-    if (isset($room)) {
-      $room_translated = \Drupal::service('entity.repository')->getTranslationFromContext($room);
-      $room_title = $room_translated->getName();
-      $room_slug = $room_translated->get("term_2_slug")->getString();
-      $value['room'] = [
-        'title' => $room_title,
-        'slug' => $room_slug,
-      ];
+  if ($context['id'] === 'vactory_forums_section') {
+    if ($filters['optional_filters_data']['taxonomy_term']['vactory_forum_room']) {
+      $filters["filter[internal_room][condition][path]"] = "field_vactory_forum_room.drupal_internal__tid";
+      $filters["filter[internal_room][condition][operator]"] = "=";
+      $filters["filter[internal_room][condition][value]"] = $filters['optional_filters_data']['taxonomy_term']['vactory_forum_room'];
     }
-    $value['response'] = $response;
   }
 
 }
