@@ -21,4 +21,4 @@ services:
     class: \Drupal\vactory_migrate\Commands\Commands
     tags:
       - { name: drush.command }
-    arguments: ['@vactory_migrate.rollback']
+    arguments: ['@vactory_migrate.rollback', '@vactory_migrate.import']

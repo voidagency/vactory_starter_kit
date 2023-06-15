@@ -3,9 +3,7 @@
 namespace Drupal\vactory_migrate\Services;
 
 use Drupal\Core\Database\Connection;
-use Drupal\migrate\MigrateExecutable;
-use Drupal\migrate\MigrateMessage;
-use Drupal\migrate\Plugin\MigrationInterface;
+use Drupal\social_media_links\Plugin\SocialMediaLinks\Platform\Drupal;
 
 class Rollback {
 
@@ -25,10 +23,12 @@ class Rollback {
     $this->database = $database;
   }
 
-  public function rollback($migration_id, $re_import = FALSE) {
+  public function rollback($migration_id) {
 
     $mapping_table = 'migrate_map_' . $migration_id;
     $message_table = 'migrate_message_' . $migration_id;
+    $batch_config = \Drupal::config('vactory_migrate.settings')->get('batch_size');
+    $batch_size = isset($batch_config) ? $batch_config : 1000 ;
 
     //Get entity info.
     $destination = $this->entityInfo->getDestinationByMigrationId($migration_id);
@@ -55,22 +55,19 @@ class Rollback {
 
     $operations = [];
     $num_operations = 0;
-    $re_import_info = [
-      're_import'    => $re_import,
-      'migration_id' => $migration_id,
-    ];
+
     if (!empty($rows)) {
-      $chunk = array_chunk($rows, 100);
+      $chunk = array_chunk($rows, $batch_size);
       foreach ($chunk as $ids) {
         $operations[] = [
           [static::class, 'rollbackCallback'],
-          [$ids, $tableInfo, $mapping_table, $message_table, $re_import_info],
+          [$ids, $tableInfo, $mapping_table, $message_table],
         ];
         $num_operations++;
       }
       if (!empty($operations)) {
         $batch = [
-          'title'      => 'Process of cleaning expired bourse data',
+          'title'      => 'Process of Rolling back',
           'operations' => $operations,
           'finished'   => [static::class, 'rollbackFinished'],
         ];
@@ -83,7 +80,7 @@ class Rollback {
   }
 
 
-  public static function rollbackCallback($ids, $tableInfo, $mapping_table, $message_table, $re_import_info, &$context) {
+  public static function rollbackCallback($ids, $tableInfo, $mapping_table, $message_table, &$context) {
     $column_id = $tableInfo['id'];
     $tables = $tableInfo['tables'];
     $baseTable = $tableInfo['baseTable'];
@@ -114,7 +111,6 @@ class Rollback {
       $context['results']['count'] = 0;
     }
     $context['results']['count'] += count($ids);
-    $context['results']['re_import'] = $re_import_info;
 
     // todo clear cache
 
@@ -122,26 +118,6 @@ class Rollback {
 
   public static function rollbackFinished($success, $results, $operations) {
     if ($success) {
-
-      $re_import_info = $results['re_import'];
-      if ($re_import_info['re_import']) {
-        $migration_id = $re_import_info['migration_id'];
-        $manager = \Drupal::service('plugin.manager.migration');
-        $migration = $manager->createInstance($migration_id);
-        $migration->getIdMap()->prepareUpdate();
-        $executable = new MigrateExecutable($migration, new MigrateMessage());
-
-        try {
-          $res = $executable->import();
-          if ($res) {
-            $message = "imported successfully";
-            \Drupal::messenger()->addStatus($message);
-          }
-        } catch (\Exception $e) {
-          $migration->setStatus(MigrationInterface::STATUS_IDLE);
-        }
-      }
-
       $message = "Rollback finished: {$results['count']} items deleted.";
       \Drupal::messenger()->addStatus($message);
     }

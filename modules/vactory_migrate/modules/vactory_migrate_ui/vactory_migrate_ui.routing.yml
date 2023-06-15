@@ -20,3 +20,11 @@ vactory_migrate_ui.import:
     _title: 'Vactory Migration Import'
   requirements:
     _role: 'administrator'
+
+vactory_migrate_ui.import_confirmation:
+  path: '/admin/structure/migration/vactory_import_confirmation'
+  defaults:
+    _form: 'Drupal\vactory_migrate_ui\Form\ImportConfirmation'
+    _title: 'Vactory Migration Import Confirmation'
+  requirements:
+    _role: 'administrator'

@@ -2,6 +2,7 @@
 
 namespace Drupal\vactory_migrate\Commands;
 
+use Drupal\vactory_migrate\Services\Import;
 use Drupal\vactory_migrate\Services\Rollback;
 use Drush\Commands\DrushCommands;
 use function PHPStan\BetterReflection\Reflection\Adapter\isFinal;
@@ -17,8 +18,14 @@ class Commands extends DrushCommands {
    */
   protected $rollbackService;
 
-  public function __construct(Rollback $rollback) {
+  /**
+   * @var \Drupal\vactory_migrate\Services\Import
+   */
+  protected $importService;
+
+  public function __construct(Rollback $rollback, Import $import) {
     $this->rollbackService = $rollback;
+    $this->importService = $import;
   }
 
   /**
@@ -38,11 +45,24 @@ class Commands extends DrushCommands {
       if (isset($result['status']) && $result['status'] == 'error'){
         $this->output->writeln("<error>" . $result['message'] . "</error>");
       }
-//      if ($result['status'] == 'info'){
-//        $this->output->writeln("<info>" . $result['message'] . "</info>");
-//      }
     }
+  }
 
+
+  /**
+   * Import migration using batcj
+   *
+   * @command vactory-migrate-import
+   * @aliases vmim
+   *
+   * @param string $migration ID of migration to rollback.
+   */
+  public function import($migration = '') {
+    if ($migration == ''){
+      $this->output()->writeln("<error>Error: The '--migration=[migration ID]' option is missing.</error>");
+    }else{
+      $this->importService->import($migration);
+    }
   }
 
 }
