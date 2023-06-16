@@ -171,3 +171,12 @@ vactory_decoupled.check_shield:
     _title: 'Check Shield module status'
   requirements:
     _permission: 'access content'
+vactory_decoupled.account_verify:
+  path: '/api/account/verify/{uid}/{timestamp}/{hash}'
+  defaults:
+    _controller: '\Drupal\vactory_decoupled\Controller\registrationController::confirmAccount'
+    _title: 'Confirm account'
+  requirements:
+    _access: 'TRUE'
+  options:
+    no_cache: TRUE

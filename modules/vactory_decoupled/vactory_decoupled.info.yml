@@ -19,4 +19,5 @@ dependencies:
   - features
   - vactory_decoupled_breadcrumb
   - vactory_decoupled_theme_switcher
+  - user_registrationpassword
 version: 8.x-1.0
