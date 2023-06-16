@@ -24,11 +24,52 @@ class InternalVCCFieldItemList extends FieldItemList {
   // phpcs:enable
 
   /**
+   * Block manager service.
+   *
+   * @var \Drupal\vactory_decoupled\BlocksManager
+   */
+  protected $blockManager;
+
+  /**
+   * Entity type manager service.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
+   * Module handler service.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
+   * Entity repository service.
+   *
+   * @var \Drupal\Core\Entity\EntityRepositoryInterface
+   */
+  protected $entityRepository;
+
+  /**
+   * Cross content manager.
+   *
+   * @var \Drupal\vactory_cross_content\Services\VactoryCrossContentManager
+   */
+  protected $crossContentManager;
+
+  /**
    * {@inheritDoc}
    */
   public static function createInstance($definition, $name = NULL, TraversableTypedDataInterface $parent = NULL) {
     $instance = parent::createInstance($definition, $name, $parent);
     $instance->cacheMetadata = new CacheableMetadata();
+    $container = \Drupal::getContainer();
+    $instance->blockManager = $container->get('vactory_decoupled.blocksManager');
+    $instance->entityTypeManager = $container->get('entity_type.manager');
+    $instance->moduleHandler = $container->get('module_handler');
+    $instance->entityRepository = $container->get('entity.repository');
+    $instance->crossContentManager = $container->get('vactory_cross_content.manager');
     return $instance;
   }
 
@@ -52,14 +93,13 @@ class InternalVCCFieldItemList extends FieldItemList {
       'display_mode' => '',
       'limit' => 0,
     ];
-    if (\Drupal::moduleHandler()->moduleExists('vactory_decoupled')) {
+    if ($this->moduleHandler->moduleExists('vactory_decoupled')) {
       // Get vcc blocks here.
       $banner_plugin_filter = [
         'operator' => 'IN',
         'plugins' => ['vactory_cross_content'],
       ];
-      $blocks = \Drupal::service('vactory_decoupled.blocksManager')
-        ->getBlocksByNode($entity->id(), $banner_plugin_filter);
+      $blocks = $this->blockManager->getBlocksByNode($entity->id(), $banner_plugin_filter);
       $block_info = reset($blocks);
       if (!empty($block_info)) {
         $block = Block::load($block_info['id']);
@@ -75,8 +115,7 @@ class InternalVCCFieldItemList extends FieldItemList {
           $value['more_link_label'] = $more_link_label;
           $value['limit'] = $nbr;
           $value['display_mode'] = $display_mode;
-          $view = \Drupal::service('vactory_cross_content.manager')
-            ->getCrossContentView($type, $entity, $configuration);
+          $view = $this->crossContentManager->getCrossContentView($type, $entity, $configuration);
           if (!empty($view) && is_object($view)) {
             $view->execute();
             if (!empty($view->result)) {
@@ -87,18 +126,17 @@ class InternalVCCFieldItemList extends FieldItemList {
             }
           }
           if (isset($value['nodes']) && !empty($value['nodes'])) {
-            $nodes = \Drupal::entityTypeManager()->getStorage('node')
+            $nodes = $this->entityTypeManager->getStorage('node')
               ->loadMultiple($value['nodes']);
             $value['nodes'] = [];
             /** @var NodeInterface $node */
-            $entity_repository = \Drupal::service('entity.repository');
             $cacheTags = [];
             $cacheContexts = [];
             foreach ($nodes as $node) {
               $cacheTags = Cache::mergeTags($cacheTags, $node->getCacheTags());
               $cacheContexts = Cache::mergeContexts($cacheContexts, $node->getCacheContexts());
 
-              $node_trans = $entity_repository->getTranslationFromContext($node);
+              $node_trans = $this->entityRepository->getTranslationFromContext($node);
               if (isset($node_trans)) {
                 $normalized_node = [
                   'title' => $node_trans->label(),
@@ -108,7 +146,7 @@ class InternalVCCFieldItemList extends FieldItemList {
                   'node_type' => $node_trans->bundle(),
                 ];
                 $base_node_type = $node_trans->bundle();
-                \Drupal::moduleHandler()
+                $this->moduleHandler
                   ->alter('jsonapi_vcc_normalized_node', $normalized_node, $context, $base_node_type);
                 $value['nodes'][] = $normalized_node;
               }
