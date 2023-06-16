@@ -26,7 +26,9 @@ class Import extends ConfirmFormBase {
   protected $step = 1;
 
   protected $type;
+
   protected $migration_id;
+
   protected $csv;
 
   /**
@@ -77,7 +79,6 @@ class Import extends ConfirmFormBase {
     ];
     $message = t('If you\'re having trouble uploading the csv file. Add <strong><em>text/csv</em></strong> <a target="_blank" href=":settings_url"> to the allowed <em>MIME types</em></a>.', $t_args);
 
-    $form['#prefix'] = '';
 
     $form['migration'] = [
       '#type'         => 'select',
@@ -86,40 +87,54 @@ class Import extends ConfirmFormBase {
       '#empty_option' => $this->t("-- Choose import --"),
       '#description'  => t("Choose the import to perform."),
       '#required'     => TRUE,
-    ];
-
-    $form['csv'] = [
-      '#type'              => 'managed_file',
-      '#title'             => $this->t('CSV file'),
-      '#name'              => 'csv',
-      '#upload_location'   => 'temporary://migrate', //todo : to define
-      '#upload_validators' => [
-        'file_validate_extensions' => ['csv'],
+      '#ajax'         => [
+        'callback' => '::promptCallback',
+        'wrapper'  => 'csv-container',
       ],
-      '#description'       => t("Load the csv file to import.<br>" . $message),
-      '#required'          => TRUE,
     ];
 
-
-    $form['type'] = [
-      '#type'        => 'radios',
-      '#title'       => $this->t("Type d'import"),
-      '#options'     => [
-        'diff' => $this->t('Diff'),
-        'full' => $this->t('Full'),
-      ],
-      '#description' => t("<b>Diff</b> : Select this option if you want to import a differential file.<br><b>Full</b> : Choose this option if you want to completely replace the existing data.<br>"),
-      '#required'    => TRUE,
+    $form['container'] = [
+      '#type'       => 'container',
+      '#attributes' => ['id' => 'csv-container'],
     ];
 
-    $form['submit'] = [
-      '#type'        => 'submit',
-      '#value'       => $this->t("Start process"),
-      '#button_type' => 'primary',
-    ];
+    $value = $form_state->getValue('migration');
+    if ($value !== NULL || isset($this->migration_id)) {
+      $form['container']['csv'] = [
+        '#type'              => 'managed_file',
+        '#title'             => $this->t('CSV file'),
+        '#name'              => 'csv',
+        '#upload_location'   => 'private://migrate-tmp',
+        '#upload_validators' => [
+          'file_validate_extensions' => ['csv'],
+        ],
+        '#description'       => t("Load the csv file to import.<br>" . $message),
+        '#required'          => TRUE,
+      ];
+      $form['container']['type'] = [
+        '#type'        => 'radios',
+        '#title'       => $this->t("Type d'import"),
+        '#options'     => [
+          'diff' => $this->t('Diff'),
+          'full' => $this->t('Full'),
+        ],
+        '#description' => t("<b>Diff</b> : Select this option if you want to import a differential file.<br><b>Full</b> : Choose this option if you want to completely replace the existing data.<br>"),
+        '#required'    => TRUE,
+      ];
+
+      $form['container']['submit'] = [
+        '#type'        => 'submit',
+        '#value'       => $this->t("Start process"),
+        '#button_type' => 'primary',
+      ];
+    }
 
 
     return $form;
+  }
+
+  public function promptCallback($form, FormStateInterface $form_state) {
+    return $form['container'];
   }
 
 
@@ -127,9 +142,15 @@ class Import extends ConfirmFormBase {
     if ($this->step === 2) {
       return;
     }
+    $triggeringElement = $form_state->getTriggeringElement();
+    if ($triggeringElement['#name'] == 'csv_remove_button') {
+      return;
+    }
     //Check if header is correct
     $migration_id = $form_state->getValue('migration');
     $csv = $form_state->getValue('csv');
+    $this->migration_id = $migration_id;
+    $this->csv = $csv;
     // Validation de header
     if (isset($csv)) {
       $original_path = $this->getMigrationSource($migration_id);
@@ -149,18 +170,24 @@ class Import extends ConfirmFormBase {
         }
       }
 
-      $check_content = $this->isValidCsvContent($file_path, ',' , count($header));
-      if (!$check_content['status']){
+      $delimiter = \Drupal::config('vactory_migrate.settings')->get('delimiter');
+      $check_content = $this->isValidCsvContent($file_path, $delimiter, count($header));
+      if (!$check_content['status']) {
         $form_state->setErrorByName('csv', $this->t('Invalid CSV content format at line ' . $check_content['line']));
       }
-
-      $check_duplicated_id = $this->isColumnDuplicated($file_path, ',' , 'ID');
-      if (!$check_duplicated_id['status']){
-        $form_state->setErrorByName('csv', $this->t('CSV contains duplicated ID : ' . $check_duplicated_id['value']));
+      $id = $this->getMigrationId($migration_id);
+      if (count($id) != 1) {
+        $form_state->setErrorByName('csv', $this->t('Migration should have only one id field'));
+      }
+      else {
+        $check_duplicated_id = $this->isColumnDuplicated($file_path, $delimiter, reset($id));
+        if (!$check_duplicated_id['status']) {
+          $form_state->setErrorByName('csv', $this->t('CSV contains duplicated ID : ' . $check_duplicated_id['value']));
+        }
       }
     }
 
-    parent::validateForm($form, $form_state); // TODO: Change the autogenerated stub
+    parent::validateForm($form, $form_state);
   }
 
   /**
@@ -213,7 +240,9 @@ class Import extends ConfirmFormBase {
       ->setRouteParameters(['migration' => $id]);
 
     $form_state->setRedirectUrl($url);
+    //todo remove new files
 
+    $new_file->delete();
   }
 
   private function getMigrationsList() {
@@ -223,8 +252,8 @@ class Import extends ConfirmFormBase {
     foreach ($migration_configs as $migration_config) {
       $config = \Drupal::configFactory()->get($migration_config);
       $source = $config->get('source');
-      if (isset($source) && key_exists('plugin', $source)){
-        if ($source['plugin'] == 'csv'){
+      if (isset($source) && key_exists('plugin', $source)) {
+        if ($source['plugin'] == 'csv') {
           $migrations[$migration_config] = $config->get('label');
         }
       }
@@ -236,14 +265,14 @@ class Import extends ConfirmFormBase {
   function isValidCsvContent($path, $delimiter, $expected_columns) {
     $index = 0;
     $handle = fopen($path, 'r');
-    if ($handle === false) {
-      return false;
+    if ($handle === FALSE) {
+      return FALSE;
     }
 
-    while (($row = fgetcsv($handle, 0, $delimiter)) !== false) {
+    while (($row = fgetcsv($handle, 0, $delimiter)) !== FALSE) {
       // Check if the row has the expected number of columns
       if (count($row) != $expected_columns) {
-        return ['status' => FALSE, 'line' => $index];
+        return ['status' => FALSE, 'line' => $index + 1];
       }
       $index++;
     }
@@ -268,6 +297,12 @@ class Import extends ConfirmFormBase {
     return $source['path'];
   }
 
+  private function getMigrationId($migration_id) {
+    $migration_config = \Drupal::configFactory()->get($migration_id);
+    $source = $migration_config->get('source');
+    return $source['ids'];
+  }
+
   private function appendCSV($source, $destination) {
     $sourceHandle = fopen($source, 'r');
     $destinationHandle = fopen($destination, 'a');
@@ -290,24 +325,27 @@ class Import extends ConfirmFormBase {
 
   private function isColumnDuplicated($file_path, $delimiter, $column_name) {
     $handle = fopen($file_path, 'r');
-    if ($handle === false) {
-      return false;
+    if ($handle === FALSE) {
+      return FALSE;
     }
 
     $header = fgetcsv($handle, 0, $delimiter);
     $column_index = array_search($column_name, $header);
-    if ($column_index === false) {
+    if ($column_index === FALSE) {
       fclose($handle);
-      return false; // Column name not found
+      return FALSE; // Column name not found
     }
 
-    $values = array();
-    while (($row = fgetcsv($handle, 0, $delimiter)) !== false) {
+    $values = [];
+    while (($row = fgetcsv($handle, 0, $delimiter)) !== FALSE) {
       if (isset($row[$column_index])) {
         $value = $row[$column_index];
         if (in_array($value, $values)) {
           fclose($handle);
-          return ['status' => FALSE, 'value' => $value]; // Column value is duplicated
+          return [
+            'status' => FALSE,
+            'value'  => $value,
+          ]; // Column value is duplicated
         }
         $values[] = $value;
       }
