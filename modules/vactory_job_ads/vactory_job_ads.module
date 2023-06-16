@@ -253,7 +253,7 @@ function vactory_job_ads_json_api_collection_alter(&$filters, &$context) {
     }
 
     /* Contract Taxonomy */
-    if (isset($query["contract"]) && $query["contract"] !== "all") {
+    if (isset($query["contract"]) && $query["contract"] !== "all" && !empty($query["contract"])) {
       $thematiques = explode("+", $query["contract"]);
       $terms = \Drupal::entityQuery('taxonomy_term')
         ->condition('vid', 'vactory_job_ads_contract')
@@ -269,7 +269,7 @@ function vactory_job_ads_json_api_collection_alter(&$filters, &$context) {
     }
 
     /* City Taxonomy */
-    if (isset($query["city"]) && $query["city"] !== "all") {
+    if (isset($query["city"]) && $query["city"] !== "all" && !empty($query["city"])) {
       $city = $query["city"];
       $cities = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties([
         'vid' => 'vactory_job_ads_city',
@@ -291,7 +291,7 @@ function vactory_job_ads_json_api_collection_alter(&$filters, &$context) {
     }
 
     /* Profession Taxonomy */
-    if (isset($query["profession"]) && $query["profession"] !== "all") {
+    if (isset($query["profession"]) && $query["profession"] !== "all" && !empty($query["profession"])) {
       $profession = $query["profession"];
       $professions = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties([
         'vid' => 'vactory_job_ads_profession',

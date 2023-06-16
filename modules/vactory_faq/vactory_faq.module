@@ -74,7 +74,7 @@ function vactory_faq_json_api_collection_alter(&$filters, &$context) {
       $filters["page[offset]"] = intval($query["page"]) > 0 ? (intval($query["page"]) - 1) * $filters["page[limit]"] : 0;
     }
 
-    if (isset($query["term"]) && $query["term"] !== "all") {
+    if (isset($query["term"]) && $query["term"] !== "all" && !empty($query["term"])) {
       $term = $query["term"];
       $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties([
         'vid' => 'faq_section',
