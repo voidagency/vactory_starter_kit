@@ -10,8 +10,13 @@ editor: ckeditor5
 settings:
   toolbar:
     items:
+      - undo
+      - redo
+      - '|'
       - bold
       - italic
+      - underline
+      - strikethrough
       - '|'
       - link
       - '|'
@@ -23,7 +28,7 @@ settings:
       - '|'
       - heading
       - '|'
-      - code
+      - sourceEditing
   plugins:
     ckeditor5_heading:
       enabled_headings:
@@ -32,6 +37,22 @@ settings:
         - heading4
         - heading5
         - heading6
+    ckeditor5_sourceEditing:
+      allowed_tags:
+        - '<cite>'
+        - '<dl>'
+        - '<dt>'
+        - '<dd>'
+        - '<span>'
+        - '<h2 id>'
+        - '<h3 id>'
+        - '<h4 id>'
+        - '<h5 id>'
+        - '<h6 id>'
+        - '<blockquote cite>'
+        - '<ul type>'
+        - '<ol type>'
+        - '<a data-entity-type data-entity-uuid title target id rel data-entity-substitution>'
     ckeditor5_list:
       reversed: false
       startIndex: true
