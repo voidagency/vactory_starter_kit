@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "af6ed797e9a93650889a6e06a34f1b70",
+    "content-hash": "68216a85c6232b7e99cd3b3883135d63",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -7477,30 +7477,36 @@
         },
         {
             "name": "drupal/path_redirect_import",
-            "version": "1.0.0-beta5",
+            "version": "2.0.7",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/path_redirect_import.git",
-                "reference": "8.x-1.0-beta5"
+                "reference": "2.0.7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/path_redirect_import-8.x-1.0-beta5.zip",
-                "reference": "8.x-1.0-beta5",
-                "shasum": "84bf22f684e0d001a5038960589939434a93994a"
+                "url": "https://ftp.drupal.org/files/projects/path_redirect_import-2.0.7.zip",
+                "reference": "2.0.7",
+                "shasum": "20c746f7dcccf1377e89741b20cd1ae22c64ddaf"
             },
             "require": {
-                "drupal/core": "^8 || ^9",
-                "drupal/redirect": "*"
+                "drupal/core": ">=9.1",
+                "drupal/migrate_source_csv": "^3.5",
+                "drupal/migrate_tools": "^5.0 || ^6.0",
+                "drupal/redirect": "*",
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "drupal/migrate_plus": ">=5.0"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-1.0-beta5",
-                    "datestamp": "1635359017",
+                    "version": "2.0.7",
+                    "datestamp": "1686322209",
                     "security-coverage": {
-                        "status": "not-covered",
-                        "message": "Beta releases are not covered by Drupal security advisories."
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
                     }
                 }
             },
@@ -7510,8 +7516,9 @@
             ],
             "authors": [
                 {
-                    "name": "gabrielu",
-                    "homepage": "https://www.drupal.org/user/279352"
+                    "name": "Pablo López",
+                    "homepage": "https://www.drupal.org/u/plopesc",
+                    "role": "Maintainer"
                 },
                 {
                     "name": "paulocs",
@@ -7522,10 +7529,11 @@
                     "homepage": "https://www.drupal.org/user/282415"
                 }
             ],
-            "description": "Provides the ability to import redirects for the Redirect module",
+            "description": "Migrate Drupal redirects from CSV.",
             "homepage": "https://www.drupal.org/project/path_redirect_import",
             "support": {
-                "source": "https://git.drupalcode.org/project/path_redirect_import"
+                "source": "https://cgit.drupalcode.org/path_redirect_import",
+                "issues": "https://www.drupal.org/project/issues/path_redirect_import"
             }
         },
         {
@@ -12788,37 +12796,34 @@
         },
         {
             "name": "league/csv",
-            "version": "9.9.0",
+            "version": "9.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/csv.git",
-                "reference": "b4418ede47fbd88facc34e40a16c8ce9153b961b"
+                "reference": "9d2e0265c5d90f5dd601bc65ff717e05cec19b47"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/csv/zipball/b4418ede47fbd88facc34e40a16c8ce9153b961b",
-                "reference": "b4418ede47fbd88facc34e40a16c8ce9153b961b",
+                "url": "https://api.github.com/repos/thephpleague/csv/zipball/9d2e0265c5d90f5dd601bc65ff717e05cec19b47",
+                "reference": "9d2e0265c5d90f5dd601bc65ff717e05cec19b47",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "ext-mbstring": "*",
-                "php": "^8.1.2"
+                "php": "^7.4 || ^8.0"
             },
             "require-dev": {
-                "doctrine/collections": "^2.1.2",
+                "ext-curl": "*",
                 "ext-dom": "*",
-                "ext-xdebug": "*",
-                "friendsofphp/php-cs-fixer": "^v3.14.3",
-                "phpbench/phpbench": "^1.2.8",
-                "phpstan/phpstan": "^1.10.4",
-                "phpstan/phpstan-deprecation-rules": "^1.1.2",
-                "phpstan/phpstan-phpunit": "^1.3.10",
-                "phpstan/phpstan-strict-rules": "^1.5.0",
-                "phpunit/phpunit": "^10.0.14"
+                "friendsofphp/php-cs-fixer": "^v3.4.0",
+                "phpstan/phpstan": "^1.3.0",
+                "phpstan/phpstan-phpunit": "^1.0.0",
+                "phpstan/phpstan-strict-rules": "^1.1.0",
+                "phpunit/phpunit": "^9.5.11"
             },
             "suggest": {
-                "ext-dom": "Required to use the XMLConverter and the HTMLConverter classes",
+                "ext-dom": "Required to use the XMLConverter and or the HTMLConverter classes",
                 "ext-iconv": "Needed to ease transcoding CSV using iconv stream filters"
             },
             "type": "library",
@@ -12871,7 +12876,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-03-11T15:57:12+00:00"
+            "time": "2022-01-04T00:13:07+00:00"
         },
         {
             "name": "league/event",
@@ -19641,7 +19646,6 @@
         "drupal/taxonomy_import": 15,
         "drupal/viewsreference": 10,
         "drupal/security_review": 20,
-        "drupal/path_redirect_import": 10,
         "drupal/linkit": 5,
         "drupal/password_policy": 10,
         "drupal/styleguide": 10,
@@ -19664,5 +19668,5 @@
         "php": ">=7.3"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.1.0"
+    "plugin-api-version": "2.3.0"
 }
