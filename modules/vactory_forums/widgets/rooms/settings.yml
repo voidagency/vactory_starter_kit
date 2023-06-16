@@ -3,12 +3,28 @@ multiple: TRUE
 category: 'Forum'
 enabled: TRUE
 fields:
-  section:
-    type: json_api_section_forums
-    label: 'Forum Section'
-    options:
-      '#required': TRUE
-extra_fields:
   forum_cta:
     type: url_extended
     label: 'Lien vers forums'
+  collection:
+    type: json_api_collection
+    label: 'Forum Section'
+    options:
+      '#required': TRUE
+      '#default_value':
+        id: "vactory_forums_section"
+        resource: node--vactory_forum
+        filters:
+          - fields[node--vactory_forum]=drupal_internal__nid,path,title,field_vactory_forum_status,field_vactory_date,field_forum_editeur,field_forum_expert,field_vactory_forums_thematic,field_vactory_media,field_forum_views_count,internal_comment,field_vactory_forum_room
+          - fields[taxonomy_term--vactory_forums_thematic]=tid,name,term_2_slug
+          - fields[user--user]=display_name
+          - fields[media--image]=name,thumbnail
+          - fields[file--image]=filename,uri
+          - filter[status][value]=1
+          - page[offset]=0
+          - page[limit]=5
+          - sort[sort-views-count][path]=field_forum_views_count
+          - sort[sort-views-count][direction]=DESC
+          - include=field_vactory_forums_thematic,field_vactory_media,field_vactory_media.thumbnail,field_forum_editeur,field_forum_expert,field_vactory_forum_room
+        optional_filters:
+          vactory_forum_room: taxonomy_term
