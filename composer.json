@@ -70,10 +70,10 @@
     "drupal/redirect": "^1.6",
     "drupal/path_redirect_import": "^1.0@beta",
     "drupal/migrate_plus": "^5.3",
-    "drupal/migrate_tools": "^5.1",
+    "drupal/migrate_tools": "^6.0",
     "drupal/migrate_source_csv": "^3.1.0",
     "drupal/link_target": "^1.2.0",
-    "drupal/linkit": "^5.0-beta11",
+    "drupal/linkit": "^6.0@RC",
     "drupal/merge_translations": "^1.1",
     "drupal/stage_file_proxy": "^1.0",
     "drupal/wysiwyg_template": "2.3.0",
@@ -159,7 +159,8 @@
     "drupal/cloudinary": "^2.0@alpha",
     "drupal/video_embed_field": "^2.4",
     "drupal/allowed_formats": "^2.0",
-    "drupal/theme_switcher": "^2.0"
+    "drupal/theme_switcher": "^2.0",
+    "drupal/migrate_file": "^2.1"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.3",

@@ -1,0 +1,15 @@
+.migrate-mappings-wrapper, .migrate-mapping-wrapper, .migrate-process-plugins-wrapper {
+    background-color: #f7fcff !important;
+}
+.migrate-mapping-wrapper, .migrate-process-plugin-wrapper {
+    position: relative;
+}
+.migrate-process-plugin-wrapper {
+    background-color: #edfdff !important;
+}
+
+[unique-id="migrate-remove-mapping"], [unique-id="migrate-remove-process-plugin"] {
+    position: absolute !important;
+    top: 1%;
+    right: 1%;
+}

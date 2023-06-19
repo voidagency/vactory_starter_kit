@@ -40,6 +40,10 @@ function _get_vactory_decoupled_router_default_pages() {
       'path' => '/account/forget-password',
       'title' => 'Forget Password',
     ],
+    'account_verify' => [
+      'path' => '/account/verify',
+      'title' => 'Account Verify',
+    ],
   ];
 }
 

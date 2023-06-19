@@ -72,11 +72,11 @@ vactory_decoupled.import_translation:
   requirements:
     _permission: 'translate interface'
 
-vactory_decoupled.secure_routes:
-  path: 'admin/config/system/secure-routes'
+vactory_decoupled.settings:
+  path: 'admin/config/system/decoupled-settings'
   defaults:
-    _form: 'Drupal\vactory_decoupled\Form\SecureRoutesForm'
-    _title: 'Secure Routes'
+    _form: 'Drupal\vactory_decoupled\Form\DecoupledSettingsForm'
+    _title: 'Vactory Decoupled Settings'
   requirements:
     _permission: 'administer site configuration'
 
@@ -171,3 +171,12 @@ vactory_decoupled.check_shield:
     _title: 'Check Shield module status'
   requirements:
     _permission: 'access content'
+vactory_decoupled.account_verify:
+  path: '/api/account/verify/{uid}/{timestamp}/{hash}'
+  defaults:
+    _controller: '\Drupal\vactory_decoupled\Controller\registrationController::confirmAccount'
+    _title: 'Confirm account'
+  requirements:
+    _access: 'TRUE'
+  options:
+    no_cache: TRUE
