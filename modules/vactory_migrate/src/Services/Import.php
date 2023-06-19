@@ -14,6 +14,7 @@ class Import {
   public function import($migration_id) {
 
     $batch_config = \Drupal::config('vactory_migrate.settings')->get('batch_size');
+    $delimiter = \Drupal::config('vactory_migrate.settings')->get('delimiter');
     $batch_size = isset($batch_config) ? $batch_config : 1000 ;
 
     //Get migration source path
@@ -22,8 +23,8 @@ class Import {
     $source = $migration->getSourceConfiguration();
     $main_path = $source['path'];
     //split main file into batched files and return new paths
-    $batched_files_dir = 'private://' . $migration_id;
-    $batched_files = $this->splitCsvFile($main_path, $batched_files_dir, $batch_size);
+    $batched_files_dir = 'private://migrate-csv/' . $migration_id;
+    $batched_files = $this->splitCsvFile($main_path, $batched_files_dir, $batch_size, $delimiter);
     //create batch with those files
     $operations = [];
     $num_operations = 0;
@@ -71,10 +72,10 @@ class Import {
   }
 
 
-  private function splitCsvFile($filePath, $outputDir, $linesPerFile) {
+  private function splitCsvFile($filePath, $outputDir, $linesPerFile, $delimiter) {
 
     $sourceFile = fopen($filePath, 'r');
-    $header = fgetcsv($sourceFile);
+    $header = fgetcsv($sourceFile, NULL, $delimiter);
 
     $fileNumber = 1;
     $lineCount = 0;
@@ -85,19 +86,18 @@ class Import {
       mkdir($outputDir, 0777);
     }
 
-    while (($data = fgetcsv($sourceFile)) !== FALSE) {
+    while (($data = fgetcsv($sourceFile, NULL, $delimiter)) !== FALSE) {
       if ($lineCount % $linesPerFile === 0) {
         if (isset($outputFile)) {
           fclose($outputFile);
         }
         $outputFilePath = $outputDir . '/output_' . $fileNumber . '.csv';
         $outputFile = fopen($outputFilePath, 'w');
-        fputcsv($outputFile, $header);
+        fputcsv($outputFile, $header, $delimiter);
         $outputFiles[] = $outputFilePath;
         $fileNumber++;
       }
-
-      fputcsv($outputFile, $data);
+      fputcsv($outputFile, $data, $delimiter);
       $lineCount++;
     }
 
@@ -112,7 +112,8 @@ class Import {
   private function deleteDirectoryByUri($dirUri) {
     $fileSystem = \Drupal::service('file_system');
     $dirPath = $fileSystem->realpath($dirUri);
-    if ($dirPath && is_dir($dirPath)) {
+    $output_dir = str_replace('private://', '', $dirUri);
+    if ($dirPath && is_dir($dirPath) && $dirPath !== DRUPAL_ROOT && str_ends_with($dirPath, $output_dir)) {
       $fileSystem->deleteRecursive($dirPath);
     }
   }

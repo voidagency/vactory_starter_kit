@@ -67,7 +67,6 @@ class Import extends ConfirmFormBase {
    *   The form structure.
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-
     if ($this->step === 2) {
       return parent::buildForm($form, $form_state);
     }
@@ -146,6 +145,7 @@ class Import extends ConfirmFormBase {
     if ($triggeringElement['#name'] == 'csv_remove_button') {
       return;
     }
+    $delimiter = \Drupal::config('vactory_migrate.settings')->get('delimiter');
     //Check if header is correct
     $migration_id = $form_state->getValue('migration');
     $csv = $form_state->getValue('csv');
@@ -153,8 +153,9 @@ class Import extends ConfirmFormBase {
     $this->csv = $csv;
     // Validation de header
     if (isset($csv)) {
-      $original_path = $this->getMigrationSource($migration_id);
-      $header = $this->getCSVHeader($original_path);
+      $source = $this->getMigrationSource($migration_id);
+      $original_path = $source['path'];
+      $header = $this->getCSVHeader($original_path, $source['delimiter']);
       $fid = (int) reset($csv);
       $file = File::load($fid);
       $file_path = NULL;
@@ -163,14 +164,13 @@ class Import extends ConfirmFormBase {
           ->realpath($file->getFileUri());
       }
       if (!empty($header)) {
-        $new_header = $this->getCSVHeader($file_path);
+        $new_header = $this->getCSVHeader($file_path, $delimiter);
         $compare_headers = array_diff($header, $new_header);
         if (!empty($compare_headers)) {
           $form_state->setErrorByName('csv', $this->t('The CSV file has an incorrect header.'));
         }
       }
 
-      $delimiter = \Drupal::config('vactory_migrate.settings')->get('delimiter');
       $check_content = $this->isValidCsvContent($file_path, $delimiter, count($header));
       if (!$check_content['status']) {
         $form_state->setErrorByName('csv', $this->t('Invalid CSV content format at line ' . $check_content['line']));
@@ -199,7 +199,7 @@ class Import extends ConfirmFormBase {
    *   The current state of the form.
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-
+    $delimiter = \Drupal::config('vactory_migrate.settings')->get('delimiter');
     if ($this->step === 1) {
       $type = $form_state->getValue('type');
       $migration_id = $form_state->getValue('migration');
@@ -221,11 +221,12 @@ class Import extends ConfirmFormBase {
     $new_file = File::load($fid);
     $new_file_path = \Drupal::service('file_system')
       ->realpath($new_file->getFileUri());
-    $original_file_path = $this->getMigrationSource($migration_id);
+    $source = $this->getMigrationSource($migration_id);
+    $original_file_path = $source['path'];
 
     //prepare new file
     if ($type == 'diff') {
-      $this->appendCSV($new_file_path, $original_file_path);
+      $this->appendCSV($new_file_path, $original_file_path, $delimiter);
     }
     if ($type == 'full') {
       $this->replaceCSV($new_file_path, $original_file_path);
@@ -282,11 +283,11 @@ class Import extends ConfirmFormBase {
   }
 
 
-  private function getCSVHeader($path) {
-    $csv = Reader::createFromPath($path, 'r');
+  private function getCSVHeader($path, $delimiter) {
+    $csv = fopen($path, 'r');
     if ($csv) {
-      $csv->setHeaderOffset(0);
-      return $csv->getHeader();
+      $header = fgetcsv($csv, NULL, $delimiter);
+      return $header;
     }
     return [];
   }
@@ -294,7 +295,7 @@ class Import extends ConfirmFormBase {
   private function getMigrationSource($migration_id) {
     $migration_config = \Drupal::configFactory()->get($migration_id);
     $source = $migration_config->get('source');
-    return $source['path'];
+    return $source;
   }
 
   private function getMigrationId($migration_id) {
@@ -303,14 +304,14 @@ class Import extends ConfirmFormBase {
     return $source['ids'];
   }
 
-  private function appendCSV($source, $destination) {
+  private function appendCSV($source, $destination, $delimiter) {
     $sourceHandle = fopen($source, 'r');
     $destinationHandle = fopen($destination, 'a');
-    $header = fgetcsv($sourceHandle);
+    $header = fgetcsv($sourceHandle, NULL, $delimiter);
     fseek($destinationHandle, 0, SEEK_END);
     fwrite($destinationHandle, PHP_EOL);
-    while (($data = fgetcsv($sourceHandle)) !== FALSE) {
-      fputcsv($destinationHandle, $data);
+    while (($data = fgetcsv($sourceHandle, NULL, $delimiter)) !== FALSE) {
+      fputcsv($destinationHandle, $data, $delimiter);
     }
     fclose($sourceHandle);
     fclose($destinationHandle);
