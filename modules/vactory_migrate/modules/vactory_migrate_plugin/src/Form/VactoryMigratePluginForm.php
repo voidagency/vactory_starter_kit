@@ -202,13 +202,19 @@ class VactoryMigratePluginForm extends FormBase {
     }
 
     $fid = $source['csv_file'] ?? NULL;
-    if ($fid) {
+    if (!$fid) {
+      $state['csv_uri'] = '';
+      $state['csv_fid'] = $fid;
+      $state['csv_header'] = [];
+    }
+    if ($fid && (!isset($state['csv_fid']) || $fid !== $state['csv_fid'])) {
       $file = File::load(reset($fid));
       if ($file) {
         $file->setPermanent();
         $file->save();
         $uri = $file->getFileUri();
         $state['csv_uri'] = $uri;
+        $state['csv_fid'] = $fid;
         $delimiter = !empty($source['delimiter']) ? $source['delimiter'] : ';';
         $state['csv_header'] = $this->getCsvHeader($uri, $delimiter);
       }
@@ -789,6 +795,7 @@ class VactoryMigratePluginForm extends FormBase {
     $migration_config = \Drupal::configFactory()->getEditable("migrate_plus.migration.{$values['id']}");
     $migration_config->setData($data);
     $migration_config->save();
+    drupal_flush_all_caches();
     $operation = $this->isEditMigrationPlugin() ? 'updated' : 'created';
     \Drupal::messenger()->addStatus($this->t('Migration plugin has been @operation successfully', ['@operation' => $operation]));
   }
