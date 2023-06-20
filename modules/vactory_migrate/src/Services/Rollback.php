@@ -43,6 +43,10 @@ class Rollback {
 
     $tableInfo = $this->entityInfo->getRelatedTablesByEntityAndBundle($entity_type_id, $bundle);
 
+    if (!$this->database->schema()->tableExists($mapping_table)){
+      return;
+    }
+
     // Add index to increase performance.
     $index_name = 'destination';
     if (!$this->database->schema()->indexExists($mapping_table, $index_name)) {

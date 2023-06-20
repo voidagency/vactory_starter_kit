@@ -155,7 +155,7 @@ class Import extends ConfirmFormBase {
     if (isset($csv)) {
       $source = $this->getMigrationSource($migration_id);
       $original_path = $source['path'];
-      $header = $this->getCSVHeader($original_path, $source['delimiter']);
+      $header = $this->getCSVHeader($original_path, $delimiter);
       $fid = (int) reset($csv);
       $file = File::load($fid);
       $file_path = NULL;
@@ -223,6 +223,10 @@ class Import extends ConfirmFormBase {
       ->realpath($new_file->getFileUri());
     $source = $this->getMigrationSource($migration_id);
     $original_file_path = $source['path'];
+    if (str_starts_with($original_file_path, 'private://') || str_starts_with($original_file_path, 'temporary://') || str_starts_with($original_file_path, 'public://')){
+      $original_file_path = \Drupal::service('file_system')
+        ->realpath($original_file_path);
+    }
 
     //prepare new file
     if ($type == 'diff') {
