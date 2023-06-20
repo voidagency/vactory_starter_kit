@@ -1,0 +1,27 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Vactory UX Notes module.
+ *
+ * @DCG
+ * This file is no longer required in Drupal 8.
+ * @see https://www.drupal.org/node/2217931
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_ux_notes_theme($existing, $type, $theme, $path) {
+  return [
+    'vactory_ux_stats' => [
+      'template' => 'vactory-ux-stats',
+      'variables' => [
+        'submission_data' => [],
+        'somme' => 0,
+        'moyenne' => 0,
+        'note_percentages' => [],
+      ],
+    ],
+  ];
+}

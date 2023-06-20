@@ -1,0 +1,23 @@
+vactory_decoupled_revalidator.revalidator_entity_type.*:
+  type: config_entity
+  label: Revalidator entity type
+  mapping:
+    id:
+      type: string
+      label: ID
+    revalidator:
+      type: string
+      label: "Revalidator"
+    revalidator_configuration:
+      type: vactory_decoupled_revalidator.revalidator.configuration.[%parent.revalidator]
+
+vactory_decoupled_revalidator.revalidator.configuration.*:
+  type: mapping
+  label: 'Revalidator configuration'
+
+vactory_decoupled_revalidator.revalidator.configuration.path:
+  type: mapping
+  mapping:
+    additional_paths:
+      type: string
+      label: "Additional paths"

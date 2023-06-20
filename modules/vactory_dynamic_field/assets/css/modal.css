@@ -21,7 +21,7 @@
   flex-wrap: wrap;
 }
 .select-template-radio {
-  display: none;
+  display: none !important;
 }
 .select-template-radio:checked + label .select-template-item {
   border: 3px solid #058ff2;

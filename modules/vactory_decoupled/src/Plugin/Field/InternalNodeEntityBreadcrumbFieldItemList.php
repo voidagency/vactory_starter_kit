@@ -204,6 +204,7 @@ class InternalNodeEntityBreadcrumbFieldItemList extends FieldItemList {
         // $found_routes = $this->routeProvider->getRoutesByPattern($path);
         // $route_iterator = $found_routes->getIterator();
         if (isset($path) && !empty($path)) {
+          $matches = [];
           preg_match_all('!\d+!', $path, $matches);
           $nid = (int) $matches[0][0];
           $node = $entity_storage->load($nid);

@@ -1,0 +1,29 @@
+name: "Formulaire d'inscription"
+multiple: FALSE
+category: 'Espace privé'
+enabled: TRUE
+fields:
+  id:
+    type: hidden
+    options:
+      '#value': 'vactory_decoupled_singup'
+      '#required': TRUE
+  webform:
+    type: webform_decoupled
+    label: 'Formulaire'
+    options:
+      '#required': TRUE
+      '#default_value':
+        webform_id: 'vactory_espace_prive_register'
+extra_fields:
+  title:
+    type: text
+    label: "Titre"
+  intro:
+    type: text_format
+    label: 'Introduction'
+    options:
+      '#format': 'full_html'
+  link:
+    type: url_extended
+    label: 'Lien'

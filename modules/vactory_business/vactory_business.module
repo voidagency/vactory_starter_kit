@@ -5,6 +5,7 @@
  * Module related hooks.
  */
 
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Form\FormStateInterface;
@@ -13,6 +14,7 @@ use Drupal\file\FileInterface;
 use Drupal\media\Entity\Media;
 use Drupal\media\MediaInterface;
 use Drupal\node\Entity\Node;
+use Drupal\node\Entity\NodeType;
 use Drupal\node\NodeInterface;
 use Drupal\node\NodeTypeInterface;
 
@@ -220,6 +222,10 @@ function vactory_business_decoupled_webform_data_presubmit_alter(array &$webform
           $has_access = FALSE;
         }
       }
+
+      $node_type = NodeType::load('vactory_business');
+      $form_nid = $node_type->getThirdPartySetting('vactory_business', 'form_page', '');
+      Cache::invalidateTags(["node:{$form_nid}"]);
     }
 
     if (!$has_access) {

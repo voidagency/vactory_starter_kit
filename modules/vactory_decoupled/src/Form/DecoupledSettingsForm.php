@@ -5,13 +5,14 @@ namespace Drupal\vactory_decoupled\Form;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use \Drupal\locale\SourceString;
+use Drupal\node\Entity\NodeType;
 
 /**
  * Add protected routes.
  *
  * @package Drupal\vactory_decoupled\Form
  */
-class SecureRoutesForm extends ConfigFormBase
+class DecoupledSettingsForm extends ConfigFormBase
 {
 
   /**
@@ -47,26 +48,54 @@ class SecureRoutesForm extends ConfigFormBase
   public function buildForm(array $form, FormStateInterface $form_state)
   {
     $config = $this->config('vactory_decoupled.settings');
+    $form = parent::buildForm($form, $form_state);
 
-    $form['routes'] = [
+    $form['settings_tab'] = [
+      '#type' => 'vertical_tabs',
+    ];
+
+    $form['secure_routes'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Secure routes'),
+      '#group' => 'settings_tab',
+    ];
+
+    $form['cache_exclude'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Frontend cache excludes'),
+      '#group' => 'settings_tab',
+    ];
+
+    $form['secure_routes']['routes'] = [
       '#type' => 'textarea',
       '#title' => t('Routes'),
       '#default_value' => $config->get('routes'),
       '#description' => t("Enter one value per line. <b>E.g</b>: /en/api/user/register"),
     ];
 
-    return parent::buildForm($form, $form_state);
+    $node_types = NodeType::loadMultiple();
+    $node_types = array_map(fn($node_type) => $node_type->label(), $node_types);
+    $form['cache_exclude']['cache_excluded_types'] = [
+      '#type' => 'checkboxes',
+      '#title' => $this->t('Excluded content type'),
+      '#options' => $node_types,
+      '#default_value' => $config->get('cache_excluded_types') ?? [],
+      '#description' => $this->t("Nodes of selected content types will be excluded from frontend caching"),
+    ];
+
+    return $form;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, FormStateInterface $form_state)
-  {
+  public function submitForm(array &$form, FormStateInterface $form_state) {
     $this->config('vactory_decoupled.settings')
       ->set('routes', $form_state->getValue('routes'))
+      ->set('cache_excluded_types', array_filter($form_state->getValue('cache_excluded_types')))
       ->save();
 
     parent::submitForm($form, $form_state);
   }
+
 }
