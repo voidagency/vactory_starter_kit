@@ -24,6 +24,7 @@ use Drupal\migrate\Row;
  *    entity: taxonomy_term
  *    bundle: type_pub
  *    mapping_field: legacy_id
+ *    bundle_key: vid
  *    source: id
  *
  * @endcode
@@ -43,11 +44,12 @@ class TranslationLegacyId extends ProcessPluginBase {
     $entity = $this->configuration['entity'];
     $bundle = $this->configuration['bundle'];
     $mapping_field = $this->configuration['mapping_field'];
+    $bundle_key = $this->configuration['bundle_key'];
 
 
-    if (isset($id) && isset($entity) && isset($bundle) && isset($mapping_field)) {
+    if (isset($id) && isset($entity) && isset($bundle) && isset($mapping_field) && isset($bundle_key)) {
       $query = \Drupal::entityTypeManager()->getStorage($entity)->getQuery();
-      $query->condition('vid', $bundle);
+      $query->condition($bundle_key, $bundle);
       $query->condition($mapping_field, $id);
 
       $ids = $query->execute();
