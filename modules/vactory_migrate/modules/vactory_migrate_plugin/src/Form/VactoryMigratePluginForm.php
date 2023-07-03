@@ -9,6 +9,7 @@ use Drupal\Core\Url;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\file\Entity\File;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\File\FileSystem;
 
 /**
  * Configure Vactory Migrate Plugin settings for this site.
@@ -51,6 +52,11 @@ class VactoryMigratePluginForm extends FormBase {
   protected $entityTypeBundleInfo;
 
   /**
+   * @var \Drupal\Core\File\FileSystem
+   */
+  protected $fileSystemService;
+
+  /**
    * {@inheritDoc}
    */
   public static function create(ContainerInterface $container) {
@@ -60,6 +66,7 @@ class VactoryMigratePluginForm extends FormBase {
     $instance->entityTypeBundleInfo = $container->get('entity_type.bundle.info');
     $instance->entityFieldManager = $container->get('entity_field.manager');
     $instance->migrateProcessPluginManager = $container->get('plugin.manager.migrate.process');
+    $instance->fileSystemService = $container->get('file_system');
 
     return $instance;
   }
@@ -240,6 +247,9 @@ class VactoryMigratePluginForm extends FormBase {
     if (!empty($uri)) {
       $file = $this->entityTypeManager->getStorage('file')
         ->loadByProperties(['uri' => $uri]);
+      if (empty($file)){
+        $file = $this->createFile($uri);
+      }
       if (!empty($file)) {
         $file = reset($file);
         $fid = $file->id();
@@ -274,6 +284,9 @@ class VactoryMigratePluginForm extends FormBase {
         continue;
       }
       $plugins = [];
+      if (!array_is_list($process_plugin)){
+        $process_plugin = [$process_plugin];
+      }
       foreach ($process_plugin as $plugin_config) {
         $plugin = $plugin_config['plugin'];
         unset($plugin_config['plugin']);
@@ -861,6 +874,28 @@ class VactoryMigratePluginForm extends FormBase {
       'paragraphs_field_settings',
       'paragraphs_field_instance_settings',
     ];
+  }
+
+  private function createFile($path){
+    if (!file_exists($path)){
+      return;
+    }
+    $destination = 'private://migration-edit';
+
+    if (!file_exists($destination)) {
+      mkdir($destination, 0777);
+    }
+
+    $copied_file = $this->fileSystemService->copy($path, $destination, FileSystem::EXISTS_RENAME);
+    $filename = explode('/',$path);
+    $file = File::create([
+      'uid'      => 1,
+      'filename' => end($filename),
+      'uri'      => $copied_file,
+      'status'   => 1,
+    ]);
+    $file->save();
+    return [$file];
   }
 
 }
