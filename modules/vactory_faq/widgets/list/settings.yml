@@ -9,6 +9,7 @@ fields:
     options:
       '#required': TRUE
       '#default_value':
+        id: "vactory_faq_list"
         resource: node--vactory_faq
         filters:
           - fields[node--vactory_faq]=drupal_internal__nid,path,title,body,field_faq,field_vactory_taxonomy_1
