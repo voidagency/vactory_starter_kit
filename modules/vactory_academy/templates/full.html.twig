@@ -142,11 +142,13 @@
             <div class="academy-video text-center">
               {#% <h3>{{ 'Contenu du cours'|t }}</h3>#}
               <div class="mb-3">
-                {% for key, item in content.field_vactory_youtube_media if key|first != '#' %}
-                  {% set video = item is defined ? item['#media'].field_media_oembed_video.0.value : null %}
-                  <a data-fancybox href="{{ video }}" class='play-videos'>
-                    {{content.field_vactory_media}}
-                  </a>
+                {% for key, item in content.field_vactory_youtube_media %}
+                  {% if key|first != '#' %}
+                    {% set video = item is defined ? item['#media'].field_media_oembed_video.0.value : null %}
+                    <a data-fancybox href="{{ video }}" class='play-videos'>
+                      {{content.field_vactory_media}}
+                    </a>
+                  {% endif %}
                 {% endfor %}
               </div>
 
