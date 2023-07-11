@@ -51,6 +51,7 @@ class TranslationLegacyId extends ProcessPluginBase {
       $query = \Drupal::entityTypeManager()->getStorage($entity)->getQuery();
       $query->condition($bundle_key, $bundle);
       $query->condition($mapping_field, $id);
+      $query->accessCheck(FALSE);
 
       $ids = $query->execute();
 

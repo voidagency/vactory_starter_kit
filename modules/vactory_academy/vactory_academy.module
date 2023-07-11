@@ -266,6 +266,7 @@ function is_instructor_profile() {
 function get_academy_instructor_statistics(User $user) {
   $nids = \Drupal::entityQuery('node')
     ->condition('type', 'vactory_academy')
+    ->accessCheck(FALSE)
     ->execute();
 
   if (!empty($nids)) {

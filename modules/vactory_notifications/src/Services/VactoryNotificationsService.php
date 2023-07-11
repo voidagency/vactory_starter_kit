@@ -147,6 +147,7 @@ class VactoryNotificationsService {
         $uids = \Drupal::entityQuery('user')
           ->condition('status', 1)
           ->condition('roles', $role->id())
+          ->accessCheck(FALSE)
           ->execute();
         if (!empty($uids)) {
           $users_ids = array_merge($users_ids, $uids);
