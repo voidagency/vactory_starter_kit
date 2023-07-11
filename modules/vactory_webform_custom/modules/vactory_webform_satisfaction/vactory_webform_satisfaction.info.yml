@@ -1,8 +1,7 @@
 name: Vactory Webform Client Satisfaction
 description: A custom module which provide a webform to collect users satisfactions.
 type: module
-core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^9 || ^10
 dependencies:
   - webform
   - vactory_webform_custom

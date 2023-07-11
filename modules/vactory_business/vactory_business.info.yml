@@ -1,7 +1,7 @@
 name: 'Fiche Business'
 description: 'Provides Fiche Business content type and related configuration. Utiliser ce type de contenu pour créer des fiches business'
 type: module
-core_version_requirement: '^8.9 || ^9'
+core_version_requirement: ^9 || ^10
 dependencies:
   - 'address:address'
   - 'allowed_formats:allowed_formats'

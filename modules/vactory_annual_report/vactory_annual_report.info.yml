@@ -1,7 +1,6 @@
 name: 'Annual report'
 type: module
-core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^9 || ^10
 version: 8.x-1.0
 package: Vactory
 dependencies:

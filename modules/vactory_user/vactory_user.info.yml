@@ -2,8 +2,7 @@ name: 'User'
 type: module
 description: 'Handle user forms & profiles.'
 package: Vactory Core
-core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^9 || ^10
 dependencies:
   - content_translation
   - field

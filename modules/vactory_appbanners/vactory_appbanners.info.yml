@@ -1,7 +1,6 @@
 name: 'App Banners'
 description: 'Provides support for Apple Smart App Banners and Android native app install banners.'
 type: module
-core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^9 || ^10
 package: Vactory
 configure: vactory_appbanners.admin_settings

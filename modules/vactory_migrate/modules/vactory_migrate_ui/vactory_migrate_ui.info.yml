@@ -1,8 +1,7 @@
 name: Vactory Migrate UI
 type: module
 description: Vactory Migrate UI est un module qui vous permetrra de modifier vos migrations ainsi que d'exporter les resultats des vues.
-core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^9 || ^10
 configure: vactory_migrate_ui.export_data
 package: Vactory
 dependencies:
