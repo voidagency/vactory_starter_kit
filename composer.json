@@ -24,16 +24,16 @@
     "drupal/block_field": "^1.0.0-rc1",
     "drupal/captcha": "^1.1",
     "drupal/coffee": "1.x-dev@dev",
-    "drupal/components": "^2.0",
-    "drupal/config_update": "1.7",
-    "drupal/ctools": "~3.9.0",
+    "drupal/components": "^3.0@beta",
+    "drupal/config_update": "^2.0@alpha",
+    "drupal/ctools": "^3.14",
     "drupal/email_registration": "1.1",
     "drupal/entity_reference_revisions": "^1.8",
     "drupal/entityqueue": "^1.2",
     "drupal/eu_cookie_compliance": "^1.14",
     "drupal/features": "^3.11.0",
     "drupal/file_entity": "^2.0-beta8",
-    "drupal/focal_point": "^1.5",
+    "drupal/focal_point": "^2.0",
     "drupal/improved_multi_select": "^1.7",
     "drupal/inline_entity_form": "^1.0.0-rc2",
     "drupal/colorapi": "^1.1",
@@ -99,7 +99,7 @@
     "drupal/dropzonejs": "^2.3",
     "drupal/tinypng": "^1.0@RC",
     "drupal/field_group": "^3.1",
-    "drupal/csv_serialization": "^2.0",
+    "drupal/csv_serialization": "^3.0",
     "drupal/votingapi": "^3.0@beta",
     "drupal/amp": "^3.6",
     "drupal/crop": "^2.1",
@@ -226,7 +226,8 @@
         "Domain no context : resolve null given.": "https://www.drupal.org/files/issues/2021-03-05/3201514-domain-no-context-test_7.patch"
       },
       "drupal/easy_install": {
-        "optional details": "https://www.drupal.org/files/issues/2020-07-25/Solution.patch"
+        "optional details": "https://www.drupal.org/files/issues/2020-07-25/Solution.patch",
+        "Drupal 10 compatibility": "https://www.drupal.org/files/issues/2023-04-12/easy_install_d10-3297022-9.patch"
       },
       "drupal/webform": {
         "Invoke alter hook after webform handlers execution": "https://gist.githubusercontent.com/voidagency/6871bd7544b621e2c4221126c5dfec50/raw/7595d19a34e18ab9f719b7f917c02b10a4a40caf/webform-post-handlers-hook.patch"
@@ -257,6 +258,9 @@
       },
       "drupal/yaml_editor": {
         "Drupal 10 compatibility": "https://gist.githubusercontent.com/b-khouy/b249e0a35a2ece62fe741ad330490b8e/raw/efb9a48d26957608b4353bbb2c48e09dd566437a/yaml-editor-D10-compatibility.patch"
+      },
+      "drupal/csv_serialization": {
+        "Drupal 10 compatibility": "https://gist.githubusercontent.com/b-khouy/b249e0a35a2ece62fe741ad330490b8e/raw/33500590ee13751624629833c39b7ba613938ce2/csv-serialization-tmp-patch.patch"
       }
     }
   },
