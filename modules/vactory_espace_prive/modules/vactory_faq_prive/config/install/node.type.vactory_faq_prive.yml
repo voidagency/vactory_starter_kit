@@ -7,14 +7,11 @@ dependencies:
   module:
     - menu_ui
     - vactory_cross_content
-    - wysiwyg_template
 third_party_settings:
   menu_ui:
     available_menus:
       - main
     parent: 'main:'
-  wysiwyg_template:
-    default_template: ''
   vactory_cross_content:
     enabling: 0
     taxonomy_field: none

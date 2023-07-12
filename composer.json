@@ -76,8 +76,6 @@
     "drupal/linkit": "^6.0@RC",
     "drupal/merge_translations": "^1.1",
     "drupal/stage_file_proxy": "^1.0",
-    "drupal/wysiwyg_template": "2.3.0",
-    "drupal/wysiwyg_template_core": "2.3.0",
     "drupal/editor_advanced_link": "^1.8",
     "drupal/media_responsive_thumbnail": "^1.5",
     "drupal/password_policy": "^3.0@beta",

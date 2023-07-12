@@ -142,7 +142,6 @@ install:
   - block_blacklist
   - yoast_seo
   - seckit
-  - wysiwyg_template
   - minifyhtml
   - responsive_favicons
   - amp
