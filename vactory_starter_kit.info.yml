@@ -139,7 +139,7 @@ install:
   - token
   - responsive_preview
   - merge_translations
-  - block_blacklist
+  - block_list_override
   - yoast_seo
   - seckit
   - minifyhtml
