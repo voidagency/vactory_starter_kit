@@ -16,18 +16,18 @@
     "commerceguys/intl": "^0.7.5",
     "lullabot/amp": "^2.0.0",
     "drupal/address": "^1.9",
-    "drupal/addtoany": "^1.16",
-    "drupal/advagg": "^5.0",
+    "drupal/addtoany": "^2.0",
+    "drupal/advagg": "^6.0@alpha",
     "drupal/backup_migrate": "^5.1",
-    "drupal/better_exposed_filters": "^5.0",
-    "drupal/block_class": "^1.3.0",
+    "drupal/better_exposed_filters": "^6.0",
+    "drupal/block_class": "^2.0",
     "drupal/block_field": "^1.0.0-rc1",
     "drupal/captcha": "^1.1",
     "drupal/coffee": "1.x-dev@dev",
     "drupal/components": "^3.0@beta",
     "drupal/config_update": "^2.0@alpha",
     "drupal/ctools": "^3.14",
-    "drupal/email_registration": "1.1",
+    "drupal/email_registration": "^1.2",
     "drupal/entity_reference_revisions": "^1.8",
     "drupal/entityqueue": "^1.2",
     "drupal/eu_cookie_compliance": "^1.14",
@@ -76,7 +76,7 @@
     "drupal/linkit": "^6.0@RC",
     "drupal/merge_translations": "^1.1",
     "drupal/stage_file_proxy": "^2.0",
-    "drupal/editor_advanced_link": "^1.8",
+    "drupal/editor_advanced_link": "^2.2",
     "drupal/media_responsive_thumbnail": "^1.5",
     "drupal/password_policy": "^4.0",
     "drupal/views_bulk_operations": "^4.1",
@@ -211,8 +211,7 @@
         "Swiftmailer fix renderPlan method cli breaks": "https://gist.githubusercontent.com/voidagency/2d6230d4c481d5f80e8e9c8e783a2963/raw/8f7e40b7b90406b96865dde05b57a4ad8d854b68/swiftmailer-prevent-cli-commands-break.patch"
       },
       "drupal/advagg": {
-        "Remove version comments from minified files.": "https://gist.githubusercontent.com/voidagency/136f41faf39bcff92e334f364a173afb/raw/421944a391d8ed071ec648cf3ca8311f912372fe/advagg-remove-version-comment-from-minified-js.patch",
-        "Support PHP 8.1 && remove deprecated class": "https://www.drupal.org/files/issues/2022-08-02/3258389-40.patch"
+        "Remove version comments from minified files.": "https://gist.githubusercontent.com/voidagency/136f41faf39bcff92e334f364a173afb/raw/421944a391d8ed071ec648cf3ca8311f912372fe/advagg-remove-version-comment-from-minified-js.patch"
       },
       "drupal/colorapi": {
         "Enable colorapi field type by default": "https://gist.githubusercontent.com/voidagency/710e846384b56afe6cdfdc59fbc6e8bc/raw/cb8b1c126e87bd57a2c745f2f29e25c0269ec32f/colorapi-enable-colorapi-field-type-by-default.patch"
@@ -231,9 +230,6 @@
       },
       "drupal/webform": {
         "Invoke alter hook after webform handlers execution": "https://gist.githubusercontent.com/voidagency/6871bd7544b621e2c4221126c5dfec50/raw/7595d19a34e18ab9f719b7f917c02b10a4a40caf/webform-post-handlers-hook.patch"
-      },
-      "drupal/email_registration": {
-        "Allow authentication via mail and password over OAuth2 module": "https://www.drupal.org/files/issues/2021-10-06/2991141-19-allow_authentication_via_mail.patch"
       },
       "drupal/simple_oauth": {
         "Auth revoke on profile update": "https://www.drupal.org/files/issues/2019-04-15/simple_oauth-auth-revoke-2946882-34.patch"
