@@ -260,6 +260,9 @@
       },
       "drupal/amptheme": {
         "Drupal 10 compatibility": "https://www.drupal.org/files/issues/2023-07-06/2.patch"
+      },
+      "drupal/shortcode": {
+        "Drupal 10 compatibility": "https://www.drupal.org/files/issues/2023-03-29/shortcode-ckeditor5-3280596-11.patch"
       }
     }
   },
