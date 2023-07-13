@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "dd4fd1c16569faf4ab86e117b85448fc",
+    "content-hash": "c6873ed86ddd339c49cfe21d7e12961b",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -5959,20 +5959,20 @@
         },
         {
             "name": "drupal/jsonapi_user_resources",
-            "version": "1.0.0-alpha4",
+            "version": "1.0.0-beta1",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/jsonapi_user_resources.git",
-                "reference": "8.x-1.0-alpha4"
+                "reference": "8.x-1.0-beta1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/jsonapi_user_resources-8.x-1.0-alpha4.zip",
-                "reference": "8.x-1.0-alpha4",
-                "shasum": "49eaef382c1530526c821a366fc5bf97977d7c27"
+                "url": "https://ftp.drupal.org/files/projects/jsonapi_user_resources-8.x-1.0-beta1.zip",
+                "reference": "8.x-1.0-beta1",
+                "shasum": "2c2d5e3edb729520f5d9fe888ef0c3a88ac26858"
             },
             "require": {
-                "drupal/core": "^8.8 || ^9",
+                "drupal/core": "^9 || ^10",
                 "drupal/jsonapi_resources": "^1.0@beta"
             },
             "require-dev": {
@@ -5981,8 +5981,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-1.0-alpha4",
-                    "datestamp": "1608429198",
+                    "version": "8.x-1.0-beta1",
+                    "datestamp": "1680172486",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Project has not opted into security advisory coverage!"
@@ -6955,20 +6955,21 @@
         },
         {
             "name": "drupal/migrate_plus",
-            "version": "5.3.0",
+            "version": "6.0.1",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/migrate_plus.git",
-                "reference": "8.x-5.3"
+                "reference": "6.0.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/migrate_plus-8.x-5.3.zip",
-                "reference": "8.x-5.3",
-                "shasum": "3cf6dde235d7604ee49be2986812c0ee5e2982f6"
+                "url": "https://ftp.drupal.org/files/projects/migrate_plus-6.0.1.zip",
+                "reference": "6.0.1",
+                "shasum": "154e5c627c8b32648cb4b4034a196a289b0626fa"
             },
             "require": {
-                "drupal/core": "^9.1"
+                "drupal/core": ">=9.1",
+                "php": ">=7.4"
             },
             "require-dev": {
                 "drupal/migrate_example_advanced_setup": "*",
@@ -6981,8 +6982,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-5.3",
-                    "datestamp": "1650658156",
+                    "version": "6.0.1",
+                    "datestamp": "1672428002",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -7141,26 +7142,26 @@
         },
         {
             "name": "drupal/minifyhtml",
-            "version": "1.12.0",
+            "version": "2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/minifyhtml.git",
-                "reference": "8.x-1.12"
+                "reference": "2.0.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/minifyhtml-8.x-1.12.zip",
-                "reference": "8.x-1.12",
-                "shasum": "c984141f5c43c9fd29004a5bed3c584179cdf75c"
+                "url": "https://ftp.drupal.org/files/projects/minifyhtml-2.0.2.zip",
+                "reference": "2.0.2",
+                "shasum": "2d53aa2ed5afc95d494ffb418d78efe6beb506c8"
             },
             "require": {
-                "drupal/core": "^8 || ^9"
+                "drupal/core": "^9 || ^10"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-1.12",
-                    "datestamp": "1655409144",
+                    "version": "2.0.2",
+                    "datestamp": "1681317514",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -7229,29 +7230,29 @@
         },
         {
             "name": "drupal/multiple_fields_remove_button",
-            "version": "1.0.0-alpha13",
+            "version": "2.2.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/multiple_fields_remove_button.git",
-                "reference": "8.x-1.0-alpha13"
+                "reference": "8.x-2.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/multiple_fields_remove_button-8.x-1.0-alpha13.zip",
-                "reference": "8.x-1.0-alpha13",
-                "shasum": "d7171a7c1cba940320c271432f8e7c432a539989"
+                "url": "https://ftp.drupal.org/files/projects/multiple_fields_remove_button-8.x-2.2.zip",
+                "reference": "8.x-2.2",
+                "shasum": "c62d790c436b67c1316cbf2f289e6420e53d83e5"
             },
             "require": {
-                "drupal/core": "^8 || ^9"
+                "drupal/core": "^9.2 || ^10"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-1.0-alpha13",
-                    "datestamp": "1590964821",
+                    "version": "8.x-2.2",
+                    "datestamp": "1676661177",
                     "security-coverage": {
-                        "status": "not-covered",
-                        "message": "Alpha releases are not covered by Drupal security advisories."
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
                     }
                 }
             },
@@ -7518,26 +7519,26 @@
         },
         {
             "name": "drupal/password_policy",
-            "version": "3.2.0",
+            "version": "4.0.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/password_policy.git",
-                "reference": "8.x-3.2"
+                "reference": "4.0.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/password_policy-8.x-3.2.zip",
-                "reference": "8.x-3.2",
-                "shasum": "34324c58c252db314fb2718cb3f4e499489f7fcf"
+                "url": "https://ftp.drupal.org/files/projects/password_policy-4.0.0.zip",
+                "reference": "4.0.0",
+                "shasum": "ed55a1441bc7fad0dcb0aea7d2bfecc88a156c83"
             },
             "require": {
-                "drupal/core": "^8 || ^9"
+                "drupal/core": "^9.1 || ^10"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-3.2",
-                    "datestamp": "1663587531",
+                    "version": "4.0.0",
+                    "datestamp": "1668191689",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -7988,26 +7989,26 @@
         },
         {
             "name": "drupal/responsive_preview",
-            "version": "1.1.0",
+            "version": "2.1.1",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/responsive_preview.git",
-                "reference": "8.x-1.1"
+                "reference": "2.1.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/responsive_preview-8.x-1.1.zip",
-                "reference": "8.x-1.1",
-                "shasum": "b284139f8eb31e2b336e85c5ec8d30d754efea15"
+                "url": "https://ftp.drupal.org/files/projects/responsive_preview-2.1.1.zip",
+                "reference": "2.1.1",
+                "shasum": "cfc9599aaf3d6cd60ffd4c90c3cc2933c103bc2c"
             },
             "require": {
-                "drupal/core": "^8.8 || ^9"
+                "drupal/core": "^9.2 || ^10"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-1.1",
-                    "datestamp": "1635325844",
+                    "version": "2.1.1",
+                    "datestamp": "1687782148",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -8680,29 +8681,29 @@
         },
         {
             "name": "drupal/simplify_menu",
-            "version": "2.1.0",
+            "version": "3.0.0-beta1",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/simplify_menu.git",
-                "reference": "8.x-2.1"
+                "reference": "3.0.0-beta1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/simplify_menu-8.x-2.1.zip",
-                "reference": "8.x-2.1",
-                "shasum": "44905c5e90e297044e4536ce3a72c101a009e6f9"
+                "url": "https://ftp.drupal.org/files/projects/simplify_menu-3.0.0-beta1.zip",
+                "reference": "3.0.0-beta1",
+                "shasum": "94b79fbb554a13bd77296a12960348afd7b8734f"
             },
             "require": {
-                "drupal/core": "^8 || ^9"
+                "drupal/core": "^9 || ^10"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-2.1",
-                    "datestamp": "1603078133",
+                    "version": "3.0.0-beta1",
+                    "datestamp": "1686159708",
                     "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
+                        "status": "not-covered",
+                        "message": "Beta releases are not covered by Drupal security advisories."
                     }
                 }
             },
@@ -9960,21 +9961,24 @@
         },
         {
             "name": "drupal/twig_tweak",
-            "version": "2.10.0",
+            "version": "3.2.1",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/twig_tweak.git",
-                "reference": "8.x-2.10"
+                "reference": "3.2.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/twig_tweak-8.x-2.10.zip",
-                "reference": "8.x-2.10",
-                "shasum": "02877fcf73744d06f1a10280ce07ea55c38d238f"
+                "url": "https://ftp.drupal.org/files/projects/twig_tweak-3.2.1.zip",
+                "reference": "3.2.1",
+                "shasum": "89fc08b60f494a7d786251b6c2c493c536218222"
             },
             "require": {
-                "drupal/core": "^8.7 || ^9.0",
-                "twig/twig": "^1.41 || ^2.12"
+                "drupal/core": "^9.3 || ^10.0",
+                "ext-json": "*",
+                "php": ">=7.3",
+                "symfony/polyfill-php80": "^1.17",
+                "twig/twig": "^2.12 || ^3.3.8"
             },
             "suggest": {
                 "symfony/var-dumper": "Better dump() function for debugging Twig variables"
@@ -9982,17 +9986,22 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-2.10",
-                    "datestamp": "1663947949",
+                    "version": "3.2.1",
+                    "datestamp": "1677404306",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
+                    }
+                },
+                "drush": {
+                    "services": {
+                        "drush.services.yml": "^9 || ^10 || ^11"
                     }
                 }
             },
             "notification-url": "https://packages.drupal.org/8/downloads",
             "license": [
-                "GPL-2.0+"
+                "GPL-2.0-or-later"
             ],
             "authors": [
                 {
@@ -10209,29 +10218,29 @@
         },
         {
             "name": "drupal/user_registrationpassword",
-            "version": "1.0.0-alpha5",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/user_registrationpassword.git",
-                "reference": "8.x-1.0-alpha5"
+                "reference": "2.0.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/user_registrationpassword-8.x-1.0-alpha5.zip",
-                "reference": "8.x-1.0-alpha5",
-                "shasum": "2443b1e7d1c080863c907da569187add5b0c0814"
+                "url": "https://ftp.drupal.org/files/projects/user_registrationpassword-2.0.0.zip",
+                "reference": "2.0.0",
+                "shasum": "ba33dacc0f1e5ee310a973f821090f7bf48a7f4c"
             },
             "require": {
-                "drupal/core": "^8.8 || ^9"
+                "drupal/core": "^9.2 || ^10"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-1.0-alpha5",
-                    "datestamp": "1592713735",
+                    "version": "2.0.0",
+                    "datestamp": "1676877573",
                     "security-coverage": {
-                        "status": "not-covered",
-                        "message": "Alpha releases are not covered by Drupal security advisories."
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
                     }
                 }
             },
@@ -10257,10 +10266,14 @@
                     "homepage": "https://www.drupal.org/user/673120"
                 }
             ],
-            "description": "Let users register with a password on the registration form when verification mail is required.",
+            "description": "Customize the destination that a user is redirected to after logging in or logged out.",
             "homepage": "https://www.drupal.org/project/user_registrationpassword",
+            "keywords": [
+                "Drupal"
+            ],
             "support": {
-                "source": "https://git.drupalcode.org/project/user_registrationpassword"
+                "source": "http://cgit.drupalcode.org/user_registrationpassword",
+                "issues": "http://drupal.org/project/issues/user_registrationpassword"
             }
         },
         {
@@ -19632,17 +19645,17 @@
         "drupal/webform": 10,
         "drupal/path_redirect_import": 10,
         "drupal/linkit": 5,
-        "drupal/password_policy": 10,
         "drupal/styleguide": 10,
         "drupal/responsive_favicons": 20,
         "drupal/flag": 10,
         "drupal/tinypng": 5,
         "drupal/votingapi": 10,
+        "drupal/simplify_menu": 10,
         "drupal/social_auth_facebook": 5,
         "drupal/social_auth_microsoft": 5,
         "drupal/social_auth_google": 5,
-        "drupal/multiple_fields_remove_button": 15,
         "drupal/filefield_paths": 10,
+        "drupal/jsonapi_user_resources": 10,
         "drupal/symfony_mailer": 15,
         "drupal/default_content": 15,
         "drupal/cloudinary": 15
