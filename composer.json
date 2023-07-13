@@ -68,7 +68,7 @@
     "drupal/views_data_export": "^1.0.0",
     "drupal/admin_toolbar": "^3.0",
     "drupal/redirect": "^1.6",
-    "drupal/path_redirect_import": "^1.0@beta",
+    "drupal/path_redirect_import": "^2.0",
     "drupal/migrate_plus": "^6.0",
     "drupal/migrate_tools": "^6.0",
     "drupal/migrate_source_csv": "^3.1.0",
@@ -114,7 +114,7 @@
     "drupal/google_tag": "^1.4",
     "drupal/login_security": "^2.0",
     "drupal/memcache": "^2.2",
-    "drupal/oauth_login_oauth2": "^1.222",
+    "drupal/oauth_login_oauth2": "^2.6",
     "drupal/recaptcha": "^3.0",
     "drupal/scheduler": "^1.3",
     "drupal/seckit": "^2.0",
@@ -122,7 +122,7 @@
     "drupal/smart_trim": "^2.0",
     "drupal/twig_field_value": "^2.0",
     "drupal/twig_vardumper": "^3.1",
-    "drupal/jquery_ui_checkboxradio": "^1.2",
+    "drupal/jquery_ui_checkboxradio": "^2.0",
     "drupal/social_api": "^3.0",
     "drupal/social_auth": "^3.0",
     "drupal/social_auth_facebook": "^3.0@RC",
@@ -132,7 +132,7 @@
     "firebase/php-jwt": "^4.0",
     "pviojo/oauth2-keycloak": "^2.0",
     "drupal/geofield": "^1.20",
-    "drupal/domain": "1.0-beta5",
+    "drupal/domain": "^2.0@beta",
     "drupal/yaml_editor": "^1.1",
     "drupal/mobile_native_share": "^1.0",
     "drupal/views_infinite_scroll": "^2.0",
@@ -194,7 +194,7 @@
         "Export config translation": "https://www.drupal.org/files/issues/features_export-config-translation-2869336-2.patch"
       },
       "drupal/oauth_login_oauth2": {
-        "Store ressourceOwner into a session variable.": "https://gist.githubusercontent.com/voidagency/7895928ef08e7b29d999eeba8c7537c6/raw/755223f947244247f860dc71144560a9ae9dfe12/oauth-login-oauth2-add-resource-owner-to-session.patch"
+        "Store ressourceOwner into a session variable.": "https://gist.githubusercontent.com/b-khouy/b249e0a35a2ece62fe741ad330490b8e/raw/a923bc664616cd47608b2632b54f3ac202707b50/oauth-login-oauth2-add-resource-owner-to-session.patch"
       },
       "drupal/social_auth_microsoft": {
         "Fixing call to function on null.": "https://gist.githubusercontent.com/voidagency/33e6445b2b0fe973654304a6ea04d50e/raw/80cd36664fe77ec6196bb310b49e8b7d27c8c96d/microsoft_social_auth.patch",
@@ -220,9 +220,6 @@
         "jQuery color picker resolve vendor path": "https://gist.githubusercontent.com/voidagency/606f9343e9c7e9b99858088d7db111f1/raw/5216cc90d89e68916b4a17b60e07466286a18397/jquery-color-picker-resolve-vendor-path.patch",
         "jQuery color picker remove vendor dependencies": "https://gist.githubusercontent.com/voidagency/17af206778d4ea598b93dd10769556a0/raw/538e683f77b15945a41b99548a6b0d1ca2315225/jquery-colorpicker-remove-vendor-dependencies.patch",
         "jQuery color picker update background (drupalSettings variable)": "https://gist.githubusercontent.com/voidagency/979ab74bd125ea27f39311084471d78d/raw/c8888fb08e7c7f811055414295a0ea7cfc2d0e53/jquery-colorpicker-update-background.patch"
-      },
-      "drupal/domain": {
-        "Domain no context : resolve null given.": "https://www.drupal.org/files/issues/2021-03-05/3201514-domain-no-context-test_7.patch"
       },
       "drupal/easy_install": {
         "optional details": "https://www.drupal.org/files/issues/2020-07-25/Solution.patch",
@@ -260,6 +257,9 @@
       },
       "drupal/block_list_override": {
         "Drupal 10 compatibility": "https://www.drupal.org/files/issues/2022-12-29/block_list_override-3327993-5.patch"
+      },
+      "drupal/amptheme": {
+        "Drupal 10 compatibility": "https://www.drupal.org/files/issues/2023-07-06/2.patch"
       }
     }
   },

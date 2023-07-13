@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b5b921423c1759c31d08deb61a6252f5",
+    "content-hash": "c7960714426c3c7564c209ffa154c5a4",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -3555,20 +3555,20 @@
         },
         {
             "name": "drupal/domain",
-            "version": "1.0.0-beta5",
+            "version": "2.0.0-beta1",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/domain.git",
-                "reference": "8.x-1.0-beta5"
+                "reference": "2.0.0-beta1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/domain-8.x-1.0-beta5.zip",
-                "reference": "8.x-1.0-beta5",
-                "shasum": "c61ccbbe81dc630f9d731956b3adb2581a880284"
+                "url": "https://ftp.drupal.org/files/projects/domain-2.0.0-beta1.zip",
+                "reference": "2.0.0-beta1",
+                "shasum": "0edbc9d6c79cb0a61c08c656e9258c2450710664"
             },
             "require": {
-                "drupal/core": "^8 || ^9"
+                "drupal/core": "^9 || ^10"
             },
             "require-dev": {
                 "drupal/domain_access": "*",
@@ -3577,8 +3577,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-1.0-beta5",
-                    "datestamp": "1614266198",
+                    "version": "2.0.0-beta1",
+                    "datestamp": "1686067462",
                     "security-coverage": {
                         "status": "not-covered",
                         "message": "Beta releases are not covered by Drupal security advisories."
@@ -5498,27 +5498,27 @@
         },
         {
             "name": "drupal/jquery_ui_checkboxradio",
-            "version": "1.4.0",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/jquery_ui_checkboxradio.git",
-                "reference": "8.x-1.4"
+                "reference": "2.0.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/jquery_ui_checkboxradio-8.x-1.4.zip",
-                "reference": "8.x-1.4",
-                "shasum": "17e3795ce971887424d14f9aac94a8731d5676d6"
+                "url": "https://ftp.drupal.org/files/projects/jquery_ui_checkboxradio-2.0.0.zip",
+                "reference": "2.0.0",
+                "shasum": "81d474fbae63b0099c58be95de71e7f010568aa9"
             },
             "require": {
-                "drupal/core": "^8 || ^9",
-                "drupal/jquery_ui": "*"
+                "drupal/core": "^9.2 || ^10",
+                "drupal/jquery_ui": "^1.6"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-1.4",
-                    "datestamp": "1660150654",
+                    "version": "2.0.0",
+                    "datestamp": "1670871489",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -7335,26 +7335,26 @@
         },
         {
             "name": "drupal/oauth_login_oauth2",
-            "version": "1.226.0",
+            "version": "2.6.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/oauth_login_oauth2.git",
-                "reference": "8.x-1.226"
+                "reference": "8.x-2.06"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/oauth_login_oauth2-8.x-1.226.zip",
-                "reference": "8.x-1.226",
-                "shasum": "1c9721ef8f9b2306fef0db5b3090bb26ab9708e4"
+                "url": "https://ftp.drupal.org/files/projects/oauth_login_oauth2-8.x-2.06.zip",
+                "reference": "8.x-2.06",
+                "shasum": "22211841af6154e8e8eac7394a990567f081b131"
             },
             "require": {
-                "drupal/core": "^8 || ^9"
+                "drupal/core": "^8 || ^9 || ^10"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-1.226",
-                    "datestamp": "1644493304",
+                    "version": "8.x-2.06",
+                    "datestamp": "1669638862",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -7383,7 +7383,7 @@
                     "homepage": "https://www.drupal.org/user/3669372"
                 }
             ],
-            "description": "This module allows you to login in your Drupal site  using any oauth2 or openId compliant server.",
+            "description": "This module allows you to login in your Drupal site  using any oauth2 or openID compliant server.",
             "homepage": "https://www.drupal.org/project/oauth_login_oauth2",
             "support": {
                 "source": "https://git.drupalcode.org/project/oauth_login_oauth2"
@@ -7585,30 +7585,36 @@
         },
         {
             "name": "drupal/path_redirect_import",
-            "version": "1.0.0-beta5",
+            "version": "2.0.7",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/path_redirect_import.git",
-                "reference": "8.x-1.0-beta5"
+                "reference": "2.0.7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/path_redirect_import-8.x-1.0-beta5.zip",
-                "reference": "8.x-1.0-beta5",
-                "shasum": "84bf22f684e0d001a5038960589939434a93994a"
+                "url": "https://ftp.drupal.org/files/projects/path_redirect_import-2.0.7.zip",
+                "reference": "2.0.7",
+                "shasum": "20c746f7dcccf1377e89741b20cd1ae22c64ddaf"
             },
             "require": {
-                "drupal/core": "^8 || ^9",
-                "drupal/redirect": "*"
+                "drupal/core": ">=9.1",
+                "drupal/migrate_source_csv": "^3.5",
+                "drupal/migrate_tools": "^5.0 || ^6.0",
+                "drupal/redirect": "*",
+                "php": ">=7.1"
+            },
+            "require-dev": {
+                "drupal/migrate_plus": ">=5.0"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-1.0-beta5",
-                    "datestamp": "1635359017",
+                    "version": "2.0.7",
+                    "datestamp": "1686322209",
                     "security-coverage": {
-                        "status": "not-covered",
-                        "message": "Beta releases are not covered by Drupal security advisories."
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
                     }
                 }
             },
@@ -7618,8 +7624,9 @@
             ],
             "authors": [
                 {
-                    "name": "gabrielu",
-                    "homepage": "https://www.drupal.org/user/279352"
+                    "name": "Pablo López",
+                    "homepage": "https://www.drupal.org/u/plopesc",
+                    "role": "Maintainer"
                 },
                 {
                     "name": "paulocs",
@@ -7630,10 +7637,11 @@
                     "homepage": "https://www.drupal.org/user/282415"
                 }
             ],
-            "description": "Provides the ability to import redirects for the Redirect module",
+            "description": "Migrate Drupal redirects from CSV.",
             "homepage": "https://www.drupal.org/project/path_redirect_import",
             "support": {
-                "source": "https://git.drupalcode.org/project/path_redirect_import"
+                "source": "https://cgit.drupalcode.org/path_redirect_import",
+                "issues": "https://www.drupal.org/project/issues/path_redirect_import"
             }
         },
         {
@@ -19645,7 +19653,6 @@
         "drupal/taxonomy_import": 15,
         "drupal/viewsreference": 10,
         "drupal/webform": 10,
-        "drupal/path_redirect_import": 10,
         "drupal/linkit": 5,
         "drupal/styleguide": 10,
         "drupal/responsive_favicons": 20,
@@ -19656,6 +19663,7 @@
         "drupal/social_auth_facebook": 5,
         "drupal/social_auth_microsoft": 5,
         "drupal/social_auth_google": 5,
+        "drupal/domain": 10,
         "drupal/filefield_paths": 10,
         "drupal/jsonapi_user_resources": 10,
         "drupal/symfony_mailer": 15,
