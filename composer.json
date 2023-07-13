@@ -263,6 +263,9 @@
       },
       "drupal/shortcode": {
         "Drupal 10 compatibility": "https://www.drupal.org/files/issues/2023-03-29/shortcode-ckeditor5-3280596-11.patch"
+      },
+      "drupal/merge_translations": {
+        "Drupal 10 compatibility": "https://www.drupal.org/files/issues/2022-07-23/merge_translations.1.x-dev.rector.patch"
       }
     }
   },
