@@ -2,17 +2,25 @@
 
 namespace Drupal\vactory_migrate\Services;
 
-
 use Drupal\Core\Url;
 use Drupal\migrate\MigrateMessage;
 use Drupal\migrate\Plugin\MigrationInterface;
 use Drupal\migrate_tools\MigrateExecutable;
 
+/**
+ * Import Service (using batch)
+ */
 class Import {
 
+  /**
+   * Import constructor.
+   */
   public function __construct() {
   }
 
+  /**
+   * Split csv file to sub-files and run batch.
+   */
   public function import($migration_id) {
 
     $batch_config = \Drupal::config('vactory_migrate.settings')
@@ -20,15 +28,15 @@ class Import {
     $delimiter = \Drupal::config('vactory_migrate.settings')->get('delimiter');
     $batch_size = isset($batch_config) ? $batch_config : 1000;
 
-    //Get migration source path
+    // Get migration source path.
     $manager = \Drupal::service('plugin.manager.migration');
     $migration = $manager->createInstance($migration_id);
     $source = $migration->getSourceConfiguration();
     $main_path = $source['path'];
-    //split main file into batched files and return new paths
+    // Split main file into batched files and return new paths.
     $batched_files_dir = 'private://migrate-csv/' . $migration_id;
     $batched_files = $this->splitCsvFile($main_path, $batched_files_dir, $batch_size, $delimiter);
-    //create batch with those files
+    // Create batch with those files.
     $operations = [];
     $num_operations = 0;
     foreach ($batched_files as $file) {
@@ -51,6 +59,9 @@ class Import {
     }
   }
 
+  /**
+   * Batch callback.
+   */
   public function importCallback($file, $migration, $source, $batched_files_dir, &$context) {
     $source['path'] = $file;
     $migration->set('source', $source);
@@ -71,10 +82,9 @@ class Import {
 
       $url_options = ['absolute' => TRUE];
       $t_args = [
-        ':settings_url' => Url::fromUri('base:/admin/structure/migrate/manage/'.$this->getMigrationGroup($migration->id()).'/migrations/' . $migration->id() . '/messages', $url_options)
+        ':settings_url' => Url::fromUri('base:/admin/structure/migrate/manage/' . $this->getMigrationGroup($migration->id()) . '/migrations/' . $migration->id() . '/messages', $url_options)
           ->toString(),
       ];
-
 
       $message = t('More information  <a target="_blank" href=":settings_url"> here </a>.', $t_args);
 
@@ -83,12 +93,16 @@ class Import {
         \Drupal::messenger()->addStatus('Migration failed.');
       }
       $context['results']['batched_files_dir'] = $batched_files_dir;
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       \Drupal::messenger()->addStatus($e->getMessage());
       $migration->setStatus(MigrationInterface::STATUS_IDLE);
     }
   }
 
+  /**
+   * Batch finished callback.
+   */
   public function importFinished($success, $results, $operations) {
     if ($success) {
       $batched_files_dir = $results['batched_files_dir'];
@@ -98,7 +112,9 @@ class Import {
     }
   }
 
-
+  /**
+   * Splits csv file into sub-files.
+   */
   private function splitCsvFile($filePath, $outputDir, $linesPerFile, $delimiter) {
 
     $sourceFile = fopen($filePath, 'r');
@@ -136,6 +152,9 @@ class Import {
     return $outputFiles;
   }
 
+  /**
+   * Deletes dir and sub-dirs.
+   */
   private function deleteDirectoryByUri($dirUri) {
     $fileSystem = \Drupal::service('file_system');
     $dirPath = $fileSystem->realpath($dirUri);
@@ -145,8 +164,12 @@ class Import {
     }
   }
 
-  private function getMigrationGroup($migration_id){
-    $config = \Drupal::configFactory()->get('migrate_plus.migration.' . $migration_id);
+  /**
+   * Get Migration group by migration id.
+   */
+  private function getMigrationGroup($migration_id) {
+    $config = \Drupal::configFactory()
+      ->get('migrate_plus.migration.' . $migration_id);
     $group = $config->get('migration_group');
     return $group ?? 'default';
   }
