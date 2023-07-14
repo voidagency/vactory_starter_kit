@@ -126,7 +126,6 @@
     "drupal/social_api": "^3.0",
     "drupal/social_auth": "^3.0",
     "drupal/social_auth_facebook": "^3.0@RC",
-    "drupal/social_auth_microsoft": "^3.0@RC",
     "drupal/social_auth_google": "^3.0@RC",
     "drupal/shortcode": "^2.0",
     "firebase/php-jwt": "^4.0",
