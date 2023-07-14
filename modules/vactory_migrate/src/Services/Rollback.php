@@ -27,8 +27,9 @@ class Rollback {
 
     $mapping_table = 'migrate_map_' . $migration_id;
     $message_table = 'migrate_message_' . $migration_id;
-    $batch_config = \Drupal::config('vactory_migrate.settings')->get('batch_size');
-    $batch_size = isset($batch_config) ? $batch_config : 1000 ;
+    $batch_config = \Drupal::config('vactory_migrate.settings')
+      ->get('batch_size');
+    $batch_size = isset($batch_config) ? $batch_config : 1000;
 
     //Get entity info.
     $destination = $this->entityInfo->getDestinationByMigrationId($migration_id);
@@ -43,7 +44,7 @@ class Rollback {
 
     $tableInfo = $this->entityInfo->getRelatedTablesByEntityAndBundle($entity_type_id, $bundle);
 
-    if (!$this->database->schema()->tableExists($mapping_table)){
+    if (!$this->database->schema()->tableExists($mapping_table)) {
       return;
     }
 
@@ -106,9 +107,8 @@ class Rollback {
     // Delete messages && mapping.
 
     self::dbDelete($mapping_table, 'destid1', $ids, 'IN');
-    // todo delete tables ??
-    //    self::dropTable($mapping_table);
-    //    self::dropTable($message_table);
+    self::dropTable($mapping_table);
+    self::dropTable($message_table);
 
 
     if (!isset($context['results']['count'])) {
@@ -116,7 +116,7 @@ class Rollback {
     }
     $context['results']['count'] += count($ids);
 
-    // todo clear cache
+    drupal_flush_all_caches();
 
   }
 
@@ -143,6 +143,8 @@ class Rollback {
 
   public static function dropTable($table) {
     $databaseService = \Drupal::service('database');
-    $databaseService->schema()->dropTable($table);
+    if ($databaseService->schema()->tableExists($table)) {
+      $databaseService->schema()->dropTable($table);
+    }
   }
 }

@@ -2,9 +2,11 @@
 
 namespace Drupal\vactory_migrate\Services;
 
-use Drupal\migrate\MigrateExecutable;
+
+use Drupal\Core\Url;
 use Drupal\migrate\MigrateMessage;
 use Drupal\migrate\Plugin\MigrationInterface;
+use Drupal\migrate_tools\MigrateExecutable;
 
 class Import {
 
@@ -13,9 +15,10 @@ class Import {
 
   public function import($migration_id) {
 
-    $batch_config = \Drupal::config('vactory_migrate.settings')->get('batch_size');
+    $batch_config = \Drupal::config('vactory_migrate.settings')
+      ->get('batch_size');
     $delimiter = \Drupal::config('vactory_migrate.settings')->get('delimiter');
-    $batch_size = isset($batch_config) ? $batch_config : 1000 ;
+    $batch_size = isset($batch_config) ? $batch_config : 1000;
 
     //Get migration source path
     $manager = \Drupal::service('plugin.manager.migration');
@@ -55,9 +58,33 @@ class Import {
 
     $executable = new MigrateExecutable($migration, new MigrateMessage());
     try {
-      $executable->import();
+      $result = $executable->import();
+
+      \Drupal::messenger()
+        ->addStatus('Failed => ' . $executable->getFailedCount());
+      \Drupal::messenger()
+        ->addStatus('Created => ' . $executable->getCreatedCount());
+      \Drupal::messenger()
+        ->addStatus('Ignored => ' . $executable->getIgnoredCount());
+      \Drupal::messenger()
+        ->addStatus('Processed => ' . $executable->getProcessedCount());
+
+      $url_options = ['absolute' => TRUE];
+      $t_args = [
+        ':settings_url' => Url::fromUri('base:/admin/structure/migrate/manage/'.$this->getMigrationGroup($migration->id()).'/migrations/' . $migration->id() . '/messages', $url_options)
+          ->toString(),
+      ];
+
+
+      $message = t('More information  <a target="_blank" href=":settings_url"> here </a>.', $t_args);
+
+      \Drupal::messenger()->addStatus($message);
+      if ($result == MigrationInterface::RESULT_FAILED) {
+        \Drupal::messenger()->addStatus('Migration failed.');
+      }
       $context['results']['batched_files_dir'] = $batched_files_dir;
     } catch (\Exception $e) {
+      \Drupal::messenger()->addStatus($e->getMessage());
       $migration->setStatus(MigrationInterface::STATUS_IDLE);
     }
   }
@@ -116,6 +143,12 @@ class Import {
     if ($dirPath && is_dir($dirPath) && $dirPath !== DRUPAL_ROOT && str_ends_with($dirPath, $output_dir)) {
       $fileSystem->deleteRecursive($dirPath);
     }
+  }
+
+  private function getMigrationGroup($migration_id){
+    $config = \Drupal::configFactory()->get('migrate_plus.migration.' . $migration_id);
+    $group = $config->get('migration_group');
+    return $group ?? 'default';
   }
 
 }
