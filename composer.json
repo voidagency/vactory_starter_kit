@@ -102,7 +102,7 @@
     "drupal/votingapi": "^3.0@beta",
     "drupal/amp": "^3.6",
     "drupal/crop": "^2.1",
-    "drupal/devel": "^4.1",
+    "drupal/devel": "^5.0",
     "drupal/draggableviews": "^2.0",
     "drupal/auto_entityqueue": "^2.0",
     "drupal/easy_install": "^10.4",
