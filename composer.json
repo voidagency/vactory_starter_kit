@@ -74,7 +74,7 @@
     "drupal/migrate_source_csv": "^3.1.0",
     "drupal/link_target": "^1.2.0",
     "drupal/linkit": "^6.0@RC",
-    "drupal/merge_translations": "^1.1",
+    "b-khouy/merge_translations": "^2.0",
     "drupal/stage_file_proxy": "^2.0",
     "drupal/editor_advanced_link": "^2.2",
     "drupal/media_responsive_thumbnail": "^1.5",
@@ -256,9 +256,6 @@
       },
       "drupal/shortcode": {
         "Drupal 10 compatibility": "https://www.drupal.org/files/issues/2023-03-29/shortcode-ckeditor5-3280596-11.patch"
-      },
-      "drupal/merge_translations": {
-        "Drupal 10 compatibility": "https://www.drupal.org/files/issues/2022-07-23/merge_translations.1.x-dev.rector.patch"
       },
       "drupal/mobile_native_share": {
         "Drupal 10 compatibility": "https://www.drupal.org/files/issues/2022-07-18/mobile_native_share.1.0.x-dev.rector.patch"

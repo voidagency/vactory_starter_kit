@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "be81f8ab4ad949b51c37b212f23d294e",
+    "content-hash": "f7eb1b18aa853cffc57c1d28aa973f91",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -208,6 +208,30 @@
                 "source": "https://git.drupalcode.org/project/jquery_colorpicker"
             },
             "time": "2023-07-17T16:39:40+00:00"
+        },
+        {
+            "name": "b-khouy/merge_translations",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/b-khouy/merge_translations.git",
+                "reference": "60b7edd0eeeedd7acb25687f7ca3171d3fdb6f9a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/b-khouy/merge_translations/zipball/60b7edd0eeeedd7acb25687f7ca3171d3fdb6f9a",
+                "reference": "60b7edd0eeeedd7acb25687f7ca3171d3fdb6f9a",
+                "shasum": ""
+            },
+            "type": "drupal-module",
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "Allows users to merge node translations.",
+            "homepage": "https://www.drupal.org/project/merge_translations",
+            "support": {
+                "issues": "https://www.drupal.org/project/issues/merge_translations",
+                "source": "https://cgit.drupalcode.org/merge_translations"
+            },
+            "time": "2023-07-17T20:27:36+00:00"
         },
         {
             "name": "bkhouy/captcha",
@@ -6373,52 +6397,6 @@
             "support": {
                 "source": "http://cgit.drupalcode.org/menu_link_attributes",
                 "issues": "http://drupal.org/project/issues/menu_link_attributes"
-            }
-        },
-        {
-            "name": "drupal/merge_translations",
-            "version": "1.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/merge_translations.git",
-                "reference": "8.x-1.1"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/merge_translations-8.x-1.1.zip",
-                "reference": "8.x-1.1",
-                "shasum": "f72e795750baab2e28da0e477ceff65bba498cef"
-            },
-            "require": {
-                "drupal/core": "^8 || ^9"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "8.x-1.1",
-                    "datestamp": "1585037297",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "lamp5",
-                    "homepage": "https://www.drupal.org/user/2870321",
-                    "role": "Maintainer"
-                }
-            ],
-            "description": "Allows users to merge node translations.",
-            "homepage": "https://www.drupal.org/project/merge_translations",
-            "support": {
-                "source": "https://cgit.drupalcode.org/merge_translations",
-                "issues": "https://www.drupal.org/project/issues/merge_translations"
             }
         },
         {
