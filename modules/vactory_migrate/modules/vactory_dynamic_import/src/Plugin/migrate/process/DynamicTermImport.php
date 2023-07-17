@@ -3,14 +3,11 @@
 namespace Drupal\vactory_dynamic_import\Plugin\migrate\process;
 
 use Drupal\migrate\MigrateExecutableInterface;
-use Drupal\migrate\MigrateSkipRowException;
 use Drupal\migrate\ProcessPluginBase;
 use Drupal\migrate\Row;
 use Drupal\taxonomy\Entity\Term;
 
-
 /**
- *
  * Use this plugin to import multiple terms ( vactory dynamic import ).
  *
  * Example:

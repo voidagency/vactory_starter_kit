@@ -2,12 +2,10 @@
 
 namespace Drupal\vactory_dynamic_import\Form;
 
-
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-
 
 /**
  * Rollback Confirmation.
@@ -15,9 +13,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class RollbackConfirmation extends FormBase {
 
   /**
+   * Rollback Service.
    *
    * @var \Drupal\vactory_migrate\Services\Import
-   *
    */
   protected $rollbackService;
 
@@ -29,7 +27,6 @@ class RollbackConfirmation extends FormBase {
     $instance->rollbackService = $container->get('vactory_migrate.rollback');
     return $instance;
   }
-
 
   /**
    * Returns a unique string identifying the form.
@@ -58,7 +55,7 @@ class RollbackConfirmation extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
 
-    $message = $this->t('The rollback will be performed after clicking the \'start rollback\' button.<br> Choose related migrations to rollback <br>');
+    $message = $this->t("The rollback will be performed after clicking the 'start rollback' button.<br> Choose related migrations to rollback <br>");
 
     $rollback_key = \Drupal::request()->query->get('rollback');
     $migration_id = \Drupal::request()->query->get('migration');
@@ -73,10 +70,9 @@ class RollbackConfirmation extends FormBase {
 
     $related_migrations = $results;
 
-    $fornatted  = array_map( function ($item) use ($migration_id) {
+    $fornatted = array_map(function ($item) use ($migration_id) {
       return $item['name'];
     }, $related_migrations);
-
 
     $migrations_rollback = array_filter($fornatted, function ($item) use ($migration_id) {
       return !str_ends_with($item, $migration_id);
@@ -90,7 +86,6 @@ class RollbackConfirmation extends FormBase {
       '#type'    => 'checkboxes',
       '#options' => $migrations_rollback,
     ];
-
 
     $form['submit'] = [
       '#type'        => 'submit',
@@ -108,6 +103,9 @@ class RollbackConfirmation extends FormBase {
     return $form;
   }
 
+  /**
+   * Form validation.
+   */
   public function validateForm(array &$form, FormStateInterface $form_state) {
     $migration_id = \Drupal::request()->query->get('migration');
     $rollback_key = \Drupal::request()->query->get('rollback');
@@ -116,7 +114,6 @@ class RollbackConfirmation extends FormBase {
     }
     parent::validateForm($form, $form_state);
   }
-
 
   /**
    * Form submission handler.
@@ -131,7 +128,7 @@ class RollbackConfirmation extends FormBase {
 
     $rollbacks = $form_state->getValue('rollbacks');
 
-    $rollbacks_checked = array_filter($rollbacks, function($item){
+    $rollbacks_checked = array_filter($rollbacks, function ($item) {
       return $item != 0;
     });
 
@@ -144,12 +141,14 @@ class RollbackConfirmation extends FormBase {
       }
     }
 
-    $url = Url::fromRoute('vactory_dynamic_import.import')
-      ->setRouteParameters(['migration' => $migration_id]);
+    $url = Url::fromRoute('vactory_dynamic_import.import')->setRouteParameters(['migration' => $migration_id]);
 
     $form_state->setRedirectUrl($url);
   }
 
+  /**
+   * Cancel Action.
+   */
   public function cancel(array &$form, FormStateInterface $form_state) {
     $form_state->setRedirect('vactory_dynamic_import.form');
   }

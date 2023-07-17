@@ -2,26 +2,22 @@
 
 namespace Drupal\vactory_dynamic_import\Form;
 
-
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-
 use Drupal\Core\Url;
 use Drupal\file\Entity\File;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Entity\ContentEntityType;
 
-
 /**
- * Class DynamicImportForm
+ * Class DynamicImportForm.
  *
- * @package Drupal\vactory_dynamic_import\Form
+ * Provides a form to import data dynamically.
  */
 class DynamicImportForm extends FormBase {
 
-
   /**
-   * entity type manager service.
+   * Entity type manager service.
    *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
@@ -35,11 +31,15 @@ class DynamicImportForm extends FormBase {
   protected $entityTypeBundleInfo;
 
   /**
-   * @var
+   * Entity Field Manager.
+   *
+   * @var \Drupal\Core\Entity\EntityFieldManager
    */
   protected $entityFieldManager;
 
   /**
+   * Submitted values.
+   *
    * @var array
    */
   protected $submitted = [];
@@ -80,7 +80,7 @@ class DynamicImportForm extends FormBase {
       ':settings_url' => Url::fromUri('base:/admin/structure/file-types/manage/document/edit', $url_options)
         ->toString(),
     ];
-    $message = t('If you\'re having trouble uploading the csv file. Add <strong><em>text/csv</em></strong> <a target="_blank" href=":settings_url"> to the allowed <em>MIME types</em></a>.', $t_args);
+    $message = $this->t('If you\'re having trouble uploading the csv file. Add <strong><em>text/csv</em></strong> <a target="_blank" href=":settings_url"> to the allowed <em>MIME types</em></a>.', $t_args);
 
     $entity_types = $this->entityTypeManager->getDefinitions();
     $entity_types = array_filter($entity_types, fn($entity_type) => $entity_type instanceof ContentEntityType);
@@ -102,7 +102,6 @@ class DynamicImportForm extends FormBase {
       '#type'       => 'container',
       '#attributes' => ['id' => 'bundles-container'],
     ];
-
 
     if (isset($this->submitted['entity_type']) && !empty($this->submitted['entity_type'])) {
       $bundles = $this->entityTypeBundleInfo->getBundleInfo($this->submitted['entity_type']);
@@ -132,10 +131,10 @@ class DynamicImportForm extends FormBase {
         ];
 
         $form['container']['delimiter'] = [
-          '#type'     => 'textfield',
-          '#title'    => $this->t('Delimiter'),
-          '#required' => TRUE,
-          '#description' => $this->t('Enter the delimiter used in the CSV file.')
+          '#type'        => 'textfield',
+          '#title'       => $this->t('Delimiter'),
+          '#required'    => TRUE,
+          '#description' => $this->t('Enter the delimiter used in the CSV file.'),
         ];
 
         $form['container']['csv'] = [
@@ -146,13 +145,13 @@ class DynamicImportForm extends FormBase {
           '#upload_validators' => [
             'file_validate_extensions' => ['csv'],
           ],
-          '#description'       => t("Load the csv file to import.<br>" . $message),
+          '#description'       => t("Load the csv file to import.<br>") . $message,
           '#required'          => TRUE,
         ];
 
         $form['container']['translation'] = [
-          '#type'  => 'checkbox',
-          '#title' => $this->t('This is a translation'),
+          '#type'        => 'checkbox',
+          '#title'       => $this->t('This is a translation'),
           '#description' => $this->t("For translations of existing content, please check this checkbox.<br>
                                             Ensures accurate processing and integration of translated data."),
         ];
@@ -165,12 +164,11 @@ class DynamicImportForm extends FormBase {
         ];
 
         $form['container']['rollback'] = [
-          '#type'  => 'checkbox',
-          '#title' => $this->t('Rollback'),
+          '#type'        => 'checkbox',
+          '#title'       => $this->t('Rollback'),
           '#description' => $this->t("Selecting 'Rollback' triggers a reversal of all migrations linked to the specified entity.<br>
-                                             <b>Caution:</b> This action undoes changes made by the migrations.")
+                                             <b>Caution:</b> This action undoes changes made by the migrations."),
         ];
-
 
         $form['container']['submit'] = [
           '#type'        => 'submit',
@@ -181,11 +179,12 @@ class DynamicImportForm extends FormBase {
       }
 
     }
-
     return $form;
   }
 
-
+  /**
+   * Ajax Callback.
+   */
   public function bundlesCallback($form, FormStateInterface $form_state) {
     return $form['container'];
   }
@@ -194,12 +193,8 @@ class DynamicImportForm extends FormBase {
    * {@inheritDoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-
-
     $values = $form_state->getValues();
-
     $data = [];
-
     $id = "{$values['entity_type']}_{$values['bundle']}_migration_{$values['label']}";
 
     $fid = (int) reset($values['csv']);
@@ -211,7 +206,7 @@ class DynamicImportForm extends FormBase {
     $header = [];
     if ($file_path) {
       $path = \Drupal::service('file_system')->realpath($file_path);
-      $header = $this->getCSVHeader($path, $values['delimiter']);
+      $header = $this->getCsvHeader($path, $values['delimiter']);
     }
 
     $data['id'] = $id;
@@ -238,8 +233,7 @@ class DynamicImportForm extends FormBase {
 
     $data['process'] = [];
 
-    if ($values['language'] != $this->languageManager->getDefaultLanguage()
-        ->getId()) {
+    if ($values['language'] != $this->languageManager->getDefaultLanguage()->getId()) {
       $data['process']['langcode'] = [
         'plugin'        => 'default_value',
         'default_value' => $values['language'],
@@ -249,7 +243,8 @@ class DynamicImportForm extends FormBase {
     if ($values['translation']) {
       $data['process']['content_translation_source'] = [
         'plugin'        => 'default_value',
-        'default_value' => $this->languageManager->getDefaultLanguage()->getId(),
+        'default_value' => $this->languageManager->getDefaultLanguage()
+          ->getId(),
       ];
       $data['process']['default_langcode'] = [
         'plugin'        => 'default_value',
@@ -267,9 +262,7 @@ class DynamicImportForm extends FormBase {
         'bundle_key'    => $bundle_field,
         'source'        => 'original',
       ];
-
     }
-
 
     foreach ($header as $field) {
       if ($field == 'id') {
@@ -290,7 +283,7 @@ class DynamicImportForm extends FormBase {
                 'plugin'      => 'format_date',
                 'source'      => $field,
                 'from_format' => $info,
-                'to_format'   => 'Y-m-d' //todo check if date only or datetime
+                'to_format'   => 'Y-m-d',
               ];
             }
             if ($plugin == 'media') {
@@ -300,14 +293,14 @@ class DynamicImportForm extends FormBase {
                 'media_bundle'     => $info,
                 'media_field_name' => 'field_media_image',
                 'source'           => $field,
-                'skip_on_error' => 'true',
+                'skip_on_error'    => 'true',
               ];
             }
             if ($plugin == 'file') {
               $data['process'][$mapped_field] = [
-                'plugin'      => 'file_import',
-                'destination' => 'constants/dest_path',
-                'source'      => $field,
+                'plugin'        => 'file_import',
+                'destination'   => 'constants/dest_path',
+                'source'        => $field,
                 'skip_on_error' => 'true',
               ];
             }
@@ -368,10 +361,12 @@ class DynamicImportForm extends FormBase {
     $migration_config->save();
     drupal_flush_all_caches();
 
-
     if ($values['rollback']) {
       $url = Url::fromRoute('vactory_dynamic_import.rollback')
-        ->setRouteParameters(['migration' => $id, 'rollback' => "{$values['entity_type']}_{$values['bundle']}_migration_"]);
+        ->setRouteParameters([
+          'migration' => $id,
+          'rollback'  => "{$values['entity_type']}_{$values['bundle']}_migration_",
+        ]);
 
       $form_state->setRedirectUrl($url);
     }
@@ -381,22 +376,18 @@ class DynamicImportForm extends FormBase {
 
       $form_state->setRedirectUrl($url);
     }
-
   }
 
+  /**
+   * Form validation.
+   */
   public function validateForm(array &$form, FormStateInterface $form_state) {
-
-
     $name = $form_state->getTriggeringElement()['#name'];
     $this->submitted[$name] = $form_state->getValue($name);
-
-
     $triggeringElement = $form_state->getTriggeringElement();
     if ($triggeringElement['#name'] == 'csv_remove_button') {
       return;
     }
-
-
     $csv = $form_state->getValue('csv');
     $entity_type = $form_state->getValue('entity_type');
     $bundle = $form_state->getValue('bundle');
@@ -418,14 +409,12 @@ class DynamicImportForm extends FormBase {
     }
 
     if (isset($translation) || isset($language)) {
-      if ($translation && $language == $this->languageManager->getDefaultLanguage()
-          ->getId()) {
+      if ($translation && $language == $this->languageManager->getDefaultLanguage()->getId()) {
         $form_state->setErrorByName('language', $this->t('Cannot use translation with default language'));
       }
     }
 
-
-    // Validation de header
+    // Validation de header.
     if (isset($csv)) {
       $fid = (int) reset($csv);
       $file = File::load($fid);
@@ -434,7 +423,7 @@ class DynamicImportForm extends FormBase {
         $file_path = \Drupal::service('file_system')
           ->realpath($file->getFileUri());
       }
-      $header = $this->getCSVHeader($file_path, $delimiter);
+      $header = $this->getCsvHeader($file_path, $delimiter);
 
       if (!empty($header)) {
         if (!in_array('id', $header)) {
@@ -447,24 +436,26 @@ class DynamicImportForm extends FormBase {
 
         $check_content = $this->isValidCsvContent($file_path, $delimiter, count($header));
         if (!$check_content['status']) {
-          $form_state->setErrorByName('csv', $this->t('Invalid CSV content format at line ' . $check_content['line']));
+          $form_state->setErrorByName('csv', $this->t('Invalid CSV content format at line') . ' ' . $check_content['line']);
         }
         $check_duplicated_id = $this->isColumnDuplicated($file_path, $delimiter, 'id');
         if (!$check_duplicated_id['status']) {
-          $form_state->setErrorByName('csv', $this->t('CSV contains duplicated ID : ' . $check_duplicated_id['value']));
+          $form_state->setErrorByName('csv', $this->t('CSV contains duplicated ID :') . ' ' . $check_duplicated_id['value']);
         }
         $check_fields = $this->isValidFields($entity_type, $bundle, $header);
         if (!$check_fields['status']) {
-          $form_state->setErrorByName('csv', $this->t('CSV header contains unknown fields : ' . implode(', ', $check_fields['fields'])));
+          $form_state->setErrorByName('csv', $this->t('CSV header contains unknown fields :') . ' ' . implode(', ', $check_fields['fields']));
         }
       }
     }
 
-
     parent::validateForm($form, $form_state);
   }
 
-  private function getCSVHeader($path, $delimiter) {
+  /**
+   * Get csv Header.
+   */
+  private function getCsvHeader($path, $delimiter) {
     $csv = fopen($path, 'r');
     if ($csv) {
       $header = fgetcsv($csv, NULL, $delimiter);
@@ -473,6 +464,9 @@ class DynamicImportForm extends FormBase {
     return [];
   }
 
+  /**
+   * Check csv format.
+   */
   private function isValidCsvContent($path, $delimiter, $expected_columns) {
     $index = 0;
     $handle = fopen($path, 'r');
@@ -481,7 +475,6 @@ class DynamicImportForm extends FormBase {
     }
 
     while (($row = fgetcsv($handle, 0, $delimiter)) !== FALSE) {
-      // Check if the row has the expected number of columns
       if (count($row) != $expected_columns) {
         return ['status' => FALSE, 'line' => $index + 1];
       }
@@ -492,6 +485,9 @@ class DynamicImportForm extends FormBase {
     return ['status' => TRUE];
   }
 
+  /**
+   * Check if csv files contains duplicated column value.
+   */
   private function isColumnDuplicated($file_path, $delimiter, $column_name) {
     $handle = fopen($file_path, 'r');
     if ($handle === FALSE) {
@@ -502,7 +498,7 @@ class DynamicImportForm extends FormBase {
     $column_index = array_search($column_name, $header);
     if ($column_index === FALSE) {
       fclose($handle);
-      return FALSE; // Column name not found
+      return FALSE;
     }
 
     $values = [];
@@ -514,16 +510,19 @@ class DynamicImportForm extends FormBase {
           return [
             'status' => FALSE,
             'value'  => $value,
-          ]; // Column value is duplicated
+          ];
         }
         $values[] = $value;
       }
     }
 
     fclose($handle);
-    return ['status' => TRUE]; // Column value is not duplicated
+    return ['status' => TRUE];
   }
 
+  /**
+   * Check if field exists for an entity and bundle.
+   */
   private function isValidFields($entity_type_id, $bundle, $header) {
     $field_definitions = $this->entityFieldManager->getFieldDefinitions($entity_type_id, $bundle);
     $fields = array_keys($field_definitions);
@@ -553,6 +552,9 @@ class DynamicImportForm extends FormBase {
     }
   }
 
+  /**
+   * Get Term Target Bundle By Field.
+   */
   private function getTermTargetBundle($entity_type, $bundle, $field) {
     $splitted = explode('/', $field);
     $field = $splitted[0];
