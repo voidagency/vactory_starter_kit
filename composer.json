@@ -110,7 +110,7 @@
     "drupal/faqfield": "^7.0",
     "drupal/flood_control": "^2.3",
     "drupal/search_api": "^1.18",
-    "drupal/upgrade_status": "^3.0",
+    "drupal/upgrade_status": "^4.0",
     "drupal/google_tag": "^1.4",
     "drupal/login_security": "^2.0",
     "drupal/memcache": "^2.2",
