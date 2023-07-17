@@ -157,7 +157,7 @@
     "drupal/allowed_formats": "^2.0",
     "drupal/theme_switcher": "^2.0",
     "drupal/migrate_file": "^2.1",
-    "drupal/block_list_override": "^1.0",
+    "b-khouy/block_list_override": "^2.0",
     "drupal/rdf": "^2.1",
     "drupal/seven": "^1.0",
     "drupal/classy": "^1.0",
@@ -259,9 +259,6 @@
       },
       "drupal/csv_serialization": {
         "Drupal 10 compatibility": "https://gist.githubusercontent.com/b-khouy/b249e0a35a2ece62fe741ad330490b8e/raw/33500590ee13751624629833c39b7ba613938ce2/csv-serialization-tmp-patch.patch"
-      },
-      "drupal/block_list_override": {
-        "Drupal 10 compatibility": "https://www.drupal.org/files/issues/2022-12-29/block_list_override-3327993-5.patch"
       },
       "drupal/shortcode": {
         "Drupal 10 compatibility": "https://www.drupal.org/files/issues/2023-03-29/shortcode-ckeditor5-3280596-11.patch"
