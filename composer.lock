@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "65fc6996b36e3f82bbac2131496c79e8",
+    "content-hash": "e083386bb25e8f2b51f081859fcd0cc5",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -93,6 +93,16 @@
                 "source": "https://git.drupalcode.org/project/captcha"
             },
             "time": "2023-07-16T14:05:38+00:00"
+        },
+        {
+            "name": "ckeditor/templates",
+            "version": "4.11.1",
+            "dist": {
+                "type": "zip",
+                "url": "https://void-factory.s3.amazonaws.com/Drupal8/Composer/templates_4.11.1.zip",
+                "reference": "master"
+            },
+            "type": "drupal-library"
         },
         {
             "name": "cloudinary/cloudinary_php",
@@ -1858,6 +1868,50 @@
             "support": {
                 "source": "https://git.drupalcode.org/project/better_exposed_filters",
                 "issues": "https://www.drupal.org/project/issues/better_exposed_filters"
+            }
+        },
+        {
+            "name": "drupal/block_blacklist",
+            "version": "1.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/block_blacklist.git",
+                "reference": "8.x-1.1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/block_blacklist-8.x-1.1.zip",
+                "reference": "8.x-1.1",
+                "shasum": "03138247661a11ac4c6d7079ca5411ca2503f4e7"
+            },
+            "require": {
+                "drupal/core": "^8.8 || ^9"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "8.x-1.1",
+                    "datestamp": "1590309216",
+                    "security-coverage": {
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "KarenS",
+                    "homepage": "https://www.drupal.org/user/45874"
+                }
+            ],
+            "description": "Remove unnecessary blocks from the block list for better system performance.",
+            "homepage": "https://www.drupal.org/project/block_blacklist",
+            "support": {
+                "source": "https://git.drupalcode.org/project/block_blacklist"
             }
         },
         {
@@ -11208,6 +11262,146 @@
             "support": {
                 "source": "http://cgit.drupalcode.org/workbench_moderation",
                 "issues": "http://drupal.org/project/issues/workbench_moderation"
+            }
+        },
+        {
+            "name": "drupal/wysiwyg_template",
+            "version": "2.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/wysiwyg_template.git",
+                "reference": "8.x-2.3"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/wysiwyg_template-8.x-2.3.zip",
+                "reference": "8.x-2.3",
+                "shasum": "4047b13834c1478b67b9ea61727431a07f38220f"
+            },
+            "require": {
+                "ckeditor/templates": "4.11.1",
+                "drupal/core": "^8 || ^9",
+                "drupal/wysiwyg_template_core": "*",
+                "php": ">=7.1"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "8.x-2.3",
+                    "datestamp": "1575907980",
+                    "security-coverage": {
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
+                    }
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Drupal\\wysiwyg_template\\": "src/"
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "authors": [
+                {
+                    "name": "guybedford",
+                    "homepage": "https://www.drupal.org/user/746802"
+                },
+                {
+                    "name": "jenlampton",
+                    "homepage": "https://www.drupal.org/user/85586"
+                },
+                {
+                    "name": "jhedstrom",
+                    "homepage": "https://www.drupal.org/user/208732"
+                },
+                {
+                    "name": "jurgenhaas",
+                    "homepage": "https://www.drupal.org/user/168924"
+                },
+                {
+                    "name": "recidive",
+                    "homepage": "https://www.drupal.org/user/12564"
+                },
+                {
+                    "name": "sebas5384",
+                    "homepage": "https://www.drupal.org/user/567694"
+                },
+                {
+                    "name": "snipebin",
+                    "homepage": "https://www.drupal.org/user/858710"
+                }
+            ],
+            "description": "Manage templates for use in a WYSIWYG.",
+            "homepage": "https://www.drupal.org/project/wysiwyg_template",
+            "keywords": [
+                "Drupal",
+                "Templates",
+                "WYSIWYG"
+            ],
+            "support": {
+                "source": "https://drupal.org/project/wysiwyg_template",
+                "issues": "https://drupal.org/project/issues/wysiwyg_template"
+            }
+        },
+        {
+            "name": "drupal/wysiwyg_template_core",
+            "version": "2.3.0",
+            "require": {
+                "drupal/core": "^8 || ^9",
+                "drupal/wysiwyg_template": "^2"
+            },
+            "type": "metapackage",
+            "extra": {
+                "drupal": {
+                    "version": "8.x-2.3",
+                    "datestamp": "1575907980",
+                    "security-coverage": {
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "guybedford",
+                    "homepage": "https://www.drupal.org/user/746802"
+                },
+                {
+                    "name": "jenlampton",
+                    "homepage": "https://www.drupal.org/user/85586"
+                },
+                {
+                    "name": "jhedstrom",
+                    "homepage": "https://www.drupal.org/user/208732"
+                },
+                {
+                    "name": "jurgenhaas",
+                    "homepage": "https://www.drupal.org/user/168924"
+                },
+                {
+                    "name": "recidive",
+                    "homepage": "https://www.drupal.org/user/12564"
+                },
+                {
+                    "name": "sebas5384",
+                    "homepage": "https://www.drupal.org/user/567694"
+                },
+                {
+                    "name": "snipebin",
+                    "homepage": "https://www.drupal.org/user/858710"
+                }
+            ],
+            "description": "Core functionality for the Wysiwyg Template module",
+            "homepage": "https://www.drupal.org/project/wysiwyg_template",
+            "support": {
+                "source": "https://git.drupalcode.org/project/wysiwyg_template"
             }
         },
         {

@@ -161,7 +161,9 @@
     "drupal/rdf": "^2.1",
     "drupal/seven": "^1.0",
     "drupal/classy": "^1.0",
-    "drupal/quickedit": "^1.0"
+    "drupal/quickedit": "^1.0",
+    "drupal/wysiwyg_template": "^2.3",
+    "drupal/block_blacklist": "^1.1"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.3",
