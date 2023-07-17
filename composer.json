@@ -37,7 +37,7 @@
     "drupal/improved_multi_select": "^1.7",
     "drupal/inline_entity_form": "^1.0.0-rc2",
     "drupal/colorapi": "^1.1",
-    "drupal/jquery_colorpicker": "^3.0",
+    "b-khouy/jquery_colorpicker": "^4.0",
     "drupal/lang_dropdown": "^2.0@beta",
     "drupal/menu_link_attributes": "^1.1.0",
     "drupal/metatag": "^1.14",
@@ -219,8 +219,7 @@
       "drupal/colorapi": {
         "Enable colorapi field type by default": "https://gist.githubusercontent.com/voidagency/710e846384b56afe6cdfdc59fbc6e8bc/raw/cb8b1c126e87bd57a2c745f2f29e25c0269ec32f/colorapi-enable-colorapi-field-type-by-default.patch"
       },
-      "drupal/jquery_colorpicker": {
-        "Drupal 10 compatibility": "https://gist.githubusercontent.com/b-khouy/b249e0a35a2ece62fe741ad330490b8e/raw/73a04f298ed4c3138c19c57d27e1824d28db1195/jquery-colorpicker-D10-compatibility.patch",
+      "b-khouy/jquery_colorpicker": {
         "jQuery color picker resolve vendor path": "https://gist.githubusercontent.com/voidagency/606f9343e9c7e9b99858088d7db111f1/raw/5216cc90d89e68916b4a17b60e07466286a18397/jquery-color-picker-resolve-vendor-path.patch",
         "jQuery color picker remove vendor dependencies": "https://gist.githubusercontent.com/voidagency/17af206778d4ea598b93dd10769556a0/raw/538e683f77b15945a41b99548a6b0d1ca2315225/jquery-colorpicker-remove-vendor-dependencies.patch",
         "jQuery color picker update background (drupalSettings variable)": "https://gist.githubusercontent.com/b-khouy/b249e0a35a2ece62fe741ad330490b8e/raw/d603db22ebedc457d5e92de81ca99a1c467f8776/jquery-colorpicker-update-background.patch"
