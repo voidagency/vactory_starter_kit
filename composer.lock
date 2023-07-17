@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "eef2bdd514f7c142246bec19b15c706c",
+    "content-hash": "ba23d533b2639cdca68c9d7c5fc52ac2",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -148,6 +148,33 @@
                 "source": "https://github.com/b-khouy/cloudinary/tree/3.0.0"
             },
             "time": "2023-07-17T15:02:03+00:00"
+        },
+        {
+            "name": "b-khouy/easy_install",
+            "version": "10.6.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/b-khouy/easy_install.git",
+                "reference": "9e8a8b8293df5386876a9380b58b45b669764e1b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/b-khouy/easy_install/zipball/9e8a8b8293df5386876a9380b58b45b669764e1b",
+                "reference": "9e8a8b8293df5386876a9380b58b45b669764e1b",
+                "shasum": ""
+            },
+            "require": {
+                "drupal/core": "^9 || ^10"
+            },
+            "type": "drupal-module",
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "Provides UI to delete configuration while uninstalling or reinstalling the modules",
+            "homepage": "https://www.drupal.org/project/easy_install",
+            "support": {
+                "issues": "https://github.com/b-khouy/easy_install/issues",
+                "source": "https://github.com/b-khouy/easy_install/tree/10.6.0"
+            },
+            "time": "2023-07-17T15:51:37+00:00"
         },
         {
             "name": "bkhouy/captcha",
@@ -3410,54 +3437,6 @@
                 "source": "https://www.drupal.org/project/dropzonejs",
                 "issues": "https://www.drupal.org/project/issues/dropzonejs",
                 "#media": "http://drupal.slack.com"
-            }
-        },
-        {
-            "name": "drupal/easy_install",
-            "version": "10.5.0",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/easy_install.git",
-                "reference": "8.x-10.5"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/easy_install-8.x-10.5.zip",
-                "reference": "8.x-10.5",
-                "shasum": "0c7d4d5d8cc11551910a6b1c9860dfa69156d0a8"
-            },
-            "require": {
-                "drupal/core": "^8 || ^9"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "8.x-10.5",
-                    "datestamp": "1625497608",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "btobac",
-                    "homepage": "https://www.drupal.org/user/3630142"
-                },
-                {
-                    "name": "karthikeyan-manivasagam",
-                    "homepage": "https://www.drupal.org/user/1494424"
-                }
-            ],
-            "description": "Provides UI to delete configuration while uninstalling or reinstalling the modules.",
-            "homepage": "https://www.drupal.org/project/easy_install",
-            "support": {
-                "source": "https://git.drupalcode.org/project/easy_install"
             }
         },
         {
