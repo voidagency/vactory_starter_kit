@@ -157,7 +157,11 @@
     "drupal/allowed_formats": "^2.0",
     "drupal/theme_switcher": "^2.0",
     "drupal/migrate_file": "^2.1",
-    "drupal/block_list_override": "^1.0"
+    "drupal/block_list_override": "^1.0",
+    "drupal/rdf": "^2.1",
+    "drupal/seven": "^1.0",
+    "drupal/classy": "^1.0",
+    "drupal/quickedit": "^1.0"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.3",
