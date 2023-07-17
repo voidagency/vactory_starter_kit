@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f7eb1b18aa853cffc57c1d28aa973f91",
+    "content-hash": "fbb6301878133dd774ab423835c23955",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -232,6 +232,30 @@
                 "source": "https://cgit.drupalcode.org/merge_translations"
             },
             "time": "2023-07-17T20:27:36+00:00"
+        },
+        {
+            "name": "b-khouy/mobile_native_share",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/b-khouy/mobile_native_share.git",
+                "reference": "5cc9b657fd08b6cfec6e6d54afe4238d6751bb38"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/b-khouy/mobile_native_share/zipball/5cc9b657fd08b6cfec6e6d54afe4238d6751bb38",
+                "reference": "5cc9b657fd08b6cfec6e6d54afe4238d6751bb38",
+                "shasum": ""
+            },
+            "type": "drupal-module",
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "This module support to share content as mobile native share dialog",
+            "homepage": "https://www.drupal.org/project/mobile_native_share",
+            "support": {
+                "issues": "https://www.drupal.org/project/issues/mobile_native_share",
+                "source": "https://cgit.drupalcode.org/mobile_native_share"
+            },
+            "time": "2023-07-17T20:42:20+00:00"
         },
         {
             "name": "bkhouy/captcha",
@@ -6743,50 +6767,6 @@
             "homepage": "https://www.drupal.org/project/minifyhtml",
             "support": {
                 "source": "https://git.drupalcode.org/project/minifyhtml"
-            }
-        },
-        {
-            "name": "drupal/mobile_native_share",
-            "version": "1.0.4",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/mobile_native_share.git",
-                "reference": "1.0.4"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/mobile_native_share-1.0.4.zip",
-                "reference": "1.0.4",
-                "shasum": "759ab05abf9f8f789362753c110c8fde68fae8db"
-            },
-            "require": {
-                "drupal/core": "^8 || ^9"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "1.0.4",
-                    "datestamp": "1605324702",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "phthlaap",
-                    "homepage": "https://www.drupal.org/user/3579545"
-                }
-            ],
-            "description": "This module support to share content as mobile native share dialog. <a href=\"\">Settings</a>",
-            "homepage": "https://www.drupal.org/project/mobile_native_share",
-            "support": {
-                "source": "https://git.drupalcode.org/project/mobile_native_share"
             }
         },
         {

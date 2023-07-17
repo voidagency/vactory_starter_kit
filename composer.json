@@ -133,7 +133,7 @@
     "drupal/geofield": "^1.20",
     "drupal/domain": "^2.0@beta",
     "drupal/yaml_editor": "^1.1",
-    "drupal/mobile_native_share": "^1.0",
+    "b-khouy/mobile_native_share": "^2.0",
     "drupal/views_infinite_scroll": "^2.0",
     "drupal/multiple_fields_remove_button": "^2.2",
     "b-khouy/amptheme": "^3.0",
@@ -256,9 +256,6 @@
       },
       "drupal/shortcode": {
         "Drupal 10 compatibility": "https://www.drupal.org/files/issues/2023-03-29/shortcode-ckeditor5-3280596-11.patch"
-      },
-      "drupal/mobile_native_share": {
-        "Drupal 10 compatibility": "https://www.drupal.org/files/issues/2022-07-18/mobile_native_share.1.0.x-dev.rector.patch"
       }
     }
   },
