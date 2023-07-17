@@ -19,7 +19,7 @@ use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\file\Entity\File;
 use Drupal\node\NodeInterface;
 use Drupal\path_alias\AliasManagerInterface;
-use Drupal\twig_tweak\TwigExtension;
+use Drupal\twig_tweak\TwigTweakExtension;
 
 /**
  * Defines a route controller for BlockManager.
@@ -29,7 +29,7 @@ class Vactory {
   /**
    * Twig extension service.
    *
-   * @var \Drupal\twig_tweak\TwigExtension
+   * @var \Drupal\twig_tweak\TwigTweakExtension
    */
   protected $twigExtension;
 
@@ -107,7 +107,7 @@ class Vactory {
    * {@inheritDoc}
    */
   public function __construct(
-    TwigExtension $twigExtension,
+    TwigTweakExtension $twigExtension,
     EntityTypeManagerInterface $entityTypeManager,
     LanguageManagerInterface $languageManager,
     CurrentPathStack $currentPathStack,
@@ -392,7 +392,7 @@ class Vactory {
       ]);
       $field->save();
 
-      /* @var \Drupal\Core\Entity\Entity\EntityFormDisplay */
+      /** @var \Drupal\Core\Entity\Entity\EntityFormDisplay */
       $entity_form_display = $this->entityTypeManager
         ->getStorage('entity_form_display')
         ->load('node.' . $content_type . '.default');
@@ -412,7 +412,7 @@ class Vactory {
         'type' => 'options_select',
       ])->save();
 
-      /* @var \Drupal\Core\Entity\Entity\EntityViewDisplay */
+      /** @var \Drupal\Core\Entity\Entity\EntityViewDisplay */
       $entity_view_display = $this->entityTypeManager->getStorage('entity_view_display')
         ->load('node.' . $content_type . '.default');
 
@@ -442,6 +442,8 @@ class Vactory {
    *   Block machine_name OR Delta.
    * @param array $configuration
    *   Block configuration.
+   * @param array $attributes
+   *   Block attributes.
    *
    * @return string|array
    *   Rendered block.

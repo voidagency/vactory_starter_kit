@@ -139,10 +139,9 @@ install:
   - token
   - responsive_preview
   - merge_translations
-  - block_blacklist
+  - block_list_override
   - yoast_seo
   - seckit
-  - wysiwyg_template
   - minifyhtml
   - responsive_favicons
   - amp

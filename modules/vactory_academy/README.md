@@ -45,7 +45,6 @@ Les dépendances :
 - vactory_views (utilisation du mode de vue card-inline)
 - video_embed_field
 - views
-- wysiwyg_template
 
 ### Installation
 
