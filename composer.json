@@ -132,7 +132,7 @@
     "pviojo/oauth2-keycloak": "^2.0",
     "drupal/geofield": "^1.20",
     "drupal/domain": "^2.0@beta",
-    "drupal/yaml_editor": "^1.1",
+    "b-khouy/yaml_editor": "^2.0",
     "b-khouy/mobile_native_share": "^2.0",
     "drupal/views_infinite_scroll": "^2.0",
     "drupal/multiple_fields_remove_button": "^2.2",
@@ -247,9 +247,6 @@
       },
       "drupal/jsonapi_search_api": {
         "Modifying a facet does not invalidate caches": "https://gist.githubusercontent.com/voidagency/299883e039129c50da852a42c704af91/raw/1812ca417adce536e82cede6da50f8e7952c7479/fix-jsonapi-search-api-facets-cache-3176987.patch"
-      },
-      "drupal/yaml_editor": {
-        "Drupal 10 compatibility": "https://gist.githubusercontent.com/b-khouy/b249e0a35a2ece62fe741ad330490b8e/raw/efb9a48d26957608b4353bbb2c48e09dd566437a/yaml-editor-D10-compatibility.patch"
       },
       "drupal/csv_serialization": {
         "Drupal 10 compatibility": "https://gist.githubusercontent.com/b-khouy/b249e0a35a2ece62fe741ad330490b8e/raw/33500590ee13751624629833c39b7ba613938ce2/csv-serialization-tmp-patch.patch"
