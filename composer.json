@@ -136,7 +136,7 @@
     "drupal/mobile_native_share": "^1.0",
     "drupal/views_infinite_scroll": "^2.0",
     "drupal/multiple_fields_remove_button": "^2.2",
-    "drupal/amptheme": "^3.0",
+    "b-khouy/amptheme": "^3.0",
     "drupal/filefield_paths": "^1.0@beta",
     "drupal/workbench_moderation": "^1.6",
     "phpoffice/phpspreadsheet": "^1.20",
@@ -262,9 +262,6 @@
       },
       "drupal/block_list_override": {
         "Drupal 10 compatibility": "https://www.drupal.org/files/issues/2022-12-29/block_list_override-3327993-5.patch"
-      },
-      "drupal/amptheme": {
-        "Drupal 10 compatibility": "https://www.drupal.org/files/issues/2023-07-06/2.patch"
       },
       "drupal/shortcode": {
         "Drupal 10 compatibility": "https://www.drupal.org/files/issues/2023-03-29/shortcode-ckeditor5-3280596-11.patch"

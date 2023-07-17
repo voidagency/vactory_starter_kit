@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "65fc6996b36e3f82bbac2131496c79e8",
+    "content-hash": "9793a80d2f91146de2da39fb51779815",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -61,6 +61,36 @@
                 "source": "https://github.com/asm89/stack-cors/tree/1.3.0"
             },
             "time": "2019-12-24T22:41:47+00:00"
+        },
+        {
+            "name": "b-khouy/amptheme",
+            "version": "3.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/b-khouy/amptheme.git",
+                "reference": "03de6c9793d9730459dc51b48c67d8e2d6b7507d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/b-khouy/amptheme/zipball/03de6c9793d9730459dc51b48c67d8e2d6b7507d",
+                "reference": "03de6c9793d9730459dc51b48c67d8e2d6b7507d",
+                "shasum": ""
+            },
+            "require": {
+                "drupal/core": "^8 || ^9 || ^10"
+            },
+            "type": "drupal-theme",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "description": "The AMP Base theme converts core templates to use AMP HTML.",
+            "homepage": "https://www.drupal.org/project/amptheme",
+            "support": {
+                "issues": "https://github.com/b-khouy/amptheme/issues",
+                "source": "https://github.com/b-khouy/amptheme/tree/3.0.0"
+            },
+            "time": "2023-07-17T14:16:54+00:00"
         },
         {
             "name": "bkhouy/captcha",
@@ -1617,58 +1647,6 @@
             "support": {
                 "source": "http://cgit.drupalcode.org/amp",
                 "issues": "http://drupal.org/project/issues/amp"
-            }
-        },
-        {
-            "name": "drupal/amptheme",
-            "version": "3.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/amptheme.git",
-                "reference": "8.x-3.0"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/amptheme-8.x-3.0.zip",
-                "reference": "8.x-3.0",
-                "shasum": "7661f5f9faa75db20f797e1c3ac92365da29b73b"
-            },
-            "require": {
-                "drupal/core": "^8.8 || ^9"
-            },
-            "type": "drupal-theme",
-            "extra": {
-                "drupal": {
-                    "version": "8.x-3.0",
-                    "datestamp": "1593083873",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "KarenS",
-                    "homepage": "https://www.drupal.org/user/45874"
-                },
-                {
-                    "name": "mdrummond",
-                    "homepage": "https://www.drupal.org/user/360968"
-                },
-                {
-                    "name": "mtift",
-                    "homepage": "https://www.drupal.org/user/751908"
-                }
-            ],
-            "description": "The AMP Base theme converts core templates to use AMP HTML.",
-            "homepage": "https://www.drupal.org/project/amptheme",
-            "support": {
-                "source": "https://git.drupalcode.org/project/amptheme"
             }
         },
         {
