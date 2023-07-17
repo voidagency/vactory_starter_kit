@@ -77,3 +77,29 @@ function hook_internal_blocks_cacheability_alter(CacheableMetadata $cacheability
     $cacheability->addCacheTags(['locator_entity_list']);
   }
 }
+
+/**
+ * Alter DF dynamic_api_fetch config
+ *
+ * @param $api_config
+ * @param $info
+ */
+function hook_dynamic_api_fetch_config_alter($api_config, $info){
+  if (isset($info['uuid']) && $info['uuid'] = 'vactory_news:fetch') {
+    // Alter config here
+    $api_config['header']['api-key'] = '094bd386-a4af-492d-83dd-8c7deb02ba2e';
+  }
+}
+
+/**
+ * Alter DF dynamic_api_fetch response
+ *
+ * @param $result
+ * @param $info
+ */
+function hook_dynamic_api_fetch_result_alter($result, $info){
+  if (isset($info['uuid']) && $info['uuid'] = 'vactory_news:fetch') {
+    // Alter response here
+    $result['news'] = isset($result['posts']) ?  $result['posts'] : $result['error'];
+  }
+}
