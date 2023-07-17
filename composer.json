@@ -127,7 +127,7 @@
     "drupal/social_auth": "^3.0",
     "drupal/social_auth_facebook": "^3.0@RC",
     "drupal/social_auth_google": "^3.0@RC",
-    "drupal/shortcode": "^2.0",
+    "b-khouy/shortcode": "^2.1",
     "firebase/php-jwt": "^4.0",
     "pviojo/oauth2-keycloak": "^2.0",
     "drupal/geofield": "^1.20",
@@ -253,9 +253,6 @@
       },
       "drupal/csv_serialization": {
         "Drupal 10 compatibility": "https://gist.githubusercontent.com/b-khouy/b249e0a35a2ece62fe741ad330490b8e/raw/33500590ee13751624629833c39b7ba613938ce2/csv-serialization-tmp-patch.patch"
-      },
-      "drupal/shortcode": {
-        "Drupal 10 compatibility": "https://www.drupal.org/files/issues/2023-03-29/shortcode-ckeditor5-3280596-11.patch"
       }
     }
   },
