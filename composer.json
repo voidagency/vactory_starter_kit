@@ -152,7 +152,7 @@
     "drupal/default_content": "^2.0@alpha",
     "mailchimp/marketing": "^3.0",
     "drupal/time_range": "^2.0",
-    "drupal/cloudinary": "^2.0@alpha",
+    "b-khouy/cloudinary": "^3.0",
     "drupal/video_embed_field": "^2.4",
     "drupal/allowed_formats": "^2.0",
     "drupal/theme_switcher": "^2.0",
@@ -241,9 +241,8 @@
       "drupal/jsonapi_extra": {
         "Default field enhancer for fields": "https://gist.githubusercontent.com/voidagency/4861a0f0343a45cf0582553fc80c6b59/raw/2342d707c2b6708f2c18a69b870fcad1d5242df3/jsonapi_default_field_enhancer_for_fields.patch"
       },
-      "drupal/cloudinary": {
-        "Cloudinary video media library compatibility fix": "https://gist.githubusercontent.com/voidagency/21729df75ca350faace0f7883960bc37/raw/88e6ce0980cb3e01c95f74e1c79b4baddcdf884e/cloudinary-video-media-library-compatibility-fix.patch",
-        "Drupal 10 compatibility": "https://gist.githubusercontent.com/b-khouy/b249e0a35a2ece62fe741ad330490b8e/raw/78567c7e5c11a4795da4dfb09b2f28bc6bfe952e/cloudinary-D10-compatibility.patch"
+      "b-khouy/cloudinary": {
+        "Cloudinary video media library compatibility fix": "https://gist.githubusercontent.com/voidagency/21729df75ca350faace0f7883960bc37/raw/88e6ce0980cb3e01c95f74e1c79b4baddcdf884e/cloudinary-video-media-library-compatibility-fix.patch"
       },
       "drupal/flag": {
         "Fix deprecated php 8.1 str_replace": "https://www.drupal.org/files/issues/2022-02-25/3266574-2.patch"

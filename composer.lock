@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9dc9592dd4c1506f73b40db627e26768",
+    "content-hash": "eef2bdd514f7c142246bec19b15c706c",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -121,6 +121,33 @@
                 "source": "https://github.com/b-khouy/block_list_override/tree/2.0.0"
             },
             "time": "2023-07-17T14:38:56+00:00"
+        },
+        {
+            "name": "b-khouy/cloudinary",
+            "version": "3.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/b-khouy/cloudinary.git",
+                "reference": "75cef4aed36a32459c59c41b3fb5b887e7031ff9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/b-khouy/cloudinary/zipball/75cef4aed36a32459c59c41b3fb5b887e7031ff9",
+                "reference": "75cef4aed36a32459c59c41b3fb5b887e7031ff9",
+                "shasum": ""
+            },
+            "require": {
+                "cloudinary/cloudinary_php": "^2"
+            },
+            "type": "drupal-module",
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "The module provides a library and stream wrapper of Cloudinary service.",
+            "homepage": "https://www.drupal.org/project/cloudinary",
+            "support": {
+                "issues": "https://github.com/b-khouy/cloudinary/issues",
+                "source": "https://github.com/b-khouy/cloudinary/tree/3.0.0"
+            },
+            "time": "2023-07-17T15:02:03+00:00"
         },
         {
             "name": "bkhouy/captcha",
@@ -2323,261 +2350,6 @@
             "support": {
                 "source": "https://git.drupalcode.org/project/classy",
                 "issues": "https://drupal.org/project/issues/classy"
-            }
-        },
-        {
-            "name": "drupal/cloudinary",
-            "version": "2.1.3",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/cloudinary.git",
-                "reference": "2.1.3"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/cloudinary-2.1.3.zip",
-                "reference": "2.1.3",
-                "shasum": "240c7bf8738686716739b4bf7bcf1fe23ce7fb79"
-            },
-            "require": {
-                "cloudinary/cloudinary_php": "^2",
-                "drupal/cloudinary_media_library_widget": "*",
-                "drupal/cloudinary_stream_wrapper": "*",
-                "drupal/core": "^9.3"
-            },
-            "require-dev": {
-                "drupal/cloudinary_media_library_widget": "*",
-                "drupal/cloudinary_sdk": "*",
-                "drupal/cloudinary_storage": "*",
-                "drupal/cloudinary_stream_wrapper": "*",
-                "drupal/video_embed_media": "*"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "2.1.3",
-                    "datestamp": "1670330179",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "Andriy Parkhomiuk",
-                    "homepage": "https://www.drupal.org/user/2565426"
-                },
-                {
-                    "name": "everright",
-                    "homepage": "https://www.drupal.org/user/225665"
-                },
-                {
-                    "name": "lquessenberry",
-                    "homepage": "https://www.drupal.org/user/454730"
-                },
-                {
-                    "name": "marcelovani",
-                    "homepage": "https://www.drupal.org/user/854220"
-                },
-                {
-                    "name": "nginex",
-                    "homepage": "https://www.drupal.org/user/2822325"
-                },
-                {
-                    "name": "sdstyles",
-                    "homepage": "https://www.drupal.org/user/1420228"
-                },
-                {
-                    "name": "wouters_f",
-                    "homepage": "https://www.drupal.org/user/721548"
-                }
-            ],
-            "description": "The module provides a library and stream wrapper of Cloudinary service.",
-            "homepage": "https://www.drupal.org/project/cloudinary",
-            "support": {
-                "source": "https://git.drupalcode.org/project/cloudinary"
-            }
-        },
-        {
-            "name": "drupal/cloudinary_media_library_widget",
-            "version": "2.1.3",
-            "require": {
-                "drupal/cloudinary": "^2",
-                "drupal/cloudinary_sdk": "*",
-                "drupal/cloudinary_stream_wrapper": "*",
-                "drupal/core": "^9.3"
-            },
-            "type": "metapackage",
-            "extra": {
-                "drupal": {
-                    "version": "2.1.3",
-                    "datestamp": "1670330179",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "Andriy Parkhomiuk",
-                    "homepage": "https://www.drupal.org/user/2565426"
-                },
-                {
-                    "name": "everright",
-                    "homepage": "https://www.drupal.org/user/225665"
-                },
-                {
-                    "name": "lquessenberry",
-                    "homepage": "https://www.drupal.org/user/454730"
-                },
-                {
-                    "name": "marcelovani",
-                    "homepage": "https://www.drupal.org/user/854220"
-                },
-                {
-                    "name": "nginex",
-                    "homepage": "https://www.drupal.org/user/2822325"
-                },
-                {
-                    "name": "sdstyles",
-                    "homepage": "https://www.drupal.org/user/1420228"
-                },
-                {
-                    "name": "wouters_f",
-                    "homepage": "https://www.drupal.org/user/721548"
-                }
-            ],
-            "description": "The module provides a cloudinary media library widget.",
-            "homepage": "https://www.drupal.org/project/cloudinary",
-            "support": {
-                "source": "https://git.drupalcode.org/project/cloudinary"
-            }
-        },
-        {
-            "name": "drupal/cloudinary_sdk",
-            "version": "2.1.3",
-            "require": {
-                "drupal/cloudinary": "*",
-                "drupal/core": "^9.3"
-            },
-            "type": "metapackage",
-            "extra": {
-                "drupal": {
-                    "version": "2.1.3",
-                    "datestamp": "1670330179",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "Andriy Parkhomiuk",
-                    "homepage": "https://www.drupal.org/user/2565426"
-                },
-                {
-                    "name": "everright",
-                    "homepage": "https://www.drupal.org/user/225665"
-                },
-                {
-                    "name": "lquessenberry",
-                    "homepage": "https://www.drupal.org/user/454730"
-                },
-                {
-                    "name": "marcelovani",
-                    "homepage": "https://www.drupal.org/user/854220"
-                },
-                {
-                    "name": "nginex",
-                    "homepage": "https://www.drupal.org/user/2822325"
-                },
-                {
-                    "name": "sdstyles",
-                    "homepage": "https://www.drupal.org/user/1420228"
-                },
-                {
-                    "name": "wouters_f",
-                    "homepage": "https://www.drupal.org/user/721548"
-                }
-            ],
-            "description": "The module provides a library of Cloudinary PHP SDK for developers working with Cloudinary service.",
-            "homepage": "https://www.drupal.org/project/cloudinary",
-            "support": {
-                "source": "https://git.drupalcode.org/project/cloudinary"
-            }
-        },
-        {
-            "name": "drupal/cloudinary_stream_wrapper",
-            "version": "2.1.3",
-            "require": {
-                "drupal/cloudinary": "*",
-                "drupal/cloudinary_sdk": "*",
-                "drupal/core": "^9.3"
-            },
-            "type": "metapackage",
-            "extra": {
-                "drupal": {
-                    "version": "2.1.3",
-                    "datestamp": "1670330179",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "Andriy Parkhomiuk",
-                    "homepage": "https://www.drupal.org/user/2565426"
-                },
-                {
-                    "name": "everright",
-                    "homepage": "https://www.drupal.org/user/225665"
-                },
-                {
-                    "name": "lquessenberry",
-                    "homepage": "https://www.drupal.org/user/454730"
-                },
-                {
-                    "name": "marcelovani",
-                    "homepage": "https://www.drupal.org/user/854220"
-                },
-                {
-                    "name": "nginex",
-                    "homepage": "https://www.drupal.org/user/2822325"
-                },
-                {
-                    "name": "sdstyles",
-                    "homepage": "https://www.drupal.org/user/1420228"
-                },
-                {
-                    "name": "wouters_f",
-                    "homepage": "https://www.drupal.org/user/721548"
-                }
-            ],
-            "description": "The module provides stream wrappers to access Cloudinary files with read or write method.",
-            "homepage": "https://www.drupal.org/project/cloudinary",
-            "support": {
-                "source": "https://git.drupalcode.org/project/cloudinary"
             }
         },
         {
@@ -19746,8 +19518,7 @@
         "drupal/filefield_paths": 10,
         "drupal/jsonapi_user_resources": 10,
         "drupal/symfony_mailer": 15,
-        "drupal/default_content": 15,
-        "drupal/cloudinary": 15
+        "drupal/default_content": 15
     },
     "prefer-stable": true,
     "prefer-lowest": false,
