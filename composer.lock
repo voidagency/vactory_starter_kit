@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1c406277ffc9add4fa74e80eb3bfdc06",
+    "content-hash": "d3c84e442b171c78397f8940b9112a00",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -336,6 +336,37 @@
                 "source": "https://git.drupalcode.org/project/captcha"
             },
             "time": "2023-07-16T14:05:38+00:00"
+        },
+        {
+            "name": "bkhouy/recaptcha",
+            "version": "3.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/BrahimKHY/recaptcha.git",
+                "reference": "af04bdbdfa02b5e3ce44a34d81802482693e26a1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/BrahimKHY/recaptcha/zipball/af04bdbdfa02b5e3ce44a34d81802482693e26a1",
+                "reference": "af04bdbdfa02b5e3ce44a34d81802482693e26a1",
+                "shasum": ""
+            },
+            "require": {
+                "bkhouy/captcha": "^2",
+                "google/recaptcha": "^1.2"
+            },
+            "type": "drupal-module",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "description": "Protect your website from spam and abuse while letting real people pass through with ease.",
+            "homepage": "https://www.drupal.org/project/recaptcha",
+            "support": {
+                "issues": "https://www.drupal.org/project/issues/recaptcha",
+                "source": "https://git.drupal.org/project/recaptcha.git"
+            },
+            "time": "2023-07-18T08:55:55+00:00"
         },
         {
             "name": "cloudinary/cloudinary_php",
@@ -2213,90 +2244,6 @@
             "homepage": "https://www.drupal.org/project/block_field",
             "support": {
                 "source": "https://git.drupalcode.org/project/block_field"
-            }
-        },
-        {
-            "name": "drupal/captcha",
-            "version": "1.10.0",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/captcha.git",
-                "reference": "8.x-1.10"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/captcha-8.x-1.10.zip",
-                "reference": "8.x-1.10",
-                "shasum": "17fb9e34d03409809e3afd03bbeb8cbb489e7d0a"
-            },
-            "require": {
-                "drupal/core": "^8.9 || ^9"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "8.x-1.10",
-                    "datestamp": "1680254570",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                },
-                "branch-alias": {
-                    "dev-8.x-1.x": "1.x-dev"
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "Anybody",
-                    "homepage": "https://www.drupal.org/user/291091"
-                },
-                {
-                    "name": "elachlan",
-                    "homepage": "https://www.drupal.org/user/1021502"
-                },
-                {
-                    "name": "Grevil",
-                    "homepage": "https://www.drupal.org/user/3668491"
-                },
-                {
-                    "name": "japerry",
-                    "homepage": "https://www.drupal.org/user/45640"
-                },
-                {
-                    "name": "naveenvalecha",
-                    "homepage": "https://www.drupal.org/user/2665733"
-                },
-                {
-                    "name": "podarok",
-                    "homepage": "https://www.drupal.org/user/116002"
-                },
-                {
-                    "name": "RobLoach",
-                    "homepage": "https://www.drupal.org/user/61114"
-                },
-                {
-                    "name": "soxofaan",
-                    "homepage": "https://www.drupal.org/user/41478"
-                },
-                {
-                    "name": "thomas.frobieter",
-                    "homepage": "https://www.drupal.org/user/409335"
-                },
-                {
-                    "name": "wundo",
-                    "homepage": "https://www.drupal.org/user/25523"
-                }
-            ],
-            "description": "The CAPTCHA module provides this feature to virtually any user facing web form on a Drupal site.",
-            "homepage": "https://www.drupal.org/project/captcha",
-            "support": {
-                "source": "https://git.drupalcode.org/project/captcha",
-                "issues": "https://www.drupal.org/project/issues/captcha"
             }
         },
         {
@@ -7548,89 +7495,6 @@
             "homepage": "https://www.drupal.org/project/rdf",
             "support": {
                 "source": "https://git.drupalcode.org/project/rdf"
-            }
-        },
-        {
-            "name": "drupal/recaptcha",
-            "version": "3.2.0",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/recaptcha.git",
-                "reference": "8.x-3.2"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/recaptcha-8.x-3.2.zip",
-                "reference": "8.x-3.2",
-                "shasum": "a4457e8ba4c80b35be22a2bba0c18e376ee98bc8"
-            },
-            "require": {
-                "drupal/captcha": "^1.4 || ^2",
-                "drupal/core": "^8.9 || ^9 || ^10",
-                "google/recaptcha": "^1.2"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "8.x-3.2",
-                    "datestamp": "1681166371",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0+"
-            ],
-            "authors": [
-                {
-                    "name": "hass",
-                    "homepage": "https://www.drupal.org/u/hass"
-                },
-                {
-                    "name": "See other contributors",
-                    "homepage": "https://www.drupal.org/node/147903/committers"
-                },
-                {
-                    "name": "hass",
-                    "homepage": "https://www.drupal.org/user/85918"
-                },
-                {
-                    "name": "id.medion",
-                    "homepage": "https://www.drupal.org/user/2542592"
-                },
-                {
-                    "name": "kim.pepper",
-                    "homepage": "https://www.drupal.org/user/370574"
-                },
-                {
-                    "name": "Liam Morland",
-                    "homepage": "https://www.drupal.org/user/493050"
-                },
-                {
-                    "name": "rfay",
-                    "homepage": "https://www.drupal.org/user/30906"
-                },
-                {
-                    "name": "RobLoach",
-                    "homepage": "https://www.drupal.org/user/61114"
-                },
-                {
-                    "name": "soxofaan",
-                    "homepage": "https://www.drupal.org/user/41478"
-                },
-                {
-                    "name": "wundo",
-                    "homepage": "https://www.drupal.org/user/25523"
-                }
-            ],
-            "description": "Protect your website from spam and abuse while letting real people pass through with ease.",
-            "homepage": "https://www.drupal.org/project/recaptcha",
-            "support": {
-                "source": "https://git.drupal.org/project/recaptcha.git",
-                "issues": "https://www.drupal.org/project/issues/recaptcha"
             }
         },
         {
