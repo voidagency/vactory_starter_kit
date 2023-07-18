@@ -18,4 +18,13 @@ vactory_academy.api_unflagging.http:
     _format: 'json'
   options:
     _auth: ['oauth2']
-
+vactory_academy.api_get_user_flagging.http:
+  path: '/api/flagging/all'
+  defaults:
+    _controller: '\Drupal\vactory_academy\Controller\ApiFlagging::getFlaggedItems'
+  methods: [GET]
+  requirements:
+    _role: 'authenticated'
+    _format: 'json'
+  options:
+    _auth: ['oauth2']
