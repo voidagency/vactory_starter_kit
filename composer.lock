@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e083386bb25e8f2b51f081859fcd0cc5",
+    "content-hash": "2606438d6ec20fa5182ce9f19efac13f",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -63,6 +63,249 @@
             "time": "2019-12-24T22:41:47+00:00"
         },
         {
+            "name": "b-khouy/amptheme",
+            "version": "3.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/b-khouy/amptheme.git",
+                "reference": "03de6c9793d9730459dc51b48c67d8e2d6b7507d"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/b-khouy/amptheme/zipball/03de6c9793d9730459dc51b48c67d8e2d6b7507d",
+                "reference": "03de6c9793d9730459dc51b48c67d8e2d6b7507d",
+                "shasum": ""
+            },
+            "require": {
+                "drupal/core": "^8 || ^9 || ^10"
+            },
+            "type": "drupal-theme",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "description": "The AMP Base theme converts core templates to use AMP HTML.",
+            "homepage": "https://www.drupal.org/project/amptheme",
+            "support": {
+                "issues": "https://github.com/b-khouy/amptheme/issues",
+                "source": "https://github.com/b-khouy/amptheme/tree/3.0.0"
+            },
+            "time": "2023-07-17T14:16:54+00:00"
+        },
+        {
+            "name": "b-khouy/block_list_override",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/b-khouy/block_list_override.git",
+                "reference": "20f0f39e1281a86d827db6553c96e2e98553bd73"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/b-khouy/block_list_override/zipball/20f0f39e1281a86d827db6553c96e2e98553bd73",
+                "reference": "20f0f39e1281a86d827db6553c96e2e98553bd73",
+                "shasum": ""
+            },
+            "require": {
+                "drupal/core": "^9 || ^10"
+            },
+            "type": "drupal-module",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "description": "Remove unnecessary blocks from the block list for better system performance.",
+            "homepage": "https://www.drupal.org/project/block_list_override",
+            "support": {
+                "issues": "https://github.com/b-khouy/block_list_override/issues",
+                "source": "https://github.com/b-khouy/block_list_override/tree/2.0.0"
+            },
+            "time": "2023-07-17T14:38:56+00:00"
+        },
+        {
+            "name": "b-khouy/cloudinary",
+            "version": "3.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/b-khouy/cloudinary.git",
+                "reference": "75cef4aed36a32459c59c41b3fb5b887e7031ff9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/b-khouy/cloudinary/zipball/75cef4aed36a32459c59c41b3fb5b887e7031ff9",
+                "reference": "75cef4aed36a32459c59c41b3fb5b887e7031ff9",
+                "shasum": ""
+            },
+            "require": {
+                "cloudinary/cloudinary_php": "^2"
+            },
+            "type": "drupal-module",
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "The module provides a library and stream wrapper of Cloudinary service.",
+            "homepage": "https://www.drupal.org/project/cloudinary",
+            "support": {
+                "issues": "https://github.com/b-khouy/cloudinary/issues",
+                "source": "https://github.com/b-khouy/cloudinary/tree/3.0.0"
+            },
+            "time": "2023-07-17T15:02:03+00:00"
+        },
+        {
+            "name": "b-khouy/easy_install",
+            "version": "10.6.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/b-khouy/easy_install.git",
+                "reference": "9e8a8b8293df5386876a9380b58b45b669764e1b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/b-khouy/easy_install/zipball/9e8a8b8293df5386876a9380b58b45b669764e1b",
+                "reference": "9e8a8b8293df5386876a9380b58b45b669764e1b",
+                "shasum": ""
+            },
+            "require": {
+                "drupal/core": "^9 || ^10"
+            },
+            "type": "drupal-module",
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "Provides UI to delete configuration while uninstalling or reinstalling the modules",
+            "homepage": "https://www.drupal.org/project/easy_install",
+            "support": {
+                "issues": "https://github.com/b-khouy/easy_install/issues",
+                "source": "https://github.com/b-khouy/easy_install/tree/10.6.0"
+            },
+            "time": "2023-07-17T15:51:37+00:00"
+        },
+        {
+            "name": "b-khouy/jquery_colorpicker",
+            "version": "4.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/b-khouy/jquery_colorpicker.git",
+                "reference": "a39a42228384845f972fe24b0d206aeb930299c1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/b-khouy/jquery_colorpicker/zipball/a39a42228384845f972fe24b0d206aeb930299c1",
+                "reference": "a39a42228384845f972fe24b0d206aeb930299c1",
+                "shasum": ""
+            },
+            "require": {
+                "drupal/colorapi": "^1.1",
+                "drupal/core": "^9.3 || ^10",
+                "drupal/vendor_stream_wrapper": "^2.0.2",
+                "jaypan/jquery-colorpicker": "~1.0.1"
+            },
+            "type": "drupal-module",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "description": "A Drupal integration with the jQuery Colorpicker (https://www.eyecon.ro/colorpicker) module",
+            "homepage": "https://drupal.org/project/jquery_colorpicker",
+            "support": {
+                "issues": "https://drupal.org/project/issues/jquery_colorpicker",
+                "source": "https://git.drupalcode.org/project/jquery_colorpicker"
+            },
+            "time": "2023-07-17T16:39:40+00:00"
+        },
+        {
+            "name": "b-khouy/merge_translations",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/b-khouy/merge_translations.git",
+                "reference": "60b7edd0eeeedd7acb25687f7ca3171d3fdb6f9a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/b-khouy/merge_translations/zipball/60b7edd0eeeedd7acb25687f7ca3171d3fdb6f9a",
+                "reference": "60b7edd0eeeedd7acb25687f7ca3171d3fdb6f9a",
+                "shasum": ""
+            },
+            "type": "drupal-module",
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "Allows users to merge node translations.",
+            "homepage": "https://www.drupal.org/project/merge_translations",
+            "support": {
+                "issues": "https://www.drupal.org/project/issues/merge_translations",
+                "source": "https://cgit.drupalcode.org/merge_translations"
+            },
+            "time": "2023-07-17T20:27:36+00:00"
+        },
+        {
+            "name": "b-khouy/mobile_native_share",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/b-khouy/mobile_native_share.git",
+                "reference": "5cc9b657fd08b6cfec6e6d54afe4238d6751bb38"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/b-khouy/mobile_native_share/zipball/5cc9b657fd08b6cfec6e6d54afe4238d6751bb38",
+                "reference": "5cc9b657fd08b6cfec6e6d54afe4238d6751bb38",
+                "shasum": ""
+            },
+            "type": "drupal-module",
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "This module support to share content as mobile native share dialog",
+            "homepage": "https://www.drupal.org/project/mobile_native_share",
+            "support": {
+                "issues": "https://www.drupal.org/project/issues/mobile_native_share",
+                "source": "https://cgit.drupalcode.org/mobile_native_share"
+            },
+            "time": "2023-07-17T20:42:20+00:00"
+        },
+        {
+            "name": "b-khouy/shortcode",
+            "version": "2.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/b-khouy/shortcode.git",
+                "reference": "546b65e125150700f282b4da21667025fffe91e9"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/b-khouy/shortcode/zipball/546b65e125150700f282b4da21667025fffe91e9",
+                "reference": "546b65e125150700f282b4da21667025fffe91e9",
+                "shasum": ""
+            },
+            "type": "drupal-module",
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "Provides ShortCodes filter framework and API (like WP ShortCodes)",
+            "homepage": "https://www.drupal.org/project/shortcode",
+            "support": {
+                "issues": "https://www.drupal.org/project/issues/shortcode",
+                "source": "https://cgit.drupalcode.org/shortcode"
+            },
+            "time": "2023-07-17T20:58:10+00:00"
+        },
+        {
+            "name": "b-khouy/yaml_editor",
+            "version": "2.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/b-khouy/yaml_editor.git",
+                "reference": "a36f1d1e4b630de4001b6d90aaae6a785184cbbf"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/b-khouy/yaml_editor/zipball/a36f1d1e4b630de4001b6d90aaae6a785184cbbf",
+                "reference": "a36f1d1e4b630de4001b6d90aaae6a785184cbbf",
+                "shasum": ""
+            },
+            "type": "drupal-module",
+            "notification-url": "https://packagist.org/downloads/",
+            "description": "Adds an editor for YAML configuration textareas",
+            "homepage": "https://www.drupal.org/project/yaml_editor",
+            "support": {
+                "issues": "https://www.drupal.org/project/issues/yaml_editor",
+                "source": "https://cgit.drupalcode.org/yaml_editor"
+            },
+            "time": "2023-07-17T21:25:59+00:00"
+        },
+        {
             "name": "bkhouy/captcha",
             "version": "2.0.0",
             "source": {
@@ -93,6 +336,37 @@
                 "source": "https://git.drupalcode.org/project/captcha"
             },
             "time": "2023-07-16T14:05:38+00:00"
+        },
+        {
+            "name": "bkhouy/recaptcha",
+            "version": "3.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/BrahimKHY/recaptcha.git",
+                "reference": "af04bdbdfa02b5e3ce44a34d81802482693e26a1"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/BrahimKHY/recaptcha/zipball/af04bdbdfa02b5e3ce44a34d81802482693e26a1",
+                "reference": "af04bdbdfa02b5e3ce44a34d81802482693e26a1",
+                "shasum": ""
+            },
+            "require": {
+                "bkhouy/captcha": "^2",
+                "google/recaptcha": "^1.2"
+            },
+            "type": "drupal-module",
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "description": "Protect your website from spam and abuse while letting real people pass through with ease.",
+            "homepage": "https://www.drupal.org/project/recaptcha",
+            "support": {
+                "issues": "https://www.drupal.org/project/issues/recaptcha",
+                "source": "https://git.drupal.org/project/recaptcha.git"
+            },
+            "time": "2023-07-18T08:55:55+00:00"
         },
         {
             "name": "ckeditor/templates",
@@ -1630,58 +1904,6 @@
             }
         },
         {
-            "name": "drupal/amptheme",
-            "version": "3.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/amptheme.git",
-                "reference": "8.x-3.0"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/amptheme-8.x-3.0.zip",
-                "reference": "8.x-3.0",
-                "shasum": "7661f5f9faa75db20f797e1c3ac92365da29b73b"
-            },
-            "require": {
-                "drupal/core": "^8.8 || ^9"
-            },
-            "type": "drupal-theme",
-            "extra": {
-                "drupal": {
-                    "version": "8.x-3.0",
-                    "datestamp": "1593083873",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "KarenS",
-                    "homepage": "https://www.drupal.org/user/45874"
-                },
-                {
-                    "name": "mdrummond",
-                    "homepage": "https://www.drupal.org/user/360968"
-                },
-                {
-                    "name": "mtift",
-                    "homepage": "https://www.drupal.org/user/751908"
-                }
-            ],
-            "description": "The AMP Base theme converts core templates to use AMP HTML.",
-            "homepage": "https://www.drupal.org/project/amptheme",
-            "support": {
-                "source": "https://git.drupalcode.org/project/amptheme"
-            }
-        },
-        {
             "name": "drupal/auto_entityqueue",
             "version": "2.1.0",
             "source": {
@@ -2079,134 +2301,6 @@
             }
         },
         {
-            "name": "drupal/block_list_override",
-            "version": "1.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/block_list_override.git",
-                "reference": "1.0.1"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/block_list_override-1.0.1.zip",
-                "reference": "1.0.1",
-                "shasum": "f1ae936cc5e4748d511ee0a7a6025337b135db56"
-            },
-            "require": {
-                "drupal/core": "^8.8 || ^9"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "1.0.1",
-                    "datestamp": "1594592703",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "KarenS",
-                    "homepage": "https://www.drupal.org/user/45874"
-                }
-            ],
-            "description": "Remove unnecessary blocks from the block list for better system performance.",
-            "homepage": "https://www.drupal.org/project/block_list_override",
-            "support": {
-                "source": "https://git.drupalcode.org/project/block_list_override"
-            }
-        },
-        {
-            "name": "drupal/captcha",
-            "version": "1.10.0",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/captcha.git",
-                "reference": "8.x-1.10"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/captcha-8.x-1.10.zip",
-                "reference": "8.x-1.10",
-                "shasum": "17fb9e34d03409809e3afd03bbeb8cbb489e7d0a"
-            },
-            "require": {
-                "drupal/core": "^8.9 || ^9"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "8.x-1.10",
-                    "datestamp": "1680254570",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                },
-                "branch-alias": {
-                    "dev-8.x-1.x": "1.x-dev"
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "Anybody",
-                    "homepage": "https://www.drupal.org/user/291091"
-                },
-                {
-                    "name": "elachlan",
-                    "homepage": "https://www.drupal.org/user/1021502"
-                },
-                {
-                    "name": "Grevil",
-                    "homepage": "https://www.drupal.org/user/3668491"
-                },
-                {
-                    "name": "japerry",
-                    "homepage": "https://www.drupal.org/user/45640"
-                },
-                {
-                    "name": "naveenvalecha",
-                    "homepage": "https://www.drupal.org/user/2665733"
-                },
-                {
-                    "name": "podarok",
-                    "homepage": "https://www.drupal.org/user/116002"
-                },
-                {
-                    "name": "RobLoach",
-                    "homepage": "https://www.drupal.org/user/61114"
-                },
-                {
-                    "name": "soxofaan",
-                    "homepage": "https://www.drupal.org/user/41478"
-                },
-                {
-                    "name": "thomas.frobieter",
-                    "homepage": "https://www.drupal.org/user/409335"
-                },
-                {
-                    "name": "wundo",
-                    "homepage": "https://www.drupal.org/user/25523"
-                }
-            ],
-            "description": "The CAPTCHA module provides this feature to virtually any user facing web form on a Drupal site.",
-            "homepage": "https://www.drupal.org/project/captcha",
-            "support": {
-                "source": "https://git.drupalcode.org/project/captcha",
-                "issues": "https://www.drupal.org/project/issues/captcha"
-            }
-        },
-        {
             "name": "drupal/chosen",
             "version": "3.0.5",
             "source": {
@@ -2413,261 +2507,6 @@
             "support": {
                 "source": "https://git.drupalcode.org/project/classy",
                 "issues": "https://drupal.org/project/issues/classy"
-            }
-        },
-        {
-            "name": "drupal/cloudinary",
-            "version": "2.1.3",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/cloudinary.git",
-                "reference": "2.1.3"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/cloudinary-2.1.3.zip",
-                "reference": "2.1.3",
-                "shasum": "240c7bf8738686716739b4bf7bcf1fe23ce7fb79"
-            },
-            "require": {
-                "cloudinary/cloudinary_php": "^2",
-                "drupal/cloudinary_media_library_widget": "*",
-                "drupal/cloudinary_stream_wrapper": "*",
-                "drupal/core": "^9.3"
-            },
-            "require-dev": {
-                "drupal/cloudinary_media_library_widget": "*",
-                "drupal/cloudinary_sdk": "*",
-                "drupal/cloudinary_storage": "*",
-                "drupal/cloudinary_stream_wrapper": "*",
-                "drupal/video_embed_media": "*"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "2.1.3",
-                    "datestamp": "1670330179",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "Andriy Parkhomiuk",
-                    "homepage": "https://www.drupal.org/user/2565426"
-                },
-                {
-                    "name": "everright",
-                    "homepage": "https://www.drupal.org/user/225665"
-                },
-                {
-                    "name": "lquessenberry",
-                    "homepage": "https://www.drupal.org/user/454730"
-                },
-                {
-                    "name": "marcelovani",
-                    "homepage": "https://www.drupal.org/user/854220"
-                },
-                {
-                    "name": "nginex",
-                    "homepage": "https://www.drupal.org/user/2822325"
-                },
-                {
-                    "name": "sdstyles",
-                    "homepage": "https://www.drupal.org/user/1420228"
-                },
-                {
-                    "name": "wouters_f",
-                    "homepage": "https://www.drupal.org/user/721548"
-                }
-            ],
-            "description": "The module provides a library and stream wrapper of Cloudinary service.",
-            "homepage": "https://www.drupal.org/project/cloudinary",
-            "support": {
-                "source": "https://git.drupalcode.org/project/cloudinary"
-            }
-        },
-        {
-            "name": "drupal/cloudinary_media_library_widget",
-            "version": "2.1.3",
-            "require": {
-                "drupal/cloudinary": "^2",
-                "drupal/cloudinary_sdk": "*",
-                "drupal/cloudinary_stream_wrapper": "*",
-                "drupal/core": "^9.3"
-            },
-            "type": "metapackage",
-            "extra": {
-                "drupal": {
-                    "version": "2.1.3",
-                    "datestamp": "1670330179",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "Andriy Parkhomiuk",
-                    "homepage": "https://www.drupal.org/user/2565426"
-                },
-                {
-                    "name": "everright",
-                    "homepage": "https://www.drupal.org/user/225665"
-                },
-                {
-                    "name": "lquessenberry",
-                    "homepage": "https://www.drupal.org/user/454730"
-                },
-                {
-                    "name": "marcelovani",
-                    "homepage": "https://www.drupal.org/user/854220"
-                },
-                {
-                    "name": "nginex",
-                    "homepage": "https://www.drupal.org/user/2822325"
-                },
-                {
-                    "name": "sdstyles",
-                    "homepage": "https://www.drupal.org/user/1420228"
-                },
-                {
-                    "name": "wouters_f",
-                    "homepage": "https://www.drupal.org/user/721548"
-                }
-            ],
-            "description": "The module provides a cloudinary media library widget.",
-            "homepage": "https://www.drupal.org/project/cloudinary",
-            "support": {
-                "source": "https://git.drupalcode.org/project/cloudinary"
-            }
-        },
-        {
-            "name": "drupal/cloudinary_sdk",
-            "version": "2.1.3",
-            "require": {
-                "drupal/cloudinary": "*",
-                "drupal/core": "^9.3"
-            },
-            "type": "metapackage",
-            "extra": {
-                "drupal": {
-                    "version": "2.1.3",
-                    "datestamp": "1670330179",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "Andriy Parkhomiuk",
-                    "homepage": "https://www.drupal.org/user/2565426"
-                },
-                {
-                    "name": "everright",
-                    "homepage": "https://www.drupal.org/user/225665"
-                },
-                {
-                    "name": "lquessenberry",
-                    "homepage": "https://www.drupal.org/user/454730"
-                },
-                {
-                    "name": "marcelovani",
-                    "homepage": "https://www.drupal.org/user/854220"
-                },
-                {
-                    "name": "nginex",
-                    "homepage": "https://www.drupal.org/user/2822325"
-                },
-                {
-                    "name": "sdstyles",
-                    "homepage": "https://www.drupal.org/user/1420228"
-                },
-                {
-                    "name": "wouters_f",
-                    "homepage": "https://www.drupal.org/user/721548"
-                }
-            ],
-            "description": "The module provides a library of Cloudinary PHP SDK for developers working with Cloudinary service.",
-            "homepage": "https://www.drupal.org/project/cloudinary",
-            "support": {
-                "source": "https://git.drupalcode.org/project/cloudinary"
-            }
-        },
-        {
-            "name": "drupal/cloudinary_stream_wrapper",
-            "version": "2.1.3",
-            "require": {
-                "drupal/cloudinary": "*",
-                "drupal/cloudinary_sdk": "*",
-                "drupal/core": "^9.3"
-            },
-            "type": "metapackage",
-            "extra": {
-                "drupal": {
-                    "version": "2.1.3",
-                    "datestamp": "1670330179",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "Andriy Parkhomiuk",
-                    "homepage": "https://www.drupal.org/user/2565426"
-                },
-                {
-                    "name": "everright",
-                    "homepage": "https://www.drupal.org/user/225665"
-                },
-                {
-                    "name": "lquessenberry",
-                    "homepage": "https://www.drupal.org/user/454730"
-                },
-                {
-                    "name": "marcelovani",
-                    "homepage": "https://www.drupal.org/user/854220"
-                },
-                {
-                    "name": "nginex",
-                    "homepage": "https://www.drupal.org/user/2822325"
-                },
-                {
-                    "name": "sdstyles",
-                    "homepage": "https://www.drupal.org/user/1420228"
-                },
-                {
-                    "name": "wouters_f",
-                    "homepage": "https://www.drupal.org/user/721548"
-                }
-            ],
-            "description": "The module provides stream wrappers to access Cloudinary files with read or write method.",
-            "homepage": "https://www.drupal.org/project/cloudinary",
-            "support": {
-                "source": "https://git.drupalcode.org/project/cloudinary"
             }
         },
         {
@@ -3728,54 +3567,6 @@
                 "source": "https://www.drupal.org/project/dropzonejs",
                 "issues": "https://www.drupal.org/project/issues/dropzonejs",
                 "#media": "http://drupal.slack.com"
-            }
-        },
-        {
-            "name": "drupal/easy_install",
-            "version": "10.5.0",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/easy_install.git",
-                "reference": "8.x-10.5"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/easy_install-8.x-10.5.zip",
-                "reference": "8.x-10.5",
-                "shasum": "0c7d4d5d8cc11551910a6b1c9860dfa69156d0a8"
-            },
-            "require": {
-                "drupal/core": "^8 || ^9"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "8.x-10.5",
-                    "datestamp": "1625497608",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "btobac",
-                    "homepage": "https://www.drupal.org/user/3630142"
-                },
-                {
-                    "name": "karthikeyan-manivasagam",
-                    "homepage": "https://www.drupal.org/user/1494424"
-                }
-            ],
-            "description": "Provides UI to delete configuration while uninstalling or reinstalling the modules.",
-            "homepage": "https://www.drupal.org/project/easy_install",
-            "support": {
-                "source": "https://git.drupalcode.org/project/easy_install"
             }
         },
         {
@@ -5236,71 +5027,6 @@
             }
         },
         {
-            "name": "drupal/jquery_colorpicker",
-            "version": "3.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/jquery_colorpicker.git",
-                "reference": "3.0.0"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/jquery_colorpicker-3.0.0.zip",
-                "reference": "3.0.0",
-                "shasum": "6d6889c77ab272585260264535914c47cee10ee0"
-            },
-            "require": {
-                "drupal/colorapi": "^1.1",
-                "drupal/core": "^8 || ^9",
-                "drupal/vendor_stream_wrapper": "^2.0.1",
-                "jaypan/jquery-colorpicker": "~1.0.1"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "3.0.0",
-                    "datestamp": "1658324651",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "Jay Friendly (Jaypan)",
-                    "homepage": "https://www.jaypan.com",
-                    "role": "Maintainer"
-                },
-                {
-                    "name": "Jaypan",
-                    "homepage": "https://www.drupal.org/user/324696"
-                },
-                {
-                    "name": "Neslee Canil Pinto",
-                    "homepage": "https://www.drupal.org/user/3580850"
-                },
-                {
-                    "name": "plopesc",
-                    "homepage": "https://www.drupal.org/user/282415"
-                },
-                {
-                    "name": "podarok",
-                    "homepage": "https://www.drupal.org/user/116002"
-                }
-            ],
-            "description": "A Drupal integration with the jQuery Colorpicker (https://www.eyecon.ro/colorpicker) module",
-            "homepage": "https://drupal.org/project/jquery_colorpicker",
-            "support": {
-                "source": "https://git.drupalcode.org/project/jquery_colorpicker",
-                "issues": "https://drupal.org/project/issues/jquery_colorpicker"
-            }
-        },
-        {
             "name": "drupal/jquery_ui",
             "version": "1.6.0",
             "source": {
@@ -6747,52 +6473,6 @@
             }
         },
         {
-            "name": "drupal/merge_translations",
-            "version": "1.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/merge_translations.git",
-                "reference": "8.x-1.1"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/merge_translations-8.x-1.1.zip",
-                "reference": "8.x-1.1",
-                "shasum": "f72e795750baab2e28da0e477ceff65bba498cef"
-            },
-            "require": {
-                "drupal/core": "^8 || ^9"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "8.x-1.1",
-                    "datestamp": "1585037297",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "lamp5",
-                    "homepage": "https://www.drupal.org/user/2870321",
-                    "role": "Maintainer"
-                }
-            ],
-            "description": "Allows users to merge node translations.",
-            "homepage": "https://www.drupal.org/project/merge_translations",
-            "support": {
-                "source": "https://cgit.drupalcode.org/merge_translations",
-                "issues": "https://www.drupal.org/project/issues/merge_translations"
-            }
-        },
-        {
             "name": "drupal/metatag",
             "version": "1.26.0",
             "source": {
@@ -7136,50 +6816,6 @@
             "homepage": "https://www.drupal.org/project/minifyhtml",
             "support": {
                 "source": "https://git.drupalcode.org/project/minifyhtml"
-            }
-        },
-        {
-            "name": "drupal/mobile_native_share",
-            "version": "1.0.4",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/mobile_native_share.git",
-                "reference": "1.0.4"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/mobile_native_share-1.0.4.zip",
-                "reference": "1.0.4",
-                "shasum": "759ab05abf9f8f789362753c110c8fde68fae8db"
-            },
-            "require": {
-                "drupal/core": "^8 || ^9"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "1.0.4",
-                    "datestamp": "1605324702",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "phthlaap",
-                    "homepage": "https://www.drupal.org/user/3579545"
-                }
-            ],
-            "description": "This module support to share content as mobile native share dialog. <a href=\"\">Settings</a>",
-            "homepage": "https://www.drupal.org/project/mobile_native_share",
-            "support": {
-                "source": "https://git.drupalcode.org/project/mobile_native_share"
             }
         },
         {
@@ -7916,89 +7552,6 @@
             }
         },
         {
-            "name": "drupal/recaptcha",
-            "version": "3.2.0",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/recaptcha.git",
-                "reference": "8.x-3.2"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/recaptcha-8.x-3.2.zip",
-                "reference": "8.x-3.2",
-                "shasum": "a4457e8ba4c80b35be22a2bba0c18e376ee98bc8"
-            },
-            "require": {
-                "drupal/captcha": "^1.4 || ^2",
-                "drupal/core": "^8.9 || ^9 || ^10",
-                "google/recaptcha": "^1.2"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "8.x-3.2",
-                    "datestamp": "1681166371",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0+"
-            ],
-            "authors": [
-                {
-                    "name": "hass",
-                    "homepage": "https://www.drupal.org/u/hass"
-                },
-                {
-                    "name": "See other contributors",
-                    "homepage": "https://www.drupal.org/node/147903/committers"
-                },
-                {
-                    "name": "hass",
-                    "homepage": "https://www.drupal.org/user/85918"
-                },
-                {
-                    "name": "id.medion",
-                    "homepage": "https://www.drupal.org/user/2542592"
-                },
-                {
-                    "name": "kim.pepper",
-                    "homepage": "https://www.drupal.org/user/370574"
-                },
-                {
-                    "name": "Liam Morland",
-                    "homepage": "https://www.drupal.org/user/493050"
-                },
-                {
-                    "name": "rfay",
-                    "homepage": "https://www.drupal.org/user/30906"
-                },
-                {
-                    "name": "RobLoach",
-                    "homepage": "https://www.drupal.org/user/61114"
-                },
-                {
-                    "name": "soxofaan",
-                    "homepage": "https://www.drupal.org/user/41478"
-                },
-                {
-                    "name": "wundo",
-                    "homepage": "https://www.drupal.org/user/25523"
-                }
-            ],
-            "description": "Protect your website from spam and abuse while letting real people pass through with ease.",
-            "homepage": "https://www.drupal.org/project/recaptcha",
-            "support": {
-                "source": "https://git.drupal.org/project/recaptcha.git",
-                "issues": "https://www.drupal.org/project/issues/recaptcha"
-            }
-        },
-        {
             "name": "drupal/redirect",
             "version": "1.8.0",
             "source": {
@@ -8730,58 +8283,6 @@
             "homepage": "https://www.drupal.org/project/shield",
             "support": {
                 "source": "https://git.drupalcode.org/project/shield"
-            }
-        },
-        {
-            "name": "drupal/shortcode",
-            "version": "2.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/shortcode.git",
-                "reference": "2.0.1"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/shortcode-2.0.1.zip",
-                "reference": "2.0.1",
-                "shasum": "7b969e049351b6ebc5fe1296b5941cdb57a2d9eb"
-            },
-            "require": {
-                "drupal/core": "^8 || ^9"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "2.0.1",
-                    "datestamp": "1624649203",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "Denes.Szabo",
-                    "homepage": "https://www.drupal.org/user/582668"
-                },
-                {
-                    "name": "squall3d",
-                    "homepage": "https://www.drupal.org/user/1256364"
-                },
-                {
-                    "name": "sthomps5",
-                    "homepage": "https://www.drupal.org/user/3534579"
-                }
-            ],
-            "description": "Provides ShortCodes filter framework and API (like WP ShortCodes)",
-            "homepage": "https://www.drupal.org/project/shortcode",
-            "support": {
-                "source": "https://git.drupalcode.org/project/shortcode"
             }
         },
         {
@@ -10301,20 +9802,20 @@
         },
         {
             "name": "drupal/upgrade_status",
-            "version": "3.19.0",
+            "version": "4.0.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/upgrade_status.git",
-                "reference": "8.x-3.19"
+                "reference": "4.0.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/upgrade_status-8.x-3.19.zip",
-                "reference": "8.x-3.19",
-                "shasum": "e155b34b80f2782778b841d72639bd0ac8b923f9"
+                "url": "https://ftp.drupal.org/files/projects/upgrade_status-4.0.0.zip",
+                "reference": "4.0.0",
+                "shasum": "013afdb46a03c9db0119cb1ce60ca49631d64368"
             },
             "require": {
-                "drupal/core": "^8 || ^9",
+                "drupal/core": "^9 || ^10",
                 "mathieuviossat/arraytotexttable": "~1.0.0",
                 "mglaman/phpstan-drupal": "^1.0.0",
                 "nikic/php-parser": "^4.0.0",
@@ -10325,8 +9826,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-3.19",
-                    "datestamp": "1678815320",
+                    "version": "4.0.0",
+                    "datestamp": "1678815090",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -11497,50 +10998,6 @@
             "support": {
                 "source": "https://git.drupalcode.org/project/xmlsitemap",
                 "issues": "http://drupal.org/project/issues/xmlsitemap"
-            }
-        },
-        {
-            "name": "drupal/yaml_editor",
-            "version": "1.1.0",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/yaml_editor.git",
-                "reference": "8.x-1.1"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/yaml_editor-8.x-1.1.zip",
-                "reference": "8.x-1.1",
-                "shasum": "eb01f577316529808e73360e17b1798c6d5b297d"
-            },
-            "require": {
-                "drupal/core": "^8 || ^9"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "8.x-1.1",
-                    "datestamp": "1592902686",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "yannickoo",
-                    "homepage": "https://www.drupal.org/user/531118"
-                }
-            ],
-            "description": "Adds an editor for YAML configuration textareas.",
-            "homepage": "https://www.drupal.org/project/yaml_editor",
-            "support": {
-                "source": "https://git.drupalcode.org/project/yaml_editor"
             }
         },
         {
@@ -17182,21 +16639,23 @@
         },
         {
             "name": "symfony/finder",
-            "version": "v4.4.44",
+            "version": "v6.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/finder.git",
-                "reference": "66bd787edb5e42ff59d3523f623895af05043e4f"
+                "reference": "d9b01ba073c44cef617c7907ce2419f8d00d75e2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/finder/zipball/66bd787edb5e42ff59d3523f623895af05043e4f",
-                "reference": "66bd787edb5e42ff59d3523f623895af05043e4f",
+                "url": "https://api.github.com/repos/symfony/finder/zipball/d9b01ba073c44cef617c7907ce2419f8d00d75e2",
+                "reference": "d9b01ba073c44cef617c7907ce2419f8d00d75e2",
                 "shasum": ""
             },
             "require": {
-                "php": ">=7.1.3",
-                "symfony/polyfill-php80": "^1.16"
+                "php": ">=8.1"
+            },
+            "require-dev": {
+                "symfony/filesystem": "^6.0"
             },
             "type": "library",
             "autoload": {
@@ -17224,7 +16683,7 @@
             "description": "Finds files and directories via an intuitive fluent interface",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/finder/tree/v4.4.44"
+                "source": "https://github.com/symfony/finder/tree/v6.3.0"
             },
             "funding": [
                 {
@@ -17240,7 +16699,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2022-07-29T07:35:46+00:00"
+            "time": "2023-04-02T01:25:41+00:00"
         },
         {
             "name": "symfony/http-client-contracts",
@@ -19976,8 +19435,7 @@
         "drupal/filefield_paths": 10,
         "drupal/jsonapi_user_resources": 10,
         "drupal/symfony_mailer": 15,
-        "drupal/default_content": 15,
-        "drupal/cloudinary": 15
+        "drupal/default_content": 15
     },
     "prefer-stable": true,
     "prefer-lowest": false,
