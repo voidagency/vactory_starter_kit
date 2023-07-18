@@ -73,7 +73,7 @@
     "drupal/migrate_tools": "^6.0",
     "drupal/migrate_source_csv": "^3.1.0",
     "drupal/link_target": "^1.2.0",
-    "drupal/linkit": "^6.0@RC",
+    "drupal/linkit": "^6.1",
     "b-khouy/merge_translations": "^2.0",
     "drupal/stage_file_proxy": "^2.0",
     "drupal/editor_advanced_link": "^2.2",
@@ -166,7 +166,7 @@
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.3",
     "drupal/coder": "8.3.13",
-    "brainmaestro/composer-git-hooks": "^2.8"
+    "brainmaestro/composer-git-hooks": "3.0.0-alpha.1"
   },
   "extra": {
     "hooks": {
