@@ -5,6 +5,7 @@ namespace Drupal\vactory_core;
 use Drupal\Core\Access\AccessManagerInterface;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Menu\DefaultMenuLinkTreeManipulators;
 use Drupal\Core\Menu\MenuLinkInterface;
 use Drupal\Core\Routing\AdminContext;
@@ -32,9 +33,10 @@ class MenuRoleLinkTreeManipulator extends DefaultMenuLinkTreeManipulators {
     AccessManagerInterface $access_manager,
     AccountInterface $account,
     EntityTypeManagerInterface $entity_type_manager,
+    ModuleHandlerInterface $moduleHandler,
     AdminContext $adminContext
   ) {
-    parent::__construct($access_manager, $account, $entity_type_manager);
+    parent::__construct($access_manager, $account, $entity_type_manager, $moduleHandler);
     $this->adminContext = $adminContext;
   }
 
