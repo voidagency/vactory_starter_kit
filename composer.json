@@ -252,6 +252,9 @@
       },
       "drupal/csv_serialization": {
         "Drupal 10 compatibility": "https://gist.githubusercontent.com/b-khouy/b249e0a35a2ece62fe741ad330490b8e/raw/33500590ee13751624629833c39b7ba613938ce2/csv-serialization-tmp-patch.patch"
+      },
+      "drupal/views_autocomplete_filters": {
+        "D10: jquery once is removed": "https://www.drupal.org/files/issues/2023-03-03/jquery_once-3345731-2.patch"
       }
     }
   },
