@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "53e0b794a94eb6a1f77c32453c1c4d16",
+    "content-hash": "84b33687108706171dcc65843269a3cc",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -9165,17 +9165,17 @@
         },
         {
             "name": "drupal/textfield_counter",
-            "version": "2.1.0",
+            "version": "2.3.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/textfield_counter.git",
-                "reference": "2.1.0"
+                "reference": "2.3.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/textfield_counter-2.1.0.zip",
-                "reference": "2.1.0",
-                "shasum": "b042c2b0377e1da7f22197159502f15560600a86"
+                "url": "https://ftp.drupal.org/files/projects/textfield_counter-2.3.0.zip",
+                "reference": "2.3.0",
+                "shasum": "f8dd70d164122af714454c0cd3fd231cdfc2bfd5"
             },
             "require": {
                 "drupal/core": "^8 || ^9 || ^10"
@@ -9183,8 +9183,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "2.1.0",
-                    "datestamp": "1674673558",
+                    "version": "2.3.0",
+                    "datestamp": "1689777593",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -14381,16 +14381,16 @@
         },
         {
             "name": "phpstan/phpstan",
-            "version": "1.10.25",
+            "version": "1.10.26",
             "source": {
                 "type": "git",
                 "url": "https://github.com/phpstan/phpstan.git",
-                "reference": "578f4e70d117f9a90699324c555922800ac38d8c"
+                "reference": "5d660cbb7e1b89253a47147ae44044f49832351f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/578f4e70d117f9a90699324c555922800ac38d8c",
-                "reference": "578f4e70d117f9a90699324c555922800ac38d8c",
+                "url": "https://api.github.com/repos/phpstan/phpstan/zipball/5d660cbb7e1b89253a47147ae44044f49832351f",
+                "reference": "5d660cbb7e1b89253a47147ae44044f49832351f",
                 "shasum": ""
             },
             "require": {
@@ -14439,7 +14439,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-07-06T12:11:37+00:00"
+            "time": "2023-07-19T12:44:37+00:00"
         },
         {
             "name": "phpstan/phpstan-deprecation-rules",

@@ -237,7 +237,8 @@
         "Default field enhancer for fields": "https://gist.githubusercontent.com/voidagency/4861a0f0343a45cf0582553fc80c6b59/raw/2342d707c2b6708f2c18a69b870fcad1d5242df3/jsonapi_default_field_enhancer_for_fields.patch"
       },
       "b-khouy/cloudinary": {
-        "Cloudinary video media library compatibility fix": "https://gist.githubusercontent.com/voidagency/21729df75ca350faace0f7883960bc37/raw/88e6ce0980cb3e01c95f74e1c79b4baddcdf884e/cloudinary-video-media-library-compatibility-fix.patch"
+        "Cloudinary video media library compatibility fix": "https://gist.githubusercontent.com/voidagency/21729df75ca350faace0f7883960bc37/raw/88e6ce0980cb3e01c95f74e1c79b4baddcdf884e/cloudinary-video-media-library-compatibility-fix.patch",
+        "Fix symfony 6 compatibility": "https://gist.githubusercontent.com/b-khouy/b249e0a35a2ece62fe741ad330490b8e/raw/a793d6bf815b9df2c33808df9c9c379312312f3b/cloudinary-fix-symfony6-compatibility.patch"
       },
       "drupal/flag": {
         "Fix deprecated php 8.1 str_replace": "https://www.drupal.org/files/issues/2022-02-25/3266574-2.patch"
@@ -247,6 +248,9 @@
       },
       "drupal/jsonapi_search_api": {
         "Modifying a facet does not invalidate caches": "https://gist.githubusercontent.com/voidagency/299883e039129c50da852a42c704af91/raw/1812ca417adce536e82cede6da50f8e7952c7479/fix-jsonapi-search-api-facets-cache-3176987.patch"
+      },
+      "drupal/views_autocomplete_filters": {
+        "D10: jquery once is removed": "https://www.drupal.org/files/issues/2023-03-03/jquery_once-3345731-2.patch"
       }
     }
   },
