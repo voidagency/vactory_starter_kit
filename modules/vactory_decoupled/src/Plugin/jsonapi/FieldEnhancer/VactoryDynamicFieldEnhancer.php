@@ -337,7 +337,7 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
 
           $build = [
             //'#type'   => 'processed_text',
-            '#text'   => $value['value'] ?? '',
+            '#text'   => $value['value'] ?? $value,
             //'#format' => $format,
           ];
 
