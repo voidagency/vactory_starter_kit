@@ -256,6 +256,9 @@
       },
       "drupal/views_autocomplete_filters": {
         "D10: jquery once is removed": "https://www.drupal.org/files/issues/2023-03-03/jquery_once-3345731-2.patch"
+      },
+      "drupal/rate": {
+        "Entity queries must explicitly set whether the query should be access checked or not": "https://www.drupal.org/files/issues/2023-07-06/3331890-rate-entity-query-access-list-3.0.1-22.patch"
       }
     }
   },
