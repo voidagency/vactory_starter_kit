@@ -14,6 +14,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
+/**
+ * Class MenusController.
+ *
+ * Expose menu items.
+ *
+ * @package Drupal\vactory_decoupled\Controller
+ */
 class MenusController extends ControllerBase {
 
   /**
@@ -33,7 +40,7 @@ class MenusController extends ControllerBase {
   /**
    * Entity repository service.
    *
-   * @var EntityRepositoryInterface
+   * @var \Drupal\Core\Entity\EntityRepositoryInterface
    */
   protected $entityRepository;
 
@@ -61,11 +68,7 @@ class MenusController extends ControllerBase {
   /**
    * {@inheritdoc}
    */
-  public function __construct(
-    ConfigFactoryInterface $config_factory,
-    MenuLinkTreeInterface $menuLinkTree,
-    EntityRepositoryInterface $entityRepository
-  ) {
+  public function __construct(ConfigFactoryInterface $config_factory, MenuLinkTreeInterface $menuLinkTree, EntityRepositoryInterface $entityRepository) {
     $this->configFactory = $config_factory;
     $this->menuLinkTree = $menuLinkTree;
     $this->entityRepository = $entityRepository;
@@ -75,11 +78,7 @@ class MenusController extends ControllerBase {
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('config.factory'),
-      $container->get('menu.link_tree'),
-      $container->get('entity.repository')
-    );
+    return new static($container->get('config.factory'), $container->get('menu.link_tree'), $container->get('entity.repository'));
   }
 
   /**
@@ -113,7 +112,7 @@ class MenusController extends ControllerBase {
     if (empty($tree)) {
       return new JsonResponse([
         'items' => [],
-        'json' => json_encode([]),
+        'json'  => json_encode([]),
       ]);
     }
 
@@ -133,7 +132,7 @@ class MenusController extends ControllerBase {
     if (empty($menu['#items'])) {
       return new JsonResponse([
         'items' => [],
-        'json' => json_encode([]),
+        'json'  => json_encode([]),
       ]);
     }
 
@@ -141,7 +140,7 @@ class MenusController extends ControllerBase {
 
     $data = [
       'items' => array_values($this->menuItems),
-      'json' => json_encode(array_values($this->menuItems)),
+      'json'  => json_encode(array_values($this->menuItems)),
     ];
 
     return new JsonResponse($data);
@@ -161,7 +160,6 @@ class MenusController extends ControllerBase {
   protected function getMenuItems(array $tree, array &$items = []) {
     // Loop through the menu items.
     foreach ($tree as $item_value) {
-      /* @var $org_link \Drupal\Core\Menu\MenuLinkInterface */
       $org_link = $item_value['original_link'];
 
       $newValue = $this->getElementValue($org_link);
@@ -181,7 +179,10 @@ class MenusController extends ControllerBase {
    * @param \Drupal\Core\Menu\MenuLinkInterface $link
    *   The link from the menu.
    *
+   * Return menu items.
+   *
    * @return array
+   * @throws \Drupal\Core\Entity\EntityStorageException
    */
   protected function getElementValue(MenuLinkInterface $link) {
     $siteConfig = $this->configFactory->get('system.site');
@@ -219,6 +220,9 @@ class MenusController extends ControllerBase {
 
     $returnArray['url'] = $url;
 
+    $this->moduleHandler()
+      ->alter('menu_api', $returnArray, $link, $link->getMenuName());
+
     return $returnArray;
   }
 
@@ -230,7 +234,6 @@ class MenusController extends ControllerBase {
    * @param $request
    */
   private function setup($request) {
-
     // Get and set the max depth if available.
     $max = $request->get('max_depth');
     if (!empty($max)) {
@@ -243,4 +246,5 @@ class MenusController extends ControllerBase {
       $this->minDepth = $min;
     }
   }
+
 }
