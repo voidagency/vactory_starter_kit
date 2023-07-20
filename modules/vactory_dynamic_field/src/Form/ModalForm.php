@@ -459,7 +459,7 @@ class ModalForm extends FormBase {
             $element_label = t('@field_label', ['@field_label' => $label]);
 
             $element_default_value = isset($this->widgetData[$i][$field_id][$field_key]) && !isset($user_input['components']) ? $this->widgetData[$i][$field_id][$field_key] : NULL;
-            $element_default_value = $user_input['components'][$i][$field_id][$field_key] ?? $element_default_value;;
+            $element_default_value = $user_input['components'][$i][$field_id][$field_key] ?? $element_default_value;
             $element_options = isset($field_info['options']) ? $field_info['options'] : [];
 
             $ds_field_name = '';
@@ -505,7 +505,7 @@ class ModalForm extends FormBase {
           $element_label = t('@field_label', ['@field_label' => $field['label']]);
 
           $element_default_value = isset($this->widgetData[$i][$field_id]) && !isset($user_input['components']) ? $this->widgetData[$i][$field_id] : NULL;
-          $element_default_value = $user_input['components'][$i][$field_id] ?? $element_default_value;;
+          $element_default_value = $user_input['components'][$i][$field_id] ?? $element_default_value;
           $element_options = isset($field['options']) ? $field['options'] : [];
 
           $ds_field_name = '';
