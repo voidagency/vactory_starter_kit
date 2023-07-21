@@ -174,7 +174,7 @@ class SondageForm extends FormBase {
       $storage_results[$voted_option_value]['votters'][] = $current_user->id();
       $storage_results['all_votters'][] = $current_user->id();
       $event = new VactorySondageVoteEvent($entity, $user);
-      $this->eventDispatcher->dispatch(VactorySondageVoteEvent::EVENT_NAME, $event);
+      $this->eventDispatcher->dispatch($event, VactorySondageVoteEvent::EVENT_NAME);
       $entity->set('field_sondage_results', Json::encode($storage_results));
       $entity->save();
       $response = new AjaxResponse();

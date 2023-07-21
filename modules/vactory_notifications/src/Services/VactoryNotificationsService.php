@@ -230,7 +230,7 @@ class VactoryNotificationsService {
    */
   public function triggerNotificationsToast($notification) {
     $event = new VactoryNotificationsToastEvent($notification);
-    $this->eventDispatcher->dispatch(VactoryNotificationsToastEvent::EVENT_NAME, $event);
+    $this->eventDispatcher->dispatch($event, VactoryNotificationsToastEvent::EVENT_NAME);
   }
 
 }
