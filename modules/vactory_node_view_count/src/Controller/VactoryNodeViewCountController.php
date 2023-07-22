@@ -45,7 +45,7 @@ class VactoryNodeViewCountController extends ControllerBase {
    * Update counter (get nid from request body).
    */
   public function updateCounter(Request $request) {
-    $nid = $request->request->get('nid');
+    $nid = $request->request->all('nid');
     if ($nid) {
       $node = Node::load($nid);
       if ($node instanceof NodeInterface) {

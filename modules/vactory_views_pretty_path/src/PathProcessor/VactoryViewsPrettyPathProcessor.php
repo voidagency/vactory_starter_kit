@@ -280,7 +280,7 @@ class VactoryViewsPrettyPathProcessor implements InboundPathProcessorInterface, 
           // Get the filter mapped name.
           $filter_name = $view_filter_name_map[$taxonomy_exposed_filter['id']];
           // Check if filter identifier appears on query params.
-          $tid = isset($query_params[$identifier]) ? $query_params[$identifier] : $request->request->get($identifier);
+          $tid = isset($query_params[$identifier]) ? $query_params[$identifier] : $request->request->all($identifier);
           if (isset($tid)) {
             if (is_array($tid)) {
               // Filter with multiple values case.

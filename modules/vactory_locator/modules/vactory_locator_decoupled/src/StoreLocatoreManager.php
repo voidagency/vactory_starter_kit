@@ -171,7 +171,7 @@ class StoreLocatoreManager implements StoreLocatoreManagerInterface {
       }
       $results = array_map(static fn($arr) => ['content' => $arr['description'], 'value' => $arr['place_id']], $response['predictions']);
 
-      $response = CacheableJsonResponse::create($results, $res->getStatusCode());
+      $response = new CacheableJsonResponse($results, $res->getStatusCode());
       $response->getCacheableMetadata()->addCacheableDependency(CacheableMetadata::createFromRenderArray($cache));
       return $response;
     } catch (\Exception $e) {
