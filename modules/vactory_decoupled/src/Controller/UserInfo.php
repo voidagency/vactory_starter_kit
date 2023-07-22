@@ -19,7 +19,7 @@ class UserInfo extends ControllerBase {
     $user = User::load($this->currentUser()->id());
     $data = get_oauth_user_infos($user);
     $data["sub"] = $user->id();
-    return JsonResponse::create($data);
+    return new JsonResponse($data);
   }
 
 }

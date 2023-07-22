@@ -63,7 +63,7 @@ class checkShieldController extends ControllerBase {
       ],
     ];
 
-    $response = CacheableJsonResponse::create(['enabled' => $is_enabled], Response::HTTP_OK);
+    $response = new CacheableJsonResponse(['enabled' => $is_enabled], Response::HTTP_OK);
     $response->addCacheableDependency(CacheableMetadata::createFromRenderArray($cache));
     return $response;
   }

@@ -103,7 +103,7 @@ class PathTranslator extends ControllerBase
     $error_match_info = $this->router->match($error_route->getPath());
 
     // Assume a 200 from start.
-    $this->response = JsonResponse::create([],200);
+    $this->response = new JsonResponse([], 200);
 
     $output = [];
     $output['status'] = 200;
