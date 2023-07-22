@@ -255,6 +255,9 @@
       },
       "drupal/rate": {
         "Entity queries must explicitly set whether the query should be access checked or not": "https://www.drupal.org/files/issues/2023-07-06/3331890-rate-entity-query-access-list-3.0.1-22.patch"
+      },
+      "drupal/jsonapi_extras": {
+        "Symfony 6 compatibility": "https://www.drupal.org/files/issues/2023-06-10/3349731-9-inputbag-scalar.patch"
       }
     }
   },
