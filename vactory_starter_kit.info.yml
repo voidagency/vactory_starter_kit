@@ -166,7 +166,6 @@ install:
   - vactory_google_places
   - vactory_dynamic_field
   # Vactory Custom
-  - vactory_dynamic_field_froala
   - vactory_dynamic_field_bootstrap
   - vactory_dynamic_field_sliders
   - vactory_dynamic_field_wysiwyg_templates
@@ -175,7 +174,10 @@ install:
   - vactory_jquerycolorpicker_css_fix
   - dblog
   - vactory_decoupled
+  - vactory_decoupled_router
+  - vactory_decoupled_router_default_pages
+  - vactory_decoupled_webform
 themes:
   - vactory
-  - seven
+  - claro
   - amptheme
