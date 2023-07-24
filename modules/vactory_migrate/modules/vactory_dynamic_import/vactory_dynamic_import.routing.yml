@@ -1,0 +1,23 @@
+vactory_dynamic_import.form:
+  path: '/admin/config/vactory_dynamic_import'
+  defaults:
+    _form: '\Drupal\vactory_dynamic_import\Form\DynamicImportForm'
+    _title: 'Vactory Dynamic Import'
+  requirements:
+    _role: 'administrator'
+
+vactory_dynamic_import.rollback:
+  path: '/admin/config/vactory_dynamic_import/rollback'
+  defaults:
+    _form: '\Drupal\vactory_dynamic_import\Form\RollbackConfirmation'
+    _title: 'Vactory Dynamic Import - Rollback'
+  requirements:
+    _role: 'administrator'
+
+vactory_dynamic_import.import:
+  path: '/admin/config/vactory_dynamic_import/import'
+  defaults:
+    _form: '\Drupal\vactory_dynamic_import\Form\ImportConfirmation'
+    _title: 'Vactory Dynamic Import - Import'
+  requirements:
+    _role: 'administrator'
