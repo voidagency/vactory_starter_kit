@@ -133,7 +133,7 @@ class RollbackConfirmation extends FormBase {
     });
 
     foreach ($rollbacks_checked as $migration) {
-      $split = explode('.', $migration);
+      $split = $migration ? explode('.', $migration) : [];
       $id = end($split);
       if ($id != $migration_id) {
         $this->rollbackService->rollback($id);

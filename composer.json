@@ -258,6 +258,9 @@
       },
       "drupal/jsonapi_extras": {
         "Symfony 6 compatibility": "https://www.drupal.org/files/issues/2023-06-10/3349731-9-inputbag-scalar.patch"
+      },
+      "drupal/auto_entityqueue": {
+        "Access check for adding to entity queue fails": "https://www.drupal.org/files/issues/2023-06-12/auto_entityqueue_accessCheck.patch"
       }
     }
   },

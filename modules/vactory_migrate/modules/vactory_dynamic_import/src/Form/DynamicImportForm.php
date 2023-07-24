@@ -269,7 +269,7 @@ class DynamicImportForm extends FormBase {
         $data['process']['legacy_id'] = $field;
       }
       else {
-        $config = explode('|', $field);
+        $config = $field ? explode('|', $field) : [];
         if (is_array($config) && count($config) == 3) {
           $plugin = $config[0];
           $mapped_field = str_replace(':', '/', $config[1]);
@@ -392,7 +392,7 @@ class DynamicImportForm extends FormBase {
     $entity_type = $form_state->getValue('entity_type');
     $bundle = $form_state->getValue('bundle');
     $delimiter = $form_state->getValue('delimiter');
-    $delimiter = trim($delimiter);
+    $delimiter = $delimiter ? trim($delimiter) : $delimiter;
     $label = $form_state->getValue('label');
     $translation = $form_state->getValue('translation');
     $language = $form_state->getValue('language');
@@ -531,10 +531,10 @@ class DynamicImportForm extends FormBase {
 
     foreach ($header as $field) {
       if ($field != 'id' && $field != 'original') {
-        $config = explode('|', $field);
-        $extracted_field = $config[1];
-        $field = explode(':', $extracted_field);
-        $field = $field[0];
+        $config = $field ? explode('|', $field) : [];
+        $extracted_field = $config[1] ?? '';
+        $field = $extracted_field ? explode(':', $extracted_field) : [];
+        $field = $field[0] ?? '';
         if (!in_array($field, $fields) && $field != 'id' && $field != 'original') {
           $unknown_fields[] = $field;
         }
@@ -556,8 +556,8 @@ class DynamicImportForm extends FormBase {
    * Get Term Target Bundle By Field.
    */
   private function getTermTargetBundle($entity_type, $bundle, $field) {
-    $splitted = explode('/', $field);
-    $field = $splitted[0];
+    $splitted = $field ? explode('/', $field) : [];
+    $field = $splitted[0] ?? '';
     $field_definitions = $this->entityFieldManager->getFieldDefinitions($entity_type, $bundle);
     foreach ($field_definitions as $field_name => $field_definition) {
       if ($field_name == $field) {
