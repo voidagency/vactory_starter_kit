@@ -124,8 +124,9 @@ class RollbackConfirmation extends FormBase {
    *   The current state of the form.
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $migration_id = \Drupal::request()->query->get('migration');
-
+    $query_params = \Drupal::request()->query->all();
+    $migration_id = $query_params['migration'] ?? NULL;
+    $delimiter = $query_params['delimiter'] ?? NULL;
     $rollbacks = $form_state->getValue('rollbacks');
 
     $rollbacks_checked = array_filter($rollbacks, function ($item) {
@@ -141,7 +142,10 @@ class RollbackConfirmation extends FormBase {
       }
     }
 
-    $url = Url::fromRoute('vactory_dynamic_import.import')->setRouteParameters(['migration' => $migration_id]);
+    $url = Url::fromRoute('vactory_dynamic_import.import')->setRouteParameters([
+      'migration' => $migration_id,
+      'delimiter' => $delimiter,
+    ]);
 
     $form_state->setRedirectUrl($url);
   }

@@ -95,8 +95,10 @@ class ImportConfirmation extends FormBase {
    *   The current state of the form.
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $migration_id = \Drupal::request()->query->get('migration');
-    $this->importService->import($migration_id);
+    $query_params = \Drupal::request()->query->all();
+    $migration_id = $query_params['migration'] ?? NULL;
+    $delimiter = $query_params['delimiter'] ?? NULL;
+    $this->importService->import($migration_id, $delimiter);
     $form_state->setRedirect('vactory_dynamic_import.form');
   }
 
