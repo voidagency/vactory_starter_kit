@@ -130,6 +130,22 @@ class DynamicImportForm extends FormBase {
                                     The migration config will be named as 'migrate_plus.migration.[entity]_[bundle]_migration_[key]' for easy tracking "),
         ];
 
+        $groups = $this->entityTypeManager->getStorage('migration_group')
+          ->loadMultiple();
+        $groups = array_map(fn($group) => $group->label(), $groups);
+        $current_path = $current_path = \Drupal::service('path.current')->getPath();
+        $link = Url::fromRoute('entity.migration_group.add_form', ['destination' => $current_path])
+          ->toString(TRUE)
+          ->getGeneratedUrl();
+        $form['container']['migration_group'] = [
+          '#type' => 'select',
+          '#title' => $this->t('Migration label'),
+          '#options' => $groups,
+          '#empty_option' => '- Select -',
+          '#required' => TRUE,
+          '#description' => $this->t('Select an existing migration group or <a href="@link">Create new migration group</a>', ['@link' => $link]),
+        ];
+
         $form['container']['delimiter'] = [
           '#type'        => 'textfield',
           '#title'       => $this->t('Delimiter'),
@@ -211,6 +227,7 @@ class DynamicImportForm extends FormBase {
 
     $data['id'] = $id;
     $data['label'] = "{$values['entity_type']} {$values['bundle']} migration";
+    $data['migration_group'] = $values['migration_group'];
     $data['source'] = [
       'plugin'           => 'csv',
       'header_row_count' => 1,
@@ -269,7 +286,7 @@ class DynamicImportForm extends FormBase {
         $data['process']['legacy_id'] = $field;
       }
       else {
-        $config = explode('|', $field);
+        $config = $field ? explode('|', $field) : [];
         if (is_array($config) && count($config) == 3) {
           $plugin = $config[0];
           $mapped_field = str_replace(':', '/', $config[1]);
@@ -392,7 +409,7 @@ class DynamicImportForm extends FormBase {
     $entity_type = $form_state->getValue('entity_type');
     $bundle = $form_state->getValue('bundle');
     $delimiter = $form_state->getValue('delimiter');
-    $delimiter = trim($delimiter);
+    $delimiter = $delimiter ? trim($delimiter) : $delimiter;
     $label = $form_state->getValue('label');
     $translation = $form_state->getValue('translation');
     $language = $form_state->getValue('language');
@@ -531,10 +548,10 @@ class DynamicImportForm extends FormBase {
 
     foreach ($header as $field) {
       if ($field != 'id' && $field != 'original') {
-        $config = explode('|', $field);
-        $extracted_field = $config[1];
-        $field = explode(':', $extracted_field);
-        $field = $field[0];
+        $config = $field ? explode('|', $field) : [];
+        $extracted_field = $config[1] ?? '';
+        $field = $extracted_field ? explode(':', $extracted_field) : [];
+        $field = $field[0] ?? '';
         if (!in_array($field, $fields) && $field != 'id' && $field != 'original') {
           $unknown_fields[] = $field;
         }
@@ -556,8 +573,8 @@ class DynamicImportForm extends FormBase {
    * Get Term Target Bundle By Field.
    */
   private function getTermTargetBundle($entity_type, $bundle, $field) {
-    $splitted = explode('/', $field);
-    $field = $splitted[0];
+    $splitted = $field ? explode('/', $field) : [];
+    $field = $splitted[0] ?? '';
     $field_definitions = $this->entityFieldManager->getFieldDefinitions($entity_type, $bundle);
     foreach ($field_definitions as $field_name => $field_definition) {
       if ($field_name == $field) {
