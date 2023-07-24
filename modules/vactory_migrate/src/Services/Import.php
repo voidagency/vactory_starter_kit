@@ -11,10 +11,10 @@ class Import {
   public function __construct() {
   }
 
-  public function import($migration_id) {
+  public function import($migration_id, $delimiter = NULL) {
 
     $batch_config = \Drupal::config('vactory_migrate.settings')->get('batch_size');
-    $delimiter = \Drupal::config('vactory_migrate.settings')->get('delimiter');
+    $delimiter = $delimiter ?? \Drupal::config('vactory_migrate.settings')->get('delimiter');
     $batch_size = isset($batch_config) ? $batch_config : 1000 ;
 
     //Get migration source path
