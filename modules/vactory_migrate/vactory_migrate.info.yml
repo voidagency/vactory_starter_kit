@@ -7,3 +7,6 @@ core_version_requirement: ^8 || ^9
 package: Vactory
 dependencies:
   - migrate_tools
+  - migrate_source_csv
+  - migrate_file
+  - migrate_plus

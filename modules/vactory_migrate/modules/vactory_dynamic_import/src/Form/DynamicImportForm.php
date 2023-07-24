@@ -139,7 +139,7 @@ class DynamicImportForm extends FormBase {
           ->getGeneratedUrl();
         $form['container']['migration_group'] = [
           '#type' => 'select',
-          '#title' => $this->t('Migration label'),
+          '#title' => $this->t('Migration group'),
           '#options' => $groups,
           '#empty_option' => '- Select -',
           '#required' => TRUE,
@@ -383,13 +383,14 @@ class DynamicImportForm extends FormBase {
         ->setRouteParameters([
           'migration' => $id,
           'rollback'  => "{$values['entity_type']}_{$values['bundle']}_migration_",
+          'delimiter' => $values['delimiter'],
         ]);
 
       $form_state->setRedirectUrl($url);
     }
     else {
       $url = Url::fromRoute('vactory_dynamic_import.import')
-        ->setRouteParameters(['migration' => $id]);
+        ->setRouteParameters(['migration' => $id, 'delimiter' => $values['delimiter']]);
 
       $form_state->setRedirectUrl($url);
     }
