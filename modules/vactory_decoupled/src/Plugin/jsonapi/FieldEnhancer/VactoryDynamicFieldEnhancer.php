@@ -561,6 +561,64 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
           $value = $response;
         }
 
+        if ($info['type'] === 'dynamic_api_fetch' && !empty($value)){
+
+          $url = \Drupal::token()->replace($value['url']);
+          $query_params_input =  \Drupal::token()->replace($value['query_params']);
+          $headers_input = \Drupal::token()->replace($value['headers']);
+          $query_params = [];
+          $headers = [];
+
+          if (!empty($query_params_input)) {
+            $query_params_as_rows = explode(PHP_EOL, $query_params_input);
+            if (!empty($query_params_as_rows)) {
+              foreach ($query_params_as_rows as $row) {
+                $param = explode('=', $row);
+                if (count($param) === 2) {
+                  $query_params[trim($param[0])] = trim($param[1]);
+                }
+              }
+            }
+          }
+
+          if (!empty($headers_input)) {
+            $headers_as_rows = explode(PHP_EOL, $headers_input);
+            if (!empty($headers_as_rows)) {
+              foreach ($headers_as_rows as $row) {
+                $header = explode('=', $row);
+                if (count($header) === 2) {
+                  $headers[trim($header[0])] = trim($header[1]);
+                }
+              }
+            }
+          }
+          $api_config = [
+            'url' => $url,
+            'headers' => $headers,
+            'query_params' => $query_params
+          ];
+          $this->moduleHandler->alter('dynamic_api_fetch_config', $api_config, $info);
+
+
+          if (is_array($api_config['query_params']) && count($api_config['query_params']) > 0){
+            $api_config['url'] = $api_config['url'] . '?' . http_build_query($api_config['query_params']);
+          }
+
+          try {
+            $request = \Drupal::httpClient()->get($api_config['url'], [
+              "headers" => $api_config['headers'],
+            ]);
+
+            $content = $request->getBody()->getContents();
+            $result = json_decode($content,TRUE);
+            $this->moduleHandler->alter('dynamic_api_fetch_result', $result, $info);
+            $value = $result;
+
+          }catch (\Exception $e){
+            \Drupal::logger('dynamic_api_fetch')->error($e->getMessage());
+          }
+        }
+
         $cacheability = $this->cacheability;
         // Apply other modules formatters if exist on current component.
         $this->moduleHandler->alter('decoupled_df_format', $value, $info, $cacheability);
