@@ -679,7 +679,7 @@ class VactoryMigratePluginForm extends FormBase {
       ->getGeneratedUrl();
     $form['migration_group'] = [
       '#type' => 'select',
-      '#title' => $this->t('Migration label'),
+      '#title' => $this->t('Migration group'),
       '#options' => $groups,
       '#empty_option' => '- Select -',
       '#required' => TRUE,
@@ -752,10 +752,10 @@ class VactoryMigratePluginForm extends FormBase {
     ];
 
     if (!empty($values['source']['constants'])) {
-      $constants = explode("\n", $values['source']['constants']);
+      $constants = isset($values['source']['constants']) ? explode("\n", $values['source']['constants']) : [];
       foreach ($constants as &$constant) {
-        $constant = trim($constant);
-        $constant = explode('|', $constant);
+        $constant = $constant ? trim($constant) : $constant;
+        $constant = $constant ? explode('|', $constant) : [];
         if (count($constant) === 2) {
           $constant = [trim($constant[0]) => trim($constant[1])];
         }
