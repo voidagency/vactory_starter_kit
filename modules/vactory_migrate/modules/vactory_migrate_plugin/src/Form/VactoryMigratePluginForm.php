@@ -679,7 +679,7 @@ class VactoryMigratePluginForm extends FormBase {
       ->getGeneratedUrl();
     $form['migration_group'] = [
       '#type' => 'select',
-      '#title' => $this->t('Migration label'),
+      '#title' => $this->t('Migration group'),
       '#options' => $groups,
       '#empty_option' => '- Select -',
       '#required' => TRUE,

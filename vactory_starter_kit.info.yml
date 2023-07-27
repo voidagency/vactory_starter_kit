@@ -175,6 +175,9 @@ install:
   - vactory_jquerycolorpicker_css_fix
   - dblog
   - vactory_decoupled
+  - vactory_decoupled_router
+  - vactory_decoupled_router_default_pages
+  - vactory_decoupled_webform
 themes:
   - vactory
   - seven
