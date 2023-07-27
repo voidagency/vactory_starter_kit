@@ -1,16 +1,29 @@
-Vactory UX Notes Module Installation and Setup Guide
+# Vactory UX Notes
 
+Provides a five stars website UX rate popin through which user could
+submit there notes with comments possibility.
+
+## Installation
+`drush en vactory_ux_notes -y`
+
+## Demo video
+https://www.loom.com/share/1e4e8e8fe847431b9439de59da23d426
+
+## Configuration
 Follow these steps to enable and configure the Vactory UX Notes module:
 Step 1: Enable the Module
 
     Open a terminal or command prompt.
-    Use the drush en command to enable the Vactory UX Notes module. Type the following command and press Enter:
+    Use the drush en command to enable the Vactory UX Notes module. Type
+    the following command and press Enter:
 
     drush en vactory_ux_notes
 
 Step 2: Display the Webform
 
-    Once the module is enabled, you should be able to see the webform with the ID "ux_note_form." This webform will allow users to submit their feedback notes.
+    Once the module is enabled, you should be able to see the webform with
+    the ID "ux_note_form." This webform will allow users to submit their 
+    feedback notes.
 
 Step 3: Add Custom Block
 
@@ -24,7 +37,9 @@ Step 4: Choose a Template
 
 Step 5: Configure Block Display
 
-    Specify where you want to display the block by filling in the block configuration. You can control this by selecting the page route or content type where the block should appear.
+    Specify where you want to display the block by filling in the block
+    configuration. You can control this by selecting the page route or content
+    type where the block should appear.
 
 Step 6: Fill in Text Groups
 
@@ -33,12 +48,19 @@ Step 6: Fill in Text Groups
 
 Step 7: Verify Block Display
 
-    Go to the front page or the specific page where you inserted the custom block.
+    Go to the front page or the specific page where you inserted the custom
+    block.
     You should now see the "Ux Note" block with the configured content.
 
 Step 8: Check User Feedback
 
     In the Backoffice, navigate to '/admin/user-experience/dashboard'.
-    Here, you can check the results, notes, and average ratings of the users' feedback.
+    Here, you can check the results, notes, and average ratings of the
+    users feedback.
 
-Congratulations! You have successfully installed and configured the Vactory UX Notes module. Users can now provide their feedback through the webform, and you can review their ratings and notes in the Backoffice dashboard.
+Congratulations! You have successfully installed and configured the Vactory
+UX Notes module. Users can now provide their feedback through the webform, 
+and you can review their ratings and notes in the Backoffice dashboard.
+
+## Maintainers:
+Meryem Dibe : <m.dibe@void.fr>
