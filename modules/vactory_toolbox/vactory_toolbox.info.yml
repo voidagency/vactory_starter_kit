@@ -2,8 +2,7 @@ name: 'ToolBox'
 description: 'Block ToolBox'
 type: module
 package: Vactory
-core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^9 || ^10
 dependencies:
   - node
   - block

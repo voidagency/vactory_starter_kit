@@ -1,7 +1,6 @@
 name: Vactory Jquery Colorpicker CSS Fix
 description: Custom module to fix Jquery Colorpicker conrib module css bugs.
 type: module
-core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^9 || ^10
 dependencies:
   - jquery_colorpicker

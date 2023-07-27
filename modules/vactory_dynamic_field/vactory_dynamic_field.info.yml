@@ -2,8 +2,7 @@ name: 'Dynamic Field'
 type: module
 description: Wysiwyg Dynamic Field.
 package: Vactory Core
-core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^9 || ^10
 configure: vactory_dynamic_field.settings_form
 dependencies:
   - twig_tweak

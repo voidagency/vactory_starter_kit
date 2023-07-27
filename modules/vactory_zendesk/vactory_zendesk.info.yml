@@ -1,10 +1,9 @@
 name: Zendesk
 description: 'Provides chat zendesk'
 type: module
-core: 8.x
 package: Vactory
 dependencies:
 - node
 - block
 version: 8.x-1.0
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^9 || ^10

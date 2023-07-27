@@ -35,7 +35,7 @@ function _vactory_core_switch_environment($environment = '') {
   include_once \Drupal::root() . '/core/includes/install.inc';
 
   if (!in_array($environment, ['development', 'production'])) {
-    drush_log(dt('Missing argument: development, production.'), 'error');
+    echo 'Missing argument: development, production.';
     return;
   }
 

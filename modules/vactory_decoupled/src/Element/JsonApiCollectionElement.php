@@ -221,6 +221,7 @@ class JsonApiCollectionElement extends FormElement {
 
     $queue_ids = $storage->getQuery()
       ->condition('status', TRUE)
+      ->accessCheck(FALSE)
       ->execute();
 
     $queues = $storage->loadMultiple($queue_ids);

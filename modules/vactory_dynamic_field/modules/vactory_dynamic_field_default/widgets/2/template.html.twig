@@ -11,21 +11,23 @@
 {% endif %}
 
 <div class="accordion" id="{{ accordion_id }}">
-  {% for key, item in content if key|first != '#' %}
-    {% set collapsed = (key != 0) ? 'collapsed' : 'collapsed' %}
-    <div class="card">
-      <div class="card-header" id="heading{{ accordion_id }}-{{ key + 1 }}">
-        <h5 class="mb-0">
-          <button class="btn btn-link {{ collapsed }}"
-                  type="button"
-                  data-toggle="collapse"
-                  data-target="#collapse{{ accordion_id }}-{{ key + 1 }}" aria-expanded="{#% if loop.first %} true {% else %} false {% endif %#}" aria-controls="collapse{{ accordion_id }}-{{ key + 1 }}">{{ item.title }}</button>
-        </h5>
-      </div>
+  {% for key, item in content %}
+    {% if key|first != '#' %}
+      {% set collapsed = (key != 0) ? 'collapsed' : 'collapsed' %}
+      <div class="card">
+        <div class="card-header" id="heading{{ accordion_id }}-{{ key + 1 }}">
+          <h5 class="mb-0">
+            <button class="btn btn-link {{ collapsed }}"
+                    type="button"
+                    data-toggle="collapse"
+                    data-target="#collapse{{ accordion_id }}-{{ key + 1 }}" aria-expanded="{#% if loop.first %} true {% else %} false {% endif %#}" aria-controls="collapse{{ accordion_id }}-{{ key + 1 }}">{{ item.title }}</button>
+          </h5>
+        </div>
 
-      <div id="collapse{{ accordion_id }}-{{ key + 1 }}" class="collapse {#% if loop.first %} show {% endif %#}" aria-labelledby="heading{{ accordion_id }}-{{ key + 1 }}" data-parent="#{{ accordion_id }}">
-        <div class="card-body">{{ item.description.value|raw }}</div>
+        <div id="collapse{{ accordion_id }}-{{ key + 1 }}" class="collapse {#% if loop.first %} show {% endif %#}" aria-labelledby="heading{{ accordion_id }}-{{ key + 1 }}" data-parent="#{{ accordion_id }}">
+          <div class="card-body">{{ item.description.value|raw }}</div>
+        </div>
       </div>
-    </div>
+    {% endif %}
   {% endfor %}
 </div>

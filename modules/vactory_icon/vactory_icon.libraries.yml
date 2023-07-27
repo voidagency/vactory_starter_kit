@@ -11,6 +11,7 @@ vactory_icon.fonticonpicker:
   dependencies:
     - core/jquery
     - core/drupalSettings
+    - core/once
 
 settings_form:
   version: 1.0

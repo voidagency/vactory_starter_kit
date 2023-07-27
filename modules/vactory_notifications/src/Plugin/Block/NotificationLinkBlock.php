@@ -38,7 +38,8 @@ class NotificationLinkBlock extends BlockBase {
       $query = \Drupal::entityQuery('notifications_entity')
         ->condition('notification_concerned_users', $uid, 'LIKE')
         ->condition('notification_viewers', $uid, 'NOT LIKE')
-        ->condition('status', 1);
+        ->condition('status', 1)
+        ->accessCheck(TRUE);
       $results = $query->execute();
       $new_notifications_counter = is_array($results) ? count($results) : 0;
       $notification_view = View::load('notifications');

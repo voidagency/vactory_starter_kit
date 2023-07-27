@@ -1,8 +1,7 @@
 name: La Factory Starter Kit
 type: profile
 description: 'Install with commonly used features pre-configured.'
-core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^9 || ^10
 exclusive: TRUE
 distribution:
   name: La Factory
@@ -140,10 +139,9 @@ install:
   - token
   - responsive_preview
   - merge_translations
-  - block_blacklist
+  - block_list_override
   - yoast_seo
   - seckit
-  - wysiwyg_template
   - minifyhtml
   - responsive_favicons
   - amp

@@ -15,6 +15,7 @@ function vactory_dynamic_field_last_nodes_dynamic_field_content_alter(&$content)
     $key = $content['components'][0]['key'];
     if ($key == 'last_nodes_listing') {
       $query = \Drupal::entityQuery('node');
+      $query->accessCheck(TRUE);
       $content_type = $content['components'][0]['group_content_type']['content_type'];
       $node_ids = [];
       if (!empty($content_type)) {

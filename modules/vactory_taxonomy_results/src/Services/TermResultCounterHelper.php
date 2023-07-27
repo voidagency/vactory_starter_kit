@@ -12,7 +12,8 @@ class TermResultCounterHelper {
 
   public function getTermResultCount($tid, $plugin = NULL, $entity_type = NULL, $bundle = NULL) {
     $query = \Drupal::entityQuery('term_result_count')
-      ->condition('tid', $tid);
+      ->condition('tid', $tid)
+      ->accessCheck(FALSE);
     if (!empty($entity_type)) {
       $query->condition('entity_type', $entity_type);
     }
@@ -33,7 +34,8 @@ class TermResultCounterHelper {
       ->condition('tid', $tid)
       ->condition('entity_type', $entity_type)
       ->condition('bundle', $bundle)
-      ->condition('plugin', $plugin);
+      ->condition('plugin', $plugin)
+      ->accessCheck(FALSE);
     $entity_ids = $query->execute();
     if (!empty($entity_ids)) {
       $entity_id = reset($entity_ids);
@@ -55,7 +57,8 @@ class TermResultCounterHelper {
       ->condition('tid', $tid)
       ->condition('entity_type', $entity_type)
       ->condition('bundle', $bundle)
-      ->condition('plugin', $plugin);
+      ->condition('plugin', $plugin)
+      ->accessCheck(FALSE);
     $entity_ids = $query->execute();
     if (!empty($entity_ids)) {
       $entity_id = reset($entity_ids);
@@ -80,6 +83,7 @@ class TermResultCounterHelper {
       ->condition('bundle', $bundle)
       ->condition('entity_type', $entity_type)
       ->condition('plugin', $plugin)
+      ->accessCheck(FALSE)
       ->execute();
     if (!empty($termResultCountIds)) {
       $termResultCountId = reset($termResultCountIds);
@@ -121,6 +125,7 @@ class TermResultCounterHelper {
       ->condition('bundle', $bundle)
       ->condition('entity_type', $entity_type)
       ->condition('plugin', $plugin)
+      ->accessCheck(FALSE)
       ->execute();
     if (!empty($ids)) {
       $id = reset($ids);

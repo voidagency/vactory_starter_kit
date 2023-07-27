@@ -15,4 +15,4 @@ views_filter_links:
   dependencies:
     - core/jquery
     - core/drupalSettings
-    - core/jquery.once
+    - core/once

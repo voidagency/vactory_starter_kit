@@ -70,6 +70,7 @@ class TermResultCountListBuilder extends EntityListBuilder {
     $total = $this->getStorage()
       ->getQuery()
       ->count()
+      ->accessCheck(FALSE)
       ->execute();
 
     $build['summary']['#markup'] = $this->t('Total termresultscounts: @total', ['@total' => $total]);

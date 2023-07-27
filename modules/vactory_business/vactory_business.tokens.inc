@@ -43,6 +43,7 @@ function vactory_business_tokens($type, $tokens, array $data, array $options, Bu
       ->getQuery()
       ->condition('type', 'vactory_business')
       ->condition('field_business_users', Drupal::currentUser()->id())
+      ->accessCheck(TRUE)
       ->execute();
     if (!empty($nids)) {
       // Update node.
