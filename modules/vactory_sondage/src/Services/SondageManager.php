@@ -25,6 +25,7 @@ class SondageManager {
 
   /**
    * Media Files manager Service.
+   *
    * @var \Drupal\vactory_decoupled\MediaFilesManager
    */
   protected $mediaFilesManager;
@@ -32,7 +33,7 @@ class SondageManager {
   /**
    * {@inheritDoc}
    */
-  public function __construct(ContainerAwareEventDispatcher $eventDispatcher,MediaFilesManager $mediaFilesManager ) {
+  public function __construct(ContainerAwareEventDispatcher $eventDispatcher, MediaFilesManager $mediaFilesManager) {
     $this->eventDispatcher = $eventDispatcher;
     $this->mediaFilesManager = $mediaFilesManager;
   }
@@ -142,10 +143,14 @@ class SondageManager {
     throw new InvalidArgumentException(sprintf('Argument 1 of %s::isSondageClosed method should be an instance of %s with bundle "vactory_sondage".', static::class, $block_content_class));
   }
 
+  /**
+   * Adding a vote.
+   */
   public function vote($entity, $voted_option_value) {
 
     $current_user = \Drupal::currentUser();
-    $user = \Drupal::entityTypeManager()->getStorage('user')
+    $user = \Drupal::entityTypeManager()
+      ->getStorage('user')
       ->load($current_user->id());
 
     $storage_results = $entity->get('field_sondage_results')->value;

@@ -3,17 +3,13 @@
 namespace Drupal\vactory_sondage\Controller;
 
 use Drupal\block_content\Entity\BlockContent;
-use Drupal\Core\Ajax\AjaxResponse;
-use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Form\FormBuilder;
 use Drupal\vactory_sondage\Services\SondageManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 
 /**
- *
+ * Provides sondage endpoints.
  */
 class Sondage extends ControllerBase {
 
@@ -27,10 +23,8 @@ class Sondage extends ControllerBase {
   /**
    * The Sondage Controller constructor.
    *
-   *
    * @param \Drupal\vactory_sondage\Services\SondageManager $sondageManager
-   * Sondage Manager Service.
-   *
+   *   Sondage Manager Service.
    */
   public function __construct(SondageManager $sondageManager) {
     $this->sondageManager = $sondageManager;
@@ -40,9 +34,7 @@ class Sondage extends ControllerBase {
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('vactory_sondage.manager')
-    );
+    return new static($container->get('vactory_sondage.manager'));
   }
 
   /**
@@ -50,8 +42,8 @@ class Sondage extends ControllerBase {
    */
   public function sondage($sondage_id, $option) {
     $block = BlockContent::load($sondage_id);
-    if ($block){
-      $this->sondageManager->vote($block,$option);
+    if ($block) {
+      $this->sondageManager->vote($block, $option);
       $stats = $this->sondageManager->getStatistics($block);
       return new JsonResponse($stats);
     }
@@ -63,7 +55,7 @@ class Sondage extends ControllerBase {
    */
   public function statistics($sondage_id) {
     $block = BlockContent::load($sondage_id);
-    if ($block){
+    if ($block) {
       $stats = $this->sondageManager->getStatistics($block);
       return new JsonResponse($stats);
     }

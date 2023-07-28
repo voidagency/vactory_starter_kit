@@ -23,7 +23,7 @@ class VactorySondage extends VactoryDynamicFieldPluginBase {
   protected $extensionPathResolver;
 
   /**
-   * {@inheritDoc }
+   * Create function.
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);

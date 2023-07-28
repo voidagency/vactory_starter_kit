@@ -28,16 +28,10 @@ class SondageOptionsEnhancer extends ResourceFieldEnhancerBase implements Contai
    */
   protected $mediaFilesManager;
 
-
   /**
    * SondageOptionsEnhancer constructor.
    */
-  public function __construct(
-    array $configuration,
-    $plugin_id,
-    $plugin_definition,
-    MediaFilesManager $mediaFilesManager
-  ) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, MediaFilesManager $mediaFilesManager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->mediaFilesManager = $mediaFilesManager;
 
@@ -59,21 +53,15 @@ class SondageOptionsEnhancer extends ResourceFieldEnhancerBase implements Contai
    *   Returns an instance of this plugin.
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get('vacory_decoupled.media_file_manager')
-    );
+    return new static($configuration, $plugin_id, $plugin_definition, $container->get('vacory_decoupled.media_file_manager'));
   }
-
 
   /**
    * {@inheritdoc}
    */
   protected function doUndoTransform($data, Context $context) {
     $mid = $data['option_image'];
-    if (!is_null($mid)){
+    if (!is_null($mid)) {
       $media = Media::load($mid);
       if ($media) {
         $fid = $media->get('field_media_image')->target_id;
@@ -112,6 +100,5 @@ class SondageOptionsEnhancer extends ResourceFieldEnhancerBase implements Contai
       ],
     ];
   }
-
 
 }
