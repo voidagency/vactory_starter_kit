@@ -1,8 +1,8 @@
-langcode: en
+langcode: fr
 status: true
 dependencies:
   config:
-    - core.entity_view_mode.node.smart_search
+    - core.entity_view_mode.node.full
     - field.field.node.vactory_academy.body
     - field.field.node.vactory_academy.comment
     - field.field.node.vactory_academy.field_academy_duree
@@ -21,49 +21,23 @@ dependencies:
     - field.field.node.vactory_academy.field_vactory_youtube_media
     - field.field.node.vactory_academy.field_vactory_youtube_videos
     - node.type.vactory_academy
-    - responsive_image.styles.vactory_three_cols
   module:
-    - datetime
-    - media_responsive_thumbnail
     - user
-    - vactory_field
-  enforced:
-    module:
-      - vactory_academy
-id: node.vactory_academy.smart_search
+id: node.vactory_academy.full
 targetEntityType: node
 bundle: vactory_academy
-mode: smart_search
+mode: full
 content:
-  field_vactory_date:
-    type: datetime_custom
+  field_vactory_media_document:
+    type: entity_reference_entity_view
     label: hidden
     settings:
-      timezone_override: ''
-      date_format: 'd | M | Y'
+      view_mode: default
+      link: true
     third_party_settings: {  }
-    weight: 3
+    weight: 111
     region: content
-  field_vactory_excerpt:
-    type: vactory_field_excerpt_formatter
-    label: hidden
-    settings:
-      trim_length: '170'
-    third_party_settings: {  }
-    weight: 1
-    region: content
-  field_vactory_media:
-    type: media_responsive_thumbnail
-    label: hidden
-    settings:
-      responsive_image_style: vactory_three_cols
-      image_link: ''
-      image_loading:
-        attribute: lazy
-    third_party_settings: {  }
-    weight: 2
-    region: content
-  flag_liked_content:
+  flag_favorite_academy:
     settings: {  }
     third_party_settings: {  }
     weight: 10
@@ -71,7 +45,7 @@ content:
   links:
     settings: {  }
     third_party_settings: {  }
-    weight: 0
+    weight: 100
     region: content
   rate_rate_voting:
     settings: {  }
@@ -87,11 +61,12 @@ hidden:
   field_content_access_groups: true
   field_content_access_roles: true
   field_content_access_users: true
-  field_contenu_lie: true
   field_vactory_academy_langue: true
+  field_vactory_date: true
+  field_vactory_excerpt: true
   field_vactory_file_multiple: true
   field_vactory_instructor: true
-  field_vactory_media_document: true
+  field_vactory_media: true
   field_vactory_meta_tags: true
   field_vactory_paragraphs: true
   field_vactory_seo_status: true
@@ -99,11 +74,9 @@ hidden:
   field_vactory_theme: true
   field_vactory_youtube_media: true
   field_vactory_youtube_videos: true
-  flag_favorite_academy: true
   langcode: true
   mail_message: true
   mail_subject: true
   notification_message: true
   notification_title: true
-  rate_vote_widget: true
   search_api_excerpt: true
