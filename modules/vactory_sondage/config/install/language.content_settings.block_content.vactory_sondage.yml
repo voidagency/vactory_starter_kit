@@ -3,11 +3,11 @@ status: true
 dependencies:
   config:
     - block_content.type.vactory_sondage
+  module:
+    - content_translation
   enforced:
     module:
       - vactory_sondage
-  module:
-    - content_translation
 third_party_settings:
   content_translation:
     enabled: true
