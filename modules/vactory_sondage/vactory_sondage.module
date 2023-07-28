@@ -5,6 +5,8 @@
  * Module related hooks.
  */
 
+use Drupal\block_content\Entity\BlockContent;
+use Drupal\Component\Serialization\Json;
 use Drupal\Core\Entity\EntityInterface;
 
 /**
@@ -50,3 +52,28 @@ function vactory_sondage_entity_presave(EntityInterface $entity) {
     $reminder_manager->reminderQueuePush('vactory_sondage_closer', 'sondage_closer', $extra_data);
   }
 }
+
+
+/**
+ * Implements hook_json_api_collection_alter().
+ */
+function vactory_sondage_json_api_collection_alter(&$filters, &$context) {
+  if ($context['id'] === 'vactory_sondage_df') {
+    $block_id = $filters['optional_filters_data']['block_content']['vactory_sondage'];
+    if ($block_id) {
+      $filters["filter[drupal_internal__id]"] = $block_id;
+    }
+  }
+}
+
+function vactory_sondage_df_jsonapi_output_alter(&$content) {
+  if ($content['template'] == 'vactory_sondage:sondage'){
+    $block_id = $content['components'][0]['collection']['filters']['filter']['drupal_internal__id'];
+    if ($block_id){
+      $block = BlockContent::load($block_id);
+      $statistics = Drupal::service('vactory_sondage.manager')->getStatistics($block);
+      $content['statistics'] =  $statistics;
+    }
+  }
+}
+

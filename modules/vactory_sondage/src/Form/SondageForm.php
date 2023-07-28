@@ -2,14 +2,11 @@
 
 namespace Drupal\vactory_sondage\Form;
 
-use Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher;
-use Drupal\Component\Serialization\Json;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\RendererInterface;
-use Drupal\vactory_sondage\Event\VactorySondageVoteEvent;
 use Drupal\vactory_sondage\Services\SondageManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -42,10 +39,9 @@ class SondageForm extends FormBase {
   /**
    * {@inheritDoc}
    */
-  public function __construct(SondageManager $sondageManager, RendererInterface $renderer, ContainerAwareEventDispatcher $eventDispatcher) {
+  public function __construct(SondageManager $sondageManager, RendererInterface $renderer) {
     $this->sondageManager = $sondageManager;
     $this->renderer = $renderer;
-    $this->eventDispatcher = $eventDispatcher;
   }
 
   /**
@@ -54,10 +50,8 @@ class SondageForm extends FormBase {
   public static function create(ContainerInterface $container) {
     // Instantiates this form class.
     return new static(
-    // Load the service required to construct this class.
       $container->get('vactory_sondage.manager'),
-      $container->get('renderer'),
-      $container->get('event_dispatcher')
+      $container->get('renderer')
     );
   }
 
@@ -161,22 +155,11 @@ class SondageForm extends FormBase {
   public function voteAjaxCallback(array &$form, FormStateInterface $form_state) {
     $form_state->setRebuild();
     if ($form_state->get('validated')) {
-      $current_user = \Drupal::currentUser();
-      $user = \Drupal::entityTypeManager()->getStorage('user')
-        ->load($current_user->id());
+
       $entity = $form_state->get('entity');
       $voted_option_value = $form_state->getValue('sondage_options_' . $entity->id());
-      $storage_results = $entity->get('field_sondage_results')->value;
-      $storage_results = isset($storage_results) && !empty($storage_results) ? $storage_results : '[]';
-      $storage_results = Json::decode($storage_results);
-      $count = isset($storage_results[$voted_option_value]) ? $storage_results[$voted_option_value]['count'] + 1 : 1;
-      $storage_results[$voted_option_value]['count'] = $count;
-      $storage_results[$voted_option_value]['votters'][] = $current_user->id();
-      $storage_results['all_votters'][] = $current_user->id();
-      $event = new VactorySondageVoteEvent($entity, $user);
-      $this->eventDispatcher->dispatch(VactorySondageVoteEvent::EVENT_NAME, $event);
-      $entity->set('field_sondage_results', Json::encode($storage_results));
-      $entity->save();
+      $this->sondageManager->vote($entity,$voted_option_value);
+
       $response = new AjaxResponse();
       $options_statistics = $this->sondageManager->getStatistics($entity);
       $vote_statistics = [
