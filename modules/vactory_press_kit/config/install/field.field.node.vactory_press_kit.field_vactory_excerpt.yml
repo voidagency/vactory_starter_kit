@@ -6,6 +6,9 @@ dependencies:
     - node.type.vactory_press_kit
   module:
     - text
+  enforced:
+    module:
+      - vactory_press_kit
 id: node.vactory_press_kit.field_vactory_excerpt
 field_name: field_vactory_excerpt
 entity_type: node

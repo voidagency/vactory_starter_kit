@@ -1,0 +1,4 @@
+style:
+  css:
+    theme:
+      ./assets/css/style.css: {}

@@ -1,0 +1,17 @@
+name: "Sticky Indicator Paragraphs"
+category: "Animated DFs"
+multiple: TRUE
+enabled: TRUE
+fields:
+  smallParagraph:
+    type: text
+    label: "small paragraph"
+    options:
+      "#required": TRUE
+  bigParagraph:
+    type: text_format
+    label: "big paragraph"
+    options:
+      "#format": "full_html"
+      "#required": TRUE
+

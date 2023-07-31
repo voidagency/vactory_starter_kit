@@ -1,0 +1,25 @@
+name: 'notification dynamic field'
+multiple: FALSE
+category: 'Notification'
+enabled: TRUE
+fields:
+  collection:
+    type: json_api_collection
+    label: 'JSON:API'
+    options:
+      '#required': TRUE
+      '#default_value':
+        id: "notification_entity"
+        resource: notifications_entity--notifications_entity
+        filters:
+          - fields[notifications_entity--notifications_entity]=name,user_id,notification_message,notification_concerned_users,notification_viewers,created,drupal_internal__id,notification_related_content
+          - fields[user--user]=id,name,user_id
+          - include=user_id,notification_related_content
+          - fields[node--vactory_page]=path
+          - page[offset]=0
+          - page[limit]=9
+          - sort=created
+          - filter[status][value]=1
+          - filter[concerned-user-filter][condition][path]=notification_concerned_users
+          - filter[concerned-user-filter][condition][operator]=CONTAINS
+          - filter[concerned-user-filter][condition][value]="[current-user:uid]"

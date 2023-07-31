@@ -3,6 +3,9 @@ status: true
 dependencies:
   config:
     - node.type.vactory_business
+  enforced:
+    module:
+      - vactory_business
 id: node.vactory_business.promote
 field_name: promote
 entity_type: node

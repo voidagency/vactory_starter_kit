@@ -1,0 +1,31 @@
+name: "Cards"
+category: "Animated DFs"
+multiple: true
+limit: 4
+enabled: TRUE
+extra_fields:
+  title:
+    type: text
+    label: "title"
+  content:
+    type: textarea
+    label: "Description"
+fields:
+  image:
+    type: image
+    label: "Card image"
+    options:
+      "#required": TRUE
+  title:
+    type: text
+    label: "Card title"
+    options:
+      "#required": TRUE
+  content:
+    type: text_format
+    label: "Card content"
+    options:
+      "#format": full_html
+  link:
+    type: url_extended
+    label: "Link"

@@ -14,6 +14,9 @@ dependencies:
     - node.type.vactory_press_kit
   module:
     - user
+  enforced:
+    module:
+      - vactory_press_kit
 id: node.vactory_press_kit.teaser
 targetEntityType: node
 bundle: vactory_press_kit

@@ -1,0 +1,42 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for vactory_decoupled_revalidator module.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\vactory_decoupled_revalidator\Event\EntityRevalidateEvent;
+use Drupal\vactory_decoupled_revalidator\Event\EntityRevalidateEventInterface;
+
+/**
+ * Implements hook_entity_insert().
+ */
+function vactory_decoupled_revalidator_entity_insert(EntityInterface $entity) {
+  $event = EntityRevalidateEvent::createFromEntity($entity, EntityRevalidateEventInterface::INSERT_ACTION);
+  register_shutdown_function('vactory_dispatch_entity_action_event', $event);
+}
+
+/**
+ * Implements hook_entity_update().
+ */
+function vactory_decoupled_revalidator_entity_update(EntityInterface $entity) {
+  $event = EntityRevalidateEvent::createFromEntity($entity, EntityRevalidateEventInterface::UPDATE_ACTION);
+  register_shutdown_function('vactory_dispatch_entity_action_event', $event);
+}
+
+/**
+ * Implements hook_entity_predelete().
+ */
+function vactory_decoupled_revalidator_entity_predelete(EntityInterface $entity) {
+  $event = EntityRevalidateEvent::createFromEntity($entity, EntityRevalidateEventInterface::DELETE_ACTION);
+  register_shutdown_function('vactory_dispatch_entity_action_event', $event);
+}
+
+/**
+ * Vactory dispatch entity action event.
+ */
+function vactory_dispatch_entity_action_event(EntityRevalidateEventInterface $event) {
+  \Drupal::service('event_dispatcher')
+    ->dispatch(EntityRevalidateEventInterface::ENTITY_REVALIDATED_ACTION, $event);
+}

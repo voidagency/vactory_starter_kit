@@ -6,6 +6,9 @@ dependencies:
     - node.type.vactory_testimonials
   module:
     - datetime
+  enforced:
+    module:
+      - vactory_testimonials
 id: node.vactory_testimonials.field_vactory_date
 field_name: field_vactory_date
 entity_type: node

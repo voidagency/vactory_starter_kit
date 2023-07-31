@@ -97,7 +97,15 @@ class VactoryReminderSettingsForm extends ConfigFormBase {
         foreach ($reminder_consumers_rows as $consumer_row) {
           $consumer = explode('|', $consumer_row);
           if (count($consumer) === 2) {
-            $consumers[trim($consumer[0])] = trim($consumer[1]);
+            $key = trim($consumer[0]);
+            $value = trim($consumer[1]);
+            if (isset($consumers[$key])) {
+              $value0 = $consumers[$key];
+              $consumers[$key] = !is_array($value0) ? [$value0, $value] : array_push($value0, $value);
+            }
+            else {
+              $consumers[$key] = $value;
+            }
           }
         }
       }

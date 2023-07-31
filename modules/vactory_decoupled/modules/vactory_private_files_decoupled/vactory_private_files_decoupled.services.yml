@@ -2,3 +2,6 @@ services:
   vactory_private_files_decoupled.access:
     class: Drupal\vactory_private_files_decoupled\Access\PrivateFileTokenGenerator
     arguments: ['@private_key', '@datetime.time']
+  vactory_private_files_decoupled:
+    class: Drupal\vactory_private_files_decoupled\VactoryPrivateFilesServices
+    arguments: ['@entity_type.manager', '@current_user', '@vactory_private_files_decoupled.access']

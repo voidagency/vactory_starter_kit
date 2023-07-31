@@ -1,0 +1,123 @@
+.uix-toolbox {
+  position: fixed;
+  z-index: 999;
+  bottom: 80px;
+  bottom: 5rem;
+  right: 20px;
+  right: 1.25rem;
+}
+
+.uix-toolbox__trigger {
+  position: relative;
+  z-index: 99;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  width: 64px;
+  width: 4rem;
+  height: 64px;
+  height: 4rem;
+  background-color: #007bff;
+  color: #fff;
+  border-radius: 50%;
+  -webkit-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 black;
+          box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 black;
+  -webkit-box-shadow: 0 0.125rem 0.125rem 0 rgba(0, 0, 0, 0.14), 0 0.1875rem 0.0625rem -0.125rem rgba(0, 0, 0, 0.12), 0 0.0625rem 0.3125rem 0 black;
+          box-shadow: 0 0.125rem 0.125rem 0 rgba(0, 0, 0, 0.14), 0 0.1875rem 0.0625rem -0.125rem rgba(0, 0, 0, 0.12), 0 0.0625rem 0.3125rem 0 black;
+  outline: 0;
+  border: 0;
+  cursor: pointer;
+}
+
+.uix-toolbox__items-list {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  -webkit-transition: .5s;
+  -o-transition: .5s;
+  transition: .5s;
+  visibility: hidden;
+  opacity: 0;
+  height: 0;
+}
+
+.uix-toolbox__items-list.visible {
+  visibility: visible;
+  opacity: 1;
+  height: 100%;
+  margin-bottom: 10px;
+  margin-bottom: 0.625rem;
+}
+
+.uix-toolbox__item__button {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  border: 0;
+  border-radius: 50%;
+  -webkit-box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 black;
+          box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.14), 0 3px 1px -2px rgba(0, 0, 0, 0.12), 0 1px 5px 0 black;
+  -webkit-box-shadow: 0 0.125rem 0.125rem 0 rgba(0, 0, 0, 0.14), 0 0.1875rem 0.0625rem -0.125rem rgba(0, 0, 0, 0.12), 0 0.0625rem 0.3125rem 0 black;
+          box-shadow: 0 0.125rem 0.125rem 0 rgba(0, 0, 0, 0.14), 0 0.1875rem 0.0625rem -0.125rem rgba(0, 0, 0, 0.12), 0 0.0625rem 0.3125rem 0 black;
+  margin: 5px;
+  margin: 0.3125rem;
+  cursor: pointer;
+  width: 50px;
+  width: 3.125rem;
+  height: 50px;
+  height: 3.125rem;
+  background-color: #007bff;
+  color: #fff;
+  -webkit-transition: .5s;
+  -o-transition: .5s;
+  transition: .5s;
+  -webkit-transform: scale(0.4) translateY(40px) translateX(0px);
+      -ms-transform: scale(0.4) translateY(40px) translateX(0px);
+          transform: scale(0.4) translateY(40px) translateX(0px);
+  -webkit-transform: scale(0.4) translateY(2.5rem) translateX(0);
+      -ms-transform: scale(0.4) translateY(2.5rem) translateX(0);
+          transform: scale(0.4) translateY(2.5rem) translateX(0);
+}
+
+.uix-toolbox__item__button.visible {
+  -webkit-transform: scale(1) translateY(0px) translateX(0px) !important;
+      -ms-transform: scale(1) translateY(0px) translateX(0px) !important;
+          transform: scale(1) translateY(0px) translateX(0px) !important;
+  -webkit-transform: scale(1) translateY(0) translateX(0) !important;
+      -ms-transform: scale(1) translateY(0) translateX(0) !important;
+          transform: scale(1) translateY(0) translateX(0) !important;
+}
+
+.uix-toolbox__item__title {
+  position: absolute;
+  right: 60px;
+  right: 3.75rem;
+  white-space: nowrap;
+  font-size: 12px;
+  font-size: 0.75rem;
+  color: #fff;
+  background-color: rgba(0, 0, 0, 0.6);
+  padding: 4px 16px;
+  padding: 0.25rem 1rem;
+  border-radius: 18px;
+  border-radius: 1.125rem;
+}

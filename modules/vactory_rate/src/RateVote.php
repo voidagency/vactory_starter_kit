@@ -8,7 +8,7 @@ use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\votingapi\VoteResultFunctionManager;
-use Drupal\rate\RateBotDetector;
+use Drupal\rate\Plugin\RateBotDetector;
 
 /**
  * Returns responses for Rate routes.

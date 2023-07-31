@@ -4,6 +4,9 @@ dependencies:
   module:
     - node
     - social_media_links_field
+  enforced:
+    module:
+      - vactory_governance
 id: node.field_gov_social_media
 field_name: field_gov_social_media
 entity_type: node

@@ -3,6 +3,9 @@ status: true
 dependencies:
   config:
     - entityqueue.entity_queue.vactory_event_slider_large
+  enforced:
+    module:
+      - vactory_event
 id: entity_subqueue.vactory_event_slider_large
 target_entity_type_id: entity_subqueue
 target_bundle: vactory_event_slider_large

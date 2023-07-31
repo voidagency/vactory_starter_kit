@@ -1,0 +1,16 @@
+name: 'Cross content blog'
+multiple: FALSE
+category: 'Cross Content'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: "title"
+  intro:
+    type: text_format
+    label: "Introduction"
+    options:
+      "#format": full_html
+  link:
+    type: url_extended
+    label: "Link"

@@ -16,6 +16,9 @@ dependencies:
     - node.type.vactory_mediatheque
   module:
     - user
+  enforced:
+    module:
+      - vactory_mediatheque
 id: node.vactory_mediatheque.teaser
 targetEntityType: node
 bundle: vactory_mediatheque

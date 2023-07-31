@@ -17,8 +17,9 @@ dependencies:
     - text
     - user
     - vactory_core
-_core:
-  default_config_hash: ycjDnV4rd1sjI8wn_ZiwpFtgSbK8VMWfD6Qa_IWg2Ro
+  enforced:
+    module:
+      - vactory_press_kit
 id: node.vactory_press_kit.mur
 targetEntityType: node
 bundle: vactory_press_kit

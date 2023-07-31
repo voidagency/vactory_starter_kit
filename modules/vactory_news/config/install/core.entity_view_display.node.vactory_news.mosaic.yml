@@ -18,6 +18,9 @@ dependencies:
     - media_responsive_thumbnail
     - user
     - vactory_field
+  enforced:
+    module:
+      - vactory_news
 id: node.vactory_news.mosaic
 targetEntityType: node
 bundle: vactory_news

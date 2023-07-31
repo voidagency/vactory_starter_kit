@@ -4,10 +4,12 @@ namespace Drupal\vactory_decoupled\Plugin\jsonapi\FieldEnhancer;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Site\Settings;
 use Drupal\Core\StreamWrapper\StreamWrapperManager;
 use Drupal\Core\Url;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\jsonapi_extras\Plugin\ResourceFieldEnhancerBase;
+use Drupal\vactory_decoupled\MediaFilesManager;
 use Shaper\Util\Context;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -30,11 +32,25 @@ class VactoryFileImageEnhancer extends ResourceFieldEnhancerBase implements Cont
   protected $entityTypeManager;
 
   /**
+   * The decoupled media files manager service.
+   *
+   * @var \Drupal\vactory_decoupled\MediaFilesManager
+   */
+  protected $mediaFilesManager;
+
+  /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, array $plugin_definition, EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct(
+    array $configuration,
+    $plugin_id,
+    array $plugin_definition,
+    EntityTypeManagerInterface $entity_type_manager,
+    MediaFilesManager $mediaFilesManager
+  ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->entityTypeManager = $entity_type_manager;
+    $this->mediaFilesManager = $mediaFilesManager;
   }
 
   /**
@@ -45,7 +61,8 @@ class VactoryFileImageEnhancer extends ResourceFieldEnhancerBase implements Cont
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('vacory_decoupled.media_file_manager')
     );
   }
 
@@ -56,24 +73,22 @@ class VactoryFileImageEnhancer extends ResourceFieldEnhancerBase implements Cont
     if (isset($data['value']) && !empty($data['value'])) {
       $origin_uri = $data['value'];
 
-      $image_app_base_url = Url::fromUserInput('/app-image/')
+      /*$image_app_base_url = Url::fromUserInput('/app-image/')
         ->setAbsolute()->toString();
-      $lqipImageStyle = ImageStyle::load('lqip');
+      $lqipImageStyle = ImageStyle::load('lqip');*/
 
-      $medias = \Drupal::entityTypeManager()
-        ->getStorage('file')
+      $medias = $this->entityTypeManager->getStorage('file')
         ->loadByProperties(['uri' => $origin_uri]);
       $media = reset($medias);
 
       $uri = $media->getFileUri();
-
       $data['value'] = [
-        '_default'  => \Drupal::service('file_url_generator')->generateAbsoluteString($uri),
-        '_lqip'     => $lqipImageStyle->buildUrl($uri),
-        'uri'       => StreamWrapperManager::getTarget($uri),
-        'fid'       => $media->id(),
+        '_default'  => $this->mediaFilesManager->getMediaAbsoluteUrl($uri),
+        //'_lqip'     => $this->mediaFilesManager->convertToMediaAbsoluteUrl($lqipImageStyle->buildUrl($uri)),
+        //'uri'       => StreamWrapperManager::getTarget($uri),
+        //'fid'       => $media->id(),
         'file_name' => $media->label(),
-        'base_url'  => $image_app_base_url,
+        //'base_url'  => $image_app_base_url,
         'meta' => $media->getAllMetadata()
       ];
 

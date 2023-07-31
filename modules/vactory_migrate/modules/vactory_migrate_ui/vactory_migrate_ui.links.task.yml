@@ -1,0 +1,8 @@
+vactory_migrate_ui.import:
+  route_name: vactory_migrate_ui.import
+  base_route: vactory_migrate_ui.import
+  title: Imports
+vactory_migrate_ui.settings:
+  route_name: vactory_migrate.settings
+  base_route: vactory_migrate_ui.import
+  title: Settings

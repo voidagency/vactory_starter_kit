@@ -35,6 +35,12 @@ class GovernanceBlock extends BlockBase {
     $build = [
       "#theme" => "governance_member_block",
       '#content' => $content,
+      '#cache' => [
+        // Set the caching policy to match the default block caching policy.
+        'max-age' => 0,
+        'contexts' => ['url'],
+        'tags' => ['rendered'],
+      ],
     ];
 
     foreach ($terms as $term) {

@@ -1,5 +1,8 @@
 langcode: fr
 status: true
-dependencies: {  }
+dependencies:
+  enforced:
+    module:
+      - vactory_locator
 id: vactory_locator
 label: Locator

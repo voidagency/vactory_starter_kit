@@ -1,6 +1,9 @@
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  enforced:
+    module:
+      - vactory_event
 name: 'Events'
 type: vactory_event
 description: 'Manage your events content.'

@@ -1,0 +1,38 @@
+name: 'Ux Note'
+multiple: FALSE
+category: 'Decoupled'
+enabled: TRUE
+fields:
+  group_rating_experience:
+    g_title: 'Rate your experience'
+    timeout:
+      type: number
+      options:
+        '#min': 0
+        '#description': Timeout in seconds after which the UX notes popup appears to users
+    title:
+      type: text
+      label: 'Title'
+    description:
+      type: text_format
+      label: 'Description'
+  group_ux_note_form:
+    g_title: 'Ux note form'
+    webform:
+      type: webform_decoupled
+      label: 'Ux Rate form'
+      options:
+        '#required': TRUE
+        '#default_value':
+          webform_id: ux_note_form
+  group_confirm_form:
+    g_title: 'Confirm Note'
+    title:
+      type: text
+      label: 'Title'
+    description:
+      type: text_format
+      label: 'Description'
+    link:
+      type: url_extended
+      label: 'Lien'

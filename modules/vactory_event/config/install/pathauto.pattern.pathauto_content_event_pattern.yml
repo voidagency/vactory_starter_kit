@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - node
+  enforced:
+    module:
+      - vactory_event
 id: pathauto_content_event_pattern
 label: 'Pathauto Content event Pattern'
 type: 'canonical_entities:node'

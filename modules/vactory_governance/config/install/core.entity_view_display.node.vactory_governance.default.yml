@@ -25,6 +25,9 @@ dependencies:
     - text
     - user
     - yoast_seo
+  enforced:
+    module:
+      - vactory_governance
 id: node.vactory_governance.default
 targetEntityType: node
 bundle: vactory_governance

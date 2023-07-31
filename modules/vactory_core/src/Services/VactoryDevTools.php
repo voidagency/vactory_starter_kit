@@ -106,14 +106,15 @@ class VactoryDevTools {
   public function cleanModuleConfigs($module) {
     $languages = array_keys($this->languageManager->getLanguages());
     $install_details = [];
+    $path_resolver = \Drupal::service('extension.path.resolver');
     foreach ($languages as $langcode) {
-      $lang_install_dir = drupal_get_path('module', $module) . '/' . InstallStorage::CONFIG_INSTALL_DIRECTORY . '/language/' . $langcode;
+      $lang_install_dir = $path_resolver->getPath('module', $module) . '/' . InstallStorage::CONFIG_INSTALL_DIRECTORY . '/language/' . $langcode;
       if (file_exists($lang_install_dir)) {
         $lang_install_details =  $this->fileSystem->scanDirectory($lang_install_dir, "/\.(yml)$/");
         $install_details = array_merge($install_details, $lang_install_details);
       }
     }
-    $install_dir = drupal_get_path('module', $module) . '/' . InstallStorage::CONFIG_INSTALL_DIRECTORY;
+    $install_dir = $path_resolver->getPath('module', $module) . '/' . InstallStorage::CONFIG_INSTALL_DIRECTORY;
     if (file_exists($install_dir)) {
       $install_details =  $this->fileSystem->scanDirectory($install_dir, "/\.(yml)$/");
     }

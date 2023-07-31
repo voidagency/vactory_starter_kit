@@ -3,7 +3,7 @@
 namespace Drupal\vactory_notifications\Event;
 
 use Drupal\vactory_notifications\Entity\NotificationsInterface;
-use Symfony\Component\EventDispatcher\Event;
+use Drupal\Component\EventDispatcher\Event;
 
 /**
  * Vactory notification toast event.

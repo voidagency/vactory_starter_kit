@@ -15,8 +15,9 @@ dependencies:
     - user
     - vactory_core
     - vactory_field
-_core:
-  default_config_hash: QtVlsHEx6TVKBwJQWGWNiNClJQm7nu2H-zapbxFdtGo
+  enforced:
+    module:
+      - vactory_blog
 id: node.vactory_blog.mur
 targetEntityType: node
 bundle: vactory_blog

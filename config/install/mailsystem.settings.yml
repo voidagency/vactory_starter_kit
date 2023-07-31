@@ -1,9 +1,4 @@
 theme: current
 defaults:
-  sender: swiftmailer
-  formatter: swiftmailer
-modules:
-  swiftmailer:
-    none:
-      formatter: swiftmailer
-      sender: swiftmailer
+  sender: devel_mail_log
+  formatter: devel_mail_log

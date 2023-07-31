@@ -21,6 +21,9 @@ dependencies:
     - scheduler
     - text
     - yoast_seo
+  enforced:
+    module:
+      - vactory_news
 id: node.vactory_news.default
 targetEntityType: node
 bundle: vactory_news

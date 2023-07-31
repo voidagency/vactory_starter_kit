@@ -1,0 +1,34 @@
+name: "Slider Variant 8 ( Full background )"
+multiple: TRUE
+category: "Sliders"
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: "Title"
+    options:
+      "#required": TRUE
+  image:
+    type: image
+    label: "Image"
+    options:
+      "#required": TRUE
+  video:
+    type: remote_video
+    label: "Video"
+  content:
+    type: text_format
+    label: "Content"
+    options:
+      "#format": full_html
+  link:
+    type: url_extended
+    label: "Link"
+  position:
+    type: select
+    label: "Content position"
+    options:
+      "#options":
+        - "right": "Right"
+        - "center": "Center"
+        - "left": "Left"

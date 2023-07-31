@@ -25,6 +25,9 @@ dependencies:
     - media_library
     - path
     - scheduler
+  enforced:
+    module:
+      - vactory_announcements
 id: node.announcement.default
 targetEntityType: node
 bundle: announcement

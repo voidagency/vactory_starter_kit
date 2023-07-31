@@ -6,6 +6,9 @@ dependencies:
     - node.type.vactory_publication
   module:
     - comment
+  enforced:
+    module:
+      - vactory_publication
 id: node.vactory_publication.comment
 field_name: comment
 entity_type: node

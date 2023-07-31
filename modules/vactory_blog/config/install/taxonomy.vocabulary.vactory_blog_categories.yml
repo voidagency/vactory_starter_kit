@@ -1,6 +1,9 @@
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  enforced:
+    module:
+      - vactory_blog
 name: 'Blog - Categories'
 vid: vactory_blog_categories
 description: 'Blog categories.'

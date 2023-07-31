@@ -4,6 +4,9 @@ dependencies:
   config:
     - field.storage.node.field_vactory_email
     - node.type.vactory_job_ads
+  enforced:
+    module:
+      - vactory_job_ads
 id: node.vactory_job_ads.field_vactory_email
 field_name: field_vactory_email
 entity_type: node

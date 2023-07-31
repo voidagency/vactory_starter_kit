@@ -175,6 +175,11 @@ trait FormWidgetTrait {
       $options['#default_value'] = array_merge($options['#default_value'], $default_value);
     }
 
+    // Node queue default value.
+    if ($type === 'node_queue' && $default_value) {
+      $options['#default_value'] = array_merge($options['#default_value'] ?? [], $default_value);
+    }
+
     $element_defaults = $this->getFormElementDefaults($type, $options);
 
     if ($type == 'image') {

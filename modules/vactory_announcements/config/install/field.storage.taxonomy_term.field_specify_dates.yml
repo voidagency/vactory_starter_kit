@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - taxonomy
+  enforced:
+    module:
+      - vactory_announcements
 id: taxonomy_term.field_specify_dates
 field_name: field_specify_dates
 entity_type: taxonomy_term

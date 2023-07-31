@@ -5,6 +5,9 @@ dependencies:
     - field.storage.node.field_statut_juridique
     - node.type.vactory_business
     - taxonomy.vocabulary.business_statut_juridique
+  enforced:
+    module:
+      - vactory_business
 id: node.vactory_business.field_statut_juridique
 field_name: field_statut_juridique
 entity_type: node
@@ -12,7 +15,7 @@ bundle: vactory_business
 label: 'Statut juridique'
 description: ''
 required: false
-translatable: true
+translatable: false
 default_value: {  }
 default_value_callback: ''
 settings:

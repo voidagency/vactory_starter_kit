@@ -11,6 +11,9 @@ dependencies:
   module:
     - user
     - vactory_field
+  enforced:
+    module:
+      - vactory_glossary
 id: node.vactory_glossary.smart_search
 targetEntityType: node
 bundle: vactory_glossary

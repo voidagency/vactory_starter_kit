@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<ruleset>
+  <file>.</file>
+  <config name="testVersion" value="5.5-"/>
+  <config name="color" value="1"/>
+  <rule ref="Drupal"/>
+  <rule ref="Generic.PHP.UpperCaseConstant">
+    <exclude-pattern>*.js</exclude-pattern>
+  </rule>
+</ruleset>

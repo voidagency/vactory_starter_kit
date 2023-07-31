@@ -1,6 +1,9 @@
 langcode: fr
 status: true
-dependencies: {  }
+dependencies:
+  enforced:
+    module:
+      - vactory_faq
 name: 'FAQ - Section'
 vid: faq_section
 description: ''

@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - node
+  enforced:
+    module:
+      - vactory_news
 id: vactory_news_block_masonry
 label: 'News Block Masonry'
 handler: simple

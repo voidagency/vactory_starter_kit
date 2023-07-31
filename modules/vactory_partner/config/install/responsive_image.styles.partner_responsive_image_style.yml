@@ -6,6 +6,9 @@ dependencies:
     - image.style.partner_image_style_x2
   theme:
     - vactory
+  enforced:
+    module:
+      - vactory_partner
 id: partner_responsive_image_style
 label: 'partner responsive image style'
 image_style_mappings:

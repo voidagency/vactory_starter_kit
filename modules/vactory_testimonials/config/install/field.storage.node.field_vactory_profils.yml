@@ -4,6 +4,9 @@ dependencies:
   module:
     - node
     - taxonomy
+  enforced:
+    module:
+      - vactory_testimonials
 id: node.field_vactory_profils
 field_name: field_vactory_profils
 entity_type: node

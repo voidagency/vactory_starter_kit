@@ -6,6 +6,9 @@ dependencies:
     - node.type.vactory_glossary
   module:
     - text
+  enforced:
+    module:
+      - vactory_glossary
 id: node.vactory_glossary.body
 field_name: body
 entity_type: node

@@ -1,0 +1,21 @@
+name: 'Newsletter'
+multiple: FALSE
+category: 'Formulaires'
+enabled: TRUE
+fields:
+  webform:
+    type: webform_decoupled
+    label: 'Formulaire'
+    options:
+      '#required': TRUE
+      '#default_value':
+        webform_id: newsletter
+extra_fields:
+  title:
+    type: text
+    label: "Titre"
+  intro:
+    type: text_format
+    label: 'Introduction'
+    options:
+      '#format': 'full_html'

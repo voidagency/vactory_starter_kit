@@ -1,0 +1,6 @@
+excluded:
+  - jsonapi_extras.jsonapi_resource_config.node--vactory_faq
+  - jsonapi_extras.jsonapi_resource_config.node--vactory_forum
+  - jsonapi_extras.jsonapi_resource_config.node--vactory_news
+  - jsonapi_extras.jsonapi_resource_config.node--vactory_page
+required: true

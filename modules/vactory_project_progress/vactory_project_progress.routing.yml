@@ -1,0 +1,17 @@
+vactory_project_progress.post:
+  path: 'project-progress/post'
+  defaults:
+    _controller: '\Drupal\vactory_project_progress\Controller\VactoryProjectProgressApi::postResult'
+  methods:  [POST]
+  requirements:
+    _access: 'TRUE'
+vactory_project_progress.get:
+  path: 'project-progress/get'
+  defaults:
+    _controller: '\Drupal\vactory_project_progress\Controller\VactoryProjectProgressApi::getProject'
+    _disable_route_normalizer: 'TRUE'
+  methods: [GET]
+  requirements:
+   _permission: 'access content'
+  options:
+    _is_jsonapi: 1

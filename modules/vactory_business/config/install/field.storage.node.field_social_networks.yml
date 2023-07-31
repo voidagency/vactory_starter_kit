@@ -4,6 +4,9 @@ dependencies:
   module:
     - node
     - social_media_links_field
+  enforced:
+    module:
+      - vactory_business
 id: node.field_social_networks
 field_name: field_social_networks
 entity_type: node

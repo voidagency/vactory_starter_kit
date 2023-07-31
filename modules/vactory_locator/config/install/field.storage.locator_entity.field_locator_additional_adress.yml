@@ -4,6 +4,9 @@ dependencies:
   module:
     - text
     - vactory_locator
+  enforced:
+    module:
+      - vactory_locator
 id: locator_entity.field_locator_additional_adress
 field_name: field_locator_additional_adress
 entity_type: locator_entity

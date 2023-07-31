@@ -35,7 +35,7 @@ class VactoryFile extends ProcessPluginBase {
         $parsed_path = pathinfo($parsed_url['path']);
         if (isset($parsed_path['extension']) && isset($parsed_path['basename'])) {
           $filename = $parsed_path['basename'];
-          $file_path = "${destination}/${filename}";
+          $file_path = "{$destination}/{$filename}";
           $downloaded_file = file_get_contents($value);
           file_put_contents($file_path, $downloaded_file);
           $file = File::create([

@@ -1,6 +1,9 @@
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  enforced:
+    module:
+      - vactory_job_ads
 formId: webform_submission_vactory_job_application_add_form
 captchaType: captcha/Math
 label: "webform_submission_vactory_job_application_add_form"

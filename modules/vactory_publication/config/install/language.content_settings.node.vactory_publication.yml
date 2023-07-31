@@ -5,6 +5,9 @@ dependencies:
     - node.type.vactory_publication
   module:
     - content_translation
+  enforced:
+    module:
+      - vactory_publication
 third_party_settings:
   content_translation:
     enabled: true

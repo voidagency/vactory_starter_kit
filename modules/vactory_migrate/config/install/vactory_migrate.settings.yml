@@ -1,0 +1,6 @@
+delimiter: ';'
+batch_size: 50
+dependencies:
+  enforced:
+    module:
+      - vactory_migrate

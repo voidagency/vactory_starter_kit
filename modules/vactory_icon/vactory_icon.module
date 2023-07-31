@@ -1,13 +1,22 @@
 <?php
 
+/**
+ * @file
+ * Module related hooks.
+ */
 
 /**
- * Implements hook_library_info_build().
+ * Implements hook_library_info_alter().
  */
-function vactory_icon_library_info_build()
-{
-    $libraries = [];
-    $stylesheet = 'public://vactory_icon/style.css';
-    $libraries['vactory_icon.fonticonpicker']['css']['theme'][$stylesheet] = [];
-    return $libraries;
+function vactory_icon_library_info_alter(&$libraries, $extension) {
+  if (isset($libraries['vactory_icon.fonticonpicker'])) {
+    $provider_plugin = Drupal::config('vactory_icon.settings')
+      ->get('provider_plugin');
+    if (!empty($provider_plugin)) {
+      $icon_provider_plugin_manager = Drupal::service('plugin.manager.vactory_icon');
+      $icon_provider = $icon_provider_plugin_manager->createInstance($provider_plugin);
+      $icon_provider->iconPickerLibraryInfoAlter($libraries['vactory_icon.fonticonpicker']);
+    }
+  }
+  return $libraries;
 }

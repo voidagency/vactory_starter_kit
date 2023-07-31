@@ -5,6 +5,9 @@ dependencies:
     - node.type.vactory_glossary
   module:
     - content_translation
+  enforced:
+    module:
+      - vactory_glossary
 third_party_settings:
   content_translation:
     enabled: true

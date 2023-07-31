@@ -18,6 +18,9 @@ dependencies:
     - user
     - vactory_core
     - vactory_field
+  enforced:
+    module:
+      - vactory_press_kit
 id: node.vactory_press_kit.card
 targetEntityType: node
 bundle: vactory_press_kit

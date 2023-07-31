@@ -112,6 +112,12 @@ class CrossContentBlock extends BlockBase implements BlockPluginInterface, Conta
       '#theme' =>'vcc_block',
       '#block' => $view->render('block_list'),
       '#title' => $title,
+      '#cache' => [
+        // Set the caching policy to match the default block caching policy.
+        'max-age' => 0,
+        'contexts' => ['url'],
+        'tags' => ['rendered'],
+      ],
     ];
   }
 

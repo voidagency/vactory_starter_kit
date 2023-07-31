@@ -1,0 +1,6 @@
+vactory_migrate_plugin.add:
+  title: Vactory Migration Plugin
+  description: Add/Edit Vactory Migration Plugin.
+  parent: system.admin_config_system
+  route_name: vactory_migrate_plugin.add
+  weight: 10

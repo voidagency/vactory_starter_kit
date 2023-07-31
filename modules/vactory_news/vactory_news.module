@@ -99,7 +99,7 @@ function vactory_news_views_pre_view(ViewExecutable $view, $display_id, array &$
           'empty' => TRUE,
           'tokenize' => FALSE,
           'content' => \Drupal::service('renderer')
-            ->render($block_content),
+            ->renderPlain($block_content),
           'plugin_id' => 'text_custom',
         ];
         $view->setHandler($display_id, 'header', 'area_text_custom', $item);
@@ -202,9 +202,9 @@ function vactory_news_jsonapi_vcc_normalized_node_alter(&$normalized_node, $cont
           if ($file != NULL) {
             $uri = $file->getFileUri();
             $fileResult = [];
-            $fileResult['_default'] = \Drupal::service('file_url_generator')
-              ->generateAbsoluteString($uri);
-            $fileResult['_lqip'] = $lqipImageStyle->buildUrl($uri);
+            $media_file_manager = \Drupal::service('vacory_decoupled.media_file_manager');
+            $fileResult['_default'] = $media_file_manager->getMediaAbsoluteUrl($uri);
+            $fileResult['_lqip'] = $media_file_manager->convertToMediaAbsoluteUrl($lqipImageStyle->buildUrl($uri));
             $fileResult['uri'] = StreamWrapperManager::getTarget($uri);
             $fileResult['fid'] = $fid;
             $fileResult['file_name'] = $media->label();
@@ -240,13 +240,14 @@ function vactory_news_jsonapi_vcc_normalized_node_alter(&$normalized_node, $cont
       // Get term.
       $term_field_name = 'field_vactory_news_theme';
       $news_term_tid = $node->get($term_field_name)->target_id ?? NULL;
-      $term_label = '';
+      $term_value = [];
       if ($news_term_tid != NULL) {
         $new_term = Term::load($news_term_tid);
         if ($new_term != NULL) {
           $new_term_trans = $term = \Drupal::service('entity.repository')
             ->getTranslationFromContext($new_term);
-          $term_label = $new_term_trans->label();
+          $term_value['name'] = $new_term_trans->label();
+          $term_value['slug'] = $new_term_trans->get('term_2_slug')->value ?? NULL;
         }
       }
 
@@ -254,7 +255,7 @@ function vactory_news_jsonapi_vcc_normalized_node_alter(&$normalized_node, $cont
         'id' => $node->id(),
         'image' => $result[$output_field_name],
         'date' => $resultDate,
-        'tag' => $term_label,
+        'tag' => $term_value,
         'title' => $node->label(),
         'excerpt' => $node->get('field_vactory_excerpt')->getValue(),
         'url' => $node->toUrl()->toString(),
@@ -284,7 +285,7 @@ function vactory_news_json_api_collection_alter(&$filters, &$context) {
     }
 
     if (isset($query["page"])) {
-      $filters["page[offset]"] = intval($query["page"]) > 0 ? intval($query["page"]) - 1 : 0;
+      $filters["page[offset]"] = intval($query["page"]) > 0 ? (intval($query["page"]) - 1) * $filters["page[limit]"] : 0;
     }
 
     if (isset($query["sort"]) && in_array(strtolower($query["sort"]), ["asc", "desc"])) {

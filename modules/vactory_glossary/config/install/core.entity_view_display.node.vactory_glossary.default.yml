@@ -11,6 +11,9 @@ dependencies:
     - text
     - user
     - yoast_seo
+  enforced:
+    module:
+      - vactory_glossary
 id: node.vactory_glossary.default
 targetEntityType: node
 bundle: vactory_glossary

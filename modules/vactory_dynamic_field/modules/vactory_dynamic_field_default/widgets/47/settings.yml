@@ -1,0 +1,15 @@
+name: 'D47 - Ancre V1'
+multiple: TRUE
+category: 'Content'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: "Titre"
+    options:
+      "#required": TRUE
+  paragraphId:
+    type: text
+    label: "Paragraph ID"
+    options:
+      "#required": TRUE

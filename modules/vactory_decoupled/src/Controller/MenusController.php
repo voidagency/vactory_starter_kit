@@ -4,8 +4,9 @@ namespace Drupal\vactory_decoupled\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Entity\EntityRepositoryInterface;
+use Drupal\Core\Menu\MenuLinkTreeInterface;
 use Drupal\Core\Url;
-use \Drupal\path_alias\AliasManagerInterface;
 use Drupal\Core\Menu\MenuTreeParameters;
 use Drupal\Core\Menu\MenuLinkInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -16,18 +17,25 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 class MenusController extends ControllerBase {
 
   /**
-   * A instance of the alias manager.
-   *
-   * @var \Drupal\Core\Path\AliasManagerInterface
-   */
-  protected $aliasManager;
-
-  /**
    * A instance of the config factory.
    *
    * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
   protected $configFactory;
+
+  /**
+   * Menu link tree service.
+   *
+   * @var \Drupal\Core\Menu\MenuLinkTreeInterface
+   */
+  protected $menuLinkTree;
+
+  /**
+   * Entity repository service.
+   *
+   * @var EntityRepositoryInterface
+   */
+  protected $entityRepository;
 
   /**
    * A list of menu items.
@@ -54,10 +62,13 @@ class MenusController extends ControllerBase {
    * {@inheritdoc}
    */
   public function __construct(
-    AliasManagerInterface $alias_manager,
-    ConfigFactoryInterface $config_factory) {
-    $this->aliasManager = $alias_manager;
+    ConfigFactoryInterface $config_factory,
+    MenuLinkTreeInterface $menuLinkTree,
+    EntityRepositoryInterface $entityRepository
+  ) {
     $this->configFactory = $config_factory;
+    $this->menuLinkTree = $menuLinkTree;
+    $this->entityRepository = $entityRepository;
   }
 
   /**
@@ -65,8 +76,9 @@ class MenusController extends ControllerBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('path_alias.manager'),
-      $container->get('config.factory')
+      $container->get('config.factory'),
+      $container->get('menu.link_tree'),
+      $container->get('entity.repository')
     );
   }
 
@@ -94,7 +106,7 @@ class MenusController extends ControllerBase {
     }
 
     // Load the tree based on this set of parameters.
-    $menu_tree = \Drupal::menuTree();
+    $menu_tree = $this->menuLinkTree;
     $tree = $menu_tree->load($menu_name, $parameters);
 
     // Return if the menu does not exist or has no entries.
@@ -172,8 +184,8 @@ class MenusController extends ControllerBase {
    * @return array
    */
   protected function getElementValue(MenuLinkInterface $link) {
-    $siteConfig = \Drupal::config('system.site');
-    $entityRepo = \Drupal::service('entity.repository');
+    $siteConfig = $this->configFactory->get('system.site');
+    $entityRepo = $this->entityRepository;
     $front_uri = $siteConfig->get('page.front');
     $returnArray = [];
 

@@ -267,7 +267,8 @@ class SubscribeToFormationDAM extends FormBase {
     // Submit button type next or previous.
     $triggering_element_type = $triggering_element_parents[0];
     // Submit button page index.
-    $triggering_element_page = in_array($triggering_element_type, ['next', 'previous']) ? $triggering_element_parents[1] : NULL;
+    $element_types = ['next', 'previous'];
+    $triggering_element_page = in_array($triggering_element_type, $element_types) ? $triggering_element_parents[1] : NULL;
     $submitted_page_index = $triggering_element_page;
     // Update the page index.
     if ($triggering_element_type == 'next') {
@@ -352,6 +353,8 @@ class SubscribeToFormationDAM extends FormBase {
     $types_formation = \Drupal::entityTypeManager()->getStorage('taxonomy_term')
       ->loadByProperties(['vid' => 'academy_types_formation']);
     $options = [];
+    $renderer = \Drupal::service('renderer');
+    $file_url_generator = \Drupal::service('file_url_generator');
     foreach ($types_formation as $type_formation) {
       // Get the term translation.
       $type_formation = \Drupal::service('entity.repository')
@@ -363,15 +366,14 @@ class SubscribeToFormationDAM extends FormBase {
       $fid = $media->field_media_image->target_id;
       $file = File::load($fid);
       if ($file) {
-        $content['image_uri'] = file_create_url($file->get('uri')->value);
+        $content['image_uri'] = $file_url_generator->generateAbsoluteString($file->get('uri')->value);
       }
       // Get formation preview.
       $formation_type_preview = [
         '#theme' => 'vactory_academy_agency_types',
         '#content' => $content,
       ];
-      $options[$type] = \Drupal::service('renderer')
-        ->render($formation_type_preview);
+      $options[$type] = $renderer->renderPlain($formation_type_preview);
     }
     // Page title.
     $form['title'] = $this->setPageTitle($this->t('Formations et Webinars'));
@@ -427,7 +429,7 @@ class SubscribeToFormationDAM extends FormBase {
     if (!empty($courses) && count($courses) > $nb_blocked_course) {
       $options = $this->getFormationsAsOptions($courses, $this->agencyID);
       // Page title.
-      $form['title'] = $this->setPageTitle(t("Formations en présentiel, dans le centre @agence - Dar Al Macharii", ['@agence' => $this->agencyName]));
+      $form['title'] = $this->setPageTitle(t("Formations en présentiel, dans le centre @agence", ['@agence' => $this->agencyName]));
       // Select agency academies radios element.
       $form['agency_academies'] = [
         '#type' => 'radios',
@@ -448,7 +450,7 @@ class SubscribeToFormationDAM extends FormBase {
     }
     else {
       // Page title.
-      $form['title'] = $this->setPageTitle(t("Découvrez toutes les formations de Dar Al Macharii chaque mercredi..."));
+      $form['title'] = $this->setPageTitle(t("Découvrez toutes nos formations"));
       // In case the current agency has no academy node.
       $message = $this->t("Un programme de formations vous sera proposé très prochainement.");
       $form['message'] = [
@@ -465,6 +467,7 @@ class SubscribeToFormationDAM extends FormBase {
   public function getFormationsAsOptions($courses, $agency_id) {
     $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
     $options = [];
+    $renderer = \Drupal::service('renderer');
     foreach ($courses as $nid => $course) {
       // Get academy node translation.
       $translated_course = \Drupal::service('entity.repository')
@@ -516,8 +519,7 @@ class SubscribeToFormationDAM extends FormBase {
         '#content' => $content,
       ];
       // Add academy node to user select options.
-      $options[$nid] = \Drupal::service('renderer')
-        ->render($course_preview);
+      $options[$nid] = $renderer->renderPlain($course_preview);
     }
     return $options;
   }
@@ -601,7 +603,7 @@ class SubscribeToFormationDAM extends FormBase {
     ];
     $block_content = $this->getGeneralConditions();
     $form['conditions_generales'] = [
-      '#markup' => \Drupal::service('renderer')->render($block_content),
+      '#markup' => \Drupal::service('renderer')->renderPlain($block_content),
     ];
     $form['form_wrapper_closer'] = [
       '#type' => 'markup',

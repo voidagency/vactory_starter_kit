@@ -24,6 +24,10 @@ class VactoryCorePathProcessor implements OutboundPathProcessorInterface {
         $request->query->remove('_wrapper_format');
         $request->overrideGlobals();
       }
+      if (isset($params['page']) && is_numeric($params['page']) && (int) $params['page'] === 0) {
+        $request->query->remove('page');
+        $request->overrideGlobals();
+      }
     }
     return $path;
   }

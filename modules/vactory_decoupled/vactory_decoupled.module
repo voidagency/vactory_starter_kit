@@ -5,7 +5,8 @@
  * Primary module hooks for vactory_decoupled module.
  */
 
-use Drupal\Core\Cache\Cache;
+use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
+use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\Core\Entity\ContentEntityFormInterface;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -16,6 +17,8 @@ use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\jsonapi_extras\Entity\JsonapiResourceConfig;
 use Drupal\node\Entity\Node;
+use Drupal\symfony_mailer\EmailInterface;
+use Drupal\system\Entity\Menu;
 use Drupal\user\UserInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Drupal\simple_oauth\Entities\AccessTokenEntity;
@@ -30,39 +33,34 @@ use Drupal\menu_item_extras\Entity\MenuItemExtrasMenuLinkContent;
 /**
  * Implements hook_form_BASE_FORM_ID_alter().
  */
-function vactory_decoupled_form_node_form_alter(&$form, FormStateInterface $form_state)
-{
+function vactory_decoupled_form_node_form_alter(&$form, FormStateInterface $form_state) {
   // Node Settings.
   if (isset($form['node_settings'])) {
     $form['node_settings_group'] = [
-      '#type'        => 'details',
-      '#title'       => t('Node settings'),
-      '#group'       => 'advanced',
-      '#open'        => FALSE,
-      '#access'      => \Drupal::currentUser()
+      '#type' => 'details',
+      '#title' => t('Node settings'),
+      '#group' => 'advanced',
+      '#open' => FALSE,
+      '#access' => \Drupal::currentUser()
         ->hasPermission('administer field node settings'),
-      '#attributes'  => ['class' => ['node-settings-form']],
+      '#attributes' => ['class' => ['node-settings-form']],
     ];
     $form['node_settings']['#group'] = 'node_settings_group';
+    $form['cache_exclude']['#group'] = 'node_settings_group';
   }
 
   if (isset($form['machine_name'])) {
     $form['machine_name']['#access'] = \Drupal::currentUser()
-    ->hasPermission('administer field node settings');
+      ->hasPermission('administer field node settings');
     $form['machine_name']['#group'] = 'node_settings_group';
   }
 
 }
 
-
 /**
  * Implements hook_form_alter().
  */
-function vactory_decoupled_form_alter(&$form, FormStateInterface $form_state, $form_id)
-{
-  if ($form_id === 'webform_edit_form') {
-    $form['actions']['submit']['#submit'][] = 'clear_node_list_cache_after_updating_webform_elements';
-  }
+function vactory_decoupled_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   if ($form_id === 'locale_translate_edit_form') {
     $form['#submit'][] = 'clear_next_cache_translation';
   }
@@ -92,11 +90,11 @@ function vactory_decoupled_form_alter(&$form, FormStateInterface $form_state, $f
   }
 
   $type = $form_state->getFormObject()->getEntity()->bundle();
-  // @todo: make an interface for this.
+  // @todo Make an interface for this.
   $disabledTypes = Settings::get('PREVIEW_DISABLED_TYPES', [
     'vactory_page_listing',
     'vactory_government_member',
-    'vactory_banner'
+    'vactory_banner',
   ]);
 
   if (in_array($type, $disabledTypes)) {
@@ -125,7 +123,7 @@ function vactory_decoupled_form_alter(&$form, FormStateInterface $form_state, $f
  * Submit handler for viewing the nextjs page.
  */
 function nextjs_node_form_submit(&$form, FormStateInterface $form_state) {
-  //@todo : config form.
+  // @todo Config form.
   // Redirect to content page after (Add or update or delete the node)
   $form_state->setRedirect('view.content.page_1');
 }
@@ -134,7 +132,7 @@ function nextjs_node_form_submit(&$form, FormStateInterface $form_state) {
  * Invalidate nodes cache on block admin display submit.
  */
 function block_admin_display_submit($form, FormStateInterface $form_state) {
-  // Cache::invalidateTags(['node_list']);
+  /* Cache::invalidateTags(['node_list']); */
 }
 
 /**
@@ -142,14 +140,14 @@ function block_admin_display_submit($form, FormStateInterface $form_state) {
  */
 function gatsby_node_form_submit(&$form, FormStateInterface $form_state) {
   $path = $form_state->getValue('path');
-  $url = !empty($path[0]['alias']) ? '/' .$path[0]['langcode'] . $path[0]['alias'] : $path[0]['source'];
+  $url = !empty($path[0]['alias']) ? '/' . $path[0]['langcode'] . $path[0]['alias'] : $path[0]['source'];
   $nid = $form_state->getValue('nid');
   $siteConfig = \Drupal::config('system.site');
   $front_uri = $siteConfig->get('page.front');
   $frontend_url = Settings::get('BASE_FRONTEND_URL', FALSE);
 
   if ($front_uri === '/node/' . $nid) {
-    $url = Url::fromRoute('<front>')->toString() ;
+    $url = Url::fromRoute('<front>')->toString();
   }
 
   // Redirect to the alias if it exists, otherwise use the node URL.
@@ -205,9 +203,7 @@ function vactory_decoupled_entity_base_field_info(EntityTypeInterface $entity_ty
       ->setTargetEntityTypeId($entity_type->id())
       ->setDisplayConfigurable('form', FALSE)
       ->setDisplayConfigurable('view', FALSE);
-  }
 
-  if ($entity_type->id() === 'node') {
     $fields['internal_metatag'] = BaseFieldDefinition::create('map')
       ->setLabel(t('Node Metatags'))
       ->setDescription(t('Defined metatags per node'))
@@ -218,9 +214,7 @@ function vactory_decoupled_entity_base_field_info(EntityTypeInterface $entity_ty
       ->setTargetEntityTypeId($entity_type->id())
       ->setDisplayConfigurable('form', FALSE)
       ->setDisplayConfigurable('view', FALSE);
-  }
 
-  if ($entity_type->id() === 'node') {
     $fields['internal_comment'] = BaseFieldDefinition::create('map')
       ->setLabel(t('Node comment'))
       ->setDescription(t('Defined comment per node'))
@@ -231,9 +225,7 @@ function vactory_decoupled_entity_base_field_info(EntityTypeInterface $entity_ty
       ->setTargetEntityTypeId($entity_type->id())
       ->setDisplayConfigurable('form', FALSE)
       ->setDisplayConfigurable('view', FALSE);
-  }
 
-  if ($entity_type->id() === 'node') {
     $fields['internal_breadcrumb'] = BaseFieldDefinition::create('map')
       ->setLabel(t('Node breadcrumb'))
       ->setDescription(t('Defined breadcrumb per node'))
@@ -244,9 +236,7 @@ function vactory_decoupled_entity_base_field_info(EntityTypeInterface $entity_ty
       ->setTargetEntityTypeId($entity_type->id())
       ->setDisplayConfigurable('form', FALSE)
       ->setDisplayConfigurable('view', FALSE);
-  }
 
-  if ($entity_type->id() === 'node') {
     $fields['internal_extra'] = BaseFieldDefinition::create('map')
       ->setLabel(t('Node extra'))
       ->setDescription(t('Extra data per node'))
@@ -257,6 +247,42 @@ function vactory_decoupled_entity_base_field_info(EntityTypeInterface $entity_ty
       ->setTargetEntityTypeId($entity_type->id())
       ->setDisplayConfigurable('form', FALSE)
       ->setDisplayConfigurable('view', FALSE);
+
+    $fields['node_settings'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('Node Settings'))
+      ->setDescription(t('Add extra parameters in JSON Format : { "isHomePage": true, "taxonomy": 4, "limit": 6 }'))
+      ->setRevisionable(TRUE)
+      ->setTranslatable(TRUE)
+      ->setDefaultValue('')
+      ->setRequired(FALSE)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textarea',
+        'weight' => 1,
+        'settings' => [
+          'rows' => 4,
+        ],
+      ])
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE);
+
+    $fields['cache_exclude'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Exclude from frontend cache'))
+      ->setDescription(t('Check this to exclude current node from being cached in frontend'))
+      ->setDefaultValue(0)
+      ->setDisplayOptions('form', [
+        'type' => 'boolean_checkbox',
+        'settings' => [
+          'display_label' => TRUE,
+        ],
+      ])
+      ->setDisplayConfigurable('form', TRUE);
+
+    $fields['machine_name'] = BaseFieldDefinition::create('string')
+      ->setLabel('Machine name')
+      ->setDescription('Machine name for internal use.')
+      ->setTranslatable(FALSE)
+      ->setRevisionable(FALSE)
+      ->setDisplayConfigurable('form', TRUE);
   }
 
   if ($entity_type->id() === 'taxonomy_term') {
@@ -271,7 +297,7 @@ function vactory_decoupled_entity_base_field_info(EntityTypeInterface $entity_ty
       ->setDisplayConfigurable('form', FALSE)
       ->setDisplayConfigurable('view', FALSE);
 
-      $fields['term_2_slug'] = BaseFieldDefinition::create('string')
+    $fields['term_2_slug'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Slug'))
       ->setDescription(t('Term slug'))
       ->setTranslatable(TRUE)
@@ -279,43 +305,13 @@ function vactory_decoupled_entity_base_field_info(EntityTypeInterface $entity_ty
       ->setRequired(FALSE)
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayOptions('form', [
-        'type'     => 'string_textfield',
-        'weight'   => 0,
+        'type' => 'string_textfield',
+        'weight' => 0,
       ])
       ->setDisplayConfigurable('view', FALSE);
   }
-
-  if ($entity_type->id() === 'node') {
-    $fields['node_settings'] = BaseFieldDefinition::create('string_long')
-      ->setLabel(t('Node Settings'))
-      ->setDescription(t('Add extra parameters in JSON Format : { "isHomePage": true, "taxonomy": 4, "limit": 6 }'))
-      ->setRevisionable(TRUE)
-      ->setTranslatable(TRUE)
-      ->setDefaultValue('')
-      ->setRequired(FALSE)
-      ->setDisplayOptions('form', [
-        'type'     => 'string_textarea',
-        'weight'   => 1,
-        'settings' => [
-          'rows' => 4,
-        ],
-      ])
-      ->setDisplayConfigurable('form', FALSE)
-      ->setDisplayConfigurable('view', FALSE);
-  }
-
-  if ($entity_type->id() === 'node') {
-    $fields['machine_name'] = BaseFieldDefinition::create('string')
-      ->setLabel('Machine name')
-      ->setDescription('Machine name for internal use.')
-      ->setTranslatable(FALSE)
-      ->setRevisionable(FALSE)
-      ->setDisplayConfigurable('form', TRUE);
-  }
-
   return $fields;
 }
-
 
 /**
  * Implements hook_field_formatter_info_alter().
@@ -324,13 +320,11 @@ function vactory_decoupled_entity_base_field_info(EntityTypeInterface $entity_ty
  * map internal_breadcrumb computed field. for debug.
  */
 /*function vactory_decoupled_field_formatter_info_alter(array &$info) {
-  $info['text_default']['field_types'][] = 'map';
+$info['text_default']['field_types'][] = 'map';
 }*/
 
 /**
  * Implements hook_entity_type_alter().
- *
- * @param array $entity_types
  */
 function vactory_decoupled_entity_type_alter(array &$entity_types) {
   $entity_types['comment']->addConstraint('jsonapi_recaptcha');
@@ -341,15 +335,15 @@ function vactory_decoupled_entity_type_alter(array &$entity_types) {
  * Oauth extra user informations.
  *
  * @param \Drupal\user\UserInterface $user
+ *   User account.
  *
  * @return array
- * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
- * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+ *   User infos.
+ *
+ * @throws Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+ * @throws Drupal\Component\Plugin\Exception\PluginNotFoundException
  */
 function get_oauth_user_infos(UserInterface $user) {
-  /** @var \Drupal\Core\File\FileUrlGeneratorInterface $file_url_generator */
-  $file_url_generator = \Drupal::service('file_url_generator');
-
   $full_name = $user->getDisplayName();
   $first_name = $user->get('field_first_name')->getString();
   $last_name = $user->get('field_last_name')->getString();
@@ -361,9 +355,12 @@ function get_oauth_user_infos(UserInterface $user) {
 
   if (user_picture_enabled() && !$user->get('user_picture')->isEmpty()) {
     $pictureUri = $user->get('user_picture')->entity->getFileUri();
-    $style = \Drupal::entityTypeManager()->getStorage('image_style')->load('avatar');
+    $style = \Drupal::entityTypeManager()
+      ->getStorage('image_style')
+      ->load('avatar');
     $derivative_uri = $style->buildUri($pictureUri);
-    $avatar = $file_url_generator->generateAbsoluteString($style->buildUrl($pictureUri));
+
+    $avatar = \Drupal::service('vacory_decoupled.media_file_manager')->convertToMediaAbsoluteUrl($style->buildUrl($pictureUri));
     if (!file_exists($derivative_uri)) {
       $style->createDerivative($pictureUri, $derivative_uri);
     }
@@ -395,8 +392,10 @@ function vactory_decoupled_simple_oauth_private_claims_alter(&$private_claims, A
   $profile = [];
   try {
     $profile = get_oauth_user_infos($user);
-  } catch (\Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException $e) {
-  } catch (\Drupal\Component\Plugin\Exception\PluginNotFoundException $e) {
+  }
+  catch (InvalidPluginDefinitionException $e) {
+  }
+  catch (PluginNotFoundException $e) {
   }
 
   $private_claims = [
@@ -404,15 +403,10 @@ function vactory_decoupled_simple_oauth_private_claims_alter(&$private_claims, A
   ];
 }
 
-
 /**
- * Generate initials from a name
- *
- * @param string $name
- * @return string
+ * Generate initials from a name.
  */
-function _auth_generate_intials_from_name($name)
-{
+function _auth_generate_intials_from_name($name) {
   $words = explode(' ', $name);
   if (count($words) >= 2) {
     return strtoupper(substr($words[0], 0, 1) . substr(end($words), 0, 1));
@@ -421,13 +415,9 @@ function _auth_generate_intials_from_name($name)
 }
 
 /**
- * Make initials from a word with no spaces
- *
- * @param string $name
- * @return string
+ * Make initials from a word with no spaces.
  */
-function _auth_make_unitials_from_single_word($name)
-{
+function _auth_make_unitials_from_single_word($name) {
   preg_match_all('#([A-Z]+)#', $name, $capitals);
   if (count($capitals[1]) >= 2) {
     return substr(implode('', $capitals[1]), 0, 2);
@@ -437,22 +427,27 @@ function _auth_make_unitials_from_single_word($name)
 
 /**
  * Implements hook_mail_alter().
+ *
+ * @deprecated To be removed once swiftmailer contrib module has been removed.
  */
 function vactory_decoupled_mail_alter(&$message) {
-  $route = \Drupal::routeMatch()->getRouteName();
   $langcode = $message['langcode'];
   $token_service = \Drupal::token();
   $mail_config = \Drupal::config('user.mail');
   $language_manager = \Drupal::languageManager();
   $language = $language_manager->getLanguage($langcode);
 
-  if (strpos($route, 'jsonapi_') === 0) {
+  if (!empty(Settings::get('BASE_FRONTEND_URL'))) {
     if ($message['id'] === 'user_password_reset') {
       $key = 'password_reset';
       $variables = ['user' => $message['params']['account']];
       $original_language = $language_manager->getConfigOverrideLanguage();
       $language_manager->setConfigOverrideLanguage($language);
-      $token_options = ['langcode' => $langcode, 'callback' => '_vactory_decoupled_user_mail_tokens', 'clear' => TRUE];
+      $token_options = [
+        'langcode' => $langcode,
+        'callback' => '_vactory_decoupled_user_mail_tokens',
+        'clear' => TRUE,
+      ];
       $message['subject'] = '';
       $message['body'] = [];
       $message['subject'] .= PlainTextOutput::renderFromHtml($token_service->replace($mail_config->get($key . '.subject'), $variables, $token_options));
@@ -463,22 +458,106 @@ function vactory_decoupled_mail_alter(&$message) {
       $key = 'register_no_approval_required';
       $message['body'] = [];
       $variables = ['user' => $message['params']['account']];
-      $token_options = ['langcode' => $langcode, 'callback' => '_vactory_decoupled_user_mail_tokens', 'clear' => TRUE];
+      $token_options = [
+        'langcode' => $langcode,
+        'callback' => '_vactory_decoupled_user_mail_tokens',
+        'clear' => TRUE,
+      ];
       $message['body'][] = new FormattableMarkup($token_service->replace($mail_config->get($key . '.body'), $variables, $token_options), []);
     }
-  }
-  if ($message['id'] == 'user_status_activated' && !empty(Settings::get('BASE_FRONTEND_URL'))) {
-    $message['body'] = [];
-    $variables = ['user' => $message['params']['account']];
-    $token_options = ['langcode' => $langcode, 'callback' => '_vactory_decoupled_user_mail_tokens', 'clear' => TRUE];
-    $message['body'][] = new FormattableMarkup($token_service->replace($mail_config->get('status_activated')['body'], $variables, $token_options), []);
+    if ($message['id'] == 'user_status_activated') {
+      $message['body'] = [];
+      $variables = ['user' => $message['params']['account']];
+      $token_options = [
+        'langcode' => $langcode,
+        'callback' => '_vactory_decoupled_user_mail_tokens',
+        'clear' => TRUE,
+      ];
+      $message['body'][] = new FormattableMarkup($token_service->replace($mail_config->get('status_activated')['body'], $variables, $token_options), []);
+    }
+    if ($message['id'] == 'user_registrationpassword_register_confirmation_with_pass') {
+      $key = 'register_confirmation_with_pass';
+      $mail_config = \Drupal::config('user_registrationpassword.mail');
+      $message['body'] = [];
+      $variables = ['user' => $message['params']['account']];
+      $token_options = [
+        'langcode' => $langcode,
+        'callback' => '_vactory_decoupled_user_mail_tokens',
+        'clear' => TRUE,
+      ];
+      $message['body'][] = new FormattableMarkup($token_service->replace($mail_config->get($key . '.body'), $variables, $token_options), []);
+    }
   }
 }
 
 /**
- * @param $replacements
- * @param $data
- * @param $options
+ * Implements hook_mailer_build().
+ */
+function vactory_decoupled_mailer_build(EmailInterface $email) {
+  $params = $email->getParams();
+  $legacy_message = $params['legacy_message'] ?? [];
+  if (!empty($legacy_message)) {
+    $langcode = $legacy_message['langcode'];
+    $token_service = \Drupal::token();
+    $mail_config = \Drupal::config('user.mail');
+    $language_manager = \Drupal::languageManager();
+    $language = $language_manager->getLanguage($langcode);
+    if (!empty(Settings::get('BASE_FRONTEND_URL'))) {
+      if ($legacy_message['id'] === 'user_password_reset') {
+        $key = 'password_reset';
+        $variables = ['user' => $legacy_message['params']['account']];
+        $original_language = $language_manager->getConfigOverrideLanguage();
+        $language_manager->setConfigOverrideLanguage($language);
+        $token_options = [
+          'langcode' => $langcode,
+          'callback' => '_vactory_decoupled_user_mail_tokens',
+          'clear' => TRUE,
+        ];
+        $subject = PlainTextOutput::renderFromHtml($token_service->replace($mail_config->get($key . '.subject'), $variables, $token_options));
+        $body = new FormattableMarkup($token_service->replace($mail_config->get($key . '.body'), $variables, $token_options), []);
+        $email->setSubject($subject);
+        $email->setBody($body);
+        $language_manager->setConfigOverrideLanguage($original_language);
+      }
+      if ($legacy_message['id'] == 'user_register_no_approval_required') {
+        $key = 'register_no_approval_required';
+        $variables = ['user' => $legacy_message['params']['account']];
+        $token_options = [
+          'langcode' => $langcode,
+          'callback' => '_vactory_decoupled_user_mail_tokens',
+          'clear' => TRUE,
+        ];
+        $body = new FormattableMarkup($token_service->replace($mail_config->get($key . '.body'), $variables, $token_options), []);
+        $email->setBody($body);
+      }
+      if ($legacy_message['id'] == 'user_status_activated') {
+        $variables = ['user' => $legacy_message['params']['account']];
+        $token_options = [
+          'langcode' => $langcode,
+          'callback' => '_vactory_decoupled_user_mail_tokens',
+          'clear' => TRUE,
+        ];
+        $body = new FormattableMarkup($token_service->replace($mail_config->get('status_activated')['body'], $variables, $token_options), []);
+        $email->setBody($body);
+      }
+      if ($legacy_message['id'] == 'user_registrationpassword_register_confirmation_with_pass') {
+        $variables = ['user' => $legacy_message['params']['account']];
+        $key = 'register_confirmation_with_pass';
+        $mail_config = \Drupal::config('user_registrationpassword.mail');
+        $token_options = [
+          'langcode' => $langcode,
+          'callback' => '_vactory_decoupled_user_mail_tokens',
+          'clear' => TRUE,
+        ];
+        $body = new FormattableMarkup($token_service->replace($mail_config->get($key . '.body'), $variables, $token_options), []);
+        $email->setBody($body);
+      }
+    }
+  }
+}
+
+/**
+ * User mail token replacement.
  */
 function _vactory_decoupled_user_mail_tokens(&$replacements, $data, $options) {
   if (isset($data['user'])) {
@@ -489,14 +568,29 @@ function _vactory_decoupled_user_mail_tokens(&$replacements, $data, $options) {
     $replacements['[user:one-time-login-url]'] = _vactory_decoupled_user_pass_reset_url($data['user'], $options);
     $replacements['[user:cancel-url]'] = user_cancel_url($data['user'], $options);
     $replacements['[site:login-url]'] = $frontend_url . "/$langcode/$nextjs_user_pages_path_prefix";
+    $replacements['[user:registrationpassword-url]'] = _vactory_decoupled_user_verify_url($data['user']);
   }
 }
 
 /**
- * @param $account
- * @param array $options
- *
- * @return string
+ * User account verify url.
+ */
+function _vactory_decoupled_user_verify_url(UserInterface $account) {
+  $timestamp = \Drupal::time()->getRequestTime();
+  $frontend_url = Settings::get('BASE_FRONTEND_URL', "http://localhost:3000");
+  $language = \Drupal::languageManager()->getCurrentLanguage()->getId();
+  $langcode = $language ?? $account->getPreferredLangcode();
+  $data = [
+    'uid' => $account->id(),
+    'timestamp' => $timestamp,
+    'hash' => user_pass_rehash($account, $timestamp),
+  ];
+  $query_string = http_build_query($data, "", "&", PHP_QUERY_RFC3986);
+  return $frontend_url . "/$langcode/account/verify?" . $query_string;
+}
+
+/**
+ * User pass reset url.
  */
 function _vactory_decoupled_user_pass_reset_url($account, $options = []) {
   $frontend_url = Settings::get('BASE_FRONTEND_URL', "http://localhost:3000");
@@ -508,6 +602,7 @@ function _vactory_decoupled_user_pass_reset_url($account, $options = []) {
   $data = [
     'uid' => $account->id(),
     'timestamp' => $timestamp,
+    'hash_expire' => $timestamp + \Drupal::config('user.settings')->get('password_reset_timeout'),
     'hash' => user_pass_rehash($account, $timestamp),
   ];
 
@@ -526,32 +621,20 @@ function vactory_decoupled_validation_constraint_alter(array &$definitions) {
 }
 
 /**
- * Implements hook_ENTITY_TYPE_presave().
- */
-function vactory_decoupled_block_presave(EntityInterface $entity) {
-  // Cache::invalidateTags(['node_list']);
-}
-
-/**
- * Clear node list cache after updating webform elements.
- */
-function clear_node_list_cache_after_updating_webform_elements(&$form, FormStateInterface $form_state) {
-  Cache::invalidateTags(['node_list']);
-}
-
-
-
-/**
  * Implements hook_entity_update().
+ *
  * Clear drupal cache => clear frontend cache.
  */
 function vactory_decoupled_cache_flush() {
   clear_next_cache();
 }
 
+/**
+ * Clear frontend cache.
+ */
 function clear_next_cache_translation(&$form, FormStateInterface $form_state) {
   $query = [
-    'invalidate'  => 'translation',
+    'invalidate' => 'translation',
   ];
   clear_next_cache($query);
 }
@@ -562,28 +645,29 @@ function clear_next_cache_translation(&$form, FormStateInterface $form_state) {
 function vactory_decoupled_entity_update(EntityInterface $entity) {
   static $loaded;
 
-  // @todo: do we need to keep going in this function ?
+  // @todo Do we need to keep going in this function ?
   // Updating a node will also update menu ?
   if ($entity instanceof Node && !$entity->isNew()) {
-      $query = get_node_info($entity);
-      clear_next_cache($query);
+    $query = get_node_info($entity);
+    clear_next_cache($query);
   }
 
   if ($entity instanceof MenuItemExtrasMenuLinkContent && !isset($loaded)) {
-      $loaded = 1;
-      clear_next_cache([
-        'menu'       => $entity->bundle(),
-        'invalidate' => 'menu',
-      ]);
-  }
-  else if ($entity instanceof Drupal\system\Entity\Menu) {
+    $loaded = 1;
     clear_next_cache([
-      'menu'       => $entity->id(),
+      'menu' => $entity->bundle(),
       'invalidate' => 'menu',
     ]);
   }
+  else {
+    if ($entity instanceof Menu) {
+      clear_next_cache([
+        'menu' => $entity->id(),
+        'invalidate' => 'menu',
+      ]);
+    }
+  }
 }
-
 
 /**
  * Implements hook_entity_predelete().
@@ -595,16 +679,17 @@ function vactory_decoupled_entity_predelete(EntityInterface $entity) {
   }
 }
 
+/**
+ * Get given node info.
+ */
 function get_node_info($entity) {
   $nid = $entity->id();
   $langcode = $entity->language()->getId();
-  // $alias = \Drupal::service('path_alias.manager')
-  //   ->getAliasByPath('/node/' . $nid);
-  // @todo: if no alias fall back to /node/id
-
+  /* $alias = \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $nid); */
+  // @todo If no alias fall back to /node/id.
   return $query = [
-    'id'         => $nid,
-    'langcode'   => $langcode,
+    'id' => $nid,
+    'langcode' => $langcode,
     // 'alias'      => $alias,
     'invalidate' => 'node',
   ];
@@ -616,7 +701,7 @@ function get_node_info($entity) {
 function vactory_decoupled_entity_delete(EntityInterface $entity) {
   if ($entity instanceof MenuItemExtrasMenuLinkContent) {
     $query = [
-      'menu'       => $entity->bundle(),
+      'menu' => $entity->bundle(),
       'invalidate' => 'menu',
     ];
     clear_next_cache($query);
@@ -624,13 +709,9 @@ function vactory_decoupled_entity_delete(EntityInterface $entity) {
 }
 
 /**
- * @param array $query
  * Clears frontend cache.
- *
- * @return bool
  */
 function clear_next_cache($query = []) {
-
   $front_end_url = Settings::get('BASE_FRONTEND_URL');
   $cache_secret = Settings::get('FRONTEND_CACHE_KEY');
 
@@ -671,10 +752,12 @@ function clear_next_cache($query = []) {
       return FALSE;
     }
 
-  } catch (ServerException $e) {
+  }
+  catch (ServerException $e) {
     \Drupal::logger('clear_next_cache')->warning($error_msg);
     return FALSE;
-  } catch (RequestException $e) {
+  }
+  catch (RequestException $e) {
     \Drupal::logger('clear_next_cache')->warning($error_msg);
     return FALSE;
   }
@@ -688,9 +771,7 @@ function vactory_decoupled_jsonapi_default_enhancers_info() {
     'internal_blocks' => [
       'enhancer' => 'vactory_blocks',
     ],
-    // 'field_vactory_meta_tags' => [
-    //   'enhancer' => 'vactory_metatag',
-    // ],
+    /* 'field_vactory_meta_tags' => ['enhancer' => 'vactory_metatag',],*/
   ];
 }
 
@@ -725,4 +806,93 @@ function vactory_decoupled_form_jsonapi_resource_config_edit_form_alter(&$form, 
 function vactory_decoupled_jsonapi_resource_config_builder($entity_type, JsonapiResourceConfig $config_resource, &$form, FormStateInterface $form_state) {
   $roles = $form_state->getValue('roles');
   $config_resource->setThirdPartySetting('vactory_decoupled', 'roles', $roles);
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_decoupled_preprocess_page(&$variables) {
+  $route_name = \Drupal::routeMatch()->getRouteName();
+  $current_domain = \Drupal::request()->getHttpHost();
+  if ($route_name === 'system.404') {
+    // Redirect backend not found pages to frontend.
+    redirectToFrontend(TRUE);
+  }
+  if ($base_media_url = Settings::get('BASE_MEDIA_URL', '')) {
+    $media_url_info = parse_url($base_media_url);
+    if (isset($media_url_info['host']) && $media_url_info['host'] === $current_domain) {
+      // Redirect none existant media to frontend.
+      redirectToFrontend();
+    }
+  }
+  if (str_starts_with($current_domain, 'api.')) {
+    // Redirect website html pages access via api domain to frontend.
+    redirectToFrontend();
+  }
+}
+
+/**
+ * Redirect to frontend url.
+ */
+// phpcs:disable
+function redirectToFrontend($from_404 = FALSE) {
+  // phpcs:enable
+  if ($frontend_url = Settings::get('BASE_FRONTEND_URL', '')) {
+    $requested_path = $from_404 ? \Drupal::request()->getPathInfo() : '/not-found';
+    $response = new RedirectResponse("{$frontend_url}{$requested_path}");
+    $response->send();
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_decoupled_preprocess_html(&$variables) {
+  $route_name = Drupal::routeMatch()->getRouteName();
+  $exluded_routes = [
+    'user.login',
+    'user.register',
+    'user.pass',
+    'user.reset.form',
+    'vactory_espace_prive.welcome',
+    'entity.user.canonical',
+  ];
+  if (!in_array($route_name, $exluded_routes)) {
+    $langcode = Drupal::languageManager()->getCurrentLanguage()->getId();
+    $current_path = \Drupal::service('path.current')->getPath();
+    $alias = \Drupal::service('path_alias.manager')->getAliasByPath($current_path);
+    $frontend_url = Settings::get('BASE_FRONTEND_URL', '');
+    if (!empty($frontend_url)) {
+      $frontend_url = trim($frontend_url, '/') . "/{$langcode}" . $alias;
+    }
+    $variables['iframe_url'] = $frontend_url;
+    $variables['is_decoupled'] = TRUE;
+  }
+}
+
+/**
+ * Implements hook_module_implements_alter().
+ */
+function vactory_decoupled_module_implements_alter(&$implementations, $hook) {
+  if ($hook === 'simple_oauth_private_claims_alter') {
+    $group = $implementations['vactory_decoupled'];
+    unset($implementations['vactory_decoupled']);
+    $implementations = ['vactory_decoupled' => $group] + $implementations;
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ */
+function vactory_decoupled_taxonomy_term_presave(EntityInterface $entity) {
+  if ($entity->hasField('term_2_slug')) {
+    $term_slug = $entity->get('term_2_slug')->value;
+    if (empty($term_slug)) {
+      $name = $entity->getName();
+      $slug = \Drupal::service('transliteration')->transliterate($name);
+      $slug = !empty($slug) ? strtolower($slug) : $slug;
+      $slug = !empty($slug) ? str_replace([' ', "'"], '-', $slug) : $slug;
+      $entity->set('term_2_slug', $slug);
+    }
+  }
 }
