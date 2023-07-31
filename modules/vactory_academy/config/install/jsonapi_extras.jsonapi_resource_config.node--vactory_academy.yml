@@ -3,6 +3,15 @@ status: true
 dependencies:
   config:
     - node.type.vactory_academy
+  enforced:
+    module:
+      - vactory_academy
+  module:
+    - jsonapi_defaults
+    - vactory_decoupled
+third_party_settings:
+  jsonapi_defaults:
+    page_limit: 50
 id: node--vactory_academy
 disabled: false
 path: node/vactory_academy
@@ -127,7 +136,7 @@ resourceFields:
     fieldName: path
     publicName: path
     enhancer:
-      id: 'vactory_link'
+      id: vactory_link
   publish_on:
     disabled: false
     fieldName: publish_on
@@ -146,6 +155,12 @@ resourceFields:
     publicName: menu_link
     enhancer:
       id: vactory_link
+  is_flagged:
+    disabled: false
+    fieldName: is_flagged
+    publicName: is_flagged
+    enhancer:
+      id: ''
   node_banner_image:
     disabled: false
     fieldName: node_banner_image
@@ -164,6 +179,36 @@ resourceFields:
     publicName: node_banner_title
     enhancer:
       id: ''
+  form_path_alias:
+    disabled: false
+    fieldName: form_path_alias
+    publicName: form_path_alias
+    enhancer:
+      id: ''
+  field_content_access_users:
+    disabled: false
+    fieldName: field_content_access_users
+    publicName: field_content_access_users
+    enhancer:
+      id: ''
+  field_content_access_roles:
+    disabled: false
+    fieldName: field_content_access_roles
+    publicName: field_content_access_roles
+    enhancer:
+      id: ''
+  field_content_access_groups:
+    disabled: false
+    fieldName: field_content_access_groups
+    publicName: field_content_access_groups
+    enhancer:
+      id: ''
+  field_content_access_custom:
+    disabled: false
+    fieldName: field_content_access_custom
+    publicName: field_content_access_custom
+    enhancer:
+      id: ''
   vcc_normalized:
     disabled: false
     fieldName: vcc_normalized
@@ -180,6 +225,12 @@ resourceFields:
     disabled: false
     fieldName: internal_blocks
     publicName: internal_blocks
+    enhancer:
+      id: ''
+  internal_metatag:
+    disabled: false
+    fieldName: internal_metatag
+    publicName: internal_metatag
     enhancer:
       id: ''
   internal_comment:
@@ -206,6 +257,18 @@ resourceFields:
     publicName: node_settings
     enhancer:
       id: ''
+  cache_exclude:
+    disabled: false
+    fieldName: cache_exclude
+    publicName: cache_exclude
+    enhancer:
+      id: ''
+  machine_name:
+    disabled: false
+    fieldName: machine_name
+    publicName: machine_name
+    enhancer:
+      id: ''
   node_bg_image:
     disabled: false
     fieldName: node_bg_image
@@ -228,6 +291,48 @@ resourceFields:
     disabled: false
     fieldName: node_body_class
     publicName: node_body_class
+    enhancer:
+      id: ''
+  candidature_spontanee_url:
+    disabled: false
+    fieldName: candidature_spontanee_url
+    publicName: candidature_spontanee_url
+    enhancer:
+      id: ''
+  notification_title:
+    disabled: false
+    fieldName: notification_title
+    publicName: notification_title
+    enhancer:
+      id: ''
+  notification_message:
+    disabled: false
+    fieldName: notification_message
+    publicName: notification_message
+    enhancer:
+      id: ''
+  mail_subject:
+    disabled: false
+    fieldName: mail_subject
+    publicName: mail_subject
+    enhancer:
+      id: ''
+  mail_message:
+    disabled: false
+    fieldName: mail_message
+    publicName: mail_message
+    enhancer:
+      id: ''
+  generate_notification:
+    disabled: false
+    fieldName: generate_notification
+    publicName: generate_notification
+    enhancer:
+      id: ''
+  vote:
+    disabled: false
+    fieldName: vote
+    publicName: vote
     enhancer:
       id: ''
   content_translation_source:
@@ -302,6 +407,12 @@ resourceFields:
     publicName: field_vactory_media
     enhancer:
       id: vactory_file_image
+  field_vactory_media_document:
+    disabled: false
+    fieldName: field_vactory_media_document
+    publicName: field_vactory_media_document
+    enhancer:
+      id: vactory_file_document
   field_vactory_meta_tags:
     disabled: false
     fieldName: field_vactory_meta_tags
@@ -318,6 +429,12 @@ resourceFields:
     disabled: false
     fieldName: field_vactory_seo_status
     publicName: field_vactory_seo_status
+    enhancer:
+      id: ''
+  field_vactory_tags:
+    disabled: false
+    fieldName: field_vactory_tags
+    publicName: field_vactory_tags
     enhancer:
       id: ''
   field_vactory_theme:
