@@ -1,0 +1,21 @@
+name: 'Cross bundles example'
+multiple: FALSE
+category: 'News'
+enabled: TRUE
+fields:
+  collection:
+    type: json_api_cross_bundles
+    label: 'JSON:API'
+    options:
+      '#required': TRUE
+      '#default_value':
+        id: "vactory_news_cross_bundles"
+        resource:
+          entity_type: node
+          bundle:
+            - vactory_news
+            - vactory_publication
+
+        filters:
+          - sort[date][path]=field_vactory_date
+          - sort[date][direction]=DESC

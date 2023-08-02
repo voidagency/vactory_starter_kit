@@ -516,6 +516,31 @@ class VactoryDynamicFieldEnhancer extends ResourceFieldEnhancerBase implements C
           $value = $response;
         }
 
+        // Cross bundles.
+        if ($info['type'] === 'json_api_cross_bundles' && !empty($value)) {
+          $value = array_merge($info['options']['#default_value'], $value);
+          $resource = $value['resource']['entity_type'];
+          $bundles = $value['resource']['bundle'];
+          $bundleEntityType = \Drupal::entityTypeManager()->getDefinition($resource)->getBundleEntityType();
+          if (is_array($bundles)){
+            $value['filters'][] = "filter[bundles][condition][path]={$bundleEntityType}.meta.drupal_internal__target_id";
+            $value['filters'][] = 'filter[bundles][condition][operator]=IN';
+            foreach ($bundles as $key => $bundle){
+              $value['filters'][] = "filter[bundles][condition][value][{$key}]={$bundle}";
+            }
+          }
+          $value['resource'] = $resource;
+          $response = $this->jsonApiGenerator->fetch($value);
+          $cache = $response['cache'];
+          unset($response['cache']);
+
+          $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $cache['tags']);
+          $this->cacheability->setCacheTags($cacheTags);
+          $cacheContexts = Cache::mergeContexts($this->cacheability->getCacheContexts(), $cache['contexts']);
+          $this->cacheability->setCacheContexts($cacheContexts);
+          $value = $response;
+        }
+
         // Webform.
         if ($info['type'] === 'webform_decoupled' && !empty($value)) {
           $webform_id = $value['id'];

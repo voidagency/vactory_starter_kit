@@ -5,6 +5,7 @@ namespace Drupal\vactory_decoupled\Element;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element\FormElement;
 use Drupal\entityqueue\Entity\EntityQueue;
+use Drupal\jsonapi_extras\ResourceType\ConfigurableResourceType;
 use Drupal\node\Entity\Node;
 
 /**
@@ -262,13 +263,15 @@ class JsonApiCollectionElement extends FormElement {
     $resource_types = \Drupal::service('jsonapi.resource_type.repository')
       ->all();
     foreach ($resource_types as $resource_type) {
-      /** @var \Drupal\jsonapi_extras\Entity\JsonapiResourceConfig $resource_config */
-      $resource_config = $resource_type->getJsonapiResourceConfig();
+      if ($resource_type instanceof ConfigurableResourceType){
+        /** @var \Drupal\jsonapi_extras\Entity\JsonapiResourceConfig $resource_config */
+        $resource_config = $resource_type->getJsonapiResourceConfig();
 
-      if ($resource_config->get('disabled')) {
-        continue;
+        if ($resource_config->get('disabled')) {
+          continue;
+        }
+        $options[$resource_type->getTypeName()] = $resource_type->getTypeName();
       }
-      $options[$resource_type->getTypeName()] = $resource_type->getTypeName();
     }
 
     return $options;
