@@ -181,6 +181,5 @@ vactory_decoupled.store_log_message:
   defaults:
     _controller: '\Drupal\vactory_decoupled\Controller\LogController::storeLogMessage'
     _disable_route_normalizer: 'TRUE'
-  methods: [POST]
   requirements:
     _permission: 'access content'

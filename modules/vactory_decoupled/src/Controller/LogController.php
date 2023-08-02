@@ -18,15 +18,17 @@ class LogController extends ControllerBase
   public function storeLogMessage(Request $request)
   {
     $payload = json_decode($request->getContent(), true);
-    if (!isset($payload['reason']) || !isset($payload['path'])) {
+    if (!isset($payload['reason']) || !isset($payload['path']) || !isset($payload['source']) || !isset($payload['stack'])) {
       return new JsonResponse(['error' => 'missing params'], 503);
     }
 
-    \Drupal::logger('nextjs')->error(
-      '@reason @path',
+    $channel = $payload['source'];
+    \Drupal::logger("Nextjs [{$channel}]")->error(
+      '<strong>Path</strong>: @path <br><hr> <strong>Error message</strong>: @reason <br><hr> <strong>Error stack</strong>: @stack',
       [
         '@reason' => Html::escape($payload['reason']),
-        '@path' => Html::escape($payload['path'])
+        '@path' => Html::escape($payload['path']),
+        '@stack' => Html::escape($payload['stack']),
       ]
     );
     return new JsonResponse($payload);
