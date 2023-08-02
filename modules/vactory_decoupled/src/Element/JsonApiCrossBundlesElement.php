@@ -6,10 +6,7 @@ use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Render\Element\FormElement;
-use Drupal\entityqueue\Entity\EntityQueue;
 use Drupal\jsonapi_cross_bundles\ResourceType\CrossBundlesResourceType;
-use Drupal\node\Entity\Node;
 
 /**
  * Provide a JSON API form element for multiple bundles from JSON:API.
@@ -77,14 +74,13 @@ class JsonApiCrossBundlesElement extends JsonApiCollectionElement {
         'style' => $has_access ? NULL : 'display:none',
       ],
       '#attributes'         => [
-        'style' => $has_access ? NULL : 'display:none',
+        'style'      => $has_access ? NULL : 'display:none',
         'element-id' => $id,
       ],
-      '#ajax'          => [
+      '#ajax'               => [
         'callback' => [static::class, 'triggerEntityReferenceUpdate'],
       ],
     ];
-
 
     $element['resource']['submit'] = [
       '#type'       => 'submit',
@@ -132,6 +128,9 @@ class JsonApiCrossBundlesElement extends JsonApiCollectionElement {
     return $form['json_api_cross_bundles']['container'];
   }
 
+  /**
+   * Get json api cross bundles resources.
+   */
   protected static function getJsonApiResources(): array {
 
     $options = [];
@@ -148,6 +147,9 @@ class JsonApiCrossBundlesElement extends JsonApiCollectionElement {
     return $options;
   }
 
+  /**
+   * Callback Trigger Entity Reference Update.
+   */
   public static function triggerEntityReferenceUpdate($form, FormStateInterface $form_state) {
     $triggering_element = $form_state->getTriggeringElement();
     $name = $triggering_element['#attributes']['element-id'];
@@ -156,6 +158,9 @@ class JsonApiCrossBundlesElement extends JsonApiCollectionElement {
     return $response;
   }
 
+  /**
+   * Callback Entity Reference Element Submit.
+   */
   public static function entityReferenceElementSubmit($form, FormStateInterface $form_state) {
     $triggering_element = $form_state->getTriggeringElement();
     $parents = $triggering_element['#parents'];
@@ -175,6 +180,9 @@ class JsonApiCrossBundlesElement extends JsonApiCollectionElement {
     }
   }
 
+  /**
+   * Callback Update Entity Reference Element.
+   */
   public static function updateEntityReferenceElement($form, FormStateInterface $form_state) {
     $triggering_element = $form_state->getTriggeringElement();
     $parents = $triggering_element['#parents'];
