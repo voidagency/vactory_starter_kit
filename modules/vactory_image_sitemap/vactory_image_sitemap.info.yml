@@ -3,5 +3,4 @@ type: module
 description: Generate media image sitemap xml file
 package: Vactory
 configure: vactory_image_sitemap.settings_form
-core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^9 || ^10

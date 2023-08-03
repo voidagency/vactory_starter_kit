@@ -12,7 +12,7 @@ type: 'canonical_entities:node'
 pattern: 'espace-privé/faq/[node:title]'
 selection_criteria:
   240a8c37-65cb-4011-9425-243c216fb5c6:
-    id: node_type
+    id: 'entity_bundle:node'
     bundles:
       vactory_faq_prive: vactory_faq_prive
     negate: false

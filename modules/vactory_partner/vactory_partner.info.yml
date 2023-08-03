@@ -1,8 +1,7 @@
 name: 'Partners'
 description: 'Provides vactory partner content type and related configuration. content type for vactory partner'
 type: module
-core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^9 || ^10
 dependencies:
   - vactory_core
   - vactory_field

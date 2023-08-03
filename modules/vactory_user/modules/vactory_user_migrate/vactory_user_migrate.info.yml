@@ -1,8 +1,7 @@
 name: Vactory User Migrate
 description: Provides user entity migrate plugin
 type: module
-core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^9 || ^10
 package: Vactory
 configure: vactory_user_migrate.settings
 dependencies:

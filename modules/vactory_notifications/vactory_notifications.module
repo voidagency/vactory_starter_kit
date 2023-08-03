@@ -369,7 +369,8 @@ function vactory_notifications_views_pre_render(ViewExecutable $view) {
         $query = \Drupal::entityQuery('notifications_entity')
           ->condition('notification_concerned_users', '%"' . $uid . '"%', 'LIKE')
           ->condition('notification_viewers', '%"' . $uid . '"%', 'NOT LIKE')
-          ->condition('status', 1);
+          ->condition('status', 1)
+          ->accessCheck(TRUE);
         $notification_ids = $query->execute();
         if (!empty($notification_ids)) {
           $notifications = Drupal::entityTypeManager()

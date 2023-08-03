@@ -2,8 +2,7 @@ name: Vactory Migration Plugin
 type: module
 description: Vactory migrate plugin interface
 package: Vactory
-core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^9 || ^10
 dependencies:
   - vactory_migrate
   - migrate_file

@@ -38,5 +38,5 @@ function vactory_decoupled_revalidator_entity_predelete(EntityInterface $entity)
  */
 function vactory_dispatch_entity_action_event(EntityRevalidateEventInterface $event) {
   \Drupal::service('event_dispatcher')
-    ->dispatch(EntityRevalidateEventInterface::ENTITY_REVALIDATED_ACTION, $event);
+    ->dispatch($event, EntityRevalidateEventInterface::ENTITY_REVALIDATED_ACTION);
 }

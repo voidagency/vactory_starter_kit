@@ -10,13 +10,15 @@ use Drupal\image\Entity\ImageStyle;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\vactory_core\Vactory;
 use Drupal\Core\Render\RendererInterface;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFunction;
 
 /**
  * Class TwigExtension.
  *
  * @package Drupal\vactory_core\TwigExtension
  */
-class TwigExtension extends \Twig_Extension {
+class TwigExtension extends AbstractExtension {
 
   /**
    * Vactory service.
@@ -53,59 +55,59 @@ class TwigExtension extends \Twig_Extension {
    */
   public function getFunctions() {
     return [
-      new \Twig_SimpleFunction('addAttributes',
+      new TwigFunction('addAttributes',
         [$this, 'addAttributes'],
         ['is_safe' => ['html']]),
 
-      new \Twig_SimpleFunction('hideLabel',
+      new TwigFunction('hideLabel',
         [$this, 'hideLabel'],
         ['is_safe' => ['html']]),
 
-      new \Twig_SimpleFunction('noWrapper',
+      new TwigFunction('noWrapper',
         [$this, 'noWrapper'],
         ['is_safe' => ['html']]),
 
-      new \Twig_SimpleFunction('drupal_block_delta',
+      new TwigFunction('drupal_block_delta',
         [$this, 'drupalBlockDelta'],
         ['is_safe' => ['html']]),
 
-      new \Twig_SimpleFunction('vactory_render',
+      new TwigFunction('vactory_render',
         [$this, 'vactoryRender'],
         ['is_safe' => ['html']]),
 
-      new \Twig_SimpleFunction('file_object',
+      new TwigFunction('file_object',
         [$this, 'fileObject'],
         ['is_safe' => ['html']]),
 
-      new \Twig_SimpleFunction('is_notifications_enabled',
+      new TwigFunction('is_notifications_enabled',
         [$this, 'isNotificationsEnabled'],
         ['is_safe' => ['html']]),
 
-      new \Twig_SimpleFunction('get_media',
+      new TwigFunction('get_media',
         [$this, 'getMedia'],
         ['is_safe' => ['html']]),
 
-      new \Twig_SimpleFunction('get_image_info',
+      new TwigFunction('get_image_info',
         [$this, 'getImageInfo'],
         ['is_safe' => ['html']]),
 
-      new \Twig_SimpleFunction('successive_image_styles',
+      new TwigFunction('successive_image_styles',
         [$this, 'successiveImageStyles'],
         ['is_safe' => ['html']]),
 
-      new \Twig_SimpleFunction('get_term_name',
+      new TwigFunction('get_term_name',
         [$this, 'getTermName'],
         ['is_safe' => ['html']]),
 
-      new \Twig_SimpleFunction('vactory_image',
+      new TwigFunction('vactory_image',
         [$this, 'vactoryImage'],
         ['is_safe' => ['html']]),
 
-      new \Twig_SimpleFunction('get_image_url',
+      new TwigFunction('get_image_url',
         [$this, 'getImageUrl'],
         ['is_safe' => ['html']]),
 
-      new \Twig_SimpleFunction('get_image',
+      new TwigFunction('get_image',
         [$this, 'getImage'],
         ['is_safe' => ['html']]),
 

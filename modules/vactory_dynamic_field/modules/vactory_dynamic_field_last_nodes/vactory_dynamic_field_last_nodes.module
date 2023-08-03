@@ -15,6 +15,7 @@ function vactory_dynamic_field_last_nodes_dynamic_field_content_alter(&$content)
     $key = $content['components'][0]['key'];
     if ($key == 'last_nodes_listing') {
       $query = \Drupal::entityQuery('node');
+      $query->accessCheck(TRUE);
       $content_type = $content['components'][0]['group_content_type']['content_type'];
       $node_ids = [];
       if (!empty($content_type)) {
@@ -103,7 +104,7 @@ function _node_types_form_validate(&$form, FormStateInterface $form_state) {
   // Check if entity queue exist.
   $entity_queue = $form_state->getValues()['components'][0]['group_entity_queue']['entity_queue'];
   if (!empty($entity_queue)) {
-    $queues = \Drupal::entityQuery('entity_queue')->execute();
+    $queues = \Drupal::entityQuery('entity_queue')->accessCheck(FALSE)->execute();
     if (!in_array($entity_queue, $queues)) {
       $form_state->setErrorByName('entity_queue', t("Entity queue doesn't exist."));
     }

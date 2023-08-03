@@ -11,6 +11,7 @@ https://www.loom.com/share/1e4e8e8fe847431b9439de59da23d426
 
 ## Configuration
 Follow these steps to enable and configure the Vactory UX Notes module:
+
 Step 1: Enable the Module
 
     Open a terminal or command prompt.

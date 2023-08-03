@@ -109,6 +109,7 @@ class AttachedAssetsService {
       ->getStorage('attached_assets_entity');
     $ids = $entityManager->getQuery()
       ->condition('status', 1)
+      ->accessCheck(FALSE)
       ->execute();
 
     return (array) $entityManager->loadMultiple($ids);

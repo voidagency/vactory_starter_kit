@@ -2,8 +2,7 @@ name: 'JSON:API'
 type: module
 description: 'Enhance jsonapi module to our needs.'
 package: Vactory
-core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^9 || ^10
 dependencies:
   - decoupled_router
   - jsonapi

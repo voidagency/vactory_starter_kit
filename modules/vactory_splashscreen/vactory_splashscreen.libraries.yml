@@ -15,5 +15,4 @@ splash_screen.v1:
     - core/jquery
     - core/drupal
     - core/drupalSettings
-    - core/jquery.once
     - core/jquery.cookie
