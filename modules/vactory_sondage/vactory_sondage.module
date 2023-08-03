@@ -5,6 +5,7 @@
  * Module related hooks.
  */
 
+use Drupal\block_content\Entity\BlockContent;
 use Drupal\Core\Entity\EntityInterface;
 
 /**
@@ -12,21 +13,21 @@ use Drupal\Core\Entity\EntityInterface;
  */
 function vactory_sondage_theme($existing, $type, $theme, $path) {
   return [
-    'vactory_sondage_radio_option' => [
-      'template' => 'sondage-radio-option',
+    'vactory_sondage_radio_option'          => [
+      'template'  => 'sondage-radio-option',
       'variables' => [
         'option' => NULL,
       ],
     ],
-    'vactory_sondage_state' => [
-      'template' => 'sondage-state',
+    'vactory_sondage_state'                 => [
+      'template'  => 'sondage-state',
       'variables' => [
         'statistics' => NULL,
       ],
     ],
     'block__block_content__vactory_sondage' => [
       'base hook' => 'block',
-      'template' => 'vactory-sondage-block',
+      'template'  => 'vactory-sondage-block',
     ],
   ];
 }
@@ -43,10 +44,37 @@ function vactory_sondage_entity_presave(EntityInterface $entity) {
     }
     $reminder_manager = Drupal::service('vactory_reminder.queue.manager');
     $extra_data = [
-      'entity_type' => $entity->getEntityTypeId(),
-      'entity_id' => $entity->id(),
+      'entity_type'     => $entity->getEntityTypeId(),
+      'entity_id'       => $entity->id(),
       'date_field_name' => 'field_sondage_close_date',
     ];
     $reminder_manager->reminderQueuePush('vactory_sondage_closer', 'sondage_closer', $extra_data);
+  }
+}
+
+/**
+ * Implements hook_json_api_collection_alter().
+ */
+function vactory_sondage_json_api_collection_alter(&$filters, &$context) {
+  if ($context['id'] === 'vactory_sondage_df') {
+    $block_id = $filters['optional_filters_data']['block_content']['vactory_sondage'];
+    if ($block_id) {
+      $filters["filter[drupal_internal__id]"] = $block_id;
+    }
+  }
+}
+
+/**
+ * Implements hook_df_jsonapi_output_alter().
+ */
+function vactory_sondage_df_jsonapi_output_alter(&$content) {
+  if ($content['template'] == 'vactory_sondage:sondage') {
+    $block_id = $content['components'][0]['collection']['filters']['filter']['drupal_internal__id'];
+    if ($block_id) {
+      $block = BlockContent::load($block_id);
+      $statistics = Drupal::service('vactory_sondage.manager')
+        ->getStatistics($block);
+      $content['statistics'] = $statistics;
+    }
   }
 }
