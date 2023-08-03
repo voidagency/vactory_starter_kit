@@ -26,14 +26,16 @@ class JsonApiCollectionFormTester extends FormBase {
       '#title' => $this->t('Your phone number'),
       '#default_value' => [
         'resource' => 'node--vactory_news',
-        'filters' => 'fields[node--vactory_news]=drupal_internal__nid,title,field_vactory_news_theme,field_vactory_media' . "\n" . 
-        'fields[taxonomy_term--vactory_news_theme]=tid,name' . "\n" . 
-        'fields[media--image]=name,thumbnail' . "\n" . 
-        'fields[file--image]=filename,uri'. "\n" . 
-        'include=field_vactory_news_theme,field_vactory_media,field_vactory_media.thumbnail' . "\n" .
-        'filter[category][condition][path]=field_vactory_news_theme.drupal_internal__tid' . "\n" .
-        'filter[category][condition][operator]=%3D' . "\n" .
-        'filter[category][condition][value]=3',
+        'filters' => [
+          'fields[node--vactory_news]=drupal_internal__nid,title,field_vactory_news_theme,field_vactory_media',
+          'fields[taxonomy_term--vactory_news_theme]=tid,name',
+          'fields[media--image]=name,thumbnail',
+          'fields[file--image]=filename,uri',
+          'include=field_vactory_news_theme,field_vactory_media,field_vactory_media.thumbnail',
+          'filter[category][condition][path]=field_vactory_news_theme.drupal_internal__tid',
+          'filter[category][condition][operator]=%3D',
+          'filter[category][condition][value]=3',
+        ]
       ]
     ];
     $form['actions']['#type'] = 'actions';
@@ -61,8 +63,8 @@ class JsonApiCollectionFormTester extends FormBase {
     $value = $form_state->getValue('json');
     $svc = \Drupal::service("vactory_decoupled.jsonapi.generator");
     $result = $svc->fetch($value);
-    dpm($value);
-    dpm($result);
+    //dpm($value);
+    //dpm($result);
 
     $this->messenger()->addStatus($this->t('OK'));
   }

@@ -78,7 +78,8 @@ class VactoryCloudinaryMoveFiles extends DrushCommands {
         $query = $storage->getQuery()
           ->condition('status', '1')
           ->condition('type', 'image')
-          ->condition('uri', $schema . '%', 'LIKE');
+          ->condition('uri', $schema . '%', 'LIKE')
+          ->accessCheck(FALSE);
         $fids = $query->execute();
       } catch (\Exception $e) {
         $this->output()->writeln($e);

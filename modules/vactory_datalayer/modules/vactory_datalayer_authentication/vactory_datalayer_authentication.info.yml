@@ -1,8 +1,7 @@
 name: Vactory DataLayer Authentication
 description: Custom module Allows you to generate dataLayer for tracking users connection with custom properties.
 type: module
-core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^9 || ^10
 dependencies:
   - token
   - vactory_datalayer

@@ -5,7 +5,6 @@ dependencies:
     - menu_ui
     - scheduler
     - vactory_cross_content
-    - wysiwyg_template
   enforced:
     module:
       - vactory_announcements
@@ -14,8 +13,6 @@ third_party_settings:
     available_menus:
       - main
     parent: 'main:'
-  wysiwyg_template:
-    default_template: ''
   scheduler:
     expand_fieldset: when_required
     fields_display_mode: vertical_tab

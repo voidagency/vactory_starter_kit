@@ -12,7 +12,7 @@ type: 'canonical_entities:node'
 pattern: '/partner/[node:title]'
 selection_criteria:
   bdf293c2-204f-48d1-991a-85f2599c4bbc:
-    id: node_type
+    id: 'entity_bundle:node'
     bundles:
       vactory_partner: vactory_partner
     negate: false

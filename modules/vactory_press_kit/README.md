@@ -40,7 +40,6 @@ Les dépendances :
   - vactory_generator (génération du contenu de type press kit)
   - vactory_core (réutilisation des champs et des modes de vues déjà définis)
   - views
-  - wysiwyg_template
 
 ## Installation
 - Activation du module via la commande drush suivante :

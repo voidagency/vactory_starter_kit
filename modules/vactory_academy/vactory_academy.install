@@ -5,6 +5,9 @@
  * Install file.
  */
 
+use Drupal\field\Entity\FieldConfig;
+use Drupal\field\Entity\FieldStorageConfig;
+use Drupal\media\Entity\Media;
 use Drupal\user\Entity\Role;
 
 /**
@@ -76,4 +79,113 @@ function vactory_academy_uninstall() {
   unset($data['enabled_types_widgets']['node']['vactory_academy']);
   $config->setData($data);
   $config->save();
+}
+
+/**
+ * Create a new academy media field to store existing field_vactory_file values in.
+ */
+function vactory_academy_update_9500(&$sandbox) {
+  // Create a new academy media field to store existing field_vactory_file values in.
+  $entity_type = 'node';
+  $bundle = 'vactory_academy';
+  $field = FieldConfig::loadByName($entity_type, $bundle, 'field_vactory_media_document');
+  if (!$field) {
+    $media_document_storage = FieldStorageConfig::loadByName($entity_type, 'field_vactory_media_document');
+    if (!$media_document_storage) {
+      $media_document_storage = FieldStorageConfig::create([
+        'field_name' => 'field_vactory_media_document',
+        'entity_type' => $entity_type,
+        'type' => 'entity_reference',
+        'settings' => [
+          'target_type' => 'media',
+        ],
+        'cardinality' => 1,
+        'translatable' => TRUE,
+      ]);
+      $media_document_storage->save();
+    }
+    $media_support_field_config = FieldConfig::create([
+      'field_storage' => $media_document_storage,
+      'bundle' => $bundle,
+      'label' => t('Support du cours'),
+    ]);
+    $media_support_field_config->save();
+
+    $entity_form_display = Drupal::entityTypeManager()->getStorage('entity_form_display')
+      ->load('node.' . $bundle . '.default');
+
+    if ($entity_form_display) {
+      $entity_form_display->setComponent('field_vactory_media_document', [
+        'type' => 'media_library_widget',
+      ])->save();
+    }
+
+    // Add new field to entity view display.
+    $default_entity_view_display = Drupal::entityTypeManager()->getStorage('entity_view_display')
+      ->load('node.' . $bundle . '.default');
+    $full_entity_view_display = Drupal::entityTypeManager()->getStorage('entity_view_display')
+      ->load('node.' . $bundle . '.full');
+    if ($default_entity_view_display) {
+      $default_entity_view_display->setComponent('field_vactory_media_document', [
+        'label' => 'hidden',
+      ])->save();
+    }
+    if ($full_entity_view_display) {
+      $full_entity_view_display->setComponent('field_vactory_media_document', [
+        'label' => 'hidden',
+      ])->save();
+    }
+  }
+}
+
+/**
+ * Copy existing field_vactory_file into the new media field values.
+ */
+function vactory_academy_update_9501(&$sandbox) {
+  // Copy existing field_vactory_file into the new media field values.
+  $entity_type = 'node';
+  $bundle = 'vactory_academy';
+  $field = FieldConfig::loadByName($entity_type, $bundle, 'field_vactory_media_document');
+  if (!$field) {
+    trigger_error('Field field_vactory_media_document does not exist within vactory_academy content type');
+  }
+  $nids = Drupal::entityTypeManager()->getStorage($entity_type)
+    ->getQuery()
+    ->accessCheck(FALSE)
+    ->condition('type', $bundle)
+    ->exists('field_vactory_file')
+    ->execute();
+  if (!empty($nids)) {
+    $nodes = Drupal::entityTypeManager()->getStorage($entity_type)
+      ->loadMultiple($nids);
+    $languages = Drupal::languageManager()->getLanguages();
+    foreach ($nodes as $node) {
+      foreach ($languages as $language) {
+        if ($node->hasTranslation($language->getId())) {
+          $node = Drupal::service('entity.repository')
+            ->getTranslationFromContext($node, $language->getId());
+        }
+        $media_id = $node->get('field_vactory_media_document')->target_id;
+        if (!$media_id) {
+          $support_fid = $node->get('field_vactory_file')->target_id;
+          $file = \Drupal\file\Entity\File::load($support_fid);
+          if ($file) {
+            // Create related media entity.
+            $media = Media::create([
+              'bundle' => 'file',
+              'uid' => 1,
+              'field_media_file' => [
+                'target_id' => $file->id(),
+              ],
+            ]);
+            $media->setName($file->getFilename())
+              ->setPublished()
+              ->save();
+            $node->set('field_vactory_media_document', ['target_id' => $media->id()]);
+            $node->save();
+          }
+        }
+      }
+    }
+  }
 }

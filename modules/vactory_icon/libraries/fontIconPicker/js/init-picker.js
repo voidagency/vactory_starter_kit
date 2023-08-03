@@ -1,4 +1,4 @@
-(function ($, Drupal, drupalSettings) {
+(function ($, Drupal, drupalSettings, once) {
   Drupal.behaviors.vactoryIcons = {
     attach: function attach(context) {
       var from_xml_svgs = false;
@@ -6,12 +6,12 @@
         from_xml_svgs = drupalSettings.vactory_icon.from_xml_svgs;
       }
       if (!from_xml_svgs) {
-        $(context).find('select.vactory--icon-picker').once('vactoryIconPicker').each(function (index, value) {
+        $(once('vactoryIconPicker', 'select.vactory--icon-picker', context)).each(function (index, value) {
           $(value).fontIconPicker();
         });
       }
       if (from_xml_svgs) {
-        $(context).find('select.vactory--icon-picker').once('vactoryIconPicker').each(function (index, value) {
+        $(once('vactoryIconPicker', 'select.vactory--icon-picker', context)).each(function (index, value) {
           $(value).fontIconPicker({
             source: drupalSettings.vactory_icon.svg_ids,
             theme: 'fip-bootstrap',
@@ -25,4 +25,4 @@
       }
     }
   };
-})(jQuery, Drupal, drupalSettings);
+})(jQuery, Drupal, drupalSettings, once);

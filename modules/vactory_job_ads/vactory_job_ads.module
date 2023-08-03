@@ -258,6 +258,7 @@ function vactory_job_ads_json_api_collection_alter(&$filters, &$context) {
       $terms = \Drupal::entityQuery('taxonomy_term')
         ->condition('vid', 'vactory_job_ads_contract')
         ->condition('term_2_slug', $thematiques, 'IN')
+        ->accessCheck(TRUE)
         ->execute();
       if ($terms) {
         $terms = array_values($terms);

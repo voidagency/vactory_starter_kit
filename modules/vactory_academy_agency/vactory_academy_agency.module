@@ -301,7 +301,7 @@ function vactory_academy_agency_mail($key, &$message, $params) {
       // Email subject.
       $message['subject'] = $site_config->get('name') . ' - ' . $params['formation']['title'] . ' - ' . $agency->get('name')->value;
       // Email body content.
-      $message['body'][] = render($mail_body);
+      $message['body'][] = Drupal::service('renderer')->renderPlain($mail_body);
       break;
 
     default:

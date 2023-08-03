@@ -53,6 +53,7 @@ class AcademyFlagService {
         ->condition('flag_id', 'favorite_academy')
         ->condition('uid', $this->currentUser->id())
         ->condition('entity_id', $entity->id())
+        ->accessCheck(FALSE)
         ->execute();
 
     return !empty($ids);

@@ -142,24 +142,24 @@
             <div class="academy-video text-center">
               {#% <h3>{{ 'Contenu du cours'|t }}</h3>#}
               <div class="mb-3">
-                {% for key, item in content.field_vactory_youtube_media if key|first != '#' %}
-                  {% set video = item is defined ? item['#media'].field_media_oembed_video.0.value : null %}
-                  <a data-fancybox href="{{ video }}" class='play-videos'>
-                    {{content.field_vactory_media}}
-                  </a>
+                {% for key, item in content.field_vactory_youtube_media %}
+                  {% if key|first != '#' %}
+                    {% set video = item is defined ? item['#media'].field_media_oembed_video.0.value : null %}
+                    <a data-fancybox href="{{ video }}" class='play-videos'>
+                      {{content.field_vactory_media}}
+                    </a>
+                  {% endif %}
                 {% endfor %}
               </div>
-
-              {% if content.field_vactory_file.0['#file'].uri is defined %}
-                <a href="{{ file_url(content.field_vactory_file.0['#file'].uri.value) }}" class="btn btn-primary prefix-icon-download mb-2" download>{{ 'Télécharger le support du cours'|t }}</a>
+              {% set media_id = content.field_vactory_media_document['#items'].target_id is defined ? content.field_vactory_media_document['#items'].target_id : null %}
+              {% if media_id is defined %}
+                {% set media_object = (content.field_vactory_media_document['#items'].target_id is not empty) ? get_media(content.field_vactory_media_document['#items'].target_id) : '' %}
+                {% set document = (media_object is not empty) ? file_object(media_object.field_media_file.0.target_id) : '' %}
+                {% set document_url = (document is not empty) ? file_url(document.uri.value) : ''  %}
+                <a href="{{ document_url }}" class="btn btn-primary prefix-icon-download mb-2" download>{{ 'Télécharger le support du cours'|t }}</a>
               {% endif %}
             </div>
           {% endif %}
-        {% else %}
-          <div class="academy-video">
-            {{content.field_vactory_file}}
-          </div>
-        {% endif %}
       </div>
     </div>
   </div>

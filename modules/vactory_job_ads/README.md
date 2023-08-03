@@ -30,7 +30,6 @@ Vactory Job Ads est un module Drupal pour gérer les annonces d’emploi et cand
   - vactory_fields_base
   - views
   - webform
-  - wysiwyg_template
 ## Installation
 
     drush en vactory_job_ads

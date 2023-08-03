@@ -2,8 +2,7 @@ name: Vactory Dynamic Field UniteGallery
 type: module
 description: Wysiwyg Dynamic Field UniteGallery.
 package: Vactory Dynamic
-core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^9 || ^10
 dependencies:
   - vactory_dynamic_field
   - entity_embed

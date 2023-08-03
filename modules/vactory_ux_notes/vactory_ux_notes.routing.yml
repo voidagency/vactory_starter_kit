@@ -1,6 +1,6 @@
 vactory_ux_notes.dashboard:
-  path: '/user-experience/dashboard' 
-  defaults: 
+  path: '/admin/user-experience/dashboard' 
+  defaults:
     _controller: '\Drupal\vactory_ux_notes\Controller\UserExperienceController::getAllWebformSubmissions' 
     _title: 'User Experience'
   requirements: 

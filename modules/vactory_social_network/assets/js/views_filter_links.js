@@ -1,4 +1,4 @@
-(function ($, Drupal, drupalSettings) {
+(function ($, Drupal, drupalSettings, once) {
 
   /**
    * Set active class on Views AJAX filter
@@ -7,7 +7,7 @@
 
   Drupal.behaviors.exposedfilter_buttons = {
     attach: function (context, settings) {
-      $('.filter-tab button', context).once('filterHome').on('click', function (e) {
+      $(once('filterHome', '.filter-tab button', context)).on('click', function (e) {
         e.preventDefault();
         var el = $(e.target).prop('tagName') === 'SPAN' ? $(e.target).parent('button.btn-filter') : $(e.target);
         // Get ID of clicked item.
@@ -93,4 +93,4 @@
     return params;
   }
 
-})(jQuery, Drupal, drupalSettings);
+})(jQuery, Drupal, drupalSettings, once);

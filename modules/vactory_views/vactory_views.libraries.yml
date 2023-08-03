@@ -4,7 +4,6 @@ slider:
     ./assets/js/slider.js: {}
   dependencies:
     - core/jquery
-    - core/jquery.once
     - core/drupal
 
 masonry:
@@ -13,7 +12,6 @@ masonry:
     ./assets/js/masonry.js: {}
   dependencies:
     - core/jquery
-    - core/jquery.once
     - core/drupal
 
 datepicker:

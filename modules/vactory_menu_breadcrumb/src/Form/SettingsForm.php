@@ -7,6 +7,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\system\Entity\Menu;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\vactory_menu_breadcrumb\VactoryBreadcrumbConstants;
 
@@ -327,10 +328,9 @@ class SettingsForm extends ConfigFormBase {
    * weight, label) sorted by weight, initializing those properties if needed.
    */
   protected function getSortedMenus() {
-    $menu_enabled = $this->moduleHandler->moduleExists('menu_ui');
-    $menus = $menu_enabled ? menu_ui_get_menus() : menu_list_system_menus();
+    $menus = Menu::loadMultiple();
+    $menus = array_map(fn($menu) => $menu->label() , $menus);
     $menu_breadcrumb_menus = $this->config('vactory_menu_breadcrumb.settings')->get('vactory_menu_breadcrumb_menus');
-
     foreach ($menus as $menu_name => &$menu) {
       if (!empty($menu_breadcrumb_menus[$menu_name])) {
         $menu = $menu_breadcrumb_menus[$menu_name] + ['label' => $menu];
