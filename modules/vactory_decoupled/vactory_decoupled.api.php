@@ -32,7 +32,7 @@ function hook_internal_block_classification_alter(string &$classification, array
  *   The component value.
  * @param array $info
  *   DF settings infos.
- * @param CacheableMetadata $cacheability
+ * @param Drupal\Core\Cache\CacheableMetadata $cacheability
  *   DF settings infos.
  */
 function hook_decoupled_df_format_alter(&$value, $info, CacheableMetadata &$cacheability) {
@@ -50,7 +50,7 @@ function hook_decoupled_df_format_alter(&$value, $info, CacheableMetadata &$cach
  *   Array of entities.
  * @param array $info
  *   DF info.
- * @param CacheableMetadata $cacheability
+ * @param Drupal\Core\Cache\CacheableMetadata $cacheability
  *   Related cacheability object.
  */
 function hook_decoupled_entity_reference_options_alter(array &$entities, array &$info, CacheableMetadata $cacheability) {
@@ -65,7 +65,7 @@ function hook_decoupled_entity_reference_options_alter(array &$entities, array &
 /**
  * Alter internal blocks cacheability.
  *
- * @param CacheableMetadata $cacheability
+ * @param Drupal\Core\Cache\CacheableMetadata $cacheability
  *   Related cacheability object.
  * @param $entity
  *   Related node entity.
@@ -79,27 +79,41 @@ function hook_internal_blocks_cacheability_alter(CacheableMetadata $cacheability
 }
 
 /**
- * Alter DF dynamic_api_fetch config
+ * Alter DF dynamic_api_fetch config.
  *
  * @param $api_config
  * @param $info
  */
 function hook_dynamic_api_fetch_config_alter($api_config, $info) {
   if (isset($info['uuid']) && $info['uuid'] = 'vactory_news:fetch') {
-    // Alter config here
+    // Alter config here.
     $api_config['header']['api-key'] = '094bd386-a4af-492d-83dd-8c7deb02ba2e';
   }
 }
 
 /**
- * Alter DF dynamic_api_fetch response
+ * Alter DF dynamic_api_fetch response.
  *
  * @param $result
  * @param $info
  */
 function hook_dynamic_api_fetch_result_alter($result, $info) {
   if (isset($info['uuid']) && $info['uuid'] = 'vactory_news:fetch') {
-    // Alter response here
+    // Alter response here.
     $result['news'] = isset($result['posts']) ? $result['posts'] : $result['error'];
+  }
+}
+
+/**
+ * Alter menu controller response.
+ *
+ * @param $returnArray
+ * @param $link
+ * @param $menu_name
+ */
+function hook_menu_api_alter(&$returnArray, $link, $menu_name) {
+  if ($menu_name == 'main') {
+    $icon = $link->getEntity()->get('field_icon')->value;
+    $returnArray['icon'] = $icon;
   }
 }
