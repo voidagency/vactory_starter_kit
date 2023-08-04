@@ -1,3 +1,7 @@
 reminder_lease_time: 300
 reminder_time_limit: 120
 reminder_consumers: ''
+dependencies:
+  enforced:
+    module:
+      - vactory_reminder

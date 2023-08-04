@@ -4,6 +4,9 @@ dependencies:
   module:
     - geofield
     - taxonomy
+  enforced:
+    module:
+      - vactory_locator
 id: taxonomy_term.field_geofield_city
 field_name: field_geofield_city
 entity_type: taxonomy_term

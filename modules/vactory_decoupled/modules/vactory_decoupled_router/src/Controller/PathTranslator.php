@@ -4,6 +4,7 @@ namespace Drupal\vactory_decoupled_router\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Routing\RouteObjectInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -16,15 +17,13 @@ use Symfony\Component\Routing;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Psr\Log\LoggerInterface;
-use Symfony\Cmf\Component\Routing\RouteObjectInterface;
 use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
 use Drupal\jsonapi\ResourceType\ResourceTypeRepository;
 
 /**
  * Controller that receives the path to inspect.
  */
-class PathTranslator extends ControllerBase
-{
+class PathTranslator extends ControllerBase {
 
   /**
    * The response.
@@ -76,8 +75,7 @@ class PathTranslator extends ControllerBase
   /**
    * Create function for dependency injection.
    */
-  public static function create(ContainerInterface $container)
-  {
+  public static function create(ContainerInterface $container) {
     return new static(
       $container->get('logger.channel.vactory_decoupled_router'),
       $container->get('router.no_access_checks'),
@@ -89,8 +87,7 @@ class PathTranslator extends ControllerBase
   /**
    * Responds with all the information about the path.
    */
-  public function translate(Request $request)
-  {
+  public function translate(Request $request) {
     $path = $this->getPathFromRequest($request);
 
     if (!isset($this->systemRoutes['error_page'])) {
@@ -136,7 +133,8 @@ class PathTranslator extends ControllerBase
       $info = [
         '_route' => 'error_page',
       ];
-      $output['status'] = 500;
+      $output['status'] = 404;
+      $output['message'] = "A route has been found for $path , but it has no entity information!";
       // $this->response->setStatusCode(500);
     }
 
@@ -169,8 +167,7 @@ class PathTranslator extends ControllerBase
   /**
    * Extract path from request.
    */
-  private function getPathFromRequest(Request $request)
-  {
+  private function getPathFromRequest(Request $request) {
     $path = $request->query->get('path');
     if (empty($path)) {
       throw new NotFoundHttpException('Unable to translate empty path. Please send a ?path query string parameter with your request.');
@@ -182,8 +179,7 @@ class PathTranslator extends ControllerBase
   /**
    * Return information about the entity.
    */
-  protected function getEntityOutput($entity)
-  {
+  protected function getEntityOutput($entity) {
     $entity_type_id = $entity->getEntityTypeId();
     $rt = $this->jsonapi_resource_type_respository->get($entity_type_id, $entity->bundle());
     $type_name = $rt->getTypeName();
@@ -201,6 +197,8 @@ class PathTranslator extends ControllerBase
         'type' => $entity_type_id,
         'bundle' => $entity->bundle(),
         'label' => $entity->label(),
+        'uuid' => $entity->uuid(),
+        'id' => $entity->id() ?? NULL,
       ],
     ];
 
@@ -223,8 +221,7 @@ class PathTranslator extends ControllerBase
    * @return string
    *   The clean path.
    */
-  protected function cleanSubdirInPath($path, Request $request)
-  {
+  protected function cleanSubdirInPath($path, Request $request) {
     // Remove any possible leading subdir information in case Drupal is
     // installed under http://example.com/d8/index.php
     $regexp = preg_quote($request->getBasePath(), '/');
@@ -233,14 +230,13 @@ class PathTranslator extends ControllerBase
 
   /**
    * Match path against a collection of routes.
-   * 
+   *
    * @return array
    *   Route configuration or empty array
    */
-  private function getRouteFromRequest(Request $request)
-  {
+  private function getRouteFromRequest(Request $request) {
     $path = $this->getPathFromRequest($request);
-   
+
     // @todo: cache this ?
     $routes = new Routing\RouteCollection();
 
@@ -279,8 +275,7 @@ class PathTranslator extends ControllerBase
    *   enhancement. It also returns the name of the parameter under which the
    *   entity lives in the route ('node' vs 'entity').
    */
-  protected function findEntity(array $match_info)
-  {
+  protected function findEntity(array $match_info) {
     $entity = NULL;
     /** @var \Symfony\Component\Routing\Route $route */
     $route = $match_info[RouteObjectInterface::ROUTE_OBJECT];
@@ -320,8 +315,7 @@ class PathTranslator extends ControllerBase
    *
    * @todo Remove this once decoupled_router requires jsonapi >= 8.x-2.0.
    */
-  protected static function getEntityRouteParameterName($route_name, $entity_type_id)
-  {
+  protected static function getEntityRouteParameterName($route_name, $entity_type_id) {
     static $first;
 
     if (!isset($first)) {
@@ -351,8 +345,7 @@ class PathTranslator extends ControllerBase
    * @return string|null
    *   The entity type ID or NULL if not found.
    */
-  protected function findEntityTypeFromRoute(Route $route)
-  {
+  protected function findEntityTypeFromRoute(Route $route) {
     $parameters = (array) $route->getOption('parameters');
     // Find the entity type for the first parameter that has one.
     return array_reduce($parameters, function ($carry, $parameter) {
@@ -367,4 +360,5 @@ class PathTranslator extends ControllerBase
       return $carry;
     }, NULL);
   }
+  
 }

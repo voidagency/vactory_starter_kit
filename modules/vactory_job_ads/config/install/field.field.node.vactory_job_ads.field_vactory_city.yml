@@ -5,6 +5,9 @@ dependencies:
     - field.storage.node.field_vactory_city
     - node.type.vactory_job_ads
     - taxonomy.vocabulary.vactory_job_ads_city
+  enforced:
+    module:
+      - vactory_job_ads
 id: node.vactory_job_ads.field_vactory_city
 field_name: field_vactory_city
 entity_type: node

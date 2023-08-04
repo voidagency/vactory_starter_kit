@@ -5,6 +5,9 @@ dependencies:
     - taxonomy.vocabulary.discipline_
   module:
     - content_translation
+  enforced:
+    module:
+      - vactory_announcements
 third_party_settings:
   content_translation:
     enabled: true

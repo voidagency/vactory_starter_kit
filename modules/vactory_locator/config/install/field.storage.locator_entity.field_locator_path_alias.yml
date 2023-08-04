@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - vactory_locator
+  enforced:
+    module:
+      - vactory_locator
 id: locator_entity.field_locator_path_alias
 field_name: field_locator_path_alias
 entity_type: locator_entity

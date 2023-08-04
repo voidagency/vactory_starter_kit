@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - node
+  enforced:
+    module:
+      - vactory_event
 id: vactory_block_two_columns
 label: 'Event Block Two Columns'
 handler: simple

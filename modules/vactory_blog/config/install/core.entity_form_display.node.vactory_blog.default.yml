@@ -17,6 +17,9 @@ dependencies:
     - path
     - text
     - yoast_seo
+  enforced:
+    module:
+      - vactory_blog
 id: node.vactory_blog.default
 targetEntityType: node
 bundle: vactory_blog

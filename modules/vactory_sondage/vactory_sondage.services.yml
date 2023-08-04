@@ -1,6 +1,9 @@
 services:
   vactory_sondage.manager:
     class: Drupal\vactory_sondage\Services\SondageManager
+    arguments:
+      - '@event_dispatcher'
+      - '@vacory_decoupled.media_file_manager'
   vactory_points.sondage_vote_subscriber:
     class: Drupal\vactory_sondage\EventSubscriber\SondageVoteEventsSubscriber
     tags:

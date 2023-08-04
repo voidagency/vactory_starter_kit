@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - node
+  enforced:
+    module:
+      - vactory_news
 id: pathauto_content_news_pattern
 label: 'Pathauto Content News Pattern'
 type: 'canonical_entities:node'

@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - node
+  enforced:
+    module:
+      - vactory_governance
 id: node.card_inline
 label: 'Card (Inline)'
 targetEntityType: node

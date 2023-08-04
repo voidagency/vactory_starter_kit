@@ -4,6 +4,12 @@ dependencies: {  }
 id: node
 label: Content
 tags:
-  title: '[node:title] | [site:name]'
-  description: '[vactory:node_summary]'
   canonical_url: '[node:url]'
+  description: '[vactory:node_summary]'
+  og_description: '[vactory:node_summary]'
+  og_image: '[vactory:site_logo]'
+  og_image_secure_url: '[vactory:site_logo]'
+  og_image_url: '[vactory:site_logo]'
+  og_title: '[node:title]'
+  og_url: '[node:url]'
+  title: '[node:title] | [site:name]'

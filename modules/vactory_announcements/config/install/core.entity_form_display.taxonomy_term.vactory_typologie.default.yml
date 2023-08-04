@@ -7,6 +7,9 @@ dependencies:
   module:
     - path
     - text
+  enforced:
+    module:
+      - vactory_announcements
 id: taxonomy_term.vactory_typologie.default
 targetEntityType: taxonomy_term
 bundle: vactory_typologie

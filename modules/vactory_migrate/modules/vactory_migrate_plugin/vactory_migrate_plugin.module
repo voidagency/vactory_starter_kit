@@ -1,0 +1,21 @@
+<?php
+
+/**
+ * @file
+ * Module related hooks.
+ */
+
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\InvokeCommand;
+
+/**
+ * Trigger migration plugin form update.
+ */
+function vactory_migrate_trigger_form_update($response = NULL) {
+  if (!$response) {
+    $response = new AjaxResponse();
+  }
+  $response->addCommand(new InvokeCommand("[unique-id=migrate-update-form]", 'trigger', ['mousedown']));
+  $response->addCommand(new InvokeCommand("[unique-id=migrate-update-form]", 'trigger', ['mouseup']));
+  return $response;
+}

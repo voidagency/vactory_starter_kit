@@ -20,6 +20,9 @@ dependencies:
     - scheduler
     - text
     - yoast_seo
+  enforced:
+    module:
+      - vactory_press_kit
 id: node.vactory_press_kit.default
 targetEntityType: node
 bundle: vactory_press_kit

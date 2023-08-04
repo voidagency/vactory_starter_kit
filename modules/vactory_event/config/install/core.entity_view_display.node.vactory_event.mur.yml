@@ -22,6 +22,9 @@ dependencies:
     - user
     - vactory_core
     - vactory_field
+  enforced:
+    module:
+      - vactory_event
 id: node.vactory_event.mur
 targetEntityType: node
 bundle: vactory_event

@@ -4,6 +4,9 @@ dependencies:
   module:
     - node
     - user
+  enforced:
+    module:
+      - vactory_forums
 id: node.field_forum_editeur
 field_name: field_forum_editeur
 entity_type: node

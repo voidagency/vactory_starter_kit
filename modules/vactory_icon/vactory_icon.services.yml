@@ -1,0 +1,4 @@
+services:
+  plugin.manager.vactory_icon:
+    class: Drupal\vactory_icon\VactoryIconProviderManager
+    parent: default_plugin_manager

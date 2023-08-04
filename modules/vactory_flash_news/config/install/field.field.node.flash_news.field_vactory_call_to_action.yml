@@ -6,6 +6,9 @@ dependencies:
     - node.type.flash_news
   module:
     - link
+  enforced:
+    module:
+      - vactory_flash_news
 id: node.flash_news.field_vactory_call_to_action
 field_name: field_vactory_call_to_action
 entity_type: node

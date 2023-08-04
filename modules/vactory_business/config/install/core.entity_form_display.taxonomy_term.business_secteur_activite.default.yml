@@ -3,6 +3,9 @@ status: true
 dependencies:
   config:
     - taxonomy.vocabulary.business_secteur_activite
+  enforced:
+    module:
+      - vactory_business
 id: taxonomy_term.business_secteur_activite.default
 targetEntityType: taxonomy_term
 bundle: business_secteur_activite

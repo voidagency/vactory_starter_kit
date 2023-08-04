@@ -4,6 +4,9 @@ dependencies:
   module:
     - node
     - taxonomy
+  enforced:
+    module:
+      - vactory_mediatheque
 id: node.field_mediatheque_theme
 field_name: field_mediatheque_theme
 entity_type: node

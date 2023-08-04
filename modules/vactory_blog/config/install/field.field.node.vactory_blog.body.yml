@@ -6,6 +6,9 @@ dependencies:
     - node.type.vactory_blog
   module:
     - text
+  enforced:
+    module:
+      - vactory_blog
 id: node.vactory_blog.body
 field_name: body
 entity_type: node

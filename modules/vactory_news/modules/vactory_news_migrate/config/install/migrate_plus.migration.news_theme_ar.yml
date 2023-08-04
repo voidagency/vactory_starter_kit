@@ -1,0 +1,46 @@
+id: news_theme_ar
+label: 'News Theme Migration AR'
+migration_group: vactory
+dependencies:
+  enforced:
+    module:
+    - vactory_news_migrate
+
+source:
+  plugin: csv
+  path: profiles/contrib/vactory_starter_kit/modules/vactory_news/modules/vactory_news_migrate/artifacts/news-theme-ar.csv
+  header_row_count: 1
+  ids: [id]
+  delimiter: ","
+
+
+destination:
+  plugin: entity:taxonomy_term
+  default_bundle: vactory_news_theme
+  translations: true
+
+
+process:
+  legacy_id: id
+  name: name
+
+  tid:
+    plugin: translation_legacy_id
+    entity: taxonomy_term
+    bundle: vactory_news_theme
+    mapping_field: legacy_id
+    bundle_key: vid
+    source: id
+
+  langcode:
+    plugin: default_value
+    default_value: 'ar'
+
+  content_translation_source:
+    plugin: default_value
+    default_value: 'fr'
+
+  default_langcode:
+    plugin: default_value
+    default_value: 0
+

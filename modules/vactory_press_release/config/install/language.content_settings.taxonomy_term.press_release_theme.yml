@@ -5,6 +5,9 @@ dependencies:
     - taxonomy.vocabulary.press_release_theme
   module:
     - content_translation
+  enforced:
+    module:
+      - vactory_press_release
 third_party_settings:
   content_translation:
     enabled: true

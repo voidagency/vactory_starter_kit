@@ -23,6 +23,9 @@ dependencies:
   module:
     - media_responsive_thumbnail
     - user
+  enforced:
+    module:
+      - vactory_governance
 id: node.vactory_governance.smart_search
 targetEntityType: node
 bundle: vactory_governance

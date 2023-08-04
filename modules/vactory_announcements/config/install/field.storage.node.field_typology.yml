@@ -4,6 +4,9 @@ dependencies:
   module:
     - node
     - taxonomy
+  enforced:
+    module:
+      - vactory_announcements
 id: node.field_typology
 field_name: field_typology
 entity_type: node

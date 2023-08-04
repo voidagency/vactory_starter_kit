@@ -5,6 +5,9 @@ dependencies:
     - field.storage.node.field_groupe_utilisateurs
     - node.type.vactory_forum
     - taxonomy.vocabulary.users_groups
+  enforced:
+    module:
+      - vactory_forums
 id: node.vactory_forum.field_groupe_utilisateurs
 field_name: field_groupe_utilisateurs
 entity_type: node

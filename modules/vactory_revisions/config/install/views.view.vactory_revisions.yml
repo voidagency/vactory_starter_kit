@@ -5,6 +5,9 @@ dependencies:
     - better_exposed_filters
     - user
     - vactory_revisions
+  enforced:
+    module:
+      - vactory_revisions
 id: vactory_revisions
 label: Revisions
 module: views

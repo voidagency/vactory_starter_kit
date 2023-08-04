@@ -3,6 +3,9 @@ status: true
 dependencies:
   config:
     - node.type.vactory_partner
+  enforced:
+    module:
+      - vactory_partner
 id: node--vactory_partner
 disabled: false
 path: node/vactory_partner

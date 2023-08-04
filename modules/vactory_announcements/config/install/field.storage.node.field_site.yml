@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - node
+  enforced:
+    module:
+      - vactory_announcements
 id: node.field_site
 field_name: field_site
 entity_type: node

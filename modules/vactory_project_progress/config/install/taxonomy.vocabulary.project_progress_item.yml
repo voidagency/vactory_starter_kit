@@ -1,0 +1,10 @@
+langcode: fr
+status: true
+dependencies:
+  enforced:
+    module:
+      - vactory_project_progress
+name: 'Mon projet - Item'
+vid: project_progress_item
+description: ''
+weight: -11

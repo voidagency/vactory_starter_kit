@@ -12,6 +12,9 @@ use Drupal\webform\WebformSubmissionInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
+/**
+ * Decoupled webform controller.
+ */
 class WebformController extends ControllerBase {
 
   const ELEMENT_TO_SKIP = [
@@ -68,9 +71,12 @@ class WebformController extends ControllerBase {
       ], 400);
     }
 
-    $webform_submission = NULL;
-
-    if ($webform_data['sid']) {
+    $error_message = [];
+    \Drupal::moduleHandler()->alter('decoupled_webform_data_presubmit', $webform_data, $error_message);
+    if (!empty($error_message)) {
+      return new JsonResponse($error_message, 400);
+    }
+    if (isset($webform_data['sid']) && !empty($webform_data['sid'])) {
       $webform_submission = WebformSubmission::load($webform_data['sid']);
       $webform_submission->setCurrentPage($webform_data['current_page'] ?? NULL);
       $webform_submission->set('in_draft', $webform_data['in_draft'] == 'true');
@@ -123,7 +129,10 @@ class WebformController extends ControllerBase {
     }
   }
 
-  static private function getWhitelistedSettings(WebformInterface $webform) {
+  /**
+   * Get white listed settings.
+   */
+  private static function getWhitelistedSettings(WebformInterface $webform) {
     $whitelist = [
       'confirmation_url',
       'confirmation_type',

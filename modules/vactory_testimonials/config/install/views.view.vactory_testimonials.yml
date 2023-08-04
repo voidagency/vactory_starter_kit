@@ -16,8 +16,9 @@ dependencies:
     - taxonomy
     - user
     - vactory_views
-_core:
-  default_config_hash: 1ICFDK6HKrrxtsy0HiuItZyxWcMSj9rz-KDrFjsgego
+  enforced:
+    module:
+      - vactory_testimonials
 id: vactory_testimonials
 label: 'Vactory Testimonials'
 module: views

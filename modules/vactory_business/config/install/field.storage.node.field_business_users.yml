@@ -4,6 +4,9 @@ dependencies:
   module:
     - node
     - user
+  enforced:
+    module:
+      - vactory_business
 id: node.field_business_users
 field_name: field_business_users
 entity_type: node

@@ -148,4 +148,14 @@ class ApiFlagging extends ControllerBase
     }
     return $format;
   }
+  
+  /**
+   * Get Current user flagging publications.
+   */
+  public function getFlaggedItems(Request $request) {
+    $nids = \Drupal::service('vactory_academy.flag')->getFlaggedNodes();
+    return new JsonResponse([
+      'nids' => $nids,
+    ]);
+  }
 }

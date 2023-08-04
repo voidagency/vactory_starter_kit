@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - node
+  enforced:
+    module:
+      - vactory_event
 id: vactory_event_block_masonry
 label: 'Event Block Masonry'
 handler: simple

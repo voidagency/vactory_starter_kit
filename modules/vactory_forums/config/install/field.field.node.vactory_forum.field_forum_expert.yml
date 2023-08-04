@@ -4,6 +4,9 @@ dependencies:
   config:
     - field.storage.node.field_forum_expert
     - node.type.vactory_forum
+  enforced:
+    module:
+      - vactory_forums
 id: node.vactory_forum.field_forum_expert
 field_name: field_forum_expert
 entity_type: node

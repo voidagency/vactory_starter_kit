@@ -18,6 +18,9 @@ dependencies:
     - user
     - vactory_core
     - vactory_field
+  enforced:
+    module:
+      - vactory_news
 id: node.vactory_news.smart_search
 targetEntityType: node
 bundle: vactory_news

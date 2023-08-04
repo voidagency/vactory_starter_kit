@@ -70,10 +70,10 @@
     "drupal/redirect": "^1.6",
     "drupal/path_redirect_import": "^1.0@beta",
     "drupal/migrate_plus": "^5.3",
-    "drupal/migrate_tools": "^5.1",
+    "drupal/migrate_tools": "^6.0",
     "drupal/migrate_source_csv": "^3.1.0",
     "drupal/link_target": "^1.2.0",
-    "drupal/linkit": "^5.0-beta11",
+    "drupal/linkit": "^6.0@RC",
     "drupal/merge_translations": "^1.1",
     "drupal/stage_file_proxy": "^1.0",
     "drupal/wysiwyg_template": "2.3.0",
@@ -103,7 +103,7 @@
     "drupal/field_group": "^3.1",
     "drupal/csv_serialization": "^2.0",
     "drupal/votingapi": "^3.0@beta",
-    "drupal/amp": "^3.5",
+    "drupal/amp": "^3.6",
     "drupal/crop": "^2.1",
     "drupal/devel": "^4.1",
     "drupal/draggableviews": "^2.0",
@@ -157,7 +157,10 @@
     "mailchimp/marketing": "^3.0",
     "drupal/time_range": "^2.0",
     "drupal/cloudinary": "^2.0@alpha",
-    "drupal/video_embed_field": "^2.4"
+    "drupal/video_embed_field": "^2.4",
+    "drupal/allowed_formats": "^2.0",
+    "drupal/theme_switcher": "^2.0",
+    "drupal/migrate_file": "^2.1"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.3",
@@ -186,40 +189,40 @@
     "enable-patching": true,
     "patches": {
       "drupal/simplify_menu": {
-        "Add support for options.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/fd5550d45f742ac17fd6d833ef33c0e02e73a57d/simplify_menu-support-options.patch",
-        "Add callable : filterLanguage": "https://gist.githubusercontent.com/khalidbouhouch77/cc04fcc7a75694dd1481e7a73b6d2606/raw/668c03c32c431dfe64f4739c8736ec4246a443af/add-filterLanguage-callable.patch"
+        "Add support for options.": "https://gist.githubusercontent.com/voidagency/0c4efddd8f379229c7416e66a1d44de3/raw/825d324ae399de35f47d2a99aca7baae509abdbc/simplify_menu-support-options.patch",
+        "Add callable : filterLanguage": "https://gist.githubusercontent.com/voidagency/7fa6544eb226eaf1a878160fec1717a2/raw/d7cfa71bdd4100569c0930d1041bb88c2ee0939c/add-filterLanguage-callable.patch"
       },
       "drupal/features": {
         "Export config translation": "https://www.drupal.org/files/issues/features_export-config-translation-2869336-2.patch"
       },
       "drupal/oauth_login_oauth2": {
-        "Store ressourceOwner into a session variable.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/d86aeeb1921f10cc36198efb5f4ac00504e9c2ee/oauth-login-oauth2-add-resource-owner-to-session.patch"
+        "Store ressourceOwner into a session variable.": "https://gist.githubusercontent.com/voidagency/7895928ef08e7b29d999eeba8c7537c6/raw/755223f947244247f860dc71144560a9ae9dfe12/oauth-login-oauth2-add-resource-owner-to-session.patch"
       },
       "drupal/social_auth_microsoft": {
-        "Fixing call to function on null.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/19e54a007837537dd7de97456ab0e1ad0b9d3cf6/microsoft_social_auth.patch",
-        "Update to v2 endpoints.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/9e6eca9bcbd95e7bed7859d54a0c4623a6112e5a/social_auth_microsoft-v2.patch"
+        "Fixing call to function on null.": "https://gist.githubusercontent.com/voidagency/33e6445b2b0fe973654304a6ea04d50e/raw/80cd36664fe77ec6196bb310b49e8b7d27c8c96d/microsoft_social_auth.patch",
+        "Update to v2 endpoints.": "https://gist.githubusercontent.com/voidagency/e45c99aff42a75a8925e043d4c22b670/raw/127ee70e123dc79d308042e519171c160a0b5ab0/social_auth_microsoft-v2.patch"
       },
       "stevenmaguire/oauth2-microsoft": {
-        "Fix Bearer Authorization - Update ResourceOwner": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/9e6eca9bcbd95e7bed7859d54a0c4623a6112e5a/oauth2-microsoft-authorization-ressource-owner.patch"
+        "Fix Bearer Authorization - Update ResourceOwner": "https://gist.githubusercontent.com/voidagency/b3b3508f2edb982b4f60a12517184e19/raw/08835c48e75e7f19f7396013988d934be30526ce/oauth2-microsoft-authorization-ressource-owner.patch"
       },
       "drupal/viewsreference": {
         "Exposed filters not working for Views in Paragraphs": "https://www.drupal.org/files/issues/2020-05-13/viewsreference-exposed_filters_not_working-3129609-3.patch"
       },
       "drupal/swiftmailer": {
         "Fix undefined index warnings on reset password form": "https://www.drupal.org/files/issues/2020-10-29/3179656-two-undentified-index-notices-2.patch",
-        "Swiftmailer fix renderPlan method cli breaks": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/e11467100b3dd3c3ee66026b5f6ee781712b214c/swiftmailer-prevent-cli-commands-break.patch"
+        "Swiftmailer fix renderPlan method cli breaks": "https://gist.githubusercontent.com/voidagency/2d6230d4c481d5f80e8e9c8e783a2963/raw/8f7e40b7b90406b96865dde05b57a4ad8d854b68/swiftmailer-prevent-cli-commands-break.patch"
       },
       "drupal/advagg": {
-        "Remove version comments from minified files.": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/9e6eca9bcbd95e7bed7859d54a0c4623a6112e5a/advagg-remove-version-comment-from-minified-js.patch",
+        "Remove version comments from minified files.": "https://gist.githubusercontent.com/voidagency/136f41faf39bcff92e334f364a173afb/raw/421944a391d8ed071ec648cf3ca8311f912372fe/advagg-remove-version-comment-from-minified-js.patch",
         "Support PHP 8.1 && remove deprecated class": "https://www.drupal.org/files/issues/2022-08-02/3258389-40.patch"
       },
       "drupal/colorapi": {
-        "Enable colorapi field type by default": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/9e6eca9bcbd95e7bed7859d54a0c4623a6112e5a/colorapi-enable-colorapi-field-type-by-default.patch"
+        "Enable colorapi field type by default": "https://gist.githubusercontent.com/voidagency/710e846384b56afe6cdfdc59fbc6e8bc/raw/cb8b1c126e87bd57a2c745f2f29e25c0269ec32f/colorapi-enable-colorapi-field-type-by-default.patch"
       },
       "drupal/jquery_colorpicker": {
-        "jQuery color picker resolve vendor path": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/348f7580c779478baebca58bfb8b27fe5c55d1ed/jquery-color-picker-resolve-vendor-path.patch",
-        "jQuery color picker remove vendor dependencies": "https://gist.githubusercontent.com/khalidbouhouch77/c128e712544f303f0214857cb362c3c7/raw/bd6219096734da124dc2b7ed95e9e34bfff3122e/jquery-colorpicker-remove-vendor-dependencies.patch",
-        "jQuery color picker update background (drupalSettings variable)": "https://gist.githubusercontent.com/khalidbouhouch77/bf02c4bc65240acea5b87a2ff5b5d719/raw/973efb8f4a7bdecd71f21e198de924e98feab66d/jquery-colorpicker-update-background.patch"
+        "jQuery color picker resolve vendor path": "https://gist.githubusercontent.com/voidagency/606f9343e9c7e9b99858088d7db111f1/raw/5216cc90d89e68916b4a17b60e07466286a18397/jquery-color-picker-resolve-vendor-path.patch",
+        "jQuery color picker remove vendor dependencies": "https://gist.githubusercontent.com/voidagency/17af206778d4ea598b93dd10769556a0/raw/538e683f77b15945a41b99548a6b0d1ca2315225/jquery-colorpicker-remove-vendor-dependencies.patch",
+        "jQuery color picker update background (drupalSettings variable)": "https://gist.githubusercontent.com/voidagency/979ab74bd125ea27f39311084471d78d/raw/c8888fb08e7c7f811055414295a0ea7cfc2d0e53/jquery-colorpicker-update-background.patch"
       },
       "drupal/domain": {
         "Domain no context : resolve null given.": "https://www.drupal.org/files/issues/2021-03-05/3201514-domain-no-context-test_7.patch"
@@ -228,7 +231,7 @@
         "optional details": "https://www.drupal.org/files/issues/2020-07-25/Solution.patch"
       },
       "drupal/webform": {
-        "Invoke alter hook after webform handlers execution": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/9e6eca9bcbd95e7bed7859d54a0c4623a6112e5a/webform-post-handlers-hook.patch"
+        "Invoke alter hook after webform handlers execution": "https://gist.githubusercontent.com/voidagency/6871bd7544b621e2c4221126c5dfec50/raw/7595d19a34e18ab9f719b7f917c02b10a4a40caf/webform-post-handlers-hook.patch"
       },
       "drupal/email_registration": {
         "Allow authentication via mail and password over OAuth2 module": "https://www.drupal.org/files/issues/2021-10-06/2991141-19-allow_authentication_via_mail.patch"
@@ -237,16 +240,13 @@
         "Auth revoke on profile update": "https://www.drupal.org/files/issues/2019-04-15/simple_oauth-auth-revoke-2946882-34.patch"
       },
       "drupal/captcha": {
-        "Fix captcha error message translation": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/f66e3eaaa67a0d0e1de3d55aec61ca327b192d4a/fix-captcha-error-message-translation.patch"
+        "Fix captcha error message translation": "https://gist.githubusercontent.com/voidagency/11480147ce444bf3b4b7c5539f213452/raw/5a2d3f39bc5f795bb25b5c91ab050ad8d9ad1837/fix-captcha-error-message-translation.patch"
       },
       "drupal/jsonapi_extra": {
         "Default field enhancer for fields": "https://gist.githubusercontent.com/voidagency/4861a0f0343a45cf0582553fc80c6b59/raw/2342d707c2b6708f2c18a69b870fcad1d5242df3/jsonapi_default_field_enhancer_for_fields.patch"
       },
       "drupal/cloudinary": {
-        "Cloudinary video media library compatibility fix": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/f8b1871b3e6dac919f09f96b44176a816d8bb4a2/cloudinary-video-media-library-compatibility-fix.patch"
-      },
-      "drupal/amp": {
-        "Fix deprecated php 8.1 issue rtrim": "https://www.drupal.org/files/issues/2022-11-02/amp-stristr-warning-patch.diff"
+        "Cloudinary video media library compatibility fix": "https://gist.githubusercontent.com/voidagency/21729df75ca350faace0f7883960bc37/raw/88e6ce0980cb3e01c95f74e1c79b4baddcdf884e/cloudinary-video-media-library-compatibility-fix.patch"
       },
       "drupal/flag": {
         "Fix deprecated php 8.1 str_replace": "https://www.drupal.org/files/issues/2022-02-25/3266574-2.patch"
@@ -255,10 +255,7 @@
         "Core 9.5.0 causing broken-looking styling (Legacy widget, with Seven)": "https://www.drupal.org/files/issues/2023-01-06/core-absolute-position-affecting-paragraphs-3331203-3.patch"
       },
       "drupal/jsonapi_search_api": {
-        "Modifying a facet does not invalidate caches": "https://gist.githubusercontent.com/b-khouy/d796ede15da1e0b69fa22af52ad55b04/raw/9d8767dd9f024935e94290e89473f2e67bebf64a/fix-jsonapi-search-api-facets-cache-3176987.patch"
-      },
-      "drupal/lang_dropdown": {
-        "Fix TypeError: array_keys(): Argument #1 ($array) must be of type array": "https://www.drupal.org/files/issues/2023-03-16/lang_dropdown-2-0-0--3348277-16.patch"
+        "Modifying a facet does not invalidate caches": "https://gist.githubusercontent.com/voidagency/299883e039129c50da852a42c704af91/raw/1812ca417adce536e82cede6da50f8e7952c7479/fix-jsonapi-search-api-facets-cache-3176987.patch"
       }
     }
   },

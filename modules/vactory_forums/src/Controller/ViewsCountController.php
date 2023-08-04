@@ -1,5 +1,7 @@
 <?php
+
 namespace Drupal\vactory_forums\Controller;
+
 use Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException;
 use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\Core\Config\ConfigFactoryInterface;
@@ -11,23 +13,34 @@ use Drupal\node\Entity\Node;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+
+/**
+ * Class Views Count Controller
+ *
+ * @package Drupal\vactory_forums\Controller
+ */
 class ViewsCountController extends ControllerBase {
+
   /**
    * @var EntityTypeManagerInterface
    */
   protected $entityTypeManager;
+
   /**
    * @var LanguageManagerInterface
    */
   protected $languageManager;
+
   /**
    * @var ConfigFactoryInterface
    */
   protected $configFactory;
+
   /**
    * @var AccountProxyInterface
    */
   protected $currentUser;
+
   /**
    * ViewsCountController constructor.
    *
@@ -44,6 +57,7 @@ class ViewsCountController extends ControllerBase {
     $this->configFactory = $configFactory;
     $this->currentUser = $currentUser;
   }
+
   /**
    * @param ContainerInterface $container
    *
@@ -57,26 +71,32 @@ class ViewsCountController extends ControllerBase {
       $container->get('current_user')
     );
   }
+
   /**
    * @param Request $request
+   *
    * @return JsonResponse
    * @throws InvalidPluginDefinitionException
    * @throws PluginNotFoundException
    */
   public function index(int $nid) {
-      if (!isset($nid) || empty($nid)) {
-        return new JsonResponse([
-          'resources' => $this->t('Empty PARAMS!'),
-          'status'    => 404
-        ]);
-      }
-      /* @var Node */
-      $node = $this->entityTypeManager->getStorage('node')->load($nid);
-      $value = $node->get('field_forum_views_count')->value ?? 0;
-      $node->set('field_forum_views_count', (int) $value + 1)->save();
+    if (!isset($nid) || empty($nid)) {
       return new JsonResponse([
-        'resources' => $this->t('Count changed succesfully'),
-        'status'    => 200
+        'resources' => $this->t('Empty PARAMS!'),
+        'status' => 404,
       ]);
     }
+    /* @var Node */
+    $node = $this->entityTypeManager->getStorage('node')->load($nid);
+    $value = $node->get('field_forum_views_count')->value ?? 0;
+    try {
+      $node->set('field_forum_views_count', (int) $value + 1)->save();
+    } catch (\Exception $exception) {
+      \Drupal::logger('vactory_forums')->error($exception->getMessage());
+    }
+    return new JsonResponse([
+      'resources' => $this->t('Count changed succesfully'),
+      'status' => 200,
+    ]);
+  }
 }

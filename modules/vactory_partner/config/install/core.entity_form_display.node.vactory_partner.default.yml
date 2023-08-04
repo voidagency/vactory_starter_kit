@@ -15,6 +15,9 @@ dependencies:
     - scheduler
     - text
     - yoast_seo
+  enforced:
+    module:
+      - vactory_partner
 id: node.vactory_partner.default
 targetEntityType: node
 bundle: vactory_partner

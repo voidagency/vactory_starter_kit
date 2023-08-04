@@ -10,8 +10,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
 /**
  * Add node_settings field.
  */
-function vactory_decoupled_update_9001()
-{
+function vactory_decoupled_update_9001() {
   $storage_definition = BaseFieldDefinition::create('string_long')
     ->setLabel(t('Node Settings'))
     ->setDescription(t('Add extra parameters in JSON Format : { "isHomePage": true, "taxonomy": 4, "limit": 6 }'))
@@ -36,8 +35,7 @@ function vactory_decoupled_update_9001()
 /**
  * Add internal_extra field.
  */
-function vactory_decoupled_update_9002()
-{
+function vactory_decoupled_update_9002() {
   $storage_definition = BaseFieldDefinition::create('map')
     ->setLabel(t('Node extra'))
     ->setDescription(t('Extra data per node'))
@@ -56,8 +54,7 @@ function vactory_decoupled_update_9002()
 /**
  * Add internal machine name field.
  */
-function vactory_decoupled_update_9003()
-{
+function vactory_decoupled_update_9003() {
   $storage_definition = BaseFieldDefinition::create('string')
     ->setLabel(t('Machine name'))
     ->setDescription(t('Machine name for internal use.'))
@@ -72,20 +69,19 @@ function vactory_decoupled_update_9003()
 /**
  * Add taxonomy term field term_slug.
  */
-function vactory_decoupled_update_9004()
-{
+function vactory_decoupled_update_9004() {
   $storage_definition = BaseFieldDefinition::create('string')
     ->setLabel(t('Slug'))
-      ->setDescription(t('Term slug'))
-      ->setTranslatable(TRUE)
-      ->setRevisionable(TRUE)
-      ->setRequired(FALSE)
-      ->setDisplayConfigurable('form', TRUE)
-      ->setDisplayOptions('form', [
-        'type'     => 'string_textfield',
-        'weight'   => 0,
-      ])
-      ->setDisplayConfigurable('view', FALSE);
+    ->setDescription(t('Term slug'))
+    ->setTranslatable(TRUE)
+    ->setRevisionable(TRUE)
+    ->setRequired(FALSE)
+    ->setDisplayConfigurable('form', TRUE)
+    ->setDisplayOptions('form', [
+      'type'     => 'string_textfield',
+      'weight'   => 0,
+    ])
+    ->setDisplayConfigurable('view', FALSE);
 
   \Drupal::entityDefinitionUpdateManager()
     ->installFieldStorageDefinition('term_2_slug', 'taxonomy_term', 'taxonomy_term', $storage_definition);
@@ -101,8 +97,7 @@ function vactory_decoupled_update_9005(&$sandbox) {
 /**
  * Add internal_metatags field.
  */
-function vactory_decoupled_update_9006()
-{
+function vactory_decoupled_update_9006() {
   $storage_definition = BaseFieldDefinition::create('map')
     ->setLabel(t('Node Metatags'))
     ->setDescription(t('Defined metatags per node'))
@@ -116,4 +111,22 @@ function vactory_decoupled_update_9006()
 
   \Drupal::entityDefinitionUpdateManager()
     ->installFieldStorageDefinition('internal_metatag', 'node', 'node', $storage_definition);
+}
+
+/**
+ * Update node entity type - Install cache exclude field.
+ */
+function vactory_decoupled_update_9007(&$sandbox) {
+  $field_definition = BaseFieldDefinition::create('boolean')
+    ->setLabel(t('Exclude from frontend cache'))
+    ->setDescription(t('Check this to exclude current node from being cached in frontend'))
+    ->setDefaultValue(0)
+    ->setDisplayOptions('form', [
+      'type' => 'boolean_checkbox',
+      'settings' => [
+        'display_label' => TRUE,
+      ],
+    ])
+    ->setDisplayConfigurable('form', TRUE);
+  Drupal::entityDefinitionUpdateManager()->installFieldStorageDefinition('cache_exclude', 'node', 'vactory_decoupled', $field_definition);
 }

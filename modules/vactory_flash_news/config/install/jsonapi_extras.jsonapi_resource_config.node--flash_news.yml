@@ -3,6 +3,9 @@ status: true
 dependencies:
   config:
     - node.type.flash_news
+  enforced:
+    module:
+      - vactory_flash_news
 id: node--flash_news
 disabled: false
 path: node/flash_news

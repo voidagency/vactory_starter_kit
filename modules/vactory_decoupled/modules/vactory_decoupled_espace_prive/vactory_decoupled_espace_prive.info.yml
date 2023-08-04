@@ -1,0 +1,8 @@
+name: 'Vactory decoupled espace privé'
+type: module
+package: Vactory
+core: 8.x
+core_version_requirement: ^8 || ^9
+dependencies:
+  - vactory_decoupled
+  - vactory_decoupled_webform

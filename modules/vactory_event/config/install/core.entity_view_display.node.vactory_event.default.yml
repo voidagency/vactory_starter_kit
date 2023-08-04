@@ -22,6 +22,9 @@ dependencies:
     - text
     - user
     - vactory_field
+  enforced:
+    module:
+      - vactory_event
 id: node.vactory_event.default
 targetEntityType: node
 bundle: vactory_event

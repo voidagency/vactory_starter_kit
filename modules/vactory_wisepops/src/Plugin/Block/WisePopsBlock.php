@@ -88,7 +88,7 @@ class WisePopsBlock extends BlockBase implements BlockPluginInterface {
     ];
     return [
       '#type' => 'markup',
-      '#markup' => \Drupal::service('renderer')->render($token_tree),
+      '#markup' => \Drupal::service('renderer')->renderPlain($token_tree),
     ];
   }
 

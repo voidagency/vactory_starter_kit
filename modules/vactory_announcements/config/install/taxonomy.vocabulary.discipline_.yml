@@ -1,6 +1,9 @@
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  enforced:
+    module:
+      - vactory_announcements
 name: Discipline
 vid: discipline_
 description: 'This Vocabulary is used for Announcements'

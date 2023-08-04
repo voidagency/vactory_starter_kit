@@ -3,6 +3,9 @@ status: true
 dependencies:
   config:
     - node.type.vactory_blog
+  enforced:
+    module:
+      - vactory_blog
 id: node--vactory_blog
 disabled: false
 path: node/vactory_blog

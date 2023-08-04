@@ -4,6 +4,9 @@ dependencies:
   module:
     - taxonomy
     - vactory_locator
+  enforced:
+    module:
+      - vactory_locator
 id: locator_entity.field_locator_country
 field_name: field_locator_country
 entity_type: locator_entity

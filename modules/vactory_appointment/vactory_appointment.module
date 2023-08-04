@@ -103,8 +103,8 @@ function vactory_appointment_views_query_alter(ViewExecutable $view, QueryPlugin
     }
     $params = Drupal::request()->query->all();
     if (isset($params['phone']) && !empty($params['phone'])) {
-        $phone = decrypt($params['phone']);
-        $query->where[1]['conditions'][0]['value'] = $phone;
+      $phone = decrypt($params['phone']);
+      $query->where[1]['conditions'][0]['value'] = $phone;
     }
     else {
       throw new NotFoundHttpException();
@@ -307,7 +307,11 @@ function vactory_appointment_entity_delete(EntityInterface $entity) {
  * Implements hook_form_alter().
  */
 function vactory_appointment_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  if (in_array($form_id, ['vactory_appointment_edit_form', 'vactory_appointment_add_form'])) {
+  $form_ids = [
+    'vactory_appointment_edit_form',
+    'vactory_appointment_add_form',
+  ];
+  if (in_array($form_id, $form_ids)) {
     $form['#validate'][] = 'edit_or_add_appointment_from_bo_validator';
   }
   $theme_name = \Drupal::service('theme.manager')->getActiveTheme()->getName();
@@ -424,7 +428,7 @@ function vactory_appointment_mail($key, &$message, $params) {
       // Email subject.
       $message['subject'] = t('Prise de Rendez-vous chez') . ' ' . $site_name . ' - ' . $appointment_type->getName();
       // Email body content.
-      $message['body'][] = \Drupal::service('renderer')->render($mail_body);
+      $message['body'][] = \Drupal::service('renderer')->renderPlain($mail_body);
       break;
 
     default:
@@ -464,9 +468,9 @@ function vactory_appointment_form_user_form_alter(&$form, FormStateInterface $fo
   $profile_edit_routes = [
     'vactory_espace_prive.cleaned_profile',
     'vactory_espace_prive.profile',
-    'entity.user.edit_form'
+    'entity.user.edit_form',
   ];
-  if (in_array($route_name,  $profile_edit_routes)) {
+  if (in_array($route_name, $profile_edit_routes)) {
     $current_user_id = Drupal::currentUser()->id();
     $modified_account = Drupal::entityTypeManager()->getStorage('user')
       ->load($current_user_id);
@@ -475,7 +479,7 @@ function vactory_appointment_form_user_form_alter(&$form, FormStateInterface $fo
     if (in_array('adviser', $modified_account->getRoles())) {
       $adviser_appointments_string = $modified_account->get('field_adviser_appointments')->value;
       $adviser_holidays = $modified_account->get('field_adviser_holiday')->value;
-      $adviser_appointments = json_decode($adviser_appointments_string);
+      $adviser_appointments = !empty($adviser_appointments_string) ? json_decode($adviser_appointments_string) : [];
       $appointment_infos = [];
       foreach ($adviser_appointments as $adviser_appointment) {
         $appointment = AppointmentEntity::load($adviser_appointment->id);
@@ -560,10 +564,14 @@ function vactory_appointment_preprocess_breadcrumb(&$variables) {
       if (isset($breadcrumb['text'])) {
         if (gettype($breadcrumb['text']) == 'string') {
           $breadcrumb['text'] = strip_tags($breadcrumb['text']);
+          // phpcs:disable
           $breadcrumb['text'] = t(ucfirst($breadcrumb['text']));
+          // phpcs:enable
           if ($route_name == 'vactory_appointment.site_appointment_submit_form') {
             if ($index == count($variables['breadcrumb']) - 1) {
+              // phpcs:disable
               $breadcrumb['text'] = t(ucwords($breadcrumb['text']));
+              // phpcs:enable
             }
             if ($index == 1) {
               $breadcrumb['text'] = t('Prendre un rendez-vous');

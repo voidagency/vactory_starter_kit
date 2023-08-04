@@ -5,6 +5,9 @@ dependencies:
     - field.storage.node.field_blog_tags
     - node.type.vactory_blog
     - taxonomy.vocabulary.vactory_blog_tags
+  enforced:
+    module:
+      - vactory_blog
 id: node.vactory_blog.field_blog_tags
 field_name: field_blog_tags
 entity_type: node

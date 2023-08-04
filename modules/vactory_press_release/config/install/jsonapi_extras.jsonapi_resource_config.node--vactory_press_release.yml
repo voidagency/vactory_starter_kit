@@ -3,6 +3,9 @@ status: true
 dependencies:
   config:
     - node.type.vactory_press_release
+  enforced:
+    module:
+      - vactory_press_release
 id: node--vactory_press_release
 disabled: false
 path: node/vactory_press_release
