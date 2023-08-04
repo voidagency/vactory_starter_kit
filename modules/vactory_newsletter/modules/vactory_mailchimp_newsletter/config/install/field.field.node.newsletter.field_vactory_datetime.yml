@@ -1,0 +1,20 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_vactory_datetime
+    - node.type.newsletter
+  module:
+    - datetime
+id: node.newsletter.field_vactory_datetime
+field_name: field_vactory_datetime
+entity_type: node
+bundle: newsletter
+label: 'Date d’envoi'
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: datetime

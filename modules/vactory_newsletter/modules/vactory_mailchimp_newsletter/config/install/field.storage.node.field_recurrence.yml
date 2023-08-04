@@ -1,0 +1,29 @@
+langcode: fr
+status: true
+dependencies:
+  module:
+    - node
+    - options
+id: node.field_recurrence
+field_name: field_recurrence
+entity_type: node
+type: list_string
+settings:
+  allowed_values:
+    -
+      value: everyday
+      label: 'Chaque jour'
+    -
+      value: every_week
+      label: 'Chaque semaine'
+    -
+      value: every_month
+      label: 'Chaque mois'
+  allowed_values_function: ''
+module: options
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

@@ -1,0 +1,68 @@
+<?php
+
+/**
+ * @file
+ * Vactory Newsletter instal.
+ */
+
+use Drupal\Core\Field\BaseFieldDefinition;
+
+/**
+ * Install newsletter Test mail and audience node fields.
+ */
+function vactory_mailchimp_newsletter_install() {
+  $entityUpdateManager = \Drupal::entityDefinitionUpdateManager();
+  // The tester mail.
+  $tester_email_field = BaseFieldDefinition::create('string')
+    ->setLabel(t('Mon email'))
+    ->setDescription(t('Set your email.'))
+    ->setSettings([
+      'max_length' => 255,
+      'text_processing' => 0,
+    ])
+    ->setRevisionable(TRUE)
+    ->setTranslatable(TRUE)
+    ->setDisplayOptions('form', [
+      'type' => 'string_textfield',
+      'weight' => -10,
+    ])
+    ->setDisplayConfigurable('form', TRUE)
+    ->setDisplayConfigurable('view', TRUE);
+
+  $entityUpdateManager->installFieldStorageDefinition(
+    'tester_email', 'node', 'vactory_newsletter', $tester_email_field
+  );
+
+  $test_audience_field = BaseFieldDefinition::create('list_string')
+    ->setLabel(t('Test Audience'))
+    ->setDescription(t('Select the Test list you want to send this submission to.'))
+    ->setRevisionable(TRUE)
+    ->setTranslatable(TRUE)
+    ->setDisplayConfigurable('form', TRUE)
+    ->setDisplayConfigurable('view', TRUE)
+    ->setDisplayOptions('form', [
+      'type'   => 'options_select',
+      'weight' => -6,
+    ]);
+
+  $entityUpdateManager->installFieldStorageDefinition(
+    'test_audience', 'node', 'vactory_newsletter', $test_audience_field
+  );
+
+  $send_test_field = BaseFieldDefinition::create('boolean')
+    ->setLabel(t('Envoyer un test'))
+    ->setRevisionable(TRUE)
+    ->setTranslatable(TRUE)
+    ->setDisplayOptions('form', [
+      'type'     => 'boolean_checkbox',
+      'settings' => [
+        'display_label' => TRUE,
+      ],
+      'weight'   => 45,
+    ])
+    ->setDisplayConfigurable('form', TRUE);
+
+  $entityUpdateManager->installFieldStorageDefinition(
+    'send_test', 'node', 'vactory_newsletter', $send_test_field
+  );
+}

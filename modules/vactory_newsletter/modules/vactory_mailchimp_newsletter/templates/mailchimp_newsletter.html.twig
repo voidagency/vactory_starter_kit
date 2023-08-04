@@ -1,0 +1,361 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTDXHTML1.0Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
+  {# {% set title = (content.field_vactory_title is not empty) ? content.field_vactory_title['#title'] : '' %}   #}
+
+  <head>
+    <!--[if gte mso 15]>
+			<xml>
+					<o:OfficeDocumentSettings>
+					<o:AllowPNG/>
+					<o:PixelsPerInch>96</o:PixelsPerInch>
+					</o:OfficeDocumentSettings>
+			</xml>
+		<![endif]-->
+    <meta charset="UTF-8"> <meta content="text/html; charset=utf-8" http-equiv="Content-Type"/>
+    <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <meta content="telephone=no" name="format-detection">
+    <meta
+    name="x-apple-disable-message-reformatting"/>
+		<title>{{ label }}</title>
+    <!-- CSS Reset : BEGIN -->
+    <style>
+      html,
+      body {
+        margin: 0 auto !important;
+        padding: 0 !important;
+        height: 100% !important;
+        width: 100% !important;
+      }
+			p {
+				margin-top: 0;
+			}
+
+      /* What it does: Stops email clients resizing small text. */
+      * {
+        -ms-text-size-adjust: 100%;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      /* What it does: Centers email on Android 4.4 */
+      div[style*="margin: 16px 0"] {
+        margin: 0 !important;
+      }
+
+      /* What it does: Stops Outlook from adding extra spacing to tables. */
+      table,
+      td {
+        mso-table-lspace: 0 !important;
+        mso-table-rspace: 0 !important;
+      }
+
+      /* What it does: Fixes webkit padding issue. */
+      table {
+        border-spacing: 0 !important;
+        border-collapse: collapse !important;
+        table-layout: fixed !important;
+        margin: 0 auto !important;
+      }
+
+      /* What it does: Uses a better rendering method when resizing images in IE. */
+      img {
+        -ms-interpolation-mode: bicubic;
+      }
+
+      /* What it does: Prevents Windows 10 Mail from underlining links despite inline CSS. Styles for underlined links should be inline. */
+      a {
+        text-decoration: none;
+      }
+			a[href^=tel],a[href^=sms]{
+				color:inherit;
+				cursor:default;
+				text-decoration:none;
+			}
+
+			p,a,li,td,blockquote{
+				mso-line-height-rule:exactly;
+			}
+
+      /* What it does: A work-around for email clients meddling in triggered links. */
+      *[x-apple-data-detectors], /* iOS */
+      .unstyle-auto-detected-links *,
+      .aBn {
+        border-bottom: 0 !important;
+        cursor: default !important;
+        color: inherit !important;
+        text-decoration: none !important;
+        font-size: inherit !important;
+        font-family: inherit !important;
+        font-weight: inherit !important;
+        line-height: inherit !important;
+      }
+
+      /* What it does: Prevents Gmail from displaying a download button on large, non-linked images. */
+      .a6S {
+        display: none !important;
+        opacity: 0.01 !important;
+      }
+
+      /* What it does: Prevents Gmail from changing the text color in conversation threads. */
+      .im {
+        color: inherit !important;
+      }
+
+      /* If the above doesn't work, add a .g-img class to any image in question. */
+      img.g-img + div {
+        display: none !important;
+      }
+
+      /* What it does: Removes right gutter in Gmail iOS app: https://github.com/TedGoas/Cerberus/issues/89  */
+      /* Create one of these media queries for each additional viewport size you'd like to fix */
+
+      /* iPhone 4, 4S, 5, 5S, 5C, and 5SE */
+      @media only screen and(min-device-width: 320px) and(max-device-width: 374px) {
+        u ~ div .email-container {
+          min-width: 320px !important;
+        }
+      }
+      /* iPhone 6, 6S, 7, 8, and X */
+      @media only screen and(min-device-width: 375px) and(max-device-width: 413px) {
+        u ~ div .email-container {
+          min-width: 375px !important;
+        }
+      }
+      /* iPhone 6+, 7+, and 8+ */
+      @media only screen and(min-device-width: 414px) {
+        u ~ div .email-container {
+          min-width: 414px !important;
+        }
+      }
+
+			@media only screen and (max-width: 480px){
+				body{
+					width:100% !important;
+					min-width:100% !important;
+				}
+			}
+    </style>
+
+    <!-- CSS Reset : END -->
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        background-color: #FFFFFF;
+      }
+      table {
+        border-spacing: 0;
+      }
+      td {
+        padding: 0;
+      }
+      img {
+        max-width: 100%;
+        border: 0;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        font-family: 'Arial', sans-serif;
+        color: #000000;
+        margin-top: 0;
+      }
+      a {
+        color: #D86B4B;
+      }
+			img,a img{
+				border:0;
+				height:auto;
+				outline:none;
+				text-decoration:none;
+			}
+      p {
+				margin-top: 0;
+        margin-bottom: 0;
+			}
+      p + p {
+        margin-top: 14px;
+      }
+      * + p {
+        margin-top: 14px;
+      }
+      .wrapper {
+        width: 100%;
+        table-layout: fixed;
+        background-color: #FFFFFF;
+      }
+      .main {
+        width: 100%;
+        max-width: 600px;
+        font-family: Arial;
+        color: #000000;
+      }
+      .img-fluid {
+        max-width: 100%;
+        width: 100%;
+        height: auto;
+      }
+      .text-align-center {
+        text-align: center;
+      }
+			@media screen and (max-width: 600px) {
+				.mobile-w-full {
+					width: 100% !important;
+				}
+				.mobile-img-full {
+					width: 100% !important;
+					height: auto;
+				}
+				.mobile-px-0 {
+					padding-left: 0 !important;
+					padding-right: 0 !important;
+				}
+				.mobile-px-10 {
+					padding-left: 10px !important;
+					padding-right: 10px !important;
+				}
+				.mobile-px-20 {
+					padding-left: 20px !important;
+					padding-right: 20px !important;
+				}
+        .mobile-py-14 {
+					padding-top: 14px !important;
+					padding-bottom: 14px !important;
+				}
+        .mobile-py-10 {
+					padding-top: 10px !important;
+					padding-bottom: 10px !important;
+				}
+				.mobile-mb-10 {
+					margin-bottom: 10px !important;
+				}
+				.mobile-pt-0 {
+					padding-top: 0 !important;
+				}
+				.mobile-pb-10 {
+					padding-bottom: 10px !important;
+				}
+				.mobile-logo {
+					max-height: 30px !important;
+					width: auto !important;
+				}
+			}
+    </style>
+  </head>
+  <body>
+    <center class="wrapper">
+      <table role="presentation" class="main" width="100%" border="0" cellpadding="0" cellspacing="0">
+        <tbody>
+
+          <tr style="display: none !important;">
+            <td style="display: none !important;">
+              <img src="https://bfig.lapreprod.com/sites/default/files/2023-02/Pyramid-AWB-Bfig.png" class="d-none" style="display: none !important;">
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding: 20px 20px; width: 100%; line-height: 0; background: rgba(0, 0, 0, 0.2) url('https://bfig.lapreprod.com/sites/default/files/2023-02/Pyramid-AWB-Bfig.png') no-repeat right top; background-size: 100% 100%;">
+              <img src="https://bfig.lapreprod.com/sites/default/files/2023-02/awb-logo.png" width="206" height="47" class="mobile-logo">
+            </td>
+          </tr>
+
+          {{ content.field_vactory_paragraphs }}
+
+          <tr>
+            <td>
+              <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td style="height: 30px;"></td>
+                </tr>
+                <tr>
+                  <td>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td width="20px"></td>
+                        <!-- FOOTER -->
+                        <td>
+                          <table width="100%" border="0" cellpadding="0" cellspacing="0" align="center" style="text-align:center">
+
+                            <tr>
+                              <td>
+
+                                <span style="display:inline-block; padding: 5px 10px; color: #312D39; font-size: 12px; font-weight: 400;">
+                                  <img src="https://bfig.lapreprod.com/sites/default/files/2023-02/icon-awb.png" width="18" height="18" style="display: inline-block; margin-right: 7px; vertical-align: middle; border: 0;"/>
+                                  {{'Attijariwafa bank CIB' |t}}</span>
+
+                                <span style="display: inline-block; padding: 5px 10px; color: #312D39; font-size: 12px; font-weight: 400;"><img src="https://bfig.lapreprod.com/sites/default/files/2023-02/icon-localisation.png" width="18" height="18" style="display: inline-block; margin-right: 7px; vertical-align: middle; border: 0;"/>
+                                  {{'2 Bd My Youssef , Casablanca' |t}}</span>
+
+                                <span style="display:inline-block; padding: 5px 10px; color: #312D39; font-size: 12px; font-weight: 400;"><img src="https://bfig.lapreprod.com/sites/default/files/2023-02/icon-phone.png" width="18" height="18" style="display: inline-block; margin-right: 7px; vertical-align: middle; border:0;"/>
+                                  {{'Tél : 05 22 XX XX XX' |t}}</span>
+
+                              </td>
+                            </tr>
+
+                            <tr>
+                              <td height="20px"></td>
+                            </tr>
+
+                            <tr>
+                              <td style="height:1px; border-bottom:0.5px dashed #312D39; opacity: 0.4;"></td>
+                            </tr>
+
+                            <tr>
+                              <td height="20px"></td>
+                            </tr>
+                            <!-- Footer bottom -->
+                            <tr>
+                              <td style="padding-bottom: 10px;">
+                                <a href="https://www.youtube.com/@attijariwafabankcib3232" style="display:inline-block; margin: 5px 10px; width: 32px; height: 32px; border:0; text-decoration:none; font-size: 0;"><img src="https://bfig.lapreprod.com/sites/default/files/2023-02/icon-youtube.png" height="32" width="32"/></a>
+                                <a href="https://www.linkedin.com/company/attijari-cib" style="display:inline-block; margin: 5px 10px; width: 32px; height: 32px; border:0; text-decoration:none; font-size: 0;"><img src="https://bfig.lapreprod.com/sites/default/files/2023-02/icon-linkedin.png" height="32" width="32"/></a>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td style="padding-bottom: 10px;">
+                                <span style="font-family: Arial;font-style: normal;font-weight: 400;font-size: 12px;line-height: 18px;">
+                                  {{'@2022 Attijariwafa bank Tous droits réservés' |t}}
+                                </span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td style="padding-bottom: 30px">
+                                <span style="font-family: Arial;font-style: normal;font-weight: 400;font-size: 12px;line-height: 18px;color: #312D39;opacity: 0.4">
+                                  {{'Si vous ne souhaitez plus recevoir de newsletter de notre part,' |t}}
+                                  <a href="*|UNSUB|*" style="font-family: Arial;font-style: normal;font-weight: 400;font-size: 12px;line-height: 18px;text-decoration:underline;color: #312D39;opacity: 0.4">
+                                    {{'cliquez ici' |t}}</a><br>
+                                  {{'pour vous désinscrire.' |t}}
+                                </span>
+                              </td>
+                            </tr>
+                            <!-- END Footer bottom -->
+                          </table>
+                        </td>
+                        <!-- END FOOTER -->
+                        <td width="20px"></td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding: 20px; background-color: #F6F6F6; text-align: center;">
+              <a href="www.attijaricib.com" style="font-family: Arial;font-style: normal;font-weight: 400;font-size: 14px;line-height: 1.5;text-decoration:none;color: #9C939E;">{{'www.attijaricib.com' |t}}</a>
+            </td>
+          </tr>
+					<tr>
+						<td style="height: 6px; background: #D86B4B;"></td>
+					</tr>
+        </tbody>
+      </table>
+    </center>
+  </body>
+</html>

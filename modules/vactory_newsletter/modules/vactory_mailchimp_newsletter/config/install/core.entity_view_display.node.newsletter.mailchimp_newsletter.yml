@@ -1,0 +1,65 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.mailchimp_newsletter
+    - field.field.node.newsletter.body
+    - field.field.node.newsletter.field_recurrence
+    - field.field.node.newsletter.field_vactory_datetime
+    - field.field.node.newsletter.field_vactory_paragraphs
+    - field.field.node.newsletter.field_vactory_title
+    - node.type.newsletter
+  module:
+    - entity_reference_revisions
+    - text
+    - user
+id: node.newsletter.mailchimp_newsletter
+targetEntityType: node
+bundle: newsletter
+mode: mailchimp_newsletter
+content:
+  body:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 1
+    region: content
+  field_vactory_paragraphs:
+    type: entity_reference_revisions_entity_view
+    label: hidden
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    weight: 2
+    region: content
+  field_vactory_title:
+    type: string
+    label: hidden
+    settings:
+      link_to_entity: false
+    third_party_settings: {  }
+    weight: 4
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
+hidden:
+  addtoany: true
+  field_content_access_custom: true
+  field_content_access_groups: true
+  field_content_access_roles: true
+  field_content_access_users: true
+  field_recurrence: true
+  field_vactory_datetime: true
+  langcode: true
+  mail_message: true
+  mail_subject: true
+  notification_message: true
+  notification_title: true
+  search_api_excerpt: true
+  test_audience: true
+  tester_email: true
