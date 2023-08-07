@@ -1,0 +1,7 @@
+vactory_content_package.settings_form:
+  path: '/admin/config/system/vactory-content-package'
+  defaults:
+    _title: 'Vactory content package settings'
+    _form: 'Drupal\vactory_content_package\Form\SettingsForm'
+  requirements:
+    _permission: 'administer vactory_content_package configuration'
