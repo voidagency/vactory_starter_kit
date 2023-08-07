@@ -1,0 +1,31 @@
+<?php
+
+/**
+ * @file
+ * Install file.
+ */
+
+
+
+/**
+ * Implements hook_install().
+ */
+//function vactory_extended_seo_install() {
+//  // Ensure the translation fields are created in the database.
+//  \Drupal::service('entity.definition_update_manager')->applyUpdates();
+//}
+//
+
+//function vactory_extended_seo_uninstall(){
+//  // Grabs the entity Field Manager service.
+//  $entityFieldManager = Drupal::service('entity_field.manager');
+//
+//  // Grabs the Field Definition listener.
+//  $fieldDefinitionListener = \Drupal::service('field_definition.listener');
+//  // Ensures(?) that the field storage for the 'detailed_menu_heading' base field is deleted
+//  // properly when the module is uninstalled.
+//  $definition = $entityFieldManager->getFieldStorageDefinitions('node')['extended_seo'];
+//  if ($definition) {
+//    $fieldDefinitionListener->onFieldDefinitionDelete($definition);
+//  }
+//}
