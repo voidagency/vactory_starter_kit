@@ -1,0 +1,7 @@
+services:
+  vactory_content_package.manager:
+    class: Drupal\vactory_content_package\Services\ContentPackageManager
+    arguments:
+      - '@entity_type.manager'
+      - '@file_url_generator'
+      - '@entity_field.manager'
