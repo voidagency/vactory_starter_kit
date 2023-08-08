@@ -36,7 +36,7 @@ class ContentPackageManager implements ContentPackageManagerInterface {
   protected $entityFieldManager;
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public function __construct(
     EntityTypeManagerInterface $entityTypeManager,
@@ -78,7 +78,7 @@ class ContentPackageManager implements ContentPackageManagerInterface {
         }
         if ($field_type === 'entity_reference') {
           if (empty($field_value)) {
-            // Help others to distinct between field cardinalities from json output.
+            // Inform others whether the field is multiple or not.
             $field_value = !$is_multiple ? '' : [];
             continue;
           }
@@ -90,13 +90,13 @@ class ContentPackageManager implements ContentPackageManagerInterface {
               $users = $this->entityTypeManager->getStorage('user')
                 ->loadMultiple($user_ids);
               $users = array_values($users);
-              foreach($users as $i => $user) {
+              foreach ($users as $i => $user) {
                 $field_value[$i] = $user->get('name')->value;
               }
               $field_value = !$is_multiple ? reset($field_value) : $field_value;
             }
             if (empty($field_value)) {
-              // Help others to distinct between field cardinalities from json output.
+              // Inform others whether the field is multiple or not.
               $field_value = !$is_multiple ? '' : [];
             }
           }
@@ -132,7 +132,31 @@ class ContentPackageManager implements ContentPackageManagerInterface {
               $field_value = !$is_multiple ? reset($field_value) : $field_value;
             }
             if (empty($field_value)) {
-              // Help others to distinct between field cardinalities from json output.
+              // Inform others whether the field is multiple or not.
+              $field_value = !$is_multiple ? '' : [];
+            }
+          }
+
+          // Taxonomy term entity reference field.
+          if (isset($field_settings['target_type']) && $field_settings['target_type'] === 'taxonomy_term') {
+            $term_ids = $this->getFieldValue($field_value, $is_multiple, TRUE, 'target_id');
+            $field_value = [];
+            if (!empty($term_ids)) {
+              $terms = $this->entityTypeManager->getStorage('taxonomy_term')
+                ->loadMultiple($term_ids);
+              $terms = array_values($terms);
+              if (!empty($terms)) {
+                foreach ($terms as $i => $term) {
+                  $term_id = $term->get('term_id')->value;
+                  if ($term_id) {
+                    $field_value[$i] = $term_id;
+                  }
+                }
+              }
+              $field_value = !$is_multiple ? reset($field_value) : $field_value;
+            }
+            if (empty($field_value)) {
+              // Inform others whether the field is multiple or not.
               $field_value = !$is_multiple ? '' : [];
             }
           }
@@ -169,7 +193,12 @@ class ContentPackageManager implements ContentPackageManagerInterface {
                 );
                 $appearance_fields = array_intersect_key($paragraph_values, array_flip(ContentPackageManagerInterface::PARAGRAPHS_APPEARANCE_KEYS));
                 $no_appearance_fields = array_diff_key($paragraph_values, array_flip(ContentPackageManagerInterface::PARAGRAPHS_APPEARANCE_KEYS));
-                $field_value[$i] = [...$no_appearance_fields, ...['appearance' => $appearance_fields]];
+                $field_value[$i] = [
+                  ...$no_appearance_fields,
+                  ...[
+                    'appearance' => $appearance_fields,
+                  ],
+                ];
               }
             }
           }
@@ -183,7 +212,7 @@ class ContentPackageManager implements ContentPackageManagerInterface {
    * Denormalize given entity.
    */
   public function denormalize(EntityInterface $entity) {
-    // todo: Add denormalizer logic here.
+    // @todo Add denormalizer logic here.
   }
 
   /**
