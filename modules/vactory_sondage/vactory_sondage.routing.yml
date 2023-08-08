@@ -1,0 +1,20 @@
+vactory_sondage.vote:
+  path: '/api/sondage/vote/{sondage_id}/{option}'
+  defaults:
+    _controller: '\Drupal\vactory_sondage\Controller\Sondage::sondage'
+  methods: [POST]
+  requirements:
+    _permission: 'access content'
+    _format: 'json'
+  options:
+    _auth: ['oauth2']
+vactory_sondage.statistics:
+  path: '/api/sondage/statistics/{sondage_id}'
+  defaults:
+    _controller: '\Drupal\vactory_sondage\Controller\Sondage::statistics'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+    _format: 'json'
+  options:
+    _auth: ['oauth2']

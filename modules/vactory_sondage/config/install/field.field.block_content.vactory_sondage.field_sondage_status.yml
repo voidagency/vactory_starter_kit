@@ -4,11 +4,11 @@ dependencies:
   config:
     - block_content.type.vactory_sondage
     - field.storage.block_content.field_sondage_status
+  module:
+    - options
   enforced:
     module:
       - vactory_sondage
-  module:
-    - options
 id: block_content.vactory_sondage.field_sondage_status
 field_name: field_sondage_status
 entity_type: block_content
