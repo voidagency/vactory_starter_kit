@@ -46,7 +46,7 @@ interface ContentPackageManagerInterface {
     "field_position_image_x",
     "field_position_image_y",
     "field_size_image",
-    "field_vactory_flag" ,
+    "field_vactory_flag",
     "field_vactory_flag_2",
   ];
   const UNWANTED_KEYS = [
@@ -105,11 +105,11 @@ interface ContentPackageManagerInterface {
   /**
    * Normalize given entity.
    */
-  public function normalize(EntityInterface $entity);
+  public function normalize(EntityInterface $entity) : array;
 
   /**
    * Denormalize given entity.
    */
-  public function denormalize(EntityInterface $entity);
+  public function denormalize(array $entity_values) : array;
 
 }

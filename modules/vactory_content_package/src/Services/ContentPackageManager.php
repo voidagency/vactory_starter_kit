@@ -8,6 +8,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\File\FileUrlGeneratorInterface;
 use Drupal\file\Entity\File;
+use Drupal\paragraphs\Entity\Paragraph;
 
 /**
  * Content package manager service.
@@ -51,7 +52,7 @@ class ContentPackageManager implements ContentPackageManagerInterface {
   /**
    * Normalize given entity.
    */
-  public function normalize(EntityInterface $entity) {
+  public function normalize(EntityInterface $entity) : array {
     $entity_type = $entity->getEntityTypeId();
     $bundle = $entity->bundle();
     $entity_values = $entity->toArray();
@@ -74,7 +75,7 @@ class ContentPackageManager implements ContentPackageManagerInterface {
           }
         }
         if (in_array($field_type, ContentPackageManagerInterface::DATE_TIME_TYPES)) {
-          $field_value = !$is_multiple ? date('m/d/Y H:i', $field_value[0]['value']) : array_map(fn($value) => date('m/d/Y H:i', $value['value']), $field_value);
+          $field_value = !$is_multiple ? date('d/m/Y H:i', $field_value[0]['value']) : array_map(fn($value) => date('d/m/Y H:i', $value['value']), $field_value);
         }
         if ($field_type === 'entity_reference') {
           if (empty($field_value)) {
@@ -205,14 +206,133 @@ class ContentPackageManager implements ContentPackageManagerInterface {
         }
       }
     }
+    $entity_values['entity_type'] = $entity_type;
+    if ($entity_type === 'node') {
+      unset($entity_values['nid']);
+    }
+    if ($entity_type === 'paragraph') {
+      unset($entity_values['id']);
+    }
     return $entity_values;
   }
 
   /**
    * Denormalize given entity.
    */
-  public function denormalize(EntityInterface $entity) {
-    // @todo Add denormalizer logic here.
+  public function denormalize(array $entity_values) : array {
+    $values = [];
+    $entity_type = $entity_values['entity_type'] ?? NULL;
+    unset($entity_values['entity_type']);
+    $bundle = $entity_values['type'] ?? NULL;
+    if (empty($entity_type) || empty($bundle)) {
+      return $values;
+    }
+
+    if ($entity_type === 'paragraph') {
+      $appearance = $entity_values['appearance'] ?? [];
+      unset($entity_values['appearance']);
+      $entity_values = [...$entity_values, ...$appearance];
+    }
+    $fields = $this->entityFieldManager->getFieldDefinitions($entity_type, $bundle);
+    foreach ($entity_values as $field_name => $field_value) {
+      $field_definition = $fields[$field_name] ?? NULL;
+      if ($field_definition) {
+        $field_type = $field_definition->getType();
+        $cardinality = $field_definition->getFieldStorageDefinition()->getCardinality();
+        $is_multiple = $cardinality > 1 || $cardinality <= -1;
+        $field_settings = $field_definition->getSettings();
+        if (in_array($field_type, ContentPackageManagerInterface::PRIMITIVE_TYPES)) {
+          if (!empty($field_value)) {
+            $values[$field_name] = $field_value;
+          }
+          if ($field_type === 'boolean' && empty($field_value)) {
+            $values[$field_name] = 0;
+          }
+        }
+        if (in_array($field_type, ContentPackageManagerInterface::DATE_TIME_TYPES) && !empty($field_value)) {
+          if (is_string($field_value)) {
+            $values[$field_name] = $this->getTimestamp('d/m/Y H:i', $field_value);
+          }
+          if (is_array($field_value)) {
+            foreach ($field_value as &$v) {
+              $v = $this->getTimestamp('d/m/Y H:i', $v);
+            }
+            $values[$field_name] = $field_value;
+          }
+        }
+        if ($field_type === 'entity_reference' && !empty($field_value)) {
+          // User entity reference field.
+          if (isset($field_settings['target_type']) && $field_settings['target_type'] === 'user') {
+            $field_value = is_array($field_value) ? $field_value : [$field_value];
+            $users_ids = $this->entityTypeManager->getStorage('user')
+              ->getQuery()
+              ->accessCheck(FALSE)
+              ->condition('name', $field_value, 'IN')
+              ->execute();
+            if (!empty($users_ids)) {
+              $users_ids = array_map(fn($id) => ['target_id' => $id], $users_ids);
+              $values[$field_name] = $users_ids;
+            }
+          }
+
+          // Media entity reference field.
+          if (isset($field_settings['target_type']) && $field_settings['target_type'] === 'media' && !empty($field_value)) {
+            // @todo Download the file/image depending on selected media.
+            // @todo Bundle in the field settings, then create the media.
+            // @todo Entity and associated the targeted id(s).
+          }
+
+          // Taxonomy term entity reference field.
+          if (isset($field_settings['target_type']) && $field_settings['target_type'] === 'taxonomy_term' && !empty($field_value)) {
+            $field_value = is_array($field_value) ? $field_value : [$field_value];
+            $terms_ids = $this->entityTypeManager->getStorage('taxonomy_term')
+              ->getQuery()
+              ->accessCheck(FALSE)
+              ->condition('term_id', $field_value, 'IN')
+              ->execute();
+            if (!empty($terms_ids)) {
+              $terms_ids = array_map(fn($id) => ['target_id' => $id], $terms_ids);
+              $values[$field_name] = $terms_ids;
+            }
+          }
+
+          // Entity type reference field.
+          if ($field_name === 'type' && isset($field_settings['target_type']) && in_array($field_settings['target_type'], ContentPackageManagerInterface::ENTITY_TYPES_KEYS) && !empty($field_value)) {
+            $field_value = is_array($field_value) ? $field_value : [$field_value];
+            $values[$field_name] = array_map(fn($id) => ['target_id' => $id], $field_value);
+          }
+        }
+        if ($field_type === 'colorapi_color_field' && !empty($field_value)) {
+          $field_value = is_array($field_value) ? $field_value : [$field_value];
+          $field_value = array_map(fn($el) => ['color' => $el], $field_value);
+          $values[$field_name] = $field_value;
+        }
+        if ($field_type === 'path' && !empty($field_value)) {
+          $field_value = is_array($field_value) ? $field_value : [$field_value];
+          $field_value = array_map(fn($el) => ['alias' => $el], $field_value);
+          $values[$field_name] = $field_value;
+        }
+        if ($field_type === 'field_wysiwyg_dynamic' && !empty($field_value)) {
+          // DF field type.
+          $field_value['widget_data'] = Json::encode($field_value['widget_data']);
+          $values[$field_name] = [$field_value];
+        }
+        if ($field_type === 'entity_reference_revisions' && isset($field_settings['target_type']) && $field_settings['target_type'] === 'paragraph') {
+          // Paragraphs entity type case.
+          $field_value = empty($field_value) ? [] : $field_value;
+          if (!empty($field_value)) {
+            foreach ($field_value as &$paragraph) {
+              $paragraph_values = $this->denormalize($paragraph);
+              $paragraph_entity = Paragraph::create($paragraph_values);
+              $paragraph_entity->save();
+              $paragraph = ['target_id' => $paragraph_entity->id()];
+            }
+            $values[$field_name] = $field_value;
+          }
+        }
+      }
+    }
+    return $values;
   }
 
   /**
@@ -221,6 +341,17 @@ class ContentPackageManager implements ContentPackageManagerInterface {
   protected function getFieldValue($fieldValue, $isMultiple = FALSE, $arrayFormat = FALSE, $key = 'value') {
     $value = !$isMultiple ? $fieldValue[0][$key] : array_map(fn($value) => $value[$key], $fieldValue);
     return $arrayFormat && !is_array($value) ? [$value] : $value;
+  }
+
+  /**
+   * Get timestamp from date string.
+   */
+  protected function getTimestamp($format, $dateString) {
+    $dateTime = \DateTime::createFromFormat($format, $dateString);
+    if ($dateTime) {
+      return $dateTime->getTimestamp();
+    }
+    throw new \Exception('Invalid datetime format, format must be ' . $format . ' "' . $dateString . '" given.<br>' . Json::encode($entity_values));
   }
 
 }
