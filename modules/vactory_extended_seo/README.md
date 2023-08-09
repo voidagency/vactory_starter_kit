@@ -36,7 +36,7 @@ Furthermore if you want to import a csv with all the hreflang data you can do it
 For Decoupled projects a custom field is created , exposed and consumed by next_app (you can modify it as it suits you ✅ ) :
 
     $fields['extended_seo']
-For monolythic projects hook_page_attachments_alter is already implemented for you.
+For monolithic projects hook_page_attachments_alter is already implemented for you.
 
 ## Theming
 
