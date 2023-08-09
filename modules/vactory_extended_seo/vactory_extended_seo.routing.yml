@@ -1,0 +1,7 @@
+vactory_extended_seo_import.settings:
+  path: '/admin/config/import-hreflang'
+  defaults:
+    _title: 'Vactory Extended SEO import settings'
+    _form: '\Drupal\vactory_extended_seo\Form\ImportFile'
+  requirements:
+    _permission: 'administer site configuration'

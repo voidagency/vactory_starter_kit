@@ -10,7 +10,7 @@ use Drupal\Core\TypedData\TraversableTypedDataInterface;
 use Drupal\node\Entity\Node;
 
 /**
- * Metatags per node.
+ * Extended SEO per node.
  */
 class ExtendedSeoFieldItemList extends FieldItemList
 {
