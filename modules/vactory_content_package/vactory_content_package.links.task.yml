@@ -1,0 +1,9 @@
+entity.vactory_content_package.import:
+  route_name: vactory_content_package.import
+  base_route: vactory_content_package.import
+  title: Import
+
+entity.vactory_content_package.export:
+  route_name: vactory_content_package.export
+  base_route: vactory_content_package.import
+  title: Export
