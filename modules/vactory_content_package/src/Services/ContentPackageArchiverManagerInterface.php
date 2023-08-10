@@ -7,7 +7,7 @@ namespace Drupal\vactory_content_package\Services;
  */
 interface ContentPackageArchiverManagerInterface {
 
-  const BATCH_SIZE = 100;
+  const BATCH_SIZE = 10;
 
   /**
    * Zip nodes.

@@ -52,7 +52,7 @@ class ContentPackageManager implements ContentPackageManagerInterface {
   /**
    * Normalize given entity.
    */
-  public function normalize(EntityInterface $entity) : array {
+  public function normalize(EntityInterface $entity): array {
     $entity_type = $entity->getEntityTypeId();
     $bundle = $entity->bundle();
     $entity_values = $entity->toArray();
@@ -62,7 +62,8 @@ class ContentPackageManager implements ContentPackageManagerInterface {
       $field_definition = $fields[$field_name] ?? NULL;
       if ($field_definition) {
         $field_type = $field_definition->getType();
-        $cardinality = $field_definition->getFieldStorageDefinition()->getCardinality();
+        $cardinality = $field_definition->getFieldStorageDefinition()
+          ->getCardinality();
         $is_multiple = $cardinality > 1 || $cardinality <= -1;
         $field_settings = $field_definition->getSettings();
         if (in_array($field_type, ContentPackageManagerInterface::PRIMITIVE_TYPES)) {
@@ -184,7 +185,8 @@ class ContentPackageManager implements ContentPackageManagerInterface {
           if (!empty($field_value)) {
             $paragraphs_ids = $this->getFieldValue($field_value, $is_multiple, TRUE, 'target_id');
             if (!empty($paragraphs_ids)) {
-              $paragraphs = $this->entityTypeManager->getStorage('paragraph')->loadMultiple($paragraphs_ids);
+              $paragraphs = $this->entityTypeManager->getStorage('paragraph')
+                ->loadMultiple($paragraphs_ids);
               $paragraphs = array_values($paragraphs);
               foreach ($paragraphs as $i => $paragraph) {
                 $paragraph_values = $this->normalize($paragraph);
@@ -197,8 +199,8 @@ class ContentPackageManager implements ContentPackageManagerInterface {
                 $field_value[$i] = [
                   ...$no_appearance_fields,
                   ...[
-                    'appearance' => $appearance_fields,
-                  ],
+                  'appearance' => $appearance_fields,
+                ],
                 ];
               }
             }
@@ -219,7 +221,7 @@ class ContentPackageManager implements ContentPackageManagerInterface {
   /**
    * Denormalize given entity.
    */
-  public function denormalize(array $entity_values) : array {
+  public function denormalize(array $entity_values): array {
     $values = [];
     $entity_type = $entity_values['entity_type'] ?? NULL;
     unset($entity_values['entity_type']);
@@ -238,7 +240,8 @@ class ContentPackageManager implements ContentPackageManagerInterface {
       $field_definition = $fields[$field_name] ?? NULL;
       if ($field_definition) {
         $field_type = $field_definition->getType();
-        $cardinality = $field_definition->getFieldStorageDefinition()->getCardinality();
+        $cardinality = $field_definition->getFieldStorageDefinition()
+          ->getCardinality();
         $is_multiple = $cardinality > 1 || $cardinality <= -1;
         $field_settings = $field_definition->getSettings();
         if (in_array($field_type, ContentPackageManagerInterface::PRIMITIVE_TYPES)) {
@@ -325,7 +328,12 @@ class ContentPackageManager implements ContentPackageManagerInterface {
               $paragraph_values = $this->denormalize($paragraph);
               $paragraph_entity = Paragraph::create($paragraph_values);
               $paragraph_entity->save();
-              $paragraph = ['target_id' => $paragraph_entity->id()];
+              $paragraph = [
+                'target_id' => $paragraph_entity->id(),
+                'target_revision_id' => $this->entityTypeManager
+                  ->getStorage('paragraph')
+                  ->getLatestRevisionId($paragraph_entity->id()),
+              ];
             }
             $values[$field_name] = $field_value;
           }

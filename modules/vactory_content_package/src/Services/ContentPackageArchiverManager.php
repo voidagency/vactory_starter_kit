@@ -72,7 +72,6 @@ class ContentPackageArchiverManager implements ContentPackageArchiverManagerInte
 
     $archivePath = ContentPackageConstants::EXPORT_DES_FILES . '/' . ContentPackageConstants::ARCHIVE_FILE_NAME;
 
-    // $files contient un tableau de chemin de fichiers à ajouter à l'archive
     $this->fileSystem->prepareDirectory($archivePath, FileSystemInterface:: CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS);
 
     $chunk = array_chunk($nodes, self::BATCH_SIZE);
@@ -151,10 +150,7 @@ class ContentPackageArchiverManager implements ContentPackageArchiverManagerInte
           $result['zip']->close();
         }
       }
-
       \Drupal::messenger()->addStatus($message);
-
-      // Redirect to the home page.
       $redirect_response = new TrustedRedirectResponse(Url::fromRoute('vactory_content_package.download')
         ->toString());
       $redirect_response->send();
@@ -184,6 +180,7 @@ class ContentPackageArchiverManager implements ContentPackageArchiverManagerInte
     $subdirectories = glob($path . '/*', GLOB_ONLYDIR);
 
     $chunk = array_chunk($subdirectories, self::BATCH_SIZE);
+
 
     if (!empty($chunk)) {
       $operations = [];
@@ -216,6 +213,14 @@ class ContentPackageArchiverManager implements ContentPackageArchiverManagerInte
     $fileSystem = \Drupal::service('file_system');
     $contentPackageManager = \Drupal::service('vactory_content_package.manager');
 
+    if (!isset($context['results']['export_data_file'])) {
+      $fileLoc = $fileSystem->realPath(ContentPackageConstants::EXPORT_DES_FILES . '-' . self::uniqueIdentifier() . '.json');
+      if (file_exists($fileLoc)) {
+        unlink($fileLoc);
+      }
+      $context['results']['export_data_file'] = $fileLoc;
+    }
+
     foreach ($nodes as $subdirectory) {
       $json_files = $fileSystem->scanDirectory($subdirectory, '/\.json/i');
       if (empty($json_files)) {
@@ -233,6 +238,16 @@ class ContentPackageArchiverManager implements ContentPackageArchiverManagerInte
           $context['results']['data'][$directory_name][$fileInfo->name] = $contentPackageManager->denormalize($json_data);
         }
       }
+
+      $existing_json_data = '';
+      if (file_exists($context['results']['export_data_file'])) {
+        $existing_json_data = file_get_contents($context['results']['export_data_file']);
+      }
+
+      $existing_array = json_decode($existing_json_data, TRUE);
+      $existing_array[$directory_name] = $context['results']['data'][$directory_name];
+      $updated_json_data = json_encode($existing_array, JSON_PRETTY_PRINT);
+      $fileSystem->saveData($updated_json_data, $context['results']['export_data_file'], FileSystemInterface::EXISTS_REPLACE);
     }
 
     if (!isset($context['results']['count'])) {
@@ -248,6 +263,14 @@ class ContentPackageArchiverManager implements ContentPackageArchiverManagerInte
     if ($success) {
       $message = "Unzipping finished: {$results['count']} nodes.";
       \Drupal::messenger()->addStatus($message);
+      $url = Url::fromRoute('vactory_content_package.confirm')
+        ->setRouteParameters([
+          'url' => $results['export_data_file'],
+        ]);
+
+      $redirect_response = new TrustedRedirectResponse($url->toString());
+      $redirect_response->send();
+      return $redirect_response;
     }
   }
 
@@ -274,7 +297,7 @@ class ContentPackageArchiverManager implements ContentPackageArchiverManagerInte
   private function extractDirectory($create = TRUE) {
     $directory = &drupal_static(__FUNCTION__, '');
     if (empty($directory)) {
-      $directory = ContentPackageConstants::FILES_EXTRACTED_DES_PREFIX_DIR . '-' . $this->uniqueIdentifier();
+      $directory = ContentPackageConstants::FILES_EXTRACTED_DES_PREFIX_DIR . '-' . self::uniqueIdentifier();
       if ($create && !file_exists($directory)) {
         mkdir($directory);
       }
@@ -285,10 +308,10 @@ class ContentPackageArchiverManager implements ContentPackageArchiverManagerInte
   /**
    * Returns a short unique identifier.
    */
-  private function uniqueIdentifier() {
+  private static function uniqueIdentifier() {
     $id = &drupal_static(__FUNCTION__, '');
     if (empty($id)) {
-      $id = substr(hash('sha256', Settings::getHashSalt()), 0, 8);
+      return substr(hash('sha256', Settings::getHashSalt()), 0, 8);
     }
     return $id;
   }
