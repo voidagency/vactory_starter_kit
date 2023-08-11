@@ -8,6 +8,7 @@ use Drupal\Core\Entity\EntityInterface;
  * Content package manager interface.
  */
 interface ContentPackageManagerInterface {
+
   const PRIMITIVE_TYPES = [
     "string",
     "integer",
@@ -18,10 +19,12 @@ interface ContentPackageManagerInterface {
     "list_string",
     "string_long",
   ];
+
   const DATE_TIME_TYPES = [
     "changed",
     "created",
   ];
+
   const MEDIA_FIELD_NAMES = [
     'audio' => 'field_media_audio_file',
     'image' => 'field_media_image',
@@ -30,10 +33,12 @@ interface ContentPackageManagerInterface {
     'video' => 'field_media_video_file',
     'onboarding_video' => 'field_video_onboarding',
   ];
+
   const ENTITY_TYPES_KEYS = [
     'node_type',
     'paragraphs_type',
   ];
+
   const PARAGRAPHS_APPEARANCE_KEYS = [
     "paragraph_container",
     "container_spacing",
@@ -49,6 +54,7 @@ interface ContentPackageManagerInterface {
     "field_vactory_flag",
     "field_vactory_flag_2",
   ];
+
   const UNWANTED_KEYS = [
     // Node fields.
     "uuid",
@@ -105,11 +111,16 @@ interface ContentPackageManagerInterface {
   /**
    * Normalize given entity.
    */
-  public function normalize(EntityInterface $entity) : array;
+  public function normalize(EntityInterface $entity): array;
 
   /**
    * Denormalize given entity.
    */
-  public function denormalize(array $entity_values) : array;
+  public function denormalize(array $entity_values): array;
+
+  /**
+   * Generate media from the given url.
+   */
+  public function generateMediaFromUrl(string $url, string $type): int;
 
 }
