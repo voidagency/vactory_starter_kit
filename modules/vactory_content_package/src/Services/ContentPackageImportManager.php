@@ -81,10 +81,49 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
    * Rollback batch callback.
    */
   public static function rollbackCallback($nids, $file_to_import, &$context) {
-
+    $entityFieldManager = \Drupal::service('entity_field.manager');
     $storage = \Drupal::entityTypeManager()->getStorage('node');
+    $paragraphStroage = \Drupal::entityTypeManager()->getStorage('paragraph');
     $nodes = $storage->loadMultiple($nids);
-    $storage->delete($nodes);
+    foreach ($nodes as $node) {
+      $entity_values = $node->toArray();
+      $entity_values = array_diff_key($entity_values, array_flip(ContentPackageManagerInterface::UNWANTED_KEYS));
+      $fields = $entityFieldManager->getFieldDefinitions('node', $node->bundle());
+      foreach ($entity_values as $field_name => &$field_value) {
+        $field_definition = $fields[$field_name] ?? NULL;
+        if ($field_definition) {
+          $field_type = $field_definition->getType();
+          $cardinality = $field_definition->getFieldStorageDefinition()
+            ->getCardinality();
+          $is_multiple = $cardinality > 1 || $cardinality <= -1;
+          $field_settings = $field_definition->getSettings();
+
+          if ($field_type === 'entity_reference_revisions' && isset($field_settings['target_type']) && $field_settings['target_type'] === 'paragraph') {
+            $field_value = empty($field_value) ? [] : $field_value;
+            if (!empty($field_value)) {
+              if (!$is_multiple) {
+                $target_id = $field_value[0]['target_id'];
+                $paragraph = $paragraphStroage->load($target_id);
+                if (isset($paragraph)) {
+                  $paragraph->delete();
+                }
+              }
+              else {
+                $target_ids = array_map(fn($value) => $value['target_id'], $field_value);
+                foreach ($target_ids as $pid) {
+                  $paragraph = $paragraphStroage->load($pid);
+                  if (isset($paragraph)) {
+                    $paragraph->delete();
+                  }
+                }
+              }
+            }
+            break;
+          }
+        }
+      }
+      $node->delete();
+    }
 
     if (!isset($context['results']['count'])) {
       $context['results']['count'] = 0;
@@ -163,8 +202,7 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
               try {
                 $node->addTranslation($lang, $trans)
                   ->save();
-              }
-              catch (\Exception $exception) {
+              } catch (\Exception $exception) {
                 $logger->error(t('Enable to attach translation %lang to node %label, error message %error', [
                   '%lang' => $lang,
                   '%label' => $key,
@@ -174,8 +212,7 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
             }
           }
 
-        }
-        catch (\Exception $exception) {
+        } catch (\Exception $exception) {
           $logger->error(t('Enable to create node %label, error message %error', [
             '%label' => $key,
             '%error' => $exception->getMessage(),

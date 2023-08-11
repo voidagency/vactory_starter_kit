@@ -6,9 +6,11 @@ use Drupal\Component\Serialization\Json;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\File\FileUrlGeneratorInterface;
 use Drupal\file\Entity\File;
 use Drupal\media\Entity\Media;
+use Drupal\file\FileInterface;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\vactory_dynamic_field\WidgetsManager;
 
@@ -210,8 +212,8 @@ class ContentPackageManager implements ContentPackageManagerInterface {
                 $field_value[$i] = [
                   ...$no_appearance_fields,
                   ...[
-                    'appearance' => $appearance_fields,
-                  ],
+                  'appearance' => $appearance_fields,
+                ],
                 ];
               }
             }
@@ -399,9 +401,23 @@ class ContentPackageManager implements ContentPackageManagerInterface {
 
           // Media entity reference field.
           if (isset($field_settings['target_type']) && $field_settings['target_type'] === 'media' && !empty($field_value)) {
-            // @todo Download the file/image depending on selected media.
-            // @todo Bundle in the field settings, then create the media.
-            // @todo Entity and associated the targeted id(s).
+            $field_value = is_array($field_value) ? $field_value : [$field_value];
+            if (!empty($field_value) && isset($field_settings['handler_settings']['target_bundles'])) {
+              $bundle = reset($field_settings['handler_settings']['target_bundles']);
+              $bundle = is_array($bundle) ? array_values($bundle)[0] : $bundle;
+              if (isset($bundle)) {
+                $mids = [];
+                foreach ($field_value as $value) {
+                  $mid = $this->generateMediaFromUrl($value, $bundle);
+                  if (isset($mid)) {
+                    $mids[] = ['target_id' => $mid];
+                  }
+                }
+                if (!empty($mids)) {
+                  $values[$field_name] = $mids;
+                }
+              }
+            }
           }
 
           // Taxonomy term entity reference field.
@@ -518,6 +534,65 @@ class ContentPackageManager implements ContentPackageManagerInterface {
       }
     }
     return $df_field_value;
+  }
+
+  /**
+   * Generate media from the given url.
+   */
+  public function generateMediaFromUrl(string $url, string $type): ?int {
+    $media = NULL;
+    switch ($type) {
+      case 'remote_video':
+        $media = $this->entityTypeManager->getStorage('media')->create([
+          'bundle' => $type,
+          'uid' => '1',
+          self::MEDIA_FIELD_NAMES[$type] => $url,
+        ]);
+        break;
+
+      case 'image':
+      case 'file':
+      case 'onboarding_video':
+      case 'video';
+      case 'audio':
+        if (!file_exists('public://content_package_manager')) {
+          mkdir('public://content_package_manager', 0777);
+        }
+        $filename = pathinfo($url);
+        $filename = $filename['filename'];
+        $filename = preg_replace("/-[^-]*$/", "", $filename);
+        $filename = ucfirst(strtolower(str_replace('-', ' ', $filename)));
+        $file = system_retrieve_file($url, 'public://content_package_manager', TRUE, FileSystemInterface::EXISTS_RENAME);
+        if ($file instanceof FileInterface) {
+          $file->save();
+          $media_data = [
+            'bundle' => $type,
+            'uid' => '1',
+            self::MEDIA_FIELD_NAMES[$type] => [
+              'target_id' => $file->id(),
+              'title' => $filename,
+              'alt' => $filename,
+            ],
+          ];
+          if ($type == 'image') {
+            $file_metadata = $file->getAllMetadata() ?? [];
+            if (!empty($file_metadata)) {
+              $media_data[self::MEDIA_FIELD_NAMES[$type]]['width'] = $file_metadata['width'];
+              $media_data[self::MEDIA_FIELD_NAMES[$type]]['height'] = $file_metadata['height'];
+            }
+          }
+          $media = $this->entityTypeManager->getStorage('media')
+            ->create($media_data);
+        }
+        break;
+    }
+
+    if (!isset($media)) {
+      return NULL;
+    }
+
+    $media->setPublished(TRUE)->save();
+    return $media->id();
   }
 
 }
