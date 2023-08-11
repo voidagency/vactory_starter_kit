@@ -2,6 +2,9 @@
 
 namespace Drupal\vactory_extended_seo\Form;
 
+use Drupal\Core\Batch\BatchBuilder;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Config\Importer\ConfigImporterBatch;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Messenger\MessengerInterface;
@@ -13,8 +16,31 @@ use Drupal\path_alias\Entity\PathAlias;
  */
 class ImportFile extends ConfigFormBase {
 
-  const DELETE_ALL = -1;
-  const DELETE_LAST = 1;
+  /**
+   *
+   */
+  public const DELETE_ALL = -1;
+
+  /**
+   *
+   */
+  public const DELETE_LAST = 1;
+
+  /**
+   * @var array
+   */
+  public $imported_ids;
+
+  /**
+   * @var
+   */
+  protected $activeLanguages;
+
+  /**
+   * @var mixed
+   */
+  protected mixed $manager;
+
   /**
    * Gets the configuration names that will be editable.
    *
@@ -25,6 +51,17 @@ class ImportFile extends ConfigFormBase {
   protected function getEditableConfigNames() {
     return ['vactory_extended_seo_import.settings'];
   }
+
+  /**
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   */
+  public function __construct(ConfigFactoryInterface $config_factory) {
+    parent::__construct($config_factory);
+    $this->imported_ids = [];
+    $this->activeLanguages = \Drupal::service('language_manager')->getLanguages();
+    $this->manager = \Drupal::service('entity_type.manager');
+  }
+
 
   /**
    * Returns a unique string identifying the form.
@@ -67,6 +104,28 @@ class ImportFile extends ConfigFormBase {
       '#default_value' => $this->config('vactory_extended_seo_import.settings')->get('file_data') ?: '',
     ];
 
+    $form['import_type'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Use Batch import (especially for large dataset)'),
+      '#size' => 10,
+      '#maxlength' => 255,
+      '#default_value' => 0,
+    ];
+
+    $form['batch_size'] = [
+      '#type' => 'textfield',
+      '#attributes' => array(
+        ' type' => 'number',
+      ),
+      '#title' => $this->t('Batch size'),
+      '#default_value' => 500,
+      '#states' => [
+        'visible' => [
+          ':input[name="import_type"]' => ["checked" => TRUE],
+        ],
+      ],
+    ];
+
     $form['purge_last'] = [
       '#type' => 'submit',
       '#value' => $this->t('Purge ONLY last imported data'),
@@ -87,19 +146,89 @@ class ImportFile extends ConfigFormBase {
   }
 
   /**
+   * @param $data
+   * @param $header
+   *
+   * @return void
+   */
+  public function rowHandler($data, $header) {
+
+    [$node, $url, $title, $lang] = $data;
+    $nid = NULL;
+    if (!empty($node)) {
+      $nid = $node;
+      $seo_entity = $this->manager->getStorage('vactory_extended_seo')->loadByProperties([
+        'node_id' => $node,
+      ]);
+      $seo_entity = reset($seo_entity);
+    } elseif (!empty($title)) {
+      $nid = $this->manager->getStorage('node')
+        ->loadByProperties([
+          'title' => trim($title),
+          'langcode' => $lang
+        ]);
+      $nid = reset($nid);
+      $seo_entity = $this->manager->loadByProperties(['node_id' => $nid]);
+      $seo_entity = reset($seo_entity);
+    } elseif (!empty($url)) {
+      $path_alias_manager =  $this->manager->getStorage('path_alias');
+      $alias_objects = $path_alias_manager->loadByProperties([
+        'alias'     => $url,
+        'langcode' => $lang
+      ]);
+      $alias = reset($alias_objects);
+      $alias = $alias instanceof PathAlias ? $alias->getPath() : '';
+      $nid = explode("/", $alias);
+      $nid = end($nid);
+      $seo_entity = $nid ? $this->manager->getStorage('vactory_extended_seo')
+        ->loadByProperties(['node_id' => $nid]) : NULL;
+      $seo_entity = reset($seo_entity);
+    }
+
+    if (empty($seo_entity)) {
+      $seo_entity = [
+        'name' => "node.$node",
+        'node_id' => $nid,
+        'user_id' => \Drupal::currentUser()->id(),
+      ];
+      foreach ($this->activeLanguages as $lang => $val) {
+        if (!array_key_exists("hreflang_$lang", $header)) {
+          continue;
+        }
+        $sanitizeId = str_replace('-', '_', $lang);
+        $seo_entity["alternate_$sanitizeId"] = $data[$header["hreflang_$lang"]];
+      }
+      $seo_entity = $this->manager->getStorage('vactory_extended_seo')->create($seo_entity);
+      $seo_entity->save();
+    } else {
+      foreach ($this->activeLanguages as $lang => $val) {
+        if (!array_key_exists("hreflang_$lang", $header)) {
+          continue;
+        }
+        $sanitizeId = str_replace('-', '_', $lang);
+        $seo_entity->set("alternate_$sanitizeId", $data[$header["hreflang_$lang"]]);
+      }
+      $seo_entity->save();
+    }
+    $this->imported_ids[] = $seo_entity?->id();
+
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $created_ids = [];
+    $import_type = $form_state->getValue('import_type');
+    if ($import_type) {
+      $this->batch_form_submit($form, $form_state);
+      return;
+    }
     // Get the uploaded file ID.
     $fid = $form_state->getValue('file_data')[0];
     $file = File::load($fid);
     if ($file) {
       $file_path = $file->getFileUri();
-      $activeLanguages = \Drupal::service('language_manager')->getLanguages();
-      $seo_entity = \Drupal::service('entity_type.manager')->getStorage('vactory_extended_seo');
-      $manager = \Drupal::service('entity_type.manager')->getStorage('vactory_extended_seo');
-
       $file_handle = fopen($file_path, 'rb');
       if ($file_handle !== FALSE) {
         // Skip the header row.
@@ -109,70 +238,12 @@ class ImportFile extends ConfigFormBase {
 
         // Loop through each row in the CSV.
         while (($data = fgetcsv($file_handle, 0, ';')) !== FALSE) {
-          [$node, $url, $title, $lang] = $data;
-          $nid = NULL;
-          if (!empty($node)) {
-            $nid = $node;
-            $seo_entity = $seo_entity->loadByProperties([
-              'node_id' => $node,
-              'langcode' => $lang
-            ]);
-            $seo_entity = reset($seo_entity);
-          } elseif (!empty($title)) {
-            $nid = \Drupal::service('entity_type.manager')->getStorage('node')
-              ->loadByProperties([
-                'title' => trim($title),
-                'langcode' => $lang
-              ]);
-            $nid = reset($nid);
-            $seo_entity = $seo_entity->loadByProperties(['node_id' => $nid]);
-            $seo_entity = reset($seo_entity);
-          } elseif (!empty($url)) {
-            $path_alias_manager =  \Drupal::service('entity_type.manager')->getStorage('path_alias');
-            $alias_objects = $path_alias_manager->loadByProperties([
-              'alias'     => $url,
-              'langcode' => $lang
-            ]);
-            $alias = reset($alias_objects);
-            $alias = $alias instanceof PathAlias ? $alias->getPath() : '';
-            $nid = explode("/", $alias);
-            $nid = end($nid);
-            $seo_entity = $nid ? $seo_entity->loadByProperties(['node_id' => $nid]) : NULL;
-            $seo_entity = reset($seo_entity);
-          }
-
-          if (empty($seo_entity)) {
-            $seo_entity = [
-              'name' => "node.$node",
-              'node_id' => $nid,
-              'user_id' => \Drupal::currentUser()->id(),
-            ];
-            foreach ($activeLanguages as $lang => $val) {
-              if (!array_key_exists("hreflang_$lang", $header)) {
-                continue;
-              }
-              $sanitizeId = str_replace('-', '_', $lang);
-              $seo_entity["alternate_$sanitizeId"] = $data[$header["hreflang_$lang"]];
-            }
-            $seo_entity = $manager->create($seo_entity);
-            $seo_entity->save();
-          } else {
-            foreach ($activeLanguages as $lang => $val) {
-              if (!array_key_exists("hreflang_$lang", $header)) {
-                continue;
-              }
-              $sanitizeId = str_replace('-', '_', $lang);
-              $seo_entity->set("alternate_$sanitizeId", $data[$header["hreflang_$lang"]]);
-            }
-            $seo_entity->save();
-          }
-
-          $created_ids[] = $seo_entity?->id();
+          $this->rowHandler($data, $header);
         }
         fclose($file_handle);
         $this->config('vactory_extended_seo_import.settings')
           ->set('file_data', $form_state->getValue('file_data'))
-          ->set('last_imported_ids', $created_ids)
+          ->set('last_imported_ids', $this->imported_ids)
           ->save();
         \Drupal::messenger()->addMessage($this->t('Fichier chargé avec succes'), MessengerInterface::TYPE_STATUS);
       }
@@ -185,9 +256,14 @@ class ImportFile extends ConfigFormBase {
     }
   }
 
+  /**
+   * @param int $mode
+   *
+   * @return void
+   */
   public function purge(int $mode = self::DELETE_LAST) {
     try {
-      $storage_handler = \Drupal::service('entity_type.manager')->getStorage("vactory_extended_seo");
+      $storage_handler = $this->manager->getStorage("vactory_extended_seo");
       $ids = [];
       if ($mode === self::DELETE_LAST) {
         $ids = $this->config('vactory_extended_seo_import.settings')->get('last_imported_ids');
@@ -204,10 +280,17 @@ class ImportFile extends ConfigFormBase {
         ->set('last_imported_ids', [])
         ->save();
     } catch (\Exception $e) {
-      \Drupal::messenger()->addMessage($this->t('An error occured plz check the logs'), MessengerInterface::TYPE_ERROR);
+      \Drupal::messenger()->addMessage($this->t('An error occurred plz check the logs'),
+        MessengerInterface::TYPE_ERROR);
     }
   }
 
+  /**
+   * @param array $form
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *
+   * @return void
+   */
   public function purgeAction(array &$form, FormStateInterface $form_state) {
     $element = $form_state->getTriggeringElement();
     $element = $element['#id'];
@@ -225,4 +308,102 @@ class ImportFile extends ConfigFormBase {
     }
   }
 
+  /**
+   * @param $form
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *
+   * @return void
+   */
+  public function batch_form_submit($form, FormStateInterface $form_state) {
+    // Get the uploaded file ID.
+    $fid = $form_state->getValue('file_data')[0];
+    $file = File::load($fid);
+    $file_path = $file?->getFileUri();
+    $batch_builder = (new BatchBuilder())
+      ->setTitle(t('Processing CSV file'))
+      ->setFinishCallback([$this, 'batch_finished']);
+
+    // Split the CSV processing into smaller chunks to avoid memory issues
+    $batch_size = $form_state->getValue('batch_size') ?? 500;
+    $batch = [];
+    $rows = 0;
+    if (($handle = fopen($file_path, "rb")) !== FALSE) {
+      $header = fgetcsv($handle, 0, ';');
+      //        Flip the array to use the header as keys.
+      $header = array_flip($header);
+      while (($data = fgetcsv($handle, 1000, ";")) !== FALSE) {
+        if ($rows % $batch_size === 0) {
+          if (!empty($batch)) {
+            $batch_builder->addOperation([$this, 'batch_process_data'], [$batch]);
+          }
+          $batch = [];
+        }
+        $batch[] = [
+          'data' => $data,
+          'header' => $header,
+          'file_path' => $file_path,
+          'file' => $form_state->getValue('file_data')
+        ];
+        $rows++;
+      }
+      fclose($handle);
+    }
+
+    if (!empty($batch)) {
+      $batch_builder->addOperation([$this, 'batch_process_data'], [$batch]);
+    }
+
+    batch_set($batch_builder->toArray());
+  }
+
+  /**
+   * @param $data
+   * @param $context
+   *
+   * @return void
+   */
+  public function batch_process_data($data, &$context) {
+    $file_path = '';
+    $file = NULL;
+    // Perform your processing on the $rows array
+    foreach ($data as $row) {
+      $this->rowHandler($row['data'], $row['header']);
+      $file_path = $row['file_path'];
+      $file = $row['file'];
+    }
+    // Update the progress
+    $context['results']['processed_rows'] += count($data);
+    $context['results']['file_data'] = $file;
+    if ($context['results']['processed_ids']) {
+      $context['results']['processed_ids'] += $this->imported_ids;
+    } else {
+      $context['results']['processed_ids'] = $this->imported_ids;
+    }
+    $context['message'] = t('Processed @count rows from file: @file', [
+      '@count' => count($data),
+      '@file' => $file_path,
+    ]);
+  }
+
+  /**
+   * @param $success
+   * @param $results
+   * @param $operations
+   *
+   * @return void
+   */
+  public function batch_finished($success, $results, $operations) {
+    if ($success) {
+      $this->config('vactory_extended_seo_import.settings')
+        ->set('file_data', $results['file_data'])
+        ->set('last_imported_ids', $results['processed_ids'])
+        ->save();
+      \Drupal::messenger()->addMessage(
+        $this->t('Batch processing completed. Processed @count rows.', ['@count' => $results['processed_rows']]),
+        MessengerInterface::TYPE_STATUS);
+    } else {
+      \Drupal::messenger()->addMessage($this->t('Batch processing encountered an error.'),
+        MessengerInterface::TYPE_ERROR);
+    }
+  }
 }

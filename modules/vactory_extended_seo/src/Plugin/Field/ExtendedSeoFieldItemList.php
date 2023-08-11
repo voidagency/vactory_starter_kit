@@ -88,7 +88,7 @@ class ExtendedSeoFieldItemList extends FieldItemList
     /** @var Node $entity */
     $entity = $this->getEntity();
     $entity_type = $entity->getEntityTypeId();
-    if (!in_array($entity_type, ['node'])) {
+    if ($entity_type !== 'node') {
       return;
     }
 

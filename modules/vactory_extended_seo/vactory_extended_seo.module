@@ -20,7 +20,6 @@ function vactory_extended_seo_entity_base_field_info(EntityTypeInterface $entity
       ->setDisplayConfigurable('form', FALSE)
       ->setDisplayConfigurable('view', FALSE);
 
-
   }
 
   return $fields;

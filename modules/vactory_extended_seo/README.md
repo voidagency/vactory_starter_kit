@@ -26,7 +26,7 @@ Module config is super straightforward 💯 :
 To get started you only need to activate the module and it will create some custom fields in the node form page where you can   manually set the link to each language to be generated as [hreflang metadata](https://ahrefs.com/blog/hreflang-tags/).
 Furthermore if you want to import a csv with all the hreflang data you can do it by checking this path : **/admin/config/import-hreflang** .
 ℹ️ Instructions + csv example are available on the import page (with the possibility of **partial** or **total** purge) .
-
+Batch import is now supported.
 
 ## Extends
 
