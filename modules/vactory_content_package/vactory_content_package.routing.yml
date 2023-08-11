@@ -5,3 +5,17 @@ vactory_content_package.settings_form:
     _form: 'Drupal\vactory_content_package\Form\SettingsForm'
   requirements:
     _permission: 'administer vactory_content_package configuration'
+vactory_content_package.df_tpl_select:
+  path: '/admin/config/system/dynamic-field-json-generator'
+  defaults:
+    _title: 'Dynamic Field JSON Generator'
+    _form: 'Drupal\vactory_content_package\Form\DynamicFieldTemplateSelect'
+  requirements:
+    _permission: 'administer vactory_content_package configuration'
+vactory_content_package.df_json_generator:
+  path: '/admin/config/system/dynamic-field-json-generator/generate'
+  defaults:
+    _title: 'Dynamic Field JSON Generator'
+    _controller: 'Drupal\vactory_content_package\Controller\DynamicFieldJsonGeneratorModal::openModalForm'
+  requirements:
+    _permission: 'administer vactory_content_package configuration'

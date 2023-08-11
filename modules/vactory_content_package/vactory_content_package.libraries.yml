@@ -1,0 +1,11 @@
+scripts:
+  version: 1.x
+  css:
+    theme:
+      ./assets/Beautiful-JSON-Viewer-Editor/src/jquery.json-viewer.css: {}
+  js:
+    ./assets/Beautiful-JSON-Viewer-Editor/dist/jquery.json-editor.min.js: {}
+    ./assets/js/app.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings
