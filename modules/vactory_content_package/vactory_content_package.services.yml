@@ -5,6 +5,7 @@ services:
       - '@entity_type.manager'
       - '@file_url_generator'
       - '@entity_field.manager'
+      - '@vactory_dynamic_field.vactory_provider_manager'
   vactory_content_package.archiver.manager:
     class: \Drupal\vactory_content_package\Services\ContentPackageArchiverManager
     arguments:

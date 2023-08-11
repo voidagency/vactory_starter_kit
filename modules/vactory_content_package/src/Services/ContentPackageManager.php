@@ -8,7 +8,9 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\File\FileUrlGeneratorInterface;
 use Drupal\file\Entity\File;
+use Drupal\media\Entity\Media;
 use Drupal\paragraphs\Entity\Paragraph;
+use Drupal\vactory_dynamic_field\WidgetsManager;
 
 /**
  * Content package manager service.
@@ -37,16 +39,26 @@ class ContentPackageManager implements ContentPackageManagerInterface {
   protected $entityFieldManager;
 
   /**
+   * DF widgets manager service.
+   *
+   * @var \Drupal\vactory_dynamic_field\WidgetsManager
+   */
+  protected $widgetsManager;
+
+  /**
    * {@inheritDoc}
    */
   public function __construct(
     EntityTypeManagerInterface $entityTypeManager,
     FileUrlGeneratorInterface $fileUrlGenerator,
-    EntityFieldManagerInterface $entityFieldManager
+    EntityFieldManagerInterface $entityFieldManager,
+    WidgetsManager $widgetsManager
   ) {
     $this->entityTypeManager = $entityTypeManager;
     $this->fileUrlGenerator = $fileUrlGenerator;
     $this->entityFieldManager = $entityFieldManager;
+    $this->entityFieldManager = $entityFieldManager;
+    $this->widgetsManager = $widgetsManager;
   }
 
   /**
@@ -176,8 +188,7 @@ class ContentPackageManager implements ContentPackageManagerInterface {
         }
         if ($field_type === 'field_wysiwyg_dynamic' && !empty($field_value)) {
           // DF field type.
-          $field_value[0]['widget_data'] = Json::decode($field_value[0]['widget_data']);
-          $field_value = reset($field_value);
+          $field_value = $this->normalizeFieldWysiwygDynamic($field_value, $entity_values);
         }
         if ($field_type === 'entity_reference_revisions' && isset($field_settings['target_type']) && $field_settings['target_type'] === 'paragraph') {
           // Paragraphs entity type case.
@@ -218,6 +229,114 @@ class ContentPackageManager implements ContentPackageManagerInterface {
     return $entity_values;
   }
 
+  public function normalizeFieldWysiwygDynamic($field_value, $entity_values) {
+    // todo: Move this to ::dynamicFieldNormalizer() method.
+    $widget_id = $field_value[0]['widget_id'];
+    $widget_data = Json::decode($field_value[0]['widget_data']);
+    $settings = $this->widgetsManager->loadSettings($widget_id);
+    if (isset($settings['extra_fields'])) {
+      foreach ($settings['extra_fields'] as $name => $field) {
+        $df_field_value = $widget_data['extra_field'][$name] ?? NULL;
+        if (!empty($df_field_value)) {
+          $df_field_value = $this->normalizeDynamicFieldValue($df_field_value, $field, $entity_values);
+        }
+        $widget_data['extra_field'][$name] = $df_field_value;
+      }
+    }
+    if (isset($settings['fields'])) {
+      foreach ($settings['fields'] as $name => $field) {
+        foreach ($widget_data as $key => $value) {
+          if ($key === 'extra_field') {
+            continue;
+          }
+          $df_field_value = $value[$name] ?? NULL;
+          if ($df_field_value) {
+            $df_field_value = $this->normalizeDynamicFieldValue($df_field_value, $field, $entity_values);
+            $widget_data[$key][$name] = $df_field_value;
+          }
+        }
+      }
+    }
+    $field_value[0]['widget_data'] = $widget_data;
+    //$field_value[0]['widget_data'] = Json::decode($field_value[0]['widget_data']);
+    return reset($field_value);
+  }
+
+  public function normalizeDynamicFieldValue($df_field_value, $field, $entity_values = []) {
+    if (!isset($field['type']) && isset($field['g_title'])) {
+      $field_value = [];
+      foreach ($field as $field_name => $field_info) {
+        if ($field_name === 'g_title') {
+          continue;
+        }
+        $field_value[$field_name] = $this->normalizeDynamicFieldValue($df_field_value[$field_name], $field_info, $entity_values);
+      }
+      $df_field_value = $field_value;
+    }
+    if (!isset($field['type']) && !isset($field['g_title'])) {
+      return $df_field_value;
+    }
+    if ($field['type'] === 'date') {
+      $df_field_value = $this->dateFromFormatToFormat('Y-m-d', 'd/m/Y', $df_field_value, $entity_values);
+    }
+    if ($field['type'] === 'entity_autocomplete') {
+      $target_type = $field['options']['#target_type'] ?? NULL;
+      if ($target_type && !empty($target_type)) {
+        if ($target_type === 'node') {
+          $df_field_value = !empty($df_field_value) ? $df_field_value : [];
+          $df_field_value = !is_array($df_field_value) ? [$df_field_value] : $df_field_value;
+          $df_field_value = is_array($df_field_value) && !empty($df_field_value) && isset(reset($df_field_value)['target_id']) ? array_map(fn($el) => $el['target_id'], $df_field_value) : $df_field_value;
+          if (!empty($df_field_value)) {
+            $nodes = $this->entityTypeManager->getStorage('node')
+              ->loadMultiple($df_field_value);
+            $nodes = array_values($nodes);
+            if (!empty($nodes)) {
+              $df_field_value = array_map(function ($node) {
+                $node_id = $node->get('node_id')->value;
+                return $node_id ?? $node->id();
+              }, $nodes);
+            }
+          }
+        }
+        else if ($target_type === 'taxonomy_term') {
+          $df_field_value = !empty($df_field_value) ? $df_field_value : [];
+          $df_field_value = !is_array($df_field_value) ? [$df_field_value] : $df_field_value;
+          $df_field_value = is_array($df_field_value) && !empty($df_field_value) && isset(reset($df_field_value)['target_id']) ? array_map(fn($el) => $el['target_id'], $df_field_value) : $df_field_value;
+          if (!empty($df_field_value)) {
+            $terms = $this->entityTypeManager->getStorage('taxonomy_term')
+              ->loadMultiple($df_field_value);
+            $terms = array_values($terms);
+            if (!empty($terms)) {
+              $df_field_value = array_map(function ($term) {
+                $term_id = $term->get('term_id')->value;
+                return $term_id ?? $term->id();
+              }, $terms);
+            }
+          }
+        }
+        else {
+          $df_field_value = !empty($df_field_value) ? $df_field_value : [];
+          $df_field_value = !is_array($df_field_value) ? [$df_field_value] : $df_field_value;
+          $df_field_value = is_array($df_field_value) && !empty($df_field_value) && isset(reset($df_field_value)['target_id']) ? array_map(fn($el) => $el['target_id'], $df_field_value) : $df_field_value;
+          if (!empty($df_field_value)) {
+            $entities = $this->entityTypeManager->getStorage($target_type)
+              ->loadMultiple($df_field_value);
+            $entities = array_values($entities);
+            if (!empty($entities)) {
+              $df_field_value = array_keys($entities);
+            }
+          }
+        }
+      }
+    }
+    if (in_array($field['type'], array_keys(ContentPackageManagerInterface::MEDIA_FIELD_NAMES))) {
+      $df_field_value = $this->normalizeDfMedia($df_field_value, $field['type']);
+    }
+
+    return $df_field_value;
+  }
+
+
   /**
    * Denormalize given entity.
    */
@@ -254,11 +373,11 @@ class ContentPackageManager implements ContentPackageManagerInterface {
         }
         if (in_array($field_type, ContentPackageManagerInterface::DATE_TIME_TYPES) && !empty($field_value)) {
           if (is_string($field_value)) {
-            $values[$field_name] = $this->getTimestamp('d/m/Y H:i', $field_value);
+            $values[$field_name] = $this->getTimestamp('d/m/Y H:i', $field_value, $entity_values);
           }
           if (is_array($field_value)) {
             foreach ($field_value as &$v) {
-              $v = $this->getTimestamp('d/m/Y H:i', $v);
+              $v = $this->getTimestamp('d/m/Y H:i', $v, $entity_values);
             }
             $values[$field_name] = $field_value;
           }
@@ -354,12 +473,51 @@ class ContentPackageManager implements ContentPackageManagerInterface {
   /**
    * Get timestamp from date string.
    */
-  protected function getTimestamp($format, $dateString) {
+  protected function getTimestamp($format, $dateString, $entity_values = []) {
     $dateTime = \DateTime::createFromFormat($format, $dateString);
     if ($dateTime) {
       return $dateTime->getTimestamp();
     }
-    throw new \Exception('Invalid datetime format, format must be ' . $format . ' "' . $dateString . '" given.<br>' . Json::encode($entity_values));
+    throw new \Exception('Invalid datetime format, format must be ' . $format . ' "' . $dateString . '" given.' . Json::encode($entity_values));
+  }
+
+  /**
+   * Get timestamp from date string.
+   */
+  protected function dateFromFormatToFormat($from_format, $to_format, $dateString, $entity_values = []) {
+    $dateTime = \DateTime::createFromFormat($from_format, $dateString);
+    if ($dateTime) {
+      return $dateTime->format($to_format);
+    }
+
+    throw new \Exception('Invalid datetime format, format must be from ' . $from_format . ' to ' . $to_format . '"' . $dateString . '" given.<br>' . Json::encode($entity_values));
+  }
+
+  protected function normalizeDfMedia($df_field_value, $media_type = 'image') {
+    if (!empty($df_field_value)) {
+      $image_data = reset($df_field_value);
+      $mid = $image_data['selection'][0]['target_id'] ?? NULL;
+      $df_field_value = '';
+      if ($mid) {
+        $media = Media::load($mid);
+        if ($media) {
+          $media_field_name = ContentPackageManagerInterface::MEDIA_FIELD_NAMES[$media_type];
+          if ($media_type !== 'remote_video') {
+            $fid = $media->get($media_field_name)->target_id;
+            if ($fid) {
+              $file = File::load($fid);
+              if ($file) {
+                $df_field_value = $this->fileUrlGenerator->generateAbsoluteString($file->getFileUri());
+              }
+            }
+          }
+          else {
+            $df_field_value = $media->get($media_field_name)->value;
+          }
+        }
+      }
+    }
+    return $df_field_value;
   }
 
 }
