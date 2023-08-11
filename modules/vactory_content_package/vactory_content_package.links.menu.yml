@@ -2,5 +2,5 @@ vactory_content_package.settings_form:
   title: Vactory content package
   description: Configure Vactory content package.
   parent: system.admin_config_system
-  route_name: vactory_content_package.settings_form
+  route_name: vactory_content_package.import
   weight: 10
