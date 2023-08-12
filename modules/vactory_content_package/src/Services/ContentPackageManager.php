@@ -370,44 +370,45 @@ class ContentPackageManager implements ContentPackageManagerInterface {
     if (!isset($field['type']) && !isset($field['g_title'])) {
       return $df_field_value;
     }
-    if ($field['type'] === 'date') {
-      $df_field_value = $this->dateFromFormatToFormat('d/m/Y', 'Y-m-d', $df_field_value, $entity_values);
-    }
-    if ($field['type'] === 'entity_autocomplete') {
-      $target_type = $field['options']['#target_type'] ?? NULL;
-      if ($target_type && !empty($target_type)) {
-        if ($target_type === 'node') {
-          $df_field_value = !empty($df_field_value) ? $df_field_value : NULL;
-          if (!empty($df_field_value)) {
-            $nodes = $this->entityTypeManager->getStorage('node')
-              ->loadByProperties([
-                'node_id' => $df_field_value,
-              ]);
-            $node = reset($nodes);
-            if (!empty($node)) {
-              $df_field_value = $node->id();
+    if (isset($field['type'])) {
+      if ($field['type'] === 'date') {
+        $df_field_value = $this->dateFromFormatToFormat('d/m/Y', 'Y-m-d', $df_field_value, $entity_values);
+      }
+      if ($field['type'] === 'entity_autocomplete') {
+        $target_type = $field['options']['#target_type'] ?? NULL;
+        if ($target_type && !empty($target_type)) {
+          if ($target_type === 'node') {
+            $df_field_value = !empty($df_field_value) ? $df_field_value : NULL;
+            if (!empty($df_field_value)) {
+              $nodes = $this->entityTypeManager->getStorage('node')
+                ->loadByProperties([
+                  'node_id' => $df_field_value,
+                ]);
+              $node = reset($nodes);
+              if (!empty($node)) {
+                $df_field_value = $node->id();
+              }
             }
           }
-        }
-        elseif ($target_type === 'taxonomy_term') {
-          $df_field_value = !empty($df_field_value) ? $df_field_value : [];
-          if (!empty($df_field_value)) {
-            $terms = $this->entityTypeManager->getStorage('taxonomy_term')
-              ->loadByProperties([
-                'term_id' => $df_field_value,
-              ]);
-            $term = reset($terms);
-            if (!empty($term)) {
-              $df_field_value = $term->id();
+          elseif ($target_type === 'taxonomy_term') {
+            $df_field_value = !empty($df_field_value) ? $df_field_value : [];
+            if (!empty($df_field_value)) {
+              $terms = $this->entityTypeManager->getStorage('taxonomy_term')
+                ->loadByProperties([
+                  'term_id' => $df_field_value,
+                ]);
+              $term = reset($terms);
+              if (!empty($term)) {
+                $df_field_value = $term->id();
+              }
             }
           }
         }
       }
+      if (in_array($field['type'], array_keys(ContentPackageManagerInterface::MEDIA_FIELD_NAMES))) {
+        $df_field_value = $this->denormalizeDfMedia($df_field_value, $field['type']);
+      }
     }
-    if (in_array($field['type'], array_keys(ContentPackageManagerInterface::MEDIA_FIELD_NAMES))) {
-      $df_field_value = $this->denormalizeDfMedia($df_field_value, $field['type']);
-    }
-
     return $df_field_value;
   }
 
