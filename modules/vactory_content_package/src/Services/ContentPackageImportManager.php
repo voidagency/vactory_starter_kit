@@ -47,6 +47,7 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
 
     $nodes = $this->entityTypeManager->getStorage('node')
       ->getQuery()
+      ->accessCheck(FALSE)
       ->condition('type', $content_types, 'IN')
       ->execute();
     $nodes = array_values($nodes);
