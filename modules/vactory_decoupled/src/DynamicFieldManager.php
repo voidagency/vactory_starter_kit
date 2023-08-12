@@ -251,290 +251,292 @@ class DynamicFieldManager {
   public function applyFormatters($parent_keys, $settings, &$component) {
     foreach ($component as $field_key => &$value) {
       $info = NestedArray::getValue($settings, array_merge((array) $parent_keys, [$field_key]));
-      $info['uuid'] = $settings['uuid'];
-      if ($info && isset($info['type'])) {
-        // Manage external/internal links.
-        if ($info['type'] === 'url_extended') {
+      if (is_array($info)) {
+        $info['uuid'] = $settings['uuid'];
+        if ($info && isset($info['type'])) {
+          // Manage external/internal links.
+          if ($info['type'] === 'url_extended') {
 
-          if (!empty($value['url']) && !UrlHelper::isExternal($value['url'])) {
-            $front_uri = $this->siteConfig->get('page.front');
-            if ($front_uri === $value['url']) {
-              $value['url'] = Url::fromRoute('<front>')->toString();
-            }
-            else {
-              $value['url'] = Url::fromUserInput($value['url'])->toString();
-            }
-            $value['url'] = str_replace('/backend', '', $value['url']);
-          }
-
-          // URL Parts.
-          if (isset($value['attributes']['path_terms']) && !empty($value['attributes']['path_terms'])) {
-            $entityRepository = $this->entityRepository;
-            $slugManager = $this->slugManager;
-            $path_terms = $value['attributes']['path_terms'];
-
-            $value['url'] .= preg_replace_callback('/(\d+)/i', function ($matches) use ($entityRepository, $slugManager) {
-              $term = Term::load(intval($matches[0]));
-              if (!$term) {
-                return NULL;
-              }
-              $term = $entityRepository->getTranslationFromContext($term);
-              return $slugManager->taxonomy2Slug($term);
-            }, $path_terms);
-            unset($value['attributes']['path_terms']);
-          }
-
-          // Check for external links.
-          $value['is_external'] = UrlHelper::isExternal($value['url']);
-        }
-
-        // Text Preprocessor.
-        if ($info['type'] === 'text_format') {
-          //$format = $info['options']['#format'] ?? 'full_html';
-
-          $build = [
-            //'#type'   => 'processed_text',
-            '#text' => $value['value'] ?? $value,
-            //'#format' => $format,
-          ];
-
-          $value = ['value' => $build];
-        }
-
-        // Decoupled entity reference options.
-        if ($info['type'] === 'decoupled_entity_reference') {
-          $entity_repository = $this->entityRepository;
-          $langcode = $this->languageManager->getCurrentLanguage()->getId();
-          $entity_type_id = $value['entity_reference']['entity_type'] ?? '';
-          $bundle = $value['entity_reference']['bundle'] ?? '';
-          $value = [];
-          if (!empty($entity_type_id) && !empty($bundle)) {
-            $tags = [
-              "{$entity_type_id}_list:{$bundle}",
-            ];
-            $this->cacheability->setCacheTags(array_merge($this->cacheability->getCacheTags(), $tags));
-            $type_field = $entity_type_id === 'taxonomy_term' ? 'vid' : 'type';
-            $entity_type_definition = $this->entityTypeManager->getDefinition($entity_type_id);
-            $status = $entity_type_definition->getKey('status');
-            $status = !$status ? $entity_type_definition->getKey('published') : $status;
-            $properties = [
-              $type_field => $bundle,
-            ];
-            if ($status) {
-              $properties[$status] = 1;
-            }
-            $entities = $this->entityTypeManager->getStorage($entity_type_id)
-              ->loadByProperties($properties);
-            $entities = array_map(function ($entity) use ($entity_repository, $langcode) {
-              return $entity_repository->getTranslationFromContext($entity, $langcode);
-            }, $entities);
-
-            if (!empty($entities) && $entity_type_id === 'taxonomy_term') {
-              usort($entities, function ($a, $b) {
-                $weight_a = $a->get('weight')->value;
-                $weight_b = $b->get('weight')->value;
-                return ($weight_a <=> $weight_b);
-              });
-            }
-
-            $info['is_options_locked'] = FALSE;
-            $this->moduleHandler->alter('decoupled_entity_reference_options', $entities, $info, $this->cacheability);
-            if (isset($info['is_options_locked']) && !$info['is_options_locked']) {
-              // Format options here.
-              $data = [];
-              $tags = $this->cacheability->getCacheTags();
-              foreach ($entities as $id => $entity) {
-                $data[$id] = [
-                  'id'    => $entity->id(),
-                  'uuid'  => $entity->uuid(),
-                  'label' => $entity->label(),
-                ];
-                if ($entity->getEntityTypeId() === 'taxonomy_term' && $entity->hasField('results_count')) {
-                  $this->injectTaxonomyResultsCount($entity, $data[$id], $tags);
-                }
-              }
-              $entities = array_values($data);
-            }
-          }
-          $value = $entities;
-        }
-
-        // Image media.
-        if ($info['type'] === 'image' && !empty($value)) {
-          $key = array_keys($value)[0];
-          $image_data = [];
-          if (isset($value[$key]['selection'])) {
-            foreach ($value[$key]['selection'] as $media) {
-              $file = $this->mediaStorage->load($media['target_id']);
-              if ($file) {
-                // Add cache.
-                $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $file->getCacheTags());
-                $this->cacheability->setCacheTags($cacheTags);
-                $uri = $file->thumbnail->entity->getFileUri();
-                $image_item['_default'] = $this->mediaFilesManager->getMediaAbsoluteUrl($uri);
-                //$image_item['_lqip'] = $this->mediaFilesManager->convertToMediaAbsoluteUrl($this->imageStyles['lqip']->buildUrl($uri));
-                //$image_item['uri'] = StreamWrapperManager::getTarget($uri);
-                //$image_item['fid'] = $file->thumbnail->entity->fid->value;
-                $image_item['file_name'] = $file->label();
-                //$image_item['base_url'] = $image_app_base_url;
-                if (!empty($file->get('field_media_image')->getValue())) {
-                  $image_item['meta'] = $file->get('field_media_image')
-                    ->first()
-                    ->getValue();
-                }
+            if (!empty($value['url']) && !UrlHelper::isExternal($value['url'])) {
+              $front_uri = $this->siteConfig->get('page.front');
+              if ($front_uri === $value['url']) {
+                $value['url'] = Url::fromRoute('<front>')->toString();
               }
               else {
-                $image_item['_error'] = 'Media file ID: ' . $media['target_id'] . ' Not Found';
+                $value['url'] = Url::fromUserInput($value['url'])->toString();
               }
-
-              $image_data[] = $image_item;
+              $value['url'] = str_replace('/backend', '', $value['url']);
             }
-          }
-          $value = $image_data;
-        }
 
-        // Video media.
-        if ($info['type'] === 'video' && !empty($value)) {
-          $key = array_keys($value)[0];
-          $video_data = [];
-          if (isset($value[$key]['selection'])) {
-            foreach ($value[$key]['selection'] as $media) {
-              $file = $this->mediaStorage->load($media['target_id']);
-              if ($file) {
-                // Add cache.
-                $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $file->getCacheTags());
-                $this->cacheability->setCacheTags($cacheTags);
-                $uri = $file->field_media_video_file->entity->getFileUri();
-                $video_item['_default'] = $this->mediaFilesManager->getMediaAbsoluteUrl($uri);
-                //$video_item['uri'] = StreamWrapperManager::getTarget($uri);
-                //$video_item['fid'] = $file->thumbnail->entity->fid->value;
-                $video_item['file_name'] = $file->label();
-                //$video_item['base_url'] = $image_app_base_url;
-                if (!empty($file->get('field_media_video_file')->getValue())) {
-                  $video_item['meta'] = $file->get('field_media_video_file')
-                    ->first()
-                    ->getValue();
+            // URL Parts.
+            if (isset($value['attributes']['path_terms']) && !empty($value['attributes']['path_terms'])) {
+              $entityRepository = $this->entityRepository;
+              $slugManager = $this->slugManager;
+              $path_terms = $value['attributes']['path_terms'];
+
+              $value['url'] .= preg_replace_callback('/(\d+)/i', function ($matches) use ($entityRepository, $slugManager) {
+                $term = Term::load(intval($matches[0]));
+                if (!$term) {
+                  return NULL;
                 }
-              }
-              else {
-                $video_item['_error'] = 'Media file ID: ' . $media['target_id'] . ' Not Found';
-              }
-
-              $video_data[] = $video_item;
+                $term = $entityRepository->getTranslationFromContext($term);
+                return $slugManager->taxonomy2Slug($term);
+              }, $path_terms);
+              unset($value['attributes']['path_terms']);
             }
-          }
-          $value = $video_data;
-        }
 
-        // Document media.
-        if ($info['type'] === 'file' && !empty($value)) {
-          $key = array_keys($value)[0];
-          $file_data = [];
-          if (isset($value[$key]['selection'])) {
-            foreach ($value[$key]['selection'] as $media) {
-              $file = $this->mediaStorage->load($media['target_id']);
-              if ($file) {
-                $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $file->getCacheTags());
-                $this->cacheability->setCacheTags($cacheTags);
-                $fid = (int) $file->get('field_media_file')->getString();
-                $document = File::load($fid);
-                if ($document) {
-                  // Add cache.
-                  $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $document->getCacheTags());
-                  $this->cacheability->setCacheTags($cacheTags);
-                  $uri = $document->getFileUri();
-                  $file_data[] = [
-                    '_default'  => $this->mediaFilesManager->getMediaAbsoluteUrl($uri),
-                    // 'uri' => StreamWrapperManager::getTarget($uri),
-                    'fid'       => $file->id(),
-                    'file_name' => $file->label(),
+            // Check for external links.
+            $value['is_external'] = UrlHelper::isExternal($value['url']);
+          }
+
+          // Text Preprocessor.
+          if ($info['type'] === 'text_format') {
+            //$format = $info['options']['#format'] ?? 'full_html';
+
+            $build = [
+              //'#type'   => 'processed_text',
+              '#text' => $value['value'] ?? $value,
+              //'#format' => $format,
+            ];
+
+            $value = ['value' => $build];
+          }
+
+          // Decoupled entity reference options.
+          if ($info['type'] === 'decoupled_entity_reference') {
+            $entity_repository = $this->entityRepository;
+            $langcode = $this->languageManager->getCurrentLanguage()->getId();
+            $entity_type_id = $value['entity_reference']['entity_type'] ?? '';
+            $bundle = $value['entity_reference']['bundle'] ?? '';
+            $value = [];
+            if (!empty($entity_type_id) && !empty($bundle)) {
+              $tags = [
+                "{$entity_type_id}_list:{$bundle}",
+              ];
+              $this->cacheability->setCacheTags(array_merge($this->cacheability->getCacheTags(), $tags));
+              $type_field = $entity_type_id === 'taxonomy_term' ? 'vid' : 'type';
+              $entity_type_definition = $this->entityTypeManager->getDefinition($entity_type_id);
+              $status = $entity_type_definition->getKey('status');
+              $status = !$status ? $entity_type_definition->getKey('published') : $status;
+              $properties = [
+                $type_field => $bundle,
+              ];
+              if ($status) {
+                $properties[$status] = 1;
+              }
+              $entities = $this->entityTypeManager->getStorage($entity_type_id)
+                ->loadByProperties($properties);
+              $entities = array_map(function ($entity) use ($entity_repository, $langcode) {
+                return $entity_repository->getTranslationFromContext($entity, $langcode);
+              }, $entities);
+
+              if (!empty($entities) && $entity_type_id === 'taxonomy_term') {
+                usort($entities, function ($a, $b) {
+                  $weight_a = $a->get('weight')->value;
+                  $weight_b = $b->get('weight')->value;
+                  return ($weight_a <=> $weight_b);
+                });
+              }
+
+              $info['is_options_locked'] = FALSE;
+              $this->moduleHandler->alter('decoupled_entity_reference_options', $entities, $info, $this->cacheability);
+              if (isset($info['is_options_locked']) && !$info['is_options_locked']) {
+                // Format options here.
+                $data = [];
+                $tags = $this->cacheability->getCacheTags();
+                foreach ($entities as $id => $entity) {
+                  $data[$id] = [
+                    'id'    => $entity->id(),
+                    'uuid'  => $entity->uuid(),
+                    'label' => $entity->label(),
                   ];
+                  if ($entity->getEntityTypeId() === 'taxonomy_term' && $entity->hasField('results_count')) {
+                    $this->injectTaxonomyResultsCount($entity, $data[$id], $tags);
+                  }
                 }
-              }
-              else {
-                $file_data['_error'] = 'Media file ID: ' . $media['target_id'] . ' Not Found';
+                $entities = array_values($data);
               }
             }
+            $value = $entities;
           }
-          $value = $file_data;
-        }
 
-        // Views.
-        if ($info['type'] === 'dynamic_views' && !empty($value)) {
-          $value = array_merge($value, $info['options']['#default_value']);
-          $value['data'] = $this->viewsToApi->normalize($value);
-        }
+          // Image media.
+          if ($info['type'] === 'image' && !empty($value)) {
+            $key = array_keys($value)[0];
+            $image_data = [];
+            if (isset($value[$key]['selection'])) {
+              foreach ($value[$key]['selection'] as $media) {
+                $file = $this->mediaStorage->load($media['target_id']);
+                if ($file) {
+                  // Add cache.
+                  $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $file->getCacheTags());
+                  $this->cacheability->setCacheTags($cacheTags);
+                  $uri = $file->thumbnail->entity->getFileUri();
+                  $image_item['_default'] = $this->mediaFilesManager->getMediaAbsoluteUrl($uri);
+                  //$image_item['_lqip'] = $this->mediaFilesManager->convertToMediaAbsoluteUrl($this->imageStyles['lqip']->buildUrl($uri));
+                  //$image_item['uri'] = StreamWrapperManager::getTarget($uri);
+                  //$image_item['fid'] = $file->thumbnail->entity->fid->value;
+                  $image_item['file_name'] = $file->label();
+                  //$image_item['base_url'] = $image_app_base_url;
+                  if (!empty($file->get('field_media_image')->getValue())) {
+                    $image_item['meta'] = $file->get('field_media_image')
+                      ->first()
+                      ->getValue();
+                  }
+                }
+                else {
+                  $image_item['_error'] = 'Media file ID: ' . $media['target_id'] . ' Not Found';
+                }
 
-        // Collection.
-        if ($info['type'] === 'json_api_collection' && !empty($value)) {
-          $value = array_merge($info['options']['#default_value'], $value);
-          $response = $this->jsonApiGenerator->fetch($value);
-          $cache = $response['cache'];
-          unset($response['cache']);
-
-          $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $cache['tags']);
-          $this->cacheability->setCacheTags($cacheTags);
-          $cacheContexts = Cache::mergeContexts($this->cacheability->getCacheContexts(), $cache['contexts']);
-          $this->cacheability->setCacheContexts($cacheContexts);
-          $value = $response;
-        }
-
-        // Webform.
-        if ($info['type'] === 'webform_decoupled' && !empty($value)) {
-          $webform_id = $value['id'];
-          // Cache tags.
-          $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), [
-            'webform_submission_list',
-            'config:webform_list',
-          ]);
-          $this->cacheability->setCacheTags($cacheTags);
-          // Cache contexts.
-          $cacheContexts = Cache::mergeContexts($this->cacheability->getCacheContexts(), ['user']);
-          $this->cacheability->setCacheContexts($cacheContexts);
-          $value['elements'] = $this->webformNormalizer->normalize($webform_id);
-        }
-
-        if ($info['type'] === 'remote_video' && !empty($value)) {
-          $value = reset($value);
-          $mid = $value['selection'][0]['target_id'] ?? '';
-          $media = !empty($mid) ? $this->mediaStorage->load($mid) : NULL;
-          if ($media instanceof MediaInterface) {
-            $value = [
-              'id'   => $media->uuid(),
-              'name' => $media->getName(),
-              'url'  => $media->get('field_media_oembed_video')->value,
-            ];
+                $image_data[] = $image_item;
+              }
+            }
+            $value = $image_data;
           }
-        }
 
-        if ($info['type'] === 'node_queue' && !empty($value)) {
-          $value = array_merge($info['options']['#default_value'], $value);
-          $value['filters'][] = 'filter[df-node-nid][condition][path]=nid';
-          $value['filters'][] = 'filter[df-node-nid][condition][operator]=IN';
-          $i = 1;
-          foreach ($value['nodes'] as $nid) {
-            $value['filters'][] = "filter[df-node-nid][condition][value][$i]=" . $nid['target_id'];
-            $i++;
+          // Video media.
+          if ($info['type'] === 'video' && !empty($value)) {
+            $key = array_keys($value)[0];
+            $video_data = [];
+            if (isset($value[$key]['selection'])) {
+              foreach ($value[$key]['selection'] as $media) {
+                $file = $this->mediaStorage->load($media['target_id']);
+                if ($file) {
+                  // Add cache.
+                  $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $file->getCacheTags());
+                  $this->cacheability->setCacheTags($cacheTags);
+                  $uri = $file->field_media_video_file->entity->getFileUri();
+                  $video_item['_default'] = $this->mediaFilesManager->getMediaAbsoluteUrl($uri);
+                  //$video_item['uri'] = StreamWrapperManager::getTarget($uri);
+                  //$video_item['fid'] = $file->thumbnail->entity->fid->value;
+                  $video_item['file_name'] = $file->label();
+                  //$video_item['base_url'] = $image_app_base_url;
+                  if (!empty($file->get('field_media_video_file')->getValue())) {
+                    $video_item['meta'] = $file->get('field_media_video_file')
+                      ->first()
+                      ->getValue();
+                  }
+                }
+                else {
+                  $video_item['_error'] = 'Media file ID: ' . $media['target_id'] . ' Not Found';
+                }
+
+                $video_data[] = $video_item;
+              }
+            }
+            $value = $video_data;
           }
-          $response = $this->jsonApiGenerator->fetch($value);
-          $cache = $response['cache'];
-          unset($response['cache']);
 
-          $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $cache['tags']);
-          $this->cacheability->setCacheTags($cacheTags);
-          $cacheContexts = Cache::mergeContexts($this->cacheability->getCacheContexts(), $cache['contexts']);
-          $this->cacheability->setCacheContexts($cacheContexts);
-          $value = $response;
+          // Document media.
+          if ($info['type'] === 'file' && !empty($value)) {
+            $key = array_keys($value)[0];
+            $file_data = [];
+            if (isset($value[$key]['selection'])) {
+              foreach ($value[$key]['selection'] as $media) {
+                $file = $this->mediaStorage->load($media['target_id']);
+                if ($file) {
+                  $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $file->getCacheTags());
+                  $this->cacheability->setCacheTags($cacheTags);
+                  $fid = (int) $file->get('field_media_file')->getString();
+                  $document = File::load($fid);
+                  if ($document) {
+                    // Add cache.
+                    $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $document->getCacheTags());
+                    $this->cacheability->setCacheTags($cacheTags);
+                    $uri = $document->getFileUri();
+                    $file_data[] = [
+                      '_default'  => $this->mediaFilesManager->getMediaAbsoluteUrl($uri),
+                      // 'uri' => StreamWrapperManager::getTarget($uri),
+                      'fid'       => $file->id(),
+                      'file_name' => $file->label(),
+                    ];
+                  }
+                }
+                else {
+                  $file_data['_error'] = 'Media file ID: ' . $media['target_id'] . ' Not Found';
+                }
+              }
+            }
+            $value = $file_data;
+          }
+
+          // Views.
+          if ($info['type'] === 'dynamic_views' && !empty($value)) {
+            $value = array_merge($value, $info['options']['#default_value']);
+            $value['data'] = $this->viewsToApi->normalize($value);
+          }
+
+          // Collection.
+          if ($info['type'] === 'json_api_collection' && !empty($value)) {
+            $value = array_merge($info['options']['#default_value'], $value);
+            $response = $this->jsonApiGenerator->fetch($value);
+            $cache = $response['cache'];
+            unset($response['cache']);
+
+            $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $cache['tags']);
+            $this->cacheability->setCacheTags($cacheTags);
+            $cacheContexts = Cache::mergeContexts($this->cacheability->getCacheContexts(), $cache['contexts']);
+            $this->cacheability->setCacheContexts($cacheContexts);
+            $value = $response;
+          }
+
+          // Webform.
+          if ($info['type'] === 'webform_decoupled' && !empty($value)) {
+            $webform_id = $value['id'];
+            // Cache tags.
+            $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), [
+              'webform_submission_list',
+              'config:webform_list',
+            ]);
+            $this->cacheability->setCacheTags($cacheTags);
+            // Cache contexts.
+            $cacheContexts = Cache::mergeContexts($this->cacheability->getCacheContexts(), ['user']);
+            $this->cacheability->setCacheContexts($cacheContexts);
+            $value['elements'] = $this->webformNormalizer->normalize($webform_id);
+          }
+
+          if ($info['type'] === 'remote_video' && !empty($value)) {
+            $value = reset($value);
+            $mid = $value['selection'][0]['target_id'] ?? '';
+            $media = !empty($mid) ? $this->mediaStorage->load($mid) : NULL;
+            if ($media instanceof MediaInterface) {
+              $value = [
+                'id'   => $media->uuid(),
+                'name' => $media->getName(),
+                'url'  => $media->get('field_media_oembed_video')->value,
+              ];
+            }
+          }
+
+          if ($info['type'] === 'node_queue' && !empty($value)) {
+            $value = array_merge($info['options']['#default_value'], $value);
+            $value['filters'][] = 'filter[df-node-nid][condition][path]=nid';
+            $value['filters'][] = 'filter[df-node-nid][condition][operator]=IN';
+            $i = 1;
+            foreach ($value['nodes'] as $nid) {
+              $value['filters'][] = "filter[df-node-nid][condition][value][$i]=" . $nid['target_id'];
+              $i++;
+            }
+            $response = $this->jsonApiGenerator->fetch($value);
+            $cache = $response['cache'];
+            unset($response['cache']);
+
+            $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $cache['tags']);
+            $this->cacheability->setCacheTags($cacheTags);
+            $cacheContexts = Cache::mergeContexts($this->cacheability->getCacheContexts(), $cache['contexts']);
+            $this->cacheability->setCacheContexts($cacheContexts);
+            $value = $response;
+          }
+
+          $cacheability = $this->cacheability;
+          // Apply other modules formatters if exist on current component.
+          $this->moduleHandler->alter('decoupled_df_format', $value, $info, $cacheability);
+          $this->cacheability = $cacheability;
         }
-
-        $cacheability = $this->cacheability;
-        // Apply other modules formatters if exist on current component.
-        $this->moduleHandler->alter('decoupled_df_format', $value, $info, $cacheability);
-        $this->cacheability = $cacheability;
-      }
-      elseif (is_array($value)) {
-        // Go deeper.
-        $this->applyFormatters(array_merge((array) $parent_keys, [$field_key]), $settings, $value);
+        elseif (is_array($value)) {
+          // Go deeper.
+          $this->applyFormatters(array_merge((array) $parent_keys, [$field_key]), $settings, $value);
+        }
       }
     }
   }
