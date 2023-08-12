@@ -145,7 +145,7 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
           'url' => $results['file_to_import'],
         ]);
 
-      $redirect_response = new TrustedRedirectResponse($url->toString());
+      $redirect_response = new TrustedRedirectResponse($url->toString(TRUE)->getGeneratedUrl());
       $redirect_response->send();
       return $redirect_response;
     }
@@ -243,7 +243,7 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
 
       $url = Url::fromRoute('vactory_content_package.import');
 
-      $redirect_response = new TrustedRedirectResponse($url->toString());
+      $redirect_response = new TrustedRedirectResponse($url->toString(TRUE)->getGeneratedUrl());
       $redirect_response->send();
       return $redirect_response;
     }
