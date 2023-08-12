@@ -59,7 +59,9 @@ class ContentPackageArchiverManager implements ContentPackageArchiverManagerInte
    * Zip nodes.
    */
   public function zipContentTypeNodes(string $contentType = 'vactory_page') {
-    $nodes = $this->entityTypeManager->getStorage('node')->getQuery()
+    $nodes = $this->entityTypeManager->getStorage('node')
+      ->getQuery()
+      ->accessCheck(FALSE)
       ->condition('type', $contentType)
       ->execute();
     $nodes = array_values($nodes);
