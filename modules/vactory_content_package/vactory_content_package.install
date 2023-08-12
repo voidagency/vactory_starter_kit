@@ -48,6 +48,34 @@ function vactory_content_package_install($is_syncing) {
   // Update form displays.
   vactory_content_package_update_form_display('node', 'node_id');
   vactory_content_package_update_form_display('taxonomy_term', 'term_id');
+
+  $node_storage = Drupal::entityTypeManager()->getStorage('node');
+  $nids = $node_storage->getQuery()
+    ->condition('type', 'vactory_page')
+    ->accessCheck(FALSE)
+    ->execute();
+  if (!empty($nids)) {
+    $nodes = $node_storage->loadMultiple($nids);
+    foreach ($nodes as $node) {
+      try {
+        $node->save();
+      }
+      catch (Exception $e) {
+      }
+    }
+  }
+
+  $term_storage = Drupal::entityTypeManager()->getStorage('taxonomy_term');
+  $terms = $term_storage->loadMultiple();
+  if (!empty($terms)) {
+    foreach ($terms as $term) {
+      try {
+        $term->save();
+      }
+      catch (Exception $e) {
+      }
+    }
+  }
 }
 
 /**
@@ -65,4 +93,11 @@ function vactory_content_package_update_form_display($entity_type, $field_name) 
       ])->save();
     }
   }
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function vactory_content_package_uninstall($is_syncing) {
+  field_cron();
 }

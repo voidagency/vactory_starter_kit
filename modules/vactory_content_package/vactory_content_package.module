@@ -120,11 +120,11 @@ function vactory_content_package_node_presave(EntityInterface $entity) {
  */
 function vactory_content_package_taxonomy_term_presave(EntityInterface $entity) {
   if ($entity->hasField('term_id')) {
-    $node_id = $entity->get('term_id')->value;
-    if (empty($node_id)) {
-      $node_id = uniqid();
+    $term_id = $entity->get('term_id')->value;
+    if (empty($term_id)) {
+      $term_id = uniqid();
     }
-    $entity->set('term_id', $node_id);
+    $entity->set('term_id', $term_id);
   }
 }
 
