@@ -51,6 +51,7 @@ class DynamicFieldTemplateSelect extends ModalForm {
           'use-ajax',
           'df-console-modal-opener',
           'button',
+          'js-hide',
         ],
         'data-dialog-options' => '',
       ],

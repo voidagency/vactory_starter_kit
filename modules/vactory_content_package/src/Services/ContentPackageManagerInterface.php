@@ -121,6 +121,6 @@ interface ContentPackageManagerInterface {
   /**
    * Generate media from the given url.
    */
-  public function generateMediaFromUrl(string $url, string $type): int;
+  public function generateMediaFromUrl(string $url, string $type): ?int;
 
 }

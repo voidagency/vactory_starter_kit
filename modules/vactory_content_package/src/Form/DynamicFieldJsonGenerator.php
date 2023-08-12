@@ -53,7 +53,7 @@ class DynamicFieldJsonGenerator extends ModalForm {
     $values['widget_data'] = $widget_data;
 
     $form = [
-      '#markup' => '<pre id="json-display"></pre>',
+      '#markup' => '<div><a data-clipboard-action="copy" data-clipboard-target="#json-display" class="copy-json-to-clipboard button">Copy</a><br><pre id="json-display"></pre></div>',
     ];
     $form['#attached']['drupalSettings']['vactory_content_package']['template_json'] = Json::encode($values);
     $form['#attached']['library'][] = 'vactory_content_package/scripts';

@@ -7,3 +7,8 @@ entity.vactory_content_package.export:
   route_name: vactory_content_package.export
   base_route: vactory_content_package.import
   title: Export
+
+vactory_content_package.df_tpl_select:
+  route_name: vactory_content_package.df_tpl_select
+  base_route: vactory_content_package.import
+  title: Dynamic field Json generator

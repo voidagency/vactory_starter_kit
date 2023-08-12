@@ -212,8 +212,8 @@ class ContentPackageManager implements ContentPackageManagerInterface {
                 $field_value[$i] = [
                   ...$no_appearance_fields,
                   ...[
-                  'appearance' => $appearance_fields,
-                ],
+                    'appearance' => $appearance_fields,
+                  ],
                 ];
               }
             }
@@ -231,8 +231,10 @@ class ContentPackageManager implements ContentPackageManagerInterface {
     return $entity_values;
   }
 
+  /**
+   * Normalize field wysiwyg dynamic.
+   */
   public function normalizeFieldWysiwygDynamic($field_value, $entity_values) {
-    // todo: Move this to ::dynamicFieldNormalizer() method.
     $widget_id = $field_value[0]['widget_id'];
     $widget_data = Json::decode($field_value[0]['widget_data']);
     $settings = $this->widgetsManager->loadSettings($widget_id);
@@ -260,10 +262,46 @@ class ContentPackageManager implements ContentPackageManagerInterface {
       }
     }
     $field_value[0]['widget_data'] = $widget_data;
-    //$field_value[0]['widget_data'] = Json::decode($field_value[0]['widget_data']);
     return reset($field_value);
   }
 
+  /**
+   * Denormalize field wysiwyg dynamic.
+   */
+  public function denormalizeFieldWysiwygDynamic($field_value, $entity_values) {
+    $widget_id = $field_value['widget_id'];
+    $widget_data = $field_value['widget_data'];
+    $settings = $this->widgetsManager->loadSettings($widget_id);
+    if (isset($settings['extra_fields'])) {
+      foreach ($settings['extra_fields'] as $name => $field) {
+        $df_field_value = $widget_data['extra_field'][$name] ?? NULL;
+        if (!empty($df_field_value)) {
+          $df_field_value = $this->denormalizeDynamicFieldValue($df_field_value, $field, $entity_values);
+        }
+        $widget_data['extra_field'][$name] = $df_field_value;
+      }
+    }
+    if (isset($settings['fields'])) {
+      foreach ($settings['fields'] as $name => $field) {
+        foreach ($widget_data as $key => $value) {
+          if ($key === 'extra_field') {
+            continue;
+          }
+          $df_field_value = $value[$name] ?? NULL;
+          if ($df_field_value) {
+            $df_field_value = $this->denormalizeDynamicFieldValue($df_field_value, $field, $entity_values);
+            $widget_data[$key][$name] = $df_field_value;
+          }
+        }
+      }
+    }
+    $field_value['widget_data'] = $widget_data;
+    return $field_value;
+  }
+
+  /**
+   * Normalize dynnamic field value.
+   */
   public function normalizeDynamicFieldValue($df_field_value, $field, $entity_values = []) {
     if (!isset($field['type']) && isset($field['g_title'])) {
       $field_value = [];
@@ -285,47 +323,24 @@ class ContentPackageManager implements ContentPackageManagerInterface {
       $target_type = $field['options']['#target_type'] ?? NULL;
       if ($target_type && !empty($target_type)) {
         if ($target_type === 'node') {
-          $df_field_value = !empty($df_field_value) ? $df_field_value : [];
-          $df_field_value = !is_array($df_field_value) ? [$df_field_value] : $df_field_value;
-          $df_field_value = is_array($df_field_value) && !empty($df_field_value) && isset(reset($df_field_value)['target_id']) ? array_map(fn($el) => $el['target_id'], $df_field_value) : $df_field_value;
+          $df_field_value = !empty($df_field_value) ? $df_field_value : NULL;
           if (!empty($df_field_value)) {
-            $nodes = $this->entityTypeManager->getStorage('node')
-              ->loadMultiple($df_field_value);
-            $nodes = array_values($nodes);
-            if (!empty($nodes)) {
-              $df_field_value = array_map(function ($node) {
-                $node_id = $node->get('node_id')->value;
-                return $node_id ?? $node->id();
-              }, $nodes);
+            $node = $this->entityTypeManager->getStorage('node')
+              ->load($df_field_value);
+            if (!empty($node)) {
+              $node_id = $node->get('node_id')->value;
+              $df_field_value = $node_id ?? $node->id();
             }
           }
         }
-        else if ($target_type === 'taxonomy_term') {
-          $df_field_value = !empty($df_field_value) ? $df_field_value : [];
-          $df_field_value = !is_array($df_field_value) ? [$df_field_value] : $df_field_value;
-          $df_field_value = is_array($df_field_value) && !empty($df_field_value) && isset(reset($df_field_value)['target_id']) ? array_map(fn($el) => $el['target_id'], $df_field_value) : $df_field_value;
+        elseif ($target_type === 'taxonomy_term') {
+          $df_field_value = !empty($df_field_value) ? $df_field_value : NULL;
           if (!empty($df_field_value)) {
-            $terms = $this->entityTypeManager->getStorage('taxonomy_term')
-              ->loadMultiple($df_field_value);
-            $terms = array_values($terms);
-            if (!empty($terms)) {
-              $df_field_value = array_map(function ($term) {
-                $term_id = $term->get('term_id')->value;
-                return $term_id ?? $term->id();
-              }, $terms);
-            }
-          }
-        }
-        else {
-          $df_field_value = !empty($df_field_value) ? $df_field_value : [];
-          $df_field_value = !is_array($df_field_value) ? [$df_field_value] : $df_field_value;
-          $df_field_value = is_array($df_field_value) && !empty($df_field_value) && isset(reset($df_field_value)['target_id']) ? array_map(fn($el) => $el['target_id'], $df_field_value) : $df_field_value;
-          if (!empty($df_field_value)) {
-            $entities = $this->entityTypeManager->getStorage($target_type)
-              ->loadMultiple($df_field_value);
-            $entities = array_values($entities);
-            if (!empty($entities)) {
-              $df_field_value = array_keys($entities);
+            $term = $this->entityTypeManager->getStorage('taxonomy_term')
+              ->load($df_field_value);
+            if (!empty($term)) {
+              $term_id = $term->get('term_id')->value;
+              $df_field_value = $term_id ?? $term->id();
             }
           }
         }
@@ -338,6 +353,63 @@ class ContentPackageManager implements ContentPackageManagerInterface {
     return $df_field_value;
   }
 
+  /**
+   * Denormalize dynamic field value.
+   */
+  public function denormalizeDynamicFieldValue($df_field_value, $field, $entity_values = []) {
+    if (!isset($field['type']) && isset($field['g_title'])) {
+      $field_value = [];
+      foreach ($field as $field_name => $field_info) {
+        if ($field_name === 'g_title') {
+          continue;
+        }
+        $field_value[$field_name] = $this->denormalizeDynamicFieldValue($df_field_value[$field_name], $field_info, $entity_values);
+      }
+      $df_field_value = $field_value;
+    }
+    if (!isset($field['type']) && !isset($field['g_title'])) {
+      return $df_field_value;
+    }
+    if ($field['type'] === 'date') {
+      $df_field_value = $this->dateFromFormatToFormat('d/m/Y', 'Y-m-d', $df_field_value, $entity_values);
+    }
+    if ($field['type'] === 'entity_autocomplete') {
+      $target_type = $field['options']['#target_type'] ?? NULL;
+      if ($target_type && !empty($target_type)) {
+        if ($target_type === 'node') {
+          $df_field_value = !empty($df_field_value) ? $df_field_value : NULL;
+          if (!empty($df_field_value)) {
+            $nodes = $this->entityTypeManager->getStorage('node')
+              ->loadByProperties([
+                'node_id' => $df_field_value,
+              ]);
+            $node = reset($nodes);
+            if (!empty($node)) {
+              $df_field_value = $node->id();
+            }
+          }
+        }
+        elseif ($target_type === 'taxonomy_term') {
+          $df_field_value = !empty($df_field_value) ? $df_field_value : [];
+          if (!empty($df_field_value)) {
+            $terms = $this->entityTypeManager->getStorage('taxonomy_term')
+              ->loadByProperties([
+                'term_id' => $df_field_value,
+              ]);
+            $term = reset($terms);
+            if (!empty($term)) {
+              $df_field_value = $term->id();
+            }
+          }
+        }
+      }
+    }
+    if (in_array($field['type'], array_keys(ContentPackageManagerInterface::MEDIA_FIELD_NAMES))) {
+      $df_field_value = $this->denormalizeDfMedia($df_field_value, $field['type']);
+    }
+
+    return $df_field_value;
+  }
 
   /**
    * Denormalize given entity.
@@ -452,6 +524,7 @@ class ContentPackageManager implements ContentPackageManagerInterface {
         }
         if ($field_type === 'field_wysiwyg_dynamic' && !empty($field_value)) {
           // DF field type.
+          $field_value = $this->denormalizeFieldWysiwygDynamic($field_value, $entity_values);
           $field_value['widget_data'] = Json::encode($field_value['widget_data']);
           $values[$field_name] = [$field_value];
         }
@@ -509,6 +582,9 @@ class ContentPackageManager implements ContentPackageManagerInterface {
     throw new \Exception('Invalid datetime format, format must be from ' . $from_format . ' to ' . $to_format . '"' . $dateString . '" given.<br>' . Json::encode($entity_values));
   }
 
+  /**
+   * Normalize dynamic field media.
+   */
   protected function normalizeDfMedia($df_field_value, $media_type = 'image') {
     if (!empty($df_field_value)) {
       $image_data = reset($df_field_value);
@@ -537,6 +613,28 @@ class ContentPackageManager implements ContentPackageManagerInterface {
   }
 
   /**
+   * Denormalize dynamic field media.
+   */
+  protected function denormalizeDfMedia($df_field_value, $media_type = 'image') {
+    if (!empty($df_field_value)) {
+      $mid = $this->generateMediaFromUrl($df_field_value, $media_type);
+      $df_field_value = [];
+      if ($mid) {
+        $df_field_value = [
+          uniqid() => [
+            'selection' => [
+              [
+                'target_id' => $mid,
+              ],
+            ],
+          ],
+        ];
+      }
+    }
+    return $df_field_value;
+  }
+
+  /**
    * Generate media from the given url.
    */
   public function generateMediaFromUrl(string $url, string $type): ?int {
@@ -550,11 +648,7 @@ class ContentPackageManager implements ContentPackageManagerInterface {
         ]);
         break;
 
-      case 'image':
-      case 'file':
-      case 'onboarding_video':
-      case 'video';
-      case 'audio':
+      default:
         if (!file_exists('public://content_package_manager')) {
           mkdir('public://content_package_manager', 0777);
         }

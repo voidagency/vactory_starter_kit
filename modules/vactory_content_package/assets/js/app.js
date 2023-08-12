@@ -16,6 +16,17 @@
 				$(this).addClass('df-selected-template')
 			})
 			if (drupalSettings.vactory_content_package !== undefined && drupalSettings.vactory_content_package.template_json !== undefined) {
+				var clipboard = new ClipboardJS('.copy-json-to-clipboard');
+				clipboard.on('success', function(e) {
+					e.trigger.textContent = 'Copied';
+					window.setTimeout(function() {
+						e.trigger.textContent = 'Copy';
+					}, 2000);
+					e.clearSelection();
+				});
+
+			}
+			if (drupalSettings.vactory_content_package !== undefined && drupalSettings.vactory_content_package.template_json !== undefined) {
 				var options = {
 					editable: false,
 				}
