@@ -173,7 +173,7 @@ class DynamicFieldManager {
     if (isset($data['widget_data']) && !empty($data['widget_data'])) {
       $widget_id = $data['widget_id'];
       $widget_data = json_decode($data['widget_data'], TRUE);
-      $settings = $this->platformProvider->loadSettings($widget_id);
+      $settings = $this->platformProvider->loadSettings($widget_id) ?? [];
       $content = [];
 
       // Add auto populate info.

@@ -153,7 +153,7 @@ class ContentPackageArchiverManager implements ContentPackageArchiverManagerInte
       }
       \Drupal::messenger()->addStatus($message);
       $redirect_response = new TrustedRedirectResponse(Url::fromRoute('vactory_content_package.download')
-        ->toString());
+        ->toString(TRUE)->getGeneratedUrl());
       $redirect_response->send();
       return $redirect_response;
     }
@@ -269,7 +269,7 @@ class ContentPackageArchiverManager implements ContentPackageArchiverManagerInte
           'url' => $results['export_data_file'],
         ]);
 
-      $redirect_response = new TrustedRedirectResponse($url->toString());
+      $redirect_response = new TrustedRedirectResponse($url->toString(TRUE)->getGeneratedUrl());
       $redirect_response->send();
       return $redirect_response;
     }
