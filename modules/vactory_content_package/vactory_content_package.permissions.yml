@@ -1,0 +1,8 @@
+administer vactory_content_package configuration:
+  title: 'Administer vactory_content_package configuration'
+  description: 'Optional description.'
+  restrict access: true
+administer vactory_content_package export configuration:
+  title: 'Administer vactory_content_package export configuration'
+  description: 'Optional description.'
+  restrict access: true

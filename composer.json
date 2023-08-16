@@ -205,9 +205,6 @@
       "stevenmaguire/oauth2-microsoft": {
         "Fix Bearer Authorization - Update ResourceOwner": "https://gist.githubusercontent.com/voidagency/b3b3508f2edb982b4f60a12517184e19/raw/08835c48e75e7f19f7396013988d934be30526ce/oauth2-microsoft-authorization-ressource-owner.patch"
       },
-      "drupal/viewsreference": {
-        "Exposed filters not working for Views in Paragraphs": "https://www.drupal.org/files/issues/2020-05-13/viewsreference-exposed_filters_not_working-3129609-3.patch"
-      },
       "drupal/swiftmailer": {
         "Fix undefined index warnings on reset password form": "https://www.drupal.org/files/issues/2020-10-29/3179656-two-undentified-index-notices-2.patch",
         "Swiftmailer fix renderPlan method cli breaks": "https://gist.githubusercontent.com/voidagency/2d6230d4c481d5f80e8e9c8e783a2963/raw/8f7e40b7b90406b96865dde05b57a4ad8d854b68/swiftmailer-prevent-cli-commands-break.patch"

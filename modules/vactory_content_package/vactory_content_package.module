@@ -1,0 +1,147 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Vactory content package module.
+ *
+ * @DCG
+ * This file is no longer required in Drupal 8.
+ * @see https://www.drupal.org/node/2217931
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function vactory_content_package_entity_base_field_info(EntityTypeInterface $entity_type) {
+  $fields = [];
+  if ($entity_type->id() === 'node') {
+    $fields['node_id'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Node machine name'))
+      ->setDescription(t('A machine-readable name for the node.'))
+      ->setRequired(TRUE)
+      ->addConstraint('UniqueField')
+      ->setSettings([
+        'default_value' => '',
+        'max_length' => 255,
+        'text_processing' => 0,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield_with_counter',
+        'weight' => 3,
+      ]);
+  }
+  if ($entity_type->id() === 'taxonomy_term') {
+    $fields['term_id'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Term machine name'))
+      ->setDescription(t('A machine-readable name for the terms.'))
+      ->setRequired(TRUE)
+      ->addConstraint('UniqueField')
+      ->setSettings([
+        'default_value' => '',
+        'max_length' => 255,
+        'text_processing' => 0,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield_with_counter',
+        'weight' => 3,
+      ]);
+  }
+  return $fields;
+}
+
+/**
+ * Implements hook_field_widget_form_alter().
+ */
+function vactory_content_package_field_field_widget_form_alter(array &$element, FormStateInterface $form_state, $context) {
+  if ($context['field']['field_name'] === 'node_id') {
+    // Add custom validation for machine name uniqueness.
+    $element['#element_validate'][] = 'vactory_content_package_node_unique_validation';
+  }
+  if ($context['field']['field_name'] === 'term_id') {
+    // Add custom validation for machine name uniqueness.
+    $element['#element_validate'][] = 'vactory_content_package_term_unique_validation';
+  }
+}
+
+/**
+ * Custom validation function to check the uniqueness of the machine name.
+ */
+function vactory_content_package_node_unique_validation($element, FormStateInterface $form_state) {
+  $value = $form_state->getValue($element['#parents']);
+  // Perform existence check.
+  if ($value) {
+    $existing_node = Drupal::entityTypeManager()->getStorage('node')
+      ->loadByProperties([
+        'node_id' => $value,
+      ]);
+    if (!empty($existing_node)) {
+      $form_state->setError($element, t('The machine name is already in use.'));
+    }
+  }
+}
+
+/**
+ * Custom validation function to check the uniqueness of the machine name.
+ */
+function vactory_content_package_term_unique_validation($element, FormStateInterface $form_state) {
+  $value = $form_state->getValue($element['#parents']);
+  // Perform existence check.
+  if ($value) {
+    $existing_node = Drupal::entityTypeManager()->getStorage('taxonomy_term')
+      ->loadByProperties([
+        'term_id' => $value,
+      ]);
+    if (!empty($existing_node)) {
+      $form_state->setError($element, t('The machine name is already in use.'));
+    }
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ */
+function vactory_content_package_node_presave(EntityInterface $entity) {
+  if ($entity->hasField('node_id')) {
+    $node_id = $entity->get('node_id')->value;
+    if (empty($node_id)) {
+      $node_id = uniqid();
+    }
+    $entity->set('node_id', $node_id);
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ */
+function vactory_content_package_taxonomy_term_presave(EntityInterface $entity) {
+  if ($entity->hasField('term_id')) {
+    $term_id = $entity->get('term_id')->value;
+    if (empty($term_id)) {
+      $term_id = uniqid();
+    }
+    $entity->set('term_id', $term_id);
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_content_package_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if (preg_match('/^node_.*_(form|edit_form)$/', $form_id)) {
+    if (!isset($form['node_id']['widget'][0]['value']['#default_value'])) {
+      $form['node_id']['widget'][0]['value']['#default_value'] = uniqid();
+      $form['node_id']['widget'][0]['value']['#description'] = 'A machine-readable name for the term.<br><p class="color-warning">⚠️ This field suggests a machine-readable value. The final value will be saved once the form is submitted</p>';
+    }
+  }
+  if (preg_match('/^taxonomy_term_.*_form$/', $form_id)) {
+    if (!isset($form['term_id']['widget'][0]['value']['#default_value'])) {
+      $form['term_id']['widget'][0]['value']['#default_value'] = uniqid();
+      $form['term_id']['widget'][0]['value']['#description'] = 'A machine-readable name for the term.<br><p class="color-warning">⚠️ This field suggests a machine-readable value. The final value will be saved once the form is submitted</p>';
+    }
+  }
+}
