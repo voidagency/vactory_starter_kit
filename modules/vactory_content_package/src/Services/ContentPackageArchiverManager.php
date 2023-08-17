@@ -126,7 +126,7 @@ class ContentPackageArchiverManager implements ContentPackageArchiverManagerInte
         if ($node->hasTranslation($lang)) {
           $translated_node = $entityRepository->getTranslationFromContext($node, $lang);
           if (isset($translated_node)) {
-            file_put_contents($dir_location . '/' . $lang . '.json', json_encode($contentPackageManager->normalize($translated_node), JSON_PRETTY_PRINT));
+            file_put_contents($dir_location . '/' . $lang . '.json', json_encode($contentPackageManager->normalize($translated_node, TRUE), JSON_PRETTY_PRINT));
             $context['sandbox']['zip']->addFile($fileSystem->realpath($dir_location . '/' . $lang . '.json'), $node->label() . '/' . $lang . '.json');
           }
         }
