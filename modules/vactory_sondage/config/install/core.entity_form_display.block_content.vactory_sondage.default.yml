@@ -9,13 +9,13 @@ dependencies:
     - field.field.block_content.vactory_sondage.field_sondage_question
     - field.field.block_content.vactory_sondage.field_sondage_results
     - field.field.block_content.vactory_sondage.field_sondage_status
-  enforced:
-    module:
-      - vactory_sondage
   module:
     - datetime
     - text
     - vactory_sondage
+  enforced:
+    module:
+      - vactory_sondage
 id: block_content.vactory_sondage.default
 targetEntityType: block_content
 bundle: vactory_sondage
