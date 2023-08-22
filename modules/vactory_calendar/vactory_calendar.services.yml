@@ -1,0 +1,6 @@
+services:
+  vactory_calendar.table_reservation:
+    class: Drupal\vactory_calendar\Service\TableReservation
+    arguments: ['@entity_type.manager', '@config.factory',
+                '@language_manager', '@email_factory',
+                '@logger.factory', '@token', '@symfony_mailer.legacy_helper', '@symfony_mailer']

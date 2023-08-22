@@ -1,0 +1,12 @@
+name: 'Link with icon'
+multiple: FALSE
+category: 'Calendar utilities'
+enabled: TRUE
+extra_fields:
+  icon_id:
+    type: text
+    label: 'Icon ID'
+  link:
+    type: url_extended
+    label: 'Lien'
+

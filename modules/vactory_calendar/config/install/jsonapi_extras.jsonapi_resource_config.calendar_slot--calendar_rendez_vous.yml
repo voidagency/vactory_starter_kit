@@ -1,0 +1,114 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - vactory_calendar.calendar_slot_type.calendar_rendez_vous
+  module:
+    - jsonapi_defaults
+    - vactory_decoupled
+third_party_settings:
+  jsonapi_defaults:
+    page_limit: 50
+  vactory_decoupled:
+    roles:
+      anonymous: 0
+      authenticated: 0
+      administrator: 0
+      super_administrator: 0
+      master: 0
+      webmaster: 0
+id: calendar_slot--calendar_rendez_vous
+disabled: false
+path: calendar_slot/calendar_rendez_vous
+resourceType: calendar_slot--calendar_rendez_vous
+resourceFields:
+  id:
+    disabled: false
+    fieldName: id
+    publicName: id
+    enhancer:
+      id: ''
+  uuid:
+    disabled: false
+    fieldName: uuid
+    publicName: uuid
+    enhancer:
+      id: ''
+  langcode:
+    disabled: false
+    fieldName: langcode
+    publicName: langcode
+    enhancer:
+      id: ''
+  type:
+    disabled: false
+    fieldName: type
+    publicName: type
+    enhancer:
+      id: ''
+  status:
+    disabled: false
+    fieldName: status
+    publicName: status
+    enhancer:
+      id: ''
+  user_id:
+    disabled: false
+    fieldName: user_id
+    publicName: user_id
+    enhancer:
+      id: ''
+  invited_user_id:
+    disabled: false
+    fieldName: invited_user_id
+    publicName: invited_user_id
+    enhancer:
+      id: ''
+  name:
+    disabled: false
+    fieldName: name
+    publicName: name
+    enhancer:
+      id: ''
+  created:
+    disabled: false
+    fieldName: created
+    publicName: created
+    enhancer:
+      id: ''
+  changed:
+    disabled: false
+    fieldName: changed
+    publicName: changed
+    enhancer:
+      id: ''
+  start_time:
+    disabled: false
+    fieldName: start_time
+    publicName: start_time
+    enhancer:
+      id: ''
+  end_time:
+    disabled: false
+    fieldName: end_time
+    publicName: end_time
+    enhancer:
+      id: ''
+  default_langcode:
+    disabled: false
+    fieldName: default_langcode
+    publicName: default_langcode
+    enhancer:
+      id: ''
+  metatag:
+    disabled: false
+    fieldName: metatag
+    publicName: metatag
+    enhancer:
+      id: ''
+  internal_user:
+    disabled: false
+    fieldName: internal_user
+    publicName: internal_user
+    enhancer:
+      id: ''

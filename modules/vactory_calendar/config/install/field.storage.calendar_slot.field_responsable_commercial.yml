@@ -1,0 +1,19 @@
+langcode: fr
+status: true
+dependencies:
+  module:
+    - user
+    - vactory_calendar
+id: calendar_slot.field_responsable_commercial
+field_name: field_responsable_commercial
+entity_type: calendar_slot
+type: entity_reference
+settings:
+  target_type: user
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

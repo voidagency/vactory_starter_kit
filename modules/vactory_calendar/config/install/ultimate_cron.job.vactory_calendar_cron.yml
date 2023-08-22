@@ -1,0 +1,16 @@
+langcode: fr
+status: true
+dependencies:
+  module:
+    - vactory_calendar
+title: 'Default cron handler'
+id: vactory_calendar_cron
+weight: 0
+module: vactory_calendar
+callback: vactory_calendar_cron
+scheduler:
+  id: simple
+launcher:
+  id: serial
+logger:
+  id: database

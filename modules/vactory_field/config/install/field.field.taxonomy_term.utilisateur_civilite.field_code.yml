@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.taxonomy_term.field_code
+    - taxonomy.vocabulary.utilisateur_civilite
+id: taxonomy_term.utilisateur_civilite.field_code
+field_name: field_code
+entity_type: taxonomy_term
+bundle: utilisateur_civilite
+label: code
+description: 'code (m, mme, mlle ...)'
+required: true
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

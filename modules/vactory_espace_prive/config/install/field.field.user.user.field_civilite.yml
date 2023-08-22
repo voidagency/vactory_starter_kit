@@ -1,0 +1,29 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.user.field_civilite
+    - taxonomy.vocabulary.utilisateur_civilite
+  module:
+    - user
+id: user.user.field_civilite
+field_name: field_civilite
+entity_type: user
+bundle: user
+label: Civilité
+description: Civilité
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:vactory_term'
+  handler_settings:
+    target_bundles:
+      utilisateur_civilite: utilisateur_civilite
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

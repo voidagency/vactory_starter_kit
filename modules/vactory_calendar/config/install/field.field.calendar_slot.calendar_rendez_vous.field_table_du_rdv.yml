@@ -1,0 +1,28 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.storage.calendar_slot.field_table_du_rdv
+    - taxonomy.vocabulary.vactory_event_table
+    - vactory_calendar.calendar_slot_type.calendar_rendez_vous
+id: calendar_slot.calendar_rendez_vous.field_table_du_rdv
+field_name: field_table_du_rdv
+entity_type: calendar_slot
+bundle: calendar_rendez_vous
+label: 'Table du RDV'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:vactory_term'
+  handler_settings:
+    target_bundles:
+      vactory_event_table: vactory_event_table
+    sort:
+      field: name
+      direction: asc
+    auto_create: false
+    auto_create_bundle: ''
+field_type: entity_reference

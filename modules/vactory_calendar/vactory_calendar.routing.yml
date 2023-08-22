@@ -1,0 +1,7 @@
+vactory_calendar.settings_form:
+  path: '/admin/config/system/calendar-configuration'
+  defaults:
+    _title: 'Calendar settings'
+    _form: '\Drupal\vactory_calendar\Form\SettingsForm'
+  requirements:
+    _role: 'administrator+webmaster'

@@ -1,0 +1,92 @@
+<?php
+
+use Drupal\Core\Language\LanguageInterface;
+use Drupal\node\Entity\Node;
+
+/**
+ * Implements hook_install().
+ */
+function vactory_calendar_install($is_syncing) {
+  foreach (_get_vactory_calendar_default_pages() as $machine_name => $page) {
+    $nodes = \Drupal::entityTypeManager()
+      ->getStorage('node')
+      ->loadByProperties(['machine_name' => $machine_name]);
+
+    if (empty($nodes)) {
+      _vactory_calendar_create_default_node($machine_name, $page['title'], $page['path']);
+    }
+  }
+
+  // Run a complete cache flush.
+  drupal_flush_all_caches();
+}
+
+function _get_vactory_calendar_default_pages() {
+  return [
+    'participant_profile' => [
+      'path' => '/account/profil',
+      'title' => 'Profil du participant',
+    ],
+    'participant_agenda' => [
+      'path' => '/agenda',
+      'title' => 'Agenda du participant',
+    ],
+    'participants_list' => [
+      'path' => '/participants/liste',
+      'title' => 'Participants',
+    ],
+    'my_agenda' => [
+      'path' => '/my-agenda',
+      'title' => 'Mon Agenda',
+    ],
+  ];
+}
+
+function _vactory_calendar_create_default_node($machine_name, $title, $path) {
+  $node = Node::create([
+    'type' => 'vactory_page',
+    'title' => $title,
+    'langcode' => LanguageInterface::LANGCODE_NOT_SPECIFIED,
+    'uid' => 1,
+  ])
+    ->set('machine_name', $machine_name)
+    ->setPublished();
+  $node->save();
+
+  $route = \Drupal::entityTypeManager()->getStorage('vactory_route')->create([
+    'id' => $machine_name,
+    'label' => $title,
+    'path' => "/node/" . $node->id(),
+    'alias' => $path,
+  ]);
+  $route->save();
+
+  return $node;
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function vactory_calendar_uninstall() {
+  // Delete routes.
+  foreach (_get_vactory_calendar_default_pages() as $machine_name => $page) {
+    $routes = \Drupal::entityTypeManager()
+      ->getStorage('vactory_route')
+      ->loadByProperties(['id' => $machine_name]);
+
+    foreach ($routes as $route) {
+      $route->delete();
+    }
+  }
+
+  // Delete nodes.
+  foreach (_get_vactory_calendar_default_pages() as $machine_name => $page) {
+    $nodes = \Drupal::entityTypeManager()
+      ->getStorage('node')
+      ->loadByProperties(['type' => 'vactory_page', 'machine_name' => $machine_name]);
+
+    foreach ($nodes as $node) {
+      $node->delete();
+    }
+  }
+}

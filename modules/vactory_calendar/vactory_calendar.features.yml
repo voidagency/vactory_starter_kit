@@ -1,0 +1,8 @@
+bundle: vactory
+required:
+  - core.entity_form_display.taxonomy_term.vactory_event_table.default
+  - field.field.taxonomy_term.vactory_event_table.field_last_lock_begin
+  - field.field.taxonomy_term.vactory_event_table.field_last_lock_end
+  - core.entity_view_display.taxonomy_term.vactory_event_table.default
+  - field.storage.taxonomy_term.field_last_lock_begin
+  - field.storage.taxonomy_term.field_last_lock_end

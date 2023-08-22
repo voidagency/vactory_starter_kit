@@ -1,0 +1,28 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.storage.calendar_slot.field_responsable_commercial
+    - vactory_calendar.calendar_slot_type.calendar_rendez_vous
+id: calendar_slot.calendar_rendez_vous.field_responsable_commercial
+field_name: field_responsable_commercial
+entity_type: calendar_slot
+bundle: calendar_rendez_vous
+label: 'Responsable commercial'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:user'
+  handler_settings:
+    target_bundles: null
+    sort:
+      field: _none
+      direction: ASC
+    auto_create: false
+    filter:
+      type: _none
+    include_anonymous: false
+field_type: entity_reference

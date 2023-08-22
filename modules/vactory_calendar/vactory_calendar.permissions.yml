@@ -1,0 +1,27 @@
+add calendar slot entities:
+  title: 'Create new Calendar slot entities'
+
+administer calendar slot entities:
+  title: 'Administer Calendar slot entities'
+  description: 'Allow to access the administration form to configure Calendar slot entities.'
+  restrict access: true
+
+delete calendar slot entities:
+  title: 'Delete Calendar slot entities'
+
+edit calendar slot entities:
+  title: 'Edit Calendar slot entities'
+
+view published calendar slot entities:
+  title: 'View published Calendar slot entities'
+
+view unpublished calendar slot entities:
+  title: 'View unpublished Calendar slot entities'
+
+administer vactory_calendar configuration:
+  title: 'Administer vactory_calendar configuration'
+  description: 'Administrate all vactory_calendar via the settings form.'
+  restrict access: true
+
+permission_callbacks:
+  - \Drupal\vactory_calendar\CalendarSlotPermissions::generatePermissions
