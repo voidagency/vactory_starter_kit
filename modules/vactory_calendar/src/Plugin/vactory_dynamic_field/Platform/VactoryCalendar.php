@@ -3,7 +3,6 @@
 namespace Drupal\vactory_calendar\Plugin\vactory_dynamic_field\Platform;
 
 use Drupal\Core\Extension\ExtensionPathResolver;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\vactory_dynamic_field\VactoryDynamicFieldPluginBase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -25,7 +24,7 @@ class VactoryCalendar extends VactoryDynamicFieldPluginBase {
   protected $extensionPathResolver;
 
   /**
-   * {@inheritDoc }
+   * {@inheritDoc}
    */
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);

@@ -5,14 +5,12 @@ namespace Drupal\vactory_calendar;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\vactory_calendar\Entity\CalendarSlotType;
 
-
 /**
  * Provides dynamic permissions for Calendar slot of different types.
  *
  * @ingroup vactory_calendar
- *
  */
-class CalendarSlotPermissions{
+class CalendarSlotPermissions {
 
   use StringTranslationTrait;
 

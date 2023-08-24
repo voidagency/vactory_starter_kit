@@ -1,21 +1,24 @@
 <?php
 
 namespace Drupal\vactory_calendar\Service;
-use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 
+/**
+ * Mail sending.
+ */
 trait MailAPI {
+
   /**
-   * Function to send mail.
+   * {@inheritDoc}
    */
   public function sendMailjet($subject, $mail_body, $from, $dest) {
-
     $mailConfig = \Drupal::service('config.factory')->get('vactory_calendar.settings');
     $mailLogger = \Drupal::service('logger.factory')->get('clubafrique_mail');
 
     $username = !empty($mailConfig->get('api_key')) ? $mailConfig->get('api_key') : '';
     $password = !empty($mailConfig->get('api_secret')) ? $mailConfig->get('api_secret') : '';
-    if (empty($username) || empty($password)) return FALSE;
+    if ((empty($username) || empty($password))) {
+      return FALSE;
+    }
     $receivers = [];
     foreach ($dest as $to) {
       $receivers[] = [
@@ -57,12 +60,7 @@ trait MailAPI {
   }
 
   /**
-   * @param $subject
-   * @param $mail_body
-   * @param $from
-   * @param $dest
-   *
-   * @return bool
+   * {@inheritDoc}
    */
   public function sendMailGun($subject, $mail_body, $from, $dest) {
 
@@ -72,12 +70,14 @@ trait MailAPI {
     $username = 'api';
     $password = !empty($mailConfig->get('mailgun_api_key')) ? $mailConfig->get('mailgun_api_key') : '';
     $domainMail = !empty($mailConfig->get('mailgun_domain')) ? $mailConfig->get('mailgun_domain') : '';
-    if (empty($password)) return FALSE;
+    if (empty($password)) {
+      return FALSE;
+    }
     $body = [
       'from' => $from,
       'to' => $dest,
       'subject' => $subject,
-      'text' => $mail_body
+      'text' => $mail_body,
     ];
     try {
       $client = \Drupal::service('http_client');

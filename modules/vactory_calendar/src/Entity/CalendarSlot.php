@@ -230,7 +230,7 @@ class CalendarSlot extends ContentEntityBase implements CalendarSlotInterface {
       ->setLabel(t("Statut de l'invitation"))
       ->setDescription(t('A variable indicating the status of the Calendar slot'))
       ->setDefaultValue('pending')
-    ->setSettings([
+      ->setSettings([
         'allowed_values' => [
           'confirmed' => t('Confirmé'),
           'pending' => t('En attente'),

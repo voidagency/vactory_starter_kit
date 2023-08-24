@@ -1,7 +1,0 @@
-langcode: fr
-status: true
-dependencies: {  }
-name: 'Utilisateur - Pays'
-vid: user_country
-description: 'Utilisateur - Pays'
-weight: 0

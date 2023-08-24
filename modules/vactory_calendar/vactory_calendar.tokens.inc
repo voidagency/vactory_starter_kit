@@ -8,6 +8,7 @@
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Url;
 use Drupal\Component\Datetime\DateTimePlus;
+use Drupal\taxonomy\Entity\Term;
 
 /**
  * Implements hook_token_info().
@@ -135,22 +136,26 @@ function vactory_calendar_tokens($type, $tokens, array $data, array $options, Bu
         case 'rdv-owner-username':
           $replacements[$original] = $owner->getAccountName() ?? '';
           break;
-        
+
         case 'rdv-owner-civilite':
           if ($owner->hasField('field_civilite') && !$owner->get('field_civilite')->isEmpty()) {
             $term_id = $owner->get('field_civilite')->target_id;
             if ($term_id) {
-              $term = \Drupal\taxonomy\Entity\Term::load($term_id);
+              // $term = \Drupal\taxonomy\Entity\Term::load($term_id);
+              $term = Term::load($term_id);
               if ($term) {
                 $field_code = $term->get('field_code')->value;
                 $replacements[$original] = $field_code;
-              } else {
+              }
+              else {
                 $replacements[$original] = "Term with id $term_id does not exist";
               }
-            } else {
+            }
+            else {
               $replacements[$original] = "field_civilite is empty for this user";
             }
-          } else {
+          }
+          else {
             $replacements[$original] = "User does not have field_civilite field or it's empty";
           }
           break;
@@ -184,10 +189,6 @@ function vactory_calendar_tokens($type, $tokens, array $data, array $options, Bu
           break;
 
         case 'rdv-invited-civilite':
-          // $invited_emails = array_map(static function ($el) use ($entity_manager) {
-          //   return $entity_manager->getStorage('user')->load($el['target_id'])?->get('field_civilite')->value ?? '';
-          // }, $invited);
-          // $replacements[$original] = implode(';', $invited_emails);
           $invited_civilites = array_map(static function ($el) use ($entity_manager) {
             $user = $entity_manager->getStorage('user')->load($el['target_id']);
             if ($user) {
@@ -200,11 +201,10 @@ function vactory_calendar_tokens($type, $tokens, array $data, array $options, Bu
             return '';
           }, $invited);
           $replacements[$original] = implode(';', $invited_civilites);
-          break; 
+          break;
 
-        
         case 'rdv-time':
-          //it Return it like this : Le 28 June/juin 2023 de 02h04 à 02h11
+          // It Return it like this : Le 28 June/juin 2023 de 02h04 à 02h11.
           $start = $calendar?->get('start_time')->value;
           $end = $calendar?->get('end_time')->value;
           $dateTimeStart = new DateTimePlus($start);
@@ -217,20 +217,29 @@ function vactory_calendar_tokens($type, $tokens, array $data, array $options, Bu
           $end = $dateTimeEnd->format('H\hi');
 
           $translatedMonth = \Drupal::service('date.formatter')->format($dateTimeStart->getTimestamp(), 'custom', 'F');
-          $translatedDay = t('@day @month @year', ['@day' => $day, '@month' => $translatedMonth, '@year' => $year]);
+          $translatedDay = t('@day @month @year', [
+            '@day' => $day,
+            '@month' => $translatedMonth,
+            '@year' => $year,
+          ]);
 
-          $replacements[$original] = t('Le @day de @start à @end', ['@day' => $translatedDay, '@start' => $start, '@end' => $end]);
+          $replacements[$original] = t('Le @day de @start à @end', [
+            '@day' => $translatedDay,
+            '@start' => $start,
+            '@end' => $end,
+          ]);
 
-          // It Return it like this : Le 28-06-2023 de 02:04 à 02:08
+          // It Return it like this : Le 28-06-2023 de 02:04 à 02:08.
           // $start = $calendar?->get('start_time')->value;
           // $end = $calendar?->get('end_time')->value;
           // $dateTimeStart = new DateTime($start);
           // $dateTimeEnd = new DateTime($end);
           // $day = $dateTimeStart->format('d-m-Y');
-          //   $start = $dateTimeStart->format('H:i');
-          //   $end = $dateTimeEnd->format('H:i');
-          //   $replacements[$original] = t('Le @day de @start à @end',
-          //     ['@day' => $day, '@start' => $start, '@end' => $end]);
+          // $start = $dateTimeStart->format('H:i');
+          // $end = $dateTimeEnd->format('H:i');
+          // $replacements[$original] = t('Le @day de @start à @end',
+          // ['@day' => $day, '@start' => $start, '@end' => $end]);
+          // .
           break;
 
         case 'rdv-table':
@@ -243,11 +252,13 @@ function vactory_calendar_tokens($type, $tokens, array $data, array $options, Bu
           $table = $entity_manager->getStorage('taxonomy_term')?->load($id)?->getName() ?? '';
           $replacements[$original] = t('Votre table : @table', ['@table' => $table]);
           break;
+
         case 'agenda-list':
           $route = \Drupal::entityTypeManager()->getStorage('vactory_route')->load('mon_agenda');
-          $url = Url::fromUserInput(($route?->get('alias')), ['absolute' => true])->toString();
+          $url = Url::fromUserInput(($route?->get('alias')), ['absolute' => TRUE])->toString();
           $replacements[$original] = $url;
           break;
+
         case 'link-google-calendar':
           $link = \Drupal::service('vactory_calendar.table_reservation')->googleCalendarLink($calendar);
           $replacements[$original] = $link;

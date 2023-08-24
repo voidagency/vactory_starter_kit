@@ -12,11 +12,10 @@ fields:
         id: "vactory_users"
         resource: user--user
         filters:
-          - fields[user--user]=mail,drupal_internal__uid,field_about_the_author,field_date_of_birth,field_first_name,field_last_name,field_telephone,name,user_picture,field_pays,field_user_profession
-          - fields[taxonomy_term--user_country]=tid,name,field_flag
+          - fields[user--user]=mail,drupal_internal__uid,field_about_the_author,field_date_of_birth,field_first_name,field_last_name,field_telephone,name,user_picture,field_user_profession,field_country
           - fields[media--image]=name,thumbnail
           - fields[file--image]=filename,uri
-          - include=user_picture,field_pays,field_pays.field_flag.thumbnail
+          - include=user_picture
           - page[offset]=0
           - page[limit]=9
           - sort[sort-name][path]=name
@@ -24,5 +23,3 @@ fields:
           - filter[status][value]=1
         optional_filters:
           vactory_event: node
-        vocabularies:
-          user_country: user_country

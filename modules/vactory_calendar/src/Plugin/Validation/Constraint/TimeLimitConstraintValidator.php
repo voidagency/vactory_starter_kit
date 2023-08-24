@@ -12,7 +12,7 @@ use Symfony\Component\Validator\ConstraintValidator;
 class TimeLimitConstraintValidator extends ConstraintValidator {
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public function validate($value, Constraint $constraint) {
 
@@ -45,6 +45,9 @@ class TimeLimitConstraintValidator extends ConstraintValidator {
     }
   }
 
+  /**
+   * FormatConstraints.
+   */
   public function formatConstraints() {
     $config = \Drupal::config('vactory_calendar.settings');
     return [
@@ -55,7 +58,7 @@ class TimeLimitConstraintValidator extends ConstraintValidator {
   }
 
   /**
-   * @return bool
+   * IsEmptyConstraints.
    */
   private function isEmptyConstraints() {
     $not_set = TRUE;
@@ -64,6 +67,5 @@ class TimeLimitConstraintValidator extends ConstraintValidator {
     }
     return (bool) $not_set;
   }
-
 
 }

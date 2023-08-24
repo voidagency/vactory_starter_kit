@@ -72,8 +72,11 @@ class CalendarSlotAccessControlHandler extends EntityAccessControlHandler {
    * Test for given 'own' permission.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
-   * @param $operation
+   *   The entity to check.
+   * @param string $operation
+   *   The operation being performed.
    * @param \Drupal\Core\Session\AccountInterface $account
+   *   The current user account.
    *
    * @return string|null
    *   The permission string indicating it's allowed.

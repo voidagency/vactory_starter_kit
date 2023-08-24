@@ -20,14 +20,26 @@ class TimeLimitConstraint extends Constraint {
    * @var string
    */
   public $intervalMessage = 'Un rendez-vous ne peut pas dépasser @placeholder minutes .';
-  
+
+  /**
+   * Constraint error message.
+   *
+   * @var string
+   */
   public $beginMessage = 'Les RDVs commencent à @placeholder .';
+
+  /**
+   * Constraint error message.
+   *
+   * @var string
+   */
   public $endMessage = 'Les RDVs sont clôturés à @placeholder .';
 
-
+  /**
+   * {@inheritDoc}
+   */
   public function validatedBy() {
     return TimeLimitConstraintValidator::class;
   }
-
 
 }

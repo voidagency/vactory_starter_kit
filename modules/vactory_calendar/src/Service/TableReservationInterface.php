@@ -5,7 +5,7 @@ namespace Drupal\vactory_calendar\Service;
 use Drupal\vactory_calendar\Entity\CalendarSlot;
 
 /**
- *
+ * Table ReservationInterface.
  */
 interface TableReservationInterface {
 
@@ -18,30 +18,22 @@ interface TableReservationInterface {
   public const TABLE_RESERVED = 'table_reserved';
 
   /**
-   * @param \Drupal\vactory_calendar\Entity\CalendarSlot $event
-   *
-   * @return mixed
+   * {@inheritDoc}
    */
   public function assignTable(CalendarSlot $event);
 
   /**
-   * @param int $id
-   * @param \Drupal\Core\Entity\EntityInterface|null $slot
-   *
-   * @return mixed
+   * {@inheritDoc}
    */
   public function freeTable(int $id, $slot = NULL);
 
   /**
-   * @return mixed
+   * {@inheritDoc}
    */
   public function countAvailable();
 
   /**
-   * @param string $type
-   * @param \Drupal\vactory_calendar\Entity\CalendarSlot|null $event
-   *
-   * @return mixed
+   * {@inheritDoc}
    */
   public function notify(string $type, CalendarSlot $event = NULL);
 

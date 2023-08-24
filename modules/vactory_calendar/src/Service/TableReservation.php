@@ -25,6 +25,7 @@ class TableReservation implements TableReservationInterface {
   use StringTranslationTrait;
 
   use MailAPI;
+
   /**
    * The logger channel factory.
    *
@@ -33,6 +34,8 @@ class TableReservation implements TableReservationInterface {
   protected LoggerChannelFactoryInterface $logger;
 
   /**
+   * Current langcode.
+   *
    * @var string
    */
   protected string $language;
@@ -65,37 +68,47 @@ class TableReservation implements TableReservationInterface {
    */
   private EntityTypeManagerInterface $entityTypeManager;
 
-
   /**
+   * Token service manager.
+   *
    * @var \Drupal\Core\Utility\Token
    */
   private Token $token;
 
+  /**
+   * Legacy mailer.
+   *
+   * @var \Drupal\symfony_mailer\LegacyMailerHelper
+   */
   private $legacyMailer;
+
+  /**
+   * Symfony mailer.
+   *
+   * @var \Drupal\symfony_mailer\Mailer
+   */
   private $symfonyMailer;
 
   /**
+   * Type of notification.
+   *
    * @var string[]
    */
   private array $notificationTypes;
 
   /**
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $configFactory
-   * @param \Drupal\Core\Language\LanguageManagerInterface $languageManager
-   * @param \Drupal\symfony_mailer\EmailFactory $mailer
-   * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger
-   * @param \Drupal\Core\Utility\Token $token
-   * @param \Drupal\symfony_mailer\LegacyMailerHelper $legacyMailer
-   * @param \Drupal\symfony_mailer\Mailer $symfonyMailer
+   * {@inheritDoc}
    */
-  public function __construct(EntityTypeManagerInterface $entityTypeManager,
-                              ConfigFactoryInterface $configFactory,
-                              LanguageManagerInterface $languageManager,
-                              EmailFactory $mailer,
-                              LoggerChannelFactoryInterface $logger,
-                              Token $token,
-                              LegacyMailerHelper $legacyMailer, Mailer $symfonyMailer) {
+  public function __construct(
+      EntityTypeManagerInterface $entityTypeManager,
+      ConfigFactoryInterface $configFactory,
+      LanguageManagerInterface $languageManager,
+      EmailFactory $mailer,
+      LoggerChannelFactoryInterface $logger,
+      Token $token,
+      LegacyMailerHelper $legacyMailer,
+      Mailer $symfonyMailer,
+      ) {
     $this->configFactory = $configFactory;
     $this->languageManager = $languageManager;
     $this->logger = $logger;
@@ -115,12 +128,7 @@ class TableReservation implements TableReservationInterface {
   }
 
   /**
-   * @param $from
-   * @param $end
-   *
-   * @return false|null
-   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
-   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   * {@inheritDoc}
    */
   private function getNextAvailable($from, $end) {
     $query = $this->query();
@@ -136,8 +144,8 @@ class TableReservation implements TableReservationInterface {
 
     $orGroup->condition($lower_bound)->condition($upper_bound)->condition($empty_table);
     $availableQuery = $query->condition($orGroup)
-                    ->range(0, 1)
-                    ->execute();
+      ->range(0, 1)
+      ->execute();
 
     if (count($availableQuery) > 0) {
       return reset($availableQuery);
@@ -147,9 +155,7 @@ class TableReservation implements TableReservationInterface {
   }
 
   /**
-   * @param $event
-   *
-   * @return bool
+   * {@inheritDoc}
    */
   public function assignTable($event) {
 
@@ -167,9 +173,9 @@ class TableReservation implements TableReservationInterface {
           $reservedStart = $entity?->get('field_last_lock_begin')->value;
           $reservedEnd = $entity?->get('field_last_lock_end')->value;
 
-//          Greedy matching to set left/right interval to the table.
-//          We assume that the reservation starts at min time and end at max time.
-//          Downside => The interval in between is never checked.
+          // Reedy matching to set left/right interval to the table.
+          // We assume that reservation starts at min time and end at max time.
+          // Downside => The interval in between is never checked.
           $lower_bound = $this->getMinMaxDatetime(new DrupalDateTime($reservedStart), new DrupalDateTime($begin));
           $lower_bound = $lower_bound['min'];
           $upped_bound = $this->getMinMaxDatetime(new DrupalDateTime($reservedEnd), new DrupalDateTime($ending));
@@ -183,34 +189,26 @@ class TableReservation implements TableReservationInterface {
           return (bool) $entity?->save();
         }
       }
-
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       $this->logger->get('Calendar')->error($e->getMessage());
       return FALSE;
     }
   }
 
   /**
-   * @return array|int
-   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
-   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
-   * @deprecated Since availability now depends on time.
+   * {@inheritDoc}
    */
   public function countAvailable() {
     return $this->query()->condition('status', 1, '=', $this->language)->count()->execute();
   }
 
   /**
-   * @param $type
-   * @param null $event
-   *
-   * @return bool
-   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
-   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   * {@inheritDoc}
    */
   public function notify($type, $event = NULL) {
     $message = $this->configFactory->get('vactory_calendar.settings')->getRawData()[$type];
-    $from = $this->configFactory->get('system.site')->get('mail') ;
+    $from = $this->configFactory->get('system.site')->get('mail');
     $localManager = $this->entityTypeManager->getStorage('user');
     $params = [];
     if ($event instanceof CalendarSlot) {
@@ -223,20 +221,19 @@ class TableReservation implements TableReservationInterface {
       $destination = array_merge([$owner], $invited);
       $params['subject'] = $this->notificationTypes[$type]->__toString();
 
-
-      $body = ['#markup' =>  Markup::create($this->token->replace($message, ['calendar_slot' => $event]))];
+      $body = ['#markup' => Markup::create($this->token->replace($message, ['calendar_slot' => $event]))];
 
       $params['from'] = $from;
       $params['headers']['Sender'] = $from;
       $params['headers']['From'] = $from;
-//      First Try using Mailjet .
+      // First Try using Mailjet .
       $delivered = $this->sendMailjet($params['subject'], $body, $from, $destination);
-//      Formatting destination to match Drupal mailer.
-//      Attempt to use Mailgun.
+      // Formatting destination to match Drupal mailer.
+      // Attempt to use Mailgun.
       if (!$delivered) {
         $delivered = $this->sendMailGun($params['subject'], $body, $from, $destination);
       }
-//      Fallback to SMTP or default Drupal Mailer.
+      // Fallback to SMTP or default Drupal Mailer.
       if (!$delivered) {
         $destination = implode(',', $destination);
         $mailObject = $this->mailer->newTypedEmail('vactory_calendar', $type);
@@ -254,44 +251,44 @@ class TableReservation implements TableReservationInterface {
   }
 
   /**
-   * @return \Drupal\Core\Entity\Query\QueryInterface
-   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
-   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   * {@inheritDoc}
    */
   private function query() {
     return $this->entityTypeManager->getStorage('taxonomy_term')->getQuery()->condition('vid', 'vactory_event_table');
   }
 
   /**
-   * @param $id
-   * @param null $slot
-   *
-   * @return bool|null
+   * {@inheritDoc}
    */
   public function freeTable($id, $slot = NULL) {
     try {
       if ($id) {
         $table = $this->entityTypeManager->getStorage('taxonomy_term')->load($id);
         if ($slot instanceof CalendarSlotInterface) {
-//          In case the table is time limit matches the limits of the cancelled event.
-//          Still needs logic so we abort this for now.
-//          $begin = $slot->get('start_time')->value;
-//          $ending = $slot->get('end_time')->value;
-//
-//          $reservedStart = $table?->get('field_last_lock_begin')->value;
-//          $reservedEnd = $table?->get('field_last_lock_end')->value;
-//
-//          if ($this->compareDatetime(new DrupalDateTime($reservedEnd), new DrupalDateTime($ending)) === 0) {
-//            $table?->set('field_last_lock_end', NULL);
-//          }
-//          if ($this->compareDatetime(new DrupalDateTime($reservedStart), new DrupalDateTime($begin)) === 0) {
-//            $table?->set('field_last_lock_begin', NULL);
-//          }
+          // In case the table is time limit matches
+          // the limits of the cancelled event.
+          // Still needs logic so we abort this for now.
+          // $begin = $slot->get('start_time')->value;
+          // $ending = $slot->get('end_time')->value;
+          //
+          // $reservedStart = $table?->get('field_last_lock_begin')->value;
+          // $reservedEnd = $table?->get('field_last_lock_end')->value;
+          //
+          // if ($this->compareDatetime(new DrupalDateTime($reservedEnd)
+          // , new DrupalDateTime($ending)) === 0) {
+          // $table?->set('field_last_lock_end', NULL);
+          // }
+          // if ($this->compareDatetime(new DrupalDateTime($reservedStart),
+          // new DrupalDateTime($begin)) === 0) {
+          // $table?->set('field_last_lock_begin', NULL);
+          // }
+          // .
           $slot_id = $slot->id();
           $this->logger->get('Calendar')->notice("Slot $slot_id Canceled Table $id must be Freed!");
           return TRUE;
         }
-//        Otherwise just set it to NULL cuz logically it's the cronjob that's doing the clean.
+        // Otherwise just set it to NULL cuz logically
+        // it's the cronjob that's doing the clean.
         else {
           $table?->set('field_last_lock_begin', NULL);
           $table?->set('field_last_lock_end', NULL);
@@ -299,7 +296,8 @@ class TableReservation implements TableReservationInterface {
         $this->logger->get('Calendar')->notice("Table $id is Free now");
         return (bool) $table?->save();
       }
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       $this->logger->get('Calendar')->error($e->getMessage());
       return FALSE;
     }
@@ -307,10 +305,7 @@ class TableReservation implements TableReservationInterface {
   }
 
   /**
-   * @param \Drupal\Core\Datetime\DrupalDateTime $datetime1
-   * @param \Drupal\Core\Datetime\DrupalDateTime $datetime2
-   *
-   * @return \Drupal\Core\Datetime\DrupalDateTime[]
+   * {@inheritDoc}
    */
   protected function getMinMaxDatetime(DrupalDateTime $datetime1, DrupalDateTime $datetime2) {
     $comparison = $this->compareDatetime($datetime1, $datetime2);
@@ -331,32 +326,29 @@ class TableReservation implements TableReservationInterface {
   }
 
   /**
-   * @param \Drupal\Core\Datetime\DrupalDateTime $datetime1
-   * @param \Drupal\Core\Datetime\DrupalDateTime $datetime2
-   *
-   * @return int
+   * {@inheritDoc}
    */
   protected function compareDatetime(DrupalDateTime $datetime1, DrupalDateTime $datetime2) {
     $diff = $datetime1->diff($datetime2);
 
     if ($diff->invert) {
-      return 1; // $datetime2 is earlier
+      // $datetime2 is earlier
+      return 1;
     }
     elseif ($diff->invert === 0) {
-      return 0; // Both are equal
+      // Both are equal.
+      return 0;
     }
     else {
-      return -1; // $datetime1 is earlier
+      // $datetime1 is earlier
+      return -1;
     }
   }
 
-
   /**
-   * @param $calendar_slot
-   *
-   * @return \Drupal\Core\GeneratedUrl|string
+   * {@inheritDoc}
    */
-  public function googleCalendarLink ($calendar_slot) {
+  public function googleCalendarLink($calendar_slot) {
     $begin = new DrupalDateTime($calendar_slot->get('start_time')->value);
     $ending = new DrupalDateTime($calendar_slot->get('end_time')->value);
 
@@ -370,7 +362,7 @@ class TableReservation implements TableReservationInterface {
           '@site_name' => $site_name,
         ]),
         'dates' => $begin->format('Ymd\THis') . '/' . $ending->format('Ymd\THis'),
-//        'location' => t('Agence') . ' ' . $agency->get('name')->value,
+        // 'location' => t('Agence') . ' ' . $agency->get('name')->value,
         'sf' => TRUE,
         'output' => 'xml',
       ],
@@ -378,4 +370,5 @@ class TableReservation implements TableReservationInterface {
     $add_to_google_calendar = Url::fromUri("https://www.google.com/calendar/render", $options);
     return $add_to_google_calendar->toString();
   }
+
 }

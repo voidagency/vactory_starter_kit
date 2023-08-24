@@ -118,11 +118,10 @@ function vactory_calendar_entity_presave(EntityInterface $entity) {
       $status = $entity?->get('etat')->value;
 
       if ($status !== 'declined') {
-       if ($status === 'confirmed') {
-         $calendar_manager->notify(TableReservationInterface::SEND_CONFIRMATION, $entity);
-         $calendar_manager->assignTable($entity);
-
-       }
+        if ($status === 'confirmed') {
+          $calendar_manager->notify(TableReservationInterface::SEND_CONFIRMATION, $entity);
+          $calendar_manager->assignTable($entity);
+        }
       }
       else {
         $calendar_manager->notify(TableReservationInterface::SEND_ANNULATION, $entity);
@@ -135,6 +134,10 @@ function vactory_calendar_entity_presave(EntityInterface $entity) {
     }
   }
 }
+
+/**
+ * Alters the JSON API collection.
+ */
 function vactory_calendar_json_api_collection_alter(&$filters, &$context) {
 
   if ($context['id'] === 'vactory_users') {
@@ -146,33 +149,32 @@ function vactory_calendar_json_api_collection_alter(&$filters, &$context) {
 
   }
 }
-/**
- * Implements hook_mail().
- */
-//function vactory_calendar_mail($key, &$message, $params) {
-//
-//  if (in_array($key, [
-//    TableReservationInterface::TABLE_RESERVED,
-//    TableReservationInterface::SEND_ANNULATION,
-//    TableReservationInterface::SEND_CONFIRMATION,
-//    TableReservationInterface::SEND_INVITATION,
-//  ], TRUE)) {
-//
-//    $sender = 'no_reply@void.care';
-//    $message['from'] = $sender;
-//    $message['headers']['Sender'] = $sender;
-//    $message['headers']['From'] = $sender;
-//    $message['subject'] = $params['subject'];
-//    $body = ['#markup' => $params['message']];
-//    $message['body'][] = \Drupal::service('renderer')->render($body);
-//
-//  }
-//}
+
+// /**
+// * Implements hook_mail().
+// */
+// function vactory_calendar_mail($key, &$message, $params) {
+// if (in_array($key, [
+// TableReservationInterface::TABLE_RESERVED,
+// TableReservationInterface::SEND_ANNULATION,
+// TableReservationInterface::SEND_CONFIRMATION,
+// TableReservationInterface::SEND_INVITATION,
+// ], TRUE)) {
+// $sender = 'no_reply@void.care';
+// $message['from'] = $sender;
+// $message['headers']['Sender'] = $sender;
+// $message['headers']['From'] = $sender;
+// $message['subject'] = $params['subject'];
+// $body = ['#markup' => $params['message']];
+// $message['body'][] = \Drupal::service('renderer')->render($body);
+// }
+// }
+
 /**
  * Implements hook_cron().
  */
 function vactory_calendar_cron() {
-//  This Cron must be ran on high frequency to free the Tables.
+  // This Cron must be ran on high frequency to free the Tables.
   $date_time = DrupalDateTime::createFromTimestamp(time())
     ->format('Y-m-d\TH:i:s');
   $tableManager = \Drupal::service('vactory_calendar.table_reservation');
@@ -185,6 +187,9 @@ function vactory_calendar_cron() {
   }
 }
 
+/**
+ * Implements hook_entity_type_alter().
+ */
 function vactory_calendar_entity_type_alter(array &$entity_types) {
   $entity_types['calendar_slot']->addConstraint('time_limit');
 

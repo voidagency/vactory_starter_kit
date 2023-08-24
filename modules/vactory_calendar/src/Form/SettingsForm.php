@@ -13,8 +13,14 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Configure Calendar Settings.
  */
 class SettingsForm extends ConfigFormBase {
-
+  /**
+   * {@inheritdoc}
+   */
   private $rendrer;
+
+  /**
+   * {@inheritdoc}
+   */
   public function __construct(Renderer $rendrer, ConfigFactoryInterface $config) {
     parent::__construct($config);
     $this->rendrer = $rendrer;
@@ -29,6 +35,7 @@ class SettingsForm extends ConfigFormBase {
       $container->get('config.factory')
     );
   }
+
   /**
    * {@inheritdoc}
    */
@@ -92,7 +99,6 @@ class SettingsForm extends ConfigFormBase {
       '#description' => $this->t('Leave Empty to use SMTP config'),
     ];
 
-
     $form['mailgun']['mailgun_api_key'] = [
       '#title' => $this->t("MailGun API key"),
       '#type' => 'textfield',
@@ -116,7 +122,7 @@ class SettingsForm extends ConfigFormBase {
       '#type' => 'text_format',
       '#format' => 'email_html',
       '#allowed_formats' => ['email_html'],
-      '#title' => $this->t('Contenu du mail d\'invitation'),
+      '#title' => $this->t("Contenu du mail d'invitation"),
       '#description' => $this->t('Laissez vide et la notification par email ne sera pas envoyée <br/><br/><br/>'),
       '#attributes' => [
         'class' => ['js-form-item'],
@@ -142,7 +148,7 @@ class SettingsForm extends ConfigFormBase {
       '#type' => 'text_format',
       '#format' => 'email_html',
       '#allowed_formats' => ['email_html'],
-      '#title' => $this->t('Contenu du mail d\'annulation'),
+      '#title' => $this->t("Contenu du mail d'annulation"),
       '#description' => $this->t('Laissez vide et la notification par email ne sera pas envoyée <br/><br/><br/>'),
       '#attributes' => [
         'class' => ['js-form-item'],
@@ -155,7 +161,7 @@ class SettingsForm extends ConfigFormBase {
       '#type' => 'text_format',
       '#format' => 'email_html',
       '#allowed_formats' => ['email_html'],
-      '#title' => $this->t('Contenu du mail de la réservation d\'une table '),
+      '#title' => $this->t("Contenu du mail de la réservation d'une table"),
       '#description' => $this->t('Laissez vide et la notification par email ne sera pas envoyée <br/><br/><br/>'),
       '#attributes' => [
         'class' => ['js-form-item'],
@@ -193,8 +199,8 @@ class SettingsForm extends ConfigFormBase {
 
     $form['time_boundes']['interval'] = [
       '#type' => 'textfield',
-      '#title' => $this->t('Durée d\'un RDV en min'),
-      '#description' => $this->t('Choisir la Durée d\' un RDV en minutes <br/><br/><br/>'),
+      '#title' => $this->t("Durée d'un RDV en min"),
+      '#description' => $this->t("Choisir la Durée d' un RDV en minutes <br/><br/><br/>"),
       '#attributes' => [
         'class' => ['js-form-item'],
       ],
@@ -210,8 +216,9 @@ class SettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
-    /**
-     * To do: add some fields validation in case a field need validation before submitting.
+    /*
+     * To do: add some fields validation in case a field
+     * need validation before submitting.
      */
 
     parent::validateForm($form, $form_state);
@@ -242,6 +249,9 @@ class SettingsForm extends ConfigFormBase {
     parent::submitForm($form, $form_state);
   }
 
+  /**
+   * {@inheritdoc}
+   */
   protected function addTokens() {
     $token_tree = [
       '#theme' => 'token_tree_link',

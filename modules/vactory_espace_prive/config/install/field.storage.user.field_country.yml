@@ -2,15 +2,14 @@ langcode: en
 status: true
 dependencies:
   module:
-    - taxonomy
+    - address
     - user
-id: user.field_pays
-field_name: field_pays
+id: user.field_country
+field_name: field_country
 entity_type: user
-type: entity_reference
-settings:
-  target_type: taxonomy_term
-module: core
+type: address_country
+settings: {  }
+module: address
 locked: false
 cardinality: 1
 translatable: true
