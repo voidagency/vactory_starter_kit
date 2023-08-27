@@ -41,9 +41,11 @@ function vactory_content_package_install($is_syncing) {
     ]);
 
   // Install node machine name new field.
-  Drupal::entityDefinitionUpdateManager()->installFieldStorageDefinition('node_id', 'node', 'vactory_content_package', $node_id_definition);
+  Drupal::entityDefinitionUpdateManager()
+    ->installFieldStorageDefinition('node_id', 'node', 'vactory_content_package', $node_id_definition);
   // Install term machine name new field.
-  Drupal::entityDefinitionUpdateManager()->installFieldStorageDefinition('term_id', 'taxonomy_term', 'vactory_content_package', $term_id_definition);
+  Drupal::entityDefinitionUpdateManager()
+    ->installFieldStorageDefinition('term_id', 'taxonomy_term', 'vactory_content_package', $term_id_definition);
 
   // Update form displays.
   vactory_content_package_update_form_display('node', 'node_id');
@@ -59,8 +61,7 @@ function vactory_content_package_install($is_syncing) {
     foreach ($nodes as $node) {
       try {
         $node->save();
-      }
-      catch (Exception $e) {
+      } catch (Exception $e) {
       }
     }
   }
@@ -71,8 +72,7 @@ function vactory_content_package_install($is_syncing) {
     foreach ($terms as $term) {
       try {
         $term->save();
-      }
-      catch (Exception $e) {
+      } catch (Exception $e) {
       }
     }
   }
@@ -83,9 +83,11 @@ function vactory_content_package_install($is_syncing) {
  */
 function vactory_content_package_update_form_display($entity_type, $field_name) {
   // Update existing form displays.
-  $bundles = \Drupal::service('entity_type.bundle.info')->getBundleInfo($entity_type);
+  $bundles = \Drupal::service('entity_type.bundle.info')
+    ->getBundleInfo($entity_type);
   foreach ($bundles as $bundle => $infos) {
-    $entity_form_display = Drupal::entityTypeManager()->getStorage('entity_form_display')
+    $entity_form_display = Drupal::entityTypeManager()
+      ->getStorage('entity_form_display')
       ->load('node.' . $bundle . '.default');
     if ($entity_form_display) {
       $entity_form_display->setComponent($field_name, [
@@ -100,4 +102,23 @@ function vactory_content_package_update_form_display($entity_type, $field_name) 
  */
 function vactory_content_package_uninstall($is_syncing) {
   field_cron();
+}
+
+/**
+ * Add node_content_package_exclude field.
+ */
+function vactory_content_package_update_9571() {
+  $storage_definition = BaseFieldDefinition::create('boolean')
+    ->setLabel(t('Yes, exclude this entity from the content package (import/export).'))
+    ->setTranslatable(FALSE)
+    ->setDisplayOptions('form', [
+      'type' => 'boolean_checkbox',
+      'settings' => [
+        'display_label' => TRUE,
+      ],
+    ])
+    ->setDisplayConfigurable('form', TRUE);
+
+  \Drupal::entityDefinitionUpdateManager()
+    ->installFieldStorageDefinition('node_content_package_exclude', 'node', 'node', $storage_definition);
 }
