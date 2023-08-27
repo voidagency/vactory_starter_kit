@@ -97,7 +97,7 @@ class TenderSid extends ControllerBase
         }
         $data = $webform_submission->getData();
 
-        $node = $this-> entityTypeManager->getStorage('node')->load($data['tender']);
+        $node = $this->entityTypeManager->getStorage('node')->load($data['tender']);
         $mid = $node->get('field_vactory_media_file')
         ->getValue()[0]['target_id'];
         $media = Media::load($mid);
