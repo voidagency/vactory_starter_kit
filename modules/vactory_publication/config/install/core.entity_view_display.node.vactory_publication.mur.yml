@@ -10,6 +10,7 @@ dependencies:
     - field.field.node.vactory_publication.field_vactory_document
     - field.field.node.vactory_publication.field_vactory_excerpt
     - field.field.node.vactory_publication.field_vactory_media
+    - field.field.node.vactory_publication.field_vactory_media_document
     - field.field.node.vactory_publication.field_vactory_meta_tags
     - field.field.node.vactory_publication.field_vactory_publication_theme
     - field.field.node.vactory_publication.field_vactory_seo_status
@@ -20,9 +21,8 @@ dependencies:
     - text
     - user
     - vactory_core
-  enforced:
-    module:
-      - vactory_publication
+_core:
+  default_config_hash: TolANuGkIotyMYeIUbcGuEnRK-RgyPLu3kqK0h_9Res
 id: node.vactory_publication.mur
 targetEntityType: node
 bundle: vactory_publication
@@ -67,6 +67,14 @@ content:
     third_party_settings: {  }
     weight: 3
     region: content
+  field_vactory_media_document:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 5
+    region: content
   flag_liked_content:
     settings: {  }
     third_party_settings: {  }
@@ -80,6 +88,7 @@ content:
 hidden:
   addtoany: true
   comment: true
+  field_content_access_custom: true
   field_content_access_groups: true
   field_content_access_roles: true
   field_content_access_users: true
