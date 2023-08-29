@@ -158,6 +158,7 @@ class MenusController extends ControllerBase {
       // Use the default sorting of menu links.
       ['callable' => 'menu.default_tree_manipulators:generateIndexAndSort'],
     ];
+
     $tree = $menu_tree->transform($tree, $manipulators);
 
     // Finally, build a renderable array from the transformed tree.
@@ -197,10 +198,23 @@ class MenusController extends ControllerBase {
     $site_config = \Drupal::config('system.site');
     $langcode = $this->languageManager->getCurrentLanguage()->getId();
     foreach ($tree as $item_value) {
+      $decoupled_link_url = '';
+      $menu_entity = $item_value['original_link'] ? $item_value['original_link']->getEntity() : NULL;
+      if ($menu_entity) {
+        $decoupled_link = $menu_entity->get('decoupled_link')->uri;
+        if ($decoupled_link) {
+          $decoupled_link_url = Url::fromUri($decoupled_link)->toString(TRUE)->getGeneratedUrl();
+        }
+      }
       /* @var $org_link \Drupal\Core\Menu\MenuLinkInterface */
       $org_link = $item_value['original_link'];
 
       $newValue = $this->getElementValue($org_link);
+
+      if (!empty($decoupled_link_url)) {
+        // Use translated link when exists.
+        $newValue['url'] = $decoupled_link_url;
+      }
 
       if (Settings::get('MENU_USE_HP_ALIAS', FALSE)) {
         $params = isset($item_value['url']) && $item_value['url'] instanceof Url && $item_value['url']->isRouted() ? $item_value['url']->getRouteParameters() : [];
@@ -301,7 +315,6 @@ class MenusController extends ControllerBase {
    * @param $request
    */
   private function setup($request) {
-
     // Get and set the max depth if available.
     $max = $request->get('max_depth');
     if (!empty($max)) {

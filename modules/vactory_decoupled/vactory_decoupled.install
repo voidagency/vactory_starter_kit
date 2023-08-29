@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\link\LinkItemInterface;
 
 /**
  * Add node_settings field.
@@ -129,4 +130,26 @@ function vactory_decoupled_update_9007(&$sandbox) {
     ])
     ->setDisplayConfigurable('form', TRUE);
   Drupal::entityDefinitionUpdateManager()->installFieldStorageDefinition('cache_exclude', 'node', 'vactory_decoupled', $field_definition);
+}
+
+/**
+ * Add menu translated decoupled link field.
+ */
+function vactory_decoupled_update_9008() {
+  $storage_definition = BaseFieldDefinition::create('link')
+    ->setLabel(t('Decoupled Link'))
+    ->setDescription(t('The location this menu link points to. Use this field if the menu link is translatable.'))
+    ->setRevisionable(TRUE)
+    ->setTranslatable(TRUE)
+    ->setSettings([
+      'link_type' => LinkItemInterface::LINK_GENERIC,
+      'title' => DRUPAL_DISABLED,
+    ])
+    ->setDisplayOptions('form', [
+      'type' => 'link_default',
+      'weight' => -2,
+    ]);
+
+  \Drupal::entityDefinitionUpdateManager()
+    ->installFieldStorageDefinition('decoupled_link', 'menu_link_content', 'vactory_decoupled', $storage_definition);
 }
