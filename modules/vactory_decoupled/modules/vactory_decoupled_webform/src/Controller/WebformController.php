@@ -2,7 +2,9 @@
 
 namespace Drupal\vactory_decoupled_webform\Controller;
 
+use Drupal\Component\Utility\Crypt;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Session\AccountProxy;
 use Drupal\Core\Url;
 use Drupal\webform\Entity\Webform;
 use Drupal\webform\Entity\WebformSubmission;
@@ -11,11 +13,35 @@ use Drupal\webform\WebformSubmissionForm;
 use Drupal\webform\WebformSubmissionInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Decoupled webform controller.
  */
 class WebformController extends ControllerBase {
+
+  /**
+   * Current user account.
+   *
+   * @var \Drupal\Core\Session\AccountInterface
+   */
+  protected $currentUser;
+
+
+  public function __construct(
+    AccountProxy $accountProxy
+  ) {
+    $this->currentUser = $accountProxy->getAccount();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('current_user')
+    );
+  }
 
   const ELEMENT_TO_SKIP = [
     'sid',
@@ -167,5 +193,37 @@ class WebformController extends ControllerBase {
       ['response_data' => $response_data],
     );
   }
+
+  public function generateCaptchaMath($webform_id) {
+
+    $num1 = rand(1, 10);
+    $num2 = rand(1, 10);
+
+    $captcha_sid = \Drupal::database()->insert('captcha_sessions')->fields([
+        'uid'        => $this->currentUser->id(),
+        'sid'        => session_id(),
+        'ip_address' => \Drupal::request()->getClientIp(),
+        'timestamp'  => \Drupal::time()->getRequestTime(),
+        'form_id'    => $webform_id,
+        'solution'   => $num1 + $num2,
+        'status'     => CAPTCHA_STATUS_UNSOLVED,
+        'attempts'   => 0,
+        'token'      => Crypt::randomBytesBase64(),
+      ])->execute();
+
+    if (isset($captcha_sid)){
+      return new JsonResponse([
+        'csid' => $captcha_sid,
+        'num1' => $num1,
+        'num2' => $num2,
+      ]);
+    }else{
+      return new JsonResponse([
+        'error' => t('Cannot generate captcha')
+      ], 400);
+    }
+
+  }
+
 
 }

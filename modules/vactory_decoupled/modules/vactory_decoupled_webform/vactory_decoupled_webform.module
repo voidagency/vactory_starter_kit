@@ -6,6 +6,8 @@
  */
 
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Render\Element;
+use Drupal\Core\Render\Element\FormElementInterface;
 
 /**
  * Implements hook_webform_element_configuration_form_alter().
@@ -31,4 +33,46 @@ function vactory_decoupled_webform_webform_element_configuration_form_alter(arra
     ];
   }
   $form_state->set('element_properties', $element_properties);
+}
+
+/**
+ * Implements hook_webform_element_configuration_form_alter().
+ */
+function vactory_decoupled_webform_form_alter(array &$form, FormStateInterface $form_state, $form_id) {
+  if (isset($form['#webform_id'])) {
+    $webform = \Drupal\webform\Entity\Webform::load($form['#webform_id']);
+    $elements = $webform->getElementsInitializedAndFlattened();
+    $resultKey = null;
+    foreach ($elements as $key => $element) {
+      if ($element['#type'] == 'captcha' && isset($element['#captcha_type']) && $element['#captcha_type'] == 'captcha/Math') {
+        $form['#validate'][] = 'validate_captcha_math';
+        break;
+      }
+    }
+  }
+}
+
+
+function validate_captcha_math(&$form, FormStateInterface $form_state) {
+  $errors = $form_state->getErrors();
+
+  if (array_key_exists('captcha_response', $errors)) {
+    unset($errors['captcha_response']);
+  }
+  $form_state->clearErrors();
+
+  foreach ($errors as $key => $value){
+    $form_state->setErrorByName($key,$value);
+  }
+  $user_input = $form_state->getFormObject()->getEntity()->getData();
+
+  $expected_captcha = \Drupal::database()
+    ->select('captcha_sessions', 'cs')
+    ->fields('cs', ['solution'])
+    ->condition('csid', $user_input['captcha_sid'])
+    ->execute()->fetchField();
+
+  if (!isset($expected_captcha) || $expected_captcha != $user_input['captcha_response']){
+    $form_state->setErrorByName('captcha_response', t("Le champs Captcha n'est pas valide."));
+  }
 }
