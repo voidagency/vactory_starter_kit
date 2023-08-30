@@ -86,8 +86,16 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
     $storage = \Drupal::entityTypeManager()->getStorage('node');
     $paragraphStroage = \Drupal::entityTypeManager()->getStorage('paragraph');
     $nodes = $storage->loadMultiple($nids);
+    $skipped_nodes = 0;
     foreach ($nodes as $node) {
       $entity_values = $node->toArray();
+
+      // Skip if node_content_package_exclude is checked.
+      if ($node->hasField('node_content_package_exclude') && $node->get('node_content_package_exclude')->value == 1) {
+        $skipped_nodes++;
+        continue;
+      }
+
       $entity_values = array_diff_key($entity_values, array_flip(ContentPackageManagerInterface::UNWANTED_KEYS));
       $fields = $entityFieldManager->getFieldDefinitions('node', $node->bundle());
       foreach ($entity_values as $field_name => &$field_value) {
@@ -129,7 +137,7 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
     if (!isset($context['results']['count'])) {
       $context['results']['count'] = 0;
     }
-    $context['results']['count'] += count($nodes);
+    $context['results']['count'] += (count($nodes) - $skipped_nodes);
     $context['results']['file_to_import'] = $file_to_import;
   }
 
@@ -145,7 +153,8 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
           'url' => $results['file_to_import'],
         ]);
 
-      $redirect_response = new TrustedRedirectResponse($url->toString(TRUE)->getGeneratedUrl());
+      $redirect_response = new TrustedRedirectResponse($url->toString(TRUE)
+        ->getGeneratedUrl());
       $redirect_response->send();
       return $redirect_response;
     }
@@ -243,7 +252,8 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
 
       $url = Url::fromRoute('vactory_content_package.import');
 
-      $redirect_response = new TrustedRedirectResponse($url->toString(TRUE)->getGeneratedUrl());
+      $redirect_response = new TrustedRedirectResponse($url->toString(TRUE)
+        ->getGeneratedUrl());
       $redirect_response->send();
       return $redirect_response;
     }

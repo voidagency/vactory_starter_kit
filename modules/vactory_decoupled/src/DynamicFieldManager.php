@@ -14,7 +14,6 @@ use Drupal\file\Entity\File;
 use Drupal\image\Entity\ImageStyle;
 use Drupal\media\MediaInterface;
 use Drupal\vactory_core\SlugManager;
-use Drupal\vactory_decoupled_webform\Webform;
 use Drupal\vactory_dynamic_field\ViewsToApi;
 use Shaper\Util\Context;
 use Drupal\Component\Utility\NestedArray;
@@ -110,13 +109,6 @@ class DynamicFieldManager {
   protected $viewsToApi;
 
   /**
-   * Vactory webform service.
-   *
-   * @var \Drupal\vactory_decoupled_webform\Webform
-   */
-  protected $webformNormalizer;
-
-  /**
    * Config factory service.
    *
    * @var ConfigFactoryInterface
@@ -137,7 +129,7 @@ class DynamicFieldManager {
   /**
    * {@inheritdoc}
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, $plateform_provider, MediaFilesManager $mediaFilesManager, EntityRepositoryInterface $entityRepository, JsonApiGenerator $jsonApiGenerator, SlugManager $slugManager, ModuleHandlerInterface $moduleHandler, LanguageManagerInterface $languageManager, ViewsToApi $viewsToApi, Webform $webformNormalizer, ConfigFactoryInterface $configFactory) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, $plateform_provider, MediaFilesManager $mediaFilesManager, EntityRepositoryInterface $entityRepository, JsonApiGenerator $jsonApiGenerator, SlugManager $slugManager, ModuleHandlerInterface $moduleHandler, LanguageManagerInterface $languageManager, ViewsToApi $viewsToApi, ConfigFactoryInterface $configFactory) {
     $this->entityTypeManager = $entity_type_manager;
     $this->language = $languageManager->getCurrentLanguage()->getId();
     $this->platformProvider = $plateform_provider;
@@ -150,7 +142,6 @@ class DynamicFieldManager {
     $this->moduleHandler = $moduleHandler;
     $this->languageManager = $languageManager;
     $this->viewsToApi = $viewsToApi;
-    $this->webformNormalizer = $webformNormalizer;
     $this->mediaStorage = $this->entityTypeManager->getStorage('media');
     $this->termResultCount = $this->moduleHandler->moduleExists('vactory_taxonomy_results') ? $this->entityTypeManager->getStorage('term_result_count') : NULL;
   }
@@ -481,7 +472,11 @@ class DynamicFieldManager {
           }
 
           // Webform.
-          if ($info['type'] === 'webform_decoupled' && !empty($value)) {
+          if (
+            $info['type'] === 'webform_decoupled' &&
+            !empty($value) &&
+            $this->moduleHandler->moduleExists('vactory_decoupled_webform')
+          ) {
             $webform_id = $value['id'];
             // Cache tags.
             $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), [
@@ -492,7 +487,9 @@ class DynamicFieldManager {
             // Cache contexts.
             $cacheContexts = Cache::mergeContexts($this->cacheability->getCacheContexts(), ['user']);
             $this->cacheability->setCacheContexts($cacheContexts);
-            $value['elements'] = $this->webformNormalizer->normalize($webform_id);
+            // Service invoked statically because vactory_decoupled_webform.
+            // Module depends on vactory_decoupled.
+            $value['elements'] = \Drupal::service('vactory.webform.normalizer')->normalize($webform_id);
           }
 
           if ($info['type'] === 'remote_video' && !empty($value)) {

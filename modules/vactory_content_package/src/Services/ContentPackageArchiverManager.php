@@ -110,10 +110,15 @@ class ContentPackageArchiverManager implements ContentPackageArchiverManagerInte
       $context['sandbox']['zip'] = new \ZipArchive();
       $context['sandbox']['zip']->open($fileSystem->realPath($zip_file_path), constant('ZipArchive::CREATE'));
     }
-
+    $skipped_nodes = 0;
     foreach ($ids as $nid) {
       // Get original node.
       $node = Node::load($nid);
+      // Skip if node_content_package_exclude is checked.
+      if ($node->hasField('node_content_package_exclude') && $node->get('node_content_package_exclude')->value == 1) {
+        $skipped_nodes++;
+        continue;
+      }
       $dir_location = $destination . '/' . $node->label();
       $fileSystem->prepareDirectory($dir_location, FileSystemInterface::CREATE_DIRECTORY);
       file_put_contents($dir_location . '/original.json', json_encode($contentPackageManager->normalize($node), JSON_PRETTY_PRINT));
@@ -126,7 +131,7 @@ class ContentPackageArchiverManager implements ContentPackageArchiverManagerInte
         if ($node->hasTranslation($lang)) {
           $translated_node = $entityRepository->getTranslationFromContext($node, $lang);
           if (isset($translated_node)) {
-            file_put_contents($dir_location . '/' . $lang . '.json', json_encode($contentPackageManager->normalize($translated_node), JSON_PRETTY_PRINT));
+            file_put_contents($dir_location . '/' . $lang . '.json', json_encode($contentPackageManager->normalize($translated_node, TRUE), JSON_PRETTY_PRINT));
             $context['sandbox']['zip']->addFile($fileSystem->realpath($dir_location . '/' . $lang . '.json'), $node->label() . '/' . $lang . '.json');
           }
         }
@@ -136,7 +141,7 @@ class ContentPackageArchiverManager implements ContentPackageArchiverManagerInte
     if (!isset($context['results']['count'])) {
       $context['results']['count'] = 0;
     }
-    $context['results']['count'] += count($ids);
+    $context['results']['count'] += (count($ids) - $skipped_nodes);
   }
 
   /**
@@ -145,17 +150,20 @@ class ContentPackageArchiverManager implements ContentPackageArchiverManagerInte
   public static function zipFinished($success, $results, $operations) {
     if ($success) {
 
-      $message = "Zipping finished: {$results['count']} nodes.";
-      foreach ($results as $result) {
-        if (isset($result['zip']) && $result['zip'] instanceof \ZipArchive) {
-          $result['zip']->close();
-        }
-      }
+      $message = $results['count'] > 0 ? "Zipping finished: {$results['count']} nodes." : "Oops, Nothing to export";
       \Drupal::messenger()->addStatus($message);
-      $redirect_response = new TrustedRedirectResponse(Url::fromRoute('vactory_content_package.download')
-        ->toString(TRUE)->getGeneratedUrl());
-      $redirect_response->send();
-      return $redirect_response;
+      if ($results['count'] > 0) {
+        foreach ($results as $result) {
+          if (isset($result['zip']) && $result['zip'] instanceof \ZipArchive) {
+            $result['zip']->close();
+          }
+        }
+        $redirect_response = new TrustedRedirectResponse(Url::fromRoute('vactory_content_package.download')
+          ->toString(TRUE)->getGeneratedUrl());
+        $redirect_response->send();
+        return $redirect_response;
+      }
+
     }
   }
 
@@ -166,8 +174,7 @@ class ContentPackageArchiverManager implements ContentPackageArchiverManagerInte
     $directory = $this->extractDirectory();
     try {
       $archive = $this->archiveExtract($path, $directory);
-    }
-    catch (\Exception $e) {
+    } catch (\Exception $e) {
       $this->messenger->addError($e->getMessage());
       return;
     }
@@ -269,7 +276,8 @@ class ContentPackageArchiverManager implements ContentPackageArchiverManagerInte
           'url' => $results['export_data_file'],
         ]);
 
-      $redirect_response = new TrustedRedirectResponse($url->toString(TRUE)->getGeneratedUrl());
+      $redirect_response = new TrustedRedirectResponse($url->toString(TRUE)
+        ->getGeneratedUrl());
       $redirect_response->send();
       return $redirect_response;
     }
