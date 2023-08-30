@@ -27,10 +27,10 @@ class WebformController extends ControllerBase {
    */
   protected $currentUser;
 
-
-  public function __construct(
-    AccountProxy $accountProxy
-  ) {
+  /**
+   * WebformController constructor.
+   */
+  public function __construct(AccountProxy $accountProxy) {
     $this->currentUser = $accountProxy->getAccount();
   }
 
@@ -38,9 +38,7 @@ class WebformController extends ControllerBase {
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('current_user')
-    );
+    return new static($container->get('current_user'));
   }
 
   const ELEMENT_TO_SKIP = [
@@ -62,7 +60,7 @@ class WebformController extends ControllerBase {
     if (empty($webform_data['webform_id'])) {
       return new JsonResponse([
         'error' => [
-          'code' => '400',
+          'code'    => '400',
           'message' => 'Missing webform id',
         ],
       ], 400);
@@ -98,7 +96,8 @@ class WebformController extends ControllerBase {
     }
 
     $error_message = [];
-    \Drupal::moduleHandler()->alter('decoupled_webform_data_presubmit', $webform_data, $error_message);
+    \Drupal::moduleHandler()
+      ->alter('decoupled_webform_data_presubmit', $webform_data, $error_message);
     if (!empty($error_message)) {
       return new JsonResponse($error_message, 400);
     }
@@ -118,15 +117,15 @@ class WebformController extends ControllerBase {
     else {
       // Convert to webform values format.
       $values = [
-        'in_draft' => $webform_data['in_draft'] == 'true',
+        'in_draft'     => $webform_data['in_draft'] == 'true',
         'current_page' => $webform_data['current_page'] ?? NULL,
-        'uid' => \Drupal::currentUser()->id(),
-        'uri' => '/_webform/submit' . $webform_data['webform_id'],
-        'entity_type' => $entity_type,
-        'entity_id' => $entity_id,
+        'uid'          => \Drupal::currentUser()->id(),
+        'uri'          => '/_webform/submit' . $webform_data['webform_id'],
+        'entity_type'  => $entity_type,
+        'entity_id'    => $entity_id,
         // Check if remote IP address should be stored.
-        'remote_addr' => $webform->hasRemoteAddr() ? $request->getClientIp() : '',
-        'webform_id' => $webform_data['webform_id'],
+        'remote_addr'  => $webform->hasRemoteAddr() ? $request->getClientIp() : '',
+        'webform_id'   => $webform_data['webform_id'],
       ];
       $values['data'] = $webform_data;
 
@@ -143,7 +142,7 @@ class WebformController extends ControllerBase {
     // Check if submit was successful.
     if ($webform_submission instanceof WebformSubmissionInterface) {
       return new JsonResponse([
-        'sid' => $webform_submission->id(),
+        'sid'      => $webform_submission->id(),
         'settings' => self::getWhitelistedSettings($webform),
       ]);
     }
@@ -185,45 +184,43 @@ class WebformController extends ControllerBase {
       $settings['confirmation_url'] = str_replace('/backend', '', $settings['confirmation_url']);
     }
 
-    return array_merge(
-      array_intersect_key(
-        $settings,
-        array_flip($whitelist)
-      ),
-      ['response_data' => $response_data],
+    return array_merge(array_intersect_key($settings, array_flip($whitelist)), ['response_data' => $response_data],
     );
   }
 
+  /**
+   * Generates math captcha.
+   */
   public function generateCaptchaMath($webform_id) {
 
     $num1 = rand(1, 10);
     $num2 = rand(1, 10);
 
     $captcha_sid = \Drupal::database()->insert('captcha_sessions')->fields([
-        'uid'        => $this->currentUser->id(),
-        'sid'        => session_id(),
-        'ip_address' => \Drupal::request()->getClientIp(),
-        'timestamp'  => \Drupal::time()->getRequestTime(),
-        'form_id'    => $webform_id,
-        'solution'   => $num1 + $num2,
-        'status'     => CAPTCHA_STATUS_UNSOLVED,
-        'attempts'   => 0,
-        'token'      => Crypt::randomBytesBase64(),
-      ])->execute();
+      'uid'        => $this->currentUser->id(),
+      'sid'        => session_id(),
+      'ip_address' => \Drupal::request()->getClientIp(),
+      'timestamp'  => \Drupal::time()->getRequestTime(),
+      'form_id'    => $webform_id,
+      'solution'   => $num1 + $num2,
+      'status'     => CAPTCHA_STATUS_UNSOLVED,
+      'attempts'   => 0,
+      'token'      => Crypt::randomBytesBase64(),
+    ])->execute();
 
-    if (isset($captcha_sid)){
+    if (isset($captcha_sid)) {
       return new JsonResponse([
         'csid' => $captcha_sid,
         'num1' => $num1,
         'num2' => $num2,
       ]);
-    }else{
+    }
+    else {
       return new JsonResponse([
-        'error' => t('Cannot generate captcha')
+        'error' => t('Cannot generate captcha'),
       ], 400);
     }
 
   }
-
 
 }

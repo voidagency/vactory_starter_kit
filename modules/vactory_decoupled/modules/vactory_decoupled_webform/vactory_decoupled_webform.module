@@ -6,8 +6,7 @@
  */
 
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Render\Element;
-use Drupal\Core\Render\Element\FormElementInterface;
+use Drupal\webform\Entity\Webform;
 
 /**
  * Implements hook_webform_element_configuration_form_alter().
@@ -18,17 +17,17 @@ function vactory_decoupled_webform_webform_element_configuration_form_alter(arra
   if (in_array($element_properties['type'], $webform_file_types)) {
     $element_properties['default_file'] = $element_properties['default_file'] ?? '';
     $form['file']['default_file'] = [
-      '#type' => 'textfield',
-      '#title' => t('Default file'),
+      '#type'          => 'textfield',
+      '#title'         => t('Default file'),
       '#default_value' => $element_properties['default_file'],
-      '#description' => t('Default file ID, tokens are supported'),
+      '#description'   => t('Default file ID, tokens are supported'),
     ];
   }
   if ($element_properties['type'] === 'webform_wizard_page') {
     $element_properties['icon'] = $element_properties['icon'] ?? '';
     $form['form']['icon'] = [
-      '#type' => 'vactory_icon_picker',
-      '#title' => 'Step icon',
+      '#type'          => 'vactory_icon_picker',
+      '#title'         => 'Step icon',
       '#default_value' => $element_properties['icon'],
     ];
   }
@@ -40,9 +39,9 @@ function vactory_decoupled_webform_webform_element_configuration_form_alter(arra
  */
 function vactory_decoupled_webform_form_alter(array &$form, FormStateInterface $form_state, $form_id) {
   if (isset($form['#webform_id'])) {
-    $webform = \Drupal\webform\Entity\Webform::load($form['#webform_id']);
+    $webform = Webform::load($form['#webform_id']);
     $elements = $webform->getElementsInitializedAndFlattened();
-    $resultKey = null;
+    $resultKey = NULL;
     foreach ($elements as $key => $element) {
       if ($element['#type'] == 'captcha' && isset($element['#captcha_type']) && $element['#captcha_type'] == 'captcha/Math') {
         $form['#validate'][] = 'validate_captcha_math';
@@ -52,7 +51,9 @@ function vactory_decoupled_webform_form_alter(array &$form, FormStateInterface $
   }
 }
 
-
+/**
+ * A custom validation for captcha math.
+ */
 function validate_captcha_math(&$form, FormStateInterface $form_state) {
   $errors = $form_state->getErrors();
 
@@ -61,8 +62,8 @@ function validate_captcha_math(&$form, FormStateInterface $form_state) {
   }
   $form_state->clearErrors();
 
-  foreach ($errors as $key => $value){
-    $form_state->setErrorByName($key,$value);
+  foreach ($errors as $key => $value) {
+    $form_state->setErrorByName($key, $value);
   }
   $user_input = $form_state->getFormObject()->getEntity()->getData();
 
@@ -70,9 +71,10 @@ function validate_captcha_math(&$form, FormStateInterface $form_state) {
     ->select('captcha_sessions', 'cs')
     ->fields('cs', ['solution'])
     ->condition('csid', $user_input['captcha_sid'])
-    ->execute()->fetchField();
+    ->execute()
+    ->fetchField();
 
-  if (!isset($expected_captcha) || $expected_captcha != $user_input['captcha_response']){
+  if (!isset($expected_captcha) || $expected_captcha != $user_input['captcha_response']) {
     $form_state->setErrorByName('captcha_response', t("Le champs Captcha n'est pas valide."));
   }
 }
