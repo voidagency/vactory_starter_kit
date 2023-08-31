@@ -13,6 +13,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
+use Drupal\Core\Site\Settings;
+use Drupal\path_alias\AliasManagerInterface;
 
 class MenusController extends ControllerBase {
 
@@ -59,16 +63,43 @@ class MenusController extends ControllerBase {
   protected $minDepth = 1;
 
   /**
+   * Language manager service.
+   *
+   * @var \Drupal\Core\Language\LanguageManagerInterface
+   */
+  protected $languageManager;
+
+  /**
+   * Entity type manager service.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
+   * Path alias manager service.
+   *
+   * @var \Drupal\path_alias\AliasManagerInterface
+   */
+  protected $pathAlias;
+
+  /**
    * {@inheritdoc}
    */
   public function __construct(
     ConfigFactoryInterface $config_factory,
     MenuLinkTreeInterface $menuLinkTree,
-    EntityRepositoryInterface $entityRepository
+    EntityRepositoryInterface $entityRepository,
+    EntityTypeManagerInterface $entityTypeManager,
+    AliasManagerInterface $pathAlias,
+    LanguageManagerInterface $languageManager,
   ) {
     $this->configFactory = $config_factory;
     $this->menuLinkTree = $menuLinkTree;
     $this->entityRepository = $entityRepository;
+    $this->entityTypeManager = $entityTypeManager;
+    $this->pathAlias = $pathAlias;
+    $this->languageManager = $languageManager;
   }
 
   /**
@@ -78,7 +109,10 @@ class MenusController extends ControllerBase {
     return new static(
       $container->get('config.factory'),
       $container->get('menu.link_tree'),
-      $container->get('entity.repository')
+      $container->get('entity.repository'),
+      $container->get('entity_type.manager'),
+      $container->get('path_alias.manager'),
+      $container->get('language_manager')
     );
   }
 
@@ -160,6 +194,8 @@ class MenusController extends ControllerBase {
    */
   protected function getMenuItems(array $tree, array &$items = []) {
     // Loop through the menu items.
+    $site_config = \Drupal::config('system.site');
+    $langcode = $this->languageManager->getCurrentLanguage()->getId();
     foreach ($tree as $item_value) {
       $decoupled_link_url = '';
       $menu_entity = $item_value['original_link'] ? $item_value['original_link']->getEntity() : NULL;
@@ -179,6 +215,19 @@ class MenusController extends ControllerBase {
         $newValue['url'] = $decoupled_link_url;
       }
 
+      if (Settings::get('MENU_USE_HP_ALIAS', FALSE)) {
+        $params = isset($item_value['url']) && $item_value['url'] instanceof Url && $item_value['url']->isRouted() ? $item_value['url']->getRouteParameters() : [];
+        $nid = $params['node'] ?? NULL;
+        if ($nid) {
+          $hp_nid = $this->getHomepageNid($site_config);
+          if ($nid === $hp_nid) {
+            $alias = $this->pathAlias->getAliasByPath("/node/{$nid}", $langcode);
+            $url = $newValue['url'] ?? '';
+            $newValue['url'] = $url . $alias;
+          }
+        }
+      }
+
       if (!empty($item_value['below'])) {
         $newValue['below'] = [];
         $this->getMenuItems($item_value['below'], $newValue['below']);
@@ -186,6 +235,26 @@ class MenusController extends ControllerBase {
 
       $items[] = $newValue;
     }
+  }
+
+  /**
+   * Get HP nid.
+   */
+  protected function getHomepageNid($site_config) {
+    // Get the front page node from the site configuration.
+    $frontpage_path = $site_config->get('page.front');
+    if (preg_match_all('#^/node/(\d+)$#', $frontpage_path, $match)) {
+      return $match[1][0] ?? NULL;
+    }
+    $nodes = $this->entityTypeManager->getStorage('node')
+      ->loadByProperties([
+        'path' => $frontpage_path,
+      ]);
+    if (!empty($nodes)) {
+      $node = reset($nodes);
+      return $node->id();
+    }
+    return NULL;
   }
 
   /**
