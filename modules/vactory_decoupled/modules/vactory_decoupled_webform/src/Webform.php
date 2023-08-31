@@ -477,6 +477,7 @@ class Webform {
 
     if ($type === 'captcha') {
       $properties['validation']['required'] = TRUE;
+      $properties['captcha_type'] = $item['#captcha_type'];
     }
 
     if ($ui_type === 'upload') {
