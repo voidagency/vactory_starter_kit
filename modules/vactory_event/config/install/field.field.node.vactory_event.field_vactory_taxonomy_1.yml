@@ -5,7 +5,6 @@ dependencies:
     - field.storage.node.field_vactory_taxonomy_1
     - node.type.vactory_event
     - taxonomy.vocabulary.vactory_event_category
-    -
   enforced:
     module:
       - vactory_event
