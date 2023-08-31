@@ -161,10 +161,23 @@ class MenusController extends ControllerBase {
   protected function getMenuItems(array $tree, array &$items = []) {
     // Loop through the menu items.
     foreach ($tree as $item_value) {
+      $decoupled_link_url = '';
+      $menu_entity = $item_value['original_link'] ? $item_value['original_link']->getEntity() : NULL;
+      if ($menu_entity) {
+        $decoupled_link = $menu_entity->get('decoupled_link')->uri;
+        if ($decoupled_link) {
+          $decoupled_link_url = Url::fromUri($decoupled_link)->toString(TRUE)->getGeneratedUrl();
+        }
+      }
       /* @var $org_link \Drupal\Core\Menu\MenuLinkInterface */
       $org_link = $item_value['original_link'];
 
       $newValue = $this->getElementValue($org_link);
+
+      if (!empty($decoupled_link_url)) {
+        // Use translated link when exists.
+        $newValue['url'] = $decoupled_link_url;
+      }
 
       if (!empty($item_value['below'])) {
         $newValue['below'] = [];

@@ -29,6 +29,7 @@ use Drupal\Component\Utility\UrlHelper;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
 use Drupal\menu_item_extras\Entity\MenuItemExtrasMenuLinkContent;
+use Drupal\link\LinkItemInterface;
 
 /**
  * Implements hook_form_BASE_FORM_ID_alter().
@@ -283,6 +284,22 @@ function vactory_decoupled_entity_base_field_info(EntityTypeInterface $entity_ty
       ->setTranslatable(FALSE)
       ->setRevisionable(FALSE)
       ->setDisplayConfigurable('form', TRUE);
+  }
+
+  if ($entity_type->id() === 'menu_link_content') {
+    $fields['decoupled_link'] = BaseFieldDefinition::create('link')
+      ->setLabel(t('Decoupled Link'))
+      ->setDescription(t('The location this menu link points to. Use this field if the menu link is translatable.'))
+      ->setRevisionable(TRUE)
+      ->setTranslatable(TRUE)
+      ->setSettings([
+        'link_type' => LinkItemInterface::LINK_GENERIC,
+        'title' => DRUPAL_DISABLED,
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'link_default',
+        'weight' => -2,
+      ]);
   }
 
   if ($entity_type->id() === 'taxonomy_term') {
