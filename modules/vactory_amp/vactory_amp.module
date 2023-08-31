@@ -61,6 +61,7 @@ function vactory_amp_form_alter(&$form, FormStateInterface $form_state, $form_id
       $nodes = Drupal::entityQuery('node')
         ->condition('type', $node_type->id())
         ->pager(1)
+        ->accessCheck(FALSE)
         ->execute();
       $nid = reset($nodes);
       if ($nid) {

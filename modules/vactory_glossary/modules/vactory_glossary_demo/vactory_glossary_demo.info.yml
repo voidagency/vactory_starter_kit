@@ -1,8 +1,7 @@
 name: 'Glossary - Default content demo'
 description: 'Provides Glossary default content.'
 type: module
-core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^9 || ^10
 dependencies:
   - default_content:default_content
   - vactory_glossary:vactory_glossary

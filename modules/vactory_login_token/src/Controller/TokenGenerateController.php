@@ -124,7 +124,8 @@ class TokenGenerateController extends ControllerBase {
   public function generateTokenEnMasse($selected) {
     $entity = \Drupal::entityTypeManager()->getStorage('user');
     $ids = $entity->getQuery()
-      ->condition('status', 1);
+      ->condition('status', 1)
+      ->accessCheck(FALSE);
     switch ($selected) {
       case 0: $ids = $ids->notExists('field_token');
         break;

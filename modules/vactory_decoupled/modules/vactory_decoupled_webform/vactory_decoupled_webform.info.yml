@@ -1,7 +1,7 @@
 name: Webform Decoupled
 description: 'Decoupled Webform.'
 type: module
-core_version_requirement: '^8.9 || ^9'
+core_version_requirement: ^9 || ^10
 dependencies:
   - vactory_decoupled
   - webform

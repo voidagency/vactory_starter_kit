@@ -93,6 +93,7 @@ class LocatorPathProcessor implements InboundPathProcessorInterface, OutboundPat
         $path_alias = urldecode($pieces[$index]);
         $locator = \Drupal::entityQuery('locator_entity')
           ->condition('field_locator_path_alias', $path_alias, '=')
+          ->accessCheck(TRUE)
           ->execute();
         if (!empty($locator)) {
           $locator_entity_id = array_values($locator)[0];

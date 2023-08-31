@@ -12,7 +12,7 @@ type: 'canonical_entities:node'
 pattern: '/academy-courses/[node:title]'
 selection_criteria:
   c4f8931b-33b3-45dc-8be1-e4407b2f7b9d:
-    id: node_type
+    id: 'entity_bundle:node'
     bundles:
       vactory_academy: vactory_academy
     negate: false

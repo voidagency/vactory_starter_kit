@@ -1,7 +1,7 @@
 name: Vactory Phone Authentication Decoupled
 description: Allow users to authenticate using phone number.
 type: module
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^9 || ^10
 package: Vactory
 dependencies:
   - vactory_decoupled

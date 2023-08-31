@@ -132,6 +132,7 @@ class SettingsForm extends ConfigFormBase {
       // Clear existing term results count entities.
       $ids = $this->entityTypeManager->getStorage('term_result_count')
         ->getQuery()
+        ->accessCheck(FALSE)
         ->execute();
       $operations = [];
       if (!empty($ids)) {
@@ -154,7 +155,8 @@ class SettingsForm extends ConfigFormBase {
         $status = !$status ? $this->entityTypeManager->getDefinition($entity_type_id)->getKey('published') : $status;
         $type = $this->entityTypeManager->getDefinition($entity_type_id)->getKey('bundle');
         $query = $this->entityTypeManager->getStorage($entity_type_id)
-          ->getQuery();
+          ->getQuery()
+          ->accessCheck(FALSE);
         if (!empty($type)) {
           $query->condition($type, $bundles, 'IN');
         }

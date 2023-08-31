@@ -157,7 +157,6 @@ class SondageForm extends FormBase {
       $entity = $form_state->get('entity');
       $voted_option_value = $form_state->getValue('sondage_options_' . $entity->id());
       $this->sondageManager->vote($entity, $voted_option_value);
-
       $response = new AjaxResponse();
       $options_statistics = $this->sondageManager->getStatistics($entity);
       $vote_statistics = [

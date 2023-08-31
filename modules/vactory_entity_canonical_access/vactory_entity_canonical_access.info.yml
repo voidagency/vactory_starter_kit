@@ -2,5 +2,4 @@ name: Vactory Entity Canonical Access
 type: module
 description: Manage access to entities canonical routes (full page)
 configure: vactory_entity_canonical_access.settings_form
-package: Vactory
-core_version_requirement: ^8.9 || ^9
+core_version_requirement: ^9 || ^10

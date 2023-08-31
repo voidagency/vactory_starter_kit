@@ -74,10 +74,10 @@ function vactory_starter_kit_install() {
     ->set('default', 'vactory')
     ->save();
 
-  // Set default admin theme to "Seven".
+  // Set default admin theme to "Claro".
   \Drupal::configFactory()
     ->getEditable('system.theme')
-    ->set('admin', 'seven')
+    ->set('admin', 'claro')
     ->save();
 
   \Drupal::service('theme_handler')->reset();

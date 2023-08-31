@@ -67,6 +67,7 @@ class NotificationsDrushCommands extends DrushCommands {
     $ids = $this->entityTypeManager->getStorage('notifications_entity')
       ->getQuery()
       ->condition('created', $relative_timestamp, '<=')
+      ->accessCheck(FALSE)
       ->execute();
     if (!empty($ids)) {
       $ids_chunk = array_chunk($ids, 100);

@@ -20,7 +20,6 @@ command.managed_file_upload_complete_event_command:
     js/managed_file_upload_complete_event_command.js: {}
   dependencies:
     - core/jquery
-    - core/jquery.once
 
 password_suggestion:
   js:

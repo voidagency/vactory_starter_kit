@@ -149,7 +149,7 @@ class ModalForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $field_id = \Drupal::request()->query->get('field_id');
     $widget_id = \Drupal::request()->query->get('widget_id');
-    $dialog_options = \Drupal::request()->request->get('dialogOptions');
+    $dialog_options = \Drupal::request()->request->all('dialogOptions');
     $widget_data = isset($dialog_options['data']) ? $dialog_options['data'] : NULL;
     $this->cardinality = \Drupal::request()->query->get('cardinality') ?: NULL;
     $this->wrapperId = \Drupal::request()->query->get('wrapper_id') ?: NULL;
@@ -638,25 +638,28 @@ class ModalForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  protected function buildWidgetSelectorForm(array &$form, FormStateInterface $form_state) {
-    // Get field name.
-    $fieldName = \Drupal::request()->query->get('field_name');
-    // Get bundle.
-    $bundle = \Drupal::request()->query->get('field_bundle');
-    // Get the entity target id.
-    $entityTypeId = \Drupal::request()->query->get('entity_type_id');
-    // Get field definitions.
-    $fields = $this->entityFieldManager->getFieldDefinitions($entityTypeId, $bundle);
-
-    /** @var \Drupal\field\Entity\FieldConfig $fieldConfig */
-    $fieldConfig = $fields[$fieldName] ?? NULL;
-    // Get list of allowed providers selected in the field settings.
+  protected function buildWidgetSelectorForm(array &$form, FormStateInterface $form_state, $allowedProvidersCheck = TRUE) {
     $allowedProviders = [];
-    if (is_array($fieldConfig->getSetting('allowed_providers'))) {
-      $allowedProviders = array_filter($fieldConfig->getSetting('allowed_providers'), function ($value) {
-        return $value !== 0;
-      });
+    if ($allowedProvidersCheck) {
+      // Get field name.
+      $fieldName = \Drupal::request()->query->get('field_name');
+      // Get bundle.
+      $bundle = \Drupal::request()->query->get('field_bundle');
+      // Get the entity target id.
+      $entityTypeId = \Drupal::request()->query->get('entity_type_id');
+      // Get field definitions.
+      $fields = $this->entityFieldManager->getFieldDefinitions($entityTypeId, $bundle);
+
+      /** @var \Drupal\field\Entity\FieldConfig $fieldConfig */
+      $fieldConfig = $fields[$fieldName] ?? NULL;
+      // Get list of allowed providers selected in the field settings.
+      if (is_array($fieldConfig->getSetting('allowed_providers'))) {
+        $allowedProviders = array_filter($fieldConfig->getSetting('allowed_providers'), function ($value) {
+          return $value !== 0;
+        });
+      }
     }
+
     // List of widgets.
     $widgets_list = $this->widgetsManager->getModalWidgetsList($allowedProviders);
 
@@ -707,6 +710,14 @@ class ModalForm extends FormBase {
         '#type' => 'horizontal_tabs',
         '#group_name' => 'templates_tabs',
       ];
+      if (!$allowedProvidersCheck) {
+        $form['templates_tabs'] = [
+          '#type' => 'vertical_tabs',
+        ];
+      }
+      $form['settings_tab'] = [
+        '#type' => 'vertical_tabs',
+      ];
       // Auto populate fields.
       $form['templates_tabs']['auto_populate'] = [
         '#type'        => 'checkbox',
@@ -725,6 +736,9 @@ class ModalForm extends FormBase {
               '#type' => 'details',
               '#title' => $category,
             ];
+            if (!$allowedProvidersCheck) {
+              $form['templates_tabs'][$category]['#group'] = 'templates_tabs';
+            }
             if ($category == 'Others') {
               $form['templates_tabs'][$category]['#weight'] = 99;
             }
@@ -751,11 +765,13 @@ class ModalForm extends FormBase {
               $options[$widget['uuid']] = $renderer->renderPlain($widget_preview);
             }
           }
+          $classes = 'select-template-wrapper';
+          $classes = $allowedProvidersCheck ? $classes : $classes . ' from-console-bo';
           $form['templates_tabs'][$category]['template'] = [
             '#type' => 'radios',
             '#options' => $options,
             '#validated' => TRUE,
-            '#prefix' => '<div class="select-template-wrapper">',
+            '#prefix' => '<div class="' . $classes . '">',
             '#suffix' => '</div>',
             '#attributes' => [
               'class' => ['select-template-radio'],

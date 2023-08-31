@@ -6,14 +6,11 @@ dependencies:
       - vactory_publication_prive
   module:
     - menu_ui
-    - wysiwyg_template
 third_party_settings:
   menu_ui:
     available_menus:
       - main
     parent: 'main:'
-  wysiwyg_template:
-    default_template: ''
 name: 'Publication privée'
 type: vactory_publication_prive
 description: 'Utiliser ce type de contenu pour créer des publications dédiées à l''espace privé.'

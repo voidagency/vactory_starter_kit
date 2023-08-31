@@ -2,8 +2,7 @@ name: Formation en agence
 description: Provide academy in agency content type & subsribe into a course feature.
 type: module
 configure: vactory_academy_agency.vactory_academy_agency_settings
-core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^9 || ^10
 package: Vactory
 dependencies:
   - vactory_core

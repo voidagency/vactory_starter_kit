@@ -147,6 +147,7 @@ class VactoryNotificationsService {
         $uids = \Drupal::entityQuery('user')
           ->condition('status', 1)
           ->condition('roles', $role->id())
+          ->accessCheck(FALSE)
           ->execute();
         if (!empty($uids)) {
           $users_ids = array_merge($users_ids, $uids);
@@ -229,7 +230,7 @@ class VactoryNotificationsService {
    */
   public function triggerNotificationsToast($notification) {
     $event = new VactoryNotificationsToastEvent($notification);
-    $this->eventDispatcher->dispatch(VactoryNotificationsToastEvent::EVENT_NAME, $event);
+    $this->eventDispatcher->dispatch($event, VactoryNotificationsToastEvent::EVENT_NAME);
   }
 
 }

@@ -4,5 +4,5 @@ type: module
 dependencies:
   - 'drupal:admin_feedback'
   - vactory_decoupled
-core_version_requirement: '^8.9 || ^9'
+core_version_requirement: ^9 || ^10
 package: Vactory

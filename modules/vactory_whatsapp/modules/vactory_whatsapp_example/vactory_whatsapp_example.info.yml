@@ -2,8 +2,7 @@ name: Vactory Whatsapp Example
 description: Demo for vactory whatsapp module
 type: module
 package: Vactory
-core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^9 || ^10
 configure: vactory_whatsapp_example.test_form
 dependencies:
   - vactory_whatsapp

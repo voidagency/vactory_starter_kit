@@ -1,8 +1,7 @@
 name: Vactory Cloudinary
 description: Provides a drush command to move existing public files to cloudinary
 type: module
-core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^9 || ^10
 dependencies:
   - cloudinary
   - cloudinary:cloudinary_video

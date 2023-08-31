@@ -210,7 +210,10 @@ class JsonApiCollectionElement extends FormElement {
     $options = [];
     $storage = \Drupal::entityTypeManager()->getStorage('entity_queue');
 
-    $queue_ids = $storage->getQuery()->condition('status', TRUE)->execute();
+    $queue_ids = $storage->getQuery()
+      ->condition('status', TRUE)
+      ->accessCheck(FALSE)
+      ->execute();
 
     $queues = $storage->loadMultiple($queue_ids);
 

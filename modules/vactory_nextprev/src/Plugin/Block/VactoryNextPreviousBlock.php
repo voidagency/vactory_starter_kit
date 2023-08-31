@@ -246,7 +246,8 @@ class VactoryNextPreviousBlock extends BlockBase implements BlockPluginInterface
     $next = $query_result->condition('nid', $current_nid, $comparison_opperator)
       ->condition('type', $this->configuration['content_type'])
       ->condition('status', 1)
-      ->condition('langcode', $current_langcode);
+      ->condition('langcode', $current_langcode)
+      ->accessCheck(TRUE);
     foreach ($content_type_taxonomies as $key => $value) {
       if ($value !== 'empty') {
         $next->condition($key, $value);

@@ -3,5 +3,4 @@ description: Provide webform options & different submodules that enhence webform
 type: module
 dependencies:
   - webform
-core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^9 || ^10

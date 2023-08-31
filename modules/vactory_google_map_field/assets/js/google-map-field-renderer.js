@@ -1,11 +1,11 @@
 var vactory_google_map_field_map;
 
-(function ($, Drupal) {
+(function ($, Drupal, once) {
 
   Drupal.behaviors.vactory_google_map_field_renderer = {
     attach: function (context) {
 
-      $('.google-map-field .map-container').once('.google-map-field-processed').each(function (index, item) {
+      $(once('.google-map-field-processed', '.google-map-field .map-container')).each(function (index, item) {
         // Get the settings for the map from the Drupal.settings object.
         var lat = $(this).attr('data-lat');
         var lon = $(this).attr('data-lon');
@@ -57,4 +57,4 @@ var vactory_google_map_field_map;
     }
   }
 
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);
