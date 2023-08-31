@@ -34,7 +34,7 @@ class VactoryPointsManager implements VactoryPointsManagerInterface {
    */
   public function triggerUserPointsUpdate(string $action, EntityInterface $entity = NULL, UserInterface $user = NULL) {
     $event = new VactoryPointsEditEvent($action, $entity, $user);
-    $this->eventDispatcher->dispatch(VactoryPointsEditEvent::EVENT_NAME, $event);
+    $this->eventDispatcher->dispatch($event, VactoryPointsEditEvent::EVENT_NAME);
   }
 
 }

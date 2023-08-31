@@ -5,7 +5,6 @@ dependencies:
     - menu_ui
     - scheduler
     - vactory_cross_content
-    - wysiwyg_template
   enforced:
     module:
       - vactory_forums
@@ -27,8 +26,6 @@ third_party_settings:
     unpublish_enable: false
     unpublish_required: false
     unpublish_revision: false
-  wysiwyg_template:
-    default_template: ''
   vactory_cross_content:
     enabling: 0
     taxonomy_field: none

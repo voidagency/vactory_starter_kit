@@ -208,7 +208,7 @@ class StoreLocator extends ControllerBase {
 
     /* In case metatags are filter dependant */
 //    $resultSet['metatags'] = json_decode($this->getMetatag($view), TRUE);
-    $response = CacheableJsonResponse::create($resultSet,Response::HTTP_OK);
+    $response = new CacheableJsonResponse($resultSet,Response::HTTP_OK);
 //
     $response->addCacheableDependency(CacheableMetadata::createFromRenderArray($view_render_array));
     $response->addCacheableDependency(CacheableMetadata::createFromRenderArray($cache));

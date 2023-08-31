@@ -1,8 +1,7 @@
 name: Vactory Quiz Certificat
 description: Generate certificat for users after passing a test
 type: module
-core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^9 || ^10
 package: Vactory
 configure: vactory_quiz_certificat.settings
 dependencies:

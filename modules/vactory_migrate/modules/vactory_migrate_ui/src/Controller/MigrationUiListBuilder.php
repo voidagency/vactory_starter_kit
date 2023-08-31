@@ -18,7 +18,7 @@ class MigrationUiListBuilder extends MigrationListBuilder {
   /**
    * Build header function.
    */
-  public function buildHeader() {
+  public function buildHeader(): array {
     $header['modify'] = $this->t('Modify');
     return parent::buildHeader() + $header;
   }
@@ -26,7 +26,7 @@ class MigrationUiListBuilder extends MigrationListBuilder {
   /**
    * Build row function.
    */
-  public function buildRow(EntityInterface $migration_entity) {
+  public function buildRow(EntityInterface $migration_entity): array {
     $migration = $this->migrationPluginManager->createInstance($migration_entity->id());
     $migration_group = $migration_entity->get('migration_group');
     if (!$migration_group) {

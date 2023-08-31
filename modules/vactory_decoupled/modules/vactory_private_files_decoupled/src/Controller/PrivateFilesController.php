@@ -90,6 +90,7 @@ class PrivateFilesController extends ControllerBase {
       $fids = \Drupal::entityQuery('file')
         ->condition('uid', $this->currentUser->id())
         ->condition('fid', $fids, 'IN')
+        ->accessCheck(TRUE)
         ->execute();
     }
 

@@ -2,8 +2,7 @@ name: 'SIMULATION CREDIT'
 description: 'Vactory module : Simulation Credit'
 categorie: Vactory
 type: module
-core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^9 || ^10
 configure: vactory_simulation_credit.vactory_simulation_credit_admin_form
 dependencies:
   - block

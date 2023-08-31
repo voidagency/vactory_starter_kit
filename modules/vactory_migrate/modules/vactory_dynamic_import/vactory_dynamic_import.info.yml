@@ -3,8 +3,7 @@ type: module
 description: Vactory Dynamic Import.
 configure: vactory_dynamic_import.form
 package: vactory
-core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^9 || ^10
 dependencies:
   - migrate_plus
   - migrate_tools

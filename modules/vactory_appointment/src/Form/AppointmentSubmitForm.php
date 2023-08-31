@@ -577,6 +577,7 @@ class AppointmentSubmitForm extends FormBase {
       ->condition('status', 1)
       ->condition('roles', 'adviser')
       ->condition('field_agencies', $this->appointmentAgencyID)
+      ->accessCheck(FALSE)
       ->execute();
     $users = User::loadMultiple($ids);
     $options = [];

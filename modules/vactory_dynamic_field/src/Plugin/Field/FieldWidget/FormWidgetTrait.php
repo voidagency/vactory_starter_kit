@@ -590,6 +590,7 @@ trait FormWidgetTrait {
     // To prevent duplication.
     $mediaFile = \Drupal::entityQuery('media')
       ->condition('name', $fileName)
+      ->accessCheck(FALSE)
       ->execute();
 
     if (!empty($mediaFile)) {
