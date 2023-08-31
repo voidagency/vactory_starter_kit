@@ -1,0 +1,5 @@
+entity.vactory_extended_seo.add_form:
+  route_name: entity.vactory_extended_seo.add_form
+  title: 'Add Vactory extended seo'
+  appears_on:
+    - entity.vactory_extended_seo.collection

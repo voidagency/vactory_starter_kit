@@ -1,0 +1,22 @@
+{#
+/**
+ * @file vactory_extended_seo.html.twig
+ * Default theme implementation to present Vactory extended seo data.
+ *
+ * This template is used when viewing Vactory extended seo pages.
+ *
+ *
+ * Available variables:
+ * - content: A list of content items. Use 'content' to print all content, or
+ * - attributes: HTML attributes for the container element.
+ *
+ * @see template_preprocess_vactory_extended_seo()
+ *
+ * @ingroup themeable
+ */
+#}
+<div{{ attributes.addClass('vactory_extended_seo') }}>
+  {% if content %}
+    {{- content -}}
+  {% endif %}
+</div>
