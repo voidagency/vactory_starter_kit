@@ -2,8 +2,7 @@ name: 'Search Overlay'
 type: module
 description: 'Search UI Overlay Based on Tympanus'
 package: Vactory Core
-core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^9 || ^10
 dependencies:
   - block
   - block_class

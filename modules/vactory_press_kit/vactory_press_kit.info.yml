@@ -1,8 +1,7 @@
 name: 'Press kit'
 description: 'Provide press kit content type and views listing.'
 type: module
-core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^9 || ^10
 dependencies:
   - vactory_core
   - vactory_field

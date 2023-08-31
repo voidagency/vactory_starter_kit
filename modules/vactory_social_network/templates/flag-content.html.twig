@@ -11,7 +11,7 @@
  * - flaggable: The flaggable entity.
  */
 #}
-{% spaceless %}
+{% apply spaceless %}
   {# Attach the flag CSS library.#}
     {{ attach_library('flag/flag.link') }}
 
@@ -47,4 +47,4 @@
       <div class='font-14 ml-2'>{{ likes_count }} {{ likes_count > 1 ? 'likes'|t : 'like'|t }}</div>
     {% endif %}
   </div>
-{% endspaceless %}
+{% endapply %}

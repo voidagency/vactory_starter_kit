@@ -15,8 +15,8 @@ settings:
       - '|'
       - bold
       - italic
-      - underline
       - strikethrough
+      - underline
       - superscript
       - subscript
       - removeFormat
@@ -58,6 +58,8 @@ settings:
         - justify
     ckeditor5_imageResize:
       allow_resize: true
+    media_media:
+      allow_view_mode_override: false
     linkit_extension:
       linkit_enabled: true
       linkit_profile: default

@@ -1,8 +1,7 @@
 name: 'Vactory Content Access'
 description: "Un module custom qui permet de gérer l'accès au contenu."
 type: module
-core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^9 || ^10
 package: Vactory
 configure: vactory_content_access.settings_form
 dependencies:

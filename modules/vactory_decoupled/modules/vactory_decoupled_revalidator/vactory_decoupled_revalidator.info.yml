@@ -2,7 +2,7 @@ name: Vactory Revalidate Cache Front
 type: module
 description: 'Clear your Next.js site redis cache when content on drupal is created, updated or deleted.'
 package: Custom
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^9 || ^10
 dependencies:
   - vactory_decoupled
 configure: entity.revalidator_entity_type.collection

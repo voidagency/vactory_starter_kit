@@ -29,7 +29,7 @@ class VactoryEmailAjaxController extends ControllerBase {
    * Builds the response.
    */
   public function validate() {
-    $email = \Drupal::request()->request->get('email');
+    $email = \Drupal::request()->request->all('email');
     $response = [];
     $response['is_valid'] = TRUE;
     if (!empty($email)) {

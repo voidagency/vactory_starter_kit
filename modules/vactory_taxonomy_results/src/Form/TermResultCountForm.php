@@ -20,7 +20,8 @@ class TermResultCountForm extends ContentEntityForm {
     $link = $entity->toLink($this->t('View'))->toRenderable();
 
     $message_arguments = ['%label' => $this->entity->label()];
-    $logger_arguments = $message_arguments + ['link' => render($link)];
+    $renderer = \Drupal::service('renderer');
+    $logger_arguments = $message_arguments + ['link' => $renderer->renderPlain($link)];
 
     if ($result == SAVED_NEW) {
       $this->messenger()->addStatus($this->t('New termresultscount %label has been created.', $message_arguments));

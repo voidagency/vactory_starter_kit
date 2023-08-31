@@ -39,14 +39,14 @@ class DynamicTermImport extends ProcessPluginBase {
 
     $vid = $this->configuration['bundle'];
 
-    $terms = explode('|', $value);
+    $terms = $value ? explode('|', $value) : [];
 
     $result = [];
 
     foreach ($terms as $term) {
-      $splitted = explode(':', $term);
-      $name = $splitted[0];
-      $legacy_id = $splitted[1];
+      $splitted = $term ? explode(':', $term) : [];
+      $name = $splitted[0] ?? '';
+      $legacy_id = $splitted[1] ?? '';
 
       $founded = \Drupal::entityTypeManager()
         ->getStorage('taxonomy_term')

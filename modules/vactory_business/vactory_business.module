@@ -134,6 +134,7 @@ function vactory_business_decoupled_webform_data_presubmit_alter(array &$webform
         ->getQuery()
         ->condition('type', 'vactory_business')
         ->condition('field_business_users', $account->id())
+        ->accessCheck(TRUE)
         ->execute();
       if (!empty($nids)) {
         // Update node.
@@ -274,6 +275,7 @@ function create_media_from_fid($fid, AccountInterface $account, $node = NULL) {
       $mids = Drupal::entityTypeManager()->getStorage('media')
         ->getQuery()
         ->condition('field_media_image', $fid)
+        ->accessCheck(FALSE)
         ->execute();
       if (!empty($mids)) {
         return reset($mids);

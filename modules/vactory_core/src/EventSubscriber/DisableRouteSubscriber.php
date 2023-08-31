@@ -2,9 +2,10 @@
 
 namespace Drupal\vactory_core\EventSubscriber;
 
+use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Drupal\Component\EventDispatcher\Event;
 
 /**
  * Listens to the dynamic route events.
@@ -23,10 +24,10 @@ class DisableRouteSubscriber implements EventSubscriberInterface {
   /**
    * A method to be called whenever a kernel.request event is dispatched.
    *
-   * @param \Drupal\Component\EventDispatcher\Event $event
+   * @param RequestEvent $event
    *   The event triggered by the request.
    */
-  public function onRequest(Event $event) {
+  public function onRequest(RequestEvent $event) {
     return $this->processEvent($event);
   }
 
@@ -35,20 +36,20 @@ class DisableRouteSubscriber implements EventSubscriberInterface {
    *
    * Like the onRequest event, it  passes in a response.
    *
-   * @param \Drupal\Component\EventDispatcher\Event $event
+   * @param ResponseEvent $event
    *   The event triggered by the response.
    */
-  public function onResponse(Event $event) {
+  public function onResponse(ResponseEvent $event) {
     return $this->processEvent($event);
   }
 
   /**
    * Process events generically invoking rabbit hole behaviors if necessary.
    *
-   * @param \Drupal\Component\EventDispatcher\Event $event
+   * @param ResponseEvent|RequestEvent $event
    *   The event to process.
    */
-  private function processEvent(Event $event) {
+  private function processEvent(ResponseEvent|RequestEvent $event) {
     // Don't process events with HTTP exceptions - those have either been thrown
     // by us or have nothing to do with rabbit hole.
     if ($event->getRequest()->get('exception') != NULL) {

@@ -2,8 +2,7 @@ name: "Vactory social network"
 description: "Fournir un système similaire au réseaux sociaux avec la possibilté de poster une publication, de faire des commentaires, et consulter le mur pour voir les dérnières publications selon le thème choisi."
 type: module
 package: vactory
-core: 8.x
-core_version_requirement: ^8 || ^9
+core_version_requirement: ^9 || ^10
 dependencies:
   - scheduler
   - webform

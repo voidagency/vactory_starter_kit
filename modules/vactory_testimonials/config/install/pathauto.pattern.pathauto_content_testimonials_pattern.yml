@@ -12,7 +12,7 @@ type: 'canonical_entities:node'
 pattern: '/testimonials/[node:title]'
 selection_criteria:
   1957fd97-5ab3-4769-a67a-98a570cba015:
-    id: node_type
+    id: 'entity_bundle:node'
     bundles:
       vactory_testimonials: vactory_testimonials
     negate: false
