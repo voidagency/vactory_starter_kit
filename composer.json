@@ -160,7 +160,8 @@
     "drupal/video_embed_field": "^2.4",
     "drupal/allowed_formats": "^2.0",
     "drupal/theme_switcher": "^2.0",
-    "drupal/migrate_file": "^2.1"
+    "drupal/migrate_file": "^2.1",
+    "drupal/jsonapi_cross_bundles": "^1.1"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.3",
@@ -253,6 +254,9 @@
       },
       "drupal/jsonapi_search_api": {
         "Modifying a facet does not invalidate caches": "https://gist.githubusercontent.com/voidagency/299883e039129c50da852a42c704af91/raw/1812ca417adce536e82cede6da50f8e7952c7479/fix-jsonapi-search-api-facets-cache-3176987.patch"
+      },
+      "drupal/jsonapi_cross_bundles": {
+        "Fix jsonapi cross bundles": "https://gist.githubusercontent.com/ismail-void/7e56262e60c81fbbd43874d37f145a6d/raw/95b5db1a582cdfe5c9ff987443b5ebc7f76e7766/fix-jsonapi-cross-bundles.patch"
       }
     }
   },
