@@ -16,6 +16,7 @@ use Drupal\Core\Url;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\jsonapi_extras\Entity\JsonapiResourceConfig;
+use Drupal\link\LinkItemInterface;
 use Drupal\node\Entity\Node;
 use Drupal\symfony_mailer\EmailInterface;
 use Drupal\system\Entity\Menu;

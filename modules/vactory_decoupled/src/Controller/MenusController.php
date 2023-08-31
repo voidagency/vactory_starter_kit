@@ -5,10 +5,14 @@ namespace Drupal\vactory_decoupled\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityRepositoryInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Menu\MenuLinkTreeInterface;
+use Drupal\Core\Site\Settings;
 use Drupal\Core\Url;
 use Drupal\Core\Menu\MenuTreeParameters;
 use Drupal\Core\Menu\MenuLinkInterface;
+use Drupal\path_alias\AliasManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -40,6 +44,27 @@ class MenusController extends ControllerBase {
    * @var EntityRepositoryInterface
    */
   protected $entityRepository;
+
+  /**
+   * Language manager service.
+   *
+   * @var \Drupal\Core\Language\LanguageManagerInterface
+   */
+  protected $languageManager;
+
+  /**
+   * Entity type manager service.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
+   * Path alias manager service.
+   *
+   * @var \Drupal\path_alias\AliasManagerInterface
+   */
+  protected $pathAlias;
 
   /**
    * A list of menu items.
@@ -158,6 +183,7 @@ class MenusController extends ControllerBase {
       // Use the default sorting of menu links.
       ['callable' => 'menu.default_tree_manipulators:generateIndexAndSort'],
     ];
+
     $tree = $menu_tree->transform($tree, $manipulators);
 
     // Finally, build a renderable array from the transformed tree.
@@ -314,7 +340,6 @@ class MenusController extends ControllerBase {
    * @param $request
    */
   private function setup($request) {
-
     // Get and set the max depth if available.
     $max = $request->get('max_depth');
     if (!empty($max)) {
