@@ -8,8 +8,6 @@ use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityPublishedTrait;
 use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\Core\Language\LanguageManager;
-use Drupal\social_media_links\Plugin\SocialMediaLinks\Platform\Drupal;
 use Drupal\user\UserInterface;
 
 /**

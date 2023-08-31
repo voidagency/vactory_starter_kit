@@ -58,7 +58,7 @@ class VactoryExtendedSeoHelper {
       ->loadByProperties(['node_id' => $currentNode]);
     if ($seo_entity) {
       $attached = [];
-      $language = \Drupal::service('language_manager')->getCurrentLanguage()->getId();
+      $language = $this->languageManager->getCurrentLanguage()->getId();
       $domain_config = NULL;
       if ($this->moduleHandler->moduleExists('domain')) {
         $domain_config = \Drupal::service('config.factory')->getEditable('domain.settings')->getRawdata();
@@ -87,8 +87,8 @@ class VactoryExtendedSeoHelper {
           $domain_id = reset($language_map);
           $domain_id = !empty($domain_id) ? str_replace('_languages', '', $domain_id) : '';
           if ($domain_id) {
-            $domainstorage = \Drupal::entityTypeManager()->getStorage('domain');
-            $aliasstorage = \Drupal::entityTypeManager()->getStorage('domain_alias');
+            $domainstorage = $this->entityTypeManager->getStorage('domain');
+            $aliasstorage = $this->entityTypeManager->getStorage('domain_alias');
             // Must know the domain's entity id, as $id.
             $domain = $domainstorage->load($domain_id) ?? $aliasstorage->load($domain_id);
             $host = $domain instanceof DomainAlias ? $domain?->getPattern() : $domain?->getPath() ;

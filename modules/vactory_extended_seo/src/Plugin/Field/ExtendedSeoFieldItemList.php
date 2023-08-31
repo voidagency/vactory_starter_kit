@@ -2,9 +2,7 @@
 
 namespace Drupal\vactory_extended_seo\Plugin\Field;
 
-use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Field\FieldItemList;
-use Drupal\Core\Site\Settings;
 use Drupal\Core\TypedData\ComputedItemListTrait;
 use Drupal\Core\TypedData\TraversableTypedDataInterface;
 use Drupal\node\Entity\Node;
@@ -12,8 +10,7 @@ use Drupal\node\Entity\Node;
 /**
  * Extended SEO per node.
  */
-class ExtendedSeoFieldItemList extends FieldItemList
-{
+class ExtendedSeoFieldItemList extends FieldItemList{
 
   use ComputedItemListTrait;
 
@@ -66,8 +63,10 @@ class ExtendedSeoFieldItemList extends FieldItemList
    */
   protected $request;
 
-  public static function createInstance($definition, $name = NULL, TraversableTypedDataInterface $parent = NULL)
-  {
+  /**
+   * {@inheritDoc}
+   */
+  public static function createInstance($definition, $name = NULL, TraversableTypedDataInterface $parent = NULL) {
     $instance = parent::createInstance($definition, $name, $parent);
     $container = \Drupal::getContainer();
     $instance->entityRepository = $container->get('entity.repository');
@@ -83,8 +82,7 @@ class ExtendedSeoFieldItemList extends FieldItemList
   /**
    * {@inheritdoc}
    */
-  protected function computeValue()
-  {
+  protected function computeValue() {
     /** @var Node $entity */
     $entity = $this->getEntity();
     $entity_type = $entity->getEntityTypeId();
@@ -99,4 +97,5 @@ class ExtendedSeoFieldItemList extends FieldItemList
     $this->vactoryExtendedSeoHelper->generateAlternate($entity->id(), $tags);
     $this->list[0] = $this->createItem(0, $tags);
   }
+
 }
