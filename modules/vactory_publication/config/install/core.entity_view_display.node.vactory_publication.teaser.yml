@@ -18,8 +18,9 @@ dependencies:
     - node.type.vactory_publication
   module:
     - user
-_core:
-  default_config_hash: BwweDbKvgAICON-gwdUhvP3-cuzI1F7jH9hM_0tnmZw
+  enforced:
+    module:
+      - vactory_publication
 id: node.vactory_publication.teaser
 targetEntityType: node
 bundle: vactory_publication

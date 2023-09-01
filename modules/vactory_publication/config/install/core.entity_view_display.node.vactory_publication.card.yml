@@ -22,8 +22,9 @@ dependencies:
     - smart_trim
     - user
     - vactory_core
-_core:
-  default_config_hash: F4l4f4Br64kTXcxEVzfwlwPpPE-JWc5ldhuz2yog0ro
+  enforced:
+    module:
+      - vactory_publication
 id: node.vactory_publication.card
 targetEntityType: node
 bundle: vactory_publication

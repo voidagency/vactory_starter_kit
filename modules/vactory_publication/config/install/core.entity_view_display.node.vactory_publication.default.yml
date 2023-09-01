@@ -26,8 +26,9 @@ dependencies:
     - user
     - vactory_core
     - yoast_seo
-_core:
-  default_config_hash: aF9vMwz_NDgEmK8yi-WKOcMOs_tEv-MwZHOu_3n3gX0
+  enforced:
+    module:
+      - vactory_publication
 id: node.vactory_publication.default
 targetEntityType: node
 bundle: vactory_publication

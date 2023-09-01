@@ -26,8 +26,9 @@ dependencies:
     - scheduler
     - text
     - yoast_seo
-_core:
-  default_config_hash: wb50cqx5qcNlZ27RXeeXRgta9ieimrGJrZjnAE9qEJI
+  enforced:
+    module:
+      - vactory_publication
 id: node.vactory_publication.default
 targetEntityType: node
 bundle: vactory_publication

@@ -22,8 +22,9 @@ dependencies:
     - smart_trim
     - user
     - vactory_core
-_core:
-  default_config_hash: 5arNngATAH-wCPbnZdORrYm3acwPxK-ZAEmbOijj5SQ
+  enforced:
+    module:
+      - vactory_publication
 id: node.vactory_publication.masonry
 targetEntityType: node
 bundle: vactory_publication

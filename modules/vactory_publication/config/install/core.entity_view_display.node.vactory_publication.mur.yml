@@ -21,8 +21,9 @@ dependencies:
     - text
     - user
     - vactory_core
-_core:
-  default_config_hash: TolANuGkIotyMYeIUbcGuEnRK-RgyPLu3kqK0h_9Res
+  enforced:
+    module:
+      - vactory_publication
 id: node.vactory_publication.mur
 targetEntityType: node
 bundle: vactory_publication

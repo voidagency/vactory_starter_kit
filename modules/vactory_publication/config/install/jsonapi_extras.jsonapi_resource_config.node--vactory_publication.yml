@@ -6,6 +6,9 @@ dependencies:
   module:
     - jsonapi_defaults
     - vactory_decoupled
+  enforced:
+    module:
+      - vactory_publication
 third_party_settings:
   jsonapi_defaults:
     page_limit: 50
@@ -22,8 +25,6 @@ third_party_settings:
       expert_forum: 0
       membre_du_club: 0
       approuve: 0
-_core:
-  default_config_hash: ywk9X7ra3UqnV_XY03Kk8_Po-CGe_z2M3ikFqSLQO_0
 id: node--vactory_publication
 disabled: false
 path: node/vactory_publication

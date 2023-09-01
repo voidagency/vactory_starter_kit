@@ -22,8 +22,9 @@ dependencies:
     - media_responsive_thumbnail
     - text
     - user
-_core:
-  default_config_hash: GnGpi8nq6LuR-OjPAYROZVxMoDjSteuFicy9JNsAfaM
+  enforced:
+    module:
+      - vactory_publication
 id: node.vactory_publication.smart_search
 targetEntityType: node
 bundle: vactory_publication
