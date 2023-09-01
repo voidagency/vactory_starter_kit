@@ -117,5 +117,12 @@ view_mode ? bundle ~ '--' ~ view_mode|clean_class,
             {{ content.comment }}
         {% endif %}
     </div>
+    {% set media_id = content.field_vactory_media_document['#items'].target_id is defined ? content.field_vactory_media_document['#items'].target_id : null %}
+    {% if media_id is defined %}
+        {% set media_object = (content.field_vactory_media_document['#items'].target_id is not empty) ? get_media(content.field_vactory_media_document['#items'].target_id) : '' %}
+        {% set document = (media_object is not empty) ? file_object(media_object.field_media_file.0.target_id) : '' %}
+        {% set document_url = (document is not empty) ? file_url(document.uri.value) : ''  %}
+        <a href="{{ document_url }}" class="btn btn-primary prefix-icon-download mb-2" download>{{ 'Download'|t }}</a>
+    {% endif %}
 
 </article>
