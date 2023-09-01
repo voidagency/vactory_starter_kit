@@ -67,7 +67,6 @@ class VactoryExtendedSeoHelper {
       $seo_entity = reset($seo_entity);
       $host = $this->isdecoupled ? getenv("BASE_FRONTEND_URL") : \Drupal::request()->getSchemeAndHttpHost();
       foreach ($activeLanguages as $lang => $obj) {
-        $host = $this->isdecoupled  ? "$host/$lang" : $host;
         $language_map = [];
 //        Must pay attention to domain_alias too & should get the LBR version of domain module.
         if (function_exists('_get_allowed_languages_with_alias')) {
@@ -99,6 +98,7 @@ class VactoryExtendedSeoHelper {
             $host = rtrim($host,"/");
           }
         }
+        $enhanced_host = $this->isdecoupled  ? "$host/$lang" : $host;
         $sanitizeId = str_replace('-', '_', $lang);
         $value = $seo_entity?->get("alternate_$sanitizeId")?->getValue();
         $value = is_array($value) ? reset($value) : '';
@@ -108,7 +108,7 @@ class VactoryExtendedSeoHelper {
             [
               "rel" =>  'alternate',
               "hreflang" => $language === $lang ? 'x-default' : $lang,
-              "href" => !preg_match("~^(?:f|ht)tps?://~i", $value) ? "$host$value" : $value,
+              "href" => !preg_match("~^(?:f|ht)tps?://~i", $value) ? "$enhanced_host$value" : $value,
             ],
           ];
           $attached[] = $base;
