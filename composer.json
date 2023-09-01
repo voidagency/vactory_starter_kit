@@ -164,7 +164,8 @@
     "drupal/bartik": "^1.0",
     "drupal/quickedit": "^1.0",
     "drupal/wysiwyg_template": "^2.3",
-    "drupal/block_blacklist": "^1.1"
+    "drupal/block_blacklist": "^1.1",
+    "drupal/jsonapi_cross_bundles": "^1.1"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.3",
@@ -208,9 +209,6 @@
       },
       "stevenmaguire/oauth2-microsoft": {
         "Fix Bearer Authorization - Update ResourceOwner": "https://gist.githubusercontent.com/voidagency/b3b3508f2edb982b4f60a12517184e19/raw/08835c48e75e7f19f7396013988d934be30526ce/oauth2-microsoft-authorization-ressource-owner.patch"
-      },
-      "drupal/viewsreference": {
-        "Exposed filters not working for Views in Paragraphs": "https://www.drupal.org/files/issues/2020-05-13/viewsreference-exposed_filters_not_working-3129609-3.patch"
       },
       "drupal/swiftmailer": {
         "Fix undefined index warnings on reset password form": "https://www.drupal.org/files/issues/2020-10-29/3179656-two-undentified-index-notices-2.patch",
@@ -259,6 +257,9 @@
       },
       "drupal/rate": {
         "Entity queries must explicitly set whether the query should be access checked or not": "https://www.drupal.org/files/issues/2023-07-06/3331890-rate-entity-query-access-list-3.0.1-22.patch"
+      },
+      "drupal/jsonapi_cross_bundles": {
+        "Fix jsonapi cross bundles": "https://gist.githubusercontent.com/ismail-void/7e56262e60c81fbbd43874d37f145a6d/raw/95b5db1a582cdfe5c9ff987443b5ebc7f76e7766/fix-jsonapi-cross-bundles.patch"
       }
     }
   },

@@ -4,8 +4,7 @@ namespace Drupal\vactory_decoupled\Element;
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Element\FormElement;
-use Drupal\entityqueue\Entity\EntityQueue;
-use Drupal\node\Entity\Node;
+use Drupal\jsonapi_extras\ResourceType\ConfigurableResourceType;
 
 /**
  * Provide a JSON API form element for retieving data collection from JSON:API.
@@ -23,15 +22,15 @@ class JsonApiCollectionElement extends FormElement {
     $class = get_class($this);
 
     return [
-      '#input' => TRUE,
-      '#default_value' => [],
-      '#process' => [
+      '#input'            => TRUE,
+      '#default_value'    => [],
+      '#process'          => [
         [$class, 'processElement'],
       ],
       '#element_validate' => [
         [$class, 'validateElement'],
       ],
-      '#theme_wrappers' => ['form_element'],
+      '#theme_wrappers'   => ['form_element'],
     ];
   }
 
@@ -48,8 +47,8 @@ class JsonApiCollectionElement extends FormElement {
     $optional_filters = $element['#default_value']['optional_filters'] ?? [];
     if ($optional_filters !== []) {
       $element['optional_filters_data'] = [
-        '#type' => 'details',
-        '#open' => TRUE,
+        '#type'  => 'details',
+        '#open'  => TRUE,
         '#title' => t('Filters'),
       ];
       foreach ($optional_filters as $bundle => $type) {
@@ -57,11 +56,11 @@ class JsonApiCollectionElement extends FormElement {
           ->load($element['#default_value']['optional_filters_data'][$type][$bundle]) : '';
 
         $element['optional_filters_data'][$type][$bundle] = [
-          '#type' => 'entity_autocomplete',
-          '#target_type' => $type,
-          '#title' => t('Filter by %bundle', ['%bundle' => $bundle]),
-          '#selection_handler' => 'default',
-          '#default_value' => $default_value ?? '',
+          '#type'               => 'entity_autocomplete',
+          '#target_type'        => $type,
+          '#title'              => t('Filter by %bundle', ['%bundle' => $bundle]),
+          '#selection_handler'  => 'default',
+          '#default_value'      => $default_value ?? '',
           '#selection_settings' => [
             'target_bundles' => [$bundle],
           ],
@@ -71,85 +70,77 @@ class JsonApiCollectionElement extends FormElement {
     }
 
     $element['resource'] = [
-      '#type' => 'select',
-      '#required' => TRUE,
-      '#description' => t('Select a JSON:API resource'),
-      '#title' => t('JSON:API Resource'),
-      '#empty_option' => t('- Select -'),
-      '#options' => self::getJsonApiResources(),
-      '#default_value' => $element['#default_value']['resource'] ?? '',
+      '#type'               => 'select',
+      '#required'           => TRUE,
+      '#description'        => t('Select a JSON:API resource'),
+      '#title'              => t('JSON:API Resource'),
+      '#empty_option'       => t('- Select -'),
+      '#options'            => self::getJsonApiResources(),
+      '#default_value'      => $element['#default_value']['resource'] ?? '',
       '#wrapper_attributes' => [
         'style' => $has_access ? NULL : 'display:none',
       ],
-      '#attributes' => [
+      '#attributes'         => [
         'style' => $has_access ? NULL : 'display:none',
       ],
     ];
 
     $element['filters'] = [
-      '#type' => 'textarea',
-      '#title' => t('JSON:API Fields'),
-      '#placeholder' =>
-        'fields[node--vactory_news]=drupal_internal__nid,title,field_vactory_news_theme,field_vactory_media' . "\n" .
-        'fields[taxonomy_term--vactory_news_theme]=tid,name' . "\n" .
-        'fields[media--image]=name,thumbnail' . "\n" .
-        'fields[file--image]=filename,uri' . "\n" .
-        'include=field_vactory_news_theme,field_vactory_media,field_vactory_media.thumbnail' . "\n" .
-        'filter[category][condition][path]=field_vactory_news_theme.drupal_internal__tid' . "\n" .
-        'filter[category][condition][operator]=%3D  <- encoded "=" symbol' . "\n" .
-        'filter[category][condition][value]=3',
-      '#description' => t('Used to filter, paginate, sort and select which fields to return from the results. Enter each value per line'),
-      '#default_value' => implode("\n", $element['#default_value']['filters']),
+      '#type'               => 'textarea',
+      '#title'              => t('JSON:API Fields'),
+      '#placeholder'        => 'fields[node--vactory_news]=drupal_internal__nid,title,field_vactory_news_theme,field_vactory_media' . "\n" . 'fields[taxonomy_term--vactory_news_theme]=tid,name' . "\n" . 'fields[media--image]=name,thumbnail' . "\n" . 'fields[file--image]=filename,uri' . "\n" . 'include=field_vactory_news_theme,field_vactory_media,field_vactory_media.thumbnail' . "\n" . 'filter[category][condition][path]=field_vactory_news_theme.drupal_internal__tid' . "\n" . 'filter[category][condition][operator]=%3D  <- encoded "=" symbol' . "\n" . 'filter[category][condition][value]=3',
+      '#description'        => t('Used to filter, paginate, sort and select which fields to return from the results. Enter each value per line'),
+      '#default_value'      => implode("\n", $element['#default_value']['filters']),
       '#wrapper_attributes' => [
         'style' => $has_access ? NULL : 'display:none',
       ],
     ];
 
     $element['entity_queue'] = [
-      '#type' => 'select',
-      '#description' => t('Use an already made queue or prefiltered one to load the nodes you need. <em>Choosing a queue will ignore the filters above.</em> '),
-      '#title' => t('Entity Queue'),
-      '#empty_option' => t('- Select -'),
-      '#options' => self::getEntityQueues(),
-      '#default_value' => $element['#default_value']['entity_queue'] ?? '',
+      '#type'               => 'select',
+      '#description'        => t('Use an already made queue or prefiltered one to load the nodes you need. <em>Choosing a queue will ignore the filters above.</em>'),
+      '#title'              => t('Entity Queue'),
+      '#empty_option'       => t('- Select -'),
+      '#options'            => self::getEntityQueues(),
+      '#default_value'      => $element['#default_value']['entity_queue'] ?? '',
       '#wrapper_attributes' => [
         'style' => $has_access_administer_entityqueue ? NULL : 'display:none',
       ],
-      '#attributes' => [
+      '#attributes'         => [
         'style' => $has_access_administer_entityqueue ? NULL : 'display:none',
-        'id' => 'field_json_api_entity_queue',
+        'id'    => 'field_json_api_entity_queue',
       ],
     ];
 
     $element['entity_queue_field_id'] = [
-      '#type' => 'textfield',
-      '#title' => t('Entity Queue - Field ID'),
-      '#placeholder' => 'drupal_internal__nid',
-      '#description' => t('The selected entity queue will return IDs as a result. Use this field match against them. Example: drupal_internal__nid'),
-      '#default_value' => $element['#default_value']['entity_queue_field_id'] ?? '',
+      '#type'               => 'textfield',
+      '#title'              => t('Entity Queue - Field ID'),
+      '#placeholder'        => 'drupal_internal__nid',
+      '#description'        => t('The selected entity queue will return IDs as a result. Use this field match against them. Example: drupal_internal__nid'),
+      '#default_value'      => $element['#default_value']['entity_queue_field_id'] ?? '',
       '#wrapper_attributes' => [
         'style' => $has_access ? NULL : 'display:none',
       ],
-      '#states' => [
+      '#states'             => [
         'required' => [
           ':input[id="field_json_api_entity_queue"]' => ['!value' => ''],
         ],
-        'visible' => [
+        'visible'  => [
           ':input[id="field_json_api_entity_queue"]' => ['!value' => ''],
         ],
       ],
     ];
 
     $element['vocabularies'] = [
-      '#type' => 'checkboxes',
-      '#title' => t('Exposed Vocabularies'),
-      '#description' => t('Terms in these vocabularies will be exposed by the API.'),
-      '#options' => self::getVocabularyBundles(),
-      '#default_value' => $element['#default_value']['vocabularies'] ?? [],
+      '#type'               => 'checkboxes',
+      '#title'              => t('Exposed Vocabularies'),
+      '#description'        => t('Terms in these vocabularies will be exposed by the API.'),
+      '#options'            => self::getVocabularyBundles(),
+      '#default_value'      => $element['#default_value']['vocabularies'] ?? [],
       '#wrapper_attributes' => [
         'style' => $has_access ? NULL : 'display:none',
       ],
-      '#attributes' => [
+      '#attributes'         => [
         'style' => $has_access ? NULL : 'display:none',
       ],
     ];
@@ -157,11 +148,11 @@ class JsonApiCollectionElement extends FormElement {
     $uuid_service = \Drupal::service('uuid');
 
     $element['id'] = [
-      '#type' => 'textfield',
-      '#title' => t('ID'),
-      '#placeholder' => 'drupal_internal__nid',
-      '#description' => t('A unique identifier. E.g vactory_news_latest_articles_filtred_by_annonce or vactory_news_list. This id is passed to hook_json_api_collection_alter'),
-      '#default_value' => $element['#default_value']['id'] ?? $uuid_service->generate(),
+      '#type'               => 'textfield',
+      '#title'              => t('ID'),
+      '#placeholder'        => 'drupal_internal__nid',
+      '#description'        => t('A unique identifier. E.g vactory_news_latest_articles_filtred_by_annonce or vactory_news_list. This id is passed to hook_json_api_collection_alter'),
+      '#default_value'      => $element['#default_value']['id'] ?? $uuid_service->generate(),
       '#wrapper_attributes' => [
         'style' => $has_access ? NULL : 'display:none',
       ],
@@ -263,13 +254,15 @@ class JsonApiCollectionElement extends FormElement {
     $resource_types = \Drupal::service('jsonapi.resource_type.repository')
       ->all();
     foreach ($resource_types as $resource_type) {
-      /** @var \Drupal\jsonapi_extras\Entity\JsonapiResourceConfig $resource_config */
-      $resource_config = $resource_type->getJsonapiResourceConfig();
+      if ($resource_type instanceof ConfigurableResourceType) {
+        /** @var \Drupal\jsonapi_extras\Entity\JsonapiResourceConfig $resource_config */
+        $resource_config = $resource_type->getJsonapiResourceConfig();
 
-      if ($resource_config->get('disabled')) {
-        continue;
+        if ($resource_config->get('disabled')) {
+          continue;
+        }
+        $options[$resource_type->getTypeName()] = $resource_type->getTypeName();
       }
-      $options[$resource_type->getTypeName()] = $resource_type->getTypeName();
     }
 
     return $options;
