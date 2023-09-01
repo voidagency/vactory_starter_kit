@@ -111,7 +111,7 @@ interface ContentPackageManagerInterface {
   /**
    * Normalize given entity.
    */
-  public function normalize(EntityInterface $entity): array;
+  public function normalize(EntityInterface $entity, $entity_translation = FALSE): array;
 
   /**
    * Denormalize given entity.

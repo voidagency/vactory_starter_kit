@@ -1,0 +1,116 @@
+<?php
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\vactory_extended_seo\Plugin\Field\ExtendedSeoFieldItemList;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function vactory_extended_seo_entity_base_field_info(EntityTypeInterface $entity_type) {
+  $fields = [];
+
+  if ($entity_type->id() === 'node') {
+    $fields['extended_seo'] = BaseFieldDefinition::create('map')
+      ->setLabel(t('Node Extended SEO values'))
+      ->setDescription(t('Defined some SEO properties per node'))
+      ->setTranslatable(FALSE)
+      ->setClass(ExtendedSeoFieldItemList::class)
+      ->setComputed(TRUE)
+      ->setReadOnly(TRUE)
+      ->setTargetEntityTypeId($entity_type->id())
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE);
+
+  }
+
+  return $fields;
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_extended_seo_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $currentRoute =  \Drupal::routeMatch()->getRouteName();
+  $activeLanguages = Drupal::service('language_manager')->getLanguages();
+  $routes = [
+    'entity.node.edit_form',
+    'node.add'
+  ];
+
+  if (in_array($currentRoute, $routes)) {
+    $seo_entity = $currentRoute !== 'node.add' ? Drupal::service('entity_type.manager')->getStorage('vactory_extended_seo')
+      ->loadByProperties(['node_id' => \Drupal::routeMatch()->getParameter('node')->id()]) : '';
+    $seo_entity = !empty($seo_entity) ? reset($seo_entity) : '';
+
+    $form['node_extended_seo'] = [
+      '#type'        => 'details',
+      '#title'       => t('Extended custom SEO'),
+      '#description' => t('Create a custom SEO entity for this node to handle hreflang.'),
+      '#group'       => 'advanced',
+      '#open'        => FALSE,
+      '#access'      => \Drupal::currentUser()
+        ->hasPermission('administer meta tags'),
+      '#attributes'  => ['class' => ['node-class-form']],
+    ];
+    foreach ($activeLanguages as $lang => $val) {
+      $sanitizeId = str_replace('-', '_', $lang);
+
+      $value = !empty($seo_entity) ? $seo_entity?->get("alternate_$sanitizeId")?->getValue() : [];
+      $value = !empty($value) ? reset($value) : '';
+      $value = !empty($value) ? reset($value) : '';
+
+      $form['node_extended_seo']["hreflang_$sanitizeId"] = [
+        '#type' => 'textfield',
+        '#title' => t("The link to the $lang version"),
+        '#description' => t("Relative links must start with / otherwise use the full url"),
+        '#default_value' => $value,
+      ];
+    }
+    $form['actions']['submit']['#submit'][] = '_extended_seo_handler';
+  }
+}
+
+/**
+ * Extended SEO handler.
+ */
+function _extended_seo_handler(&$form, FormStateInterface $form_state) {
+  $nid = $form_state->getValue('nid');
+  $seo_entity = Drupal::service('entity_type.manager')->getStorage('vactory_extended_seo')
+    ->loadByProperties(['node_id' => $nid]);
+  $seo_entity = !empty($seo_entity) ? reset($seo_entity) : '';
+  $activeLanguages = Drupal::service('language_manager')->getLanguages();
+  if (empty($seo_entity)) {
+    $entity = [
+      'name' => "node.$nid",
+      'node_id' => $nid,
+      'user_id' => \Drupal::currentUser()->id(),
+    ];
+    $manager = Drupal::service('entity_type.manager')->getStorage('vactory_extended_seo');
+    foreach ($activeLanguages as $lang => $val) {
+      $sanitizeId = str_replace('-', '_', $lang);
+      $entity["alternate_$sanitizeId"] = $form_state->getValue("hreflang_$sanitizeId");
+    }
+    $created = $manager->create($entity)->save();
+  } else {
+    foreach ($activeLanguages as $lang => $val) {
+      $sanitizeId = str_replace('-', '_', $lang);
+      $seo_entity->set("alternate_$sanitizeId", $form_state->getValue("hreflang_$sanitizeId"));
+    }
+    $seo_entity->save();
+  }
+
+}
+/**
+ * Implements hook_page_attachments_alter().
+ */
+function vactory_extended_seo_page_attachments_alter(array &$attachments) {
+  $currentNode =  \Drupal::routeMatch()->getParameter('node')?->id();
+  if ($currentNode) {
+    $attached = &$attachments['#attached']['html_head_link'];
+    $extended_seo_helper = Drupal::service('vactory_extended_seo.helper');
+    $extended_seo_helper->generateAlternate($currentNode, $attached);
+
+  }
+}

@@ -8,3 +8,11 @@ vactory_decoupled_webform.webform_submit:
     _format: 'json'
   options:
     _auth: ['oauth2']
+
+vactory_decoupled_webform.generate_captcha_math:
+  path: '/_webform/captcha_math/{webform_id}'
+  defaults:
+    _controller: '\Drupal\vactory_decoupled_webform\Controller\WebformController::generateCaptchaMath'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'

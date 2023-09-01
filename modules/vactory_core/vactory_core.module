@@ -148,21 +148,26 @@ function vactory_core_mailer_build(EmailInterface $email) {
 function vactory_core_token_info() {
 
   $types['vactory'] = [
-    'name'        => t('Vactory'),
+    'name' => t('Vactory'),
     'description' => t('Vactory custom token type'),
   ];
   $tokens['site_logo'] = [
-    'name'        => t('Site logo'),
+    'name' => t('Site logo'),
     'description' => t('The logo of the site.'),
   ];
 
   $tokens['node_summary'] = [
-    'name'        => t('Node summary'),
+    'name' => t('Node summary'),
     'description' => t('The description of the current page.'),
   ];
 
+  $tokens['homepage:path'] = [
+    'name' => t('Homepage path alias'),
+    'description' => t('Homepage path alias in current language'),
+  ];
+
   return [
-    'types'  => $types,
+    'types' => $types,
     'tokens' => [
       'vactory' => $tokens,
     ],
@@ -190,6 +195,29 @@ function vactory_core_tokens($type, $tokens, array $data, array $options, Bubble
           $replacements[$original] = $value;
           break;
 
+        case 'homepage:path':
+          $langcode = Drupal::languageManager()->getCurrentLanguage()->getId();
+          // Get the front page node from the site configuration.
+          $frontpage_path = \Drupal::config('system.site')->get('page.front');
+          $alias = NULL;
+          $alias_manager = \Drupal::service('path_alias.manager');
+          if (preg_match_all('#^/node/(\d+)$#', $frontpage_path)) {
+            $alias = $alias_manager->getAliasByPath($frontpage_path, $langcode);
+          }
+          if (!$alias) {
+            $nodes = Drupal::entityTypeManager()->getStorage('node')
+              ->loadByProperties([
+                'path' => $frontpage_path,
+              ]);
+            if (!empty($nodes)) {
+              $node = reset($nodes);
+              $alias = $alias_manager->getAliasByPath('/node/' . $node->id(), $langcode);
+            }
+          }
+          if ($alias) {
+            $replacements[$original] = $alias;
+          }
+          break;
       }
     }
   }

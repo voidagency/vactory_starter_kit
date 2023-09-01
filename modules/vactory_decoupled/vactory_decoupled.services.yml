@@ -99,5 +99,4 @@ services:
       - '@module_handler'
       - '@language_manager'
       - '@vactory.views.to_api'
-      - '@vactory.webform.normalizer'
       - '@config.factory'
