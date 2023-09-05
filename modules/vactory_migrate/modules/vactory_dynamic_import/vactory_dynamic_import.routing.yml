@@ -21,3 +21,12 @@ vactory_dynamic_import.import:
     _title: 'Vactory Dynamic Import - Import'
   requirements:
     _role: 'administrator'
+
+
+vactory_dynamic_import.generate:
+  path: '/admin/config/vactory_dynamic_import/generate'
+  defaults:
+    _form: '\Drupal\vactory_dynamic_import\Form\GenerateModelForm'
+    _title: 'Vactory Dynamic Import - Generate Model'
+  requirements:
+    _role: 'administrator'
