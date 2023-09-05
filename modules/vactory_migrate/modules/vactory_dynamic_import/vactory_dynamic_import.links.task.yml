@@ -1,0 +1,8 @@
+vactory_dynamic_import.form:
+  route_name: vactory_dynamic_import.form
+  base_route: vactory_dynamic_import.form
+  title: Dynamic import Imports
+vactory_dynamic_import.generate:
+  route_name: vactory_dynamic_import.generate
+  base_route: vactory_dynamic_import.form
+  title: Generate
