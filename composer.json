@@ -237,6 +237,9 @@
       "drupal/simple_oauth": {
         "Auth revoke on profile update": "https://www.drupal.org/files/issues/2019-04-15/simple_oauth-auth-revoke-2946882-34.patch"
       },
+      "drupal/captcha": {
+        "Fix captcha error message translation": "https://gist.githubusercontent.com/voidagency/11480147ce444bf3b4b7c5539f213452/raw/5a2d3f39bc5f795bb25b5c91ab050ad8d9ad1837/fix-captcha-error-message-translation.patch"
+      },
       "drupal/jsonapi_extra": {
         "Default field enhancer for fields": "https://gist.githubusercontent.com/voidagency/4861a0f0343a45cf0582553fc80c6b59/raw/2342d707c2b6708f2c18a69b870fcad1d5242df3/jsonapi_default_field_enhancer_for_fields.patch"
       },
