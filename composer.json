@@ -43,7 +43,7 @@
     "drupal/metatag": "^1.14",
     "drupal/yoast_seo": "^2.0.0-alpha4",
     "drupal/nocurrent_pass": "^1.2.0",
-    "drupal/paragraphs": "^1.14",
+    "drupal/paragraphs": "^1.16",
     "drupal/facets": "^2.0",
     "drupal/jsonapi_search_api": "^1.0@RC",
     "drupal/pathauto": "^1.10",
@@ -248,9 +248,6 @@
       },
       "drupal/flag": {
         "Fix deprecated php 8.1 str_replace": "https://www.drupal.org/files/issues/2022-02-25/3266574-2.patch"
-      },
-      "drupal/paragraphs": {
-        "Core 9.5.0 causing broken-looking styling (Legacy widget, with Seven)": "https://www.drupal.org/files/issues/2023-01-06/core-absolute-position-affecting-paragraphs-3331203-3.patch"
       },
       "drupal/jsonapi_search_api": {
         "Modifying a facet does not invalidate caches": "https://gist.githubusercontent.com/voidagency/299883e039129c50da852a42c704af91/raw/1812ca417adce536e82cede6da50f8e7952c7479/fix-jsonapi-search-api-facets-cache-3176987.patch"
