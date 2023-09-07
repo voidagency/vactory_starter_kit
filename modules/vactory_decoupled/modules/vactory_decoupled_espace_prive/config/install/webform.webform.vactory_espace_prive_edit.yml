@@ -42,6 +42,11 @@ elements: |-
       '#title': Mail
       '#required': true
       '#default_value': '[current-user:mail]'
+  user_picture:
+    '#type': webform_image_file
+    '#title': 'User Picture'
+    '#file_preview': value
+    '#default_file': '[current-user:user_picture:entity:fid]'
 css: ''
 javascript: ''
 settings:
