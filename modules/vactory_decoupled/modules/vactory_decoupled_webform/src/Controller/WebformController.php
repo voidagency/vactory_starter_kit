@@ -2,6 +2,7 @@
 
 namespace Drupal\vactory_decoupled_webform\Controller;
 
+use Drupal\captcha\Constants\CaptchaConstants;
 use Drupal\Component\Utility\Crypt;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Session\AccountProxy;
@@ -203,7 +204,7 @@ class WebformController extends ControllerBase {
       'timestamp'  => \Drupal::time()->getRequestTime(),
       'form_id'    => $webform_id,
       'solution'   => $num1 + $num2,
-      'status'     => CAPTCHA_STATUS_UNSOLVED,
+      'status'     => CaptchaConstants::CAPTCHA_STATUS_UNSOLVED,
       'attempts'   => 0,
       'token'      => Crypt::randomBytesBase64(),
     ])->execute();
