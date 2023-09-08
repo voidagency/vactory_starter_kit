@@ -327,7 +327,8 @@ class MenusController extends ControllerBase {
 
     $returnArray['url'] = $url;
 
-    $this->moduleHandler()->alter('menu_api', $returnArray, $link, $link->getMenuName());
+    $menu_link_name = $link->getMenuName();
+    $this->moduleHandler()->alter('menu_api', $returnArray, $link, $menu_link_name);
 
     return $returnArray;
   }
