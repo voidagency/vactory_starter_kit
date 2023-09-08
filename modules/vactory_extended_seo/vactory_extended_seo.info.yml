@@ -1,0 +1,6 @@
+name: Vactory Extended SEO
+description: Customize drupal default Metatags and SEO infos
+type: module
+core: 8.x
+core_version_requirement: ^8 || ^9 || ^10
+configure: vactory_extended_seo_import.settings

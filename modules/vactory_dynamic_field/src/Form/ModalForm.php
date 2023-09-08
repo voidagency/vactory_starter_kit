@@ -110,6 +110,8 @@ class ModalForm extends FormBase {
    *   The widgets manager.
    * @param \Drupal\Core\Entity\EntityFieldManager $entity_field_manager
    *   The entity field manager.
+   * @param \Drupal\Core\Extension\ExtensionPathResolver $extensionPathResolver
+   *   The extension path resolver.
    */
   public function __construct(
     WidgetsManagerInterface $widgets_manager,
@@ -335,7 +337,12 @@ class ModalForm extends FormBase {
             }
 
             if ($element_type == 'text_format') {
-              $this->textformatFields[] = ['components', 'extra_field', $field_id, $field_key];
+              $this->textformatFields[] = [
+                'components',
+                'extra_field',
+                $field_id,
+                $field_key,
+              ];
             }
 
             if ($element_type == 'image' || $element_type == 'file') {
@@ -394,6 +401,7 @@ class ModalForm extends FormBase {
     }
 
     // Add component fields.
+    $user_input = $form_state->getUserInput();
     for ($i = 0; $i < $this->widgetRows; $i++) {
       // Components wrapper.
       $form['components'][$i] = [
@@ -450,7 +458,8 @@ class ModalForm extends FormBase {
             $label = $field_info['label'] ?? '';
             $element_label = t('@field_label', ['@field_label' => $label]);
 
-            $element_default_value = (isset($this->widgetData[$i][$field_id][$field_key])) ? $this->widgetData[$i][$field_id][$field_key] : NULL;
+            $element_default_value = isset($this->widgetData[$i][$field_id][$field_key]) && !isset($user_input['components']) ? $this->widgetData[$i][$field_id][$field_key] : NULL;
+            $element_default_value = $user_input['components'][$i][$field_id][$field_key] ?? $element_default_value;
             $element_options = isset($field_info['options']) ? $field_info['options'] : [];
 
             $ds_field_name = '';
@@ -477,7 +486,12 @@ class ModalForm extends FormBase {
             }
 
             if ($element_type == 'text_format') {
-              $this->textformatFields[] = ['components', $i, $field_id, $field_key];
+              $this->textformatFields[] = [
+                'components',
+                $i,
+                $field_id,
+                $field_key,
+              ];
             }
 
             if ($element_type == 'image') {
@@ -490,11 +504,12 @@ class ModalForm extends FormBase {
           $element_type = $field['type'];
           $element_label = t('@field_label', ['@field_label' => $field['label']]);
 
-          $element_default_value = (isset($this->widgetData[$i][$field_id])) ? $this->widgetData[$i][$field_id] : NULL;
+          $element_default_value = isset($this->widgetData[$i][$field_id]) && !isset($user_input['components']) ? $this->widgetData[$i][$field_id] : NULL;
+          $element_default_value = $user_input['components'][$i][$field_id] ?? $element_default_value;
           $element_options = isset($field['options']) ? $field['options'] : [];
 
           $ds_field_name = '';
-          if ($element_type == 'image' || $element_type == 'remote_video' || $element_type =='file' || $element_type == 'video') {
+          if ($element_type == 'image' || $element_type == 'remote_video' || $element_type == 'file' || $element_type == 'video') {
             // Save a copy of current parent.
             $form_parents = $form['#parents'] ?? [];
             $form['#parents'] = ['components', $i, $field_id];
@@ -542,6 +557,23 @@ class ModalForm extends FormBase {
             'class' => ['df-components-weight'],
           ],
         ];
+        // If there is more than one name, add the remove button.
+        if ($this->widgetRows > 1) {
+          $form['components'][$i]['remove'] = [
+            '#type' => 'submit',
+            '#value' => $this->t('Remove'),
+            '#name' => "remove_component_{$i}",
+            '#submit' => ['::removeComponent'],
+            '#attributes' => [
+              'unique-id' => 'df-remove-component',
+              'class' => ['button', 'button--danger'],
+            ],
+            '#ajax' => [
+              'wrapper' => ModalEnum::FORM_WIDGET_AJAX_WRAPPER,
+              'callback' => [$this, 'updateFormCallback'],
+            ],
+          ];
+        }
       }
 
     }
@@ -574,21 +606,6 @@ class ModalForm extends FormBase {
         ];
       }
 
-      // If there is more than one name, add the remove button.
-      if ($this->widgetRows > 1) {
-        $form['actions_buttons']['remove_name'] = [
-          '#type'                    => 'submit',
-          '#button_type'             => 'danger',
-          '#name'                    => strtr(ModalEnum::FORM_WIDGET_AJAX_WRAPPER, '-', '_') . '_remove_more',
-          '#value'                   => t('Remove one'),
-          '#limit_validation_errors' => [],
-          '#submit'                  => ['::removeOne'],
-          '#ajax'                    => [
-            'callback' => [$this, 'updateFormCallback'],
-            'wrapper'  => ModalEnum::FORM_WIDGET_AJAX_WRAPPER,
-          ],
-        ];
-      }
       // Attach drag and drop DF module library in multiple components case.
       $form['#attached']['library'][] = 'vactory_dynamic_field/drag_and_drop';
     }
@@ -621,25 +638,28 @@ class ModalForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  protected function buildWidgetSelectorForm(array &$form, FormStateInterface $form_state) {
-    // Get field name.
-    $fieldName = \Drupal::request()->query->get('field_name');
-    // Get bundle.
-    $bundle = \Drupal::request()->query->get('field_bundle');
-    // Get the entity target id.
-    $entityTypeId = \Drupal::request()->query->get('entity_type_id');
-    // Get field definitions.
-    $fields = $this->entityFieldManager->getFieldDefinitions($entityTypeId, $bundle);
-
-    /** @var \Drupal\field\Entity\FieldConfig $fieldConfig */
-    $fieldConfig = $fields[$fieldName] ?? NULL;
-    // Get list of allowed providers selected in the field settings.
+  protected function buildWidgetSelectorForm(array &$form, FormStateInterface $form_state, $allowedProvidersCheck = TRUE) {
     $allowedProviders = [];
-    if (is_array($fieldConfig->getSetting('allowed_providers'))) {
-      $allowedProviders = array_filter($fieldConfig->getSetting('allowed_providers'), function ($value) {
-        return $value !== 0;
-      });
+    if ($allowedProvidersCheck) {
+      // Get field name.
+      $fieldName = \Drupal::request()->query->get('field_name');
+      // Get bundle.
+      $bundle = \Drupal::request()->query->get('field_bundle');
+      // Get the entity target id.
+      $entityTypeId = \Drupal::request()->query->get('entity_type_id');
+      // Get field definitions.
+      $fields = $this->entityFieldManager->getFieldDefinitions($entityTypeId, $bundle);
+
+      /** @var \Drupal\field\Entity\FieldConfig $fieldConfig */
+      $fieldConfig = $fields[$fieldName] ?? NULL;
+      // Get list of allowed providers selected in the field settings.
+      if (is_array($fieldConfig->getSetting('allowed_providers'))) {
+        $allowedProviders = array_filter($fieldConfig->getSetting('allowed_providers'), function ($value) {
+          return $value !== 0;
+        });
+      }
     }
+
     // List of widgets.
     $widgets_list = $this->widgetsManager->getModalWidgetsList($allowedProviders);
 
@@ -690,6 +710,14 @@ class ModalForm extends FormBase {
         '#type' => 'horizontal_tabs',
         '#group_name' => 'templates_tabs',
       ];
+      if (!$allowedProvidersCheck) {
+        $form['templates_tabs'] = [
+          '#type' => 'vertical_tabs',
+        ];
+      }
+      $form['settings_tab'] = [
+        '#type' => 'vertical_tabs',
+      ];
       // Auto populate fields.
       $form['templates_tabs']['auto_populate'] = [
         '#type'        => 'checkbox',
@@ -708,6 +736,9 @@ class ModalForm extends FormBase {
               '#type' => 'details',
               '#title' => $category,
             ];
+            if (!$allowedProvidersCheck) {
+              $form['templates_tabs'][$category]['#group'] = 'templates_tabs';
+            }
             if ($category == 'Others') {
               $form['templates_tabs'][$category]['#weight'] = 99;
             }
@@ -734,11 +765,13 @@ class ModalForm extends FormBase {
               $options[$widget['uuid']] = $renderer->renderPlain($widget_preview);
             }
           }
+          $classes = 'select-template-wrapper';
+          $classes = $allowedProvidersCheck ? $classes : $classes . ' from-console-bo';
           $form['templates_tabs'][$category]['template'] = [
             '#type' => 'radios',
             '#options' => $options,
             '#validated' => TRUE,
-            '#prefix' => '<div class="select-template-wrapper">',
+            '#prefix' => '<div class="' . $classes . '">',
             '#suffix' => '</div>',
             '#attributes' => [
               'class' => ['select-template-radio'],
@@ -890,14 +923,31 @@ class ModalForm extends FormBase {
   }
 
   /**
-   * Submit handler for the "add-one-more" button.
-   *
-   * Increments the max counter and causes a rebuild.
+   * Submit handler for the component remove button.
    */
-  public function removeOne(array &$form, FormStateInterface $form_state) {
+  public function removeComponent(array &$form, FormStateInterface $form_state) {
+    $user_input = $form_state->getUserInput();
+    $components = $user_input['components'] ?? [];
+    $extra_fields = $components['extra_field'] ?? [];
+    unset($components['extra_field']);
+    $triggering_element = $form_state->getTriggeringElement();
+    $parents = $triggering_element['#parents'];
+    array_pop($parents);
+    $index = end($parents);
+    unset($components[$index]);
+    $components = array_values($components);
+    $components = array_map(function ($key, $component) {
+      $component['_weight'] = $key + 1;
+      return $component;
+    }, array_keys($components), $components);
+    if (!empty($extra_fields)) {
+      $components = array_merge(['extra_field' => $extra_fields], $components);
+    }
+    $user_input['components'] = $components;
     $current = $form_state->get('num_widgets');
     $current--;
     $form_state->set('num_widgets', $current);
+    $form_state->setUserInput($user_input);
     $form_state->setRebuild();
   }
 
@@ -929,6 +979,12 @@ class ModalForm extends FormBase {
       foreach ($errors as $key => $message) {
         $form_state->setErrorByName($key, $message);
       }
+    }
+
+    $triggering_element = $form_state->getTriggeringElement();
+    $triggering_element_unique_id = $triggering_element['#attributes']['unique-id'] ?? NULL;
+    if ($triggering_element_unique_id === 'df-remove-component') {
+      $form_state->clearErrors();
     }
   }
 

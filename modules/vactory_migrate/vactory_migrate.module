@@ -1,0 +1,24 @@
+<?php
+
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function vactory_migrate_entity_base_field_info(EntityTypeInterface $entity_type) {
+  $fields = [];
+  if ($entity_type->id() == 'file' || $entity_type->id() == 'user' || $entity_type->id() == 'node' || $entity_type->id() == 'media' || $entity_type->id() == 'taxonomy_term' || $entity_type->id() == 'comment') {
+
+
+    $fields['legacy_id'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Old ID'))
+      ->setDescription(t('Old ID.'))
+      ->setReadOnly(TRUE);
+
+  }
+
+  return $fields;
+
+}

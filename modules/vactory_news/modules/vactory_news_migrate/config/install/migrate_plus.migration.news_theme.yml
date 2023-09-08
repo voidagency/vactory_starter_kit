@@ -1,0 +1,25 @@
+id: news_theme
+label: 'News Theme Migration'
+migration_group: vactory
+dependencies:
+  enforced:
+    module:
+    - vactory_news_migrate
+
+source:
+  plugin: csv
+  path: profiles/contrib/vactory_starter_kit/modules/vactory_news/modules/vactory_news_migrate/artifacts/news-theme-fr.csv
+  header_row_count: 1
+  ids: [id]
+  delimiter: ","
+
+
+destination:
+  plugin: entity:taxonomy_term
+  default_bundle: vactory_news_theme
+
+
+process:
+  legacy_id: id
+  name: name
+

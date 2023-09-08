@@ -5,7 +5,6 @@ core_version_requirement: '^8.9 || ^9'
 dependencies:
   - vactory_decoupled
   - decoupled_router
-  - vactory_decoupled_router_default_pages
 version: 8.x-1.0
 package: Vactory
 core_incompatible: false

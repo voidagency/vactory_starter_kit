@@ -86,3 +86,17 @@ services:
       - '@entity_type.manager'
       - '@metatag.manager'
       - '@language_manager'
+
+  vactory_decoupled.dynamic_field_manager:
+    class: Drupal\vactory_decoupled\DynamicFieldManager
+    arguments:
+      - '@entity_type.manager'
+      - '@vactory_dynamic_field.vactory_provider_manager'
+      - '@vacory_decoupled.media_file_manager'
+      - '@entity.repository'
+      - '@vactory_decoupled.jsonapi.generator'
+      - '@vactory_core.slug_manager'
+      - '@module_handler'
+      - '@language_manager'
+      - '@vactory.views.to_api'
+      - '@config.factory'

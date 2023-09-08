@@ -1,0 +1,7 @@
+vactory_migrate.settings:
+  path: '/admin/structure/migration/vactory_settings'
+  defaults:
+    _form: 'Drupal\vactory_migrate\Form\VactoryMigrationConfig'
+    _title: 'Vactory Migration Settings'
+  requirements:
+    _role: 'administrator'

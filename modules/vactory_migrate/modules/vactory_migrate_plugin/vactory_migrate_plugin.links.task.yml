@@ -1,0 +1,17 @@
+vactory_migrate_plugin.manage:
+  route_name: vactory_migrate_plugin.add
+  base_route: vactory_migrate_ui.import
+  title: Manage migration plugins
+
+vactory_migrate_plugin.add:
+  route_name: vactory_migrate_plugin.add
+  base_route: vactory_migrate_plugin.add
+  title: Add new migration plugin
+  parent_id: vactory_migrate_plugin.manage
+
+vactory_migrate_plugin.edit:
+  route_name: vactory_migrate_plugin.edit
+  base_route: vactory_migrate_plugin.add
+  title: Edit existing migration plugin
+  parent_id: vactory_migrate_plugin.manage
+
