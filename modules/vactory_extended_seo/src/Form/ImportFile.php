@@ -161,16 +161,18 @@ class ImportFile extends ConfigFormBase {
         'node_id' => $node,
       ]);
       $seo_entity = reset($seo_entity);
-    } elseif (!empty($title)) {
+    } elseif (!empty($title) && !empty($lang)) {
       $nid = $this->manager->getStorage('node')
         ->loadByProperties([
           'title' => trim($title),
           'langcode' => $lang
         ]);
       $nid = reset($nid);
-      $seo_entity = $this->manager->loadByProperties(['node_id' => $nid]);
-      $seo_entity = reset($seo_entity);
-    } elseif (!empty($url)) {
+      if (!empty($nid)) {
+        $seo_entity = $this->manager->loadByProperties(['node_id' => $nid]);
+        $seo_entity = reset($seo_entity);
+      }
+    } elseif (!empty($url) && !empty($lang)) {
       $path_alias_manager =  $this->manager->getStorage('path_alias');
       $alias_objects = $path_alias_manager->loadByProperties([
         'alias'     => $url,
