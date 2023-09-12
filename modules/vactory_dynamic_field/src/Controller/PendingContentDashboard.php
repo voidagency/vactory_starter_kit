@@ -104,7 +104,7 @@ class PendingContentDashboard extends ControllerBase {
     $pending_content_count = $this->pendingContentManager->getPendingContentCount();
     $resolved_content_count = $this->pendingContentManager->getResolvedContentCount();
     // Pourcentage d'avancement.
-    if ($resolved_content_count + $resolved_content_count === 0) {
+    if ($pending_content_count + $resolved_content_count === 0) {
       $pourcentage = '100%';
     }
     else {
