@@ -92,6 +92,20 @@ class VactoryDynamicWidget extends WidgetBase implements ContainerFactoryPluginI
    * {@inheritdoc}
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
+    $entity = $form_state->getFormObject()->getEntity();
+    $context = [];
+    if ($entity && $entity->id()) {
+      $paragraph_entity = $items->getEntity();
+      $route_name = \Drupal::routeMatch()->getRouteName();
+      if ($entity->getEntityTypeId() === 'paragraph' && $route_name === 'paragraphs_edit.edit_form') {
+        $entity = \Drupal::routeMatch()->getParameter('root_parent');
+      }
+      $context = [
+        'entity_type' => $entity->getEntityTypeId(),
+        'entity_id' => $entity->id(),
+        'paragraph_id' => $paragraph_entity && $paragraph_entity->getEntityTypeId() === 'paragraph' ? $paragraph_entity->id() : NULL,
+      ];
+    }
     /** @var \Drupal\link\LinkItemInterface $item */
     $item = $items[$delta];
     // The $field_name $field_bundle and $entity_type_id used to get the field
@@ -145,6 +159,7 @@ class VactoryDynamicWidget extends WidgetBase implements ContainerFactoryPluginI
      // 'widget_data' => $widget_data,
       'wrapper_id' => $wrapper_id,
       'cardinality' => $cardinality,
+      'context' => $context,
     ];
 
     // Modal link opener.
