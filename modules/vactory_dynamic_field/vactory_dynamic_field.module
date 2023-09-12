@@ -69,6 +69,14 @@ function vactory_dynamic_field_theme() {
       'template'  => 'dynamic-field-text-format-wrapper',
       'base hook' => 'text_format_wrapper',
     ],
+    'vactory_dynamic_pending_content' => [
+      'variables' => [
+        'content' => [],
+        'pourcentage' => NULL,
+        'filter_form' => NULL,
+      ],
+      'template'  => 'dynamic-field-pending-content',
+    ],
   ];
 }
 
