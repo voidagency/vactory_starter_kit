@@ -104,8 +104,13 @@ class PendingContentDashboard extends ControllerBase {
     $pending_content_count = $this->pendingContentManager->getPendingContentCount();
     $resolved_content_count = $this->pendingContentManager->getResolvedContentCount();
     // Pourcentage d'avancement.
-    $pourcentage = round(($resolved_content_count * 100) / ($resolved_content_count + $pending_content_count));
-    $pourcentage .= '%';
+    if ($resolved_content_count + $resolved_content_count === 0) {
+      $pourcentage = '100%';
+    }
+    else {
+      $pourcentage = round(($resolved_content_count * 100) / ($resolved_content_count + $pending_content_count));
+      $pourcentage .= '%';
+    }
     $default_langcode = $this->languageManager->getDefaultLanguage()->getId();
     $languages = $this->languageManager->getLanguages();
     foreach ($content as &$info) {

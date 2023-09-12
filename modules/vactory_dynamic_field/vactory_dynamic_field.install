@@ -22,7 +22,7 @@ function vactory_dynamic_field_update_9500(&$sandbox) {
     ->createTable('content_progress', vactory_df_get_table_schema());
 
   // Enable paragraph_edit module when necessary.
-  if (Drupal::moduleHandler()->moduleExists('paragraphs_edit')) {
+  if (!Drupal::moduleHandler()->moduleExists('paragraphs_edit')) {
     \Drupal::service('module_installer')->install(['paragraphs_edit']);
   }
 }
