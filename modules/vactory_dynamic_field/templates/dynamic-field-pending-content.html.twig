@@ -1,0 +1,58 @@
+<div class="progress" data-drupal-progress="" data-once="batch">
+	<div id="updateprogress" class="progress" aria-live="polite">
+		<div class="progress__label">{{ 'Avancement...' }}</div>
+		<div class="progress__track">
+			<div class="progress__bar" style="width: {{ pourcentage }};"></div>
+		</div>
+		<div class="progress__percentage" style="font-size: 40px; font-weight: bold">{{ pourcentage }}</div>
+	</div>
+</div>
+
+<div class="view view-content">
+	<div class="view-filters">
+		{{ filter_form }}
+	</div>
+</div>
+
+{% if content is empty %}
+	<h6>{{ 'No pending content has been found.'|t }}</h6>
+{% else %}
+	<div style="display: flex; flex-wrap: wrap;">
+	{% for item in content %}
+		<fieldset class="fieldset" style="flex-grow: 1; width: 33%; margin: 5px">
+			<legend class="fieldset__legend fieldset__legend--visible">
+				<span class="fieldset__label">{{ item.widget_name }}</span>
+			</legend>
+			<div class="fieldset-wrapper" style="display: flex;">
+				<div style="width: 50%">
+					<img
+						class="screenshot"
+						src="{{ item.widget_screen }}"
+						alt="Screenshot for Component"
+						title="Screenshot for Component"
+						typeof="foaf:Image"
+					>
+				</div>
+				<div style="width: 50%">
+					<div>
+						<ul>
+							<li>Champs concerné: <strong>{{ item.field_label }}</strong></li>
+							<li>Type d'entité: <strong>{{ item.entity_type|capitalize }}</strong></li>
+							<li>Language: <strong>{{ item.language }}</strong></li>
+							<li>
+								{{ item.entity_type == 'node' ? 'Page' : 'Block' }} : <a href="{{ item.alias }}">
+									<strong>{{ item.title }}</strong>
+								</a>
+							</li>
+						</ul>
+					</div>
+					<div style="padding: 10px">
+						<a href="{{ item.edit_link }}" class="button button--primary">{{ 'Modifier'|t }}</a>
+					</div>
+				</div>
+
+			</div>
+		</fieldset>
+	{% endfor %}
+	</div>
+{% endif %}

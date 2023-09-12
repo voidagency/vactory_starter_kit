@@ -32,3 +32,11 @@ vactory_dynamic_field.settings_form:
     _form: '\Drupal\vactory_dynamic_field\Form\DynamicFieldSettingsForm'
   requirements:
     _permission: 'administer site configuration'
+
+df_pending_content.dashboard:
+  path: '/admin/content/pending'
+  defaults:
+    _title: '🕒 Contenu statique en attente...'
+    _controller: '\Drupal\vactory_dynamic_field\Controller\PendingContentDashboard::dashboard'
+  requirements:
+    _role: 'administrator+webmaster'
