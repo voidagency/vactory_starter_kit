@@ -974,6 +974,9 @@ class ModalForm extends FormBase {
           $category = $settings['category'] ?? 'Others';
           $widget = $this->widgetsList[$category][$this->widget];
           $screenshot = $widget['screenshot'] ?? $this->extensionPathResolver->getPath('module', 'vactory_dynamic_field') . '/images/undefined-screenshot.jpg';
+          $file_url_generator = \Drupal::service('file_url_generator');
+          $undefined_screenshot = $this->extensionPathResolver->getPath('module', 'vactory_dynamic_field') . '/images/undefined-screenshot.jpg';
+          $screenshot = empty($screenshot) ? $file_url_generator->generateAbsoluteString($undefined_screenshot) : $screenshot;
           if (isset($triggering_element['#value']) && $triggering_element['#value'] === 1) {
             if ($needs_autopopulate) {
               NestedArray::setValue($form, $parents, $this->autoPopulateManager->getDummyData($element, $field_name, $form, $form_state));
