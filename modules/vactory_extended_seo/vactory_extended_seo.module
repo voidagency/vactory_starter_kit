@@ -40,7 +40,10 @@ function vactory_extended_seo_form_alter(&$form, FormStateInterface $form_state,
   ];
 
   if (in_array($currentRoute, $routes)) {
-    $node_id = \Drupal::routeMatch()->getParameter('node')->id();
+    $node = \Drupal::routeMatch()->getParameter('node');
+    if ($node) {
+      $node_id = $node->id();
+    }
     $seo_entity = '';
     if (!empty($node_id) && $currentRoute !== 'node.add') {
       $seo_entity = Drupal::service('entity_type.manager')->getStorage('vactory_extended_seo')

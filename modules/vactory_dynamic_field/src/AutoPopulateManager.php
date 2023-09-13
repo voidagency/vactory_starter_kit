@@ -168,7 +168,7 @@ class AutoPopulateManager {
   /**
    * Check if given field type is dummiable.
    */
-  public function isFieldTypeDummiable($type, $isPendingContentEnabled = FALSE) {
+  public function isFieldTypeDummiable($type, $isPendingContentEnabled = FALSE, $context = []) {
     $allowed_types = [
       'text',
       'textarea',
@@ -179,7 +179,7 @@ class AutoPopulateManager {
       'remote_video',
       'video',
     ];
-    return $isPendingContentEnabled && in_array($type, $allowed_types);
+    return $isPendingContentEnabled && in_array($type, $allowed_types) && !empty($context);
   }
 
   /**

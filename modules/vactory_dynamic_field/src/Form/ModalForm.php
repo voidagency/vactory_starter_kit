@@ -371,7 +371,7 @@ class ModalForm extends FormBase {
             }
 
             $form['components']['extra_field'][$field_id][$field_key] = $this->getFormElement($element_type, $element_label, $element_default_value, $element_options, $form, $form_state, $ds_field_name, $field_id, $field_key);
-            if ($this->autoPopulateManager->isFieldTypeDummiable($element_type, $this->isPendingContentEnabled)) {
+            if ($this->autoPopulateManager->isFieldTypeDummiable($element_type, $this->isPendingContentEnabled, $this->context)) {
               $name = "components.extra_field.{$field_id}.{$field_key}";
               if ($element_type === 'url_extended') {
                 $name = "components.extra_field.{$field_id}.{$field_key}";
@@ -419,7 +419,7 @@ class ModalForm extends FormBase {
           }
 
           $form['components']['extra_field'][$field_id] = $this->getFormElement($element_type, $element_label, $element_default_value, $element_options, $form, $form_state, $ds_field_name, $field_id);
-          if ($this->autoPopulateManager->isFieldTypeDummiable($element_type, $this->isPendingContentEnabled)) {
+          if ($this->autoPopulateManager->isFieldTypeDummiable($element_type, $this->isPendingContentEnabled, $this->context)) {
             $name = "components.extra_field.{$field_id}";
             if ($element_type === 'url_extended') {
               $name = "components.extra_field.{$field_id}";
@@ -533,7 +533,7 @@ class ModalForm extends FormBase {
             }
 
             $form['components'][$i][$field_id][$field_key] = $this->getFormElement($element_type, $element_label, $element_default_value, $element_options, $form, $form_state, $ds_field_name);
-            if ($this->autoPopulateManager->isFieldTypeDummiable($element_type, $this->isPendingContentEnabled)) {
+            if ($this->autoPopulateManager->isFieldTypeDummiable($element_type, $this->isPendingContentEnabled, $this->context)) {
               $name = "components.{$i}.{$field_id}.{$field_key}";
               if ($element_type === 'url_extended') {
                 $name = "components.{$i}.{$field_id}.{$field_key}";
@@ -585,7 +585,7 @@ class ModalForm extends FormBase {
           }
 
           $form['components'][$i][$field_id] = $this->getFormElement($element_type, $element_label, $element_default_value, $element_options, $form, $form_state, $ds_field_name, $field_id, $i);
-          if ($this->autoPopulateManager->isFieldTypeDummiable($element_type, $this->isPendingContentEnabled)) {
+          if ($this->autoPopulateManager->isFieldTypeDummiable($element_type, $this->isPendingContentEnabled, $this->context)) {
             $name = "components.{$i}.{$field_id}";
             if ($element_type === 'url_extended') {
               $name = "components.{$i}.{$field_id}";
@@ -943,7 +943,7 @@ class ModalForm extends FormBase {
 
       return $response;
     }
-    if ($this->isPendingContentEnabled) {
+    if ($this->isPendingContentEnabled && !empty($this->context)) {
       $triggering_element = $form_state->getTriggeringElement();
       if (isset($triggering_element['#parents'])) {
         $parents = $triggering_element['#parents'];
@@ -968,16 +968,16 @@ class ModalForm extends FormBase {
           if (isset($element['widget']['media_library_update_widget'])) {
             $needs_autopopulate = FALSE;
           }
+          $field_label = $element['#title'] ?? '';
+          $settings = $this->widgetsManager->loadSettings($this->widget);
+          $widget_name = $settings['name'] ?? NULL;
+          $category = $settings['category'] ?? 'Others';
+          $widget = $this->widgetsList[$category][$this->widget];
+          $screenshot = $widget['screenshot'] ?? $this->extensionPathResolver->getPath('module', 'vactory_dynamic_field') . '/images/undefined-screenshot.jpg';
           if (isset($triggering_element['#value']) && $triggering_element['#value'] === 1) {
             if ($needs_autopopulate) {
               NestedArray::setValue($form, $parents, $this->autoPopulateManager->getDummyData($element, $field_name, $form, $form_state));
             }
-            $settings = $this->widgetsManager->loadSettings($this->widget);
-            $widget_name = $settings['name'] ?? NULL;
-            $category = $settings['category'] ?? 'Others';
-            $widget = $this->widgetsList[$category][$this->widget];
-            $screenshot = $widget['screenshot'] ?? $this->extensionPathResolver->getPath('module', 'vactory_dynamic_field') . '/images/undefined-screenshot.jpg';
-            $field_label = $element['#title'] ?? '';
             if (isset($element['widget']['media_library_update_widget'])) {
               $field_label = $element['widget']['#title'] ?? '';
             }
