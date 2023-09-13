@@ -187,20 +187,66 @@ class AutoPopulateManager {
    */
   public function setFieldInPending($field_name, $widget_id, $context, $field_label, $widget_name, $screenshot) {
     $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
-    \Drupal::database()->insert('content_progress')
-      ->fields([
-        'entity_id' => $context['entity_id'],
-        'entity_type' => $context['entity_type'],
-        'paragraph_id' => $context['paragraph_id'],
-        'widget_id' => $widget_id,
-        'field_name' => $field_name,
-        'field_label' => $field_label,
-        'widget_name' => $widget_name,
-        'langcode' => $langcode,
-        'widget_screen' => $screenshot,
-        'pending' => 1,
-      ])
-      ->execute();
+    $id = $this->getPendingContentId($field_name, $widget_id, $context);
+    if (!isset($id)) {
+      // New entry.
+      \Drupal::database()->insert('content_progress')
+        ->fields([
+          'entity_id' => $context['entity_id'],
+          'entity_type' => $context['entity_type'],
+          'paragraph_id' => $context['paragraph_id'],
+          'widget_id' => $widget_id,
+          'field_name' => $field_name,
+          'field_label' => $field_label,
+          'widget_name' => $widget_name,
+          'langcode' => $langcode,
+          'widget_screen' => $screenshot,
+          'pending' => 1,
+        ])
+        ->execute();
+    }
+    else {
+      // Update existing entry.
+      \Drupal::database()->update('content_progress')
+        ->fields([
+          'entity_id' => $context['entity_id'],
+          'entity_type' => $context['entity_type'],
+          'paragraph_id' => $context['paragraph_id'],
+          'widget_id' => $widget_id,
+          'field_name' => $field_name,
+          'field_label' => $field_label,
+          'widget_name' => $widget_name,
+          'langcode' => $langcode,
+          'widget_screen' => $screenshot,
+          'pending' => 1,
+        ])
+        ->condition('id', $id)
+        ->execute();
+    }
+
+  }
+
+  /**
+   * Get existing pending content ID.
+   */
+  public function getPendingContentId($field_name, $widget_id, $context) {
+    $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
+    $query_string = "SELECT id FROM content_progress WHERE entity_id=:entity_id AND entity_type=:entity_type AND paragraph_id=:paragraph_id AND widget_id=:widget_id AND field_name=:field_name AND langcode=:langcode";
+    $query_params = [
+      'entity_id' => $context['entity_id'],
+      'entity_type' => $context['entity_type'],
+      'paragraph_id' => $context['paragraph_id'],
+      'widget_id' => $widget_id,
+      'langcode' => $langcode,
+      'field_name' => $field_name,
+    ];
+    $result = \Drupal::database()->query($query_string, $query_params)
+      ->fetchAll();
+    if (!empty($result)) {
+      $result = reset($result);
+      return $result->id;
+    }
+    return NULL;
   }
 
   /**
