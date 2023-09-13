@@ -962,7 +962,9 @@ class ModalForm extends FormBase {
             $needs_autopopulate = !isset($element['#value']['title']['#value']) || (isset($element['#value']['title']['#value']) && empty($element['#value']['title']['#value']));
           }
           if (!in_array($element['#type'], ['container', 'url_extended'])) {
-            $needs_autopopulate = !isset($element['#value']) || (isset($element['#value']) && empty($element['#value']));
+            if ($element['#type'] !== 'text_format') {
+              $needs_autopopulate = !isset($element['#value']) || (isset($element['#value']) && empty($element['#value']));
+            }
             $parents[] = '#value';
           }
           if (isset($element['widget']['media_library_update_widget'])) {
