@@ -1,0 +1,66 @@
+route_callbacks:
+  - '\Drupal\vactory_jsonapi_extras\Routing\Routes::routes'
+entity.exposed_apis.collection:
+  path: '/admin/structure/exposed-apis'
+  defaults:
+    _entity_list: 'exposed_apis'
+    _title: 'Exposed APIs configuration'
+  requirements:
+    _permission: 'administer exposed apis'
+
+entity.exposed_apis.add_form:
+  path: '/admin/structure/exposed_apis/add'
+  defaults:
+    _entity_form: 'exposed_apis.add'
+    _title: 'Add an exposed apis'
+  requirements:
+    _permission: 'administer exposed apis'
+
+entity.exposed_apis.edit_form:
+  path: '/admin/structure/exposed-apis/{exposed_apis}'
+  defaults:
+    _entity_form: 'exposed_apis.edit'
+    _title: 'Edit an exposed apis'
+  requirements:
+    _permission: 'administer exposed apis'
+
+entity.exposed_apis.delete_form:
+  path: '/admin/structure/exposed-apis/{exposed_apis}/delete'
+  defaults:
+    _entity_form: 'exposed_apis.delete'
+    _title: 'Delete an exposed apis'
+  requirements:
+    _permission: 'administer exposed apis'
+
+entity.api_package.collection:
+  path: '/admin/structure/api-packages'
+  defaults:
+    _entity_list: 'api_package'
+    _title: 'API Packages configuration'
+  requirements:
+    _permission: 'administer api packages'
+
+entity.api_package.add_form:
+  path: '/admin/structure/apis-packages/add'
+  defaults:
+    _entity_form: 'api_package.add'
+    _title: 'Add api package'
+  requirements:
+    _permission: 'administer api packages'
+
+entity.api_package.edit_form:
+  path: '/admin/structure/apis-packages/{api_package}'
+  defaults:
+    _entity_form: 'api_package.edit'
+    _title: 'Edit api package'
+  requirements:
+    _permission: 'administer api packages'
+
+entity.api_package.delete_form:
+  path: '/admin/structure/apis-packages/{api_package}/delete'
+  defaults:
+    _entity_form: 'api_package.delete'
+    _title: 'Delete api package'
+  requirements:
+    _permission: 'administer api packages'
+

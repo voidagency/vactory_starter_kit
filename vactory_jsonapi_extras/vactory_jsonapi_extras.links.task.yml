@@ -1,0 +1,13 @@
+apis_packages.tasks:
+  route_name: entity.api_package.collection
+  base_route: entity.api_package.collection
+  title: API Packages
+apis.tasks:
+  route_name: entity.exposed_apis.collection
+  base_route: entity.api_package.collection
+  title: Exposed APIs
+api_keys.tasks:
+  route_name: entity.api_key.collection
+  base_route: entity.api_package.collection
+  title: API keys
+

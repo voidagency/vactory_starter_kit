@@ -1,0 +1,14 @@
+apis.exposed_apis.*:
+  type: config_entity
+  label: Exposed APIs
+  mapping:
+    id:
+      type: string
+      label: ID
+    label:
+      type: label
+      label: Label
+    uuid:
+      type: string
+    description:
+      type: string
