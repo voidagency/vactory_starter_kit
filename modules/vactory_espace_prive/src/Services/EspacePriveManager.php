@@ -44,20 +44,19 @@ class EspacePriveManager {
     $password_lifetime = $config->get('password_lifetime');
     if ($password_lifetime) {
       foreach ($users as $user) {
+        $now = time();
         if ($user->hasField('field_reset_password_date')) {
           // Last reset password date.
           $lrp_date = $user->get('field_reset_password_date')->value;
           if (empty($lrp_date) || !is_numeric($lrp_date)) {
-            $user->set('field_reset_password_date', time());
-            $user->save();
-            $lrp_date = $user->get('field_reset_password_date')->value;
+            $lrp_date = $now;
           }
-          $now = time();
-          $diff_days = ($now - (int) $lrp_date)/(60*60*24);
+          $diff_days = ($now - (int) $lrp_date)/(60 * 60 * 24);
           if ($diff_days >= (int) $password_lifetime) {
-            $user->setPassword('reSet'. time());
-            $user->save();
+            $user->setPassword('reSet'. $now);
           }
+          $user->set('field_reset_password_date', $lrp_date);
+          $user->save();
         }
       }
     }
