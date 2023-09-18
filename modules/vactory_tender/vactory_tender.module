@@ -11,6 +11,11 @@ use Drupal\file\Entity\File;
 use Drupal\node\Entity\Node;
 use Drupal\views\ViewExecutable;
 use Drupal\block_content\Entity\BlockContent;
+use Drupal\node\NodeTypeInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\webform\WebformSubmissionInterface;
+use Drupal\Core\Entity\EntityStorageException;
 
 /**
  * Implements hook_theme().
@@ -144,6 +149,57 @@ function vactory_tender_form_alter(&$form, FormStateInterface $form_state, $form
     $form['actions']['submit']['#submit'][] = '_vactory_tender_webform_redirection';
     $form['#submit'][] = '_vactory_tender_webform_redirection';
   }
+  // Add computed field to tender content type.
+  if ($form_id == "node_type_edit_form") {
+    $type = $form_state->getFormObject()->getEntity();
+    if ($type->id() == 'vactory_tender') {
+      $form['tender_form'] = [
+        '#type' => 'details',
+        '#title' => t('Tender Form Config'),
+        '#group' => 'additional_settings',
+      ];
+      $default_value = $type->getThirdPartySetting('vactory_tender', 'tender_node', '') != '' ? (Node::load($type->getThirdPartySetting('vactory_tender', 'tender_node', '')) ?? '') : '';
+      $form['tender_form']['tender_node'] = [
+        '#title' => t('Tender Form Node'),
+        '#type' => 'entity_autocomplete',
+        '#target_type' => 'node',
+        '#selection_settings' => [
+          'target_bundles' => ['vactory_page'],
+        ],
+        '#default_value' => $default_value,
+      ];
+      $form['#entity_builders'][] = 'vactory_tender_form_node_type_form_builder';
+    }
+  }
+}
+
+/**
+ * Entity builder for the node type form with scheduler options.
+ */
+function vactory_tender_form_node_type_form_builder($entity_type, NodeTypeInterface $type, &$form, FormStateInterface $form_state)
+{
+  $type->setThirdPartySetting('vactory_tender', 'tender_node', $form_state->getValue('tender_node'));
+}
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function vactory_tender_entity_base_field_info(EntityTypeInterface $entity_type)
+{
+  $fields = [];
+  if ($entity_type->id() === 'node') {
+    $fields['tender_form_url'] = BaseFieldDefinition::create('string')
+      ->setComputed(TRUE)
+      ->setReadOnly(TRUE)
+      ->setTargetEntityTypeId($entity_type->id())
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE)
+      ->setClass('Drupal\vactory_tender\Field\TenderFormEntityFieldItemList')
+      ->setTranslatable(FALSE)
+      ->setRequired(FALSE);
+  }
+
+  return $fields;
 }
 
 /**
@@ -195,6 +251,45 @@ function vactory_tender_views_pre_view(ViewExecutable $view, $display_id, array 
         ];
         $view->setHandler($display_id, 'header', 'area_text_custom', $item);
       }
+    }
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave() for webform_submission entities.
+ *
+ * @throws \Exception
+ */
+function vactory_tender_webform_submission_presave(WebformSubmissionInterface $webform_submission)
+{
+  if ($webform_submission->getWebform()->id() !== 'vactory_tender_form') {
+    return;
+  }
+
+  // Get original data (with default state) and current data.
+  $original_data = $webform_submission->getOriginalData() + ['state' => NULL];
+  $current_data = $webform_submission->getData();
+
+  // If submission is completed and state is not set then set state to completed.
+  if ($webform_submission->isCompleted() && empty($current_data['state'])) {
+    $current_data['state'] = 'completed';
+  }
+
+  if ($original_data['state'] !== $current_data['state']) {
+    $flag = FALSE;
+    $decryted_tender = \Drupal::service('vactory_core.tools')->decrypt($current_data['tender']);
+    if ($decryted_tender != null) {
+      $decryted_tender = str_replace('vactory_tender:', '', $decryted_tender);
+      $tender = \Drupal::entityTypeManager()->getStorage('node')->loadByProperties(['nid' => $decryted_tender, 'type' => 'vactory_tender']);
+      $tender = reset($tender);
+      if (isset($tender)) {
+        $current_data['tender'] = $tender->id();
+        $webform_submission->setData($current_data);
+        $flag = TRUE;
+      }
+    }
+    if (!$flag) {
+      throw new EntityStorageException(t("Le champ Tender est requis."), 0001);
     }
   }
 }
