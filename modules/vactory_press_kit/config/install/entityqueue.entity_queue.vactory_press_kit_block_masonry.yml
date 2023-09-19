@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - node
+  enforced:
+    module:
+      - vactory_press_kit
 id: vactory_press_kit_block_masonry
 label: 'press kit Block Masonry'
 handler: simple

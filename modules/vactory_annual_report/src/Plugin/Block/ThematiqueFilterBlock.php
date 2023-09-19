@@ -96,6 +96,12 @@ class ThematiqueFilterBlock extends BlockBase {
         'rapport_year' => $rapport_year,
         'links' => $links,
       ],
+      '#cache' => [
+        // Set the caching policy to match the default block caching policy.
+        'max-age' => 0,
+        'contexts' => ['url'],
+        'tags' => ['rendered'],
+      ],
     ];
   }
 

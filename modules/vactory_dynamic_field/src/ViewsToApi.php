@@ -408,12 +408,16 @@ class ViewsToApi {
       foreach ($terms as $term) {
         $term = $entityRepository
           ->getTranslationFromContext($term);
-        array_push($result[$vid], [
+        $to_push = [
           'id' => $term->id(),
           'uuid' => $term->uuid(),
           'slug' => $slugManager->taxonomy2Slug($term),
           'label' => $term->label(),
-        ]);
+        ];
+        if ($term->parent->target_id !== '0') {
+          $to_push['parent'] = $term->parent->target_id;
+        }
+        array_push($result[$vid], $to_push);
       }
 
     }

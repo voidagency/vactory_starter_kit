@@ -5,8 +5,11 @@
  * Vactory Espace prive custom module related hooks.
  */
 
+use Drupal\file\Element\ManagedFile;
+use Drupal\vactory_espace_prive\Ajax\ManagedFileUploadCompleteEventCommand;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Drupal\Core\Form\FormStateInterface;
+
 /**
  * Implements hook_theme().
  */
@@ -30,12 +33,12 @@ function vactory_espace_prive_theme($existing, $type, $theme, $path) {
         'profile_form' => NULL,
       ],
     ],
-     'espace_prive_edit_pwd' => [
+    'espace_prive_edit_pwd' => [
       'template' => 'espace-prive-edit-pwd',
       'variables' => [
         'edit_password_form' => NULL,
       ],
-     ],
+    ],
     'espace_prive_password' => [
       'template' => 'espace-prive-password',
       'variables' => [
@@ -86,10 +89,15 @@ function vactory_espace_prive_preprocess_page(&$variables) {
  */
 function vactory_espace_prive_preprocess_input__password(&$variables) {
   if ($variables['element']['#type'] == 'password') {
+    $espace_prive_settings = \Drupal::config('vactory_espace_prive.settings');
+    $enable_password_suggestion = $espace_prive_settings->get('enable_password_suggestion');
     $title = $variables['element']['#id'] == 'edit-pass-pass1' ? t('Mot de passe') : t('Confirmer le mot de passe');
     $title = $variables['element']['#id'] == 'edit-current-pass' ? t('Mot de passe actuel') : $title;
     $title = $variables['element']['#id'] == 'edit-pass' ? t('Enter your password') : $title;
     $variables['attributes']['placeholder'] = $title;
+    if ($enable_password_suggestion) {
+      $variables['#attached']['library'][] = 'vactory_espace_prive/password_suggestion';
+    }
   }
 }
 
@@ -144,7 +152,11 @@ function vactory_espace_prive_page_attachments(array &$attachments) {
       $meta_title = $espace_prive_config->get('metatag_register_title');
       $meta_description = $espace_prive_config->get('metatag_register_description');
     }
-    if (in_array($current_route, ['user.register', 'vactory_espace_prive.register'])) {
+    $register_routes = [
+      'user.register',
+      'vactory_espace_prive.register',
+    ];
+    if (in_array($current_route, $register_routes)) {
       $meta_title = $espace_prive_config->get('metatag_login_title');
       $meta_description = $espace_prive_config->get('metatag_login_description');
     }
@@ -182,13 +194,13 @@ function vactory_espace_prive_form_user_form_alter(&$form, FormStateInterface $f
   $current_route = Drupal::routeMatch()->getRouteName();
   if ($current_route == "vactory_espace_prive.cleaned_profile") {
     $form['#attached']['library'][] = 'vactory_espace_prive/script.auto_upload';
-    if ($form_state->getValue('user_picture') != null) {
+    if ($form_state->getValue('user_picture') != NULL) {
       $fid = $form_state->getValue('user_picture')['0']['fids']['0'];
       $current_user = \Drupal::currentUser();
       $user = \Drupal::entityTypeManager()->getStorage('user')
-      ->load($current_user->id());
-        $user->set('user_picture', $fid);
-        $user->save();
+        ->load($current_user->id());
+      $user->set('user_picture', $fid);
+      $user->save();
     }
   }
 }
@@ -213,8 +225,8 @@ function vactory_espace_prive_element_info_alter(array &$info) {
  * @see \Drupal\file\Element\ManagedFile::uploadAjaxCallback
  */
 function vactory_espace_prive_managed_file_ajax_callback(array &$form, FormStateInterface $form_state) {
-  $response = \Drupal\file\Element\ManagedFile::uploadAjaxCallback($form, $form_state, \Drupal::request());
-  $response->addCommand(new \Drupal\vactory_espace_prive\Ajax\ManagedFileUploadCompleteEventCommand($form, $form_state));
+  $response = ManagedFile::uploadAjaxCallback($form, $form_state, \Drupal::request());
+  $response->addCommand(new ManagedFileUploadCompleteEventCommand($form, $form_state));
   return $response;
 }
 
@@ -267,4 +279,3 @@ function vactory_mail_black_list_validation($form, FormStateInterface $form_stat
     $form_state->setErrorByName('mail', t('The email domain is not valid'));
   }
 }
-

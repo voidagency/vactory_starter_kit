@@ -11,6 +11,9 @@ dependencies:
     - media_library
     - path
     - text
+  enforced:
+    module:
+      - vactory_locator
 third_party_settings:
   field_group:
     group_marker_container:

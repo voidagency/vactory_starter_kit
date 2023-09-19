@@ -1,0 +1,9 @@
+services:
+  plugin.manager.revalidator:
+    class: Drupal\vactory_decoupled_revalidator\RevalidatorPluginManager
+    parent: default_plugin_manager
+  vactory.entity_action_event_revalidate_subscriber:
+    class: '\Drupal\vactory_decoupled_revalidator\EventSubscriber\VactoryDecoupledRevalidatorSubscriber'
+    arguments: ['@entity_type.manager']
+    tags:
+      - { name: 'event_subscriber' }

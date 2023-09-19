@@ -1,6 +1,9 @@
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  enforced:
+    module:
+      - vactory_press_kit
 name: 'Press kit - Theme'
 vid: press_kit_theme
 description: 'Press kit vocabulary.'

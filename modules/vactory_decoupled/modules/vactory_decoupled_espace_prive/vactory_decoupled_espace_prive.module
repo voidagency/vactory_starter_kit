@@ -1,0 +1,145 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for vactory_decoupled_espace_prive module.
+ */
+
+use Drupal\Core\Cache\Cache;
+use Drupal\user\Entity\User;
+use Drupal\user\UserInterface;
+use Drupal\user_registrationpassword\UserRegistrationPassword;
+
+/**
+ * Implements hook_decoupled_webform_data_presubmit_alters().
+ */
+function vactory_decoupled_espace_prive_decoupled_webform_data_presubmit_alter(array &$webform_data, &$error_message) {
+  if (isset($webform_data['webform_id']) && $webform_data['webform_id'] === 'vactory_espace_prive_register') {
+    $existing_user = user_load_by_mail($webform_data['mail']);
+
+    if (!$existing_user instanceof UserInterface) {
+      $error_message = [
+        'error' => [
+          'message' => t("The mail is already in existence, try another one"),
+        ],
+      ];
+      return;
+    }
+
+    $user_data = $webform_data;
+    // Unset unused data.
+    unset($user_data['webform_id']);
+    unset($user_data['in_draft']);
+    unset($user_data['g-recaptcha-response']);
+
+    // Get username by mail.
+    $new_name = preg_replace('/@.*$/', '', $user_data['mail']);
+    $new_name = email_registration_cleanup_username($new_name);
+    $user_data['name'] = email_registration_unique_username($new_name);
+
+
+    $userSettings = \Drupal::configFactory()->get('user.settings');
+    $approval_settings = $userSettings->get('register');
+    $user_registrationpassword_type = \Drupal::configFactory()
+        ->getEditable('user_registrationpassword.settings')
+        ->get('registration') ?? [];
+
+    if ($approval_settings === UserInterface::REGISTER_VISITORS &&
+      ($user_registrationpassword_type == UserRegistrationPassword::NO_VERIFICATION ||
+        $user_registrationpassword_type == UserRegistrationPassword::VERIFICATION_DEFAULT)) {
+      $user_data['status'] = 1;
+    }
+
+    try {
+      $account = User::create($user_data);
+      $account->save();
+    } catch (\Exception $exception) {
+      $error_message = [
+        'error' => [
+          'message' => t("Une erreur s'est produite"),
+        ],
+      ];
+      return;
+    }
+
+    if ($approval_settings === UserInterface::REGISTER_VISITORS) {
+      switch ($user_registrationpassword_type) {
+        case UserRegistrationPassword::NO_VERIFICATION:
+          _user_mail_notify('register_no_approval_required', $account);
+          break;
+        case UserRegistrationPassword::VERIFICATION_DEFAULT:
+          _user_mail_notify('register_no_approval_required', $account);
+          break;
+        case UserRegistrationPassword::VERIFICATION_PASS:
+          _user_registrationpassword_mail_notify('register_confirmation_with_pass', $account);
+          break;
+      }
+    }
+    // Administrator approval required.
+    elseif ($approval_settings === UserInterface::REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL) {
+      _user_mail_notify('register_pending_approval', $account);
+    }
+
+  }
+  if (isset($webform_data['webform_id']) && $webform_data['webform_id'] === 'vactory_espace_prive_edit') {
+
+    $current_user_id = \Drupal::service('current_user')->getAccount()->id();
+    $user = !empty($current_user_id) ? User::load($current_user_id) : NULL;
+
+    if (!$user instanceof UserInterface) {
+      $error_message = [
+        'error' => [
+          'message' => t("Invalid User"),
+        ],
+      ];
+      return;
+    }
+
+    $user_data = $webform_data;
+    // Unset unused data.
+    unset($user_data['webform_id']);
+    unset($user_data['in_draft']);
+    unset($user_data['csrfToken']);
+
+    foreach ($user_data as $field => $value){
+      $user->set($field, $value);
+    }
+    try{
+      $user->save();
+    } catch (\Exception $exception) {
+      $error_message = [
+        'error' => [
+          'message' => t("Une erreur s'est produite:") . $exception->getMessage(),
+        ],
+      ];
+    }
+
+
+  }
+
+}
+
+/**
+ * Implements hook_df_jsonapi_output_alter().
+ */
+function vactory_decoupled_espace_prive_df_jsonapi_output_alter(&$content) {
+  if (isset($content['components'][0]['id'])) {
+    $key = $content['components'][0]['id'];
+    if ($key == 'vactory_decoupled_singup') {
+      $config = \Drupal::config('user_registrationpassword.settings');
+      $content['components'][0]['singup_config'] = [
+        'user_registration_password' => $config->get('registration') ?? 'with-pass',
+      ];
+    }
+  }
+}
+
+/**
+ * Implements hook_decoupled_df_format_alter().
+ */
+function vactory_decoupled_espace_prive_decoupled_df_format_alter(&$value, &$info, &$cacheability) {
+  if ($info['uuid'] == 'vactory_decoupled_espace_prive:signup') {
+    $cacheTags = Cache::mergeTags($cacheability->getCacheTags(), ['config:user_registrationpassword.settings']);
+    $cacheability->setCacheTags($cacheTags);
+  }
+}

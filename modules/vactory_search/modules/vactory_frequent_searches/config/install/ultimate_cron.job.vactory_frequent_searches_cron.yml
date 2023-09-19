@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - vactory_frequent_searches
+  enforced:
+    module:
+      - vactory_frequent_searches
 title: 'Weekly frequent searched keywords'
 id: vactory_frequent_searches_cron
 weight: 0

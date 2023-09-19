@@ -11,7 +11,7 @@ services:
     arguments: ['@vactory_decoupled.breadcrumb.default', '@database', '@router.no_access_checks', '@entity.repository']
   vactory_decoupled.blocksManager:
     class: Drupal\vactory_decoupled\BlocksManager
-    arguments: ['@plugin.manager.block', '@theme.manager', '@entity_type.manager', '@plugin.manager.condition', '@vactory_decoupled.jsonapi.client']
+    arguments: ['@plugin.manager.block', '@theme.manager', '@entity_type.manager', '@plugin.manager.condition', '@vactory_decoupled.jsonapi.client', '@module_handler', '@logger.factory']
 
   vactory_decoupled.url_resolver:
     class: Drupal\vactory_decoupled\UrlResolver
@@ -19,15 +19,9 @@ services:
 
   vactory_decoupled.route_subscriber:
     class: Drupal\vactory_decoupled\Routing\RouteSubscriber
+    arguments: ['@entity_type.manager']
     tags:
       - { name: event_subscriber }
-  vactory_decoupled.normalizer.primitive_data:
-    class: Drupal\vactory_decoupled\Normalizer\PrimitiveDataNormalizerOverride
-    decorates: serializer.normalizer.primitive_data
-    decoration_priority: 7
-    public: false
-    arguments:
-      - '@vactory_decoupled.normalizer.primitive_data.inner'
 
   vactory_decoupled.jsonapi.client:
     class: Drupal\vactory_decoupled\JsonApiClient
@@ -36,11 +30,18 @@ services:
       - '@jsonapi.resource_type.repository'
       - '@session'
       - '@request_stack'
+      - '@current_route_match'
+      - '@logger.factory'
 
   vactory_decoupled.jsonapi.generator:
     class: Drupal\vactory_decoupled\JsonApiGenerator
     arguments:
       - '@vactory_decoupled.jsonapi.client'
+      - '@entity_type.manager'
+      - '@entity.repository'
+      - '@token'
+      - '@module_handler'
+      - '@current_route_match'
 
   vactory_decoupled.finish_response_subscriber:
     class: Drupal\vactory_decoupled\EventSubscriber\FinishResponseSubscriber
@@ -50,7 +51,7 @@ services:
 
   vactory_decoupled.jsonapi_recaptcha_subscriber:
     class: Drupal\vactory_decoupled\EventSubscriber\JsonApiReCaptchaSubscriber
-    arguments: ['@config.factory']
+    arguments: ['@config.factory', '@logger.factory']
     tags:
       - { name: event_subscriber }
 
@@ -74,3 +75,35 @@ services:
       - { name: cache.bin }
     factory: ['@cache_factory', 'get']
     arguments: [vactory_decoupled_oauth]
+
+  vacory_decoupled.media_file_manager:
+    class: Drupal\vactory_decoupled\MediaFilesManager
+    arguments: ['@file_url_generator']
+
+  vactory_decoupled.helper:
+    class: Drupal\vactory_decoupled\VactoryDecoupledHelper
+    arguments:
+      - '@entity_type.manager'
+      - '@metatag.manager'
+      - '@language_manager'
+
+  vactory_decoupled.dynamic_field_manager:
+    class: Drupal\vactory_decoupled\DynamicFieldManager
+    arguments:
+      - '@entity_type.manager'
+      - '@vactory_dynamic_field.vactory_provider_manager'
+      - '@vacory_decoupled.media_file_manager'
+      - '@entity.repository'
+      - '@vactory_decoupled.jsonapi.generator'
+      - '@vactory_core.slug_manager'
+      - '@module_handler'
+      - '@language_manager'
+      - '@vactory.views.to_api'
+      - '@config.factory'
+
+  vactory_decoupled.check_auth_limit_access:
+    class: Drupal\vactory_decoupled\EventSubscriber\RequestSubscriberLimitiAuthAccess
+    arguments: ['@router.no_access_checks', '@entity_type.manager', '@config.factory']
+    tags:
+      - { name: event_subscriber }
+

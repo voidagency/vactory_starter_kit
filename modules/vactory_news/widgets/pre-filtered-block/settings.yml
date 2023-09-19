@@ -1,0 +1,34 @@
+name: 'Three Columns - Pre Filtered'
+multiple: FALSE
+category: 'News'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: "Titre"
+  description:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'basic_html'
+  collection:
+    type: json_api_collection
+    label: 'JSON:API'
+    options:
+      '#required': TRUE
+      '#default_value':
+        id: "vactory_news_pre_filtered_block"
+        resource: node--vactory_news
+        filters:
+          - fields[node--vactory_news]=drupal_internal__nid,path,title,field_vactory_news_theme,field_vactory_media,field_vactory_excerpt,field_vactory_date
+          - fields[taxonomy_term--vactory_news_theme]=tid,name,term_2_slug
+          - fields[media--image]=name,thumbnail
+          - fields[file--image]=filename,uri
+          - include=field_vactory_news_theme,field_vactory_media,field_vactory_media.thumbnail
+          - page[limit]=3
+          - filter[status][value]=1
+        optional_filters:
+          vactory_news_theme: taxonomy_term
+  link:
+    type: url_extended
+    label: 'Lien'

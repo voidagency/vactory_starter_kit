@@ -2,16 +2,15 @@
 
 namespace Drupal\vactory_private_files_decoupled\Controller;
 
-use DateTime;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\vactory_private_files_decoupled\Access\PrivateFileTokenGenerator;
+use Drupal\file\Entity\File;
+use Drupal\vactory_private_files_decoupled\VactoryPrivateFilesServices;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Drupal\Core\Session\AccountProxyInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\File\FileUrlGeneratorInterface;
 
 /**
  * Class private files controller.
@@ -26,13 +25,6 @@ class PrivateFilesController extends ControllerBase {
   protected $entityTypeManager;
 
   /**
-   * File url generator.
-   *
-   * @var \Drupal\Core\File\FileUrlGeneratorInterface
-   */
-  protected $fileUrlGenerator;
-
-  /**
    * Account proxy interface.
    *
    * @var \Drupal\Core\Session\AccountProxyInterface
@@ -40,27 +32,19 @@ class PrivateFilesController extends ControllerBase {
   protected $currentUser;
 
   /**
-   * @var int
-   */
-  protected $currentTimeStamp;
-
-  /**
-   * Private File Token Generator.
+   * Vactory privates files services.
    *
-   * @var \Drupal\vactory_private_files_decoupled\Access\PrivateFileTokenGenerator
+   * @var \Drupal\vactory_private_files_decoupled\VactoryPrivateFilesServices
    */
-  protected $privateFileTokenGenerator;
+  protected $vactoryPrivateFilesServices;
 
   /**
    * Constructs document controller.
    */
-  public function __construct(AccountProxyInterface $accountProxy, EntityTypeManagerInterface $entityTypeManager, FileUrlGeneratorInterface $fileUrlGenerator, PrivateFileTokenGenerator $privateFileTokenGenerator) {
+  public function __construct(AccountProxyInterface $accountProxy, EntityTypeManagerInterface $entityTypeManager, VactoryPrivateFilesServices $vactoryPrivateFilesServices) {
     $this->currentUser = $accountProxy->getAccount();
     $this->entityTypeManager = $entityTypeManager;
-    $this->fileUrlGenerator = $fileUrlGenerator;
-    $now = new DateTime();
-    $this->currentTimeStamp = $now->getTimestamp();
-    $this->privateFileTokenGenerator = $privateFileTokenGenerator;
+    $this->vactoryPrivateFilesServices = $vactoryPrivateFilesServices;
   }
 
   /**
@@ -70,7 +54,6 @@ class PrivateFilesController extends ControllerBase {
     return new static(
       $container->get('current_user'),
       $container->get('entity_type.manager'),
-      $container->get('file_url_generator'),
       $container->get('vactory_private_files_decoupled.access')
     );
   }
@@ -84,27 +67,41 @@ class PrivateFilesController extends ControllerBase {
     if ($files == []) {
       return [];
     }
-    $results = [];
-    foreach ($files as $file) {
-      $uri = $file->downloadUrl();
-      $query = $uri->getOptions()['query'];
-      $sessionId = $this->privateFileTokenGenerator->get($uri->toString(), $this->currentTimeStamp);
-      $query['sessionId'] = $sessionId;
-      $query['timestamp'] = $this->currentTimeStamp;
-      $uri->setOption('query', $query);
-      $results[] = [
-        '_default' => $uri->toString(),
-        'extension' => $file->getMimeType(),
-        'fid' => $file->id(),
-        'file_name' => $file->label(),
-      ];
-    }
+
+    $results = $this->vactoryPrivateFilesServices->generatePrivateFilesUrls($files);
 
     return new JsonResponse([
       'files' => $results,
       'count' => count($results),
     ], Response::HTTP_OK);
 
+  }
+
+  /**
+   * Get Private Files From Fids.
+   */
+  public function generateUrlForPrivateFileFromFids(Request $request) {
+    $fids = $request->query->get('files', []);
+    if ($fids == []) {
+      return [];
+    }
+    $fids = explode(',', $fids);
+    if ($this->currentUser->isAuthenticated()) {
+      $fids = \Drupal::entityQuery('file')
+        ->condition('uid', $this->currentUser->id())
+        ->condition('fid', $fids, 'IN')
+        ->execute();
+    }
+
+    $files = File::loadMultiple($fids);
+    if (!isset($files) || empty($files)) {
+      return [];
+    }
+
+    $results = $this->vactoryPrivateFilesServices->generatePrivateFilesUrls($files);
+    return new JsonResponse([
+      'files' => $results,
+    ], Response::HTTP_OK);
   }
 
 }

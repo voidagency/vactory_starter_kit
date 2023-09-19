@@ -146,7 +146,7 @@ class OneTimeToken extends ControllerBase {
     }
 
     // Check if client exist.
-    $drupal_client = $this->clientRepository->getClientDrupalEntity($client_id);
+    $drupal_client = $this->clientRepository->getClientEntity($client_id)->getDrupalEntity();
     if (empty($drupal_client)) {
       return OAuthServerException::invalidClient($request)
         ->generateHttpResponse(new Response());

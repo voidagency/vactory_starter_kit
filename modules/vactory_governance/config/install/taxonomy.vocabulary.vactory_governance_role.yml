@@ -1,6 +1,9 @@
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  enforced:
+    module:
+      - vactory_governance
 name: 'Governance - Roles'
 vid: vactory_governance_role
 description: 'Roles of the government member.'

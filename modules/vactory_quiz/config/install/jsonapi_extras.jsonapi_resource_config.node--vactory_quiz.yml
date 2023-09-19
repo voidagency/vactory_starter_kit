@@ -3,6 +3,9 @@ status: true
 dependencies:
   config:
     - node.type.vactory_quiz
+  enforced:
+    module:
+      - vactory_quiz
 id: node--vactory_quiz
 disabled: false
 path: node/vactory_quiz

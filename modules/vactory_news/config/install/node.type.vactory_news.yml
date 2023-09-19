@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - scheduler
+  enforced:
+    module:
+      - vactory_news
 third_party_settings:
   scheduler:
     expand_fieldset: when_required

@@ -6,6 +6,9 @@ dependencies:
     - node.type.vactory_partner
   module:
     - yoast_seo
+  enforced:
+    module:
+      - vactory_partner
 id: node.vactory_partner.field_vactory_seo_status
 field_name: field_vactory_seo_status
 entity_type: node

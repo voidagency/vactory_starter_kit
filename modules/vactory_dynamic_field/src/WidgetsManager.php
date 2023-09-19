@@ -5,7 +5,10 @@ namespace Drupal\vactory_dynamic_field;
 use Drupal\Component\Plugin\Mapper\MapperInterface;
 use Drupal\Component\Serialization\Exception\InvalidDataTypeException;
 use Drupal\Core\Cache\CacheBackendInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\File\FileUrlGeneratorInterface;
+use Drupal\Core\Logger\LoggerChannelFactory;
 use Drupal\Core\Plugin\DefaultPluginManager;
 use Drupal\Component\Serialization\Yaml;
 use Symfony\Component\Finder\Finder;
@@ -16,14 +19,45 @@ use Symfony\Component\Finder\Finder;
 class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInterface, MapperInterface {
 
   /**
+   * File url generator service.
+   *
+   * @var \Drupal\Core\File\FileUrlGeneratorInterface
+   */
+  protected $fileUrlGenerator;
+
+  /**
+   * Logger service.
+   *
+   * @var \Drupal\Core\Logger\LoggerChannelFactory
+   */
+  protected $logger;
+
+  /**
+   * Config factory service.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected $configFactory;
+
+  /**
    * {@inheritdoc}
    */
-  public function __construct(\Traversable $namespaces, CacheBackendInterface $cache_backend, ModuleHandlerInterface $module_handler) {
+  public function __construct(
+    \Traversable $namespaces,
+    CacheBackendInterface $cache_backend,
+    ModuleHandlerInterface $module_handler,
+    FileUrlGeneratorInterface $fileUrlGenerator,
+    LoggerChannelFactory $logger,
+    ConfigFactoryInterface $configFactory
+  ) {
     parent::__construct('Plugin/vactory_dynamic_field/Platform', $namespaces, $module_handler,
       'Drupal\vactory_dynamic_field\VactoryDynamicFieldPluginInterface',
       'Drupal\vactory_dynamic_field\Annotation\PlatformProvider'
     );
     $this->alterInfo('vactory_dynamic_field_info');
+    $this->fileUrlGenerator = $fileUrlGenerator;
+    $this->logger = $logger;
+    $this->configFactory = $configFactory;
   }
 
   /**
@@ -31,7 +65,8 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
    */
   protected function getPluginsList() {
     $options = [];
-    foreach ($this->getDefinitions() as $id => $definition) {
+    $definitions = $this->getDefinitions();
+    foreach ($definitions as $id => $definition) {
       $plugin = $this->createInstance($id);
       $options[$definition['id']] = $plugin;
     }
@@ -60,6 +95,7 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
       $widgets[$platform_id] = [];
     }
 
+    $file_url_generator = $this->fileUrlGenerator;
     foreach ($plugins as $platform_id => $platform) {
       $widget_path = $platform->getWidgetsPath();
       $finder = new Finder();
@@ -91,13 +127,13 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
         // Add screenshoot.
         $data['screenshot'] = FALSE;
         if (file_exists($screenshot_path)) {
-          $data['screenshot'] = file_create_url($screenshot_path);
+          $data['screenshot'] = $file_url_generator->generateAbsoluteString($screenshot_path);
         }
         elseif (file_exists($screenshot_path_fallback)) {
-          $data['screenshot'] = file_create_url($screenshot_path_fallback);
+          $data['screenshot'] = $file_url_generator->generateAbsoluteString($screenshot_path_fallback);
         }
         elseif (file_exists($screenshot_url_gif)) {
-          $data['screenshot'] = file_create_url($screenshot_url_gif);
+          $data['screenshot'] = $file_url_generator->generateAbsoluteString($screenshot_url_gif);
         }
 
         // Add static widget - demo content.
@@ -124,6 +160,7 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
     $widgets = [];
     $plugins = $this->getPluginsList();
 
+    $file_url_generator = $this->fileUrlGenerator;
     foreach ($plugins as $platform_id => $platform) {
 
       // Add only widgets from allowed providers.
@@ -161,13 +198,13 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
         // Add screenshoot.
         $data['screenshot'] = FALSE;
         if (file_exists($screenshot_path)) {
-          $data['screenshot'] = file_create_url($screenshot_path);
+          $data['screenshot'] = $file_url_generator->generateAbsoluteString($screenshot_path);
         }
         elseif (file_exists($screenshot_path_fallback)) {
-          $data['screenshot'] = file_create_url($screenshot_path_fallback);
+          $data['screenshot'] = $file_url_generator->generateAbsoluteString($screenshot_path_fallback);
         }
         elseif (file_exists($screenshot_url_gif)) {
-          $data['screenshot'] = file_create_url($screenshot_url_gif);
+          $data['screenshot'] = $file_url_generator->generateAbsoluteString($screenshot_url_gif);
         }
 
         // Add static widget - demo content.
@@ -225,11 +262,12 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
     $screenshot_url_gif = $widget_path . '/' . $id . '/screenshot.gif';
     $static_widget_path = $widget_path . '/' . $id . '/static.html.twig';
 
+    $file_url_generator = $this->fileUrlGenerator;
     try {
       $data = Yaml::decode(file_get_contents($settings_path)) ?: [];
     }
     catch (InvalidDataTypeException $e) {
-      \Drupal::logger('vactory_dynamic_field')
+      $this->logger->get('vactory_dynamic_field')
         ->notice("The $settings_path contains invalid YAML: " . $e->getMessage());
       return [];
     }
@@ -237,13 +275,13 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
     // Add screenshoot.
     $data['screenshot'] = FALSE;
     if (file_exists($screenshot_url)) {
-      $data['screenshot'] = file_create_url($screenshot_url);
+      $data['screenshot'] = $file_url_generator->generateAbsoluteString($screenshot_url);
     }
     elseif (file_exists($screenshot_url_fallback)) {
-      $data['screenshot'] = file_create_url($screenshot_url_fallback);
+      $data['screenshot'] = $file_url_generator->generateAbsoluteString($screenshot_url_fallback);
     }
     elseif (file_exists($screenshot_url_gif)) {
-      $data['screenshot'] = file_create_url($screenshot_url_gif);
+      $data['screenshot'] = $file_url_generator->generateAbsoluteString($screenshot_url_gif);
     }
 
     // Add static widget - demo content.
@@ -302,7 +340,7 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
    */
   public function getDisabledWidgets() {
     $disabled_widgets = [];
-    $excluded_widgets = \Drupal::config('vactory_dynamic_field.settings')->get('excluded_widgets') ?: '';
+    $excluded_widgets = $this->configFactory->get('vactory_dynamic_field.settings')->get('excluded_widgets') ?: '';
     // Decode YAML file.
     try {
       $data = Yaml::decode($excluded_widgets) ?: [];

@@ -4,6 +4,9 @@ dependencies:
   module:
     - block_content
     - colorapi
+  enforced:
+    module:
+      - vactory_banner
 id: block_content.field_background_color
 field_name: field_background_color
 entity_type: block_content

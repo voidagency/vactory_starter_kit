@@ -123,7 +123,7 @@ class ImageController extends ControllerBase
    *   The transferred file as response or some error response.
    *
    */
-  public function image(Request $request, $cached_uri = '', $width, $height, $fid, $filename)
+  public function image(Request $request, $width, $height, $fid, $filename, $cached_uri = '')
   {
 
     // Uncomment to test the loading effect:

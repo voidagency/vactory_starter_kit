@@ -5,6 +5,9 @@ dependencies:
     - node.type.vactory_press_kit
   module:
     - content_translation
+  enforced:
+    module:
+      - vactory_press_kit
 third_party_settings:
   content_translation:
     enabled: true

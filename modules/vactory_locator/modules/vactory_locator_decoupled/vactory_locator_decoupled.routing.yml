@@ -1,0 +1,24 @@
+vactory_locator_decoupled.store_locator:
+  path: '/api/store-locator'
+  defaults:
+    _controller: '\Drupal\vactory_locator_decoupled\Controller\StoreLocator::index'
+  methods: [GET]
+  requirements:
+    _access: 'TRUE'
+
+
+
+vactory_locator_decoupled.cities_api:
+  path: 'api/cities.json'
+  defaults: { _controller: '\Drupal\vactory_locator_decoupled\Controller\StoreLocator::placesAutocomplete' }
+  methods:  [GET]
+  requirements:
+    _access: 'TRUE'
+
+
+vactory_locator_decoupled.grouping_api:
+  path: 'api/store-locator/grouping'
+  defaults: { _controller: '\Drupal\vactory_locator_decoupled\Controller\StoreLocator::getGrouping' }
+  methods:  [GET]
+  requirements:
+    _access: 'TRUE'

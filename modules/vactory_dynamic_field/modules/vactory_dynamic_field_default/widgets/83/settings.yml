@@ -1,0 +1,25 @@
+name: "Slider - V2"
+multiple: true
+category: "Animated DFs"
+enabled: TRUE
+fields:
+  image:
+    type: image
+    label: "imgae"
+    options:
+      "#required": TRUE
+  title:
+    type: text
+    label: "title"
+    options:
+      "#required": TRUE
+  content:
+    type: text_format
+    label: "Content"
+    options:
+      "#format": full_html
+      "#required": TRUE
+  link:
+    type: url_extended
+    label: "link"
+

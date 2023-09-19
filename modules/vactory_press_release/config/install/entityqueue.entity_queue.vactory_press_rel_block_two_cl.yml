@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - node
+  enforced:
+    module:
+      - vactory_press_release
 id: vactory_press_rel_block_two_cl
 label: 'press release Block Two Columns'
 handler: simple

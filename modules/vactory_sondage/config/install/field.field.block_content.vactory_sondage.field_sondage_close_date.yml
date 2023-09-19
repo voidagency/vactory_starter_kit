@@ -4,11 +4,11 @@ dependencies:
   config:
     - block_content.type.vactory_sondage
     - field.storage.block_content.field_sondage_close_date
+  module:
+    - datetime
   enforced:
     module:
       - vactory_sondage
-  module:
-    - datetime
 id: block_content.vactory_sondage.field_sondage_close_date
 field_name: field_sondage_close_date
 entity_type: block_content

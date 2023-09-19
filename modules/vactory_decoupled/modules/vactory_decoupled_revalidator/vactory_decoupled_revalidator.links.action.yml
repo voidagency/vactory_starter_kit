@@ -1,0 +1,5 @@
+entity.revalidator_entity_type.add_form:
+  route_name: 'entity.revalidator_entity_type.add_form'
+  title: 'Add revalidator'
+  appears_on:
+    - entity.revalidator_entity_type.collection

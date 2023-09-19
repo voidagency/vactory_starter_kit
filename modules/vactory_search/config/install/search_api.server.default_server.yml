@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - search_api_db
+  enforced:
+    module:
+      - vactory_search
 id: default_server
 name: 'Database Server'
 description: 'Default database server created for Vactory'

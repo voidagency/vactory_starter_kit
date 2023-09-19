@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - vactory_locator
+  enforced:
+    module:
+      - vactory_locator
 id: locator_entity.field_locator_zipcode
 field_name: field_locator_zipcode
 entity_type: locator_entity

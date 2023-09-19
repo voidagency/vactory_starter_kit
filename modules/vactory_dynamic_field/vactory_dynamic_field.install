@@ -1,0 +1,102 @@
+<?php
+
+/**
+ * @file
+ * Module related install hooks.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function vactory_dynamic_field_schema() {
+  $schema['content_progress'] = vactory_df_get_table_schema();
+  return $schema;
+}
+
+/**
+ * Implements hook_update_N().
+ */
+function vactory_dynamic_field_update_9500(&$sandbox) {
+  Drupal::database()
+    ->schema()
+    ->createTable('content_progress', vactory_df_get_table_schema());
+
+  // Enable paragraph_edit module when necessary.
+  if (!Drupal::moduleHandler()->moduleExists('paragraphs_edit')) {
+    \Drupal::service('module_installer')->install(['paragraphs_edit']);
+  }
+}
+
+/**
+ * Content progress custom table schema.
+ */
+function vactory_df_get_table_schema() {
+  return [
+    'description' => 'Store content progress information',
+    'fields' => [
+      'id' => [
+        'description' => 'Primary identifier',
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+      ],
+      'entity_id' => [
+        'description' => 'Related entity id',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ],
+      'entity_type' => [
+        'description' => 'Related entity type',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ],
+      'paragraph_id' => [
+        'description' => 'Related paragraph id',
+        'type' => 'varchar',
+        'length' => 255,
+      ],
+      'widget_id' => [
+        'description' => 'Template widget id',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ],
+      'widget_name' => [
+        'description' => 'Template widget name',
+        'type' => 'varchar',
+        'length' => 255,
+      ],
+      'widget_screen' => [
+        'description' => 'Template widget screen',
+        'type' => 'varchar',
+        'length' => 255,
+      ],
+      'field_name' => [
+        'description' => 'Field name',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ],
+      'langcode' => [
+        'description' => 'Langcode',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ],
+      'field_label' => [
+        'description' => 'Field Label',
+        'type' => 'varchar',
+        'length' => 255,
+      ],
+      'pending' => [
+        'description' => 'Indicate either the current field content is pending or not',
+        'type' => 'int',
+        'length' => 10,
+        'not null' => TRUE,
+      ],
+    ],
+    'primary key' => ['id'],
+  ];
+}

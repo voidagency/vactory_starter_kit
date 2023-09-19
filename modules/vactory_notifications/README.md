@@ -58,6 +58,13 @@ The module defines its own tokens to create notifications with dynamic title and
 content, just click the link "Brows available tokens" showed in different module config pages,
 and in the token name 'Notifications' group choose the needed tokens.
 
+## Clean expired notifications
+You can execute the following drush command to clean expired notifications entities:
+
+`drush cen`
+
+You could also add this command to your crontab conf file.
+
 ## Loom demo video
 https://www.loom.com/share/a8b79aa700d14d7cb9af3f46a29cfeaf
 

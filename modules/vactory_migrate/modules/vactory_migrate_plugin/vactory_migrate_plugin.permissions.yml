@@ -1,0 +1,4 @@
+administer vactory_migrate_plugin configuration:
+  title: 'Administer vactory_migrate_plugin configuration'
+  description: 'Optional description.'
+  restrict access: true

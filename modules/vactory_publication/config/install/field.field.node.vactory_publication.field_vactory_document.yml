@@ -6,6 +6,9 @@ dependencies:
     - node.type.vactory_publication
   module:
     - file
+  enforced:
+    module:
+      - vactory_publication
 id: node.vactory_publication.field_vactory_document
 field_name: field_vactory_document
 entity_type: node

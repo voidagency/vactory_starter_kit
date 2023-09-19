@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - node
+  enforced:
+    module:
+      - vactory_blog
 id: pathauto_content_blogs_pattern
 label: 'Pathauto Content Blogs Pattern'
 type: 'canonical_entities:node'

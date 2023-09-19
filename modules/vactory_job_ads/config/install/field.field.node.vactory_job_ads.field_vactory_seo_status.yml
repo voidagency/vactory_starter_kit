@@ -6,6 +6,9 @@ dependencies:
     - node.type.vactory_job_ads
   module:
     - yoast_seo
+  enforced:
+    module:
+      - vactory_job_ads
 id: node.vactory_job_ads.field_vactory_seo_status
 field_name: field_vactory_seo_status
 entity_type: node

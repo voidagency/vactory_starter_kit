@@ -1,0 +1,26 @@
+<?php
+
+
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function vactory_rate_entity_base_field_info(EntityTypeInterface $entity_type) {
+    $fields = [];
+    if ($entity_type->id() === 'node') {
+        $fields['vote'] = BaseFieldDefinition::create('map')
+            ->setComputed(TRUE)
+            ->setReadOnly(TRUE)
+            ->setTargetEntityTypeId($entity_type->id())
+            ->setDisplayConfigurable('form', FALSE)
+            ->setDisplayConfigurable('view', FALSE)
+            ->setClass('Drupal\vactory_rate\Field\VoteEntityFieldItemList')
+            ->setTranslatable(FALSE)
+            ->setRequired(FALSE);
+    }
+    return $fields;
+  }
+  

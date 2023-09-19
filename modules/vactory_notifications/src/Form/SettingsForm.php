@@ -41,6 +41,7 @@ class SettingsForm extends ConfigFormBase {
 
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('vactory_notifications.settings');
+    $path_resolver = \Drupal::service('extension.path.resolver');
     $existing_roles = Role::loadMultiple();
     $existing_content_types = NodeType::loadMultiple();
     $node_types = [];
@@ -134,8 +135,8 @@ class SettingsForm extends ConfigFormBase {
     $form['global_settings']['toast_template'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Toast template'),
-      '#description' => $this->t('Enter Toast template twig file path here, Default to ' . drupal_get_path('module', 'vactory_notifications') . '/templates/notifications-toast.html.twig'),
-      '#default_value' => $config->get('toast_template') ? $config->get('toast_template') : drupal_get_path('module', 'vactory_notifications') . '/templates/notifications-toast.html.twig',
+      '#description' => $this->t('Enter Toast template twig file path here, Default to ' . $path_resolver->getPath('module', 'vactory_notifications') . '/templates/notifications-toast.html.twig'),
+      '#default_value' => $config->get('toast_template') ? $config->get('toast_template') : $path_resolver->getPath('module', 'vactory_notifications') . '/templates/notifications-toast.html.twig',
       '#states' => [
         'visible' => [
           'input[name="enable_toast"]' => ['checked' => TRUE],

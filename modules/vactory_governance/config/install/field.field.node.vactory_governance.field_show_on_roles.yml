@@ -5,6 +5,9 @@ dependencies:
     - field.storage.node.field_show_on_roles
     - node.type.vactory_governance
     - taxonomy.vocabulary.vactory_governance_role
+  enforced:
+    module:
+      - vactory_governance
 id: node.vactory_governance.field_show_on_roles
 field_name: field_show_on_roles
 entity_type: node

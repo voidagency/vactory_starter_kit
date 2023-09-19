@@ -92,7 +92,6 @@ class KeycloakAuthSettingsForm extends SocialAuthSettingsForm {
       '#description' => $this->t('Example https://localhost:8443/auth'),
     ];
 
-
     $form['kc_settings']['app_realm'] = [
       '#type' => 'textfield',
       '#required' => TRUE,
@@ -127,6 +126,12 @@ class KeycloakAuthSettingsForm extends SocialAuthSettingsForm {
       '#open' => FALSE,
     ];
 
+    $form['ck_settings']['advanced']['no_verify'] = [
+      '#type' => 'checkbox',
+      '#title' => t('No cert verification'),
+      '#default_value' => $config->get('no_verify'),
+    ];
+
     $form['ck_settings']['advanced']['scopes'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Scopes for API call'),
@@ -142,13 +147,6 @@ class KeycloakAuthSettingsForm extends SocialAuthSettingsForm {
   /**
    * {@inheritdoc}
    */
-  public function validateForm(array &$form, FormStateInterface $form_state) {
-    parent::validateForm($form, $form_state);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
     $this->config('vactory_keycloak.settings')
@@ -158,6 +156,7 @@ class KeycloakAuthSettingsForm extends SocialAuthSettingsForm {
       ->set('app_client_secret', $values['app_client_secret'])
       ->set('oauth_redirect_url', $values['oauth_redirect_url'])
       ->set('scopes', $values['scopes'])
+      ->set('no_verify', $values['no_verify'])
       ->save();
 
     parent::submitForm($form, $form_state);

@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - node
+  enforced:
+    module:
+      - vactory_announcements
 id: node.field_twitter_account
 field_name: field_twitter_account
 entity_type: node

@@ -6,6 +6,9 @@ dependencies:
     - image.style.testimonials_reversed_3col_x2
   theme:
     - vactory
+  enforced:
+    module:
+      - vactory_testimonials
 id: testimonials_reversed_3col_x1
 label: 'Testimonials reversed'
 image_style_mappings:

@@ -4,6 +4,9 @@ dependencies:
   module:
     - node
     - taxonomy
+  enforced:
+    module:
+      - vactory_forums
 id: node.field_groupe_utilisateurs
 field_name: field_groupe_utilisateurs
 entity_type: node

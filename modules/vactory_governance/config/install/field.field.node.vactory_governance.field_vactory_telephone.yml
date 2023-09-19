@@ -4,6 +4,9 @@ dependencies:
   config:
     - field.storage.node.field_vactory_telephone
     - node.type.vactory_governance
+  enforced:
+    module:
+      - vactory_governance
 id: node.vactory_governance.field_vactory_telephone
 field_name: field_vactory_telephone
 entity_type: node

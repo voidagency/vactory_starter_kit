@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - node
+  enforced:
+    module:
+      - vactory_news
 id: vactory_news_block_three_columns
 label: 'News Block Three Columns'
 handler: simple

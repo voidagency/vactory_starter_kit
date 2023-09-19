@@ -9,6 +9,9 @@ dependencies:
   config:
     - search_api.server.default_server
     - core.entity_view_mode.node.full
+  enforced:
+    module:
+      - vactory_search
 id: default_content_index
 name: 'Default content index'
 description: 'Default content index created for Vactory'

@@ -258,3 +258,14 @@ function vactory_banner_entity_insert(EntityInterface $block) {
     \Drupal::service('messenger')->addError($message);
   }
 }
+
+/**
+ * Implements hook_preprocess_block_content_add_list().
+ */
+function vactory_banner_preprocess_block_content_add_list(&$variables)
+{
+  if (\Drupal::moduleHandler()->moduleExists('vactory_decoupled')) {
+    unset($variables['content']['vactory_banner']);
+    unset($variables['types']['vactory_banner']);
+  }
+}

@@ -32,8 +32,8 @@ class SettingsForm extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildForm($form, $form_state);
-    $modele_file = drupal_get_path('module', 'vactory_seo_noindex') . '/example/noindex-model.xls';
-    $modele_file_url = file_create_url($modele_file);
+    $modele_file = \Drupal::service('extension.path.resolver')->getPath('module', 'vactory_seo_noindex') . '/example/noindex-model.xls';
+    $modele_file_url = \Drupal::service('file_url_generator')->generateAbsoluteString($modele_file);
     $form['artifact'] = [
       '#type' => 'managed_file',
       '#title' => $this->t('Upload excel file'),

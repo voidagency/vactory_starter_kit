@@ -119,7 +119,7 @@ class VactoryHtml2PdfManager {
     // Get module settings object.
     $config = $this->configFactory->get('vactory_html2pdf.settings');
     // Get fonts from module settings.
-    $custom_fonts_directories = $this->state->get('vactory_html2pdf_font_dirs');
+    $custom_fonts_directories = $config->get('vactory_html2pdf_font_dirs');
     $custom_fonts_data = $config->get('fonts_data');
     // Get mpdf fonts dirs and data.
     $fontDirs = $this->mpdfDefaultConfig['fontDir'];
@@ -134,7 +134,7 @@ class VactoryHtml2PdfManager {
     $mpdf->WriteHTML($htmlContent);
     $file = $dirname . '/' . $file_name;
     $mpdf->Output($file, 'F');
-    $url = file_create_url($file);
+    $url = \Drupal::service('file_url_generator')->generateAbsoluteString($file);
     return [
       'url' => $url,
       'uri' => $file,

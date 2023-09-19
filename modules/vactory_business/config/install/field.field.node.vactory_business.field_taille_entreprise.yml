@@ -5,6 +5,9 @@ dependencies:
     - field.storage.node.field_taille_entreprise
     - node.type.vactory_business
     - taxonomy.vocabulary.business_taille_entreprise
+  enforced:
+    module:
+      - vactory_business
 id: node.vactory_business.field_taille_entreprise
 field_name: field_taille_entreprise
 entity_type: node
@@ -12,7 +15,7 @@ bundle: vactory_business
 label: 'Taille d''entreprise'
 description: ''
 required: false
-translatable: true
+translatable: false
 default_value: {  }
 default_value_callback: ''
 settings:

@@ -6,6 +6,9 @@ dependencies:
     - scheduler
     - vactory_cross_content
     - wysiwyg_template
+  enforced:
+    module:
+      - vactory_announcements
 third_party_settings:
   menu_ui:
     available_menus:

@@ -3,6 +3,9 @@ status: true
 dependencies:
   config:
     - node.type.vactory_glossary
+  enforced:
+    module:
+      - vactory_glossary
 id: node--vactory_glossary
 disabled: false
 path: node/vactory_glossary

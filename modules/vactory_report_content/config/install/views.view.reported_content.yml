@@ -5,6 +5,9 @@ dependencies:
     - better_exposed_filters
     - user
     - vactory_report_content
+  enforced:
+    module:
+      - vactory_report_content
 id: reported_content
 label: 'Reported content'
 module: views

@@ -16,6 +16,9 @@ dependencies:
   module:
     - text
     - user
+  enforced:
+    module:
+      - vactory_news
 id: node.vactory_news.teaser
 targetEntityType: node
 bundle: vactory_news

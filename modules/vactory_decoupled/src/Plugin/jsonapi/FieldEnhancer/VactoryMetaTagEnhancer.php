@@ -3,8 +3,10 @@
 namespace Drupal\vactory_decoupled\Plugin\jsonapi\FieldEnhancer;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\jsonapi_extras\Plugin\ResourceFieldEnhancerBase;
+use Drupal\metatag\MetatagManagerInterface;
 use Drupal\node\Entity\Node;
 use Shaper\Util\Context;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -28,11 +30,27 @@ class VactoryMetaTagEnhancer extends ResourceFieldEnhancerBase implements Contai
   protected $entityTypeManager;
 
   /**
+   * The meta tag manager service.
+   *
+   * @var \Drupal\metatag\MetatagManagerInterface
+   */
+  protected $metatagManager;
+
+  /**
+   * Module handler service
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
    * {@inheritdoc}
    */
-  public function __construct(array $configuration, $plugin_id, array $plugin_definition, EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct(array $configuration, $plugin_id, array $plugin_definition, EntityTypeManagerInterface $entity_type_manager, MetatagManagerInterface $metatagManager, ModuleHandlerInterface $moduleHandler) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->entityTypeManager = $entity_type_manager;
+    $this->metatagManager = $metatagManager;
+    $this->moduleHandler = $moduleHandler;
 //    debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 //      exit;
   }
@@ -45,7 +63,9 @@ class VactoryMetaTagEnhancer extends ResourceFieldEnhancerBase implements Contai
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('metatag.manager'),
+      $container->get('module_handler')
     );
   }
 
@@ -56,14 +76,11 @@ class VactoryMetaTagEnhancer extends ResourceFieldEnhancerBase implements Contai
     $object = $context['field_item_object'];
     $entity = $object->getEntity();
 
-//    var_dump($entity->label());
-
     if (!$entity instanceof Node) {
       return $data;
     }
 
-
-    $metatag_manager = \Drupal::service('metatag.manager');
+    $metatag_manager = $this->metatagManager;
     $metatags = metatag_get_default_tags($entity);
     foreach ($metatag_manager->tagsFromEntity($entity) as $tag => $data) {
       $metatags[$tag] = $data;
@@ -73,17 +90,19 @@ class VactoryMetaTagEnhancer extends ResourceFieldEnhancerBase implements Contai
       'entity' => $entity,
     ];
 
-    \Drupal::service('module_handler')->alter('metatags', $metatags, $context);
+    $this->moduleHandler->alter('metatags', $metatags, $context);
 
-    $pre_rendered_tags = $metatag_manager->generateRawElements($metatags, $entity);
+    $tags = $metatag_manager->generateRawElements($metatags, $entity);
+    $normalized_tags = [];
+    foreach ($tags as $key => $tag) {
+      $normalized_tags[] = [
+        'id' => $key,
+        'tag' => $tag['#tag'],
+        'attributes' => $tag['#attributes'],
+      ];
+    }
 
-    // @note: This need to be json encoded,
-    // we need all fields to be available to GraphQl.
-    // we don't wanna have to select field by field.
-    // We will be missing some fields when we have no content to work with.
-    // Some nodes may have title & description, others may have open graph.
-    $data = json_encode($pre_rendered_tags);
-    return $data;
+    return $normalized_tags;
   }
 
   /**
@@ -98,7 +117,7 @@ class VactoryMetaTagEnhancer extends ResourceFieldEnhancerBase implements Contai
    */
   public function getOutputJsonSchema() {
     return [
-      'type' => 'string',
+      'type' => 'array',
     ];
   }
 

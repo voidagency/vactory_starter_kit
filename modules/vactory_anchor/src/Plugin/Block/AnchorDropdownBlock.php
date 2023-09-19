@@ -33,6 +33,12 @@ class AnchorDropdownBlock extends BlockBase {
     return [
       "#theme"      => "block_anchor_dropdown",
       '#menu_links' => $menu_links,
+      '#cache' => [
+        // Set the caching policy to match the default block caching policy.
+        'max-age' => 0,
+        'contexts' => ['url'],
+        'tags' => ['rendered'],
+      ],
     ];
   }
 

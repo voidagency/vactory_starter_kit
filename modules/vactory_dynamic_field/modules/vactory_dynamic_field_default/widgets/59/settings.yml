@@ -1,0 +1,28 @@
+name: "CTA with two images"
+category: "Animated DFs"
+enabled: TRUE
+fields:
+  bigImage:
+    type: image
+    label: "Big Image"
+    options:
+      "#required": TRUE
+  smallImage:
+    type: image
+    label: "Small Image"
+    options:
+      "#required": TRUE
+  title:
+    type: text
+    label: "Title"
+    options:
+      "#required": TRUE
+  content:
+    type: text_format
+    label: "Content"
+    options:
+      "#format": full_html
+      "#required": TRUE
+  cta:
+    type: url_extended
+    label: "Link"

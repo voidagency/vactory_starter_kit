@@ -3,3 +3,6 @@ services:
     class: Drupal\vactory_decoupled_webform\Webform
     arguments:
     - '@webform.token_manager'
+    - '@current_user'
+    - '@plugin.manager.webform.element'
+    - '@entity_type.manager'

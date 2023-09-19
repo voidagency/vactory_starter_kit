@@ -2,7 +2,8 @@
 
 /**
  * @file
- * Install, update and uninstall functions for the Vactory Decoupled Router module.
+ * Install, update and uninstall functions for the Vactory Decoupled Router
+ *   module.
  */
 
 use Drupal\Core\Language\LanguageInterface;
@@ -10,94 +11,105 @@ use Drupal\node\Entity\Node;
 
 
 function _get_vactory_decoupled_router_default_pages() {
-    return [
-        'error_page' => [
-            'path' => '/error-page',
-            'title' => 'Error Page',
-        ],
-        'account' => [
-            'path' => '/account',
-            'title' => 'Account',
-        ],
-        'account_login' => [
-            'path' => '/account/login',
-            'title' => 'Login',
-        ],
-        'account_register' => [
-            'path' => '/account/register',
-            'title' => 'Register',
-        ],
-        'account_lost_password' => [
-            'path' => '/account/lost-password',
-            'title' => 'Lost Password',
-        ],
-        'account_reset_password' => [
-            'path' => '/account/reset-password',
-            'title' => 'Reset Password',
-        ],
-    ];
+  return [
+    'error_page' => [
+      'path' => '/error-page',
+      'title' => 'Error Page',
+    ],
+    'account' => [
+      'path' => '/account',
+      'title' => 'Account',
+    ],
+    'account_login' => [
+      'path' => '/account/login',
+      'title' => 'Login',
+    ],
+    'account_register' => [
+      'path' => '/account/register',
+      'title' => 'Register',
+    ],
+    'account_lost_password' => [
+      'path' => '/account/lost-password',
+      'title' => 'Lost Password',
+    ],
+    'account_reset_password' => [
+      'path' => '/account/reset-password',
+      'title' => 'Reset Password',
+    ],
+    'account_forget_password' => [
+      'path' => '/account/forget-password',
+      'title' => 'Forget Password',
+    ],
+    'account_verify' => [
+      'path' => '/account/verify',
+      'title' => 'Account Verify',
+    ],
+  ];
 }
 
 /**
  * Implements hook_install().
  */
-function vactory_decoupled_router_default_pages_install()
-{
-    foreach (_get_vactory_decoupled_router_default_pages() as $machine_name => $page) {
-        $nodes = \Drupal::entityTypeManager()->getStorage('node')->loadByProperties(['machine_name' => $machine_name]);
+function vactory_decoupled_router_default_pages_install() {
+  foreach (_get_vactory_decoupled_router_default_pages() as $machine_name => $page) {
+    $nodes = \Drupal::entityTypeManager()
+      ->getStorage('node')
+      ->loadByProperties(['machine_name' => $machine_name]);
 
-        if (empty($nodes)) {
-            _vactory_decoupled_router_create_default_node($machine_name, $page['title'], $page['path']);
-        }
+    if (empty($nodes)) {
+      _vactory_decoupled_router_create_default_node($machine_name, $page['title'], $page['path']);
     }
+  }
 
-    // Run a complete cache flush.
-    drupal_flush_all_caches();
+  // Run a complete cache flush.
+  drupal_flush_all_caches();
 }
 
-function _vactory_decoupled_router_create_default_node($machine_name, $title, $path)
-{
-    $node = Node::create([
-        'type'     => 'vactory_page',
-        'title'    => $title,
-        'langcode' => LanguageInterface::LANGCODE_NOT_SPECIFIED,
-        'uid'      => 1,
-    ])
-        ->set('machine_name', $machine_name)
-        ->setPublished();
-    $node->save();
+function _vactory_decoupled_router_create_default_node($machine_name, $title, $path) {
+  $node = Node::create([
+    'type' => 'vactory_page',
+    'title' => $title,
+    'langcode' => LanguageInterface::LANGCODE_NOT_SPECIFIED,
+    'uid' => 1,
+  ])
+    ->set('machine_name', $machine_name)
+    ->setPublished();
+  $node->save();
 
-    $route = \Drupal::entityTypeManager()->getStorage('vactory_route')->create([
-        'id' => $machine_name,
-        'label' => $title,
-        'path' => "/node/" . $node->id(),
-        'alias' => $path,
-    ]);
-    $route->save();
+  $route = \Drupal::entityTypeManager()->getStorage('vactory_route')->create([
+    'id' => $machine_name,
+    'label' => $title,
+    'path' => "/node/" . $node->id(),
+    'alias' => $path,
+  ]);
+  $route->save();
 
-    return $node;
+  return $node;
 }
 
 /**
  * Implements hook_uninstall().
  */
-function vactory_decoupled_router_default_pages_uninstall()
-{
-    // Delete routes.
-    $routes = \Drupal::entityTypeManager()->getStorage('vactory_route')->loadMultiple();
-    foreach ($routes as $route) {
-        $route->delete();
-    }
+function vactory_decoupled_router_default_pages_uninstall() {
+  // Delete routes.
+  $routes = \Drupal::entityTypeManager()
+    ->getStorage('vactory_route')
+    ->loadMultiple();
+  foreach ($routes as $route) {
+    $route->delete();
+  }
 
-    // Delete nodes.
-    foreach (_get_vactory_decoupled_router_default_pages() as $machine_name => $page) {
-        $nodes = \Drupal::entityTypeManager()->getStorage('node')->loadByProperties([
-            'type' => 'vactory_page',
-            'machine_name' => $machine_name,
-        ]);
+  // Delete nodes.
+  foreach (_get_vactory_decoupled_router_default_pages() as $machine_name => $page) {
+    $nodes = \Drupal::entityTypeManager()
+      ->getStorage('node')
+      ->loadByProperties([
+        'type' => 'vactory_page',
+        'machine_name' => $machine_name,
+      ]);
 
-        foreach ($nodes as $node) {
-            $node->delete();
-        }
+    foreach ($nodes as $node) {
+      $node->delete();
     }
+  }
 }

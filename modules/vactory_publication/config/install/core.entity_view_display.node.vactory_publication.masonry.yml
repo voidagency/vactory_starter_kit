@@ -10,6 +10,7 @@ dependencies:
     - field.field.node.vactory_publication.field_vactory_document
     - field.field.node.vactory_publication.field_vactory_excerpt
     - field.field.node.vactory_publication.field_vactory_media
+    - field.field.node.vactory_publication.field_vactory_media_document
     - field.field.node.vactory_publication.field_vactory_meta_tags
     - field.field.node.vactory_publication.field_vactory_publication_theme
     - field.field.node.vactory_publication.field_vactory_seo_status
@@ -21,6 +22,9 @@ dependencies:
     - smart_trim
     - user
     - vactory_core
+  enforced:
+    module:
+      - vactory_publication
 id: node.vactory_publication.masonry
 targetEntityType: node
 bundle: vactory_publication
@@ -43,7 +47,7 @@ content:
       access_message: 'You don''t have access to download this file.'
       text: '[file:name]'
     third_party_settings: {  }
-    weight: 6
+    weight: 5
     region: content
   field_vactory_excerpt:
     type: smart_trim
@@ -54,9 +58,13 @@ content:
       trim_suffix: ...
       wrap_output: false
       wrap_class: trimmed
-      more_link: false
-      more_class: more-link
-      more_text: More
+      more:
+        display_link: false
+        target_blank: false
+        link_trim_only: false
+        class: more-link
+        text: More
+        aria_label: 'Read more about [node:title]'
       summary_handler: full
       trim_options:
         text: true
@@ -80,6 +88,14 @@ content:
     third_party_settings: {  }
     weight: 4
     region: content
+  field_vactory_media_document:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 6
+    region: content
   field_vactory_publication_theme:
     type: entity_reference_label
     label: hidden
@@ -102,9 +118,17 @@ hidden:
   addtoany: true
   body: true
   comment: true
+  field_content_access_custom: true
+  field_content_access_groups: true
+  field_content_access_roles: true
+  field_content_access_users: true
   field_vactory_call_to_action: true
   field_vactory_meta_tags: true
   field_vactory_seo_status: true
   field_vactory_tags: true
   langcode: true
+  mail_message: true
+  mail_subject: true
+  notification_message: true
+  notification_title: true
   search_api_excerpt: true

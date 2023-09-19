@@ -1,6 +1,9 @@
 map_api_key: ''
 use_geolocation: 0
-geolocation_marker: {  }
+geolocation_marker:
+  enforced:
+    module:
+      - vactory_locator
 url_geolocation_marker: null
 map_style: ''
 enable_filter: 0

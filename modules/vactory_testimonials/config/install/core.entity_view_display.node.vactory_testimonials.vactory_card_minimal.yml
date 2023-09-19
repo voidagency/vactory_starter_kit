@@ -17,6 +17,9 @@ dependencies:
     - smart_trim
     - user
     - vactory_core
+  enforced:
+    module:
+      - vactory_testimonials
 id: node.vactory_testimonials.vactory_card_minimal
 targetEntityType: node
 bundle: vactory_testimonials

@@ -3,17 +3,23 @@ vactory_rate.vote:
   defaults:
     _controller: '\Drupal\vactory_rate\Controller\VoteController::vote'
   requirements:
-    _permission: 'access content'
+    _permission: 'can vote entity'
 vactory_rate.undo_vote:
   path: '/api/rate/undo/{entity_type_id}/{entity_id}'
   defaults:
     _controller: 'Drupal\vactory_rate\Controller\VoteController::undoVote'
   requirements:
-    _permission: 'access content'
+    _permission: 'Undo entity vote'
 vactory_rate.results:
   path: '/api/rate/results/{entity_type_id}/{entity_id}'
   defaults:
     _controller: 'Drupal\vactory_rate\Controller\VoteController::results'
   requirements:
     _permission: 'access content'
-
+vactory_rate.entity:
+  path: '/admin/config/rate/add-entity'
+  defaults:
+    _form: '\Drupal\vactory_rate\Form\AddEntityForm'
+    _title: 'Ajouter une entité'
+  requirements:
+    _permission: 'access content'

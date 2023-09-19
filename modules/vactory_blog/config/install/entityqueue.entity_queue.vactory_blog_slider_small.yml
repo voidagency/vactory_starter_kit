@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - node
+  enforced:
+    module:
+      - vactory_blog
 id: vactory_blog_slider_small
 label: 'Blog Slider Small'
 handler: simple

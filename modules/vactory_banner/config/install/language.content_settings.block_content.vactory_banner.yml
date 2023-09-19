@@ -1,6 +1,9 @@
 langcode: en
 status: true
 dependencies:
+  enforced:
+    module:
+      - vactory_banner
   config:
     - block_content.type.vactory_banner
   module:

@@ -9,8 +9,11 @@ use Drupal\Core\Block\BlockManagerInterface;
 use Drupal\Core\Condition\ConditionAccessResolverTrait;
 use Drupal\Core\Condition\ConditionPluginCollection;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Executable\ExecutableManagerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\Logger\LoggerChannelFactory;
 use Drupal\Core\Theme\ThemeManagerInterface;
 use Drupal\Core\Cache\Cache;
 use Drupal\node\Entity\Node;
@@ -58,6 +61,25 @@ class BlocksManager
   protected $jsonApiClient;
 
   /**
+   * Module handler service.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
+   * Logger service.
+   *
+   * @var \Drupal\Core\Logger\LoggerChannelFactory
+   */
+  protected $logger;
+
+  /**
+   * @var EntityStorageInterface
+   */
+  protected $blockContentStorage;
+
+  /**
    * {@inheritdoc}
    */
   public function __construct(
@@ -65,14 +87,19 @@ class BlocksManager
     ThemeManagerInterface $theme_manager,
     EntityTypeManagerInterface $entity_type_manager,
     ExecutableManagerInterface $condition_plugin_manager,
-    JsonApiClient $json_api_client
+    JsonApiClient $json_api_client,
+    ModuleHandlerInterface $moduleHandler,
+    LoggerChannelFactory $logger
   )
   {
     $this->pluginManagerBlock = $block_manager;
     $this->themeManager = $theme_manager;
     $this->entityTypeManager = $entity_type_manager;
+    $this->blockContentStorage = $this->entityTypeManager->getStorage('block_content');
     $this->conditionPluginManager = $condition_plugin_manager;
     $this->jsonApiClient = $json_api_client;
+    $this->moduleHandler = $moduleHandler;
+    $this->logger = $logger;
   }
 
   public function getBlocksByNode($nid, $filter = [])
@@ -85,6 +112,14 @@ class BlocksManager
 
     try {
       $blocks = $this->getThemeBlocks();
+      // Exclude Banner blocks.
+      $banner_blocks = $this->blockContentStorage->loadByProperties(['type' => 'vactory_decoupled_banner']);
+      if (!empty($banner_blocks)) {
+        $banner_blocks_plugins = array_map(function ($banner_block) {
+          return 'block_content:' . $banner_block->uuid();
+        }, $banner_blocks);
+        $filter['plugins'] = array_values($banner_blocks_plugins);
+      }
       if (isset($filter['operator']) && isset($filter['plugins']) && !empty($filter['plugins'])) {
         // Apply filter if exist.
         $blocks = array_filter($blocks, function ($block) use ($filter) {
@@ -102,7 +137,7 @@ class BlocksManager
     }
 
     usort($blocks, function ($item1, $item2) {
-      return $item1['weight'] <=> $item2['weight'];
+      return (int) ($item1['weight'] <=> $item2['weight']);
     });
 
     return $this->getVisibleBlocks($blocks, $nid);
@@ -204,15 +239,17 @@ class BlocksManager
         'plugin' => $block->getPluginId(),
         'weight' => $block->getWeight(),
         'classification' => $classification,
-        'content' => $block_content['block'],
-        'block_cache' => $block_content['cache'],
+        'content' => $block_content['block'] ?? '',
+        //'block_cache' => $block_content['cache'] ?? [],
         'visibilityConditions' => $visibilityCollection,
         'classes' => $block->getThirdPartySetting('block_class', 'classes'),
+        'body_classes' => $block->getThirdPartySetting('block_page_class', 'body_classes') ?? '',
+        'html_classes' => $block->getThirdPartySetting('block_page_class', 'html_classes') ?? '',
         'container' => $block->getThirdPartySetting('vactory_field', 'block_container') ?? 'narrow_width',
         'container_spacing' => $block->getThirdPartySetting('vactory_field', 'container_spacing') ?? 'small_space',
       ];
       // Invoke internal block classification alter
-      \Drupal::moduleHandler()->invokeAll('internal_block_classification_alter', [&$classification, $block_info]);
+      $this->moduleHandler->invokeAll('internal_block_classification_alter', [&$classification, $block_info]);
       $block_info['classification'] = $classification;
       return $block_info;
     }, $blocks_list);
@@ -256,10 +293,7 @@ class BlocksManager
    */
   private function getContentBlock(string $uuid)
   {
-    $contentBlock = $this->entityTypeManager
-      ->getStorage('block_content')
-      ->loadByProperties(['uuid' => $uuid]);
-
+    $contentBlock = $this->blockContentStorage->loadByProperties(['uuid' => $uuid]);
     if (!empty($contentBlock)) {
       if (is_array($contentBlock)) {
         $contentBlock = reset($contentBlock);
@@ -286,7 +320,7 @@ class BlocksManager
             $contentBlock = $client_data['data']['attributes']['field_dynamic_block_components'];
           }
         } catch (\Exception $e) {
-          \Drupal::logger('vactory_decoupled')->error('Block @block_id not found', ['@block_id' => $uuid]);
+          $this->logger->get('vactory_decoupled')->error('Block @block_id not found', ['@block_id' => $uuid]);
         }
       }
       return [

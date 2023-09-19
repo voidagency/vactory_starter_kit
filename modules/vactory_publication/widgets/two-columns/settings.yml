@@ -19,13 +19,13 @@ fields:
       '#default_value':
         resource: node--vactory_publication
         filters:
-          - fields[node--vactory_publication]=drupal_internal__nid,path,title,field_vactory_date,field_vactory_document,field_vactory_call_to_action,field_vactory_excerpt,field_vactory_media,field_vactory_publication_theme,field_vactory_tags
+          - fields[node--vactory_publication]=drupal_internal__nid,path,title,field_vactory_date,field_vactory_media_document,field_vactory_call_to_action,field_vactory_excerpt,field_vactory_media,field_vactory_publication_theme,field_vactory_tags
           - fields[taxonomy_term--vactory_publication_theme]=tid,name
           - fields[taxonomy_term--tags]=tid,name
           - fields[media--image]=name,thumbnail
           - fields[file--image]=filename,uri
           - fields[file--document]=filename,uri
-          - include=field_vactory_publication_theme,field_vactory_document,field_vactory_media,field_vactory_media.thumbnail,field_vactory_tags
+          - include=field_vactory_publication_theme,field_vactory_media_document,field_vactory_media,field_vactory_media.thumbnail,field_vactory_tags
           - page[offset]=0
           - page[limit]=2
           - sort[sort-vactory-date][path]=field_vactory_date

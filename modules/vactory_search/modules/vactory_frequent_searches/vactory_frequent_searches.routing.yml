@@ -7,3 +7,13 @@ vactory_frequent_searches.frequent_searches_admin_form:
     _permission: access administration pages
   options:
     _admin_route: TRUE
+vactory_frequent_searches.frequent_searches:
+  path: '/frequent-searches'
+  defaults:
+    _controller: '\Drupal\vactory_frequent_searches\Controller\GetFrequentSearchesController::index'
+    _disable_route_normalizer: 'TRUE'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+  options:
+    _is_jsonapi: 1

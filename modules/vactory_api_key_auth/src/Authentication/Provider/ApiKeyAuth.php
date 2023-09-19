@@ -5,6 +5,7 @@ namespace Drupal\vactory_api_key_auth\Authentication\Provider;
 use Drupal\Core\Authentication\AuthenticationProviderInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
@@ -36,16 +37,23 @@ class ApiKeyAuth implements AuthenticationProviderInterface {
   protected $entityTypeManager;
 
   /**
-   * Constructs a HTTP basic authentication provider object.
+   * Route match service.
    *
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The config factory.
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   *   The entity manager service.
+   * @var \Drupal\Core\Routing\RouteMatchInterface
    */
-  public function __construct(ConfigFactoryInterface $config_factory, EntityTypeManagerInterface $entity_type_manager) {
+  protected $routeMatch;
+
+  /**
+   * Constructs a HTTP basic authentication provider object.
+   */
+  public function __construct(
+    ConfigFactoryInterface $config_factory,
+    EntityTypeManagerInterface $entity_type_manager,
+    RouteMatchInterface $routeMatch
+  ) {
     $this->configFactory = $config_factory;
     $this->entityTypeManager = $entity_type_manager;
+    $this->routeMatch = $routeMatch;
   }
 
   /**
@@ -61,15 +69,15 @@ class ApiKeyAuth implements AuthenticationProviderInterface {
    */
   public function authenticate(Request $request) {
     // Load config entity.
-    $api_key_entities = \Drupal::entityTypeManager()
-      ->getStorage('api_key')
+    $api_key_entities = $this->entityTypeManager->getStorage('api_key')
       ->loadMultiple();
 
     // @todo: use entityTypeManager for a direct lookup for the key
     // no loop
+    $user_storage = $this->entityTypeManager->getStorage('user');
     foreach ($api_key_entities as $key_item) {
       if ($this->getKey($request) == $key_item->key) {
-        $accounts = $this->entityTypeManager->getStorage('user')->loadByProperties(['uid' => $key_item->user_uuid]);
+        $accounts = $user_storage->loadByProperties(['uid' => $key_item->user_uuid]);
         $account = reset($accounts);
 
         if (isset($account)) {
@@ -112,8 +120,8 @@ class ApiKeyAuth implements AuthenticationProviderInterface {
    */
   public function getKey(Request $request) {
     // Exempt edit/delete form route.
-    $route_name = \Drupal::routeMatch()->getRouteName();
-    if (strstr($route_name, 'entity.api_key')) {
+    $route_name = $this->routeMatch->getRouteName();
+    if (is_string($route_name) && strstr($route_name, 'entity.api_key')) {
       return FALSE;
     }
 

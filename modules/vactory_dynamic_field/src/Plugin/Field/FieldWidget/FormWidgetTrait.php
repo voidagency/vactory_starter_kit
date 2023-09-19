@@ -175,6 +175,11 @@ trait FormWidgetTrait {
       $options['#default_value'] = array_merge($options['#default_value'], $default_value);
     }
 
+    // Node queue default value.
+    if ($type === 'node_queue' && $default_value) {
+      $options['#default_value'] = array_merge($options['#default_value'] ?? [], $default_value);
+    }
+
     $element_defaults = $this->getFormElementDefaults($type, $options);
 
     if ($type == 'image') {
@@ -206,7 +211,8 @@ trait FormWidgetTrait {
       if (!empty($default_value)) {
         if (!is_array($default_value)) {
           $video_default_value[] = $default_value;
-        } else {
+        }
+        else {
           $key = array_keys($default_value)[0];
           if (isset($default_value[$key]['selection'])) {
             foreach ($default_value[$key]['selection'] as $media) {
@@ -218,7 +224,7 @@ trait FormWidgetTrait {
       return $this->getVideoFieldForm($field_name, [
         'label' => $label,
         'default_value' => $video_default_value,
-        'required' => $element_defaults['#required']  ?? FALSE,
+        'required' => $element_defaults['#required'] ?? FALSE,
         'cardinality' => 1,
       ], $form, $form_state);
     }
@@ -344,7 +350,7 @@ trait FormWidgetTrait {
    *   Media field.
    */
   // phpcs:disable
-  public function getImageFieldForm($field_name, array $configuration = [], array $form, FormStateInterface $form_state) {
+  public function getImageFieldForm($field_name, array $configuration, array $form, FormStateInterface $form_state) {
     // phpcs:enable
     return $this->getMediaFieldForm('image', $field_name, $configuration, $form, $form_state);
   }
@@ -365,7 +371,7 @@ trait FormWidgetTrait {
    *   Media field.
    */
   // phpcs:disable
-  public function getFileFieldForm($field_name, array $configuration = [], array $form, FormStateInterface $form_state) {
+  public function getFileFieldForm($field_name, array $configuration, array $form, FormStateInterface $form_state) {
     // phpcs:enable
     return $this->getMediaFieldForm('file', $field_name, $configuration, $form, $form_state);
   }
@@ -386,7 +392,7 @@ trait FormWidgetTrait {
    *   Media field.
    */
   // phpcs:disable
-  public function getAudioFieldForm($field_name, array $configuration = [], array $form, FormStateInterface $form_state) {
+  public function getAudioFieldForm($field_name, array $configuration, array $form, FormStateInterface $form_state) {
     // phpcs:enable
     return $this->getMediaFieldForm('audio', $field_name, $configuration, $form, $form_state);
   }
@@ -407,7 +413,7 @@ trait FormWidgetTrait {
    *   Media field.
    */
   // phpcs:disable
-  public function getVideoFieldForm($field_name, array $configuration = [], array $form, FormStateInterface $form_state) {
+  public function getVideoFieldForm($field_name, array $configuration, array $form, FormStateInterface $form_state) {
     // phpcs:enable
     return $this->getMediaFieldForm('video', $field_name, $configuration, $form, $form_state);
   }
@@ -428,7 +434,7 @@ trait FormWidgetTrait {
    *   Media field.
    */
   // phpcs:disable
-  public function getRemoteVideoFieldForm($field_name, array $configuration = [], array $form, FormStateInterface $form_state) {
+  public function getRemoteVideoFieldForm($field_name, array $configuration, array $form, FormStateInterface $form_state) {
     // phpcs:enable
     return $this->getMediaFieldForm('remote_video', $field_name, $configuration, $form, $form_state);
   }
@@ -453,7 +459,7 @@ trait FormWidgetTrait {
    * @throws \Exception
    */
   // phpcs:disable
-  protected function getMediaFieldForm($media_type = 'image', $field_name, array $configuration = [], array $form, FormStateInterface $form_state) {
+  protected function getMediaFieldForm($media_type, $field_name, array $configuration, array $form, FormStateInterface $form_state) {
     // phpcs:enable
     $field_type = 'entity_reference';
 

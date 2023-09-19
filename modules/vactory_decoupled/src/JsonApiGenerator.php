@@ -3,8 +3,15 @@
 namespace Drupal\vactory_decoupled;
 
 // use Drupal\entityqueue\Entity\EntityQueue;
+use Drupal\Core\Entity\EntityRepositoryInterface;
+use Drupal\Core\Entity\EntityStorageInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Utility\Token;
 use Drupal\entityqueue\Entity\EntitySubqueue;
 use Drupal\Core\Cache\Cache;
+use Drupal\jsonapi\ResourceType\ResourceType;
 
 /**
  * Simplifies the process of generating an API version using DF.
@@ -16,10 +23,71 @@ class JsonApiGenerator {
   protected $client;
 
   /**
+   * Entity type manager service.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
+   * Entity repository service.
+   *
+   * @var \Drupal\Core\Entity\EntityRepositoryInterface
+   */
+  protected $entityRepository;
+
+  /**
+   * Drupal token service.
+   *
+   * @var \Drupal\Core\Utility\Token
+   */
+  protected $token;
+
+  /**
+   * Module handler service.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
+   * Route match service.
+   *
+   * @var RouteMatchInterface
+   */
+  protected $routeMatch;
+
+  /**
+   * @var EntityStorageInterface
+   */
+  protected $termStorage;
+
+  /**
+   * @var EntityStorageInterface
+   */
+  protected $termResultStorage;
+
+  /**
    * {@inheritdoc}
    */
-  public function __construct(JsonApiClient $client) {
+  public function __construct(
+    JsonApiClient $client,
+    EntityTypeManagerInterface $entityTypeManager,
+    EntityRepositoryInterface $entityRepository,
+    Token $token,
+    ModuleHandlerInterface $moduleHandler,
+    RouteMatchInterface $routeMatch
+  ) {
     $this->client = $client;
+    $this->entityTypeManager = $entityTypeManager;
+    $this->entityRepository = $entityRepository;
+    $this->token = $token;
+    $this->moduleHandler = $moduleHandler;
+    $this->routeMatch = $routeMatch;
+    $this->termStorage = $this->entityTypeManager->getStorage('taxonomy_term');
+    if ($this->moduleHandler->moduleExists('vactory_taxonomy_results')) {
+      $this->termResultStorage = $this->entityTypeManager->getStorage('term_result_count');
+    }
   }
 
   /**
@@ -40,6 +108,19 @@ class JsonApiGenerator {
     $entity_queue = $config['entity_queue'] ?? '';
     $entity_queue_field_id = $config['entity_queue_field_id'] ?? '';
     $subqueue_items_ids = [];
+
+    // Handle jsonapi filters tokens.
+    $nested_filters = [];
+    foreach ($filters as $key => $filter) {
+      if (strpos($filter, '[') === 0 && strpos($filter, ']') === strlen($filter)-1) {
+        // Token case.
+        $filter = $this->token->replace($filter, []);
+        $filter_pieces = is_string($filter) ? explode("\n", $filter) : [];
+        $nested_filters = [...$nested_filters, ...$filter_pieces];
+        unset($filters[$key]);
+      }
+    }
+    $filters = [...$filters, ...$nested_filters];
 
     // Filters may be altered using hook_json_api_collection_alter which is triggered below.
     // We need to keep a copy of the original filters to be used
@@ -70,13 +151,13 @@ class JsonApiGenerator {
     $parsed = [];
     foreach ($filters as $line) {
       [$name, $qsvalue] = explode("=", $line, 2);
-      $parsed[trim($name)] = urldecode(trim(\Drupal::token()->replace($qsvalue, [])));
+      $parsed[trim($name)] = urldecode(trim($this->token->replace($qsvalue, [])));
     }
 
     $original_filters_parsed = [];
     foreach ($original_filters as $line) {
       [$name, $qsvalue] = explode("=", $line, 2);
-      $original_filters_parsed[trim($name)] = urldecode(trim(\Drupal::token()->replace($qsvalue, [])));
+      $original_filters_parsed[trim($name)] = urldecode(trim($this->token->replace($qsvalue, [])));
     }
 
     /*
@@ -96,15 +177,30 @@ class JsonApiGenerator {
       'id' => $id,
     ];
 
-    \Drupal::moduleHandler()->alter('json_api_collection', $parsed, $hook_context);
+    // Get current page information and pass them through the hook context.
+    $params = $this->routeMatch->getParameters();
+    if ($params) {
+      if ($resource_type_param = $params->get('resource_type')) {
+        $hook_context["entity_bundle"] = $resource_type_param instanceof ResourceType ?  $resource_type_param->getBundle() : $resource_type_param;
+      }
 
+      if ($entity_param = $params->get('entity')) {
+        $hook_context["entity_id"] = $entity_param->id();
+      }
+    }
+    $parsed['optional_filters_data'] = $config['optional_filters_data'] ?? [];
+    $hook_context['cache_tags'] = [];
+    $hook_context['cache_contexts'] = [];
+    $this->moduleHandler->alter('json_api_collection', $parsed, $hook_context);
+    unset($parsed['optional_filters_data']);
     parse_str(http_build_query($parsed), $query_filters);
     parse_str(http_build_query($original_filters_parsed), $query_original_filters);
 
     $response = $this->client->serialize($resource, $query_filters);
     $exposedTerms = $this->getExposedTerms($exposed_vocabularies);
-    $response['cache']['tags'] = Cache::mergeTags($response['cache']['tags'], $exposedTerms['cache_tags']);
-
+    $response['cache']['tags'] = Cache::mergeTags($response['cache']['tags'], $exposedTerms['cache_tags'], $hook_context['cache_tags']);
+    $response['cache']['contexts'] = Cache::mergeContexts($response['cache']['contexts'] ?? [], $hook_context['cache_contexts']);
+    
     $client_data = json_decode($response['data']);
 
     // For entityqueue, we cannot use JSON:API sorting mecanism as we don't have any field attached to entities
@@ -122,7 +218,7 @@ class JsonApiGenerator {
       });
       $client_data->data = array_values($result);
     }
-    
+
     return [
       'data' => $client_data,
       'cache' => $response['cache'],
@@ -136,10 +232,6 @@ class JsonApiGenerator {
     $result = [];
     $cacheTags = [];
 
-    $entityTypeManager = \Drupal::service('entity_type.manager');
-    $taxonomyTermStorage = $entityTypeManager->getStorage('taxonomy_term');
-    // $slugManager = \Drupal::service('vactory_core.slug_manager');
-    $entityRepository = \Drupal::service('entity.repository');
     $bundles = (array) $vocabularies;
     $bundles = array_filter($bundles, function ($value) {
       return $value != '0';
@@ -147,27 +239,78 @@ class JsonApiGenerator {
     $bundles = array_keys($bundles);
 
     foreach ($bundles as $vid) {
-      $terms = $taxonomyTermStorage->loadTree($vid, 0, NULL, TRUE);
+      $terms = $this->termStorage->loadTree($vid, 0, NULL, TRUE);
       $result[$vid] = [];
+      if (!empty($terms)) {
+        usort($terms, function ($a, $b) {
+          $weight_a = $a->get('weight')->value;
+          $weight_b = $b->get('weight')->value;
+          return (int) ($weight_a <=> $weight_b);
+        });
+      }
       foreach ($terms as $term) {
-        $term = $entityRepository
-          ->getTranslationFromContext($term);
+        $published = $term->get('status')->value;
+        if (!$published) {
+          continue;
+        }
+        $term = $this->entityRepository->getTranslationFromContext($term);
 
         $cacheTags = Cache::mergeTags($cacheTags, $term->getCacheTags());
-        array_push($result[$vid], [
+        $term_data = [
           'id' => $term->id(),
           'uuid' => $term->uuid(),
           'slug' => $term->get("term_2_slug")->getString(),
           'label' => $term->label(),
-        ]);
-      }
+          'results' => [],
+        ];
 
+        /**
+         * Used to add/modify term data.
+         *
+         * How to use : hook_json_collection_exposed_term_alter($term, &$term_data).
+         */
+        $this->moduleHandler->alter('json_collection_exposed_term', $term, $term_data);
+
+        if ($term->hasField('results_count')) {
+          $this->injectTaxonomyResultsCount($term, $term_data, $cacheTags);
+        }
+        array_push($result[$vid], $term_data);
+      }
     }
 
     return [
       "data" => $result,
       "cache_tags" => $cacheTags,
     ];
+  }
+
+  public function injectTaxonomyResultsCount($term, &$term_data, &$cacheTags) {
+    $result_count_ids = $term->get('results_count')->getValue();
+    if (!empty($result_count_ids)) {
+      $result_count_ids = array_map(function ($el) {
+        return $el['target_id'];
+      }, $result_count_ids);
+      if (!empty($result_count_ids)) {
+        $results_count = $this->termResultStorage->loadMultiple($result_count_ids);
+        if (!empty($results_count)) {
+          foreach ($results_count as $result_count) {
+            $plugin = $result_count->get('plugin')->value;
+            $entity_type = $result_count->get('entity_type')->value;
+            $bundle = $result_count->get('bundle')->value;
+            $count = $result_count->get('count')->value;
+            if (!empty($plugin) && !empty($entity_type) && !empty($bundle) && !empty($count)) {
+              $cacheTags = Cache::mergeTags($cacheTags, $result_count->getCacheTags());
+              $term_data['results'][] = [
+                'plugin' => $plugin,
+                'entity_type' => $entity_type,
+                'bundle' => $bundle,
+                'count' => $count,
+              ];
+            }
+          }
+        }
+      }
+    }
   }
 
 }

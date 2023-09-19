@@ -6,6 +6,9 @@ dependencies:
     - node.type.vactory_job_ads
   module:
     - metatag
+  enforced:
+    module:
+      - vactory_job_ads
 id: node.vactory_job_ads.field_vactory_meta_tags
 field_name: field_vactory_meta_tags
 entity_type: node

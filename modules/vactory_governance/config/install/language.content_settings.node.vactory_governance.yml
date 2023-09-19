@@ -3,6 +3,9 @@ status: true
 dependencies:
   config:
     - node.type.vactory_governance
+  enforced:
+    module:
+      - vactory_governance
 id: node.vactory_governance
 target_entity_type_id: node
 target_bundle: vactory_governance

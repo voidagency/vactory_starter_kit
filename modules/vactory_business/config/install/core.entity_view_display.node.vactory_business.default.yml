@@ -14,17 +14,20 @@ dependencies:
     - field.field.node.vactory_business.field_taille_entreprise
     - field.field.node.vactory_business.field_vactory_address
     - field.field.node.vactory_business.field_vactory_date
-    - field.field.node.vactory_business.field_vactory_image
-    - field.field.node.vactory_annual_report.field_vactory_tags
+    - field.field.node.vactory_business.field_vactory_media_image
+    - field.field.node.vactory_business.field_vactory_tags
     - field.field.node.vactory_business.field_vactory_telephone
     - node.type.vactory_business
   module:
     - address
     - datetime
-    - image
     - social_media_links_field
     - text
     - user
+    - vactory_core
+  enforced:
+    module:
+      - vactory_business
 id: node.vactory_business.default
 targetEntityType: node
 bundle: vactory_business
@@ -125,14 +128,21 @@ content:
     third_party_settings: {  }
     weight: 103
     region: content
-  field_vactory_image:
-    type: image
+  field_vactory_media_image:
+    type: lazy_image
     label: above
     settings:
-      image_link: ''
-      image_style: ''
+      desktop_1x: vactory_two_cols_x1
+      desktop_2x: vactory_two_cols_x2
+      laptop_1x: vactory_two_cols_x1
+      laptop_2x: vactory_two_cols_x2
+      tablet_1x: vactory_two_cols_x1
+      tablet_2x: vactory_two_cols_x2
+      mobile_1x: vactory_two_cols_x1
+      mobile_2x: vactory_two_cols_x2
+      lqip: lqip
     third_party_settings: {  }
-    weight: 117
+    weight: 118
     region: content
   field_vactory_telephone:
     type: string
@@ -154,6 +164,14 @@ content:
     region: content
 hidden:
   addtoany: true
+  field_content_access_custom: true
+  field_content_access_groups: true
+  field_content_access_roles: true
+  field_content_access_users: true
   field_vactory_tags: true
   langcode: true
+  mail_message: true
+  mail_subject: true
+  notification_message: true
+  notification_title: true
   search_api_excerpt: true

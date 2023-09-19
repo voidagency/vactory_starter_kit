@@ -19,6 +19,9 @@ dependencies:
     - taxonomy
     - user
     - vactory_views
+  enforced:
+    module:
+      - vactory_press_release
 id: vactory_press_release
 label: 'Press Release'
 module: views

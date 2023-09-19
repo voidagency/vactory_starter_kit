@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - node
+  enforced:
+    module:
+      - vactory_governance
 id: governance_block_membre_du_gouve
 label: 'Governance block : Membre du gouvernement'
 handler: simple

@@ -1,0 +1,45 @@
+id: news_fr
+migration_group: vactory
+label: 'News FR'
+
+source:
+  plugin: csv
+  path: profiles/contrib/vactory_starter_kit/modules/vactory_news/modules/vactory_news_migrate/artifacts/news-fr.csv
+  header_row_count: 1
+  delimiter: ','
+  ids: [id]
+  constants:
+    dest_path: 'public://migrated-news/'
+
+process:
+  legacy_id: id
+  title: title
+  body/value: body
+  body/format:
+    -
+      plugin: default_value
+      default_value: full_html
+  field_vactory_date/value: date
+  node_summary: title
+  field_vactory_news_theme:
+    -
+      plugin: explode
+      source: theme
+      delimiter: ','
+    -
+      plugin: entity_lookup
+      value_key: legacy_id
+      bundle_key: vid
+      bundle: vactory_news_theme
+      entity_type: taxonomy_term
+  field_vactory_media:
+    -
+      plugin: media_import
+      destination: constants/dest_path
+      media_bundle: image
+      media_field_name: field_media_image
+      source: image
+
+destination:
+  plugin: entity:node
+  default_bundle: vactory_news

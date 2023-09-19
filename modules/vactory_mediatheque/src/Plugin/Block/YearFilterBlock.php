@@ -35,6 +35,12 @@ class YearFilterBlock extends BlockBase {
       '#theme' => 'block_year_filter',
       '#years' => $years,
       '#current_active_year' => $current_active_year,
+      '#cache' => [
+        // Set the caching policy to match the default block caching policy.
+        'max-age' => 0,
+        'contexts' => ['url'],
+        'tags' => ['rendered'],
+      ],
     ];
   }
 

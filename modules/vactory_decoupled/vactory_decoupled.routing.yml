@@ -1,18 +1,18 @@
-vactory_decoupled.image:
-  path: '/app-image/{cached_uri}/{width}/{height}/{fid}/{filename}'
-  defaults:
-    _controller: '\Drupal\vactory_decoupled\Controller\ImageController::image'
-    _disable_route_normalizer: 'TRUE'
-  requirements:
-    _permission: 'access content'
+# vactory_decoupled.image:
+#   path: '/app-image/{cached_uri}/{width}/{height}/{fid}/{filename}'
+#   defaults:
+#     _controller: '\Drupal\vactory_decoupled\Controller\ImageController::image'
+#     _disable_route_normalizer: 'TRUE'
+#   requirements:
+#     _permission: 'access content'
 
-vactory_decoupled.create_image_style:
-  path: '/app-image/create-style'
-  defaults:
-    _controller: '\Drupal\vactory_decoupled\Controller\ImageStyleController::image'
-    _disable_route_normalizer: 'TRUE'
-  requirements:
-    _permission: 'access content'
+# vactory_decoupled.create_image_style:
+#   path: '/app-image/create-style'
+#   defaults:
+#     _controller: '\Drupal\vactory_decoupled\Controller\ImageStyleController::image'
+#     _disable_route_normalizer: 'TRUE'
+#   requirements:
+#     _permission: 'access content'
 
 vactory_decoupled.translations:
   path: '/_translations'
@@ -22,22 +22,23 @@ vactory_decoupled.translations:
   methods: [GET]
   requirements:
     _permission: 'access content'
+    _format: 'json'
 
-vactory_decoupled.blocks:
-  path: '/_blocks'
-  defaults:
-    _controller: '\Drupal\vactory_decoupled\Controller\BlocksController::index'
-  methods: [GET]
-  requirements:
-    _permission: 'access content'
+# vactory_decoupled.blocks:
+#   path: '/_blocks'
+#   defaults:
+#     _controller: '\Drupal\vactory_decoupled\Controller\BlocksController::index'
+#   methods: [GET]
+#   requirements:
+#     _permission: 'access content'
 
-vactory_decoupled.breadcrumb:
-  path: '/_breadcrumb'
-  defaults:
-    _controller: '\Drupal\vactory_decoupled\Controller\BreadcrumbController::index'
-  methods: [GET]
-  requirements:
-    _permission: 'access content'
+# vactory_decoupled.breadcrumb:
+#   path: '/_breadcrumb'
+#   defaults:
+#     _controller: '\Drupal\vactory_decoupled\Controller\BreadcrumbController::index'
+#   methods: [GET]
+#   requirements:
+#     _permission: 'access content'
 
 vactory_decoupled.menus:
   path: '/_menus'
@@ -46,6 +47,7 @@ vactory_decoupled.menus:
   methods: [GET]
   requirements:
     _permission: 'access content'
+    _format: 'json'
 
 # vactory_decoupled.search:
 #   path: '/_search'
@@ -66,11 +68,11 @@ vactory_decoupled.import_translation:
   requirements:
     _permission: 'translate interface'
 
-vactory_decoupled.secure_routes:
-  path: 'admin/config/system/secure-routes'
+vactory_decoupled.settings:
+  path: 'admin/config/system/decoupled-settings'
   defaults:
-    _form: 'Drupal\vactory_decoupled\Form\SecureRoutesForm'
-    _title: 'Secure Routes'
+    _form: 'Drupal\vactory_decoupled\Form\DecoupledSettingsForm'
+    _title: 'Vactory Decoupled Settings'
   requirements:
     _permission: 'administer site configuration'
 
@@ -90,6 +92,7 @@ vactory_decoupled.vcc:
   methods: [GET]
   requirements:
     _permission: 'access content'
+    _format: 'json'
   options:
     _is_jsonapi: 1
 
@@ -100,6 +103,7 @@ vactory_decoupled.pays.api:
     _disable_route_normalizer: 'TRUE'
   requirements:
     _permission: 'access content'
+    _format: 'json'
 
 vactory_decoupled.social_media.api:
   path: /api/available-social-media
@@ -108,6 +112,7 @@ vactory_decoupled.social_media.api:
     _disable_route_normalizer: 'TRUE'
   requirements:
     _permission: 'access content'
+    _format: 'json'
 
 vactory_decoupled.get_unique_username_by_email:
   path: '/api/get-unique-username-by-email'
@@ -117,6 +122,17 @@ vactory_decoupled.get_unique_username_by_email:
   methods: [GET]
   requirements:
     _permission: 'access content'
+    _format: 'json'
+
+vactory_decoupled.get_user_account_config:
+  path: '/api/get-user-registration-config'
+  defaults:
+    _controller: '\Drupal\vactory_decoupled\Controller\UserRegistrationConfigController::getAccountRegistrationConfig'
+    _disable_route_normalizer: 'TRUE'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+    _format: 'json'
 
 vactory_decoupled.one_time_token:
   path: '/oauth/one-time-token'
@@ -125,6 +141,7 @@ vactory_decoupled.one_time_token:
   methods: [POST]
   requirements:
     _access: 'TRUE'
+    _format: 'json'
 
 vactory_decoupled.firebase_key_controller:
   path: '/_firebase-key'
@@ -133,11 +150,36 @@ vactory_decoupled.firebase_key_controller:
   methods: [GET]
   requirements:
     _permission: 'access content'
+    _format: 'json'
 
 vactory_decoupled.login_token:
   path: '/oauth/login-token'
   defaults:
-    _controller: 'Drupal\simple_oauth\Controller\Oauth2Token::token'
+    _controller: 'Drupal\vactory_decoupled\Controller\DecoupledOauth2Token::token'
   methods: [POST]
   requirements:
     _access: 'TRUE'
+    _format: 'json'
+vactory_decoupled.check_shield:
+  path: '/api/check-shield'
+  defaults:
+    _controller: '\Drupal\vactory_decoupled\Controller\checkShieldController::checkShield'
+    _title: 'Check Shield module status'
+  requirements:
+    _permission: 'access content'
+vactory_decoupled.account_verify:
+  path: '/api/account/verify/{uid}/{timestamp}/{hash}'
+  defaults:
+    _controller: '\Drupal\vactory_decoupled\Controller\registrationController::confirmAccount'
+    _title: 'Confirm account'
+  requirements:
+    _access: 'TRUE'
+  options:
+    no_cache: TRUE
+vactory_decoupled.store_log_message:
+  path: '/api/capture-log'
+  defaults:
+    _controller: '\Drupal\vactory_decoupled\Controller\LogController::storeLogMessage'
+    _disable_route_normalizer: 'TRUE'
+  requirements:
+    _permission: 'access content'

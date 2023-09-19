@@ -9,6 +9,7 @@ fields:
     options:
       '#required': TRUE
       '#default_value':
+        id: "vactory_job_ads_list"
         resource: node--vactory_job_ads
         filters:
         - fields[node--vactory_job_ads]=drupal_internal__nid,path,title,field_vactory_description,field_vactory_address,field_vactory_email,field_vactory_telephone,field_vactory_contract,field_vactory_profession,field_vactory_city

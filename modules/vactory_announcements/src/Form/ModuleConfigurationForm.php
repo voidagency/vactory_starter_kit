@@ -57,7 +57,7 @@ class ModuleConfigurationForm extends ConfigFormBase {
     $concernedRoles = ['administrator', 'webmaster'];
     foreach ($users as $user) {
       if (count(array_intersect($concernedRoles, $user->getRoles())) > 0) {
-        $receivers[$user->id()] = $user->getUsername();
+        $receivers[$user->id()] = $user->getDisplayName();
       }
     }
     $form['notification_settings']['notification_mail_receiver'] = [

@@ -11,6 +11,9 @@ dependencies:
     - taxonomy
     - text
     - user
+  enforced:
+    module:
+      - vactory_glossary
 id: vactory_glossary
 label: Glossary
 module: views

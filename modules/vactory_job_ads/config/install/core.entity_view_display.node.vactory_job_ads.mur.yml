@@ -19,8 +19,9 @@ dependencies:
   module:
     - user
     - vactory_field
-_core:
-  default_config_hash: IFrWvkhQuGw5Kp2LX8rKokrfBHXBKMDLNF5AC9fnPPo
+  enforced:
+    module:
+      - vactory_job_ads
 id: node.vactory_job_ads.mur
 targetEntityType: node
 bundle: vactory_job_ads

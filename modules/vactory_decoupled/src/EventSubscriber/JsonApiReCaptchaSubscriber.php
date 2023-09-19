@@ -4,6 +4,7 @@ namespace Drupal\vactory_decoupled\EventSubscriber;
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Logger\LoggerChannelFactory;
 use Drupal\jsonapi\JsonApiResource\ErrorCollection;
 use Drupal\jsonapi\JsonApiResource\JsonApiDocumentTopLevel;
 use Drupal\jsonapi\JsonApiResource\LinkCollection;
@@ -34,14 +35,21 @@ class JsonApiReCaptchaSubscriber implements EventSubscriberInterface
   protected $config;
 
   /**
+   * Logger service.
+   *
+   * @var \Drupal\Core\Logger\LoggerChannelFactory
+   */
+  protected $logger;
+
+  /**
    * Constructs a new JsonapiReCaptchaSubscriber.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory.
    */
-  public function __construct(ConfigFactoryInterface $config_factory)
-  {
+  public function __construct(ConfigFactoryInterface $config_factory, LoggerChannelFactory $logger) {
     $this->config = $config_factory;
+    $this->logger = $logger;
   }
 
   /**
@@ -76,8 +84,8 @@ class JsonApiReCaptchaSubscriber implements EventSubscriberInterface
       return;
     }
 
-    $secure_routes_raw = \Drupal::config('vactory_decoupled.settings')->get('routes', '');
-    $secure_routes = explode("\n", $secure_routes_raw);
+    $secure_routes_raw = $this->config->get('vactory_decoupled.settings')->get('routes', '');
+    $secure_routes = is_string($secure_routes_raw) ? explode("\n", $secure_routes_raw) : [];
     $secure_routes = array_map(function ($route) {
       return trim($route);
     }, $secure_routes);
@@ -112,7 +120,7 @@ class JsonApiReCaptchaSubscriber implements EventSubscriberInterface
    */
   private function isValidRecaptchaToken($recaptcha_token)
   {
-    $config = \Drupal::config('recaptcha.settings');
+    $config = $this->config->get('recaptcha.settings');
 
     $recaptcha_secret_key = $config->get('secret_key');
     if (empty($recaptcha_token) || empty($recaptcha_secret_key)) {
@@ -159,12 +167,12 @@ class JsonApiReCaptchaSubscriber implements EventSubscriberInterface
       ];
       foreach ($resp->getErrorCodes() as $code) {
         if (isset($info_codes[$code])) {
-          \Drupal::logger('reCAPTCHA web service')->info('@info', ['@info' => $info_codes[$code]]);
+          $this->logger->get('reCAPTCHA web service')->info('@info', ['@info' => $info_codes[$code]]);
         } else {
           if (!isset($error_codes[$code])) {
             $code = 'unknown-error';
           }
-          \Drupal::logger('reCAPTCHA web service')->error('@error', ['@error' => $error_codes[$code]]);
+          $this->logger->get('reCAPTCHA web service')->error('@error', ['@error' => $error_codes[$code]]);
         }
       }
     }

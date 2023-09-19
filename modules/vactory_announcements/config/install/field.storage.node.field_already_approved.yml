@@ -3,6 +3,9 @@ status: true
 dependencies:
   module:
     - node
+  enforced:
+    module:
+      - vactory_announcements
 id: node.field_already_approved
 field_name: field_already_approved
 entity_type: node

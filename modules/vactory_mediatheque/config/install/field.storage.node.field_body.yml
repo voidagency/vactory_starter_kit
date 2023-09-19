@@ -4,6 +4,9 @@ dependencies:
   module:
     - node
     - text
+  enforced:
+    module:
+      - vactory_mediatheque
 id: node.field_body
 field_name: field_body
 entity_type: node

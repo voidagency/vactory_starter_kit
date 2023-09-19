@@ -8,6 +8,10 @@
   cursor: move;
   transform: translate(0, -50%);
 }
+html[dir="rtl"] .df-components-sortable-handler {
+  left: unset;
+  right: 97%;
+}
 .field__item video {
   max-width: 100% !important;
 }

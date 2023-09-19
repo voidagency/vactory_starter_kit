@@ -15,13 +15,16 @@ dependencies:
     - field.field.node.vactory_business.field_taille_entreprise
     - field.field.node.vactory_business.field_vactory_address
     - field.field.node.vactory_business.field_vactory_date
-    - field.field.node.vactory_business.field_vactory_image
-    - field.field.node.vactory_annual_report.field_vactory_tags
+    - field.field.node.vactory_business.field_vactory_media_image
+    - field.field.node.vactory_business.field_vactory_tags
     - field.field.node.vactory_business.field_vactory_telephone
     - node.type.vactory_business
   module:
     - text
     - user
+  enforced:
+    module:
+      - vactory_business
 id: node.vactory_business.teaser
 targetEntityType: node
 bundle: vactory_business
@@ -51,6 +54,10 @@ hidden:
   field_business_specialisations: true
   field_business_users: true
   field_business_ville: true
+  field_content_access_custom: true
+  field_content_access_groups: true
+  field_content_access_roles: true
+  field_content_access_users: true
   field_secteur_activite: true
   field_site_web: true
   field_social_networks: true
@@ -58,8 +65,12 @@ hidden:
   field_taille_entreprise: true
   field_vactory_address: true
   field_vactory_date: true
-  field_vactory_image: true
+  field_vactory_media_image: true
   field_vactory_tags: true
   field_vactory_telephone: true
   langcode: true
+  mail_message: true
+  mail_subject: true
+  notification_message: true
+  notification_title: true
   search_api_excerpt: true

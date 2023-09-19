@@ -1,0 +1,4 @@
+style:
+  css:
+    component:
+      assets/css/migrate-plugin.css: {}
