@@ -19,3 +19,23 @@ fields:
         filters:
           - sort[date][path]=field_vactory_date
           - sort[date][direction]=DESC
+          - page[offset]=0
+          - page[limit]=9
+          - filter[status][value]=1
+          - sort[sort-vactory-date][path]=field_vactory_date
+          - sort[sort-vactory-date][direction]=DESC
+
+          - fields[node--vactory_news]=drupal_internal__nid,path,title,field_vactory_news_theme,field_vactory_media,field_vactory_excerpt,field_vactory_date
+          - fields[taxonomy_term--vactory_news_theme]=tid,name
+#          - include=field_vactory_publication_theme,field_vactory_news_theme
+
+          - fields[node--vactory_publication]=drupal_internal__nid,path,title,field_vactory_date,field_vactory_media_document,field_vactory_call_to_action,field_vactory_excerpt,field_vactory_media,field_vactory_publication_theme,field_vactory_tags,field_media_file
+          - fields[taxonomy_term--vactory_publication_theme]=tid,name
+          - fields[taxonomy_term--tags]=tid,name
+#          - fields[file--document]=filename,uri
+#          - fields[media--file]= field_media_file,uri
+
+          - include=field_vactory_media,field_vactory_media.thumbnail
+
+          - fields[media--image]=name,thumbnail
+          - fields[file--image]=filename,uri
