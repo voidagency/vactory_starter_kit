@@ -5,7 +5,6 @@ namespace Drupal\vactory_decoupled;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityRepositoryInterface;
-use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
@@ -69,8 +68,18 @@ class DynamicFieldManager {
    */
   protected $mediaFilesManager;
 
+  /**
+   * Site config.
+   *
+   * @var \Drupal\Core\Config\ImmutableConfig
+   */
   protected $siteConfig;
 
+  /**
+   * Cacheability.
+   *
+   * @var \Drupal\Core\Cache\CacheableMetadata
+   */
   protected $cacheability;
 
   /**
@@ -111,20 +120,23 @@ class DynamicFieldManager {
   /**
    * Config factory service.
    *
-   * @var ConfigFactoryInterface
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
   protected $configFactory;
 
   /**
-   * @var EntityStorageInterface
+   * Media storage.
+   *
+   * @var \Drupal\Core\Entity\EntityStorageInterface
    */
   protected $mediaStorage;
 
   /**
-   * @var EntityStorageInterface
+   * Term Result Count Storage.
+   *
+   * @var \Drupal\Core\Entity\EntityStorageInterface
    */
   protected $termResultCount;
-
 
   /**
    * {@inheritdoc}
@@ -146,6 +158,9 @@ class DynamicFieldManager {
     $this->termResultCount = $this->moduleHandler->moduleExists('vactory_taxonomy_results') ? $this->entityTypeManager->getStorage('term_result_count') : NULL;
   }
 
+  /**
+   * Transform.
+   */
   public function transform($data, Context &$context) {
     $cacheability = (object) $context[CacheableNormalizerInterface::SERIALIZATION_CONTEXT_CACHEABILITY];
     $res = $this->process($data, $cacheability);
@@ -153,6 +168,9 @@ class DynamicFieldManager {
     return $res['data'];
   }
 
+  /**
+   * Process.
+   */
   public function process($data, $cacheability = NULL) {
     $this->cacheability = $cacheability;
 
@@ -195,10 +213,10 @@ class DynamicFieldManager {
         return (int) ($item1['_weight'] <=> $item2['_weight']);
       });
 
-      /*$image_app_base_url = Url::fromUserInput('/app-image/')
-        ->setAbsolute()->toString();*/
+      // $image_app_base_url = Url::fromUserInput('/app-image/')
+      // ->setAbsolute()->toString();
       foreach ($widget_data as &$component) {
-        //        $this->applyFormatters(['fields'], $settings, $component);
+        // $this->applyFormatters(['fields'], $settings, $component);
         $this->applyFormatters(['fields'], $settings, $component);
         $content['components'][] = $component;
       }
@@ -232,14 +250,7 @@ class DynamicFieldManager {
   }
 
   /**
-   * Apply formatters such as processed_text, image & links.
-   *
-   * @param array $parent_keys
-   *   Keys.
-   * @param array $settings
-   *   Settings.
-   * @param array $component
-   *   Component.
+   * Apply Formatters.
    */
   public function applyFormatters($parent_keys, $settings, &$component) {
     foreach ($component as $field_key => &$value) {
@@ -284,12 +295,11 @@ class DynamicFieldManager {
 
           // Text Preprocessor.
           if ($info['type'] === 'text_format') {
-            //$format = $info['options']['#format'] ?? 'full_html';
-
+            // $format = $info['options']['#format'] ?? 'full_html';
             $build = [
-              //'#type'   => 'processed_text',
+              // '#type'   => 'processed_text',
               '#text' => $value['value'] ?? $value,
-              //'#format' => $format,
+              // '#format' => $format,
             ];
 
             $value = ['value' => $build];
@@ -366,11 +376,11 @@ class DynamicFieldManager {
                   $this->cacheability->setCacheTags($cacheTags);
                   $uri = $file->thumbnail->entity->getFileUri();
                   $image_item['_default'] = $this->mediaFilesManager->getMediaAbsoluteUrl($uri);
-                  //$image_item['_lqip'] = $this->mediaFilesManager->convertToMediaAbsoluteUrl($this->imageStyles['lqip']->buildUrl($uri));
-                  //$image_item['uri'] = StreamWrapperManager::getTarget($uri);
-                  //$image_item['fid'] = $file->thumbnail->entity->fid->value;
+                  // $image_item['_lqip'] = $this->mediaFilesManager->convertToMediaAbsoluteUrl($this->imageStyles['lqip']->buildUrl($uri));
+                  // $image_item['uri'] = StreamWrapperManager::getTarget($uri);
+                  // $image_item['fid'] = $file->thumbnail->entity->fid->value;
                   $image_item['file_name'] = $file->label();
-                  //$image_item['base_url'] = $image_app_base_url;
+                  // $image_item['base_url'] = $image_app_base_url;
                   if (!empty($file->get('field_media_image')->getValue())) {
                     $image_item['meta'] = $file->get('field_media_image')
                       ->first()
@@ -400,10 +410,10 @@ class DynamicFieldManager {
                   $this->cacheability->setCacheTags($cacheTags);
                   $uri = $file->field_media_video_file->entity->getFileUri();
                   $video_item['_default'] = $this->mediaFilesManager->getMediaAbsoluteUrl($uri);
-                  //$video_item['uri'] = StreamWrapperManager::getTarget($uri);
-                  //$video_item['fid'] = $file->thumbnail->entity->fid->value;
+                  // $video_item['uri'] = StreamWrapperManager::getTarget($uri);
+                  // $video_item['fid'] = $file->thumbnail->entity->fid->value;
                   $video_item['file_name'] = $file->label();
-                  //$video_item['base_url'] = $image_app_base_url;
+                  // $video_item['base_url'] = $image_app_base_url;
                   if (!empty($file->get('field_media_video_file')->getValue())) {
                     $video_item['meta'] = $file->get('field_media_video_file')
                       ->first()
@@ -479,10 +489,10 @@ class DynamicFieldManager {
             $resource = $value['resource']['entity_type'];
             $bundles = $value['resource']['bundle'];
             $bundleEntityType = \Drupal::entityTypeManager()->getDefinition($resource)->getBundleEntityType();
-            if (is_array($bundles)){
+            if (is_array($bundles)) {
               $value['filters'][] = "filter[bundles][condition][path]={$bundleEntityType}.meta.drupal_internal__target_id";
               $value['filters'][] = 'filter[bundles][condition][operator]=IN';
-              foreach ($bundles as $key => $bundle){
+              foreach ($bundles as $key => $bundle) {
                 $value['filters'][] = "filter[bundles][condition][value][{$key}]={$bundle}";
               }
             }
