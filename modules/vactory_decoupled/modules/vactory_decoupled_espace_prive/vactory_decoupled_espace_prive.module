@@ -17,7 +17,7 @@ function vactory_decoupled_espace_prive_decoupled_webform_data_presubmit_alter(a
   if (isset($webform_data['webform_id']) && $webform_data['webform_id'] === 'vactory_espace_prive_register') {
     $existing_user = user_load_by_mail($webform_data['mail']);
 
-    if (!$existing_user instanceof UserInterface) {
+    if ($existing_user instanceof UserInterface) {
       $error_message = [
         'error' => [
           'message' => t("The mail is already in existence, try another one"),
