@@ -1142,13 +1142,20 @@ class ModalForm extends FormBase {
     }
   }
 
-  function findDatetimeElement(&$array) {
+  /**
+   * Searching for all elements of type datetime.
+   *
+   * Replace value by text instead of DrupalDateTime object.
+   */
+  private function findDatetimeElement(&$array) {
     foreach ($array as &$value) {
       if ($value instanceof DrupalDateTime) {
         $value = $value->format('Y-m-d H:i:s');
-      } elseif (is_array($value)) {
+      }
+      elseif (is_array($value)) {
         $this->findDatetimeElement($value);
       }
     }
   }
+
 }

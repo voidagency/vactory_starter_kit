@@ -133,7 +133,7 @@ trait FormWidgetTrait {
       $element['#default_value'] = isset($default_value['value']) ? $default_value['value'] : $default_value_string;
     }
     if ($type === 'datetime') {
-      $element['#default_value'] = is_string($default_value) ? DrupalDateTime::createFromFormat('Y-m-d H:i:s',$default_value) : $default_value;
+      $element['#default_value'] = is_string($default_value) ? DrupalDateTime::createFromFormat('Y-m-d H:i:s', $default_value) : $default_value;
     }
 
     if (in_array($type, ['text_format', 'text', 'textarea'])) {
