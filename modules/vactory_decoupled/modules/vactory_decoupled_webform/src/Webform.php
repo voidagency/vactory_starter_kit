@@ -3,6 +3,7 @@
 namespace Drupal\vactory_decoupled_webform;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Session\AccountProxy;
 use Drupal\file\Entity\File;
 use Drupal\webform\Element\WebformTermReferenceTrait;
@@ -63,6 +64,13 @@ class Webform {
    */
   protected $entityTypeManager;
 
+  /**
+   * Module handler manager.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
   const LAYOUTS = [
     'webform_flexbox',
     'container',
@@ -76,11 +84,18 @@ class Webform {
   /**
    * {@inheritDoc}
    */
-  public function __construct(WebformTokenManager $webformTokenManager, AccountProxy $accountProxy, WebformElementManager $webformElementManager, EntityTypeManagerInterface $entityTypeManager) {
+  public function __construct(
+    WebformTokenManager $webformTokenManager,
+    AccountProxy $accountProxy,
+    WebformElementManager $webformElementManager,
+    EntityTypeManagerInterface $entityTypeManager,
+    ModuleHandlerInterface $moduleHandler
+  ) {
     $this->webformTokenManager = $webformTokenManager;
     $this->currentUser = $accountProxy->getAccount();
     $this->webformElementManager = $webformElementManager;
     $this->entityTypeManager = $entityTypeManager;
+    $this->moduleHandler = $moduleHandler;
   }
 
   /**
@@ -107,6 +122,7 @@ class Webform {
     }
     // Add reset button.
     $schema['buttons']['reset'] = $this->resetButtonToUiSchema();
+    $this->moduleHandler->alter('decoupled_webform_schema', $schema, $webform_id);
     return $schema;
   }
 

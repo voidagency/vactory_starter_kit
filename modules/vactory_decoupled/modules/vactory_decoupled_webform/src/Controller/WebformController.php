@@ -100,7 +100,7 @@ class WebformController extends ControllerBase {
     \Drupal::moduleHandler()
       ->alter('decoupled_webform_data_presubmit', $webform_data, $error_message);
     if (!empty($error_message)) {
-      return new JsonResponse($error_message, 400);
+      return new JsonResponse($error_message, $error_message['code'] ?? 400);
     }
     if (isset($webform_data['sid']) && !empty($webform_data['sid'])) {
       $webform_submission = WebformSubmission::load($webform_data['sid']);
