@@ -113,29 +113,55 @@ class PendingContentDashboard extends ControllerBase {
     }
     $default_langcode = $this->languageManager->getDefaultLanguage()->getId();
     $languages = $this->languageManager->getLanguages();
-    foreach ($content as &$info) {
+    $result = [];
+    foreach ($content as $info) {
+      $entity_type = $info['entity_type'];
+      $entity_id = $info['entity_id'];
+      $paragraph_id = $info['paragraph_id'];
       $entity = $this->entityTypeManager->getStorage($info['entity_type'])
         ->load($info['entity_id']);
       if ($default_langcode !== $info['langcode']) {
         $entity = $this->entityRepository->getTranslationFromContext($entity, $info['langcode']);
       }
       $info['alias'] = "/{$info['langcode']}/block/{$entity->id()}?destination=/{$info['langcode']}/admin/content/pending";
-      if ($info['entity_type'] === 'node') {
+      if ($entity_type === 'node') {
         $info['alias'] = '/' . $info['langcode'] . $this->aliasManager->getAliasByPath('/node/' . $info['entity_id'], $info['langcode']);
       }
       $info['entity'] = $entity;
       $info['title'] = $info['entity_type'] === 'node' ? $entity->get('title')->value : $entity->get('info')->value;
       $info['language'] = $languages[$info['langcode']]->getName();
       $info['edit_link'] = $info['alias'];
-      if ($info['entity_type'] === 'node') {
+      if ($entity_type === 'node') {
         $info['edit_link'] = "/{$info['langcode']}/paragraphs_edit/node/{$info['entity_id']}/paragraphs/{$info['paragraph_id']}/edit?destination=/{$info['langcode']}/admin/content/pending";
+        $result[$entity_id]['entity_type'] = $entity_type;
+        $result[$entity_id]['title'] = $info['title'];
+        $result[$entity_id]['alias'] = $info['alias'];
+        $result[$entity_id]['content'][$paragraph_id]['fields'][] = $info['field_label'];
+        $result[$entity_id]['content'][$paragraph_id]['screenshot'] = $info['widget_screen'];
+        $result[$entity_id]['content'][$paragraph_id]['widget_name'] = $info['widget_name'];
+        $result[$entity_id]['content'][$paragraph_id]['language'] = $info['language'];
+        $result[$entity_id]['content'][$paragraph_id]['edit_link'] = $info['edit_link'];
+      }
+      else {
+        $result[$entity_id]['entity_type'] = $entity_type;
+        $result[$entity_id]['title'] = $info['title'];
+        $result[$entity_id]['fields'][] = $info['field_label'];
+        $result[$entity_id]['widget_name'] = $info['widget_name'];
+        $result[$entity_id]['edit_link'] = $info['edit_link'];
+        $result[$entity_id]['language'] = $info['language'];
+        $result[$entity_id]['screenshot'] = $info['widget_screen'];
+        $result[$entity_id][] = [
+          'entity_type' => $entity_type,
+          'content' => $info,
+        ];
       }
     }
+
     // Get filter form using the form builder.
     $filter_form = $this->formBuilder->getForm('Drupal\vactory_dynamic_field\Form\PendingContentFilterForm');
     return [
       '#theme' => 'vactory_dynamic_pending_content',
-      '#content' => $content,
+      '#content' => $result,
       '#pourcentage' => $pourcentage,
       '#filter_form' => $filter_form,
     ];
