@@ -1,3 +1,8 @@
+<style>
+    .page-summary:focus {
+				box-shadow: unset;
+		}
+</style>
 <div class="progress" data-drupal-progress="" data-once="batch">
 	<div id="updateprogress" class="progress" aria-live="polite">
 		<div class="progress__label">{{ 'Avancement...' }}</div>
@@ -17,42 +22,77 @@
 {% if content is empty %}
 	<h6>{{ 'No pending content has been found.'|t }}</h6>
 {% else %}
-	<div style="display: flex; flex-wrap: wrap;">
+	<div style="">
 	{% for item in content %}
-		<fieldset class="fieldset" style="flex-grow: 1; width: 33%; margin: 5px">
-			<legend class="fieldset__legend fieldset__legend--visible">
-				<span class="fieldset__label">{{ item.widget_name }}</span>
-			</legend>
-			<div class="fieldset-wrapper" style="display: flex;">
-				<div style="width: 50%">
-					<img
-						class="screenshot"
-						src="{{ item.widget_screen }}"
-						alt="Screenshot for Component"
-						title="Screenshot for Component"
-						typeof="foaf:Image"
-					>
-				</div>
-				<div style="width: 50%">
-					<div>
-						<ul>
-							<li>Champs concerné: <strong>{{ item.field_label }}</strong></li>
-							<li>Type d'entité: <strong>{{ item.entity_type|capitalize }}</strong></li>
-							<li>Language: <strong>{{ item.language }}</strong></li>
-							<li>
-								{{ item.entity_type == 'node' ? 'Page' : 'Block' }} : <a href="{{ item.alias }}">
-									<strong>{{ item.title }}</strong>
-								</a>
-							</li>
-						</ul>
+		{% if item.entity_type == 'node' %}
+			<details data-once="details" style="border: 2px solid #808080; border-radius: 8px; margin: 8px;">
+				<summary class="page-summary" style="display: flex; cursor: pointer;">
+					<h2>{{ item.title }}</h2>
+					<span style="background: orangered; color: white; border-radius: 3px; font-size: small; height: 20px; padding: 3px">{{ 'Page'|t }}</span>
+				</summary>
+				<a href="{{ item.alias }}" class="button button--secondary" style="margin: 10px" target="_blank">{{ 'Visiter cette page'|t }}</a>
+				<div class="fieldset-wrapper">
+				{% for paragraph in item.content %}
+					<div style="display: flex; /*border: 2px solid #a1a1a1;*/ border-radius: 8px; margin: 8px;">
+						<div style="width: 50%">
+							<img
+								class="screenshot"
+								src="{{ paragraph.screenshot }}"
+								alt="Screenshot for Component"
+								title="Screenshot for Component"
+								typeof="foaf:Image"
+							>
+						</div>
+						<div style="width: 50%">
+							<div>
+								<h4>{{ paragraph.widget_name }}</h4>
+								<ul>
+									<li>Champs concernés: <strong>{{ paragraph.fields|join(', ') }}</strong></li>
+									<li>Langue: <strong>{{ paragraph.language }}</strong></li>
+								</ul>
+							</div>
+							<div style="padding: 10px">
+								<a href="{{ paragraph.edit_link }}" class="button button--primary">{{ 'Modifier'|t }}</a>
+							</div>
+						</div>
 					</div>
-					<div style="padding: 10px">
-						<a href="{{ item.edit_link }}" class="button button--primary">{{ 'Modifier'|t }}</a>
+					{% if not loop.last %}
+						<hr>
+					{% endif %}
+				{% endfor %}
+				</div>
+			</details>
+		{% else %}
+			<details class="fieldset" style="border: 2px solid #808080; border-radius: 8px; margin: 8px;">
+				<summary class="page-summary" style="display: flex; cursor: pointer;">
+					<h2>{{ item.title }}</h2>
+					<span style="background: mediumslateblue; color: white; border-radius: 3px; font-size: small; height: 20px; padding: 3px">{{ 'Bloc'|t }}</span>
+				</summary>
+				<div class="fieldset-wrapper" style="display: flex;">
+					<div style="width: 50%">
+						<img
+							class="screenshot"
+							src="{{ item.screenshot }}"
+							alt="Screenshot for Component"
+							title="Screenshot for Component"
+							typeof="foaf:Image"
+						>
+					</div>
+					<div style="width: 50%">
+						<div>
+							<h4>{{ item.widget_name }}</h4>
+							<ul>
+								<li>Champs concernés: <strong>{{ item.fields|join(', ') }}</strong></li>
+								<li>Langue: <strong>{{ item.language }}</strong></li>
+							</ul>
+						</div>
+						<div style="padding: 10px">
+							<a href="{{ item.edit_link }}" class="button button--primary">{{ 'Modifier'|t }}</a>
+						</div>
 					</div>
 				</div>
-
-			</div>
-		</fieldset>
+			</details>
+		{% endif %}
 	{% endfor %}
 	</div>
 {% endif %}

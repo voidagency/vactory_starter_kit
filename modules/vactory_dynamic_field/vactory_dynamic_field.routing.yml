@@ -36,7 +36,7 @@ vactory_dynamic_field.settings_form:
 df_pending_content.dashboard:
   path: '/admin/content/pending'
   defaults:
-    _title: '🕒 Contenu statique en attente...'
+    _title: '🕒 Aperçu du contenu en attente'
     _controller: '\Drupal\vactory_dynamic_field\Controller\PendingContentDashboard::dashboard'
   requirements:
     _role: 'administrator+webmaster'
