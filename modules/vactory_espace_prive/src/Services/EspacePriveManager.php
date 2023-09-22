@@ -54,6 +54,7 @@ class EspacePriveManager {
           $diff_days = ($now - (int) $lrp_date)/(60 * 60 * 24);
           if ($diff_days >= (int) $password_lifetime) {
             $user->setPassword('reSet'. $now);
+            $lrp_date = $now;
           }
           $user->set('field_reset_password_date', $lrp_date);
           $user->save();
