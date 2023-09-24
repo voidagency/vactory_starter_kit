@@ -21,3 +21,12 @@ vactory_tender.admin_settings:
     _title: "Appels d'offres settings"
   requirements:
     _permission: 'administer vactory_tender'
+vactory_tender.sid:
+  path: '/api/submission/{sid}'
+  defaults:
+    _controller: '\Drupal\vactory_tender\Controller\TenderSid::getFileUrl'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+  options:
+    _auth: ["oauth2"]

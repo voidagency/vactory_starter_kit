@@ -7,6 +7,7 @@ use Drupal\Component\Utility\Crypt;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Session\AccountProxy;
 use Drupal\Core\Url;
+use Drupal\vactory_core\Services\VactoryDevTools;
 use Drupal\webform\Entity\Webform;
 use Drupal\webform\Entity\WebformSubmission;
 use Drupal\webform\WebformInterface;
@@ -29,17 +30,27 @@ class WebformController extends ControllerBase {
   protected $currentUser;
 
   /**
+   * Vactory Dev Tools.
+   */
+  protected $vactoryDevTools;
+
+  /**
    * WebformController constructor.
    */
-  public function __construct(AccountProxy $accountProxy) {
+  public function __construct(AccountProxy $accountProxy, VactoryDevTools $vactoryDevTools) {
     $this->currentUser = $accountProxy->getAccount();
+    $this->vactoryDevTools = $vactoryDevTools;
+
   }
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static($container->get('current_user'));
+    return new static(
+      $container->get('current_user'),
+      $container->get('vactory_core.tools')
+    );
   }
 
   const ELEMENT_TO_SKIP = [
@@ -144,6 +155,7 @@ class WebformController extends ControllerBase {
     if ($webform_submission instanceof WebformSubmissionInterface) {
       return new JsonResponse([
         'sid'      => $webform_submission->id(),
+        'crypted_sid' => $this->vactoryDevTools->encrypt('vactory_tender' . $webform_submission->id()),
         'settings' => self::getWhitelistedSettings($webform),
       ]);
     }
