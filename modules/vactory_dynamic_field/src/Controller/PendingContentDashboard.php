@@ -4,9 +4,11 @@ namespace Drupal\vactory_dynamic_field\Controller;
 
 use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\ExtensionPathResolver;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\path_alias\AliasManagerInterface;
 use Drupal\vactory_dynamic_field\PendingContentManager;
+use Drupal\vactory_dynamic_field\WidgetsManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Form\FormBuilder;
@@ -45,6 +47,20 @@ class PendingContentDashboard extends ControllerBase {
   protected $aliasManager;
 
   /**
+   * The plugin manager.
+   *
+   * @var \Drupal\vactory_dynamic_field\WidgetsManager
+   */
+  protected $widgetsManager;
+
+  /**
+   * Extension path resolver service.
+   *
+   * @var \Drupal\Core\Extension\ExtensionPathResolver
+   */
+  protected $extensionPathResolver;
+
+  /**
    * Language manager.
    *
    * @var \Drupal\Core\Language\LanguageManagerInterface
@@ -59,6 +75,13 @@ class PendingContentDashboard extends ControllerBase {
   protected $formBuilder;
 
   /**
+   * Widgets list.
+   *
+   * @var array
+   */
+  protected $widgetsList;
+
+  /**
    * {@inheritDoc}
    */
   public function __construct(
@@ -67,7 +90,9 @@ class PendingContentDashboard extends ControllerBase {
     EntityRepositoryInterface $entityRepository,
     AliasManagerInterface $aliasManager,
     LanguageManagerInterface $languageManager,
-    FormBuilder $formBuilder
+    FormBuilder $formBuilder,
+    WidgetsManager $widgetsManager,
+    ExtensionPathResolver $extensionPathResolver
   ) {
     $this->pendingContentManager = $pendingContentManager;
     $this->entityTypeManager = $entityTypeManager;
@@ -75,6 +100,9 @@ class PendingContentDashboard extends ControllerBase {
     $this->aliasManager = $aliasManager;
     $this->languageManager = $languageManager;
     $this->formBuilder = $formBuilder;
+    $this->extensionPathResolver = $extensionPathResolver;
+    $this->widgetsManager = $widgetsManager;
+    $this->widgetsList = $this->widgetsManager->getModalWidgetsList();
   }
 
   /**
@@ -87,7 +115,9 @@ class PendingContentDashboard extends ControllerBase {
       $container->get('entity.repository'),
       $container->get('path_alias.manager'),
       $container->get('language_manager'),
-      $container->get('form_builder')
+      $container->get('form_builder'),
+      $container->get('vactory_dynamic_field.vactory_provider_manager'),
+      $container->get('extension.path.resolver')
     );
   }
 
@@ -131,6 +161,13 @@ class PendingContentDashboard extends ControllerBase {
       $info['title'] = $info['entity_type'] === 'node' ? $entity->get('title')->value : $entity->get('info')->value;
       $info['language'] = $languages[$info['langcode']]->getName();
       $info['edit_link'] = $info['alias'];
+      $settings = $this->widgetsManager->loadSettings($info['widget_id']);
+      $category = $settings['category'] ?? 'Others';
+      $widget = $this->widgetsList[$category][$info['widget_id']];
+      $screenshot = $widget['screenshot'] ?? $this->extensionPathResolver->getPath('module', 'vactory_dynamic_field') . '/images/undefined-screenshot.jpg';
+      $file_url_generator = \Drupal::service('file_url_generator');
+      $undefined_screenshot = $this->extensionPathResolver->getPath('module', 'vactory_dynamic_field') . '/images/undefined-screenshot.jpg';
+      $info['widget_screen'] = empty($screenshot) ? $file_url_generator->generateAbsoluteString($undefined_screenshot) : $screenshot;
       if ($entity_type === 'node') {
         $info['edit_link'] = "/{$info['langcode']}/paragraphs_edit/node/{$info['entity_id']}/paragraphs/{$info['paragraph_id']}/edit?destination=/{$info['langcode']}/admin/content/pending";
         $result[$entity_id]['entity_type'] = $entity_type;

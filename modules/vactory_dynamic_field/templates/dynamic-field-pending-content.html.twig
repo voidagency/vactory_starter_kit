@@ -1,23 +1,21 @@
-<style>
-    .page-summary:focus {
-				box-shadow: unset;
-		}
-</style>
+{{ attach_library('vactory_dynamic_field/pending_content') }}
 <div class="progress" data-drupal-progress="" data-once="batch">
 	<div id="updateprogress" class="progress" aria-live="polite">
 		<div class="progress__label">{{ 'Avancement...' }}</div>
 		<div class="progress__track">
 			<div class="progress__bar" style="width: {{ pourcentage }};"></div>
 		</div>
-		<div class="progress__percentage" style="font-size: 25px; font-weight: bold">{{ pourcentage }}</div>
+		<div class="progress__percentage">{{ pourcentage }}</div>
 	</div>
 </div>
 
-<div class="view view-content">
+<div class="view view-content pending-content-filter">
 	<div class="view-filters">
 		{{ filter_form }}
 	</div>
 </div>
+
+<button id="page-printer" class="button button--extrasmall">{{ 'Imprimer'|t }}</button>
 
 {% if content is empty %}
 	<h6>{{ 'No pending content has been found.'|t }}</h6>
@@ -25,15 +23,15 @@
 	<div style="">
 	{% for item in content %}
 		{% if item.entity_type == 'node' %}
-			<details data-once="details" style="border: 2px solid #808080; border-radius: 8px; margin: 8px;">
-				<summary class="page-summary" style="display: flex; cursor: pointer;">
+			<details data-once="details" class="page-details">
+				<summary class="page-summary">
 					<h2>{{ item.title }}</h2>
-					<span style="background: orangered; color: white; border-radius: 3px; font-size: small; height: 20px; padding: 3px">{{ 'Page'|t }}</span>
+					<span>{{ 'Page'|t }}</span>
 				</summary>
 				<a href="{{ item.alias }}" class="button button--secondary" style="margin: 10px" target="_blank">{{ 'Visiter cette page'|t }}</a>
 				<div class="fieldset-wrapper">
 				{% for paragraph in item.content %}
-					<div style="display: flex; /*border: 2px solid #a1a1a1;*/ border-radius: 8px; margin: 8px;">
+					<div class="details-body">
 						<div style="width: 50%">
 							<img
 								class="screenshot"
@@ -63,10 +61,10 @@
 				</div>
 			</details>
 		{% else %}
-			<details class="fieldset" style="border: 2px solid #808080; border-radius: 8px; margin: 8px;">
-				<summary class="page-summary" style="display: flex; cursor: pointer;">
+			<details class="page-details">
+				<summary class="page-summary">
 					<h2>{{ item.title }}</h2>
-					<span style="background: mediumslateblue; color: white; border-radius: 3px; font-size: small; height: 20px; padding: 3px">{{ 'Bloc'|t }}</span>
+					<span class="span-block">{{ 'Bloc'|t }}</span>
 				</summary>
 				<div class="fieldset-wrapper" style="display: flex;">
 					<div style="width: 50%">
