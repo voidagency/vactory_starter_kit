@@ -10,6 +10,7 @@ use Drupal\webform\Plugin\WebformElementManager;
 use Drupal\webform\WebformSubmissionConditionsValidator;
 use Drupal\webform\WebformTokenManager;
 use Drupal\webform\Entity\Webform as WebformEntity;
+use Drupal\file\Entity\File;
 
 /**
  * Simplifies the process of generating an API version of a webform.
@@ -336,7 +337,8 @@ class Webform {
     if (isset($item['#default_file'])) {
       $properties['default_value'] = $this->defaultValueTokensReplace($item, $field_name, '#default_file');
       if (!empty($properties['default_value'])) {
-        $properties['default_value'] = json_decode($properties['default_value']);
+        $decoded = json_decode($properties['default_value']);
+        $properties['default_value'] = json_last_error() === JSON_ERROR_NONE ? $decoded : $properties['default_value'];
       }
     }
 
@@ -499,6 +501,19 @@ class Webform {
       }
 
       $properties['filePreview'] = isset($item['#file_preview']);
+
+      $fid = $properties['default_value'];
+      if (is_numeric($fid)) {
+        $file = File::load($fid);
+        $info = [
+          'fid'        => $fid,
+          'size'       => $file->get('filesize')->value,
+          'type'       => $file->get('filemime')->value,
+          'name'       => $file->get('filename')->value,
+          'previewUrl' => $file->createFileUrl(TRUE),
+        ];
+        $properties['default_value'] = $info;
+      }
 
       if (
         isset($element['#upload_validators']) &&
