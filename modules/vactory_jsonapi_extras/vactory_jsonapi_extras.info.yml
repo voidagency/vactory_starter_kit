@@ -1,0 +1,7 @@
+name: 'Vactory Jsonapi Extras'
+type: module
+description: 'Provides APIs administration console'
+core_version_requirement: '^8.9 || ^9'
+package: Custom
+dependencies:
+  - 'jsonapi_extras'
