@@ -8,4 +8,7 @@ services:
       - '@config.factory'
   vactory.views.to_api:
     class: Drupal\vactory_dynamic_field\ViewsToApi
-
+  df_auto_populate.manager:
+    class: Drupal\vactory_dynamic_field\AutoPopulateManager
+  df_pending_content.manager:
+    class: Drupal\vactory_dynamic_field\PendingContentManager

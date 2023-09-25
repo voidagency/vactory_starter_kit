@@ -154,7 +154,6 @@ class DynamicFieldManager {
   }
 
   public function process($data, $cacheability = NULL) {
-
     $this->cacheability = $cacheability;
 
     if (is_null($cacheability)) {
@@ -175,6 +174,11 @@ class DynamicFieldManager {
       if (isset($widget_data['extra_field'])) {
         $content['extra_field'] = $widget_data['extra_field'];
         unset($widget_data['extra_field']);
+      }
+
+      if (isset($widget_data['pending_content'])) {
+        $content['pending_content'] = array_map(fn($el) => !str_starts_with($el, 'extra_field') ? "components.{$el}" : $el, $widget_data['pending_content']);
+        unset($widget_data['pending_content']);
       }
 
       // Fallback for existing templates.
@@ -215,7 +219,6 @@ class DynamicFieldManager {
        * @endcode
        */
       $this->moduleHandler->alter('df_jsonapi_output', $content);
-
       $data['widget_data'] = json_encode($content);
     }
 
@@ -227,7 +230,6 @@ class DynamicFieldManager {
       'cacheability' => $this->cacheability,
     ];
   }
-
 
   /**
    * Apply formatters such as processed_text, image & links.
