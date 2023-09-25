@@ -144,11 +144,17 @@ class VactoryNotificationsService {
     foreach ($roles as $role) {
       $role_content_types = $this->notificationConfig->get($role->id() . '_content_types');
       if (!empty($role_content_types) && in_array($bundle, $role_content_types)) {
-        $uids = \Drupal::entityQuery('user')
-          ->condition('status', 1)
-          ->condition('roles', $role->id())
-          ->accessCheck(FALSE)
-          ->execute();
+        if ($role->id() === 'authenticated') {
+          $uids = \Drupal::entityQuery('user')
+            ->condition('status', 1)
+            ->execute();
+        }
+        else {
+          $uids = \Drupal::entityQuery('user')
+            ->condition('status', 1)
+            ->condition('roles', $role->id())
+            ->execute();
+        }
         if (!empty($uids)) {
           $users_ids = array_merge($users_ids, $uids);
           $users_ids = array_unique($users_ids);
