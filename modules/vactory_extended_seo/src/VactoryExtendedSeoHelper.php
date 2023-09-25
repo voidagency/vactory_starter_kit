@@ -54,8 +54,11 @@ class VactoryExtendedSeoHelper {
   }
 
   public function generateAlternate($currentNode, &$attached) {
-    $seo_entity = $this->entityTypeManager->getStorage('vactory_extended_seo')
-      ->loadByProperties(['node_id' => $currentNode]);
+    $seo_entity = NULL;
+    if (!empty($currentNode)) {
+      $seo_entity = $this->entityTypeManager->getStorage('vactory_extended_seo')
+        ->loadByProperties(['node_id' => $currentNode]);
+    }
     if ($seo_entity) {
       $attached = [];
       $language = $this->languageManager->getCurrentLanguage()->getId();
