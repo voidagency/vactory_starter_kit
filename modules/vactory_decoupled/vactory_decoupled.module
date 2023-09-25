@@ -454,9 +454,9 @@ function vactory_decoupled_mail_alter(&$message) {
   $mail_config = \Drupal::config('user.mail');
   $language_manager = \Drupal::languageManager();
   $language = $language_manager->getLanguage($langcode);
-
+  $route_name = \Drupal::routeMatch()->getRouteName();
   if (!empty(Settings::get('BASE_FRONTEND_URL'))) {
-    if ($message['id'] === 'user_password_reset') {
+    if ($message['id'] === 'user_password_reset' && $route_name !== 'user.pass') {
       $key = 'password_reset';
       $variables = ['user' => $message['params']['account']];
       $original_language = $language_manager->getConfigOverrideLanguage();
@@ -520,8 +520,9 @@ function vactory_decoupled_mailer_build(EmailInterface $email) {
     $mail_config = \Drupal::config('user.mail');
     $language_manager = \Drupal::languageManager();
     $language = $language_manager->getLanguage($langcode);
+    $route_name = \Drupal::routeMatch()->getRouteName();
     if (!empty(Settings::get('BASE_FRONTEND_URL'))) {
-      if ($legacy_message['id'] === 'user_password_reset') {
+      if ($legacy_message['id'] === 'user_password_reset' && $route_name !== 'user.pass') {
         $key = 'password_reset';
         $variables = ['user' => $legacy_message['params']['account']];
         $original_language = $language_manager->getConfigOverrideLanguage();
