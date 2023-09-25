@@ -8,13 +8,8 @@ fields:
     label: "Intro contenu libre"
     options:
       "#format": full_html
-  cars:
-    type: number
-    label: "cars"
-    options:
-      "#required": TRUE
   date:
-    type: date
+    type: datetime
     label: "date"
     options:
       "#required": TRUE
