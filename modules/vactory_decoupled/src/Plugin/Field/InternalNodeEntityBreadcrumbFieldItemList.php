@@ -3,21 +3,14 @@
 namespace Drupal\vactory_decoupled\Plugin\Field;
 
 use Drupal\Component\Render\MarkupInterface;
-use Drupal\Core\Entity\EntityRepositoryInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Field\FieldItemList;
-use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Link;
-use Drupal\Core\Menu\MenuLinkManagerInterface;
 use Drupal\Core\Render\RenderContext;
 use Drupal\Core\Render\RendererInterface;
-use Drupal\Core\Routing\RouteProvider;
 use Drupal\Core\TypedData\ComputedItemListTrait;
 use Drupal\Core\TypedData\TraversableTypedDataInterface;
 use Drupal\Core\Url;
-use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
-use Drupal\path_alias\AliasManagerInterface;
 
 /**
  * Breadcrumb per node.
@@ -36,49 +29,49 @@ class InternalNodeEntityBreadcrumbFieldItemList extends FieldItemList {
   /**
    * Language manager service.
    *
-   * @var LanguageManagerInterface
+   * @var \Drupal\Core\Language\LanguageManagerInterface
    */
   protected $languageManager;
 
   /**
    * Renderer service.
    *
-   * @var RendererInterface
+   * @var \Drupal\Core\Render\RendererInterface
    */
   protected $renderer;
 
   /**
    * Alias manager service.
    *
-   * @var AliasManagerInterface
+   * @var \Drupal\path_alias\AliasManagerInterface
    */
   protected $aliasManager;
 
   /**
    * Entity type manager service.
    *
-   * @var EntityTypeManagerInterface
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
 
   /**
    * Entity repository service.
    *
-   * @var EntityRepositoryInterface
+   * @var \Drupal\Core\Entity\EntityRepositoryInterface
    */
   protected $entityRepository;
 
   /**
    * Menu link manager service.
    *
-   * @var MenuLinkManagerInterface
+   * @var \Drupal\Core\Menu\MenuLinkManagerInterface
    */
   protected $menuLinkManager;
 
   /**
    * Route provider service.
    *
-   * @var RouteProvider
+   * @var \Drupal\Core\Routing\RouteProvider
    */
   protected $routeProvider;
 
@@ -102,7 +95,7 @@ class InternalNodeEntityBreadcrumbFieldItemList extends FieldItemList {
    * {@inheritdoc}
    */
   protected function computeValue() {
-    /** @var Node $entity */
+    /** @var \Drupal\node\Entity\Node $entity */
     $entity = $this->getEntity();
     $entity_type = $entity->getEntityTypeId();
 
@@ -121,10 +114,10 @@ class InternalNodeEntityBreadcrumbFieldItemList extends FieldItemList {
     // Attempt to grab links from menu.
     $links = $this->getFromMenu($entity);
 
-    // if (empty($links)) {
-    // Attempt to load from content type.
-    //  $links = $this->getFromContentTypeMenu($entity);
-    // }
+    /* if (empty($links)) {
+      //Attempt to load from content type.
+      $links = $this->getFromContentTypeMenu($entity);
+    }*/
 
     if (empty($links)) {
       // Attempt to load from path.
@@ -148,12 +141,13 @@ class InternalNodeEntityBreadcrumbFieldItemList extends FieldItemList {
 
     // Format items.
     $breadcrumbs_data = [];
-    /* @var \Drupal\Core\Link $link */
+    /** @var \Drupal\Core\Link $link */
     $renderer = $this->renderer;
     assert($renderer instanceof RendererInterface);
     try {
       $entity = $entity->getTranslation($langcode);
-    } catch (\InvalidArgumentException $e) {
+    }
+    catch (\InvalidArgumentException $e) {
     }
     $show_current_page = $config->get('show_current_page');
     if (!$show_current_page) {
@@ -183,6 +177,9 @@ class InternalNodeEntityBreadcrumbFieldItemList extends FieldItemList {
     $this->list[0] = $this->createItem(0, $breadcrumbs_data);
   }
 
+  /**
+   * Get links form route path.
+   */
   private function getFromPath($entity) {
     $links = [];
     $path = '/node/' . $entity->id();
@@ -206,7 +203,8 @@ class InternalNodeEntityBreadcrumbFieldItemList extends FieldItemList {
         if (isset($path) && !empty($path)) {
           $matches = [];
           preg_match_all('!\d+!', $path, $matches);
-          $nid = (int) $matches[0][0];
+          $prospect_nid = $matches[0][0] ?? NULL;
+          $nid = !is_null($prospect_nid) ? (int) $prospect_nid : NULL;
           $node = $entity_storage->load($nid);
           if ($node instanceof NodeInterface) {
             $trans_node = $this->entityRepository->getTranslationFromContext($node);
@@ -223,7 +221,9 @@ class InternalNodeEntityBreadcrumbFieldItemList extends FieldItemList {
     return $links;
   }
 
-
+  /**
+   * Get links from content type menu.
+   */
   private function getFromContentTypeMenu($entity) {
     $links = [];
     /** @var \Drupal\node\NodeTypeInterface $node_type */
@@ -242,10 +242,10 @@ class InternalNodeEntityBreadcrumbFieldItemList extends FieldItemList {
       $plugin = $this->menuLinkManager->createInstance($id);
       $definition = $plugin->getPluginDefinition();
       $entity_id = $definition['metadata']['entity_id'];
-      /* @var \Drupal\menu_item_extras\Entity\MenuItemExtrasMenuLinkContent $menuLink */
+      /** @var \Drupal\menu_item_extras\Entity\MenuItemExtrasMenuLinkContent $menuLink */
       $menuLink = $menuLinkContentStorage->load($entity_id);
       $menuLink = $this->entityRepository->getTranslationFromContext($menuLink);
-      /* @var \Drupal\Core\Url $link */
+      /** @var \Drupal\Core\Url $link */
       $link = $menuLink->getUrlObject();
       $attributes = $link->getOption('attributes');
       $skip = FALSE;
@@ -263,6 +263,9 @@ class InternalNodeEntityBreadcrumbFieldItemList extends FieldItemList {
     return $links;
   }
 
+  /**
+   * Get Links from menu.
+   */
   private function getFromMenu($entity) {
     $links = [];
     $menu_links = [];
@@ -276,7 +279,6 @@ class InternalNodeEntityBreadcrumbFieldItemList extends FieldItemList {
       $menu_links = [...$menu_links, ...array_values($m_links)];
     }
 
-
     if (empty($menu_links)) {
       return $links;
     }
@@ -288,10 +290,10 @@ class InternalNodeEntityBreadcrumbFieldItemList extends FieldItemList {
       $plugin = $this->menuLinkManager->createInstance($id);
       $definition = $plugin->getPluginDefinition();
       $entity_id = $definition['metadata']['entity_id'];
-      /* @var \Drupal\menu_item_extras\Entity\MenuItemExtrasMenuLinkContent $menuLink */
+      /** @var \Drupal\menu_item_extras\Entity\MenuItemExtrasMenuLinkContent $menuLink */
       $menuLink = $menuLinkContentStorage->load($entity_id);
       $menuLink = $this->entityRepository->getTranslationFromContext($menuLink);
-      /* @var \Drupal\Core\Url $link */
+      /** @var \Drupal\Core\Url $link */
       $link = $menuLink->getUrlObject();
       $attributes = $link->getOption('attributes');
       $skip = FALSE;
