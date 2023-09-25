@@ -11,6 +11,7 @@ use Drupal\webform\WebformSubmissionConditionsValidator;
 use Drupal\webform\WebformTokenManager;
 use Drupal\webform\Entity\Webform as WebformEntity;
 use Drupal\file\Entity\File;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 
 /**
  * Simplifies the process of generating an API version of a webform.
@@ -63,6 +64,13 @@ class Webform {
    */
   protected $entityTypeManager;
 
+  /**
+   * Module handler manager.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
   const LAYOUTS = [
     'webform_flexbox',
     'container',
@@ -80,12 +88,14 @@ class Webform {
     WebformTokenManager $webformTokenManager,
     AccountProxy $accountProxy,
     WebformElementManager $webformElementManager,
-    EntityTypeManagerInterface $entityTypeManager
+    EntityTypeManagerInterface $entityTypeManager,
+    ModuleHandlerInterface $moduleHandler
   ) {
     $this->webformTokenManager = $webformTokenManager;
     $this->currentUser = $accountProxy->getAccount();
     $this->webformElementManager = $webformElementManager;
     $this->entityTypeManager = $entityTypeManager;
+    $this->moduleHandler = $moduleHandler;
   }
 
   /**
@@ -112,6 +122,7 @@ class Webform {
     }
     // Add reset button.
     $schema['buttons']['reset'] = $this->resetButtonToUiSchema();
+    $this->moduleHandler->alter('decoupled_webform_schema', $schema, $webform_id);
     return $schema;
   }
 
