@@ -71,3 +71,13 @@ drag_and_drop:
   dependencies:
     - core/jquery
     - core/drupalSettingss
+
+pending_content:
+  css:
+    theme:
+      ./assets/css/pending-content.css: {}
+  js:
+    ./assets/js/pending-content.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettingss
