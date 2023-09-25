@@ -15,9 +15,9 @@ use Drupal\user_registrationpassword\UserRegistrationPassword;
  */
 function vactory_decoupled_espace_prive_decoupled_webform_data_presubmit_alter(array &$webform_data, &$error_message) {
   if (isset($webform_data['webform_id']) && $webform_data['webform_id'] === 'vactory_espace_prive_register') {
-    $exist = user_load_by_mail($webform_data['mail']);
+    $existing_user = user_load_by_mail($webform_data['mail']);
 
-    if ($exist) {
+    if ($existing_user instanceof UserInterface) {
       $error_message = [
         'error' => [
           'message' => t("The mail is already in existence, try another one"),
@@ -80,6 +80,39 @@ function vactory_decoupled_espace_prive_decoupled_webform_data_presubmit_alter(a
       _user_mail_notify('register_pending_approval', $account);
     }
 
+  }
+
+  if (isset($webform_data['webform_id']) && $webform_data['webform_id'] === 'vactory_espace_prive_edit') {
+    $current_user_id = \Drupal::service('current_user')->getAccount()->id();
+    $user = !empty($current_user_id) ? User::load($current_user_id) : NULL;
+
+    if (!$user instanceof UserInterface) {
+      $error_message = [
+        'error' => [
+          'message' => t("Invalid User"),
+        ],
+      ];
+      return;
+    }
+
+    $user_data = $webform_data;
+    // Unset unused data.
+    unset($user_data['webform_id']);
+    unset($user_data['in_draft']);
+    unset($user_data['csrfToken']);
+
+    foreach ($user_data as $field => $value){
+      $user->set($field, $value);
+    }
+    try{
+      $user->save();
+    } catch (\Exception $exception) {
+      $error_message = [
+        'error' => [
+          'message' => t("Une erreur s'est produite:") . $exception->getMessage(),
+        ],
+      ];
+    }
   }
 
 }
