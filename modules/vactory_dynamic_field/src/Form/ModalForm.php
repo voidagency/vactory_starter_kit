@@ -219,14 +219,14 @@ class ModalForm extends FormBase {
         }
       }
 
+      // Unset pending content array.
+      unset($widget_data['pending_content']);
+      unset($this->widgetData['pending_content']);
+
       // Sort data.
       usort($this->widgetData, function ($item1, $item2) {
         return (int) ($item1['_weight'] <=> $item2['_weight']);
       });
-
-      // Unset pending content array.
-      unset($widget_data['pending_content']);
-      unset($this->widgetData['pending_content']);
 
       // Restore extra_field.
       if (isset($widget_data['extra_field'])) {
