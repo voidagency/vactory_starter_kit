@@ -263,6 +263,14 @@ class JsonApiGenerator {
           'label' => $term->label(),
           'results' => [],
         ];
+
+        /**
+         * Used to add/modify term data.
+         *
+         * How to use : hook_json_collection_exposed_term_alter($term, &$term_data).
+         */
+        $this->moduleHandler->alter('json_collection_exposed_term', $term, $term_data);
+        
         if ($term->hasField('results_count')) {
           $this->injectTaxonomyResultsCount($term, $term_data, $cacheTags);
         }
