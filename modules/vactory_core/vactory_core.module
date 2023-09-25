@@ -503,7 +503,8 @@ function addCounterToTextElement(&$element) {
  * Implements hook_preprocess_HOOK().
  */
 function vactory_core_preprocess_pager(&$variables) {
-  if (isset($variables['items'])) {
+  $is_admin_path = \Drupal::service('router.admin_context')->isAdminRoute();
+  if (isset($variables['items']) && !$is_admin_path) {
     $first = $variables['items']['first'] ?? [];
     $previous = $variables['items']['previous'] ?? [];
     $pages = $variables['items']['pages'] ?? [];
