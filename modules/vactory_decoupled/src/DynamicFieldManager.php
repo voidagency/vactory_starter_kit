@@ -218,7 +218,8 @@ class DynamicFieldManager {
        * }
        * @endcode
        */
-      $this->moduleHandler->alter('df_jsonapi_output', $content);
+      $this->moduleHandler->alter('df_jsonapi_output', $content, $cacheability);
+      $this->cacheability = $cacheability;
       $data['widget_data'] = json_encode($content);
     }
 
