@@ -210,9 +210,9 @@ class InternalNodeEntityBreadcrumbFieldItemList extends FieldItemList {
               $trans_node = $this->entityRepository->getTranslationFromContext($node);
               $piece = $trans_node->label();
             }
-            $links[] = Link::fromTextAndUrl(t($piece), Url::fromUserInput($cumul));
-            $cumul .= '/';
           }
+          $links[] = Link::fromTextAndUrl(t($piece), Url::fromUserInput($cumul));
+          $cumul .= '/';
         }
         else {
           $links[] = t($piece);
