@@ -1,0 +1,22 @@
+name: 'DF: Toolbox expanded'
+multiple: TRUE
+category: 'Toolbox'
+enabled: TRUE
+fields:
+  icon:
+    type: text
+    label: 'Icon id'
+    options:
+      '#required': TRUE
+  link:
+    type: url_extended
+    label: 'Link'
+extra_fields:
+  icon:
+    type: text
+    label: 'Global icon id'
+    options:
+      '#required': TRUE
+  title:
+    type: text
+    label: 'Toolbox title'
