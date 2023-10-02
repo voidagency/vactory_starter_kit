@@ -204,10 +204,12 @@ class InternalNodeEntityBreadcrumbFieldItemList extends FieldItemList {
           preg_match_all('!\d+!', $path, $matches);
           $prospect_nid = $matches[0][0] ?? NULL;
           $nid = !is_null($prospect_nid) ? (int) $prospect_nid : NULL;
-          $node = $entity_storage->load($nid);
-          if ($node instanceof NodeInterface) {
-            $trans_node = $this->entityRepository->getTranslationFromContext($node);
-            $piece = $trans_node->label();
+          if ($nid) {
+            $node = $entity_storage->load($nid);
+            if ($node instanceof NodeInterface) {
+              $trans_node = $this->entityRepository->getTranslationFromContext($node);
+              $piece = $trans_node->label();
+            }
           }
           $links[] = Link::fromTextAndUrl(t($piece), Url::fromUserInput($cumul));
           $cumul .= '/';
