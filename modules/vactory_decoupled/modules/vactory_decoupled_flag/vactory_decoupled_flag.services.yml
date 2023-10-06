@@ -1,0 +1,5 @@
+services:
+  vactory_decoupled_flag.hepler:
+    class: Drupal\vactory_decoupled_flag\Services\VactoryDecoupledFlagService
+    arguments: ['@entity_type.manager','@current_user', '@database']
+

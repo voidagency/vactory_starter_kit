@@ -1,8 +1,9 @@
 <?php
 
-namespace Drupal\vactory_academy\Services;
+namespace Drupal\vactory_decoupled_flag\Services;
 
 use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Database\Connection;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\TypedData\TraversableTypedDataInterface;
 use Drupal\node\Entity\Node;
@@ -16,9 +17,10 @@ use Drupal\Core\Entity\EntityInterface;
 /**
  * Class.
  */
-class AcademyFlagService {
+class VactoryDecoupledFlagService
+{
 
-   /**
+  /**
    * Entity type manager service.
    *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
@@ -33,43 +35,57 @@ class AcademyFlagService {
   protected $currentUser;
 
   /**
+   * @var Connection
+   */
+  protected $database;
+
+  /**
    * {@inheritDoc}
    *  * @param \Drupal\Core\Session\AccountInterface $current_user
    *   The current user.
    */
 
-  public  function __construct(EntityTypeManagerInterface $entityTypeManager, AccountInterface $currentUser  )
+  public function __construct(EntityTypeManagerInterface $entityTypeManager, AccountInterface $currentUser, Connection $database)
   {
     $this->entityTypeManager = $entityTypeManager;
     $this->currentUser = $currentUser;
+    $this->database = $database;
   }
 
   /**
    * Check whether the current user flagged nodes.
    */
-  public function isCurrentUserFlaggedNode ($entity): bool {
+  public function isCurrentUserFlaggedNode($entity): bool
+  {
 
     $ids = $this->entityTypeManager->getStorage('flagging')->getQuery()
-        ->condition('flag_id', 'favorite_academy')
-        ->condition('uid', $this->currentUser->id())
-        ->condition('entity_id', $entity->id())
-        ->execute();
+      ->condition('flag_id', 'default_flag')
+      ->condition('uid', $this->currentUser->id())
+      ->condition('entity_id', $entity->id())
+      ->execute();
 
     return !empty($ids);
   }
 
- /**
+  /**
    * Get Flagged nodes.
-  */
-  public function getFlaggedNodes() {
-    $favourites = $this->entityTypeManager->getStorage('flagging')->loadByProperties(['uid' => $this->currentUser->id()]);
-    $nids = [];
-    if (isset($favourites) && !empty($favourites)) {
-      foreach($favourites  as $favourite ) {
-      $nids[] = $favourite->getFlaggableId();
-      }
+   */
+  public function getFlaggedNodes($bundle)
+  {
+    $args = [
+      ':bundle' => $bundle,
+      ':user' => $this->currentUser->id(),
+      ':flag' => 'default_flag',
+    ];
+    $sql = "SELECT entity_id AS id FROM flagging AS f ";
+    $sql .= "JOIN node_field_data AS n ON n.nid = f.entity_id ";
+    if ($bundle != 'all'){
+      $sql .= "WHERE n.type=:bundle ";
     }
-    return $nids;
+    $sql .= "AND f.uid=:user ";
+    $sql .= "AND f.flag_id=:flag ";
+    $results = $this->database->query($sql, $args)->fetchAllAssoc('id');
+    return array_keys($results);
   }
 
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\vactory_academy\Field;
+namespace Drupal\vactory_decoupled_flag\Field;
 
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Field\FieldItemList;
@@ -8,6 +8,7 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\TypedData\ComputedItemListTrait;
 use Drupal\Core\TypedData\TraversableTypedDataInterface;
 use Drupal\node\Entity\Node;
+use Drupal\node\Entity\NodeType;
 use Drupal\serialization\Normalizer\CacheableNormalizerInterface;
 
 
@@ -21,18 +22,13 @@ class IsFlaggedEntityFieldItemList extends FieldItemList
 
   protected ?CacheableMetadata $cacheMetadata = NULL;
 
-  /**
-   * Flag Services.
-   *
-   * @var \Drupal\vactory_academy\AcademyFlagService
-   */
-  protected $flagAcademy;
+  protected $flagHelper;
 
   public static function createInstance($definition, $name = NULL, TraversableTypedDataInterface $parent = NULL)
   {
     $instance = parent::createInstance($definition, $name, $parent);
     $container = \Drupal::getContainer();
-    $instance->flagAcademy = $container->get('vactory_academy.flag');
+    $instance->flagHelper = $container->get('vactory_decoupled_flag.hepler');
     $instance->cacheMetadata = new CacheableMetadata();
     return $instance;
   }
@@ -46,14 +42,16 @@ class IsFlaggedEntityFieldItemList extends FieldItemList
     /** @var \Drupal\node\NodeInterface $node */
     $entity = $this->getEntity();
     $bundle = $entity->bundle();
-    if ($bundle != 'vactory_academy') {
+    $type = NodeType::load($bundle);
+    $flag_enabled = $type->getThirdPartySetting('vactory_decoupled_flag', 'flag_enabling', '');
+    if (!$flag_enabled) {
         return;
     }
 
     $this->cacheMetadata->addCacheContexts(['user']);
     $this->cacheMetadata->addCacheTags(['flagging_list']);
 
-    $this->list[0] = $this->createItem(0, $this->flagAcademy->isCurrentUserFlaggedNode($entity));
+    $this->list[0] = $this->createItem(0,(bool) $this->flagHelper->isCurrentUserFlaggedNode($entity));
   }
 
   /**
@@ -62,7 +60,7 @@ class IsFlaggedEntityFieldItemList extends FieldItemList
   public function access($operation = 'view', AccountInterface $account = NULL, $return_as_object = FALSE)
   {
     $access = parent::access($operation, $account, TRUE);
-
+//
     if ($return_as_object) {
       /** @see \Drupal\jsonapi\JsonApiResource\ResourceIdentifier */
       /** @see \Drupal\jsonapi\Normalizer\ResourceIdentifierNormalizer */

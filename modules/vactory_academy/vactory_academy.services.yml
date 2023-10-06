@@ -1,5 +1,0 @@
-services:
-  vactory_academy.flag:
-    class: Drupal\vactory_academy\Services\AcademyFlagService
-    arguments: ['@entity_type.manager','@current_user']
-

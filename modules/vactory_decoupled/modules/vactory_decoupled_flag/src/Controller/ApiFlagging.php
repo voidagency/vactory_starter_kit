@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\vactory_academy\Controller;
+namespace Drupal\vactory_decoupled_flag\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\flag\FlagServiceInterface;
