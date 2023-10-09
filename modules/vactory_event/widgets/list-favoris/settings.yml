@@ -1,4 +1,4 @@
-name: 'List'
+name: 'List Favoris'
 multiple: FALSE
 category: 'Events'
 enabled: TRUE
@@ -9,7 +9,7 @@ fields:
     options:
       '#required': TRUE
       '#default_value':
-        id: "vactory_event_list"
+        id: "vactory_event_list_flag"
         resource: node--vactory_event
         filters:
           - fields[node--vactory_event]=drupal_internal__nid,path,title,field_vactory_taxonomy_1,field_vactory_taxonomy_2,field_vactory_date_interval,field_vactory_tags,field_vactory_media,field_vactory_excerpt,is_flagged,has_flag
@@ -23,6 +23,13 @@ fields:
           - page[limit]=9
           - sort=-created
           - filter[status][value]=1
+          - "[vactory:flagged_nodes:vactory_event]"
+        cache_tags:
+          - flaggging_list
+        cache_contexts:
+          - user
         vocabularies:
           vactory_event_category: vactory_event_category
           vactory_event_citys: vactory_event_citys
+
+

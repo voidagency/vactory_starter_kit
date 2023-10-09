@@ -19,7 +19,7 @@ vactory_decoupled_flag.api_unflagging.http:
   options:
     _auth: ['oauth2']
 vactory_decoupled_flag.api_get_user_flagging.http:
-  path: '/api/flagging/all'
+  path: '/api/flagging/all/{bundle}'
   defaults:
     _controller: '\Drupal\vactory_decoupled_flag\Controller\ApiFlagging::getFlaggedItems'
   methods: [GET]
