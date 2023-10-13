@@ -1,3 +1,7 @@
+vactory_admin:
+  css:
+    theme:
+      ./assets/css/vactory-admin.css: {}
 ckeditor_config:
   version: 1.x
   js:
