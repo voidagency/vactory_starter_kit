@@ -1,0 +1,40 @@
+<?php
+
+/**
+ * @file
+ * Module related hooks.
+ */
+
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function vactory_faceid_auth_entity_base_field_info(EntityTypeInterface $entity_type) {
+  $fields = [];
+  if ($entity_type->id() === 'user') {
+    $fields['face_id'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Face ID'))
+      ->setDescription(t('User face id'))
+      ->setTranslatable(FALSE)
+      ->setReadOnly(TRUE)
+      ->setDisplayOptions('form', [
+        'type'   => 'string_textfield',
+        'weight' => 0,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', FALSE)
+      ->addConstraint('UniqueField', []);
+  }
+  return $fields;
+}
+
+/**
+ * Implements hook_decoupled_webform_schema_alter().
+ */
+function vactory_faceid_auth_decoupled_webform_schema_alter(array &$schema, $webform_id) {
+  if ($webform_id === 'vactory_espace_prive_edit') {
+    $schema['isFaceIdEnabled'] = TRUE;
+  }
+}
