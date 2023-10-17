@@ -4,17 +4,10 @@ category: 'Toolbox'
 enabled: TRUE
 fields:
   idIcon:
-    type: text
-    label: "id icon v_next"
-  icon:
-    type: select
-    label: 'icons V8'
+    type: vactory_icon_picker
+    label: "Icon"
     options:
-      '#options':
-        - 'icon-simulateur': 'icon simulateur'
-        - 'icon-projets': 'icon projets'
-        - 'icon-aide': 'icon aide'
-        - 'icon-site': 'icon site'
+      '#required': TRUE
   link:
     type: url_extended
     label: 'Lien'
