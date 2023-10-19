@@ -3,6 +3,9 @@ multiple: FALSE
 category: 'Layout'
 enabled: TRUE
 fields:
+  enableThemeSwitcher:
+    type: checkbox
+    label: "Activer Dark Mode"
   enableNewsletter:
     type: checkbox
     label: "Afficher newsletter"

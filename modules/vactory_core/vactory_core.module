@@ -337,6 +337,7 @@ function vactory_core_page_attachments(array &$page) {
   $front_theme = \Drupal::config('system.theme')->get('default');
   if ($active_theme->getName() != $front_theme) {
     $page['#attached']['library'][] = 'vactory_core/ckeditor_config';
+    $page['#attached']['library'][] = 'vactory_core/vactory_admin';
   }
 }
 
