@@ -4,8 +4,11 @@ category: 'Layout'
 enabled: TRUE
 fields:
   cta_social:
-      type: url_extended
-      label: 'Social media links'
+    type: url_extended
+    label: 'Social media links'
+  icon:
+    type: vactory_icon_picker
+    label: "Icon"
 extra_fields:
   logo:
     type: image

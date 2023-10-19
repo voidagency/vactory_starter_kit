@@ -20,7 +20,7 @@
             data-toggle="tooltip" data-placement="{{ placement_tooltip }}" title="{{ item.link.title }}"
           {% endif %}
         >
-          <i class="{{ item.icon }}"></i>
+          <i class="icon-{{ item.icon }}"></i>
           {% if item.label is not empty %}
             <span class="d-inline d-lg-none">{{ item.label }}</span>
           {% elseif item.link.title is not empty %}

@@ -6,6 +6,9 @@ fields:
   cta:
     type: url_extended
     label: "Add extra button"
+  icon:
+    type: vactory_icon_picker
+    label: "Icon"
   mode:
     type: checkbox
     label: 'Is outline button'

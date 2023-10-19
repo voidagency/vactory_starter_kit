@@ -4,8 +4,11 @@ category: 'Headers'
 enabled: TRUE
 fields:
   cta:
-      type: url_extended
-      label: 'Add extra button'
+    type: url_extended
+    label: 'Add extra button'
+  icon:
+    type: vactory_icon_picker
+    label: "Icon"
 extra_fields:
   header_logo:
       type: image
