@@ -1,0 +1,15 @@
+.js .paragraphs-collapsed-description:after {
+  display: none !important;
+}
+
+.js .paragraph-type-top {
+  align-items: center;
+}
+
+.paragraphs-subform .field--type-boolean .form-type--boolean {
+  margin: 15px 0 !important;
+}
+
+.js .field--widget-entity-reference-paragraphs .field-multiple-drag {
+  vertical-align: middle !important;
+}

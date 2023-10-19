@@ -6,7 +6,13 @@ fields:
   cta_social:
     type: url_extended
     label: "Social media links"
+  icon:
+    type: vactory_icon_picker
+    label: "Icon"
 extra_fields:
+  enableThemeSwitcher:
+    type: checkbox
+    label: "Activer Dark Mode"
   use_footer_main:
     type: text
     label: "Footer Main Menu ID"

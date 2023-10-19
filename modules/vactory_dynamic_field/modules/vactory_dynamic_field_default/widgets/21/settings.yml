@@ -4,8 +4,8 @@ category: 'Toolbox'
 enabled: TRUE
 fields:
   icon:
-    type: text
-    label: 'Icon id'
+    type: vactory_icon_picker
+    label: 'Icon'
     options:
       '#required': TRUE
   link:

@@ -4,8 +4,8 @@ category: 'Toolbox'
 enabled: TRUE
 fields:
   icon:
-    type: text
-    label: 'Icon id'
+    type: vactory_icon_picker
+    label: "Global icon"
     options:
       '#required': TRUE
   link:
@@ -13,8 +13,8 @@ fields:
     label: 'Link'
 extra_fields:
   icon:
-    type: text
-    label: 'Global icon id'
+    type: vactory_icon_picker
+    label: "Global icon"
     options:
       '#required': TRUE
   title:
