@@ -21,7 +21,7 @@
     "drupal/backup_migrate": "^5.1",
     "drupal/better_exposed_filters": "^5.0",
     "drupal/block_class": "^1.3.0",
-    "drupal/block_field": "^1.0.0-rc1",
+    "drupal/block_field": "^1.0@RC",
     "drupal/captcha": "^1.1",
     "drupal/coffee": "1.x-dev@dev",
     "drupal/components": "^2.0",
