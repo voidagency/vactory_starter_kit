@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\vactory_academy\Controller;
+namespace Drupal\vactory_decoupled_flag\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\flag\FlagServiceInterface;
@@ -12,10 +12,9 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Serializer;
 
 /**
- * Class ApiFlagging.
+ * Provides flagging endpoints.
  */
-class ApiFlagging extends ControllerBase
-{
+class ApiFlagging extends ControllerBase {
 
   /**
    * The flag service.
@@ -41,8 +40,7 @@ class ApiFlagging extends ControllerBase
   /**
    * Constructs a new ApiFlagging object.
    */
-  public function __construct(Serializer $serializer, array $serializer_formats, FlagServiceInterface $flag)
-  {
+  public function __construct(Serializer $serializer, array $serializer_formats, FlagServiceInterface $flag) {
     $this->serializer = $serializer;
     $this->serializerFormats = $serializer_formats;
     $this->flagService = $flag;
@@ -51,12 +49,12 @@ class ApiFlagging extends ControllerBase
   /**
    * {@inheritdoc}
    */
-  public static function create(ContainerInterface $container)
-  {
+  public static function create(ContainerInterface $container) {
     if ($container->hasParameter('serializer.formats') && $container->has('serializer')) {
       $serializer = $container->get('serializer');
       $formats = $container->getParameter('serializer.formats');
-    } else {
+    }
+    else {
       $formats = ['json'];
       $encoders = [new JsonEncoder()];
       $serializer = new Serializer([], $encoders);
@@ -70,10 +68,9 @@ class ApiFlagging extends ControllerBase
   }
 
   /**
-   * flagging.
+   * Flagging.
    */
-  public function flag(Request $request)
-  {
+  public function flag(Request $request) {
     $format = $this->getRequestFormat($request);
     $content = $request->getContent();
     $flagData = $this->serializer->decode($content, $format);
@@ -87,7 +84,8 @@ class ApiFlagging extends ControllerBase
     try {
       /** @var \Drupal\flag\Entity\Flagging $flagging */
       $flagging = $this->flagService->flag($flag, $entity);
-    } catch (\LogicException $e) {
+    }
+    catch (\LogicException $e) {
       $message = $e->getMessage();
       return new JsonResponse([
         'error_message' => $message,
@@ -103,10 +101,9 @@ class ApiFlagging extends ControllerBase
   }
 
   /**
-   * unflagging.
+   * Unflagging.
    */
-  public function unFlag(Request $request)
-  {
+  public function unFlag(Request $request) {
     $format = $this->getRequestFormat($request);
     $content = $request->getContent();
     $unFlagData = $this->serializer->decode($content, $format);
@@ -119,7 +116,8 @@ class ApiFlagging extends ControllerBase
 
     try {
       $this->flagService->unflag($flag, $entity);
-    } catch (\LogicException $e) {
+    }
+    catch (\LogicException $e) {
       $message = $e->getMessage();
       return new JsonResponse([
         'error_message' => $message,
@@ -140,22 +138,22 @@ class ApiFlagging extends ControllerBase
    * @return string
    *   The format of the request.
    */
-  protected function getRequestFormat(Request $request)
-  {
+  protected function getRequestFormat(Request $request) {
     $format = $request->getRequestFormat();
     if (!in_array($format, $this->serializerFormats)) {
       throw new BadRequestHttpException("Unrecognized format: $format.");
     }
     return $format;
   }
-  
+
   /**
    * Get Current user flagging publications.
    */
-  public function getFlaggedItems(Request $request) {
-    $nids = \Drupal::service('vactory_academy.flag')->getFlaggedNodes();
+  public function getFlaggedItems($bundle) {
+    $nids = \Drupal::service('vactory_decoupled_flag.hepler')->getFlaggedNodes($bundle);
     return new JsonResponse([
       'nids' => $nids,
     ]);
   }
+
 }
