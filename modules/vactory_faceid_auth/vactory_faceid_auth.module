@@ -14,14 +14,17 @@ use Drupal\Core\Field\BaseFieldDefinition;
 function vactory_faceid_auth_entity_base_field_info(EntityTypeInterface $entity_type) {
   $fields = [];
   if ($entity_type->id() === 'user') {
-    $fields['face_id'] = BaseFieldDefinition::create('string')
+    $fields['face_id'] = BaseFieldDefinition::create('string_log')
       ->setLabel(t('Face ID'))
       ->setDescription(t('User face id'))
       ->setTranslatable(FALSE)
       ->setReadOnly(TRUE)
       ->setDisplayOptions('form', [
-        'type'   => 'string_textfield',
-        'weight' => 0,
+        'type'     => 'string_textarea',
+        'weight'   => 1,
+        'settings' => [
+          'rows' => 4,
+        ],
       ])
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', FALSE)
