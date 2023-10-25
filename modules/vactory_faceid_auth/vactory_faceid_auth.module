@@ -14,7 +14,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
 function vactory_faceid_auth_entity_base_field_info(EntityTypeInterface $entity_type) {
   $fields = [];
   if ($entity_type->id() === 'user') {
-    $fields['face_id'] = BaseFieldDefinition::create('string_log')
+    $fields['face_id'] = BaseFieldDefinition::create('string_long')
       ->setLabel(t('Face ID'))
       ->setDescription(t('User face id'))
       ->setTranslatable(FALSE)
