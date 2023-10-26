@@ -83,7 +83,7 @@ class Import {
     $outputFiles = [];
 
     if (!file_exists($outputDir)) {
-      mkdir($outputDir, 0777);
+      mkdir($outputDir, 0777, TRUE);
     }
 
     while (($data = fgetcsv($sourceFile, NULL, $delimiter)) !== FALSE) {
