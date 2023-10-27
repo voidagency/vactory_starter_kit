@@ -56,7 +56,6 @@ class DynamicFieldConfigExport extends ModalForm {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     // Prepare data.
     $widgetsList = $this->dynamicFieldManager->getModalWidgetsList();
-    $normalized = $this->excludeCategories($widgetsList);
 
     // Construct filename.
     $filename = $this->constructFilename();
@@ -68,7 +67,7 @@ class DynamicFieldConfigExport extends ModalForm {
     }
 
     // Create json file.
-    $printed = $this->createJsonFileFromArray($normalized, $path);
+    $printed = $this->createJsonFileFromArray($widgetsList, $path);
 
     if (!$printed) {
       $this->messenger()->addError($this->t('Failed to create the JSON file.<br>Please try again later.'));
@@ -100,21 +99,6 @@ class DynamicFieldConfigExport extends ModalForm {
     }
     $file_path = self::FILE_DESTINATION_URI . '/' . $filename;
     return \Drupal::service('file_system')->realpath($file_path);
-  }
-
-  /**
-   * Exclude categories from widgets list.
-   */
-  private function excludeCategories($widgetsList): array {
-    $result = [];
-
-    foreach ($widgetsList as $key => $subitems) {
-      foreach ($subitems as $subkey => $value) {
-        $result[$subkey] = $value;
-      }
-    }
-
-    return $result;
   }
 
   /**
