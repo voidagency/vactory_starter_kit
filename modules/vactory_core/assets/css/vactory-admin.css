@@ -13,3 +13,16 @@
 .js .field--widget-entity-reference-paragraphs .field-multiple-drag {
   vertical-align: middle !important;
 }
+
+.no-touchevents .dropbutton--extrasmall .dropbutton__toggle {
+  padding: 12px !important;
+  box-shadow: none !important;
+}
+
+.js .field--widget-entity-reference-paragraphs .dropbutton-wrapper {
+  margin-right: 10px !important;
+}
+
+#field-vactory-paragraphs-add-more-wrapper .form-item--multiple .form-actions {
+  align-items: center;
+}
