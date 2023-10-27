@@ -75,6 +75,10 @@ class ResourceRequestSubscriber implements EventSubscriberInterface {
         $this->parseQueryParams($includes, $request);
         $this->parseQueryParams($fields, $request);
         $this->parseQueryParams($filters, $request);
+        if ($partner_api->isJsonApiInclude()) {
+          $request->query->set('jsonapi_include', 1);
+        }
+        $request->overrideGlobals();
       }
     }
   }
