@@ -2,10 +2,12 @@
 
 namespace Drupal\vactory_jsonapi_extras\Routing;
 
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\jsonapi\ResourceType\ResourceType;
 use Drupal\jsonapi\Routing\Routes as JsonapiRoutes;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\jsonapi_search_api\Resource\IndexResource;
+use Drupal\search_api\Datasource\DatasourceInterface;
+use Drupal\search_api\IndexInterface;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
 
@@ -42,6 +44,7 @@ class Routes extends JsonapiRoutes {
    */
   public function routes() {
     $routes = new RouteCollection();
+    $search_routes = new RouteCollection();
     $exposed_apis = $this->entityTypeManager->getStorage('exposed_apis')
       ->loadByProperties([
         'status' => 1
@@ -56,7 +59,7 @@ class Routes extends JsonapiRoutes {
       return in_array($name, $original_resources, TRUE);
     });
     foreach ($exposed_apis as $exposed_api) {
-      if (!$exposed_api->isCustomResource()) {
+      if (!$exposed_api->isCustomResource() && !$exposed_api->isSearchApiResource()) {
         $original_resource = $exposed_api->originalResource();
         [$entity_type_id, $bundle] = explode(ResourceType::TYPE_NAME_URI_PATH_SEPARATOR, $original_resource);
 
@@ -89,7 +92,7 @@ class Routes extends JsonapiRoutes {
           }
         }
       }
-      else {
+      elseif ($exposed_api->isCustomResource()) {
         $path = $exposed_api->path();
         $resource_route = new Route($path);
         $id = $exposed_api->id();
@@ -104,7 +107,62 @@ class Routes extends JsonapiRoutes {
         $resource_route->setDefault(JsonapiRoutes::JSON_API_ROUTE_FLAG_KEY, TRUE);
         $routes->add("exposed_api.{$id}", $resource_route);
       }
+      else {
+        // Search API resource case.
+        $index_id = $exposed_api->searchJsonapiResource();
+        $index_storage = $this->entityTypeManager->getStorage('search_api_index');
+        $index = $index_storage->load($index_id);
+        assert($index instanceof IndexInterface);
+        if (!$index->status()) {
+          continue;
+        }
+        $search_resource_types = [];
+        foreach ($index->getDatasources() as $datasource) {
+          assert($datasource instanceof DatasourceInterface);
+          $entity_type_id = $datasource->getEntityTypeId();
+          if ($this->entityTypeManager->hasDefinition($entity_type_id)) {
+            foreach (array_keys($datasource->getBundles()) as $bundle) {
+              $resource_type = $this->resourceTypeRepository->get($entity_type_id, $bundle);
+              if ($resource_type) {
+                $search_resource_types[] = $resource_type->getTypeName();
+              }
+            }
+          }
+        }
+
+        $path = $exposed_api->path();
+        $id = $exposed_api->id();
+        $route = new Route($path);
+        $route->addDefaults([
+          '_jsonapi_resource' => IndexResource::class,
+          '_jsonapi_resource_types' => $search_resource_types,
+          'index' => $index->uuid(),
+        ]);
+        $parameters = $route->getOption('parameters') ?: [];
+        $parameters['index']['type'] = 'entity:search_api_index';
+        $route->setOption('parameters', $parameters);
+        $requirements = $route->getRequirements();
+        $this->checkRouteAccess($exposed_api, $requirements);
+        $requirements['_format'] = 'json';
+        $route->setRequirements($requirements);
+        $route->setDefault('exposed_api', $id);
+        $root_resource_type = $this->resourceTypeRepository->get($index->getEntityTypeId(), $index->bundle());
+        $route->addDefaults([
+          JsonapiRoutes::RESOURCE_TYPE_KEY => $root_resource_type->getTypeName(),
+        ]);
+        $route->setDefault(JsonapiRoutes::JSON_API_ROUTE_FLAG_KEY, TRUE);
+        $search_routes->add("exposed_api.search.{$id}", $route);
+      }
     }
+
+    if ($search_routes->count() > 0) {
+      $search_routes->addPrefix('/%jsonapi%');
+      $search_routes->addRequirements([
+        '_access' => 'TRUE',
+      ]);
+    }
+
+    $routes->addCollection($search_routes);
 
     return $routes;
   }
