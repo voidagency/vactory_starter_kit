@@ -164,7 +164,8 @@
     "drupal/bartik": "^1.0",
     "drupal/quickedit": "^1.0",
     "drupal/jsonapi_cross_bundles": "^1.1",
-    "drupal/gin": "^3.0@RC"
+    "drupal/gin": "^3.0@RC",
+    "drupal/jsonapi_include": "^1.7"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.3",
