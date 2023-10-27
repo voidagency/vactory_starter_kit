@@ -44,12 +44,20 @@ class ExposedApisForm extends EntityForm {
       '#default_value' => $this->entity->status(),
     ];
 
+    if (\Drupal::moduleHandler()->moduleExists('jsonapi_include')) {
+      $form['is_jsonapi_include'] = [
+        '#type' => 'checkbox',
+        '#title' => $this->t('Résoudre les includes implicitement'),
+        '#default_value' => $this->entity->isJsonApiInclude(),
+      ];
+    }
+
     $form['path'] = [
       '#type' => 'textfield',
       '#title' => $this->t('New route path'),
       '#maxlength' => 255,
       '#default_value' => $this->entity->path(),
-      '#description' => $this->t('The new route path'),
+      '#description' => $this->t('The new route path, for search API resources case the path will be automatically prefixed by "/jsonapi"'),
       '#required' => TRUE,
     ];
 
@@ -58,6 +66,13 @@ class ExposedApisForm extends EntityForm {
       '#title' => $this->t("Il s'agit d'une resource personnalisée"),
       '#access' => $current_user->hasPermission('administer exposed filters'),
       '#default_value' => $this->entity->isCustomResource(),
+    ];
+
+    $form['is_search_api_resource'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t("Il s'agit d'une resource Search API"),
+      '#access' => $current_user->hasPermission('administer api partner filters'),
+      '#default_value' => $this->entity->isSearchApiResource(),
     ];
 
     $form['custom_controller'] = [
@@ -91,6 +106,24 @@ class ExposedApisForm extends EntityForm {
       '#states' => [
         'visible' => [
           'input[name="is_custom_resource"]' => ['checked' => FALSE],
+          'input[name="is_search_api_resource"]' => ['checked' => FALSE],
+        ],
+      ],
+    ];
+
+    $index_storage = $this->entityTypeManager->getStorage('search_api_index');
+    $indexes = $index_storage->loadMultiple();
+    $indexes = array_map(fn($index) => $index->label() . " (" . $index->id() . ")", $indexes);
+    $form['search_api_resource'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Search api resource'),
+      '#options' => $indexes,
+      '#default_value' => $this->entity->searchJsonapiResource(),
+      '#access' => $current_user->hasPermission('administer api partner filters'),
+      '#description' => $this->t('Search API resource to override'),
+      '#states' => [
+        'visible' => [
+          'input[name="is_search_api_resource"]' => ['checked' => TRUE],
         ],
       ],
     ];
@@ -130,7 +163,7 @@ class ExposedApisForm extends EntityForm {
       '#title' => $this->t('Default fields'),
       '#default_value' => $this->entity->getFields(),
       '#access' => $current_user->hasPermission('administer api exposed filters'),
-      '#description' => $filter_desc,
+      '#description' => $fields_desc,
       '#placeholder' => 'Ex: fields[resource-type]=field1,field2...',
       '#states' => [
         'visible' => [
@@ -144,7 +177,7 @@ class ExposedApisForm extends EntityForm {
       '#title' => $this->t('Default includes'),
       '#default_value' => $this->entity->getIncludes(),
       '#access' => $current_user->hasPermission('administer exposed filters'),
-      '#description' => $filter_desc,
+      '#description' => $include_desc,
       '#placeholder' => 'Ex: include=field1,field2...',
       '#states' => [
         'visible' => [

@@ -46,6 +46,9 @@ use Drupal\filter\Annotation\Filter;
  *     "label",
  *     "original_resource",
  *     "is_custom_resource",
+ *     "search_api_resource",
+ *     "is_search_api_resource",
+ *     "is_jsonapi_include",
  *     "custom_controller",
  *     "packages",
  *     "path",
@@ -93,6 +96,20 @@ class ExposedApis extends ConfigEntityBase implements ExposedApisInterface {
   protected $original_resource;
 
   /**
+   * Search jsonapi resource.
+   *
+   * @var string
+   */
+  protected $search_api_resource;
+
+  /**
+   * JsonApi include.
+   *
+   * @var string
+   */
+  protected $is_jsonapi_include;
+
+  /**
    * Default filters.
    *
    * @var string
@@ -119,6 +136,13 @@ class ExposedApis extends ConfigEntityBase implements ExposedApisInterface {
    * @var boolean
    */
   protected $is_custom_resource;
+
+  /**
+   * Search api resource type.
+   *
+   * @var boolean
+   */
+  protected $is_search_api_resource;
 
   /**
    * Custom controller.
@@ -187,6 +211,33 @@ class ExposedApis extends ConfigEntityBase implements ExposedApisInterface {
    */
   public function getCustomController(): string {
     return $this->custom_controller ?? '';
+  }
+
+  /**
+   * Search jsonapi resource getter.
+   *
+   * @return string
+   */
+  public function searchJsonapiResource() {
+    return $this->search_api_resource;
+  }
+
+  /**
+   * Search jsonapi resource getter.
+   *
+   * @return string
+   */
+  public function isSearchApiResource() {
+    return $this->is_search_api_resource;
+  }
+
+  /**
+   * Search jsonapi resource getter.
+   *
+   * @return string
+   */
+  public function isJsonApiInclude() {
+    return $this->is_jsonapi_include;
   }
 
   /**
