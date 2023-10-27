@@ -1,0 +1,54 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_df_sticky
+    - node.type.vactory_page
+  module:
+    - vactory_dynamic_field
+id: node.vactory_page.field_df_sticky
+field_name: field_df_sticky
+entity_type: node
+bundle: vactory_page
+label: 'Template sticky ancre'
+description: ''
+required: false
+translatable: false
+default_value:
+  -
+    widget_id: 'vactory_default:91'
+    widget_data: '{"extra_field":{"title":"Dans cette page","link":{"title":"Imprimer","url":"#","attributes":{"class":"","id":"link-mty5nzgwmda1oa","target":"_self","rel":""}}},"0":{"title":"Paragraph Title","paragraphId":"id_paragraph","_weight":"1"},"pending_content":[]}'
+default_value_callback: ''
+settings:
+  allowed_providers:
+    vactory_default: vactory_default
+    vactory_academy: 0
+    vactory_banner: 0
+    vactory_blog: 0
+    vactory_business: 0
+    vactory_decoupled_espace_prive: 0
+    vactory_decoupled_webform: 0
+    vactory_dynamic_field_decoupled: 0
+    vactory_dynamic_sliders: 0
+    vactory_event: 0
+    vactory_faq: 0
+    vactory_footer: 0
+    vactory_forums: 0
+    vactory_glossary: 0
+    vactory_header: 0
+    vactory_job_ads: 0
+    vactory_locator: 0
+    vactory_mediatheque: 0
+    vactory_news: 0
+    vactory_notifications_df: 0
+    project_progress: 0
+    vactory_publication: 0
+    vactory_sondage: 0
+    vactory_splashscreen: 0
+    vactory_tender: 0
+    vactory_testimonials: 0
+    vactory_timeout: 0
+    vactory_user_guide_tours: 0
+    vactory_ux_notes: 0
+    vactory_video_ask: 0
+field_type: field_wysiwyg_dynamic

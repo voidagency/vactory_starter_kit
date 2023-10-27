@@ -3,6 +3,9 @@ status: true
 dependencies:
   config:
     - field.field.node.vactory_page.comment
+    - field.field.node.vactory_page.field_contenu_lie
+    - field.field.node.vactory_page.field_df_sticky
+    - field.field.node.vactory_page.field_sticky_ancre
     - field.field.node.vactory_page.field_exclude_from_search
     - field.field.node.vactory_page.field_vactory_meta_tags
     - field.field.node.vactory_page.field_vactory_paragraphs
@@ -11,46 +14,105 @@ dependencies:
     - node.type.vactory_page
   module:
     - comment
+    - field_group
     - media_library
     - metatag
     - paragraphs
     - path
     - scheduler
     - search_api_exclude_entity
+    - textfield_counter
     - yoast_seo
+third_party_settings:
+  field_group:
+    group_sticky:
+      children:
+        - field_sticky_ancre
+        - field_df_sticky
+      label: 'Sticky ancre'
+      region: hidden
+      parent_name: ''
+      weight: 31
+      format_type: details
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        open: false
+        description: ''
+        required_fields: false
 id: node.vactory_page.default
 targetEntityType: node
 bundle: vactory_page
 mode: default
 content:
+  cache_exclude:
+    type: boolean_checkbox
+    weight: 28
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
   comment:
     type: comment_default
-    weight: 126
+    weight: 27
     region: content
     settings: {  }
     third_party_settings: {  }
   created:
     type: datetime_timestamp
-    weight: 10
+    weight: 14
     region: content
     settings: {  }
     third_party_settings: {  }
+  field_content_access_custom:
+    type: string_textfield
+    weight: 13
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  field_content_access_groups:
+    type: options_select
+    weight: 2
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_content_access_roles:
+    type: options_select
+    weight: 1
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_content_access_users:
+    type: entity_reference_autocomplete
+    weight: 0
+    region: content
+    settings:
+      match_operator: CONTAINS
+      match_limit: 10
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
   field_exclude_from_search:
     type: search_api_exclude_entity_widget
-    weight: 125
+    weight: 26
     region: content
     settings:
       field_label: 'Yes, exclude this entity from the search indexes.'
     third_party_settings: {  }
   field_vactory_meta_tags:
     type: metatag_firehose
-    weight: 122
+    weight: 24
     region: content
-    settings: {  }
+    settings:
+      sidebar: true
+      use_details: true
     third_party_settings: {  }
   field_vactory_paragraphs:
     type: entity_reference_paragraphs
-    weight: 32
+    weight: 21
     region: content
     settings:
       title: Paragraph
@@ -62,15 +124,137 @@ content:
     third_party_settings: {  }
   field_vactory_seo_status:
     type: yoast_seo_widget
-    weight: 124
+    weight: 25
     region: content
     settings:
       edit_title: false
       edit_description: false
+      render_theme: null
+      render_view_mode: default
     third_party_settings: {  }
-  field_vactory_tags:
+  generate_notification:
+    type: boolean_checkbox
+    weight: 29
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  langcode:
+    type: language_select
+    weight: 11
+    region: content
+    settings:
+      include_locked: true
+    third_party_settings: {  }
+  mail_message:
+    type: string_textarea
+    weight: 7
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+  mail_subject:
+    type: string_textfield
+    weight: 4
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  node_banner_image:
+    type: media_library_widget
+    weight: 8
+    region: content
+    settings:
+      media_types: {  }
+    third_party_settings: {  }
+  node_banner_mobile_image:
+    type: media_library_widget
+    weight: 9
+    region: content
+    settings:
+      media_types: {  }
+    third_party_settings: {  }
+  node_bg_image:
+    type: media_library_widget
+    weight: 10
+    region: content
+    settings:
+      media_types: {  }
+    third_party_settings: {  }
+  node_content_package_exclude:
+    type: boolean_checkbox
+    weight: 30
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  notification_message:
+    type: string_textarea
+    weight: 6
+    region: content
+    settings:
+      rows: 5
+      placeholder: ''
+    third_party_settings: {  }
+  notification_title:
+    type: string_textfield
+    weight: 3
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  path:
+    type: path
+    weight: 18
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  promote:
+    type: boolean_checkbox
+    weight: 16
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  publish_on:
+    type: datetime_timestamp_no_default
+    weight: 19
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  status:
+    type: boolean_checkbox
+    weight: 23
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  sticky:
+    type: boolean_checkbox
+    weight: 17
+    region: content
+    settings:
+      display_label: true
+    third_party_settings: {  }
+  title:
+    type: string_textfield
+    weight: 5
+    region: content
+    settings:
+      size: 60
+      placeholder: ''
+    third_party_settings: {  }
+  translation:
+    weight: 15
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  uid:
     type: entity_reference_autocomplete
-    weight: 127
+    weight: 12
     region: content
     settings:
       match_operator: CONTAINS
@@ -78,98 +262,19 @@ content:
       size: 60
       placeholder: ''
     third_party_settings: {  }
-  langcode:
-    type: language_select
-    weight: 2
-    region: content
-    settings:
-      include_locked: true
-    third_party_settings: {  }
-  node_banner_image:
-    type: media_library_widget
-    weight: 0
-    region: content
-    settings:
-      media_types: {  }
-    third_party_settings: {  }
-  node_banner_mobile_image:
-    type: media_library_widget
-    weight: 0
-    region: content
-    settings:
-      media_types: {  }
-    third_party_settings: {  }
-  node_bg_image:
-    type: media_library_widget
-    weight: 0
-    region: content
-    settings:
-      media_types: {  }
-    third_party_settings: {  }
-  path:
-    type: path
-    weight: 30
-    region: content
-    settings: {  }
-    third_party_settings: {  }
-  promote:
-    type: boolean_checkbox
-    weight: 15
-    region: content
-    settings:
-      display_label: true
-    third_party_settings: {  }
-  publish_on:
-    type: datetime_timestamp_no_default
-    weight: 30
-    region: content
-    settings: {  }
-    third_party_settings: {  }
-  status:
-    type: boolean_checkbox
-    weight: 121
-    region: content
-    settings:
-      display_label: true
-    third_party_settings: {  }
-  sticky:
-    type: boolean_checkbox
-    weight: 16
-    region: content
-    settings:
-      display_label: true
-    third_party_settings: {  }
-  title:
-    type: string_textfield
-    weight: -5
-    region: content
-    settings:
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
-  translation:
-    weight: 10
-    region: content
-    settings: {  }
-    third_party_settings: {  }
-  uid:
-    type: entity_reference_autocomplete
-    weight: 5
-    region: content
-    settings:
-      match_operator: CONTAINS
-      size: 60
-      placeholder: ''
-    third_party_settings: {  }
   unpublish_on:
     type: datetime_timestamp_no_default
-    weight: 30
+    weight: 20
     region: content
     settings: {  }
     third_party_settings: {  }
   url_redirects:
-    weight: 50
+    weight: 22
     region: content
     settings: {  }
     third_party_settings: {  }
-hidden: {  }
+hidden:
+  field_contenu_lie: true
+  field_df_sticky: true
+  field_sticky_ancre: true
+  machine_name: true
