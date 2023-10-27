@@ -53,3 +53,11 @@ vactory_content_package.importing_exported_nodes:
     _form: 'Drupal\vactory_content_package\Form\ContentPackageImportingExportedNodesForm'
   requirements:
     _permission: 'administer vactory_content_package import configuration'
+
+vactory_content_package.export_df_config:
+  path: '/admin/config/system/vactory-content-package-export-df-config'
+  defaults:
+    _title: 'Vactory content package export df config'
+    _form: 'Drupal\vactory_content_package\Form\DynamicFieldConfigExport'
+  requirements:
+    _permission: 'administer vactory_content_package export configuration'
