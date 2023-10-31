@@ -413,6 +413,17 @@ class Webform {
     (isset($item['#wrapper_attributes']['class']) && !empty($item['#wrapper_attributes']['class'])) ? $properties['wrapperClass'] = implode(" ", $item['#wrapper_attributes']['class']) : "";
     (isset($item['#date_date_min']) && !is_null($item['#date_date_min'])) ? $properties['dateMin'] = $item['#date_date_min'] : NULL;
     (isset($item['#date_date_max']) && !is_null($item['#date_date_max'])) ? $properties['dateMax'] = $item['#date_date_max'] : NULL;
+    (isset($item['#min']) && !is_null($item['#min'])) ? $properties['attributes']['min'] = $item['#min'] : NULL;
+    (isset($item['#max']) && !is_null($item['#max'])) ? $properties['attributes']['max'] = $item['#max'] : NULL;
+    (isset($item['#step']) && !is_null($item['#step'])) ? $properties['attributes']['step'] = $item['#step'] : NULL;
+
+    // add custom properties
+    if (isset($item['#attributes']) && is_array($item['#attributes']) ) {
+      foreach ($item['#attributes'] as $key => $value) {
+        $properties['attributes'][$key] = $value;
+      }
+    }
+
     $properties['isMultiple'] = isset($item['#multiple']);
     if (isset($item['#required'])) {
       $properties['validation']['required'] = TRUE;
