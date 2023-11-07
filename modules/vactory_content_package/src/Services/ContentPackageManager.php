@@ -284,8 +284,11 @@ class ContentPackageManager implements ContentPackageManagerInterface {
    * Denormalize field wysiwyg dynamic.
    */
   public function denormalizeFieldWysiwygDynamic($field_value, $entity_values) {
-    $widget_id = $field_value['widget_id'];
-    $widget_data = $field_value['widget_data'];
+    $widget_id = $field_value['widget_id'] ?? NULL;
+    $widget_data = $field_value['widget_data'] ?? NULL;
+    if (!isset($widget_id)) {
+      return NULL;
+    }
     $settings = $this->widgetsManager->loadSettings($widget_id);
     if (isset($settings['extra_fields'])) {
       foreach ($settings['extra_fields'] as $name => $field) {
@@ -541,8 +544,10 @@ class ContentPackageManager implements ContentPackageManagerInterface {
         if ($field_type === 'field_wysiwyg_dynamic' && !empty($field_value)) {
           // DF field type.
           $field_value = $this->denormalizeFieldWysiwygDynamic($field_value, $entity_values);
-          $field_value['widget_data'] = Json::encode($field_value['widget_data']);
-          $values[$field_name] = [$field_value];
+          if ($field_value) {
+            $field_value['widget_data'] = Json::encode($field_value['widget_data']);
+            $values[$field_name] = [$field_value];
+          }
         }
         if ($field_type === 'entity_reference_revisions' && isset($field_settings['target_type']) && $field_settings['target_type'] === 'paragraph') {
           // Paragraphs entity type case.
