@@ -114,15 +114,12 @@ class GenerateModelForm extends FormBase {
       ];
 
       if (isset($this->submitted['bundle']) && !empty($this->submitted['bundle'])) {
-
-
         $form['container']['delimiter'] = [
           '#type'        => 'textfield',
           '#title'       => $this->t('Delimiter'),
           '#required'    => TRUE,
           '#description' => $this->t('Enter the delimiter used in the CSV file.'),
         ];
-
 
         $form['container']['translation'] = [
           '#type'        => 'checkbox',
@@ -135,7 +132,6 @@ class GenerateModelForm extends FormBase {
           '#title'   => t('Concerned fields'),
           '#options' => $this->getRelatedFields($this->submitted['entity_type'], $this->submitted['bundle'], TRUE),
         ];
-
 
         $form['container']['submit'] = [
           '#type'        => 'submit',
@@ -198,8 +194,7 @@ class GenerateModelForm extends FormBase {
       }
     }
 
-
-    $path = $this->generateCSV($header, [], "{$values['entity_type']}-{$values['bundle']}", $values['delimiter']);
+    $path = $this->generateCsv($header, [], "{$values['entity_type']}-{$values['bundle']}", $values['delimiter']);
 
     $response = new BinaryFileResponse(\Drupal::service('file_system')
       ->realPath($path), 200, [], FALSE);
@@ -217,7 +212,10 @@ class GenerateModelForm extends FormBase {
     parent::validateForm($form, $form_state);
   }
 
-  private function generateCSV($header, $data, $filename, $delimiter) {
+  /**
+   * Transform array to csv file.
+   */
+  private function generateCsv($header, $data, $filename, $delimiter) {
     $time = time();
 
     $destination = 'public://dynamic-import-model';
@@ -227,7 +225,7 @@ class GenerateModelForm extends FormBase {
     $path = "{$destination}/{$filename}-{$time}.csv";
     $fp = fopen($path, 'w');
     fputcsv($fp, $header, $delimiter);
-    // Loop through file pointer and a line
+    // Loop through file pointer and a line.
     foreach ($data as $item) {
       fputcsv($fp, $item);
     }
@@ -236,7 +234,9 @@ class GenerateModelForm extends FormBase {
     return $path;
   }
 
-
+  /**
+   * Get field of a given entity and bundle.
+   */
   private function getRelatedFields($entity_type, $bundle, $only_keys = FALSE) {
 
     $excluded_fields = [
@@ -248,14 +248,14 @@ class GenerateModelForm extends FormBase {
       'mail_',
       'comment',
       'field_vactory_meta_tags',
-      'field_vactory_seo_status'
+      'field_vactory_seo_status',
     ];
 
     $field_definitions = $this->entityFieldManager->getFieldDefinitions($entity_type, $bundle);
     $fields = [];
     foreach ($field_definitions as $field_name => $field_definition) {
 
-      if (!$this->startsWithAnyInArray($field_name, $excluded_fields)){
+      if (!$this->startsWithAnyInArray($field_name, $excluded_fields)) {
         $field_storage = FieldStorageConfig::loadByName($entity_type, $field_name);
 
         $field_label = !empty($field_definition->getLabel()) ? $field_definition->getLabel() : $field_name;
@@ -267,7 +267,9 @@ class GenerateModelForm extends FormBase {
         if ($field_type == 'entity_reference') {
           $settings = $field_definition->getSettings();
           if (isset($settings['target_type']) && $settings['target_type'] == 'media') {
-            $field_type = 'media:' . reset($settings['handler_settings']['target_bundles']);
+            if (isset($settings['handler_settings']['target_bundles']) && !is_null($settings['handler_settings']['target_bundles'])) {
+              $field_type = 'media:' . reset($settings['handler_settings']['target_bundles']);
+            }
           }
           if (isset($settings['target_type']) && $settings['target_type'] == 'taxonomy_term') {
             $field_type = 'taxonomy_term';
@@ -300,14 +302,16 @@ class GenerateModelForm extends FormBase {
     return $fields;
   }
 
+  /**
+   * Check if array contains a value that starts with haystack.
+   */
   private function startsWithAnyInArray($haystack, $array) {
     foreach ($array as $prefix) {
       if (strpos($haystack, $prefix) === 0) {
-        return true;
+        return TRUE;
       }
     }
-    return false;
+    return FALSE;
   }
-
 
 }

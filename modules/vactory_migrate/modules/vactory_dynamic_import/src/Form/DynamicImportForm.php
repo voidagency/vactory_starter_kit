@@ -304,14 +304,22 @@ class DynamicImportForm extends FormBase {
               ];
             }
             if ($plugin == 'media') {
-              $data['process'][$mapped_field] = [
-                'plugin'           => 'media_import',
-                'destination'      => 'constants/dest_path',
-                'media_bundle'     => $info,
-                'media_field_name' => 'field_media_image',
-                'source'           => $field,
-                'skip_on_error'    => 'true',
-              ];
+              if ($info == 'remote_video') {
+                $data['process'][$mapped_field] = [
+                  'plugin'           => 'remote_video_import',
+                  'source'           => $field,
+                ];
+              }
+              else {
+                $data['process'][$mapped_field] = [
+                  'plugin'           => 'media_import',
+                  'destination'      => 'constants/dest_path',
+                  'media_bundle'     => $info,
+                  'media_field_name' => 'field_media_' . $info,
+                  'source'           => $field,
+                  'skip_on_error'    => 'true',
+                ];
+              }
             }
             if ($plugin == 'file') {
               $data['process'][$mapped_field] = [
@@ -390,7 +398,10 @@ class DynamicImportForm extends FormBase {
     }
     else {
       $url = Url::fromRoute('vactory_dynamic_import.import')
-        ->setRouteParameters(['migration' => $id, 'delimiter' => $values['delimiter']]);
+        ->setRouteParameters([
+          'migration' => $id,
+          'delimiter' => $values['delimiter'],
+        ]);
 
       $form_state->setRedirectUrl($url);
     }
