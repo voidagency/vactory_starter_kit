@@ -1,0 +1,183 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - block_content.type.vactory_sondage
+  module:
+    - jsonapi_defaults
+third_party_settings:
+  jsonapi_defaults:
+    page_limit: 50
+id: block_content--vactory_sondage
+disabled: false
+path: block_content/vactory_sondage
+resourceType: block_content--vactory_sondage
+resourceFields:
+  id:
+    disabled: false
+    fieldName: id
+    publicName: id
+    enhancer:
+      id: ''
+  uuid:
+    disabled: false
+    fieldName: uuid
+    publicName: uuid
+    enhancer:
+      id: ''
+  revision_id:
+    disabled: false
+    fieldName: revision_id
+    publicName: revision_id
+    enhancer:
+      id: ''
+  langcode:
+    disabled: false
+    fieldName: langcode
+    publicName: langcode
+    enhancer:
+      id: ''
+  type:
+    disabled: false
+    fieldName: type
+    publicName: type
+    enhancer:
+      id: ''
+  revision_created:
+    disabled: false
+    fieldName: revision_created
+    publicName: revision_created
+    enhancer:
+      id: ''
+  revision_user:
+    disabled: false
+    fieldName: revision_user
+    publicName: revision_user
+    enhancer:
+      id: ''
+  revision_log:
+    disabled: false
+    fieldName: revision_log
+    publicName: revision_log
+    enhancer:
+      id: ''
+  status:
+    disabled: false
+    fieldName: status
+    publicName: status
+    enhancer:
+      id: ''
+  info:
+    disabled: false
+    fieldName: info
+    publicName: info
+    enhancer:
+      id: ''
+  changed:
+    disabled: false
+    fieldName: changed
+    publicName: changed
+    enhancer:
+      id: ''
+  reusable:
+    disabled: false
+    fieldName: reusable
+    publicName: reusable
+    enhancer:
+      id: ''
+  default_langcode:
+    disabled: false
+    fieldName: default_langcode
+    publicName: default_langcode
+    enhancer:
+      id: ''
+  revision_default:
+    disabled: false
+    fieldName: revision_default
+    publicName: revision_default
+    enhancer:
+      id: ''
+  revision_translation_affected:
+    disabled: false
+    fieldName: revision_translation_affected
+    publicName: revision_translation_affected
+    enhancer:
+      id: ''
+  metatag:
+    disabled: false
+    fieldName: metatag
+    publicName: metatag
+    enhancer:
+      id: ''
+  block_machine_name:
+    disabled: false
+    fieldName: block_machine_name
+    publicName: block_machine_name
+    enhancer:
+      id: ''
+  internal_user:
+    disabled: false
+    fieldName: internal_user
+    publicName: internal_user
+    enhancer:
+      id: ''
+  content_translation_source:
+    disabled: false
+    fieldName: content_translation_source
+    publicName: content_translation_source
+    enhancer:
+      id: ''
+  content_translation_outdated:
+    disabled: false
+    fieldName: content_translation_outdated
+    publicName: content_translation_outdated
+    enhancer:
+      id: ''
+  content_translation_uid:
+    disabled: false
+    fieldName: content_translation_uid
+    publicName: content_translation_uid
+    enhancer:
+      id: ''
+  content_translation_created:
+    disabled: false
+    fieldName: content_translation_created
+    publicName: content_translation_created
+    enhancer:
+      id: ''
+  body:
+    disabled: false
+    fieldName: body
+    publicName: body
+    enhancer:
+      id: ''
+  field_sondage_close_date:
+    disabled: false
+    fieldName: field_sondage_close_date
+    publicName: field_sondage_close_date
+    enhancer:
+      id: ''
+  field_sondage_options:
+    disabled: false
+    fieldName: field_sondage_options
+    publicName: field_sondage_options
+    enhancer:
+      id: sondage_options_enhancer
+  field_sondage_question:
+    disabled: false
+    fieldName: field_sondage_question
+    publicName: field_sondage_question
+    enhancer:
+      id: ''
+  field_sondage_results:
+    disabled: false
+    fieldName: field_sondage_results
+    publicName: field_sondage_results
+    enhancer:
+      id: ''
+  field_sondage_status:
+    disabled: false
+    fieldName: field_sondage_status
+    publicName: field_sondage_status
+    enhancer:
+      id: ''

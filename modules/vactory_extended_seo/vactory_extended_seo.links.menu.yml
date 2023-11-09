@@ -1,0 +1,14 @@
+
+# Vactory extended seo menu items definition
+entity.vactory_extended_seo.collection:
+  title: 'Vactory extended seo list'
+  route_name: entity.vactory_extended_seo.collection
+  description: 'List Vactory extended seo entities'
+  parent: system.admin_structure
+  weight: 100
+
+vactory_extended_seo.admin.structure.settings:
+  title: 'Vactory extended seo settings'
+  description: 'Configure Vactory extended seo entities'
+  route_name: vactory_extended_seo.settings
+  parent: system.admin_structure

@@ -3,6 +3,7 @@
 namespace Drupal\vactory_dynamic_field\Plugin\Field\FieldWidget;
 
 use Drupal\Component\Render\MarkupInterface;
+use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Language\LanguageInterface;
@@ -131,6 +132,9 @@ trait FormWidgetTrait {
       $default_value_string = is_string($default_value) ? $default_value : '';
       $element['#default_value'] = isset($default_value['value']) ? $default_value['value'] : $default_value_string;
     }
+    if ($type === 'datetime') {
+      $element['#default_value'] = is_string($default_value) ? DrupalDateTime::createFromFormat('Y-m-d H:i:s', $default_value) : $default_value;
+    }
 
     if (in_array($type, ['text_format', 'text', 'textarea'])) {
       if ($type === 'text' && !isset($options['#maxlength'])) {
@@ -211,7 +215,8 @@ trait FormWidgetTrait {
       if (!empty($default_value)) {
         if (!is_array($default_value)) {
           $video_default_value[] = $default_value;
-        } else {
+        }
+        else {
           $key = array_keys($default_value)[0];
           if (isset($default_value[$key]['selection'])) {
             foreach ($default_value[$key]['selection'] as $media) {
@@ -223,7 +228,7 @@ trait FormWidgetTrait {
       return $this->getVideoFieldForm($field_name, [
         'label' => $label,
         'default_value' => $video_default_value,
-        'required' => $element_defaults['#required']  ?? FALSE,
+        'required' => $element_defaults['#required'] ?? FALSE,
         'cardinality' => 1,
       ], $form, $form_state);
     }
@@ -349,7 +354,7 @@ trait FormWidgetTrait {
    *   Media field.
    */
   // phpcs:disable
-  public function getImageFieldForm($field_name, array $configuration = [], array $form, FormStateInterface $form_state) {
+  public function getImageFieldForm($field_name, array $configuration, array $form, FormStateInterface $form_state) {
     // phpcs:enable
     return $this->getMediaFieldForm('image', $field_name, $configuration, $form, $form_state);
   }
@@ -370,7 +375,7 @@ trait FormWidgetTrait {
    *   Media field.
    */
   // phpcs:disable
-  public function getFileFieldForm($field_name, array $configuration = [], array $form, FormStateInterface $form_state) {
+  public function getFileFieldForm($field_name, array $configuration, array $form, FormStateInterface $form_state) {
     // phpcs:enable
     return $this->getMediaFieldForm('file', $field_name, $configuration, $form, $form_state);
   }
@@ -391,7 +396,7 @@ trait FormWidgetTrait {
    *   Media field.
    */
   // phpcs:disable
-  public function getAudioFieldForm($field_name, array $configuration = [], array $form, FormStateInterface $form_state) {
+  public function getAudioFieldForm($field_name, array $configuration, array $form, FormStateInterface $form_state) {
     // phpcs:enable
     return $this->getMediaFieldForm('audio', $field_name, $configuration, $form, $form_state);
   }
@@ -412,7 +417,7 @@ trait FormWidgetTrait {
    *   Media field.
    */
   // phpcs:disable
-  public function getVideoFieldForm($field_name, array $configuration = [], array $form, FormStateInterface $form_state) {
+  public function getVideoFieldForm($field_name, array $configuration, array $form, FormStateInterface $form_state) {
     // phpcs:enable
     return $this->getMediaFieldForm('video', $field_name, $configuration, $form, $form_state);
   }
@@ -433,7 +438,7 @@ trait FormWidgetTrait {
    *   Media field.
    */
   // phpcs:disable
-  public function getRemoteVideoFieldForm($field_name, array $configuration = [], array $form, FormStateInterface $form_state) {
+  public function getRemoteVideoFieldForm($field_name, array $configuration, array $form, FormStateInterface $form_state) {
     // phpcs:enable
     return $this->getMediaFieldForm('remote_video', $field_name, $configuration, $form, $form_state);
   }
@@ -458,7 +463,7 @@ trait FormWidgetTrait {
    * @throws \Exception
    */
   // phpcs:disable
-  protected function getMediaFieldForm($media_type = 'image', $field_name, array $configuration = [], array $form, FormStateInterface $form_state) {
+  protected function getMediaFieldForm($media_type, $field_name, array $configuration, array $form, FormStateInterface $form_state) {
     // phpcs:enable
     $field_type = 'entity_reference';
 

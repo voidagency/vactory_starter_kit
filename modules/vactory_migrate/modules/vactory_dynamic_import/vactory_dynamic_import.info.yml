@@ -1,0 +1,14 @@
+name: 'Vactory Dynamic Import'
+type: module
+description: Vactory Dynamic Import.
+configure: vactory_dynamic_import.form
+package: vactory
+core: 8.x
+core_version_requirement: ^8 || ^9
+dependencies:
+  - migrate_plus
+  - migrate_tools
+  - migrate_source_csv
+  - vactory_migrate
+  - vactory_migrate_plugin
+  - vactory_migrate_ui

@@ -1,12 +1,12 @@
 langcode: en
 status: true
 dependencies:
-  enforced:
-    module:
-      - vactory_sondage
   module:
     - block_content
     - options
+  enforced:
+    module:
+      - vactory_sondage
 id: block_content.field_sondage_status
 field_name: field_sondage_status
 entity_type: block_content

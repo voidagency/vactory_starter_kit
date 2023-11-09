@@ -1,0 +1,22 @@
+add vactory extended seo entities:
+  title: 'Create new Vactory extended seo entities'
+
+administer vactory extended seo entities:
+  title: 'Administer Vactory extended seo entities'
+  description: 'Allow to access the administration form to configure Vactory extended seo entities.'
+  restrict access: true
+
+delete vactory extended seo entities:
+  title: 'Delete Vactory extended seo entities'
+
+edit vactory extended seo entities:
+  title: 'Edit Vactory extended seo entities'
+
+view published vactory extended seo entities:
+  title: 'View published Vactory extended seo entities'
+
+view unpublished vactory extended seo entities:
+  title: 'View unpublished Vactory extended seo entities'
+
+contribute content vactory extended seo entities:
+  title: 'Contribute content vactory extended seo entities'

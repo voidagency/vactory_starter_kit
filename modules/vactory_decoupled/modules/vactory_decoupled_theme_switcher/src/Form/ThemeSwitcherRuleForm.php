@@ -44,6 +44,10 @@ class ThemeSwitcherRuleForm extends ThemeSwitcherRuleFormBase {
       '#description' => $this->t('The theme to apply in all pages that meet the conditions below.'),
       '#required' => TRUE,
     ];
+
+    $form['conjunction']['#default_value'] = 'and';
+    $form['conjunction']['#disabled'] = TRUE;
+
     return $form;
   }
 

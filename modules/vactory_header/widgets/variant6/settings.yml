@@ -1,0 +1,34 @@
+name: 'Header - Multiple level'
+multiple: TRUE
+category: 'Headers'
+enabled: TRUE
+fields:
+  cta:
+    type: url_extended
+    label: "Add extra button"
+  icon:
+    type: vactory_icon_picker
+    label: "Icon"
+  mode:
+    type: checkbox
+    label: 'Is outline button'
+extra_fields:
+  header_logo:
+    type: image
+    label: "Header's logo"
+  hp_logo:
+    type: image
+    label: "Logo Homepage"
+  show_language_dropdown:
+    type: checkbox
+    label: "Display language dropdown"
+  use_menu_main:
+    type: text
+    label: "Menu Main ID"
+    options:
+      "#description": "Menu machine name. Default to main"
+  use_menu_top:
+    type: text
+    label: "Menu Top ID"
+    options:
+      "#description": "Top Menu machine name"

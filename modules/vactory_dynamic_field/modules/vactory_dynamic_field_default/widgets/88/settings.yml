@@ -1,0 +1,52 @@
+name: "Media Gallery"
+multiple: true
+category: "Content"
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: "Title"
+  image:
+    type: image
+    label: "Image"
+    options:
+      "#required": TRUE
+  video:
+    type: remote_video
+    label: "Video"
+extra_fields:
+  title:
+    type: text
+    label: "Title"
+  description:
+    type: "textarea"
+    label: "Content"
+  position:
+    type: select
+    label: "Thumbnail position"
+    options:
+      "#options":
+        - "bottom": "Bottom"
+        - "top": "Top"
+        - "left": "Left"
+        - "right": "Right"
+  isInfinit:
+    type: checkbox
+    label: "Enable infinit sliding"
+  showFullscreenButton:
+    type: checkbox
+    label: "Enable Fullscreen"
+  showPlayButton:
+    type: checkbox
+    label: "Show Autoplay button"
+  showBullets:
+    type: checkbox
+    label: "Show navigation dots"
+  showThumbnails:
+    type: checkbox
+    label: "Show thumbnails"
+  slideInterval:
+    type: number
+    label: "Time in miliseconds to slide between slides"
+    options:
+      "#required": TRUE
