@@ -110,14 +110,47 @@ class DecoupledOauth2Token extends Oauth2Token {
         }
 
         if ($response->getStatusCode() !== 200) {
+          $this->logAuthFailure($body);
           $this->flood->register('user.failed_login_user', $this->userWindow, $account->id());
         }
 
+        if ($response->getStatusCode() === 200) {
+          $this->logAuthSuccess($body);
+        }
+
+      }
+      else {
+        $this->logAuthFailure($body);
       }
 
     }
 
     return $response;
+  }
+
+  /**
+   * Log authentication failures.
+   */
+  protected function logAuthFailure($body) {
+    if (\Drupal::moduleHandler()->moduleExists('vactory_security_review')) {
+      $is_failed_login_log_enabled = \Drupal::config('security_review.checks')->get('log_failed_auth');
+      $ip = \Drupal::request()->getClientIp();
+      if ($is_failed_login_log_enabled) {
+        \Drupal::logger('user')->info("Login attempt failed from: <br>IP: {$ip}<br>Username: {$body['username']}");
+      }
+    }
+  }
+
+  /**
+   * Log authentication success.
+   */
+  protected function logAuthSuccess($body) {
+    if (\Drupal::moduleHandler()->moduleExists('vactory_security_review')) {
+      $is_failed_login_log_enabled = \Drupal::config('security_review.checks')->get('failed_auth_log');
+      if ($is_failed_login_log_enabled) {
+        \Drupal::logger('user')->info("Session opened for {$body['username']} via Oauth2");
+      }
+    }
   }
 
 
