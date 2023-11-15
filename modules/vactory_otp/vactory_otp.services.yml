@@ -1,4 +1,4 @@
 services:
   vactory_otp.send_otp:
     class: Drupal\vactory_otp\Services\VactoryOtpService
-    arguments: ['@logger.factory', '@plugin.manager.mail', '@config.manager', '@datetime.time', '@tempstore.private']
+    arguments: ['@logger.factory', '@plugin.manager.mail', '@config.manager', '@datetime.time', '@tempstore.private', '@vactory_sms_sender.manager']

@@ -6,6 +6,8 @@ use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
+ * OTP Module configuration.
+ *
  * Class VactoryOtpConfigForm.
  */
 class VactoryOtpConfigForm extends ConfigFormBase {
@@ -31,20 +33,17 @@ class VactoryOtpConfigForm extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('vactory_otp.settings');
-
-    $form = [];
+    $form = parent::buildForm($form, $form_state);
 
     $form['url'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Url'),
-      '#required' => TRUE,
       '#default_value' => $config->get('url'),
     ];
 
-    $form['api_key'] = [
+    $form['otp_api_key'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Api Key'),
-      '#required' => TRUE,
       '#default_value' => $config->get('api_key'),
     ];
 
@@ -68,17 +67,17 @@ class VactoryOtpConfigForm extends ConfigFormBase {
       '#default_value' => $config->get('default_sms_body'),
     ];
 
+    $form['default_mail_subject'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Default Email Subject'),
+      '#default_value' => $config->get('default_mail_subject'),
+    ];
+
     $form['default_mail_body'] = [
       '#type' => 'text_format',
       '#title' => $this->t('Default Mail Body'),
       '#format' => 'full_html',
       '#default_value' => $config->get('default_mail_body')['value'] ?? '',
-    ];
-
-    $form['submit'] = [
-      '#type' => 'submit',
-      '#value' => $this->t('Enregistrer la configuration'),
-      '#button_type' => 'primary',
     ];
 
     return $form;
@@ -91,10 +90,11 @@ class VactoryOtpConfigForm extends ConfigFormBase {
     $config = $this->config('vactory_otp.settings');
 
     $config->set('url', $form_state->getValue('url'));
-    $config->set('api_key', $form_state->getValue('api_key'));
+    $config->set('api_key', $form_state->getValue('otp_api_key'));
     $config->set('from', $form_state->getValue('from'));
     $config->set('cooldown', $form_state->getValue('cooldown'));
     $config->set('default_sms_body', $form_state->getValue('default_sms_body'));
+    $config->set('default_mail_subject', $form_state->getValue('default_mail_subject'));
     $config->set('default_mail_body', $form_state->getValue('default_mail_body'));
 
     $config->save();

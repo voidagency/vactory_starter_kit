@@ -9,8 +9,11 @@ use Drupal\Core\Mail\MailManagerInterface;
 use Drupal\Core\Messenger\MessengerTrait;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
+use Drupal\vactory_sms_sender\Services\VactorySmsSenderService;
 
 /**
+ * Contains otp senders (sms, mail).
+ *
  * Class VactoryOtpService.
  */
 class VactoryOtpService {
@@ -61,6 +64,13 @@ class VactoryOtpService {
   protected $store;
 
   /**
+   * SMS Sender Service.
+   *
+   * @var \Drupal\vactory_sms_sender\Services\VactorySmsSenderService
+   */
+  protected $smsSender;
+
+  /**
    * Constructs a new EventFormMailService.
    *
    * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger
@@ -73,14 +83,17 @@ class VactoryOtpService {
    *   Time.
    * @param \Drupal\Core\TempStore\PrivateTempStoreFactory $tempstore
    *   Private tempstore.
+   * @param \Drupal\vactory_sms_sender\Services\VactorySmsSenderService $vactorySmsSenderService
+   *   Sms Sender Service.
    */
-  public function __construct(LoggerChannelFactoryInterface $logger, MailManagerInterface $mail_manager, ConfigManager $config_manager, TimeInterface $time, PrivateTempStoreFactory $tempstore) {
+  public function __construct(LoggerChannelFactoryInterface $logger, MailManagerInterface $mail_manager, ConfigManager $config_manager, TimeInterface $time, PrivateTempStoreFactory $tempstore, VactorySmsSenderService $vactorySmsSenderService) {
     $this->logger = $logger;
     $this->mailManager = $mail_manager;
     $this->configManager = $config_manager;
     $this->time = $time;
     $this->tempstore = $tempstore;
     $this->store = $tempstore->get('vactory_otp');
+    $this->smsSender = $vactorySmsSenderService;
   }
 
   /**
@@ -98,9 +111,7 @@ class VactoryOtpService {
    * @return int
    *   The generated otp.
    */
-  public function sendOtpByMail($subject, $to_mail, $mail_body = '', $otp = '') {
-
-    /** @var \Drupal\Core\Config\ConfigManager $confiManager */
+  public function sendOtpByMail($subject = '', $to_mail, $mail_body = '', $otp = '') {
     $confiManagerFactory = $this->configManager->getConfigFactory();
     $langcode = $confiManagerFactory->get('system.site')->get('langcode');
     $config = $confiManagerFactory->getEditable('vactory_otp.settings');
@@ -124,19 +135,23 @@ class VactoryOtpService {
       $mail_body = $config->get('default_mail_body');
     }
 
+    if (empty($subject)) {
+      $subject = $config->get('default_mail_subject');
+    }
+
     if (empty($otp)) {
       $otp = rand(10000, 99999);
     }
 
     $message_body = [
-      'text'       => $mail_body,
-      'subject'    => $subject,
+      'text' => $mail_body,
+      'subject' => $subject,
       'otp' => $otp,
     ];
 
     $theme_body = [
       '#theme' => 'vactory_otp_mail_body',
-      '#body'  => $message_body,
+      '#body' => $message_body,
     ];
 
     $mail_body = \Drupal::service('renderer')->renderPlain($theme_body);
@@ -144,7 +159,6 @@ class VactoryOtpService {
     $params['subject'] = $subject;
     $params['options']['title'] = $subject;
 
-    /* @var  /Drupal\Core\Mail\MailManager $mailManager */
     $mailManager = $this->mailManager;
     try {
       $mailManager->mail($module, $key, $to, $langcode, $params, $reply, $send);
@@ -171,6 +185,9 @@ class VactoryOtpService {
    *
    * @return int
    *   The generated otp.
+   *
+   * @deprecated use sendSmsOtp instead.
+   *
    */
   public function sendOtpBySms($sms_phone, $sms_body = '', $otp = '') {
     $config = \Drupal::service('config.factory')->getEditable('vactory_otp.settings');
@@ -196,7 +213,7 @@ class VactoryOtpService {
 
     $data = [
       'from' => $from,
-      'to'   => $sms_phone,
+      'to' => $sms_phone,
       'text' => $sms_body . ' : ' . $otp,
     ];
 
@@ -219,6 +236,42 @@ class VactoryOtpService {
     }
 
     return FALSE;
+  }
+
+  /**
+   * Send OTP via SMS.
+   */
+  public function sendSmsOtp($sms_phone, $sms_body = '', $otp = '') {
+    $config = \Drupal::service('config.factory')->getEditable('vactory_otp.settings');
+
+    if ($last = $this->store->get('last_sms_otp_sent')) {
+      $cd = $config->get('cooldown');
+      if (($this->time->getCurrentTime() - $last) < $cd) {
+        \Drupal::messenger()->addError($this->t('You have to wait @seconds seconds before you can send another sms.', ['@seconds' => $cd - ($this->time->getCurrentTime() - $last)]));
+        return FALSE;
+      }
+    }
+    if (empty($sms_body)) {
+      $sms_body = $config->get('default_sms_body');
+    }
+
+    if (empty($otp)) {
+      $otp = rand(10000, 99999);
+    }
+
+    $sms_content = $sms_body . ' : ' . $otp;
+
+    try {
+      $sent = $this->smsSender->sendSms($sms_phone, $sms_content);
+      if ($sent) {
+        return $otp;
+      }
+      return FALSE;
+    }
+    catch (\Exception $e) {
+      return FALSE;
+    }
+
   }
 
 }
