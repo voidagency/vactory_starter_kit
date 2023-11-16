@@ -1,0 +1,8 @@
+name: 'Vactory Search AI - ChatBox'
+multiple: FALSE
+category: 'Search AI'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: 'Title'
