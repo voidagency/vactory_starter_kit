@@ -110,8 +110,10 @@ class VactoryOtpService {
    *
    * @return int
    *   The generated otp.
+   *
+   * @deprecated use sendMailOtp instead.
    */
-  public function sendOtpByMail($subject = '', $to_mail, $mail_body = '', $otp = '') {
+  public function sendOtpByMail($subject, $to_mail, $mail_body = '', $otp = '') {
     $confiManagerFactory = $this->configManager->getConfigFactory();
     $langcode = $confiManagerFactory->get('system.site')->get('langcode');
     $config = $confiManagerFactory->getEditable('vactory_otp.settings');
@@ -133,10 +135,6 @@ class VactoryOtpService {
 
     if (empty($mail_body)) {
       $mail_body = $config->get('default_mail_body');
-    }
-
-    if (empty($subject)) {
-      $subject = $config->get('default_mail_subject');
     }
 
     if (empty($otp)) {
@@ -187,7 +185,6 @@ class VactoryOtpService {
    *   The generated otp.
    *
    * @deprecated use sendSmsOtp instead.
-   *
    */
   public function sendOtpBySms($sms_phone, $sms_body = '', $otp = '') {
     $config = \Drupal::service('config.factory')->getEditable('vactory_otp.settings');
@@ -272,6 +269,71 @@ class VactoryOtpService {
       return FALSE;
     }
 
+  }
+
+  /**
+   * Send OTP via Email.
+   */
+  public function sendMailOtp($to_mail, $subject = '', $mail_body = '', $otp = '') {
+    $confiManagerFactory = $this->configManager->getConfigFactory();
+    $langcode = $confiManagerFactory->get('system.site')->get('langcode');
+    $config = $confiManagerFactory->getEditable('vactory_otp.settings');
+
+    if ($last = $this->store->get('last_mail_otp_sent')) {
+      $cd = $config->get('cooldown');
+      if (($this->time->getCurrentTime() - $last) < $cd) {
+        \Drupal::messenger()->addError($this->t('You have to wait @seconds seconds before you can send another email.', ['@seconds' => $cd - ($this->time->getCurrentTime() - $last)]));
+        return FALSE;
+      }
+    }
+
+    // Mail.
+    $module = 'vactory_otp';
+    $key = 'vactory_otp_mail_body';
+    $to = $to_mail;
+    $reply = FALSE;
+    $send = TRUE;
+
+    if (empty($mail_body)) {
+      $mail_body = $config->get('default_mail_body');
+    }
+
+    if (empty($subject)) {
+      $subject = $config->get('default_mail_subject');
+    }
+
+    if (empty($otp)) {
+      $otp = rand(10000, 99999);
+    }
+
+    $message_body = [
+      'text' => $mail_body,
+      'subject' => $subject,
+      'otp' => $otp,
+    ];
+
+    $theme_body = [
+      '#theme' => 'vactory_otp_mail_body',
+      '#body' => $message_body,
+    ];
+
+    $mail_body = \Drupal::service('renderer')->renderPlain($theme_body);
+    $params['message'] = $mail_body;
+    $params['subject'] = $subject;
+    $params['options']['title'] = $subject;
+
+    $mailManager = $this->mailManager;
+    try {
+      $mailManager->mail($module, $key, $to, $langcode, $params, $reply, $send);
+      $this->store->set('last_mail_otp_sent', $this->time->getCurrentTime());
+      return $otp;
+    }
+    catch (\Exception $e) {
+      \Drupal::logger('vactory_otp')
+        ->error("Erreur lors de l'envoi de l'otp par mail : " . $e->getMessage());
+    }
+
+    return FALSE;
   }
 
 }
