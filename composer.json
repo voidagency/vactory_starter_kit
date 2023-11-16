@@ -165,7 +165,8 @@
     "drupal/quickedit": "^1.0",
     "drupal/jsonapi_cross_bundles": "^1.1",
     "drupal/gin": "^3.0@RC",
-    "drupal/jsonapi_include": "^1.7"
+    "drupal/jsonapi_include": "^1.7",
+    "drupal/search_api_ai": "^1.0@alpha"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.3",
@@ -261,6 +262,9 @@
       },
       "drupal/jsonapi_cross_bundles": {
         "Fix jsonapi cross bundles": "https://gist.githubusercontent.com/ismail-void/7e56262e60c81fbbd43874d37f145a6d/raw/95b5db1a582cdfe5c9ff987443b5ebc7f76e7766/fix-jsonapi-cross-bundles.patch"
+      },
+      "drupal/search_api_ai": {
+        "Seach ai pinecone free account issue": "https://gist.githubusercontent.com/khalidbouhouch77/097184b7b3e611ff5e052902486601f3/raw/d7255c4f884aeb39eb68830d8cd77821eeee3634/search-api-pineconebackend-namespace-lang.patch"
       }
     }
   },
@@ -293,6 +297,9 @@
   },
   "config": {
     "disable-tls": true,
-    "secure-http": false
+    "secure-http": false,
+    "allow-plugins": {
+      "php-http/discovery": true
+    }
   }
 }
