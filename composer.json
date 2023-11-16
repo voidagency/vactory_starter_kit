@@ -262,6 +262,9 @@
       },
       "drupal/jsonapi_cross_bundles": {
         "Fix jsonapi cross bundles": "https://gist.githubusercontent.com/ismail-void/7e56262e60c81fbbd43874d37f145a6d/raw/95b5db1a582cdfe5c9ff987443b5ebc7f76e7766/fix-jsonapi-cross-bundles.patch"
+      },
+      "drupal/search_api_ai": {
+        "Seach ai pinecone free account issue": "https://gist.githubusercontent.com/khalidbouhouch77/097184b7b3e611ff5e052902486601f3/raw/d7255c4f884aeb39eb68830d8cd77821eeee3634/search-api-pineconebackend-namespace-lang.patch"
       }
     }
   },
