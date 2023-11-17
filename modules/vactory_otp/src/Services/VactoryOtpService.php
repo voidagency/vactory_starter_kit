@@ -9,6 +9,7 @@ use Drupal\Core\Mail\MailManagerInterface;
 use Drupal\Core\Messenger\MessengerTrait;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
+use Drupal\Core\Utility\Token;
 use Drupal\vactory_sms_sender\Services\VactorySmsSenderService;
 
 /**
@@ -71,6 +72,13 @@ class VactoryOtpService {
   protected $smsSender;
 
   /**
+   * Drupal tokens.
+   *
+   * @var \Drupal\Core\Utility\Token
+   */
+  protected $token;
+
+  /**
    * Constructs a new EventFormMailService.
    *
    * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger
@@ -85,8 +93,10 @@ class VactoryOtpService {
    *   Private tempstore.
    * @param \Drupal\vactory_sms_sender\Services\VactorySmsSenderService $vactorySmsSenderService
    *   Sms Sender Service.
+   * @param \Drupal\Core\Utility\Token $token
+   *   Drupal tokens.
    */
-  public function __construct(LoggerChannelFactoryInterface $logger, MailManagerInterface $mail_manager, ConfigManager $config_manager, TimeInterface $time, PrivateTempStoreFactory $tempstore, VactorySmsSenderService $vactorySmsSenderService) {
+  public function __construct(LoggerChannelFactoryInterface $logger, MailManagerInterface $mail_manager, ConfigManager $config_manager, TimeInterface $time, PrivateTempStoreFactory $tempstore, VactorySmsSenderService $vactorySmsSenderService, Token $token) {
     $this->logger = $logger;
     $this->mailManager = $mail_manager;
     $this->configManager = $config_manager;
@@ -94,6 +104,7 @@ class VactoryOtpService {
     $this->tempstore = $tempstore;
     $this->store = $tempstore->get('vactory_otp');
     $this->smsSender = $vactorySmsSenderService;
+    $this->token = $token;
   }
 
   /**
@@ -255,8 +266,8 @@ class VactoryOtpService {
     if (empty($otp)) {
       $otp = rand(10000, 99999);
     }
-
-    $sms_content = $sms_body . ' : ' . $otp;
+    $sms_content = str_replace("!otp", $otp, $sms_body);
+    $sms_content = $this->token->replace($sms_content);
 
     try {
       $sent = $this->smsSender->sendSms($sms_phone, $sms_content);
@@ -305,11 +316,12 @@ class VactoryOtpService {
     if (empty($otp)) {
       $otp = rand(10000, 99999);
     }
+    $mail_body = str_replace("!otp", $otp, $mail_body);
+    $mail_body['value'] = $this->token->replace($mail_body['value']);
 
     $message_body = [
       'text' => $mail_body,
       'subject' => $subject,
-      'otp' => $otp,
     ];
 
     $theme_body = [

@@ -91,7 +91,7 @@ class OtpController extends ControllerBase {
     }
     if ($canal == 'email') {
       $email = $user->get($email_field)->value;
-      $otp = \Drupal::service('vactory_otp.send_otp')->sendOtpByMail('', $email);
+      $otp = \Drupal::service('vactory_otp.send_otp')->sendMailOtp($email);
     }
     if (!$otp) {
       return new JsonResponse([

@@ -65,6 +65,7 @@ class VactoryOtpConfigForm extends ConfigFormBase {
       '#type' => 'textarea',
       '#title' => $this->t('Default SMS Body'),
       '#default_value' => $config->get('default_sms_body'),
+      '#description' => "Use !otp for OTP",
     ];
 
     $form['default_mail_subject'] = [
@@ -78,6 +79,7 @@ class VactoryOtpConfigForm extends ConfigFormBase {
       '#title' => $this->t('Default Mail Body'),
       '#format' => 'full_html',
       '#default_value' => $config->get('default_mail_body')['value'] ?? '',
+      '#description' => "Use !otp for OTP",
     ];
 
     return $form;
