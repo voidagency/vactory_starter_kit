@@ -17,10 +17,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Language\LanguageManagerInterface;
-use Drupal\Core\Site\Settings;
-use Drupal\path_alias\AliasManagerInterface;
 
 class MenusController extends ControllerBase {
 
@@ -88,27 +84,6 @@ class MenusController extends ControllerBase {
   protected $minDepth = 1;
 
   /**
-   * Language manager service.
-   *
-   * @var \Drupal\Core\Language\LanguageManagerInterface
-   */
-  protected $languageManager;
-
-  /**
-   * Entity type manager service.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected $entityTypeManager;
-
-  /**
-   * Path alias manager service.
-   *
-   * @var \Drupal\path_alias\AliasManagerInterface
-   */
-  protected $pathAlias;
-
-  /**
    * {@inheritdoc}
    */
   public function __construct(
@@ -117,7 +92,7 @@ class MenusController extends ControllerBase {
     EntityRepositoryInterface $entityRepository,
     EntityTypeManagerInterface $entityTypeManager,
     AliasManagerInterface $pathAlias,
-    LanguageManagerInterface $languageManager,
+    LanguageManagerInterface $languageManager
   ) {
     $this->configFactory = $config_factory;
     $this->menuLinkTree = $menuLinkTree;
