@@ -1,0 +1,11 @@
+<div>
+    <div> <span>{{extra_fields.subtitle}}</span> {{ extra_fields.title }}</div
+    <div>{{ extra_fields.description }}</div
+    <div>
+        {% for item in content %}
+        <div>{{ item.tag }}</div
+        <div>{{ item.title }}</div
+        <a  href="{{ item.link.url }}" > {{  item.link.title }} </a>
+        {% endfor %}
+    </div>
+</div>
