@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Entity\EntityInterface;
+
 use Drupal\vactory_security_review\Checks\BackendHttpStrictTransportSecurityHeader;
 use Drupal\vactory_security_review\Checks\BackendSslCertValidation;
 use Drupal\vactory_security_review\Checks\FrontendContentSecurityPolicyHeader;
