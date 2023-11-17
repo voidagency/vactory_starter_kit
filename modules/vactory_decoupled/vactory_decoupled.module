@@ -30,7 +30,6 @@ use Drupal\Component\Utility\UrlHelper;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
 use Drupal\menu_item_extras\Entity\MenuItemExtrasMenuLinkContent;
-use Drupal\link\LinkItemInterface;
 
 /**
  * Implements hook_form_BASE_FORM_ID_alter().
