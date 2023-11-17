@@ -1,13 +1,18 @@
 name: "Formulaire d'authentication"
 multiple: FALSE
-category: 'Espace privé'
+category: "Espace privé"
 enabled: TRUE
 fields:
+  group_settings:
+  g_title: "setting"
+  emprunt:
+    type: checkbox
+    label: "Activer l'empreint/FaceID"
   title:
     type: text
     label: "Titre"
   intro:
     type: text_format
-    label: 'Introduction'
+    label: "Introduction"
     options:
-      '#format': 'full_html'
+      "#format": "full_html"
