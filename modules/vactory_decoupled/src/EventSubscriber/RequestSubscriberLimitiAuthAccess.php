@@ -3,7 +3,7 @@
 namespace Drupal\vactory_decoupled\EventSubscriber;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Symfony\Cmf\Component\Routing\RouteObjectInterface;
+use Drupal\Core\Routing\RouteObjectInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
