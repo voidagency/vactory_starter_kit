@@ -1,0 +1,8 @@
+services:
+  vactory_security_review.route_subscriber:
+    class: Drupal\vactory_security_review\Routing\VactorySecurityReviewRouteSubscriber
+    tags:
+      - { name: event_subscriber }
+  vactory_security_review.helper:
+    class: Drupal\vactory_security_review\Services\SecurityReviewHelper
+
