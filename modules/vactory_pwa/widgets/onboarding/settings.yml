@@ -1,0 +1,19 @@
+name: "PWA On Boarding"
+multiple: true
+category: 'PWA'
+enabled: TRUE
+fields:
+  image:
+    type: image
+    label: "image"
+  title:
+    type: text
+    label: "title"
+  content:
+    type: text_format
+    label: "description"
+    options:
+      "#format": full_html"
+  link:
+    type: url_extended
+    label: "Button où lien"
