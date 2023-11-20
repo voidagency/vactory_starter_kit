@@ -43,3 +43,11 @@ vactory_metatag_opengraph.defaults:
 #    no_cache: TRUE
 #  requirements:
 #    _permission: 'access content'
+
+vactory_core.pdf_watermark:
+  path: '/watermark/{mid}'
+  defaults:
+    _controller: '\Drupal\vactory_core\Controller\VactoryWatermarkController::pdfWatermark'
+    _title: 'Pdf Watermark'
+  requirements:
+    _access: 'TRUE'
