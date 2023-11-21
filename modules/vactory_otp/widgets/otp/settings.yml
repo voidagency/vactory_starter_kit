@@ -1,0 +1,25 @@
+name: "one time password (OTP)"
+multiple: FALSE
+category: 'OTP'
+enabled: TRUE
+fields:
+  group_first_step:
+    g_title: 'First step group'
+    title:
+      type: text
+      label: "Titre"
+    intro:
+      type: text_format
+      label: 'Introduction'
+      options:
+        '#format': 'full_html'
+  group_second_step:
+    g_title: 'First second group'
+    title:
+      type: text
+      label: "Titre"
+    intro:
+      type: text_format
+      label: 'Introduction'
+      options:
+        '#format': 'full_html'

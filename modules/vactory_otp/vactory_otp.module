@@ -5,6 +5,11 @@
  * Vactory OTP .module file.
  */
 
+use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Config\ImmutableConfig;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+
 /**
  * Implements hook_theme().
  */
@@ -31,5 +36,50 @@ function vactory_otp_mail($key, &$message, $params) {
       $message['body'][] = $params['message'];
       $message['options'] = $params['options'];
       break;
+  }
+}
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function vactory_otp_entity_base_field_info(EntityTypeInterface $entity_type) {
+  $fields = [];
+  if ($entity_type->id() === 'user') {
+    $fields['otp'] = BaseFieldDefinition::create('string_long')
+      ->setLabel(t('otp'))
+      ->setTranslatable(FALSE)
+      ->setDefaultValue('')
+      ->setReadOnly(TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textarea',
+        'weight' => 1,
+        'settings' => [
+          'rows' => 4,
+        ],
+      ])
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE);
+  }
+  return $fields;
+}
+
+/**
+ * Implements hook_df_jsonapi_output_alter().
+ */
+function vactory_otp_df_jsonapi_output_alter(&$content, CacheableMetadata $cacheability) {
+  if ($content['template'] === 'vactory_otp:otp') {
+    $settings = \Drupal::configFactory()->get('vactory_otp.login_settings');
+    if ($settings instanceof ImmutableConfig) {
+      $field = $settings->get('login_field');
+      $field_definitions = \Drupal::service('entity_field.manager')->getFieldDefinitions('user', 'user');
+      foreach ($field_definitions as $field_name => $field_definition) {
+        if ($field_name == $field) {
+          $content['field_label'] = $field_definition->getLabel();
+          break;
+        }
+        $fields[$field_name] = "{$field_definition->getLabel()} ({$field_name})";
+      }
+      $cacheability->addCacheTags(['config:vactory_otp.login_settings']);
+    }
   }
 }

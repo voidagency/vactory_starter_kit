@@ -1,0 +1,31 @@
+<?php
+
+/**
+ * @file
+ * Install file.
+ */
+
+use Drupal\Core\Field\BaseFieldDefinition;
+
+/**
+ * Add otp field.
+ */
+function vactory_otp_update_9501() {
+  $storage_definition = BaseFieldDefinition::create('string_long')
+    ->setLabel(t('otp'))
+    ->setTranslatable(FALSE)
+    ->setDefaultValue('')
+    ->setReadOnly(TRUE)
+    ->setDisplayOptions('form', [
+      'type' => 'string_textarea',
+      'weight' => 1,
+      'settings' => [
+        'rows' => 4,
+      ],
+    ])
+    ->setDisplayConfigurable('form', FALSE)
+    ->setDisplayConfigurable('view', FALSE);
+
+  \Drupal::entityDefinitionUpdateManager()
+    ->installFieldStorageDefinition('otp', 'user', 'user', $storage_definition);
+}
