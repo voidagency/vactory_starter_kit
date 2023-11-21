@@ -58,6 +58,7 @@ class OtpController extends ControllerBase {
     $canal = $this->config->get('canal');
 
     $query = \Drupal::entityTypeManager()->getStorage('user')->getQuery();
+    $query->accessCheck(FALSE);
     $query->condition($login_field, trim($value));
     $ids = $query->execute();
     if (!is_array($ids) || count($ids) !== 1) {
