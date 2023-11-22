@@ -187,12 +187,14 @@ function vactory_core_tokens($type, $tokens, array $data, array $options, Bubble
           $theme_name = \Drupal::service('theme.manager')
             ->getActiveTheme()
             ->getName();
-          // Todo: To delete comment
-          // $replacements[$original] = \Drupal::service('file_url_generator')->generateAbsoluteString(substr(theme_get_setting('logo.url', $theme_name), 1));
-          $replacements[$original] = \Drupal::service('vacory_decoupled.media_files_manager')->getMediaAbsoluteUrl(substr(theme_get_setting('logo.url', $theme_name), 1));       
+          if (\Drupal::moduleHandler()->moduleExists('vactory_decoupled')) {
+            $replacements[$original] = \Drupal::service('vacory_decoupled.media_files_manager')->getMediaAbsoluteUrl(substr(theme_get_setting('logo.url', $theme_name), 1));
+          } else {
+            $replacements[$original] = \Drupal::service('file_url_generator')->generateAbsoluteString(substr(theme_get_setting('logo.url', $theme_name), 1));
+          }
           break;
 
-          case 'node_summary':
+        case 'node_summary':
           $value = (isset($data['node']) && $data['node']->get('node_summary')->first() && isset($data['node']->get('node_summary')->first()->getValue()['value'])) ? $data['node']->get('node_summary')->first()->getValue()['value'] : '';
           $replacements[$original] = $value;
           break;

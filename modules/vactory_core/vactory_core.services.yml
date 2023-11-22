@@ -58,6 +58,3 @@ services:
       - "@settings"
   vactory_core.slug_manager:
     class: Drupal\vactory_core\SlugManager
-  vacory_decoupled.media_file_manager:
-    class: Drupal\vactory_decoupled\MediaFilesManager
-    arguments: ["@file_url_generator"]
