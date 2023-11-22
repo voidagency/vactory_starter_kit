@@ -34,6 +34,17 @@ function vactory_content_package_entity_base_field_info(EntityTypeInterface $ent
         'type' => 'string_textfield_with_counter',
         'weight' => 3,
       ]);
+
+    $fields['node_content_package_exclude'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Yes, exclude this entity from the content package (import/export).'))
+      ->setTranslatable(FALSE)
+      ->setDisplayOptions('form', [
+        'type' => 'boolean_checkbox',
+        'settings' => [
+          'display_label' => TRUE,
+        ],
+      ])
+      ->setDisplayConfigurable('form', TRUE);
   }
   if ($entity_type->id() === 'taxonomy_term') {
     $fields['term_id'] = BaseFieldDefinition::create('string')
@@ -144,4 +155,21 @@ function vactory_content_package_form_alter(&$form, FormStateInterface $form_sta
       $form['term_id']['widget'][0]['value']['#description'] = 'A machine-readable name for the term.<br><p class="color-warning">⚠️ This field suggests a machine-readable value. The final value will be saved once the form is submitted</p>';
     }
   }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function vactory_content_package_form_node_form_alter(&$form) {
+  $form['node_content_package_group'] = [
+    '#type' => 'details',
+    '#title' => t('Exclude from content package (import/export)'),
+    '#group' => 'advanced',
+    '#open' => FALSE,
+    '#access' => \Drupal::currentUser()
+      ->hasPermission('administer vactory_content_package configuration'),
+    '#attributes' => ['class' => ['node-class-form']],
+  ];
+
+  $form['node_content_package_exclude']['#group'] = 'node_content_package_group';
 }

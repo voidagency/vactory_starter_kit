@@ -99,5 +99,13 @@ services:
       - '@module_handler'
       - '@language_manager'
       - '@vactory.views.to_api'
-      - '@vactory.webform.normalizer'
       - '@config.factory'
+      - '@token'
+      - '@http_client'
+
+  vactory_decoupled.check_auth_limit_access:
+    class: Drupal\vactory_decoupled\EventSubscriber\RequestSubscriberLimitiAuthAccess
+    arguments: ['@router.no_access_checks', '@entity_type.manager', '@config.factory']
+    tags:
+      - { name: event_subscriber }
+

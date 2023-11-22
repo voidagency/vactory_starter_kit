@@ -66,7 +66,7 @@ class ContentPackageManager implements ContentPackageManagerInterface {
   /**
    * Normalize given entity.
    */
-  public function normalize(EntityInterface $entity): array {
+  public function normalize(EntityInterface $entity, $entity_translation = FALSE): array {
     $entity_type = $entity->getEntityTypeId();
     $bundle = $entity->bundle();
     $entity_values = $entity->toArray();
@@ -80,6 +80,43 @@ class ContentPackageManager implements ContentPackageManagerInterface {
           ->getCardinality();
         $is_multiple = $cardinality > 1 || $cardinality <= -1;
         $field_settings = $field_definition->getSettings();
+
+        $not_append_to_translated_entity = !($field_type === 'entity_reference_revisions' && isset($field_settings['target_type']) &&
+            $field_settings['target_type'] === 'paragraph') && !$field_definition->isTranslatable() && $entity_translation && $field_name !== 'type';
+
+        if ($not_append_to_translated_entity) {
+          unset($entity_values[$field_name]);
+          continue;
+        }
+
+        if ($field_type === 'entity_reference_revisions' && isset($field_settings['target_type']) && $field_settings['target_type'] === 'paragraph') {
+          // Paragraphs entity type case.
+          $field_value = empty($field_value) ? [] : $field_value;
+          if (!empty($field_value)) {
+            $paragraphs_ids = $this->getFieldValue($field_value, $is_multiple, TRUE, 'target_id');
+            if (!empty($paragraphs_ids)) {
+              $paragraphs = $this->entityTypeManager->getStorage('paragraph')
+                ->loadMultiple($paragraphs_ids);
+              $paragraphs = array_values($paragraphs);
+              foreach ($paragraphs as $i => $paragraph) {
+                $paragraph_values = $this->normalize($paragraph);
+                unset(
+                  $paragraph_values['status'],
+                  $paragraph_values['created'],
+                );
+                $appearance_fields = array_intersect_key($paragraph_values, array_flip(ContentPackageManagerInterface::PARAGRAPHS_APPEARANCE_KEYS));
+                $no_appearance_fields = array_diff_key($paragraph_values, array_flip(ContentPackageManagerInterface::PARAGRAPHS_APPEARANCE_KEYS));
+                $field_value[$i] = [
+                  ...$no_appearance_fields,
+                  ...[
+                  'appearance' => $appearance_fields,
+                ],
+                ];
+              }
+            }
+          }
+        }
+
         if (in_array($field_type, ContentPackageManagerInterface::PRIMITIVE_TYPES)) {
           $field_value = empty($field_value) ? "" : $field_value;
           if (is_array($field_value) && isset($field_value[0]['value'])) {
@@ -89,9 +126,11 @@ class ContentPackageManager implements ContentPackageManagerInterface {
             $field_value = empty($field_value[0]) ? "" : $field_value;
           }
         }
+
         if (in_array($field_type, ContentPackageManagerInterface::DATE_TIME_TYPES)) {
           $field_value = !$is_multiple ? date('d/m/Y H:i', $field_value[0]['value']) : array_map(fn($value) => date('d/m/Y H:i', $value['value']), $field_value);
         }
+
         if ($field_type === 'entity_reference') {
           if (empty($field_value)) {
             // Inform others whether the field is multiple or not.
@@ -182,42 +221,18 @@ class ContentPackageManager implements ContentPackageManagerInterface {
             $field_value = $this->getFieldValue($field_value, $is_multiple, FALSE, 'target_id');
           }
         }
+
         if ($field_type === 'colorapi_color_field') {
           $field_value = $this->getFieldValue($field_value, $is_multiple, FALSE, 'color');
         }
+
         if ($field_type === 'path') {
           $field_value = $this->getFieldValue($field_value, $is_multiple, FALSE, 'alias');
         }
+
         if ($field_type === 'field_wysiwyg_dynamic' && !empty($field_value)) {
           // DF field type.
           $field_value = $this->normalizeFieldWysiwygDynamic($field_value, $entity_values);
-        }
-        if ($field_type === 'entity_reference_revisions' && isset($field_settings['target_type']) && $field_settings['target_type'] === 'paragraph') {
-          // Paragraphs entity type case.
-          $field_value = empty($field_value) ? [] : $field_value;
-          if (!empty($field_value)) {
-            $paragraphs_ids = $this->getFieldValue($field_value, $is_multiple, TRUE, 'target_id');
-            if (!empty($paragraphs_ids)) {
-              $paragraphs = $this->entityTypeManager->getStorage('paragraph')
-                ->loadMultiple($paragraphs_ids);
-              $paragraphs = array_values($paragraphs);
-              foreach ($paragraphs as $i => $paragraph) {
-                $paragraph_values = $this->normalize($paragraph);
-                unset(
-                  $paragraph_values['status'],
-                  $paragraph_values['created'],
-                );
-                $appearance_fields = array_intersect_key($paragraph_values, array_flip(ContentPackageManagerInterface::PARAGRAPHS_APPEARANCE_KEYS));
-                $no_appearance_fields = array_diff_key($paragraph_values, array_flip(ContentPackageManagerInterface::PARAGRAPHS_APPEARANCE_KEYS));
-                $field_value[$i] = [
-                  ...$no_appearance_fields,
-                  ...[
-                    'appearance' => $appearance_fields,
-                  ],
-                ];
-              }
-            }
-          }
         }
       }
     }
@@ -269,8 +284,11 @@ class ContentPackageManager implements ContentPackageManagerInterface {
    * Denormalize field wysiwyg dynamic.
    */
   public function denormalizeFieldWysiwygDynamic($field_value, $entity_values) {
-    $widget_id = $field_value['widget_id'];
-    $widget_data = $field_value['widget_data'];
+    $widget_id = $field_value['widget_id'] ?? NULL;
+    $widget_data = $field_value['widget_data'] ?? NULL;
+    if (!isset($widget_id)) {
+      return NULL;
+    }
     $settings = $this->widgetsManager->loadSettings($widget_id);
     if (isset($settings['extra_fields'])) {
       foreach ($settings['extra_fields'] as $name => $field) {
@@ -526,8 +544,10 @@ class ContentPackageManager implements ContentPackageManagerInterface {
         if ($field_type === 'field_wysiwyg_dynamic' && !empty($field_value)) {
           // DF field type.
           $field_value = $this->denormalizeFieldWysiwygDynamic($field_value, $entity_values);
-          $field_value['widget_data'] = Json::encode($field_value['widget_data']);
-          $values[$field_name] = [$field_value];
+          if ($field_value) {
+            $field_value['widget_data'] = Json::encode($field_value['widget_data']);
+            $values[$field_name] = [$field_value];
+          }
         }
         if ($field_type === 'entity_reference_revisions' && isset($field_settings['target_type']) && $field_settings['target_type'] === 'paragraph') {
           // Paragraphs entity type case.

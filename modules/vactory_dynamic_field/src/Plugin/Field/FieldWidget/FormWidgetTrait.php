@@ -3,6 +3,7 @@
 namespace Drupal\vactory_dynamic_field\Plugin\Field\FieldWidget;
 
 use Drupal\Component\Render\MarkupInterface;
+use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Language\LanguageInterface;
@@ -130,6 +131,9 @@ trait FormWidgetTrait {
     if ($type === 'text_format') {
       $default_value_string = is_string($default_value) ? $default_value : '';
       $element['#default_value'] = isset($default_value['value']) ? $default_value['value'] : $default_value_string;
+    }
+    if ($type === 'datetime') {
+      $element['#default_value'] = is_string($default_value) ? DrupalDateTime::createFromFormat('Y-m-d H:i:s', $default_value) : $default_value;
     }
 
     if (in_array($type, ['text_format', 'text', 'textarea'])) {

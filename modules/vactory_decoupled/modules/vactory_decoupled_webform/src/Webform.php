@@ -3,7 +3,9 @@
 namespace Drupal\vactory_decoupled_webform;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Session\AccountProxy;
+use Drupal\file\Entity\File;
 use Drupal\webform\Element\WebformTermReferenceTrait;
 use Drupal\webform\Entity\WebformSubmission;
 use Drupal\webform\Plugin\WebformElementManager;
@@ -62,6 +64,13 @@ class Webform {
    */
   protected $entityTypeManager;
 
+  /**
+   * Module handler manager.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
   const LAYOUTS = [
     'webform_flexbox',
     'container',
@@ -79,12 +88,14 @@ class Webform {
     WebformTokenManager $webformTokenManager,
     AccountProxy $accountProxy,
     WebformElementManager $webformElementManager,
-    EntityTypeManagerInterface $entityTypeManager
+    EntityTypeManagerInterface $entityTypeManager,
+    ModuleHandlerInterface $moduleHandler
   ) {
     $this->webformTokenManager = $webformTokenManager;
     $this->currentUser = $accountProxy->getAccount();
     $this->webformElementManager = $webformElementManager;
     $this->entityTypeManager = $entityTypeManager;
+    $this->moduleHandler = $moduleHandler;
   }
 
   /**
@@ -111,6 +122,7 @@ class Webform {
     }
     // Add reset button.
     $schema['buttons']['reset'] = $this->resetButtonToUiSchema();
+    $this->moduleHandler->alter('decoupled_webform_schema', $schema, $webform_id);
     return $schema;
   }
 
@@ -134,9 +146,9 @@ class Webform {
     $draft['enable'] = TRUE;
     $submissions = $this->entityTypeManager->getStorage('webform_submission')
       ->loadByProperties([
-        'uid' => $this->currentUser->id(),
+        'uid'        => $this->currentUser->id(),
         'webform_id' => $this->webform->id(),
-        'in_draft' => TRUE,
+        'in_draft'   => TRUE,
       ]);
     $submission = reset($submissions);
     if ($submission) {
@@ -211,7 +223,7 @@ class Webform {
     }
 
     $properties = [
-      'type' => $item['#type'],
+      'type'  => $item['#type'],
       'title' => $item['#title'] ?? '',
     ];
 
@@ -264,9 +276,9 @@ class Webform {
     }
 
     $properties = [
-      'type' => $item['#type'],
+      'type'  => $item['#type'],
       'title' => $item['#title'] ?? '',
-      'icon' => $item['#icon'] ?? '',
+      'icon'  => $item['#icon'] ?? '',
     ];
 
     (isset($item['#attributes']['class']) && !empty($item['#attributes']['class'])) ? $properties['class'] = implode(" ", $item['#attributes']['class']) : "";
@@ -336,7 +348,8 @@ class Webform {
     if (isset($item['#default_file'])) {
       $properties['default_value'] = $this->defaultValueTokensReplace($item, $field_name, '#default_file');
       if (!empty($properties['default_value'])) {
-        $properties['default_value'] = json_decode($properties['default_value']);
+        $decoded = json_decode($properties['default_value']);
+        $properties['default_value'] = json_last_error() === JSON_ERROR_NONE ? $decoded : $properties['default_value'];
       }
     }
 
@@ -346,37 +359,37 @@ class Webform {
 
     // @todo Webform_terms_of_service.
     $types = [
-      'textfield' => 'text',
-      'email' => 'text',
-      'webform_email_confirm' => 'text',
-      'url' => 'text',
-      'tel' => 'text',
-      'hidden' => 'text',
-      'number' => 'number',
-      'textarea' => 'textArea',
-      'captcha' => 'captcha',
-      'checkbox' => 'checkbox',
+      'textfield'                => 'text',
+      'email'                    => 'text',
+      'webform_email_confirm'    => 'text',
+      'url'                      => 'text',
+      'tel'                      => 'text',
+      'hidden'                   => 'text',
+      'number'                   => 'number',
+      'textarea'                 => 'textArea',
+      'captcha'                  => 'captcha',
+      'checkbox'                 => 'checkbox',
       'webform_terms_of_service' => 'checkbox',
-      'select' => 'select',
-      'webform_select_other' => 'select',
-      'webform_term_select' => 'select',
-      'webform_term_checkboxes' => 'checkboxes',
-      'radios' => 'radios',
-      'webform_radios_other' => 'radios',
-      'checkboxes' => 'checkboxes',
-      'webform_buttons' => 'checkboxes',
-      'webform_buttons_other' => 'checkboxes',
+      'select'                   => 'select',
+      'webform_select_other'     => 'select',
+      'webform_term_select'      => 'select',
+      'webform_term_checkboxes'  => 'checkboxes',
+      'radios'                   => 'radios',
+      'webform_radios_other'     => 'radios',
+      'checkboxes'               => 'checkboxes',
+      'webform_buttons'          => 'checkboxes',
+      'webform_buttons_other'    => 'checkboxes',
       'webform_checkboxes_other' => 'checkboxes',
-      'webform_document_file' => 'upload',
-      'webform_image_file' => 'upload',
-      'date' => 'date',
-      'webform_time' => 'time',
-      'processed_text' => 'rawhtml',
-      'password' => 'password',
+      'webform_document_file'    => 'upload',
+      'webform_image_file'       => 'upload',
+      'date'                     => 'date',
+      'webform_time'             => 'time',
+      'processed_text'           => 'rawhtml',
+      'password'                 => 'password',
     ];
 
     $htmlInputTypes = [
-      'tel' => 'tel',
+      'tel'    => 'tel',
       'hidden' => 'hidden',
     ];
 
@@ -400,6 +413,17 @@ class Webform {
     (isset($item['#wrapper_attributes']['class']) && !empty($item['#wrapper_attributes']['class'])) ? $properties['wrapperClass'] = implode(" ", $item['#wrapper_attributes']['class']) : "";
     (isset($item['#date_date_min']) && !is_null($item['#date_date_min'])) ? $properties['dateMin'] = $item['#date_date_min'] : NULL;
     (isset($item['#date_date_max']) && !is_null($item['#date_date_max'])) ? $properties['dateMax'] = $item['#date_date_max'] : NULL;
+    (isset($item['#min']) && !is_null($item['#min'])) ? $properties['attributes']['min'] = $item['#min'] : NULL;
+    (isset($item['#max']) && !is_null($item['#max'])) ? $properties['attributes']['max'] = $item['#max'] : NULL;
+    (isset($item['#step']) && !is_null($item['#step'])) ? $properties['attributes']['step'] = $item['#step'] : NULL;
+
+    // add custom properties
+    if (isset($item['#attributes']) && is_array($item['#attributes']) ) {
+      foreach ($item['#attributes'] as $key => $value) {
+        $properties['attributes'][$key] = $value;
+      }
+    }
+
     $properties['isMultiple'] = isset($item['#multiple']);
     if (isset($item['#required'])) {
       $properties['validation']['required'] = TRUE;
@@ -418,10 +442,7 @@ class Webform {
       $properties['validation']['max'] = $item['#max'];
     }
     // phpcs:enable
-    if (
-      $type === 'email' ||
-      $type === 'webform_email_confirm'
-    ) {
+    if ($type === 'email' || $type === 'webform_email_confirm') {
       if (!isset($properties['validation']['pattern'])) {
         $properties['validation']['pattern'] = "/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i";
         $properties['validation']['patternError'] = (string) t("Le champ @field n'est pas valide", [
@@ -455,20 +476,13 @@ class Webform {
       }
     }
 
-    if (
-      isset($properties['emptyOption']) &&
-      !empty($properties['emptyOption']) &&
-      !empty($properties['options'])
-    ) {
+    if (isset($properties['emptyOption']) && !empty($properties['emptyOption']) && !empty($properties['options'])) {
       $emptyOption = [
         'label' => $properties['emptyOption'],
         'value' => '',
       ];
 
-      if (
-        isset($properties['emptyValue']) &&
-        !empty($properties['emptyValue'])
-      ) {
+      if (isset($properties['emptyValue']) && !empty($properties['emptyValue'])) {
         $emptyOption['value'] = $properties['emptyValue'];
       }
 
@@ -477,6 +491,7 @@ class Webform {
 
     if ($type === 'captcha') {
       $properties['validation']['required'] = TRUE;
+      $properties['captcha_type'] = $item['#captcha_type'];
     }
 
     if ($ui_type === 'upload') {
@@ -498,11 +513,20 @@ class Webform {
       }
 
       $properties['filePreview'] = isset($item['#file_preview']);
+      $fid = $properties['default_value'];
+      if (is_numeric($fid)) {
+        $file = File::load($fid);
+        $info = [
+          'fid'        => $fid,
+          'size'       => $file->get('filesize')->value,
+          'type'       => $file->get('filemime')->value,
+          'name'       => $file->get('filename')->value,
+          'previewUrl' => $file->createFileUrl(TRUE),
+        ];
+        $properties['default_value'] = $info;
+      }
 
-      if (
-        isset($element['#upload_validators']) &&
-        isset($element['#upload_validators']['file_validate_extensions'][0])
-      ) {
+      if (isset($element['#upload_validators']) && isset($element['#upload_validators']['file_validate_extensions'][0])) {
         $field_extensions = $element['#upload_validators']['file_validate_extensions'][0];
         $extensions = explode(" ", $field_extensions);
         $doted_extensions = [];

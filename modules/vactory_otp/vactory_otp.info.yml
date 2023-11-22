@@ -4,3 +4,5 @@ type: module
 core: 8.x
 core_version_requirement: ^8 || ^9
 package: Vactory
+dependencies:
+  - vactory_sms_sender

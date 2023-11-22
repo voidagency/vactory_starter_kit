@@ -155,8 +155,15 @@ vactory_decoupled.firebase_key_controller:
 vactory_decoupled.login_token:
   path: '/oauth/login-token'
   defaults:
-    _controller: 'Drupal\simple_oauth\Controller\Oauth2Token::token'
+    _controller: 'Drupal\vactory_decoupled\Controller\DecoupledOauth2Token::token'
   methods: [POST]
+  requirements:
+    _access: 'TRUE'
+    _format: 'json'
+vactory_decoupled.one_time_token_check:
+  path: '/oauth/one-time-token-check'
+  defaults:
+    _controller: 'Drupal\vactory_decoupled\Controller\OneTimeToken::CheckOneTimeLogin'
   requirements:
     _access: 'TRUE'
     _format: 'json'

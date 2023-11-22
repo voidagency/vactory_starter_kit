@@ -1,0 +1,40 @@
+.page-summary:focus {
+    box-shadow: unset !important;
+}
+.progress__percentage {
+    font-size: 40px; font-weight: bold !important;
+}
+.pending-content-filter {
+
+}
+.page-details {
+    border: 2px solid #808080 !important;
+    border-radius: 8px !important;
+    margin: 8px !important;
+}
+.page-summary span {
+    background: orangered !important;
+    color: white !important;
+    border-radius: 3px !important;
+    font-size: small !important;
+    height: 20px !important;
+    padding: 3px !important;
+}
+.page-summary .span-block {
+    background: mediumslateblue !important;
+}
+
+.page-summary {
+    display: flex !important;
+    cursor: pointer !important;
+}
+.details-body {
+    display: flex;
+    border-radius: 8px;
+    margin: 8px;
+}
+@media print {
+    .pending-content-filter, .progress, .pending-content-filter, .button, a.button, nav, #page-printer {
+        display: none;
+    }
+}

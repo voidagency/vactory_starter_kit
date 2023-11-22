@@ -4,8 +4,8 @@ namespace Drupal\vactory_decoupled\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use \Drupal\locale\SourceString;
 use Drupal\node\Entity\NodeType;
+use Drupal\user\Entity\Role;
 
 /**
  * Add protected routes.
@@ -66,6 +66,12 @@ class DecoupledSettingsForm extends ConfigFormBase
       '#group' => 'settings_tab',
     ];
 
+    $form['auth_limit_access'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Authentication limit access'),
+      '#group' => 'settings_tab',
+    ];
+
     $form['secure_routes']['routes'] = [
       '#type' => 'textarea',
       '#title' => t('Routes'),
@@ -83,6 +89,17 @@ class DecoupledSettingsForm extends ConfigFormBase
       '#description' => $this->t("Nodes of selected content types will be excluded from frontend caching"),
     ];
 
+    $user_roles = Role::loadMultiple();
+    $user_roles = array_map(fn($role) => $role->label(), $user_roles);
+    $form['auth_limit_access']['auth_roles_excluded'] = [
+      '#type' => 'checkboxes',
+      '#title' => $this->t('Excluded roles from authentication'),
+      '#options' => $user_roles,
+      '#default_value' => $config->get('auth_roles_excluded') ?? [],
+      '#description' => $this->t("Roles will be excluded from front authentication"),
+    ];
+
+
     return $form;
   }
 
@@ -93,6 +110,7 @@ class DecoupledSettingsForm extends ConfigFormBase
     $this->config('vactory_decoupled.settings')
       ->set('routes', $form_state->getValue('routes'))
       ->set('cache_excluded_types', array_filter($form_state->getValue('cache_excluded_types')))
+      ->set('auth_roles_excluded', array_filter($form_state->getValue('auth_roles_excluded')))
       ->save();
 
     parent::submitForm($form, $form_state);

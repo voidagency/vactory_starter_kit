@@ -1,0 +1,22 @@
+name: 'D91 - Ancre V3'
+multiple: TRUE
+category: 'Content'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: "Titre"
+    options:
+      "#required": TRUE
+  paragraphId:
+    type: text
+    label: "Paragraph ID"
+    options:
+      "#required": TRUE
+extra_fields:
+  title:
+    type: text
+    label: 'Title'
+  link:
+    type: url_extended
+    label: 'Link'

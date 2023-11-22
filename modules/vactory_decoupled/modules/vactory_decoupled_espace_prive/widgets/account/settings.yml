@@ -13,3 +13,11 @@ fields:
         filters:
           - include=user_picture
           - filter[drupal_internal__uid][value]=[current-user:uid]
+
+  webform:
+    type: webform_decoupled
+    label: 'Formulaire'
+    options:
+      '#required': TRUE
+      '#default_value':
+        webform_id: 'vactory_espace_prive_edit'

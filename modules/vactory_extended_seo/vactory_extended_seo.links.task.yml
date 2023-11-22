@@ -1,0 +1,21 @@
+# Vactory extended seo routing definition
+vactory_extended_seo.settings_tab:
+  route_name: vactory_extended_seo.settings
+  title: 'Settings'
+  base_route: vactory_extended_seo.settings
+
+entity.vactory_extended_seo.canonical:
+  route_name: entity.vactory_extended_seo.canonical
+  base_route: entity.vactory_extended_seo.canonical
+  title: 'View'
+
+entity.vactory_extended_seo.edit_form:
+  route_name: entity.vactory_extended_seo.edit_form
+  base_route: entity.vactory_extended_seo.canonical
+  title: 'Edit'
+
+entity.vactory_extended_seo.delete_form:
+  route_name:  entity.vactory_extended_seo.delete_form
+  base_route:  entity.vactory_extended_seo.canonical
+  title: Delete
+  weight: 10

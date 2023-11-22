@@ -39,3 +39,15 @@ extra_fields:
     loopSpeed:
       type: number
       label: 'Slide Speed'
+    hideArrowMobile:
+      type: checkbox
+      label: 'hide arrows on mobile'
+    hideArrowTablet:
+      type: checkbox
+      label: 'hide arrows on tablet'
+    hideArrowDesktop:
+      type: checkbox
+      label: 'hide arrows on desktop'
+    hideDots:
+      type: checkbox
+      label: 'hide pagination dots'
