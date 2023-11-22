@@ -3,15 +3,19 @@
 namespace Drupal\vactory_decoupled_webform;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Session\AccountProxy;
+use Drupal\file\Entity\File;
 use Drupal\webform\Element\WebformTermReferenceTrait;
 use Drupal\webform\Entity\WebformSubmission;
 use Drupal\webform\Plugin\WebformElementManager;
 use Drupal\webform\WebformSubmissionConditionsValidator;
 use Drupal\webform\WebformTokenManager;
 use Drupal\webform\Entity\Webform as WebformEntity;
-use Drupal\file\Entity\File;
-use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Component\Utility\NestedArray;
+use Drupal\Core\Render\RenderContext;
+use Drupal\Core\Render\RendererInterface;
+use Drupal\vactory_private_files_decoupled\VactoryPrivateFilesServices;
 
 /**
  * Simplifies the process of generating an API version of a webform.
@@ -71,6 +75,28 @@ class Webform {
    */
   protected $moduleHandler;
 
+  /**
+   * The renderer.
+   * 
+   * @var \Drupal\Core\Render\RendererInterface
+   */
+  protected $renderer;
+
+  /**
+   * The vactory private file service.
+   * 
+   * @var \Drupal\vactory_private_files_decoupled\VactoryPrivateFilesServices
+   */
+  protected $vactoryPrivateFilesService;
+
+  /**
+   * Form with test values.
+   */
+  protected $formWithTestsValues = [];
+
+  /**
+   * Layouts constant.
+   */
   const LAYOUTS = [
     'webform_flexbox',
     'container',
@@ -79,7 +105,15 @@ class Webform {
     'webform_section',
   ];
 
+  /**
+   * Webform Page Constant.
+   */
   const PAGE = 'webform_wizard_page';
+
+  /**
+   * The excluded webform from test. 
+   */
+  const WEBFORM_TESTS_EXCLUDED = ['vactory_espace_prive_edit', 'vactory_espace_prive_register'];
 
   /**
    * {@inheritDoc}
@@ -89,13 +123,17 @@ class Webform {
     AccountProxy $accountProxy,
     WebformElementManager $webformElementManager,
     EntityTypeManagerInterface $entityTypeManager,
-    ModuleHandlerInterface $moduleHandler
+    ModuleHandlerInterface $moduleHandler,
+    RendererInterface $renderer,
+    VactoryPrivateFilesServices $vactoryPrivateFilesService
   ) {
     $this->webformTokenManager = $webformTokenManager;
     $this->currentUser = $accountProxy->getAccount();
     $this->webformElementManager = $webformElementManager;
     $this->entityTypeManager = $entityTypeManager;
     $this->moduleHandler = $moduleHandler;
+    $this->renderer = $renderer;
+    $this->vactoryPrivateFilesService = $vactoryPrivateFilesService;
   }
 
   /**
@@ -109,6 +147,10 @@ class Webform {
    */
   public function normalize($webform_id) {
     $this->webform = WebformEntity::load($webform_id);
+    $webformAux = $this->webform;
+    $this->formWithTestsValues = $this->renderer->executeInRenderContext(new RenderContext(), static function () use ($webformAux) {
+      return $webformAux->getSubmissionForm([], 'test')['elements'] ?? [];;
+    });
     $elements = $this->webform->getElementsInitialized();
     $draft = $this->draftSettingsToSchema();
     $schema = $this->itemsToSchema($elements);
@@ -146,9 +188,9 @@ class Webform {
     $draft['enable'] = TRUE;
     $submissions = $this->entityTypeManager->getStorage('webform_submission')
       ->loadByProperties([
-        'uid' => $this->currentUser->id(),
+        'uid'        => $this->currentUser->id(),
         'webform_id' => $this->webform->id(),
-        'in_draft' => TRUE,
+        'in_draft'   => TRUE,
       ]);
     $submission = reset($submissions);
     if ($submission) {
@@ -203,7 +245,6 @@ class Webform {
     }
     /*    $schema['draft']['settings']['draft'] = isset($this->webform->getSettings()['draft']) && !empty($this->webform->getSettings()['draft']) ? $this->webform->getSettings()['draft'] : 'none';*/
     /*    $schema['draft']['settings']['draft_auto_save'] = isset($this->webform->getSettings()['draft']) && !empty($this->webform->getSettings()['draft_auto_save']) ? $this->webform->getSettings()['draft_auto_save'] : FALSE; */
-
     return $schema;
   }
 
@@ -223,7 +264,7 @@ class Webform {
     }
 
     $properties = [
-      'type' => $item['#type'],
+      'type'  => $item['#type'],
       'title' => $item['#title'] ?? '',
     ];
 
@@ -276,9 +317,9 @@ class Webform {
     }
 
     $properties = [
-      'type' => $item['#type'],
+      'type'  => $item['#type'],
       'title' => $item['#title'] ?? '',
-      'icon' => $item['#icon'] ?? '',
+      'icon'  => $item['#icon'] ?? '',
     ];
 
     (isset($item['#attributes']['class']) && !empty($item['#attributes']['class'])) ? $properties['class'] = implode(" ", $item['#attributes']['class']) : "";
@@ -359,37 +400,37 @@ class Webform {
 
     // @todo Webform_terms_of_service.
     $types = [
-      'textfield' => 'text',
-      'email' => 'text',
-      'webform_email_confirm' => 'text',
-      'url' => 'text',
-      'tel' => 'text',
-      'hidden' => 'text',
-      'number' => 'number',
-      'textarea' => 'textArea',
-      'captcha' => 'captcha',
-      'checkbox' => 'checkbox',
+      'textfield'                => 'text',
+      'email'                    => 'text',
+      'webform_email_confirm'    => 'text',
+      'url'                      => 'text',
+      'tel'                      => 'text',
+      'hidden'                   => 'text',
+      'number'                   => 'number',
+      'textarea'                 => 'textArea',
+      'captcha'                  => 'captcha',
+      'checkbox'                 => 'checkbox',
       'webform_terms_of_service' => 'checkbox',
-      'select' => 'select',
-      'webform_select_other' => 'select',
-      'webform_term_select' => 'select',
-      'webform_term_checkboxes' => 'checkboxes',
-      'radios' => 'radios',
-      'webform_radios_other' => 'radios',
-      'checkboxes' => 'checkboxes',
-      'webform_buttons' => 'checkboxes',
-      'webform_buttons_other' => 'checkboxes',
+      'select'                   => 'select',
+      'webform_select_other'     => 'select',
+      'webform_term_select'      => 'select',
+      'webform_term_checkboxes'  => 'checkboxes',
+      'radios'                   => 'radios',
+      'webform_radios_other'     => 'radios',
+      'checkboxes'               => 'checkboxes',
+      'webform_buttons'          => 'checkboxes',
+      'webform_buttons_other'    => 'checkboxes',
       'webform_checkboxes_other' => 'checkboxes',
-      'webform_document_file' => 'upload',
-      'webform_image_file' => 'upload',
-      'date' => 'date',
-      'webform_time' => 'time',
-      'processed_text' => 'rawhtml',
-      'password' => 'password',
+      'webform_document_file'    => 'upload',
+      'webform_image_file'       => 'upload',
+      'date'                     => 'date',
+      'webform_time'             => 'time',
+      'processed_text'           => 'rawhtml',
+      'password'                 => 'password',
     ];
 
     $htmlInputTypes = [
-      'tel' => 'tel',
+      'tel'    => 'tel',
       'hidden' => 'hidden',
     ];
 
@@ -442,10 +483,7 @@ class Webform {
       $properties['validation']['max'] = $item['#max'];
     }
     // phpcs:enable
-    if (
-      $type === 'email' ||
-      $type === 'webform_email_confirm'
-    ) {
+    if ($type === 'email' || $type === 'webform_email_confirm') {
       if (!isset($properties['validation']['pattern'])) {
         $properties['validation']['pattern'] = "/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i";
         $properties['validation']['patternError'] = (string) t("Le champ @field n'est pas valide", [
@@ -479,20 +517,13 @@ class Webform {
       }
     }
 
-    if (
-      isset($properties['emptyOption']) &&
-      !empty($properties['emptyOption']) &&
-      !empty($properties['options'])
-    ) {
+    if (isset($properties['emptyOption']) && !empty($properties['emptyOption']) && !empty($properties['options'])) {
       $emptyOption = [
         'label' => $properties['emptyOption'],
         'value' => '',
       ];
 
-      if (
-        isset($properties['emptyValue']) &&
-        !empty($properties['emptyValue'])
-      ) {
+      if (isset($properties['emptyValue']) && !empty($properties['emptyValue'])) {
         $emptyOption['value'] = $properties['emptyValue'];
       }
 
@@ -523,24 +554,12 @@ class Webform {
       }
 
       $properties['filePreview'] = isset($item['#file_preview']);
-
       $fid = $properties['default_value'];
       if (is_numeric($fid)) {
-        $file = File::load($fid);
-        $info = [
-          'fid'        => $fid,
-          'size'       => $file->get('filesize')->value,
-          'type'       => $file->get('filemime')->value,
-          'name'       => $file->get('filename')->value,
-          'previewUrl' => $file->createFileUrl(TRUE),
-        ];
-        $properties['default_value'] = $info;
+        $properties['default_value'] = $this->preparePreviewInfos($fid);
       }
 
-      if (
-        isset($element['#upload_validators']) &&
-        isset($element['#upload_validators']['file_validate_extensions'][0])
-      ) {
+      if (isset($element['#upload_validators']) && isset($element['#upload_validators']['file_validate_extensions'][0])) {
         $field_extensions = $element['#upload_validators']['file_validate_extensions'][0];
         $extensions = explode(" ", $field_extensions);
         $doted_extensions = [];
@@ -564,7 +583,65 @@ class Webform {
       $properties['states'] = $this->getFormElementStates($item);
     }
 
+    // Override default values when the query params include test.
+    $query = \Drupal::request()->query->get("q");
+    if (!in_array($this->webform->id() ,self::WEBFORM_TESTS_EXCLUDED) && isset($query["test"])) {
+      $this->prepareFormElementTestValue($field_name , $properties);
+    }
+
     return $properties;
+  }
+
+  /**
+   * Prepare form element test value.
+   */
+  private function prepareFormElementTestValue($field_name, &$properties) {
+    $parents = $this->findParents($field_name, $this->formWithTestsValues);
+    $child = !empty($parents) ?  NestedArray::getValue($this->formWithTestsValues, array_merge($parents, [$field_name])) : [];
+    $concenedElement = !empty($child) && in_array($field_name, $child['#array_parents'] ?? []) ? $child : $this->formWithTestsValues[$field_name];
+    $properties['default_value'] = $concenedElement['#default_value'] ?? '';
+    if ($properties['type'] == 'upload') {
+      $this->prepareUploadElementTestValue($properties);
+    }
+  }
+
+  /**
+   * Prepare upload element test value.
+   */
+  private function prepareUploadElementTestValue(&$properties) {
+    if (!$properties['isMultiple']) {
+      $fid = is_array($properties['default_value']) ? array_values($properties['default_value'])[0] : null;
+      if (!is_null($fid)) {
+        $properties['default_value'] = $this->preparePreviewInfos($fid);  
+        return;
+      }
+    }
+    $files = [];
+    foreach ($properties['default_value'] as $fid) {
+      $fileInfo = $this->preparePreviewInfos($fid);
+      if (!empty($fileInfo)) {
+        $files[] = $fileInfo;
+      }
+    }
+    $properties['default_value'] = $files;
+  }
+
+  /**
+   * Prepare preview infos.
+   */
+  private function preparePreviewInfos($fid) {
+    $file = File::load($fid);
+    if (!isset($file)) {
+      return [];
+    }
+    $privateFile = $this->vactoryPrivateFilesService->generatePrivateFileUrl($file);
+    return [
+      'fid'        => $fid,
+      'size'       => $file->get('filesize')->value,
+      'type'       => $file->get('filemime')->value,
+      'name'       => $file->get('filename')->value,
+      'previewUrl' => $privateFile['_default'] ?? $file->createFileUrl(TRUE),
+    ];
   }
 
   /**
@@ -661,6 +738,28 @@ class Webform {
     $element_plugin = $this->webformElementManager->createInstance($element['#type'], $plugin_definition);
 
     return $element_plugin;
+  }
+
+  /**
+   * Find the parent elements of a specified key within an array.
+   */
+  protected function findParents($key, $array, $parentKey = null, &$parents = array()) {
+    foreach ($array as $currentKey => $value) {
+        if ($currentKey === $key) {
+            // If the current key matches the target key, add the parent to the list
+            if ($parentKey !== null && !str_starts_with($parentKey, '#')) {
+                $parents[] = $parentKey;
+            }
+            break;
+        }
+
+        if (is_array($value)) {
+            // Recursively search in the current sub-array with the current key as the parent
+            $this->findParents($key, $value, $currentKey, $parents);
+        }
+    }
+
+    return $parents;
   }
 
 }
