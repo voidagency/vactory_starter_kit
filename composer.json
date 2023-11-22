@@ -249,7 +249,7 @@
         "Modifying a facet does not invalidate caches": "https://gist.githubusercontent.com/voidagency/299883e039129c50da852a42c704af91/raw/1812ca417adce536e82cede6da50f8e7952c7479/fix-jsonapi-search-api-facets-cache-3176987.patch"
       },
       "drupal/csv_serialization": {
-        "Drupal 10 compatibility": "https://gist.githubusercontent.com/b-khouy/b249e0a35a2ece62fe741ad330490b8e/raw/33500590ee13751624629833c39b7ba613938ce2/csv-serialization-tmp-patch.patch"
+        "Drupal 10 compatibility": "https://gist.githubusercontent.com/b-khouy/b249e0a35a2ece62fe741ad330490b8e/raw/4c338d1e2bc46675d84f7ea4badb51ed61744fdb/csv-serialization-tmp-patch2.patch"
       },
       "drupal/views_autocomplete_filters": {
         "D10: jquery once is removed": "https://www.drupal.org/files/issues/2023-03-03/jquery_once-3345731-2.patch"
