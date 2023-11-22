@@ -97,6 +97,10 @@ class SimpleOauthAuthenticationProvider extends BaseSimpleOauthAuthenticationPro
         $mail = (!empty($email)) ? $email : "{$id}@google.com";
 
         $user = user_load_by_name($username);
+        if (empty($user)) {
+          // Try loading user by mail.
+          $user = user_load_by_mail($mail);
+        }
         if (!$user) {
             $values = [
                 'status' => 1,
@@ -145,6 +149,10 @@ class SimpleOauthAuthenticationProvider extends BaseSimpleOauthAuthenticationPro
         $mail = (!empty($email)) ? $email : "{$id}@facebook.com";
 
         $user = user_load_by_name($username);
+        if (empty($user)) {
+          // Try loading user by mail.
+          $user = user_load_by_mail($mail);
+        }
         if (!$user) {
             $values = [
                 'status' => 1,
@@ -200,7 +208,10 @@ class SimpleOauthAuthenticationProvider extends BaseSimpleOauthAuthenticationPro
         $mail = $claims->get("email", $username . "@keycloak.com");
 
         $user = user_load_by_name($username);
-
+        if (empty($user)) {
+          // Try loading user by mail.
+          $user = user_load_by_mail($mail);
+        }
         if (!$user) {
             $values = [
                 'status' => 1,

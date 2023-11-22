@@ -1,0 +1,81 @@
+<?php
+
+/**
+ * @file
+ * Module related hooks.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+
+use Drupal\vactory_security_review\Checks\BackendHttpStrictTransportSecurityHeader;
+use Drupal\vactory_security_review\Checks\BackendSslCertValidation;
+use Drupal\vactory_security_review\Checks\FrontendContentSecurityPolicyHeader;
+use Drupal\vactory_security_review\Checks\FrontendHttpStrictTransportSecurityHeader;
+use Drupal\vactory_security_review\Checks\FrontendSslCertValidation;
+use Drupal\vactory_security_review\Checks\LoginFailureLog;
+use Drupal\vactory_security_review\Checks\UserPrivilegesChangesLog;
+
+/**
+ * Implements hook_security_review_checks().
+ */
+function vactory_security_review_security_review_checks() {
+  return [
+    new LoginFailureLog(),
+    new UserPrivilegesChangesLog(),
+    new FrontendSslCertValidation(),
+    new BackendSslCertValidation(),
+    new BackendHttpStrictTransportSecurityHeader(),
+    new FrontendHttpStrictTransportSecurityHeader(),
+    new FrontendContentSecurityPolicyHeader(),
+  ];
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ */
+function vactory_security_review_user_presave(EntityInterface $entity) {
+  $log_user_privileges_change = \Drupal::config('security_review.checks')->get('log_user_privileges_change');
+  if (!$entity->isNew() && $log_user_privileges_change) {
+    $original = $entity->original;
+    $original_roles = $original->getRoles();
+    $entity_roles = $entity->getRoles();
+    $revoke_diff = array_diff($original_roles, $entity_roles);
+    $grant_diff = array_diff($entity_roles, $original_roles);
+    if (!empty($revoke_diff) || !empty($grant_diff)) {
+      $username = $entity->get('name')->value;
+      $message = "Privileges has been updated for user {$username}: <br>";
+      if (!empty($revoke_diff)) {
+        $message .= '<strong>Revoked roles:</strong> ' . implode(', ', $revoke_diff) . '<br>';
+      }
+      if (!empty($grant_diff)) {
+        $message .= '<strong>Granted roles:</strong> ' . implode(', ', $grant_diff);
+      }
+      \Drupal::logger('user')->info($message);
+    }
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ */
+function vactory_security_review_user_role_presave(EntityInterface $entity) {
+  $log_user_privileges_change = \Drupal::config('security_review.checks')->get('log_user_privileges_change');
+  if (!$entity->isNew() && $log_user_privileges_change) {
+    $original = $entity->original;
+    $original_permissions = $original->getPermissions();
+    $role_permissions = $entity->getPermissions();
+    $revoke_diff = array_diff($original_permissions, $role_permissions);
+    $grant_diff = array_diff($role_permissions, $original_permissions);
+    if (!empty($revoke_diff) || !empty($grant_diff)) {
+      $role_label = $entity->label();
+      $message = "Privileges has been updated for users with role \"{$role_label}\": <br>";
+      if (!empty($revoke_diff)) {
+        $message .= '<strong>Revoked permissions:</strong> ' . implode(', ', $revoke_diff) . '<br>';
+      }
+      if (!empty($grant_diff)) {
+        $message .= '<strong>Granted permissions:</strong> ' . implode(', ', $grant_diff);
+      }
+      \Drupal::logger('user')->info($message);
+    }
+  }
+}

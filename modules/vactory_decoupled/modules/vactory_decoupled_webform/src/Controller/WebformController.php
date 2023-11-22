@@ -2,10 +2,12 @@
 
 namespace Drupal\vactory_decoupled_webform\Controller;
 
+use Drupal\captcha\Constants\CaptchaConstants;
 use Drupal\Component\Utility\Crypt;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Session\AccountProxy;
 use Drupal\Core\Url;
+use Drupal\vactory_core\Services\VactoryDevTools;
 use Drupal\webform\Entity\Webform;
 use Drupal\webform\Entity\WebformSubmission;
 use Drupal\webform\WebformInterface;
@@ -28,17 +30,27 @@ class WebformController extends ControllerBase {
   protected $currentUser;
 
   /**
+   * Vactory Dev Tools.
+   */
+  protected $vactoryDevTools;
+
+  /**
    * WebformController constructor.
    */
-  public function __construct(AccountProxy $accountProxy) {
+  public function __construct(AccountProxy $accountProxy, VactoryDevTools $vactoryDevTools) {
     $this->currentUser = $accountProxy->getAccount();
+    $this->vactoryDevTools = $vactoryDevTools;
+
   }
 
   /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static($container->get('current_user'));
+    return new static(
+      $container->get('current_user'),
+      $container->get('vactory_core.tools')
+    );
   }
 
   const ELEMENT_TO_SKIP = [
@@ -99,7 +111,7 @@ class WebformController extends ControllerBase {
     \Drupal::moduleHandler()
       ->alter('decoupled_webform_data_presubmit', $webform_data, $error_message);
     if (!empty($error_message)) {
-      return new JsonResponse($error_message, 400);
+      return new JsonResponse($error_message, $error_message['code'] ?? 400);
     }
     if (isset($webform_data['sid']) && !empty($webform_data['sid'])) {
       $webform_submission = WebformSubmission::load($webform_data['sid']);
@@ -143,6 +155,7 @@ class WebformController extends ControllerBase {
     if ($webform_submission instanceof WebformSubmissionInterface) {
       return new JsonResponse([
         'sid'      => $webform_submission->id(),
+        'crypted_sid' => $this->vactoryDevTools->encrypt('vactory_tender' . $webform_submission->id()),
         'settings' => self::getWhitelistedSettings($webform),
       ]);
     }
@@ -203,7 +216,7 @@ class WebformController extends ControllerBase {
       'timestamp'  => \Drupal::time()->getRequestTime(),
       'form_id'    => $webform_id,
       'solution'   => $num1 + $num2,
-      'status'     => CAPTCHA_STATUS_UNSOLVED,
+      'status'     => CaptchaConstants::CAPTCHA_STATUS_UNSOLVED,
       'attempts'   => 0,
       'token'      => Crypt::randomBytesBase64(),
     ])->execute();

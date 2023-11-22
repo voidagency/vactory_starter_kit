@@ -3,6 +3,11 @@ vactory_otp.settings_tab:
   title: 'OTP Settings'
   base_route: vactory_otp.settings
 
+vactory_otp.login_tab:
+  route_name: vactory_otp.login_settings
+  title: 'OTP Login Settings'
+  base_route: vactory_otp.settings
+
 vactory_otp.test_tab:
   route_name: vactory_otp.test_form
   title: 'OTP Test'

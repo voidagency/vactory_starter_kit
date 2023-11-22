@@ -32,7 +32,7 @@ extra_fields:
         - "right": "Right"
   isInfinit:
     type: checkbox
-    label: 'Enable infinit sliding'
+    label: "Enable infinit sliding"
   showFullscreenButton:
     type: checkbox
     label: "Enable Fullscreen"
@@ -45,3 +45,8 @@ extra_fields:
   showThumbnails:
     type: checkbox
     label: "Show thumbnails"
+  slideInterval:
+    type: number
+    label: "Time in miliseconds to slide between slides"
+    options:
+      "#required": TRUE

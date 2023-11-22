@@ -107,6 +107,8 @@ class JsonApiGenerator {
     $exposed_vocabularies = $config['vocabularies'];
     $entity_queue = $config['entity_queue'] ?? '';
     $entity_queue_field_id = $config['entity_queue_field_id'] ?? '';
+    $cache_tags = !empty($config['cache_tags']) ? explode("\n", $config['cache_tags']) : [];
+    $cache_contexts = !empty($config['cache_contexts']) ? explode("\n", $config['cache_contexts']) : [];
     $subqueue_items_ids = [];
 
     // Handle jsonapi filters tokens.
@@ -189,8 +191,8 @@ class JsonApiGenerator {
       }
     }
     $parsed['optional_filters_data'] = $config['optional_filters_data'] ?? [];
-    $hook_context['cache_tags'] = [];
-    $hook_context['cache_contexts'] = [];
+    $hook_context['cache_tags'] =  $cache_tags;
+    $hook_context['cache_contexts'] = $cache_contexts;
     $this->moduleHandler->alter('json_api_collection', $parsed, $hook_context);
     unset($parsed['optional_filters_data']);
     parse_str(http_build_query($parsed), $query_filters);
@@ -263,6 +265,14 @@ class JsonApiGenerator {
           'label' => $term->label(),
           'results' => [],
         ];
+
+        /**
+         * Used to add/modify term data.
+         *
+         * How to use : hook_json_collection_exposed_term_alter($term, &$term_data).
+         */
+        $this->moduleHandler->alter('json_collection_exposed_term', $term, $term_data);
+
         if ($term->hasField('results_count')) {
           $this->injectTaxonomyResultsCount($term, $term_data, $cacheTags);
         }

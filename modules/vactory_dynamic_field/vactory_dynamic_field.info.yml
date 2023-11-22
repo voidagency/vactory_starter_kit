@@ -11,3 +11,4 @@ dependencies:
   - media_library_form_element
   - textfield_counter
   - yaml_editor
+  - paragraphs_edit

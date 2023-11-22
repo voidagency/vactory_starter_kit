@@ -40,8 +40,16 @@ function vactory_extended_seo_form_alter(&$form, FormStateInterface $form_state,
   ];
 
   if (in_array($currentRoute, $routes)) {
-    $seo_entity = $currentRoute !== 'node.add' ? Drupal::service('entity_type.manager')->getStorage('vactory_extended_seo')
-      ->loadByProperties(['node_id' => \Drupal::routeMatch()->getParameter('node')->id()]) : '';
+    $node = \Drupal::routeMatch()->getParameter('node');
+    if ($node) {
+      $node_id = $node->id();
+    }
+    $seo_entity = '';
+    if (!empty($node_id) && $currentRoute !== 'node.add') {
+      $seo_entity = Drupal::service('entity_type.manager')->getStorage('vactory_extended_seo')
+        ->loadByProperties(['node_id' => $node_id]);
+    }
+
     $seo_entity = !empty($seo_entity) ? reset($seo_entity) : '';
 
     $form['node_extended_seo'] = [
@@ -51,7 +59,7 @@ function vactory_extended_seo_form_alter(&$form, FormStateInterface $form_state,
       '#group'       => 'advanced',
       '#open'        => FALSE,
       '#access'      => \Drupal::currentUser()
-        ->hasPermission('administer meta tags'),
+        ->hasPermission('contribute content vactory extended seo entities'),
       '#attributes'  => ['class' => ['node-class-form']],
     ];
     foreach ($activeLanguages as $lang => $val) {
@@ -77,9 +85,12 @@ function vactory_extended_seo_form_alter(&$form, FormStateInterface $form_state,
  */
 function _extended_seo_handler(&$form, FormStateInterface $form_state) {
   $nid = $form_state->getValue('nid');
-  $seo_entity = Drupal::service('entity_type.manager')->getStorage('vactory_extended_seo')
-    ->loadByProperties(['node_id' => $nid]);
-  $seo_entity = !empty($seo_entity) ? reset($seo_entity) : '';
+  $seo_entity = '';
+  if (!empty($nid)) {
+    $seo_entity = Drupal::service('entity_type.manager')->getStorage('vactory_extended_seo')
+      ->loadByProperties(['node_id' => $nid]);
+    $seo_entity = !empty($seo_entity) ? reset($seo_entity) : '';
+  }
   $activeLanguages = Drupal::service('language_manager')->getLanguages();
   if (empty($seo_entity)) {
     $entity = [

@@ -90,7 +90,7 @@ class JsonApiCollectionElement extends FormElement {
       '#title'              => t('JSON:API Fields'),
       '#placeholder'        => 'fields[node--vactory_news]=drupal_internal__nid,title,field_vactory_news_theme,field_vactory_media' . "\n" . 'fields[taxonomy_term--vactory_news_theme]=tid,name' . "\n" . 'fields[media--image]=name,thumbnail' . "\n" . 'fields[file--image]=filename,uri' . "\n" . 'include=field_vactory_news_theme,field_vactory_media,field_vactory_media.thumbnail' . "\n" . 'filter[category][condition][path]=field_vactory_news_theme.drupal_internal__tid' . "\n" . 'filter[category][condition][operator]=%3D  <- encoded "=" symbol' . "\n" . 'filter[category][condition][value]=3',
       '#description'        => t('Used to filter, paginate, sort and select which fields to return from the results. Enter each value per line'),
-      '#default_value'      => implode("\n", $element['#default_value']['filters']),
+      '#default_value'      => is_array($element['#default_value']['filters']) ? implode("\n", $element['#default_value']['filters']) : $element['#default_value']['filters'],
       '#wrapper_attributes' => [
         'style' => $has_access ? NULL : 'display:none',
       ],
@@ -145,6 +145,28 @@ class JsonApiCollectionElement extends FormElement {
       ],
     ];
 
+    $element['cache_tags'] = [
+      '#type'               => 'textarea',
+      '#title'              => t('Cache Tags'),
+      '#placeholder'        => 'Cache tags',
+      '#description'        => t('Related cache tags per line'),
+      '#default_value'      => is_array($element['#default_value']['cache_tags']) ? implode("\n", $element['#default_value']['cache_tags']) : $element['#default_value']['cache_tags'],
+      '#wrapper_attributes' => [
+        'style' => $has_access ? NULL : 'display:none',
+      ],
+    ];
+
+    $element['cache_contexts'] = [
+      '#type'               => 'textarea',
+      '#title'              => t('Cache Contexts'),
+      '#placeholder'        => 'Cache Contexts',
+      '#description'        => t('Related cache contexts per line'),
+      '#default_value'      => is_array($element['#default_value']['cache_contexts']) ? implode("\n", $element['#default_value']['cache_contexts']) : $element['#default_value']['cache_contexts'],
+      '#wrapper_attributes' => [
+        'style' => $has_access ? NULL : 'display:none',
+      ],
+    ];
+
     $uuid_service = \Drupal::service('uuid');
 
     $element['id'] = [
@@ -177,6 +199,7 @@ class JsonApiCollectionElement extends FormElement {
     if ($input !== FALSE && $input !== NULL && isset($input['filters']) && !empty($input['filters'])) {
       $input['filters'] = array_map('trim', explode("\n", $input['filters']));
     }
+    // phpcs:disable
     // if ($input !== FALSE && $input !== NULL) {
     //   if (isset($input['filters']) && !empty($input['filters'])) {
     //     $parsed = [];
@@ -196,6 +219,7 @@ class JsonApiCollectionElement extends FormElement {
     // else {
     //   $input['filters'] = []; 
     // }
+    // phpcs:enable
 
     return is_array($input) ? $input : $element['#default_value'];
   }
@@ -272,6 +296,8 @@ class JsonApiCollectionElement extends FormElement {
    * Get Entity Storage.
    *
    * @return \Drupal\Core\Entity\EntityStorageInterface
+   *   Entity Storage Interface.
+   *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */

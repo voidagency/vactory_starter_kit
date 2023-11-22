@@ -121,6 +121,8 @@ class MenusController extends ControllerBase {
    */
   public function index(Request $request) {
     $menu_name = $request->query->get('menu_name');
+    // Access check param.
+    $access_check = $request->query->get('ac', 1);
     if (empty($menu_name)) {
       throw new NotFoundHttpException('Unable to work with empty menu_name. Please send a ?menu_name query string parameter with your request.');
     }
@@ -153,11 +155,14 @@ class MenusController extends ControllerBase {
 
     // Transform the tree using the manipulators you want.
     $manipulators = [
-      // Only show links that are accessible for the current user.
-      ['callable' => 'menu.default_tree_manipulators:checkAccess'],
       // Use the default sorting of menu links.
       ['callable' => 'menu.default_tree_manipulators:generateIndexAndSort'],
     ];
+
+    if ($access_check) {
+      // Only show links that are accessible for the current user.
+      $manipulators[] = ['callable' => 'menu.default_tree_manipulators:checkAccess'];
+    }
 
     $tree = $menu_tree->transform($tree, $manipulators);
 
@@ -302,7 +307,8 @@ class MenusController extends ControllerBase {
 
     $returnArray['url'] = $url;
 
-    $this->moduleHandler()->alter('menu_api', $returnArray, $link, $link->getMenuName());
+    $menu_link_name = $link->getMenuName();
+    $this->moduleHandler()->alter('menu_api', $returnArray, $link, $menu_link_name);
 
     return $returnArray;
   }

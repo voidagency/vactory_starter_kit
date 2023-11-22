@@ -11,8 +11,6 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Drupal\user\Entity\User;
 use Drupal\node\Entity\Node;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\views\ViewExecutable;
 
 /**
@@ -311,6 +309,9 @@ function vactory_academy_preprocess_page(&$variables) {
   }
 }
 
+/**
+ * Implements hook_preprocess_rate_widget().
+ */
 function vactory_academy_preprocess_rate_widget(&$variables) {
   foreach ($variables['form']['value'] as $key => &$element) {
     if (is_numeric($key)) {
@@ -323,18 +324,32 @@ function vactory_academy_preprocess_rate_widget(&$variables) {
  * Implements hook_json_api_collection_alter().
  */
 function vactory_academy_json_api_collection_alter(&$filters, &$context) {
-  if ($context['id'] === 'vactory_academy_list') {
-    $query = \Drupal::request()->query->get("q");
+  $query = \Drupal::request()->query->get("q");
+  $is_avenir = $context['id'] === 'vactory_academy_list_a_venir' && isset($query["type"]) && $query["type"] == "avenir";
+  $is_passe = $context['id'] === 'vactory_academy_list_passe' && isset($query["type"]) && $query["type"] == "passe";
+  if ($context['id'] === 'next_academy') {
+    if (isset($query["date"])) {
+      $filters["filter[date-filter-next][condition][path]"] = "field_vactory_date";
+      $filters["filter[date-filter-next][condition][operator]"] = ">";
+      $filters["filter[date-filter-next][condition][value]"] = $query["date"];
+    }
+  }
+  if ($context['id'] === 'vactory_academy_list' || $is_avenir || $is_passe) {
 
     if (isset($query["page"])) {
       $filters["page[offset]"] = intval($query["page"]) > 0 ? (intval($query["page"]) - 1) * $filters["page[limit]"] : 0;
+    }
+    if (isset($query["date"])) {
+      $filters["filter[date-filter][condition][path]"] = "field_vactory_date";
+      $filters["filter[date-filter][condition][operator]"] = "=";
+      $filters["filter[date-filter][condition][value]"] = $query["date"];
     }
 
     if (isset($query["theme"]) && $query["theme"] !== "all") {
       $theme = $query["theme"];
       $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties([
         'vid' => 'vactory_academy_themes',
-        'term_2_slug' => $query["theme"]
+        'term_2_slug' => $query["theme"],
       ]);
 
       if (!$terms) {
@@ -351,33 +366,5 @@ function vactory_academy_json_api_collection_alter(&$filters, &$context) {
 
     }
   }
-  if ($context['id'] === 'vactory_academy_favorite') {
-    $filters["filter[academy_internal_favorite][condition][path]"] = "drupal_internal__nid";
-    $filters["filter[academy_internal_favorite][condition][operator]"] = "IN";
-    $filters["filter[academy_internal_favorite][condition][value]"] = \Drupal::service('vactory_academy.flag')->getFlaggedNodes();
-    $context['cache_tags'][] = 'flagging_list';
-    $context['cache_contexts'][] = 'user';
-  }
+
 }
-
-/**
- * Implements hook_entity_base_field_info().
- */
-function vactory_academy_entity_base_field_info(EntityTypeInterface $entity_type)
-{
-  $fields = [];
-  if ($entity_type->id() === 'node') {
-    $fields['is_flagged'] = BaseFieldDefinition::create('boolean')
-      ->setComputed(TRUE)
-      ->setReadOnly(TRUE)
-      ->setTargetEntityTypeId($entity_type->id())
-      ->setDisplayConfigurable('form', FALSE)
-      ->setDisplayConfigurable('view', FALSE)
-      ->setClass('Drupal\vactory_academy\Field\IsFlaggedEntityFieldItemList')
-      ->setTranslatable(FALSE)
-      ->setRequired(FALSE);
-  }
-
-  return $fields;
-}
-

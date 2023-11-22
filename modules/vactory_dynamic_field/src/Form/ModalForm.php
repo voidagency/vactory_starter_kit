@@ -6,12 +6,14 @@ use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Ajax\CloseDialogCommand;
 use Drupal\Core\Ajax\InvokeCommand;
+use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityFieldManager;
 use Drupal\Core\Extension\ExtensionPathResolver;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\ReplaceCommand;
+use Drupal\vactory_dynamic_field\AutoPopulateManager;
 use Drupal\vactory_dynamic_field\ModalEnum;
 use Drupal\vactory_dynamic_field\Plugin\Field\FieldWidget\FormWidgetTrait;
 use Drupal\vactory_dynamic_field\WidgetsManagerInterface;
@@ -45,7 +47,7 @@ class ModalForm extends FormBase {
    *
    * @var string
    */
-  protected $widget = NULL;
+  public $widget = NULL;
 
   /**
    * The widget being processed.
@@ -104,6 +106,34 @@ class ModalForm extends FormBase {
   protected $extensionPathResolver;
 
   /**
+   * Auto populate manager service.
+   *
+   * @var \Drupal\vactory_dynamic_field\AutoPopulateManager
+   */
+  protected $autoPopulateManager;
+
+  /**
+   * Modal form context.
+   *
+   * @var array
+   */
+  public $context;
+
+  /**
+   * Widgets list.
+   *
+   * @var array
+   */
+  protected $widgetsList;
+
+  /**
+   * Indicate pending content feature status.
+   *
+   * @var bool
+   */
+  protected $isPendingContentEnabled;
+
+  /**
    * Constructs a new ExampleConfigEntityExternalForm.
    *
    * @param \Drupal\vactory_dynamic_field\WidgetsManagerInterface $widgets_manager
@@ -112,17 +142,23 @@ class ModalForm extends FormBase {
    *   The entity field manager.
    * @param \Drupal\Core\Extension\ExtensionPathResolver $extensionPathResolver
    *   The extension path resolver.
+   * @param \Drupal\vactory_dynamic_field\AutoPopulateManager $autoPopulateManager
+   *   The auto populate manager.
    */
   public function __construct(
     WidgetsManagerInterface $widgets_manager,
     EntityFieldManager $entity_field_manager,
-    ExtensionPathResolver $extensionPathResolver
+    ExtensionPathResolver $extensionPathResolver,
+    AutoPopulateManager $autoPopulateManager
   ) {
     $this->textformatFields = [];
     $this->widgetsManager = $widgets_manager;
     $this->entityFieldManager = $entity_field_manager;
     $this->extensionPathResolver = $extensionPathResolver;
+    $this->autoPopulateManager = $autoPopulateManager;
+    $this->widgetsList = $this->widgetsManager->getModalWidgetsList();
     $this->isDropdownSelectMode = \Drupal::config('vactory_dynamic_field.settings')->get('is_dropdown_select_templates');
+    $this->isPendingContentEnabled = (bool) \Drupal::config('vactory_dynamic_field.settings')->get('pending_content');
   }
 
   /**
@@ -132,7 +168,8 @@ class ModalForm extends FormBase {
     return new static(
       $container->get('vactory_dynamic_field.vactory_provider_manager'),
       $container->get('entity_field.manager'),
-      $container->get('extension.path.resolver')
+      $container->get('extension.path.resolver'),
+      $container->get('df_auto_populate.manager')
     );
   }
 
@@ -149,6 +186,7 @@ class ModalForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $field_id = \Drupal::request()->query->get('field_id');
     $widget_id = \Drupal::request()->query->get('widget_id');
+    $this->context = \Drupal::request()->query->get('context');
     $dialog_options = \Drupal::request()->request->get('dialogOptions');
     $widget_data = isset($dialog_options['data']) ? $dialog_options['data'] : NULL;
     $this->cardinality = \Drupal::request()->query->get('cardinality') ?: NULL;
@@ -181,6 +219,10 @@ class ModalForm extends FormBase {
           $component['_weight'] = $widget_weight++;
         }
       }
+
+      // Unset pending content array.
+      unset($widget_data['pending_content']);
+      unset($this->widgetData['pending_content']);
 
       // Sort data.
       usort($this->widgetData, function ($item1, $item2) {
@@ -330,7 +372,13 @@ class ModalForm extends FormBase {
             }
 
             $form['components']['extra_field'][$field_id][$field_key] = $this->getFormElement($element_type, $element_label, $element_default_value, $element_options, $form, $form_state, $ds_field_name, $field_id, $field_key);
-
+            if ($this->autoPopulateManager->isFieldTypeDummiable($element_type, $this->isPendingContentEnabled, $this->context)) {
+              $name = "components.extra_field.{$field_id}.{$field_key}";
+              if ($element_type === 'url_extended') {
+                $name = "components.extra_field.{$field_id}.{$field_key}";
+              }
+              $form['components']['extra_field'][$field_id]["dummy_{$field_key}"] = $this->autoPopulateManager->getDummyContentCheckbox($name, $element_label, $this);
+            }
             // Handle conditional fields.
             if (isset($field_info['conditions'])) {
               $this->setVisibilityConditions($form['components']['extra_field'][$field_id][$field_key], $field_info['conditions']);
@@ -372,6 +420,13 @@ class ModalForm extends FormBase {
           }
 
           $form['components']['extra_field'][$field_id] = $this->getFormElement($element_type, $element_label, $element_default_value, $element_options, $form, $form_state, $ds_field_name, $field_id);
+          if ($this->autoPopulateManager->isFieldTypeDummiable($element_type, $this->isPendingContentEnabled, $this->context)) {
+            $name = "components.extra_field.{$field_id}";
+            if ($element_type === 'url_extended') {
+              $name = "components.extra_field.{$field_id}";
+            }
+            $form['components']['extra_field']["dummy_{$field_id}"] = $this->autoPopulateManager->getDummyContentCheckbox($name, $element_label, $this);
+          }
 
           // Handle conditional fields.
           if (isset($field['conditions'])) {
@@ -479,6 +534,13 @@ class ModalForm extends FormBase {
             }
 
             $form['components'][$i][$field_id][$field_key] = $this->getFormElement($element_type, $element_label, $element_default_value, $element_options, $form, $form_state, $ds_field_name);
+            if ($this->autoPopulateManager->isFieldTypeDummiable($element_type, $this->isPendingContentEnabled, $this->context)) {
+              $name = "components.{$i}.{$field_id}.{$field_key}";
+              if ($element_type === 'url_extended') {
+                $name = "components.{$i}.{$field_id}.{$field_key}";
+              }
+              $form['components'][$i][$field_id]["dummy_{$field_key}"] = $this->autoPopulateManager->getDummyContentCheckbox($name, $element_label, $this);
+            }
 
             // Handle conditional fields.
             if (isset($field_info['conditions'])) {
@@ -524,6 +586,13 @@ class ModalForm extends FormBase {
           }
 
           $form['components'][$i][$field_id] = $this->getFormElement($element_type, $element_label, $element_default_value, $element_options, $form, $form_state, $ds_field_name, $field_id, $i);
+          if ($this->autoPopulateManager->isFieldTypeDummiable($element_type, $this->isPendingContentEnabled, $this->context)) {
+            $name = "components.{$i}.{$field_id}";
+            if ($element_type === 'url_extended') {
+              $name = "components.{$i}.{$field_id}";
+            }
+            $form['components'][$i]["dummy_{$field_id}"] = $this->autoPopulateManager->getDummyContentCheckbox($name, $element_label, $this);
+          }
 
           // Handle conditional fields.
           if (isset($field['conditions'])) {
@@ -662,6 +731,7 @@ class ModalForm extends FormBase {
 
     // List of widgets.
     $widgets_list = $this->widgetsManager->getModalWidgetsList($allowedProviders);
+    $this->widgetsList = $widgets_list;
 
     $form['#prefix'] = '<div id="' . ModalEnum::FORM_WIDGET_SELECTOR_AJAX_WRAPPER . '">';
     $form['#suffix'] = '</div>';
@@ -732,9 +802,9 @@ class ModalForm extends FormBase {
             $category = 'Others';
           }
           if (!isset($form['templates_tabs'][$category])) {
-            $form['templates_tabs'][$category] = [
+            $form['templates_tabs'][ucfirst($category)] = [
               '#type' => 'details',
-              '#title' => $category,
+              '#title' => ucfirst($category),
             ];
             if (!$allowedProvidersCheck) {
               $form['templates_tabs'][$category]['#group'] = 'templates_tabs';
@@ -794,6 +864,9 @@ class ModalForm extends FormBase {
         'wrapper'  => ModalEnum::FORM_WIDGET_SELECTOR_AJAX_WRAPPER,
       ],
     ];
+
+    // Sort tabs by categories names.
+    ksort($form['templates_tabs']);
 
     $form['#attached']['library'][] = 'core/drupal.ajax';
     $form['#attached']['library'][] = 'core/drupal.dialog.ajax';
@@ -871,6 +944,58 @@ class ModalForm extends FormBase {
 
       return $response;
     }
+    if ($this->isPendingContentEnabled && !empty($this->context)) {
+      $triggering_element = $form_state->getTriggeringElement();
+      if (isset($triggering_element['#parents'])) {
+        $parents = $triggering_element['#parents'];
+        $name = array_pop($parents);
+        if (str_starts_with($name, 'dummy_')) {
+          $field_name = str_replace('dummy_', '', $name);
+          $parents[] = $field_name;
+          $field_path = implode('.', $parents);
+          $element = NestedArray::getValue($form, $parents);
+          $needs_autopopulate = TRUE;
+          if ($element['#type'] === 'text_format') {
+            $needs_autopopulate = !isset($element['value']['#value']) || (isset($element['value']['#value']) && empty(trim($element['value']['#value'])));
+            $parents[] = 'value';
+          }
+          if ($element['#type'] === 'url_extended') {
+            $needs_autopopulate = !isset($element['#value']['title']['#value']) || (isset($element['#value']['title']['#value']) && empty($element['#value']['title']['#value']));
+          }
+          if (!in_array($element['#type'], ['container', 'url_extended'])) {
+            if ($element['#type'] !== 'text_format') {
+              $needs_autopopulate = !isset($element['#value']) || (isset($element['#value']) && empty($element['#value']));
+            }
+            $parents[] = '#value';
+          }
+          if (isset($element['widget']['media_library_update_widget'])) {
+            $needs_autopopulate = FALSE;
+          }
+          $field_label = $element['#title'] ?? '';
+          $settings = $this->widgetsManager->loadSettings($this->widget);
+          $widget_name = $settings['name'] ?? NULL;
+          $category = $settings['category'] ?? 'Others';
+          $widget = $this->widgetsList[$category][$this->widget];
+          $screenshot = $widget['screenshot'] ?? $this->extensionPathResolver->getPath('module', 'vactory_dynamic_field') . '/images/undefined-screenshot.jpg';
+          $file_url_generator = \Drupal::service('file_url_generator');
+          $undefined_screenshot = $this->extensionPathResolver->getPath('module', 'vactory_dynamic_field') . '/images/undefined-screenshot.jpg';
+          $screenshot = empty($screenshot) ? $file_url_generator->generateAbsoluteString($undefined_screenshot) : $screenshot;
+          if (isset($triggering_element['#value']) && $triggering_element['#value'] === 1) {
+            if ($needs_autopopulate) {
+              NestedArray::setValue($form, $parents, $this->autoPopulateManager->getDummyData($element, $field_name, $form, $form_state));
+            }
+            if (isset($element['widget']['media_library_update_widget'])) {
+              $field_label = $element['widget']['#title'] ?? '';
+            }
+            $this->autoPopulateManager->setFieldInPending($field_path, $this->widget, $this->context, $field_label, $widget_name, $screenshot);
+          }
+          else {
+            $this->autoPopulateManager->unsetFieldInPending($field_path, $this->widget, $this->context, $field_label, $widget_name, $screenshot);
+          }
+        }
+      }
+    }
+
     return $form;
   }
 
@@ -883,6 +1008,10 @@ class ModalForm extends FormBase {
     }
 
     $data = $form_state->getValue('components');
+    $this->findDatetimeElement($data);
+    $results = $this->autoPopulateManager->findParentKeysStartingWith($data, 'dummy_');
+    $results = array_map(fn($el) => is_array($el) ? implode('.', $el) : $el, $results);
+    $data['pending_content'] = $results;
     $data = json_encode($data);
     $widget_id = $this->widget;
 
@@ -1010,6 +1139,22 @@ class ModalForm extends FormBase {
     }
     if (!empty($states['#states'])) {
       $element = array_merge($element, $states);
+    }
+  }
+
+  /**
+   * Searching for all elements of type datetime.
+   *
+   * Replace value by text instead of DrupalDateTime object.
+   */
+  private function findDatetimeElement(&$array) {
+    foreach ($array as &$value) {
+      if ($value instanceof DrupalDateTime) {
+        $value = $value->format('Y-m-d H:i:s');
+      }
+      elseif (is_array($value)) {
+        $this->findDatetimeElement($value);
+      }
     }
   }
 

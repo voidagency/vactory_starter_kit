@@ -337,6 +337,7 @@ function vactory_core_page_attachments(array &$page) {
   $front_theme = \Drupal::config('system.theme')->get('default');
   if ($active_theme->getName() != $front_theme) {
     $page['#attached']['library'][] = 'vactory_core/ckeditor_config';
+    $page['#attached']['library'][] = 'vactory_core/vactory_admin';
   }
 }
 
@@ -503,7 +504,8 @@ function addCounterToTextElement(&$element) {
  * Implements hook_preprocess_HOOK().
  */
 function vactory_core_preprocess_pager(&$variables) {
-  if (isset($variables['items'])) {
+  $is_admin_path = \Drupal::service('router.admin_context')->isAdminRoute();
+  if (isset($variables['items']) && !$is_admin_path) {
     $first = $variables['items']['first'] ?? [];
     $previous = $variables['items']['previous'] ?? [];
     $pages = $variables['items']['pages'] ?? [];

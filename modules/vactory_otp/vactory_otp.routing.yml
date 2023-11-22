@@ -6,6 +6,14 @@ vactory_otp.settings:
   requirements:
     _role: 'administrator + master'
 
+vactory_otp.login_settings:
+  path: '/admin/config/development/vactory_otp_login_settings'
+  defaults:
+    _form: '\Drupal\vactory_otp\Form\VactoryOtpLoginConfig'
+    _title: 'Vactory OTP login settings'
+  requirements:
+    _role: 'administrator + master'
+
 vactory_otp.test_form:
   path: '/admin/config/development/vactory_otp_test_form'
   defaults:
@@ -13,3 +21,21 @@ vactory_otp.test_form:
     _title: 'Vactory OTP test'
   requirements:
     _role: 'administrator + master'
+
+vactory_otp.generate_otp:
+  path: '/api/otp/generate/{value}'
+  defaults:
+    _controller: '\Drupal\vactory_otp\Controller\OtpController::generateOtp'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
+    _format: 'json'
+
+vactory_otp.validate_otp:
+  path: '/api/otp/validate'
+  defaults:
+    _controller: '\Drupal\vactory_otp\Controller\OtpController::validateOtp'
+  methods: [POST]
+  requirements:
+    _permission: 'access content'
+    _format: 'json'
