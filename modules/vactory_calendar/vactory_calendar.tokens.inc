@@ -254,7 +254,7 @@ function vactory_calendar_tokens($type, $tokens, array $data, array $options, Bu
           break;
 
         case 'agenda-list':
-          $route = \Drupal::entityTypeManager()->getStorage('vactory_route')->load('mon_agenda');
+          $route = \Drupal::entityTypeManager()->getStorage('vactory_route')->load('my_agenda');
           $url = Url::fromUserInput(($route?->get('alias')), ['absolute' => TRUE])->toString();
           $replacements[$original] = $url;
           break;

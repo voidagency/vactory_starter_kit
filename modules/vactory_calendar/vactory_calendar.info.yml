@@ -1,21 +1,21 @@
-name: 'Vactory Calendar'
+name: "Vactory Calendar"
 type: module
-description: 'This module handles Calendar Entries for users'
-core_version_requirement: '^8.9 || ^9'
+description: "This module handles Calendar Entries for users"
+core_version_requirement: "^8.9 || ^9"
 package: Vactory
 dependencies:
-  - 'drupal:content_translation'
-  - 'drupal:datetime'
-  - 'drupal:field'
-  - 'drupal:language'
-  - 'drupal:options'
-  - 'drupal:path'
-  - 'drupal:taxonomy'
-  - 'drupal:text'
-  - 'drupal:user'
-  - 'field_group:field_group'
-  - 'jsonapi_extras:jsonapi_defaults'
-  - 'jsonapi_extras:jsonapi_extras'
-  - 'ultimate_cron:ultimate_cron'
-  - 'vactory_decoupled:vactory_decoupled'
-  - 'symfony_mailer:symfony_mailer'
+  - "drupal:content_translation"
+  - "drupal:datetime"
+  - "drupal:field"
+  - "drupal:language"
+  - "drupal:options"
+  - "drupal:path"
+  - "drupal:taxonomy"
+  - "drupal:text"
+  - "drupal:user"
+  - "field_group:field_group"
+  - "jsonapi_extras:jsonapi_defaults"
+  - "jsonapi_extras:jsonapi_extras"
+  - "ultimate_cron:ultimate_cron"
+  - "vactory_decoupled:vactory_decoupled"
+  - "symfony_mailer:symfony_mailer"
