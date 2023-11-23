@@ -1,0 +1,7 @@
+name: Vactory Security Review
+type: module
+description: Enhance Seecurity Review contrib module
+package: Vactory
+core_version_requirement: ^9 || ^10
+dependencies:
+  - security_review

@@ -147,12 +147,14 @@ class VactoryNotificationsService {
         if ($role->id() === 'authenticated') {
           $uids = \Drupal::entityQuery('user')
             ->condition('status', 1)
+            ->accessCheck(FALSE)
             ->execute();
         }
         else {
           $uids = \Drupal::entityQuery('user')
             ->condition('status', 1)
             ->condition('roles', $role->id())
+            ->accessCheck(FALSE)
             ->execute();
         }
         if (!empty($uids)) {

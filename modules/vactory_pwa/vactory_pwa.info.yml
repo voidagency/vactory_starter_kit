@@ -1,0 +1,5 @@
+name: "Vactory PWA"
+type: module
+core_version_requirement: "^9 || ^10"
+dependencies:
+  - jsonapi_extras
