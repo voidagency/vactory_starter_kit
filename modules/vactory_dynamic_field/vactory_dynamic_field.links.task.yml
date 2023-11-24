@@ -1,3 +1,12 @@
 df.pending_content:
   deriver: 'Drupal\vactory_dynamic_field\Plugin\Derivative\DynamicLocalTasks'
   weight: 100
+
+vactory_dynamic_field.settings:
+  route_name: vactory_dynamic_field.settings_form
+  base_route: vactory_dynamic_field.settings_form
+  title: Dynamic field settings
+vactory_dynamic_field.screenshot_settings:
+  route_name: vactory_dynamic_field.screenshot_settings
+  base_route: vactory_dynamic_field.settings_form
+  title: Screenshots settings
