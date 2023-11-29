@@ -3,7 +3,6 @@ status: true
 dependencies:
   config:
     - field.field.node.vactory_page.comment
-    - field.field.node.vactory_page.field_contenu_lie
     - field.field.node.vactory_page.field_df_sticky
     - field.field.node.vactory_page.field_sticky_ancre
     - field.field.node.vactory_page.field_exclude_from_search
