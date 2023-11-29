@@ -2,12 +2,14 @@
 
 namespace Drupal\vactory_jsonapi_extras\EventSubscriber;
 
+use Drupal\Component\Serialization\Json;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Utility\Token;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
@@ -49,6 +51,7 @@ class ResourceRequestSubscriber implements EventSubscriberInterface {
     // Run before the dynamic page cache subscriber (priority 100), so that
     // Dynamic Page Cache can cache flattened responses.
     $events[KernelEvents::REQUEST][] = ['onRequest', 1];
+    $events[KernelEvents::RESPONSE][] = ['onResponse', 1];
     return $events;
   }
 
@@ -83,6 +86,125 @@ class ResourceRequestSubscriber implements EventSubscriberInterface {
     }
   }
 
+  /**
+   * Sets extra headers on successful responses.
+   *
+   * @param \Symfony\Component\HttpKernel\Event\ResponseEvent $event
+   *   The event to process.
+   */
+  public function onResponse(ResponseEvent $event) {
+    $route_name = $this->routeMatch->getRouteName();
+    if (!str_starts_with($route_name, 'exposed_api.')) {
+      return;
+    }
+    $id = $this->routeMatch->getParameter('exposed_api');
+    if ($id) {
+      $response = $event->getResponse();
+      $content = Json::decode($response->getContent());
+
+      if (isset($content['links']['last']['href'])) {
+        $content['links']['last']['href'] = $this->clearJsonApiFilters($id, $content['links']['last']['href']);
+      }
+      if (isset($content['links']['next']['href'])) {
+        $content['links']['next']['href'] = $this->clearJsonApiFilters($id, $content['links']['next']['href']);
+      }
+      if (isset($content['links']['self']['href'])) {
+        $content['links']['self']['href'] = $this->clearJsonApiFilters($id, $content['links']['self']['href']);
+      }
+      if (isset($content['links']['first']['href'])) {
+        $content['links']['first']['href'] = $this->clearJsonApiFilters($id, $content['links']['first']['href']);
+      }
+      if (isset($content['links']['prev']['href'])) {
+        $content['links']['prev']['href'] = $this->clearJsonApiFilters($id, $content['links']['prev']['href']);
+      }
+    }
+
+    $response->setContent(Json::encode($content));
+  }
+
+  /**
+   * Clear jsonapi filters from url.
+   */
+  public function clearJsonApiFilters($id, string $url) {
+    $url_infos = parse_url($url);
+    if (!isset($url_infos['query'])) {
+      return $url;
+    }
+
+    $query_params = [];
+    parse_str($url_infos['query'], $query_params);
+
+    $partner_api = $this->entityTypeManager->getStorage('exposed_apis')
+      ->load($id);
+
+    if (!$partner_api) {
+      return $url;
+    }
+
+    $fields = str_replace(["\r\n", "\n"], '&', $partner_api->getFields());
+    $filters = str_replace(["\r\n", "\n"], '&', $partner_api->getFilters());
+    if (!empty($fields)) {
+      $default_fields = [];
+      parse_str($fields, $default_fields);
+      if (!empty($default_fields)) {
+        // Remove default fields from link.
+        foreach ($query_params['fields'] as $key => $value) {
+          if (isset($default_fields['fields'][$key])) {
+            unset($query_params['fields'][$key]);
+          }
+        }
+        if (empty($query_params['fields'])) {
+          unset($query_params['fields']);
+        }
+        // Remove default page params from link.
+        foreach ($query_params['page'] as $key => $value) {
+          if (isset($default_fields['page'][$key])) {
+            unset($query_params['page'][$key]);
+          }
+        }
+        if (empty($query_params['page'])) {
+          unset($query_params['page']);
+        }
+      }
+    }
+    if (!empty($filters)) {
+      $default_filters = [];
+      parse_str($filters, $default_filters);
+      if (!empty($default_filters)) {
+        // Remove default filters from link.
+        foreach ($query_params['filter'] as $key => $value) {
+          if (isset($default_filters['filter'][$key])) {
+            unset($query_params['filter'][$key]);
+          }
+        }
+        if (empty($query_params['filter'])) {
+          unset($query_params['filter']);
+        }
+        // Remove default page params from link.
+        foreach ($query_params['page'] as $key => $value) {
+          if (isset($default_filters['page'][$key])) {
+            unset($query_params['page'][$key]);
+          }
+        }
+        if (empty($query_params['page'])) {
+          unset($query_params['page']);
+        }
+      }
+    }
+
+    // Remove includes param from Links.
+    unset($query_params['includes']);
+
+    if (!empty($query_params)) {
+      return str_replace($url_infos['query'], http_build_query($query_params), $url);
+    }
+
+    return str_replace('?' . $url_infos['query'], '', $url);
+  }
+
+  /**
+   * Parse query params.
+   */
   protected function parseQueryParams($params_string, Request $request) {
     $params_string = $this->token->replace($params_string, []);
     $params_string = trim($params_string);
@@ -95,6 +217,10 @@ class ResourceRequestSubscriber implements EventSubscriberInterface {
       if (!empty($name) && !empty($value)) {
         if ($name === 'filter') {
           $recieved_filters = $request->query->get('filter', []);
+          $value = array_merge($recieved_filters, $value);
+        }
+        if ($name === 'page') {
+          $recieved_filters = $request->query->get('page', []);
           $value = array_merge($recieved_filters, $value);
         }
         $request->query->set($name, $value);
