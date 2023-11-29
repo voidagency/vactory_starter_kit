@@ -2,11 +2,18 @@ apis_packages.tasks:
   route_name: entity.api_package.collection
   base_route: entity.api_package.collection
   title: API Packages
+  parent_id: vactory_jsonapi_extras.main_task
+vactory_jsonapi_extras.main_task:
+  route_name: entity.exposed_apis.collection
+  base_route: jsonapi.settings
+  title: Vactory JSON:API extras
 apis.tasks:
   route_name: entity.exposed_apis.collection
   base_route: entity.api_package.collection
   title: Exposed APIs
+  parent_id: vactory_jsonapi_extras.main_task
 api_keys.tasks:
   route_name: entity.api_key.collection
   base_route: entity.api_package.collection
   title: API keys
+  parent_id: vactory_jsonapi_extras.main_task
