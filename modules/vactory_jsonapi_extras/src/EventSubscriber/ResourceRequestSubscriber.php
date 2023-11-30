@@ -129,11 +129,16 @@ class ResourceRequestSubscriber implements EventSubscriberInterface {
         $content['links']['prev']['href'] = $this->clearJsonApiFilters($id, $content['links']['prev']['href'], $fields, $filters);
       }
       if (isset($content['meta']['facets'])) {
-        foreach ($content['meta']['facets'] as &$facet) {
-          if (!isset($facet['terms']['url'])) {
+        foreach ($content['meta']['facets'] as $i => $facet) {
+          if (!isset($facet['terms']) || empty($facet['terms'])) {
             continue;
           }
-          $facet['terms']['url'] = $this->clearJsonApiFilters($id, $facet['terms']['url'], $fields, $filters);
+          foreach ($facet['terms'] as $j => $term) {
+            if (!isset($term['url']) || empty($term['url'])) {
+              continue;
+            }
+            $content['meta']['facets'][$i]['terms'][$j]['url'] = $this->clearJsonApiFilters($id, $content['meta']['facets'][$i]['terms'][$j]['url'], $fields, $filters);
+          }
         }
       }
     }
@@ -203,7 +208,8 @@ class ResourceRequestSubscriber implements EventSubscriberInterface {
     }
 
     // Remove includes param from Links.
-    unset($query_params['includes']);
+    unset($query_params['include']);
+    unset($query_params['jsonapi_include']);
 
     if (!empty($query_params)) {
       return str_replace($url_infos['query'], http_build_query($query_params), $url);
