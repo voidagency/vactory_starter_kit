@@ -102,20 +102,39 @@ class ResourceRequestSubscriber implements EventSubscriberInterface {
       $response = $event->getResponse();
       $content = Json::decode($response->getContent());
 
+      $partner_api = $this->entityTypeManager->getStorage('exposed_apis')
+        ->load($id);
+
+      if (!$partner_api) {
+        return;
+      }
+
+      // Get default filters.
+      $fields = str_replace(["\r\n", "\n"], '&', $partner_api->getFields());
+      $filters = str_replace(["\r\n", "\n"], '&', $partner_api->getFilters());
+
       if (isset($content['links']['last']['href'])) {
-        $content['links']['last']['href'] = $this->clearJsonApiFilters($id, $content['links']['last']['href']);
+        $content['links']['last']['href'] = $this->clearJsonApiFilters($id, $content['links']['last']['href'], $fields, $filters);
       }
       if (isset($content['links']['next']['href'])) {
-        $content['links']['next']['href'] = $this->clearJsonApiFilters($id, $content['links']['next']['href']);
+        $content['links']['next']['href'] = $this->clearJsonApiFilters($id, $content['links']['next']['href'], $fields, $filters);
       }
       if (isset($content['links']['self']['href'])) {
-        $content['links']['self']['href'] = $this->clearJsonApiFilters($id, $content['links']['self']['href']);
+        $content['links']['self']['href'] = $this->clearJsonApiFilters($id, $content['links']['self']['href'], $fields, $filters);
       }
       if (isset($content['links']['first']['href'])) {
-        $content['links']['first']['href'] = $this->clearJsonApiFilters($id, $content['links']['first']['href']);
+        $content['links']['first']['href'] = $this->clearJsonApiFilters($id, $content['links']['first']['href'], $fields, $filters);
       }
       if (isset($content['links']['prev']['href'])) {
-        $content['links']['prev']['href'] = $this->clearJsonApiFilters($id, $content['links']['prev']['href']);
+        $content['links']['prev']['href'] = $this->clearJsonApiFilters($id, $content['links']['prev']['href'], $fields, $filters);
+      }
+      if (isset($content['meta']['facets'])) {
+        foreach ($content['meta']['facets'] as &$facet) {
+          if (!isset($facet['terms']['url'])) {
+            continue;
+          }
+          $facet['terms']['url'] = $this->clearJsonApiFilters($id, $facet['terms']['url'], $fields, $filters);
+        }
       }
     }
 
@@ -125,7 +144,7 @@ class ResourceRequestSubscriber implements EventSubscriberInterface {
   /**
    * Clear jsonapi filters from url.
    */
-  public function clearJsonApiFilters($id, string $url) {
+  public function clearJsonApiFilters($id, string $url, $fields, $filters) {
     $url_infos = parse_url($url);
     if (!isset($url_infos['query'])) {
       return $url;
@@ -134,15 +153,6 @@ class ResourceRequestSubscriber implements EventSubscriberInterface {
     $query_params = [];
     parse_str($url_infos['query'], $query_params);
 
-    $partner_api = $this->entityTypeManager->getStorage('exposed_apis')
-      ->load($id);
-
-    if (!$partner_api) {
-      return $url;
-    }
-
-    $fields = str_replace(["\r\n", "\n"], '&', $partner_api->getFields());
-    $filters = str_replace(["\r\n", "\n"], '&', $partner_api->getFilters());
     if (!empty($fields)) {
       $default_fields = [];
       parse_str($fields, $default_fields);
