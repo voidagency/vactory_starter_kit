@@ -144,9 +144,9 @@ install:
   - seckit
   - minifyhtml
   - responsive_favicons
-  - amp
-  - amp_rdf
-  - amp_toolbar
+  # - amp > handled in fontend
+  # - amp_rdf > handled in fontend
+  # - amp_toolbar > handled in fontend
   - smart_trim
   - dropzonejs
   - password_policy
@@ -163,12 +163,12 @@ install:
   - vactory_search_overlay
   - vactory_header
   - vactory_footer
-  - vactory_google_places
+  # - vactory_google_places
   - vactory_dynamic_field
   # Vactory Custom
   - vactory_dynamic_field_bootstrap
   - vactory_dynamic_field_sliders
-  - vactory_dynamic_field_wysiwyg_templates
+  # - vactory_dynamic_field_wysiwyg_templates
   - vactory_cross_content
   - vactory_espace_prive
   - vactory_jquerycolorpicker_css_fix
@@ -181,4 +181,4 @@ install:
 themes:
   - vactory
   - claro
-  - amptheme
+  # - amptheme > handled in fontend
