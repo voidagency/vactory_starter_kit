@@ -5,6 +5,7 @@ namespace Drupal\vactory_otp\Controller;
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Config\ConfigManager;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\user\Entity\User;
 use Drupal\user\UserInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -31,11 +32,19 @@ class OtpController extends ControllerBase {
   protected $config;
 
   /**
+   * The logger channel factory.
+   *
+   * @var \Drupal\Core\Logger\LoggerChannelFactoryInterface
+   */
+  protected $logger;
+
+  /**
    * Constructs a new ApiFlagging object.
    */
-  public function __construct(TimeInterface $time, ConfigManager $config_manager) {
+  public function __construct(TimeInterface $time, ConfigManager $config_manager, LoggerChannelFactoryInterface $logger) {
     $this->time = $time;
     $this->config = $config_manager->getConfigFactory()->getEditable('vactory_otp.login_settings');
+    $this->logger = $logger;
   }
 
   /**
@@ -45,6 +54,7 @@ class OtpController extends ControllerBase {
     return new static(
       $container->get('datetime.time'),
       $container->get('config.manager'),
+      $container->get('logger.factory'),
     );
   }
 
@@ -56,6 +66,8 @@ class OtpController extends ControllerBase {
     $phone_field = $this->config->get('phone_field');
     $email_field = $this->config->get('email_field');
     $canal = $this->config->get('canal');
+
+    $this->logger->get('vactory_otp')->info("OTP requested for : {$value}");
 
     $query = \Drupal::entityTypeManager()->getStorage('user')->getQuery();
     $query->condition($login_field, trim($value));
