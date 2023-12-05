@@ -51,6 +51,7 @@ class ContentPackageExportForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $nodes = $form_state->get('nodes') ?? [];
+    $blocks = $form_state->get('blocks') ?? [];
     $partial_export = $form_state->get('partial_export') ?? 0;
     $form = [
       '#prefix' => '<div id="' . static::FORM_AJAX_WRAPPER . '">',
@@ -122,6 +123,58 @@ class ContentPackageExportForm extends FormBase {
         ];
       }
     }
+    
+    $form['partial_export_wrapper']['input_block'] = [
+      '#type' => 'entity_autocomplete',
+      '#title' => t('Block'),
+      '#target_type' => 'block_content',
+      '#selection_settings' => [
+        'target_bundles' => ['vactory_block_component'],
+      ],
+      '#description' => $this->t("Please select the desired block..."),
+      '#ajax' => [
+        'event' => 'autocompleteclose',
+        'callback' => [$this, 'closeAutocompleteCallback'],
+      ],
+    ];
+  
+    if (!empty($blocks)) {
+      $form['partial_export_wrapper']['blocks'] = [
+        '#type' => 'table',
+        '#header' => [
+          'block_id' => $this->t('Block ID'),
+          'block_title' => $this->t('Block Title'),
+          'action_block' => $this->t('Operation'),
+        ],
+        '#sticky' => TRUE,
+      ];
+      $blocks = $this->entityTypeManager->getStorage('block_content')
+        ->loadMultiple($blocks);
+      foreach ($blocks as $block) {
+        $form['partial_export_wrapper']['blocks'][] = [
+          'block_id' => [
+            '#markup' => $block->id(),
+          ],
+          'block_title' => [
+            '#markup' => $block->label(),
+          ],
+          'action_block' => [
+            '#type' => 'submit',
+            '#value' => $this->t('Remove'),
+            '#name' => "remove_block_{$block->id()}",
+            '#submit' => [[$this, 'removeBlockSubmit']],
+            '#attributes' => [
+              'class' => ['button', 'button--danger'],
+            ],
+            '#ajax' => [
+              'event' => 'click',
+              'callback' => [$this, 'updateForm'],
+              'wrapper' => static::FORM_AJAX_WRAPPER,
+            ],
+          ],
+        ];
+      }
+    }
 
     $form['partial_export_wrapper']['update'] = [
       '#type' => 'submit',
@@ -168,14 +221,21 @@ class ContentPackageExportForm extends FormBase {
   public function updateFormSubmit(array &$form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
     $nodes = $form_state->get('nodes') ?? [];
+    $blocks = $form_state->get('blocks') ?? [];
     $user_inputs = $form_state->getUserInput();
     if (isset($values['input']) && !empty($values['input'])) {
       $nodes[] = $values['input'];
       $nodes = array_unique($nodes);
       $form_state->set('nodes', $nodes);
     }
+    if (isset($values['input_block']) && !empty($values['input_block'])) {
+      $blocks[] = $values['input_block'];
+      $blocks = array_unique($blocks);
+      $form_state->set('blocks', $blocks);
+    }
     $partial_export = $values['partial_export'] ?? 0;
     $user_inputs['input'] = '';
+    $user_inputs['input_block'] = '';
     $form_state->setUserInput($user_inputs);
     $form_state->set('partial_export', $partial_export);
     $form_state->setRebuild();
@@ -195,6 +255,19 @@ class ContentPackageExportForm extends FormBase {
   }
 
   /**
+   * Remove block submit callback.
+   */
+  public function removeBlockSubmit(array &$form, FormStateInterface $form_state) {
+    $triggering_element = $form_state->getTriggeringElement();
+    $block_id = str_replace('remove_block_', '', $triggering_element['#name']);
+    $blocks = $form_state->get('blocks') ?? [];
+    $block_id_index = array_search($block_id, $blocks);
+    unset($blocks[$block_id_index]);
+    $form_state->set('blocks', $blocks);
+    $form_state->setRebuild();
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
@@ -205,11 +278,13 @@ class ContentPackageExportForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $nodes = $form_state->get('nodes') ?? NULL;
-    if (!empty($nodes)) {
-      $nodes = array_values($nodes);
-    }
+    $blocks = $form_state->get('blocks') ?? NULL;
+    $is_partial = $form_state->get('partial_export') ?? false;
+
+    // Zip nodes.
     \Drupal::service('vactory_content_package.archiver.manager')
-      ->zipContentTypeNodes('vactory_page', $nodes);
+      ->zipContentTypeNodes('vactory_page', $nodes, $blocks, $is_partial);
+
   }
 
 }
