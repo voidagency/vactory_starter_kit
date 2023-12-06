@@ -3,6 +3,11 @@ multiple: FALSE
 category: 'Espace privé'
 enabled: TRUE
 fields:
+  group_settings:
+  g_title: "setting"
+  emprunt:
+    type: checkbox
+    label: "Activer l'empreint/FaceID"
   user:
     type: json_api_collection
     label: 'JSON:API'
