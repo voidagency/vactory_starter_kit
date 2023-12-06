@@ -1,0 +1,5 @@
+services:
+  vactory_jsonapi_disable_resources.build_subscriber:
+    class: Drupal\vactory_jsonapi_disable_resources\EventSubscriber\ResourceTypeDisableResourcesEventSubscriber
+    tags:
+      - { name: event_subscriber }
