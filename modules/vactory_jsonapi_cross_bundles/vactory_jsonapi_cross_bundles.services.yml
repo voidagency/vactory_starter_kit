@@ -1,0 +1,24 @@
+services:
+  vactory_jsonapi_cross_bundles.field_resolver:
+    class: Drupal\vactory_jsonapi_cross_bundles\VactoryFieldResolver
+    decorates: jsonapi.field_resolver
+    decoration_priority: -1
+    public: false
+    arguments:
+      - '@vactory_jsonapi_cross_bundles.field_resolver.inner'
+      - '@entity_type.manager'
+      - '@entity_field.manager'
+      - '@entity_type.bundle.info'
+      - '@jsonapi.resource_type.repository'
+      - '@module_handler'
+      - '@current_user'
+
+  vactory_jsonapi_cross_bundles.include_resolver:
+    class: Drupal\vactory_jsonapi_cross_bundles\VactoryIncludeResolver
+    decorates: jsonapi.include_resolver
+    decoration_priority: -1
+    public: false
+    arguments:
+      - '@vactory_jsonapi_cross_bundles.include_resolver.inner'
+      - '@entity_type.manager'
+      - '@jsonapi.entity_access_checker'
