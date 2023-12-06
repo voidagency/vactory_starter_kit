@@ -1,0 +1,53 @@
+name: "PWA Process d'installation"
+multiple: FALSE
+category: 'PWA'
+enabled: TRUE
+fields:
+  group_banner:
+    g_title: "Banner d'installation"
+    image:
+      type: image
+      label: "logo"
+    btn:
+      type: text
+      label: "Text du button d'installation"
+  group_safari:
+    g_title: "Safari"
+    title:
+      type: text
+      label: 'Title'
+    description:
+      type: text_format
+      label: 'Description'
+      options:
+        '#format': 'full_html'
+  group_android:
+    g_title: "Android"
+    title:
+      type: text
+      label: 'Title'
+    description:
+      type: text_format
+      label: 'Description'
+      options:
+        '#format': 'full_html'
+  group_android_firefox:
+    g_title: "Android Firefox"
+    title:
+      type: text
+      label: 'Title'
+    description:
+      type: text_format
+      label: 'Description'
+      options:
+        '#format': 'full_html'
+  group_huawei_firefox:
+    g_title: "Huawei firefox"
+    title:
+      type: text
+      label: 'Title'
+    description:
+      type: text_format
+      label: 'Description'
+      options:
+        '#format': 'full_html'

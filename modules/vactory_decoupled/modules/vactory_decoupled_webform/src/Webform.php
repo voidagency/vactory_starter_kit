@@ -3,6 +3,7 @@
 namespace Drupal\vactory_decoupled_webform;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Session\AccountProxy;
 use Drupal\file\Entity\File;
 use Drupal\webform\Element\WebformTermReferenceTrait;
@@ -63,6 +64,13 @@ class Webform {
    */
   protected $entityTypeManager;
 
+  /**
+   * Module handler manager.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
   const LAYOUTS = [
     'webform_flexbox',
     'container',
@@ -76,11 +84,18 @@ class Webform {
   /**
    * {@inheritDoc}
    */
-  public function __construct(WebformTokenManager $webformTokenManager, AccountProxy $accountProxy, WebformElementManager $webformElementManager, EntityTypeManagerInterface $entityTypeManager) {
+  public function __construct(
+    WebformTokenManager $webformTokenManager,
+    AccountProxy $accountProxy,
+    WebformElementManager $webformElementManager,
+    EntityTypeManagerInterface $entityTypeManager,
+    ModuleHandlerInterface $moduleHandler
+  ) {
     $this->webformTokenManager = $webformTokenManager;
     $this->currentUser = $accountProxy->getAccount();
     $this->webformElementManager = $webformElementManager;
     $this->entityTypeManager = $entityTypeManager;
+    $this->moduleHandler = $moduleHandler;
   }
 
   /**
@@ -107,6 +122,7 @@ class Webform {
     }
     // Add reset button.
     $schema['buttons']['reset'] = $this->resetButtonToUiSchema();
+    $this->moduleHandler->alter('decoupled_webform_schema', $schema, $webform_id);
     return $schema;
   }
 
@@ -397,6 +413,17 @@ class Webform {
     (isset($item['#wrapper_attributes']['class']) && !empty($item['#wrapper_attributes']['class'])) ? $properties['wrapperClass'] = implode(" ", $item['#wrapper_attributes']['class']) : "";
     (isset($item['#date_date_min']) && !is_null($item['#date_date_min'])) ? $properties['dateMin'] = $item['#date_date_min'] : NULL;
     (isset($item['#date_date_max']) && !is_null($item['#date_date_max'])) ? $properties['dateMax'] = $item['#date_date_max'] : NULL;
+    (isset($item['#min']) && !is_null($item['#min'])) ? $properties['attributes']['min'] = $item['#min'] : NULL;
+    (isset($item['#max']) && !is_null($item['#max'])) ? $properties['attributes']['max'] = $item['#max'] : NULL;
+    (isset($item['#step']) && !is_null($item['#step'])) ? $properties['attributes']['step'] = $item['#step'] : NULL;
+
+    // add custom properties
+    if (isset($item['#attributes']) && is_array($item['#attributes']) ) {
+      foreach ($item['#attributes'] as $key => $value) {
+        $properties['attributes'][$key] = $value;
+      }
+    }
+
     $properties['isMultiple'] = isset($item['#multiple']);
     if (isset($item['#required'])) {
       $properties['validation']['required'] = TRUE;

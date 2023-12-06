@@ -59,7 +59,13 @@ class XmlSourceIconProvider extends VactoryIconProviderBase {
       foreach ($svgs_infos['symbol'] as $info) {
         $svg_id = $info['@attributes']['id'];
         $svg_ids[] = $svg_id;
-        $svg_paths_d[$svg_id] = $info['path']['@attributes']['d'];
+        if (count($info['path']) > 1) {
+          foreach ($info['path'] as $path) {
+            $svg_paths_d[$svg_id][] = $path['@attributes']['d'];
+          }
+        } else {
+          $svg_paths_d[$svg_id] = $info['path']['@attributes']['d'];
+        }
         $element['#options'][$svg_id] = $svg_id;
       }
     }

@@ -23,6 +23,7 @@ use League\OAuth2\Server\Repositories\ScopeRepositoryInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Drupal\user\UserStorageInterface;
 use Defuse\Crypto\Core;
+use Symfony\Component\HttpFoundation\Request;
 
 class OneTimeToken extends ControllerBase {
 
@@ -128,7 +129,6 @@ class OneTimeToken extends ControllerBase {
     $timestamp = $body['timestamp'];
     $hash = $body['hash'];
     $grant_type = 'implicit';
-    $current = \Drupal::time()->getRequestTime();
 
     // Check for client arguements.
     if (empty($client_id) || empty($client_secret)) {
@@ -136,13 +136,10 @@ class OneTimeToken extends ControllerBase {
         ->generateHttpResponse(new Response());
     }
 
-    // Check for user arguments.
-    if (empty($uid) || empty($timestamp) || empty($hash)) {
-      return new JsonResponse([
-        'error' => 'invalid_user',
-        'error_description' => 'User authentication failed',
-        'message' => 'User authentication failed'
-      ], 401);
+    $checkOneTimeLogin = $this->checkOneTimeLoginQueryParams($uid, $hash, $timestamp);
+
+    if ($checkOneTimeLogin['status'] == 401) {
+      return new JsonResponse($checkOneTimeLogin, 401);
     }
 
     // Check if client exist.
@@ -156,41 +153,6 @@ class OneTimeToken extends ControllerBase {
     if (!$this->clientRepository->validateClient($client_id, $client_secret, $grant_type)) {
       return OAuthServerException::invalidClient($request)
         ->generateHttpResponse(new Response());
-    }
-
-    /** @var \Drupal\user\UserInterface $user */
-    $user = $this->userStorage->load($uid);
-
-    if ($user === NULL || !$user->isActive()) {
-      return new JsonResponse([
-        'error' => 'invalid_user',
-        'error_description' => 'User authentication failed',
-        'message' => 'User authentication failed'
-      ], 401);
-    }
-
-    // Time out, in seconds, until login URL expires.
-    $timeout = $this->config('user.settings')->get('password_reset_timeout');
-    if ($user->getLastLoginTime() && $current - $timestamp > $timeout) {
-      return new JsonResponse([
-        'error' => 'one_time_login_expired',
-        'error_description' => 'You have tried to use a one-time login link that has expired. Please request a new one using the form below.',
-        'message' => 'You have tried to use a one-time login link that has expired. Please request a new one using the form below.'
-      ], 401);
-    }
-
-    if (
-      !($user->isAuthenticated() &&
-      ($timestamp >= $user->getLastLoginTime()) &&
-      ($timestamp <= $current) &&
-      hash_equals($hash, user_pass_rehash($user, $timestamp))
-      )
-      ) {
-      return new JsonResponse([
-        'error' => 'one_time_login_failed',
-        'error_description' => 'One-time-login user authentication failed',
-        'message' => 'One-time-login user authentication failed'
-      ], 401);
     }
 
     $client = new ClientEntity($drupal_client);
@@ -234,6 +196,7 @@ class OneTimeToken extends ControllerBase {
     $responseType->setAccessToken($accessToken);
     $responseType->setRefreshToken($refreshToken);
     $response = $responseType->generateHttpResponse(new Response());
+
     return $response;
   }
 
@@ -261,6 +224,81 @@ class OneTimeToken extends ControllerBase {
       $this->fileSystem = \Drupal::service('file_system');
     }
     return $this->fileSystem;
+  }
+
+  /**
+   * Check one time login route.
+   */
+  public function CheckOneTimeLogin(Request $request) {
+    $uid = $request->query->get('uid');
+    $timestamp = $request->query->get('timestamp');
+    $hash = $request->query->get('hash');
+
+    $check = $this->checkOneTimeLoginQueryParams($uid, $hash, $timestamp);
+
+    if ($check['status'] == 401) {
+      return new JsonResponse($check, 401);
+    }
+
+    return new JsonResponse($check, 200);
+  }
+
+  /**
+   * Check one time login query params.
+   */
+  protected function checkOneTimeLoginQueryParams($uid, $hash, $timestamp) {
+    // Check for user arguments.
+    if (empty($uid) || empty($timestamp) || empty($hash)) {
+      return new JsonResponse([
+        'error' => 'invalid_user',
+        'error_description' => 'User authentication failed',
+        'message' => 'User authentication failed'
+      ], 401);
+    }
+
+    $current = \Drupal::time()->getRequestTime();
+    /** @var \Drupal\user\UserInterface $user */
+    $user = $this->userStorage->load($uid);
+
+    if ($user === NULL || !$user->isActive()) {
+      return [
+        'status' => 401,
+        'error' => 'invalid_user',
+        'error_description' => 'User authentication failed',
+        'message' => 'User authentication failed'
+      ];
+    }
+
+    // Time out, in seconds, until login URL expires.
+    $timeout = $this->config('user.settings')->get('password_reset_timeout');
+    if ($user->getLastLoginTime() && $current - $timestamp > $timeout) {
+      return [
+        'status' => 401,
+        'error' => 'one_time_login_expired',
+        'error_description' => 'You have tried to use a one-time login link that has expired. Please request a new one using the form below.',
+        'message' => 'You have tried to use a one-time login link that has expired. Please request a new one using the form below.'
+      ];
+    }
+
+    if (
+      !($user->isAuthenticated() &&
+      ($timestamp >= $user->getLastLoginTime()) &&
+      ($timestamp <= $current) &&
+      hash_equals($hash, user_pass_rehash($user, $timestamp))
+      )
+      ) {
+      return [
+        'status' => 401,
+        'error' => 'one_time_login_failed',
+        'error_description' => 'One-time-login user authentication failed',
+        'message' => 'One-time-login user authentication failed'
+      ];
+    }
+
+    return [
+      'status' => 200,
+    ];
+
   }
 
 }

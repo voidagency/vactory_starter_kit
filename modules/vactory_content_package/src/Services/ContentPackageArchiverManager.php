@@ -58,13 +58,15 @@ class ContentPackageArchiverManager implements ContentPackageArchiverManagerInte
   /**
    * Zip nodes.
    */
-  public function zipContentTypeNodes(string $contentType = 'vactory_page') {
-    $nodes = $this->entityTypeManager->getStorage('node')
-      ->getQuery()
-      ->accessCheck(FALSE)
-      ->condition('type', $contentType)
-      ->execute();
-    $nodes = array_values($nodes);
+  public function zipContentTypeNodes(string $contentType = 'vactory_page', $nodes = NULL) {
+    if (empty($nodes)) {
+      $nodes = $this->entityTypeManager->getStorage('node')
+        ->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('type', $contentType)
+        ->execute();
+      $nodes = array_values($nodes);
+    }
 
     if (empty($nodes)) {
       return NULL;
@@ -174,7 +176,8 @@ class ContentPackageArchiverManager implements ContentPackageArchiverManagerInte
     $directory = $this->extractDirectory();
     try {
       $archive = $this->archiveExtract($path, $directory);
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       $this->messenger->addError($e->getMessage());
       return;
     }

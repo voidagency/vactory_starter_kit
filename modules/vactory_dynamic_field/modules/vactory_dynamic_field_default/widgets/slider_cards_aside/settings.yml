@@ -1,0 +1,43 @@
+name: "Slider cards aside"
+multiple: TRUE
+category: "Slider"
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: "Titre"
+    options:
+      "#required": TRUE
+  tag:
+    type: text
+    label: "Tag"
+  link:
+    type: url_extended
+    label: "Plus d information"
+  image:
+    type: image
+    label: "Image"
+    options:
+      "#required": TRUE
+extra_fields:
+  title:
+    type: text
+    label: "Titre"
+    options:
+      "#required": TRUE
+  subtitle:
+    type: text
+    label: "Sous titre"
+  link:
+    type: url_extended
+    label: "Voir plus"
+    options:
+      "#required": TRUE
+  description:
+    type: text
+    label: "Description"
+  image:
+    type: image
+    label: "Image"
+    options:
+      "#required": TRUE

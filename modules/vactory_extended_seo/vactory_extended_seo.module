@@ -59,7 +59,7 @@ function vactory_extended_seo_form_alter(&$form, FormStateInterface $form_state,
       '#group'       => 'advanced',
       '#open'        => FALSE,
       '#access'      => \Drupal::currentUser()
-        ->hasPermission('administer meta tags'),
+        ->hasPermission('contribute content vactory extended seo entities'),
       '#attributes'  => ['class' => ['node-class-form']],
     ];
     foreach ($activeLanguages as $lang => $val) {
