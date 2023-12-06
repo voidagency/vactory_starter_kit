@@ -160,6 +160,13 @@ vactory_decoupled.login_token:
   requirements:
     _access: 'TRUE'
     _format: 'json'
+vactory_decoupled.one_time_token_check:
+  path: '/oauth/one-time-token-check'
+  defaults:
+    _controller: 'Drupal\vactory_decoupled\Controller\OneTimeToken::CheckOneTimeLogin'
+  requirements:
+    _access: 'TRUE'
+    _format: 'json'
 vactory_decoupled.check_shield:
   path: '/api/check-shield'
   defaults:
