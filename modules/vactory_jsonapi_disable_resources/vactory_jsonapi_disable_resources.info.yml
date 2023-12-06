@@ -1,4 +1,7 @@
 name: 'Vactory Jsonapi Disable Resources'
 type: module
-core_version_requirement: '^8.9 || ^9'
-package: Custom
+description: 'Disables unwanted JSON:API resources and their fields for security purpose.'
+core_version_requirement: ^9 || ^10
+package: Vactory
+dependencies:
+  - jsonapi
