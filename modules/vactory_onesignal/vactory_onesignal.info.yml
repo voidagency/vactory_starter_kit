@@ -1,0 +1,8 @@
+name: Vactory Onesignal
+type: module
+description: Provides additional custom services to enhance onesignal contrib module
+package: Vactory
+core_version_requirement: ^9 || ^10
+configure: onesignal.config_form
+dependencies:
+  - onesignal

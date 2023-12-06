@@ -1,0 +1,9 @@
+services:
+  vactory_onesignal.manager:
+    class: Drupal\vactory_onesignal\Service\VactoryOnesignalManager
+    arguments:
+      - '@entity_type.manager'
+      - '@language_manager'
+      - '@onesignal'
+      - '@config.factory'
+      - '@database'
