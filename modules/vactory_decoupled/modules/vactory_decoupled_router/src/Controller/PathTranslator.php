@@ -141,14 +141,30 @@ class PathTranslator extends ControllerBase {
     if ($entity->getEntityType() instanceof ContentEntityType) {
       $can_view = $entity->access('view', NULL, TRUE);
       if (!$can_view->isAllowed()) {
-        /** @var \Drupal\Core\Entity\EntityInterface $entity */
-        $entity = $this->findEntity($error_match_info);
-        $info = [
-          '_route' => 'error_page',
-        ];
-        $output['status'] = 403;
-        // $this->response->setStatusCode(403);
-        $output['message'] = "User is not allowed to view $path";
+        if ($this->currentUser()->isAnonymous()) {
+          // Redirect the anonymous user to the login page in case they do not have access to the current page.
+          $login_route = $this->systemRoutes['account_login'];
+          if (!isset($login_route)) {
+            $this->logger->error('System route account_login is not found. Create one at /admin/config/system/vactory_router');
+            return;
+          }
+          $redirects_trace[] = [
+            'to' => $login_route->getAlias(),
+            'status' => 301,
+            'from' => $path,
+          ];
+          $output['redirect'] = $redirects_trace;
+        }
+        else {
+          /** @var \Drupal\Core\Entity\EntityInterface $entity */
+          $entity = $this->findEntity($error_match_info);
+          $info = [
+            '_route' => 'error_page',
+          ];
+          $output['status'] = 403;
+          // $this->response->setStatusCode(403);
+          $output['message'] = "User is not allowed to view $path";
+        }
       }
     }
 
