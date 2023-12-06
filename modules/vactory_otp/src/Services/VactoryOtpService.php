@@ -272,11 +272,13 @@ class VactoryOtpService {
     try {
       $sent = $this->smsSender->sendSms($sms_phone, $sms_content);
       if ($sent) {
+        $this->logger->get('vactory_otp')->info("OTP sent successfully to {$sms_phone}");
         return $otp;
       }
       return FALSE;
     }
     catch (\Exception $e) {
+      $this->logger->get('vactory_otp')->error("Cannot send OTP to {$sms_phone}");
       return FALSE;
     }
 
@@ -338,11 +340,11 @@ class VactoryOtpService {
     try {
       $mailManager->mail($module, $key, $to, $langcode, $params, $reply, $send);
       $this->store->set('last_mail_otp_sent', $this->time->getCurrentTime());
+      $this->logger->get('vactory_otp')->info("OTP sent successfully to {$to}");
       return $otp;
     }
     catch (\Exception $e) {
-      \Drupal::logger('vactory_otp')
-        ->error("Erreur lors de l'envoi de l'otp par mail : " . $e->getMessage());
+      $this->logger->get('vactory_otp')->error("Erreur lors de l'envoi de l'otp par mail : " . $e->getMessage());
     }
 
     return FALSE;
