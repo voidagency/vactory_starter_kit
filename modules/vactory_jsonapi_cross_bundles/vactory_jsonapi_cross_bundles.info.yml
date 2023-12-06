@@ -1,0 +1,7 @@
+name: 'Vactory Jsonapi Cross Bundles'
+type: module
+description: 'Vactory Jsonapi Cross Bundles'
+core_version_requirement: ^9 || ^10
+package: Vactory
+dependencies:
+  - jsonapi_cross_bundles
