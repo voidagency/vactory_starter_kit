@@ -350,6 +350,9 @@ Valid Element States:
 Loom Tutorial
 https://www.loom.com/share/895b2edccdea45f8b59c1db4f496998f
 
+## Screenshoots
+See https://voidagency.gitbook.io/factory/developpeur-frontend/dynamic-field#screenshoots
+
 ## Extends
 Aucun
 
