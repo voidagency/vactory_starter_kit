@@ -72,7 +72,9 @@ class ContentPackageArchiverManager implements ContentPackageArchiverManagerInte
     // Get blocks.
     if (empty($blocks) && !$is_partial) {
       $blocks = $this->entityTypeManager->getStorage('block_content')
-        ->getQuery()
+        ->getQuery('OR')
+        ->notExists('block_content_package_exclude')
+        ->condition('block_content_package_exclude', 1, '<>')
         ->accessCheck(FALSE)
         ->execute();
       $blocks = array_values($blocks);
@@ -158,7 +160,6 @@ class ContentPackageArchiverManager implements ContentPackageArchiverManagerInte
 
       // Create subdirectory within the main folder.
       $fileSystem->prepareDirectory($dir_location, FileSystemInterface::CREATE_DIRECTORY);
-      // $json_file_name = $entity_type === 'node' ? 'original.json' : 'block_original.json';
       $json_file_name = 'original.json';
       file_put_contents($dir_location . '/' . $json_file_name, json_encode($contentPackageManager->normalize($entity), JSON_PRETTY_PRINT));
       $context['sandbox']['zip']->addFile($fileSystem->realpath($dir_location . '/' . $json_file_name), $entity_folder . '/' . $entity->label() . '/' . $json_file_name);
@@ -264,10 +265,7 @@ class ContentPackageArchiverManager implements ContentPackageArchiverManagerInte
    * Unzip batch callback.
    */
   public static function unzipCallback($nodes, $type, &$context) {
-    // \Drupal::logger('your_module')->debug('Context befor unlink: @context', [
-    //   '@context' => print_r($context, TRUE),
-    // ]);
-  
+      
     $fileSystem = \Drupal::service('file_system');
     $contentPackageManager = \Drupal::service('vactory_content_package.manager');
 

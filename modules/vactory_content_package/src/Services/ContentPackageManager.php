@@ -178,6 +178,7 @@ class ContentPackageManager implements ContentPackageManagerInterface {
                     if ($fid) {
                       $file = File::load($fid);
                       if ($file) {
+                        // If the image is not loading on localhost, you can use an online image link like "https://hips.hearstapps.com/hmg-prod/images/nature-quotes-landscape-1648265299.jpg"
                         $field_value[$i] = $this->fileUrlGenerator->generateAbsoluteString($file->getFileUri());
                       }
                     }
@@ -635,6 +636,7 @@ class ContentPackageManager implements ContentPackageManagerInterface {
             if ($fid) {
               $file = File::load($fid);
               if ($file) {
+                // If the image is not loading on localhost, you can use an online image link like "https://hips.hearstapps.com/hmg-prod/images/nature-quotes-landscape-1648265299.jpg"
                 $df_field_value = $this->fileUrlGenerator->generateAbsoluteString($file->getFileUri());
               }
             }

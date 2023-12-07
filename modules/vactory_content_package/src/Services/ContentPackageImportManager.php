@@ -44,7 +44,7 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
   /**
    * Delete all nodes of given content types.
    */
-  public function rollback(array $content_types, string $file_to_import = '') {
+  public function rollback(array $content_types, string $file_to_import = '', $is_block_delete = FALSE) {
 
     $nodes = $this->entityTypeManager->getStorage('node')
       ->getQuery()
@@ -72,8 +72,10 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
       $batch = [
         'title' => 'Process of deleting nodes',
         'operations' => $operations,
-        'finished' => [self::class, 'rollbackFinished'],
       ];
+      if (!$is_block_delete) {
+        $batch['finished'] = [self::class, 'rollbackFinished'];
+      }
       batch_set($batch);
     }
 
@@ -139,6 +141,61 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
       $context['results']['count'] = 0;
     }
     $context['results']['count'] += (count($nodes) - $skipped_nodes);
+    $context['results']['file_to_import'] = $file_to_import;
+  }
+
+  /**
+   * Delete all Blocks of given content types.
+   */
+  public function rollbackBlock(string $file_to_import = '') {
+    $blocks = $this->entityTypeManager->getStorage('block_content')
+      ->getQuery('OR')
+      ->notExists('block_content_package_exclude')
+      ->condition('block_content_package_exclude', 1, '<>')
+      ->accessCheck(FALSE)
+      ->execute();
+    $blocks = array_values($blocks);
+    if (empty($blocks)) {
+      return [];
+    }
+
+    $chunk = array_chunk($blocks, self::BATCH_SIZE);
+    $operations = [];
+    $num_operations = 0;
+    foreach ($chunk as $ids) {
+      $operations[] = [
+        [self::class, 'rollbackBlocksCallback'],
+        [$ids, $file_to_import],
+      ];
+      $num_operations++;
+    }
+
+    if (!empty($operations)) {
+      $batch = [
+        'title' => 'Process of deleting blocks',
+        'operations' => $operations,
+        'finished' => [self::class, 'rollbackFinished'],
+      ];
+      batch_set($batch);
+    }
+
+  }
+
+  /**
+   * Rollback batch callbackBlocks.
+   */
+  public static function rollbackBlocksCallback($nids, $file_to_import, &$context) {
+    $entityFieldManager = \Drupal::service('entity_field.manager');
+    $storage = \Drupal::entityTypeManager()->getStorage('block_content');
+    $nodes = $storage->loadMultiple($nids);
+    foreach ($nodes as $node) {
+      $node->delete();
+    }
+    
+    if (!isset($context['results']['count'])) {
+      $context['results']['count'] = 0;
+    }
+    $context['results']['count'] += count($nodes);
     $context['results']['file_to_import'] = $file_to_import;
   }
 
