@@ -77,14 +77,14 @@ class Webform {
 
   /**
    * The renderer.
-   * 
+   *
    * @var \Drupal\Core\Render\RendererInterface
    */
   protected $renderer;
 
   /**
    * The vactory private file service.
-   * 
+   *
    * @var \Drupal\vactory_private_files_decoupled\VactoryPrivateFilesServices
    */
   protected $vactoryPrivateFilesService;
@@ -111,7 +111,7 @@ class Webform {
   const PAGE = 'webform_wizard_page';
 
   /**
-   * The excluded webform from test. 
+   * The excluded webform from test.
    */
   const WEBFORM_TESTS_EXCLUDED = ['vactory_espace_prive_edit', 'vactory_espace_prive_register'];
 
@@ -147,10 +147,12 @@ class Webform {
    */
   public function normalize($webform_id) {
     $this->webform = WebformEntity::load($webform_id);
-    $webformAux = $this->webform;
-    $this->formWithTestsValues = $this->renderer->executeInRenderContext(new RenderContext(), static function () use ($webformAux) {
-      return $webformAux->getSubmissionForm([], 'test')['elements'] ?? [];;
-    });
+    if ($this->checkIfWeShouldPrepareTestsValues()) {
+      $webformAux = $this->webform;
+      $this->formWithTestsValues = $this->renderer->executeInRenderContext(new RenderContext(), static function () use ($webformAux) {
+        return $webformAux->getSubmissionForm([], 'test')['elements'] ?? [];;
+      });
+    }
     $elements = $this->webform->getElementsInitialized();
     $draft = $this->draftSettingsToSchema();
     $schema = $this->itemsToSchema($elements);
@@ -584,12 +586,19 @@ class Webform {
     }
 
     // Override default values when the query params include test.
-    $query = \Drupal::request()->query->get("q");
-    if (!in_array($this->webform->id() ,self::WEBFORM_TESTS_EXCLUDED) && isset($query["test"])) {
+    if ($this->checkIfWeShouldPrepareTestsValues()) {
       $this->prepareFormElementTestValue($field_name , $properties);
     }
 
     return $properties;
+  }
+
+  /**
+   * Check if we should prepare tests values.
+   */
+  private function checkIfWeShouldPrepareTestsValues() {
+    $query = \Drupal::request()->query->get("q");
+    return !in_array($this->webform->id(), self::WEBFORM_TESTS_EXCLUDED) && isset($query["test"]);
   }
 
   /**
@@ -612,7 +621,7 @@ class Webform {
     if (!$properties['isMultiple']) {
       $fid = is_array($properties['default_value']) ? array_values($properties['default_value'])[0] : null;
       if (!is_null($fid)) {
-        $properties['default_value'] = $this->preparePreviewInfos($fid);  
+        $properties['default_value'] = $this->preparePreviewInfos($fid);
         return;
       }
     }
@@ -746,7 +755,7 @@ class Webform {
   protected function findParents($key, $array, $parentKey = null, &$parents = array()) {
     foreach ($array as $currentKey => $value) {
         if ($currentKey === $key) {
-            // If the current key matches the target key, add the parent to the list
+            // If the current key matches the target key, add the parent to the list.
             if ($parentKey !== null && !str_starts_with($parentKey, '#')) {
                 $parents[] = $parentKey;
             }
@@ -754,11 +763,10 @@ class Webform {
         }
 
         if (is_array($value)) {
-            // Recursively search in the current sub-array with the current key as the parent
+            // Recursively search in the current sub-array with the current key as the parent.
             $this->findParents($key, $value, $currentKey, $parents);
         }
     }
-
     return $parents;
   }
 
