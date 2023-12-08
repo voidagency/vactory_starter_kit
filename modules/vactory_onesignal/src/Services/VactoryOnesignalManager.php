@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\vactory_onesignal\Services\VactoryOnesignalManager;
+namespace Drupal\vactory_onesignal\Services;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Database\Connection;
