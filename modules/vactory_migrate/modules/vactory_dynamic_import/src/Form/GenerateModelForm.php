@@ -188,6 +188,10 @@ class GenerateModelForm extends FormBase {
       elseif (str_starts_with($original['type'], 'media')) {
         $bundle = explode(':', $original['type']);
         $header[] = 'media|' . $formatted_field . '|' . $bundle[1];
+        // Add a field for images alt.
+        if ($bundle[1] == 'image') {
+          $header[] = 'media|' . $formatted_field . '|' . $bundle[1] . '_alt';
+        }
       }
       else {
         $header[] = '-|' . $formatted_field . '|-';
