@@ -256,7 +256,9 @@ class DynamicFieldManager {
     }
 
     // Restore cache.
-    $this->cacheability->addCacheContexts(['url.query_args:q']);
+    if(isset($this->cacheability)) {
+      $this->cacheability->addCacheContexts(['url.query_args:q']);
+    }
 
     return [
       'data'         => $data,
