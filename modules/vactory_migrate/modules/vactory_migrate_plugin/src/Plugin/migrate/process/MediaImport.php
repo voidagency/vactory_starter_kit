@@ -31,6 +31,7 @@ use Drupal\migrate_file\Plugin\migrate\process\FileImport;
  *   "Dynamic File Path Destinations" section below for an example). However,
  *   this means if you want to assign a static destination value in your
  *   migration, you will need to use a constant.
+ *
  *   @see https://www.drupal.org/docs/8/api/migrate-api/migrate-process/constant-values
  *   To provide a directory path (to which the file is saved using its original
  *   name), a trailing slash *must* be used to differentiate it from being a
@@ -52,7 +53,7 @@ use Drupal\migrate_file\Plugin\migrate\process\FileImport;
  *   that if you are importing a lot of remote files, this check will greatly
  *   reduce the speed of your import as it requires an http request per file to
  *   check for existence. Defaults to FALSE.
- * - source_check_method: The HTTP Request method used to check if he file
+ * - source_check_method: The HTTP Request method used to check if the file
  *   exists when skip_on_missing_source is set. Either HEAD or GET. A HEAD
  *   request is faster than a GET since the file isn't actually downloaded,
  *   but not all servers support it. Switch to GET if necessary.
@@ -166,14 +167,28 @@ class MediaImport extends FileImport {
       $file_name = $this->configuration['media_name'] ?? $file->getFilename();
       $media_bundle = $this->configuration['media_bundle'] ?? 'image';
       $media_field_name = $this->configuration['media_field_name'] ?? 'field_media_image';
-      $media = Media::create([
-        'bundle'          => $media_bundle,
-        'name'            => $file_name,
+      $data = [
+        'bundle' => $media_bundle,
+        'name' => $file_name,
         'uid' => \Drupal::currentUser()->id(),
         $media_field_name => [
           'target_id' => $file->id(),
         ],
-      ]);
+      ];
+      // Assign alt for images.
+      if ($media_bundle == 'image') {
+        $alt_field = $this->configuration['alt_field'];
+        // Get alt from source.
+        $alt_value = $row->get($alt_field);
+        // Use title instead if alt is not preent in source.
+        if (empty($alt_value)) {
+          $alt_value = $row->get('-|title|-');
+        }
+        if (isset($alt_value)) {
+          $data[$media_field_name]['alt'] = $alt_value;
+        }
+      }
+      $media = Media::create($data);
       $media->save();
       return $media->id();
     }
