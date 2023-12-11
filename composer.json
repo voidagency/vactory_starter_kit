@@ -224,7 +224,8 @@
       },
       "b-khouy/jquery_colorpicker": {
         "jQuery color picker resolve vendor path": "https://gist.githubusercontent.com/voidagency/606f9343e9c7e9b99858088d7db111f1/raw/5216cc90d89e68916b4a17b60e07466286a18397/jquery-color-picker-resolve-vendor-path.patch",
-        "jQuery color picker remove vendor dependencies": "https://gist.githubusercontent.com/voidagency/17af206778d4ea598b93dd10769556a0/raw/538e683f77b15945a41b99548a6b0d1ca2315225/jquery-colorpicker-remove-vendor-dependencies.patch"
+        "jQuery color picker remove vendor dependencies": "https://gist.githubusercontent.com/voidagency/17af206778d4ea598b93dd10769556a0/raw/538e683f77b15945a41b99548a6b0d1ca2315225/jquery-colorpicker-remove-vendor-dependencies.patch",
+        "jQuery color picker update background (drupalSettings variable)": "https://gist.githubusercontent.com/b-khouy/b249e0a35a2ece62fe741ad330490b8e/raw/d603db22ebedc457d5e92de81ca99a1c467f8776/jquery-colorpicker-update-background.patch"
       },
       "drupal/webform": {
         "Invoke alter hook after webform handlers execution": "https://gist.githubusercontent.com/voidagency/6871bd7544b621e2c4221126c5dfec50/raw/7595d19a34e18ab9f719b7f917c02b10a4a40caf/webform-post-handlers-hook.patch"
@@ -255,6 +256,9 @@
       },
       "drupal/jsonapi_cross_bundles": {
         "Fix jsonapi cross bundles": "https://gist.githubusercontent.com/ismail-void/7e56262e60c81fbbd43874d37f145a6d/raw/95b5db1a582cdfe5c9ff987443b5ebc7f76e7766/fix-jsonapi-cross-bundles.patch"
+      },
+      "drupal/csv_serialization": {
+        "Drupal 10 compatibility": "https://gist.githubusercontent.com/b-khouy/b249e0a35a2ece62fe741ad330490b8e/raw/6692adac21ef17ea4d66d69584159a6802707404/csv-serialization-tmp-patch2.patch"
       }
     }
   },
