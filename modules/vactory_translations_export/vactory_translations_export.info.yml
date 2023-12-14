@@ -1,0 +1,5 @@
+name: Vactory translation export/import
+type: module
+description: Export user interface translations to excel
+package: Vactory
+core_version_requirement: ^9 || ^10
