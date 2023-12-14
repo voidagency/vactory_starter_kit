@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 // @todo: add form to add string
 // @todo: use Context for storing these values.
-// @todo: t('WELCOME REACT', array(), array('context' => '_FRONTEND'));
+// @todo: t('WELCOME REACT', [], ['context' => '_FRONTEND']);
 
 class TranslationsController extends ControllerBase {
 
