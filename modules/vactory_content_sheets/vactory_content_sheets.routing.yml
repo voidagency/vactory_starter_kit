@@ -1,0 +1,9 @@
+vactory_content_sheets.update_content:
+  path: "/api/vactory-content-sheets/update"
+  defaults:
+    _controller: '\Drupal\vactory_content_sheets\Controller\ContentSheetsController::update'
+    _title: "Update Content Sheets"
+  methods: [PATCH]
+  requirements:
+    _access: "TRUE"
+  #   _permission: "administer vactory_content_sheets site configuration"

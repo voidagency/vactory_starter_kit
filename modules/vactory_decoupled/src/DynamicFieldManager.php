@@ -311,6 +311,17 @@ class DynamicFieldManager {
           }
 
           // Text Preprocessor.
+          if ($info['type'] === 'text') {
+            if (str_starts_with($value, 'tx:')) {
+              $contentService = \Drupal::service('vactory_content_sheets.content_services');
+              $retrievedContent = $contentService->getContent($value);
+              if ($retrievedContent) {
+                $value = $retrievedContent;
+              }
+            }
+          }
+          
+          // Text_format Preprocessor.
           if ($info['type'] === 'text_format') {
             // $format = $info['options']['#format'] ?? 'full_html';
             $build = [

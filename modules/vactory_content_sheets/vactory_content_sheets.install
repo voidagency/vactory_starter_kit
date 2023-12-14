@@ -1,0 +1,40 @@
+<?php
+
+use Drupal\Core\Database\Schema;
+
+/**
+ * Implements hook_schema().
+ */
+function vactory_content_sheets_schema() {
+  $schema['vactory_content_sheets'] = vactory_content_sheets_get_table_schema();
+  return $schema;
+}
+
+/**
+ * Define the schema for vactory_content_sheets.
+ */
+function vactory_content_sheets_get_table_schema() {
+  return [
+    'description' => 'Stores content sheets.',
+    'fields' => [
+      'key' => [
+        'description' => 'The key of the content.',
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+      ],
+      'langcode' => [
+        'description' => 'The language code of the content.',
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+      ],
+      'content' => [
+        'description' => 'The content.',
+        'type' => 'text',
+        'not null' => FALSE,
+      ],
+    ],
+    'primary key' => ['key', 'langcode'],
+  ];
+}
