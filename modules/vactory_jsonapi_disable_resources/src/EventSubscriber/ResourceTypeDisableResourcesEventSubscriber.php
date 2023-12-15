@@ -35,7 +35,10 @@ class ResourceTypeDisableResourcesEventSubscriber implements EventSubscriberInte
             'generate_notification',
             'content_translation_source',
             'content_translation_outdated',
-            'field_exclude_from_search'
+            'field_exclude_from_search',
+        ],
+        'user' => [
+          'display_name',
         ],
     ];
 
