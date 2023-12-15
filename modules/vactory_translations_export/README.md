@@ -12,5 +12,11 @@ the desired context and the delimiter then click export.
 Go to `/admin/config/regional/translate/import` select
 the desired context and the delimiter then upload the csv and click import.
 
+### Permission
+To be able to access the translation CSV import/export form user should have
+the permissions:
+* Administer vactory_translations_export configuration
+(`administer vactory_translations_export configuration`)
+
 ### Maintainers
 Brahim KHOUY <b.khouy@void.fr>
