@@ -836,13 +836,6 @@ function vactory_decoupled_preprocess_page(&$variables) {
     // Redirect backend not found pages to frontend.
     redirectToFrontend(TRUE);
   }
-  if ($base_media_url = Settings::get('BASE_MEDIA_URL', '')) {
-    $media_url_info = parse_url($base_media_url);
-    if (isset($media_url_info['host']) && $media_url_info['host'] === $current_domain) {
-      // Redirect none existant media to frontend.
-      redirectToFrontend();
-    }
-  }
   if (str_starts_with($current_domain, 'api.')) {
     // Redirect website html pages access via api domain to frontend.
     redirectToFrontend();
