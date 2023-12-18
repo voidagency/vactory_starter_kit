@@ -33,6 +33,14 @@ vactory_dynamic_field.settings_form:
   requirements:
     _permission: 'administer site configuration'
 
+vactory_dynamic_field.screenshot_settings:
+  path: '/admin/config/system/dynamic-field-screenshots'
+  defaults:
+    _title: 'Dynamic field screenshots'
+    _form: '\Drupal\vactory_dynamic_field\Form\DynamicFieldScreenshot'
+  requirements:
+    _permission: 'administer site configuration'
+
 df_pending_content.dashboard:
   path: '/admin/content/pending'
   defaults:

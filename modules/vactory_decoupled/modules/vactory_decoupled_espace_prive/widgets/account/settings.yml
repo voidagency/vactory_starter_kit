@@ -1,22 +1,27 @@
 name: "Account"
 multiple: FALSE
-category: 'Espace privé'
+category: "Espace privé"
 enabled: TRUE
 fields:
+  group_settings:
+  g_title: "setting"
+  emprunt:
+    type: checkbox
+    label: "Activer l'empreint/FaceID"
   user:
     type: json_api_collection
-    label: 'JSON:API'
+    label: "JSON:API"
     options:
-      '#required': TRUE
-      '#default_value':
+      "#required": TRUE
+      "#default_value":
         resource: user--user
         filters:
           - include=user_picture
           - filter[drupal_internal__uid][value]=[current-user:uid]
   webform:
     type: webform_decoupled
-    label: 'Formulaire'
+    label: "Formulaire"
     options:
-      '#required': TRUE
-      '#default_value':
-        webform_id: 'vactory_espace_prive_edit'
+      "#required": TRUE
+      "#default_value":
+        webform_id: "vactory_espace_prive_edit"

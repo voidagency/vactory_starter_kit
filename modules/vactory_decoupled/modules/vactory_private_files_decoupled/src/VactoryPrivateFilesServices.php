@@ -7,6 +7,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\file\FileInterface;
 use Drupal\vactory_private_files_decoupled\Access\PrivateFileTokenGenerator;
+use Drupal\Component\Utility\UrlHelper;
 
 /**
  * Vactory private files service.
@@ -44,26 +45,31 @@ class VactoryPrivateFilesServices {
     $this->entityTypeManager = $entityTypeManager;
     $this->currentUser = $accountProxy->getAccount();
     $this->privateFileTokenGenerator = $privateFileTokenGenerator;
-    $now = new DateTime();
-    $this->currentTimeStamp = $now->getTimestamp();
+    $this->currentTimeStamp = \Drupal::time()->getRequestTime();
   }
 
   /**
    * Generate private file url.
    */
   public function generatePrivateFileUrl(FileInterface $file) {
-    $uri = $file->downloadUrl();
-    $query = $uri->getOptions()['query'];
-    $sessionId = $this->privateFileTokenGenerator->get($uri->toString(), $this->currentTimeStamp);
-    $query['sessionId'] = $sessionId;
-    $query['timestamp'] = $this->currentTimeStamp;
-    $uri->setOption('query', $query);
-    return [
-      '_default' => $uri->toString(),
+    $uri = $file->getFileUri();
+    $download_url = $file->downloadUrl()->toString();
+    $stream_wrapper_manager = \Drupal::service('stream_wrapper_manager');
+    $formatedFile = [
+      '_default' => $download_url,
       'extension' => $file->getMimeType(),
       'fid' => $file->id(),
       'file_name' => $file->label(),
     ];
+    if ($stream_wrapper_manager::getScheme($uri) == 'private') {
+      $token_query = [
+        'sessionId' => $this->privateFileTokenGenerator->get($download_url, $this->currentTimeStamp),
+        'timestamp' => $this->currentTimeStamp,
+      ];
+      $download_url .= (strpos($download_url, '?') !== FALSE ? '&' : '?') . UrlHelper::buildQuery($token_query);
+      $formatedFile['_default'] = $download_url;
+    }
+    return $formatedFile;
   }
 
   /**

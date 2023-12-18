@@ -33,7 +33,8 @@ function vactory_content_package_entity_base_field_info(EntityTypeInterface $ent
       ->setDisplayOptions('form', [
         'type' => 'string_textfield_with_counter',
         'weight' => 3,
-      ]);
+      ])
+      ->setDisplayConfigurable('form', TRUE);
 
     $fields['node_content_package_exclude'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Yes, exclude this entity from the content package (import/export).'))

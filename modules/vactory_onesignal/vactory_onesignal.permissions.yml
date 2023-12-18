@@ -1,0 +1,4 @@
+test vactory_onesignal notifications:
+  title: 'Test vactory_onesignal notifications'
+  description: 'Users with this permission could have access to vactory onesignal test form'
+  restrict access: true
