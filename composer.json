@@ -54,7 +54,7 @@
     "drupal/social_media_links": "^2.7.0",
     "drupal/taxonomy_import": "^2.0@alpha",
     "drupal/token": "^1.7",
-    "drupal/twig_tweak": "^2.8",
+    "drupal/twig_tweak": "^3.2",
     "drupal/ultimate_cron": "^2.0.0-alpha5",
     "drupal/viewsreference": "^2.0@beta",
     "drupal/webform": "^6.0",
