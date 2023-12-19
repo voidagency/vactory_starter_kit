@@ -99,7 +99,7 @@ class Translation_Sniffs_DisallowTranslationWithoutContextSniff implements Sniff
   }
 
   private function getErrorMessage() {
-    return "t function should use context _FRONTEND\nEx: t('Hello world', [], ['context' => '_FRONTEND']);";
+    return "t function should use context _FRONTEND\nEx: t('Hello world', [], ['context' => '_FRONTEND']);\nIf you see that the translated string is not related to _FRONTEND context please ignore this warning and proceed to next ones whenever exist, finally use the commit command --no-verify option to bypass checks";
   }
 
 }
