@@ -135,7 +135,7 @@ class SettingsForm extends ConfigFormBase {
     fputcsv($fp, $header, $delimiter);
     // Loop through file pointer and a line.
     foreach ($data as $item) {
-      fputcsv($fp, $item);
+      fputcsv($fp, $item, $delimiter);
     }
 
     fclose($fp);
