@@ -285,6 +285,9 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
       return [];
     }
 
+    // Add widget id.
+    $data['uuid'] = $uuid;
+
     // Add screenshoot.
     $data['screenshot'] = FALSE;
     if (file_exists($screenshot_url)) {
@@ -297,14 +300,17 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
       $data['screenshot'] = $file_url_generator->generateAbsoluteString($screenshot_url_gif);
     }
 
+    $screenshot_config = $this->configFactory->getEditable('vactory_dynamic_field.screenshot_settings')->get($data['uuid']);
+    if ($screenshot_config) {
+      $data['screenshot'] = $file_url_generator->generateAbsoluteString($screenshot_config['uri']);
+    }
+
     // Add static widget - demo content.
     $data['static_widget'] = FALSE;
     if (file_exists($static_widget_path)) {
       $data['static_widget'] = $static_widget_path;
     }
 
-    // Add widget id.
-    $data['uuid'] = $uuid;
 
     return $data;
   }
