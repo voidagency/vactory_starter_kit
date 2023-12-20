@@ -1,0 +1,11 @@
+name: Webform Decoupled Autosave
+description: 'Decoupled Webform autosave.'
+type: module
+core_version_requirement: '^8.9 || ^9'
+dependencies:
+  - webform
+  - jsonapi_extras
+  - vactory_decoupled_webform
+version: 8.x-1.0
+package: Vactory
+core_incompatible: false
