@@ -15,12 +15,10 @@ use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use PhpOffice\PhpSpreadsheet\Exception;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 
-
 /**
- * Import form.
+ * Imports (create/update) page from excel.
  */
 class Import extends FormBase {
-
 
   /**
    * Returns a unique string identifying the form.
@@ -70,11 +68,6 @@ class Import extends FormBase {
     return $form;
   }
 
-
-  public function validateForm(array &$form, FormStateInterface $form_state) {
-    parent::validateForm($form, $form_state);
-  }
-
   /**
    * Form submission handler.
    *
@@ -85,7 +78,7 @@ class Import extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $file_id = $form_state->getValue('excel');
-    $file_id = (int)reset($file_id);
+    $file_id = (int) reset($file_id);
     $file = File::load($file_id);
     $file_path = \Drupal::service('file_system')
       ->realpath($file->getFileUri());
@@ -100,8 +93,9 @@ class Import extends FormBase {
       if (empty($ids)) {
         $this->createDynamicFields($page['original']);
         $this->createNode($key, $page);
-      } elseif (count($ids) == 1) {
-        //Load the page (node) and update it.
+      }
+      elseif (count($ids) == 1) {
+        // Load the page (node) and update it.
         $this->createDynamicFields($page['original']);
         $nid = reset($ids);
         $node = Node::load($nid);
@@ -110,13 +104,16 @@ class Import extends FormBase {
     }
   }
 
+  /**
+   * Transform input excel to array.
+   */
   private function readExcelToArray($filePath) {
-    // Load the spreadsheet file
+    // Load the spreadsheet file.
     $spreadsheet = IOFactory::load($filePath);
 
     $data = [];
 
-    // Process sheets
+    // Process sheets.
     foreach ($spreadsheet->getSheetNames() as $sheetName) {
       $data[$sheetName] = $this->readSheetToArray($spreadsheet->getSheetByName($sheetName));
     }
@@ -124,18 +121,22 @@ class Import extends FormBase {
     return $data;
   }
 
+  /**
+   * Transform input excel (per sheet) to array.
+   */
   private function readSheetToArray($sheet) {
-    // Get the highest row and column indices
+    // Get the highest row and column indices.
     $highestRow = $sheet->getHighestRow();
     $highestColumn = $sheet->getHighestColumn();
 
-    // Convert the column letter to a numerical index
+    // Convert the column letter to a numerical index.
     try {
       $highestColumnIndex = Coordinate::columnIndexFromString($highestColumn);
-    } catch (Exception $e) {
+    }
+    catch (Exception $e) {
     }
 
-    // Initialize an array to store the data
+    // Initialize an array to store the data.
     $data = [];
     $current_paragraph = NULL;
     for ($col = 2; $col <= $highestColumnIndex; ++$col) {
@@ -154,7 +155,8 @@ class Import extends FormBase {
         }
         if (str_starts_with($key, 'paragraph') && is_null($value)) {
           $current_paragraph = $key;
-        } elseif (!is_null($current_paragraph)) {
+        }
+        elseif (!is_null($current_paragraph)) {
           $data[$language][$current_paragraph][$key] = $value;
         }
       }
@@ -163,6 +165,9 @@ class Import extends FormBase {
     return $data;
   }
 
+  /**
+   * Creates DF setting.
+   */
   private function createDynamicFields(array $data) {
     foreach ($data as $key => $value) {
       if (str_starts_with($key, 'paragraph')) {
@@ -176,7 +181,7 @@ class Import extends FormBase {
 
         foreach (array_keys($value) as $field) {
           $split = explode('|', $field);
-          // todo check if 2nd part is an available DF type.
+          // @todo check if 2nd part is an available DF type.
           if (count($split) == 3 && is_numeric($split[1])) {
             $this->generateDfField($config, $split, 'fields');
           }
@@ -191,6 +196,9 @@ class Import extends FormBase {
     }
   }
 
+  /**
+   * Check if DF is multiple.
+   */
   private function isDfMultiple($config) {
     foreach ($config as $item) {
       $split = explode('|', $item);
@@ -201,11 +209,17 @@ class Import extends FormBase {
     return FALSE;
   }
 
+  /**
+   * Transforms string from snake case to human format.
+   */
   private function snakeToHuman($string) {
     $words = explode('_', $string);
     return ucfirst(implode(' ', $words));
   }
 
+  /**
+   * Generates single DF field (setting.yml).
+   */
   private function generateDfField(&$config, $pieces, $section) {
     $field_key = reset($pieces);
     $field_type = end($pieces);
@@ -215,6 +229,9 @@ class Import extends FormBase {
     ];
   }
 
+  /**
+   * Create the YML file (DF).
+   */
   private function writeDfFile($content, $name) {
     $dest_uri = 'private://imported-pages-df';
     $dest_df_uri = $dest_uri . '/' . $name;
@@ -224,11 +241,14 @@ class Import extends FormBase {
     $filepath = \Drupal::service('file_system')->realpath($dest_df_uri . '/settings.yml');
 
     $printed = file_put_contents($filepath, $content);
-    return (bool)$printed;
+    return (bool) $printed;
   }
 
+  /**
+   * Created node (page).
+   */
   private function createNode($page_key, $data) {
-    // todo insure that original is the first item
+    // @todo Insure that original is the first item
     $node_entity = NULL;
     foreach ($data as $language => $language_value) {
       $node = [
@@ -259,20 +279,23 @@ class Import extends FormBase {
                 ->getStorage('paragraph')
                 ->getLatestRevisionId($paragraph->id()),
             ];
-          } else {
+          }
+          else {
             $concerned_paragraph = $this->findParagraphByNodeAndKey($node_entity, $key);
             $concerned_paragraph->addTranslation($language, $paragraph);
             $concerned_paragraph->save();
           }
 
-        } else {
+        }
+        else {
           $node[$key] = $value;
         }
       }
       if ($language == 'original') {
         $node_entity = Node::create($node);
         $node_entity->save();
-      } else {
+      }
+      else {
         $node_entity->addTranslation($language, $node);
         $node_entity->save();
       }
@@ -280,6 +303,9 @@ class Import extends FormBase {
 
   }
 
+  /**
+   * Normalize widget data.
+   */
   private function normalizeWidgetData($data) {
     $result = [];
     $is_multiple = $this->isDfMultiple(array_keys($data));
@@ -302,6 +328,9 @@ class Import extends FormBase {
     return json_encode($result);
   }
 
+  /**
+   * Normalize Df value.
+   */
   private function normalizeDfValue($value, $field_type) {
     $media_fields = PageImportConstants::MEDIA_FIELD_NAMES;
     if (array_key_exists($field_type, $media_fields)) {
@@ -332,34 +361,41 @@ class Import extends FormBase {
           "class" => "",
           "id" => "",
           "target" => "",
-          "rel" => ""
-        ]
+          "rel" => "",
+        ],
       ];
-    } else {
+    }
+    else {
       return $value;
     }
   }
 
+  /**
+   * Extract text with parentheses.
+   */
   private function extractTextWithParentheses($text) {
-    // Define a regular expression pattern for text inside parentheses
+    // Define a regular expression pattern for text inside parentheses.
     $pattern = '/\((.*?)\)/';
 
-    // Match all occurrences of text inside parentheses
+    // Match all occurrences of text inside parentheses.
     preg_match_all($pattern, $text, $matches);
 
-    // Get the last match (content inside the last parentheses)
+    // Get the last match (content inside the last parentheses).
     $lastMatch = end($matches[1]);
 
-    // Extract the text outside parentheses
+    // Extract the text outside parentheses.
     $textOutsideParentheses = trim(str_replace(end($matches[0]), '', $text));
 
-    // Return an associative array with extracted text
+    // Return an associative array with extracted text.
     return [
       'in' => $lastMatch ?? '',
       'out' => $textOutsideParentheses,
     ];
   }
 
+  /**
+   * Denormalize Df media.
+   */
   private function denormalizeDfMedia($df_field_value, $media_type, $media_field, $image_alt = '') {
     if (is_numeric($image_alt)) {
       $df_field_value = [
@@ -371,7 +407,8 @@ class Import extends FormBase {
           ],
         ],
       ];
-    } elseif (!empty($df_field_value)) {
+    }
+    elseif (!empty($df_field_value)) {
       $mid = $this->generateMediaFromUrl($df_field_value, $media_type, $media_field, $image_alt);
       $df_field_value = [];
       if ($mid) {
@@ -389,6 +426,9 @@ class Import extends FormBase {
     return $df_field_value;
   }
 
+  /**
+   * Generates new media fromexternal url.
+   */
   private function generateMediaFromUrl(string $url, string $type, string $field, string $image_alt): ?int {
     $media = NULL;
     switch ($type) {
@@ -441,6 +481,9 @@ class Import extends FormBase {
     return $media->id();
   }
 
+  /**
+   * Updates the node (page).
+   */
   private function updatePage(Node $node, $page) {
     $node_id = $node->get('node_id')->value;
 
@@ -464,21 +507,22 @@ class Import extends FormBase {
             "widget_id" => $widget_id,
             "widget_data" => $widget_data,
           ];
-          // Add new paragraph
+          // Add new paragraph.
           $paragraph = [
             "type" => "vactory_component",
             "paragraph_identifier" => $node_id . '|' . $key,
             "field_vactory_title" => $this->snakeToHuman(end($split)),
-            "field_vactory_component" => $field_vactory_component
+            "field_vactory_component" => $field_vactory_component,
           ];
           if ($language == 'original') {
-            // Search for paragraph with identifier [node_id]|$key
+            // Search for paragraph with identifier [node_id]|$key.
             $paragraph_entity = $this->findParagraphByNodeAndKey($node, $key);
             if (!empty($paragraph_entity)) {
-              // Update founded paragraph
+              // Update founded paragraph.
               $paragraph_entity->field_vactory_component = $field_vactory_component;
               $paragraph_entity->save();
-            } else {
+            }
+            else {
               $paragraph = Paragraph::create($paragraph);
               $paragraph->save();
               $node->field_vactory_paragraphs[] = [
@@ -489,23 +533,27 @@ class Import extends FormBase {
               ];
               $node->save();
             }
-          } else {
+          }
+          else {
             $concerned_paragraph = $this->findParagraphByNodeAndKey($node, $key);
             if ($concerned_paragraph->hasTranslation($language)) {
               $concerned_paragraph_trans = $concerned_paragraph->getTranslation($language);
               $concerned_paragraph_trans->field_vactory_component = $field_vactory_component;
               $concerned_paragraph_trans->save();
-            } else {
+            }
+            else {
               $concerned_paragraph->addTranslation($language, $paragraph);
               $concerned_paragraph->save();
             }
           }
-
         }
       }
     }
   }
 
+  /**
+   * Finds a paragraph entity based on node and paragraph_identifier.
+   */
   private function findParagraphByNodeAndKey(Node $node, $key) {
     $node_id = $node->get('node_id')->value;
     $paragraph_entity = \Drupal::entityTypeManager()->getStorage('paragraph')->loadByProperties([

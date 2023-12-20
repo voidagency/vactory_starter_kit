@@ -311,7 +311,6 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
       $data['static_widget'] = $static_widget_path;
     }
 
-
     return $data;
   }
 

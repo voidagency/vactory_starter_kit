@@ -15,12 +15,10 @@ use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
-
 /**
- * Export form.
+ * Exports pages (with DFs as excel).
  */
-class export extends FormBase {
-
+class Export extends FormBase {
 
   /**
    * Returns a unique string identifying the form.
@@ -48,7 +46,6 @@ class export extends FormBase {
    *   The form structure.
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-
     $sql = "SELECT nid, title from node_field_data ";
     $sql .= "WHERE  type = 'vactory_page' AND default_langcode = 1";
 
@@ -68,11 +65,6 @@ class export extends FormBase {
     ];
 
     return $form;
-  }
-
-
-  public function validateForm(array &$form, FormStateInterface $form_state) {
-    parent::validateForm($form, $form_state);
   }
 
   /**
@@ -110,10 +102,11 @@ class export extends FormBase {
     $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, "pages.xlsx");
     $response->deleteFileAfterSend(TRUE);
     $response->send();
-
-
   }
 
+  /**
+   * Transform node to array (to be added to excel file).
+   */
   private function constructNodeArray($node, $language) {
     $node_array = [
       'language' => $language,
@@ -154,7 +147,8 @@ class export extends FormBase {
               $normalized_value = $this->normalizeDfData($field_value, $type);
               $node_array['paragraphs'][$paragraph_identifier][$field_key . '|' . $type] = $normalized_value;
             }
-          } elseif (is_numeric($key) && $key !== 'pending_content') {
+          }
+          elseif (is_numeric($key) && $key !== 'pending_content') {
             foreach ($value as $field_key => $field_value) {
               if ($field_key !== '_weight') {
                 $type = $widget_settings['fields'][$field_key]['type'];
@@ -164,7 +158,8 @@ class export extends FormBase {
             }
           }
         }
-      } else {
+      }
+      else {
         $widget_data = $widget_data[0];
         foreach ($widget_data as $key => $value) {
           $type = $widget_settings['fields'][$key]['type'];
@@ -177,10 +172,13 @@ class export extends FormBase {
     return $node_array;
   }
 
+  /**
+   * Creates excel file from array (node data).
+   */
   private function createExcelFromArray($sheetData) {
-    // Create a new Spreadsheet object
+    // Create a new Spreadsheet object.
     $spreadsheet = new Spreadsheet();
-    // Remove the default sheet created by PhpSpreadsheet
+    // Remove the default sheet created by PhpSpreadsheet.
     $spreadsheet->removeSheetByIndex(0);
 
     $style = [
@@ -192,17 +190,16 @@ class export extends FormBase {
       ],
     ];
 
-
     foreach ($sheetData as $sheetName => $data) {
-      // Add a new sheet
+      // Add a new sheet.
       $activeSheet = $spreadsheet->createSheet()->setTitle($sheetName);
       $spreadsheet->setActiveSheetIndex($spreadsheet->getIndex($activeSheet));
 
-      // Set active sheet
+      // Set active sheet.
       $sheet = $spreadsheet->getActiveSheet();
-      $sheet->getStyle($sheet->calculateWorksheetDimension())->getAlignment()->setWrapText(true);
+      $sheet->getStyle($sheet->calculateWorksheetDimension())->getAlignment()->setWrapText(TRUE);
 
-      // Add data to the sheet
+      // Add data to the sheet.
       $current_col = 2;
       foreach ($data as $rowData) {
         $current_row = 1;
@@ -215,7 +212,7 @@ class export extends FormBase {
           else {
             foreach ($value as $paragraph_key => $paragraph_data) {
               $sheet->setCellValue([1, $current_row], $paragraph_key);
-              $sheet->getStyle([1, $current_row , count($data) + 1, $current_row])->applyFromArray($style);
+              $sheet->getStyle([1, $current_row, count($data) + 1, $current_row])->applyFromArray($style);
               $current_row++;
               foreach ($paragraph_data as $k => $v) {
                 $sheet->setCellValue([1, $current_row], $k);
@@ -228,27 +225,28 @@ class export extends FormBase {
         }
         $current_col++;
       }
-//      foreach ($sheet->getColumnIterator() as $column) {
-//        $sheet->getColumnDimension($column->getColumnIndex())->setAutoSize(true);
-//      }
+
     }
 
-    // Create a new Excel writer
+    // Create a new Excel writer.
     $writer = new Xlsx($spreadsheet);
 
-    // Save the Excel file
+    // Save the Excel file.
     $output_uri = 'private://page-export';
     if (!file_exists($output_uri)) {
       mkdir($output_uri, 0777);
     }
     $time = time();
     $file_path = \Drupal::service('file_system')
-        ->realpath($output_uri) . "/pages_{$time}.xlsx";
+      ->realpath($output_uri) . "/pages_{$time}.xlsx";
     $writer->save($file_path);
     return $file_path;
 
   }
 
+  /**
+   * Normalize Df Data.
+   */
   private function normalizeDfData($value, $type) {
     $media_types = PageImportConstants::MEDIA_FIELD_NAMES;
     if (in_array($type, array_keys($media_types))) {
@@ -265,16 +263,18 @@ class export extends FormBase {
             return "{$url} ({$mid})";
           }
         }
-      } else {
+      }
+      else {
         $url = $media->get($media_field_name)->value;
         return "{$url} ({$mid})";
       }
-    } elseif ($type === 'url_extended') {
+    }
+    elseif ($type === 'url_extended') {
       return "{$value['title']} ({$value['url']})";
-    } else {
+    }
+    else {
       return $value;
     }
   }
-
 
 }
