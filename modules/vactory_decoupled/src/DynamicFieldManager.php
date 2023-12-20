@@ -22,6 +22,7 @@ use Drupal\Core\Cache\Cache;
 use Drupal\serialization\Normalizer\CacheableNormalizerInterface;
 use Drupal\Core\Utility\Token;
 use GuzzleHttp\Client;
+use Drupal\webform\Entity\Webform;
 
 /**
  * Manages Dynamic Field Transformation.
@@ -544,6 +545,18 @@ class DynamicFieldManager {
             // Service invoked statically because vactory_decoupled_webform.
             // Module depends on vactory_decoupled.
             $value['elements'] = \Drupal::service('vactory.webform.normalizer')->normalize($webform_id);
+
+            $value['autosave'] = FALSE;
+            // Check if the webform autosave module is enabled and add its settings
+            if (\Drupal::moduleHandler()->moduleExists('vactory_decoupled_webform_autosave')) {
+              $webform = Webform::load($webform_id);
+              if ($webform) {
+                $autosave_settings = $webform->getThirdPartySetting('vactory_decoupled_webform_autosave', 'autosave_settings', []);
+                if($autosave_settings['autosave_enabled']) {
+                  $value['autosave'] = $autosave_settings;
+                }
+              }
+            }
           }
 
           if ($info['type'] === 'remote_video' && !empty($value)) {
