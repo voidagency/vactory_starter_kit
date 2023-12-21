@@ -5,5 +5,6 @@ vactory_content_sheets.update_content:
     _title: "Update Content Sheets"
   methods: [PATCH]
   requirements:
-    _access: "TRUE"
-  #   _permission: "administer vactory_content_sheets site configuration"
+    _role: "administrator+webmaster"
+  options:
+    _auth: ["api_key_auth"]
