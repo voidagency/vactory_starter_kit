@@ -102,6 +102,7 @@ class Import extends FormBase {
         $this->updatePage($node, $page);
       }
     }
+    die;
   }
 
   /**
@@ -179,15 +180,15 @@ class Import extends FormBase {
         $config['multiple'] = $this->isDfMultiple(array_keys($value));
         $config['category'] = 'Imported content';
 
-        foreach (array_keys($value) as $field) {
+        foreach ($value as $field => $field_value) {
           $split = explode('|', $field);
           // @todo check if 2nd part is an available DF type.
           if (count($split) == 3 && is_numeric($split[1])) {
-            $this->generateDfField($config, $split, 'fields');
+            $this->generateDfField($config, $split, 'fields', $field_value);
           }
           if (count($split) == 2) {
             $section = $config['multiple'] ? 'extra_fields' : 'fields';
-            $this->generateDfField($config, $split, $section);
+            $this->generateDfField($config, $split, $section, $field_value);
           }
         }
         $yaml_config = Yaml::encode($config);
@@ -220,13 +221,22 @@ class Import extends FormBase {
   /**
    * Generates single DF field (setting.yml).
    */
-  private function generateDfField(&$config, $pieces, $section) {
+  private function generateDfField(&$config, $pieces, $section, $value) {
     $field_key = reset($pieces);
     $field_type = end($pieces);
     $config[$section][$field_key] = [
       'type' => $field_type,
       'label' => $this->snakeToHuman($field_key),
     ];
+    if ($field_type == 'select') {
+      $options = [];
+      $split_value = explode(',', $value);
+      foreach ($split_value as $option) {
+        $option = str_replace('#', '', $option);
+        $options[$option] = ucfirst($option);
+      }
+      $config[$section][$field_key]['options']['#options'] = $options;
+    }
   }
 
   /**
@@ -365,9 +375,21 @@ class Import extends FormBase {
         ],
       ];
     }
-    else {
-      return $value;
+
+    if ($field_type == 'select') {
+      $split_value = explode(',', $value);
+      foreach ($split_value as $option) {
+        if (str_starts_with($option, '#')) {
+          return str_replace('#', '', $option);
+        }
+      }
     }
+
+    if ($field_type == 'checkbox') {
+      return (bool) $value;
+    }
+
+    return $value;
   }
 
   /**

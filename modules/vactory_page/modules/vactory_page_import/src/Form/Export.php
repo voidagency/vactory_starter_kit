@@ -6,6 +6,7 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\file\Entity\File;
 use Drupal\media\Entity\Media;
+use Drupal\media\MediaInterface;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\vactory_page_import\PageImportConstants;
@@ -143,17 +144,17 @@ class Export extends FormBase {
         foreach ($widget_data as $key => $value) {
           if ($key == 'extra_field') {
             foreach ($value as $field_key => $field_value) {
-              $type = $widget_settings['extra_fields'][$field_key]['type'];
-              $normalized_value = $this->normalizeDfData($field_value, $type);
-              $node_array['paragraphs'][$paragraph_identifier][$field_key . '|' . $type] = $normalized_value;
+              $field_settings = $widget_settings['extra_fields'][$field_key];
+              $normalized_value = $this->normalizeDfData($field_value, $field_settings);
+              $node_array['paragraphs'][$paragraph_identifier][$field_key . '|' . $field_settings['type']] = $normalized_value;
             }
           }
           elseif (is_numeric($key) && $key !== 'pending_content') {
             foreach ($value as $field_key => $field_value) {
               if ($field_key !== '_weight') {
-                $type = $widget_settings['fields'][$field_key]['type'];
-                $normalized_value = $this->normalizeDfData($field_value, $type);
-                $node_array['paragraphs'][$paragraph_identifier][$field_key . '|' . $key . '|' . $type] = $normalized_value;
+                $field_settings = $widget_settings['fields'][$field_key];
+                $normalized_value = $this->normalizeDfData($field_value, $field_settings);
+                $node_array['paragraphs'][$paragraph_identifier][$field_key . '|' . $key . '|' . $field_settings['type']] = $normalized_value;
               }
             }
           }
@@ -162,9 +163,9 @@ class Export extends FormBase {
       else {
         $widget_data = $widget_data[0];
         foreach ($widget_data as $key => $value) {
-          $type = $widget_settings['fields'][$key]['type'];
-          $normalized_value = $this->normalizeDfData($value, $type);
-          $node_array['paragraphs'][$paragraph_identifier][$key . '|' . $type] = $normalized_value;
+          $field_settings = $widget_settings['fields'][$key];
+          $normalized_value = $this->normalizeDfData($value, $field_settings);
+          $node_array['paragraphs'][$paragraph_identifier][$key . '|' . $field_settings['type']] = $normalized_value;
         }
       }
     }
@@ -247,34 +248,50 @@ class Export extends FormBase {
   /**
    * Normalize Df Data.
    */
-  private function normalizeDfData($value, $type) {
+  private function normalizeDfData($value, $field_settings) {
+    $type = $field_settings['type'];
     $media_types = PageImportConstants::MEDIA_FIELD_NAMES;
     if (in_array($type, array_keys($media_types))) {
       $value = reset($value);
       $media_field_name = PageImportConstants::MEDIA_FIELD_NAMES[$type];
       $mid = $value['selection'][0]['target_id'];
       $media = Media::load($mid);
-      if ($type !== 'remote_video') {
-        $fid = $media->get($media_field_name)->target_id;
-        if ($fid) {
-          $file = File::load($fid);
-          if ($file) {
-            $url = \Drupal::service('file_url_generator')->generateAbsoluteString($file->getFileUri());
-            return "{$url} ({$mid})";
+      if ($media instanceof MediaInterface) {
+        if ($type !== 'remote_video') {
+          $fid = $media->get($media_field_name)->target_id;
+          if ($fid) {
+            $file = File::load($fid);
+            if ($file) {
+              $url = \Drupal::service('file_url_generator')->generateAbsoluteString($file->getFileUri());
+              return "{$url} ({$mid})";
+            }
           }
         }
-      }
-      else {
-        $url = $media->get($media_field_name)->value;
-        return "{$url} ({$mid})";
+        else {
+          $url = $media->get($media_field_name)->value;
+          return "{$url} ({$mid})";
+        }
       }
     }
-    elseif ($type === 'url_extended') {
+    if ($type === 'url_extended') {
       return "{$value['title']} ({$value['url']})";
     }
-    else {
-      return $value;
+    if ($type == 'select') {
+      $options = array_keys($field_settings['options']['#options']);
+      $options = array_map(function ($option) use ($value) {
+        if ($option == $value) {
+          return "#{$option}";
+        }
+        return $option;
+      }, $options);
+
+      return implode(',', $options);
     }
+    if ($type == 'text_format') {
+      return $value['value'];
+    }
+
+    return $value;
   }
 
 }
