@@ -1,0 +1,69 @@
+<?php
+
+/**
+ * @file
+ * Contain related hooks.
+ */
+
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\node\NodeTypeInterface;
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_decoupled_flag_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if ($form_id == "node_type_edit_form") {
+    $type = $form_state->getFormObject()->getEntity();
+
+    $form['flag'] = [
+      '#type' => 'details',
+      '#title' => t('Flag configuration'),
+      '#group' => 'additional_settings',
+    ];
+    $form['flag']['flag_enabling'] = [
+      '#title' => t('Enable Flag'),
+      '#type' => 'checkbox',
+      '#default_value' => $type->getThirdPartySetting('vactory_decoupled_flag', 'flag_enabling', ''),
+    ];
+    $form['#entity_builders'][] = 'vactory_decoupled_flag_form_node_type_form_builder';
+  }
+}
+
+/**
+ * Entity builder for the node type form with flag configuration.
+ */
+function vactory_decoupled_flag_form_node_type_form_builder($entity_type, NodeTypeInterface $type, &$form, FormStateInterface $form_state) {
+  $type->setThirdPartySetting('vactory_decoupled_flag', 'flag_enabling', $form_state->getValue('flag_enabling'));
+}
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function vactory_decoupled_flag_entity_base_field_info(EntityTypeInterface $entity_type) {
+  $fields = [];
+  if ($entity_type->id() === 'node') {
+    $fields['is_flagged'] = BaseFieldDefinition::create('boolean')
+      ->setComputed(TRUE)
+      ->setReadOnly(TRUE)
+      ->setTargetEntityTypeId($entity_type->id())
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE)
+      ->setClass('Drupal\vactory_decoupled_flag\Field\IsFlaggedEntityFieldItemList')
+      ->setTranslatable(FALSE)
+      ->setRequired(FALSE);
+
+    $fields['has_flag'] = BaseFieldDefinition::create('boolean')
+      ->setComputed(TRUE)
+      ->setReadOnly(TRUE)
+      ->setTargetEntityTypeId($entity_type->id())
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE)
+      ->setClass('Drupal\vactory_decoupled_flag\Field\HasFlagEntityFieldItemList')
+      ->setTranslatable(FALSE)
+      ->setRequired(FALSE);
+  }
+
+  return $fields;
+}
