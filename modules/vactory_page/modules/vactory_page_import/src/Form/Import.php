@@ -388,6 +388,13 @@ class Import extends FormBase {
       return (bool) $value;
     }
 
+    if ($field_type == 'text_format') {
+      return [
+        'value' => $value,
+        'format' => 'full_html',
+      ];
+    }
+
     return $value;
   }
 
