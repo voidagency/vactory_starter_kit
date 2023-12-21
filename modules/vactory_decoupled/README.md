@@ -21,3 +21,7 @@ Enhance jsonapi module to our needs using many custom submodules.
 - vactory_decoupled_theme_switcher
 - user_registrationpassword
 - ultimate_cron
+
+### Settings form
++The module settings form is accessible via:
++`/admin/config/system/decoupled-settings`
