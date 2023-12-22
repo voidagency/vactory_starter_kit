@@ -60,7 +60,7 @@ class ContentSheetsController extends ControllerBase {
       $message = 'Content added successfully';
     }
 
-    Cache::invalidateTags(["config:jsonapi_extras.settings"]);
+    Cache::invalidateTags([$key]);
     // Return a response
     return new JsonResponse(['message' => $message], 200);
   }

@@ -270,6 +270,15 @@ class DynamicFieldManager {
    * Apply Formatters.
    */
   public function applyFormatters($parent_keys, $settings, &$component) {
+    $simple_text_types = [
+      'text',
+      'textarea',
+    ];
+    $contentService = NULL;
+    if (\Drupal::moduleHandler()->moduleExists('vactory_content_sheets')) {
+      $contentService = \Drupal::service('vactory_content_sheets.content_services');
+    }
+
     foreach ($component as $field_key => &$value) {
       $info = NestedArray::getValue($settings, array_merge((array) $parent_keys, [$field_key]));
       if (is_array($info)) {
@@ -311,22 +320,32 @@ class DynamicFieldManager {
           }
 
           // Text Preprocessor.
-          if ($info['type'] === 'text') {
-            if (str_starts_with($value, 'tx:')) {
-              $contentService = \Drupal::service('vactory_content_sheets.content_services');
+          if (in_array($info['type'], $simple_text_types)) {
+            if (str_starts_with($value, 'tx:') && $contentService) {
+              $this->cacheability->addCacheTags([$value]);
               $retrievedContent = $contentService->getContent($value);
               if ($retrievedContent) {
                 $value = $retrievedContent;
               }
             }
           }
-          
+
           // Text_format Preprocessor.
           if ($info['type'] === 'text_format') {
+            $text = $value['value'] ?? $value;
+            if ((str_starts_with($text, 'tx:') || str_starts_with($text, '<p>tx:')) && $contentService){
+              $text = strip_tags($text);
+              $this->cacheability->addCacheTags([$text]);
+              $retrievedContent = $contentService->getContent($text);
+              if ($retrievedContent) {
+                $text = $retrievedContent;
+              }
+            }
+
             // $format = $info['options']['#format'] ?? 'full_html';
             $build = [
               // '#type'   => 'processed_text',
-              '#text' => $value['value'] ?? $value,
+              '#text' => $text,
               // '#format' => $format,
             ];
 
