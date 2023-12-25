@@ -15,7 +15,7 @@ class KeycloakAuthManager extends OAuth2Manager {
   /**
    * The Keycloak client.
    *
-   * @var \pviojo\OAuth2\Client\Provider\Keycloak
+   * @var \Stevenmaguire\OAuth2\Client\Provider\Keycloak
    */
   protected $client;
 
