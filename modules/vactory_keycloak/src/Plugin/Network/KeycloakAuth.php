@@ -6,7 +6,7 @@ use Drupal\Core\Url;
 use Drupal\social_api\SocialApiException;
 use Drupal\social_auth\Plugin\Network\NetworkBase;
 use Drupal\vactory_keycloak\Settings\KeycloakAuthSettings;
-use pviojo\OAuth2\Client\Provider\Keycloak;
+use Stevenmaguire\OAuth2\Client\Provider\Keycloak;
 use GuzzleHttp\Client as HttpClient;
 
 /**
@@ -31,7 +31,7 @@ class KeycloakAuth extends NetworkBase implements KeycloakAuthInterface {
   /**
    * Sets the underlying SDK library.
    *
-   * @return \pviojo\OAuth2\Client\Provider\Keycloak|false
+   * @return \Stevenmaguire\OAuth2\Client\Provider\Keycloak|false
    *   The initialized 3rd party library instance.
    *   False if library could not be initialized.
    *
@@ -40,7 +40,7 @@ class KeycloakAuth extends NetworkBase implements KeycloakAuthInterface {
    */
   protected function initSdk() {
 
-    $class_name = '\pviojo\OAuth2\Client\Provider\Keycloak';
+    $class_name = '\Stevenmaguire\OAuth2\Client\Provider\Keycloak';
     if (!class_exists($class_name)) {
       throw new SocialApiException(sprintf('The PHP League OAuth2 library for Keycloak not found. Class: %s.', $class_name));
     }
@@ -51,11 +51,11 @@ class KeycloakAuth extends NetworkBase implements KeycloakAuthInterface {
     if ($this->validateConfig($settings)) {
       // All these settings are mandatory.
       $league_settings = [
-        'authServerUrl'         => $settings->getAppServerUrl(),
-        'realm'                 => $settings->getAppRealm(),
-        'clientId'              => $settings->getAppClientId(),
-        'clientSecret'          => $settings->getAppClientSecret(),
-        'redirectUri'           => Url::fromRoute('vactory_keycloak.callback')->setAbsolute()->toString(),
+        'authServerUrl' => $settings->getAppServerUrl(),
+        'realm' => $settings->getAppRealm(),
+        'clientId' => $settings->getAppClientId(),
+        'clientSecret' => $settings->getAppClientSecret(),
+        'redirectUri' => Url::fromRoute('vactory_keycloak.callback')->setAbsolute()->toString(),
       ];
 
       if ($settings->noCertVerification()) {
