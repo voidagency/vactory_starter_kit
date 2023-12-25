@@ -128,8 +128,7 @@
     "drupal/social_auth_facebook": "^3.0@RC",
     "drupal/social_auth_google": "^3.0@RC",
     "b-khouy/shortcode": "^2.1",
-    "firebase/php-jwt": "^4.0",
-    "pviojo/oauth2-keycloak": "^2.0",
+    "firebase/php-jwt": "^6.0",
     "drupal/geofield": "^1.20",
     "drupal/domain": "^2.0@beta",
     "b-khouy/yaml_editor": "^2.0",
@@ -167,7 +166,8 @@
     "drupal/gin": "^3.0@RC",
     "drupal/jsonapi_include": "^1.7",
     "drupal/search_api_ai": "^1.0@alpha",
-    "drupal/onesignal": "^3.0"
+    "drupal/onesignal": "^3.0",
+    "stevenmaguire/oauth2-keycloak": "^5.0"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.3",
