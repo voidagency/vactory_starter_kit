@@ -102,6 +102,7 @@ class Import extends FormBase {
         $this->updatePage($node, $page);
       }
     }
+    die;
   }
 
   /**
@@ -185,9 +186,16 @@ class Import extends FormBase {
           if (count($split) == 3 && is_numeric($split[1])) {
             $this->generateDfField($config, $split, 'fields', $field_value);
           }
-          if (count($split) == 2) {
+          elseif (count($split) == 3) {
+            $section = $config['multiple'] ? 'extra_fields' : 'fields';
+            $this->generateDfField($config, $split, $section, $field_value, reset($split));
+          }
+          elseif (count($split) == 2) {
             $section = $config['multiple'] ? 'extra_fields' : 'fields';
             $this->generateDfField($config, $split, $section, $field_value);
+          }
+          elseif (count($split) == 4 && str_starts_with($field, 'g_')) {
+            $this->generateDfField($config, $split, 'fields', $field_value, reset($split));
           }
         }
         $yaml_config = Yaml::encode($config);
@@ -205,6 +213,9 @@ class Import extends FormBase {
       if (count($split) == 3 && is_numeric($split[1])) {
         return TRUE;
       }
+      if (count($split) == 4 && str_starts_with($item, 'g_')) {
+        return TRUE;
+      }
     }
     return FALSE;
   }
@@ -220,13 +231,25 @@ class Import extends FormBase {
   /**
    * Generates single DF field (setting.yml).
    */
-  private function generateDfField(&$config, $pieces, $section, $value) {
-    $field_key = reset($pieces);
+  private function generateDfField(&$config, $pieces, $section, $value, $group = '') {
+    $field_key = empty($group) ? reset($pieces) : $pieces[1];
     $field_type = end($pieces);
-    $config[$section][$field_key] = [
-      'type' => $field_type,
-      'label' => $this->snakeToHuman($field_key),
-    ];
+    if (!empty($group)) {
+      $group_label = substr($group, 2);
+      $group_key = 'group_' . $group_label;
+      $config[$section][$group_key]['g_title'] = $this->snakeToHuman($group_label);
+      $config[$section][$group_key][$field_key] = [
+        'type' => $field_type,
+        'label' => $this->snakeToHuman($field_key),
+      ];
+    }
+    else {
+      $config[$section][$field_key] = [
+        'type' => $field_type,
+        'label' => $this->snakeToHuman($field_key),
+      ];
+    }
+
     if ($field_type == 'select') {
       $options = [];
       $split_value = explode(',', $value);
@@ -234,7 +257,13 @@ class Import extends FormBase {
         $option = str_replace('#', '', $option);
         $options[$option] = ucfirst($option);
       }
-      $config[$section][$field_key]['options']['#options'] = $options;
+      if (!empty($group)) {
+        $config[$section][$group_key][$field_key]['options']['#options'] = $options;
+      }
+      else {
+        $config[$section][$field_key]['options']['#options'] = $options;
+      }
+
     }
   }
 
@@ -319,8 +348,15 @@ class Import extends FormBase {
     $result = [];
     $is_multiple = $this->isDfMultiple(array_keys($data));
     foreach ($data as $key => $value) {
+      $is_group = str_starts_with($key, 'g_');
+      $group_key = '';
       $split = explode('|', $key);
-      $field_key = reset($split);
+      if ($is_group) {
+        $group_key = reset($split);
+        $group_key = substr($group_key, 2);
+        $group_key = 'group_' . $group_key;
+      }
+      $field_key = !$is_group ? reset($split) : $split[1];
       $field_type = end($split);
       $normalized_value = $this->normalizeDfValue($value, $field_type);
       if (count($split) == 2 && !$is_multiple) {
@@ -329,8 +365,19 @@ class Import extends FormBase {
       if (count($split) == 2 && $is_multiple) {
         $result['extra_field'][$field_key] = $normalized_value;
       }
-      if (count($split) == 3 && $is_multiple) {
+      if (count($split) == 3 && $is_multiple && is_numeric($split[1])) {
         $result[$split[1]][$field_key] = $normalized_value;
+      }
+      if (count($split) == 3 && $is_group && !$is_multiple) {
+        $result[0][$group_key][$field_key] = $normalized_value;
+      }
+
+      if (count($split) == 3 && $is_group && $is_multiple) {
+        $result['extra_field'][$group_key][$field_key] = $normalized_value;
+      }
+
+      if (count($split) == 4 && $is_group && $is_multiple) {
+        $result[$split[2]][$group_key][$field_key] = $normalized_value;
       }
 
     }

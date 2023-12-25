@@ -144,17 +144,37 @@ class Export extends FormBase {
         foreach ($widget_data as $key => $value) {
           if ($key == 'extra_field') {
             foreach ($value as $field_key => $field_value) {
-              $field_settings = $widget_settings['extra_fields'][$field_key];
-              $normalized_value = $this->normalizeDfData($field_value, $field_settings);
-              $node_array['paragraphs'][$paragraph_identifier][$field_key . '|' . $field_settings['type']] = $normalized_value;
+              if (str_starts_with($field_key, 'group_')) {
+                foreach ($field_value as $sub_key => $sub_value) {
+                  $field_settings = $widget_settings['extra_fields'][$field_key][$sub_key];
+                  $normalized_value = $this->normalizeDfData($sub_value, $field_settings);
+                  $group_key = $this->replaceGroup($field_key);
+                  $node_array['paragraphs'][$paragraph_identifier][$group_key . '|' . $sub_key . '|' . $field_settings['type']] = $normalized_value;
+                }
+              }
+              else {
+                $field_settings = $widget_settings['extra_fields'][$field_key];
+                $normalized_value = $this->normalizeDfData($field_value, $field_settings);
+                $node_array['paragraphs'][$paragraph_identifier][$field_key . '|' . $field_settings['type']] = $normalized_value;
+              }
             }
           }
           elseif (is_numeric($key) && $key !== 'pending_content') {
             foreach ($value as $field_key => $field_value) {
-              if ($field_key !== '_weight') {
-                $field_settings = $widget_settings['fields'][$field_key];
-                $normalized_value = $this->normalizeDfData($field_value, $field_settings);
-                $node_array['paragraphs'][$paragraph_identifier][$field_key . '|' . $key . '|' . $field_settings['type']] = $normalized_value;
+              if ($field_key !== '_weight' && $field_key !== 'remove') {
+                if (str_starts_with($field_key, 'group_')) {
+                  foreach ($field_value as $sub_key => $sub_value) {
+                    $field_settings = $widget_settings['fields'][$field_key][$sub_key];
+                    $normalized_value = $this->normalizeDfData($sub_value, $field_settings);
+                    $group_key = $this->replaceGroup($field_key);
+                    $node_array['paragraphs'][$paragraph_identifier][$group_key . '|' . $sub_key . '|' . $key . '|' . $field_settings['type']] = $normalized_value;
+                  }
+                }
+                else {
+                  $field_settings = $widget_settings['fields'][$field_key];
+                  $normalized_value = $this->normalizeDfData($field_value, $field_settings);
+                  $node_array['paragraphs'][$paragraph_identifier][$field_key . '|' . $key . '|' . $field_settings['type']] = $normalized_value;
+                }
               }
             }
           }
@@ -163,9 +183,19 @@ class Export extends FormBase {
       else {
         $widget_data = $widget_data[0];
         foreach ($widget_data as $key => $value) {
-          $field_settings = $widget_settings['fields'][$key];
-          $normalized_value = $this->normalizeDfData($value, $field_settings);
-          $node_array['paragraphs'][$paragraph_identifier][$key . '|' . $field_settings['type']] = $normalized_value;
+          if (str_starts_with($key, 'group_')) {
+            foreach ($value as $sub_key => $sub_value) {
+              $field_settings = $widget_settings['fields'][$key][$sub_key];
+              $normalized_value = $this->normalizeDfData($sub_value, $field_settings);
+              $group_key = $this->replaceGroup($key);
+              $node_array['paragraphs'][$paragraph_identifier][$group_key . '|' . $sub_key . '|' . $field_settings['type']] = $normalized_value;
+            }
+          }
+          else {
+            $field_settings = $widget_settings['fields'][$key];
+            $normalized_value = $this->normalizeDfData($value, $field_settings);
+            $node_array['paragraphs'][$paragraph_identifier][$key . '|' . $field_settings['type']] = $normalized_value;
+          }
         }
       }
     }
@@ -216,6 +246,9 @@ class Export extends FormBase {
               $sheet->getStyle([1, $current_row, count($data) + 1, $current_row])->applyFromArray($style);
               $current_row++;
               foreach ($paragraph_data as $k => $v) {
+                if (is_array($v)) {
+                  $v = json_encode($v);
+                }
                 $sheet->setCellValue([1, $current_row], $k);
                 $sheet->setCellValue([$current_col, $current_row], $v);
                 $current_row++;
@@ -225,6 +258,10 @@ class Export extends FormBase {
 
         }
         $current_col++;
+      }
+
+      foreach ($sheet->getColumnIterator() as $column) {
+        $sheet->getColumnDimension($column->getColumnIndex())->setAutoSize(TRUE);
       }
 
     }
@@ -292,6 +329,14 @@ class Export extends FormBase {
     }
 
     return $value;
+  }
+
+  /**
+   * Replace "group_" by "g_".
+   */
+  private function replaceGroup($string) {
+    $string = substr($string, 6);
+    return 'g_' . $string;
   }
 
 }
