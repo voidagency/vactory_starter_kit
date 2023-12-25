@@ -62,6 +62,7 @@ class VactoryDecoupledFlagService
       ->condition('flag_id', 'default_flag')
       ->condition('uid', $this->currentUser->id())
       ->condition('entity_id', $entity->id())
+      ->accessCheck(FALSE)
       ->execute();
 
     return !empty($ids);

@@ -22,6 +22,7 @@ use Drupal\Core\Cache\Cache;
 use Drupal\serialization\Normalizer\CacheableNormalizerInterface;
 use Drupal\Core\Utility\Token;
 use GuzzleHttp\Client;
+use Drupal\webform\Entity\Webform;
 
 /**
  * Manages Dynamic Field Transformation.
@@ -256,7 +257,9 @@ class DynamicFieldManager {
     }
 
     // Restore cache.
-    $this->cacheability->addCacheContexts(['url.query_args:q']);
+    if(isset($this->cacheability)) {
+      $this->cacheability->addCacheContexts(['url.query_args:q']);
+    }
 
     return [
       'data'         => $data,
@@ -268,6 +271,15 @@ class DynamicFieldManager {
    * Apply Formatters.
    */
   public function applyFormatters($parent_keys, $settings, &$component) {
+    $simple_text_types = [
+      'text',
+      'textarea',
+    ];
+    $contentService = NULL;
+    if (\Drupal::moduleHandler()->moduleExists('vactory_content_sheets')) {
+      $contentService = \Drupal::service('vactory_content_sheets.content_services');
+    }
+
     foreach ($component as $field_key => &$value) {
       $info = NestedArray::getValue($settings, array_merge((array) $parent_keys, [$field_key]));
       if (is_array($info)) {
@@ -309,11 +321,32 @@ class DynamicFieldManager {
           }
 
           // Text Preprocessor.
+          if (in_array($info['type'], $simple_text_types)) {
+            if (str_starts_with($value, 'tx:') && $contentService) {
+              $this->cacheability->addCacheTags([$value]);
+              $retrievedContent = $contentService->getContent($value);
+              if ($retrievedContent) {
+                $value = $retrievedContent;
+              }
+            }
+          }
+
+          // Text_format Preprocessor.
           if ($info['type'] === 'text_format') {
+            $text = $value['value'] ?? $value;
+            if ((str_starts_with($text, 'tx:') || str_starts_with($text, '<p>tx:')) && $contentService){
+              $text = strip_tags($text);
+              $this->cacheability->addCacheTags([$text]);
+              $retrievedContent = $contentService->getContent($text);
+              if ($retrievedContent) {
+                $text = $retrievedContent;
+              }
+            }
+
             // $format = $info['options']['#format'] ?? 'full_html';
             $build = [
               // '#type'   => 'processed_text',
-              '#text' => $value['value'] ?? $value,
+              '#text' => $text,
               // '#format' => $format,
             ];
 
@@ -542,6 +575,18 @@ class DynamicFieldManager {
             // Service invoked statically because vactory_decoupled_webform.
             // Module depends on vactory_decoupled.
             $value['elements'] = \Drupal::service('vactory.webform.normalizer')->normalize($webform_id);
+
+            $value['autosave'] = FALSE;
+            // Check if the webform autosave module is enabled and add its settings
+            if (\Drupal::moduleHandler()->moduleExists('vactory_decoupled_webform_autosave')) {
+              $webform = Webform::load($webform_id);
+              if ($webform) {
+                $autosave_settings = $webform->getThirdPartySetting('vactory_decoupled_webform_autosave', 'autosave_settings', []);
+                if($autosave_settings['autosave_enabled']) {
+                  $value['autosave'] = $autosave_settings;
+                }
+              }
+            }
           }
 
           if ($info['type'] === 'remote_video' && !empty($value)) {

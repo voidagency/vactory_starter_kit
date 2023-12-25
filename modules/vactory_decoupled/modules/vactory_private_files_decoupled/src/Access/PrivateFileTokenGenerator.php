@@ -46,8 +46,7 @@ class PrivateFileTokenGenerator {
    */
   public function __construct(PrivateKey $private_key, TimeInterface $time) {
     $this->privateKey = $private_key;
-    $now = new DateTime();
-    $this->expirationTime = $now->getTimestamp() + 300;
+    $this->expirationTime = 300;
     $this->time = $time;
   }
 

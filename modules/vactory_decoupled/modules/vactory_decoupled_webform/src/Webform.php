@@ -147,10 +147,12 @@ class Webform {
    */
   public function normalize($webform_id) {
     $this->webform = WebformEntity::load($webform_id);
-    $webformAux = $this->webform;
-    $this->formWithTestsValues = $this->renderer->executeInRenderContext(new RenderContext(), static function () use ($webformAux) {
-      return $webformAux->getSubmissionForm([], 'test')['elements'] ?? [];;
-    });
+    if ($this->checkIfWeShouldPrepareTestsValues()) {
+      $webformAux = $this->webform;
+      $this->formWithTestsValues = $this->renderer->executeInRenderContext(new RenderContext(), static function () use ($webformAux) {
+        return $webformAux->getSubmissionForm([], 'test')['elements'] ?? [];;
+      });
+    }
     $elements = $this->webform->getElementsInitialized();
     $draft = $this->draftSettingsToSchema();
     $schema = $this->itemsToSchema($elements);
@@ -584,12 +586,19 @@ class Webform {
     }
 
     // Override default values when the query params include test.
-    $query = \Drupal::request()->query->get("q");
-    if (!in_array($this->webform->id(), self::WEBFORM_TESTS_EXCLUDED) && isset($query["test"])) {
+    if ($this->checkIfWeShouldPrepareTestsValues()) {
       $this->prepareFormElementTestValue($field_name , $properties);
     }
 
     return $properties;
+  }
+
+  /**
+   * Check if we should prepare tests values.
+   */
+  private function checkIfWeShouldPrepareTestsValues() {
+    $query = \Drupal::request()->query->get("q");
+    return !in_array($this->webform->id(), self::WEBFORM_TESTS_EXCLUDED) && isset($query["test"]);
   }
 
   /**

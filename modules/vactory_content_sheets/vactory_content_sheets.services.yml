@@ -1,0 +1,6 @@
+services:
+  vactory_content_sheets.content_services:
+    class: Drupal\vactory_content_sheets\Services\ContentService
+    arguments:
+      - "@database"
+      - "@logger.factory"

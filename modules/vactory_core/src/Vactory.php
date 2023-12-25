@@ -19,7 +19,7 @@ use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\file\Entity\File;
 use Drupal\node\NodeInterface;
 use Drupal\path_alias\AliasManagerInterface;
-use Drupal\twig_tweak\TwigExtension;
+use Drupal\twig_tweak\TwigTweakExtension;
 
 /**
  * Defines a route controller for BlockManager.
@@ -29,7 +29,7 @@ class Vactory {
   /**
    * Twig extension service.
    *
-   * @var \Drupal\twig_tweak\TwigExtension
+   * @var \Drupal\twig_tweak\TwigTweakExtension
    */
   protected $twigExtension;
 
@@ -107,7 +107,7 @@ class Vactory {
    * {@inheritDoc}
    */
   public function __construct(
-    TwigExtension $twigExtension,
+    TwigTweakExtension $twigExtension,
     EntityTypeManagerInterface $entityTypeManager,
     LanguageManagerInterface $languageManager,
     CurrentPathStack $currentPathStack,
