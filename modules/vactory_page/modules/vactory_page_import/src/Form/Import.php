@@ -102,7 +102,6 @@ class Import extends FormBase {
         $this->updatePage($node, $page);
       }
     }
-    die;
   }
 
   /**
