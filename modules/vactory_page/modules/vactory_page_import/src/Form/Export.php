@@ -289,6 +289,9 @@ class Export extends FormBase {
     $type = $field_settings['type'];
     $media_types = PageImportConstants::MEDIA_FIELD_NAMES;
     if (in_array($type, array_keys($media_types))) {
+      if (empty($value)) {
+        return $value;
+      }
       $value = reset($value);
       $media_field_name = PageImportConstants::MEDIA_FIELD_NAMES[$type];
       $mid = $value['selection'][0]['target_id'];
