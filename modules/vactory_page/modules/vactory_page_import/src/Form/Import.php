@@ -150,6 +150,9 @@ class Import extends FormBase {
           break;
         }
         $value = $sheet->getCell([$col, $row])->getValue();
+        if (str_starts_with($key, 'paragraph') && $value == 'IGNORE') {
+          continue;
+        }
         if (!str_starts_with($key, 'paragraph') && !is_null($value) && is_null($current_paragraph)) {
           $data[$language][$key] = $value;
         }
@@ -630,13 +633,23 @@ class Import extends FormBase {
    */
   private function findParagraphByNodeAndKey(Node $node, $key) {
     $node_id = $node->get('node_id')->value;
-    $paragraph_entity = \Drupal::entityTypeManager()->getStorage('paragraph')->loadByProperties([
-      'paragraph_identifier' => $node_id . '|' . $key,
-      'parent_type' => 'node',
-      'parent_id' => $node->id(),
-    ]);
-    if (count($paragraph_entity) == 1) {
-      return reset($paragraph_entity);
+    $node_paragraphs = $node->get('field_vactory_paragraphs')->getValue();
+    $node_paragraph_ids = [];
+    foreach ($node_paragraphs as $node_paragraph) {
+      $node_paragraph_ids[] = $node_paragraph['target_id'];
+    }
+
+    $query = \Drupal::entityTypeManager()->getStorage('paragraph')->getQuery();
+    $query->accessCheck(FALSE);
+    $query->condition('paragraph_identifier', $node_id . '|' . $key);
+    $query->condition('parent_type', 'node');
+    $query->condition('parent_id', $node->id());
+    $query->condition('id', $node_paragraph_ids, 'IN');
+    $ids = $query->execute();
+
+    if (count($ids) == 1) {
+      $id = reset($ids);
+      return Paragraph::load($id);
     }
     return [];
   }
