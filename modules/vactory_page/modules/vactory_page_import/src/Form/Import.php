@@ -392,11 +392,17 @@ class Import extends FormBase {
   private function normalizeDfValue($value, $field_type) {
     $media_fields = PageImportConstants::MEDIA_FIELD_NAMES;
     if (array_key_exists($field_type, $media_fields)) {
+      if (empty($value)) {
+        return $value;
+      }
       $extracted = $this->extractTextWithParentheses($value);
       return $this->denormalizeDfMedia($extracted['out'], $field_type, $media_fields[$field_type], $extracted['in']);
     }
 
     if ($field_type == 'url_extended') {
+      if (empty($value)) {
+        return $value;
+      }
       $extracted = $this->extractTextWithParentheses($value);
       $title = $extracted['out'];
       $url = $extracted['in'];
