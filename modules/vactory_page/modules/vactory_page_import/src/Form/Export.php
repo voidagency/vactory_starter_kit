@@ -118,7 +118,7 @@ class Export extends FormBase {
 
     $node_id = $node->get('node_id')->value;
     $paragraphs = $node->get('field_vactory_paragraphs')->getValue();
-    foreach ($paragraphs as $paragraph) {
+    foreach ($paragraphs as $index => $paragraph) {
       // Load paragraph entity.
       $paragraph_entity = Paragraph::load($paragraph['target_id']);
       if (!isset($paragraph_entity)) {
@@ -136,9 +136,23 @@ class Export extends FormBase {
       // Get paragraph identifier.
       $paragraph_identifier = $paragraph_entity->get('paragraph_identifier')->value;
       if (!isset($paragraph_identifier)) {
-        $paragraph_identifier = $paragraph_widget['widget_id'];
+        $widget_id = $paragraph_widget['widget_id'];
+        $paragraph_key = explode(':', $widget_id);
+        $paragraph_key = end($paragraph_key);
+        $paragraph_identifier = "paragraph" . $index + 1 . '|' . $paragraph_key;
+        $paragraph_entity->paragraph_identifier = $node_id . '|' . $paragraph_identifier;
+        $paragraph_entity->save();
+
       }
-      $paragraph_identifier = str_replace($node_id . '|', '', $paragraph_identifier);
+      else {
+        $paragraph_identifier = str_replace($node_id . '|', '', $paragraph_identifier);
+      }
+
+      $ignored = $this->isIgnored($widget_settings);
+      if ($ignored) {
+        $node_array['paragraphs'][$paragraph_identifier] = 'IGNORE';
+        continue;
+      }
 
       if ($widget_settings['multiple']) {
         foreach ($widget_data as $key => $value) {
@@ -147,15 +161,19 @@ class Export extends FormBase {
               if (str_starts_with($field_key, 'group_')) {
                 foreach ($field_value as $sub_key => $sub_value) {
                   $field_settings = $widget_settings['extra_fields'][$field_key][$sub_key];
-                  $normalized_value = $this->normalizeDfData($sub_value, $field_settings);
-                  $group_key = $this->replaceGroup($field_key);
-                  $node_array['paragraphs'][$paragraph_identifier][$group_key . '|' . $sub_key . '|' . $field_settings['type']] = $normalized_value;
+                  if (isset($field_settings['type'])) {
+                    $normalized_value = $this->normalizeDfData($sub_value, $field_settings);
+                    $group_key = $this->replaceGroup($field_key);
+                    $node_array['paragraphs'][$paragraph_identifier][$group_key . '|' . $sub_key . '|' . $field_settings['type']] = $normalized_value;
+                  }
                 }
               }
               else {
                 $field_settings = $widget_settings['extra_fields'][$field_key];
-                $normalized_value = $this->normalizeDfData($field_value, $field_settings);
-                $node_array['paragraphs'][$paragraph_identifier][$field_key . '|' . $field_settings['type']] = $normalized_value;
+                if (isset($field_settings['type'])) {
+                  $normalized_value = $this->normalizeDfData($field_value, $field_settings);
+                  $node_array['paragraphs'][$paragraph_identifier][$field_key . '|' . $field_settings['type']] = $normalized_value;
+                }
               }
             }
           }
@@ -165,15 +183,19 @@ class Export extends FormBase {
                 if (str_starts_with($field_key, 'group_')) {
                   foreach ($field_value as $sub_key => $sub_value) {
                     $field_settings = $widget_settings['fields'][$field_key][$sub_key];
-                    $normalized_value = $this->normalizeDfData($sub_value, $field_settings);
-                    $group_key = $this->replaceGroup($field_key);
-                    $node_array['paragraphs'][$paragraph_identifier][$group_key . '|' . $sub_key . '|' . $key . '|' . $field_settings['type']] = $normalized_value;
+                    if (isset($field_settings['type'])) {
+                      $normalized_value = $this->normalizeDfData($sub_value, $field_settings);
+                      $group_key = $this->replaceGroup($field_key);
+                      $node_array['paragraphs'][$paragraph_identifier][$group_key . '|' . $sub_key . '|' . $key . '|' . $field_settings['type']] = $normalized_value;
+                    }
                   }
                 }
                 else {
                   $field_settings = $widget_settings['fields'][$field_key];
-                  $normalized_value = $this->normalizeDfData($field_value, $field_settings);
-                  $node_array['paragraphs'][$paragraph_identifier][$field_key . '|' . $key . '|' . $field_settings['type']] = $normalized_value;
+                  if (isset($field_settings['type'])) {
+                    $normalized_value = $this->normalizeDfData($field_value, $field_settings);
+                    $node_array['paragraphs'][$paragraph_identifier][$field_key . '|' . $key . '|' . $field_settings['type']] = $normalized_value;
+                  }
                 }
               }
             }
@@ -186,15 +208,19 @@ class Export extends FormBase {
           if (str_starts_with($key, 'group_')) {
             foreach ($value as $sub_key => $sub_value) {
               $field_settings = $widget_settings['fields'][$key][$sub_key];
-              $normalized_value = $this->normalizeDfData($sub_value, $field_settings);
-              $group_key = $this->replaceGroup($key);
-              $node_array['paragraphs'][$paragraph_identifier][$group_key . '|' . $sub_key . '|' . $field_settings['type']] = $normalized_value;
+              if (isset($field_settings['type'])) {
+                $normalized_value = $this->normalizeDfData($sub_value, $field_settings);
+                $group_key = $this->replaceGroup($key);
+                $node_array['paragraphs'][$paragraph_identifier][$group_key . '|' . $sub_key . '|' . $field_settings['type']] = $normalized_value;
+              }
             }
           }
           else {
             $field_settings = $widget_settings['fields'][$key];
-            $normalized_value = $this->normalizeDfData($value, $field_settings);
-            $node_array['paragraphs'][$paragraph_identifier][$key . '|' . $field_settings['type']] = $normalized_value;
+            if (isset($field_settings['type'])) {
+              $normalized_value = $this->normalizeDfData($value, $field_settings);
+              $node_array['paragraphs'][$paragraph_identifier][$key . '|' . $field_settings['type']] = $normalized_value;
+            }
           }
         }
       }
@@ -244,6 +270,11 @@ class Export extends FormBase {
             foreach ($value as $paragraph_key => $paragraph_data) {
               $sheet->setCellValue([1, $current_row], $paragraph_key);
               $sheet->getStyle([1, $current_row, count($data) + 1, $current_row])->applyFromArray($style);
+              if ($paragraph_data == 'IGNORE') {
+                $sheet->setCellValue([$current_col, $current_row], 'IGNORE');
+                $current_row++;
+                continue;
+              }
               $current_row++;
               foreach ($paragraph_data as $k => $v) {
                 if (is_array($v)) {
@@ -314,7 +345,10 @@ class Export extends FormBase {
       }
     }
     if ($type === 'url_extended') {
-      return "{$value['title']} ({$value['url']})";
+      if (!empty($value['title']) || !empty($value['url'])) {
+        return "{$value['title']} ({$value['url']})";
+      }
+      return "";
     }
     if ($type == 'select') {
       $options = array_keys($field_settings['options']['#options']);
@@ -340,6 +374,32 @@ class Export extends FormBase {
   private function replaceGroup($string) {
     $string = substr($string, 6);
     return 'g_' . $string;
+  }
+
+  /**
+   * Check if DF contains some fields, then ignore it.
+   */
+  private function isIgnored($settings) {
+    $ignored_types = [
+      'webform_decoupled',
+      'json_api_collection',
+    ];
+    $fields = $settings['fields'] ?? [];
+    $extra_fields = $settings['extra_fields'] ?? [];
+    $all_fields = array_merge($fields, $extra_fields);
+    foreach ($all_fields as $key => $value) {
+      if (str_starts_with($key, 'group_')) {
+        foreach ($value as $sub_key => $sub_value) {
+          if (!str_starts_with($sub_key, 'g_') && in_array($sub_value['type'], $ignored_types)) {
+            return TRUE;
+          }
+        }
+      }
+      elseif (in_array($value['type'], $ignored_types)) {
+        return TRUE;
+      }
+    }
+    return FALSE;
   }
 
 }
