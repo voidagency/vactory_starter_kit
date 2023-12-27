@@ -1,0 +1,3 @@
+administer vactory console config:
+  title: 'Administer vactory console config'
+  restrict access: true

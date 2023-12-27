@@ -1,0 +1,5 @@
+name: Vactory Console Config
+type: module
+description: Offers an interface for listing all vactory modules along with their respective configuration pages.
+package: vactory
+core_version_requirement: ^9 || ^10
