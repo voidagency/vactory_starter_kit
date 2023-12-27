@@ -106,6 +106,8 @@ interface ContentPackageManagerInterface {
     "behavior_settings",
     "revision_id",
     "content_translation_changed",
+    "content_translation_created",
+    "content_translation_uid",
   ];
 
   /**

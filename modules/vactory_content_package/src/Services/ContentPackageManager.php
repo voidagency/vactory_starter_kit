@@ -178,6 +178,7 @@ class ContentPackageManager implements ContentPackageManagerInterface {
                     if ($fid) {
                       $file = File::load($fid);
                       if ($file) {
+                        // If the image is not loading on localhost, you can use an online image link like "https://hips.hearstapps.com/hmg-prod/images/nature-quotes-landscape-1648265299.jpg"
                         $field_value[$i] = $this->fileUrlGenerator->generateAbsoluteString($file->getFileUri());
                       }
                     }
@@ -241,6 +242,9 @@ class ContentPackageManager implements ContentPackageManagerInterface {
       unset($entity_values['nid']);
     }
     if ($entity_type === 'paragraph') {
+      unset($entity_values['id']);
+    }
+    if ($entity_type === 'block_content') {
       unset($entity_values['id']);
     }
     return $entity_values;
@@ -437,11 +441,23 @@ class ContentPackageManager implements ContentPackageManagerInterface {
     $values = [];
     $entity_type = $entity_values['entity_type'] ?? NULL;
     unset($entity_values['entity_type']);
-    $bundle = $entity_values['type'] ?? NULL;
+
+    $typeValue = $entity_values['type'] ?? NULL;
+    if (is_array($typeValue)) {
+      $bundle = isset($typeValue[0]['target_id']) ? $typeValue[0]['target_id'] : NULL;
+    } elseif (is_string($typeValue)) {
+      $bundle = $typeValue;
+    } else {
+      $bundle = NULL;
+    }
     if (empty($entity_type) || empty($bundle)) {
       return $values;
     }
 
+    if ($entity_type === 'block_content') {
+      $values['type'] = $bundle;
+    }
+    
     if ($entity_type === 'paragraph') {
       $appearance = $entity_values['appearance'] ?? [];
       unset($entity_values['appearance']);
@@ -620,6 +636,7 @@ class ContentPackageManager implements ContentPackageManagerInterface {
             if ($fid) {
               $file = File::load($fid);
               if ($file) {
+                // If the image is not loading on localhost, you can use an online image link like "https://hips.hearstapps.com/hmg-prod/images/nature-quotes-landscape-1648265299.jpg"
                 $df_field_value = $this->fileUrlGenerator->generateAbsoluteString($file->getFileUri());
               }
             }

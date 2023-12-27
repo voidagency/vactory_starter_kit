@@ -47,6 +47,18 @@ function vactory_content_package_entity_base_field_info(EntityTypeInterface $ent
       ])
       ->setDisplayConfigurable('form', TRUE);
   }
+  if ($entity_type->id() === 'block_content') {
+    $fields['block_content_package_exclude'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Yes, exclude this entity from the content package (import/export).'))
+      ->setTranslatable(FALSE)
+      ->setDisplayOptions('form', [
+        'type' => 'boolean_checkbox',
+        'settings' => [
+          'display_label' => TRUE,
+        ],
+      ])
+      ->setDisplayConfigurable('form', TRUE);
+  }
   if ($entity_type->id() === 'taxonomy_term') {
     $fields['term_id'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Term machine name'))
