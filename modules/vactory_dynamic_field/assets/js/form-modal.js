@@ -41,10 +41,10 @@ if (jQuery.ui && jQuery.ui.dialog && jQuery.ui.dialog.prototype._allowInteractio
           templateName = templateName.toLowerCase();
           userInput = userInput.toLowerCase();
           if (templateName.search(userInput) > -1) {
-            $(this).closest('div.form-item-template').show();
+            $(this).closest('div.form-item--template').show();
           }
           else {
-            $(this).closest('div.form-item-template').hide();
+            $(this).closest('div.form-item--template').hide();
           }
         });
       });
