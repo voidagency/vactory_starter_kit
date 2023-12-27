@@ -7,6 +7,7 @@ use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Routing\TrustedRedirectResponse;
 use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
+use Drupal\block_content\Entity\BlockContent;
 
 /**
  * Content package import manager service.
@@ -43,7 +44,7 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
   /**
    * Delete all nodes of given content types.
    */
-  public function rollback(array $content_types, string $file_to_import = '') {
+  public function rollback(array $content_types, string $file_to_import = '', $is_block_delete = FALSE) {
 
     $nodes = $this->entityTypeManager->getStorage('node')
       ->getQuery()
@@ -71,8 +72,10 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
       $batch = [
         'title' => 'Process of deleting nodes',
         'operations' => $operations,
-        'finished' => [self::class, 'rollbackFinished'],
       ];
+      if (!$is_block_delete) {
+        $batch['finished'] = [self::class, 'rollbackFinished'];
+      }
       batch_set($batch);
     }
 
@@ -142,6 +145,61 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
   }
 
   /**
+   * Delete all Blocks of given content types.
+   */
+  public function rollbackBlock(string $file_to_import = '') {
+    $blocks = $this->entityTypeManager->getStorage('block_content')
+      ->getQuery('OR')
+      ->notExists('block_content_package_exclude')
+      ->condition('block_content_package_exclude', 1, '<>')
+      ->accessCheck(FALSE)
+      ->execute();
+    $blocks = array_values($blocks);
+    if (empty($blocks)) {
+      return [];
+    }
+
+    $chunk = array_chunk($blocks, self::BATCH_SIZE);
+    $operations = [];
+    $num_operations = 0;
+    foreach ($chunk as $ids) {
+      $operations[] = [
+        [self::class, 'rollbackBlocksCallback'],
+        [$ids, $file_to_import],
+      ];
+      $num_operations++;
+    }
+
+    if (!empty($operations)) {
+      $batch = [
+        'title' => 'Process of deleting blocks',
+        'operations' => $operations,
+        'finished' => [self::class, 'rollbackFinished'],
+      ];
+      batch_set($batch);
+    }
+
+  }
+
+  /**
+   * Rollback batch callbackBlocks.
+   */
+  public static function rollbackBlocksCallback($nids, $file_to_import, &$context) {
+    $entityFieldManager = \Drupal::service('entity_field.manager');
+    $storage = \Drupal::entityTypeManager()->getStorage('block_content');
+    $nodes = $storage->loadMultiple($nids);
+    foreach ($nodes as $node) {
+      $node->delete();
+    }
+    
+    if (!isset($context['results']['count'])) {
+      $context['results']['count'] = 0;
+    }
+    $context['results']['count'] += count($nodes);
+    $context['results']['file_to_import'] = $file_to_import;
+  }
+
+  /**
    * Rollback batch finished.
    */
   public static function rollbackFinished($success, $results, $operations) {
@@ -165,55 +223,66 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
    */
   public function importNodes(string $file_to_import) {
     if (!file_exists($file_to_import)) {
-
+      return;
     }
 
     $json_contents = file_get_contents($file_to_import);
-    $json_data = json_decode($json_contents, TRUE);
+    $json_datas = json_decode($json_contents, TRUE);
 
-    $chunk = array_chunk($json_data, self::BATCH_SIZE);
-    $operations = [];
-    $num_operations = 0;
-    foreach ($chunk as $nodes) {
-      $operations[] = [
-        [self::class, 'importingCallback'],
-        [$nodes, $file_to_import],
-      ];
-      $num_operations++;
-    }
+    if (!empty($json_datas) && is_array($json_datas)) {
+      foreach ($json_datas as $content_type => $json_data) {
+        $chunk = array_chunk($json_data, self::BATCH_SIZE);
+        $operations = [];
+        $num_operations = 0;
 
-    if (!empty($operations)) {
-      $batch = [
-        'title' => 'Process of importing nodes',
-        'operations' => $operations,
-        'finished' => [self::class, 'importingFinished'],
-      ];
-      batch_set($batch);
+        foreach ($chunk as $nodes) {
+          $operations[] = [
+            [self::class, 'importingCallback'],
+            [$nodes, $content_type, $file_to_import],
+          ];
+          $num_operations++;
+        }
+
+        if (!empty($operations)) {
+          $batch = [
+            'title' => "Process of importing $content_type",
+            'operations' => $operations,
+            'finished' => [self::class, 'importingFinished'],
+          ];
+          batch_set($batch);
+        }
+      }
     }
   }
 
   /**
    * Importing batch callback.
    */
-  public static function importingCallback($nodes, $file_to_import, &$context) {
+  public static function importingCallback($items, $content_type, $file_to_import, &$context) {
 
     $logger = \Drupal::logger('vactory_content_package');
 
-    foreach ($nodes as $key => $value) {
-      $node = NULL;
+    foreach ($items as $key => $value) {
+      $entity = NULL;
+
       if (isset($value['original'])) {
         try {
-          $node = Node::create($value['original']);
-          $node->enforceIsNew();
-          $node->save();
+          if ($content_type === 'pages') {
+            $entity = Node::create($value['original']);
+            $entity->enforceIsNew();
+            $entity->save();
+          } elseif ($content_type === 'blocks') {
+            $entity = BlockContent::create($value['original']);
+            $entity->save();
+          }
 
-          if (isset($node) && isset($value['translations'])) {
+          if ($entity && isset($value['translations'])) {
             foreach ($value['translations'] as $lang => $trans) {
               try {
-                $node->addTranslation($lang, $trans)
+                $entity->addTranslation($lang, $trans)
                   ->save();
               } catch (\Exception $exception) {
-                $logger->error(t('Enable to attach translation %lang to node %label, error message %error', [
+                $logger->error(t('Enable to attach translation %lang to entity %label, error message %error', [
                   '%lang' => $lang,
                   '%label' => $key,
                   '%error' => $exception->getMessage(),
@@ -223,19 +292,18 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
           }
 
         } catch (\Exception $exception) {
-          $logger->error(t('Enable to create node %label, error message %error', [
+          $logger->error(t('Unable to create entity %label, error message %error', [
             '%label' => $key,
             '%error' => $exception->getMessage(),
           ]));
         }
-
       }
     }
 
     if (!isset($context['results']['count'])) {
       $context['results']['count'] = 0;
     }
-    $context['results']['count'] += count($nodes);
+    $context['results']['count'] += count($items);
     $context['results']['file_to_import'] = $file_to_import;
   }
 
