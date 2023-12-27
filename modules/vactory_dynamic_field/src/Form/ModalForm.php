@@ -802,7 +802,7 @@ class ModalForm extends FormBase {
             $category = 'Others';
           }
           if (!isset($form['templates_tabs'][$category])) {
-            $form['templates_tabs'][ucfirst($category)] = [
+            $form['templates_tabs'][$category] = [
               '#type' => 'details',
               '#title' => ucfirst($category),
             ];
