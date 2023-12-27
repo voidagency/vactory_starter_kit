@@ -1,0 +1,4 @@
+vactory_console_config.settings:
+  title: Vactory Modules
+  route_name: vactory_console_config.settings
+  parent: system.modules_list
