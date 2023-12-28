@@ -178,6 +178,7 @@ class ContentPackageManager implements ContentPackageManagerInterface {
                     if ($fid) {
                       $file = File::load($fid);
                       if ($file) {
+                        // If the image is not loading on localhost, you can use an online image link like "https://hips.hearstapps.com/hmg-prod/images/nature-quotes-landscape-1648265299.jpg"
                         $field_value[$i] = $this->fileUrlGenerator->generateAbsoluteString($file->getFileUri());
                       }
                     }
@@ -243,6 +244,9 @@ class ContentPackageManager implements ContentPackageManagerInterface {
     if ($entity_type === 'paragraph') {
       unset($entity_values['id']);
     }
+    if ($entity_type === 'block_content') {
+      unset($entity_values['id']);
+    }
     return $entity_values;
   }
 
@@ -284,8 +288,11 @@ class ContentPackageManager implements ContentPackageManagerInterface {
    * Denormalize field wysiwyg dynamic.
    */
   public function denormalizeFieldWysiwygDynamic($field_value, $entity_values) {
-    $widget_id = $field_value['widget_id'];
-    $widget_data = $field_value['widget_data'];
+    $widget_id = $field_value['widget_id'] ?? NULL;
+    $widget_data = $field_value['widget_data'] ?? NULL;
+    if (!isset($widget_id)) {
+      return NULL;
+    }
     $settings = $this->widgetsManager->loadSettings($widget_id);
     if (isset($settings['extra_fields'])) {
       foreach ($settings['extra_fields'] as $name => $field) {
@@ -434,11 +441,23 @@ class ContentPackageManager implements ContentPackageManagerInterface {
     $values = [];
     $entity_type = $entity_values['entity_type'] ?? NULL;
     unset($entity_values['entity_type']);
-    $bundle = $entity_values['type'] ?? NULL;
+
+    $typeValue = $entity_values['type'] ?? NULL;
+    if (is_array($typeValue)) {
+      $bundle = isset($typeValue[0]['target_id']) ? $typeValue[0]['target_id'] : NULL;
+    } elseif (is_string($typeValue)) {
+      $bundle = $typeValue;
+    } else {
+      $bundle = NULL;
+    }
     if (empty($entity_type) || empty($bundle)) {
       return $values;
     }
 
+    if ($entity_type === 'block_content') {
+      $values['type'] = $bundle;
+    }
+    
     if ($entity_type === 'paragraph') {
       $appearance = $entity_values['appearance'] ?? [];
       unset($entity_values['appearance']);
@@ -541,8 +560,10 @@ class ContentPackageManager implements ContentPackageManagerInterface {
         if ($field_type === 'field_wysiwyg_dynamic' && !empty($field_value)) {
           // DF field type.
           $field_value = $this->denormalizeFieldWysiwygDynamic($field_value, $entity_values);
-          $field_value['widget_data'] = Json::encode($field_value['widget_data']);
-          $values[$field_name] = [$field_value];
+          if ($field_value) {
+            $field_value['widget_data'] = Json::encode($field_value['widget_data']);
+            $values[$field_name] = [$field_value];
+          }
         }
         if ($field_type === 'entity_reference_revisions' && isset($field_settings['target_type']) && $field_settings['target_type'] === 'paragraph') {
           // Paragraphs entity type case.
@@ -615,6 +636,7 @@ class ContentPackageManager implements ContentPackageManagerInterface {
             if ($fid) {
               $file = File::load($fid);
               if ($file) {
+                // If the image is not loading on localhost, you can use an online image link like "https://hips.hearstapps.com/hmg-prod/images/nature-quotes-landscape-1648265299.jpg"
                 $df_field_value = $this->fileUrlGenerator->generateAbsoluteString($file->getFileUri());
               }
             }

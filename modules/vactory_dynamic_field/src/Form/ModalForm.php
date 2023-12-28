@@ -6,6 +6,7 @@ use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Ajax\CloseDialogCommand;
 use Drupal\Core\Ajax\InvokeCommand;
+use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityFieldManager;
 use Drupal\Core\Extension\ExtensionPathResolver;
 use Drupal\Core\Form\FormBase;
@@ -801,7 +802,7 @@ class ModalForm extends FormBase {
             $category = 'Others';
           }
           if (!isset($form['templates_tabs'][$category])) {
-            $form['templates_tabs'][ucfirst($category)] = [
+            $form['templates_tabs'][$category] = [
               '#type' => 'details',
               '#title' => ucfirst($category),
             ];
@@ -1007,6 +1008,7 @@ class ModalForm extends FormBase {
     }
 
     $data = $form_state->getValue('components');
+    $this->findDatetimeElement($data);
     $results = $this->autoPopulateManager->findParentKeysStartingWith($data, 'dummy_');
     $results = array_map(fn($el) => is_array($el) ? implode('.', $el) : $el, $results);
     $data['pending_content'] = $results;
@@ -1137,6 +1139,22 @@ class ModalForm extends FormBase {
     }
     if (!empty($states['#states'])) {
       $element = array_merge($element, $states);
+    }
+  }
+
+  /**
+   * Searching for all elements of type datetime.
+   *
+   * Replace value by text instead of DrupalDateTime object.
+   */
+  private function findDatetimeElement(&$array) {
+    foreach ($array as &$value) {
+      if ($value instanceof DrupalDateTime) {
+        $value = $value->format('Y-m-d H:i:s');
+      }
+      elseif (is_array($value)) {
+        $this->findDatetimeElement($value);
+      }
     }
   }
 

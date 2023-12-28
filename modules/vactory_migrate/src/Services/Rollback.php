@@ -3,34 +3,46 @@
 namespace Drupal\vactory_migrate\Services;
 
 use Drupal\Core\Database\Connection;
-use Drupal\social_media_links\Plugin\SocialMediaLinks\Platform\Drupal;
 
+/**
+ * Rollback Service using database service.
+ */
 class Rollback {
 
-
   /**
+   * Entity info Service.
+   *
    * @var \Drupal\vactory_migrate\Services\EntityInfo
    */
   protected $entityInfo;
 
   /**
+   * Database Service.
+   *
    * @var \Drupal\Core\Database\Connection
    */
   protected $database;
 
+  /**
+   * Rollback constructor.
+   */
   public function __construct(EntityInfo $entityInfo, Connection $database) {
     $this->entityInfo = $entityInfo;
     $this->database = $database;
   }
 
+  /**
+   * Rollback Service using database service.
+   */
   public function rollback($migration_id) {
 
     $mapping_table = 'migrate_map_' . $migration_id;
     $message_table = 'migrate_message_' . $migration_id;
-    $batch_config = \Drupal::config('vactory_migrate.settings')->get('batch_size');
-    $batch_size = isset($batch_config) ? $batch_config : 1000 ;
+    $batch_config = \Drupal::config('vactory_migrate.settings')
+      ->get('batch_size');
+    $batch_size = isset($batch_config) ? $batch_config : 1000;
 
-    //Get entity info.
+    // Get entity info.
     $destination = $this->entityInfo->getDestinationByMigrationId($migration_id);
     if (empty($destination)) {
       return [
@@ -43,7 +55,7 @@ class Rollback {
 
     $tableInfo = $this->entityInfo->getRelatedTablesByEntityAndBundle($entity_type_id, $bundle);
 
-    if (!$this->database->schema()->tableExists($mapping_table)){
+    if (!$this->database->schema()->tableExists($mapping_table)) {
       return;
     }
 
@@ -83,7 +95,9 @@ class Rollback {
     }
   }
 
-
+  /**
+   * Batch callback.
+   */
   public static function rollbackCallback($ids, $tableInfo, $mapping_table, $message_table, &$context) {
     $column_id = $tableInfo['id'];
     $tables = $tableInfo['tables'];
@@ -103,23 +117,24 @@ class Rollback {
     if (isset($baseTable)) {
       self::dbDelete($baseTable, $column_id, $ids, 'IN');
     }
+
     // Delete messages && mapping.
-
     self::dbDelete($mapping_table, 'destid1', $ids, 'IN');
-    // todo delete tables ??
-    //    self::dropTable($mapping_table);
-    //    self::dropTable($message_table);
-
+    self::dropTable($mapping_table);
+    self::dropTable($message_table);
 
     if (!isset($context['results']['count'])) {
       $context['results']['count'] = 0;
     }
     $context['results']['count'] += count($ids);
 
-    // todo clear cache
+    drupal_flush_all_caches();
 
   }
 
+  /**
+   * Batch finished callback.
+   */
   public static function rollbackFinished($success, $results, $operations) {
     if ($success) {
       $message = "Rollback finished: {$results['count']} items deleted.";
@@ -127,7 +142,9 @@ class Rollback {
     }
   }
 
-
+  /**
+   * Delete database table.
+   */
   public static function dbDelete($table, $column, $id, $operator = '=') {
     $databaseService = \Drupal::service('database');
     $transaction = $databaseService->startTransaction();
@@ -135,14 +152,21 @@ class Rollback {
       $databaseService->delete($table)
         ->condition($column, $id, $operator)
         ->execute();
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       $transaction->rollBack();
       throw new \Exception($e->getMessage(), $e->getCode(), $e);
     }
   }
 
+  /**
+   * Drop database table.
+   */
   public static function dropTable($table) {
     $databaseService = \Drupal::service('database');
-    $databaseService->schema()->dropTable($table);
+    if ($databaseService->schema()->tableExists($table)) {
+      $databaseService->schema()->dropTable($table);
+    }
   }
+
 }

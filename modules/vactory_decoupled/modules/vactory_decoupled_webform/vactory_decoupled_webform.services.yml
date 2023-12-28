@@ -6,3 +6,6 @@ services:
     - '@current_user'
     - '@plugin.manager.webform.element'
     - '@entity_type.manager'
+    - '@module_handler'
+    - '@renderer'
+    - '@vactory_private_files_decoupled'

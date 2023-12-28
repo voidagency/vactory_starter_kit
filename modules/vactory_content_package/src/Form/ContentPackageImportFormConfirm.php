@@ -41,17 +41,54 @@ class ContentPackageImportFormConfirm extends FormBase {
    *   The form structure.
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
+    $is_page_delete = $form_state->get('is_page_delete') ?? 0;
+    $is_block_delete = $form_state->get('is_block_delete') ?? 0;
 
+    $form['is_page_delete'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Delete existing pages'),
+      '#description' => $this->t('Check this to delete all pages'),
+      '#default_value' => $is_page_delete,
+    ];
+    $form['is_block_delete'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Delete existing blocks'),
+      '#description' => $this->t('Check this to delete all blocks'),
+      '#default_value' => $is_block_delete,
+    ];
+    $form['delete_pages'] = [
+      '#type' => 'fieldset',
+      '#title' => '<strong>⚠️ All existing pages will be deleted before importing new ones!</strong><br>',
+      '#states' => [
+        'visible' => [
+          'input[name="is_page_delete"]' => ['checked' => TRUE],
+        ],
+      ],
+    ];
+    $form['delete_blocks'] = [
+      '#type' => 'fieldset',
+      '#title' => '<strong>⚠️ All existing blocks will be deleted before importing new ones!</strong><br>',
+      '#states' => [
+        'visible' => [
+          'input[name="is_block_delete"]' => ['checked' => TRUE],
+        ],
+      ],
+    ];
+  
+    $form['keep_all'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Nothing will be deleted, and new content will be imported!'),
+      '#states' => [
+        'visible' => [
+          ':input[name="is_page_delete"]' => ['checked' => FALSE],
+          ':input[name="is_block_delete"]' => ['checked' => FALSE],
+        ],
+      ],
+    ];
     $form['submit'] = [
       '#type' => 'submit',
-      '#value' => $this->t("Delete all pages and start import"),
+      '#value' => $this->t("Start import"),
       '#button_type' => 'primary',
-    ];
-
-    $form['import'] = [
-      '#type' => 'submit',
-      '#value' => t('Start import anyway'),
-      '#submit' => ['::importWithoutDeleting'],
     ];
 
     return $form;
@@ -78,22 +115,28 @@ class ContentPackageImportFormConfirm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $url = \Drupal::request()->query->get('url');
-    $result = \Drupal::service('vactory_content_package.import.manager')
-      ->rollback(self::CONTENT_TYPES, $url);
-    if (is_array($result) && empty($result)) {
-      // Redirect to import form.
-      $form_state->setRedirect('vactory_content_package.importing_exported_nodes', ['url' => $url]);
+    $is_page_delete = $form_state->getValue('is_page_delete') ?? 0;
+    $is_block_delete = $form_state->getValue('is_block_delete') ?? 0;
+
+    if (!$is_page_delete && !$is_block_delete) {
+      \Drupal::service('vactory_content_package.import.manager')
+        ->importNodes($url);
     }
-  }
-
-  /**
-   * Import without deleting action.
-   */
-  public function importWithoutDeleting(array &$form, FormStateInterface $form_state) {
-    $url = \Drupal::request()->query->get('url');
-    \Drupal::service('vactory_content_package.import.manager')
-      ->importNodes($url);
-
+    
+    if ($is_page_delete) {
+      $result = \Drupal::service('vactory_content_package.import.manager')
+        ->rollback(self::CONTENT_TYPES, $url, $is_block_delete);
+    }
+    if ($is_block_delete) {
+      $result = \Drupal::service('vactory_content_package.import.manager')
+        ->rollbackBlock($url);
+    }
+    if ($is_page_delete || $is_block_delete) {
+      if (is_array($result) && empty($result)) {
+        // Redirect to import form.
+        $form_state->setRedirect('vactory_content_package.importing_exported_nodes', ['url' => $url]);
+      }
+    }
   }
 
 }

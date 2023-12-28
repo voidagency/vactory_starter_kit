@@ -1,6 +1,8 @@
 langcode: en
 status: true
-dependencies: {  }
+dependencies:
+  module:
+    - simple_oauth
 id: authenticated
 label: 'Authenticated user'
 weight: 1
@@ -14,3 +16,4 @@ permissions:
   - 'post comments'
   - 'view files'
   - 'view media'
+  - 'grant simple_oauth codes'

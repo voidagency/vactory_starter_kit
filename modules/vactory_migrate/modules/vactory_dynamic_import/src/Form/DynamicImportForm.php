@@ -129,22 +129,24 @@ class DynamicImportForm extends FormBase {
                                     This key is essential for tracking and managing the migration process.<br>
                                     The migration config will be named as 'migrate_plus.migration.[entity]_[bundle]_migration_[key]' for easy tracking "),
         ];
-
-        $groups = $this->entityTypeManager->getStorage('migration_group')
-          ->loadMultiple();
-        $groups = array_map(fn($group) => $group->label(), $groups);
-        $current_path = $current_path = \Drupal::service('path.current')->getPath();
-        $link = Url::fromRoute('entity.migration_group.add_form', ['destination' => $current_path])
-          ->toString(TRUE)
-          ->getGeneratedUrl();
-        $form['container']['migration_group'] = [
-          '#type' => 'select',
-          '#title' => $this->t('Migration group'),
-          '#options' => $groups,
-          '#empty_option' => '- Select -',
-          '#required' => TRUE,
-          '#description' => $this->t('Select an existing migration group or <a href="@link">Create new migration group</a>', ['@link' => $link]),
-        ];
+        $user_roles = \Drupal::currentUser()->getRoles();
+        if (in_array('administrator', $user_roles)) {
+          $groups = $this->entityTypeManager->getStorage('migration_group')
+            ->loadMultiple();
+          $groups = array_map(fn($group) => $group->label(), $groups);
+          $current_path = $current_path = \Drupal::service('path.current')->getPath();
+          $link = Url::fromRoute('entity.migration_group.add_form', ['destination' => $current_path])
+            ->toString(TRUE)
+            ->getGeneratedUrl();
+          $form['container']['migration_group'] = [
+            '#type' => 'select',
+            '#title' => $this->t('Migration group'),
+            '#options' => $groups,
+            '#empty_option' => '- Select -',
+            '#required' => TRUE,
+            '#description' => $this->t('Select an existing migration group or <a href="@link">Create new migration group</a>', ['@link' => $link]),
+          ];
+        }
 
         $form['container']['delimiter'] = [
           '#type'        => 'textfield',
@@ -227,7 +229,11 @@ class DynamicImportForm extends FormBase {
 
     $data['id'] = $id;
     $data['label'] = "{$values['entity_type']} {$values['bundle']} migration";
-    $data['migration_group'] = $values['migration_group'];
+
+    if (isset($values['migration_group'])) {
+      $data['migration_group'] = $values['migration_group'];
+    }
+
     $data['source'] = [
       'plugin'           => 'csv',
       'header_row_count' => 1,
@@ -304,14 +310,22 @@ class DynamicImportForm extends FormBase {
               ];
             }
             if ($plugin == 'media') {
-              $data['process'][$mapped_field] = [
-                'plugin'           => 'media_import',
-                'destination'      => 'constants/dest_path',
-                'media_bundle'     => $info,
-                'media_field_name' => 'field_media_image',
-                'source'           => $field,
-                'skip_on_error'    => 'true',
-              ];
+              if ($info == 'remote_video') {
+                $data['process'][$mapped_field] = [
+                  'plugin'           => 'remote_video_import',
+                  'source'           => $field,
+                ];
+              }
+              else {
+                $data['process'][$mapped_field] = [
+                  'plugin'           => 'media_import',
+                  'destination'      => 'constants/dest_path',
+                  'media_bundle'     => $info,
+                  'media_field_name' => 'field_media_' . $info,
+                  'source'           => $field,
+                  'skip_on_error'    => 'true',
+                ];
+              }
             }
             if ($plugin == 'file') {
               $data['process'][$mapped_field] = [
@@ -390,7 +404,10 @@ class DynamicImportForm extends FormBase {
     }
     else {
       $url = Url::fromRoute('vactory_dynamic_import.import')
-        ->setRouteParameters(['migration' => $id, 'delimiter' => $values['delimiter']]);
+        ->setRouteParameters([
+          'migration' => $id,
+          'delimiter' => $values['delimiter'],
+        ]);
 
       $form_state->setRedirectUrl($url);
     }

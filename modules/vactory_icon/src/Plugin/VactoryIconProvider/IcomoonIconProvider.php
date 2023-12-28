@@ -103,7 +103,7 @@ class IcomoonIconProvider extends VactoryIconProviderBase {
    * {@inheritDoc}
    */
   public function iconPickerLibraryInfoAlter(array &$library_info) {
-    $stylesheet = 'public://vactory_icon/style.css';
+    $stylesheet = \Drupal::service('file_url_generator')->generateString('public://vactory_icon/style.css');
     $library_info['css']['theme'][$stylesheet] = [];
   }
 

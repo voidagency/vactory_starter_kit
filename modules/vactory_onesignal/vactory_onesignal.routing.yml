@@ -1,0 +1,17 @@
+vactory_onesignal.add_device_id:
+  path: '/api/notifications/device_id/add'
+  defaults:
+    _controller: '\Drupal\vactory_onesignal\Controller\VactoryOnesignalController::addDeviceIdToUser'
+  methods: [POST]
+  options:
+    _auth: ['oauth2']
+  requirements:
+    _role: 'authenticated'
+    _format: 'json'
+vactory_onesignal.test_form:
+  path: '/admin/config/services/onesignal/test'
+  defaults:
+    _title: 'Vactory Onesignal Test'
+    _form: '\Drupal\vactory_onesignal\Form\OnesignalNotificationTestForm'
+  requirements:
+    _permission: 'test vactory_onesignal notifications'

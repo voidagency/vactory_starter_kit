@@ -1,0 +1,14 @@
+vactory_translations_export.settings_form:
+  path: '/admin/config/regional/vactory-translations-export'
+  defaults:
+    _title: 'Vactory translations export'
+    _form: 'Drupal\vactory_translations_export\Form\SettingsForm'
+  requirements:
+    _permission: 'administer vactory_translations_export configuration'
+vactory_translations_export.import_form:
+  path: '/admin/config/regional/vactory-translations-import'
+  defaults:
+    _title: 'Vactory translations import'
+    _form: 'Drupal\vactory_translations_export\Form\TranslationCsvImportForm'
+  requirements:
+    _permission: 'administer vactory_translations_export configuration'

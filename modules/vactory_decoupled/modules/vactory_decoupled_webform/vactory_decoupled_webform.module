@@ -7,6 +7,9 @@
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\webform\Entity\Webform;
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\user\Entity\User;
 
 /**
  * Implements hook_webform_element_configuration_form_alter().
@@ -76,5 +79,22 @@ function validate_captcha_math(&$form, FormStateInterface $form_state) {
 
   if (!isset($expected_captcha) || $expected_captcha != $user_input['captcha_response']) {
     $form_state->setErrorByName('captcha_response', t("Le champs Captcha n'est pas valide."));
+  }
+}
+
+/**
+ * Implements hook_webform_access().
+*/
+function vactory_decoupled_webform_webform_access($webform, $operation, AccountInterface $account) {
+  $route_name = \Drupal::routeMatch()->getRouteName();
+  if (strpos($route_name, 'jsonapi.') !== false && $operation == 'test' && $account->isAuthenticated()) {
+    $user = User::load($account->id());
+    if (in_array('administrator', $user->getRoles())) {
+      return AccessResult::allowed();
+    }
+    $access_rules = $webform->getAccessRules()['test']['roles'];
+    if (count(array_intersect($user->getRoles(), $access_rules)) > 0) {
+      return AccessResult::allowed();
+    }
   }
 }

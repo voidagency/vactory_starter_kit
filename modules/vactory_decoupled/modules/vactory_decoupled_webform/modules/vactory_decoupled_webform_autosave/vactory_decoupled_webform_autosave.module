@@ -1,0 +1,159 @@
+<?php
+
+/**
+ * @file
+ * Module related hooks.
+ */
+
+use \Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_decoupled_webform_autosave_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if (strpos($form_id, 'webform_settings') !== FALSE) {
+    // Retrieve existing auto-save settings, if any
+    $webform = $form_state->getFormObject()->getEntity();
+    $autosave_settings = $webform->getThirdPartySetting('vactory_decoupled_webform_autosave', 'autosave_settings', []);
+
+    // Add a new vertical tab for Auto-Save
+    $form['autosave'] = [
+      '#type' => 'details',
+      '#title' => t('Auto-Save'),
+      '#group' => 'tabs',
+    ];
+
+    // Checkbox to enable/disable auto-save
+    $form['autosave']['autosave_enabled'] = [
+      '#type' => 'checkbox',
+      '#title' => t('Enable Auto-Save'),
+      '#default_value' => $autosave_settings['autosave_enabled'] ?? FALSE,
+    ];
+
+    // Numeric field for auto-save interval with description
+    $form['autosave']['autosave_interval'] = [
+      '#type' => 'number',
+      '#title' => t('Auto-Save Interval (in seconds)'),
+      '#min' => 0, // Set minimum value to 0
+      '#step' => 1, // Step size
+      '#description' => t('Enter the time interval for auto-save. Leave blank or enter 0 for indefinite persistence.'),
+      '#states' => [
+        'visible' => [
+          ':input[name="autosave_enabled"]' => ['checked' => TRUE],
+        ],
+      ],
+      '#default_value' => $autosave_settings['autosave_interval'] ?? '',
+    ];
+
+    // Dropdown for selecting storage type
+    $form['autosave']['autosave_storage_type'] = [
+      '#type' => 'select',
+      '#title' => t('Auto-Save Storage Type'),
+      '#options' => [
+        'local' => t('Local Storage'),
+        'session' => t('Session Storage'),
+      ],
+      '#default_value' => 'local',
+      '#states' => [
+        'visible' => [
+          ':input[name="autosave_enabled"]' => ['checked' => TRUE],
+        ],
+      ],
+      '#default_value' => $autosave_settings['autosave_storage_type'] ?? 'local',
+    ];
+
+    $exclude_options = _get_webform_fields_options($form_state);
+
+    $form['autosave']['autosave_exclude_fields'] = [
+      '#type' => 'select',
+      '#title' => t('Fields to Exclude from Auto-Save'),
+      '#description' => t('Select fields to exclude from auto-saving.'),
+      '#multiple' => TRUE,
+      '#options' => $exclude_options['options'],
+      '#default_value' => $autosave_settings['autosave_exclude_fields'] ?? $exclude_options['default_values'],
+      '#states' => [
+        'visible' => [
+          ':input[name="autosave_enabled"]' => ['checked' => TRUE],
+        ],
+      ],
+    ];
+
+    // Add custom submission handler
+    $form['actions']['submit']['#submit'][] = 'vactory_decoupled_webform_autosave_form_submit';
+  }
+}
+
+function vactory_decoupled_webform_autosave_form_submit(array &$form, FormStateInterface $form_state) {
+  $webform = $form_state->getFormObject()->getEntity();
+  $autosave_enabled = $form_state->getValue('autosave_enabled');
+
+  $autosave_settings = [
+    'autosave_enabled' => $autosave_enabled,
+  ];
+
+  // Append additional settings only if auto-save is enabled
+  if ($autosave_enabled) {
+    $autosave_interval = $form_state->getValue('autosave_interval');
+    if ($autosave_interval === '' || $autosave_interval === '0') {
+      $autosave_interval = NULL;
+    }
+    $autosave_settings += [
+      'autosave_interval' => $autosave_interval,
+      'autosave_storage_type' => $form_state->getValue('autosave_storage_type'),
+      'autosave_exclude_fields' => $form_state->getValue('autosave_exclude_fields'),
+    ];
+  }
+
+  $webform->setThirdPartySetting('vactory_decoupled_webform_autosave', 'autosave_settings', $autosave_settings);
+  $webform->save();
+}
+
+/**
+ * Retrieves options for webform fields, identifying sensitive fields for default exclusion.
+ *
+ * This function iterates through all elements of the webform, including nested
+ * elements in containers like fieldsets or wizard pages. It collects field names
+ * and titles for use in a select element, and it identifies fields of sensitive types
+ * (like passwords) to pre-select them for exclusion from auto-saving.
+ *
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *   The form state object from which the current webform can be derived.
+ *
+ * @return array
+ *   An associative array containing:
+ *   - 'options': An associative array of field names and titles.
+ *   - 'default_values': An array of field names of sensitive fields.
+ */
+function _get_webform_fields_options(FormStateInterface $form_state) {
+  $options = [];
+  $default_values = [];
+  $webform = $form_state->getFormObject()->getEntity();
+
+  // Recursive function to parse elements
+  $parse_elements = function($elements) use (&$parse_elements, &$options, &$default_values) {
+    foreach ($elements as $key => $element) {
+      // Check if the element is a standard form field
+      if (isset($element['#type']) && !in_array($element['#type'], ['container', 'fieldset', 'details', 'vertical_tabs', 'item', 'webform_wizard_page', 'page', 'webform_flexbox'])) {
+        $options[$key] = $element['#title'] ?? $key;
+
+        // Automatically select sensitive field types
+        if (in_array($element['#type'], ['password', 'password_confirm'])) {
+          $default_values[] = $key;
+        }
+      }
+
+      // Recursively parse children if it's a container
+      if (isset($element['#type']) && in_array($element['#type'], ['container', 'fieldset', 'details', 'vertical_tabs', 'item', 'webform_wizard_page', 'page', 'webform_flexbox'])) {
+        if (isset($element['#webform_children'])) {
+          $child_elements = array_intersect_key($elements, array_flip($element['#webform_children']));
+          $parse_elements($child_elements);
+        }
+      }
+    }
+  };
+
+  // Start parsing from the root elements
+  $parse_elements($webform->getElementsDecodedAndFlattened());
+
+  return ['options' => $options, 'default_values' => $default_values];
+}

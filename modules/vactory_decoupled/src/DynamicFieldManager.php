@@ -5,7 +5,6 @@ namespace Drupal\vactory_decoupled;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityRepositoryInterface;
-use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
@@ -21,6 +20,9 @@ use Drupal\Component\Utility\UrlHelper;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\Core\Cache\Cache;
 use Drupal\serialization\Normalizer\CacheableNormalizerInterface;
+use Drupal\Core\Utility\Token;
+use GuzzleHttp\Client;
+use Drupal\webform\Entity\Webform;
 
 /**
  * Manages Dynamic Field Transformation.
@@ -69,8 +71,18 @@ class DynamicFieldManager {
    */
   protected $mediaFilesManager;
 
+  /**
+   * Site config.
+   *
+   * @var \Drupal\Core\Config\ImmutableConfig
+   */
   protected $siteConfig;
 
+  /**
+   * Cacheability.
+   *
+   * @var \Drupal\Core\Cache\CacheableMetadata
+   */
   protected $cacheability;
 
   /**
@@ -111,25 +123,38 @@ class DynamicFieldManager {
   /**
    * Config factory service.
    *
-   * @var ConfigFactoryInterface
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
   protected $configFactory;
 
   /**
-   * @var EntityStorageInterface
+   * Media storage.
+   *
+   * @var \Drupal\Core\Entity\EntityStorageInterface
    */
   protected $mediaStorage;
 
   /**
-   * @var EntityStorageInterface
+   * Term Result Count Storage.
+   *
+   * @var \Drupal\Core\Entity\EntityStorageInterface
    */
   protected $termResultCount;
 
+  /**
+   * @var \Drupal\Core\Utility\Token
+   */
+  protected $token;
+
+  /**
+   * @var \GuzzleHttp\Client
+   */
+  protected $httpClient;
 
   /**
    * {@inheritdoc}
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, $plateform_provider, MediaFilesManager $mediaFilesManager, EntityRepositoryInterface $entityRepository, JsonApiGenerator $jsonApiGenerator, SlugManager $slugManager, ModuleHandlerInterface $moduleHandler, LanguageManagerInterface $languageManager, ViewsToApi $viewsToApi, ConfigFactoryInterface $configFactory) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, $plateform_provider, MediaFilesManager $mediaFilesManager, EntityRepositoryInterface $entityRepository, JsonApiGenerator $jsonApiGenerator, SlugManager $slugManager, ModuleHandlerInterface $moduleHandler, LanguageManagerInterface $languageManager, ViewsToApi $viewsToApi, ConfigFactoryInterface $configFactory, Token $token, Client $httpClient) {
     $this->entityTypeManager = $entity_type_manager;
     $this->language = $languageManager->getCurrentLanguage()->getId();
     $this->platformProvider = $plateform_provider;
@@ -142,10 +167,15 @@ class DynamicFieldManager {
     $this->moduleHandler = $moduleHandler;
     $this->languageManager = $languageManager;
     $this->viewsToApi = $viewsToApi;
+    $this->token = $token;
+    $this->httpClient = $httpClient;
     $this->mediaStorage = $this->entityTypeManager->getStorage('media');
     $this->termResultCount = $this->moduleHandler->moduleExists('vactory_taxonomy_results') ? $this->entityTypeManager->getStorage('term_result_count') : NULL;
   }
 
+  /**
+   * Transform.
+   */
   public function transform($data, Context &$context) {
     $cacheability = (object) $context[CacheableNormalizerInterface::SERIALIZATION_CONTEXT_CACHEABILITY];
     $res = $this->process($data, $cacheability);
@@ -153,6 +183,9 @@ class DynamicFieldManager {
     return $res['data'];
   }
 
+  /**
+   * Process.
+   */
   public function process($data, $cacheability = NULL) {
     $this->cacheability = $cacheability;
 
@@ -195,10 +228,10 @@ class DynamicFieldManager {
         return (int) ($item1['_weight'] <=> $item2['_weight']);
       });
 
-      /*$image_app_base_url = Url::fromUserInput('/app-image/')
-        ->setAbsolute()->toString();*/
+      // $image_app_base_url = Url::fromUserInput('/app-image/')
+      // ->setAbsolute()->toString();
       foreach ($widget_data as &$component) {
-        //        $this->applyFormatters(['fields'], $settings, $component);
+        // $this->applyFormatters(['fields'], $settings, $component);
         $this->applyFormatters(['fields'], $settings, $component);
         $content['components'][] = $component;
       }
@@ -218,12 +251,15 @@ class DynamicFieldManager {
        * }
        * @endcode
        */
-      $this->moduleHandler->alter('df_jsonapi_output', $content);
+      $this->moduleHandler->alter('df_jsonapi_output', $content, $cacheability);
+      $this->cacheability = $cacheability;
       $data['widget_data'] = json_encode($content);
     }
 
     // Restore cache.
-    $this->cacheability->addCacheContexts(['url.query_args:q']);
+    if(isset($this->cacheability)) {
+      $this->cacheability->addCacheContexts(['url.query_args:q']);
+    }
 
     return [
       'data'         => $data,
@@ -232,16 +268,18 @@ class DynamicFieldManager {
   }
 
   /**
-   * Apply formatters such as processed_text, image & links.
-   *
-   * @param array $parent_keys
-   *   Keys.
-   * @param array $settings
-   *   Settings.
-   * @param array $component
-   *   Component.
+   * Apply Formatters.
    */
   public function applyFormatters($parent_keys, $settings, &$component) {
+    $simple_text_types = [
+      'text',
+      'textarea',
+    ];
+    $contentService = NULL;
+    if (\Drupal::moduleHandler()->moduleExists('vactory_content_sheets')) {
+      $contentService = \Drupal::service('vactory_content_sheets.content_services');
+    }
+
     foreach ($component as $field_key => &$value) {
       $info = NestedArray::getValue($settings, array_merge((array) $parent_keys, [$field_key]));
       if (is_array($info)) {
@@ -283,13 +321,33 @@ class DynamicFieldManager {
           }
 
           // Text Preprocessor.
-          if ($info['type'] === 'text_format') {
-            //$format = $info['options']['#format'] ?? 'full_html';
+          if (in_array($info['type'], $simple_text_types)) {
+            if (str_starts_with($value, 'tx:') && $contentService) {
+              $this->cacheability->addCacheTags([$value]);
+              $retrievedContent = $contentService->getContent($value);
+              if ($retrievedContent) {
+                $value = $retrievedContent;
+              }
+            }
+          }
 
+          // Text_format Preprocessor.
+          if ($info['type'] === 'text_format') {
+            $text = $value['value'] ?? $value;
+            if ((str_starts_with($text, 'tx:') || str_starts_with($text, '<p>tx:')) && $contentService){
+              $text = strip_tags($text);
+              $this->cacheability->addCacheTags([$text]);
+              $retrievedContent = $contentService->getContent($text);
+              if ($retrievedContent) {
+                $text = $retrievedContent;
+              }
+            }
+
+            // $format = $info['options']['#format'] ?? 'full_html';
             $build = [
-              //'#type'   => 'processed_text',
-              '#text' => $value['value'] ?? $value,
-              //'#format' => $format,
+              // '#type'   => 'processed_text',
+              '#text' => $text,
+              // '#format' => $format,
             ];
 
             $value = ['value' => $build];
@@ -366,11 +424,11 @@ class DynamicFieldManager {
                   $this->cacheability->setCacheTags($cacheTags);
                   $uri = $file->thumbnail->entity->getFileUri();
                   $image_item['_default'] = $this->mediaFilesManager->getMediaAbsoluteUrl($uri);
-                  //$image_item['_lqip'] = $this->mediaFilesManager->convertToMediaAbsoluteUrl($this->imageStyles['lqip']->buildUrl($uri));
-                  //$image_item['uri'] = StreamWrapperManager::getTarget($uri);
-                  //$image_item['fid'] = $file->thumbnail->entity->fid->value;
+                  // $image_item['_lqip'] = $this->mediaFilesManager->convertToMediaAbsoluteUrl($this->imageStyles['lqip']->buildUrl($uri));
+                  // $image_item['uri'] = StreamWrapperManager::getTarget($uri);
+                  // $image_item['fid'] = $file->thumbnail->entity->fid->value;
                   $image_item['file_name'] = $file->label();
-                  //$image_item['base_url'] = $image_app_base_url;
+                  // $image_item['base_url'] = $image_app_base_url;
                   if (!empty($file->get('field_media_image')->getValue())) {
                     $image_item['meta'] = $file->get('field_media_image')
                       ->first()
@@ -400,10 +458,10 @@ class DynamicFieldManager {
                   $this->cacheability->setCacheTags($cacheTags);
                   $uri = $file->field_media_video_file->entity->getFileUri();
                   $video_item['_default'] = $this->mediaFilesManager->getMediaAbsoluteUrl($uri);
-                  //$video_item['uri'] = StreamWrapperManager::getTarget($uri);
-                  //$video_item['fid'] = $file->thumbnail->entity->fid->value;
+                  // $video_item['uri'] = StreamWrapperManager::getTarget($uri);
+                  // $video_item['fid'] = $file->thumbnail->entity->fid->value;
                   $video_item['file_name'] = $file->label();
-                  //$video_item['base_url'] = $image_app_base_url;
+                  // $video_item['base_url'] = $image_app_base_url;
                   if (!empty($file->get('field_media_video_file')->getValue())) {
                     $video_item['meta'] = $file->get('field_media_video_file')
                       ->first()
@@ -473,6 +531,31 @@ class DynamicFieldManager {
             $value = $response;
           }
 
+          // Cross bundles.
+          if ($info['type'] === 'json_api_cross_bundles' && !empty($value)) {
+            $value = array_merge($info['options']['#default_value'], $value);
+            $resource = $value['resource']['entity_type'];
+            $bundles = $value['resource']['bundle'];
+            $bundleEntityType = \Drupal::entityTypeManager()->getDefinition($resource)->getBundleEntityType();
+            if (is_array($bundles)) {
+              $value['filters'][] = "filter[bundles][condition][path]={$bundleEntityType}.meta.drupal_internal__target_id";
+              $value['filters'][] = 'filter[bundles][condition][operator]=IN';
+              foreach ($bundles as $key => $bundle) {
+                $value['filters'][] = "filter[bundles][condition][value][{$key}]={$bundle}";
+              }
+            }
+            $value['resource'] = $resource;
+            $response = $this->jsonApiGenerator->fetch($value);
+            $cache = $response['cache'];
+            unset($response['cache']);
+
+            $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $cache['tags']);
+            $this->cacheability->setCacheTags($cacheTags);
+            $cacheContexts = Cache::mergeContexts($this->cacheability->getCacheContexts(), $cache['contexts']);
+            $this->cacheability->setCacheContexts($cacheContexts);
+            $value = $response;
+          }
+
           // Webform.
           if (
             $info['type'] === 'webform_decoupled' &&
@@ -492,6 +575,18 @@ class DynamicFieldManager {
             // Service invoked statically because vactory_decoupled_webform.
             // Module depends on vactory_decoupled.
             $value['elements'] = \Drupal::service('vactory.webform.normalizer')->normalize($webform_id);
+
+            $value['autosave'] = FALSE;
+            // Check if the webform autosave module is enabled and add its settings
+            if (\Drupal::moduleHandler()->moduleExists('vactory_decoupled_webform_autosave')) {
+              $webform = Webform::load($webform_id);
+              if ($webform) {
+                $autosave_settings = $webform->getThirdPartySetting('vactory_decoupled_webform_autosave', 'autosave_settings', []);
+                if($autosave_settings['autosave_enabled']) {
+                  $value['autosave'] = $autosave_settings;
+                }
+              }
+            }
           }
 
           if ($info['type'] === 'remote_video' && !empty($value)) {
@@ -525,6 +620,65 @@ class DynamicFieldManager {
             $cacheContexts = Cache::mergeContexts($this->cacheability->getCacheContexts(), $cache['contexts']);
             $this->cacheability->setCacheContexts($cacheContexts);
             $value = $response;
+          }
+
+          if ($info['type'] === 'dynamic_api_fetch' && !empty($value)) {
+
+            $url = $this->token->replace($value['url']);
+            $query_params_input =  $this->token->replace($value['query_params']);
+            $headers_input = $this->token->replace($value['headers']);
+            $query_params = [];
+            $headers = [];
+  
+            if (!empty($query_params_input)) {
+              $query_params_as_rows = explode(PHP_EOL, $query_params_input);
+              if (!empty($query_params_as_rows)) {
+                foreach ($query_params_as_rows as $row) {
+                  $param = explode('=', $row);
+                  if (count($param) === 2) {
+                    $query_params[trim($param[0])] = trim($param[1]);
+                  }
+                }
+              }
+            }
+  
+            if (!empty($headers_input)) {
+              $headers_as_rows = explode(PHP_EOL, $headers_input);
+              if (!empty($headers_as_rows)) {
+                foreach ($headers_as_rows as $row) {
+                  $header = explode('=', $row);
+                  if (count($header) === 2) {
+                    $headers[trim($header[0])] = trim($header[1]);
+                  }
+                }
+              }
+            }
+            $api_config = [
+              'url' => $url,
+              'headers' => $headers,
+              'query_params' => $query_params
+            ];
+            $this->moduleHandler->alter('dynamic_api_fetch_config', $api_config, $info);
+  
+  
+            if (is_array($api_config['query_params']) && count($api_config['query_params']) > 0){
+              $api_config['url'] = $api_config['url'] . '?' . http_build_query($api_config['query_params']);
+            }
+  
+            try {
+              $request = $this->httpClient->get($api_config['url'], [
+                "headers" => $api_config['headers'],
+              ]);
+  
+              $content = $request->getBody()->getContents();
+              $result = json_decode($content,TRUE);
+              $this->moduleHandler->alter('dynamic_api_fetch_result', $result, $info);
+              $value = $result;
+  
+            }
+            catch (\Exception $e) {
+              \Drupal::logger('dynamic_api_fetch')->error($e->getMessage());
+            }
           }
 
           $cacheability = $this->cacheability;

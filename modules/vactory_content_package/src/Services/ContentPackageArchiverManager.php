@@ -11,6 +11,7 @@ use Drupal\Core\Site\Settings;
 use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
 use Drupal\vactory_content_package\ContentPackageConstants;
+use Drupal\block_content\Entity\BlockContent;
 
 /**
  * Content package archiver manager service.
@@ -56,17 +57,30 @@ class ContentPackageArchiverManager implements ContentPackageArchiverManagerInte
   }
 
   /**
-   * Zip nodes.
+   * Zip nodes and blocks.
    */
-  public function zipContentTypeNodes(string $contentType = 'vactory_page') {
-    $nodes = $this->entityTypeManager->getStorage('node')
-      ->getQuery()
-      ->accessCheck(FALSE)
-      ->condition('type', $contentType)
-      ->execute();
-    $nodes = array_values($nodes);
+  public function zipContentTypeNodes(string $contentType = 'vactory_page', $nodes = NULL, $blocks = NULL, $is_partial = false) {
+    if (empty($nodes) && !$is_partial) {
+      $nodes = $this->entityTypeManager->getStorage('node')
+        ->getQuery()
+        ->accessCheck(FALSE)
+        ->condition('type', $contentType)
+        ->execute();
+      $nodes = array_values($nodes);
+    }
 
-    if (empty($nodes)) {
+    // Get blocks.
+    if (empty($blocks) && !$is_partial) {
+      $blocks = $this->entityTypeManager->getStorage('block_content')
+        ->getQuery('OR')
+        ->notExists('block_content_package_exclude')
+        ->condition('block_content_package_exclude', 1, '<>')
+        ->accessCheck(FALSE)
+        ->execute();
+      $blocks = array_values($blocks);
+    }
+
+    if (empty($nodes) && empty($blocks)) {
       return NULL;
     }
 
@@ -74,7 +88,7 @@ class ContentPackageArchiverManager implements ContentPackageArchiverManagerInte
 
     $archivePath = ContentPackageConstants::EXPORT_DES_FILES . '/' . ContentPackageConstants::ARCHIVE_FILE_NAME;
 
-    $this->fileSystem->prepareDirectory($archivePath, FileSystemInterface:: CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS);
+    $this->fileSystem->prepareDirectory($archivePath, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS);
 
     $chunk = array_chunk($nodes, self::BATCH_SIZE);
     $operations = [];
@@ -82,7 +96,16 @@ class ContentPackageArchiverManager implements ContentPackageArchiverManagerInte
     foreach ($chunk as $ids) {
       $operations[] = [
         [self::class, 'zipCallback'],
-        [$ids, $destination],
+        [$ids, $destination, 'node'],
+      ];
+      $num_operations++;
+    }
+
+    $chunk = array_chunk($blocks, self::BATCH_SIZE);
+    foreach ($chunk as $ids) {
+      $operations[] = [
+        [self::class, 'zipCallback'],
+        [$ids, $destination, 'block'],
       ];
       $num_operations++;
     }
@@ -100,7 +123,7 @@ class ContentPackageArchiverManager implements ContentPackageArchiverManagerInte
   /**
    * Zip batch callback.
    */
-  public static function zipCallback($ids, $destination, &$context) {
+  public static function zipCallback($ids, $destination, $entity_type, &$context) {
     $fileSystem = \Drupal::service('file_system');
     $langs = array_keys(\Drupal::service('language_manager')->getLanguages());
     $entityRepository = \Drupal::service('entity.repository');
@@ -108,31 +131,51 @@ class ContentPackageArchiverManager implements ContentPackageArchiverManagerInte
     $zip_file_path = ContentPackageConstants::EXPORT_DES_FILES . '/' . ContentPackageConstants::ARCHIVE_FILE_NAME . '.zip';
     if (!isset($context['sandbox']['zip'])) {
       $context['sandbox']['zip'] = new \ZipArchive();
-      $context['sandbox']['zip']->open($fileSystem->realPath($zip_file_path), constant('ZipArchive::CREATE'));
+      $context['sandbox']['zip']->open($fileSystem->realPath($zip_file_path), \ZipArchive::CREATE);
     }
-    $skipped_nodes = 0;
-    foreach ($ids as $nid) {
-      // Get original node.
-      $node = Node::load($nid);
-      // Skip if node_content_package_exclude is checked.
-      if ($node->hasField('node_content_package_exclude') && $node->get('node_content_package_exclude')->value == 1) {
-        $skipped_nodes++;
+    $skipped_entities = 0;
+    foreach ($ids as $id) {
+      // Get original entity.
+      $entity = NULL;
+      if ($entity_type === 'node') {
+        $entity = Node::load($id);
+      } elseif ($entity_type === 'block') {
+        $entity = BlockContent::load($id);
+      }
+
+      if ($entity === NULL) {
         continue;
       }
-      $dir_location = $destination . '/' . $node->label();
+
+      // Skip if entity_content_package_exclude is checked.
+      $exclude_field_name = $entity_type . '_content_package_exclude';
+      if ($entity->hasField($exclude_field_name) && $entity->get($exclude_field_name)->value == 1) {
+        $skipped_entities++;
+        continue;
+      }
+
+      // Create subdirectory for nodes or blocks.
+      $entity_folder = $entity_type === 'node' ? 'pages' : 'blocks';
+      $dir_location = $destination . '/' . $entity_folder . '/' . $entity->label();
+
+      // Create subdirectory within the main folder.
       $fileSystem->prepareDirectory($dir_location, FileSystemInterface::CREATE_DIRECTORY);
-      file_put_contents($dir_location . '/original.json', json_encode($contentPackageManager->normalize($node), JSON_PRETTY_PRINT));
-      $context['sandbox']['zip']->addFile($fileSystem->realpath($dir_location . '/original.json'), $node->label() . '/original.json');
+      $json_file_name = 'original.json';
+      file_put_contents($dir_location . '/' . $json_file_name, json_encode($contentPackageManager->normalize($entity), JSON_PRETTY_PRINT));
+      $context['sandbox']['zip']->addFile($fileSystem->realpath($dir_location . '/' . $json_file_name), $entity_folder . '/' . $entity->label() . '/' . $json_file_name);
       // Get translations.
       foreach ($langs as $lang) {
-        if ($lang == $node->language()->getId()) {
+        if ($lang == $entity->language()->getId()) {
           continue;
         }
-        if ($node->hasTranslation($lang)) {
-          $translated_node = $entityRepository->getTranslationFromContext($node, $lang);
-          if (isset($translated_node)) {
-            file_put_contents($dir_location . '/' . $lang . '.json', json_encode($contentPackageManager->normalize($translated_node, TRUE), JSON_PRETTY_PRINT));
-            $context['sandbox']['zip']->addFile($fileSystem->realpath($dir_location . '/' . $lang . '.json'), $node->label() . '/' . $lang . '.json');
+
+        if ($entity->hasTranslation($lang)) {
+          $translated_entity = $entityRepository->getTranslationFromContext($entity, $lang);
+
+          if ($translated_entity !== NULL) {
+            $lang_json_file_name =  $lang . '.json';
+            file_put_contents($dir_location . '/' . $lang_json_file_name, json_encode($contentPackageManager->normalize($translated_entity, TRUE), JSON_PRETTY_PRINT));
+            $context['sandbox']['zip']->addFile($fileSystem->realpath($dir_location . '/' . $lang_json_file_name), $entity_folder . '/' . $entity->label() . '/' . $lang_json_file_name);
           }
         }
       }
@@ -141,7 +184,7 @@ class ContentPackageArchiverManager implements ContentPackageArchiverManagerInte
     if (!isset($context['results']['count'])) {
       $context['results']['count'] = 0;
     }
-    $context['results']['count'] += (count($ids) - $skipped_nodes);
+    $context['results']['count'] += (count($ids) - $skipped_entities);
   }
 
   /**
@@ -149,8 +192,7 @@ class ContentPackageArchiverManager implements ContentPackageArchiverManagerInte
    */
   public static function zipFinished($success, $results, $operations) {
     if ($success) {
-
-      $message = $results['count'] > 0 ? "Zipping finished: {$results['count']} nodes." : "Oops, Nothing to export";
+      $message = $results['count'] > 0 ? "Zipping finished: {$results['count']} entities." : "Oops, Nothing to export";
       \Drupal::messenger()->addStatus($message);
       if ($results['count'] > 0) {
         foreach ($results as $result) {
@@ -174,50 +216,56 @@ class ContentPackageArchiverManager implements ContentPackageArchiverManagerInte
     $directory = $this->extractDirectory();
     try {
       $archive = $this->archiveExtract($path, $directory);
-    } catch (\Exception $e) {
+    }catch (\Exception $e) {
       $this->messenger->addError($e->getMessage());
       return;
     }
 
     $files = $archive->listContents();
     if (!$files) {
-      return [];
+        return [];
     }
 
     $path = $this->fileSystem->realpath($directory);
-
     $subdirectories = glob($path . '/*', GLOB_ONLYDIR);
 
-    $chunk = array_chunk($subdirectories, self::BATCH_SIZE);
+    if (!empty($subdirectories)) {
+        $operations = [];
+        foreach ($subdirectories as $folder) {
+          $type = '';
+          if (str_ends_with($folder, '/blocks')) {
+            $type = 'blocks';
+          }
+          if (str_ends_with($folder, '/pages')) {
+            $type = 'pages';
+          }
+          $nodes = glob($folder . '/*', GLOB_ONLYDIR);
+          $chunk = array_chunk($nodes, self::BATCH_SIZE);
 
-    if (!empty($chunk)) {
-      $operations = [];
-      $num_operations = 0;
-      foreach ($chunk as $nodes) {
+          foreach ($chunk as $nodesChunk) {
+              $operations[] = [
+                  [self::class, 'unzipCallback'],
+                  [$nodesChunk, $type],
+              ];
+          }
+        }
 
-        $operations[] = [
-          [self::class, 'unzipCallback'],
-          [$nodes],
-        ];
-        $num_operations++;
-
-      }
-
-      if (!empty($operations)) {
-        $batch = [
-          'title' => 'Process of unzipping',
-          'operations' => $operations,
-          'finished' => [self::class, 'unzipFinished'],
-        ];
-        batch_set($batch);
-      }
+        if (!empty($operations)) {
+            $batch = [
+                'title' => 'Process of unzipping',
+                'operations' => $operations,
+                'finished' => [self::class, 'unzipFinished'],
+            ];
+            batch_set($batch);
+        }
     }
   }
 
   /**
    * Unzip batch callback.
    */
-  public static function unzipCallback($nodes, &$context) {
+  public static function unzipCallback($nodes, $type, &$context) {
+      
     $fileSystem = \Drupal::service('file_system');
     $contentPackageManager = \Drupal::service('vactory_content_package.manager');
 
@@ -240,10 +288,10 @@ class ContentPackageArchiverManager implements ContentPackageArchiverManagerInte
           $json_contents = file_get_contents($filePath);
           $json_data = json_decode($json_contents, TRUE);
           if ($fileInfo->name !== 'original') {
-            $context['results']['data'][$directory_name]['translations'][$fileInfo->name] = $contentPackageManager->denormalize($json_data);
+            $context['results']['data'][$type][$directory_name]['translations'][$fileInfo->name] = $contentPackageManager->denormalize($json_data);
             continue;
           }
-          $context['results']['data'][$directory_name][$fileInfo->name] = $contentPackageManager->denormalize($json_data);
+          $context['results']['data'][$type][$directory_name][$fileInfo->name] = $contentPackageManager->denormalize($json_data);
         }
       }
 
@@ -253,7 +301,7 @@ class ContentPackageArchiverManager implements ContentPackageArchiverManagerInte
       }
 
       $existing_array = json_decode($existing_json_data, TRUE);
-      $existing_array[$directory_name] = $context['results']['data'][$directory_name];
+      $existing_array[$type][$directory_name] = $context['results']['data'][$type][$directory_name];
       $updated_json_data = json_encode($existing_array, JSON_PRETTY_PRINT);
       $fileSystem->saveData($updated_json_data, $context['results']['export_data_file'], FileSystemInterface::EXISTS_REPLACE);
     }

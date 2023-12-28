@@ -3,6 +3,7 @@
 namespace Drupal\vactory_decoupled_webform;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Session\AccountProxy;
 use Drupal\file\Entity\File;
 use Drupal\webform\Element\WebformTermReferenceTrait;
@@ -11,6 +12,10 @@ use Drupal\webform\Plugin\WebformElementManager;
 use Drupal\webform\WebformSubmissionConditionsValidator;
 use Drupal\webform\WebformTokenManager;
 use Drupal\webform\Entity\Webform as WebformEntity;
+use Drupal\Component\Utility\NestedArray;
+use Drupal\Core\Render\RenderContext;
+use Drupal\Core\Render\RendererInterface;
+use Drupal\vactory_private_files_decoupled\VactoryPrivateFilesServices;
 
 /**
  * Simplifies the process of generating an API version of a webform.
@@ -63,6 +68,35 @@ class Webform {
    */
   protected $entityTypeManager;
 
+  /**
+   * Module handler manager.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
+   * The renderer.
+   *
+   * @var \Drupal\Core\Render\RendererInterface
+   */
+  protected $renderer;
+
+  /**
+   * The vactory private file service.
+   *
+   * @var \Drupal\vactory_private_files_decoupled\VactoryPrivateFilesServices
+   */
+  protected $vactoryPrivateFilesService;
+
+  /**
+   * Form with test values.
+   */
+  protected $formWithTestsValues = [];
+
+  /**
+   * Layouts constant.
+   */
   const LAYOUTS = [
     'webform_flexbox',
     'container',
@@ -71,16 +105,35 @@ class Webform {
     'webform_section',
   ];
 
+  /**
+   * Webform Page Constant.
+   */
   const PAGE = 'webform_wizard_page';
+
+  /**
+   * The excluded webform from test.
+   */
+  const WEBFORM_TESTS_EXCLUDED = ['vactory_espace_prive_edit', 'vactory_espace_prive_register'];
 
   /**
    * {@inheritDoc}
    */
-  public function __construct(WebformTokenManager $webformTokenManager, AccountProxy $accountProxy, WebformElementManager $webformElementManager, EntityTypeManagerInterface $entityTypeManager) {
+  public function __construct(
+    WebformTokenManager $webformTokenManager,
+    AccountProxy $accountProxy,
+    WebformElementManager $webformElementManager,
+    EntityTypeManagerInterface $entityTypeManager,
+    ModuleHandlerInterface $moduleHandler,
+    RendererInterface $renderer,
+    VactoryPrivateFilesServices $vactoryPrivateFilesService
+  ) {
     $this->webformTokenManager = $webformTokenManager;
     $this->currentUser = $accountProxy->getAccount();
     $this->webformElementManager = $webformElementManager;
     $this->entityTypeManager = $entityTypeManager;
+    $this->moduleHandler = $moduleHandler;
+    $this->renderer = $renderer;
+    $this->vactoryPrivateFilesService = $vactoryPrivateFilesService;
   }
 
   /**
@@ -94,6 +147,12 @@ class Webform {
    */
   public function normalize($webform_id) {
     $this->webform = WebformEntity::load($webform_id);
+    if ($this->checkIfWeShouldPrepareTestsValues()) {
+      $webformAux = $this->webform;
+      $this->formWithTestsValues = $this->renderer->executeInRenderContext(new RenderContext(), static function () use ($webformAux) {
+        return $webformAux->getSubmissionForm([], 'test')['elements'] ?? [];;
+      });
+    }
     $elements = $this->webform->getElementsInitialized();
     $draft = $this->draftSettingsToSchema();
     $schema = $this->itemsToSchema($elements);
@@ -107,6 +166,7 @@ class Webform {
     }
     // Add reset button.
     $schema['buttons']['reset'] = $this->resetButtonToUiSchema();
+    $this->moduleHandler->alter('decoupled_webform_schema', $schema, $webform_id);
     return $schema;
   }
 
@@ -187,7 +247,6 @@ class Webform {
     }
     /*    $schema['draft']['settings']['draft'] = isset($this->webform->getSettings()['draft']) && !empty($this->webform->getSettings()['draft']) ? $this->webform->getSettings()['draft'] : 'none';*/
     /*    $schema['draft']['settings']['draft_auto_save'] = isset($this->webform->getSettings()['draft']) && !empty($this->webform->getSettings()['draft_auto_save']) ? $this->webform->getSettings()['draft_auto_save'] : FALSE; */
-
     return $schema;
   }
 
@@ -397,6 +456,17 @@ class Webform {
     (isset($item['#wrapper_attributes']['class']) && !empty($item['#wrapper_attributes']['class'])) ? $properties['wrapperClass'] = implode(" ", $item['#wrapper_attributes']['class']) : "";
     (isset($item['#date_date_min']) && !is_null($item['#date_date_min'])) ? $properties['dateMin'] = $item['#date_date_min'] : NULL;
     (isset($item['#date_date_max']) && !is_null($item['#date_date_max'])) ? $properties['dateMax'] = $item['#date_date_max'] : NULL;
+    (isset($item['#min']) && !is_null($item['#min'])) ? $properties['attributes']['min'] = $item['#min'] : NULL;
+    (isset($item['#max']) && !is_null($item['#max'])) ? $properties['attributes']['max'] = $item['#max'] : NULL;
+    (isset($item['#step']) && !is_null($item['#step'])) ? $properties['attributes']['step'] = $item['#step'] : NULL;
+
+    // add custom properties
+    if (isset($item['#attributes']) && is_array($item['#attributes']) ) {
+      foreach ($item['#attributes'] as $key => $value) {
+        $properties['attributes'][$key] = $value;
+      }
+    }
+
     $properties['isMultiple'] = isset($item['#multiple']);
     if (isset($item['#required'])) {
       $properties['validation']['required'] = TRUE;
@@ -488,15 +558,7 @@ class Webform {
       $properties['filePreview'] = isset($item['#file_preview']);
       $fid = $properties['default_value'];
       if (is_numeric($fid)) {
-        $file = File::load($fid);
-        $info = [
-          'fid'        => $fid,
-          'size'       => $file->get('filesize')->value,
-          'type'       => $file->get('filemime')->value,
-          'name'       => $file->get('filename')->value,
-          'previewUrl' => $file->createFileUrl(TRUE),
-        ];
-        $properties['default_value'] = $info;
+        $properties['default_value'] = $this->preparePreviewInfos($fid);
       }
 
       if (isset($element['#upload_validators']) && isset($element['#upload_validators']['file_validate_extensions'][0])) {
@@ -523,7 +585,72 @@ class Webform {
       $properties['states'] = $this->getFormElementStates($item);
     }
 
+    // Override default values when the query params include test.
+    if ($this->checkIfWeShouldPrepareTestsValues()) {
+      $this->prepareFormElementTestValue($field_name , $properties);
+    }
+
     return $properties;
+  }
+
+  /**
+   * Check if we should prepare tests values.
+   */
+  private function checkIfWeShouldPrepareTestsValues() {
+    $query = \Drupal::request()->query->get("q");
+    return !in_array($this->webform->id(), self::WEBFORM_TESTS_EXCLUDED) && isset($query["test"]);
+  }
+
+  /**
+   * Prepare form element test value.
+   */
+  private function prepareFormElementTestValue($field_name, &$properties) {
+    $parents = $this->findParents($field_name, $this->formWithTestsValues);
+    $child = !empty($parents) ?  NestedArray::getValue($this->formWithTestsValues, array_merge($parents, [$field_name])) : [];
+    $concenedElement = !empty($child) && in_array($field_name, $child['#array_parents'] ?? []) ? $child : $this->formWithTestsValues[$field_name];
+    $properties['default_value'] = $concenedElement['#default_value'] ?? '';
+    if ($properties['type'] == 'upload') {
+      $this->prepareUploadElementTestValue($properties);
+    }
+  }
+
+  /**
+   * Prepare upload element test value.
+   */
+  private function prepareUploadElementTestValue(&$properties) {
+    if (!$properties['isMultiple']) {
+      $fid = is_array($properties['default_value']) ? array_values($properties['default_value'])[0] : null;
+      if (!is_null($fid)) {
+        $properties['default_value'] = $this->preparePreviewInfos($fid);
+        return;
+      }
+    }
+    $files = [];
+    foreach ($properties['default_value'] as $fid) {
+      $fileInfo = $this->preparePreviewInfos($fid);
+      if (!empty($fileInfo)) {
+        $files[] = $fileInfo;
+      }
+    }
+    $properties['default_value'] = $files;
+  }
+
+  /**
+   * Prepare preview infos.
+   */
+  private function preparePreviewInfos($fid) {
+    $file = File::load($fid);
+    if (!isset($file)) {
+      return [];
+    }
+    $privateFile = $this->vactoryPrivateFilesService->generatePrivateFileUrl($file);
+    return [
+      'fid'        => $fid,
+      'size'       => $file->get('filesize')->value,
+      'type'       => $file->get('filemime')->value,
+      'name'       => $file->get('filename')->value,
+      'previewUrl' => $privateFile['_default'] ?? $file->createFileUrl(TRUE),
+    ];
   }
 
   /**
@@ -620,6 +747,27 @@ class Webform {
     $element_plugin = $this->webformElementManager->createInstance($element['#type'], $plugin_definition);
 
     return $element_plugin;
+  }
+
+  /**
+   * Find the parent elements of a specified key within an array.
+   */
+  protected function findParents($key, $array, $parentKey = null, &$parents = array()) {
+    foreach ($array as $currentKey => $value) {
+        if ($currentKey === $key) {
+            // If the current key matches the target key, add the parent to the list.
+            if ($parentKey !== null && !str_starts_with($parentKey, '#')) {
+                $parents[] = $parentKey;
+            }
+            break;
+        }
+
+        if (is_array($value)) {
+            // Recursively search in the current sub-array with the current key as the parent.
+            $this->findParents($key, $value, $currentKey, $parents);
+        }
+    }
+    return $parents;
   }
 
 }

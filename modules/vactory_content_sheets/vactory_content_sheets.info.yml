@@ -1,0 +1,6 @@
+name: Vactory Content Sheets
+type: module
+description: "Provides functionality to store and update content sheets."
+package: Vactory
+configure: vactory_content_sheets.import
+core_version_requirement: ^9 || ^10

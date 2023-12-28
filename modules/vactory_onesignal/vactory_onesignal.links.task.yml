@@ -1,0 +1,4 @@
+vactory_onesignal.test:
+  route_name: vactory_onesignal.test_form
+  title: OneSignal Notifications Test
+  base_route: onesignal.config_form

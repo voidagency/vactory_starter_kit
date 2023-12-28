@@ -1,0 +1,5 @@
+entity.exposed_apis.overview:
+  title: Exposed APIs
+  parent: system.admin_structure
+  description: 'List of exposed apis to extend site functionality.'
+  route_name: entity.exposed_apis.collection

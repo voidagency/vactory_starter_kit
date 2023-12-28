@@ -76,7 +76,7 @@ class KeycloakAuthController extends OAuth2ControllerBase {
       return $redirect;
     }
 
-    /* @var \pviojo\OAuth2\Client\Provider\KeycloakResourceOwner|null $profile */
+    /** @var \Stevenmaguire\OAuth2\Client\Provider\KeycloakResourceOwner|null $profile */
     $profile = $this->processCallback();
 
     // If authentication was successful.

@@ -1,0 +1,7 @@
+name: 'Vactory Decoupled Flag'
+type: module
+description: 'Vactory Decoupled Flag'
+package: Vactory
+core_version_requirement: ^9 || ^10
+dependencies:
+  - vactory_decoupled

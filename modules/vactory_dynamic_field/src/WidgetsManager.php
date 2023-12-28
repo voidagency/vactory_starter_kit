@@ -86,8 +86,8 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
    * {@inheritdoc}
    */
   public function getWidgetsList() {
-    // @todo: refactor with getModalWidgetsList().
-    // @todo: cache.
+    // @todo refactor with getModalWidgetsList().
+    // @todo cache.
     $widgets = [];
     $plugins = $this->getPluginsList();
 
@@ -124,6 +124,9 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
           throw new \Exception("The $settings_file_path contains invalid YAML", 0, $e);
         }
 
+        // Add widget id.
+        $data['uuid'] = $platform_id . ':' . $widget_id;
+
         // Add screenshoot.
         $data['screenshot'] = FALSE;
         if (file_exists($screenshot_path)) {
@@ -134,6 +137,11 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
         }
         elseif (file_exists($screenshot_url_gif)) {
           $data['screenshot'] = $file_url_generator->generateAbsoluteString($screenshot_url_gif);
+        }
+
+        $screenshot_config = $this->configFactory->getEditable('vactory_dynamic_field.screenshot_settings')->get($data['uuid']);
+        if ($screenshot_config) {
+          $data['screenshot'] = $file_url_generator->generateAbsoluteString($screenshot_config['uri']);
         }
 
         // Add static widget - demo content.
@@ -156,7 +164,7 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
    * {@inheritdoc}
    */
   public function getModalWidgetsList($allowedProviders = []) {
-    // @todo: cache.
+    // @todo cache.
     $widgets = [];
     $plugins = $this->getPluginsList();
 
@@ -195,6 +203,9 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
           throw new \Exception("The $settings_file_path contains invalid YAML", 0, $e);
         }
 
+        // Add widget id.
+        $data['uuid'] = $platform_id . ':' . $widget_id;
+
         // Add screenshoot.
         $data['screenshot'] = FALSE;
         if (file_exists($screenshot_path)) {
@@ -207,14 +218,16 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
           $data['screenshot'] = $file_url_generator->generateAbsoluteString($screenshot_url_gif);
         }
 
+        $screenshot_config = $this->configFactory->getEditable('vactory_dynamic_field.screenshot_settings')->get($data['uuid']);
+        if ($screenshot_config) {
+          $data['screenshot'] = $file_url_generator->generateAbsoluteString($screenshot_config['uri']);
+        }
+
         // Add static widget - demo content.
         $data['static_widget'] = FALSE;
         if (file_exists($static_widget_path)) {
           $data['static_widget'] = $static_widget_path;
         }
-
-        // Add widget id.
-        $data['uuid'] = $platform_id . ':' . $widget_id;
 
         // Keep only enabled widgets.
         if (isset($data['enabled']) && $data['enabled'] === TRUE) {
@@ -272,6 +285,9 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
       return [];
     }
 
+    // Add widget id.
+    $data['uuid'] = $uuid;
+
     // Add screenshoot.
     $data['screenshot'] = FALSE;
     if (file_exists($screenshot_url)) {
@@ -284,14 +300,16 @@ class WidgetsManager extends DefaultPluginManager implements WidgetsManagerInter
       $data['screenshot'] = $file_url_generator->generateAbsoluteString($screenshot_url_gif);
     }
 
+    $screenshot_config = $this->configFactory->getEditable('vactory_dynamic_field.screenshot_settings')->get($data['uuid']);
+    if ($screenshot_config) {
+      $data['screenshot'] = $file_url_generator->generateAbsoluteString($screenshot_config['uri']);
+    }
+
     // Add static widget - demo content.
     $data['static_widget'] = FALSE;
     if (file_exists($static_widget_path)) {
       $data['static_widget'] = $static_widget_path;
     }
-
-    // Add widget id.
-    $data['uuid'] = $uuid;
 
     return $data;
   }
