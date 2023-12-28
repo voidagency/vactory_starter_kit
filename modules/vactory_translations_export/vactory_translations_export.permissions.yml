@@ -1,0 +1,4 @@
+administer vactory_translations_export configuration:
+  title: 'Administer vactory_translations_export configuration'
+  description: 'Optional description.'
+  restrict access: true

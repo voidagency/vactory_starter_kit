@@ -1,0 +1,24 @@
+vactory_translations_export.export_po:
+  title: Default export (.po)
+  base_route: locale.translate_export
+  route_name: locale.translate_export
+  parent_id: locale.translate_export
+  weight: 10
+vactory_translations_export.import_po:
+  title: Default import (.po)
+  base_route: locale.translate_import
+  route_name: locale.translate_import
+  parent_id: locale.translate_import
+  weight: 10
+vactory_translations_export.export_csv:
+  title: Custom export (.csv)
+  base_route: locale.translate_export
+  route_name: vactory_translations_export.settings_form
+  parent_id: locale.translate_export
+  weight: 20
+vactory_translations_export.import_csv:
+  title: Custom import (.csv)
+  base_route: locale.translate_import
+  route_name: vactory_translations_export.import_form
+  parent_id: locale.translate_import
+  weight: 20
