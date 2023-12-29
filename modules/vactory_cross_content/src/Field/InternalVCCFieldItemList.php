@@ -65,7 +65,11 @@ class InternalVCCFieldItemList extends FieldItemList {
     $instance = parent::createInstance($definition, $name, $parent);
     $instance->cacheMetadata = new CacheableMetadata();
     $container = \Drupal::getContainer();
-    $instance->blockManager = $container->get('vactory_decoupled.blocksManager');
+    // Check if the module vactory_decoupled is enabled before getting the service blocksManager.
+    $moduleHandler = $container->get('module_handler');
+    if ($moduleHandler->moduleExists('vactory_decoupled')) {
+      $instance->blockManager = $container->get('vactory_decoupled.blocksManager');
+    }
     $instance->entityTypeManager = $container->get('entity_type.manager');
     $instance->moduleHandler = $container->get('module_handler');
     $instance->entityRepository = $container->get('entity.repository');
