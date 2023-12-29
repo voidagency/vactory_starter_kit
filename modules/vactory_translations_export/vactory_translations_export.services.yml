@@ -1,0 +1,6 @@
+services:
+  vactory_translations_export.manager:
+    class: 'Drupal\vactory_translations_export\Services\TranslationExportManager'
+    arguments:
+      - '@language_manager'
+      - '@database'
