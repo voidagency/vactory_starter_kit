@@ -90,13 +90,13 @@ class Import extends FormBase {
       $query->condition('type', 'vactory_page');
       $query->condition('node_id', $key);
       $ids = $query->execute();
+      $df_settings = $this->prepareDfSettings($page['original']);
+      $this->createDynamicFields($df_settings);
       if (empty($ids)) {
-        $this->createDynamicFields($page['original']);
         $this->createNode($key, $page);
       }
       elseif (count($ids) == 1) {
         // Load the page (node) and update it.
-        $this->createDynamicFields($page['original']);
         $nid = reset($ids);
         $node = Node::load($nid);
         $this->updatePage($node, $page);
@@ -139,6 +139,8 @@ class Import extends FormBase {
     // Initialize an array to store the data.
     $data = [];
     $current_paragraph = NULL;
+    $current_multiple = NULL;
+    $current_tab = NULL;
     for ($col = 2; $col <= $highestColumnIndex; ++$col) {
       $language = $sheet->getCell([$col, 1])->getValue();
       if (is_null($language)) {
@@ -150,59 +152,97 @@ class Import extends FormBase {
           break;
         }
         $value = $sheet->getCell([$col, $row])->getValue();
-        if (str_starts_with($key, 'paragraph') && $value == 'IGNORE') {
+        if ($value == 'IGNORE') {
           continue;
         }
-        if (!str_starts_with($key, 'paragraph') && !is_null($value) && is_null($current_paragraph)) {
+        if (!str_starts_with($key, 'paragraph') && !is_null($value) && is_null($current_paragraph) && is_null($current_multiple)) {
           $data[$language][$key] = $value;
+        }
+        if (str_starts_with($key, 'multiple') && is_null($value)) {
+          $current_multiple = $key;
+          $current_paragraph = NULL;
+        }
+        if (str_starts_with($key, 'tab') && is_null($value) && !is_null($current_multiple)) {
+          $current_tab = $key;
         }
         if (str_starts_with($key, 'paragraph') && is_null($value)) {
           $current_paragraph = $key;
+          $current_multiple = NULL;
+          $current_tab = NULL;
         }
-        elseif (!is_null($current_paragraph)) {
-          $data[$language][$current_paragraph][$key] = $value;
+        if (!str_starts_with($key, 'paragraph') && !str_starts_with($key, 'multiple') && !str_starts_with($key, 'tab')) {
+          if (!is_null($current_paragraph)) {
+            $data[$language][$current_paragraph][$key] = $value;
+          }
+          if (!is_null($current_multiple) && !is_null($current_tab)) {
+            $data[$language][$current_multiple][$current_tab][$key] = $value;
+          }
         }
       }
       $current_paragraph = NULL;
+      $current_multiple = NULL;
+      $current_tab = NULL;
     }
     return $data;
   }
 
   /**
-   * Creates DF setting.
+   * Prepare (normalize) data for DF settings creation.
    */
-  private function createDynamicFields(array $data) {
+  private function prepareDfSettings(array $data) {
+    $dynamic_field_settings = [];
     foreach ($data as $key => $value) {
       if (str_starts_with($key, 'paragraph')) {
-        $config = [];
-        $split = explode('|', $key);
-        $df_key = end($split);
-        $config['name'] = $this->snakeToHuman($df_key);
-        $config['enabled'] = TRUE;
-        $config['multiple'] = $this->isDfMultiple(array_keys($value));
-        $config['category'] = 'Imported content';
-
-        foreach ($value as $field => $field_value) {
-          $split = explode('|', $field);
-          // @todo check if 2nd part is an available DF type.
-          if (count($split) == 3 && is_numeric($split[1])) {
-            $this->generateDfField($config, $split, 'fields', $field_value);
-          }
-          elseif (count($split) == 3) {
-            $section = $config['multiple'] ? 'extra_fields' : 'fields';
-            $this->generateDfField($config, $split, $section, $field_value, reset($split));
-          }
-          elseif (count($split) == 2) {
-            $section = $config['multiple'] ? 'extra_fields' : 'fields';
-            $this->generateDfField($config, $split, $section, $field_value);
-          }
-          elseif (count($split) == 4 && str_starts_with($field, 'g_')) {
-            $this->generateDfField($config, $split, 'fields', $field_value, reset($split));
+        $dynamic_field_id = explode('|', $key);
+        $dynamic_field_id = end($dynamic_field_id);
+        $dynamic_field_settings[$dynamic_field_id] = $value;
+      }
+      if (str_starts_with($key, 'multiple')) {
+        foreach ($value as $tab => $tab_dfs) {
+          foreach ($tab_dfs as $sub_key => $sub_value) {
+            $split = explode('|', $sub_key);
+            $dynamic_field_id = reset($split);
+            $dynamic_field_field = substr($sub_key, strlen($dynamic_field_id) + 1);
+            $dynamic_field_settings[$dynamic_field_id][$dynamic_field_field] = $sub_value;
           }
         }
-        $yaml_config = Yaml::encode($config);
-        $this->writeDfFile($yaml_config, $df_key);
       }
+    }
+    return $dynamic_field_settings;
+  }
+
+  /**
+   * Creates DF setting.
+   */
+  private function createDynamicFields(array $settings) {
+    foreach ($settings as $key => $value) {
+      $config = [];
+      $split = explode('|', $key);
+      $config['name'] = $this->snakeToHuman($key);
+      $config['enabled'] = TRUE;
+      $config['multiple'] = $this->isDfMultiple(array_keys($value));
+      $config['category'] = 'Imported content';
+
+      foreach ($value as $field => $field_value) {
+        $split = explode('|', $field);
+        // @todo check if 2nd part is an available DF type.
+        if (count($split) == 3 && is_numeric($split[1])) {
+          $this->generateDfField($config, $split, 'fields', $field_value);
+        }
+        elseif (count($split) == 3) {
+          $section = $config['multiple'] ? 'extra_fields' : 'fields';
+          $this->generateDfField($config, $split, $section, $field_value, reset($split));
+        }
+        elseif (count($split) == 2) {
+          $section = $config['multiple'] ? 'extra_fields' : 'fields';
+          $this->generateDfField($config, $split, $section, $field_value);
+        }
+        elseif (count($split) == 4 && str_starts_with($field, 'g_')) {
+          $this->generateDfField($config, $split, 'fields', $field_value, reset($split));
+        }
+      }
+      $yaml_config = Yaml::encode($config);
+      $this->writeDfFile($yaml_config, $key);
     }
   }
 
@@ -297,8 +337,8 @@ class Import extends FormBase {
         'node_id' => $page_key,
       ];
       foreach ($language_value as $key => $value) {
+        $split = explode('|', $key);
         if (str_starts_with($key, 'paragraph')) {
-          $split = explode('|', $key);
           $widget_id = "vactory_page_import:" . end($split);
           $widget_data = $this->normalizeWidgetData($value);
           $paragraph = [
@@ -326,6 +366,55 @@ class Import extends FormBase {
             $concerned_paragraph->save();
           }
 
+        }
+        elseif (str_starts_with($key, 'multiple')) {
+          $multi_paragraph_type = end($split);
+          $paragraph = [
+            'type' => 'vactory_paragraph_multi_template',
+            'paragraph_identifier' => $page_key . '|' . $key,
+            'field_multi_paragraph_type' => $multi_paragraph_type,
+            'field_vactory_paragraph_tab' => [],
+          ];
+          foreach ($value as $tab_key => $tab_values) {
+            $split_key = explode('|', $tab_key);
+            $tab_title = $this->snakeToHuman(end($split_key));
+            $paragraph_tab_template = [
+              "type" => "vactory_paragraph_tab",
+              "paragraph_identifier" => $page_key . '|' . $key . '|' . $tab_key,
+              "field_vactory_title" => $tab_title,
+              "field_tab_templates" => [],
+            ];
+            $templates = [];
+            foreach ($tab_values as $field_key => $field_value) {
+              $split = explode('|', $field_key);
+              $dynamic_field_id = reset($split);
+              $dynamic_field_field = substr($field_key, strlen($dynamic_field_id) + 1);
+              $templates[$dynamic_field_id][$dynamic_field_field] = $field_value;
+            }
+            foreach ($templates as $df_key => $data) {
+              $widget_data = $this->normalizeWidgetData($data);
+              $paragraph_tab_template['field_tab_templates'][] = [
+                "widget_id" => 'vactory_page_import:' . $df_key,
+                "widget_data" => $widget_data,
+              ];
+            }
+            $paragraph_tab_template = Paragraph::create($paragraph_tab_template);
+            $paragraph_tab_template->save();
+            $paragraph['field_vactory_paragraph_tab'][] = [
+              'target_id' => $paragraph_tab_template->id(),
+              'target_revision_id' => \Drupal::entityTypeManager()
+                ->getStorage('paragraph')
+                ->getLatestRevisionId($paragraph_tab_template->id()),
+            ];
+          }
+          $paragraph = Paragraph::create($paragraph);
+          $paragraph->save();
+          $node['field_vactory_paragraphs'][] = [
+            'target_id' => $paragraph->id(),
+            'target_revision_id' => \Drupal::entityTypeManager()
+              ->getStorage('paragraph')
+              ->getLatestRevisionId($paragraph->id()),
+          ];
         }
         else {
           $node[$key] = $value;
@@ -569,12 +658,11 @@ class Import extends FormBase {
    */
   private function updatePage(Node $node, $page) {
     $node_id = $node->get('node_id')->value;
-
     foreach ($page as $language => $data) {
       if ($language !== 'original' && !$node->hasTranslation($language)) {
         $node_translation = [];
         foreach ($data as $field => $value) {
-          if (!str_starts_with($field, 'paragraph')) {
+          if (!str_starts_with($field, 'paragraph') && !str_starts_with($field, 'multiple')) {
             $node_translation[$field] = $value;
           }
         }
@@ -630,6 +718,108 @@ class Import extends FormBase {
             }
           }
         }
+        if (str_starts_with($key, 'multiple')) {
+          $paragraph_entity = $this->findParagraphByNodeAndKey($node, $key);
+          if ($paragraph_entity) {
+            foreach ($value as $tab_key => $tab_values) {
+              $paragraph_identifier = $key . '|' . $tab_key;
+
+              $templates = [];
+              $tab_templates = [];
+              foreach ($tab_values as $field_key => $field_value) {
+                $split = explode('|', $field_key);
+                $dynamic_field_id = reset($split);
+                $dynamic_field_field = substr($field_key, strlen($dynamic_field_id) + 1);
+                $templates[$dynamic_field_id][$dynamic_field_field] = $field_value;
+              }
+              foreach ($templates as $df_key => $data) {
+                $widget_data = $this->normalizeWidgetData($data);
+                $tab_templates[] = [
+                  "widget_id" => 'vactory_page_import:' . $df_key,
+                  "widget_data" => $widget_data,
+                ];
+              }
+
+              $paragraph_tab_entity = $this->findParagraphTabByParagraph($paragraph_entity, $paragraph_identifier, $node_id);
+              if ($paragraph_tab_entity) {
+                $paragraph_tab_entity->field_tab_templates = $tab_templates;
+                $paragraph_tab_entity->save();
+              }
+              else {
+                $split_key = explode('|', $tab_key);
+                $tab_title = $this->snakeToHuman(end($split_key));
+                $paragraph_tab_template = [
+                  "type" => "vactory_paragraph_tab",
+                  "paragraph_identifier" => $node_id . '|' . $key . '|' . $tab_key,
+                  "field_vactory_title" => $tab_title,
+                  "field_tab_templates" => $tab_templates,
+                ];
+                $paragraph_tab_template = Paragraph::create($paragraph_tab_template);
+                $paragraph_tab_template->save();
+
+                $paragraph_entity->field_vactory_paragraph_tab[] = [
+                  'target_id' => $paragraph_tab_template->id(),
+                  'target_revision_id' => \Drupal::entityTypeManager()
+                    ->getStorage('paragraph')
+                    ->getLatestRevisionId($paragraph_tab_template->id()),
+                ];
+                $paragraph_entity->save();
+              }
+            }
+          }
+          else {
+            $split = explode('|', $key);
+            $multi_paragraph_type = end($split);
+            $paragraph = [
+              'type' => 'vactory_paragraph_multi_template',
+              'paragraph_identifier' => $node_id . '|' . $key,
+              'field_multi_paragraph_type' => $multi_paragraph_type,
+              'field_vactory_paragraph_tab' => [],
+            ];
+            foreach ($value as $tab_key => $tab_values) {
+              $split_key = explode('|', $tab_key);
+              $tab_title = $this->snakeToHuman(end($split_key));
+              $paragraph_tab_template = [
+                "type" => "vactory_paragraph_tab",
+                "paragraph_identifier" => $node_id . '|' . $key . '|' . $tab_key,
+                "field_vactory_title" => $tab_title,
+                "field_tab_templates" => [],
+              ];
+              $templates = [];
+              foreach ($tab_values as $field_key => $field_value) {
+                $split = explode('|', $field_key);
+                $dynamic_field_id = reset($split);
+                $dynamic_field_field = substr($field_key, strlen($dynamic_field_id) + 1);
+                $templates[$dynamic_field_id][$dynamic_field_field] = $field_value;
+              }
+              foreach ($templates as $df_key => $data) {
+                $widget_data = $this->normalizeWidgetData($data);
+                $paragraph_tab_template['field_tab_templates'][] = [
+                  "widget_id" => 'vactory_page_import:' . $df_key,
+                  "widget_data" => $widget_data,
+                ];
+              }
+              $paragraph_tab_template = Paragraph::create($paragraph_tab_template);
+              $paragraph_tab_template->save();
+              $paragraph['field_vactory_paragraph_tab'][] = [
+                'target_id' => $paragraph_tab_template->id(),
+                'target_revision_id' => \Drupal::entityTypeManager()
+                  ->getStorage('paragraph')
+                  ->getLatestRevisionId($paragraph_tab_template->id()),
+              ];
+            }
+            $paragraph = Paragraph::create($paragraph);
+            $paragraph->save();
+            $node->field_vactory_paragraphs[] = [
+              'target_id' => $paragraph->id(),
+              'target_revision_id' => \Drupal::entityTypeManager()
+                ->getStorage('paragraph')
+                ->getLatestRevisionId($paragraph->id()),
+            ];
+            $node->save();
+          }
+
+        }
       }
     }
   }
@@ -651,6 +841,24 @@ class Import extends FormBase {
     $query->condition('parent_type', 'node');
     $query->condition('parent_id', $node->id());
     $query->condition('id', $node_paragraph_ids, 'IN');
+    $ids = $query->execute();
+
+    if (count($ids) == 1) {
+      $id = reset($ids);
+      return Paragraph::load($id);
+    }
+    return [];
+  }
+
+  /**
+   * Finds a paragraph tab entity based on node and paragraph_identifier.
+   */
+  private function findParagraphTabByParagraph(Paragraph $paragraph, $key, $node_id) {
+    $query = \Drupal::entityTypeManager()->getStorage('paragraph')->getQuery();
+    $query->accessCheck(FALSE);
+    $query->condition('paragraph_identifier', $node_id . '|' . $key);
+    $query->condition('parent_type', 'paragraph');
+    $query->condition('parent_id', $paragraph->id());
     $ids = $query->execute();
 
     if (count($ids) == 1) {
