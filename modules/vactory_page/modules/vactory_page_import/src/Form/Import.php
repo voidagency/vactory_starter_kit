@@ -343,7 +343,7 @@ class Import extends FormBase {
           $widget_data = $this->normalizeWidgetData($value);
           $paragraph = [
             "type" => "vactory_component",
-            "paragraph_identifier" => $page_key . '|' . $key,
+            "paragraph_key" => $page_key . '|' . $key,
             "field_vactory_title" => $this->snakeToHuman(end($split)),
             "field_vactory_component" => [
               "widget_id" => $widget_id,
@@ -371,7 +371,7 @@ class Import extends FormBase {
           $multi_paragraph_type = end($split);
           $paragraph = [
             'type' => 'vactory_paragraph_multi_template',
-            'paragraph_identifier' => $page_key . '|' . $key,
+            'paragraph_key' => $page_key . '|' . $key,
             'field_multi_paragraph_type' => $multi_paragraph_type,
             'field_vactory_paragraph_tab' => [],
           ];
@@ -380,7 +380,7 @@ class Import extends FormBase {
             $tab_title = $this->snakeToHuman(end($split_key));
             $paragraph_tab_template = [
               "type" => "vactory_paragraph_tab",
-              "paragraph_identifier" => $page_key . '|' . $key . '|' . $tab_key,
+              "paragraph_key" => $page_key . '|' . $key . '|' . $tab_key,
               "field_vactory_title" => $tab_title,
               "field_tab_templates" => [],
             ];
@@ -681,7 +681,7 @@ class Import extends FormBase {
           // Add new paragraph.
           $paragraph = [
             "type" => "vactory_component",
-            "paragraph_identifier" => $node_id . '|' . $key,
+            "paragraph_key" => $node_id . '|' . $key,
             "field_vactory_title" => $this->snakeToHuman(end($split)),
             "field_vactory_component" => $field_vactory_component,
           ];
@@ -750,7 +750,7 @@ class Import extends FormBase {
                 $tab_title = $this->snakeToHuman(end($split_key));
                 $paragraph_tab_template = [
                   "type" => "vactory_paragraph_tab",
-                  "paragraph_identifier" => $node_id . '|' . $key . '|' . $tab_key,
+                  "paragraph_key" => $node_id . '|' . $key . '|' . $tab_key,
                   "field_vactory_title" => $tab_title,
                   "field_tab_templates" => $tab_templates,
                 ];
@@ -772,7 +772,7 @@ class Import extends FormBase {
             $multi_paragraph_type = end($split);
             $paragraph = [
               'type' => 'vactory_paragraph_multi_template',
-              'paragraph_identifier' => $node_id . '|' . $key,
+              'paragraph_key' => $node_id . '|' . $key,
               'field_multi_paragraph_type' => $multi_paragraph_type,
               'field_vactory_paragraph_tab' => [],
             ];
@@ -781,7 +781,7 @@ class Import extends FormBase {
               $tab_title = $this->snakeToHuman(end($split_key));
               $paragraph_tab_template = [
                 "type" => "vactory_paragraph_tab",
-                "paragraph_identifier" => $node_id . '|' . $key . '|' . $tab_key,
+                "paragraph_key" => $node_id . '|' . $key . '|' . $tab_key,
                 "field_vactory_title" => $tab_title,
                 "field_tab_templates" => [],
               ];
@@ -825,7 +825,7 @@ class Import extends FormBase {
   }
 
   /**
-   * Finds a paragraph entity based on node and paragraph_identifier.
+   * Finds a paragraph entity based on node and paragraph_key.
    */
   private function findParagraphByNodeAndKey(Node $node, $key) {
     $node_id = $node->get('node_id')->value;
@@ -837,7 +837,7 @@ class Import extends FormBase {
 
     $query = \Drupal::entityTypeManager()->getStorage('paragraph')->getQuery();
     $query->accessCheck(FALSE);
-    $query->condition('paragraph_identifier', $node_id . '|' . $key);
+    $query->condition('paragraph_key', $node_id . '|' . $key);
     $query->condition('parent_type', 'node');
     $query->condition('parent_id', $node->id());
     $query->condition('id', $node_paragraph_ids, 'IN');
@@ -851,12 +851,12 @@ class Import extends FormBase {
   }
 
   /**
-   * Finds a paragraph tab entity based on node and paragraph_identifier.
+   * Finds a paragraph tab entity based on node and paragraph_key.
    */
   private function findParagraphTabByParagraph(Paragraph $paragraph, $key, $node_id) {
     $query = \Drupal::entityTypeManager()->getStorage('paragraph')->getQuery();
     $query->accessCheck(FALSE);
-    $query->condition('paragraph_identifier', $node_id . '|' . $key);
+    $query->condition('paragraph_key', $node_id . '|' . $key);
     $query->condition('parent_type', 'paragraph');
     $query->condition('parent_id', $paragraph->id());
     $ids = $query->execute();

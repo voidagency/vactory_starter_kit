@@ -135,13 +135,13 @@ class Export extends FormBase {
         $widget_data = json_decode($paragraph_widget['widget_data'], TRUE);
 
         // Get paragraph identifier.
-        $paragraph_identifier = $paragraph_entity->get('paragraph_identifier')->value;
+        $paragraph_identifier = $paragraph_entity->get('paragraph_key')->value;
         if (!isset($paragraph_identifier)) {
           $widget_id = $paragraph_widget['widget_id'];
           $paragraph_key = explode(':', $widget_id);
           $paragraph_key = end($paragraph_key);
           $paragraph_identifier = "paragraph" . $index + 1 . '|' . $paragraph_key;
-          $paragraph_entity->paragraph_identifier = $node_id . '|' . $paragraph_identifier;
+          $paragraph_entity->paragraph_key = $node_id . '|' . $paragraph_identifier;
           $paragraph_entity->save();
 
         }
@@ -227,12 +227,12 @@ class Export extends FormBase {
         }
       }
       if ($paragraph_entity->bundle() == 'vactory_paragraph_multi_template') {
-        $multiple_paragraph_identifier = $paragraph_entity->get('paragraph_identifier')->value;
+        $multiple_paragraph_identifier = $paragraph_entity->get('paragraph_key')->value;
         if (!isset($multiple_paragraph_identifier)) {
           $type = $paragraph_entity->get('field_multi_paragraph_type')->value;
           $type = !empty($type) ? $type : 'tab';
           $paragraph_identifier = "multiple" . $index + 1 . '|' . $type;
-          $paragraph_entity->paragraph_identifier = $node_id . '|' . $paragraph_identifier;
+          $paragraph_entity->paragraph_key = $node_id . '|' . $paragraph_identifier;
           $paragraph_entity->save();
         }
         else {
@@ -245,10 +245,10 @@ class Export extends FormBase {
           $tab_title = $paragraph_tab_entity->get('field_vactory_title')->value;
           $tab_key = $this->toSnakeCase($tab_title);
           $tab_templates = $paragraph_tab_entity->get('field_tab_templates')->getValue();
-          $paragraph_tab_identifier = $paragraph_tab_entity->get('paragraph_identifier')->value;
+          $paragraph_tab_identifier = $paragraph_tab_entity->get('paragraph_key')->value;
           if (!isset($paragraph_tab_identifier)) {
             $paragraph_identifier = "multiple" . $tab_index + 1 . '|' . $tab_key;
-            $paragraph_tab_entity->paragraph_identifier = $node_id . '|' . $paragraph_identifier;
+            $paragraph_tab_entity->paragraph_key = $node_id . '|' . $paragraph_identifier;
             $paragraph_tab_entity->save();
           }
           else {
@@ -448,11 +448,14 @@ class Export extends FormBase {
     $media_types = PageImportConstants::MEDIA_FIELD_NAMES;
     if (in_array($type, array_keys($media_types))) {
       if (empty($value)) {
-        return $value;
+        return '';
       }
       $value = reset($value);
       $media_field_name = PageImportConstants::MEDIA_FIELD_NAMES[$type];
-      $mid = $value['selection'][0]['target_id'];
+      $mid = $value['selection'][0]['target_id'] ?? '';
+      if (empty($mid)) {
+        return '';
+      }
       $media = Media::load($mid);
       if ($media instanceof MediaInterface) {
         if ($type !== 'remote_video') {
