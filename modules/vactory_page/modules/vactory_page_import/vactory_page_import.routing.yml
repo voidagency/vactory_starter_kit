@@ -1,0 +1,15 @@
+vactory_page_import.import:
+  path: '/admin/structure/vactory_page/import'
+  defaults:
+    _form: 'Drupal\vactory_page_import\Form\Import'
+    _title: 'Vactory Page Import'
+  requirements:
+    _role: 'administrator'
+
+vactory_page_import.export:
+  path: '/admin/structure/vactory_page/export'
+  defaults:
+    _form: 'Drupal\vactory_page_import\Form\Export'
+    _title: 'Vactory Page Export'
+  requirements:
+    _role: 'administrator'
