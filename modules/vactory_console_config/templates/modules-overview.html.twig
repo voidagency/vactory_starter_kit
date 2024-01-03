@@ -1,0 +1,20 @@
+{% if modules is defined %}
+    {% for key, module in modules %}
+    <details{{ attributes.addClass('claro-details', 'package-listing', 'js-form-wrapper', 'form-wrapper') }} >
+    <summary class="claro-details__summary">{{ module.moduleName }} ({{ key }})</summary>
+    <div class="claro-details__wrapper details-wrapper">
+    <p><b>{{ 'Machine name'|t}} :</b> {{ key }}</p>
+    <p><b>{{ 'Description'|t}} :</b> {{ module.moduleDescription }}</p>
+        {% for form in module.settings %}
+            <details{{ attributes.addClass('claro-details', 'package-listing', 'js-form-wrapper', 'form-wrapper') }} >
+                <summary class="claro-details__summary">{{ form.title }}</summary>
+                <div class="claro-details__wrapper details-wrapper">
+                    <p><b>{{ 'Permission' }} :</b> {{ form.permission }}</p>
+                    <a href='{{form.path}}'>Configure</a>
+                </div>
+            </details>
+        {% endfor %}
+    </div>
+    </details>
+    {% endfor %}
+{% endif %}

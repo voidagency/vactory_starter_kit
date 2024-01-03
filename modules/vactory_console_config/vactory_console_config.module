@@ -1,0 +1,20 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Vactory Console Log module.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_console_config_theme() {
+  return [
+    'vactory_console_config_overview' => [
+      'variables' => [
+        'modules' => [],
+      ],
+      'template'  => 'modules-overview',
+    ],
+  ];
+}

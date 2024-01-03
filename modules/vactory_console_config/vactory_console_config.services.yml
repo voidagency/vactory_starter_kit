@@ -1,0 +1,5 @@
+services:
+  vactory_console_config.route_subscriber:
+    class: Drupal\vactory_console_config\Routing\ConsoleConfigRouteSubscriber
+    tags:
+      - { name: event_subscriber }
