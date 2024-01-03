@@ -1,5 +1,6 @@
 name: 'Vactory Newsletter'
 type: module
+description: Provides a newsletter DF (webform).
 core_version_requirement: '^8.9 || ^9'
 dependencies:
   - jsonapi_extras
