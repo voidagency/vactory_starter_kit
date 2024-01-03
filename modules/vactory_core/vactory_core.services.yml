@@ -59,3 +59,12 @@ services:
   vactory_core.slug_manager:
     class: Drupal\vactory_core\SlugManager
 
+  vactory_core.http_client_factory:
+    class: Drupal\vactory_core\VactoryClientFactory
+    decorates: http_client_factory
+    decoration_priority: -1
+    public: false
+    arguments:
+      - '@vactory_core.http_client_factory.inner'
+      - '@http_handler_stack'
+      - '@config.factory'
