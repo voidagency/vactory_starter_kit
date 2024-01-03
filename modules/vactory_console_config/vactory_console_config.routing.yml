@@ -1,0 +1,7 @@
+vactory_console_config.settings:
+  path: '/admin/modules/vactory'
+  defaults:
+    _title: 'Vactory Modules'
+    _controller: '\Drupal\vactory_console_config\Controller\VactoryConsoleConfigController::build'
+  requirements:
+    _permission: 'administer vactory console config'
