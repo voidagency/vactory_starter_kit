@@ -228,7 +228,10 @@ class ContentPackageManager implements ContentPackageManagerInterface {
         }
 
         if ($field_type === 'path') {
-          $field_value = $this->getFieldValue($field_value, $is_multiple, FALSE, 'alias');
+          $field_value = [
+            'alias' => $entity->path->alias,
+            'pathauto' => $entity->path->pathauto ?? 1,
+          ];
         }
 
         if ($field_type === 'field_wysiwyg_dynamic' && !empty($field_value)) {
@@ -553,8 +556,6 @@ class ContentPackageManager implements ContentPackageManagerInterface {
           $values[$field_name] = $field_value;
         }
         if ($field_type === 'path' && !empty($field_value)) {
-          $field_value = is_array($field_value) ? $field_value : [$field_value];
-          $field_value = array_map(fn($el) => ['alias' => $el], $field_value);
           $values[$field_name] = $field_value;
         }
         if ($field_type === 'field_wysiwyg_dynamic' && !empty($field_value)) {
