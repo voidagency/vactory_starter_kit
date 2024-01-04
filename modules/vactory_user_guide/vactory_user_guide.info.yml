@@ -1,5 +1,6 @@
 name: 'Vactory User Guide'
 type: module
+description: visites guidées de l'interface du site vie des info-bulles.
 core_version_requirement: ^9 || ^10
 package: Vactory
 dependencies:

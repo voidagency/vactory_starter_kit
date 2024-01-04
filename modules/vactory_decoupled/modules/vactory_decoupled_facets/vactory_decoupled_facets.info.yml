@@ -1,5 +1,6 @@
 name: Vactory Decoupled Facets
 type: module
+description: permet le recherche du contenu en utilisant les facettes.
 package: Vactory
 core_version_requirement: ^9 || ^10
 dependencies:
