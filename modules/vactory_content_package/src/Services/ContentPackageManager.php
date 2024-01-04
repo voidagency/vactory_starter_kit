@@ -13,6 +13,7 @@ use Drupal\media\Entity\Media;
 use Drupal\file\FileInterface;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\vactory_dynamic_field\WidgetsManager;
+use Drupal\Core\Entity\EntityRepositoryInterface;
 
 /**
  * Content package manager service.
@@ -48,19 +49,28 @@ class ContentPackageManager implements ContentPackageManagerInterface {
   protected $widgetsManager;
 
   /**
+   * The entity repository.
+   *
+   * @var \Drupal\Core\Entity\EntityRepositoryInterface
+   */
+  protected $entityRepository;
+
+  /**
    * {@inheritDoc}
    */
   public function __construct(
     EntityTypeManagerInterface $entityTypeManager,
     FileUrlGeneratorInterface $fileUrlGenerator,
     EntityFieldManagerInterface $entityFieldManager,
-    WidgetsManager $widgetsManager
+    WidgetsManager $widgetsManager,
+    EntityRepositoryInterface $entityRepository
   ) {
     $this->entityTypeManager = $entityTypeManager;
     $this->fileUrlGenerator = $fileUrlGenerator;
     $this->entityFieldManager = $entityFieldManager;
     $this->entityFieldManager = $entityFieldManager;
     $this->widgetsManager = $widgetsManager;
+    $this->entityRepository = $entityRepository;
   }
 
   /**
@@ -99,6 +109,7 @@ class ContentPackageManager implements ContentPackageManagerInterface {
                 ->loadMultiple($paragraphs_ids);
               $paragraphs = array_values($paragraphs);
               foreach ($paragraphs as $i => $paragraph) {
+                $paragraph = $this->entityRepository->getTranslationFromContext($paragraph, $entity->language()->getId());
                 $paragraph_values = $this->normalize($paragraph);
                 unset(
                   $paragraph_values['status'],
