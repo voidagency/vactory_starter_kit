@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "37a6534b389bc6f5a00621fd44973bf5",
+    "content-hash": "bfb64bf9eaf8b306807d1e0573fb9b2a",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -2320,28 +2320,27 @@
         },
         {
             "name": "drupal/chosen",
-            "version": "2.10.0",
+            "version": "4.0.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/chosen.git",
-                "reference": "8.x-2.10"
+                "reference": "4.0.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/chosen-8.x-2.10.zip",
-                "reference": "8.x-2.10",
-                "shasum": "ce6f3ea7a99ab641385c4310fad86d3e660480e0"
+                "url": "https://ftp.drupal.org/files/projects/chosen-4.0.0.zip",
+                "reference": "4.0.0",
+                "shasum": "6355b49a1dc90f372d38b0e100745e387cad3423"
             },
             "require": {
                 "drupal/chosen_lib": "*",
-                "drupal/core": "^8 || ^9",
-                "harvesthq/chosen": "^1.8.7"
+                "drupal/core": "^9.2 || ^10"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-2.10",
-                    "datestamp": "1597305739",
+                    "version": "4.0.0",
+                    "datestamp": "1680955162",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -2350,7 +2349,7 @@
             },
             "notification-url": "https://packages.drupal.org/8/downloads",
             "license": [
-                "GPL-2.0+"
+                "GPL-2.0-or-later"
             ],
             "authors": [
                 {
@@ -2390,30 +2389,25 @@
                     "homepage": "https://www.drupal.org/user/235438"
                 }
             ],
-            "description": "Makes select elements more friendly using the Chosen jQuery plugin",
+            "description": "Makes select elements more user-friendly using <a href=\"https://github.com/JJJ/chosen\">Chosen</a>.",
             "homepage": "https://www.drupal.org/project/chosen",
-            "keywords": [
-                "Chosen",
-                "Drupal"
-            ],
             "support": {
-                "source": "https://drupal.org/project/chosen",
-                "issues": "https://drupal.org/project/issues/chosen"
+                "source": "https://git.drupalcode.org/project/chosen"
             }
         },
         {
             "name": "drupal/chosen_lib",
-            "version": "2.10.0",
+            "version": "4.0.0",
             "require": {
-                "drupal/chosen": "^2",
-                "drupal/core": "^8 || ^9",
+                "drupal/chosen": "^4",
+                "drupal/core": "^9.2 || ^10",
                 "php": ">=5.6.0"
             },
             "type": "metapackage",
             "extra": {
                 "drupal": {
-                    "version": "8.x-2.10",
-                    "datestamp": "1597305739",
+                    "version": "4.0.0",
+                    "datestamp": "1680955162",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -2421,7 +2415,7 @@
                 },
                 "drush": {
                     "services": {
-                        "drush.services.yml": "^9"
+                        "drush.services.yml": "^9 || ^10 || ^11"
                     }
                 }
             },
@@ -12519,58 +12513,6 @@
             "time": "2023-04-17T16:00:37+00:00"
         },
         {
-            "name": "harvesthq/chosen",
-            "version": "v1.8.7",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/harvesthq/chosen-package.git",
-                "reference": "ad86732b668627c131e61ee8f0e6e9ed52e4db8d"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/harvesthq/chosen-package/zipball/ad86732b668627c131e61ee8f0e6e9ed52e4db8d",
-                "reference": "ad86732b668627c131e61ee8f0e6e9ed52e4db8d",
-                "shasum": ""
-            },
-            "type": "library",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Koen Punt",
-                    "homepage": "https://github.com/koenpunt"
-                },
-                {
-                    "name": "Patrick Filler",
-                    "homepage": "https://github.com/pfiller"
-                },
-                {
-                    "name": "Christophe Coevoet",
-                    "homepage": "https://github.com/stof"
-                },
-                {
-                    "name": "Ken Earley",
-                    "homepage": "https://github.com/kenearley"
-                }
-            ],
-            "description": "Chosen is a JavaScript plugin that makes select boxes user-friendly. It is currently available in both jQuery and Prototype flavors.",
-            "homepage": "https://harvesthq.github.io/chosen/",
-            "keywords": [
-                "dropdown",
-                "form",
-                "input",
-                "multiselect",
-                "select",
-                "ui"
-            ],
-            "support": {
-                "source": "https://github.com/harvesthq/chosen-package/tree/v1.8.7"
-            },
-            "time": "2018-06-28T20:32:51+00:00"
-        },
-        {
             "name": "html2text/html2text",
             "version": "4.3.1",
             "source": {
@@ -17526,16 +17468,16 @@
         },
         {
             "name": "symfony/http-client",
-            "version": "v5.4.31",
+            "version": "v5.4.34",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/http-client.git",
-                "reference": "6cdf6cdf48101454f014a9ab4e0905f0b902389d"
+                "reference": "8fe833b758bc5b325e9d96a913376d6d57a90fb0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/http-client/zipball/6cdf6cdf48101454f014a9ab4e0905f0b902389d",
-                "reference": "6cdf6cdf48101454f014a9ab4e0905f0b902389d",
+                "url": "https://api.github.com/repos/symfony/http-client/zipball/8fe833b758bc5b325e9d96a913376d6d57a90fb0",
+                "reference": "8fe833b758bc5b325e9d96a913376d6d57a90fb0",
                 "shasum": ""
             },
             "require": {
@@ -17597,7 +17539,7 @@
                 "http"
             ],
             "support": {
-                "source": "https://github.com/symfony/http-client/tree/v5.4.31"
+                "source": "https://github.com/symfony/http-client/tree/v5.4.34"
             },
             "funding": [
                 {
@@ -17613,7 +17555,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-10-29T12:33:05+00:00"
+            "time": "2023-12-02T08:41:43+00:00"
         },
         {
             "name": "symfony/http-client-contracts",
@@ -17867,16 +17809,16 @@
         },
         {
             "name": "symfony/mailer",
-            "version": "v5.4.31",
+            "version": "v5.4.34",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/mailer.git",
-                "reference": "5ca8a7628a5ee69767047dd0f4cf4c9521c999b8"
+                "reference": "0d2c0e0fdd07c80d95eadcdbba6af41e9aafcfa5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/mailer/zipball/5ca8a7628a5ee69767047dd0f4cf4c9521c999b8",
-                "reference": "5ca8a7628a5ee69767047dd0f4cf4c9521c999b8",
+                "url": "https://api.github.com/repos/symfony/mailer/zipball/0d2c0e0fdd07c80d95eadcdbba6af41e9aafcfa5",
+                "reference": "0d2c0e0fdd07c80d95eadcdbba6af41e9aafcfa5",
                 "shasum": ""
             },
             "require": {
@@ -17923,7 +17865,7 @@
             "description": "Helps sending emails",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/mailer/tree/v5.4.31"
+                "source": "https://github.com/symfony/mailer/tree/v5.4.34"
             },
             "funding": [
                 {
@@ -17939,7 +17881,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-11-03T16:16:43+00:00"
+            "time": "2023-12-02T08:41:43+00:00"
         },
         {
             "name": "symfony/mime",
@@ -20395,5 +20337,5 @@
         "php": ">=7.3"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }
