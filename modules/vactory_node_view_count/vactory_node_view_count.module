@@ -16,6 +16,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\node\NodeTypeInterface;
+use Drupal\node\Entity\NodeType;
 
 /**
  * Implements hook_form_alter().
@@ -90,4 +91,16 @@ function vactory_node_view_count_entity_base_field_info(EntityTypeInterface $ent
   }
 
   return $fields;
+}
+
+/**
+ * Implements hook_json_api_collection_alter().
+ */
+function vactory_node_view_count_json_api_collection_alter(&$filters, &$context) {
+  if (isset($context['resource']) && str_starts_with($context['resource'], 'node--')) {
+    $bundle = str_replace('node--', '', $context['resource']);
+    $type = NodeType::load($bundle);
+    $view_count_enabled = $type->getThirdPartySetting('vactory_node_view_count', 'enabling_count_node', '');
+    $context['optional_data']['node_has_views_count'] = (bool) $view_count_enabled;
+  }
 }
