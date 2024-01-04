@@ -11,6 +11,8 @@
 
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\node\NodeTypeInterface;
@@ -67,4 +69,25 @@ function vactory_node_view_count_node_view(array &$build, EntityInterface $node,
             $build['#attached']['drupalSettings']['vactory_node_view_count']['url'] = Url::fromRoute('vactory_node_view_count.increment_counter', ['nid' => $node->id()])->toString();
         }
     }
+}
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function vactory_node_view_count_entity_base_field_info(EntityTypeInterface $entity_type) {
+  $fields = [];
+  if ($entity_type->id() === 'node') {
+
+    $fields['has_view_count'] = BaseFieldDefinition::create('boolean')
+      ->setComputed(TRUE)
+      ->setReadOnly(TRUE)
+      ->setTargetEntityTypeId($entity_type->id())
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE)
+      ->setClass('Drupal\vactory_node_view_count\Field\NodeHasCountEntityFieldItemList')
+      ->setTranslatable(FALSE)
+      ->setRequired(FALSE);
+  }
+
+  return $fields;
 }
