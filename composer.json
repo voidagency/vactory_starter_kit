@@ -107,7 +107,7 @@
     "drupal/crop": "^2.1",
     "drupal/devel": "^4.1",
     "drupal/draggableviews": "^2.0",
-    "drupal/auto_entityqueue": "^2.0",
+    "drupal/auto_entityqueue": "^3.0",
     "drupal/easy_install": "^10.4",
     "drupal/entity": "^1.2",
     "drupal/faqfield": "^7.0",
