@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "796956327222d02be753e7a81e3aa3e5",
+    "content-hash": "73f8ce3e62b48aecfa96c2a91b586180",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -7749,17 +7749,17 @@
         },
         {
             "name": "drupal/rate",
-            "version": "3.0.1",
+            "version": "3.1.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/rate.git",
-                "reference": "3.0.1"
+                "reference": "3.1.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/rate-3.0.1.zip",
-                "reference": "3.0.1",
-                "shasum": "72077a601955262a46a4b96cfb1e24cb5cba69dd"
+                "url": "https://ftp.drupal.org/files/projects/rate-3.1.0.zip",
+                "reference": "3.1.0",
+                "shasum": "03193f8173b27c34271c00de5def05a2a72cf0e4"
             },
             "require": {
                 "drupal/core": "^9 || ^10",
@@ -7768,8 +7768,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "3.0.1",
-                    "datestamp": "1646428101",
+                    "version": "3.1.0",
+                    "datestamp": "1703991503",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -7784,10 +7784,6 @@
                 {
                     "name": "JordiK",
                     "homepage": "https://www.drupal.org/user/3472907"
-                },
-                {
-                    "name": "Unsupported Projects",
-                    "homepage": "https://www.drupal.org/user/291168"
                 }
             ],
             "description": "Flexible voting options for entity types.",
