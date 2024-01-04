@@ -279,7 +279,7 @@ function vactory_news_json_api_collection_alter(&$filters, &$context) {
   }
 
   if ($context['id'] === 'vactory_news_list') {
-    $query = \Drupal::request()->query->get("q");
+    $query = \Drupal::request()->query->all()["q"];
     if (empty($query)) {
       return;
     }

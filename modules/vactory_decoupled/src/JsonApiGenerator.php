@@ -166,7 +166,7 @@ class JsonApiGenerator {
       * @code
       * Implements hook_json_api_collection_alter().
       * function myModule_json_api_collection_alter(&$filters, &$context) {
-      *   $query = \Drupal::request()->query->get("q");
+      *   $query = \Drupal::request()->query->all()["q"];
       *   $id = $context['id'];
       *   ... do something, like altering the filters
       * }

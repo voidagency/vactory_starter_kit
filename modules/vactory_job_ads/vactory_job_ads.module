@@ -246,7 +246,7 @@ function vactory_job_ads_webform_submission_presave(WebformSubmissionInterface $
  */
 function vactory_job_ads_json_api_collection_alter(&$filters, &$context) {
   if ($context['id'] === 'vactory_job_ads_list') {
-    $query = \Drupal::request()->query->get("q");
+    $query = \Drupal::request()->query->all()["q"];
 
     if (isset($query["page"])) {
       $filters["page[offset]"] = intval($query["page"]) > 0 ? (intval($query["page"]) - 1) * $filters["page[limit]"] : 0;
