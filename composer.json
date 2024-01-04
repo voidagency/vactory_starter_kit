@@ -167,7 +167,8 @@
     "drupal/jsonapi_include": "^1.7",
     "drupal/search_api_ai": "^1.0@alpha",
     "drupal/onesignal": "^3.0",
-    "stevenmaguire/oauth2-keycloak": "^5.0"
+    "stevenmaguire/oauth2-keycloak": "^5.0",
+    "drupal/openai": "1.0.0-alpha17"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.3",

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "ac4f011ab92f6805f5dd4d362ebed79a",
+    "content-hash": "796956327222d02be753e7a81e3aa3e5",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -7224,34 +7224,33 @@
         },
         {
             "name": "drupal/openai",
-            "version": "1.0.0-beta2",
+            "version": "1.0.0-alpha17",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/openai.git",
-                "reference": "1.0.0-beta2"
+                "reference": "1.0.0-alpha17"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/openai-1.0.0-beta2.zip",
-                "reference": "1.0.0-beta2",
-                "shasum": "b1bba956197967c3ce10a4f3916e381195a5cada"
+                "url": "https://ftp.drupal.org/files/projects/openai-1.0.0-alpha17.zip",
+                "reference": "1.0.0-alpha17",
+                "shasum": "a202cbc08941a6e2a41028a3c61c3ea782091bad"
             },
             "require": {
                 "drupal/core": "^10",
                 "openai-php/client": "^v0.7.8"
             },
             "require-dev": {
-                "drupal/devel_generate": "*",
-                "drupal/eca": "*"
+                "drupal/devel_generate": "*"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "1.0.0-beta2",
-                    "datestamp": "1700488330",
+                    "version": "1.0.0-alpha17",
+                    "datestamp": "1700145377",
                     "security-coverage": {
                         "status": "not-covered",
-                        "message": "Beta releases are not covered by Drupal security advisories."
+                        "message": "Alpha releases are not covered by Drupal security advisories."
                     }
                 }
             },
