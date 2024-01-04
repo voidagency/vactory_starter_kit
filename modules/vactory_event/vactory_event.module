@@ -219,7 +219,7 @@ function vactory_event_preprocess_views_view(&$variables) {
  */
 function vactory_event_json_api_collection_alter(&$filters, &$context) {
   if ($context['id'] === 'vactory_event_list') {
-    $query = \Drupal::request()->query->all()["q"];
+    $query = \Drupal::request()->query->all("q");
 
     if (isset($query["page"])) {
       $filters["page[offset]"] = intval($query["page"]) > 0 ? (intval($query["page"]) - 1) * $filters["page[limit]"] : 0;

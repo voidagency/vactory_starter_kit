@@ -109,7 +109,7 @@ function vactory_publication_views_pre_view(ViewExecutable $view, $display_id, a
  */
 function vactory_publication_json_api_collection_alter(&$filters, &$context) {
   if ($context['id'] === 'vactory_publication_list') {
-    $query = \Drupal::request()->query->all()["q"];
+    $query = \Drupal::request()->query->all("q");
 
     if (isset($query["page"])) {
       $filters["page[offset]"] = intval($query["page"]) > 0 ? (intval($query["page"]) - 1) * $filters["page[limit]"] : 0;
