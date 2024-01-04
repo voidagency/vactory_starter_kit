@@ -168,7 +168,7 @@
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.3",
-    "drupal/coder": "8.3.13",
+    "drupal/coder": "8.3.22",
     "brainmaestro/composer-git-hooks": "^2.8"
   },
   "extra": {
