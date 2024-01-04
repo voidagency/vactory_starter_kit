@@ -1,6 +1,7 @@
 name: 'Annual report'
 type: module
 core: 8.x
+description: 'Provides Annual report (annual_report) content type and its listings.'
 core_version_requirement: ^8 || ^9
 version: 8.x-1.0
 package: Vactory

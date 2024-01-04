@@ -1,5 +1,6 @@
 name: 'DF Nodes'
 type: module
+description: Permet de créer des DF affichant des nœuds selon un mode d'affichage spécifique.
 core: 8.x
 core_version_requirement: '^8 || ^9'
 package: Vactory

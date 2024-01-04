@@ -1,5 +1,6 @@
 name: 'Vactory decoupled espace privé'
 type: module
+description: Fournit des webform pour la création et la modification de comptes, ainsi que des DFs liés à l'espace privé.
 package: Vactory
 core: 8.x
 core_version_requirement: ^8 || ^9

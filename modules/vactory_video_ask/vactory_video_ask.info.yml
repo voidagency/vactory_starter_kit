@@ -1,4 +1,5 @@
 name: 'Vactory video ask'
 type: module
+description: Offre la possibilité de créer des DF pour l'onboarding.
 core_version_requirement: '^8.9 || ^9'
 package: Vactory

@@ -1,6 +1,6 @@
 name: 'Vactory Page Import'
 type: module
-description: 'Vactory Page Import.'
+description: 'Exporter/importer les pages (vactory_page) via Excel.'
 package: Vactory
 core: 8.x
 core_version_requirement: ^8 || ^9
