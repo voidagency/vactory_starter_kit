@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "37a6534b389bc6f5a00621fd44973bf5",
+    "content-hash": "c9c8af486abee89bde5a43a04227ce7a",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -8953,26 +8953,26 @@
         },
         {
             "name": "drupal/simplify_menu",
-            "version": "2.1.0",
+            "version": "3.1.1",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/simplify_menu.git",
-                "reference": "8.x-2.1"
+                "reference": "3.1.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/simplify_menu-8.x-2.1.zip",
-                "reference": "8.x-2.1",
-                "shasum": "44905c5e90e297044e4536ce3a72c101a009e6f9"
+                "url": "https://ftp.drupal.org/files/projects/simplify_menu-3.1.1.zip",
+                "reference": "3.1.1",
+                "shasum": "03babea75fb5c9473cad3d131b96553ff8cc0956"
             },
             "require": {
-                "drupal/core": "^8 || ^9"
+                "drupal/core": "^9 || ^10"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-2.1",
-                    "datestamp": "1603078133",
+                    "version": "3.1.1",
+                    "datestamp": "1690572635",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -17526,16 +17526,16 @@
         },
         {
             "name": "symfony/http-client",
-            "version": "v5.4.31",
+            "version": "v5.4.34",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/http-client.git",
-                "reference": "6cdf6cdf48101454f014a9ab4e0905f0b902389d"
+                "reference": "8fe833b758bc5b325e9d96a913376d6d57a90fb0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/http-client/zipball/6cdf6cdf48101454f014a9ab4e0905f0b902389d",
-                "reference": "6cdf6cdf48101454f014a9ab4e0905f0b902389d",
+                "url": "https://api.github.com/repos/symfony/http-client/zipball/8fe833b758bc5b325e9d96a913376d6d57a90fb0",
+                "reference": "8fe833b758bc5b325e9d96a913376d6d57a90fb0",
                 "shasum": ""
             },
             "require": {
@@ -17597,7 +17597,7 @@
                 "http"
             ],
             "support": {
-                "source": "https://github.com/symfony/http-client/tree/v5.4.31"
+                "source": "https://github.com/symfony/http-client/tree/v5.4.34"
             },
             "funding": [
                 {
@@ -17613,7 +17613,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-10-29T12:33:05+00:00"
+            "time": "2023-12-02T08:41:43+00:00"
         },
         {
             "name": "symfony/http-client-contracts",
@@ -17867,16 +17867,16 @@
         },
         {
             "name": "symfony/mailer",
-            "version": "v5.4.31",
+            "version": "v5.4.34",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/mailer.git",
-                "reference": "5ca8a7628a5ee69767047dd0f4cf4c9521c999b8"
+                "reference": "0d2c0e0fdd07c80d95eadcdbba6af41e9aafcfa5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/mailer/zipball/5ca8a7628a5ee69767047dd0f4cf4c9521c999b8",
-                "reference": "5ca8a7628a5ee69767047dd0f4cf4c9521c999b8",
+                "url": "https://api.github.com/repos/symfony/mailer/zipball/0d2c0e0fdd07c80d95eadcdbba6af41e9aafcfa5",
+                "reference": "0d2c0e0fdd07c80d95eadcdbba6af41e9aafcfa5",
                 "shasum": ""
             },
             "require": {
@@ -17923,7 +17923,7 @@
             "description": "Helps sending emails",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/mailer/tree/v5.4.31"
+                "source": "https://github.com/symfony/mailer/tree/v5.4.34"
             },
             "funding": [
                 {
@@ -17939,7 +17939,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-11-03T16:16:43+00:00"
+            "time": "2023-12-02T08:41:43+00:00"
         },
         {
             "name": "symfony/mime",
@@ -20395,5 +20395,5 @@
         "php": ">=7.3"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.3.0"
+    "plugin-api-version": "2.6.0"
 }
