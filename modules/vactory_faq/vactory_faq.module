@@ -65,7 +65,7 @@ function vactory_faq_theme_suggestions_alter(array &$suggestions, array $variabl
  */
 function vactory_faq_json_api_collection_alter(&$filters, &$context) {
   if ($context['id'] === 'vactory_faq_list') {
-    $query = \Drupal::request()->query->all()["q"];
+    $query = \Drupal::request()->query->all("q");
     if (empty($query)) {
       return;
     }
