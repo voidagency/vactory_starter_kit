@@ -12,7 +12,6 @@ use Drupal\Core\Utility\Token;
 use Drupal\entityqueue\Entity\EntitySubqueue;
 use Drupal\Core\Cache\Cache;
 use Drupal\jsonapi\ResourceType\ResourceType;
-use Drupal\jsonapi\ResourceType\ResourceTypeRepository;
 
 /**
  * Simplifies the process of generating an API version using DF.
