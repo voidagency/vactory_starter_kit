@@ -113,7 +113,7 @@ class JsonApiClient {
     // Get current page informations and pass them through the next request.
     $params = $this->routeMatch->getParameters();
     if ($params) {
-      $params_query = $this->currentRequest->query->get("q") ?? [];
+      $params_query = $this->currentRequest->query->all()["q"] ?? [];
       if ($resource_type_param = $params->get('resource_type')) {
         $params_query["entity_bundle"] = $resource_type_param instanceof ResourceType ?  $resource_type_param->getBundle() : $resource_type_param;
       }
@@ -171,7 +171,7 @@ class JsonApiClient {
     // Get current page informations and pass them through the next request.
     $params = $this->routeMatch->getParameters();
     if ($params) {
-      $params_query = $this->currentRequest->query->get("q") ?? [];
+      $params_query = $this->currentRequest->query->all()["q"] ?? [];
       if ($resource_type_param = $params->get('resource_type')) {
         $params_query["entity_bundle"] = $resource_type_param instanceof ResourceType ?  $resource_type_param->getBundle() : $resource_type_param;
       }

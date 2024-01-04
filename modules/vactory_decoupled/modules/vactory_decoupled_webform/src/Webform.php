@@ -597,7 +597,7 @@ class Webform {
    * Check if we should prepare tests values.
    */
   private function checkIfWeShouldPrepareTestsValues() {
-    $query = \Drupal::request()->query->get("q");
+    $query = \Drupal::request()->query->all()["q"];
     return !in_array($this->webform->id(), self::WEBFORM_TESTS_EXCLUDED) && isset($query["test"]);
   }
 
