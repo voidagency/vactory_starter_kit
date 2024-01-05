@@ -23,6 +23,14 @@ vactory_metatag_opengraph.defaults:
   requirements:
     _permission: 'administer site configuration'
 
+vactory_core.global_config:
+  path: '/admin/config/vactory-core-config'
+  defaults:
+    _title: 'Vactory core - global config'
+    _form: '\Drupal\vactory_core\Form\VactoryCoreConfig'
+  requirements:
+    _permission: 'administer site configuration'
+
 #node.add_page:
 #  path: '/node/add'
 #  defaults:
