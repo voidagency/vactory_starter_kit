@@ -316,7 +316,7 @@ class DynamicImportForm extends FormBase {
                   'source'           => $field,
                 ];
               }
-              else {
+              elseif ($info !== 'image_alt') {
                 $data['process'][$mapped_field] = [
                   'plugin'           => 'media_import',
                   'destination'      => 'constants/dest_path',
@@ -325,6 +325,9 @@ class DynamicImportForm extends FormBase {
                   'source'           => $field,
                   'skip_on_error'    => 'true',
                 ];
+                if ($info == 'image') {
+                  $data['process'][$mapped_field]['alt_field'] = $field . '_alt';
+                }
               }
             }
             if ($plugin == 'file') {
