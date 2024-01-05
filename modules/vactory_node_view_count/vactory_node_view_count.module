@@ -11,9 +11,12 @@
 
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\node\NodeTypeInterface;
+use Drupal\node\Entity\NodeType;
 
 /**
  * Implements hook_form_alter().
@@ -67,4 +70,37 @@ function vactory_node_view_count_node_view(array &$build, EntityInterface $node,
             $build['#attached']['drupalSettings']['vactory_node_view_count']['url'] = Url::fromRoute('vactory_node_view_count.increment_counter', ['nid' => $node->id()])->toString();
         }
     }
+}
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function vactory_node_view_count_entity_base_field_info(EntityTypeInterface $entity_type) {
+  $fields = [];
+  if ($entity_type->id() === 'node') {
+
+    $fields['has_view_count'] = BaseFieldDefinition::create('boolean')
+      ->setComputed(TRUE)
+      ->setReadOnly(TRUE)
+      ->setTargetEntityTypeId($entity_type->id())
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE)
+      ->setClass('Drupal\vactory_node_view_count\Field\NodeHasCountEntityFieldItemList')
+      ->setTranslatable(FALSE)
+      ->setRequired(FALSE);
+  }
+
+  return $fields;
+}
+
+/**
+ * Implements hook_json_api_collection_alter().
+ */
+function vactory_node_view_count_json_api_collection_alter(&$filters, &$context) {
+  if (isset($context['resource']) && str_starts_with($context['resource'], 'node--')) {
+    $bundle = str_replace('node--', '', $context['resource']);
+    $type = NodeType::load($bundle);
+    $view_count_enabled = $type->getThirdPartySetting('vactory_node_view_count', 'enabling_count_node', '');
+    $context['optional_data']['node_has_views_count'] = (bool) $view_count_enabled;
+  }
 }

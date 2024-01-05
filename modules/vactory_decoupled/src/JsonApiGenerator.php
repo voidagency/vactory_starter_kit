@@ -191,6 +191,8 @@ class JsonApiGenerator {
     $parsed['optional_filters_data'] = $config['optional_filters_data'] ?? [];
     $hook_context['cache_tags'] = [];
     $hook_context['cache_contexts'] = [];
+    $hook_context['resource'] = $resource;
+    $hook_context['optional_data'] = [];
     $this->moduleHandler->alter('json_api_collection', $parsed, $hook_context);
     unset($parsed['optional_filters_data']);
     parse_str(http_build_query($parsed), $query_filters);
@@ -225,6 +227,7 @@ class JsonApiGenerator {
       'filters' => $query_filters,
       'original_filters' => $query_original_filters,
       'taxonomies' => $exposedTerms['data'],
+      'optional_data' => $hook_context['optional_data'],
     ];
   }
 
