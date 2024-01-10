@@ -414,6 +414,7 @@ class DynamicFieldManager {
           // Image media.
           if ($info['type'] === 'image' && !empty($value)) {
             $key = array_keys($value)[0];
+            $media_img = $value[$key]['media_google_sheet'] ?? null;
             $image_data = [];
             if (isset($value[$key]['selection'])) {
               foreach ($value[$key]['selection'] as $media) {
@@ -424,11 +425,7 @@ class DynamicFieldManager {
                   $this->cacheability->setCacheTags($cacheTags);
                   $uri = $file->thumbnail->entity->getFileUri();
                   $image_item['_default'] = $this->mediaFilesManager->getMediaAbsoluteUrl($uri);
-                  // $image_item['_lqip'] = $this->mediaFilesManager->convertToMediaAbsoluteUrl($this->imageStyles['lqip']->buildUrl($uri));
-                  // $image_item['uri'] = StreamWrapperManager::getTarget($uri);
-                  // $image_item['fid'] = $file->thumbnail->entity->fid->value;
                   $image_item['file_name'] = $file->label();
-                  // $image_item['base_url'] = $image_app_base_url;
                   if (!empty($file->get('field_media_image')->getValue())) {
                     $image_item['meta'] = $file->get('field_media_image')
                       ->first()
@@ -440,6 +437,28 @@ class DynamicFieldManager {
                 }
 
                 $image_data[] = $image_item;
+              }
+            }
+            if (isset($media_img) && $contentService && str_starts_with($media_img, 'img:')) {
+              $media_img = strip_tags($media_img);
+              $this->cacheability->addCacheTags([$media_img]);
+              $retrievedContent = $contentService->getContent($media_img);
+              if (!empty($retrievedContent)) {
+                $file = $this->mediaStorage->load($retrievedContent);
+                if ($file) {
+                  // Add cache.
+                  $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $file->getCacheTags());
+                  $this->cacheability->setCacheTags($cacheTags);
+                  $uri = $file->thumbnail->entity->getFileUri();
+                  $image_item['_default'] = $this->mediaFilesManager->getMediaAbsoluteUrl($uri);
+                  $image_item['file_name'] = $file->label();
+                  if (!empty($file->get('field_media_image')->getValue())) {
+                    $image_item['meta'] = $file->get('field_media_image')
+                      ->first()
+                      ->getValue();
+                  }
+                  $image_data = [$image_item];
+                }
               }
             }
             $value = $image_data;
@@ -591,6 +610,7 @@ class DynamicFieldManager {
 
           if ($info['type'] === 'remote_video' && !empty($value)) {
             $value = reset($value);
+            $media_ytb = $value['media_google_sheet'] ?? null;
             $mid = $value['selection'][0]['target_id'] ?? '';
             $media = !empty($mid) ? $this->mediaStorage->load($mid) : NULL;
             if ($media instanceof MediaInterface) {
@@ -599,6 +619,19 @@ class DynamicFieldManager {
                 'name' => $media->getName(),
                 'url'  => $media->get('field_media_oembed_video')->value,
               ];
+            }
+            if (isset($media_ytb) && $contentService && str_starts_with($media_ytb, 'ytb:')) {
+              $media_ytb = strip_tags($media_ytb);
+              $this->cacheability->addCacheTags([$media_ytb]);
+              $retrievedContent = $contentService->getContent($media_ytb);
+              $media = !empty($retrievedContent) ? $this->mediaStorage->load($retrievedContent) : NULL;
+              if ($media instanceof MediaInterface) {
+                $value = [
+                  'id'   => $media->uuid(),
+                  'name' => $media->getName(),
+                  'url'  => $media->get('field_media_oembed_video')->value,
+                ];
+              }
             }
           }
 

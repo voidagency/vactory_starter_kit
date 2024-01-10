@@ -586,6 +586,9 @@ class ModalForm extends FormBase {
           }
 
           $form['components'][$i][$field_id] = $this->getFormElement($element_type, $element_label, $element_default_value, $element_options, $form, $form_state, $ds_field_name, $field_id, $i);
+          if (isset($form['components'][$i][$field_id]['widget']['media_google_sheet'])) {
+            $form['components'][$i][$field_id]['widget']['media_google_sheet']['#default_value'] = $this->widgetData[$i][$field_id][$ds_field_name]['media_google_sheet'] ?? '';
+          }
           if ($this->autoPopulateManager->isFieldTypeDummiable($element_type, $this->isPendingContentEnabled, $this->context)) {
             $name = "components.{$i}.{$field_id}";
             if ($element_type === 'url_extended') {
