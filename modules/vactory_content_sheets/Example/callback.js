@@ -2,6 +2,51 @@
 // It's provided as an example of how to interact with the 'vactory_content_sheets' module.
 // Place this function in 'Apps Scripts project' and modify as needed for your specific use case.
 
+function atEdit(e) {
+  var updatedCell = e.range.getA1Notation();
+  if (updatedCell.startsWith("C")) {
+    var rowNumber = updatedCell.replace("C", "");
+    var content = SpreadsheetApp.getActiveSheet()
+      .getRange(updatedCell)
+      .getValue();
+    var key = SpreadsheetApp.getActiveSheet()
+      .getRange("A" + rowNumber)
+      .getValue();
+    var langcode = SpreadsheetApp.getActiveSheet()
+      .getRange("B" + rowNumber)
+      .getValue();
+    var apiData = {
+      key: key,
+      langcode: langcode,
+      content: content,
+    };
+
+    var options = {
+      method: "patch",
+      contentType: "application/json",
+      payload: JSON.stringify(apiData),
+      headers: {
+        apikey: "xXxXxXxXxXxXxXxXxXxXxXxXxXx", // Replace with your actual API key
+      },
+      muteHttpExceptions: true,
+    };
+
+    // Specify the API endpoint (modify this URL to match your actual Drupal API endpoint)
+    var apiEndpoint =
+      "https://backend.vactory.lecontenaire.com/fr/api/vactory-content-sheets/update";
+
+    var response = UrlFetchApp.fetch(apiEndpoint, options);
+    Logger.log("Key: " + key);
+    Logger.log("Langcode: " + langcode);
+    Logger.log("Content: " + content);
+    Logger.log("Response: " + JSON.stringify(response));
+  }
+}
+
+// This function is designed to call a Drupal API endpoint and update content from a Google Sheet.
+// It's provided as an example of how to interact with the 'vactory_content_sheets' module.
+// Place this function in 'Apps Scripts project' and modify as needed for your specific use case.
+
 function callDrupalApi() {
   var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   var startRow = 2;
