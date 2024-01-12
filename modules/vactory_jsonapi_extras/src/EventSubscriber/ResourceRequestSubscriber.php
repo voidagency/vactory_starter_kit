@@ -94,7 +94,7 @@ class ResourceRequestSubscriber implements EventSubscriberInterface {
    */
   public function onResponse(ResponseEvent $event) {
     $route_name = $this->routeMatch->getRouteName();
-    if (!str_starts_with($route_name, 'exposed_api.')) {
+    if (empty($route_name) || !str_starts_with($route_name, 'exposed_api.')) {
       return;
     }
     $id = $this->routeMatch->getParameter('exposed_api');
