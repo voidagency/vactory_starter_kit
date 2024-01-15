@@ -163,7 +163,7 @@ class VactoryDynamicFormatter extends FormatterBase {
             $value = array_filter($value, function ($el) {
               return isset($el['selection'][0]);
             });
-            $key = array_keys($value)[0];
+            $key = array_keys($value)[0] ?? '';
             if (isset($value[$key]['selection'])) {
               $file = reset($value[$key]['selection']);
               $mid = $file['target_id'];
