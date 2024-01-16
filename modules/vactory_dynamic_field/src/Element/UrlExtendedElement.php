@@ -128,7 +128,7 @@ class UrlExtendedElement extends FormElement {
           }
         }
       }
-      elseif (!empty($url) && !UrlHelper::isExternal($url)) {
+      elseif (!empty($url) && !UrlHelper::isExternal($url) && !str_starts_with($url, 'cta:')) {
         if ((strpos($url, '/') !== 0) && (strpos($url, '#') !== 0) && (strpos($url, '?') !== 0)) {
           $form_state->setError($element['url'], t("The user-entered string '@url' must begin with a '/', '?', or '#'.", ['@url' => $url]));
         }
