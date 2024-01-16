@@ -85,21 +85,21 @@ class Import extends FormBase {
     $data = $this->readExcelToArray($file_path);
     foreach ($data as $key => $page) {
       // Check if page alrady exists (by node_id).
+      $nid = (int) $page['original']['id'] ?? -1;
       $query = \Drupal::entityTypeManager()->getStorage('node')->getQuery();
       $query->accessCheck(FALSE);
       $query->condition('type', 'vactory_page');
-      $query->condition('node_id', $key);
+      $query->condition('nid', $nid);
       $ids = $query->execute();
       $df_settings = $this->prepareDfSettings($page['original']);
-      $this->createDynamicFields($df_settings);
       if (empty($ids)) {
-        $this->createNode($key, $page);
+        $this->createNode($key, $page, $df_settings);
       }
       elseif (count($ids) == 1) {
         // Load the page (node) and update it.
         $nid = reset($ids);
         $node = Node::load($nid);
-        $this->updatePage($node, $page);
+        $this->updatePage($node, $page, $df_settings);
       }
     }
   }
@@ -218,7 +218,9 @@ class Import extends FormBase {
     foreach ($settings as $key => $value) {
       $config = [];
       $split = explode('|', $key);
-      $config['name'] = $this->snakeToHuman($key);
+      $df_name = explode(':', $key);
+      $df_name = end($df_name);
+      $config['name'] = $this->snakeToHuman($df_name);
       $config['enabled'] = TRUE;
       $config['multiple'] = $this->isDfMultiple(array_keys($value));
       $config['category'] = 'Imported content';
@@ -242,7 +244,7 @@ class Import extends FormBase {
         }
       }
       $yaml_config = Yaml::encode($config);
-      $this->writeDfFile($yaml_config, $key);
+      $this->writeDfFile($yaml_config, $df_name);
     }
   }
 
@@ -327,7 +329,7 @@ class Import extends FormBase {
   /**
    * Created node (page).
    */
-  private function createNode($page_key, $data) {
+  private function createNode($page_key, $data, $df_settings) {
     // @todo Insure that original is the first item
     $node_entity = NULL;
     foreach ($data as $language => $language_value) {
@@ -339,7 +341,11 @@ class Import extends FormBase {
       foreach ($language_value as $key => $value) {
         $split = explode('|', $key);
         if (str_starts_with($key, 'paragraph')) {
-          $widget_id = "vactory_page_import:" . end($split);
+          $widget_id = end($split);
+          if (str_starts_with($widget_id, 'vactory_page_import:')) {
+            $single_df_settings = [$widget_id => $df_settings[$widget_id]];
+            $this->createDynamicFields($single_df_settings);
+          }
           $widget_data = $this->normalizeWidgetData($value);
           $paragraph = [
             "type" => "vactory_component",
@@ -393,8 +399,12 @@ class Import extends FormBase {
             }
             foreach ($templates as $df_key => $data) {
               $widget_data = $this->normalizeWidgetData($data);
+              if (str_starts_with($df_key, 'vactory_page_import:')) {
+                $single_df_settings = [$df_key => $df_settings[$df_key]];
+                $this->createDynamicFields($single_df_settings);
+              }
               $paragraph_tab_template['field_tab_templates'][] = [
-                "widget_id" => 'vactory_page_import:' . $df_key,
+                "widget_id" => $df_key,
                 "widget_data" => $widget_data,
               ];
             }
@@ -656,7 +666,7 @@ class Import extends FormBase {
   /**
    * Updates the node (page).
    */
-  private function updatePage(Node $node, $page) {
+  private function updatePage(Node $node, $page, $df_settings) {
     $node_id = $node->get('node_id')->value;
     foreach ($page as $language => $data) {
       if ($language !== 'original' && !$node->hasTranslation($language)) {
@@ -671,8 +681,18 @@ class Import extends FormBase {
       }
       foreach ($data as $key => $value) {
         if (str_starts_with($key, 'paragraph')) {
+          // Search for paragraph with identifier [node_id]|$key.
+          $paragraph_entity = $this->findParagraphByNodeAndKey($node, $key);
           $split = explode('|', $key);
-          $widget_id = "vactory_page_import:" . end($split);
+          if (str_starts_with(end($split), 'vactory_page_import:')) {
+            $single_df_settings = [end($split) => $df_settings[end($split)]];
+            $widget_id = end($split);
+            $this->createDynamicFields($single_df_settings);
+          }
+          else {
+            $widget_id = end($split);
+          }
+
           $widget_data = $this->normalizeWidgetData($value);
           $field_vactory_component = [
             "widget_id" => $widget_id,
@@ -686,8 +706,6 @@ class Import extends FormBase {
             "field_vactory_component" => $field_vactory_component,
           ];
           if ($language == 'original') {
-            // Search for paragraph with identifier [node_id]|$key.
-            $paragraph_entity = $this->findParagraphByNodeAndKey($node, $key);
             if (!empty($paragraph_entity)) {
               // Update founded paragraph.
               $paragraph_entity->field_vactory_component = $field_vactory_component;
@@ -706,15 +724,14 @@ class Import extends FormBase {
             }
           }
           else {
-            $concerned_paragraph = $this->findParagraphByNodeAndKey($node, $key);
-            if ($concerned_paragraph->hasTranslation($language)) {
-              $concerned_paragraph_trans = $concerned_paragraph->getTranslation($language);
+            if ($paragraph_entity->hasTranslation($language)) {
+              $concerned_paragraph_trans = $paragraph_entity->getTranslation($language);
               $concerned_paragraph_trans->field_vactory_component = $field_vactory_component;
               $concerned_paragraph_trans->save();
             }
             else {
-              $concerned_paragraph->addTranslation($language, $paragraph);
-              $concerned_paragraph->save();
+              $paragraph_entity->addTranslation($language, $paragraph);
+              $paragraph_entity->save();
             }
           }
         }
@@ -734,8 +751,16 @@ class Import extends FormBase {
               }
               foreach ($templates as $df_key => $data) {
                 $widget_data = $this->normalizeWidgetData($data);
+                if (str_starts_with($df_key, 'vactory_page_import:')) {
+                  $single_df_settings = [end($split) => $df_settings[end($split)]];
+                  $widget_id = $df_key;
+                  $this->createDynamicFields($single_df_settings);
+                }
+                else {
+                  $widget_id = $df_key;
+                }
                 $tab_templates[] = [
-                  "widget_id" => 'vactory_page_import:' . $df_key,
+                  "widget_id" => $widget_id,
                   "widget_data" => $widget_data,
                 ];
               }
@@ -794,8 +819,16 @@ class Import extends FormBase {
               }
               foreach ($templates as $df_key => $data) {
                 $widget_data = $this->normalizeWidgetData($data);
+                if (str_starts_with($df_key, 'vactory_page_import:')) {
+                  $single_df_settings = [end($split) => $df_settings[end($split)]];
+                  $widget_id = $df_key;
+                  $this->createDynamicFields($single_df_settings);
+                }
+                else {
+                  $widget_id = $df_key;
+                }
                 $paragraph_tab_template['field_tab_templates'][] = [
-                  "widget_id" => 'vactory_page_import:' . $df_key,
+                  "widget_id" => $widget_id,
                   "widget_data" => $widget_data,
                 ];
               }
@@ -833,6 +866,9 @@ class Import extends FormBase {
     $node_paragraph_ids = [];
     foreach ($node_paragraphs as $node_paragraph) {
       $node_paragraph_ids[] = $node_paragraph['target_id'];
+    }
+    if (empty($node_paragraph_ids)) {
+      return [];
     }
 
     $query = \Drupal::entityTypeManager()->getStorage('paragraph')->getQuery();
