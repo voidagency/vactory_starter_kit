@@ -287,33 +287,45 @@ class DynamicFieldManager {
         if ($info && isset($info['type'])) {
           // Manage external/internal links.
           if ($info['type'] === 'url_extended') {
+            $url = $value['url'];
 
-            if (!empty($value['url']) && !UrlHelper::isExternal($value['url'])) {
-              $front_uri = $this->siteConfig->get('page.front');
-              if ($front_uri === $value['url']) {
-                $value['url'] = Url::fromRoute('<front>')->toString();
+            if (str_starts_with($url, 'cta:') && $contentService) {
+              $this->cacheability->addCacheTags([$url]);
+              $retrievedContent = $contentService->getContent($url);
+              $retrievedContent = $contentService->extractCTA($retrievedContent);
+              if ($retrievedContent !== null) {
+                $value['url'] = $retrievedContent['url'];
+                $value['title'] = $retrievedContent['label'];
               }
-              else {
-                $value['url'] = Url::fromUserInput($value['url'])->toString();
-              }
-              $value['url'] = str_replace('/backend', '', $value['url']);
             }
-
-            // URL Parts.
-            if (isset($value['attributes']['path_terms']) && !empty($value['attributes']['path_terms'])) {
-              $entityRepository = $this->entityRepository;
-              $slugManager = $this->slugManager;
-              $path_terms = $value['attributes']['path_terms'];
-
-              $value['url'] .= preg_replace_callback('/(\d+)/i', function ($matches) use ($entityRepository, $slugManager) {
-                $term = Term::load(intval($matches[0]));
-                if (!$term) {
-                  return NULL;
+            else {
+              if (!empty($value['url']) && !UrlHelper::isExternal($value['url'])) {
+                $front_uri = $this->siteConfig->get('page.front');
+                if ($front_uri === $value['url']) {
+                  $value['url'] = Url::fromRoute('<front>')->toString();
                 }
-                $term = $entityRepository->getTranslationFromContext($term);
-                return $slugManager->taxonomy2Slug($term);
-              }, $path_terms);
-              unset($value['attributes']['path_terms']);
+                else {
+                  $value['url'] = Url::fromUserInput($value['url'])->toString();
+                }
+                $value['url'] = str_replace('/backend', '', $value['url']);
+              }
+  
+              // URL Parts.
+              if (isset($value['attributes']['path_terms']) && !empty($value['attributes']['path_terms'])) {
+                $entityRepository = $this->entityRepository;
+                $slugManager = $this->slugManager;
+                $path_terms = $value['attributes']['path_terms'];
+  
+                $value['url'] .= preg_replace_callback('/(\d+)/i', function ($matches) use ($entityRepository, $slugManager) {
+                  $term = Term::load(intval($matches[0]));
+                  if (!$term) {
+                    return NULL;
+                  }
+                  $term = $entityRepository->getTranslationFromContext($term);
+                  return $slugManager->taxonomy2Slug($term);
+                }, $path_terms);
+                unset($value['attributes']['path_terms']);
+              }
             }
 
             // Check for external links.
