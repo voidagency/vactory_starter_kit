@@ -204,7 +204,7 @@
         "Export config translation": "https://www.drupal.org/files/issues/features_export-config-translation-2869336-2.patch"
       },
       "drupal/oauth_login_oauth2": {
-        "Store ressourceOwner into a session variable.": "https://gist.githubusercontent.com/b-khouy/b249e0a35a2ece62fe741ad330490b8e/raw/a923bc664616cd47608b2632b54f3ac202707b50/oauth-login-oauth2-add-resource-owner-to-session.patch"
+        "Store ressourceOwner into a session variable.": "https://gist.githubusercontent.com/voidagency/94489fb9998406959ebefb31a758f39c/raw/6692adac21ef17ea4d66d69584159a6802707404/oauth-login-oauth2-add-resource-owner-to-session.patch"
       },
       "drupal/social_auth_microsoft": {
         "Fixing call to function on null.": "https://gist.githubusercontent.com/voidagency/33e6445b2b0fe973654304a6ea04d50e/raw/80cd36664fe77ec6196bb310b49e8b7d27c8c96d/microsoft_social_auth.patch",
@@ -226,7 +226,7 @@
       "voidagency/jquery_colorpicker": {
         "jQuery color picker resolve vendor path": "https://gist.githubusercontent.com/voidagency/606f9343e9c7e9b99858088d7db111f1/raw/5216cc90d89e68916b4a17b60e07466286a18397/jquery-color-picker-resolve-vendor-path.patch",
         "jQuery color picker remove vendor dependencies": "https://gist.githubusercontent.com/voidagency/17af206778d4ea598b93dd10769556a0/raw/538e683f77b15945a41b99548a6b0d1ca2315225/jquery-colorpicker-remove-vendor-dependencies.patch",
-        "jQuery color picker update background (drupalSettings variable)": "https://gist.githubusercontent.com/b-khouy/b249e0a35a2ece62fe741ad330490b8e/raw/d603db22ebedc457d5e92de81ca99a1c467f8776/jquery-colorpicker-update-background.patch"
+        "jQuery color picker update background (drupalSettings variable)": "https://gist.githubusercontent.com/voidagency/94489fb9998406959ebefb31a758f39c/raw/6692adac21ef17ea4d66d69584159a6802707404/jquery-colorpicker-update-background.patch"
       },
       "drupal/webform": {
         "Invoke alter hook after webform handlers execution": "https://gist.githubusercontent.com/voidagency/6871bd7544b621e2c4221126c5dfec50/raw/7595d19a34e18ab9f719b7f917c02b10a4a40caf/webform-post-handlers-hook.patch"
@@ -241,7 +241,8 @@
         "Default field enhancer for fields": "https://gist.githubusercontent.com/voidagency/4861a0f0343a45cf0582553fc80c6b59/raw/2342d707c2b6708f2c18a69b870fcad1d5242df3/jsonapi_default_field_enhancer_for_fields.patch"
       },
       "voidagency/cloudinary": {
-        "D10 compatibility": "https://gist.github.com/voidagency/94489fb9998406959ebefb31a758f39c"
+        "Cloudinary video media library compatibility fix": "https://gist.githubusercontent.com/voidagency/21729df75ca350faace0f7883960bc37/raw/88e6ce0980cb3e01c95f74e1c79b4baddcdf884e/cloudinary-video-media-library-compatibility-fix.patch",
+        "Fix symfony 6 compatibility": "https://gist.githubusercontent.com/voidagency/94489fb9998406959ebefb31a758f39c/raw/6692adac21ef17ea4d66d69584159a6802707404/cloudinary-fix-symfony6-compatibility.patch"
       },
       "drupal/flag": {
         "Fix deprecated php 8.1 str_replace": "https://www.drupal.org/files/issues/2022-02-25/3266574-2.patch"
