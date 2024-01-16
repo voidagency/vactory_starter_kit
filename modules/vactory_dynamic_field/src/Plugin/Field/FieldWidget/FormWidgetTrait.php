@@ -120,6 +120,10 @@ trait FormWidgetTrait {
    */
   // phpcs:disable
   protected function getFormElement($type, MarkupInterface $label, $default_value, array $options, array &$form, FormStateInterface $form_state, $field_name, $field_id = '', $index = '') {
+    $contentService = NULL;
+    if (\Drupal::moduleHandler()->moduleExists('vactory_content_sheets')) {
+      $contentService = \Drupal::service('vactory_content_sheets.content_services');
+    }
     // phpcs:enable
     $element = [
       '#type'          => $type,
@@ -138,6 +142,17 @@ trait FormWidgetTrait {
     }
 
     if (in_array($type, ['text_format', 'text', 'textarea'])) {
+      if ($contentService) {
+        $default_value_aux = $default_value['value'] ?? $default_value;
+        if (is_string($default_value_aux) && (str_starts_with($default_value_aux, 'tx:') || (str_starts_with($default_value_aux, '<p>tx:')))) {
+          $default_value_aux = strip_tags($default_value_aux);
+          $retrievedContent = $contentService->getContent($default_value_aux) ?? '';
+          if (!empty($retrievedContent)) {
+            $element['#description'] = '<strong>Content: </strong> <i>' . substr($retrievedContent, 0, 64) . '...</i>';
+          }
+        }
+      }
+
       if ($type === 'text' && !isset($options['#maxlength'])) {
         $options['#maxlength'] = 255;
       }
@@ -198,6 +213,12 @@ trait FormWidgetTrait {
           if (isset($default_value[$key]['selection'])) {
             foreach ($default_value[$key]['selection'] as $media) {
               $image_default_value[] = $media['target_id'];
+            }
+          }
+          if ($contentService && str_starts_with($default_value[$key]['media_google_sheet'] ?? '', 'img:')) {
+            $retrievedContent = $contentService->getContent($default_value[$key]['media_google_sheet']);
+            if ($retrievedContent) {
+              $image_default_value = [$retrievedContent];
             }
           }
         }
@@ -273,6 +294,12 @@ trait FormWidgetTrait {
           if (isset($default_value[$key]['selection'])) {
             foreach ($default_value[$key]['selection'] as $media) {
               $remote_video_default_value[] = $media['target_id'];
+            }
+          }
+          if ($contentService && str_starts_with($default_value[$key]['media_google_sheet'] ?? '', 'ytb:')) {
+            $retrievedContent = $contentService->getContent($default_value[$key]['media_google_sheet']);
+            if ($retrievedContent) {
+              $remote_video_default_value = [$retrievedContent];
             }
           }
         }

@@ -1,1 +1,21 @@
 <?php
+
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_field_widget_single_element_form_alter().
+ */
+function vactory_content_sheets_field_widget_single_element_form_alter(&$element, FormStateInterface $form_state, array $context) {
+    $plugin_id = $context['widget']->getPluginId();
+    if ($plugin_id == 'media_library_widget') {
+        $route_name = \Drupal::routeMatch()->getRouteName();
+        if ($route_name == 'vactory_dynamic_field.open_modal_form') {
+            $element['media_google_sheet'] = [
+                '#type' => 'textfield',
+                '#title' => t('Media key'),
+                '#description' => t('This field serves to link the media with its associated value on a Google Sheet.'),
+            ];
+        }
+    }
+}
+  
