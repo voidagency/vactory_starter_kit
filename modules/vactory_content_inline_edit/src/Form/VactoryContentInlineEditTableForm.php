@@ -10,6 +10,8 @@ use Drupal\vactory_content_inline_edit\Controller\VactoryContentInlineEditContro
 use Drupal\Core\Pager\PagerParametersInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Url;
+use Drupal\Core\Link;
 
 class VactoryContentInlineEditTableForm extends FormBase
 {
@@ -101,7 +103,13 @@ class VactoryContentInlineEditTableForm extends FormBase
 
         foreach ($nodes_data as $node_data) {
             $row_key = 'node_' . $node_data['nodeId'];
-            $form['nodes_table_wrapper']['nodes_table'][$row_key]['title'] = ['#markup' => $node_data['title']];
+
+            // Create the URL to the node edit page
+            $editUrl = Url::fromRoute('entity.node.edit_form', ['node' => $node_data['nodeId']]);
+            // Create a Link object
+            $editLink = Link::fromTextAndUrl($node_data['title'], $editUrl)->toString();
+            // Add the clickable link to the table
+            $form['nodes_table_wrapper']['nodes_table'][$row_key]['title'] = ['#markup' => $editLink];
 
             // Parent container for all paragraphs to enable horizontal layout
             $form['nodes_table_wrapper']['nodes_table'][$row_key]['paragraphs'] = [
