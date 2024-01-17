@@ -1,0 +1,12 @@
+vactory-content-inline-edit-js:
+  version: 1.x
+  js:
+    js/vactory-content-inline-edit-fetch.js: {}
+    js/vactory-content-inline-edit-ui.js: {}
+  css:
+    theme:
+      css/vactory-content-inline-edit.css: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupalSettings

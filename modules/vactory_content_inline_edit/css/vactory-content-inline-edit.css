@@ -1,0 +1,70 @@
+.edit-controls {
+    display: none; /* Initially hidden, shown when an input changes */
+    margin: auto;
+    width: 20px;
+    height: 20px;
+    font-size: large;
+}
+
+.icon-save {
+    cursor: pointer;
+    margin-left: 5px;
+    color: #00aa30;
+}
+
+.icon-cancel {
+    cursor: pointer;
+    margin-left: 5px;
+    color: #c40000;
+}
+
+.loader {
+    display: none; /* Hidden by default */
+    border: 4px solid #f3f3f3; /* Light grey */
+    border-top: 4px solid #3498db; /* Blue */
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 2s linear infinite;
+    margin: auto; /* Center the loader */
+}
+
+#nodes-table-wrapper {
+    overflow-x: auto; /* Makes the table scrollable horizontally */
+}
+
+.paragraphs-container {
+    white-space: nowrap; /* Prevents wrapping of inline elements */
+    overflow-x: auto; /* Enables horizontal scrolling */
+}
+
+.paragraph-wrapper {
+    display: inline-block; /* Display paragraphs inline */
+    vertical-align: top; /* Aligns paragraphs at the top */
+    margin-right: 10px; /* Space between paragraphs */
+    padding: 10px; /* Padding inside each paragraph container */
+    border: 1px solid #ccc; /* Border around each paragraph */
+    background-color: #f9f9f9; /* Background color of each paragraph */
+    width: 600px;
+}
+.paragraph-title {
+    font-size: 1em; /* Adjust font size as needed */
+    font-weight: bold;
+    color: #333; /* Adjust the color as needed */
+    /* Add more styling as needed */
+}
+
+.paragraph-field,
+.paragraph-url-extended-field {
+    display: block; /* Ensures each field is on its own line */
+    margin-bottom: 5px;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
