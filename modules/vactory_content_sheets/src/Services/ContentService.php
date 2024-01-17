@@ -32,6 +32,9 @@ class ContentService {
     $this->logger = $logger;
   }
 
+  /**
+   * Get content by key.
+   */
   public function getContent(string $key = '') {
     \Drupal::logger('getContent =')->debug('key: @key', [
               '@key' => print_r($key, TRUE),
@@ -52,5 +55,27 @@ class ContentService {
       return NULL;
     }
   }
+
+  /**
+   * Extract label/url from text.
+   */
+  public function extractCTA($text) {
+    // Define the pattern to match the CTA label and URL.
+    $pattern = '/(?P<label>[^(]+)\((?P<url>[^)]+)\)/';
+
+    // Use preg_match to find the matches
+    preg_match($pattern, $text, $matches);
+
+    // Check if there are matches and return the result
+    if ($matches && isset($matches['label'], $matches['url'])) {
+        $ctaLabel = trim($matches['label']);
+        $ctaUrl = trim($matches['url']);
+        return array('label' => $ctaLabel, 'url' => $ctaUrl);
+    } else {
+        // Return null if no matches are found.
+        return null;
+    }
+  }
+
 }
 

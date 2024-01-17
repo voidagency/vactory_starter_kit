@@ -42,7 +42,19 @@ class UrlExtendedElement extends FormElement {
    * Url extended form element process callback.
    */
   public static function processUrlExtended(&$element, FormStateInterface $form_state, &$form) {
+    $contentService = NULL;
+    if (\Drupal::moduleHandler()->moduleExists('vactory_content_sheets')) {
+      $contentService = \Drupal::service('vactory_content_sheets.content_services');
+    }
+
     $default_values = $element['#default_value'];
+
+    $retrievedContent = NULL;
+    if (str_starts_with($default_values['url'] ?? '', 'cta:') && $contentService) {
+      $retrievedContent = $contentService->getContent($default_values['url']);
+      $retrievedContent = $contentService->extractCTA($retrievedContent);
+    }
+
     $element['title'] = [
       '#type' => 'textfield',
       '#title' => t('Link title'),
@@ -57,6 +69,12 @@ class UrlExtendedElement extends FormElement {
       '#default_value' => isset($default_values['url']) ? $default_values['url'] : '',
       '#description' => t('An external URL or internal path, <br> Examples for an internal path: <strong>/node/1</strong> or <strong>/path-example-alias</strong><br>Examples for an external path: <strong>https://example.com</strong>'),
     ];
+
+    if (isset($retrievedContent)) {
+      $element['title']['#description'] = '<b>Content: </b>' . $retrievedContent['label'];
+      $element['url']['#description'] = '<b>Content: </b>' . $retrievedContent['url'];
+    }
+
     $element['attributes'] = [
       '#type' => 'details',
       '#title' => t('Link attributes'),
@@ -110,7 +128,7 @@ class UrlExtendedElement extends FormElement {
           }
         }
       }
-      elseif (!empty($url) && !UrlHelper::isExternal($url)) {
+      elseif (!empty($url) && !UrlHelper::isExternal($url) && !str_starts_with($url, 'cta:')) {
         if ((strpos($url, '/') !== 0) && (strpos($url, '#') !== 0) && (strpos($url, '?') !== 0)) {
           $form_state->setError($element['url'], t("The user-entered string '@url' must begin with a '/', '?', or '#'.", ['@url' => $url]));
         }
