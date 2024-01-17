@@ -7,7 +7,6 @@ use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Field\FieldItemListInterface;
-use Drupal\Core\File\FileUrlGeneratorInterface;
 use Drupal\Core\Render\RenderContext;
 use Drupal\Core\Site\Settings;
 use Drupal\Core\Url;
@@ -54,7 +53,7 @@ class VactoryDynamicFormatter extends FormatterBase {
   /**
    * File url generator service.
    *
-   * @var FileUrlGeneratorInterface
+   * @var \Drupal\Core\File\FileUrlGeneratorInterface
    */
   protected $fileUrlGenerator;
 
@@ -210,7 +209,7 @@ class VactoryDynamicFormatter extends FormatterBase {
                     }
                   }
                   if (!empty($video_id)) {
-                    $uri = 'https://img.youtube.com/vi/'. $video_id .'/maxres2.jpg';
+                    $uri = 'https://img.youtube.com/vi/' . $video_id . '/maxres2.jpg';
                   }
                 }
               }
@@ -301,6 +300,11 @@ class VactoryDynamicFormatter extends FormatterBase {
         if (isset($widget_data['extra_field'])) {
           $content['extra_field'] = $widget_data['extra_field'];
           unset($widget_data['extra_field']);
+        }
+
+        if (isset($widget_data['pending_content'])) {
+          $content['pending_content'] = array_map(fn($el) => !str_starts_with($el, 'extra_field') ? "components.{$el}" : $el, $widget_data['pending_content']);
+          unset($widget_data['pending_content']);
         }
 
         // Fallback for existing templates.
