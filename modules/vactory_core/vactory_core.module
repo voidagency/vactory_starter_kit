@@ -572,3 +572,21 @@ function vactory_core_clean_pager_query_param(&$str) {
     }
   }
 }
+
+/**
+ * Implements hook_js_alter() for skipping js aggregation for ckeditor5.
+ */
+function vactory_core_js_alter(&$js) {
+  $ckeditor5_paths = [
+    'core/assets/vendor/ckeditor5/',
+    'core/modules/ckeditor5/',
+  ];
+
+  foreach ($ckeditor5_paths as $path) {
+    foreach ($js as $key => $script) {
+      if (strpos($script['data'], $path) !== FALSE) {
+        $js[$key]['preprocess'] = FALSE;
+      }
+    }
+  }
+}
