@@ -110,9 +110,9 @@ function vactory_dynamic_field_preprocess_page(&$variables) {
 }
 
 /**
- * Implements hook_field_widget_form_alter().
+ * Implements hook_field_widget_single_element_form_alter().
  */
-function vactory_dynamic_field_field_widget_form_alter(&$element, FormStateInterface $form_state, $context) {
+function vactory_dynamic_field_field_widget_single_element_form_alter(&$element, FormStateInterface $form_state, $context) {
   $items = $context['items'];
   $fieldDefinition = $items->getFieldDefinition();
   $storage = $fieldDefinition->getFieldStorageDefinition();

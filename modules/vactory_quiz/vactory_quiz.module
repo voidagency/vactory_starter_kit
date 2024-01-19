@@ -74,9 +74,9 @@ function vactory_quiz_multiple_field_remove_button_field_types_alter(array &$fie
 }
 
 /**
- * Implements hook_field_widget_form_alter().
+ * Implements hook_field_widget_single_element_form_alter().
  */
-function vactory_quiz_field_widget_form_alter(&$element, FormStateInterface $form_state, $context) {
+function vactory_quiz_field_widget_single_element_form_alter(&$element, FormStateInterface $form_state, $context) {
   if ($context['widget']->getPluginId() === 'vactory_quiz_question_widget') {
     $element['#title'] = t('Question @num', ['@num' => $element['#delta'] + 1]);
   }

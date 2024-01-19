@@ -187,9 +187,9 @@ function vactory_paragraphs_field_widget_entity_reference_paragraphs_form_alter(
 }
 
 /**
- * Implements hook_field_widget_form_alter().
+ * Implements hook_field_widget_single_element_form_alter().
  */
-function vactory_paragraphs_field_widget_form_alter(&$element, FormStateInterface $form_state, $context) {
+function vactory_paragraphs_field_widget_single_element_form_alter(&$element, FormStateInterface $form_state, $context) {
   $field_name = !empty($context['items']->getName()) ? $context['items']->getName() : '';
   if (!empty($field_name) && $field_name == 'field_views_reference') {
     views_reference_remove_disabled_views($element['target_id']['#options']);

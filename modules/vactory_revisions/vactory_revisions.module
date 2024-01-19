@@ -92,9 +92,9 @@ function vactory_revisions_form_alter(&$form, FormStateInterface $form_state, $f
 }
 
 /**
- * Implements hook_field_widget_form_alter().
+ * Implements hook_field_widget_single_element_form_alter().
  */
-function vactory_revisions_field_widget_form_alter(&$element, FormStateInterface $form_state, $context) {
+function vactory_revisions_field_widget_single_element_form_alter(&$element, FormStateInterface $form_state, $context) {
   if ($context['items']->getName() === 'last_contributor') {
     $uid = $context['items']->target_id;
     $element = [];

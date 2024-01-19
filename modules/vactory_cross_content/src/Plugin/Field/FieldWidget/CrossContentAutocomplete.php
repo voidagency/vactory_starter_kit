@@ -36,7 +36,7 @@ class CrossContentAutocomplete extends WidgetBase {
    * formElement() method will be called as many times as needed.
    *
    * Other modules may alter the form element provided by this function using
-   * hook_field_widget_form_alter() or
+   * hook_field_widget_single_element_form_alter() or
    * hook_field_widget_WIDGET_TYPE_form_alter().
    *
    * The FAPI element callbacks (such as #process, #element_validate,
@@ -77,7 +77,7 @@ class CrossContentAutocomplete extends WidgetBase {
    * @return array
    *   The form elements for a single widget for this field.
    *
-   * @see hook_field_widget_form_alter()
+   * @see hook_field_widget_single_element_form_alter()
    * @see hook_field_widget_WIDGET_TYPE_form_alter()
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {

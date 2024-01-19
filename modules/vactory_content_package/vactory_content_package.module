@@ -67,9 +67,9 @@ function vactory_content_package_entity_base_field_info(EntityTypeInterface $ent
 }
 
 /**
- * Implements hook_field_widget_form_alter().
+ * Implements hook_field_widget_single_element_form_alter().
  */
-function vactory_content_package_field_field_widget_form_alter(array &$element, FormStateInterface $form_state, $context) {
+function vactory_content_package_field_field_widget_single_element_form_alter(array &$element, FormStateInterface $form_state, $context) {
   if ($context['field']['field_name'] === 'node_id') {
     // Add custom validation for machine name uniqueness.
     $element['#element_validate'][] = 'vactory_content_package_node_unique_validation';
