@@ -55,7 +55,7 @@ class VactoryContentInlineEditController extends ControllerBase
     // Pagination logic: Ensure the page is at least 1 and calculate offset accordingly
     $page = max($page, 1);
     $offset = ($page - 1) * $limit;
-    $nids = $query->range($offset, $limit)->execute();
+    $nids = $query->range($offset, $limit)->accessCheck(FALSE)->execute();
 
     return Node::loadMultiple($nids);
   }
@@ -200,8 +200,9 @@ class VactoryContentInlineEditController extends ControllerBase
         // Process regular field groups (indexed numerically)
         foreach ($fieldGroup as $fieldName => $fieldValue) {
 
-          $fieldConfig = $widgetConfig['fields'][$fieldName];
-          $processedField = $this->processField($fieldValue, $fieldConfig);
+          $fieldConfig = $widgetConfig['fields'][$fieldName] ?? null;
+          if($fieldConfig)
+            $processedField = $this->processField($fieldValue, $fieldConfig);
           if($processedField) {
             $formattedData["elements"]["components"][$key][$fieldName] = $processedField;
           }
