@@ -86,8 +86,10 @@ class VactoryDynamicFormatter extends FormatterBase {
           if (str_starts_with($value['url'] ?? '', 'cta:') && $contentService) {
             $retrievedContent = $contentService->getContent($value['url']);
             $retrievedContent = $contentService->extractCTA($retrievedContent);
-            $value['url'] = $retrievedContent['url'];
-            $value['title'] = $retrievedContent['label'];
+            if ($retrievedContent !== NULL) {
+              $value['url'] = $retrievedContent['url'];
+              $value['title'] = $retrievedContent['label'];
+            }
           }
           elseif (!empty($value['url']) && !UrlHelper::isExternal($value['url'])) {
             $value['url'] = Url::fromUserInput($value['url'], ['absolute' => 'true'])
