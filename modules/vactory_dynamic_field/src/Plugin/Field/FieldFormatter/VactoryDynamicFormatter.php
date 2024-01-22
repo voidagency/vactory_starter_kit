@@ -73,18 +73,27 @@ class VactoryDynamicFormatter extends FormatterBase {
    * Apply formatters such as processed_text, image & links.
    */
   private function applyFormatters($parent_keys, $settings, &$component) {
+    $contentService = NULL;
+    if (\Drupal::moduleHandler()->moduleExists('vactory_content_sheets')) {
+      $contentService = \Drupal::service('vactory_content_sheets.content_services');
+    }
     foreach ($component as $field_key => &$value) {
       $info = NestedArray::getValue($settings, array_merge((array) $parent_keys, [$field_key]));
 
       if ($info && isset($info['type'])) {
         // Manage external/internal links.
         if ($info['type'] === 'url_extended') {
-          if (!empty($value['url']) && !UrlHelper::isExternal($value['url'])) {
+          if (str_starts_with($value['url'] ?? '', 'cta:') && $contentService) {
+            $retrievedContent = $contentService->getContent($value['url']);
+            $retrievedContent = $contentService->extractCTA($retrievedContent);
+            $value['url'] = $retrievedContent['url'];
+            $value['title'] = $retrievedContent['label'];
+          }
+          elseif (!empty($value['url']) && !UrlHelper::isExternal($value['url'])) {
             $value['url'] = Url::fromUserInput($value['url'], ['absolute' => 'true'])
               ->toString();
           }
         }
-
         // Text Preprocessor.
         if ($info['type'] === 'text_format') {
           $format = $info['options']['#format'] ?? 'full_html';
