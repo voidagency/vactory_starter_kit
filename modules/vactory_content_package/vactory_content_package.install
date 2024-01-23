@@ -122,3 +122,23 @@ function vactory_content_package_update_9571() {
   \Drupal::entityDefinitionUpdateManager()
     ->installFieldStorageDefinition('node_content_package_exclude', 'node', 'node', $storage_definition);
 }
+
+/**
+ * Add block_content_package_exclude field.
+ */
+function vactory_content_package_update_9572() {
+  $storage_definition = BaseFieldDefinition::create('boolean')
+    ->setLabel(t('Yes, exclude this entity from the content package (import/export).'))
+    ->setTranslatable(FALSE)
+    ->setDisplayOptions('form', [
+      'type' => 'boolean_checkbox',
+      'settings' => [
+        'display_label' => TRUE,
+      ],
+    ])
+    ->setDisplayConfigurable('form', TRUE);
+
+  \Drupal::entityDefinitionUpdateManager()
+  ->installFieldStorageDefinition('block_content_package_exclude', 'block_content', 'block_content', $storage_definition);
+
+}
