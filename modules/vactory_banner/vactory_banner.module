@@ -162,9 +162,9 @@ function vactory_banner_preprocess_node(&$variables) {
 }
 
 /**
- * Implements hook_field_widget_form_alter().
+ * Implements hook_field_widget_single_element_form_alter().
  */
-function vactory_banner_field_widget_form_alter(&$element, \Drupal\Core\Form\FormStateInterface $form_state, $context) {
+function vactory_banner_field_widget_single_element_form_alter(&$element, \Drupal\Core\Form\FormStateInterface $form_state, $context) {
   $banner_images_fields = [
     'node_banner_image',
     'node_banner_mobile_image',
