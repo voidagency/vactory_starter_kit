@@ -90,7 +90,7 @@ class ContentPackageArchiverManager implements ContentPackageArchiverManagerInte
 
     $this->fileSystem->prepareDirectory($archivePath, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS);
 
-    $chunk = array_chunk($nodes, self::BATCH_SIZE);
+    $chunk = array_chunk($nodes ?? [], self::BATCH_SIZE);
     $operations = [];
     $num_operations = 0;
     foreach ($chunk as $ids) {
@@ -101,7 +101,7 @@ class ContentPackageArchiverManager implements ContentPackageArchiverManagerInte
       $num_operations++;
     }
 
-    $chunk = array_chunk($blocks, self::BATCH_SIZE);
+    $chunk = array_chunk($blocks ?? [], self::BATCH_SIZE);
     foreach ($chunk as $ids) {
       $operations[] = [
         [self::class, 'zipCallback'],
