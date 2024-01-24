@@ -1,0 +1,5 @@
+name: Vactory content inline edit
+type: module
+description: Provides page to inline edit pages content
+package: Vactory
+core_version_requirement: ^9 || ^10
