@@ -1,0 +1,22 @@
+vactory_content_inline_edit.admin_page:
+  path: '/admin/content/inline-edit'
+  defaults:
+    _form: '\Drupal\vactory_content_inline_edit\Form\VactoryContentInlineEditTableForm'
+    _title: 'Inline Edit Vactory Pages'
+  requirements:
+    _permission: 'administer site content'
+
+vactory_content_inline_edit.api:
+  path: '/vactory-content-inline-edit/api'
+  defaults:
+    _controller: '\Drupal\vactory_content_inline_edit\Controller\VactoryContentInlineEditController::index'
+  requirements:
+    _permission: 'access content'
+
+vactory_content_inline_edit.save_changes:
+  path: '/vactory-content-inline-edit/save'
+  defaults:
+    _controller: '\Drupal\vactory_content_inline_edit\Controller\VactoryContentInlineEditController::saveChanges'
+  methods:  ['POST']
+  requirements:
+    _permission: 'edit content'
