@@ -93,10 +93,12 @@ class DecoupledOauth2Token extends Oauth2Token {
 
     $body = $request->getParsedBody();
     if (!empty($body['username']) && !empty($body['password'])) {
+      $isEmail = strpos($body['username'], '@') !== false;
 
+      $property = $isEmail ? 'mail' : 'name';
       $account_search = $this->entityTypeManager
         ->getStorage('user')
-        ->loadByProperties(['name' => $body['username']]);
+        ->loadByProperties([$property => $body['username']]);
 
       if ($account = reset($account_search)) {
 
