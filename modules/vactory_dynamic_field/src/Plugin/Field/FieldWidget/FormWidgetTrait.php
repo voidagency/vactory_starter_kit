@@ -261,15 +261,22 @@ trait FormWidgetTrait {
           $file_default_value[] = $default_value;
         }
         else {
+          $key = array_keys($default_value)[0];
+          $media_key = $default_value[$key]['media_google_sheet'] ?? '';
           $default_value = array_filter($default_value, function ($el) {
             return isset($el['selection'][0]);
           });
           if (!empty($default_value)) {
-            $key = array_keys($default_value)[0];
             if (isset($default_value[$key]['selection'])) {
               foreach ($default_value[$key]['selection'] as $media) {
                 $file_default_value[] = $media['target_id'];
               }
+            }
+          }
+          if ($contentService && str_starts_with($media_key, 'file:')) {
+            $retrievedContent = $contentService->getContent($media_key);
+            if ($retrievedContent) {
+              $file_default_value = [$retrievedContent];
             }
           }
         }
