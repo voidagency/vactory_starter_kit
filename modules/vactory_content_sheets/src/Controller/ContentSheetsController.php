@@ -86,6 +86,15 @@ class ContentSheetsController extends ControllerBase {
       }
     }
 
+    if (str_starts_with($key, 'file:')) {
+      $file_id = $this->createFile($content);
+      if ($file_id !== NULL) {
+        return $this->createMedia('file', 'field_media_file', ['target_id' => $file_id]);
+      } else {
+        throw new \RuntimeException('Failed to create media. Invalid file content.');
+      }
+    }
+
     if (str_starts_with($key, 'ytb:')) {
       return $this->createMedia('remote_video', 'field_media_oembed_video', $content);
     }

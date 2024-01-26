@@ -512,6 +512,7 @@ class DynamicFieldManager {
           // Document media.
           if ($info['type'] === 'file' && !empty($value)) {
             $key = array_keys($value)[0];
+            $media_file = $value[$key]['media_google_sheet'] ?? null;
             $file_data = [];
             if (isset($value[$key]['selection'])) {
               foreach ($value[$key]['selection'] as $media) {
@@ -536,6 +537,26 @@ class DynamicFieldManager {
                 }
                 else {
                   $file_data['_error'] = 'Media file ID: ' . $media['target_id'] . ' Not Found';
+                }
+              }
+            }
+            if (isset($media_file) && $contentService && str_starts_with($media_file, 'file:')) {
+              $media_file = strip_tags($media_file);
+              $this->cacheability->addCacheTags([$media_file]);
+              $retrievedContent = $contentService->getContent($media_file);
+              if (!empty($retrievedContent)) {
+                $file = $this->mediaStorage->load($retrievedContent);
+                $fid = (int) $file->get('field_media_file')->getString();
+                $document = File::load($fid);
+                if ($document) {
+                  // Add cache.
+                  $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $document->getCacheTags());
+                  $this->cacheability->setCacheTags($cacheTags);
+                  $uri = $document->getFileUri();
+                  $file_item['_default'] = $this->mediaFilesManager->getMediaAbsoluteUrl($uri);
+                  $file_item['file_name'] = $file->label();
+                  $file_item['fid'] = $document->id();
+                  $file_data = [$file_item];
                 }
               }
             }
