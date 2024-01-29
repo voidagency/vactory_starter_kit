@@ -767,16 +767,19 @@ function clear_next_cache($query = []) {
     }
     else {
       \Drupal::logger('clear_next_cache')->warning($error_msg);
+      \Drupal::logger('clear_next_cache')->warning('Cannot Clear Next Cache : status code ' . $request->getStatusCode());
       return FALSE;
     }
 
   }
   catch (ServerException $e) {
     \Drupal::logger('clear_next_cache')->warning($error_msg);
+    \Drupal::logger('clear_next_cache')->warning($e->getMessage());
     return FALSE;
   }
   catch (RequestException $e) {
     \Drupal::logger('clear_next_cache')->warning($error_msg);
+    \Drupal::logger('clear_next_cache')->warning($e->getMessage());
     return FALSE;
   }
 }
@@ -874,7 +877,7 @@ function vactory_decoupled_preprocess_html(&$variables) {
     'user.reset.form',
     'vactory_espace_prive.welcome',
     'entity.user.canonical',
-    'oauth2_token.authorize'
+    'oauth2_token.authorize',
   ];
   if (!in_array($route_name, $exluded_routes)) {
     $langcode = Drupal::languageManager()->getCurrentLanguage()->getId();
