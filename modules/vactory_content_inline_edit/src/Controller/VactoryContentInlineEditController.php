@@ -214,6 +214,8 @@ class VactoryContentInlineEditController extends ControllerBase
   }
 
   private function processField($fieldValue, $fieldConfig) {
+    if(!isset($fieldConfig['type']))
+      return null;
     switch ($fieldConfig['type']) {
       case 'text':
         return [
