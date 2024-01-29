@@ -1,0 +1,5 @@
+vactory_content_inline_edit.admin_page:
+  title: 'Page inline edit'
+  parent: system.admin_content
+  route_name: vactory_content_inline_edit.admin_page
+  weight: 100
