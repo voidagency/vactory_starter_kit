@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bbd382dbebdc3aa5a49d76badda050a5",
+    "content-hash": "275db80f64b10429f1b405fe16b68d26",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -7383,26 +7383,26 @@
         },
         {
             "name": "drupal/persistent_login",
-            "version": "1.6.0",
+            "version": "2.1.1",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/persistent_login.git",
-                "reference": "8.x-1.6"
+                "reference": "2.1.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/persistent_login-8.x-1.6.zip",
-                "reference": "8.x-1.6",
-                "shasum": "87bc87ae8c4035efbdf8d6cae17c489c4fdd0aa3"
+                "url": "https://ftp.drupal.org/files/projects/persistent_login-2.1.1.zip",
+                "reference": "2.1.1",
+                "shasum": "8b9e7393d18ac09aa6c7499905fba7ab9c1f4560"
             },
             "require": {
-                "drupal/core": "^9.2 || ^10"
+                "drupal/core": "^10"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-1.6",
-                    "datestamp": "1679547817",
+                    "version": "2.1.1",
+                    "datestamp": "1691059918",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
