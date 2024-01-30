@@ -7,7 +7,7 @@ updates:
       include: "scope" 
     schedule:
       interval: "daily"
-    target-branch: "2.x" 
+    target-branch: "3.x" 
     reviewers: 
-      - b-khouy 
-      - voidagency 
+      - Bahlaouane-Hamza
+      - voidagency
