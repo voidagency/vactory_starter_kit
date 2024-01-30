@@ -3,11 +3,11 @@ updates:
   - package-ecosystem: "composer"
     directory: "/"
     commit-message: 
-      prefix: "Composer" 
-      include: "scope" 
+    prefix: "Composer" 
+    include: "scope" 
     schedule:
       interval: "daily"
-    target-branch: "3.x" 
+    target-branch: "3.x" 
     reviewers: 
       - Bahlaouane-Hamza
       - voidagency
