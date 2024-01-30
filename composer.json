@@ -159,7 +159,7 @@
     "drupal/search_api_ai": "^1.0@alpha",
     "drupal/onesignal": "^3.0",
     "stevenmaguire/oauth2-keycloak": "^5.0",
-    "drupal/openai": "1.0.0-alpha17",
+    "drupal/openai": "1.0.0-beta4",
     "voidagency/jquery_colorpicker": "^4.0",
     "voidagency/merge_translations": "^2.0",
     "voidagency/easy_install": "^10.6",
