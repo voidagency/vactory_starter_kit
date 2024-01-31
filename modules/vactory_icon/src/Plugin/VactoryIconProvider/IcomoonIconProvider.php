@@ -113,9 +113,11 @@ class IcomoonIconProvider extends VactoryIconProviderBase {
   public function iconPickerFormElementAlter(array &$element, ImmutableConfig|Config $config) {
     $element['#default_value'] = !empty($element['#default_value']) ? 'icon-' . $element['#default_value'] : $element['#default_value'];
     $decoded_content = $this->fetchIcons($config);
-    foreach ($decoded_content['icons'] as $icon) {
-      $icon_name = $icon['properties']['name'];
-      $element['#options']['icon-' . $icon_name] = $icon_name;
+    if (isset($decoded_content['icons'])) {
+      foreach ($decoded_content['icons'] as $icon) {
+        $icon_name = $icon['properties']['name'];
+        $element['#options']['icon-' . $icon_name] = $icon_name;
+      }
     }
   }
 
@@ -124,7 +126,10 @@ class IcomoonIconProvider extends VactoryIconProviderBase {
    */
   public function fetchIcons(ImmutableConfig|Config $config) {
     $json_file = \Drupal::service('file_system')->realpath("public://vactory_icon/selection.json");
-    $file_content = file_get_contents($json_file);
+    $file_content = "";
+    if ($json_file !== FALSE) {
+      $file_content = file_get_contents($json_file);
+    }
     return Json::decode($file_content);
   }
 
