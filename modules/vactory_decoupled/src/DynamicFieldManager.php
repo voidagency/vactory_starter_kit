@@ -257,7 +257,7 @@ class DynamicFieldManager {
     }
 
     // Restore cache.
-    if(isset($this->cacheability)) {
+    if (isset($this->cacheability)) {
       $this->cacheability->addCacheContexts(['url.query_args:q']);
     }
 
@@ -292,7 +292,7 @@ class DynamicFieldManager {
               $this->cacheability->addCacheTags([$url]);
               $retrievedContent = $contentService->getContent($url);
               $retrievedContent = $contentService->extractCTA($retrievedContent);
-              if ($retrievedContent !== null) {
+              if ($retrievedContent !== NULL) {
                 $value['url'] = $retrievedContent['url'];
                 $value['title'] = $retrievedContent['label'];
               }
@@ -308,13 +308,13 @@ class DynamicFieldManager {
                 }
                 $value['url'] = str_replace('/backend', '', $value['url']);
               }
-  
+
               // URL Parts.
               if (isset($value['attributes']['path_terms']) && !empty($value['attributes']['path_terms'])) {
                 $entityRepository = $this->entityRepository;
                 $slugManager = $this->slugManager;
                 $path_terms = $value['attributes']['path_terms'];
-  
+
                 $value['url'] .= preg_replace_callback('/(\d+)/i', function ($matches) use ($entityRepository, $slugManager) {
                   $term = Term::load(intval($matches[0]));
                   if (!$term) {
@@ -345,7 +345,7 @@ class DynamicFieldManager {
           // Text_format Preprocessor.
           if ($info['type'] === 'text_format') {
             $text = $value['value'] ?? $value;
-            if ((str_starts_with($text, 'tx:') || str_starts_with($text, '<p>tx:')) && $contentService){
+            if ((str_starts_with($text, 'tx:') || str_starts_with($text, '<p>tx:')) && $contentService) {
               $text = strip_tags($text);
               $this->cacheability->addCacheTags([$text]);
               $retrievedContent = $contentService->getContent($text);
@@ -425,7 +425,7 @@ class DynamicFieldManager {
           // Image media.
           if ($info['type'] === 'image' && !empty($value)) {
             $key = array_keys($value)[0];
-            $media_img = $value[$key]['media_google_sheet'] ?? null;
+            $media_img = $value[$key]['media_google_sheet'] ?? NULL;
             $image_data = [];
             if (isset($value[$key]['selection'])) {
               foreach ($value[$key]['selection'] as $media) {
@@ -511,7 +511,7 @@ class DynamicFieldManager {
           // Document media.
           if ($info['type'] === 'file' && !empty($value)) {
             $key = array_keys($value)[0];
-            $media_file = $value[$key]['media_google_sheet'] ?? null;
+            $media_file = $value[$key]['media_google_sheet'] ?? NULL;
             $file_data = [];
             if (isset($value[$key]['selection'])) {
               foreach ($value[$key]['selection'] as $media) {
@@ -628,12 +628,12 @@ class DynamicFieldManager {
             $value['elements'] = \Drupal::service('vactory.webform.normalizer')->normalize($webform_id);
 
             $value['autosave'] = FALSE;
-            // Check if the webform autosave module is enabled and add its settings
+            // Check webform autosave module is enabled and add its settings.
             if (\Drupal::moduleHandler()->moduleExists('vactory_decoupled_webform_autosave')) {
               $webform = Webform::load($webform_id);
               if ($webform) {
                 $autosave_settings = $webform->getThirdPartySetting('vactory_decoupled_webform_autosave', 'autosave_settings', []);
-                if($autosave_settings['autosave_enabled']) {
+                if ($autosave_settings['autosave_enabled']) {
                   $value['autosave'] = $autosave_settings;
                 }
               }
@@ -642,14 +642,24 @@ class DynamicFieldManager {
 
           if ($info['type'] === 'remote_video' && !empty($value)) {
             $value = reset($value);
-            $media_ytb = $value['media_google_sheet'] ?? null;
+            $media_ytb = $value['media_google_sheet'] ?? NULL;
             $mid = $value['selection'][0]['target_id'] ?? '';
             $media = !empty($mid) ? $this->mediaStorage->load($mid) : NULL;
+            $video_url = $media->get('field_media_oembed_video')->value;
+            $thumbnail_maxres = $this->getYoutubeThumbnail($video_url);
+            $thumbnail_uri = $this->getDefaultYoutubeThumbnail($media);
+            $thumbnail = $this->mediaFilesManager->getMediaAbsoluteUrl($thumbnail_uri);
             if ($media instanceof MediaInterface) {
               $value = [
                 'id'   => $media->uuid(),
                 'name' => $media->getName(),
-                'url'  => $media->get('field_media_oembed_video')->value,
+                'url'  => $video_url,
+                'thumbnail' => [
+                  'uri' => $thumbnail,
+                  'maxres' => $thumbnail_maxres,
+                  'height' => $media->get('thumbnail')->height,
+                  'width' => $media->get('thumbnail')->width,
+                ],
               ];
             }
             if (isset($media_ytb) && $contentService && str_starts_with($media_ytb, 'ytb:')) {
@@ -661,7 +671,13 @@ class DynamicFieldManager {
                 $value = [
                   'id'   => $media->uuid(),
                   'name' => $media->getName(),
-                  'url'  => $media->get('field_media_oembed_video')->value,
+                  'url'  => $video_url,
+                  'thumbnail' => [
+                    'uri' => $thumbnail,
+                    'maxres' => $thumbnail_maxres,
+                    'height' => $media->get('thumbnail')->height,
+                    'width' => $media->get('thumbnail')->width,
+                  ],
                 ];
               }
             }
@@ -788,6 +804,49 @@ class DynamicFieldManager {
         }
       }
     }
+  }
+
+  /**
+   * Get youtube thumbnail by video id.
+   */
+  private function getYoutubeThumbnail($video_url) {
+    $uri = '';
+    $url_components = parse_url($video_url);
+    $is_youtube_full_url = strpos($url_components['host'], 'youtube.com') !== FALSE;
+    $is_youtube_embed_url = strpos($url_components['host'], 'youtu.be') !== FALSE;
+    // Handle youtube thumbnail case.
+    if ($is_youtube_full_url || $is_youtube_embed_url) {
+      $video_id = '';
+      if ($is_youtube_full_url && isset($url_components['query'])) {
+        parse_str($url_components['query'], $params);
+        if (isset($params['v'])) {
+          $video_id = $params['v'];
+        }
+      }
+      if ($is_youtube_embed_url && isset($url_components['path'])) {
+        $path = trim($url_components['path'], '/');
+        $path_args = explode('/', $path);
+        if (!empty($path_args)) {
+          $video_id = $path_args[0];
+        }
+      }
+      if (!empty($video_id)) {
+        $uri = 'https://img.youtube.com/vi/' . $video_id . '/maxres2.jpg';
+      }
+    }
+    return $uri;
+  }
+
+  /**
+   * Get drupal youtube.
+   */
+  private function getDefaultYoutubeThumbnail($media) {
+    $fid = $media->get('thumbnail')->target_id;
+    if (isset($fid) && !empty($fid)) {
+      $uri = File::load($fid)->getFileUri();
+      return $uri;
+    }
+    return '';
   }
 
 }
