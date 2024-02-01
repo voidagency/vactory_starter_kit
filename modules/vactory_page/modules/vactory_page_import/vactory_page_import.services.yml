@@ -1,0 +1,4 @@
+services:
+  vactory_page_import.helpers:
+    class: Drupal\vactory_page_import\Services\PageImportService
+    arguments: ['@logger.factory']
