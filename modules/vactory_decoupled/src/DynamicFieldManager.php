@@ -645,11 +645,14 @@ class DynamicFieldManager {
             $media_ytb = $value['media_google_sheet'] ?? NULL;
             $mid = $value['selection'][0]['target_id'] ?? '';
             $media = !empty($mid) ? $this->mediaStorage->load($mid) : NULL;
-            $video_url = $media->get('field_media_oembed_video')->value;
-            $thumbnail_maxres = $this->getYoutubeThumbnail($video_url);
-            $thumbnail_uri = $this->getDefaultYoutubeThumbnail($media);
-            $thumbnail = $this->mediaFilesManager->getMediaAbsoluteUrl($thumbnail_uri);
+            $video_url = '';
+            $thumbnail = '';
+            $thumbnail_maxres = '';
             if ($media instanceof MediaInterface) {
+              $video_url = $media->get('field_media_oembed_video')->value;
+              $thumbnail_maxres = $this->getYoutubeThumbnail($video_url);
+              $thumbnail_uri = $this->getDefaultYoutubeThumbnail($media);
+              $thumbnail = $this->mediaFilesManager->getMediaAbsoluteUrl($thumbnail_uri);
               $value = [
                 'id'   => $media->uuid(),
                 'name' => $media->getName(),
