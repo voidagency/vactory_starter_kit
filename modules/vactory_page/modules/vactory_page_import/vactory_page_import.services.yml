@@ -2,3 +2,6 @@ services:
   vactory_page_import.helpers:
     class: Drupal\vactory_page_import\Services\PageImportService
     arguments: ['@logger.factory']
+
+  vactory_page_import.export_helpers:
+    class: Drupal\vactory_page_import\Services\PageExportService
