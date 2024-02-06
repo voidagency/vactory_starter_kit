@@ -49,6 +49,14 @@ function vactory_starter_kit_install_tasks(&$install_state) {
       'display'      => TRUE,
       'type'         => 'batch',
     ],
+    'vactory_decoupled_module_configure_form' => [
+      'display_name' => t('Configure additional modules'),
+      'type' => 'form',
+      'function' => 'Drupal\vactory_starter_kit\Installer\Form\ModuleConfigureForm',
+    ],
+    'vactory_decoupled_module_install' => [
+      'display_name' => t('Install additional modules'),
+    ],
   ];
 }
 
@@ -139,3 +147,49 @@ function vactory_starter_kit_after_install_finished(array &$install_state) {
 
   return $output;
 }
+
+
+/**
+ * Installs the vactory_decoupled modules.
+ *
+ * @param array $install_state
+ *   The install state.
+ */
+function vactory_decoupled_module_install(array &$install_state)
+{
+  set_time_limit(0);
+  $extensions = $install_state['forms']['vactory_decoupled_additional_modules'];
+  $form_values = $install_state['forms']['form_state_values'];
+
+  $optional_modules_manager = \Drupal::service('plugin.manager.vactory_decoupled.optional_modules');
+  $definitions = array_map(function ($extension_name) use ($optional_modules_manager) {
+    return $optional_modules_manager->getDefinition($extension_name);
+  }, $extensions);
+  $modules = array_filter($definitions, function (array $definition) {
+    return $definition['type'] == 'module';
+  });
+//  $themes = array_filter($definitions, function (array $definition) {
+//    return $definition['type'] == 'theme';
+//  });
+  if (!empty($modules)) {
+    /** @var \Drupal\Core\Extension\ModuleInstallerInterface $installer */
+    $installer = \Drupal::service('module_installer');
+    $installer->install(array_map(function (array $module) {
+      return $module['id'];
+    }, $modules));
+  }
+//  if (!empty($themes)) {
+//    /** @var \Drupal\Core\Extension\ModuleInstallerInterface $installer */
+//    $installer = \Drupal::service('theme_installer');
+//    $installer->install(array_map(function (array $theme) {
+//      return $theme['id'];
+//    }, $themes));
+//  }
+//  $instances = array_map(function ($extension_name) use ($optional_modules_manager) {
+//    return $optional_modules_manager->createInstance($extension_name);
+//  }, $extensions);
+//  array_walk($instances, function ($instance) use ($form_values) {
+//    $instance->submitForm($form_values);
+//  });
+}
+

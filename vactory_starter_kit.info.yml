@@ -179,6 +179,7 @@ install:
   - vactory_decoupled_webform
   - shield
   - vactory_jsonapi_extras
+  - vactory_dynamic_import
 themes:
   - vactory
   - claro

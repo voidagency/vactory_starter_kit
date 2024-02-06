@@ -1,0 +1,7 @@
+services:
+  logger.channel.vactory_decoupled:
+    parent: logger.channel_base
+    arguments: ['vactory_decoupled']
+  plugin.manager.vactory_decoupled.optional_modules:
+    class: Drupal\vactory_starter_kit\OptionalModulesManager
+    parent: default_plugin_manager

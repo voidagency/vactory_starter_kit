@@ -8,6 +8,11 @@
 use Drupal\taxonomy\Entity\Term;
 use Drupal\vactory_news\Exceptions\BlockCreationException;
 use Drupal\block_content\Entity\BlockContent;
+use Drupal\migrate\MigrateExecutable;
+use Drupal\migrate\MigrateMessage;
+use Drupal\migrate\Plugin\MigrationInterface;
+use Drupal\node\Entity\Node;
+use Drupal\paragraphs\Entity\Paragraph;
 
 /**
  * Implements hook_install().
@@ -43,6 +48,50 @@ function vactory_news_install() {
     $message = t("Problem has been detected while creating block news_view_introduction, the block might be already exist.");
     \Drupal::logger('vactory_news')->notice($message);
   }
+  // Execute migration (create news nodes).
+  $manager = \Drupal::service('plugin.manager.migration');
+  $migration = $manager->createInstance('node_vactory_news_migration_default');
+  $migration->getIdMap()->prepareUpdate();
+  $executable = new MigrateExecutable($migration, new MigrateMessage());
+
+  try {
+    $executable->import();
+  }
+  catch (\Exception $e) {
+    $migration->setStatus(MigrationInterface::STATUS_IDLE);
+  }
+  // Create page that contains news listing DF.
+  $widget_id = 'vactory_news:list';
+  $widget_settings = \Drupal::service('vactory_dynamic_field.vactory_provider_manager')->loadSettings($widget_id);
+  $df_default_value = $widget_settings['fields']['collection']['options']['#default_value'] ?? '';
+  $component = [];
+  if (isset($df_default_value)) {
+    $component['0']['collection'] = $df_default_value;
+  }
+
+  $paragraph = [
+    "type" => "vactory_component",
+    "field_vactory_title" => 'News listing',
+    "field_vactory_component" => [
+      "widget_id" => $widget_id,
+      "widget_data" => json_encode($component),
+    ],
+  ];
+  $paragraph = Paragraph::create($paragraph);
+  $paragraph->save();
+  $node = [
+    'type' => 'vactory_page',
+    'status' => 1,
+    'title' => 'News',
+    'field_vactory_paragraphs' => [
+      'target_id' => $paragraph->id(),
+      'target_revision_id' => \Drupal::entityTypeManager()
+        ->getStorage('paragraph')
+        ->getLatestRevisionId($paragraph->id()),
+    ],
+  ];
+  $node_entity = Node::create($node);
+  $node_entity->save();
 }
 
 /**
