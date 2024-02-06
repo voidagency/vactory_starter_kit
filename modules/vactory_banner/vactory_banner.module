@@ -52,7 +52,7 @@ function vactory_banner_preprocess_block(&$variables) {
       $content_image = isset($variables['content']['field_vactory_media']) ? $variables['content']['field_vactory_media'] : NULL;
       $content_image_mobile = isset($variables['content']['field_banner_image_mobile']) ? $variables['content']['field_banner_image_mobile'] : NULL;
       $variables['content']['field_vactory_media'] = isset($banner_image[0]['target_id']) ? $banner_image : $content_image;
-      $variables['content']['field_vactory_media_mobile'] = isset($banner_image_mobile[0]['target_id']) ? $banner_image_mobile : $content_image_mobile;
+      $variables['content']['field_banner_image_mobile'] = isset($banner_image_mobile[0]['target_id']) ? $banner_image_mobile : $content_image_mobile;
       $field_dynamic_title = (isset($banner_title[0]['value']) && !empty($banner_title[0]['value'])) ? $banner_title[0]['value'] : $variables['content']['page_title'];
       $variables['content']['page_title'] = $field_dynamic_title;
     }
