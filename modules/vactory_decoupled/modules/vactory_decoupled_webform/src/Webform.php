@@ -429,6 +429,7 @@ class Webform {
       'webform_time'             => 'time',
       'processed_text'           => 'rawhtml',
       'password'                 => 'password',
+      'range'                    => 'range',
     ];
 
     $htmlInputTypes = [
@@ -579,6 +580,10 @@ class Webform {
       $properties['html'] = $item['#text'];
       $properties['format'] = $item['#format'];
       $properties['attributes'] = $item['#wrapper_attributes'] ?? [];
+    }
+
+    if ($ui_type === 'range') {
+      (isset($item['#output'])) ? $properties['output'] = $item['#output'] : NULL;
     }
 
     if (isset($item['#states'])) {
