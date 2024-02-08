@@ -1,9 +1,6 @@
 map_api_key: ''
 use_geolocation: 0
-geolocation_marker:
-  enforced:
-    module:
-      - vactory_locator
+geolocation_marker: {  }
 url_geolocation_marker: null
 map_style: ''
 enable_filter: 0
@@ -11,3 +8,7 @@ lat: ''
 lon: ''
 zoom: nothing
 path_url: agence
+dependencies:
+  enforced:
+    module:
+      - vactory_locator
