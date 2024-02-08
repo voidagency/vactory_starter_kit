@@ -1,0 +1,51 @@
+id: node_vactory_blog_migration_default
+migration_group: default
+label: 'node vactory_blog migration'
+source:
+  plugin: csv
+  header_row_count: 1
+  ids:
+    - id
+  delimiter: ','
+  path: 'profiles/contrib/vactory_starter_kit/modules/vactory_blog/assets/migrate/node-vactory_blog.csv'
+  constants:
+    dest_path: 'public://migrated-vactory_blog/'
+process:
+  legacy_id: id
+  title: '-|title|-'
+  node_summary: '-|node_summary|-'
+  body/value: '-|body:value|-'
+  field_blog_category:
+    -
+      plugin: explode
+      delimiter: '|'
+      source: term|field_blog_category|+
+    -
+      plugin: entity_generate
+      value_key: name
+      bundle_key: vid
+      bundle: vactory_blog_categories
+      entity_type: taxonomy_term
+  field_blog_tags:
+    -
+      plugin: explode
+      delimiter: '|'
+      source: term|field_blog_tags|+
+    -
+      plugin: entity_generate
+      value_key: name
+      bundle_key: vid
+      bundle: vactory_blog_tags
+      entity_type: taxonomy_term
+  field_vactory_excerpt/value: '-|field_vactory_excerpt:value|-'
+  field_vactory_media:
+    plugin: media_import
+    destination: constants/dest_path
+    media_bundle: image
+    media_field_name: field_media_image
+    source: media|field_vactory_media|image
+    skip_on_error: 'true'
+    alt_field: media|field_vactory_media|image_alt
+destination:
+  plugin: 'entity:node'
+  default_bundle: vactory_blog

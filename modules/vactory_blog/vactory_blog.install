@@ -1,6 +1,49 @@
 <?php
 
+use Drupal\node\Entity\Node;
+use Drupal\paragraphs\Entity\Paragraph;
+
 /**
  * @file
  * Install file.
  */
+
+function vactory_blog_install() {
+
+  // Execute migration (create blog nodes).
+  $import_service = \Drupal::service('vactory_migrate.import');
+  $import_service->import('node_vactory_blog_migration_default', ',', 1);
+
+  // Create page that contains blog listing DF.
+  $widget_id = 'vactory_blog:list';
+  $widget_settings = \Drupal::service('vactory_dynamic_field.vactory_provider_manager')->loadSettings($widget_id);
+  $df_default_value = $widget_settings['fields']['collection']['options']['#default_value'] ?? '';
+  $component = [];
+  if (isset($df_default_value)) {
+    $component['0']['collection'] = $df_default_value;
+  }
+
+  $paragraph = [
+    "type" => "vactory_component",
+    "field_vactory_title" => 'Blog listing',
+    "field_vactory_component" => [
+      "widget_id" => $widget_id,
+      "widget_data" => json_encode($component),
+    ],
+  ];
+  $paragraph = Paragraph::create($paragraph);
+  $paragraph->save();
+  $node = [
+    'type' => 'vactory_page',
+    'status' => 1,
+    'title' => 'Blogs',
+    'field_vactory_paragraphs' => [
+      'target_id' => $paragraph->id(),
+      'target_revision_id' => \Drupal::entityTypeManager()
+        ->getStorage('paragraph')
+        ->getLatestRevisionId($paragraph->id()),
+    ],
+  ];
+  $node_entity = Node::create($node);
+  $node_entity->save();
+}

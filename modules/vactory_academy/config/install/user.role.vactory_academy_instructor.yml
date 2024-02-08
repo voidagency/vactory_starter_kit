@@ -1,6 +1,15 @@
 langcode: en
 status: true
 dependencies:
+  config:
+    - node.type.vactory_academy
+    - language.content_settings.node.vactory_academy
+  module:
+    - comment
+    - content_translation
+    - node
+    - system
+    - toolbar
   enforced:
     module:
       - vactory_academy

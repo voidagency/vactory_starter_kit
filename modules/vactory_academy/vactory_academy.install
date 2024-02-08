@@ -8,6 +8,8 @@
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\media\Entity\Media;
+use Drupal\node\Entity\Node;
+use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\user\Entity\Role;
 
 /**
@@ -49,6 +51,43 @@ function vactory_academy_install() {
   $data = array_merge($config->getRawData(), $data);
   $config->setData($data);
   $config->save();
+
+  // Execute migration (create academy nodes).
+  $import_service = \Drupal::service('vactory_migrate.import');
+  $import_service->import('node_vactory_academy_migration_default', ',', 1);
+
+  // Create page that contains academy listing DF.
+  $widget_id = 'vactory_academy:list';
+  $widget_settings = \Drupal::service('vactory_dynamic_field.vactory_provider_manager')->loadSettings($widget_id);
+  $df_default_value = $widget_settings['fields']['collection']['options']['#default_value'] ?? '';
+  $component = [];
+  if (isset($df_default_value)) {
+    $component['0']['collection'] = $df_default_value;
+  }
+
+  $paragraph = [
+    "type" => "vactory_component",
+    "field_vactory_title" => 'Academy listing',
+    "field_vactory_component" => [
+      "widget_id" => $widget_id,
+      "widget_data" => json_encode($component),
+    ],
+  ];
+  $paragraph = Paragraph::create($paragraph);
+  $paragraph->save();
+  $node = [
+    'type' => 'vactory_page',
+    'status' => 1,
+    'title' => 'Academy',
+    'field_vactory_paragraphs' => [
+      'target_id' => $paragraph->id(),
+      'target_revision_id' => \Drupal::entityTypeManager()
+        ->getStorage('paragraph')
+        ->getLatestRevisionId($paragraph->id()),
+    ],
+  ];
+  $node_entity = Node::create($node);
+  $node_entity->save();
 }
 
 /**

@@ -56,6 +56,8 @@ function vactory_starter_kit_install_tasks(&$install_state) {
     ],
     'vactory_decoupled_module_install' => [
       'display_name' => t('Install additional modules'),
+      'display'      => TRUE,
+      'type'         => 'batch',
     ],
   ];
 }
@@ -171,13 +173,26 @@ function vactory_decoupled_module_install(array &$install_state)
 //  $themes = array_filter($definitions, function (array $definition) {
 //    return $definition['type'] == 'theme';
 //  });
-  if (!empty($modules)) {
-    /** @var \Drupal\Core\Extension\ModuleInstallerInterface $installer */
-    $installer = \Drupal::service('module_installer');
-    $installer->install(array_map(function (array $module) {
-      return $module['id'];
-    }, $modules));
+  //=============================
+  $batch = [];
+
+  // Add all selected languages.
+  foreach ($modules as $module) {
+    $batch['operations'][] = [
+      'install_single_module',
+      (array) $module['id'],
+    ];
   }
+
+  return $batch;
+  //=============================
+//  if (!empty($modules)) {
+//    /** @var \Drupal\Core\Extension\ModuleInstallerInterface $installer */
+//    $installer = \Drupal::service('module_installer');
+//    $installer->install(array_map(function (array $module) {
+//      return $module['id'];
+//    }, $modules));
+//  }
 //  if (!empty($themes)) {
 //    /** @var \Drupal\Core\Extension\ModuleInstallerInterface $installer */
 //    $installer = \Drupal::service('theme_installer');
@@ -193,3 +208,7 @@ function vactory_decoupled_module_install(array &$install_state)
 //  });
 }
 
+function install_single_module($module) {
+  $installer = \Drupal::service('module_installer');
+  $installer->install([$module]);
+}
