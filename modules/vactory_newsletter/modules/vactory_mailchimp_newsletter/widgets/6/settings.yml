@@ -1,0 +1,8 @@
+name: 'NL - field date'
+multiple: FALSE
+category: 'NL Content'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: 'Titre'

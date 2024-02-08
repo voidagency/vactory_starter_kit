@@ -1,0 +1,20 @@
+{% if extra_fields.description.value['#text'] is not empty %}
+  <tr>
+    <td style="height: 14px"></td>
+  </tr>
+  <tr align="left">
+    <td style="padding: 0 20px">
+      <div style="color: #312D39; font-size: 12px; line-height: 18px; font-weight: 400;">
+        {{ extra_fields.description|raw }}
+      </div>
+    </td>
+  </tr>
+  <tr>
+    <td style="height: 14px"></td>
+  </tr>
+{% endif %}
+
+{% for item in content %}
+    {% set view_mode = item.view_mode is defined and item.view_mode is not empty ? item.view_mode : '' %}
+      {{ vactory_render('entity', 'node', item.node, '', view_mode) }}
+{% endfor %}

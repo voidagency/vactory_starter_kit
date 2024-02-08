@@ -1,0 +1,10 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - node.type.newsletter
+id: node.newsletter
+target_entity_type_id: node
+target_bundle: newsletter
+default_langcode: site_default
+language_alterable: false

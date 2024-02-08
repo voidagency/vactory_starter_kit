@@ -1,0 +1,28 @@
+name: 'NL - Nodes News'
+multiple: TRUE
+category: 'NL Content'
+enabled: TRUE
+fields:
+  node:
+    type: entity_autocomplete
+    label: 'Node'
+    options:
+      '#target_type': node
+      '#selection_settings':
+        'target_bundles':
+          - vactory_news
+      '#required': TRUE
+  view_mode:
+    type: select
+    label: 'View Mode'
+    options:
+      '#empty_option': '- Select View Mode -'
+      '#options':
+        - 'newsletter_inline_card_simple': 'Newsletter inline card (simple)'
+        - 'newsletter_inline_card_image': 'Newsletter inline card (with an image)'
+extra_fields:
+  description:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'full_html'

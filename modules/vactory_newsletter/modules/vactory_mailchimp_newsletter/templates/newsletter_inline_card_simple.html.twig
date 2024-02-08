@@ -1,0 +1,55 @@
+{% set theme = (content.field_vactory_theme.0 is not empty) ? content.field_vactory_theme.0['#title'] : '' %}
+{% set excerpt = (content.field_vactory_excerpt.0 is not empty) ? content.field_vactory_excerpt.0['#text'] : '' %}
+{% set date = (content.field_vactory_date.0 is not empty) ? content.field_vactory_date.0['#text'] : '' %}
+
+<tr>
+  <td>
+    <table bgcolor="#E1E0E2" role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tr>
+        <td style="padding: 20px 40px" class="mobile-px-20">
+          <table bgcolor="#FFFFFF" role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
+            <tr>
+              <td width="100%">
+                <table width="34%" class="mobile-w-full" cellspacing="0" cellpadding="0" border="0" align="left" valign="center">
+                  <tbody>
+                    <tr>
+                      <td style="padding: 20px 10px" class="mobile-pb-10 mobile-px-20">
+                        <div style="padding: 0 10px" class="mobile-px-0">
+                          {% if theme is not empty %}
+                            <span style="display: block; color: #D86B4B; font-size: 8px; line-height: 12px; font-weight: 400; margin-bottom: 9px;">{{ theme }}</span>
+                          {% endif %}
+                          {% if label is not empty %}
+                            <h2 style="display: block; font-size: 14px; line-height: 14px; font-weight: 700; color: #312D39; text-transform: uppercase;">{{ label }}</h2>
+                          {% endif %}
+                          {% if date is not empty %}
+                            <span style="display: block; color: #9C939E; font-size: 14px; font-weight: 700; line-height: 25px; text-transform: uppercase;">{{ date }}</span>
+                          {% endif %}
+
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <table width="66%" class="mobile-w-full" cellspacing="0" cellpadding="0" border="0" valign="center">
+                  <tbody>
+                    <tr>
+                      <td style="padding: 20px 10px" class="mobile-pt-0 mobile-px-20">
+                        <div class="mobile-mb-10" style="color: #635764; font-size: 12px; line-height: 18px; font-weight: 400; margin-bottom: 28px; margin-top: 0;">{{ excerpt |raw }}</div>
+                        {% if url is not null %}
+                          <span>
+                            <a href="{{ base_url ~ url }}" style="display: inline-block; padding: 5px 20px; text-align: center; border: 1px solid #EAC251; background-color: #EAC251; color: black; font-size: 8px; line-height: 11px; font-weight: 700; text-decoration: none;">{{ 'Lire la suite' |t }}</a>
+                          </span>
+                        {% endif %}
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </td>
+</tr>

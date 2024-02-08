@@ -1,0 +1,18 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_vactory_title
+    - node.type.newsletter
+id: node.newsletter.field_vactory_title
+field_name: field_vactory_title
+entity_type: node
+bundle: newsletter
+label: Subject
+description: ''
+required: true
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings: {  }
+field_type: string

@@ -1,0 +1,14 @@
+name: 'NL - Image'
+multiple: FALSE
+category: 'NL Content'
+enabled: TRUE
+fields:
+  title_image:
+    type: text
+    label: 'Titre image'
+  image:
+    type: image
+    label: 'Image'
+    options:
+      '#required': true
+      '#description': 'Image size largeur:246px hauteur:236px'

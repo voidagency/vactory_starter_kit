@@ -1,0 +1,21 @@
+{% set image_uri = (content.0.image.0 is defined) ? get_image(content.0.image.0) : "" %}
+{% set fluid_image = file_url(image_uri) %}
+{% set alt_image = (content.0.image.alt_image is defined) ? content.0.image.alt_image : '' %}
+{% set title_image = (content.0.title_image is not empty) ? content.0.title_image : '' %}
+{% set image_info = get_image_info(content.0.image.0) %}
+
+{% if content.0.image is not empty %}
+  <tr>
+    <td style="width: 100%; line-height: 0;">
+      <img src="{{ base_url ~ fluid_image }}"
+          class="img-fluid"
+          title="{{ title_image }}"
+          alt="{{alt_image}}"
+          width="{{image_info.width}}"
+          height="{{image_info.height}}"
+          >
+    </td>
+  </tr>
+{% endif %}
+
+

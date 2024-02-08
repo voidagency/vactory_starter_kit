@@ -1,0 +1,43 @@
+{% set image_uri = (content.0.image.0 is defined) ? get_image(content.0.image.0) : '' %}
+{# {% set fluid_image = image_uri|image_style('max_650x650') %} #}
+{% set fluid_image = file_url(image_uri) %}
+{% set image_info = get_image_info(content.0.image.0) %}
+
+<tr>
+  <td>
+    <table bgcolor="#57081B" border="0" cellpadding="0" cellspacing="0" align="center" valign="center">
+      <tbody>
+        <tr>
+          <td style="padding: 20px 0" valign="center" align="center">
+            <table class="mobile-w-full" width="38%" border="0" cellpadding="0" cellspacing="0" align="left" valign="center">
+              <tbody>
+                <tr>
+                  <td>
+                    <img alt="{{ content.0.image_alt }}" class="img-fluid" src="{{ base_url ~ fluid_image }}" width="{{image_info.width}}" height="{{image_info.height}}">
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <table class="mobile-w-full" width="62%" border="0" cellpadding="0" cellspacing="0" valign="center">
+              <tbody>
+                <tr>
+                  <td style="padding: 10px 30px;" class="mobile-px-20">
+                    {% if content.0.title is not empty %}
+                      <h2 style="font-family: 'Arial'; font-style: normal; font-weight: 700; font-size: 17px; line-height: 21px; color: #FFFFFF; margin-bottom: 7px;">{{ content.0.title }}</h2>
+                    {% endif %}
+                    {% if content.0.description is not empty %}
+                      <div style="font-family: 'Arial'; font-style: normal; font-weight: 400; font-size: 10px; line-height: 14px; color: #FFFFFF; margin-bottom: 20px;">{{ content.0.description|raw }}</div>
+                    {% endif %}
+                    {% if content.0.link.url is not empty and content.0.link.title is not empty %}
+                      <span><a href="{{ content.0.link.url }}" style="display: inline-block; background-color: #F9B900; padding: 8px 18px; font-family: 'Arial'; font-style: normal; font-weight: 400; font-size: 10px; color: #000000; text-decoration: none;">{{ content.0.link.title }}</a></span>
+                    {% endif %}
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </td>
+</tr>

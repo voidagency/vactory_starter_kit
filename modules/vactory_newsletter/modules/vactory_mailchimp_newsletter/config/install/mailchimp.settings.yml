@@ -1,0 +1,12 @@
+langcode: fr
+api_key: a029f8ac4ca914ff07c83d6fdbfae8ea-us16
+domain: 'localhost:8088'
+api_timeout: 10
+cron: false
+batch_limit: 100
+api_classname: Mailchimp\Mailchimp
+test_mode: false
+enable_connected: true
+connected_id: null
+connected_paths: null
+webhook_hash: 3f16c78c5e4cf88ec0fc0d2b74fe964c

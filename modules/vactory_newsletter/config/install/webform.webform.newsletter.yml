@@ -12,18 +12,31 @@ title: Newsletter
 description: ''
 category: ''
 elements: |-
-  votre_e_mail:
+  email:
     '#type': email
-    '#title': 'Votre e-mail'
+    '#title': 'Votre adresse email'
     '#required': true
-    '#required_error': 'Votre adresse mail est requise'
-    '#unique': true
-    '#unique_error': 'Cette adresse mail est déjà fournie!'
-  j_accepte_de_recevoir_des_informations_par_mail:
+  j_ai_lu_et_j_accepte_les_conditions_generales_d_utilisation_nota:
     '#type': checkbox
-    '#title': 'J''accepte de recevoir des informations par mail'
+    '#title': 'J’ai lu et j’accepte les conditions générales d’utilisation, notamment la mention relative à la protection des données personnelles'
     '#required': true
-    '#required_error': 'J''accepte de recevoir des informations par mail est requis'
+  processed_text:
+    '#type': processed_text
+    '#text': |
+      <p><strong>Mention relative à la protection des données personnelles :</strong></p>
+
+      <p>« Les données à caractère personnel recueillies dans le cadre du présent formulaire sont destinées à Attijariwafa bank qui de convention expresse est autorisée à procéder à leur traitement automatisé ou non, à les communiquer aux personnes morales et aux filiales et sociétés de son groupe, aux partenaires et prestataires de services.<br />
+      En outre, je déclare être informé que la Banque est susceptible d’utiliser mes données pour porter à ma connaissance des nouvelles offres, publications susceptibles de m’intéresser. A cette fin, je donne mon consentement express à l’utilisation de mes données personnelles.</p>
+
+      <p>Je confirme avoir lu et j’accepte les conditions relatives au traitement des données personnelles me concernant, et je donne mon accord express pour le traitement par le Groupe Attijariwafa bank y compris ses filiales, des données à caractère personnel me concernant.” Conformément à la loi n°09-08, vous bénéficiez d’un droit d’accès, de rectification et d’opposition aux traitements de vos données personnelles dont les modalités d’exercice sont précisées au sein des Conditions Générales du Site. »</p>
+    '#format': basic_html
+  captcha:
+    '#type': captcha
+    '#captcha_type': recaptcha/reCAPTCHA
+  actions:
+    '#type': webform_actions
+    '#title': 'Submit button(s)'
+    '#submit__label': S’inscrire
 css: ''
 javascript: ''
 settings:
@@ -33,8 +46,8 @@ settings:
   ajax_effect: ''
   ajax_speed: null
   page: true
-  page_submit_path: ''
-  page_confirm_path: ''
+  page_submit_path: /form/newsletter
+  page_confirm_path: /form/newsletter/confirmation
   page_theme_name: ''
   form_title: both
   form_submit_once: false
@@ -42,7 +55,7 @@ settings:
   form_close_message: ''
   form_exception_message: ''
   form_previous_submissions: false
-  form_confidential: false
+  form_confidential: true
   form_confidential_message: ''
   form_disable_remote_addr: false
   form_convert_anonymous: false
@@ -111,6 +124,8 @@ settings:
   wizard_toggle: false
   wizard_toggle_show_label: ''
   wizard_toggle_hide_label: ''
+  wizard_page_type: container
+  wizard_page_title_tag: h2
   preview: 0
   preview_label: ''
   preview_title: ''
@@ -129,7 +144,7 @@ settings:
   confirmation_type: message
   confirmation_url: ''
   confirmation_title: ''
-  confirmation_message: 'Merci pour votre inscription &agrave; la newsletter!'
+  confirmation_message: 'Merci ! Vous avez &eacute;t&eacute; abonn&eacute; avec succ&egrave;s.'
   confirmation_attributes: {  }
   confirmation_back: true
   confirmation_back_label: ''

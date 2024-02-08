@@ -1,0 +1,29 @@
+name: 'Vactory Mailchimp Newsletter'
+description: 'Provides Newsletter type de contenu and related configuration. Manage your Newsletter content. Sends newsletters via Mailchimp'
+core_version_requirement: '^9.4 || ^10'
+type: module
+dependancies:
+  - vactory_newsletter
+  - vactory_mailchimp
+  - vactory_dynamic_field
+  - webform
+  - vactory_webform_mailchimp_handler
+dependencies:
+  - 'better_exposed_filters:better_exposed_filters'
+  - 'drupal:datetime'
+  - 'drupal:field'
+  - 'drupal:language'
+  - 'drupal:media_library'
+  - 'drupal:menu_ui'
+  - 'drupal:node'
+  - 'drupal:options'
+  - 'drupal:path'
+  - 'drupal:text'
+  - 'drupal:user'
+  - 'drupal:views'
+  - 'entity_reference_revisions:entity_reference_revisions'
+  - 'mailchimp:mailchimp'
+  - 'paragraphs:paragraphs'
+  - 'scheduler:scheduler'
+  - 'vactory_mailchimp_newsletter:vactory_mailchimp_newsletter'
+  - 'wysiwyg_template:wysiwyg_template'

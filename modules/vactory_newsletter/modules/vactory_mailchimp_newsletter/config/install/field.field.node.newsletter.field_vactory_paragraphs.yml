@@ -1,0 +1,38 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_vactory_paragraphs
+    - node.type.newsletter
+    - paragraphs.paragraphs_type.vactory_component
+    - paragraphs.paragraphs_type.vactory_paragraph_block
+  module:
+    - entity_reference_revisions
+id: node.newsletter.field_vactory_paragraphs
+field_name: field_vactory_paragraphs
+entity_type: node
+bundle: newsletter
+label: Paragraphs
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:paragraph'
+  handler_settings:
+    target_bundles:
+      vactory_component: vactory_component
+      vactory_paragraph_block: vactory_paragraph_block
+    negate: 0
+    target_bundles_drag_drop:
+      paragraph_background_wrapper:
+        weight: 4
+        enabled: false
+      vactory_component:
+        weight: 5
+        enabled: true
+      vactory_paragraph_block:
+        weight: 6
+        enabled: true
+field_type: entity_reference_revisions

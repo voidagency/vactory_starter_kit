@@ -1,0 +1,14 @@
+name: 'NL - Content Title, Description, Button CTA - centred'
+multiple: FALSE
+category: 'NL Content'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: 'Titre'
+  description:
+    type: textarea
+    label: 'Description'
+  link:
+    type: url_extended
+    label: 'Lien'
