@@ -58,6 +58,14 @@ settings:
         - justify
     ckeditor5_imageResize:
       allow_resize: true
+    media_media:
+      allow_view_mode_override: false
+    editor_advanced_link_link:
+      enabled_attributes:
+        - class
+        - rel
+        - target
+        - title
     linkit_extension:
       linkit_enabled: true
       linkit_profile: default
