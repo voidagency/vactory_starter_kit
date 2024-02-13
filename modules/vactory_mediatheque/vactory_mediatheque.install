@@ -5,6 +5,7 @@
  * Install file.
  */
 
+use Drupal\menu_link_content\Entity\MenuLinkContent;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\taxonomy\Entity\Term;
@@ -98,4 +99,12 @@ function vactory_mediatheque_install() {
   ];
   $node_entity = Node::create($node);
   $node_entity->save();
+
+
+  $menu_link = MenuLinkContent::create([
+    'title' => 'Mediatheque',
+    'link' => ['uri' => 'internal:/node/' . $node_entity->id()],
+    'menu_name' => 'main',
+  ]);
+  $menu_link->save();
 }

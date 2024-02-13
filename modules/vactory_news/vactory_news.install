@@ -8,11 +8,9 @@
 use Drupal\taxonomy\Entity\Term;
 use Drupal\vactory_news\Exceptions\BlockCreationException;
 use Drupal\block_content\Entity\BlockContent;
-use Drupal\migrate\MigrateExecutable;
-use Drupal\migrate\MigrateMessage;
-use Drupal\migrate\Plugin\MigrationInterface;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
+use Drupal\menu_link_content\Entity\MenuLinkContent;
 
 /**
  * Implements hook_install().
@@ -83,6 +81,49 @@ function vactory_news_install() {
   ];
   $node_entity = Node::create($node);
   $node_entity->save();
+
+  $menu_link = MenuLinkContent::create([
+    'title' => 'News',
+    'link' => ['uri' => 'internal:/node/' . $node_entity->id()],
+    'menu_name' => 'main',
+  ]);
+  $menu_link->save();
+
+  // add three-columns DF to homepage.
+  $three_columns_widget_id = 'vactory_news:three-columns';
+  $three_columns_widget_settings = \Drupal::service('vactory_dynamic_field.vactory_provider_manager')->loadSettings($three_columns_widget_id);
+  $df_default_value = $three_columns_widget_settings['fields']['collection']['options']['#default_value'] ?? '';
+  $component = [];
+  if (isset($df_default_value)) {
+    $component['0']['collection'] = $df_default_value;
+    $component['0']['title'] = 'News three columns';
+    $component['0']['description']['value'] = '';
+    $component['0']['link']['title'] = 'See more';
+    $component['0']['link']['url'] = '/node/' . $node_entity->id();
+  }
+
+  $paragraph = [
+    "type" => "vactory_component",
+    "field_vactory_title" => 'News three columns',
+    "field_vactory_component" => [
+      "widget_id" => $three_columns_widget_id,
+      "widget_data" => json_encode($component),
+    ],
+  ];
+  $paragraph = Paragraph::create($paragraph);
+  $paragraph->save();
+  $homepage = \Drupal::entityTypeManager()->getStorage('node')->loadByProperties([
+    'type'     => 'vactory_page',
+    'title'    => 'Homepage',
+  ]);
+  $homepage = reset($homepage);
+  $homepage->field_vactory_paragraphs[] = [
+    'target_id' => $paragraph->id(),
+    'target_revision_id' => \Drupal::entityTypeManager()
+      ->getStorage('paragraph')
+      ->getLatestRevisionId($paragraph->id()),
+  ];
+  $homepage->save();
 }
 
 /**

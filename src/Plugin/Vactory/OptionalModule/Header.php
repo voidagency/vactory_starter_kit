@@ -5,18 +5,18 @@ namespace Drupal\vactory_starter_kit\Plugin\Vactory\OptionalModule;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Publication.
+ * Header.
  *
  * @VactoryOptionalModule(
- *   id = "vactory_publication",
- *   label = @Translation("Publication"),
- *   description = @Translation("The publication module manages your publications content."),
+ *   id = "vactory_header",
+ *   label = @Translation("Header"),
+ *   description = @Translation("manages layout : header"),
  *   type = "module",
  *   weight = 10,
  *   standardlyEnabled = false,
  * )
  */
-class Publication extends AbstractOptionalModule {
+class Header extends AbstractOptionalModule {
 
   /**
    * {@inheritdoc}
@@ -25,9 +25,9 @@ class Publication extends AbstractOptionalModule {
 
     $form = parent::buildForm($form, $form_state);
 
-    $form['vactory_publication']['project_info'] = [
+    $form['vactory_header']['project_info'] = [
       '#type' => 'item',
-      '#description' => $this->t("The publication module manages your publications content."),
+      '#description' => $this->t("manages layout : header"),
     ];
 
     return $form;

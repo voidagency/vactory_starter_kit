@@ -104,7 +104,7 @@ class JsonApiGenerator {
     $id = $config['id'] ?? '';
     $resource = $config['resource'];
     $filters = $config['filters'];
-    $exposed_vocabularies = $config['vocabularies'];
+    $exposed_vocabularies = $config['vocabularies'] ?? [];
     $entity_queue = $config['entity_queue'] ?? '';
     $entity_queue_field_id = $config['entity_queue_field_id'] ?? '';
     $subqueue_items_ids = [];
