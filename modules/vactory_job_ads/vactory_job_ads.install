@@ -12,8 +12,8 @@ use Drupal\paragraphs\Entity\Paragraph;
 function vactory_job_ads_install() {
 
   // Execute migration (create blog nodes).
-  $import_service = \Drupal::service('vactory_migrate.import');
-  $import_service->import('node_vactory_job_ads_migration_default', ',', 1);
+//  $import_service = \Drupal::service('vactory_migrate.import');
+//  $import_service->import('node_vactory_job_ads_migration_default', ',', 1);
 
   // Create page that contains news listing DF.
   $widget_id = 'vactory_job_ads:list';

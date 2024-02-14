@@ -64,8 +64,8 @@ function vactory_mediatheque_install() {
   }
 
   // Execute migration (create mediatheque nodes).
-  $import_service = \Drupal::service('vactory_migrate.import');
-  $import_service->import('node_vactory_mediatheque_migration_default', ',', 1);
+//  $import_service = \Drupal::service('vactory_migrate.import');
+//  $import_service->import('node_vactory_mediatheque_migration_default', ',', 1);
 
   // Create page that contains mediatheque listing DF.
   $widget_id = 'vactory_mediatheque:list';

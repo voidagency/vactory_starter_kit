@@ -51,8 +51,8 @@ function vactory_publication_install() {
   }
 
   // Execute migration (create news nodes).
-  $import_service = \Drupal::service('vactory_migrate.import');
-  $import_service->import('node_vactory_publication_migration_default', ',', 1);
+//  $import_service = \Drupal::service('vactory_migrate.import');
+//  $import_service->import('node_vactory_publication_migration_default', ',', 1);
   // Create page that contains news listing DF.
   $widget_id = 'vactory_publication:list';
   $widget_settings = \Drupal::service('vactory_dynamic_field.vactory_provider_manager')->loadSettings($widget_id);

@@ -54,8 +54,8 @@ function vactory_academy_install() {
   $config->save();
 
   // Execute migration (create academy nodes).
-  $import_service = \Drupal::service('vactory_migrate.import');
-  $import_service->import('node_vactory_academy_migration_default', ',', 1);
+//  $import_service = \Drupal::service('vactory_migrate.import');
+//  $import_service->import('node_vactory_academy_migration_default', ',', 1);
 
   // Create page that contains academy listing DF.
   $widget_id = 'vactory_academy:list';
