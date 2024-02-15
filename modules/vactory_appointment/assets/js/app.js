@@ -27,7 +27,7 @@
         selectDateWrapper.setAttribute("class", 'mobile-date-wrapper');
         content = '<div class="date-wrapper mb-2">';
         content += '<label>' + Drupal.t('Choisissez la date de votre rendez-vous') + '</label>';
-        content += '<input id="mobile-appointment-day" type="text" min="' + currentDate + '" placeholder="jj/mm/aaaa" class="appointment-date required bg-white form-control js-has-icon" readonly>';
+        content += '<input id="mobile-appointment-day" type="text" min="' + sanitizeValue(currentDate) + '" placeholder="jj/mm/aaaa" class="appointment-date required bg-white form-control js-has-icon" readonly>';
         content += '</div>';
         content += '<div class="hours-wrapper">';
         content += '<label>' + Drupal.t("Choisissez l'heure de votre rendez-vous") + '</label>';
@@ -35,13 +35,13 @@
         content += '<div><select id="mobile-appointment-hour" name="hours">';
         //content += '<option value="">' + Drupal.t("- Sélectionner l'heure -") + '</option>';
         hoursOptions.forEach(function (el) {
-          content += '<option value="' + el + '">' + el + '</option>';
+          content += '<option value="' + sanitizeValue(el) + '">' + sanitizeValue(el) + '</option>';
         });
         content += '</select></div>';
         content += '<span class="m-1 font-20 font-weight-bold align-middle">:</span>';
         content += '<div><select id="mobile-appointment-minutes" name="minutes">';
         minutesOptions.forEach(function (el) {
-          content += '<option value="' + el + '">' + el + '</option>';
+          content += '<option value="' + sanitizeValue(el) + '">' + sanitizeValue(el) + '</option>';
         });
         content += '</select></div></div>';
         content += '</div>';
@@ -264,5 +264,9 @@
     else if(timezone_offset_min === 0)
       timezone_standard = 'Z';
     return timezone_standard;
+  }
+
+  function sanitizeValue(value) {
+    return String(value).replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
 })(jQuery, Drupal, drupalSettings);
