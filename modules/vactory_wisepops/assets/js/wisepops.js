@@ -9,7 +9,7 @@
         p=i.getElementsByTagName(s)[0];
       o.defer=1;o.src=e;p.parentNode.insertBefore(o,p)})(
         window,
-        document,'script','//loader.wisepops.com/get-loader.js?v=1&site=' + drupalSettings['key'],'wisepops'
+        document,'script','//loader.wisepops.com/get-loader.js?v=1&site=' + encodeURIComponent(drupalSettings['key']),'wisepops'
       );
       if (drupalSettings['properties'] !== null) {
         wisepops('properties', drupalSettings['properties']);

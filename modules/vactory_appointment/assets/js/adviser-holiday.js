@@ -104,9 +104,9 @@
               eventDescription = document.createElement("div");
               eventDescription.setAttribute("class", 'event-description');
               eventDescription.setAttribute("data-date", infos.event.start);
-              content = '<strong>' + appointmentInfo.full_name + '</strong><br>';
-              content += '<strong>Tél:</strong> ' + appointmentInfo.telephone + '<br>';
-              content += '<strong>E-mail:</strong> ' + '<a href="mailto:' + appointmentInfo.email + '">' + appointmentInfo.email + '</a><br>';
+              content = '<strong>' + sanitizeValue(appointmentInfo.full_name) + '</strong><br>';
+              content += '<strong>Tél:</strong> ' + sanitizeValue(appointmentInfo.telephone) + '<br>';
+              content += '<strong>E-mail:</strong> ' + '<a href="mailto:' + sanitizeValue(appointmentInfo.email) + '">' + sanitizeValue(appointmentInfo.email) + '</a><br>';
               eventDescription.innerHTML = content;
               infos.el.append(eventDescription);
               date = new Date(infos.event.start);
@@ -269,5 +269,9 @@
     else if(timezone_offset_min === 0)
       timezone_standard = 'Z';
     return timezone_standard;
+  }
+
+  function sanitizeValue(value) {
+    return String(value).replace(/</g, "&lt;").replace(/>/g, "&gt;");
   }
 })(jQuery, Drupal, drupalSettings);
