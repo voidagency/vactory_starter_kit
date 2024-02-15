@@ -1,6 +1,7 @@
 <?php
 
 namespace Drupal\vactory_notifications\Form;
+
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
@@ -39,6 +40,9 @@ class SettingsForm extends ConfigFormBase {
     return 'vactory_notifications_settings_form';
   }
 
+  /**
+   * The build form function.
+   */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('vactory_notifications.settings');
     $path_resolver = \Drupal::service('extension.path.resolver');
@@ -135,7 +139,7 @@ class SettingsForm extends ConfigFormBase {
     $form['global_settings']['toast_template'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Toast template'),
-      '#description' => $this->t('Enter Toast template twig file path here, Default to ' . $path_resolver->getPath('module', 'vactory_notifications') . '/templates/notifications-toast.html.twig'),
+      '#description' => $this->t('Enter Toast template twig file path here, Default to @path/templates/notifications-toast.html.twig', ['@path' => $path_resolver->getPath('module', 'vactory_notifications')]),
       '#default_value' => $config->get('toast_template') ? $config->get('toast_template') : $path_resolver->getPath('module', 'vactory_notifications') . '/templates/notifications-toast.html.twig',
       '#states' => [
         'visible' => [
@@ -195,7 +199,7 @@ class SettingsForm extends ConfigFormBase {
       ];
 
       // Mail Roles settings.
-      if ($role->id()<>'anonymous'){
+      if ($role->id() <> 'anonymous') {
         $form['mail_settings'][$key] = [
           '#type' => 'details',
           '#title' => $role->label(),
@@ -216,7 +220,6 @@ class SettingsForm extends ConfigFormBase {
           '#default_value' => !empty($config->get($key . '_content_types_mail')) ? $config->get($key . '_content_types_mail') : [],
         ];
 
-
       }
       $node_types = [];
     }
@@ -224,6 +227,9 @@ class SettingsForm extends ConfigFormBase {
     return $form;
   }
 
+  /**
+   * The submit form function.
+   */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $config = $this->config('vactory_notifications.settings');
     $existing_roles = Role::loadMultiple();
@@ -240,13 +246,14 @@ class SettingsForm extends ConfigFormBase {
       ->save();
 
     foreach ($existing_roles as $key => $role) {
-        $config->set($key . '_content_types', array_keys($form_state->getValue($key . '_content_types')));
-        if ($role->id()<>'anonymous'){
-          $config->set($key . '_content_types_mail', array_keys($form_state->getValue($key . '_content_types_mail')));
-        }
+      $config->set($key . '_content_types', array_keys($form_state->getValue($key . '_content_types')));
+      if ($role->id() <> 'anonymous') {
+        $config->set($key . '_content_types_mail', array_keys($form_state->getValue($key . '_content_types_mail')));
+      }
     }
 
     $config->save();
     parent::submitForm($form, $form_state);
   }
+
 }

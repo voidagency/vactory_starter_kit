@@ -8,7 +8,6 @@
 use Drupal\Component\Serialization\Json;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Cache\Cache;
-use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
@@ -57,7 +56,7 @@ function vactory_notifications_theme($existing, $type, $theme, $path) {
 /**
  * Implements hook_ENTITY_TYPE_presave().
  */
-function vactory_notifications_node_presave(Drupal\Core\Entity\EntityInterface $entity) {
+function vactory_notifications_node_presave(EntityInterface $entity) {
   $notification_manager = \Drupal::service('vactory_notifications.manager');
   if ($entity->get('generate_notification')->value && $notification_manager->isNotificationsEnabledForBundle($entity->bundle())) {
     if ($entity->isNew()) {
@@ -158,7 +157,7 @@ function vactory_notification_generate($entity) {
 /**
  * Implements hook_ENTITY_TYPE_insert().
  */
-function vactory_notifications_notifications_entity_insert(Drupal\Core\Entity\EntityInterface $entity) {
+function vactory_notifications_notifications_entity_insert(EntityInterface $entity) {
   $notification_manager = \Drupal::service('vactory_notifications.manager');
   $token = Drupal::token();
   $notification_config = Drupal::config('vactory_notifications.settings');
@@ -331,33 +330,40 @@ function vactory_notifications_form_node_form_alter(&$form, FormStateInterface $
   $form['mail_subject']['#group'] = 'node_mail';
   $form['mail_message']['#group'] = 'node_mail';
 
-  // Set content type subjet and message default values if not empty
+  // Set content type subjet and message default values if not empty.
   if ($form_state->getFormObject()->getEntity() instanceof NodeInterface) {
     $node_type = $form_state->getFormObject()->getEntity()->getType();
     // Get the mail_content_types data.
     $mail_content_types = $notifications_config->get('mail_content_types');
     if (isset($mail_content_types[$node_type])) {
-      // Check if mail_subject and mail_message are empty, and set default values.
+      // Check mail_subject and mail_message are empty, and set default values.
       if (empty($mail_content_types[$node_type]['mail_subject'])) {
-        $form['mail_subject']['widget'][0]['value']['#default_value'] = $notification_config_translation->get('mail_default_subject') ?? $notifications_config->get('mail_default_subject');
-      } else {
+        $form['mail_subject']['widget'][0]['value']['#default_value'] = $notification_config_translation->get('mail_default_subject') ??
+         $notifications_config->get('mail_default_subject');
+      }
+      else {
         // Use the mail_subject from mail_content_types.
         $form['mail_subject']['widget'][0]['value']['#default_value'] = $mail_content_types[$node_type]['mail_subject'];
       }
       if (empty($mail_content_types[$node_type]['mail_message']['value'])) {
-        $form['mail_message']['widget'][0]['#default_value'] = $notification_config_translation->get('mail_default_message') ?? $notifications_config->get('mail_default_message');
-      } else {
+        $form['mail_message']['widget'][0]['#default_value'] = $notification_config_translation->get('mail_default_message') ??
+         $notifications_config->get('mail_default_message');
+      }
+      else {
         // Use the mail_message from mail_content_types.
         $form['mail_message']['widget'][0]['#default_value'] = $mail_content_types[$node_type]['mail_message']['value'];
       }
       $form['mail_message']['widget'][0]['#format'] = 'full_html';
     }
-  } else {
+  }
+  else {
     if (!isset($form['mail_subject']['widget'][0]['value']['#default_value']) || $route_name === 'entity.node.content_translation_add') {
-      $form['mail_subject']['widget'][0]['value']['#default_value'] = $notification_config_translation->get('mail_default_subject') ?? $notifications_config->get('mail_default_subject');
+      $form['mail_subject']['widget'][0]['value']['#default_value'] = $notification_config_translation->get('mail_default_subject') ??
+       $notifications_config->get('mail_default_subject');
     }
     if (!isset($form['mail_message']['widget'][0]['value']['#default_value']) || $route_name === 'entity.node.content_translation_add') {
-      $form['mail_message']['widget'][0]['value']['#default_value'] = $notification_config_translation->get('mail_default_message') ?? $notifications_config->get('mail_default_message');
+      $form['mail_message']['widget'][0]['value']['#default_value'] = $notification_config_translation->get('mail_default_message') ??
+       $notifications_config->get('mail_default_message');
     }
   }
 
