@@ -144,6 +144,36 @@ class SettingsForm extends ConfigFormBase {
       ],
     ];
 
+    // Mail content types Tab.
+    $form['mail_content_types'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Mail content types'),
+      '#description' => $this->t('Mail message to use. You can explore available notifications tokens by clicking "Browse available tokens" link bellow.'),
+      '#group' => 'settings_tab',
+      '#tree' => TRUE,
+    ];
+    foreach ($existing_content_types as $node_type_machine_name => $content_type) {
+      $form['mail_content_types'][$node_type_machine_name] = [
+        '#type' => 'details',
+        '#title' => $content_type->label(),
+        '#group' => 'content_type_tab',
+      ];
+      $form['mail_content_types'][$node_type_machine_name]['mail_subject'] = [
+        '#type' => 'textfield',
+        '#title' => $this->t('Mail subject'),
+        '#description' => $this->t('Mail Subject to use. You can explore available notifications tokens by clicking "Browse available tokens" link bellow.'),
+        '#default_value' => $config->get('mail_content_types')[$node_type_machine_name]['mail_subject'] ?? '',
+      ];
+      $form['mail_content_types'][$node_type_machine_name]['mail_message'] = [
+        '#type' => 'text_format',
+        '#title' => $this->t('Mail default message'),
+        '#description' => $this->t('Mail message to use. You can explore available notifications tokens by clicking "Browse available tokens" link bellow.'),
+        '#format' => 'full_html',
+        '#default_value' => $config->get('mail_content_types')[$node_type_machine_name]['mail_message']['value'] ?? '',
+      ];
+      $form['mail_content_types'][$node_type_machine_name]['tree_token'] = get_token_tree();
+    }
+
     // Roles settings.
     foreach ($existing_roles as $key => $role) {
       $form['roles_settings'][$key] = [
@@ -191,8 +221,6 @@ class SettingsForm extends ConfigFormBase {
       $node_types = [];
     }
 
-
-
     return $form;
   }
 
@@ -208,6 +236,7 @@ class SettingsForm extends ConfigFormBase {
       ->set('notifications_lifetime', $form_state->getValue('notifications_lifetime'))
       ->set('enable_toast', $form_state->getValue('enable_toast'))
       ->set('toast_template', $form_state->getValue('toast_template'))
+      ->set('mail_content_types', $form_state->getValue('mail_content_types'))
       ->save();
 
     foreach ($existing_roles as $key => $role) {

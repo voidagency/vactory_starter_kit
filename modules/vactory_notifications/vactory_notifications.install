@@ -147,3 +147,29 @@ function vactory_notifications_update_8105(&$sandbox) {
     ->setDisplayConfigurable('form', TRUE);
   Drupal::entityDefinitionUpdateManager()->installFieldStorageDefinition('generate_notification', 'node', 'vactory_notifications', $field_definition);
 }
+
+/**
+ * Update Mail notifications message node widget type.
+ */
+function vactory_notifications_update_8106(&$sandbox) {
+  $entityUpdateManager = \Drupal::entityDefinitionUpdateManager();
+  // Get the existing field storage definition.
+  $field_storage = $entityUpdateManager->getFieldStorageDefinition('mail_message', 'node', 'vactory_notifications');
+  // Create a new field definition with the text_long type.
+  $new_mail_message_field = BaseFieldDefinition::create('text_textarea')
+    ->setLabel(t('Mail Notifications message'))
+    ->setDescription(t('Set the mail notification message of current node'))
+    ->setSettings([
+      'default_value' => '',
+      'text_processing' => 0,
+    ])
+    ->setTranslatable(TRUE)
+    ->setDisplayOptions('form', array(
+      'type' => 'text_textarea',
+      'weight' => -1,
+    ))
+    ->setDisplayConfigurable('form', TRUE)
+    ->setDisplayConfigurable('view', TRUE);
+  // Update the field storage definition with the new field definition.
+  $entityUpdateManager->updateFieldStorageDefinition($field_storage, $new_mail_message_field);
+}
