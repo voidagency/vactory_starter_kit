@@ -13,3 +13,18 @@
 .js .field--widget-entity-reference-paragraphs .field-multiple-drag {
   vertical-align: middle !important;
 }
+
+/* Widget Vactory Icon */
+.icons-selector .selector-category select,
+.icons-selector .selector-search input[type="text"] {
+  padding-right: 35px;
+}
+[dir="rtl"] .icons-selector .selector-category select,
+[dir="rtl"] .icons-selector .selector-search input[type="text"] {
+  padding-left: 35px;
+}
+
+[dir="rtl"] .icons-selector .selector-search i {
+  right: unset;
+  left: 10px;
+}
