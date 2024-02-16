@@ -1,0 +1,19 @@
+<?php
+
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function vactory_two_factor_authentication_entity_base_field_info(EntityTypeInterface $entity_type) {
+  $fields = [];
+
+  if ($entity_type->id() === 'user') {
+    $fields['user_2fa_data'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('User 2FA data'))
+      ->setTranslatable(FALSE);
+  }
+
+  return $fields;
+}
