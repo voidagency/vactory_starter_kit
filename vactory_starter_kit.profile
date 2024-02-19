@@ -163,15 +163,13 @@ function vactory_starter_kit_after_install_finished(array &$install_state) {
   return $output;
 }
 
-
 /**
  * Installs the vactory_decoupled modules.
  *
  * @param array $install_state
  *   The install state.
  */
-function vactory_decoupled_module_install(array &$install_state)
-{
+function vactory_decoupled_module_install(array &$install_state) {
   set_time_limit(0);
   $extensions = $install_state['forms']['vactory_decoupled_additional_modules'];
   $form_values = $install_state['forms']['form_state_values'];
@@ -183,10 +181,6 @@ function vactory_decoupled_module_install(array &$install_state)
   $modules = array_filter($definitions, function (array $definition) {
     return $definition['type'] == 'module';
   });
-//  $themes = array_filter($definitions, function (array $definition) {
-//    return $definition['type'] == 'theme';
-//  });
-  //=============================
   $batch = [];
 
   // Add all selected languages.
@@ -198,29 +192,11 @@ function vactory_decoupled_module_install(array &$install_state)
   }
 
   return $batch;
-  //=============================
-//  if (!empty($modules)) {
-//    /** @var \Drupal\Core\Extension\ModuleInstallerInterface $installer */
-//    $installer = \Drupal::service('module_installer');
-//    $installer->install(array_map(function (array $module) {
-//      return $module['id'];
-//    }, $modules));
-//  }
-//  if (!empty($themes)) {
-//    /** @var \Drupal\Core\Extension\ModuleInstallerInterface $installer */
-//    $installer = \Drupal::service('theme_installer');
-//    $installer->install(array_map(function (array $theme) {
-//      return $theme['id'];
-//    }, $themes));
-//  }
-//  $instances = array_map(function ($extension_name) use ($optional_modules_manager) {
-//    return $optional_modules_manager->createInstance($extension_name);
-//  }, $extensions);
-//  array_walk($instances, function ($instance) use ($form_values) {
-//    $instance->submitForm($form_values);
-//  });
 }
 
+/**
+ * Install a module.
+ */
 function install_single_module($module) {
   $installer = \Drupal::service('module_installer');
   $installer->install([$module]);
@@ -232,8 +208,7 @@ function install_single_module($module) {
  * @param array $install_state
  *   The install state.
  */
-function vactory_decoupled_module_import_nodes_batch(array &$install_state)
-{
+function vactory_decoupled_module_import_nodes_batch(array &$install_state) {
   set_time_limit(0);
   $migrations = $install_state['forms']['vactory_decoupled_import_nodes'];
 
@@ -266,7 +241,8 @@ function execute_migration($id, &$context) {
 
   try {
     $executable->import();
-  } catch (\Exception $e) {
+  }
+  catch (\Exception $e) {
     $migration->setStatus(MigrationInterface::STATUS_IDLE);
   }
 }

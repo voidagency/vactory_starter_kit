@@ -50,39 +50,44 @@ function vactory_publication_install() {
     \Drupal::logger('vactory_publication')->notice($message);
   }
 
-  // Execute migration (create news nodes).
-//  $import_service = \Drupal::service('vactory_migrate.import');
-//  $import_service->import('node_vactory_publication_migration_default', ',', 1);
   // Create page that contains news listing DF.
   $widget_id = 'vactory_publication:list';
   $widget_settings = \Drupal::service('vactory_dynamic_field.vactory_provider_manager')->loadSettings($widget_id);
   $df_default_value = $widget_settings['fields']['collection']['options']['#default_value'] ?? '';
   $component = [];
+  $paragraph = NULL;
   if (isset($df_default_value)) {
     $component['0']['collection'] = $df_default_value;
+    $paragraph = [
+      "type" => "vactory_component",
+      "field_vactory_title" => 'Publications listing',
+      "field_vactory_component" => [
+        "widget_id" => $widget_id,
+        "widget_data" => json_encode($component),
+      ],
+    ];
+    $paragraph = Paragraph::create($paragraph);
+    $paragraph->save();
+  }
+  else {
+    \Drupal::logger('vactory_publication')
+      ->warning('Listing page : The paragraph was not added because the widget settings do not have the expected structure.');
   }
 
-  $paragraph = [
-    "type" => "vactory_component",
-    "field_vactory_title" => 'Publications listing',
-    "field_vactory_component" => [
-      "widget_id" => $widget_id,
-      "widget_data" => json_encode($component),
-    ],
-  ];
-  $paragraph = Paragraph::create($paragraph);
-  $paragraph->save();
   $node = [
     'type' => 'vactory_page',
     'status' => 1,
     'title' => 'Publications',
-    'field_vactory_paragraphs' => [
+  ];
+
+  if ($paragraph instanceof Paragraph) {
+    $node['field_vactory_paragraphs'] = [
       'target_id' => $paragraph->id(),
       'target_revision_id' => \Drupal::entityTypeManager()
         ->getStorage('paragraph')
         ->getLatestRevisionId($paragraph->id()),
-    ],
-  ];
+    ];
+  }
   $node_entity = Node::create($node);
   $node_entity->save();
 
@@ -93,41 +98,50 @@ function vactory_publication_install() {
   ]);
   $menu_link->save();
 
-  // add three-columns DF to homepage.
+  // Add three-columns DF to homepage.
   $three_columns_widget_id = 'vactory_publication:three-columns';
   $three_columns_widget_settings = \Drupal::service('vactory_dynamic_field.vactory_provider_manager')->loadSettings($three_columns_widget_id);
   $df_default_value = $three_columns_widget_settings['fields']['collection']['options']['#default_value'] ?? '';
   $component = [];
-  if (isset($df_default_value)) {
+  if (
+    isset($df_default_value)
+    && $three_columns_widget_settings['fields']['title']
+    && $three_columns_widget_settings['fields']['description']
+    && $three_columns_widget_settings['fields']['link']
+  ) {
     $component['0']['collection'] = $df_default_value;
     $component['0']['title'] = 'Publication three columns';
     $component['0']['description']['value'] = '';
     $component['0']['link']['title'] = 'See more';
     $component['0']['link']['url'] = '/node/' . $node_entity->id();
-  }
 
-  $paragraph = [
-    "type" => "vactory_component",
-    "field_vactory_title" => 'Publication three columns',
-    "field_vactory_component" => [
-      "widget_id" => $three_columns_widget_id,
-      "widget_data" => json_encode($component),
-    ],
-  ];
-  $paragraph = Paragraph::create($paragraph);
-  $paragraph->save();
-  $homepage = \Drupal::entityTypeManager()->getStorage('node')->loadByProperties([
-    'type'     => 'vactory_page',
-    'title'    => 'Homepage',
-  ]);
-  $homepage = reset($homepage);
-  $homepage->field_vactory_paragraphs[] = [
-    'target_id' => $paragraph->id(),
-    'target_revision_id' => \Drupal::entityTypeManager()
-      ->getStorage('paragraph')
-      ->getLatestRevisionId($paragraph->id()),
-  ];
-  $homepage->save();
+    $paragraph = [
+      "type" => "vactory_component",
+      "field_vactory_title" => 'Publication three columns',
+      "field_vactory_component" => [
+        "widget_id" => $three_columns_widget_id,
+        "widget_data" => json_encode($component),
+      ],
+    ];
+    $paragraph = Paragraph::create($paragraph);
+    $paragraph->save();
+    $homepage = \Drupal::entityTypeManager()->getStorage('node')->loadByProperties([
+      'type'     => 'vactory_page',
+      'title'    => 'Homepage',
+    ]);
+    $homepage = reset($homepage);
+    $homepage->field_vactory_paragraphs[] = [
+      'target_id' => $paragraph->id(),
+      'target_revision_id' => \Drupal::entityTypeManager()
+        ->getStorage('paragraph')
+        ->getLatestRevisionId($paragraph->id()),
+    ];
+    $homepage->save();
+  }
+  else {
+    \Drupal::logger('vactory_publication')
+      ->warning('Three columns block : The paragraph was not added because the widget settings do not have the expected structure.');
+  }
 
 }
 
