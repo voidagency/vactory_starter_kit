@@ -382,7 +382,7 @@ function get_oauth_user_infos(UserInterface $user) {
       $style->createDerivative($pictureUri, $derivative_uri);
     }
   }
-
+  $password = $user->get('pass')->value ?? '';
   return [
     'id' => $user->id(),
     'uuid' => $user->uuid(),
@@ -396,6 +396,8 @@ function get_oauth_user_infos(UserInterface $user) {
     'roles' => $user->getRoles(),
     'isActive' => $user->isActive(),
     'isBlocked' => $user->isBlocked(),
+    'has_password' => !empty($password),
+    'first_login' => empty($user->getLastAccessedTime()),
   ];
 }
 
