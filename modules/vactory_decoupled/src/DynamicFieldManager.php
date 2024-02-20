@@ -671,6 +671,10 @@ class DynamicFieldManager {
               $retrievedContent = $contentService->getContent($media_ytb);
               $media = !empty($retrievedContent) ? $this->mediaStorage->load($retrievedContent) : NULL;
               if ($media instanceof MediaInterface) {
+                $video_url = $media->get('field_media_oembed_video')->value;
+                $thumbnail_maxres = $this->getYoutubeThumbnail($video_url);
+                $thumbnail_uri = $this->getDefaultYoutubeThumbnail($media);
+                $thumbnail = $this->mediaFilesManager->getMediaAbsoluteUrl($thumbnail_uri);
                 $value = [
                   'id'   => $media->uuid(),
                   'name' => $media->getName(),
