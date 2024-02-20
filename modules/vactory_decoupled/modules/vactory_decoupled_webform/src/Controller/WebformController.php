@@ -31,6 +31,8 @@ class WebformController extends ControllerBase {
 
   /**
    * Vactory Dev Tools.
+   *
+   * @var \Drupal\vactory_core\Services\VactoryDevTools
    */
   protected $vactoryDevTools;
 
@@ -150,12 +152,15 @@ class WebformController extends ControllerBase {
     }
 
     $webform_submission = WebformSubmissionForm::submitWebformSubmission($webform_submission);
+    $submission = WebformSubmission::load($webform_submission->id());
+    $datalayer = $submission->get('datalayer')->value;
     // Check if submit was successful.
     if ($webform_submission instanceof WebformSubmissionInterface) {
       return new JsonResponse([
         'sid' => $webform_submission->id(),
         'crypted_sid' => $this->vactoryDevTools->encrypt('vactory_tender' . $webform_submission->id()),
         'settings' => self::getWhitelistedSettings($webform),
+        'datalayer' => isset($datalayer) ? json_decode($datalayer, TRUE) : [],
       ]);
     }
     else {

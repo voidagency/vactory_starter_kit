@@ -26,6 +26,7 @@ class DataLayerWebformHandler extends WebformHandlerBase {
   public function defaultConfiguration() {
     return [
       'fields' => [],
+      'event' => '',
     ];
   }
 
@@ -39,7 +40,13 @@ class DataLayerWebformHandler extends WebformHandlerBase {
     foreach ($elements as $element_key => $element) {
       $options[$element_key] = (isset($element['#title']) ? $element['#title'] : '');
     }
-
+    $form['event'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Event'),
+      '#description' => $this->t('Datalayer event name.'),
+      '#required' => TRUE,
+      '#default_value' => $this->configuration['event'],
+    ];
     $form['fields'] = [
       '#type' => 'webform_multiple',
       '#title' => $this->t('Fields'),
@@ -110,6 +117,17 @@ class DataLayerWebformHandler extends WebformHandlerBase {
       }
     }
     if (!empty($layerDataAttributes)) {
+      $moduleHandler = \Drupal::service('module_handler');
+      if ($moduleHandler->moduleExists('vactory_decoupled_webform')) {
+        $datalayer = [
+          'data' => $layerDataAttributes,
+          'event' => $this->configuration['event'],
+        ];
+        \Drupal::service('database')->update('webform_submission')
+          ->fields(['datalayer' => json_encode($datalayer)])
+          ->condition('sid', $sid)
+          ->execute();
+      }
       $build = [
         '#children' => '<script>dataLayer = [' . json_encode($layerDataAttributes) . ']; document.querySelector(".messages > script").parentNode.style.display = \'none\';</script>',
       ];
