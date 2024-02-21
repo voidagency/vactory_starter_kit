@@ -5,14 +5,14 @@
  * Install file.
  */
 
+use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\locale\SourceString;
-use \Drupal\user\RoleInterface;
+use Drupal\user\RoleInterface;
 
 /**
  * Implements hook_install().
  */
-function vactory_decoupled_webform_install()
-{
+function vactory_decoupled_webform_install() {
   // Grant permission to all users by default.
   if (\Drupal::moduleHandler()->moduleExists('user')) {
     user_role_grant_permissions(RoleInterface::ANONYMOUS_ID, ['access any webform configuration']);
@@ -21,15 +21,14 @@ function vactory_decoupled_webform_install()
     user_role_grant_permissions('webmaster', ['administer webform_decoupled props']);
   }
 
-  // Import Translations
-  _vactory_decoupled_webform_importTranslation();
+  // Import Translations.
+  _vactory_decoupled_webform_import_translation();
 }
 
 /**
  * Import Frontend translations.
  */
-function _vactory_decoupled_webform_importTranslation()
-{
+function _vactory_decoupled_webform_import_translation() {
   $storage = \Drupal::service('locale.storage');
   $translations = [
     [
@@ -173,7 +172,7 @@ function _vactory_decoupled_webform_importTranslation()
   foreach ($translations as $translation) {
     // Find the source string.
     try {
-      $string = $storage->findString(array('source' => $translation['label']));
+      $string = $storage->findString(['source' => $translation['label']]);
       if (is_null($string)) {
         $string = new SourceString();
         $string->context = '_FRONTEND';
@@ -191,7 +190,8 @@ function _vactory_decoupled_webform_importTranslation()
         ])->save();
       }
 
-    } catch (Exception $e) {
+    }
+    catch (Exception $e) {
       \Drupal::logger('vactory_decoupled_webform')->warning('Error trying to find string @s: @e on line @l', [
         '@s' => $translation['label'],
         '@e' => $e->getMessage(),
@@ -200,4 +200,18 @@ function _vactory_decoupled_webform_importTranslation()
     }
   }
 
+}
+
+/**
+ * Add Datalayer field.
+ */
+function vactory_decoupled_webform_update_10101() {
+  $storage_definition = BaseFieldDefinition::create('string')
+    ->setLabel(t('Datalayer'))
+    ->setDescription(t('Stores datalayers.'))
+    ->setDisplayConfigurable('form', FALSE)
+    ->setDisplayConfigurable('view', FALSE);
+
+  \Drupal::entityDefinitionUpdateManager()
+    ->installFieldStorageDefinition('datalayer', 'webform_submission', 'vactory_decoupled_webform', $storage_definition);
 }
