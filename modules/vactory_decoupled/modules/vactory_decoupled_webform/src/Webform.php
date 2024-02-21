@@ -430,6 +430,7 @@ class Webform {
       'processed_text'           => 'rawhtml',
       'password'                 => 'password',
       'range'                    => 'range',
+      'webform_remote_select_element' => 'select',
     ];
 
     $htmlInputTypes = [
@@ -441,6 +442,9 @@ class Webform {
     $ui_type = $types[$type] ?? NULL;
     $properties['type'] = $ui_type;
     // phpcs:disable
+    if ($type == "webform_remote_select_element" && $this->moduleHandler->moduleExists('vactory_remote_select_element')) {
+      \Drupal::service("vactory_remote_select_element.fetcher")->executeRequest($item);
+    }
     (isset($item['#title']) && !is_null($item['#title'])) ? $properties['label'] = $item['#title'] : NULL;
     (array_key_exists('#webform_parent_flexbox', $item) && $item['#webform_parent_flexbox']) ? $properties['flex'] = (array_key_exists('#flex', $item) ? $item['#flex'] : 1) : 1;
     (isset($item['#placeholder']) && !is_null($item['#placeholder'])) ? $properties['placeholder'] = (string) t($item['#placeholder']) : NULL;
