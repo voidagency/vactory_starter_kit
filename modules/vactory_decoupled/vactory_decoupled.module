@@ -880,6 +880,7 @@ function vactory_decoupled_preprocess_html(&$variables) {
     'vactory_espace_prive.welcome',
     'entity.user.canonical',
     'oauth2_token.authorize',
+    'entity.webform.canonical',
   ];
   if (!in_array($route_name, $exluded_routes)) {
     $langcode = Drupal::languageManager()->getCurrentLanguage()->getId();
