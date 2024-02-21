@@ -28,7 +28,7 @@ class XmlSourceIconProvider extends VactoryIconProviderBase {
     $form['xml_source_url'] = [
       '#type' => 'textfield',
       '#title' => t('XML source url'),
-      '#description' => t('XML icon source url'),
+      '#description' => t("XML icon source url \n Relative link must start with / otherwise use the full url"),
       '#default_value' => $xml_source_url,
       '#required' => TRUE,
     ];
@@ -53,7 +53,9 @@ class XmlSourceIconProvider extends VactoryIconProviderBase {
     $svg_ids = [];
     $svg_paths_d = [];
     $from_xml_svgs = TRUE;
+    $host = !empty(getenv("BASE_FRONTEND_URL")) ? getenv("BASE_FRONTEND_URL") : (!empty(getenv("FRONTEND_URL")) ? getenv("FRONTEND_URL") : "");
     $xml_source_url = $config->get('xml_source_url');
+    $xml_source_url = !preg_match("~^(?:f|ht)tps?://~i", $xml_source_url) ? $host . $xml_source_url : $xml_source_url;
     $svgs_infos = $this->fetchIcons($config);
     if (!empty($svgs_infos) && isset($svgs_infos['symbol']) && is_array($svgs_infos['symbol'])) {
       foreach ($svgs_infos['symbol'] as $info) {
@@ -80,14 +82,19 @@ class XmlSourceIconProvider extends VactoryIconProviderBase {
    */
   public function iconPickerLibraryInfoAlter(array &$library_info) {
     $stylesheet = 'public://vactory_icon/style.css';
-    $library_info['css']['theme'][$stylesheet] = [];
+    if (file_exists($stylesheet)) {
+      $stylesheet = \Drupal::service('file_url_generator')->generateString($stylesheet);
+      $library_info['css']['theme'][$stylesheet] = [];
+    }
   }
 
   /**
    * {@inheritDoc}
    */
   public function fetchIcons(ImmutableConfig|Config $config) {
+    $host = !empty(getenv("BASE_FRONTEND_URL")) ? getenv("BASE_FRONTEND_URL") : (!empty(getenv("FRONTEND_URL")) ? getenv("FRONTEND_URL") : "");
     $xml_source_url = $config->get('xml_source_url');
+    $xml_source_url = !preg_match("~^(?:f|ht)tps?://~i", $xml_source_url) ? $host . $xml_source_url : $xml_source_url;
     $svgs_infos = [];
     if (!empty($xml_source_url)) {
       // Get the XML content from the URL.
