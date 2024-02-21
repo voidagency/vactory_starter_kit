@@ -21,12 +21,12 @@ class Import {
   /**
    * Split csv file to sub-files and run batch.
    */
-  public function import($migration_id, $delimiter = NULL) {
+  public function import($migration_id, $delimiter = NULL, $batch_size = 1000) {
 
-    $batch_config = \Drupal::config('vactory_migrate.settings')
-      ->get('batch_size');
+//    $batch_config = \Drupal::config('vactory_migrate.settings')
+//      ->get('batch_size');
     $delimiter = $delimiter ?? \Drupal::config('vactory_migrate.settings')->get('delimiter');
-    $batch_size = $batch_config ?? 1000;
+//    $batch_size = $batch_config ?? 1000;
 
     // Get migration source path.
     $manager = \Drupal::service('plugin.manager.migration');

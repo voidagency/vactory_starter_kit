@@ -1,0 +1,37 @@
+id,-|title|-,-|node_summary|-,-|body:value|-,-|field_vactory_address:value|-,term|field_vactory_city|+,term|field_vactory_contract|+,-|field_vactory_description:value|-,-|field_vactory_email|-,term|field_vactory_profession|+,-|field_vactory_telephone|-
+1,Job ad 01,Job ad 01 description,"Nam commodo suscipit quam. Ut varius tincidunt libero. Praesent congue erat at massa. Sed lectus.
+Morbi vestibulum volutpat enim. Curabitur ullamcorper ultricies nisi. Donec vitae sapien ut libero venenatis faucibus. Nam eget dui.",Praesent egestas neque eu enim,Agadir,CDI,"Nulla neque dolor, sagittis eget, iaculis quis, molestie non, velit. Pellentesque posuere. Quisque rutrum. Morbi vestibulum volutpat enim.
+Donec orci lectus, aliquam ut, faucibus non, euismod id, nulla. Sed magna purus, fermentum eu, tincidunt eu, varius ut, felis.",company01@gmail.com,Developer,212 5 28 24 23 41
+2,Job ad 02,Job ad 02 description,"Proin magna. Sed mollis, eros et ultrices tempus, mauris ipsum aliquam libero, non adipiscing dolor urna a orci.
+Praesent egestas neque eu enim. Vestibulum eu odio. Nulla consequat massa quis enim.",Phasellus ullamcorper ipsum rutrum,Casablanca,CDD,"Phasellus tempus. Nullam vel sem. Duis arcu tortor, suscipit eget, imperdiet nec, imperdiet iaculis, ipsum.
+Vestibulum ullamcorper mauris at ligula. Nullam accumsan lorem in dui. Suspendisse eu ligula. Nullam cursus lacinia erat.",company02@gmail.com,Designer,212 5 28 24 23 42
+3,Job ad 03,Job ad 03 description,"Nulla neque dolor, sagittis eget, iaculis quis, molestie non, velit. Pellentesque posuere. Quisque rutrum. Morbi vestibulum volutpat enim.
+Donec orci lectus, aliquam ut, faucibus non, euismod id, nulla. Sed magna purus, fermentum eu, tincidunt eu, varius ut, felis.",Maecenas vestibulum mollis diam,Marrakech,Stage,"In ac felis quis tortor malesuada pretium. Vivamus quis mi. Aenean commodo ligula eget dolor. 
+Vivamus quis mi. Curabitur blandit mollis lacus. Phasellus gravida semper nisi. Proin magna.",company03@gmail.com,Developer,212 5 28 24 23 43
+4,Job ad 04,Job ad 04 description,"Phasellus tempus. Nullam vel sem. Duis arcu tortor, suscipit eget, imperdiet nec, imperdiet iaculis, ipsum.
+Vestibulum ullamcorper mauris at ligula. Nullam accumsan lorem in dui. Suspendisse eu ligula. Nullam cursus lacinia erat.",Fusce risus nisl viverra,Rabat,CDI,"Nam commodo suscipit quam. Ut varius tincidunt libero. Praesent congue erat at massa. Sed lectus.
+Morbi vestibulum volutpat enim. Curabitur ullamcorper ultricies nisi. Donec vitae sapien ut libero venenatis faucibus. Nam eget dui.",company04@gmail.com,Designer,212 5 28 24 23 41
+5,Job ad 05,Job ad 05 description,"In ac felis quis tortor malesuada pretium. Vivamus quis mi. Aenean commodo ligula eget dolor. 
+Vivamus quis mi. Curabitur blandit mollis lacus. Phasellus gravida semper nisi. Proin magna.",Praesent egestas neque eu enim,Agadir,CDD,"Proin magna. Sed mollis, eros et ultrices tempus, mauris ipsum aliquam libero, non adipiscing dolor urna a orci.
+Praesent egestas neque eu enim. Vestibulum eu odio. Nulla consequat massa quis enim.",company01@gmail.com,Developer,212 5 28 24 23 42
+6,Job ad 06,Job ad 06 description,"Nam commodo suscipit quam. Ut varius tincidunt libero. Praesent congue erat at massa. Sed lectus.
+Morbi vestibulum volutpat enim. Curabitur ullamcorper ultricies nisi. Donec vitae sapien ut libero venenatis faucibus. Nam eget dui.",Phasellus ullamcorper ipsum rutrum,Casablanca,Stage,"Nulla neque dolor, sagittis eget, iaculis quis, molestie non, velit. Pellentesque posuere. Quisque rutrum. Morbi vestibulum volutpat enim.
+Donec orci lectus, aliquam ut, faucibus non, euismod id, nulla. Sed magna purus, fermentum eu, tincidunt eu, varius ut, felis.",company02@gmail.com,Designer,212 5 28 24 23 43
+7,Job ad 07,Job ad 07 description,"Proin magna. Sed mollis, eros et ultrices tempus, mauris ipsum aliquam libero, non adipiscing dolor urna a orci.
+Praesent egestas neque eu enim. Vestibulum eu odio. Nulla consequat massa quis enim.",Maecenas vestibulum mollis diam,Marrakech,CDI,"Phasellus tempus. Nullam vel sem. Duis arcu tortor, suscipit eget, imperdiet nec, imperdiet iaculis, ipsum.
+Vestibulum ullamcorper mauris at ligula. Nullam accumsan lorem in dui. Suspendisse eu ligula. Nullam cursus lacinia erat.",company03@gmail.com,Developer,212 5 28 24 23 41
+8,Job ad 08,Job ad 08 description,"Nulla neque dolor, sagittis eget, iaculis quis, molestie non, velit. Pellentesque posuere. Quisque rutrum. Morbi vestibulum volutpat enim.
+Donec orci lectus, aliquam ut, faucibus non, euismod id, nulla. Sed magna purus, fermentum eu, tincidunt eu, varius ut, felis.",Fusce risus nisl viverra,Rabat,CDD,"In ac felis quis tortor malesuada pretium. Vivamus quis mi. Aenean commodo ligula eget dolor. 
+Vivamus quis mi. Curabitur blandit mollis lacus. Phasellus gravida semper nisi. Proin magna.",company04@gmail.com,Designer,212 5 28 24 23 42
+9,Job ad 09,Job ad 09 description,"Phasellus tempus. Nullam vel sem. Duis arcu tortor, suscipit eget, imperdiet nec, imperdiet iaculis, ipsum.
+Vestibulum ullamcorper mauris at ligula. Nullam accumsan lorem in dui. Suspendisse eu ligula. Nullam cursus lacinia erat.",Praesent egestas neque eu enim,Agadir,Stage,"Nam commodo suscipit quam. Ut varius tincidunt libero. Praesent congue erat at massa. Sed lectus.
+Morbi vestibulum volutpat enim. Curabitur ullamcorper ultricies nisi. Donec vitae sapien ut libero venenatis faucibus. Nam eget dui.",company01@gmail.com,Developer,212 5 28 24 23 43
+10,Job ad 10,Job ad 10 description,"In ac felis quis tortor malesuada pretium. Vivamus quis mi. Aenean commodo ligula eget dolor. 
+Vivamus quis mi. Curabitur blandit mollis lacus. Phasellus gravida semper nisi. Proin magna.",Phasellus ullamcorper ipsum rutrum,Casablanca,CDI,"Proin magna. Sed mollis, eros et ultrices tempus, mauris ipsum aliquam libero, non adipiscing dolor urna a orci.
+Praesent egestas neque eu enim. Vestibulum eu odio. Nulla consequat massa quis enim.",company02@gmail.com,Designer,212 5 28 24 23 41
+11,Job ad 11,Job ad 11 description,"Nam commodo suscipit quam. Ut varius tincidunt libero. Praesent congue erat at massa. Sed lectus.
+Morbi vestibulum volutpat enim. Curabitur ullamcorper ultricies nisi. Donec vitae sapien ut libero venenatis faucibus. Nam eget dui.",Maecenas vestibulum mollis diam,Marrakech,CDD,"Nam commodo suscipit quam. Ut varius tincidunt libero. Praesent congue erat at massa. Sed lectus.
+Morbi vestibulum volutpat enim. Curabitur ullamcorper ultricies nisi. Donec vitae sapien ut libero venenatis faucibus. Nam eget dui.",company03@gmail.com,Developer,212 5 28 24 23 42
+12,Job ad 12,Job ad 12 description,"Proin magna. Sed mollis, eros et ultrices tempus, mauris ipsum aliquam libero, non adipiscing dolor urna a orci.
+Praesent egestas neque eu enim. Vestibulum eu odio. Nulla consequat massa quis enim.",Fusce risus nisl viverra,Rabat,Stage,"Proin magna. Sed mollis, eros et ultrices tempus, mauris ipsum aliquam libero, non adipiscing dolor urna a orci.
+Praesent egestas neque eu enim. Vestibulum eu odio. Nulla consequat massa quis enim.",company04@gmail.com,Designer,212 5 28 24 23 43

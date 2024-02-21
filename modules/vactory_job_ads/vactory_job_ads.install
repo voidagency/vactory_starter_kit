@@ -5,3 +5,60 @@
  * Install file.
  */
 
+use Drupal\menu_link_content\Entity\MenuLinkContent;
+use Drupal\node\Entity\Node;
+use Drupal\paragraphs\Entity\Paragraph;
+
+/**
+ * Implements hook_install().
+ */
+function vactory_job_ads_install() {
+
+  // Create page that contains news listing DF.
+  $widget_id = 'vactory_job_ads:list';
+  $widget_settings = \Drupal::service('vactory_dynamic_field.vactory_provider_manager')->loadSettings($widget_id);
+  $df_default_value = $widget_settings['fields']['collection']['options']['#default_value'] ?? '';
+  $component = [];
+  $paragraph = NULL;
+  if (isset($df_default_value)) {
+    $component['0']['collection'] = $df_default_value;
+    $paragraph_data = [
+      "type" => "vactory_component",
+      "field_vactory_title" => 'Job ads listing',
+      "field_vactory_component" => [
+        "widget_id" => $widget_id,
+        "widget_data" => json_encode($component),
+      ],
+    ];
+    $paragraph = Paragraph::create($paragraph_data);
+    $paragraph->save();
+  }
+  else {
+    \Drupal::logger('vactory_job_ads')->warning('Listing page : The paragraph was not added because the widget settings do not have the expected structure.');
+  }
+
+  $node = [
+    'type' => 'vactory_page',
+    'status' => 1,
+    'title' => 'Job ads',
+  ];
+
+  if ($paragraph instanceof Paragraph) {
+    $node['field_vactory_paragraphs'] = [
+      'target_id' => $paragraph->id(),
+      'target_revision_id' => \Drupal::entityTypeManager()
+        ->getStorage('paragraph')
+        ->getLatestRevisionId($paragraph->id()),
+    ];
+  }
+  $node_entity = Node::create($node);
+  $node_entity->save();
+
+  $menu_link = MenuLinkContent::create([
+    'title' => 'Job ads',
+    'link' => ['uri' => 'internal:/node/' . $node_entity->id()],
+    'menu_name' => 'main',
+  ]);
+  $menu_link->save();
+
+}

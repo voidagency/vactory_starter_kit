@@ -1,0 +1,57 @@
+id: node_vactory_job_ads_migration_default
+migration_group: default
+label: 'node vactory_job_ads migration'
+source:
+  plugin: csv
+  header_row_count: 1
+  ids:
+    - id
+  delimiter: ','
+  path: 'profiles/contrib/vactory_starter_kit/modules/vactory_job_ads/artifacts/node-vactory_job_ads.csv'
+  constants:
+    dest_path: 'public://migrated-vactory_job_ads/'
+process:
+  legacy_id: id
+  title: '-|title|-'
+  node_summary: '-|node_summary|-'
+  body/value: '-|body:value|-'
+  field_vactory_address/value: '-|field_vactory_address:value|-'
+  field_vactory_city:
+    -
+      plugin: explode
+      delimiter: '|'
+      source: term|field_vactory_city|+
+    -
+      plugin: entity_generate
+      value_key: name
+      bundle_key: vid
+      bundle: vactory_job_ads_city
+      entity_type: taxonomy_term
+  field_vactory_contract:
+    -
+      plugin: explode
+      delimiter: '|'
+      source: term|field_vactory_contract|+
+    -
+      plugin: entity_generate
+      value_key: name
+      bundle_key: vid
+      bundle: vactory_job_ads_contract
+      entity_type: taxonomy_term
+  field_vactory_description/value: '-|field_vactory_description:value|-'
+  field_vactory_email: '-|field_vactory_email|-'
+  field_vactory_profession:
+    -
+      plugin: explode
+      delimiter: '|'
+      source: term|field_vactory_profession|+
+    -
+      plugin: entity_generate
+      value_key: name
+      bundle_key: vid
+      bundle: vactory_job_ads_profession
+      entity_type: taxonomy_term
+  field_vactory_telephone: '-|field_vactory_telephone|-'
+destination:
+  plugin: 'entity:node'
+  default_bundle: vactory_job_ads
