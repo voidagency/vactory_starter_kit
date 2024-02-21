@@ -145,7 +145,7 @@
     "mailchimp/marketing": "^3.0",
     "drupal/time_range": "^2.0",
     "drupal/video_embed_field": "^2.4",
-    "drupal/allowed_formats": "^2.0",
+    "drupal/allowed_formats": "^3.0",
     "drupal/theme_switcher": "^2.0",
     "drupal/migrate_file": "^2.1",
     "drupal/rdf": "^2.1",
