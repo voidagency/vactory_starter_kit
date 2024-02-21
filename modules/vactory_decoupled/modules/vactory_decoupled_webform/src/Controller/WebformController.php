@@ -152,8 +152,12 @@ class WebformController extends ControllerBase {
     }
 
     $webform_submission = WebformSubmissionForm::submitWebformSubmission($webform_submission);
-    $submission = WebformSubmission::load($webform_submission->id());
-    $datalayer = $submission->get('datalayer')->value;
+    $datalayer_handler_enabled = $this->isHandlerEnabled($webform, 'vactory_datalayer_handler');
+    $datalayer = NULL;
+    if ($datalayer_handler_enabled) {
+      $submission = WebformSubmission::load($webform_submission->id());
+      $datalayer = $submission->get('datalayer')->value;
+    }
     // Check if submit was successful.
     if ($webform_submission instanceof WebformSubmissionInterface) {
       return new JsonResponse([
@@ -238,6 +242,19 @@ class WebformController extends ControllerBase {
       ], 400);
     }
 
+  }
+
+  /**
+   * Checks if a webform has a specific handler.
+   */
+  private function isHandlerEnabled($webform, $handler_id) {
+    $handlers = $webform->getHandlers(NULL, TRUE);
+    foreach ($handlers as $handler) {
+      if ($handler->getPluginId() == $handler_id) {
+        return TRUE;
+      }
+    }
+    return FALSE;
   }
 
 }
