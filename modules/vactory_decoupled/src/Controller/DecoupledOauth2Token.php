@@ -50,6 +50,16 @@ class DecoupledOauth2Token extends Oauth2Token {
    */
   protected $userWindow;
 
+  /**
+   * User ip limit.
+   */
+  protected $userIpLimit;
+
+  /**
+   * User ip window.
+   */
+  protected $userIpWindow;
+
 
   /**
    * DecoupledOauth2Token constructor.
@@ -67,6 +77,13 @@ class DecoupledOauth2Token extends Oauth2Token {
           ->get('user_limit') ?? 5;
       $this->userWindow = $this->configFactory->get('user.flood')
           ->get('user_window') ?? 300;
+
+      $this->userIpLimit = $this->configFactory->get('user.flood')
+          ->get('ip_limit') ?? 50;
+
+      $this->userIpWindow = $this->configFactory->get('user.flood')
+          ->get('ip_window') ?? 3600;
+
     }
 
   }
@@ -99,21 +116,23 @@ class DecoupledOauth2Token extends Oauth2Token {
       $account_search = $this->entityTypeManager
         ->getStorage('user')
         ->loadByProperties([$property => $body['username']]);
-
       if ($account = reset($account_search)) {
-
-        $isAllowed = $this->isAllowed($account->id());
-
-        if (!$isAllowed) {
-          return new JsonResponse([
+        $isAllowed = $this->flood->isAllowed('user.failed_login_user', $this->userLimit, $this->userWindow, $account->id());
+        $isAllowedIp = $this->flood->isAllowed('user.failed_login_ip', $this->userIpLimit, $this->userIpWindow);
+        if (!$isAllowed || !$isAllowedIp) {
+          $responseError = [
             'error' => 'flood_control_error',
             'message' => sprintf('There have been more than %s failed login attempts for this account. It is temporarily blocked. Try again later or request a new password.', $this->userLimit),
-          ], 400);
+          ];
+          if (!$isAllowedIp) {
+            $responseError['message'] = "Trop d'échecs de connexion à partir de votre adresse IP. Cette adresse IP est temporairement bloquée. Réessayer ultérieurement";
+          }
+          return new JsonResponse($responseError, 400);
         }
-
         if ($response->getStatusCode() !== 200) {
           $this->logAuthFailure($body);
           $this->flood->register('user.failed_login_user', $this->userWindow, $account->id());
+          $this->flood->register('user.failed_login_ip', $this->userIpWindow);
         }
 
         if ($response->getStatusCode() === 200) {
@@ -153,16 +172,6 @@ class DecoupledOauth2Token extends Oauth2Token {
         \Drupal::logger('user')->info("Session opened for {$body['username']} via Oauth2");
       }
     }
-  }
-
-
-  /**
-   * Check if the user is allowed or not to login.
-   *
-   * @return bool
-   */
-  protected function isAllowed($uid) {
-    return $this->flood->isAllowed('user.failed_login_user', $this->userLimit, $this->userWindow, $uid);
   }
 
 }
