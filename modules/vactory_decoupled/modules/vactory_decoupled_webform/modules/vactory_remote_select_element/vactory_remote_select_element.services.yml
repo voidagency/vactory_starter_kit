@@ -1,0 +1,3 @@
+services:
+  vactory_remote_select_element.fetcher:
+    class: Drupal\vactory_remote_select_element\Services\VactoryRemoteSelectService

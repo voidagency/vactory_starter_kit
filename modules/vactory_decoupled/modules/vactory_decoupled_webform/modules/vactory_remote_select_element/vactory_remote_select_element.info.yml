@@ -1,0 +1,10 @@
+name: 'Vactory Webform Remote Select'
+type: module
+description: 'Offers a service that populates the options of the Webform Select Remote Element with data retrieved from the API.'
+package: 'Webform'
+core_version_requirement: ^9 || ^10
+dependencies:
+  - 'webform:webform'
+  - 'webform_remote_select:webform_remote_select'
+  - vactory_decoupled_webform
+project: Vactory

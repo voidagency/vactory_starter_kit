@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bbd382dbebdc3aa5a49d76badda050a5",
+    "content-hash": "ae6d08c32933ecdd7f4621c048b55165",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -10909,6 +10909,79 @@
             }
         },
         {
+            "name": "drupal/webform_remote_select",
+            "version": "1.0.8",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/webform_remote_select.git",
+                "reference": "1.0.8"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/webform_remote_select-1.0.8.zip",
+                "reference": "1.0.8",
+                "shasum": "59b7973b3b032d8418682fc962efed8b4c87eab3"
+            },
+            "require": {
+                "drupal/core": "^8 || ^9 || ^10",
+                "drupal/webform": "*"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "1.0.8",
+                    "datestamp": "1679574157",
+                    "security-coverage": {
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "dgaspara",
+                    "homepage": "https://www.drupal.org/user/3557179"
+                },
+                {
+                    "name": "joao.figueira",
+                    "homepage": "https://www.drupal.org/user/3605197"
+                },
+                {
+                    "name": "joaomarques736",
+                    "homepage": "https://www.drupal.org/user/3557181"
+                },
+                {
+                    "name": "Miguelpamferreira",
+                    "homepage": "https://www.drupal.org/user/3548054"
+                },
+                {
+                    "name": "nsalves",
+                    "homepage": "https://www.drupal.org/user/3557178"
+                },
+                {
+                    "name": "ricardotenreiro",
+                    "homepage": "https://www.drupal.org/user/213132"
+                },
+                {
+                    "name": "sara_asb",
+                    "homepage": "https://www.drupal.org/user/3673657"
+                },
+                {
+                    "name": "tmiguelv",
+                    "homepage": "https://www.drupal.org/user/3612421"
+                }
+            ],
+            "description": "Provides a Webform Select Element whose options are populated from an endpoint through REST services.",
+            "homepage": "https://www.drupal.org/project/webform_remote_select",
+            "support": {
+                "source": "https://git.drupalcode.org/project/webform_remote_select"
+            }
+        },
+        {
             "name": "drupal/workbench_moderation",
             "version": "1.7.0",
             "source": {
@@ -20226,5 +20299,5 @@
         "php": ">=7.3"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.3.0"
 }

@@ -168,7 +168,8 @@
     "voidagency/mobile_native_share": "^2.0",
     "voidagency/amptheme": "^3.0",
     "voidagency/cloudinary": "^3.0",
-    "voidagency/block_list_override": "^2.0"
+    "voidagency/block_list_override": "^2.0",
+    "drupal/webform_remote_select": "^1.0"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.3",
