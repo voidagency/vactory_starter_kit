@@ -178,6 +178,8 @@ install:
   - vactory_decoupled_router
   - vactory_decoupled_router_default_pages
   - vactory_decoupled_webform
+  - vactory_decoupled_search
+  - vactory_decoupled_espace_prive
   - shield
   - vactory_jsonapi_extras
   - vactory_dynamic_import

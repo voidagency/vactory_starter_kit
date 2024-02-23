@@ -2,14 +2,15 @@
 
 /**
  * @file
- * Install, update and uninstall functions for the Vactory Decoupled Search
- *   module.
+ * Install, update and uninstall functions for Vactory Decoupled Search module.
  */
 
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\node\Entity\Node;
 
-
+/**
+ * Provides default pages to be created.
+ */
 function _get_vactory_decoupled_search_default_pages() {
   return [
     'search' => [
@@ -23,12 +24,19 @@ function _get_vactory_decoupled_search_default_pages() {
   ];
 }
 
+/**
+ * Create default pages.
+ */
 function _vactory_decoupled_search_create_default_node($machine_name, $title, $path) {
   $node = Node::create([
     'type' => 'vactory_page',
     'title' => $title,
     'langcode' => LanguageInterface::LANGCODE_NOT_SPECIFIED,
     'uid' => 1,
+    'path' => [
+      'pathauto' => 0,
+      'alias' => $path,
+    ],
   ])
     ->set('machine_name', $machine_name)
     ->setPublished();
