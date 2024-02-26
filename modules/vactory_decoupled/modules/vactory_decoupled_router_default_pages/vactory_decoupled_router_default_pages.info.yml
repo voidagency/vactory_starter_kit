@@ -4,6 +4,7 @@ type: module
 core_version_requirement: ^9 || ^10
 dependencies:
   - vactory_decoupled_router
+  - vactory_decoupled_espace_prive
 version: 8.x-1.0
 package: Vactory
 core_incompatible: false
