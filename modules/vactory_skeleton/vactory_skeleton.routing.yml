@@ -1,0 +1,7 @@
+vactory_skeleton.all_node_skeleton:
+  path: '/vactory-skeleton'
+  defaults:
+    _controller: '\Drupal\vactory_skeleton\Controller\VactorySkeletonController::index'
+  methods: [GET]
+  requirements:
+    _permission: 'access content'
