@@ -235,7 +235,49 @@ class VactoryContentInlineEditTableForm extends FormBase {
           '#title' => $fieldConfig['label'],
           '#allowed_bundles' => ['image'],
           '#default_value' => $fieldConfig['mid'],
-          '#description' => t('Upload or select your profile image.'),
+          '#description' => t('Upload or select your image.'),
+          '#attributes' => [
+            'class' => ['paragraph-field'],
+            'data-original-value' => $fieldConfig['mid'],
+          ],
+        ];
+        break;
+
+      case 'remote_video':
+        $field = [
+          '#type' => 'media_library',
+          '#title' => $fieldConfig['label'],
+          '#allowed_bundles' => ['remote_video'],
+          '#default_value' => $fieldConfig['mid'],
+          '#description' => t('Upload or select your remote video.'),
+          '#attributes' => [
+            'class' => ['paragraph-field'],
+            'data-original-value' => $fieldConfig['mid'],
+          ],
+        ];
+        break;
+
+      case 'video':
+        $field = [
+          '#type' => 'media_library',
+          '#title' => $fieldConfig['label'],
+          '#allowed_bundles' => ['video'],
+          '#default_value' => $fieldConfig['mid'],
+          '#description' => t('Upload or select your video.'),
+          '#attributes' => [
+            'class' => ['paragraph-field'],
+            'data-original-value' => $fieldConfig['mid'],
+          ],
+        ];
+        break;
+
+      case 'file':
+        $field = [
+          '#type' => 'media_library',
+          '#title' => $fieldConfig['label'],
+          '#allowed_bundles' => ['file'],
+          '#default_value' => $fieldConfig['mid'],
+          '#description' => t('Upload or select your file.'),
           '#attributes' => [
             'class' => ['paragraph-field'],
             'data-original-value' => $fieldConfig['mid'],

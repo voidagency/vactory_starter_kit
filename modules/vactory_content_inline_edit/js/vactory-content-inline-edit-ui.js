@@ -156,7 +156,7 @@
                 function (response) {
                     // Success callback
                     _this.hideLoader(container);
-                    container.find(".edit-controls").remove();
+                    // container.find(".edit-controls").remove();
                 },
                 function (error) {
                     // Error callback
@@ -199,14 +199,14 @@
                     }
                 });
             });
-            container.find(".edit-controls").remove();
+            // container.find(".edit-controls").remove();
         },
 
         showLoader: function (container) {
             // Add loader to the widget container
             const loader = $("<div>").addClass("loader");
             container.append(loader);
-            container.find(".edit-controls").hide(); // Hide edit controls
+            // container.find(".edit-controls").hide(); // Hide edit controls
             container.find(".loader").show(); // Show loader
         },
 
