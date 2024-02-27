@@ -151,6 +151,13 @@ class VactoryCrossContentManager {
       $ids = [$node->get("nid")->value];
       $view->query->addWhere(1, $id_table . '.' . $id_field, $ids, '!=');
     }
+
+    $fields = \Drupal::service('entity_field.manager')->getFieldDefinitions('node', $node->bundle());
+    if (isset($fields['field_vactory_date'])) {
+      $view->query->orderby = [];
+      $view->query->addOrderBy('node__field_vactory_date', 'field_vactory_date_value', 'DESC');
+    }
+
     // Update views build info query.
     $view->build_info['query'] = $view->query->query();
     return $view;
