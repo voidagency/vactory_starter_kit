@@ -1,27 +1,27 @@
 (function ($, Drupal) {
     Drupal.vactoryContentInlineEditUI = {
         // Event delegation for dynamically added fields
-        bindFieldEvents: function () {
-            $(document).on(
-                "input",
-                ".paragraph-field, .paragraph-url-extended-field",
-                function () {
-                    Drupal.vactoryContentInlineEditUI.showEditControls(
-                        $(this).closest(".paragraph-wrapper")
-                    );
-                }
-            );
-        },
-        bindCkeditorEvents: function () {
-            $("textarea[data-ckeditor5-id]").each(function () {
-                let element = this;
-                Drupal.editors.ckeditor5.onChange(element, function () {
-                    Drupal.vactoryContentInlineEditUI.showEditControls(
-                        $(element).closest(".paragraph-wrapper")
-                    );
-                });
-            });
-        },
+        // bindFieldEvents: function () {
+        //     $(document).on(
+        //         "input",
+        //         ".paragraph-field, .paragraph-url-extended-field",
+        //         function () {
+        //             Drupal.vactoryContentInlineEditUI.showEditControls(
+        //                 $(this).closest(".paragraph-wrapper")
+        //             );
+        //         }
+        //     );
+        // },
+        // bindCkeditorEvents: function () {
+        //     $("textarea[data-ckeditor5-id]").each(function () {
+        //         let element = this;
+        //         Drupal.editors.ckeditor5.onChange(element, function () {
+        //             Drupal.vactoryContentInlineEditUI.showEditControls(
+        //                 $(element).closest(".paragraph-wrapper")
+        //             );
+        //         });
+        //     });
+        // },
 
         showEditControls: function (container) {
             if (container.find(".edit-controls").length === 0) {
@@ -156,7 +156,7 @@
                 function (response) {
                     // Success callback
                     _this.hideLoader(container);
-                    container.find(".edit-controls").remove();
+                    // container.find(".edit-controls").remove();
                 },
                 function (error) {
                     // Error callback
@@ -199,14 +199,14 @@
                     }
                 });
             });
-            container.find(".edit-controls").remove();
+            // container.find(".edit-controls").remove();
         },
 
         showLoader: function (container) {
             // Add loader to the widget container
             const loader = $("<div>").addClass("loader");
             container.append(loader);
-            container.find(".edit-controls").hide(); // Hide edit controls
+            // container.find(".edit-controls").hide(); // Hide edit controls
             container.find(".loader").show(); // Show loader
         },
 
@@ -220,7 +220,11 @@
 
     // Initialize the event binding
     $(document).ready(function () {
-        Drupal.vactoryContentInlineEditUI.bindFieldEvents();
-        Drupal.vactoryContentInlineEditUI.bindCkeditorEvents();
+
+        $('.paragraph-wrapper').each(function() {
+            Drupal.vactoryContentInlineEditUI.showEditControls($(this))
+        });
+        // Drupal.vactoryContentInlineEditUI.bindFieldEvents();
+        // Drupal.vactoryContentInlineEditUI.bindCkeditorEvents();
     });
 })(jQuery, Drupal);

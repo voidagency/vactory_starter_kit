@@ -12,16 +12,19 @@ use Drupal\Component\Serialization\Json;
 /**
  * The VactoryContentFeedbackController class.
  */
-class VactoryContentInlineEditController extends ControllerBase
-{
+class VactoryContentInlineEditController extends ControllerBase {
+
   /**
    * @param Request $request
    * @return JsonResponse
    */
   public function index(Request $request) {
     $page = $request->query->get('page', 1);
-    $limit = 10; // You can adjust this as needed
-    $nodeId = $request->query->get('node_id'); // Optional node ID for filtering
+    // You can adjust this as needed.
+    $limit = 10;
+
+    // Optional node ID for filtering.
+    $nodeId = $request->query->get('node_id');
 
     $nodes = $this->fetchNodes($page, $limit, $nodeId);
 
@@ -52,7 +55,7 @@ class VactoryContentInlineEditController extends ControllerBase
       $query->condition('nid', $nodeId);
     }
 
-    // Pagination logic: Ensure the page is at least 1 and calculate offset accordingly
+    // Ensure the page is at least 1 and calculate offset accordingly.
     $page = max($page, 1);
     $offset = ($page - 1) * $limit;
     $nids = $query->range($offset, $limit)->accessCheck(FALSE)->execute();
@@ -77,10 +80,10 @@ class VactoryContentInlineEditController extends ControllerBase
             $widgetData = Json::decode($component['widget_data']);
             $widgetId = $component['widget_id'];
 
-            // Fetch the widget configuration
+            // Fetch the widget configuration.
             $widgetConfig = \Drupal::service('vactory_dynamic_field.vactory_provider_manager')->loadSettings($widgetId);
 
-            // Now combine $widgetData with $widgetConfig
+            // Now combine $widgetData with $widgetConfig.
             $formattedData = $this->formatWidgetData($widgetData, $widgetConfig, $paragraphData['target_id']);
             $formattedNodeData['paragraphs'][] = $formattedData;
           }
@@ -92,24 +95,34 @@ class VactoryContentInlineEditController extends ControllerBase
   }
 
   public function saveChanges(Request $request) {
-    $content = json_decode($request->getContent(), true);
+    $content = json_decode($request->getContent(), TRUE);
 
     $nodeId = $content['nodeId'] ?? NULL;
     $paragraphId = $content['paragraphId'] ?? NULL;
     $updatedData = $content['updatedData'] ?? NULL;
 
     if (!$nodeId || !$updatedData) {
-      return new JsonResponse(['success' => FALSE, 'message' => 'Missing data', 'c' => $content], 400);
+      return new JsonResponse([
+        'success' => FALSE,
+        'message' => 'Missing data',
+        'c' => $content,
+      ], 400);
     }
 
     $node = Node::load($nodeId);
     if (!$node) {
-      return new JsonResponse(['success' => FALSE, 'message' => 'Node not found'], 400);
+      return new JsonResponse([
+        'success' => FALSE,
+        'message' => 'Node not found',
+      ], 400);
     }
 
     $paragraph = Paragraph::load($paragraphId);
     if (!$paragraph) {
-      return new JsonResponse(['success' => FALSE, 'message' => 'Paragraph not found'], 404);
+      return new JsonResponse([
+        'success' => FALSE,
+        'message' => 'Paragraph not found',
+      ], 404);
     }
 
     $paragraphsField = $node->get('field_vactory_paragraphs');
@@ -120,16 +133,16 @@ class VactoryContentInlineEditController extends ControllerBase
     $widgetDataJson = $widget['widget_data'];
     $widgetData = Json::decode($widgetDataJson);
 
-    // Update extra fields
+    // Update extra fields.
     if (isset($updatedData['extra_fields'])) {
       foreach ($updatedData['extra_fields'] as $fieldName => $fieldValue) {
-        // url extended
-        if(isset($fieldValue['url']) && isset($fieldValue['title'])) {
+        // Url extended.
+        if (isset($fieldValue['url']) && isset($fieldValue['title'])) {
           $widgetData['extra_field'][$fieldName]['title'] = $fieldValue['title'];
           $widgetData['extra_field'][$fieldName]['url'] = $fieldValue['url'];
         }
-        // text_format
-        else if (isset($fieldValue['format'])) {
+        // text_format.
+        elseif (isset($fieldValue['format'])) {
           $widgetData['extra_field'][$fieldName]['value'] = $fieldValue['value'];
         }
         else {
@@ -138,20 +151,20 @@ class VactoryContentInlineEditController extends ControllerBase
       }
     }
 
-    // Update numbered components
+    // Update numbered components.
     if (isset($updatedData['components'])) {
       foreach ($updatedData['components'] as $componentIndex => $componentFields) {
         if (!isset($widgetData[$componentIndex])) {
           $widgetData[$componentIndex] = [];
         }
         foreach ($componentFields as $fieldName => $fieldValue) {
-          // url extended
-          if(isset($fieldValue['url']) && isset($fieldValue['title'])) {
+          // Url extended.
+          if (isset($fieldValue['url']) && isset($fieldValue['title'])) {
             $widgetData[$componentIndex][$fieldName]['title'] = $fieldValue['title'];
             $widgetData[$componentIndex][$fieldName]['url'] = $fieldValue['url'];
           }
-          // text_format
-          else if (isset($fieldValue['format'])) {
+          // text_format.
+          elseif (isset($fieldValue['format'])) {
             $widgetData[$componentIndex][$fieldName]['value'] = $fieldValue['value'];
           }
           else {
@@ -160,23 +173,18 @@ class VactoryContentInlineEditController extends ControllerBase
         }
       }
     }
-    $paragraph->field_vactory_component->setValue([['widget_id' => $widget_id, 'widget_data' => Json::encode($widgetData)]]);
+    $paragraph->field_vactory_component->setValue([
+      [
+        'widget_id' => $widget_id,
+        'widget_data' => Json::encode($widgetData),
+      ],
+    ]);
     $paragraph->save();
 
-    // Update the target_revision_id for the paragraph reference
-    // Revisions are disbaled from Paragraph i guess
-    // foreach ($node->get('field_vactory_paragraphs')->getValue() as &$paragraphRef) {
-    //   if ($paragraphRef['target_id'] == $paragraphId) {
-    //     $paragraphRef['target_revision_id'] = $paragraph->getRevisionId();
-    //   }
-    // }
-
-    // Set the updated paragraphs data back to the node and save it
-    // $node->get('field_vactory_paragraphs')->setValue($paragraphsData);
-    // $node->save();
-
-
-    return new JsonResponse(['success' => TRUE, 'message' => 'Node and Paragraphs updated']);
+    return new JsonResponse([
+      'success' => TRUE,
+      'message' => 'Node and Paragraphs updated',
+    ]);
   }
 
   private function formatWidgetData($widgetData, $widgetConfig, $paragraphId) {
@@ -184,26 +192,28 @@ class VactoryContentInlineEditController extends ControllerBase
     $formattedData["paragraphId"] = $paragraphId;
     $formattedData["name"] = $widgetConfig["name"];
 
-    // Process regular fields
+    // Process regular fields.
     foreach ($widgetData as $key => $fieldGroup) {
       if ($key === 'extra_field') {
-        // Process extra fields
+        // Process extra fields.
         foreach ($fieldGroup as $extraFieldName => $extraFieldValue) {
 
           $extraFieldConfig = $widgetConfig['extra_fields'][$extraFieldName];
           $processedField = $this->processField($extraFieldValue, $extraFieldConfig);
-          if($processedField) {
+          if ($processedField) {
             $formattedData["elements"]["extra_fields"][$extraFieldName] = $processedField;
           }
         }
-      } else if (is_numeric($key) && is_array($fieldGroup)) {
-        // Process regular field groups (indexed numerically)
+      }
+      elseif (is_numeric($key) && is_array($fieldGroup)) {
+        // Process regular field groups (indexed numerically).
         foreach ($fieldGroup as $fieldName => $fieldValue) {
 
-          $fieldConfig = $widgetConfig['fields'][$fieldName] ?? null;
-          if($fieldConfig)
+          $fieldConfig = $widgetConfig['fields'][$fieldName] ?? NULL;
+          if ($fieldConfig) {
             $processedField = $this->processField($fieldValue, $fieldConfig);
-          if($processedField) {
+          }
+          if ($processedField) {
             $formattedData["elements"]["components"][$key][$fieldName] = $processedField;
           }
         }
@@ -214,33 +224,38 @@ class VactoryContentInlineEditController extends ControllerBase
   }
 
   private function processField($fieldValue, $fieldConfig) {
-    if(!isset($fieldConfig['type']))
-      return null;
+    if (!isset($fieldConfig['type'])) {
+      return NULL;
+    }
     switch ($fieldConfig['type']) {
       case 'text':
         return [
           'type' => 'text',
           'value' => $fieldValue,
-          'label' => $fieldConfig['label']
+          'label' => $fieldConfig['label'],
         ];
+
       case 'textarea':
         return [
           'type' => 'textarea',
           'value' => $fieldValue,
-          'label' => $fieldConfig['label']
+          'label' => $fieldConfig['label'],
         ];
 
       case 'text_format':
         return $this->processFormattedText($fieldValue, $fieldConfig);
 
+      case 'remote_video':
       case 'image':
-        return $this->processImageField($fieldValue, $fieldConfig);
+      case 'video':
+      case 'file':
+        return $this->processMediaField($fieldValue, $fieldConfig);
 
       case 'url_extended':
         return $this->processUrlExtendedField($fieldValue, $fieldConfig);
     }
 
-    return null;
+    return NULL;
   }
 
   private function processFormattedText($formattedText, $fieldConfig) {
@@ -252,11 +267,17 @@ class VactoryContentInlineEditController extends ControllerBase
     ];
   }
 
-  private function processImageField($imageField, $fieldConfig) {
-    $image_data = reset($imageField);
-    $mid = $image_data['selection'][0]['target_id'] ?? NULL;
+  private function processMediaField($imageField, $fieldConfig) {
+    if (is_array($imageField)) {
+      $image_data = reset($imageField);
+      $mid = $image_data['selection'][0]['target_id'] ?? NULL;
+    }
+    else {
+      $mid = $imageField;
+    }
+
     return [
-      'type' => 'image',
+      'type' => $fieldConfig['type'],
       'label' => $fieldConfig['label'],
       'mid' => $mid,
     ];
@@ -270,4 +291,5 @@ class VactoryContentInlineEditController extends ControllerBase
       'url' => $urlField['url'],
     ];
   }
+
 }
