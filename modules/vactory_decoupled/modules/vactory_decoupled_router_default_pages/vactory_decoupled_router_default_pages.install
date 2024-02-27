@@ -7,6 +7,7 @@
 
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\node\Entity\Node;
+use Drupal\paragraphs\Entity\Paragraph;
 
 /**
  * Returns default pages info.
@@ -70,7 +71,7 @@ function vactory_decoupled_router_default_pages_install() {
  * Create default nodes and router entity.
  */
 function _vactory_decoupled_router_create_default_node($machine_name, $title, $path) {
-  $node = Node::create([
+  $node_data = [
     'type' => 'vactory_page',
     'title' => $title,
     'langcode' => LanguageInterface::LANGCODE_NOT_SPECIFIED,
@@ -79,7 +80,18 @@ function _vactory_decoupled_router_create_default_node($machine_name, $title, $p
       'pathauto' => 0,
       'alias' => $path,
     ],
-  ])
+  ];
+  $paragraph = _vactory_decoupled_router_add_widget($machine_name, $title);
+  if ($paragraph instanceof Paragraph) {
+    $node_data['field_vactory_paragraphs'] = [
+      'target_id' => $paragraph->id(),
+      'target_revision_id' => \Drupal::entityTypeManager()
+        ->getStorage('paragraph')
+        ->getLatestRevisionId($paragraph->id()),
+    ];
+  }
+
+  $node = Node::create($node_data)
     ->set('machine_name', $machine_name)
     ->setPublished();
   $node->save();
@@ -93,6 +105,128 @@ function _vactory_decoupled_router_create_default_node($machine_name, $title, $p
   $route->save();
 
   return $node;
+}
+
+/**
+ * Add DFs to espace prive pages.
+ */
+function _vactory_decoupled_router_add_widget($page, $title) {
+  $component = [];
+  $widget_id = '';
+  if ($page === 'account_login') {
+    $widget_id = 'vactory_decoupled_espace_prive:signin';
+    $widget_settings = \Drupal::service('vactory_dynamic_field.vactory_provider_manager')->loadSettings($widget_id);
+
+    if (
+      $widget_settings['fields']['title']
+      && $widget_settings['fields']['intro']
+    ) {
+      $component['0']['title'] = 'Login';
+      $component['0']['intro']['value'] = '';
+    }
+    else {
+      \Drupal::logger('vactory_decoupled_router_default_pages')
+        ->warning("{$title}: The paragraph was not added because the widget settings do not have the expected structure.");
+    }
+  }
+  if ($page === 'account') {
+    $widget_id = 'vactory_decoupled_espace_prive:account';
+    $widget_settings = \Drupal::service('vactory_dynamic_field.vactory_provider_manager')->loadSettings($widget_id);
+    $user = $widget_settings['fields']['user']['options']['#default_value'] ?? NULL;
+    $webform = $widget_settings['fields']['webform']['options']['#default_value']['webform_id'] ?? NULL;
+    if (
+      isset($user)
+      && isset($webform)
+    ) {
+      $component['0']['user'] = $user;
+      $component['0']['webform'] = [
+        'id' => $webform,
+        'style' => '',
+        'buttons' => '',
+      ];
+    }
+    else {
+      \Drupal::logger('vactory_decoupled_router_default_pages')
+        ->warning("{$title}: The paragraph was not added because the widget settings do not have the expected structure.");
+    }
+  }
+  if ($page === 'account_register') {
+    $widget_id = 'vactory_decoupled_espace_prive:signup';
+    $widget_settings = \Drupal::service('vactory_dynamic_field.vactory_provider_manager')->loadSettings($widget_id);
+    $webform = $widget_settings['fields']['webform']['options']['#default_value']['webform_id'] ?? NULL;
+
+    if (isset($webform)) {
+      $component['0']['webform'] = [
+        'id' => $webform,
+        'style' => '',
+        'buttons' => '',
+      ];
+    }
+    else {
+      \Drupal::logger('vactory_decoupled_router_default_pages')
+        ->warning("{$title}: The paragraph was not added because the widget settings do not have the expected structure.");
+    }
+  }
+  if ($page === 'account_lost_password') {
+    $widget_id = 'vactory_decoupled_espace_prive:lost-password';
+    $widget_settings = \Drupal::service('vactory_dynamic_field.vactory_provider_manager')->loadSettings($widget_id);
+    if (
+      $widget_settings['fields']['title']
+      && $widget_settings['fields']['intro']
+    ) {
+      $component['0']['title'] = 'Reset password';
+      $component['0']['intro']['value'] = '';
+    }
+    else {
+      \Drupal::logger('vactory_decoupled_router_default_pages')
+        ->warning("{$title}: The paragraph was not added because the widget settings do not have the expected structure.");
+    }
+  }
+  if ($page === 'account_reset_password') {
+    $widget_id = 'vactory_decoupled_espace_prive:single-sign-on';
+    $widget_settings = \Drupal::service('vactory_dynamic_field.vactory_provider_manager')->loadSettings($widget_id);
+    if (
+      $widget_settings['fields']['title']
+      && $widget_settings['fields']['intro']
+    ) {
+      $component['0']['title'] = '';
+      $component['0']['intro']['value'] = '';
+    }
+    else {
+      \Drupal::logger('vactory_decoupled_router_default_pages')
+        ->warning("{$title}: The paragraph was not added because the widget settings do not have the expected structure.");
+    }
+  }
+  if ($page === 'account_forget_password') {
+    $widget_id = 'vactory_decoupled_espace_prive:forget-password';
+    $widget_settings = \Drupal::service('vactory_dynamic_field.vactory_provider_manager')->loadSettings($widget_id);
+    if (
+      $widget_settings['fields']['title']
+      && $widget_settings['fields']['intro']
+    ) {
+      $component['0']['title'] = '';
+      $component['0']['intro']['value'] = '';
+    }
+    else {
+      \Drupal::logger('vactory_decoupled_router_default_pages')
+        ->warning("{$title}: The paragraph was not added because the widget settings do not have the expected structure.");
+    }
+  }
+
+  if (!empty($component)) {
+    $paragraph = [
+      "type" => "vactory_component",
+      "field_vactory_title" => $title,
+      "field_vactory_component" => [
+        "widget_id" => $widget_id,
+        "widget_data" => json_encode($component),
+      ],
+    ];
+    $paragraph = Paragraph::create($paragraph);
+    $paragraph->save();
+    return $paragraph;
+  }
+  return NULL;
 }
 
 /**
