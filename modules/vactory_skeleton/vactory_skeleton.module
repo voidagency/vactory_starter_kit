@@ -1,0 +1,51 @@
+<?php
+
+/**
+ * @file
+ * Related hooks.
+ */
+
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function vactory_skeleton_form_node_form_alter(&$form) {
+  $form['node_skeleton_group'] = [
+    '#type'        => 'details',
+    '#title'       => t('Skeleton settings'),
+    '#description' => t('Create skeleton for this node.'),
+    '#group'       => 'advanced',
+    '#open'        => FALSE,
+    '#access'      => \Drupal::currentUser()
+      ->hasPermission('administer fields node skeleton'),
+    '#attributes'  => ['class' => ['node-class-form']],
+  ];
+
+  $form['node_skeleton_image']['#group'] = 'node_skeleton_group';
+
+}
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function vactory_skeleton_entity_base_field_info(EntityTypeInterface $entity_type) {
+  if ($entity_type->id() === 'node') {
+    $fields['node_skeleton_image'] = BaseFieldDefinition::create('entity_reference')
+      ->setLabel(t('Skeleton Image'))
+      ->setDescription(t('The skeleton image of this node.'))
+      ->setSetting('target_type', 'media')
+      ->setSetting('handler_settings', ['target_bundles' => ['image' => 'image']])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', FALSE)
+      ->setTargetEntityTypeId('node')
+      ->setTranslatable(TRUE)
+      ->setDisplayOptions('form', [
+        'type'   => 'media_library_widget',
+        'weight' => 0,
+      ]);
+    return $fields;
+  }
+  return [];
+}
