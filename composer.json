@@ -201,7 +201,7 @@
     "patches": {
       "drupal/simplify_menu": {
         "Add support for options.": "https://gist.githubusercontent.com/voidagency/0c4efddd8f379229c7416e66a1d44de3/raw/825d324ae399de35f47d2a99aca7baae509abdbc/simplify_menu-support-options.patch",
-        "Add callable : filterLanguage": "https://gist.githubusercontent.com/ismail-void/73d5a8497bc09443ae5a6e7467609dd3/raw/a120d6632f3ca20269475db6f752c3074c457a06/add-filterLanguage-callable.patch"
+        "Add callable : filterLanguage": "https://gist.githubusercontent.com/ismail-void/73d5a8497bc09443ae5a6e7467609dd3/raw/adb696894af3b6fcbf5adab7c199432e839f8403/add-filterLanguage-callable.patch"
       },
       "drupal/features": {
         "Export config translation": "https://www.drupal.org/files/issues/features_export-config-translation-2869336-2.patch"
