@@ -354,10 +354,14 @@ class DynamicFieldManager {
               }
             }
 
+            $langcode = $this->languageManager->getCurrentLanguage()->getId();
+            $processed_text = \Drupal::service('vactory_decoupled.media_embed')->process($text, $langcode)->getProcessedText();
+            $processed_text = str_replace("\n", "", preg_replace('/<!--(.|\s)*?-->/', '', $processed_text));
+
             // $format = $info['options']['#format'] ?? 'full_html';
             $build = [
               // '#type'   => 'processed_text',
-              '#text' => $text,
+              '#text' => $processed_text,
               // '#format' => $format,
             ];
 
