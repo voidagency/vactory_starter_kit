@@ -55,6 +55,13 @@ class DynamicFieldSettingsForm extends ConfigFormBase {
         ->get('pending_content'),
     ];
 
+    $form['auto_populate'] = [
+      '#type' => 'checkbox',
+      '#title' => t('Enable auto populate feature.'),
+      '#default_value' => $this->config('vactory_dynamic_field.settings')
+        ->get('auto_populate'),
+    ];
+
     $form['excluded_widgets'] = [
       '#type' => 'textarea',
       '#title' => t('Excluded widgets'),
@@ -75,6 +82,7 @@ class DynamicFieldSettingsForm extends ConfigFormBase {
       ->set('is_dropdown_select_templates', $form_state->getValue('is_dropdown_select_templates'))
       ->set('excluded_widgets', $form_state->getValue('excluded_widgets'))
       ->set('pending_content', $form_state->getValue('pending_content'))
+      ->set('auto_populate', $form_state->getValue('auto_populate'))
       ->save();
     parent::submitForm($form, $form_state);
     drupal_flush_all_caches();
