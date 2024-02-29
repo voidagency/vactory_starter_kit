@@ -20,10 +20,15 @@ class VactorySkeletonController extends ControllerBase {
   public function index() {
 
     $nodes = $this->entityTypeManager()->getStorage('node')->loadMultiple();
+    $langcode = $this->languageManager()->getCurrentLanguage()->getId();
     $result = [];
     foreach ($nodes as $node) {
+      $concernedNodeTranslation = $node;
+      if ($node->hasTranslation($langcode)) {
+        $concernedNodeTranslation = $node->getTranslation($langcode);
+      }
 
-      $mid = $node->get('node_skeleton_image')->target_id;
+      $mid = $concernedNodeTranslation->get('node_skeleton_image')->target_id;
       if (!isset($mid)) {
         $result[$node->bundle()][$node->id()] = '';
         continue;
