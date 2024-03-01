@@ -183,7 +183,8 @@ class MediaEmbed {
       $this->renderIntoDomNode($build, $node, $result);
     }
 
-    $result->setProcessedText(Html::serialize($dom));
+    $processed_text = str_replace("\n", "", preg_replace('/<!--(.|\s)*?-->/', '', Html::serialize($dom)));
+    $result->setProcessedText($processed_text);
     return $result;
   }
 
