@@ -3,12 +3,10 @@
 namespace Drupal\vactory_dynamic_import\Form;
 
 use Drupal\Core\Entity\ContentEntityType;
-use Drupal\Core\Entity\EntityFieldManager;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\vactory_dynamic_import\Service\DynamicImportHelpers;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -40,9 +38,6 @@ class DynamicImportForm extends EntityForm {
 
   /**
    * Constructs an ExampleForm object.
-   *
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
-   *   The entityTypeManager.
    */
   public function __construct(EntityTypeManagerInterface $entityTypeManager, EntityTypeBundleInfoInterface $entityTypeBundleInfo, DynamicImportHelpers $dynamicImportHelper) {
     $this->entityTypeManager = $entityTypeManager;
@@ -128,8 +123,8 @@ class DynamicImportForm extends EntityForm {
           '#type' => 'checkboxes',
           '#title' => t('Concerned fields'),
           '#options' => $entity->isNew() ?
-            $this->dynamicImportHelper->getRelatedFields($this->submitted['target_entity'], $this->submitted['target_bundle'], TRUE)
-            : $this->dynamicImportHelper->getRelatedFields($entity->get('target_entity'), $entity->get('target_bundle'), TRUE),
+          $this->dynamicImportHelper->getRelatedFields($this->submitted['target_entity'], $this->submitted['target_bundle'], TRUE)
+          : $this->dynamicImportHelper->getRelatedFields($entity->get('target_entity'), $entity->get('target_bundle'), TRUE),
           '#default_value' => $entity->get('concered_fields'),
         ];
 
@@ -150,7 +145,6 @@ class DynamicImportForm extends EntityForm {
 
     }
 
-    // You will need additional form elements for your custom properties.
     return $form;
   }
 
@@ -165,7 +159,8 @@ class DynamicImportForm extends EntityForm {
       $this->messenger()->addMessage($this->t('The %label Example created.', [
         '%label' => $example->label(),
       ]));
-    } else {
+    }
+    else {
       $this->messenger()->addMessage($this->t('The %label Example updated.', [
         '%label' => $example->label(),
       ]));
@@ -181,7 +176,7 @@ class DynamicImportForm extends EntityForm {
     $entity = $this->entityTypeManager->getStorage('dynamic_import')->getQuery()
       ->condition('id', $id)
       ->execute();
-    return (bool)$entity;
+    return (bool) $entity;
   }
 
   /**

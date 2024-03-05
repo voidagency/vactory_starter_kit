@@ -9,7 +9,6 @@ use Drupal\Core\Form\FormStateInterface;
 /**
  * Builds the form to delete a Dynamic import.
  */
-
 class DynamicImportDeleteForm extends EntityConfirmFormBase {
 
   /**

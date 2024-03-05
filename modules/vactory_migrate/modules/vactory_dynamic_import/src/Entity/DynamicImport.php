@@ -80,14 +80,15 @@ class DynamicImport extends ConfigEntityBase implements DynamicImportInterface {
    * The dynamic import fields.
    *
    * @var array
-   * todo fix typo
+   *
+   * @todo Fix typo.
    */
   protected array $concered_fields;
 
   /**
-   * is translation import.
+   * Is translation import.
    *
-   * @var boolean
+   * @var bool
    */
   protected bool $is_translation;
 
@@ -98,6 +99,4 @@ class DynamicImport extends ConfigEntityBase implements DynamicImportInterface {
    */
   protected string $translation_langcode;
 
-  // Your specific configuration property get/set methods go here,
-  // implementing the interface.
 }

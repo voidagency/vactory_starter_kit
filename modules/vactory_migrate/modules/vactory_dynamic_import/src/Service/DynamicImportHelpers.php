@@ -6,7 +6,6 @@ use Drupal\Core\Entity\EntityFieldManager;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\field\Entity\FieldStorageConfig;
-use http\Header;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
@@ -36,6 +35,9 @@ class DynamicImportHelpers {
    */
   protected $entityTypeManager;
 
+  /**
+   * Service constructor.
+   */
   public function __construct(EntityFieldManager $entityFieldManager, LanguageManagerInterface $languageManager, EntityTypeManagerInterface $entityTypeManager) {
     $this->entityFieldManager = $entityFieldManager;
     $this->languageManager = $languageManager;
@@ -201,21 +203,23 @@ class DynamicImportHelpers {
     $response->send();
   }
 
+  /**
+   * Generates migration config based on dynamic import config.
+   */
   public function generateMigrationConfig($id, $label, $header, $target_entity, $target_bundle, $is_translation, $translation_langcode) {
     $data = [];
     $data['id'] = $id;
     $data['label'] = $label;
 
-//    if (isset($values['migration_group'])) {
-      //todo
-      $data['migration_group'] = 'default';
-//    }
+    // @todo Get group from settings
+    $data['migration_group'] = 'default';
 
+    // @todo Get delimiter from settings
     $data['source'] = [
       'plugin'           => 'csv',
       'header_row_count' => 1,
       'ids'              => ['id'],
-      'delimiter'        => ',',//todo
+      'delimiter'        => ',',
       'path'             => '',
       'constants'        => [
         'dest_path' => "public://migrated-{$target_bundle}/",

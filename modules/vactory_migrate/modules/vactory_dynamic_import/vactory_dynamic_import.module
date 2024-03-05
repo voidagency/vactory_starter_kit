@@ -2,32 +2,37 @@
 
 /**
  * @file
- *
  * Related hooks.
  */
 
 use Drupal\Core\Form\FormStateInterface;
 
+/**
+ * Implements hook_form_alter().
+ */
 function vactory_dynamic_import_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   if ($form_id == 'dynamic_import_edit_form') {
     $form['actions']['generate'] = [
       '#type' => 'submit',
       '#value' => t('Generate CSV model'),
       '#submit' => ['generate_csv_model'],
-      '#weight' => 10
+      '#weight' => 10,
     ];
     $form['actions']['execute'] = [
       '#type' => 'submit',
       '#value' => t('Execute this migration'),
       '#submit' => ['execute_dynamic_import'],
-      '#weight' => 10
+      '#weight' => 10,
     ];
   }
 }
 
-function generate_csv_model(&$form, FormStateInterface $form_state){
+/**
+ * Submit function for generate button.
+ */
+function generate_csv_model(&$form, FormStateInterface $form_state) {
   $values = $form_state->getValues();
-  // todo get delimiter from config.
+  // @todo Get delimiter from config.
   \Drupal::service('vactory_dynamic_import.helper')
     ->generateCsvModel(
       $values['target_entity'],
@@ -38,9 +43,12 @@ function generate_csv_model(&$form, FormStateInterface $form_state){
     );
 }
 
-function execute_dynamic_import(&$form, FormStateInterface $form_state){
+/**
+ * Submit function for execute button.
+ */
+function execute_dynamic_import(&$form, FormStateInterface $form_state) {
   $values = $form_state->getValues();
-  // todo get delimiter from config.
+  // @todo Get delimiter from config.
   $header = \Drupal::service('vactory_dynamic_import.helper')
     ->generateCsvModel(
       $values['target_entity'],
@@ -71,9 +79,4 @@ function execute_dynamic_import(&$form, FormStateInterface $form_state){
   $form_state->setRedirect('vactory_migrate_ui.import', ['id' => $config_name]);
   $form_state->setIgnoreDestination();
 
-
 }
-
-
-
-

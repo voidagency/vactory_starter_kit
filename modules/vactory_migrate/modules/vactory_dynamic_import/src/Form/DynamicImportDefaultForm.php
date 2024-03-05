@@ -226,7 +226,7 @@ class DynamicImportDefaultForm extends FormBase {
       $path = \Drupal::service('file_system')->realpath($file_path);
       $header = $this->getCsvHeader($path, $values['delimiter']);
     }
-    //todo use \Drupal::service('vactory_dynamic_import.helper')->generateMigrationConfig()
+    // @todo Use \Drupal::service('vactory_dynamic_import.helper')->generateMigrationConfig()
     $data['id'] = $id;
     $data['label'] = "{$values['entity_type']} {$values['bundle']} migration";
 
@@ -593,7 +593,7 @@ class DynamicImportDefaultForm extends FormBase {
   /**
    * Get Term Target Bundle By Field.
    *
-   * todo use \Drupal::service('vactory_dynamic_import.helper')
+   * @todo Use \Drupal::service('vactory_dynamic_import.helper')
    */
   private function getTermTargetBundle($entity_type, $bundle, $field) {
     $splitted = $field ? explode('/', $field) : [];
