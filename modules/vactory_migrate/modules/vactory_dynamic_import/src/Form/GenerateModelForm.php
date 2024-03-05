@@ -218,6 +218,8 @@ class GenerateModelForm extends FormBase {
 
   /**
    * Transform array to csv file.
+   *
+   * todo use \Drupal::service('vactory_dynamic_import.helper')
    */
   private function generateCsv($header, $data, $filename, $delimiter) {
     $time = time();
@@ -240,6 +242,8 @@ class GenerateModelForm extends FormBase {
 
   /**
    * Get field of a given entity and bundle.
+   *
+   * todo use \Drupal::service('vactory_dynamic_import.helper')
    */
   private function getRelatedFields($entity_type, $bundle, $only_keys = FALSE) {
 
@@ -308,6 +312,8 @@ class GenerateModelForm extends FormBase {
 
   /**
    * Check if array contains a value that starts with haystack.
+   *
+   * todo use \Drupal::service('vactory_dynamic_import.helper')
    */
   private function startsWithAnyInArray($haystack, $array) {
     foreach ($array as $prefix) {

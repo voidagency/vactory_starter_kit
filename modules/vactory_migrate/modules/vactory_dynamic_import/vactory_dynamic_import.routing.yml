@@ -1,7 +1,7 @@
 vactory_dynamic_import.form:
   path: '/admin/config/vactory_dynamic_import'
   defaults:
-    _form: '\Drupal\vactory_dynamic_import\Form\DynamicImportForm'
+    _form: '\Drupal\vactory_dynamic_import\Form\DynamicImportDefaultForm'
     _title: 'Vactory Dynamic Import'
   requirements:
     _permission: 'administer dynamic imports'
@@ -27,5 +27,47 @@ vactory_dynamic_import.generate:
   defaults:
     _form: '\Drupal\vactory_dynamic_import\Form\GenerateModelForm'
     _title: 'Vactory Dynamic Import - Generate Model'
+  requirements:
+    _permission: 'administer dynamic imports'
+
+vactory_dynamic_import.execute:
+  path: '/admin/config/vactory_dynamic_import/execute'
+  defaults:
+    _form: 'Drupal\vactory_migrate_ui\Form\Import'
+    _title: 'Vactory Dynamic Import - Execute'
+  requirements:
+    _permission: 'administer dynamic imports'
+
+
+# ====== Dynamic import config entity ======
+entity.dynamic_import.collection:
+  path: '/admin/config/system/dynamic_import'
+  defaults:
+    _entity_list: 'dynamic_import'
+    _title: 'Dynamic import configuration'
+  requirements:
+    _permission: 'administer dynamic imports'
+
+entity.dynamic_import.add_form:
+  path: '/admin/config/system/dynamic_import/add'
+  defaults:
+    _entity_form: 'dynamic_import.add'
+    _title: 'Add dynamic import'
+  requirements:
+    _permission: 'administer dynamic imports'
+
+entity.dynamic_import.edit_form:
+  path: '/admin/config/system/dynamic_import/{dynamic_import}'
+  defaults:
+    _entity_form: 'dynamic_import.edit'
+    _title: 'Edit dynamic import'
+  requirements:
+    _permission: 'administer dynamic imports'
+
+entity.dynamic_import.delete_form:
+  path: '/admin/config/system/dynamic_import/{dynamic_import}/delete'
+  defaults:
+    _entity_form: 'dynamic_import.delete'
+    _title: 'Delete dynamic import'
   requirements:
     _permission: 'administer dynamic imports'

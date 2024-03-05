@@ -1,0 +1,79 @@
+<?php
+
+/**
+ * @file
+ *
+ * Related hooks.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+
+function vactory_dynamic_import_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if ($form_id == 'dynamic_import_edit_form') {
+    $form['actions']['generate'] = [
+      '#type' => 'submit',
+      '#value' => t('Generate CSV model'),
+      '#submit' => ['generate_csv_model'],
+      '#weight' => 10
+    ];
+    $form['actions']['execute'] = [
+      '#type' => 'submit',
+      '#value' => t('Execute this migration'),
+      '#submit' => ['execute_dynamic_import'],
+      '#weight' => 10
+    ];
+  }
+}
+
+function generate_csv_model(&$form, FormStateInterface $form_state){
+  $values = $form_state->getValues();
+  // todo get delimiter from config.
+  \Drupal::service('vactory_dynamic_import.helper')
+    ->generateCsvModel(
+      $values['target_entity'],
+      $values['target_bundle'],
+      $values['concered_fields'],
+      $values['is_translation'],
+      ','
+    );
+}
+
+function execute_dynamic_import(&$form, FormStateInterface $form_state){
+  $values = $form_state->getValues();
+  // todo get delimiter from config.
+  $header = \Drupal::service('vactory_dynamic_import.helper')
+    ->generateCsvModel(
+      $values['target_entity'],
+      $values['target_bundle'],
+      $values['concered_fields'],
+      $values['is_translation'],
+      ',',
+      TRUE
+    );
+
+  $data = \Drupal::service('vactory_dynamic_import.helper')
+    ->generateMigrationConfig(
+      $values['id'],
+      $values['label'],
+      $header,
+      $values['target_entity'],
+      $values['target_bundle'],
+      $values['is_translation'],
+      $values['translation_langcode']
+    );
+
+  $config_name = "migrate_plus.migration.{$values['id']}";
+  $migration_config = \Drupal::configFactory()
+    ->getEditable($config_name);
+  $migration_config->setData($data);
+  $migration_config->save();
+  drupal_flush_all_caches();
+  $form_state->setRedirect('vactory_migrate_ui.import', ['id' => $config_name]);
+  $form_state->setIgnoreDestination();
+
+
+}
+
+
+
+

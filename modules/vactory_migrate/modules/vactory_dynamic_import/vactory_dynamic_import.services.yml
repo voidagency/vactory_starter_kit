@@ -1,0 +1,7 @@
+services:
+  vactory_dynamic_import.helper:
+    class: Drupal\vactory_dynamic_import\Service\DynamicImportHelpers
+    arguments:
+      - '@entity_field.manager'
+      - '@language_manager'
+      - '@entity_type.manager'
