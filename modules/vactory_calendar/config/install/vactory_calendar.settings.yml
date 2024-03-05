@@ -1,0 +1,13 @@
+invitation_mail: "<p>test invitation[vactory_calendar:rdv-invited][vactory_calendar:rdv-owner][vactory_calendar:rdv-responsable][vactory_calendar:rdv-table][vactory_calendar:rdv-time][vactory_calendar:agenda-list]</p>\r\n"
+confirmation_mail: "<p>test confirmation[vactory_calendar:rdv-invited][vactory_calendar:rdv-owner][vactory_calendar:rdv-responsable][vactory_calendar:rdv-table][vactory_calendar:rdv-time]</p>\r\n"
+annulation_mail: "<p>test annulation[vactory_calendar:rdv-invited][vactory_calendar:rdv-owner][vactory_calendar:rdv-responsable][vactory_calendar:rdv-table][vactory_calendar:rdv-time]</p>\r\n"
+table_reserved: "<p>test reservation[vactory_calendar:rdv-invited][vactory_calendar:rdv-owner][vactory_calendar:rdv-responsable][vactory_calendar:rdv-table][vactory_calendar:rdv-time]</p>\r\n"
+langcode: fr
+api_key: ''
+api_secret: ''
+mailgun_api_key: ''
+mailgun_api_secret: ''
+mailgun_domain: ''
+begin: ''
+end: ''
+interval: ''

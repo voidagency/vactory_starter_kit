@@ -1,0 +1,22 @@
+# Calendar slot routing definition
+entity.calendar_slot_type.edit_form:
+  route_name: entity.calendar_slot_type.edit_form
+  base_route: entity.calendar_slot_type.edit_form
+  title: 'Edit'
+  weight: 0
+
+entity.calendar_slot.canonical:
+  route_name: entity.calendar_slot.canonical
+  base_route: entity.calendar_slot.canonical
+  title: 'View'
+
+entity.calendar_slot.edit_form:
+  route_name: entity.calendar_slot.edit_form
+  base_route: entity.calendar_slot.canonical
+  title: 'Edit'
+
+entity.calendar_slot.delete_form:
+  route_name:  entity.calendar_slot.delete_form
+  base_route:  entity.calendar_slot.canonical
+  title: Delete
+  weight: 10

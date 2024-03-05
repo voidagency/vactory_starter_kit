@@ -1,0 +1,19 @@
+langcode: fr
+status: true
+dependencies:
+  module:
+    - taxonomy
+    - vactory_calendar
+id: calendar_slot.field_table_du_rdv
+field_name: field_table_du_rdv
+entity_type: calendar_slot
+type: entity_reference
+settings:
+  target_type: taxonomy_term
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

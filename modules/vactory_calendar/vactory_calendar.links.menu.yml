@@ -1,0 +1,24 @@
+
+# Calendar slot menu items definition
+entity.calendar_slot.collection:
+  title: 'Calendar slot list'
+  route_name: entity.calendar_slot.collection
+  description: 'List Calendar slot entities'
+  parent: system.admin_structure
+  weight: 100
+
+
+# Calendar slot type menu items definition
+entity.calendar_slot_type.collection:
+  title: 'Calendar slot type'
+  route_name: entity.calendar_slot_type.collection
+  description: 'List Calendar slot type (bundles)'
+  parent: system.admin_structure
+  weight: 99
+
+vactory_calendar.settings_form:
+  title: 'Calendar slot Mailing'
+  route_name: vactory_calendar.settings_form
+  description: 'List of mailing system config for the calendar entity'
+  parent: system.admin_config_services
+  weight: 99

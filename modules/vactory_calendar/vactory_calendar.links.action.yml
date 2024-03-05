@@ -1,0 +1,10 @@
+entity.calendar_slot.add_form:
+  route_name: entity.calendar_slot.add_page
+  title: 'Add Calendar slot'
+  appears_on:
+    - entity.calendar_slot.collection
+entity.calendar_slot_type.add_form:
+  route_name: entity.calendar_slot_type.add_form
+  title: 'Add Calendar slot type'
+  appears_on:
+    - entity.calendar_slot_type.collection

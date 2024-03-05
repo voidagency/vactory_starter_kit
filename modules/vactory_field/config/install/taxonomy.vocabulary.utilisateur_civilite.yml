@@ -1,0 +1,7 @@
+langcode: en
+status: true
+dependencies: {  }
+name: 'Utilisateur - Civilité'
+vid: utilisateur_civilite
+description: 'Utilisateur civilité'
+weight: 0

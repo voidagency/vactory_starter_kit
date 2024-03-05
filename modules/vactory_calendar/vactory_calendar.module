@@ -1,0 +1,196 @@
+<?php
+
+/**
+ * @file
+ * Contains vactory_calendar.module.
+ */
+
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\FieldDefinitionInterface;
+use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\vactory_calendar\Service\TableReservationInterface;
+
+/**
+ * Implements hook_help().
+ */
+function vactory_calendar_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the vactory_calendar module.
+    case 'help.page.vactory_calendar':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('My Awesome Module') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_calendar_theme() {
+  $theme = [];
+  $theme['calendar_slot'] = [
+    'render element' => 'elements',
+    'file' => 'calendar_slot.page.inc',
+    'template' => 'calendar_slot',
+  ];
+  $theme['calendar_slot_content_add_list'] = [
+    'render element' => 'content',
+    'variables' => ['content' => NULL],
+    'file' => 'calendar_slot.page.inc',
+  ];
+  $theme['vactory_calendar'] = [
+    'render element' => 'children',
+  ];
+  return $theme;
+}
+
+/**
+ * Implements hook_theme_suggestions_HOOK().
+ */
+function vactory_calendar_theme_suggestions_calendar_slot(array $variables) {
+  $suggestions = [];
+  $entity = $variables['elements']['#calendar_slot'];
+  $sanitized_view_mode = strtr($variables['elements']['#view_mode'], '.', '_');
+
+  $suggestions[] = 'calendar_slot__' . $sanitized_view_mode;
+  $suggestions[] = 'calendar_slot__' . $entity->bundle();
+  $suggestions[] = 'calendar_slot__' . $entity->bundle() . '__' . $sanitized_view_mode;
+  $suggestions[] = 'calendar_slot__' . $entity->id();
+  $suggestions[] = 'calendar_slot__' . $entity->id() . '__' . $sanitized_view_mode;
+  return $suggestions;
+}
+
+/**
+ * Implements hook_jsonapi_ENTITY_TYPE_filter_access().
+ */
+function vactory_calendar_jsonapi_calendar_slot_filter_access(EntityTypeInterface $entity_type, AccountInterface $account) {
+  return [
+    JSONAPI_FILTER_AMONG_ALL => AccessResult::allowedIfHasPermission(
+    $account,
+    'view published calendar slot entities'
+    ),
+  ];
+}
+
+/**
+ * Implements hook_jsonapi_entity_field_filter_access().
+ */
+function vactory_calendar_jsonapi_entity_field_filter_access(FieldDefinitionInterface $field_definition, AccountInterface $account) {
+  if ($field_definition->getTargetEntityTypeId() === 'calendar_slot') {
+    return AccessResult::allowedIfHasPermission($account, 'view published calendar slot entities');
+  }
+  if ($field_definition->getName() === 'status' && $field_definition->getTargetEntityTypeId() === 'user') {
+    return AccessResult::allowed();
+  }
+  return AccessResult::neutral();
+}
+
+/**
+ * Implements hook_entity_field_access().
+ */
+function vactory_calendar_entity_field_access($operation, FieldDefinitionInterface $field_definition, AccountInterface $account, FieldItemListInterface $items = NULL) {
+
+  if ($operation === 'view' && $field_definition->getTargetEntityTypeId() === 'user') {
+    return AccessResult::allowedIfHasPermission($account, 'view published calendar slot entities');
+  }
+  return AccessResult::neutral();
+}
+
+/**
+ * Implements hook_entity_presave().
+ */
+function vactory_calendar_entity_presave(EntityInterface $entity) {
+  if ($entity->getEntityTypeId() === 'calendar_slot') {
+    /** @var Drupal\vactory_calendar\Service\TableReservation $calendar_manager */
+    $calendar_manager = \Drupal::service('vactory_calendar.table_reservation');
+    if ($entity->isNew()) {
+      $calendar_manager->notify(TableReservationInterface::SEND_INVITATION, $entity);
+    }
+    else {
+      $status = $entity?->get('etat')->value;
+
+      if ($status !== 'declined') {
+        if ($status === 'confirmed') {
+          $calendar_manager->notify(TableReservationInterface::SEND_CONFIRMATION, $entity);
+          $calendar_manager->assignTable($entity);
+        }
+      }
+      else {
+        $calendar_manager->notify(TableReservationInterface::SEND_ANNULATION, $entity);
+        $tableId = $entity->get('field_table_du_rdv')?->getValue();
+        $entity?->set('field_table_du_rdv', NULL);
+        $tableId = is_array($tableId) ? $tableId[0]['target_id'] : '';
+
+        $calendar_manager->freeTable($tableId, $entity);
+      }
+    }
+  }
+}
+
+/**
+ * Alters the JSON API collection.
+ */
+function vactory_calendar_json_api_collection_alter(&$filters, &$context) {
+
+  if ($context['id'] === 'vactory_users') {
+    if ($filters['optional_filters_data']['node']['vactory_event']) {
+      $filters["filter[event_internal][condition][path]"] = "field_events.drupal_internal__nid";
+      $filters["filter[event_internal][condition][operator]"] = "IN";
+      $filters["filter[event_internal][condition][value]"] = $filters['optional_filters_data']['node']['vactory_event'];
+    }
+
+  }
+}
+
+// /**
+// * Implements hook_mail().
+// */
+// function vactory_calendar_mail($key, &$message, $params) {
+// if (in_array($key, [
+// TableReservationInterface::TABLE_RESERVED,
+// TableReservationInterface::SEND_ANNULATION,
+// TableReservationInterface::SEND_CONFIRMATION,
+// TableReservationInterface::SEND_INVITATION,
+// ], TRUE)) {
+// $sender = 'no_reply@void.care';
+// $message['from'] = $sender;
+// $message['headers']['Sender'] = $sender;
+// $message['headers']['From'] = $sender;
+// $message['subject'] = $params['subject'];
+// $body = ['#markup' => $params['message']];
+// $message['body'][] = \Drupal::service('renderer')->render($body);
+// }
+// }
+
+/**
+ * Implements hook_cron().
+ */
+function vactory_calendar_cron() {
+  // This Cron must be ran on high frequency to free the Tables.
+  $date_time = DrupalDateTime::createFromTimestamp(time())
+    ->format('Y-m-d\TH:i:s');
+  $tableManager = \Drupal::service('vactory_calendar.table_reservation');
+
+  $ids = $tableManager->query()->condition('field_last_lock_end', $date_time, '<')->execute();
+
+  foreach ($ids as $id) {
+    $tableManager->freeTable($id);
+
+  }
+}
+
+/**
+ * Implements hook_entity_type_alter().
+ */
+function vactory_calendar_entity_type_alter(array &$entity_types) {
+  $entity_types['calendar_slot']->addConstraint('time_limit');
+
+}
