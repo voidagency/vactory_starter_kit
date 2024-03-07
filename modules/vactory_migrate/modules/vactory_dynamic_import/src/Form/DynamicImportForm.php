@@ -151,6 +151,26 @@ class DynamicImportForm extends EntityForm {
   /**
    * {@inheritdoc}
    */
+  public function buildForm(array $form, FormStateInterface $form_state) {
+    $form = parent::buildForm($form, $form_state);
+    $form['actions']['generate'] = [
+      '#type' => 'submit',
+      '#value' => t('Generate CSV model'),
+      '#submit' => ['::generateCsvModel'],
+      '#weight' => 10,
+    ];
+    $form['actions']['execute'] = [
+      '#type' => 'submit',
+      '#value' => t('Execute this migration'),
+      '#submit' => ['::executeDynamicImport'],
+      '#weight' => 10,
+    ];
+    return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function save(array $form, FormStateInterface $form_state) {
     $example = $this->entity;
     $status = $example->save();
@@ -193,6 +213,54 @@ class DynamicImportForm extends EntityForm {
    */
   public function bundlesCallback($form, FormStateInterface $form_state) {
     return $form['container'];
+  }
+
+  /**
+   * Submit function for generate button.
+   */
+  public function generateCsvModel(&$form, FormStateInterface $form_state) {
+    $values = $form_state->getValues();
+    $this->dynamicImportHelper->generateCsvModel(
+        $values['target_entity'],
+        $values['target_bundle'],
+        $values['concerned_fields'],
+        $values['is_translation']
+      );
+  }
+
+  /**
+   * Submit function for execute button.
+   */
+  public function executeDynamicImport(&$form, FormStateInterface $form_state) {
+    $values = $form_state->getValues();
+    $header = $this->dynamicImportHelper->generateCsvModel(
+        $values['target_entity'],
+        $values['target_bundle'],
+        $values['concerned_fields'],
+        $values['is_translation'],
+        NULL,
+        TRUE
+      );
+
+    $data = $this->dynamicImportHelper->generateMigrationConfig(
+        $values['id'],
+        $values['label'],
+        $header,
+        $values['target_entity'],
+        $values['target_bundle'],
+        $values['is_translation'],
+        $values['translation_langcode']
+      );
+
+    $config_name = "migrate_plus.migration.{$values['id']}";
+    $migration_config = \Drupal::configFactory()
+      ->getEditable($config_name);
+    $migration_config->setData($data);
+    $migration_config->save();
+    drupal_flush_all_caches();
+    $form_state->setRedirect('vactory_migrate_ui.import', ['id' => $config_name]);
+    $form_state->setIgnoreDestination();
+
   }
 
 }
