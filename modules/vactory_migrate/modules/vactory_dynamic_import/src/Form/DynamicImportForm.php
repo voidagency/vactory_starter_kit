@@ -258,7 +258,7 @@ class DynamicImportForm extends EntityForm {
     $migration_config->setData($data);
     $migration_config->save();
     drupal_flush_all_caches();
-    $form_state->setRedirect('vactory_migrate_ui.import', ['id' => $config_name]);
+    $form_state->setRedirect('vactory_dynamic_import.execute', ['id' => $config_name]);
     $form_state->setIgnoreDestination();
 
   }

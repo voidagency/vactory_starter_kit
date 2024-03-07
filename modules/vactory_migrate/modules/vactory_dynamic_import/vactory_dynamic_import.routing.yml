@@ -33,8 +33,16 @@ vactory_dynamic_import.generate:
 vactory_dynamic_import.execute:
   path: '/admin/config/vactory_dynamic_import/execute'
   defaults:
-    _form: 'Drupal\vactory_migrate_ui\Form\Import'
+    _form: 'Drupal\vactory_dynamic_import\Form\DynamicImportExecute'
     _title: 'Vactory Dynamic Import - Execute'
+  requirements:
+    _permission: 'administer dynamic imports'
+
+vactory_dynamic_import.confirmation:
+  path: '/admin/config/vactory_dynamic_import/dynamic_import_comfirmation'
+  defaults:
+    _form: 'Drupal\vactory_dynamic_import\Form\DynamicImportConfirmation'
+    _title: 'Vactory Dynamic Import - Confirmation'
   requirements:
     _permission: 'administer dynamic imports'
 
