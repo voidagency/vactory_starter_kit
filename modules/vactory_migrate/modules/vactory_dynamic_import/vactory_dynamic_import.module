@@ -32,14 +32,12 @@ function vactory_dynamic_import_form_alter(&$form, FormStateInterface $form_stat
  */
 function generate_csv_model(&$form, FormStateInterface $form_state) {
   $values = $form_state->getValues();
-  // @todo Get delimiter from config.
   \Drupal::service('vactory_dynamic_import.helper')
     ->generateCsvModel(
       $values['target_entity'],
       $values['target_bundle'],
-      $values['concered_fields'],
-      $values['is_translation'],
-      ','
+      $values['concerned_fields'],
+      $values['is_translation']
     );
 }
 
@@ -48,14 +46,13 @@ function generate_csv_model(&$form, FormStateInterface $form_state) {
  */
 function execute_dynamic_import(&$form, FormStateInterface $form_state) {
   $values = $form_state->getValues();
-  // @todo Get delimiter from config.
   $header = \Drupal::service('vactory_dynamic_import.helper')
     ->generateCsvModel(
       $values['target_entity'],
       $values['target_bundle'],
-      $values['concered_fields'],
+      $values['concerned_fields'],
       $values['is_translation'],
-      ',',
+      NULL,
       TRUE
     );
 

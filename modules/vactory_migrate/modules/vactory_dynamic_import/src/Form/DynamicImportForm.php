@@ -119,13 +119,13 @@ class DynamicImportForm extends EntityForm {
         '#default_value' => $entity->get('target_bundle'),
       ];
       if ((isset($this->submitted['target_bundle']) && !empty($this->submitted['target_bundle'])) || !$entity->isNew()) {
-        $form['container']['concered_fields'] = [
+        $form['container']['concerned_fields'] = [
           '#type' => 'checkboxes',
           '#title' => t('Concerned fields'),
           '#options' => $entity->isNew() ?
           $this->dynamicImportHelper->getRelatedFields($this->submitted['target_entity'], $this->submitted['target_bundle'], TRUE)
           : $this->dynamicImportHelper->getRelatedFields($entity->get('target_entity'), $entity->get('target_bundle'), TRUE),
-          '#default_value' => $entity->get('concered_fields'),
+          '#default_value' => $entity->get('concerned_fields'),
         ];
 
         $form['container']['is_translation'] = [

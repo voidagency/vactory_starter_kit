@@ -1,0 +1,6 @@
+vactory_migrate.settings:
+  title: 'Vactory migrate settings'
+  description: 'Global settings for vactory migrate.'
+  parent: system.admin_config_system
+  route_name: vactory_migrate.settings
+  weight: 10

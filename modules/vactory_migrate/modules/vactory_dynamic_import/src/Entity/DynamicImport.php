@@ -26,7 +26,7 @@ use Drupal\vactory_dynamic_import\DynamicImportInterface;
  *     "label" = "label",
  *     "target_entity" = "target_entity",
  *     "target_bundle" = "target_bundle",
- *     "concered_fields" = "concered_fields",
+ *     "concerned_fields" = "concerned_fields",
  *     "is_translation" = "is_translation",
  *     "translation_langcode" = "translation_langcode"
  *   },
@@ -35,7 +35,7 @@ use Drupal\vactory_dynamic_import\DynamicImportInterface;
  *     "label",
  *     "target_entity",
  *     "target_bundle",
- *     "concered_fields",
+ *     "concerned_fields",
  *     "is_translation",
  *     "translation_langcode",
  *
@@ -80,10 +80,8 @@ class DynamicImport extends ConfigEntityBase implements DynamicImportInterface {
    * The dynamic import fields.
    *
    * @var array
-   *
-   * @todo Fix typo.
    */
-  protected array $concered_fields;
+  protected array $concerned_fields;
 
   /**
    * Is translation import.

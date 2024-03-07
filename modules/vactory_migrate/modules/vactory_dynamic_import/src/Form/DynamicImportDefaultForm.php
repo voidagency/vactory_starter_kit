@@ -52,6 +52,13 @@ class DynamicImportDefaultForm extends FormBase {
   protected $languageManager;
 
   /**
+   * Dynamic import helper.
+   *
+   * @var \Drupal\vactory_dynamic_import\Service\DynamicImportHelpers
+   */
+  protected $dynamicImportHelper;
+
+  /**
    * {@inheritDoc}
    */
   public static function create(ContainerInterface $container) {
@@ -60,6 +67,7 @@ class DynamicImportDefaultForm extends FormBase {
     $instance->entityTypeBundleInfo = $container->get('entity_type.bundle.info');
     $instance->entityFieldManager = $container->get('entity_field.manager');
     $instance->languageManager = $container->get('language_manager');
+    $instance->dynamicImportHelper = $container->get('vactory_dynamic_import.helper');
     return $instance;
   }
 
@@ -339,7 +347,7 @@ class DynamicImportDefaultForm extends FormBase {
               ];
             }
             if ($plugin == 'term') {
-              $target_bundle = $this->getTermTargetBundle($values['entity_type'], $values['bundle'], $mapped_field);
+              $target_bundle = $this->dynamicImportHelper->getTermTargetBundle($values['entity_type'], $values['bundle'], $mapped_field);
               if (!$target_bundle['status']) {
                 $form_state->setErrorByName('csv', $target_bundle['value']);
               }
@@ -587,33 +595,6 @@ class DynamicImportDefaultForm extends FormBase {
         'status' => FALSE,
         'fields' => $unknown_fields,
       ];
-    }
-  }
-
-  /**
-   * Get Term Target Bundle By Field.
-   *
-   * @todo Use \Drupal::service('vactory_dynamic_import.helper')
-   */
-  private function getTermTargetBundle($entity_type, $bundle, $field) {
-    $splitted = $field ? explode('/', $field) : [];
-    $field = $splitted[0] ?? '';
-    $field_definitions = $this->entityFieldManager->getFieldDefinitions($entity_type, $bundle);
-    foreach ($field_definitions as $field_name => $field_definition) {
-      if ($field_name == $field) {
-        $settings = $field_definition->getSettings();
-        if ($settings['target_type'] !== 'taxonomy_term') {
-          return [
-            'status' => FALSE,
-            'value'  => "{$field_name} configuration is not correct",
-          ];
-        }
-        $target_bundle = $settings['handler_settings']['target_bundles'];
-        return [
-          'status' => TRUE,
-          'value'  => reset($target_bundle),
-        ];
-      }
     }
   }
 

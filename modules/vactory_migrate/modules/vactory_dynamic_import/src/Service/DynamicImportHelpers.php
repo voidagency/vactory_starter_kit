@@ -2,6 +2,7 @@
 
 namespace Drupal\vactory_dynamic_import\Service;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityFieldManager;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
@@ -36,20 +37,28 @@ class DynamicImportHelpers {
   protected $entityTypeManager;
 
   /**
+   * Config factory.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected $configFactory;
+
+  /**
    * Service constructor.
    */
-  public function __construct(EntityFieldManager $entityFieldManager, LanguageManagerInterface $languageManager, EntityTypeManagerInterface $entityTypeManager) {
+  public function __construct(EntityFieldManager $entityFieldManager, LanguageManagerInterface $languageManager, EntityTypeManagerInterface $entityTypeManager, ConfigFactoryInterface $configFactory) {
     $this->entityFieldManager = $entityFieldManager;
     $this->languageManager = $languageManager;
     $this->entityTypeManager = $entityTypeManager;
+    $this->configFactory = $configFactory;
   }
 
   /**
    * Transform array to csv file.
    */
-  public function generateCsv($header, $data, $filename, $delimiter) {
+  public function generateCsv($header, $data, $filename, $delimiter = NULL) {
     $time = time();
-
+    $delimiter = is_null($delimiter) ? $this->configFactory->get('vactory_migrate.settings')->get('delimiter') : $delimiter;
     $destination = 'public://dynamic-import-model';
     if (!file_exists($destination)) {
       mkdir($destination, 0777);
@@ -149,7 +158,7 @@ class DynamicImportHelpers {
   /**
    * Generates csv model based on dynamic import configuration.
    */
-  public function generateCsvModel($target_entity, $target_bundle, $fields, $is_translation, $delimiter, $return_array = FALSE) {
+  public function generateCsvModel($target_entity, $target_bundle, $fields, $is_translation, $delimiter = NULL, $return_array = FALSE) {
 
     $header = [
       'id',
@@ -206,20 +215,20 @@ class DynamicImportHelpers {
   /**
    * Generates migration config based on dynamic import config.
    */
-  public function generateMigrationConfig($id, $label, $header, $target_entity, $target_bundle, $is_translation, $translation_langcode) {
+  public function generateMigrationConfig($id, $label, $header, $target_entity, $target_bundle, $is_translation, $translation_langcode, $delimiter = NULL, $group = NULL) {
     $data = [];
     $data['id'] = $id;
     $data['label'] = $label;
 
-    // @todo Get group from settings
-    $data['migration_group'] = 'default';
+    $group = is_null($group) ? $this->configFactory->get('vactory_migrate.settings')->get('group') : $group;
+    $data['migration_group'] = $group;
 
-    // @todo Get delimiter from settings
+    $delimiter = is_null($delimiter) ? $this->configFactory->get('vactory_migrate.settings')->get('delimiter') : $delimiter;
     $data['source'] = [
       'plugin'           => 'csv',
       'header_row_count' => 1,
       'ids'              => ['id'],
-      'delimiter'        => ',',
+      'delimiter'        => $delimiter,
       'path'             => '',
       'constants'        => [
         'dest_path' => "public://migrated-{$target_bundle}/",
@@ -376,7 +385,7 @@ class DynamicImportHelpers {
   /**
    * Get Term Target Bundle By Field.
    */
-  private function getTermTargetBundle($entity_type, $bundle, $field) {
+  public function getTermTargetBundle($entity_type, $bundle, $field) {
     $splitted = $field ? explode('/', $field) : [];
     $field = $splitted[0] ?? '';
     $field_definitions = $this->entityFieldManager->getFieldDefinitions($entity_type, $bundle);

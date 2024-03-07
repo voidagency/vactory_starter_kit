@@ -4,7 +4,6 @@ namespace Drupal\vactory_dynamic_import\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\field\Entity\FieldStorageConfig;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Entity\ContentEntityType;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -53,6 +52,13 @@ class GenerateModelForm extends FormBase {
   protected $languageManager;
 
   /**
+   * Dynamic import helper.
+   *
+   * @var \Drupal\vactory_dynamic_import\Service\DynamicImportHelpers
+   */
+  protected $dynamicImportHelper;
+
+  /**
    * {@inheritDoc}
    */
   public static function create(ContainerInterface $container) {
@@ -61,6 +67,7 @@ class GenerateModelForm extends FormBase {
     $instance->entityTypeBundleInfo = $container->get('entity_type.bundle.info');
     $instance->entityFieldManager = $container->get('entity_field.manager');
     $instance->languageManager = $container->get('language_manager');
+    $instance->dynamicImportHelper = $container->get('vactory_dynamic_import.helper');
     return $instance;
   }
 
@@ -130,7 +137,7 @@ class GenerateModelForm extends FormBase {
         $form['container']['fields'] = [
           '#type'    => 'checkboxes',
           '#title'   => t('Concerned fields'),
-          '#options' => $this->getRelatedFields($this->submitted['entity_type'], $this->submitted['bundle'], TRUE),
+          '#options' => $this->dynamicImportHelper->getRelatedFields($this->submitted['entity_type'], $this->submitted['bundle'], TRUE),
         ];
 
         $form['container']['submit'] = [
@@ -170,7 +177,7 @@ class GenerateModelForm extends FormBase {
       return $item != 0;
     });
 
-    $otiginal_fields = $this->getRelatedFields($values['entity_type'], $values['bundle']);
+    $otiginal_fields = $this->dynamicImportHelper->getRelatedFields($values['entity_type'], $values['bundle']);
 
     foreach ($fields as $field) {
       $formatted_field = str_replace('/', ':', $field);
@@ -198,7 +205,7 @@ class GenerateModelForm extends FormBase {
       }
     }
 
-    $path = $this->generateCsv($header, [], "{$values['entity_type']}-{$values['bundle']}", $values['delimiter']);
+    $path = $this->dynamicImportHelper->generateCsv($header, [], "{$values['entity_type']}-{$values['bundle']}", $values['delimiter']);
 
     $response = new BinaryFileResponse(\Drupal::service('file_system')
       ->realPath($path), 200, [], FALSE);
@@ -214,114 +221,6 @@ class GenerateModelForm extends FormBase {
     $name = $form_state->getTriggeringElement()['#name'];
     $this->submitted[$name] = $form_state->getValue($name);
     parent::validateForm($form, $form_state);
-  }
-
-  /**
-   * Transform array to csv file.
-   *
-   * @todo Use \Drupal::service('vactory_dynamic_import.helper')
-   */
-  private function generateCsv($header, $data, $filename, $delimiter) {
-    $time = time();
-
-    $destination = 'public://dynamic-import-model';
-    if (!file_exists($destination)) {
-      mkdir($destination, 0777);
-    }
-    $path = "{$destination}/{$filename}-{$time}.csv";
-    $fp = fopen($path, 'w');
-    fputcsv($fp, $header, $delimiter);
-    // Loop through file pointer and a line.
-    foreach ($data as $item) {
-      fputcsv($fp, $item);
-    }
-
-    fclose($fp);
-    return $path;
-  }
-
-  /**
-   * Get field of a given entity and bundle.
-   *
-   * @todo Use \Drupal::service('vactory_dynamic_import.helper')
-   */
-  private function getRelatedFields($entity_type, $bundle, $only_keys = FALSE) {
-
-    $excluded_fields = [
-      'revision_',
-      'field_content_access',
-      'vcc_',
-      'internal_',
-      'notification_',
-      'mail_',
-      'comment',
-      'field_vactory_meta_tags',
-      'field_vactory_seo_status',
-    ];
-
-    $field_definitions = $this->entityFieldManager->getFieldDefinitions($entity_type, $bundle);
-    $fields = [];
-    foreach ($field_definitions as $field_name => $field_definition) {
-
-      if (!$this->startsWithAnyInArray($field_name, $excluded_fields)) {
-        $field_storage = FieldStorageConfig::loadByName($entity_type, $field_name);
-
-        $field_label = !empty($field_definition->getLabel()) ? $field_definition->getLabel() : $field_name;
-        $field_type = !empty($field_definition->getType()) ? $field_definition->getType() : '';
-
-        if ($field_type == 'datetime') {
-          $field_type = 'date';
-        }
-        if ($field_type == 'entity_reference') {
-          $settings = $field_definition->getSettings();
-          if (isset($settings['target_type']) && $settings['target_type'] == 'media') {
-            if (isset($settings['handler_settings']['target_bundles']) && !is_null($settings['handler_settings']['target_bundles'])) {
-              $field_type = 'media:' . reset($settings['handler_settings']['target_bundles']);
-            }
-          }
-          if (isset($settings['target_type']) && $settings['target_type'] == 'taxonomy_term') {
-            $field_type = 'taxonomy_term';
-          }
-        }
-        if (!$field_storage) {
-          $fields[$field_name] = $only_keys ? $field_name : [
-            'label' => $field_label,
-            'type'  => $field_type,
-          ];
-          continue;
-        }
-
-        $field_properties = $field_storage->getPropertyDefinitions();
-        if (count($field_properties) === 1 || isset($field_properties['target_id'])) {
-          $fields[$field_name] = $only_keys ? $field_name : [
-            'label' => $field_label,
-            'type'  => $field_type,
-          ];
-          continue;
-        }
-        foreach ($field_properties as $key => $field_property) {
-          $fields["{$field_name}/{$key}"] = $only_keys ? "{$field_name}/{$key}" : [
-            'label' => "{$field_label}/{$key}",
-            'type'  => $field_type,
-          ];
-        }
-      }
-    }
-    return $fields;
-  }
-
-  /**
-   * Check if array contains a value that starts with haystack.
-   *
-   * @todo Use \Drupal::service('vactory_dynamic_import.helper')
-   */
-  private function startsWithAnyInArray($haystack, $array) {
-    foreach ($array as $prefix) {
-      if (strpos($haystack, $prefix) === 0) {
-        return TRUE;
-      }
-    }
-    return FALSE;
   }
 
 }
