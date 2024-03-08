@@ -289,6 +289,7 @@ class DynamicImportForm extends EntityForm {
    */
   public function dynamicExport(&$form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
+    $alias_manager = \Drupal::service('path_alias.manager');
     $header = $this->dynamicImportHelper->generateCsvModel(
       $values['target_entity'],
       $values['target_bundle'],
@@ -323,7 +324,13 @@ class DynamicImportForm extends EntityForm {
             $split = explode(':', $field);
             if ($plugin == '-' && $info == '-') {
               if (count($split) == 1) {
-                $entity_data[$header_item] = $entity->get($field)->value;
+                if ($field == 'path' && $values['target_entity'] == 'node') {
+                  $alias = $alias_manager->getAliasByPath('/node/' . $entity->id());
+                  $entity_data[$header_item] = $alias;
+                }
+                else {
+                  $entity_data[$header_item] = $entity->get($field)->value;
+                }
               }
               if (count($split) == 2) {
                 $value = $entity->get(reset($split))->getValue();

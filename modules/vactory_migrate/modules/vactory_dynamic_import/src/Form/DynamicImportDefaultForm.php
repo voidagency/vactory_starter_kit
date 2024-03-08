@@ -306,7 +306,16 @@ class DynamicImportDefaultForm extends FormBase {
           $mapped_field = str_replace(':', '/', $config[1]);
           $info = $config[2];
           if ($plugin == '-' && $info == '-') {
-            $data['process'][$mapped_field] = $field;
+            if ($target_entity == 'node' && $mapped_field == 'path') {
+              $data['process']['path/alias'] = $field;
+              $data['process']['path/pathauto'] = [
+                'plugin' => 'default_value',
+                'default_value' => 0,
+              ];
+            }
+            else {
+              $data['process'][$mapped_field] = $field;
+            }
           }
           else {
             if ($plugin == 'date') {
