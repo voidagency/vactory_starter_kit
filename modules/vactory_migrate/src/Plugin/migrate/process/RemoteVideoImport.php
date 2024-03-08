@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\vactory_migrate_plugin\Plugin\migrate\process;
+namespace Drupal\vactory_migrate\Plugin\migrate\process;
 
 use Drupal\Core\Entity\EntityStorageException;
 use Drupal\media\Entity\Media;

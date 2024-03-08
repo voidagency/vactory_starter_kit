@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\vactory_dynamic_import\Plugin\migrate\process;
+namespace Drupal\vactory_migrate\Plugin\migrate\process;
 
 use Drupal\migrate\MigrateExecutableInterface;
 use Drupal\migrate\ProcessPluginBase;

@@ -1,0 +1,5 @@
+entity.dynamic_import.add_form:
+  route_name: 'entity.dynamic_import.add_form'
+  title: 'Add dynamic import'
+  appears_on:
+    - entity.dynamic_import.collection
