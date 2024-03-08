@@ -173,7 +173,7 @@ install:
   - vactory_cross_content
   - vactory_espace_prive
   - vactory_jquerycolorpicker_css_fix
-  - dblog
+  - log_stdout
   - vactory_decoupled
   - vactory_decoupled_router
   - vactory_decoupled_router_default_pages
