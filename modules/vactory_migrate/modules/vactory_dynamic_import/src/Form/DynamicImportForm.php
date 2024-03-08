@@ -364,6 +364,10 @@ class DynamicImportForm extends EntityForm {
                   $image_uri = $file->getFileUri();
                   $url = \Drupal::service('vacory_decoupled.media_file_manager')->getMediaAbsoluteUrl($image_uri);
                   $entity_data[$header_item] = $url;
+                  if ($info == 'image') {
+                    $key = "media|{$field}|image_alt";
+                    $entity_data[$key] = $media->thumbnail->alt;
+                  }
                 }
               }
             }
