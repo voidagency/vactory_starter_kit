@@ -7,13 +7,28 @@ use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\file\Entity\File;
+use Drupal\file\FileInterface;
+use Drupal\media\Entity\Media;
+use Drupal\taxonomy\Entity\Term;
 use Drupal\vactory_dynamic_import\Service\DynamicImportHelpers;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 /**
  * Form handler for the dynamic import add and edit forms.
  */
 class DynamicImportForm extends EntityForm {
+
+  const MEDIA_FIELD_NAMES = [
+    'audio' => 'field_media_audio_file',
+    'image' => 'field_media_image',
+    'file' => 'field_media_file',
+    'remote_video' => 'field_media_oembed_video',
+    'video' => 'field_media_video_file',
+    'onboarding_video' => 'field_video_onboarding',
+  ];
 
   /**
    * Entity type bundle info service.
@@ -165,6 +180,12 @@ class DynamicImportForm extends EntityForm {
       '#submit' => ['::executeDynamicImport'],
       '#weight' => 10,
     ];
+    $form['actions']['export'] = [
+      '#type' => 'submit',
+      '#value' => t('Export existing content'),
+      '#submit' => ['::dynamicExport'],
+      '#weight' => 10,
+    ];
     return $form;
   }
 
@@ -261,6 +282,108 @@ class DynamicImportForm extends EntityForm {
     $form_state->setRedirect('vactory_dynamic_import.execute', ['id' => $config_name]);
     $form_state->setIgnoreDestination();
 
+  }
+
+  /**
+   * Export content based on dynamic import config.
+   */
+  public function dynamicExport(&$form, FormStateInterface $form_state) {
+    $values = $form_state->getValues();
+    $header = $this->dynamicImportHelper->generateCsvModel(
+      $values['target_entity'],
+      $values['target_bundle'],
+      $values['concerned_fields'],
+      $values['is_translation'],
+      NULL,
+      TRUE
+    );
+    $storage = $this->entityTypeManager->getStorage($values['target_entity']);
+    $query = $storage->getQuery();
+    $query->accessCheck(FALSE);
+    if ($values['target_entity'] !== $values['target_bundle']) {
+      $entity_type_definition = $this->entityTypeManager->getDefinition($values['target_entity']);
+      $bundle_field = $entity_type_definition->getKey('bundle');
+      $query->condition($bundle_field, $values['target_bundle']);
+    }
+    $ids = $query->execute();
+    $data = [];
+    foreach ($ids as $id) {
+      $entity_data = [];
+      $entity = $storage->load($id);
+      foreach ($header as $header_item) {
+        if ($header_item == 'id') {
+          $entity_data['id'] = $entity->id();
+        }
+        else {
+          $config = $header_item ? explode('|', $header_item) : [];
+          $plugin = $config[0];
+          $field = $config[1];
+          $info = $config[2];
+          if (is_array($config) && count($config) == 3) {
+            $split = explode(':', $field);
+            if ($plugin == '-' && $info == '-') {
+              if (count($split) == 1) {
+                $entity_data[$header_item] = $entity->get($field)->value;
+              }
+              if (count($split) == 2) {
+                $value = $entity->get(reset($split))->getValue();
+                $entity_data[$header_item] = $value[0][end($split)];
+              }
+            }
+            if ($plugin == 'term') {
+              $term_id = $entity->get($field)->target_id;
+              $term = Term::load($term_id);
+              $entity_data[$header_item] = $term->label();
+            }
+            if ($plugin == 'date') {
+              $value = $entity->get(reset($split))->getValue();
+              $entity_data[$header_item] = $value[0][end($split)];
+
+            }
+            if ($plugin == 'media') {
+              if ($info !== 'image_alt') {
+                $media_id = $entity->get($field)->target_id;
+                $media = Media::load($media_id);
+                if ($info == 'remote_video') {
+                  $url = $media->get(self::MEDIA_FIELD_NAMES[$info])->value;
+                  $entity_data[$header_item] = $url;
+                }
+                else {
+                  $fid = $media->get(self::MEDIA_FIELD_NAMES[$info])->target_id;
+                  $file = $fid ? File::load($fid) : NULL;
+                  if (!$file instanceof FileInterface) {
+                    return;
+                  }
+                  $image_uri = $file->getFileUri();
+                  $url = \Drupal::service('vacory_decoupled.media_file_manager')->getMediaAbsoluteUrl($image_uri);
+                  $entity_data[$header_item] = $url;
+                }
+              }
+            }
+            if ($plugin == 'file') {
+              $fid = $entity->get($field)->target_id;
+              $file = $fid ? File::load($fid) : NULL;
+              if (!$file instanceof FileInterface) {
+                return;
+              }
+              $image_uri = $file->getFileUri();
+              $url = \Drupal::service('vacory_decoupled.media_file_manager')->getMediaAbsoluteUrl($image_uri);
+              $entity_data[$header_item] = $url;
+            }
+          }
+        }
+      }
+      $data[] = $entity_data;
+    }
+
+    $delimiter = \Drupal::config('vactory_migrate.settings')->get('delimiter') ?? ',';
+    $path = $this->dynamicImportHelper->generateCsv($header, $data, "{$values['target_entity']}--{$values['target_bundle']}--export", $delimiter);
+
+    $response = new BinaryFileResponse(\Drupal::service('file_system')
+      ->realPath($path), 200, [], FALSE);
+    $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, "{$values['target_entity']}--{$values['target_bundle']}--export" . '.csv');
+    $response->deleteFileAfterSend(TRUE);
+    $response->send();
   }
 
 }
