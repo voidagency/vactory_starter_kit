@@ -20,10 +20,6 @@ function vactory_content_package_install($is_syncing) {
       'default_value' => '',
       'max_length' => 255,
       'text_processing' => 0,
-    ])
-    ->setDisplayOptions('form', [
-      'type' => 'string_textfield_with_counter',
-      'weight' => 3,
     ]);
   $term_id_definition = BaseFieldDefinition::create('string')
     ->setLabel(t('Term machine name'))
@@ -34,10 +30,6 @@ function vactory_content_package_install($is_syncing) {
       'default_value' => '',
       'max_length' => 255,
       'text_processing' => 0,
-    ])
-    ->setDisplayOptions('form', [
-      'type' => 'string_textfield_with_counter',
-      'weight' => 3,
     ]);
 
   // Install node machine name new field.
@@ -47,9 +39,6 @@ function vactory_content_package_install($is_syncing) {
   Drupal::entityDefinitionUpdateManager()
     ->installFieldStorageDefinition('term_id', 'taxonomy_term', 'vactory_content_package', $term_id_definition);
 
-  // Update form displays.
-  vactory_content_package_update_form_display('node', 'node_id');
-  vactory_content_package_update_form_display('taxonomy_term', 'term_id');
 
   $database = \Drupal::service('database');
   $logger = \Drupal::logger('vactory_content_package');
