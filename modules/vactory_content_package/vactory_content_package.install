@@ -39,7 +39,6 @@ function vactory_content_package_install($is_syncing) {
   Drupal::entityDefinitionUpdateManager()
     ->installFieldStorageDefinition('term_id', 'taxonomy_term', 'vactory_content_package', $term_id_definition);
 
-
   $database = \Drupal::service('database');
   $logger = \Drupal::logger('vactory_content_package');
   // Nodes.
