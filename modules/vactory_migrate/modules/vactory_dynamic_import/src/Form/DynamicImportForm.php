@@ -292,7 +292,11 @@ class DynamicImportForm extends EntityForm {
     $values = $form_state->getValues();
     $moduleHandler = \Drupal::service('module_handler');
     $alias_manager = \Drupal::service('path_alias.manager');
-    $media_decoupled_manager = \Drupal::service('vacory_decoupled.media_file_manager');
+    $media_decoupled_manager = NULL;
+    if ($moduleHandler->moduleExists('vactory_decoupled')) {
+      $media_decoupled_manager = \Drupal::service('vacory_decoupled.media_file_manager');
+    }
+
     $file_url_generator = \Drupal::service('file_url_generator');
     $header = $this->dynamicImportHelper->generateCsvModel(
       $values['target_entity'],
@@ -381,7 +385,7 @@ class DynamicImportForm extends EntityForm {
                   $image_uri = $file->getFileUri();
 
                   $url = '';
-                  if ($moduleHandler->moduleExists('vactory_decoupled')) {
+                  if ($moduleHandler->moduleExists('vactory_decoupled') && !is_null($media_decoupled_manager)) {
                     $url = $media_decoupled_manager->getMediaAbsoluteUrl($image_uri);
                   }
                   else {
@@ -403,7 +407,7 @@ class DynamicImportForm extends EntityForm {
                 continue;
               }
               $image_uri = $file->getFileUri();
-              if ($moduleHandler->moduleExists('vactory_decoupled')) {
+              if ($moduleHandler->moduleExists('vactory_decoupled') && !is_null($media_decoupled_manager)) {
                 $url = $media_decoupled_manager->getMediaAbsoluteUrl($image_uri);
               }
               else {
