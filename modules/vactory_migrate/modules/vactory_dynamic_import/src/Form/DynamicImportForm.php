@@ -10,6 +10,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\file\Entity\File;
 use Drupal\file\FileInterface;
 use Drupal\media\Entity\Media;
+use Drupal\media\MediaInterface;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\vactory_dynamic_import\Service\DynamicImportHelpers;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -289,7 +290,10 @@ class DynamicImportForm extends EntityForm {
    */
   public function dynamicExport(&$form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
+    $moduleHandler = \Drupal::service('module_handler');
     $alias_manager = \Drupal::service('path_alias.manager');
+    $media_decoupled_manager = \Drupal::service('vacory_decoupled.media_file_manager');
+    $file_url_generator = \Drupal::service('file_url_generator');
     $header = $this->dynamicImportHelper->generateCsvModel(
       $values['target_entity'],
       $values['target_bundle'],
@@ -350,7 +354,15 @@ class DynamicImportForm extends EntityForm {
             if ($plugin == 'media') {
               if ($info !== 'image_alt') {
                 $media_id = $entity->get($field)->target_id;
-                $media = Media::load($media_id);
+                $media = isset($media_id) ? Media::load($media_id) : NULL;
+                if (!$media instanceof MediaInterface) {
+                  $entity_data[$header_item] = '';
+                  if ($info == 'image') {
+                    $key = "media|{$field}|image_alt";
+                    $entity_data[$key] = $media->thumbnail->alt;
+                  }
+                  continue;
+                }
                 if ($info == 'remote_video') {
                   $url = $media->get(self::MEDIA_FIELD_NAMES[$info])->value;
                   $entity_data[$header_item] = $url;
@@ -359,10 +371,22 @@ class DynamicImportForm extends EntityForm {
                   $fid = $media->get(self::MEDIA_FIELD_NAMES[$info])->target_id;
                   $file = $fid ? File::load($fid) : NULL;
                   if (!$file instanceof FileInterface) {
-                    return;
+                    $entity_data[$header_item] = '';
+                    if ($info == 'image') {
+                      $key = "media|{$field}|image_alt";
+                      $entity_data[$key] = $media->thumbnail->alt;
+                    }
+                    continue;
                   }
                   $image_uri = $file->getFileUri();
-                  $url = \Drupal::service('vacory_decoupled.media_file_manager')->getMediaAbsoluteUrl($image_uri);
+
+                  $url = '';
+                  if ($moduleHandler->moduleExists('vactory_decoupled')) {
+                    $url = $media_decoupled_manager->getMediaAbsoluteUrl($image_uri);
+                  }
+                  else {
+                    $url = $file_url_generator->generateAbsoluteString($image_uri);
+                  }
                   $entity_data[$header_item] = $url;
                   if ($info == 'image') {
                     $key = "media|{$field}|image_alt";
@@ -375,10 +399,16 @@ class DynamicImportForm extends EntityForm {
               $fid = $entity->get($field)->target_id;
               $file = $fid ? File::load($fid) : NULL;
               if (!$file instanceof FileInterface) {
-                return;
+                $entity_data[$header_item] = '';
+                continue;
               }
               $image_uri = $file->getFileUri();
-              $url = \Drupal::service('vacory_decoupled.media_file_manager')->getMediaAbsoluteUrl($image_uri);
+              if ($moduleHandler->moduleExists('vactory_decoupled')) {
+                $url = $media_decoupled_manager->getMediaAbsoluteUrl($image_uri);
+              }
+              else {
+                $url = $file_url_generator->generateAbsoluteString($image_uri);
+              }
               $entity_data[$header_item] = $url;
             }
           }
