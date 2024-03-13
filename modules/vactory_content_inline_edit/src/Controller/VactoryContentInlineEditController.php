@@ -213,6 +213,7 @@ class VactoryContentInlineEditController extends ControllerBase {
   private function formatWidgetData($widgetData, $widgetConfig, $paragraphId) {
     $formattedData = [];
     $formattedData["paragraphId"] = $paragraphId;
+    $formattedData["screenshot"] = $widgetConfig['screenshot'];
     $formattedData["name"] = $widgetConfig["name"];
 
     // Process regular fields.

@@ -182,8 +182,11 @@ class VactoryContentInlineEditTableForm extends FormBase {
       '#attributes' => ['class' => ['paragraph-wrapper']],
     ];
 
+    $container['screenshot'] = [
+      '#markup' => '<img src="' . $paragraph['screenshot'] . '" alt="DF Image" width="300" height="250">',
+    ];
     $container['title'] = [
-      '#markup' => '<h1>' . $this->t($paragraph['name']) . '</h1>',
+      '#markup' => '<h1>' . $this->t($paragraph['name']) . '</h1><hr>',
     ];
 
     if (isset($paragraph['elements']['extra_fields'])) {
