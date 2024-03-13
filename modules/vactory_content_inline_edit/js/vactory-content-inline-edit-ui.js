@@ -222,7 +222,10 @@
     $(document).ready(function () {
 
         $('.paragraph-wrapper').each(function() {
-            Drupal.vactoryContentInlineEditUI.showEditControls($(this))
+            var no_control = $(this).data('no-control');
+            if (!no_control) {
+                Drupal.vactoryContentInlineEditUI.showEditControls($(this));
+            }
         });
         // Drupal.vactoryContentInlineEditUI.bindFieldEvents();
         // Drupal.vactoryContentInlineEditUI.bindCkeditorEvents();

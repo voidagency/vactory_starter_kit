@@ -61,10 +61,16 @@ class VactoryContentInlineEditTableForm extends FormBase {
     );
   }
 
+  /**
+   * {@inheritDoc}
+   */
   public function getFormId() {
     return 'vactory_content_inline_edit_table_form';
   }
 
+  /**
+   * {@inheritDoc}
+   */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form['#attached']['library'][] = 'vactory_content_inline_edit/vactory-content-inline-edit-js';
 
@@ -104,6 +110,9 @@ class VactoryContentInlineEditTableForm extends FormBase {
     return $form;
   }
 
+  /**
+   * Build data to display node DFs.
+   */
   private function buildTable(&$form, FormStateInterface $form_state) {
     if (is_null($this->nodeId)) {
       return;
@@ -146,8 +155,14 @@ class VactoryContentInlineEditTableForm extends FormBase {
       ];
 
       foreach ($node_data['paragraphs'] as $paragraph) {
-        $paragraph_key = 'paragraph_' . $paragraph['paragraphId'];
-        $form['nodes_table_wrapper']['nodes_table'][$row_key]['paragraphs'][$paragraph_key] = $this->createParagraphFields($node_data['nodeId'], $paragraph, $form, $form_state);
+        if ($paragraph['type'] == 'vactory_component') {
+          $paragraph_key = 'paragraph_' . $paragraph['paragraphId'];
+          $form['nodes_table_wrapper']['nodes_table'][$row_key]['paragraphs'][$paragraph_key] = $this->createParagraphFields($node_data['nodeId'], $paragraph, $form, $form_state);
+        }
+        if ($paragraph['type'] == 'vactory_paragraph_multi_template') {
+          $paragraph_key = 'paragraph_' . $paragraph['paragraphId'];
+          $form['nodes_table_wrapper']['nodes_table'][$row_key]['paragraphs'][$paragraph_key] = $this->createParagraphMultiplePreview($node_data['nodeId'], $paragraph, $form, $form_state);
+        }
       }
     }
 
@@ -158,6 +173,9 @@ class VactoryContentInlineEditTableForm extends FormBase {
     ];
   }
 
+  /**
+   * Generate paragraph fields.
+   */
   private function createParagraphFields($nodeId, $paragraph, &$form, FormStateInterface $form_state) {
     $container = [
       '#type' => 'container',
@@ -187,6 +205,9 @@ class VactoryContentInlineEditTableForm extends FormBase {
     return $container;
   }
 
+  /**
+   * Generate single fields.
+   */
   private function createField($nodeId, $paragraphId, $fieldConfig, $fieldName, $isExtraField, $componentIndex = NULL) {
     $field = [];
 
@@ -317,14 +338,49 @@ class VactoryContentInlineEditTableForm extends FormBase {
     return $field;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $form_state->setRedirect('vactory_content_inline_edit.admin_page', [
       'node' => $form_state->getValue('node_filter'),
     ]);
   }
 
+  /**
+   * Reset filter.
+   */
   public function resetFilter(array &$form, FormStateInterface $form_state) {
     $form_state->setRedirect('vactory_content_inline_edit.admin_page');
+  }
+
+  /**
+   * Generate preview for multiple paragraph.
+   */
+  private function createParagraphMultiplePreview($nodeId, $paragraph, &$form, FormStateInterface $form_state) {
+    $container = [
+      '#type' => 'container',
+      '#attributes' => ['class' => ['paragraph-wrapper'], 'data-no-control' => 'true'],
+    ];
+
+    $container['title'] = [
+      '#markup' => '<h1>' . $this->t($paragraph['title']) . '</h1>',
+    ];
+
+    $container['intro'] = [
+      '#markup' => '<p>' . $this->t($paragraph['introduction']) . '</p>',
+    ];
+
+    // Create the URL to the node edit page.
+    $editUrl = Url::fromRoute('entity.node.edit_form', ['node' => $nodeId]);
+    // Create a Link object.
+    $editLink = Link::fromTextAndUrl('click here', $editUrl)->toString();
+    // Add the clickable link to the table.
+    $container['introduction'] = [
+      '#markup' => 'This field represents a multiple-paragraph. To edit it, ' . $editLink,
+    ];
+
+    return $container;
   }
 
 }
