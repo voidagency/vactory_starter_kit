@@ -199,7 +199,7 @@ function vactory_paragraphs_field_widget_single_element_form_alter(&$element, Fo
   }
   if (!empty($field_name) && $field_name == 'field_background_color') {
     $color = $element['color']['#default_value'];
-    $element['color']['#default_value'] = isset($color) && !empty($color) && $color != '#FFFFFF' ? $color : '#FF0000';
+    $element['color']['#default_value'] = isset($color) && !empty($color) && $color != '#FFFFFF' ? $color : '#FFFFFF';
   }
   if (!empty($field_name) && $field_name == 'container_spacing') {
     $element['#default_value'] = isset($element['#default_value']) && !empty($element['#default_value']) ? $element['#default_value'] : 'small_space';
