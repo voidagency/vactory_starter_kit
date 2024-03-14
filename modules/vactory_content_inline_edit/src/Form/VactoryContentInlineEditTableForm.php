@@ -61,10 +61,16 @@ class VactoryContentInlineEditTableForm extends FormBase {
     );
   }
 
+  /**
+   * {@inheritDoc}
+   */
   public function getFormId() {
     return 'vactory_content_inline_edit_table_form';
   }
 
+  /**
+   * {@inheritDoc}
+   */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form['#attached']['library'][] = 'vactory_content_inline_edit/vactory-content-inline-edit-js';
 
@@ -104,6 +110,9 @@ class VactoryContentInlineEditTableForm extends FormBase {
     return $form;
   }
 
+  /**
+   * Build data to display node DFs.
+   */
   private function buildTable(&$form, FormStateInterface $form_state) {
     if (is_null($this->nodeId)) {
       return;
@@ -146,8 +155,14 @@ class VactoryContentInlineEditTableForm extends FormBase {
       ];
 
       foreach ($node_data['paragraphs'] as $paragraph) {
-        $paragraph_key = 'paragraph_' . $paragraph['paragraphId'];
-        $form['nodes_table_wrapper']['nodes_table'][$row_key]['paragraphs'][$paragraph_key] = $this->createParagraphFields($node_data['nodeId'], $paragraph, $form, $form_state);
+        if ($paragraph['type'] == 'vactory_component') {
+          $paragraph_key = 'paragraph_' . $paragraph['paragraphId'];
+          $form['nodes_table_wrapper']['nodes_table'][$row_key]['paragraphs'][$paragraph_key] = $this->createParagraphFields($node_data['nodeId'], $paragraph, $form, $form_state);
+        }
+        if ($paragraph['type'] == 'vactory_paragraph_multi_template') {
+          $paragraph_key = 'paragraph_' . $paragraph['paragraphId'];
+          $form['nodes_table_wrapper']['nodes_table'][$row_key]['paragraphs'][$paragraph_key] = $this->createParagraphMultiplePreview($node_data['nodeId'], $paragraph, $form, $form_state);
+        }
       }
     }
 
@@ -158,26 +173,52 @@ class VactoryContentInlineEditTableForm extends FormBase {
     ];
   }
 
+  /**
+   * Generate paragraph fields.
+   */
   private function createParagraphFields($nodeId, $paragraph, &$form, FormStateInterface $form_state) {
     $container = [
       '#type' => 'container',
       '#attributes' => ['class' => ['paragraph-wrapper']],
     ];
 
+    $container['screenshot'] = [
+      '#markup' => '<img src="' . $paragraph['screenshot'] . '" alt="DF Image" width="300" height="250">',
+    ];
     $container['title'] = [
-      '#markup' => '<h1>' . $this->t($paragraph['name']) . '</h1>',
+      '#markup' => '<h1>' . $this->t($paragraph['name']) . '</h1><hr>',
     ];
 
     if (isset($paragraph['elements']['extra_fields'])) {
       foreach ($paragraph['elements']['extra_fields'] as $fieldName => $fieldConfig) {
-        $container[$fieldName] = $this->createField($nodeId, $paragraph['paragraphId'], $fieldConfig, $fieldName, TRUE);
+        if (str_starts_with($fieldName, 'group_')) {
+          $container[$fieldName] = [
+            '#type' => 'details',
+            '#title' => $fieldName,
+          ];
+          foreach ($fieldConfig as $sub_key => $sub_config) {
+            $container[$fieldName][$sub_key] = $this->createField($nodeId, $paragraph['paragraphId'], $sub_config, $sub_key, TRUE, NULL, $fieldName);
+          }
+        }
+        else {
+          $container[$fieldName] = $this->createField($nodeId, $paragraph['paragraphId'], $fieldConfig, $fieldName, TRUE);
+        }
       }
     }
 
     if (isset($paragraph['elements']['components'])) {
       foreach ($paragraph['elements']['components'] as $index => $component) {
         foreach ($component as $fieldName => $fieldConfig) {
-          if (!in_array($fieldName, ['_weight', 'remove'])) {
+          if (str_starts_with($fieldName, 'group_')) {
+            $container[$fieldName . '_' . $index] = [
+              '#type' => 'details',
+              '#title' => $fieldName,
+            ];
+            foreach ($fieldConfig as $sub_key => $sub_config) {
+              $container[$fieldName . '_' . $index][$sub_key] = $this->createField($nodeId, $paragraph['paragraphId'], $sub_config, $sub_key, FALSE, $index, $fieldName);
+            }
+          }
+          elseif (!in_array($fieldName, ['_weight', 'remove'])) {
             $container[$fieldName . '_' . $index] = $this->createField($nodeId, $paragraph['paragraphId'], $fieldConfig, $fieldName, FALSE, $index);
           }
         }
@@ -187,7 +228,10 @@ class VactoryContentInlineEditTableForm extends FormBase {
     return $container;
   }
 
-  private function createField($nodeId, $paragraphId, $fieldConfig, $fieldName, $isExtraField, $componentIndex = NULL) {
+  /**
+   * Generate single fields.
+   */
+  private function createField($nodeId, $paragraphId, $fieldConfig, $fieldName, $isExtraField, $componentIndex = NULL, $group = NULL) {
     $field = [];
 
     switch ($fieldConfig['type']) {
@@ -313,18 +357,56 @@ class VactoryContentInlineEditTableForm extends FormBase {
     if ($componentIndex !== NULL) {
       $field['#attributes']['data-component-index'] = $componentIndex;
     }
+    if (!is_null($group)) {
+      $field['#attributes']['data-group'] = $group;
+    }
 
     return $field;
   }
 
+  /**
+   * {@inheritDoc}
+   */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $form_state->setRedirect('vactory_content_inline_edit.admin_page', [
       'node' => $form_state->getValue('node_filter'),
     ]);
   }
 
+  /**
+   * Reset filter.
+   */
   public function resetFilter(array &$form, FormStateInterface $form_state) {
     $form_state->setRedirect('vactory_content_inline_edit.admin_page');
+  }
+
+  /**
+   * Generate preview for multiple paragraph.
+   */
+  private function createParagraphMultiplePreview($nodeId, $paragraph, &$form, FormStateInterface $form_state) {
+    $container = [
+      '#type' => 'container',
+      '#attributes' => ['class' => ['paragraph-wrapper'], 'data-no-control' => 'true'],
+    ];
+
+    $container['title'] = [
+      '#markup' => '<h1>' . $this->t($paragraph['title']) . '</h1>',
+    ];
+
+    $container['intro'] = [
+      '#markup' => '<p>' . $this->t($paragraph['introduction']) . '</p>',
+    ];
+
+    // Create the URL to the node edit page.
+    $editUrl = Url::fromRoute('entity.node.edit_form', ['node' => $nodeId]);
+    // Create a Link object.
+    $editLink = Link::fromTextAndUrl('click here', $editUrl)->toString();
+    // Add the clickable link to the table.
+    $container['introduction'] = [
+      '#markup' => 'This field represents a multiple-paragraph. To edit it, ' . $editLink,
+    ];
+
+    return $container;
   }
 
 }

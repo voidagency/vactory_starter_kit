@@ -15,8 +15,7 @@ use Drupal\Component\Serialization\Json;
 class VactoryContentInlineEditController extends ControllerBase {
 
   /**
-   * @param Request $request
-   * @return JsonResponse
+   * Get nodes.
    */
   public function index(Request $request) {
     $page = $request->query->get('page', 1);
@@ -36,6 +35,9 @@ class VactoryContentInlineEditController extends ControllerBase {
     return new JsonResponse($pageData);
   }
 
+  /**
+   * Get nodes using pagination.
+   */
   public function getPaginatedNodeData($page, $nodeId = NULL, $num_per_page = 10) {
     $nodes = $this->fetchNodes($page, $num_per_page, $nodeId);
 
@@ -47,6 +49,9 @@ class VactoryContentInlineEditController extends ControllerBase {
     return $formattedData;
   }
 
+  /**
+   * Fetch nodes.
+   */
   private function fetchNodes($page = 1, $limit = 10, $nodeId = NULL) {
     $query = \Drupal::entityQuery('node')
       ->condition('type', 'vactory_page');
@@ -63,6 +68,9 @@ class VactoryContentInlineEditController extends ControllerBase {
     return Node::loadMultiple($nids);
   }
 
+  /**
+   * Format nodes data.
+   */
   private function formatNodeData($node) {
     $formattedNodeData = [
       'nodeId' => $node->id(),
@@ -74,7 +82,7 @@ class VactoryContentInlineEditController extends ControllerBase {
       $paragraphsData = $node->get('field_vactory_paragraphs')->getValue();
       foreach ($paragraphsData as $paragraphData) {
         $paragraph = Paragraph::load($paragraphData['target_id']);
-        if ($paragraph && $paragraph->hasField('field_vactory_component')) {
+        if ($paragraph && $paragraph->hasField('field_vactory_component') && $paragraph->bundle() == 'vactory_component') {
           $vactoryComponents = $paragraph->field_vactory_component->getValue();
           foreach ($vactoryComponents as $component) {
             $widgetData = Json::decode($component['widget_data']);
@@ -85,8 +93,17 @@ class VactoryContentInlineEditController extends ControllerBase {
 
             // Now combine $widgetData with $widgetConfig.
             $formattedData = $this->formatWidgetData($widgetData, $widgetConfig, $paragraphData['target_id']);
+            $formattedData['type'] = 'vactory_component';
             $formattedNodeData['paragraphs'][] = $formattedData;
           }
+        }
+        if ($paragraph && $paragraph->bundle() == 'vactory_paragraph_multi_template') {
+          $formattedNodeData['paragraphs'][] = [
+            'paragraphId' => $paragraphData['target_id'],
+            'type' => 'vactory_paragraph_multi_template',
+            'title' => $paragraph->get('field_vactory_title')->value ?? '',
+            'introduction' => $paragraph->get('field_paragraph_introduction')->value ?? '',
+          ];
         }
       }
     }
@@ -94,6 +111,9 @@ class VactoryContentInlineEditController extends ControllerBase {
     return $formattedNodeData;
   }
 
+  /**
+   * Save DF changes.
+   */
   public function saveChanges(Request $request) {
     $content = json_decode($request->getContent(), TRUE);
 
@@ -187,9 +207,13 @@ class VactoryContentInlineEditController extends ControllerBase {
     ]);
   }
 
+  /**
+   * Format DF Data.
+   */
   private function formatWidgetData($widgetData, $widgetConfig, $paragraphId) {
     $formattedData = [];
     $formattedData["paragraphId"] = $paragraphId;
+    $formattedData["screenshot"] = $widgetConfig['screenshot'];
     $formattedData["name"] = $widgetConfig["name"];
 
     // Process regular fields.
@@ -197,32 +221,62 @@ class VactoryContentInlineEditController extends ControllerBase {
       if ($key === 'extra_field') {
         // Process extra fields.
         foreach ($fieldGroup as $extraFieldName => $extraFieldValue) {
-
-          $extraFieldConfig = $widgetConfig['extra_fields'][$extraFieldName];
-          $processedField = $this->processField($extraFieldValue, $extraFieldConfig);
-          if ($processedField) {
-            $formattedData["elements"]["extra_fields"][$extraFieldName] = $processedField;
+          if (str_starts_with($extraFieldName, 'group_')) {
+            foreach ($extraFieldValue as $sub_key => $sub_value) {
+              if ($sub_key == 'g_title') {
+                continue;
+              }
+              $extraFieldConfig = $widgetConfig['extra_fields'][$extraFieldName][$sub_key];
+              $processedField = $this->processField($sub_value, $extraFieldConfig);
+              if ($processedField) {
+                $formattedData["elements"]["extra_fields"][$extraFieldName][$sub_key] = $processedField;
+              }
+            }
+          }
+          else {
+            $extraFieldConfig = $widgetConfig['extra_fields'][$extraFieldName];
+            $processedField = $this->processField($extraFieldValue, $extraFieldConfig);
+            if ($processedField) {
+              $formattedData["elements"]["extra_fields"][$extraFieldName] = $processedField;
+            }
           }
         }
       }
       elseif (is_numeric($key) && is_array($fieldGroup)) {
         // Process regular field groups (indexed numerically).
         foreach ($fieldGroup as $fieldName => $fieldValue) {
-
-          $fieldConfig = $widgetConfig['fields'][$fieldName] ?? NULL;
-          if ($fieldConfig) {
-            $processedField = $this->processField($fieldValue, $fieldConfig);
+          if (str_starts_with($fieldName, 'group_')) {
+            foreach ($fieldValue as $sub_key => $sub_value) {
+              if ($sub_key == 'g_title') {
+                continue;
+              }
+              $fieldConfig = $widgetConfig['fields'][$fieldName][$sub_key] ?? NULL;
+              if ($fieldConfig) {
+                $processedField = $this->processField($sub_value, $fieldConfig);
+              }
+              if ($processedField) {
+                $formattedData["elements"]["components"][$key][$fieldName][$sub_key] = $processedField;
+              }
+            }
           }
-          if ($processedField) {
-            $formattedData["elements"]["components"][$key][$fieldName] = $processedField;
+          else {
+            $fieldConfig = $widgetConfig['fields'][$fieldName] ?? NULL;
+            if ($fieldConfig) {
+              $processedField = $this->processField($fieldValue, $fieldConfig);
+            }
+            if ($processedField) {
+              $formattedData["elements"]["components"][$key][$fieldName] = $processedField;
+            }
           }
         }
       }
     }
-
     return $formattedData;
   }
 
+  /**
+   * Normalize fields based on type.
+   */
   private function processField($fieldValue, $fieldConfig) {
     if (!isset($fieldConfig['type'])) {
       return NULL;
@@ -258,6 +312,9 @@ class VactoryContentInlineEditController extends ControllerBase {
     return NULL;
   }
 
+  /**
+   * Normalize formatted text.
+   */
   private function processFormattedText($formattedText, $fieldConfig) {
     return [
       'type' => 'text_format',
@@ -267,6 +324,9 @@ class VactoryContentInlineEditController extends ControllerBase {
     ];
   }
 
+  /**
+   * Normalize media field.
+   */
   private function processMediaField($imageField, $fieldConfig) {
     if (is_array($imageField)) {
       $image_data = reset($imageField);
@@ -283,6 +343,9 @@ class VactoryContentInlineEditController extends ControllerBase {
     ];
   }
 
+  /**
+   * Normalize url extended.
+   */
   private function processUrlExtendedField($urlField, $fieldConfig) {
     return [
       'type' => 'url_extended',
