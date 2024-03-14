@@ -96,7 +96,7 @@
     "drupal/dropzonejs": "^2.3",
     "drupal/tinypng": "^1.0@RC",
     "drupal/field_group": "^3.1",
-    "drupal/csv_serialization": "^3.0",
+    "drupal/csv_serialization": "^4.0",
     "drupal/votingapi": "^3.0@beta",
     "drupal/amp": "^3.8",
     "drupal/crop": "^2.1",
