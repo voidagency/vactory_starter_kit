@@ -191,14 +191,34 @@ class VactoryContentInlineEditTableForm extends FormBase {
 
     if (isset($paragraph['elements']['extra_fields'])) {
       foreach ($paragraph['elements']['extra_fields'] as $fieldName => $fieldConfig) {
-        $container[$fieldName] = $this->createField($nodeId, $paragraph['paragraphId'], $fieldConfig, $fieldName, TRUE);
+        if (str_starts_with($fieldName, 'group_')) {
+          $container[$fieldName] = [
+            '#type' => 'details',
+            '#title' => $fieldName,
+          ];
+          foreach ($fieldConfig as $sub_key => $sub_config) {
+            $container[$fieldName][$sub_key] = $this->createField($nodeId, $paragraph['paragraphId'], $sub_config, $sub_key, TRUE, NULL, $fieldName);
+          }
+        }
+        else {
+          $container[$fieldName] = $this->createField($nodeId, $paragraph['paragraphId'], $fieldConfig, $fieldName, TRUE);
+        }
       }
     }
 
     if (isset($paragraph['elements']['components'])) {
       foreach ($paragraph['elements']['components'] as $index => $component) {
         foreach ($component as $fieldName => $fieldConfig) {
-          if (!in_array($fieldName, ['_weight', 'remove'])) {
+          if (str_starts_with($fieldName, 'group_')) {
+            $container[$fieldName . '_' . $index] = [
+              '#type' => 'details',
+              '#title' => $fieldName,
+            ];
+            foreach ($fieldConfig as $sub_key => $sub_config) {
+              $container[$fieldName . '_' . $index][$sub_key] = $this->createField($nodeId, $paragraph['paragraphId'], $sub_config, $sub_key, FALSE, $index, $fieldName);
+            }
+          }
+          elseif (!in_array($fieldName, ['_weight', 'remove'])) {
             $container[$fieldName . '_' . $index] = $this->createField($nodeId, $paragraph['paragraphId'], $fieldConfig, $fieldName, FALSE, $index);
           }
         }
@@ -211,7 +231,7 @@ class VactoryContentInlineEditTableForm extends FormBase {
   /**
    * Generate single fields.
    */
-  private function createField($nodeId, $paragraphId, $fieldConfig, $fieldName, $isExtraField, $componentIndex = NULL) {
+  private function createField($nodeId, $paragraphId, $fieldConfig, $fieldName, $isExtraField, $componentIndex = NULL, $group = NULL) {
     $field = [];
 
     switch ($fieldConfig['type']) {
@@ -336,6 +356,9 @@ class VactoryContentInlineEditTableForm extends FormBase {
     }
     if ($componentIndex !== NULL) {
       $field['#attributes']['data-component-index'] = $componentIndex;
+    }
+    if (!is_null($group)) {
+      $field['#attributes']['data-group'] = $group;
     }
 
     return $field;

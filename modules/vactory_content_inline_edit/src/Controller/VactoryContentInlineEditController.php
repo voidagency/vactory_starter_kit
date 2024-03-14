@@ -221,29 +221,56 @@ class VactoryContentInlineEditController extends ControllerBase {
       if ($key === 'extra_field') {
         // Process extra fields.
         foreach ($fieldGroup as $extraFieldName => $extraFieldValue) {
-
-          $extraFieldConfig = $widgetConfig['extra_fields'][$extraFieldName];
-          $processedField = $this->processField($extraFieldValue, $extraFieldConfig);
-          if ($processedField) {
-            $formattedData["elements"]["extra_fields"][$extraFieldName] = $processedField;
+          if (str_starts_with($extraFieldName, 'group_')) {
+            foreach ($extraFieldValue as $sub_key => $sub_value) {
+              if ($sub_key == 'g_title') {
+                continue;
+              }
+              $extraFieldConfig = $widgetConfig['extra_fields'][$extraFieldName][$sub_key];
+              $processedField = $this->processField($sub_value, $extraFieldConfig);
+              if ($processedField) {
+                $formattedData["elements"]["extra_fields"][$extraFieldName][$sub_key] = $processedField;
+              }
+            }
+          }
+          else {
+            $extraFieldConfig = $widgetConfig['extra_fields'][$extraFieldName];
+            $processedField = $this->processField($extraFieldValue, $extraFieldConfig);
+            if ($processedField) {
+              $formattedData["elements"]["extra_fields"][$extraFieldName] = $processedField;
+            }
           }
         }
       }
       elseif (is_numeric($key) && is_array($fieldGroup)) {
         // Process regular field groups (indexed numerically).
         foreach ($fieldGroup as $fieldName => $fieldValue) {
-
-          $fieldConfig = $widgetConfig['fields'][$fieldName] ?? NULL;
-          if ($fieldConfig) {
-            $processedField = $this->processField($fieldValue, $fieldConfig);
+          if (str_starts_with($fieldName, 'group_')) {
+            foreach ($fieldValue as $sub_key => $sub_value) {
+              if ($sub_key == 'g_title') {
+                continue;
+              }
+              $fieldConfig = $widgetConfig['fields'][$fieldName][$sub_key] ?? NULL;
+              if ($fieldConfig) {
+                $processedField = $this->processField($sub_value, $fieldConfig);
+              }
+              if ($processedField) {
+                $formattedData["elements"]["components"][$key][$fieldName][$sub_key] = $processedField;
+              }
+            }
           }
-          if ($processedField) {
-            $formattedData["elements"]["components"][$key][$fieldName] = $processedField;
+          else {
+            $fieldConfig = $widgetConfig['fields'][$fieldName] ?? NULL;
+            if ($fieldConfig) {
+              $processedField = $this->processField($fieldValue, $fieldConfig);
+            }
+            if ($processedField) {
+              $formattedData["elements"]["components"][$key][$fieldName] = $processedField;
+            }
           }
         }
       }
     }
-
     return $formattedData;
   }
 
