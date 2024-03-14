@@ -86,7 +86,7 @@
     "drupal/flag": "^4.0@beta",
     "drupal/rate": "3.1.0",
     "masterminds/html5": "^2.3",
-    "drupal/link_attributes": "^1.9",
+    "drupal/link_attributes": "^2.1",
     "drupal/entity_embed": "^1.0",
     "drupal/search_api_autocomplete": "^1.4",
     "drupal/chosen": "^3.0",
