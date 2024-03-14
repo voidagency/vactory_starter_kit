@@ -171,7 +171,8 @@
     "voidagency/block_list_override": "^2.0",
     "drupal/amptheme": "^3.1",
     "drupal/yaml_editor": "^1.2",
-    "drupal/menu_manipulator": "^3.0"
+    "drupal/menu_manipulator": "^3.0",
+    "drupal/log_stdout": "^1.5"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.3",
