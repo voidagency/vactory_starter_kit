@@ -121,7 +121,7 @@ function vactory_starter_kit_after_install_finished(array &$install_state) {
   global $base_url;
 
   // After install direction.
-  $after_install_direction = $base_url . '/?welcome';
+  $after_install_direction = $base_url;
 
   install_finished($install_state);
   $output = [];
