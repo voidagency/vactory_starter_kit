@@ -18,7 +18,8 @@ use Drupal\Core\Entity\EntityRepositoryInterface;
 /**
  * Content package manager service.
  */
-class ContentPackageManager implements ContentPackageManagerInterface {
+class ContentPackageManager implements ContentPackageManagerInterface
+{
 
   /**
    * Entity type manager service.
@@ -76,7 +77,9 @@ class ContentPackageManager implements ContentPackageManagerInterface {
   /**
    * Normalize given entity.
    */
-  public function normalize(EntityInterface $entity, $entity_translation = FALSE): array {
+  public function normalize(EntityInterface $entity, $entity_translation = FALSE): array
+  {
+
     $entity_type = $entity->getEntityTypeId();
     $bundle = $entity->bundle();
     $entity_values = $entity->toArray();
@@ -92,7 +95,7 @@ class ContentPackageManager implements ContentPackageManagerInterface {
         $field_settings = $field_definition->getSettings();
 
         $not_append_to_translated_entity = !($field_type === 'entity_reference_revisions' && isset($field_settings['target_type']) &&
-            $field_settings['target_type'] === 'paragraph') && !$field_definition->isTranslatable() && $entity_translation && $field_name !== 'type';
+          $field_settings['target_type'] === 'paragraph') && !$field_definition->isTranslatable() && $entity_translation && $field_name !== 'type';
 
         if ($not_append_to_translated_entity) {
           unset($entity_values[$field_name]);
@@ -120,8 +123,8 @@ class ContentPackageManager implements ContentPackageManagerInterface {
                 $field_value[$i] = [
                   ...$no_appearance_fields,
                   ...[
-                  'appearance' => $appearance_fields,
-                ],
+                    'appearance' => $appearance_fields,
+                  ],
                 ];
               }
             }
@@ -139,7 +142,7 @@ class ContentPackageManager implements ContentPackageManagerInterface {
         }
 
         if (in_array($field_type, ContentPackageManagerInterface::DATE_TIME_TYPES)) {
-          $field_value = !$is_multiple ? date('d/m/Y H:i', $field_value[0]['value']) : array_map(fn($value) => date('d/m/Y H:i', $value['value']), $field_value);
+          $field_value = !$is_multiple ? date('d/m/Y H:i', $field_value[0]['value']) : array_map(fn ($value) => date('d/m/Y H:i', $value['value']), $field_value);
         }
 
         if ($field_type === 'entity_reference') {
@@ -247,6 +250,9 @@ class ContentPackageManager implements ContentPackageManagerInterface {
 
         if ($field_type === 'field_wysiwyg_dynamic' && !empty($field_value)) {
           // DF field type.
+
+          \Drupal::logger('vactory_content_package_extractLinksInfo')->debug(sprintf("1 Test Field: %s, Type: %s, Value: %s, entity_values: %s", $field_name, $field_type, json_encode($field_value), json_encode($entity_values)));
+
           $field_value = $this->normalizeFieldWysiwygDynamic($field_value, $entity_values);
         }
       }
@@ -267,7 +273,8 @@ class ContentPackageManager implements ContentPackageManagerInterface {
   /**
    * Normalize field wysiwyg dynamic.
    */
-  public function normalizeFieldWysiwygDynamic($field_value, $entity_values) {
+  public function normalizeFieldWysiwygDynamic($field_value, $entity_values)
+  {
     $widget_id = $field_value[0]['widget_id'];
     $widget_data = Json::decode($field_value[0]['widget_data']);
     $settings = $this->widgetsManager->loadSettings($widget_id);
@@ -301,7 +308,8 @@ class ContentPackageManager implements ContentPackageManagerInterface {
   /**
    * Denormalize field wysiwyg dynamic.
    */
-  public function denormalizeFieldWysiwygDynamic($field_value, $entity_values) {
+  public function denormalizeFieldWysiwygDynamic($field_value, $entity_values)
+  {
     $widget_id = $field_value['widget_id'] ?? NULL;
     $widget_data = $field_value['widget_data'] ?? NULL;
     if (!isset($widget_id)) {
@@ -338,7 +346,8 @@ class ContentPackageManager implements ContentPackageManagerInterface {
   /**
    * Normalize dynnamic field value.
    */
-  public function normalizeDynamicFieldValue($df_field_value, $field, $entity_values = []) {
+  public function normalizeDynamicFieldValue($df_field_value, $field, $entity_values = [])
+  {
     if (!isset($field['type']) && isset($field['g_title'])) {
       $field_value = [];
       foreach ($field as $field_name => $field_info) {
@@ -368,8 +377,7 @@ class ContentPackageManager implements ContentPackageManagerInterface {
               $df_field_value = $node_id ?? $node->id();
             }
           }
-        }
-        elseif ($target_type === 'taxonomy_term') {
+        } elseif ($target_type === 'taxonomy_term') {
           $df_field_value = !empty($df_field_value) ? $df_field_value : NULL;
           if (!empty($df_field_value)) {
             $term = $this->entityTypeManager->getStorage('taxonomy_term')
@@ -392,7 +400,8 @@ class ContentPackageManager implements ContentPackageManagerInterface {
   /**
    * Denormalize dynamic field value.
    */
-  public function denormalizeDynamicFieldValue($df_field_value, $field, $entity_values = []) {
+  public function denormalizeDynamicFieldValue($df_field_value, $field, $entity_values = [])
+  {
     if (!isset($field['type']) && isset($field['g_title'])) {
       $field_value = [];
       foreach ($field as $field_name => $field_info) {
@@ -425,8 +434,7 @@ class ContentPackageManager implements ContentPackageManagerInterface {
                 $df_field_value = $node->id();
               }
             }
-          }
-          elseif ($target_type === 'taxonomy_term') {
+          } elseif ($target_type === 'taxonomy_term') {
             $df_field_value = !empty($df_field_value) ? $df_field_value : [];
             if (!empty($df_field_value)) {
               $terms = $this->entityTypeManager->getStorage('taxonomy_term')
@@ -451,7 +459,8 @@ class ContentPackageManager implements ContentPackageManagerInterface {
   /**
    * Denormalize given entity.
    */
-  public function denormalize(array $entity_values): array {
+  public function denormalize(array $entity_values): array
+  {
     $values = [];
     $entity_type = $entity_values['entity_type'] ?? NULL;
     unset($entity_values['entity_type']);
@@ -471,7 +480,7 @@ class ContentPackageManager implements ContentPackageManagerInterface {
     if ($entity_type === 'block_content') {
       $values['type'] = $bundle;
     }
-    
+
     if ($entity_type === 'paragraph') {
       $appearance = $entity_values['appearance'] ?? [];
       unset($entity_values['appearance']);
@@ -515,7 +524,7 @@ class ContentPackageManager implements ContentPackageManagerInterface {
               ->condition('name', $field_value, 'IN')
               ->execute();
             if (!empty($users_ids)) {
-              $users_ids = array_map(fn($id) => ['target_id' => $id], $users_ids);
+              $users_ids = array_map(fn ($id) => ['target_id' => $id], $users_ids);
               $values[$field_name] = $users_ids;
             }
           }
@@ -550,7 +559,7 @@ class ContentPackageManager implements ContentPackageManagerInterface {
               ->condition('term_id', $field_value, 'IN')
               ->execute();
             if (!empty($terms_ids)) {
-              $terms_ids = array_map(fn($id) => ['target_id' => $id], $terms_ids);
+              $terms_ids = array_map(fn ($id) => ['target_id' => $id], $terms_ids);
               $values[$field_name] = $terms_ids;
             }
           }
@@ -558,12 +567,12 @@ class ContentPackageManager implements ContentPackageManagerInterface {
           // Entity type reference field.
           if ($field_name === 'type' && isset($field_settings['target_type']) && in_array($field_settings['target_type'], ContentPackageManagerInterface::ENTITY_TYPES_KEYS) && !empty($field_value)) {
             $field_value = is_array($field_value) ? $field_value : [$field_value];
-            $values[$field_name] = array_map(fn($id) => ['target_id' => $id], $field_value);
+            $values[$field_name] = array_map(fn ($id) => ['target_id' => $id], $field_value);
           }
         }
         if ($field_type === 'colorapi_color_field' && !empty($field_value)) {
           $field_value = is_array($field_value) ? $field_value : [$field_value];
-          $field_value = array_map(fn($el) => ['color' => $el], $field_value);
+          $field_value = array_map(fn ($el) => ['color' => $el], $field_value);
           $values[$field_name] = $field_value;
         }
         if ($field_type === 'path' && !empty($field_value)) {
@@ -599,19 +608,320 @@ class ContentPackageManager implements ContentPackageManagerInterface {
     }
     return $values;
   }
+  // todo: solition two
+  // todo: solition V1
+  /**
+   * Normalize a menu link entity.
+   *
+   * @param \Drupal\menu_link_content\Entity\MenuLinkContent $menu_link
+   *   The menu link entity to normalize.
+   * @param bool $is_translation
+   *   Indicates if the normalization is for a translation.
+   *
+   * @return array
+   *   The normalized array representation of the menu link.
+   */
+  // public function normalizeMenuLink(\Drupal\menu_link_content\Entity\MenuLinkContent $menu_link, $is_translation = FALSE)
+  // {
+  //   \Drupal::logger('vactory_content_package_Archive_manager')->debug(sprintf("10 %s", json_encode($menu_link->toArray())));
+
+  //   // Initialize the normalized array.
+  //   $normalized = [
+  //     'id' => $menu_link->id(),
+  //     'title' => $menu_link->getTitle(),
+  //     'url' => $menu_link->getUrlObject()->toString(),
+  //     'parent' => $menu_link->getParentId(),
+  //     'menu_name' => $menu_link->getMenuName(),
+  //     'weight' => $menu_link->getWeight(),
+  //     'expanded' => $menu_link->isExpanded(),
+  //     'enabled' => $menu_link->isEnabled(),
+  //     // Add other properties and fields as needed.
+  //   ];
+
+  //   // Retrieve all field definitions for the menu link entity.
+  //   $fields = \Drupal::service('entity_field.manager')->getFieldDefinitions('menu_link_content', $menu_link->bundle());
+
+
+  //   // foreach ($entity_array as $field_name => &$field_value) {
+  //   //   $field_definition = $fields[$field_name] ?? NULL;
+  //   //   if ($field_definition) {
+  //   //     $field_type = $field_definition->getType();
+  //   //     if ($field_type === 'field_wysiwyg_dynamic' && !empty($field_value)) {
+
+  //   foreach ($fields as $field_name => $field_definition) {
+  //     // Check if the field is of type 'field_wysiwyg_dynamic'.
+  //     if ($field_definition->getType() === 'field_wysiwyg_dynamic') {
+  //       \Drupal::logger('vactory_content_package_Archive_manager')->debug(sprintf("10 the w"));
+
+  //       // if ($menu_link->hasField($field_name) && !$menu_link->get($field_name)->isEmpty()) {
+  //       //   $field_value = $menu_link->get($field_name)->getValue();
+  //       \Drupal::logger('vactory_content_package_Archive_manager')->debug(sprintf("Field %s is not empty and contains: %s", $field_name, json_encode($field_definition)));
+  //       // } else {
+  //       //   \Drupal::logger('vactory_content_package_Archive_manager')->debug(sprintf("Field %s is empty or does not exist on this entity.", $field_name));
+  //       // }
+
+  //       // Assume $menu_link->field_wysiwyg_dynamic exists and has a method getValue().
+  //       $field_value = $menu_link->$field_name->getValue();
+  //       $field_value = $menu_link->$field_name->getValue();
+  //       \Drupal::logger('vactory_content_package_extractLinksInfo')->debug(sprintf("1 Test Field: %s, Value: %s", $field_name, json_encode($field_value)));
+
+  //       // Assume normalizeFieldWysiwygDynamic() is a method to normalize this field's complex structure.
+  //       $normalized[$field_name] = $this->normalizeFieldWysiwygDynamic($field_definition, $field_value);
+  //     }
+  //   }
+
+  //   // Handle translations if this is not a translation and the menu link has translation languages.
+  //   if (!$is_translation && $menu_link->hasTranslationLanguages()) {
+  //     $normalized['translations'] = [];
+  //     foreach ($menu_link->getTranslationLanguages(FALSE) as $langcode => $language) {
+  //       if ($menu_link->hasTranslation($langcode)) {
+  //         $translation = $menu_link->getTranslation($langcode);
+  //         // Recursively normalize translations, marking them as translations.
+  //         $normalized['translations'][$langcode] = $this->normalizeMenuLink($translation, TRUE);
+  //       }
+  //     }
+  //   }
+
+  //   return $normalized;
+  // }
+
+  // todo: V2
+  // this is work
+  // public function normalizeMenuLink(\Drupal\menu_link_content\Entity\MenuLinkContent $menu_link, $is_translation = FALSE)
+  // {
+  //   // Initialize the normalized data structure.
+  //   $normalized = [
+  //     'id' => $menu_link->id(),
+  //     'title' => $menu_link->getTitle(),
+  //     'url' => $menu_link->getUrlObject()->toString(),
+  //     'parent' => $menu_link->getParentId(),
+  //     'menu_name' => $menu_link->getMenuName(),
+  //     'weight' => $menu_link->getWeight(),
+  //     'expanded' => $menu_link->isExpanded(),
+  //     'enabled' => $menu_link->isEnabled(),
+  //   ];
+
+  //   // Load the full menu link entity to access all fields.
+  //   $menu_link_full = \Drupal::entityTypeManager()->getStorage('menu_link_content')->load($menu_link->id());
+
+  //   // Get field definitions for the menu link entity type and bundle.
+  //   $fields = \Drupal::service('entity_field.manager')->getFieldDefinitions('menu_link_content', $menu_link_full->bundle());
+
+  //   // Iterate through all defined fields to process them.
+  //   foreach ($fields as $field_name => $field_definition) {
+  //     if ($menu_link_full->hasField($field_name) && !$menu_link_full->get($field_name)->isEmpty()) {
+  //       $field_type = $field_definition->getType();
+
+  //       // Handle specific field types uniquely, such as 'field_wysiwyg_dynamic'.
+  //       if ($field_type === 'field_wysiwyg_dynamic') {
+  //         $field_value = $menu_link_full->get($field_name)->getValue();
+  //         \Drupal::logger('vactory_content_package_extractLinksInfo')->debug(sprintf("Field: %s, Value: %s", $field_name, json_encode($field_value)));
+
+  //         // Normalize and assign the dynamic field value.
+  //         $normalized[$field_name] = $this->normalizeFieldWysiwygDynamic($field_value, []);
+  //       } else {
+  //         // For other field types, directly assign their values. Adapt as needed.
+  //         $normalized[$field_name] = $menu_link_full->get($field_name)->getValue();
+  //       }
+  //     }
+  //   }
+
+  //   return $normalized;
+  // }
+
+  //todo: V3
+
+  // public function normalizeMenuLink(\Drupal\menu_link_content\Entity\MenuLinkContent $menu_link, $is_translation = FALSE)
+  // {
+
+  //   \Drupal::logger('vactory_content_package_Archive_manager')->debug(sprintf("menu_link %s", json_encode($menu_link->toArray())));
+
+  //   \Drupal::logger('vactory_content_package_extractLinksInfo')->debug(sprintf("title: %s", $menu_link->getUrlObject()->toString()));
+
+  //   // Initialize the normalized data structure.
+  //   $normalized = [
+  //     'id' => $menu_link->id(),
+  //     'title' => $menu_link->getTitle(),
+  //     'url' => $menu_link->getUrlObject()->toString(),
+  //     'parent' => $menu_link->getParentId(),
+  //     'menu_name' => $menu_link->getMenuName(),
+  //     'weight' => $menu_link->getWeight(),
+  //     'expanded' => $menu_link->isExpanded(),
+  //     'enabled' => $menu_link->isEnabled(),
+  //     // Prepare to collect translations if any
+  //     'translations' => [],
+  //   ];
+
+  //   // Load the full menu link entity to access all fields, ensuring all translations are loaded.
+  //   $menu_link_full = \Drupal::entityTypeManager()->getStorage('menu_link_content')->load($menu_link->id());
+
+  //   // Ensure we are working with a translatable menu link.
+  //   if ($menu_link_full instanceof \Drupal\Core\Entity\TranslatableInterface) {
+  //     // Get field definitions for the menu link entity type and bundle.
+  //     $fields = \Drupal::service('entity_field.manager')->getFieldDefinitions('menu_link_content', $menu_link_full->bundle());
+
+  //     // Check if there are translations and normalize them.
+  //     if (!$is_translation) {
+  //       foreach ($menu_link_full->getTranslationLanguages(false) as $langcode => $language) {
+  //         if ($menu_link_full->hasTranslation($langcode)) {
+  //           $translation = $menu_link_full->getTranslation($langcode);
+  //           // Recursively call normalizeMenuLink for each translation.
+  //           $normalized['translations'][$langcode] = $this->normalizeMenuLink($translation, TRUE);
+  //         }
+  //       }
+  //     }
+
+  //     // Iterate through all defined fields to process them, for the original and each translation.
+  //     foreach ($fields as $field_name => $field_definition) {
+  //       if ($menu_link_full->hasField($field_name) && !$menu_link_full->get($field_name)->isEmpty()) {
+  //         $field_type = $field_definition->getType();
+  //         $field_value = $menu_link_full->get($field_name)->getValue();
+  //         // Normalize field based on type, if necessary.
+  //         if ($field_type === 'field_wysiwyg_dynamic') {
+  //           $normalized[$field_name] = $this->normalizeFieldWysiwygDynamic($field_value, []);
+  //         } else {
+  //           $normalized[$field_name] = $field_value;
+  //         }
+  //       }
+  //     }
+  //   }
+
+  //   return $normalized;
+  // }
+
+  // public function normalizeMenuLink($menu_link, $is_translation = FALSE)
+  // {
+  //   // Ensure URLs are language-aware.
+  //   $language_manager = \Drupal::languageManager();
+  //   $langcode = $menu_link->language()->getId();
+  //   $url_options = ['language' => $language_manager->getLanguage($langcode)];
+  //   $url = $menu_link->toUrl('canonical', $url_options)->toString();
+
+  //   // Basic link properties.
+  //   $normalized = [
+  //     'id' => $menu_link->id(),
+  //     'title' => $menu_link->label(), // Use label() for the translated title.
+  //     'url' => $url,
+  //     // Add other basic properties as necessary...
+  //     'translations' => [], // Prepare to collect translations if any.
+  //   ];
+
+  //   // Load the full menu link entity to access all fields, ensuring all translations are loaded.
+  //   $menu_link_full = \Drupal::entityTypeManager()->getStorage('menu_link_content')->load($menu_link->id());
+
+  //   // Handle translations if this is not a translation and the entity is translatable.
+  //   if (!$is_translation && $menu_link_full instanceof \Drupal\Core\Entity\TranslatableInterface && $menu_link_full->isTranslatable()) {
+  //     foreach ($menu_link_full->getTranslationLanguages(false) as $langcode => $language) {
+  //       if ($menu_link_full->hasTranslation($langcode)) {
+  //         $translation = $menu_link_full->getTranslation($langcode);
+  //         // Recursively call normalizeMenuLink for each translation.
+  //         $normalized['translations'][$langcode] = $this->normalizeMenuLink($translation, TRUE);
+  //       }
+  //     }
+  //   }
+
+  //   // Normalize fields, especially dynamic ones.
+  //   $fields = \Drupal::service('entity_field.manager')->getFieldDefinitions('menu_link_content', $menu_link_full->bundle());
+  //   foreach ($fields as $field_name => $field_definition) {
+  //     if ($menu_link_full->hasField($field_name) && !$menu_link_full->get($field_name)->isEmpty()) {
+  //       $field_value = $menu_link_full->get($field_name)->getValue();
+
+  //       // Normalize 'field_wysiwyg_dynamic' fields specifically, or adapt for other custom fields.
+  //       if ($field_definition->getType() === 'field_wysiwyg_dynamic') {
+  //         $normalized[$field_name] = $this->normalizeFieldWysiwygDynamic($field_value, []);
+  //       } else {
+  //         // Direct assignment for other field types; adapt as needed.
+  //         $normalized[$field_name] = $field_value;
+  //       }
+  //     }
+  //   }
+
+  //   return $normalized;
+  // }
+
+
+  /**
+   * Denormalize menu data.
+   */
+  public function denormalizeMenu(array $menuData): array
+  {
+    // Convert the menuData array to a JSON string for logging
+    $jsonContent = json_encode($menuData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    \Drupal::logger('vactory_content_package')->debug('MenuData Content of JSON file: @content', ['@content' => $jsonContent]);
+
+    // Ensure $menuData is always an array of menus
+    if (isset($menuData['menu_name'])) {
+      $menuData = [$menuData];
+    }
+
+    // Initialize normalizedMenu array to collect all menus
+    $normalizedMenus = [];
+
+    foreach ($menuData as $menu) {
+      $normalizedMenu = [
+        'menu_name' => $menu['menu_name'] ?? '',
+        'menu_system_name' => $menu['menu_system_name'] ?? '',
+        'links' => [],
+      ];
+
+      // Check if 'links' exists and is an array
+      if (isset($menu['links']) && is_array($menu['links'])) {
+        foreach ($menu['links'] as $link) {
+          $normalizedLink = $this->denormalizeMenuLink($link);
+          $normalizedMenu['links'][] = $normalizedLink;
+        }
+      }
+
+      // Add normalized menu to the collection of menus
+      $normalizedMenus[] = $normalizedMenu;
+    }
+
+    \Drupal::logger('vactory_content_package')->debug('normalizedMenus Content of JSON file: @normalizedMenus', [
+      '@normalizedMenus' => json_encode($normalizedMenus, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES),
+    ]);
+    return $normalizedMenus;
+  }
+
+  /**
+   * Helper function to denormalize a single menu link.
+   */
+  protected function denormalizeMenuLink(array $linkData): array
+  {
+    $normalizedLink = [
+      'title' => $linkData['title'] ?? '',
+      'url' => $linkData['url'] ?? '',
+      'hasChildren' => $linkData['hasChildren'] ?? false,
+      'menu_name' => $linkData['menu_name'] ?? '',
+      'translations' => $linkData['translations'] ?? [],
+      'children' => [],
+    ];
+
+    // Recursively process children if present
+    if (!empty($linkData['children']) && is_array($linkData['children'])) {
+      foreach ($linkData['children'] as $child) {
+        $normalizedChild = $this->denormalizeMenuLink($child);
+        $normalizedLink['children'][] = $normalizedChild;
+      }
+    }
+
+    return $normalizedLink;
+  }
+
 
   /**
    * Get field value depending on its cardinality.
    */
-  protected function getFieldValue($fieldValue, $isMultiple = FALSE, $arrayFormat = FALSE, $key = 'value') {
-    $value = !$isMultiple ? $fieldValue[0][$key] : array_map(fn($value) => $value[$key], $fieldValue);
+  protected function getFieldValue($fieldValue, $isMultiple = FALSE, $arrayFormat = FALSE, $key = 'value')
+  {
+    $value = !$isMultiple ? $fieldValue[0][$key] : array_map(fn ($value) => $value[$key], $fieldValue);
     return $arrayFormat && !is_array($value) ? [$value] : $value;
   }
 
   /**
    * Get timestamp from date string.
    */
-  protected function getTimestamp($format, $dateString, $entity_values = []) {
+  protected function getTimestamp($format, $dateString, $entity_values = [])
+  {
     $dateTime = \DateTime::createFromFormat($format, $dateString);
     if ($dateTime) {
       return $dateTime->getTimestamp();
@@ -622,7 +932,8 @@ class ContentPackageManager implements ContentPackageManagerInterface {
   /**
    * Get timestamp from date string.
    */
-  protected function dateFromFormatToFormat($from_format, $to_format, $dateString, $entity_values = []) {
+  protected function dateFromFormatToFormat($from_format, $to_format, $dateString, $entity_values = [])
+  {
     $dateTime = \DateTime::createFromFormat($from_format, $dateString);
     if ($dateTime) {
       return $dateTime->format($to_format);
@@ -634,7 +945,8 @@ class ContentPackageManager implements ContentPackageManagerInterface {
   /**
    * Normalize dynamic field media.
    */
-  protected function normalizeDfMedia($df_field_value, $media_type = 'image') {
+  protected function normalizeDfMedia($df_field_value, $media_type = 'image')
+  {
     if (!empty($df_field_value)) {
       $image_data = reset($df_field_value);
       $mid = $image_data['selection'][0]['target_id'] ?? NULL;
@@ -652,8 +964,7 @@ class ContentPackageManager implements ContentPackageManagerInterface {
                 $df_field_value = $this->fileUrlGenerator->generateAbsoluteString($file->getFileUri());
               }
             }
-          }
-          else {
+          } else {
             $df_field_value = $media->get($media_field_name)->value;
           }
         }
@@ -665,7 +976,8 @@ class ContentPackageManager implements ContentPackageManagerInterface {
   /**
    * Denormalize dynamic field media.
    */
-  protected function denormalizeDfMedia($df_field_value, $media_type = 'image') {
+  protected function denormalizeDfMedia($df_field_value, $media_type = 'image')
+  {
     if (!empty($df_field_value)) {
       $mid = $this->generateMediaFromUrl($df_field_value, $media_type);
       $df_field_value = [];
@@ -687,7 +999,8 @@ class ContentPackageManager implements ContentPackageManagerInterface {
   /**
    * Generate media from the given url.
    */
-  public function generateMediaFromUrl(string $url, string $type): ?int {
+  public function generateMediaFromUrl(string $url, string $type): ?int
+  {
     $media = NULL;
     switch ($type) {
       case 'remote_video':
@@ -738,5 +1051,4 @@ class ContentPackageManager implements ContentPackageManagerInterface {
     $media->setPublished(TRUE)->save();
     return $media->id();
   }
-
 }
