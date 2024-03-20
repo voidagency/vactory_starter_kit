@@ -1,0 +1,158 @@
+<?php
+
+/**
+ * @file
+ * Contain related hooks.
+ */
+
+use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Link;
+use Drupal\Core\Url;
+use Drupal\node\Entity\Node;
+use Drupal\taxonomy\Entity\Term;
+
+/**
+ * Implements hook_node_presave().
+ */
+function vactory_multivers_node_presave($node) {
+  $multivers_term_id = $node->get('field_multivers')->target_id;
+  $multivers_term = Term::load($multivers_term_id);
+  $parents = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadParents($multivers_term_id);
+  $alias = $multivers_term->get('term_2_slug')->value;
+  if (count($parents) == 1) {
+    $parent = reset($parents);
+    $parent_alias = $parent->get('term_2_slug')->value;
+    $alias = "{$parent_alias}/{$alias}";
+  }
+
+  $node->path = [
+    'pathauto' => 0,
+    'alias' => "/{$alias}",
+  ];
+
+}
+
+/**
+ * Implements hook_node_internal_blocks_alter().
+ */
+function vactory_multivers_node_internal_blocks_alter(&$value, $entity) {
+  if ($entity->bundle() == 'vactory_multivers') {
+    $dynamic_field_manager = \Drupal::service('vactory_decoupled.dynamic_field_manager');
+    $multivers_term_id = $entity->get('field_multivers')->target_id;
+    $multivers_term = Term::load($multivers_term_id);
+    if ($multivers_term) {
+      // Header.
+      $multivers_header = $multivers_term->get('field_multivers_header')->getValue();
+      $multivers_header = reset($multivers_header);
+      $multivers_header_content = $dynamic_field_manager->process($multivers_header);
+      $block_info = [
+        'id' => 'vactory_multivers_header',
+        'label' => 'Vactory multivers header',
+        'region' => 'header',
+        'content' => $multivers_header_content['data'],
+        'classes' => '',
+        'body_classes' => '',
+        'html_classes' => '',
+        'container' => 'no_container',
+        'container_spacing' => 'small_space',
+      ];
+      $value[] = $block_info;
+
+      // Footer.
+      $multivers_footer = $multivers_term->get('field_multivers_footer')->getValue();
+      $multivers_footer = reset($multivers_footer);
+      $multivers_footer_content = $dynamic_field_manager->process($multivers_footer);
+      $block_info = [
+        'id' => 'vactory_multivers_footer',
+        'label' => 'Vactory multivers footer',
+        'region' => 'footer',
+        'weight' => -2,
+        'content' => $multivers_footer_content['data'],
+        'classes' => '',
+        'body_classes' => '',
+        'html_classes' => '',
+        'container' => 'no_container',
+        'container_spacing' => 'small_space',
+      ];
+      $value[] = $block_info;
+
+      // Toolbox.
+      $multivers_toolbox = $multivers_term->get('field_multivers_toolbox')->getValue();
+      $multivers_toolbox = reset($multivers_toolbox);
+      $multivers_toolbox_content = $dynamic_field_manager->process($multivers_toolbox);
+      $block_info = [
+        'id' => 'vactory_multivers_toolbox',
+        'label' => 'Vactory multivers toolbox',
+        'region' => 'footer',
+        'weight' => 0,
+        'content' => $multivers_toolbox_content['data'],
+        'classes' => '',
+        'body_classes' => '',
+        'html_classes' => '',
+        'container' => 'narrow_width',
+        'container_spacing' => 'small_space',
+      ];
+      $value[] = $block_info;
+    }
+  }
+}
+
+/**
+ * Implements hook_decoupled_extra_field_value_alter().
+ */
+function vactory_multivers_decoupled_extra_field_value_alter(&$value, $context, CacheableMetadata $cacheability) {
+  $entity = $context['entity'];
+  if ($entity->bundle() == 'vactory_multivers') {
+    $multivers_term_id = $entity->get('field_multivers')->target_id;
+    if (!isset($multivers_term_id)) {
+      return;
+    }
+    $multivers_term = Term::load($multivers_term_id);
+    if (!isset($multivers_term)) {
+      return;
+    }
+    $theme = $multivers_term->get('field_multivers_theme')->target_id;
+    $value['theme'] = $theme ?? 'default';
+    $cacheability->addCacheTags([
+      'theme_switcher',
+      'taxonomy_term_list:multivers',
+    ]);
+  }
+}
+
+/**
+ * Implements hook_entity_insert().
+ */
+function vactory_multivers_entity_insert(EntityInterface $entity) {
+  if ($entity->getEntityTypeId() === 'taxonomy_term' && $entity->bundle() === 'multivers') {
+    drupal_register_shutdown_function('_post_insert_multivers_callback', $entity);
+  }
+}
+
+/**
+ * Creates vactory_multivers node after term multivers creation.
+ */
+function _post_insert_multivers_callback(EntityInterface $entity) {
+  if ($entity->getEntityTypeId() === 'taxonomy_term' && $entity->bundle() === 'multivers') {
+
+    $name = $entity->label();
+    $langcode = $entity->language()->getId();
+
+    $node = Node::create([
+      'type'                    => 'vactory_multivers',
+      'title'                   => $name,
+      'langcode'                => $langcode,
+      'field_multivers' => [
+        'target_id' => $entity->id(),
+      ],
+    ]);
+    $node->save();
+    $editUrl = Url::fromRoute('entity.node.edit_form', ['node' => $node->id()]);
+    $editLink = Link::fromTextAndUrl('click here to edit', $editUrl)->toString();
+    \Drupal::messenger()->addStatus("corresponding node was created {$editLink}");
+  }
+}
+
+// @todo update taxo slug => update node path
+// @todo update taxo level => update node path

@@ -1,0 +1,18 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - taxonomy
+    - vactory_dynamic_field
+id: taxonomy_term.field_multivers_footer
+field_name: field_multivers_footer
+entity_type: taxonomy_term
+type: field_wysiwyg_dynamic
+settings: {  }
+module: vactory_dynamic_field
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

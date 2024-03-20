@@ -1,0 +1,4 @@
+label: "Promu en page d'accueil"
+settings:
+  on_label: Activé
+  off_label: Désactivé

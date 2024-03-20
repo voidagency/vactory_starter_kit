@@ -1,0 +1,7 @@
+langcode: en
+status: true
+dependencies: {  }
+name: Multivers
+vid: multivers
+description: 'Utiliser ce vocabulaire pour multi-sites.'
+weight: 0
