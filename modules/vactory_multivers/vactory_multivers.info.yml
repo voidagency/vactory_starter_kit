@@ -20,3 +20,5 @@ dependencies:
   - 'theme_switcher:theme_switcher'
   - 'vactory_dynamic_field:vactory_dynamic_field'
   - 'vactory_multivers:vactory_multivers'
+  - 'vactory_decoupled'
+  - 'vactory_decoupled_theme_switcher'

@@ -16,21 +16,19 @@ use Drupal\taxonomy\Entity\Term;
  * Implements hook_node_presave().
  */
 function vactory_multivers_node_presave($node) {
-  $multivers_term_id = $node->get('field_multivers')->target_id;
-  $multivers_term = Term::load($multivers_term_id);
-  $parents = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadParents($multivers_term_id);
-  $alias = $multivers_term->get('term_2_slug')->value;
-  if (count($parents) == 1) {
-    $parent = reset($parents);
-    $parent_alias = $parent->get('term_2_slug')->value;
-    $alias = "{$parent_alias}/{$alias}";
+  if ($node->bundle() == 'vactory_multivers') {
+    $multivers_term_id = $node->get('field_multivers')->target_id;
+    $parents = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadAllParents($multivers_term_id);
+    $alias = '';
+    foreach ($parents as $parent) {
+      $slug = $parent->get('term_2_slug')->value;
+      $alias = "/{$slug}{$alias}";
+    }
+    $node->path = [
+      'pathauto' => 0,
+      'alias' => "{$alias}",
+    ];
   }
-
-  $node->path = [
-    'pathauto' => 0,
-    'alias' => "/{$alias}",
-  ];
-
 }
 
 /**
@@ -117,6 +115,7 @@ function vactory_multivers_decoupled_extra_field_value_alter(&$value, $context, 
     $cacheability->addCacheTags([
       'theme_switcher',
       'taxonomy_term_list:multivers',
+      'node_list:vactory_multivers',
     ]);
   }
 }
@@ -154,5 +153,17 @@ function _post_insert_multivers_callback(EntityInterface $entity) {
   }
 }
 
-// @todo update taxo slug => update node path
-// @todo update taxo level => update node path
+/**
+ * Implements hook_node_update().
+ */
+function vactory_multivers_taxonomy_term_update($term) {
+  if ($term->bundle() == 'multivers') {
+    $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+    $nodes = $node_storage->loadByProperties([
+      'field_multivers' => $term->id(),
+    ]);
+    foreach ($nodes as $node) {
+      $node->save();
+    }
+  }
+}
