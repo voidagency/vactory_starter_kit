@@ -1,0 +1,26 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.vactory_multivers.field_multivers
+    - field.field.node.vactory_multivers.field_vactory_paragraphs
+    - node.type.vactory_multivers
+  module:
+    - user
+id: node.vactory_multivers.teaser
+targetEntityType: node
+bundle: vactory_multivers
+mode: teaser
+content:
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
+hidden:
+  addtoany: true
+  field_multivers: true
+  field_vactory_paragraphs: true
+  langcode: true
+  search_api_excerpt: true

@@ -1,0 +1,56 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.taxonomy_term.multivers.field_multivers_footer
+    - field.field.taxonomy_term.multivers.field_multivers_header
+    - field.field.taxonomy_term.multivers.field_multivers_theme
+    - field.field.taxonomy_term.multivers.field_multivers_toolbox
+    - taxonomy.vocabulary.multivers
+  module:
+    - text
+    - vactory_dynamic_field
+id: taxonomy_term.multivers.default
+targetEntityType: taxonomy_term
+bundle: multivers
+mode: default
+content:
+  description:
+    type: text_default
+    label: hidden
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
+  field_multivers_footer:
+    type: field_wysiwyg_dynamic_formatter
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 4
+    region: content
+  field_multivers_header:
+    type: field_wysiwyg_dynamic_formatter
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 1
+    region: content
+  field_multivers_theme:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 5
+    region: content
+  field_multivers_toolbox:
+    type: field_wysiwyg_dynamic_formatter
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 3
+    region: content
+hidden:
+  langcode: true
+  search_api_excerpt: true
