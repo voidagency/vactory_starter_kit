@@ -148,7 +148,7 @@ class InternalNodeMetatagsFieldItemList extends FieldItemList {
             $value = str_replace($front_page_alias, '', $value);
           }
           elseif (!empty($query)) {
-            $value = $value . '/' . http_build_query($query);
+            $value = $value . '?' . http_build_query($query);
           }
         }
       }
