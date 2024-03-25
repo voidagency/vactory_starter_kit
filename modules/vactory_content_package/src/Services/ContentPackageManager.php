@@ -77,6 +77,7 @@ class ContentPackageManager implements ContentPackageManagerInterface {
    * Normalize given entity.
    */
   public function normalize(EntityInterface $entity, $entity_translation = FALSE): array {
+
     $entity_type = $entity->getEntityTypeId();
     $bundle = $entity->bundle();
     $entity_values = $entity->toArray();
@@ -92,7 +93,7 @@ class ContentPackageManager implements ContentPackageManagerInterface {
         $field_settings = $field_definition->getSettings();
 
         $not_append_to_translated_entity = !($field_type === 'entity_reference_revisions' && isset($field_settings['target_type']) &&
-            $field_settings['target_type'] === 'paragraph') && !$field_definition->isTranslatable() && $entity_translation && $field_name !== 'type';
+          $field_settings['target_type'] === 'paragraph') && !$field_definition->isTranslatable() && $entity_translation && $field_name !== 'type';
 
         if ($not_append_to_translated_entity) {
           unset($entity_values[$field_name]);
@@ -120,8 +121,8 @@ class ContentPackageManager implements ContentPackageManagerInterface {
                 $field_value[$i] = [
                   ...$no_appearance_fields,
                   ...[
-                  'appearance' => $appearance_fields,
-                ],
+                    'appearance' => $appearance_fields,
+                  ],
                 ];
               }
             }
@@ -139,7 +140,7 @@ class ContentPackageManager implements ContentPackageManagerInterface {
         }
 
         if (in_array($field_type, ContentPackageManagerInterface::DATE_TIME_TYPES)) {
-          $field_value = !$is_multiple ? date('d/m/Y H:i', $field_value[0]['value']) : array_map(fn($value) => date('d/m/Y H:i', $value['value']), $field_value);
+          $field_value = !$is_multiple ? date('d/m/Y H:i', $field_value[0]['value']) : array_map(fn ($value) => date('d/m/Y H:i', $value['value']), $field_value);
         }
 
         if ($field_type === 'entity_reference') {
@@ -247,6 +248,8 @@ class ContentPackageManager implements ContentPackageManagerInterface {
 
         if ($field_type === 'field_wysiwyg_dynamic' && !empty($field_value)) {
           // DF field type.
+          \Drupal::logger('vactory_content_package_extractLinksInfo')->debug(sprintf("1 Test Field: %s, Type: %s, Value: %s, entity_values: %s", $field_name, $field_type, json_encode($field_value), json_encode($entity_values)));
+
           $field_value = $this->normalizeFieldWysiwygDynamic($field_value, $entity_values);
         }
       }
@@ -459,9 +462,11 @@ class ContentPackageManager implements ContentPackageManagerInterface {
     $typeValue = $entity_values['type'] ?? NULL;
     if (is_array($typeValue)) {
       $bundle = isset($typeValue[0]['target_id']) ? $typeValue[0]['target_id'] : NULL;
-    } elseif (is_string($typeValue)) {
+    }
+    elseif (is_string($typeValue)) {
       $bundle = $typeValue;
-    } else {
+    }
+    else {
       $bundle = NULL;
     }
     if (empty($entity_type) || empty($bundle)) {
@@ -471,7 +476,7 @@ class ContentPackageManager implements ContentPackageManagerInterface {
     if ($entity_type === 'block_content') {
       $values['type'] = $bundle;
     }
-    
+
     if ($entity_type === 'paragraph') {
       $appearance = $entity_values['appearance'] ?? [];
       unset($entity_values['appearance']);
@@ -515,7 +520,7 @@ class ContentPackageManager implements ContentPackageManagerInterface {
               ->condition('name', $field_value, 'IN')
               ->execute();
             if (!empty($users_ids)) {
-              $users_ids = array_map(fn($id) => ['target_id' => $id], $users_ids);
+              $users_ids = array_map(fn ($id) => ['target_id' => $id], $users_ids);
               $values[$field_name] = $users_ids;
             }
           }
@@ -550,7 +555,7 @@ class ContentPackageManager implements ContentPackageManagerInterface {
               ->condition('term_id', $field_value, 'IN')
               ->execute();
             if (!empty($terms_ids)) {
-              $terms_ids = array_map(fn($id) => ['target_id' => $id], $terms_ids);
+              $terms_ids = array_map(fn ($id) => ['target_id' => $id], $terms_ids);
               $values[$field_name] = $terms_ids;
             }
           }
@@ -558,12 +563,12 @@ class ContentPackageManager implements ContentPackageManagerInterface {
           // Entity type reference field.
           if ($field_name === 'type' && isset($field_settings['target_type']) && in_array($field_settings['target_type'], ContentPackageManagerInterface::ENTITY_TYPES_KEYS) && !empty($field_value)) {
             $field_value = is_array($field_value) ? $field_value : [$field_value];
-            $values[$field_name] = array_map(fn($id) => ['target_id' => $id], $field_value);
+            $values[$field_name] = array_map(fn ($id) => ['target_id' => $id], $field_value);
           }
         }
         if ($field_type === 'colorapi_color_field' && !empty($field_value)) {
           $field_value = is_array($field_value) ? $field_value : [$field_value];
-          $field_value = array_map(fn($el) => ['color' => $el], $field_value);
+          $field_value = array_map(fn ($el) => ['color' => $el], $field_value);
           $values[$field_name] = $field_value;
         }
         if ($field_type === 'path' && !empty($field_value)) {
@@ -601,10 +606,75 @@ class ContentPackageManager implements ContentPackageManagerInterface {
   }
 
   /**
+   * Denormalize menu data.
+   */
+  public function denormalizeMenu(array $menuData): array {
+    // Convert the menuData array to a JSON string for logging.
+    $jsonContent = json_encode($menuData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    \Drupal::logger('vactory_content_package')->debug('MenuData Content of JSON file: @content', ['@content' => $jsonContent]);
+
+    // Ensure $menuData is always an array of menus.
+    if (isset($menuData['menu_name'])) {
+      $menuData = [$menuData];
+    }
+
+    // Initialize normalizedMenu array to collect all menus.
+    $normalizedMenus = [];
+
+    foreach ($menuData as $menu) {
+      $normalizedMenu = [
+        'menu_name' => $menu['menu_name'] ?? '',
+        'menu_system_name' => $menu['menu_system_name'] ?? '',
+        'links' => [],
+      ];
+
+      // Check if 'links' exists and is an array.
+      if (isset($menu['links']) && is_array($menu['links'])) {
+        foreach ($menu['links'] as $link) {
+          $normalizedLink = $this->denormalizeMenuLink($link);
+          $normalizedMenu['links'][] = $normalizedLink;
+        }
+      }
+
+      // Add normalized menu to the collection of menus.
+      $normalizedMenus[] = $normalizedMenu;
+    }
+
+    \Drupal::logger('vactory_content_package')->debug('normalizedMenus Content of JSON file: @normalizedMenus', [
+      '@normalizedMenus' => json_encode($normalizedMenus, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES),
+    ]);
+    return $normalizedMenus;
+  }
+
+  /**
+   * Helper function to denormalize a single menu link.
+   */
+  protected function denormalizeMenuLink(array $linkData): array {
+    $normalizedLink = [
+      'title' => $linkData['title'] ?? '',
+      'url' => $linkData['url'] ?? '',
+      'hasChildren' => $linkData['hasChildren'] ?? FALSE,
+      'menu_name' => $linkData['menu_name'] ?? '',
+      'translations' => $linkData['translations'] ?? [],
+      'children' => [],
+    ];
+
+    // Recursively process children if present.
+    if (!empty($linkData['children']) && is_array($linkData['children'])) {
+      foreach ($linkData['children'] as $child) {
+        $normalizedChild = $this->denormalizeMenuLink($child);
+        $normalizedLink['children'][] = $normalizedChild;
+      }
+    }
+
+    return $normalizedLink;
+  }
+
+  /**
    * Get field value depending on its cardinality.
    */
   protected function getFieldValue($fieldValue, $isMultiple = FALSE, $arrayFormat = FALSE, $key = 'value') {
-    $value = !$isMultiple ? $fieldValue[0][$key] : array_map(fn($value) => $value[$key], $fieldValue);
+    $value = !$isMultiple ? $fieldValue[0][$key] : array_map(fn ($value) => $value[$key], $fieldValue);
     return $arrayFormat && !is_array($value) ? [$value] : $value;
   }
 

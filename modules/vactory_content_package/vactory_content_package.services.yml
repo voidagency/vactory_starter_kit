@@ -14,6 +14,7 @@ services:
       - '@plugin.manager.archiver'
       - '@messenger'
       - '@entity_type.manager'
+      - '@entity_field.manager'
   vactory_content_package.import.manager:
     class: \Drupal\vactory_content_package\Services\ContentPackageImportManager
     arguments:

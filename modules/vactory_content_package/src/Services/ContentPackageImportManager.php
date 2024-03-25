@@ -8,6 +8,7 @@ use Drupal\Core\Routing\TrustedRedirectResponse;
 use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
 use Drupal\block_content\Entity\BlockContent;
+use Drupal\menu_link_content\Entity\MenuLinkContent;
 
 /**
  * Content package import manager service.
@@ -78,7 +79,6 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
       }
       batch_set($batch);
     }
-
   }
 
   /**
@@ -121,7 +121,7 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
                 }
               }
               else {
-                $target_ids = array_map(fn($value) => $value['target_id'], $field_value);
+                $target_ids = array_map(fn ($value) => $value['target_id'], $field_value);
                 foreach ($target_ids as $pid) {
                   $paragraph = $paragraphStroage->load($pid);
                   if (isset($paragraph)) {
@@ -178,7 +178,6 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
       ];
       batch_set($batch);
     }
-
   }
 
   /**
@@ -191,7 +190,7 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
     foreach ($nodes as $node) {
       $node->delete();
     }
-    
+
     if (!isset($context['results']['count'])) {
       $context['results']['count'] = 0;
     }
@@ -231,25 +230,30 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
 
     if (!empty($json_datas) && is_array($json_datas)) {
       foreach ($json_datas as $content_type => $json_data) {
-        $chunk = array_chunk($json_data, self::BATCH_SIZE);
-        $operations = [];
-        $num_operations = 0;
-
-        foreach ($chunk as $nodes) {
-          $operations[] = [
-            [self::class, 'importingCallback'],
-            [$nodes, $content_type, $file_to_import],
-          ];
-          $num_operations++;
+        if ($content_type === 'menus') {
+          $this->processMenus($json_data);
         }
+        else {
+          $chunk = array_chunk($json_data, self::BATCH_SIZE);
+          $operations = [];
+          $num_operations = 0;
 
-        if (!empty($operations)) {
-          $batch = [
-            'title' => "Process of importing $content_type",
-            'operations' => $operations,
-            'finished' => [self::class, 'importingFinished'],
-          ];
-          batch_set($batch);
+          foreach ($chunk as $nodes) {
+            $operations[] = [
+              [self::class, 'importingCallback'],
+              [$nodes, $content_type, $file_to_import],
+            ];
+            $num_operations++;
+          }
+
+          if (!empty($operations)) {
+            $batch = [
+              'title' => "Process of importing $content_type",
+              'operations' => $operations,
+              'finished' => [self::class, 'importingFinished'],
+            ];
+            batch_set($batch);
+          }
         }
       }
     }
@@ -271,7 +275,8 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
             $entity = Node::create($value['original']);
             $entity->enforceIsNew();
             $entity->save();
-          } elseif ($content_type === 'blocks') {
+          }
+          elseif ($content_type === 'blocks') {
             $entity = BlockContent::create($value['original']);
             $entity->save();
           }
@@ -281,7 +286,8 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
               try {
                 $entity->addTranslation($lang, $trans)
                   ->save();
-              } catch (\Exception $exception) {
+              }
+              catch (\Exception $exception) {
                 $logger->error(t('Enable to attach translation %lang to entity %label, error message %error', [
                   '%lang' => $lang,
                   '%label' => $key,
@@ -290,8 +296,8 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
               }
             }
           }
-
-        } catch (\Exception $exception) {
+        }
+        catch (\Exception $exception) {
           $logger->error(t('Unable to create entity %label, error message %error', [
             '%label' => $key,
             '%error' => $exception->getMessage(),
@@ -324,6 +330,159 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
         ->getGeneratedUrl());
       $redirect_response->send();
       return $redirect_response;
+    }
+  }
+
+  /**
+   * Process menus data to create or update menus and their links.
+   */
+  protected function processMenus(array $menusData) {
+    $jsonContent = json_encode($menusData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+    \Drupal::logger('vactory_content_package')->debug('Processing menusData: @content', ['@content' => $jsonContent]);
+
+    foreach ($menusData as $menuId => $menuContentWrapper) {
+      foreach ($menuContentWrapper as $menuContentArray) {
+        foreach ($menuContentArray as $menuContent) {
+          $menuName = $menuContent['menu_name'] ?? 'Unknown menu name';
+          $menuSystemName = $menuContent['menu_system_name'] ?? 'Unknown system name';
+
+          $linksCount = !empty($menuContent['links']) ? count($menuContent['links']) : 0;
+          \Drupal::logger('vactory_content_package')->debug("Processing menu: $menuName ($menuSystemName) with $linksCount links.");
+
+          $this->ensureMenuExists($menuName, $menuSystemName);
+          \Drupal::logger('vactory_content_package')->debug("Processing to finished save creted Menu");
+
+          if (!empty($menuContent['links'])) {
+            \Drupal::logger('vactory_content_package')->debug("Processing to createOrUpdateMenuLink");
+            foreach ($menuContent['links'] as $linkData) {
+              \Drupal::logger('vactory_content_package')->debug("Processing call createOrUpdateMenuLink");
+              $this->createOrUpdateMenuLink($linkData, $menuSystemName, '');
+            }
+          }
+        }
+      }
+    }
+    $menuCount = count($menusData);
+    // $context['results']['file_to_import'] = $file_to_import;
+    $message = "Importing process finished: {$menuCount} Menu.";
+    \Drupal::messenger()->addStatus($message);
+
+    $url = Url::fromRoute('vactory_content_package.import');
+
+    $redirect_response = new TrustedRedirectResponse($url->toString(TRUE)
+      ->getGeneratedUrl());
+    $redirect_response->send();
+  }
+
+  /**
+   * Ensures a menu exists, or creates it.
+   */
+  protected function ensureMenuExists($menuName, $menuSystemName) {
+    if (empty($menuSystemName)) {
+      throw new \Exception("Menu system name is required.");
+    }
+
+    $menu_storage = \Drupal::entityTypeManager()->getStorage('menu');
+    $menu = $menu_storage->load($menuSystemName);
+    if (!$menu) {
+      \Drupal::logger('vactory_content_package')->debug("Processing to crete Menu");
+      $menu = $menu_storage->create([
+        'id' => $menuSystemName,
+        'label' => $menuName,
+      ]);
+      \Drupal::logger('vactory_content_package')->debug("Processing to save creted Menu");
+
+      $menu->save();
+    }
+  }
+
+  /**
+   * Creates or updates a menu link.
+   */
+  protected function createOrUpdateMenuLink(array $linkData, $menuId, $parentId) {
+    \Drupal::logger('vactory_content_package')->debug("Processing create Menu Link");
+
+    // Determine if the URL is external or internal and format it correctly.
+    $uri = $linkData['url'];
+    if (!preg_match('/^http(s)?:\/\//', $uri)) {
+      // Prepend 'internal:' scheme for internal paths.
+      $uri = 'internal:' . $uri;
+    }
+
+    $dynamicFieldData = [
+      "widget_id" => "vactory_default:23",
+      "widget_data" => json_encode([
+        "0" => [
+          "chiffre" => "2",
+          "titre" => "Test oF TITLE",
+          "description" => "Descr faa",
+          "cta" => [
+            "title" => "Live Market",
+            "url" => "/mode/1",
+            "attributes" => [
+              "class" => "",
+              "id" => "cta-mde3mdk4mzc4mju",
+              "target" => "_self",
+              "rel" => "",
+            ],
+          ],
+          "_weight" => "1",
+        ],
+        "pending_content" => [],
+      ]),
+    ];
+    $link = MenuLinkContent::create([
+      'title' => $linkData['title'],
+      'link' => ['uri' => $uri],
+      'menu_name' => $menuId,
+      'parent' => $parentId ? 'menu_link_content:' . $parentId : '',
+      'field_custom_cv' => 'fahd bouaicha',
+    ]);
+
+    \Drupal::logger('vactory_content_package')->debug("Processing save created Menu Link");
+
+    $link->save();
+    \Drupal::logger('vactory_content_package')->debug("Processing Link Handle translations if present");
+
+    // Handle translations if present.
+    if (!empty($linkData['translations'])) {
+      \Drupal::logger('vactory_content_package')->debug("Processing Handle translations if present");
+
+      foreach ($linkData['translations'] as $langcode => $translationData) {
+        \Drupal::logger('vactory_content_package')->debug("Processing call addMenuLinkTranslation");
+        $this->addMenuLinkTranslation($link, $translationData, $langcode);
+      }
+    }
+
+    // Recursively create or update child links.
+    if (!empty($linkData['children'])) {
+      \Drupal::logger('vactory_content_package')->debug("Processing Recursively create or update child links");
+
+      foreach ($linkData['children'] as $childLinkData) {
+        \Drupal::logger('vactory_content_package')->debug("1 Processing call " . $link->id() . " Recursively create or update child links");
+        \Drupal::logger('vactory_content_package')->debug("2 Processing call " . $link->uuid() . " Recursively create or update child links");
+
+        $this->createOrUpdateMenuLink($childLinkData, $menuId, $link->uuid());
+      }
+    }
+  }
+
+  /**
+   * Adds a translation to a menu link.
+   */
+  protected function addMenuLinkTranslation($link, $translationData, $langcode) {
+    \Drupal::logger('vactory_content_package')->debug("Processing inter addMenuLinkTranslation");
+
+    if (!$link->hasTranslation($langcode)) {
+      \Drupal::logger('vactory_content_package')->debug("Processing inside linke addMenuLinkTranslation");
+
+      $translation = $link->addTranslation($langcode, [
+        'title' => $translationData['title'],
+        // Add other fields as needed.
+      ]);
+      \Drupal::logger('vactory_content_package')->debug("Processing save addMenuLinkTranslation");
+
+      $translation->save();
     }
   }
 
