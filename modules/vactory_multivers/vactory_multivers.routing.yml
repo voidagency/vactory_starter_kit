@@ -1,0 +1,7 @@
+vactory_multivers.settings:
+  path: '/admin/config/development/multivers_settings_form'
+  defaults:
+    _form: '\Drupal\vactory_multivers\Form\MultiversConfig'
+    _title: 'Vactory Multivers settings'
+  requirements:
+    _role: 'administrator'

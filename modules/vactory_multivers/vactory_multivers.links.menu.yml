@@ -1,0 +1,6 @@
+vactory_multivers.settings:
+  title: 'Vactory Multivers'
+  description: 'Configure multivers module.'
+  parent: system.admin_config_system
+  route_name: vactory_multivers.settings
+  weight: 10

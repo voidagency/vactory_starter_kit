@@ -16,26 +16,47 @@ use Drupal\taxonomy\Entity\Term;
  * Implements hook_node_presave().
  */
 function vactory_multivers_node_presave($node) {
+  $allowed_node_types = \Drupal::config('vactory_multivers.settings')->get('node_types');
+  $is_allowed = !($allowed_node_types[$node->bundle()] === 0);
   if ($node->bundle() == 'vactory_multivers') {
     $multivers_term_id = $node->get('field_multivers')->target_id;
-    $parents = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadAllParents($multivers_term_id);
-    $alias = '';
-    foreach ($parents as $parent) {
-      $slug = $parent->get('term_2_slug')->value;
-      $alias = "/{$slug}{$alias}";
-    }
+    $alias = _get_multivers_path_by_parants($multivers_term_id);
     $node->path = [
       'pathauto' => 0,
       'alias' => "{$alias}",
     ];
   }
+  if ($is_allowed && $node->hasField('field_multivers')) {
+    $node_alias = \Drupal::service('pathauto.generator')->createEntityAlias($node, 'return');
+    $multivers_term_id = $node->get('field_multivers')->target_id;
+    $alias = _get_multivers_path_by_parants($multivers_term_id);
+    $node->path = [
+      'pathauto' => 0,
+      'alias' => "{$alias}{$node_alias}",
+    ];
+  }
+}
+
+/**
+ * Get multivers path by parants.
+ */
+function _get_multivers_path_by_parants($multivers_id) {
+  $parents = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadAllParents($multivers_id);
+  $alias = '';
+  foreach ($parents as $parent) {
+    $slug = $parent->get('term_2_slug')->value;
+    $alias = "/{$slug}{$alias}";
+  }
+  return $alias;
 }
 
 /**
  * Implements hook_node_internal_blocks_alter().
  */
 function vactory_multivers_node_internal_blocks_alter(&$value, $entity) {
-  if ($entity->bundle() == 'vactory_multivers') {
+  $allowed_node_types = \Drupal::config('vactory_multivers.settings')->get('node_types');
+  $is_allowed = !($allowed_node_types[$entity->bundle()] === 0);
+  if ($entity->bundle() == 'vactory_multivers' || ($is_allowed && $entity->hasField('field_multivers'))) {
     $dynamic_field_manager = \Drupal::service('vactory_decoupled.dynamic_field_manager');
     $multivers_term_id = $entity->get('field_multivers')->target_id;
     $multivers_term = Term::load($multivers_term_id);
@@ -101,7 +122,9 @@ function vactory_multivers_node_internal_blocks_alter(&$value, $entity) {
  */
 function vactory_multivers_decoupled_extra_field_value_alter(&$value, $context, CacheableMetadata $cacheability) {
   $entity = $context['entity'];
-  if ($entity->bundle() == 'vactory_multivers') {
+  $allowed_node_types = \Drupal::config('vactory_multivers.settings')->get('node_types');
+  $is_alloewd = !($allowed_node_types[$entity->bundle()] === 0);
+  if ($entity->bundle() == 'vactory_multivers' || ($is_alloewd && $entity->hasField('field_multivers'))) {
     $multivers_term_id = $entity->get('field_multivers')->target_id;
     if (!isset($multivers_term_id)) {
       return;
@@ -115,7 +138,7 @@ function vactory_multivers_decoupled_extra_field_value_alter(&$value, $context, 
     $cacheability->addCacheTags([
       'theme_switcher',
       'taxonomy_term_list:multivers',
-      'node_list:vactory_multivers',
+      'node_list:' . $entity->bundle(),
     ]);
   }
 }
@@ -139,9 +162,9 @@ function _post_insert_multivers_callback(EntityInterface $entity) {
     $langcode = $entity->language()->getId();
 
     $node = Node::create([
-      'type'                    => 'vactory_multivers',
-      'title'                   => $name,
-      'langcode'                => $langcode,
+      'type' => 'vactory_multivers',
+      'title' => $name,
+      'langcode' => $langcode,
       'field_multivers' => [
         'target_id' => $entity->id(),
       ],
