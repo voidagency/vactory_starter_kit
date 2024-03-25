@@ -2,21 +2,21 @@ services:
   vactory_content_package.manager:
     class: Drupal\vactory_content_package\Services\ContentPackageManager
     arguments:
-      - "@entity_type.manager"
-      - "@file_url_generator"
-      - "@entity_field.manager"
-      - "@vactory_dynamic_field.vactory_provider_manager"
-      - "@entity.repository"
+      - '@entity_type.manager'
+      - '@file_url_generator'
+      - '@entity_field.manager'
+      - '@vactory_dynamic_field.vactory_provider_manager'
+      - '@entity.repository'
   vactory_content_package.archiver.manager:
     class: \Drupal\vactory_content_package\Services\ContentPackageArchiverManager
     arguments:
-      - "@file_system"
-      - "@plugin.manager.archiver"
-      - "@messenger"
-      - "@entity_type.manager"
-      - "@entity_field.manager"
+      - '@file_system'
+      - '@plugin.manager.archiver'
+      - '@messenger'
+      - '@entity_type.manager'
+      - '@entity_field.manager'
   vactory_content_package.import.manager:
     class: \Drupal\vactory_content_package\Services\ContentPackageImportManager
     arguments:
-      - "@messenger"
-      - "@entity_type.manager"
+      - '@messenger'
+      - '@entity_type.manager'
