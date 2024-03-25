@@ -1,21 +1,106 @@
 <?php
 
+/**
+ * @file
+ * Contain related hooks.
+ */
+
 use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Implements hook_field_widget_single_element_form_alter().
  */
 function vactory_content_sheets_field_widget_single_element_form_alter(&$element, FormStateInterface $form_state, array $context) {
-    $plugin_id = $context['widget']->getPluginId();
-    if ($plugin_id == 'media_library_widget') {
-        $route_name = \Drupal::routeMatch()->getRouteName();
-        if ($route_name == 'vactory_dynamic_field.open_modal_form') {
-            $element['media_google_sheet'] = [
-                '#type' => 'textfield',
-                '#title' => t('Media key'),
-                '#description' => t('This field serves to link the media with its associated value on a Google Sheet.'),
-            ];
-        }
+  $plugin_id = $context['widget']->getPluginId();
+  if ($plugin_id == 'media_library_widget') {
+    $route_name = \Drupal::routeMatch()->getRouteName();
+    if ($route_name == 'vactory_dynamic_field.open_modal_form') {
+      $element['media_google_sheet'] = [
+        '#type' => 'textfield',
+        '#title' => t('Media key'),
+        '#description' => t('This field serves to link the media with its associated value on a Google Sheet.'),
+      ];
     }
+  }
 }
-  
+
+/**
+ * Implements disable content sheets callback.
+ */
+function disable_content_sheets_callback($id, $nid, $operation_details, &$context) {
+  $entity_type_manager = Drupal::entityTypeManager();
+  $content_service = Drupal::service("vactory_content_sheets.content_services");
+  $entity_repository = Drupal::service("entity.repository");
+  $language_manager = Drupal::service("language_manager");
+  if ($nid && is_numeric($nid)) {
+    $node = $entity_type_manager->getStorage('node')
+      ->load($nid);
+    if (!isset($node)) {
+      return;
+    }
+    $paragraphs = $node->get("field_vactory_paragraphs")->getValue();
+    if (!isset($paragraphs)) {
+      return;
+    }
+    $langs = array_keys($language_manager->getLanguages());
+    foreach ($paragraphs as $pItem) {
+      $paragraph = $entity_type_manager->getStorage('paragraph')
+        ->load($pItem['target_id']);
+      if (!isset($paragraph)) {
+        return;
+      }
+      $processedLang[$nid] = [];
+
+      $data = $content_service->replaceContentSheetRegex($paragraph);
+      $paragraph->field_vactory_component->setValue($data);
+      try {
+        $paragraph->save();
+        array_push($processedLang[$nid], $node->get('langcode')->value);
+      }
+      catch (\Exception $e) {
+        \Drupal::logger("vactory_content_sheets")->warning($e->getMessage());
+      }
+
+      // Get translations.
+      foreach ($langs as $lang) {
+        if ($lang == $paragraph->language()->getId()) {
+          continue;
+        }
+        if ($paragraph->hasTranslation($lang)) {
+          $translated_entity = $entity_repository->getTranslationFromContext($paragraph, $lang);
+          if ($translated_entity !== NULL) {
+            $data = $content_service->replaceContentSheetRegex($translated_entity, $lang);
+            $translated_entity->field_vactory_component->setValue($data);
+            try {
+              $translated_entity->save();
+              array_push($processedLang[$nid], $lang);
+            }
+            catch (\Exception $e) {
+              \Drupal::logger("vactory_content_sheets")
+                ->warning($e->getMessage());
+            }
+          }
+        }
+      }
+      $context['results'][] = $id;
+      // Optional message displayed under the progressbar.
+      $context['message'] = t('Running Batch Node id:@nid | Title: @title | Languages: @lang',
+        [
+          '@title' => $node->label(),
+          '@nid' => $nid,
+          '@lang' => implode(";", $processedLang[$nid]),
+        ]
+      );
+    }
+  }
+}
+
+/**
+ * Implements batch finished callback.
+ */
+function disable_content_sheets_finished($success, $results, $operations) {
+  $messenger = \Drupal::messenger();
+  if ($success) {
+    $messenger->addMessage(t('@count nodes processed.', ['@count' => count($results)]));
+  }
+}
