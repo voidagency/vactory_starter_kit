@@ -13,8 +13,7 @@ use Drupal\Core\Menu\MenuLinkTreeInterface;
 /**
  * Configure Vactory content package settings for this site.
  */
-class ContentPackageExportForm extends FormBase
-{
+class ContentPackageExportForm extends FormBase {
 
   const FORM_AJAX_WRAPPER = 'content-package-export-form';
 
@@ -28,8 +27,7 @@ class ContentPackageExportForm extends FormBase
   /**
    * {@inheritDoc}
    */
-  public function __construct(EntityTypeManagerInterface $entityTypeManager, MenuLinkTreeInterface $menuLinkTree)
-  {
+  public function __construct(EntityTypeManagerInterface $entityTypeManager, MenuLinkTreeInterface $menuLinkTree) {
     $this->entityTypeManager = $entityTypeManager;
     $this->menuLinkTree = $menuLinkTree;
   }
@@ -37,8 +35,7 @@ class ContentPackageExportForm extends FormBase
   /**
    * {@inheritDoc}
    */
-  public static function create(ContainerInterface $container)
-  {
+  public static function create(ContainerInterface $container) {
     return new static(
       $container->get('entity_type.manager'),
       $container->get('menu.link_tree')
@@ -48,16 +45,14 @@ class ContentPackageExportForm extends FormBase
   /**
    * {@inheritdoc}
    */
-  public function getFormId()
-  {
+  public function getFormId() {
     return 'vactory_content_package_export';
   }
 
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state)
-  {
+  public function buildForm(array $form, FormStateInterface $form_state) {
     $nodes = $form_state->get('nodes') ?? [];
     $blocks = $form_state->get('blocks') ?? [];
     $menus = $form_state->get('menus') ?? [];
@@ -260,8 +255,7 @@ class ContentPackageExportForm extends FormBase
   /**
    * Close autocomplete callback.
    */
-  public function closeAutocompleteCallback(array &$form, FormStateInterface $form_state)
-  {
+  public function closeAutocompleteCallback(array &$form, FormStateInterface $form_state) {
     $response = new AjaxResponse();
     $response->addCommand(new InvokeCommand("input[name=\"update_cp_export_form\"]", 'click', []));
     return $response;
@@ -270,16 +264,14 @@ class ContentPackageExportForm extends FormBase
   /**
    * Update form.
    */
-  public function updateForm(array &$form, FormStateInterface $form_state)
-  {
+  public function updateForm(array &$form, FormStateInterface $form_state) {
     return $form;
   }
 
   /**
    * Update form submit callback.
    */
-  public function updateFormSubmit(array &$form, FormStateInterface $form_state)
-  {
+  public function updateFormSubmit(array &$form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
     $nodes = $form_state->get('nodes') ?? [];
     $blocks = $form_state->get('blocks') ?? [];
@@ -312,8 +304,7 @@ class ContentPackageExportForm extends FormBase
   /**
    * Remove node submit callback.
    */
-  public function removeNodeSubmit(array &$form, FormStateInterface $form_state)
-  {
+  public function removeNodeSubmit(array &$form, FormStateInterface $form_state) {
     $triggering_element = $form_state->getTriggeringElement();
     $nid = str_replace('remove_node_', '', $triggering_element['#name']);
     $nodes = $form_state->get('nodes') ?? [];
@@ -326,8 +317,7 @@ class ContentPackageExportForm extends FormBase
   /**
    * Remove block submit callback.
    */
-  public function removeBlockSubmit(array &$form, FormStateInterface $form_state)
-  {
+  public function removeBlockSubmit(array &$form, FormStateInterface $form_state) {
     $triggering_element = $form_state->getTriggeringElement();
     $block_id = str_replace('remove_block_', '', $triggering_element['#name']);
     $blocks = $form_state->get('blocks') ?? [];
@@ -340,8 +330,7 @@ class ContentPackageExportForm extends FormBase
   /**
    * Remove menu submit callback.
    */
-  public function removeMenuSubmit(array &$form, FormStateInterface $form_state)
-  {
+  public function removeMenuSubmit(array &$form, FormStateInterface $form_state) {
     $triggering_element = $form_state->getTriggeringElement();
     $menu_id = str_replace('remove_menu_', '', $triggering_element['#name']);
     $menus = $form_state->get('menus') ?? [];
@@ -354,25 +343,16 @@ class ContentPackageExportForm extends FormBase
   /**
    * {@inheritdoc}
    */
-  public function validateForm(array &$form, FormStateInterface $form_state)
-  {
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function submitForm(array &$form, FormStateInterface $form_state)
-  {
+  public function submitForm(array &$form, FormStateInterface $form_state) {
     $nodes = $form_state->get('nodes') ?? NULL;
     $blocks = $form_state->get('blocks') ?? NULL;
     $menus = $form_state->get('menus') ?? NULL;
-    $is_partial = $form_state->get('partial_export') ?? false;
+    $is_partial = $form_state->get('partial_export') ?? FALSE;
     \Drupal::logger('vactory_content_package_export_form')->debug(sprintf("nodes: %s, blocks: %s, menus: %s", json_encode($nodes), json_encode($blocks), json_encode($menus)));
-
-    // die();
 
     // Zip nodes.
     \Drupal::service('vactory_content_package.archiver.manager')
       ->zipContentTypeNodes('vactory_page', $nodes, $blocks, $menus, $is_partial);
   }
+
 }

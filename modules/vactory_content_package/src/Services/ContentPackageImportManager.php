@@ -13,8 +13,7 @@ use Drupal\menu_link_content\Entity\MenuLinkContent;
 /**
  * Content package import manager service.
  */
-class ContentPackageImportManager implements ContentPackageImportManagerInterface
-{
+class ContentPackageImportManager implements ContentPackageImportManagerInterface {
 
   /**
    * The entity type manager.
@@ -38,8 +37,7 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
   /**
    * Vactory Content Package Service constructor.
    */
-  public function __construct(MessengerInterface $messenger, EntityTypeManagerInterface $entityTypeManager)
-  {
+  public function __construct(MessengerInterface $messenger, EntityTypeManagerInterface $entityTypeManager) {
     $this->messenger = $messenger;
     $this->entityTypeManager = $entityTypeManager;
   }
@@ -47,8 +45,7 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
   /**
    * Delete all nodes of given content types.
    */
-  public function rollback(array $content_types, string $file_to_import = '', $is_block_delete = FALSE)
-  {
+  public function rollback(array $content_types, string $file_to_import = '', $is_block_delete = FALSE) {
 
     $nodes = $this->entityTypeManager->getStorage('node')
       ->getQuery()
@@ -87,8 +84,7 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
   /**
    * Rollback batch callback.
    */
-  public static function rollbackCallback($nids, $file_to_import, &$context)
-  {
+  public static function rollbackCallback($nids, $file_to_import, &$context) {
     $entityFieldManager = \Drupal::service('entity_field.manager');
     $storage = \Drupal::entityTypeManager()->getStorage('node');
     $paragraphStroage = \Drupal::entityTypeManager()->getStorage('paragraph');
@@ -123,7 +119,8 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
                 if (isset($paragraph)) {
                   $paragraph->delete();
                 }
-              } else {
+              }
+              else {
                 $target_ids = array_map(fn ($value) => $value['target_id'], $field_value);
                 foreach ($target_ids as $pid) {
                   $paragraph = $paragraphStroage->load($pid);
@@ -150,8 +147,7 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
   /**
    * Delete all Blocks of given content types.
    */
-  public function rollbackBlock(string $file_to_import = '')
-  {
+  public function rollbackBlock(string $file_to_import = '') {
     $blocks = $this->entityTypeManager->getStorage('block_content')
       ->getQuery('OR')
       ->notExists('block_content_package_exclude')
@@ -187,8 +183,7 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
   /**
    * Rollback batch callbackBlocks.
    */
-  public static function rollbackBlocksCallback($nids, $file_to_import, &$context)
-  {
+  public static function rollbackBlocksCallback($nids, $file_to_import, &$context) {
     $entityFieldManager = \Drupal::service('entity_field.manager');
     $storage = \Drupal::entityTypeManager()->getStorage('block_content');
     $nodes = $storage->loadMultiple($nids);
@@ -206,8 +201,7 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
   /**
    * Rollback batch finished.
    */
-  public static function rollbackFinished($success, $results, $operations)
-  {
+  public static function rollbackFinished($success, $results, $operations) {
     if ($success) {
       $message = "Deleting finished: {$results['count']} nodes.";
       \Drupal::messenger()->addStatus($message);
@@ -226,8 +220,7 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
   /**
    * Import nodes.
    */
-  public function importNodes(string $file_to_import)
-  {
+  public function importNodes(string $file_to_import) {
     if (!file_exists($file_to_import)) {
       return;
     }
@@ -239,7 +232,8 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
       foreach ($json_datas as $content_type => $json_data) {
         if ($content_type === 'menus') {
           $this->processMenus($json_data);
-        } else {
+        }
+        else {
           $chunk = array_chunk($json_data, self::BATCH_SIZE);
           $operations = [];
           $num_operations = 0;
@@ -268,8 +262,7 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
   /**
    * Importing batch callback.
    */
-  public static function importingCallback($items, $content_type, $file_to_import, &$context)
-  {
+  public static function importingCallback($items, $content_type, $file_to_import, &$context) {
 
     $logger = \Drupal::logger('vactory_content_package');
 
@@ -282,7 +275,8 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
             $entity = Node::create($value['original']);
             $entity->enforceIsNew();
             $entity->save();
-          } elseif ($content_type === 'blocks') {
+          }
+          elseif ($content_type === 'blocks') {
             $entity = BlockContent::create($value['original']);
             $entity->save();
           }
@@ -292,7 +286,8 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
               try {
                 $entity->addTranslation($lang, $trans)
                   ->save();
-              } catch (\Exception $exception) {
+              }
+              catch (\Exception $exception) {
                 $logger->error(t('Enable to attach translation %lang to entity %label, error message %error', [
                   '%lang' => $lang,
                   '%label' => $key,
@@ -301,7 +296,8 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
               }
             }
           }
-        } catch (\Exception $exception) {
+        }
+        catch (\Exception $exception) {
           $logger->error(t('Unable to create entity %label, error message %error', [
             '%label' => $key,
             '%error' => $exception->getMessage(),
@@ -320,8 +316,7 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
   /**
    * Importing batch finished.
    */
-  public static function importingFinished($success, $results, $operations)
-  {
+  public static function importingFinished($success, $results, $operations) {
     if ($success) {
       $message = "Importing process finished: {$results['count']} nodes.";
       \Drupal::messenger()->addStatus($message);
@@ -337,11 +332,11 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
       return $redirect_response;
     }
   }
+
   /**
    * Process menus data to create or update menus and their links.
    */
-  protected function processMenus(array $menusData)
-  {
+  protected function processMenus(array $menusData) {
     $jsonContent = json_encode($menusData, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
     \Drupal::logger('vactory_content_package')->debug('Processing menusData: @content', ['@content' => $jsonContent]);
 
@@ -382,8 +377,7 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
   /**
    * Ensures a menu exists, or creates it.
    */
-  protected function ensureMenuExists($menuName, $menuSystemName)
-  {
+  protected function ensureMenuExists($menuName, $menuSystemName) {
     if (empty($menuSystemName)) {
       throw new \Exception("Menu system name is required.");
     }
@@ -395,7 +389,6 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
       $menu = $menu_storage->create([
         'id' => $menuSystemName,
         'label' => $menuName,
-        // 'description' => 'Optional description here', 
       ]);
       \Drupal::logger('vactory_content_package')->debug("Processing to save creted Menu");
 
@@ -406,14 +399,13 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
   /**
    * Creates or updates a menu link.
    */
-  protected function createOrUpdateMenuLink(array $linkData, $menuId, $parentId)
-  {
+  protected function createOrUpdateMenuLink(array $linkData, $menuId, $parentId) {
     \Drupal::logger('vactory_content_package')->debug("Processing create Menu Link");
 
-    // Determine if the URL is external or internal and format it correctly
+    // Determine if the URL is external or internal and format it correctly.
     $uri = $linkData['url'];
     if (!preg_match('/^http(s)?:\/\//', $uri)) {
-      // Prepend 'internal:' scheme for internal paths
+      // Prepend 'internal:' scheme for internal paths.
       $uri = 'internal:' . $uri;
     }
 
@@ -431,13 +423,13 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
               "class" => "",
               "id" => "cta-mde3mdk4mzc4mju",
               "target" => "_self",
-              "rel" => ""
-            ]
+              "rel" => "",
+            ],
           ],
-          "_weight" => "1"
+          "_weight" => "1",
         ],
-        "pending_content" => []
-      ])
+        "pending_content" => [],
+      ]),
     ];
     $link = MenuLinkContent::create([
       'title' => $linkData['title'],
@@ -452,7 +444,7 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
     $link->save();
     \Drupal::logger('vactory_content_package')->debug("Processing Link Handle translations if present");
 
-    // Handle translations if present
+    // Handle translations if present.
     if (!empty($linkData['translations'])) {
       \Drupal::logger('vactory_content_package')->debug("Processing Handle translations if present");
 
@@ -462,7 +454,7 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
       }
     }
 
-    // Recursively create or update child links
+    // Recursively create or update child links.
     if (!empty($linkData['children'])) {
       \Drupal::logger('vactory_content_package')->debug("Processing Recursively create or update child links");
 
@@ -478,8 +470,7 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
   /**
    * Adds a translation to a menu link.
    */
-  protected function addMenuLinkTranslation($link, $translationData, $langcode)
-  {
+  protected function addMenuLinkTranslation($link, $translationData, $langcode) {
     \Drupal::logger('vactory_content_package')->debug("Processing inter addMenuLinkTranslation");
 
     if (!$link->hasTranslation($langcode)) {
@@ -487,11 +478,12 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
 
       $translation = $link->addTranslation($langcode, [
         'title' => $translationData['title'],
-        // Add other fields as needed
+        // Add other fields as needed.
       ]);
       \Drupal::logger('vactory_content_package')->debug("Processing save addMenuLinkTranslation");
 
       $translation->save();
     }
   }
+
 }

@@ -8,8 +8,7 @@ use Drupal\Core\Form\FormStateInterface;
 /**
  * Migration import form.
  */
-class ContentPackageImportFormConfirm extends FormBase
-{
+class ContentPackageImportFormConfirm extends FormBase {
 
   /**
    * Content types.
@@ -26,8 +25,7 @@ class ContentPackageImportFormConfirm extends FormBase
    * @return string
    *   The unique string identifying the form.
    */
-  public function getFormId()
-  {
+  public function getFormId() {
     return 'vactory_content_package.import_confirmation';
   }
 
@@ -42,8 +40,7 @@ class ContentPackageImportFormConfirm extends FormBase
    * @return array
    *   The form structure.
    */
-  public function buildForm(array $form, FormStateInterface $form_state)
-  {
+  public function buildForm(array $form, FormStateInterface $form_state) {
     $is_page_delete = $form_state->get('is_page_delete') ?? 0;
     $is_block_delete = $form_state->get('is_block_delete') ?? 0;
     $is_menu_delete = $form_state->get('is_menu_delete') ?? 0;
@@ -117,8 +114,7 @@ class ContentPackageImportFormConfirm extends FormBase
   /**
    * Form Validation.
    */
-  public function validateForm(array &$form, FormStateInterface $form_state)
-  {
+  public function validateForm(array &$form, FormStateInterface $form_state) {
     $url = \Drupal::request()->query->get('url');
     if (!file_exists($url)) {
       $form_state->setErrorByName('submit', $this->t('Import is currently unavailable.'));
@@ -134,17 +130,14 @@ class ContentPackageImportFormConfirm extends FormBase
    * @param \Drupal\Core\Form\FormStateInterface $form_state
    *   The current state of the form.
    */
-  public function submitForm(array &$form, FormStateInterface $form_state)
-  {
+  public function submitForm(array &$form, FormStateInterface $form_state) {
 
     $url = \Drupal::request()->query->get('url');
     $is_page_delete = $form_state->getValue('is_page_delete') ?? 0;
     $is_block_delete = $form_state->getValue('is_block_delete') ?? 0;
     $is_menu_delete = $form_state->getValue('is_menu_delete') ?? 0;
 
-
     \Drupal::logger('vactory_content_package')->debug('Confirm Content of JSON file @url', ['@url' => $url]);
-
 
     if (!$is_page_delete && !$is_block_delete && !$is_menu_delete) {
       \Drupal::service('vactory_content_package.import.manager')
@@ -170,4 +163,5 @@ class ContentPackageImportFormConfirm extends FormBase
       }
     }
   }
+
 }
