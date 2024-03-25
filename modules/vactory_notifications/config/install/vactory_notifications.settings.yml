@@ -1,12 +1,107 @@
+langcode: en
 notifications_default_title: 'New content from [notification:owner_first_name]'
 notifications_default_message: 'New content « [notification:content_type:node_title] » of type [notification:content_type] has been added by [notification:owner_first_name] [notification:owner_last_name].'
-auto_translation: TRUE
-notifications_lifetime: 6
-enable_toast: 1
-toast_template: profiles/contrib/vactory_starter_kit/modules/vactory_notifications/templates/notifications-toast.html.twig
 mail_default_subject: 'New content from [notification:owner_first_name]'
 mail_default_message: 'New content « [notification:content_type:node_title] » of type [notification:content_type] has been added by [notification:owner_first_name] [notification:owner_last_name].'
-langcode: en
+auto_translation: 1
+notifications_lifetime: '6'
+enable_toast: 0
+toast_template: profiles/contrib/vactory_starter_kit/modules/vactory_notifications/templates/notifications-toast.html.twig
 enforced:
   module:
     - vactory_notifications
+anonymous_content_types: {  }
+authenticated_content_types: {  }
+administrator_content_types:
+  - vactory_page
+super_administrator_content_types: {  }
+master_content_types: {  }
+webmaster_content_types: {  }
+vactory_academy_instructor_content_types: {  }
+editeur_forum_content_types: {  }
+expert_forum_content_types: {  }
+mail_active: 0
+authenticated_content_types_mail: {  }
+administrator_content_types_mail: {  }
+super_administrator_content_types_mail: {  }
+master_content_types_mail: {  }
+webmaster_content_types_mail: {  }
+vactory_academy_instructor_content_types_mail: {  }
+editeur_forum_content_types_mail: {  }
+expert_forum_content_types_mail: {  }
+mail_content_types:
+  vactory_academy:
+    mail_subject: ''
+    mail_message:
+      value: ''
+      format: full_html
+  vactory_blog:
+    mail_subject: ''
+    mail_message:
+      value: ''
+      format: full_html
+  vactory_business:
+    mail_subject: ''
+    mail_message:
+      value: ''
+      format: full_html
+  vactory_event:
+    mail_subject: ''
+    mail_message:
+      value: ''
+      format: full_html
+  vactory_faq:
+    mail_subject: ''
+    mail_message:
+      value: ''
+      format: full_html
+  vactory_forum:
+    mail_subject: ''
+    mail_message:
+      value: ''
+      format: full_html
+  vactory_glossary:
+    mail_subject: ''
+    mail_message:
+      value: ''
+      format: full_html
+  vactory_job_ads:
+    mail_subject: ''
+    mail_message:
+      value: ''
+      format: full_html
+  vactory_mediatheque:
+    mail_subject: ''
+    mail_message:
+      value: ''
+      format: full_html
+  vactory_news:
+    mail_subject: ''
+    mail_message:
+      value: ''
+      format: full_html
+  vactory_page:
+    mail_subject: ''
+    mail_message:
+      value: ''
+      format: full_html
+  vactory_publication:
+    mail_subject: ''
+    mail_message:
+      value: ''
+      format: full_html
+  vactory_quiz:
+    mail_subject: ''
+    mail_message:
+      value: ''
+      format: full_html
+  vactory_tender:
+    mail_subject: ''
+    mail_message:
+      value: ''
+      format: full_html
+  vactory_testimonials:
+    mail_subject: ''
+    mail_message:
+      value: ''
+      format: full_html

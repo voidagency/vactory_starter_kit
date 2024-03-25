@@ -1,6 +1,7 @@
 <?php
 
 namespace Drupal\vactory_notifications\Form;
+
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
@@ -39,6 +40,9 @@ class SettingsForm extends ConfigFormBase {
     return 'vactory_notifications_settings_form';
   }
 
+  /**
+   * The build form function.
+   */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('vactory_notifications.settings');
     $path_resolver = \Drupal::service('extension.path.resolver');
@@ -135,7 +139,7 @@ class SettingsForm extends ConfigFormBase {
     $form['global_settings']['toast_template'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Toast template'),
-      '#description' => $this->t('Enter Toast template twig file path here, Default to ' . $path_resolver->getPath('module', 'vactory_notifications') . '/templates/notifications-toast.html.twig'),
+      '#description' => $this->t('Enter Toast template twig file path here, Default to @path/templates/notifications-toast.html.twig', ['@path' => $path_resolver->getPath('module', 'vactory_notifications')]),
       '#default_value' => $config->get('toast_template') ? $config->get('toast_template') : $path_resolver->getPath('module', 'vactory_notifications') . '/templates/notifications-toast.html.twig',
       '#states' => [
         'visible' => [
@@ -143,6 +147,36 @@ class SettingsForm extends ConfigFormBase {
         ],
       ],
     ];
+
+    // Mail content types Tab.
+    $form['mail_content_types'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Mail content types'),
+      '#description' => $this->t('Mail message to use. You can explore available notifications tokens by clicking "Browse available tokens" link bellow.'),
+      '#group' => 'settings_tab',
+      '#tree' => TRUE,
+    ];
+    foreach ($existing_content_types as $node_type_machine_name => $content_type) {
+      $form['mail_content_types'][$node_type_machine_name] = [
+        '#type' => 'details',
+        '#title' => $content_type->label(),
+        '#group' => 'content_type_tab',
+      ];
+      $form['mail_content_types'][$node_type_machine_name]['mail_subject'] = [
+        '#type' => 'textfield',
+        '#title' => $this->t('Mail subject'),
+        '#description' => $this->t('Mail Subject to use. You can explore available notifications tokens by clicking "Browse available tokens" link bellow.'),
+        '#default_value' => $config->get('mail_content_types')[$node_type_machine_name]['mail_subject'] ?? '',
+      ];
+      $form['mail_content_types'][$node_type_machine_name]['mail_message'] = [
+        '#type' => 'text_format',
+        '#title' => $this->t('Mail default message'),
+        '#description' => $this->t('Mail message to use. You can explore available notifications tokens by clicking "Browse available tokens" link bellow.'),
+        '#format' => 'full_html',
+        '#default_value' => $config->get('mail_content_types')[$node_type_machine_name]['mail_message']['value'] ?? '',
+      ];
+      $form['mail_content_types'][$node_type_machine_name]['tree_token'] = get_token_tree();
+    }
 
     // Roles settings.
     foreach ($existing_roles as $key => $role) {
@@ -165,7 +199,7 @@ class SettingsForm extends ConfigFormBase {
       ];
 
       // Mail Roles settings.
-      if ($role->id()<>'anonymous'){
+      if ($role->id() <> 'anonymous') {
         $form['mail_settings'][$key] = [
           '#type' => 'details',
           '#title' => $role->label(),
@@ -186,16 +220,16 @@ class SettingsForm extends ConfigFormBase {
           '#default_value' => !empty($config->get($key . '_content_types_mail')) ? $config->get($key . '_content_types_mail') : [],
         ];
 
-
       }
       $node_types = [];
     }
 
-
-
     return $form;
   }
 
+  /**
+   * The submit form function.
+   */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $config = $this->config('vactory_notifications.settings');
     $existing_roles = Role::loadMultiple();
@@ -208,16 +242,18 @@ class SettingsForm extends ConfigFormBase {
       ->set('notifications_lifetime', $form_state->getValue('notifications_lifetime'))
       ->set('enable_toast', $form_state->getValue('enable_toast'))
       ->set('toast_template', $form_state->getValue('toast_template'))
+      ->set('mail_content_types', $form_state->getValue('mail_content_types'))
       ->save();
 
     foreach ($existing_roles as $key => $role) {
-        $config->set($key . '_content_types', array_keys($form_state->getValue($key . '_content_types')));
-        if ($role->id()<>'anonymous'){
-          $config->set($key . '_content_types_mail', array_keys($form_state->getValue($key . '_content_types_mail')));
-        }
+      $config->set($key . '_content_types', array_keys($form_state->getValue($key . '_content_types')));
+      if ($role->id() <> 'anonymous') {
+        $config->set($key . '_content_types_mail', array_keys($form_state->getValue($key . '_content_types_mail')));
+      }
     }
 
     $config->save();
     parent::submitForm($form, $form_state);
   }
+
 }
