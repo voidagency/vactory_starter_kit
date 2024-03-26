@@ -647,6 +647,7 @@ function vactory_decoupled_validation_constraint_alter(array &$definitions) {
  */
 function vactory_decoupled_cache_flush() {
   clear_next_cache();
+  opcache_reset();
 }
 
 /**
