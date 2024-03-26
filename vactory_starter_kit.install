@@ -100,14 +100,14 @@ function vactory_starter_kit_install() {
     ->save(TRUE);
 
   // Run cron.
-  \Drupal::service('cron')->run();
+  // \Drupal::service('cron')->run();
 
   // Run a complete cache flush.
   drupal_flush_all_caches();
 }
 
 /**
- * Implement hook_update_N().
+ * Implements hook_update_N().
  */
 function vactory_starter_kit_update_9400(&$sandbox) {
   $entityUpdateManager = \Drupal::entityDefinitionUpdateManager();
