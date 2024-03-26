@@ -15,6 +15,7 @@ use Drupal\Core\Site\Settings;
 use Drupal\Core\Url;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Render\Element;
 use Drupal\jsonapi_extras\Entity\JsonapiResourceConfig;
 use Drupal\link\LinkItemInterface;
 use Drupal\node\Entity\Node;
@@ -63,6 +64,35 @@ function vactory_decoupled_form_node_form_alter(&$form, FormStateInterface $form
  */
 function vactory_decoupled_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   if ($form_id === 'locale_translate_edit_form') {
+    $form['strings']['#header'][] = t('Delete');
+    if (count(Element::children($form['strings']))) {
+      foreach ($form['strings'] as $lid => $string) {
+        if (is_numeric($lid)) {
+          $context = $form['strings'][$lid]['original']['0']['#context']['context'] ?? '';
+          if($context === '_FRONTEND') {
+            $form['strings'][$lid]['delete'] = [
+              '#type' => 'checkbox',
+              '#title' => t('Delete translation'),
+              '#title_display' => 'invisible',
+            ];
+          }
+        }
+      }
+      $form['actions']['delete'] = [
+        '#type' => 'submit',
+        '#name' => 'delete',
+        '#value' => t('Delete translations'),
+        '#submit' => ['deleteTranslations'],
+        '#button_type' => 'danger',
+        '#states' => [
+          'visible' => [
+            ':input[name$="[delete]"]' => ['checked' => TRUE],
+          ],
+        ],
+      ];
+    }
+
+    $form['#validate'][] = 'locale_translate_edit_form_validator';
     $form['#submit'][] = 'clear_next_cache_translation';
   }
 
@@ -920,5 +950,34 @@ function vactory_decoupled_taxonomy_term_presave(EntityInterface $entity) {
       $slug = !empty($slug) ? str_replace([' ', "'"], '-', $slug) : $slug;
       $entity->set('term_2_slug', $slug);
     }
+  }
+}
+
+/**
+ * Delete selected translations of _FRONTEND context.
+ */
+function deleteTranslations(array $form, FormStateInterface $form_state) {
+  $langcode = $form_state->getValue('langcode');
+  $delete = [];
+  foreach ($form_state->getValue('strings') as $lid => $new_translation) {
+    $to_be_deleted = $new_translation['delete'] ?? FALSE;
+    if ($to_be_deleted) {
+      $delete[] = $lid;
+      \Drupal::service('locale.storage')->deleteStrings(['lid' => $lid]);
+    }
+  }
+  if ($delete) {
+    \Drupal::service('messenger')->addMessage(t('Translations have been deleted.'));
+    _locale_refresh_translations([$langcode], $delete);
+    _locale_refresh_configuration([$langcode], $delete);
+  }
+}
+
+/**
+ * Delete translations from BO validator.
+ */
+function locale_translate_edit_form_validator(&$form, FormStateInterface $form_state) {
+  if ($form_state->getTriggeringElement()['#name'] === 'delete') {
+    return;
   }
 }
