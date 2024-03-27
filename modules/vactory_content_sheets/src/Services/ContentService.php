@@ -9,7 +9,9 @@ use Drupal\Component\Utility\NestedArray;
 use Drupal\vactory_dynamic_field\WidgetsManager;
 
 /**
- * Content service class.
+ * Class Content Service.
+ *
+ * @package Drupal\vactory_content_sheets\Services
  */
 class ContentService {
 
@@ -82,9 +84,9 @@ class ContentService {
     // Define the pattern to match the CTA label and URL.
     $pattern = '/(?P<label>[^(]+)\((?P<url>[^)]+)\)/';
 
-    // Use preg_match to find the matches
+    // Use preg_match to find the matches.
     preg_match($pattern, $text, $matches);
-    // Check if there are matches and return the result
+    // Check if there are matches and return the result.
     if ($matches && isset($matches['label'], $matches['url'])) {
       $ctaLabel = trim($matches['label']);
       $ctaUrl = trim($matches['url']);
@@ -131,12 +133,8 @@ class ContentService {
   /**
    * Replace content sheet regex by real data.
    */
-  public function replaceContentSheetRegex($paragraph, $lang = NULL) {
+  public function replaceContentSheetRegex($widget_data = [], $widget_id = '', $lang = NULL) {
     $skip = ['auto_populate', 'pending_content'];
-    $widget_data = $paragraph->get('field_vactory_component')
-      ->getValue()[0]['widget_data'];
-    $widget_id = $paragraph->get('field_vactory_component')
-      ->getValue()[0]['widget_id'];
     $settings = $this->platformProvider->loadSettings($widget_id) ?? [];
     $widget_data = json_decode($widget_data, TRUE);
     foreach ($widget_data as $key => &$component) {

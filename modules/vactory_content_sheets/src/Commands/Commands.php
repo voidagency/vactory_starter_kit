@@ -27,15 +27,17 @@ class Commands extends DrushCommands {
   /**
    * Disable content sheets data.
    *
-   * @command vactory-disbale-content-sheets
+   * @command vactory-disable-content-sheets
    * @aliases vdcs
    */
-  public function disableContentSheets() {
-    $this->output()->writeln('Process of disable content sheets start...');
-    $storage = $this->entityTypeManager->getStorage('node');
+  public function disableContentSheets($options = ['bundles' => '']) {
+    $bundles = isset($options['bundles']) && !empty($options['bundles']) ? explode(",", $options['bundles']) : ['vactory_page'];
+    // Load nodes.
+    $nodeStorage = $this->entityTypeManager->getStorage('node');
+    $blockStorage = $this->entityTypeManager->getStorage('block_content');
     try {
-      $query = $storage->getQuery()
-        ->condition('type', 'vactory_page')
+      $query = $nodeStorage->getQuery()
+        ->condition('type', $bundles, 'IN')
         ->accessCheck(FALSE);
       $nodes = $query->execute();
     }
@@ -43,17 +45,47 @@ class Commands extends DrushCommands {
       $this->output()->writeln($e);
     }
 
+    // Load blocks.
+    try {
+      $blocks = $blockStorage->getQuery()
+        ->accessCheck(FALSE)
+        ->execute();
+    }
+    catch (\Exception $e) {
+      $this->output()->writeln($e);
+    }
+
+    if (empty($nodes) && empty($blocks)) {
+      return;
+    }
+
+    $this->processBatch($nodes, NULL);
+    $this->processBatch(NULL, $blocks);
+
+  }
+
+  /**
+   * Process batch function.
+   */
+  public function processBatch($nodes = [], $blocks = []) {
+    $type = !empty($nodes) ? 'node' : 'block_content';
+    $this->output()
+      ->writeln('==================' . $type . '=====================');
+    $this->output()->writeln('Process of disable content sheets start');
     $operations = [];
     $num_operations = 0;
     $batch_id = 1;
-    foreach ($nodes as $nid) {
-      $this->output()->writeln("Preparing batch: [Node: " . $nid . "]");
+    $items = !empty($nodes) ? $nodes : $blocks;
+    foreach ($items as $entity_id) {
+      $this->output()
+        ->writeln("Preparing batch: [Entity id: " . $entity_id . "]");
       $operations[] = [
         'disable_content_sheets_callback',
         [
           $batch_id,
-          $nid,
-          t('Process node @nid', ['@nid' => $nid]),
+          $entity_id,
+          $type,
+          t('Process entity @entity_id', ['@entity_id' => $entity_id]),
         ],
       ];
       $batch_id++;
