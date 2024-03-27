@@ -15,15 +15,11 @@ function vactory_content_sheets_field_widget_single_element_form_alter(&$element
   if ($plugin_id == 'media_library_widget') {
     $route_name = \Drupal::routeMatch()->getRouteName();
     if ($route_name == 'vactory_dynamic_field.open_modal_form') {
-      $is_content_sheets_disabled = \Drupal::config("vactory_content_sheets.settings")
-        ->get("is_content_sheets_disabled");
-      if (isset($is_content_sheets_disabled) && !$is_content_sheets_disabled) {
-        $element['media_google_sheet'] = [
-          '#type' => 'textfield',
-          '#title' => t('Media key'),
-          '#description' => t('This field serves to link the media with its associated value on a Google Sheet.'),
-        ];
-      }
+      $element['media_google_sheet'] = [
+        '#type' => 'textfield',
+        '#title' => t('Media key'),
+        '#description' => t('This field serves to link the media with its associated value on a Google Sheet.'),
+      ];
     }
   }
 }
