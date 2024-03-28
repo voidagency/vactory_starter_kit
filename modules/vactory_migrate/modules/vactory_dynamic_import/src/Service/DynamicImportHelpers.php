@@ -195,6 +195,9 @@ class DynamicImportHelpers {
           $header[] = 'media|' . $formatted_field . '|' . $bundle[1] . '_alt';
         }
       }
+      elseif ($original['type'] == 'text_with_summary') {
+        $header[] = 'wysiwyg|' . $formatted_field . '|full_html';
+      }
       else {
         $header[] = '-|' . $formatted_field . '|-';
       }
@@ -383,6 +386,17 @@ class DynamicImportHelpers {
                   ];
                 }
               }
+            }
+            if ($plugin == 'wysiwyg') {
+              $split_field = explode('/', $mapped_field);
+              if (end($split_field) === 'format') {
+                continue;
+              }
+              $data['process'][$mapped_field] = $field;
+              $data['process'][$split_field[0] . '/format'] = [
+                'plugin' => 'default_value',
+                'default_value' => $info,
+              ];
             }
           }
         }

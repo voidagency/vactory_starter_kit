@@ -402,6 +402,17 @@ class DynamicImportDefaultForm extends FormBase {
                 }
               }
             }
+            if ($plugin == 'wysiwyg') {
+              $split_field = explode('/', $mapped_field);
+              if (end($split_field) === 'format') {
+                continue;
+              }
+              $data['process'][$mapped_field] = $field;
+              $data['process'][$split_field[0] . '/format'] = [
+                'plugin' => 'default_value',
+                'default_value' => $info,
+              ];
+            }
           }
         }
       }

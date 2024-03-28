@@ -415,6 +415,12 @@ class DynamicImportForm extends EntityForm {
               }
               $entity_data[$header_item] = $url;
             }
+            if ($plugin == 'wysiwyg') {
+              if (count($split) == 2) {
+                $value = $entity->get(reset($split))->getValue();
+                $entity_data[$header_item] = $value[0][end($split)];
+              }
+            }
           }
         }
       }
