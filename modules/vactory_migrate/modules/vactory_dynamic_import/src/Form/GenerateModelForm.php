@@ -200,6 +200,9 @@ class GenerateModelForm extends FormBase {
           $header[] = 'media|' . $formatted_field . '|' . $bundle[1] . '_alt';
         }
       }
+      elseif ($original['type'] == 'text_with_summary') {
+        $header[] = 'wysiwyg|' . $formatted_field . '|full_html';
+      }
       else {
         $header[] = '-|' . $formatted_field . '|-';
       }
