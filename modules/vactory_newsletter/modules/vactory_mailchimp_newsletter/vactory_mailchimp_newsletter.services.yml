@@ -1,0 +1,8 @@
+services:
+  vactory_mailchimp_newsletter.campaigns.manage:
+    class: Drupal\vactory_mailchimp_newsletter\Services\CampaignsService
+    arguments: ['@logger.factory', '@entity_type.manager', '@config.factory', '@renderer']
+  newsletters_send.commands:
+    class: \Drupal\vactory_mailchimp_newsletter\Commands\SendNewslettersCommands
+    tags:
+      - { name: drush.command }

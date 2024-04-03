@@ -1,0 +1,11 @@
+langcode: fr
+api_key: ab834741ff9e3fc1d4eeb1e405869ad1-us16
+api_timeout: 10
+cron: false
+batch_limit: 100
+api_classname: Mailchimp\Mailchimp
+test_mode: false
+enable_connected: true
+connected_id: null
+connected_paths: null
+webhook_hash: 3f16c78c5e4cf88ec0fc0d2b74fe964c

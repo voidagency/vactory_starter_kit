@@ -1,0 +1,9 @@
+langcode: fr
+status: true
+dependencies:
+  module:
+    - node
+id: node.newsletter_inline_card_image
+label: 'Newsletter inline card (with an image)'
+targetEntityType: node
+cache: true
