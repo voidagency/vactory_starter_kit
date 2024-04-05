@@ -599,10 +599,13 @@ function vactory_core_js_alter(&$js) {
  */
 function vactory_core_media_presave(MediaInterface $media) {
   if ($media->bundle() == 'file' && $media->hasField('field_media_file')) {
+    $feature_enabled = \Drupal::configFactory()->get('vactory_core.global_config')->get('generate_pdf_thumbnail');
+    if (!$feature_enabled) {
+      return;
+    }
     $imagick_enabled = extension_loaded('imagick');
-    $image_magick = shell_exec('which convert');
-    $ghostscript = shell_exec('which gs');
-    if (!$imagick_enabled || is_null($image_magick) || is_null($ghostscript)) {
+
+    if (!$imagick_enabled) {
       return;
     }
 
