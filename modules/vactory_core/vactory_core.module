@@ -599,6 +599,13 @@ function vactory_core_js_alter(&$js) {
  */
 function vactory_core_media_presave(MediaInterface $media) {
   if ($media->bundle() == 'file' && $media->hasField('field_media_file')) {
+    $imagick_enabled = extension_loaded('imagick');
+    $image_magick = shell_exec('which convert');
+    $ghostscript = shell_exec('which gs');
+    if (!$imagick_enabled || is_null($image_magick) || is_null($ghostscript)) {
+      return;
+    }
+
     $original_fid = $media->original->get('field_media_file')->target_id;
     $fid = $media->get('field_media_file')->target_id;
     if ($original_fid == $fid) {
