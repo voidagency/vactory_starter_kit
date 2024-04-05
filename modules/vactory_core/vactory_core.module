@@ -628,7 +628,7 @@ function vactory_core_media_presave(MediaInterface $media) {
     $extension = 'png';
     $thumbnails_dir_uri = 'public://pdf-thumbnails';
     $unqid = uniqid();
-    $thumbnail_name = "{$unqid}.{$extension}";
+    $thumbnail_name = "{$fid}-{$unqid}.{$extension}";
     if (!file_exists($thumbnails_dir_uri)) {
       mkdir($thumbnails_dir_uri, 0777, TRUE);
     }
