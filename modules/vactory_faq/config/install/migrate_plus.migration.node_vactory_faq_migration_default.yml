@@ -1,0 +1,33 @@
+id: node_vactory_faq_migration_default
+migration_group: default
+label: 'node vactory_faq migration'
+source:
+  plugin: csv
+  header_row_count: 1
+  ids:
+    - id
+  delimiter: ';'
+  path: 'profiles/contrib/vactory_starter_kit/modules/vactory_faq/assets/migrate/node--vactory_faq.csv'
+  constants:
+    dest_path: 'public://migrated-vactory_faq/'
+process:
+  legacy_id: id
+  title: '-|title|-'
+  node_summary: '-|node_summary|-'
+  body/value: '-|body:value|-'
+  field_faq/question: '-|field_faq:question|-'
+  field_faq/answer: '-|field_faq:answer|-'
+  field_vactory_taxonomy_1:
+    -
+      plugin: explode
+      delimiter: '|'
+      source: term|field_vactory_taxonomy_1|+
+    -
+      plugin: entity_generate
+      value_key: name
+      bundle_key: vid
+      bundle: faq_section
+      entity_type: taxonomy_term
+destination:
+  plugin: 'entity:node'
+  default_bundle: vactory_faq

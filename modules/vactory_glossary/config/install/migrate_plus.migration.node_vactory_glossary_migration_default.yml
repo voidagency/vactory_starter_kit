@@ -1,0 +1,20 @@
+id: node_vactory_glossary_migration_default
+migration_group: default
+label: 'node vactory_glossary migration'
+source:
+  plugin: csv
+  header_row_count: 1
+  ids:
+    - id
+  delimiter: ';'
+  path: 'profiles/contrib/vactory_starter_kit/modules/vactory_glossary/assets/migrate/node--vactory_glossary.csv'
+  constants:
+    dest_path: 'public://migrated-vactory_glossary/'
+process:
+  legacy_id: id
+  title: '-|title|-'
+  node_summary: '-|node_summary|-'
+  body/value: '-|body:value|-'
+destination:
+  plugin: 'entity:node'
+  default_bundle: vactory_glossary
