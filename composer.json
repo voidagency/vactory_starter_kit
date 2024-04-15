@@ -230,7 +230,8 @@
       "voidagency/jquery_colorpicker": {
         "jQuery color picker resolve vendor path": "https://gist.githubusercontent.com/voidagency/606f9343e9c7e9b99858088d7db111f1/raw/5216cc90d89e68916b4a17b60e07466286a18397/jquery-color-picker-resolve-vendor-path.patch",
         "jQuery color picker remove vendor dependencies": "https://gist.githubusercontent.com/voidagency/17af206778d4ea598b93dd10769556a0/raw/538e683f77b15945a41b99548a6b0d1ca2315225/jquery-colorpicker-remove-vendor-dependencies.patch",
-        "jQuery color picker update background (drupalSettings variable)": "https://gist.githubusercontent.com/voidagency/94489fb9998406959ebefb31a758f39c/raw/6692adac21ef17ea4d66d69584159a6802707404/jquery-colorpicker-update-background.patch"
+        "jQuery color picker update background (drupalSettings variable)": "https://gist.githubusercontent.com/voidagency/94489fb9998406959ebefb31a758f39c/raw/6692adac21ef17ea4d66d69584159a6802707404/jquery-colorpicker-update-background.patch",
+        "jQuery color picker default color": "https://gist.githubusercontent.com/voidagency/35c94c16af59f3eea64aa4d05805db15/raw/6dc9b83bbf9e0fa2df18ab2b3b0b6e460546cbe6/jquery_color_picker_default_color.patch"
       },
       "drupal/webform": {
         "Invoke alter hook after webform handlers execution": "https://gist.githubusercontent.com/voidagency/6871bd7544b621e2c4221126c5dfec50/raw/7595d19a34e18ab9f719b7f917c02b10a4a40caf/webform-post-handlers-hook.patch"
