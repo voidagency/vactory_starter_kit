@@ -151,12 +151,18 @@ class DynamicFieldManager {
    */
   protected $httpClient;
 
+   /**
+   * Media embed service.
+   *
+   * @var \Drupal\vactory_decoupled\MediaEmbed
+   */
+  protected $mediaEmbedService;
+
   /**
    * {@inheritdoc}
    */
   public function __construct(EntityTypeManagerInterface $entity_type_manager, $plateform_provider, MediaFilesManager $mediaFilesManager, EntityRepositoryInterface $entityRepository, JsonApiGenerator $jsonApiGenerator, SlugManager $slugManager, ModuleHandlerInterface $moduleHandler, LanguageManagerInterface $languageManager, ViewsToApi $viewsToApi, ConfigFactoryInterface $configFactory, Token $token, Client $httpClient) {
     $this->entityTypeManager = $entity_type_manager;
-    $this->language = $languageManager->getCurrentLanguage()->getId();
     $this->platformProvider = $plateform_provider;
     $this->imageStyles = ImageStyle::loadMultiple();
     $this->siteConfig = $configFactory->get('system.site');
@@ -166,11 +172,13 @@ class DynamicFieldManager {
     $this->slugManager = $slugManager;
     $this->moduleHandler = $moduleHandler;
     $this->languageManager = $languageManager;
+    $this->language = $languageManager->getCurrentLanguage()->getId();
     $this->viewsToApi = $viewsToApi;
     $this->token = $token;
     $this->httpClient = $httpClient;
     $this->mediaStorage = $this->entityTypeManager->getStorage('media');
     $this->termResultCount = $this->moduleHandler->moduleExists('vactory_taxonomy_results') ? $this->entityTypeManager->getStorage('term_result_count') : NULL;
+    $this->mediaEmbedService = \Drupal::service('vactory_decoupled.media_embed');
   }
 
   /**
@@ -354,10 +362,11 @@ class DynamicFieldManager {
               }
             }
 
+            $processed_text = $this->mediaEmbedService->process($text, $this->language)->getProcessedText();
             // $format = $info['options']['#format'] ?? 'full_html';
             $build = [
               // '#type'   => 'processed_text',
-              '#text' => $text,
+              '#text' => $processed_text,
               // '#format' => $format,
             ];
 
