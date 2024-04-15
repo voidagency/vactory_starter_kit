@@ -134,7 +134,7 @@
     "phpoffice/phpspreadsheet": "^1.20",
     "mpdf/mpdf": "^8.0",
     "drupal/admin_feedback": "^2.2",
-    "drupal/views_json_source": "^1.1",
+    "drupal/views_json_source": "^2.0",
     "drupal/jsonapi_extras": "^3.20",
     "drupal/simple_oauth": "^5.2",
     "drupal/decoupled_router": "^2.0",
