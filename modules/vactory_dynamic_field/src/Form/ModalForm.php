@@ -134,6 +134,13 @@ class ModalForm extends FormBase {
   protected $isPendingContentEnabled;
 
   /**
+   * Indicates if auto populate feature is enabled.
+   *
+   * @var bool
+   */
+  protected $isAutoPopulateEnabled;
+
+  /**
    * Constructs a new ExampleConfigEntityExternalForm.
    *
    * @param \Drupal\vactory_dynamic_field\WidgetsManagerInterface $widgets_manager
@@ -159,6 +166,7 @@ class ModalForm extends FormBase {
     $this->widgetsList = $this->widgetsManager->getModalWidgetsList();
     $this->isDropdownSelectMode = \Drupal::config('vactory_dynamic_field.settings')->get('is_dropdown_select_templates');
     $this->isPendingContentEnabled = (bool) \Drupal::config('vactory_dynamic_field.settings')->get('pending_content');
+    $this->isAutoPopulateEnabled = (bool) \Drupal::config('vactory_dynamic_field.settings')->get('auto_populate');
   }
 
   /**
@@ -771,11 +779,14 @@ class ModalForm extends FormBase {
       ];
 
       // Auto populate fields.
-      $form['auto_populate'] = [
-        '#type'        => 'checkbox',
-        '#title'       => $this->t('Auto populate'),
-        '#description' => $this->t('Set default content for this template.'),
-      ];
+      if ($this->isAutoPopulateEnabled) {
+        $form['auto_populate'] = [
+          '#type' => 'checkbox',
+          '#title' => $this->t('Auto populate'),
+          '#description' => $this->t('Set default content for this template.'),
+        ];
+      }
+
     }
     else {
       // Templates with thumbnails select mode.
@@ -792,11 +803,13 @@ class ModalForm extends FormBase {
         '#type' => 'vertical_tabs',
       ];
       // Auto populate fields.
-      $form['templates_tabs']['auto_populate'] = [
-        '#type'        => 'checkbox',
-        '#title'       => $this->t('Auto populate'),
-        '#description' => $this->t('Set default content for the selected template.'),
-      ];
+      if ($this->isAutoPopulateEnabled) {
+        $form['templates_tabs']['auto_populate'] = [
+          '#type'        => 'checkbox',
+          '#title'       => $this->t('Auto populate'),
+          '#description' => $this->t('Set default content for the selected template.'),
+        ];
+      }
 
       $renderer = \Drupal::service('renderer');
       foreach ($widgets_list as $category => $widgets) {

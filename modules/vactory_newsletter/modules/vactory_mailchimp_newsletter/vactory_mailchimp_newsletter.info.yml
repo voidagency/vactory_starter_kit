@@ -1,0 +1,13 @@
+name: 'Vactory Mailchimp Newsletter'
+description: 'Provides Newsletter type de contenu and related configuration. Manage your Newsletter content. Sends newsletters via Mailchimp'
+core_version_requirement: '^9.4 || ^10'
+type: module
+dependencies:
+  - webform
+  - vactory_webform_mailchimp_handler
+  - mailchimp
+  - mailchimp_campaign
+  - mailchimp_lists
+  - vactory_newsletter
+  - vactory_mailchimp
+  - vactory_dynamic_field

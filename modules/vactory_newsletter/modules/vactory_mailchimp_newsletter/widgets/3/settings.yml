@@ -1,0 +1,10 @@
+name: 'NL - Contenu libre'
+multiple: FALSE
+category: 'NL Content'
+enabled: TRUE
+fields:
+  content:
+    type: text_format
+    label: 'Contenu'
+    options:
+      '#format': 'full_html'
