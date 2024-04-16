@@ -4,10 +4,6 @@ namespace Drupal\vactory_decoupled\Plugin\jsonapi\FieldEnhancer;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\Core\Site\Settings;
-use Drupal\Core\StreamWrapper\StreamWrapperManager;
-use Drupal\Core\Url;
-use Drupal\image\Entity\ImageStyle;
 use Drupal\jsonapi_extras\Plugin\ResourceFieldEnhancerBase;
 use Drupal\vactory_decoupled\MediaFilesManager;
 use Shaper\Util\Context;
@@ -73,26 +69,19 @@ class VactoryFileImageEnhancer extends ResourceFieldEnhancerBase implements Cont
     if (isset($data['value']) && !empty($data['value'])) {
       $origin_uri = $data['value'];
 
-      /*$image_app_base_url = Url::fromUserInput('/app-image/')
-        ->setAbsolute()->toString();
-      $lqipImageStyle = ImageStyle::load('lqip');*/
-
       $medias = $this->entityTypeManager->getStorage('file')
         ->loadByProperties(['uri' => $origin_uri]);
       $media = reset($medias);
 
       $uri = $media->getFileUri();
+      $images = $this->mediaFilesManager->getFileImageStyles($media);
+      $images['original'] = $this->mediaFilesManager->getMediaAbsoluteUrl($uri);
       $data['value'] = [
-        '_default'  => $this->mediaFilesManager->getMediaAbsoluteUrl($uri),
-        //'_lqip'     => $this->mediaFilesManager->convertToMediaAbsoluteUrl($lqipImageStyle->buildUrl($uri)),
-        //'uri'       => StreamWrapperManager::getTarget($uri),
-        //'fid'       => $media->id(),
+        '_default'  => $images,
         'file_name' => $media->label(),
-        //'base_url'  => $image_app_base_url,
-        'meta' => $media->getAllMetadata()
+        'meta' => $media->getAllMetadata(),
       ];
 
-//      $data['value'] = \Drupal::service('file_url_generator')->generateAbsoluteString($data['value']);
     }
     return $data;
   }

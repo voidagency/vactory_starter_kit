@@ -142,11 +142,15 @@ class DynamicFieldManager {
   protected $termResultCount;
 
   /**
+   * Token.
+   *
    * @var \Drupal\Core\Utility\Token
    */
   protected $token;
 
   /**
+   * Http client.
+   *
    * @var \GuzzleHttp\Client
    */
   protected $httpClient;
@@ -435,7 +439,11 @@ class DynamicFieldManager {
                   $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $file->getCacheTags());
                   $this->cacheability->setCacheTags($cacheTags);
                   $uri = $file->thumbnail->entity->getFileUri();
-                  $image_item['_default'] = $this->mediaFilesManager->getMediaAbsoluteUrl($uri);
+                  $images = $this->mediaFilesManager->getFileImageStyles($file->thumbnail->entity);
+                  $image_item['_default'] = [
+                    'original' => $this->mediaFilesManager->getMediaAbsoluteUrl($uri),
+                    ...$images,
+                  ];
                   $image_item['file_name'] = $file->label();
                   if (!empty($file->get('field_media_image')->getValue())) {
                     $image_item['meta'] = $file->get('field_media_image')
@@ -461,7 +469,11 @@ class DynamicFieldManager {
                   $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $file->getCacheTags());
                   $this->cacheability->setCacheTags($cacheTags);
                   $uri = $file->thumbnail->entity->getFileUri();
-                  $image_item['_default'] = $this->mediaFilesManager->getMediaAbsoluteUrl($uri);
+                  $images = $this->mediaFilesManager->getFileImageStyles($file);
+                  $image_item['_default'] = [
+                    'original' => $this->mediaFilesManager->getMediaAbsoluteUrl($uri),
+                    ...$images,
+                  ];
                   $image_item['file_name'] = $file->label();
                   if (!empty($file->get('field_media_image')->getValue())) {
                     $image_item['meta'] = $file->get('field_media_image')
