@@ -155,7 +155,7 @@ class DynamicFieldManager {
    */
   protected $httpClient;
 
-   /**
+  /**
    * Media embed service.
    *
    * @var \Drupal\vactory_decoupled\MediaEmbed
@@ -440,6 +440,7 @@ class DynamicFieldManager {
             $key = array_keys($value)[0];
             $media_img = $value[$key]['media_google_sheet'] ?? NULL;
             $image_data = [];
+            $file = NULL;
             if (isset($value[$key]['selection'])) {
               foreach ($value[$key]['selection'] as $media) {
                 $file = $this->mediaStorage->load($media['target_id']);
@@ -448,11 +449,7 @@ class DynamicFieldManager {
                   $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $file->getCacheTags());
                   $this->cacheability->setCacheTags($cacheTags);
                   $uri = $file->thumbnail->entity->getFileUri();
-                  $images = $this->mediaFilesManager->getFileImageStyles($file->thumbnail->entity);
-                  $image_item['_default'] = [
-                    'original' => $this->mediaFilesManager->getMediaAbsoluteUrl($uri),
-                    ...$images,
-                  ];
+                  $image_item['_default'] = $this->mediaFilesManager->getMediaAbsoluteUrl($uri);
                   $image_item['file_name'] = $file->label();
                   if (!empty($file->get('field_media_image')->getValue())) {
                     $image_item['meta'] = $file->get('field_media_image')
@@ -478,11 +475,7 @@ class DynamicFieldManager {
                   $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $file->getCacheTags());
                   $this->cacheability->setCacheTags($cacheTags);
                   $uri = $file->thumbnail->entity->getFileUri();
-                  $images = $this->mediaFilesManager->getFileImageStyles($file);
-                  $image_item['_default'] = [
-                    'original' => $this->mediaFilesManager->getMediaAbsoluteUrl($uri),
-                    ...$images,
-                  ];
+                  $image_item['_default'] = $this->mediaFilesManager->getMediaAbsoluteUrl($uri);
                   $image_item['file_name'] = $file->label();
                   if (!empty($file->get('field_media_image')->getValue())) {
                     $image_item['meta'] = $file->get('field_media_image')
@@ -493,6 +486,7 @@ class DynamicFieldManager {
                 }
               }
             }
+            $this->moduleHandler->alter('df_manager_image', $image_data, $file->thumbnail->entity);
             $value = $image_data;
           }
 

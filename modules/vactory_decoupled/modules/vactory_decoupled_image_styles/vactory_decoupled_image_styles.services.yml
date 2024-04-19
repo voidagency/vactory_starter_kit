@@ -1,0 +1,4 @@
+services:
+  vactory_decoupled_image_styles.service:
+    class: Drupal\vactory_decoupled_image_styles\ImageStylesService
+    arguments: ['@vacory_decoupled.media_file_manager']

@@ -3,6 +3,7 @@
 namespace Drupal\vactory_decoupled\Plugin\jsonapi\FieldEnhancer;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\jsonapi_extras\Plugin\ResourceFieldEnhancerBase;
 use Drupal\vactory_decoupled\MediaFilesManager;
@@ -35,6 +36,13 @@ class VactoryFileImageEnhancer extends ResourceFieldEnhancerBase implements Cont
   protected $mediaFilesManager;
 
   /**
+   * Module handler service.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
    * {@inheritdoc}
    */
   public function __construct(
@@ -42,11 +50,13 @@ class VactoryFileImageEnhancer extends ResourceFieldEnhancerBase implements Cont
     $plugin_id,
     array $plugin_definition,
     EntityTypeManagerInterface $entity_type_manager,
-    MediaFilesManager $mediaFilesManager
+    MediaFilesManager $mediaFilesManager,
+    ModuleHandlerInterface $moduleHandler
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->entityTypeManager = $entity_type_manager;
     $this->mediaFilesManager = $mediaFilesManager;
+    $this->moduleHandler = $moduleHandler;
   }
 
   /**
@@ -58,7 +68,8 @@ class VactoryFileImageEnhancer extends ResourceFieldEnhancerBase implements Cont
       $plugin_id,
       $plugin_definition,
       $container->get('entity_type.manager'),
-      $container->get('vacory_decoupled.media_file_manager')
+      $container->get('vacory_decoupled.media_file_manager'),
+      $container->get('module_handler')
     );
   }
 
@@ -74,13 +85,12 @@ class VactoryFileImageEnhancer extends ResourceFieldEnhancerBase implements Cont
       $media = reset($medias);
 
       $uri = $media->getFileUri();
-      $images = $this->mediaFilesManager->getFileImageStyles($media);
-      $images['original'] = $this->mediaFilesManager->getMediaAbsoluteUrl($uri);
       $data['value'] = [
-        '_default'  => $images,
+        '_default'  => $this->mediaFilesManager->getMediaAbsoluteUrl($uri),
         'file_name' => $media->label(),
         'meta' => $media->getAllMetadata(),
       ];
+      $this->moduleHandler->alter('vactory_file_image_enhancer', $data, $media);
 
     }
     return $data;

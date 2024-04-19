@@ -1,0 +1,7 @@
+name: Vactory Decoupled Image Styles
+description: 'Handled images styles for decoupled architecture'
+type: module
+core_version_requirement: ^9 || ^10
+package: Vactory
+dependencies:
+  - image_effects

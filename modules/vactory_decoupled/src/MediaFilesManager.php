@@ -4,8 +4,6 @@ namespace Drupal\vactory_decoupled;
 
 use Drupal\Core\File\FileUrlGeneratorInterface;
 use Drupal\Core\Site\Settings;
-use Drupal\file\Entity\File;
-use Drupal\image\Entity\ImageStyle;
 
 /**
  * Decoupled media file manager.
@@ -59,36 +57,6 @@ class MediaFilesManager {
       }
     }
     return $url;
-  }
-
-  /**
-   * Get file image styles.
-   */
-  public function getFileImageStyles($entity) {
-    $config = \Drupal::config('jsonapi_image_styles.settings');
-    $styles = [];
-
-    $uri = ($entity instanceof File && substr($entity->getMimeType(), 0, 5) === 'image') ? $entity->getFileUri() : FALSE;
-
-    if ($uri) {
-      $defined_styles = $config->get('image_styles') ?? [];
-      if (!empty(array_filter($defined_styles))) {
-        foreach ($defined_styles as $key) {
-          $styles[$key] = ImageStyle::load($key);
-        }
-      }
-      else {
-        $styles = ImageStyle::loadMultiple();
-      }
-
-      $uris = [];
-      foreach ($styles as $name => $style) {
-        if ($style instanceof ImageStyle) {
-          $uris[$name] = $this->getMediaAbsoluteUrl($style->buildUrl($uri));
-        }
-      }
-    }
-    return $uris;
   }
 
 }
