@@ -5,6 +5,8 @@
  * Hooks for vactory_decoupled_image_styles module.
  */
 
+use Drupal\Core\Config\Entity\ConfigEntityInterface;
+
 /**
  * Implements hook_vactory_file_image_enhancer_alter().
  */
@@ -27,4 +29,15 @@ function vactory_decoupled_image_styles_df_manager_image_alter(&$data, $media) {
     '_original' => $original,
     ...$image_styles,
   ];
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave() for image style configuration entities.
+ */
+function vactory_decoupled_image_styles_entity_presave(ConfigEntityInterface $entity) {
+  if ($entity->getEntityTypeId() === 'image_style') {
+    $config = \Drupal::configFactory()->getEditable('vactory_decoupled_image_styles.settings');
+    $config->set('token', uniqid());
+    $config->save();
+  }
 }

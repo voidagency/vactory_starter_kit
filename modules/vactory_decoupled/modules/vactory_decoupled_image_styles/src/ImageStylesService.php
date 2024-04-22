@@ -31,6 +31,7 @@ class ImageStylesService {
   public function getFileImageStyles($entity) {
     $config = \Drupal::config('jsonapi_image_styles.settings');
     $exposed_image_styles = \Drupal::config('vactory_decoupled_image_styles.settings')->get('image_styles');
+    $token = \Drupal::config('vactory_decoupled_image_styles.settings')->get('token');
     $styles = [];
 
     $uri = ($entity instanceof File && substr($entity->getMimeType(), 0, 5) === 'image') ? $entity->getFileUri() : FALSE;
@@ -49,7 +50,15 @@ class ImageStylesService {
       $uris = [];
       foreach ($styles as $name => $style) {
         if ($style instanceof ImageStyle && $exposed_image_styles[$name] !== 0) {
-          $uris[$name] = $this->mediaFilesManager->getMediaAbsoluteUrl($style->buildUrl($uri));
+          $url = $this->mediaFilesManager->getMediaAbsoluteUrl($style->buildUrl($uri));
+          $urlParts = parse_url($style->buildUrl($url));
+          if (isset($urlParts['query'])) {
+            $url .= "&token={$token}";
+          }
+          else {
+            $url .= "?token={$token}";
+          }
+          $uris[$name] = $url;
         }
       }
     }
