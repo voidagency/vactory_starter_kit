@@ -363,6 +363,7 @@ class DynamicFieldManager {
             }
 
             $processed_text = $this->mediaEmbedService->process($text, $this->language)->getProcessedText();
+            $processed_text = $this->linkitService->process($processed_text, $this->language)->getProcessedText();
             // $format = $info['options']['#format'] ?? 'full_html';
             $build = [
               // '#type'   => 'processed_text',

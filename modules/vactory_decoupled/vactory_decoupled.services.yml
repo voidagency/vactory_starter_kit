@@ -87,6 +87,12 @@ services:
       - '@metatag.manager'
       - '@language_manager'
 
+  vactory_decoupled.linkit:
+    class: Drupal\vactory_decoupled\Linkit
+    arguments:
+      - '@entity.repository'
+      - '@plugin.manager.linkit.substitution'
+
   vactory_decoupled.dynamic_field_manager:
     class: Drupal\vactory_decoupled\DynamicFieldManager
     arguments:
