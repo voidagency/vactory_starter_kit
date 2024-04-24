@@ -57,7 +57,7 @@ class MultiversConfig extends ConfigFormBase {
     $form['node_types'] = [
       '#type' => 'checkboxes',
       '#options' => $node_types,
-      '#default_value' => $config->get('node_types'),
+      '#default_value' => $config->get('node_types') ?? [],
       '#title' => $this->t('Content types'),
     ];
 
