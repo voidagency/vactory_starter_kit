@@ -151,12 +151,19 @@ class DynamicFieldManager {
    */
   protected $httpClient;
 
-   /**
+  /**
    * Media embed service.
    *
    * @var \Drupal\vactory_decoupled\MediaEmbed
    */
   protected $mediaEmbedService;
+
+  /**
+   * Linkit service.
+   *
+   * @var \Drupal\vactory_decoupled\Linkit
+   */
+  protected $linkitService;
 
   /**
    * {@inheritdoc}
@@ -179,6 +186,7 @@ class DynamicFieldManager {
     $this->mediaStorage = $this->entityTypeManager->getStorage('media');
     $this->termResultCount = $this->moduleHandler->moduleExists('vactory_taxonomy_results') ? $this->entityTypeManager->getStorage('term_result_count') : NULL;
     $this->mediaEmbedService = \Drupal::service('vactory_decoupled.media_embed');
+    $this->linkitService = \Drupal::service('vactory_decoupled.linkit');
   }
 
   /**
