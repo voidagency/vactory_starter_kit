@@ -87,12 +87,6 @@ services:
       - '@metatag.manager'
       - '@language_manager'
 
-  vactory_decoupled.linkit:
-    class: Drupal\vactory_decoupled\Linkit
-    arguments:
-      - '@entity.repository'
-      - '@plugin.manager.linkit.substitution'
-
   vactory_decoupled.dynamic_field_manager:
     class: Drupal\vactory_decoupled\DynamicFieldManager
     arguments:
@@ -108,15 +102,6 @@ services:
       - '@config.factory'
       - '@token'
       - '@http_client'
-
-  vactory_decoupled.media_embed:
-    class: Drupal\vactory_decoupled\MediaEmbed
-    arguments:
-      - '@entity.repository'
-      - '@entity_type.manager'
-      - '@entity_display.repository'
-      - '@renderer'
-      - '@logger.factory'
 
   vactory_decoupled.check_auth_limit_access:
     class: Drupal\vactory_decoupled\EventSubscriber\RequestSubscriberLimitiAuthAccess
