@@ -453,3 +453,56 @@ function vactory_locator_df_jsonapi_output_alter(&$content) {
   }
 
 }
+
+/**
+ * Implements hook_json_api_collection_alter().
+ */
+function vactory_locator_json_api_collection_alter(&$filters, &$context) {
+
+  if ($context['id'] === 'vactory_locator_list') {
+    $query = \Drupal::request()->query->all("q");
+    if (empty($query)) {
+      return;
+    }
+
+    if (isset($query["page"])) {
+      $filters["page[offset]"] = intval($query["page"]) > 0 ? (intval($query["page"]) - 1) * $filters["page[limit]"] : 0;
+    }
+
+
+
+    if (isset($query["city"]) && $query["city"] !== "all") {
+      $theme = $query["city"];
+      $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties([
+        'vid' => 'locator_city',
+        'term_2_slug' => $query["city"]
+      ]);
+
+      if (!$terms) {
+        throw new \Exception("[Locator - hook_json_api_collection_alter] term '$theme' not found.");
+      }
+
+      if ($terms) {
+        $term = reset($terms);
+        $id = $term->id();
+        $filters["filter[city][condition][path]"] = "field_locator_city.tid";
+        $filters["filter[city][condition][operator]"] = "=";
+        $filters["filter[city][condition][value]"] = $id;
+      }
+
+    }
+  }
+
+}
+
+
+/**
+ * Implements hook_jsonapi_entity_filter_access().
+ */
+function vactory_locator_jsonapi_entity_filter_access(EntityTypeInterface $entity_type, AccountInterface $account) {
+  if ($entity_type->id() === 'locator_entity') {
+    return ([
+      JSONAPI_FILTER_AMONG_ALL => AccessResult::allowed()
+    ]);
+  }
+}
