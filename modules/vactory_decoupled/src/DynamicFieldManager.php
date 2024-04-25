@@ -151,13 +151,6 @@ class DynamicFieldManager {
    */
   protected $httpClient;
 
-   /**
-   * Media embed service.
-   *
-   * @var \Drupal\vactory_decoupled\MediaEmbed
-   */
-  protected $mediaEmbedService;
-
   /**
    * {@inheritdoc}
    */
@@ -178,7 +171,6 @@ class DynamicFieldManager {
     $this->httpClient = $httpClient;
     $this->mediaStorage = $this->entityTypeManager->getStorage('media');
     $this->termResultCount = $this->moduleHandler->moduleExists('vactory_taxonomy_results') ? $this->entityTypeManager->getStorage('term_result_count') : NULL;
-    $this->mediaEmbedService = \Drupal::service('vactory_decoupled.media_embed');
   }
 
   /**
@@ -362,12 +354,11 @@ class DynamicFieldManager {
               }
             }
 
-            $processed_text = $this->mediaEmbedService->process($text, $this->language)->getProcessedText();
-            // $format = $info['options']['#format'] ?? 'full_html';
+            $format = $info['options']['#format'] ?? 'full_html';
             $build = [
               // '#type'   => 'processed_text',
-              '#text' => $processed_text,
-              // '#format' => $format,
+              '#text' => (string) check_markup($text, $format),
+              '#format' => $format,
             ];
 
             $value = ['value' => $build];
