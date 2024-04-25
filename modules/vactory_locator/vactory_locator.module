@@ -14,6 +14,9 @@ use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\views\Plugin\views\cache\CachePluginBase;
 use Drupal\views\ViewExecutable;
 use Drupal\Component\Serialization\Json;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Access\AccessResult;
 
 /**
  * Implements hook_help().
