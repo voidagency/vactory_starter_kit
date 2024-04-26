@@ -142,11 +142,15 @@ class DynamicFieldManager {
   protected $termResultCount;
 
   /**
+   * Token.
+   *
    * @var \Drupal\Core\Utility\Token
    */
   protected $token;
 
   /**
+   * Http client.
+   *
    * @var \GuzzleHttp\Client
    */
   protected $httpClient;
@@ -427,6 +431,7 @@ class DynamicFieldManager {
             $key = array_keys($value)[0];
             $media_img = $value[$key]['media_google_sheet'] ?? NULL;
             $image_data = [];
+            $file = NULL;
             if (isset($value[$key]['selection'])) {
               foreach ($value[$key]['selection'] as $media) {
                 $file = $this->mediaStorage->load($media['target_id']);
@@ -472,6 +477,7 @@ class DynamicFieldManager {
                 }
               }
             }
+            $this->moduleHandler->alter('df_manager_image', $image_data, $file->thumbnail->entity);
             $value = $image_data;
           }
 
