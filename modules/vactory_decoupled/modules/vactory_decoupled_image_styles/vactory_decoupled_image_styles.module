@@ -34,7 +34,7 @@ function vactory_decoupled_image_styles_df_manager_image_alter(&$data, $media) {
 /**
  * Implements hook_ENTITY_TYPE_presave() for image style configuration entities.
  */
-function vactory_decoupled_image_styles_entity_presave(ConfigEntityInterface $entity) {
+function vactory_decoupled_entity_presave($entity) {
   if ($entity->getEntityTypeId() === 'image_style') {
     $config = \Drupal::configFactory()->getEditable('vactory_decoupled_image_styles.settings');
     $config->set('token', uniqid());
