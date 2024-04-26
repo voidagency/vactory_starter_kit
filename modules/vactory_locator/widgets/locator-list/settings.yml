@@ -1,0 +1,29 @@
+name: 'Listing Locator'
+multiple: FALSE
+category: 'Store Locator'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: "Titre"
+  intro:
+    type: text_format
+    label: "Introduction"
+    options:
+      "#format": full_html
+  collection:
+    type: json_api_collection
+    label: 'JSON:API'
+    options:
+      '#required': TRUE
+      '#default_value':
+        id: "vactory_locator_list"
+        resource: locator_entity--vactory_locator	
+        filters:
+          - fields[locator_entity--vactory_locator]=field_locator_additional_adress,field_locator_adress,field_locator_autre,field_locator_autre_2,field_locator_category,field_locator_city,field_locator_country,field_locator_description,field_locator_email,field_locator_fax,field_locator_image,field_locator_info,field_locator_phone,field_locator_zipcode,field_vactory_locator_geofield,id,name,status
+          - fields[taxonomy_term--locator_city]=tid,name
+          - include=field_locator_city
+          - page[offset]=0
+          - page[limit]=20
+        vocabularies:
+          locator_city: taxonomy_term--locator_city

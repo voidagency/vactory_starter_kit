@@ -9,7 +9,7 @@ debug_header: false
 unset_basic_auth_headers: true
 print: Hello!
 method: 0
-paths: "/api/*\r\n/_translations\r\n/_menus\r\n/_webform\r\n/webform_rest/*\r\n/search_api_autocomplete\r\n/search_api_autocomplete/*"
+paths: "/api/*\r\n/_translations\r\n/_menus\r\n/_webform\r\n/webform_rest/*\r\n/search_api_autocomplete\r\n/search_api_autocomplete/*\r\n/_webform/captcha_math/*"
 allowlist: ''
 http_method_allowlist:
   post: post

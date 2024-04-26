@@ -266,9 +266,6 @@
       "drupal/search_api_ai": {
         "Seach ai pinecone free account issue": "https://gist.githubusercontent.com/khalidbouhouch77/097184b7b3e611ff5e052902486601f3/raw/d7255c4f884aeb39eb68830d8cd77821eeee3634/search-api-pineconebackend-namespace-lang.patch"
       },
-      "drupal/link_target": {
-        "Fix handling request link target widget": "https://www.drupal.org/files/issues/2022-09-16/schema-update.patch"
-      },
       "drupal/file_entity": {
         "Fix missing bundle entity, entity type file_type, entity id undefined": "https://gist.githubusercontent.com/voidagency/b2ec60b41a9ef234ba860c03c05410f4/raw/cea45bcd86a2063d7460a99d1757719035a75314/remove-undefined-bundle-from-entity-type-file-type.patch"
       }
