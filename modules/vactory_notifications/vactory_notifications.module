@@ -107,8 +107,32 @@ function vactory_notification_generate($entity) {
     $notification_manager->notificationsAutoTranslate($notification);
   }
   // Notification by Mail.
-  $node_mail_subject = !empty($entity->get('mail_subject')->value) ? $entity->get('mail_subject')->value : $notification_config->get('mail_default_subject');
-  $node_mail_message = !empty($entity->get('mail_message')->value) ? $entity->get('mail_message')->value : $notification_config->get('mail_default_message');
+  if ($entity instanceof NodeInterface) {
+    $node_type = $entity->getType();
+    // Get the mail_content_types data.
+    $mail_content_types = $notification_config->get('mail_content_types');
+    if (isset($mail_content_types[$node_type])) {
+      // Check if mail_subject and mail_message are empty, and set default values.
+      if (empty($mail_content_types[$node_type]['mail_subject'])) {
+        $node_mail_subject = $notification_config->get('mail_default_subject') ?? $notification_config->get('mail_default_subject');
+      }
+      else {
+        // Use the mail_subject from mail_content_types.
+        $node_mail_subject = $mail_content_types[$node_type]['mail_subject'];
+      }
+      if (empty($mail_content_types[$node_type]['mail_message']['value'])) {
+        $node_mail_message = $notification_config->get('mail_default_message') ?? $notification_config->get('mail_default_message');
+      }
+      else {
+        // Use the mail_message from mail_content_types.
+        $node_mail_message = $mail_content_types[$node_type]['mail_message']['value'];
+      }
+    }
+  }
+  else {
+    $node_mail_subject = !empty($entity->get('mail_subject')->value) ? $entity->get('mail_subject')->value : $notification_config->get('mail_default_subject');
+    $node_mail_message = !empty($entity->get('mail_message')->value) ? $entity->get('mail_message')->value : $notification_config->get('mail_default_message');
+  }
   // Send a mail notification.
   $is_mail_active = $notification_config->get('mail_active');
   if ($is_mail_active == 1) {
