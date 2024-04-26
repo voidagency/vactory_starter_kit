@@ -87,6 +87,9 @@ class DynamicFieldScreenshot extends ConfigFormBase {
     ];
 
     foreach ($widgetsList as $category => $widgets) {
+      if (empty($widgets)) {
+        continue;
+      }
       $form[$category] = [
         '#type' => 'details',
         '#title' => ucfirst($category),
@@ -96,17 +99,15 @@ class DynamicFieldScreenshot extends ConfigFormBase {
       $form[$category]['templates'] = [
         '#type' => 'container',
         '#attributes' => [
-          'style' => 'display: grid;grid-template-columns: repeat(2, minmax(0, 1fr));gap: 10px',
+          'style' => 'display: grid;grid-template-columns: repeat(4, minmax(0, 1fr));gap: 10px',
         ],
       ];
-
       foreach ($widgets as $uuid => $widget) {
         $screenshotConfig = $config->get($uuid)['fid'] ?? NULL;
         $form[$category]['templates'][$uuid] = [
           '#type' => 'container',
           '#attributes' => [
-            'style' => 'display:flex;padding: 10px;margin-top: 10px;background-color: #edf0f5;',
-
+            'style' => 'display:flex;flex-direction: column;justify-content: space-between;padding: 10px;margin-top: 10px;background-color: #edf0f5;',
           ],
         ];
         $form[$category]['templates'][$uuid]['screenshot'] = [
