@@ -1,0 +1,5 @@
+vactory_decoupled_image_styles.settings_form:
+  title: 'Vactory image styles config'
+  parent: system.admin_config_system
+  description: 'Configure decoupled image styles .'
+  route_name: vactory_decoupled_image_styles.settings_form
