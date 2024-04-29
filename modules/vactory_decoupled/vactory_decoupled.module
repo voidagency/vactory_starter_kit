@@ -69,7 +69,7 @@ function vactory_decoupled_form_alter(&$form, FormStateInterface $form_state, $f
       foreach ($form['strings'] as $lid => $string) {
         if (is_numeric($lid)) {
           $context = $form['strings'][$lid]['original']['0']['#context']['context'] ?? '';
-          if($context === '_FRONTEND') {
+          if ($context === '_FRONTEND') {
             $form['strings'][$lid]['delete'] = [
               '#type' => 'checkbox',
               '#title' => t('Delete translation'),
@@ -82,7 +82,7 @@ function vactory_decoupled_form_alter(&$form, FormStateInterface $form_state, $f
         '#type' => 'submit',
         '#name' => 'delete',
         '#value' => t('Delete translations'),
-        '#submit' => ['deleteTranslations'],
+        '#submit' => ['delete_translations'],
         '#button_type' => 'danger',
         '#states' => [
           'visible' => [
@@ -701,6 +701,9 @@ function vactory_decoupled_entity_update(EntityInterface $entity) {
   if ($entity instanceof Node && !$entity->isNew()) {
     $query = get_node_info($entity);
     clear_next_cache($query);
+    // Need to remove router cache when a page is unpublished.
+    $router_query = get_node_router_info($entity);
+    clear_next_cache($router_query);
   }
 
   if ($entity instanceof MenuItemExtrasMenuLinkContent && !isset($loaded)) {
@@ -743,6 +746,19 @@ function get_node_info($entity) {
     'langcode' => $langcode,
     // 'alias'      => $alias,
     'invalidate' => 'node',
+  ];
+}
+
+/**
+ * Get given node slug.
+ */
+function get_node_router_info($entity) {
+  $nid = $entity->id();
+  $langcode = $entity->language()->getId();
+  $alias = \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $nid, $langcode);
+  return [
+    'invalidate' => 'router',
+    'slug' => ltrim($alias, '/'),
   ];
 }
 
@@ -956,7 +972,7 @@ function vactory_decoupled_taxonomy_term_presave(EntityInterface $entity) {
 /**
  * Delete selected translations of _FRONTEND context.
  */
-function deleteTranslations(array $form, FormStateInterface $form_state) {
+function delete_translations(array $form, FormStateInterface $form_state) {
   $langcode = $form_state->getValue('langcode');
   $delete = [];
   foreach ($form_state->getValue('strings') as $lid => $new_translation) {
