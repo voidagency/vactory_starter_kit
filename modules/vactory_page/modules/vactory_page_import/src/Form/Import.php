@@ -319,7 +319,7 @@ class Import extends FormBase {
               foreach ($templates as $df_key => $data) {
                 $widget_data = $this->pageImportService->normalizeWidgetData($data);
                 if (str_starts_with($df_key, 'vactory_page_import:')) {
-                  $single_df_settings = [end($split) => $df_settings[end($split)]];
+                  $single_df_settings = [reset($split) => $df_settings[reset($split)]];
                   $widget_id = $df_key;
                   $this->pageImportService->createDynamicFields($single_df_settings);
                 }
@@ -387,7 +387,7 @@ class Import extends FormBase {
               foreach ($templates as $df_key => $data) {
                 $widget_data = $this->pageImportService->normalizeWidgetData($data);
                 if (str_starts_with($df_key, 'vactory_page_import:')) {
-                  $single_df_settings = [end($split) => $df_settings[end($split)]];
+                  $single_df_settings = [reset($split) => $df_settings[reset($split)]];
                   $widget_id = $df_key;
                   $this->pageImportService->createDynamicFields($single_df_settings);
                 }
