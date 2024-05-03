@@ -477,7 +477,9 @@ class DynamicFieldManager {
                 }
               }
             }
-            $this->moduleHandler->alter('df_manager_image', $image_data, $file->thumbnail->entity);
+            if ($file) {
+              $this->moduleHandler->alter('df_manager_image', $image_data, $file->thumbnail->entity);
+            }
             $value = $image_data;
           }
 
