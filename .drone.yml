@@ -1,0 +1,17 @@
+name: default
+kind: pipeline
+type: docker
+
+steps:
+  - name: code-analysis
+    image: kytay/sonar-node-plugin
+    settings:
+      sonar_host:
+        from_secret: sonar_host
+      sonar_token:
+        from_secret: sonar_token
+      use_node_version: 20.11.1
+volumes:
+  - name: docker_sock
+    host:
+      path: /var/run/docker.sock
