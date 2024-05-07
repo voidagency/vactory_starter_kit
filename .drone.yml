@@ -11,6 +11,15 @@ steps:
       sonar_token:
         from_secret: sonar_token
       use_node_version: 20.11.1
+  - name: install
+    image: composer
+    commands:
+    - composer install -vvv
+  - name: phpcs
+    image: php:8
+    commands:
+    - vendor/bin/phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer
+    - vendor/squizlabs/php_codesniffer/bin/phpcs --standard=scripts/githooks/lint/InterfaceTranslationStandard --extensions=module,php,inc
 volumes:
   - name: docker_sock
     host:
