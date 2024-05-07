@@ -2,7 +2,7 @@
 
 /**
  * @file
- * This is the Banner module for adding banners.
+ * This is the Banner module for adding banners - phpcs.
  */
 
 use Drupal\Core\Entity\EntityInterface;
