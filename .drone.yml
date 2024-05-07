@@ -11,17 +11,16 @@ steps:
       sonar_token:
         from_secret: sonar_token
       use_node_version: 20.11.1
-  # - name: install
-  #   image: vactory/php-ubi9:8.1.7
-  #   commands:
-  #   - composer install -vvv
-  # - name: phpcs
-  #   image: vactory/php-ubi9:8.1.7
-  #   depends_on:
-  #     - install
-  #   commands:
-  #   - vendor/bin/phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer
-  #   - vendor/squizlabs/php_codesniffer/bin/phpcs --standard=scripts/githooks/lint/InterfaceTranslationStandard --extensions=module,php,inc
+  - name: phpcs
+    image: docker/compose:1.29.2
+    volumes:
+      - name: docker_sock
+        path: /var/run/docker.sock
+    depends_on:
+      - code-analysis
+    commands:
+      - echo $${DRONE_COMMIT}
+      - docker build -f ./Dockerfile --build-arg COMMIT_ID=$${DRONE_COMMIT} -t vactory_starter_kit/build .
 volumes:
   - name: docker_sock
     host:
