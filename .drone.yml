@@ -3,20 +3,20 @@ kind: pipeline
 type: docker
 
 steps:
-  - name: code-analysis
-    image: kytay/sonar-node-plugin
-    settings:
-      sonar_host:
-        from_secret: sonar_host
-      sonar_token:
-        from_secret: sonar_token
-      use_node_version: 20.11.1
+  # - name: code-analysis
+  #   image: kytay/sonar-node-plugin
+  #   settings:
+  #     sonar_host:
+  #       from_secret: sonar_host
+  #     sonar_token:
+  #       from_secret: sonar_token
+  #     use_node_version: 20.11.1
   - name: install
-    image: composer
+    image: vactory/php-ubi9:8.1.7
     commands:
     - composer install -vvv
   - name: phpcs
-    image: php:8
+    image: vactory/php-ubi9:8.1.7
     commands:
     - vendor/bin/phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer
     - vendor/squizlabs/php_codesniffer/bin/phpcs --standard=scripts/githooks/lint/InterfaceTranslationStandard --extensions=module,php,inc
