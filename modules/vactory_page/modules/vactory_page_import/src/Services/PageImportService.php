@@ -202,6 +202,7 @@ class PageImportService {
       }
       $yaml_config = Yaml::encode($config);
       $this->writeDfFile($yaml_config, $df_name);
+      $this->createDfTemplateHtml($config, $df_name);
     }
   }
 
@@ -257,6 +258,78 @@ class PageImportService {
 
     $printed = file_put_contents($filepath, $content);
     return (bool) $printed;
+  }
+
+  /**
+   * Create html template file.
+   */
+  private function createDfTemplateHtml($settings, $name) {
+    $dest_uri = 'private://imported-pages-df';
+    $dest_df_uri = $dest_uri . '/' . $name;
+    if (!file_exists($dest_df_uri)) {
+      mkdir($dest_df_uri, 0777, TRUE);
+    }
+    $filepath = \Drupal::service('file_system')->realpath($dest_df_uri . '/template.html.twig');
+    $content = "<div>";
+    if (!$settings['multiple']) {
+      $content .= $this->constructDfTemplateHtml($settings['fields']);
+    }
+    else {
+      $content .= $this->constructDfTemplateHtml($settings['extra_fields'], NULL, TRUE);
+      $content .= "\n\t{% for key, item in content %}";
+      $content .= $this->constructDfTemplateHtml($settings['fields'], NULL, FALSE, TRUE);
+      $content .= "\n\t{% endfor %}";
+    }
+    $content .= "\n</div>";
+
+    $printed = file_put_contents($filepath, $content);
+    return (bool) $printed;
+  }
+
+  /**
+   * Construct html template file content.
+   */
+  private function constructDfTemplateHtml($fields, $group = NULL, $is_extra_field = FALSE, $is_multiple = FALSE) {
+    $content = '';
+    foreach ($fields as $key => $field) {
+      if (str_starts_with($key, 'group_')) {
+        $exclude_title = array_filter($field, function ($key) {
+          return !($key == 'g_title');
+        }, ARRAY_FILTER_USE_KEY);
+        $content .= $this->constructDfTemplateHtml($exclude_title, $key);
+      }
+      else {
+        $item = $key;
+        if (!is_null($group)) {
+          $item = "{$group}.{$item}";
+        }
+        $index = 'content.0';
+        if ($is_extra_field) {
+          $index = 'extra_fields';
+        }
+        if ($is_multiple) {
+          $index = 'item';
+        }
+
+        if ($field['type'] == 'text' || $field['type'] == 'textarea') {
+          $content .= "\n\t<p>";
+          $content .= "\n\t\t{{ {$index}.{$item} }}";
+          $content .= "\n\t</p>";
+        }
+        elseif ($field['type'] == 'url_extended') {
+          $content .= "\n\t<a href='{{ {$index}.{$item}.url }}'> {{ {$index}.{$item}.title }} </a>";
+        }
+        elseif ($field['type'] == 'text_format') {
+          $content .= "\n\t<div> {{ {$index}.{$item}.value|raw }}</div>";
+        }
+        elseif ($field['type'] == 'image') {
+          $content .= "\n\t{% set image_uri = ({$index}.{$item}.0 is defined) ? get_image({$index}.{$item}.0) : '' %}";
+          $content .= "\n\t{% set image_src = file_url(image_uri) %}";
+          $content .= "\n\t<img src='{{ image_src }}'>";
+        }
+      }
+    }
+    return $content;
   }
 
   /**
