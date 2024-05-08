@@ -1,0 +1,22 @@
+langcode: fr
+status: true
+dependencies:
+  config:
+    - field.storage.node.body
+    - node.type.newsletter
+  module:
+    - text
+id: node.newsletter.body
+field_name: body
+entity_type: node
+bundle: newsletter
+label: Body
+description: ''
+required: false
+translatable: true
+default_value: {  }
+default_value_callback: ''
+settings:
+  display_summary: true
+  required_summary: false
+field_type: text_with_summary
