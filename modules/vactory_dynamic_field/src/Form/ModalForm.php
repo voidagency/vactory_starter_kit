@@ -742,6 +742,18 @@ class ModalForm extends FormBase {
 
     // List of widgets.
     $widgets_list = $this->widgetsManager->getModalWidgetsList($allowedProviders);
+    
+    //! Add the "All" category containing all DF.
+    $all_widgets = [];
+    foreach ($widgets_list as $category => $widgets) {
+      foreach ($widgets as $widget_id => $widget) {
+        $all_widgets[$widget_id] = $widget; // Add all widgets to the "All" category.
+      }
+    }
+    // Add the "All" category to the beginning of the list.
+    $widgets_list = ['All' => $all_widgets] + $widgets_list;
+    //! END
+
     $this->widgetsList = $widgets_list;
 
     $form['#prefix'] = '<div id="' . ModalEnum::FORM_WIDGET_SELECTOR_AJAX_WRAPPER . '">';
@@ -882,7 +894,24 @@ class ModalForm extends FormBase {
     ];
 
     // Sort tabs by categories names.
-    ksort($form['templates_tabs']);
+     //! Ensure "All" is first
+    if (isset($form['templates_tabs']['All'])) {
+      // Store the 'All' category and remove it from the tabs.
+      $all_cat_tab = $form['templates_tabs']['All'];
+      unset($form['templates_tabs']['All']);
+  
+      // Sort the rest of the tabs.
+      ksort($form['templates_tabs']); 
+  
+      // Reinsert 'All' at the beginning.
+      $sorted_tabs = ['All' => $all_cat_tab] + $form['templates_tabs'];
+    } else {
+      ksort($form['templates_tabs']); 
+      $sorted_tabs = $form['templates_tabs'];
+    }
+    //* affect the sorted ele to the form
+    $form['templates_tabs'] = $sorted_tabs;
+    //! END
 
     $form['#attached']['library'][] = 'core/drupal.ajax';
     $form['#attached']['library'][] = 'core/drupal.dialog.ajax';
