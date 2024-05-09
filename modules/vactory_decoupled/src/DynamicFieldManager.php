@@ -22,7 +22,6 @@ use Drupal\Core\Cache\Cache;
 use Drupal\serialization\Normalizer\CacheableNormalizerInterface;
 use Drupal\Core\Utility\Token;
 use GuzzleHttp\Client;
-use Drupal\webform\Entity\Webform;
 
 /**
  * Manages Dynamic Field Transformation.
@@ -590,64 +589,6 @@ class DynamicFieldManager {
             $value = $response;
           }
 
-          // Cross bundles.
-          if ($info['type'] === 'json_api_cross_bundles' && !empty($value)) {
-            $value = array_merge($info['options']['#default_value'], $value);
-            $resource = $value['resource']['entity_type'];
-            $bundles = $value['resource']['bundle'];
-            $bundleEntityType = \Drupal::entityTypeManager()->getDefinition($resource)->getBundleEntityType();
-            if (is_array($bundles)) {
-              $value['filters'][] = "filter[bundles][condition][path]={$bundleEntityType}.meta.drupal_internal__target_id";
-              $value['filters'][] = 'filter[bundles][condition][operator]=IN';
-              foreach ($bundles as $key => $bundle) {
-                $value['filters'][] = "filter[bundles][condition][value][{$key}]={$bundle}";
-              }
-            }
-            $value['resource'] = $resource;
-            $response = $this->jsonApiGenerator->fetch($value);
-            $cache = $response['cache'];
-            unset($response['cache']);
-
-            $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $cache['tags']);
-            $this->cacheability->setCacheTags($cacheTags);
-            $cacheContexts = Cache::mergeContexts($this->cacheability->getCacheContexts(), $cache['contexts']);
-            $this->cacheability->setCacheContexts($cacheContexts);
-            $value = $response;
-          }
-
-          // Webform.
-          if (
-            $info['type'] === 'webform_decoupled' &&
-            !empty($value) &&
-            $this->moduleHandler->moduleExists('vactory_decoupled_webform')
-          ) {
-            $webform_id = $value['id'];
-            // Cache tags.
-            $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), [
-              'webform_submission_list',
-              'config:webform_list',
-            ]);
-            $this->cacheability->setCacheTags($cacheTags);
-            // Cache contexts.
-            $cacheContexts = Cache::mergeContexts($this->cacheability->getCacheContexts(), ['user']);
-            $this->cacheability->setCacheContexts($cacheContexts);
-            // Service invoked statically because vactory_decoupled_webform.
-            // Module depends on vactory_decoupled.
-            $value['elements'] = \Drupal::service('vactory.webform.normalizer')->normalize($webform_id);
-
-            $value['autosave'] = FALSE;
-            // Check webform autosave module is enabled and add its settings.
-            if (\Drupal::moduleHandler()->moduleExists('vactory_decoupled_webform_autosave')) {
-              $webform = Webform::load($webform_id);
-              if ($webform) {
-                $autosave_settings = $webform->getThirdPartySetting('vactory_decoupled_webform_autosave', 'autosave_settings', []);
-                if ($autosave_settings['autosave_enabled']) {
-                  $value['autosave'] = $autosave_settings;
-                }
-              }
-            }
-          }
-
           if ($info['type'] === 'remote_video' && !empty($value)) {
             $value = reset($value);
             $media_ytb = $value['media_google_sheet'] ?? NULL;
@@ -717,6 +658,7 @@ class DynamicFieldManager {
             $this->cacheability->setCacheContexts($cacheContexts);
             $value = $response;
           }
+
           if ($info['type'] === 'dynamic_api_fetch' && !empty($value)) {
 
             $url = $this->token->replace($value['url']);
