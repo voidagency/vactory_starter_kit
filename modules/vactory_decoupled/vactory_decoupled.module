@@ -678,6 +678,7 @@ function vactory_decoupled_validation_constraint_alter(array &$definitions) {
 function vactory_decoupled_cache_flush() {
   clear_next_cache();
   opcache_reset();
+  clear_next_nginx_cache('*');
 }
 
 /**
@@ -704,6 +705,7 @@ function vactory_decoupled_entity_update(EntityInterface $entity) {
     // Need to remove router cache when a page is unpublished.
     $router_query = get_node_router_info($entity);
     clear_next_cache($router_query);
+    clear_next_nginx_cache($router_query['slug']);
   }
 
   if ($entity instanceof MenuItemExtrasMenuLinkContent && !isset($loaded)) {
@@ -776,7 +778,7 @@ function vactory_decoupled_entity_delete(EntityInterface $entity) {
 }
 
 /**
- * Clears frontend cache.
+ * Clears frontend cache (redis).
  */
 function clear_next_cache($query = []) {
   $front_end_url = Settings::get('BASE_FRONTEND_URL');
@@ -995,5 +997,34 @@ function delete_translations(array $form, FormStateInterface $form_state) {
 function locale_translate_edit_form_validator(&$form, FormStateInterface $form_state) {
   if ($form_state->getTriggeringElement()['#name'] === 'delete') {
     return;
+  }
+}
+
+
+/**
+ * Clears frontend cache (nginx).
+ */
+function clear_next_nginx_cache($path = '') {
+  $front_end_url = Settings::get('BASE_FRONTEND_URL');
+
+  if (!isset($front_end_url) || $front_end_url == '') {
+    \Drupal::logger('clear_next_nginx_cache')
+      ->warning('BASE_FRONTEND_URL env variable is undefined');
+    return FALSE;
+  }
+
+  $client = \Drupal::httpClient();
+
+  try {
+    $request = $client->request('PURGE', $front_end_url . '/' . $path);
+    \Drupal::logger('clear_next_nginx_cache')->info('Next nginx cache cleared for ' . $path);
+  }
+  catch (ServerException $e) {
+    \Drupal::logger('clear_next_nginx_cache')
+      ->warning("Next nginx cache cleared for {$path} (no cache found)");
+  }
+  catch (RequestException $e) {
+    \Drupal::logger('clear_next_nginx_cache')
+      ->warning("Next nginx cache cleared for {$path} (no cache found)");
   }
 }
