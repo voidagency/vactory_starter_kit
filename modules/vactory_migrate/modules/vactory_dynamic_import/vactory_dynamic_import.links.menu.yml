@@ -1,10 +1,3 @@
-vactory_dynamic_import.form:
-  title: 'Vactory Dynamic Import'
-  description: 'Perform migration process dynamically.'
-  parent: system.admin_config_system
-  route_name: vactory_dynamic_import.form
-  weight: 10
-
 entity.dynamic_import.collection:
   title: 'Vactory Dynamic Import Entity'
   parent: system.admin_config_system

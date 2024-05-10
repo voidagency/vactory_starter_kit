@@ -608,8 +608,10 @@ function vactory_core_media_presave(MediaInterface $media) {
     if (!$imagick_enabled) {
       return;
     }
-
-    $original_fid = $media->original->get('field_media_file')->target_id;
+    $original_fid = NULL;
+    if (!$media->isNew()) {
+      $original_fid = $media->original->get('field_media_file')->target_id;
+    }
     $fid = $media->get('field_media_file')->target_id;
     if ($original_fid == $fid) {
       return;

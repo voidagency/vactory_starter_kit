@@ -1,35 +1,3 @@
-vactory_dynamic_import.form:
-  path: '/admin/config/vactory_dynamic_import'
-  defaults:
-    _form: '\Drupal\vactory_dynamic_import\Form\DynamicImportDefaultForm'
-    _title: 'Vactory Dynamic Import'
-  requirements:
-    _permission: 'administer dynamic imports'
-
-vactory_dynamic_import.rollback:
-  path: '/admin/config/vactory_dynamic_import/rollback'
-  defaults:
-    _form: '\Drupal\vactory_dynamic_import\Form\RollbackConfirmation'
-    _title: 'Vactory Dynamic Import - Rollback'
-  requirements:
-    _permission: 'administer dynamic imports'
-
-vactory_dynamic_import.import:
-  path: '/admin/config/vactory_dynamic_import/import'
-  defaults:
-    _form: '\Drupal\vactory_dynamic_import\Form\ImportConfirmation'
-    _title: 'Vactory Dynamic Import - Import'
-  requirements:
-    _permission: 'administer dynamic imports'
-
-vactory_dynamic_import.generate:
-  path: '/admin/config/vactory_dynamic_import/generate'
-  defaults:
-    _form: '\Drupal\vactory_dynamic_import\Form\GenerateModelForm'
-    _title: 'Vactory Dynamic Import - Generate Model'
-  requirements:
-    _permission: 'administer dynamic imports'
-
 vactory_dynamic_import.execute:
   path: '/admin/config/vactory_dynamic_import/execute'
   defaults:
@@ -45,7 +13,6 @@ vactory_dynamic_import.confirmation:
     _title: 'Vactory Dynamic Import - Confirmation'
   requirements:
     _permission: 'administer dynamic imports'
-
 
 # ====== Dynamic import config entity ======
 entity.dynamic_import.collection:

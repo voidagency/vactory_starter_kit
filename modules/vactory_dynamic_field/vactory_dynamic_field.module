@@ -313,3 +313,12 @@ function vactory_dynamic_field_theme_suggestions_alter(array &$suggestions, arra
     $suggestions[] = 'custom_' . $hook;
   }
 }
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_dynamic_field_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if ($form_id == 'search_api_index_status' && \Drupal::moduleHandler()->moduleExists('search_api')) {
+    \Drupal::messenger()->addWarning('[Dynamic Field] Index items using `drush sapi-i` not the UI !');
+  }
+}
