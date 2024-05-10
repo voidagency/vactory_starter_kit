@@ -477,7 +477,7 @@ function _auth_make_unitials_from_single_word($name) {
 /**
  * Implements hook_mail_alter().
  *
- * @deprecated To be removed once swiftmailer contrib module has been removed.
+ * @todo To be removed once swiftmailer contrib module has been removed.
  */
 function vactory_decoupled_mail_alter(&$message) {
   $langcode = $message['langcode'];
@@ -999,7 +999,6 @@ function locale_translate_edit_form_validator(&$form, FormStateInterface $form_s
     return;
   }
 }
-
 
 /**
  * Clears frontend cache (nginx).
