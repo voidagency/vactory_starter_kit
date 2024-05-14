@@ -1,0 +1,15 @@
+name: 'Sample Image Styles'
+multiple: TRUE
+category: 'Image Styles'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: "Titre"
+  image_style_id:
+    type: text
+    label: "Image style id"
+  image:
+    type: image
+    label: "Image"
+

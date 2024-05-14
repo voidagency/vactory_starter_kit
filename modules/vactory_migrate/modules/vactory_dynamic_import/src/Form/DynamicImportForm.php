@@ -2,26 +2,34 @@
 
 namespace Drupal\vactory_dynamic_import\Form;
 
-use Drupal\Core\Form\FormBase;
-use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Url;
-use Drupal\file\Entity\File;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Entity\ContentEntityType;
+use Drupal\Core\Entity\EntityForm;
+use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\file\Entity\File;
+use Drupal\file\FileInterface;
+use Drupal\media\Entity\Media;
+use Drupal\media\MediaInterface;
+use Drupal\taxonomy\Entity\Term;
+use Drupal\vactory_dynamic_import\Service\DynamicImportHelpers;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 /**
- * Class DynamicImportForm.
- *
- * Provides a form to import data dynamically.
+ * Form handler for the dynamic import add and edit forms.
  */
-class DynamicImportForm extends FormBase {
+class DynamicImportForm extends EntityForm {
 
-  /**
-   * Entity type manager service.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected $entityTypeManager;
+  const MEDIA_FIELD_NAMES = [
+    'audio' => 'field_media_audio_file',
+    'image' => 'field_media_image',
+    'file' => 'field_media_file',
+    'remote_video' => 'field_media_oembed_video',
+    'video' => 'field_media_video_file',
+    'onboarding_video' => 'field_video_onboarding',
+  ];
 
   /**
    * Entity type bundle info service.
@@ -31,11 +39,11 @@ class DynamicImportForm extends FormBase {
   protected $entityTypeBundleInfo;
 
   /**
-   * Entity Field Manager.
+   * Dynamic import helper.
    *
-   * @var \Drupal\Core\Entity\EntityFieldManager
+   * @var \Drupal\vactory_dynamic_import\Service\DynamicImportHelpers
    */
-  protected $entityFieldManager;
+  protected $dynamicImportHelper;
 
   /**
    * Submitted values.
@@ -45,159 +53,181 @@ class DynamicImportForm extends FormBase {
   protected $submitted = [];
 
   /**
-   * Language manager service.
-   *
-   * @var \Drupal\Core\Language\LanguageManagerInterface
+   * Constructs an ExampleForm object.
    */
-  protected $languageManager;
+  public function __construct(EntityTypeManagerInterface $entityTypeManager, EntityTypeBundleInfoInterface $entityTypeBundleInfo, DynamicImportHelpers $dynamicImportHelper) {
+    $this->entityTypeManager = $entityTypeManager;
+    $this->entityTypeBundleInfo = $entityTypeBundleInfo;
+    $this->dynamicImportHelper = $dynamicImportHelper;
+  }
 
   /**
-   * {@inheritDoc}
+   * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    $instance = parent::create($container);
-    $instance->entityTypeManager = $container->get('entity_type.manager');
-    $instance->entityTypeBundleInfo = $container->get('entity_type.bundle.info');
-    $instance->entityFieldManager = $container->get('entity_field.manager');
-    $instance->languageManager = $container->get('language_manager');
-    return $instance;
+    return new static(
+      $container->get('entity_type.manager'),
+      $container->get('entity_type.bundle.info'),
+      $container->get('vactory_dynamic_import.helper')
+    );
   }
 
   /**
-   * {@inheritDoc}
+   * {@inheritdoc}
    */
-  public function getFormId() {
-    return 'dynamic_import_form';
-  }
+  public function form(array $form, FormStateInterface $form_state) {
+    $form = parent::form($form, $form_state);
 
-  /**
-   * {@inheritDoc}
-   */
-  public function buildForm(array $form, FormStateInterface $form_state) {
+    $entity = $this->entity;
 
-    $url_options = ['absolute' => TRUE];
-    $t_args = [
-      ':settings_url' => Url::fromUri('base:/admin/structure/file-types/manage/document/edit', $url_options)
-        ->toString(),
+    $form['label'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Label'),
+      '#maxlength' => 255,
+      '#default_value' => $entity->label(),
+      '#description' => $this->t("Label for the Dynamic import."),
+      '#required' => TRUE,
     ];
-    $message = $this->t('If you\'re having trouble uploading the csv file. Add <strong><em>text/csv</em></strong> <a target="_blank" href=":settings_url"> to the allowed <em>MIME types</em></a>.', $t_args);
-
+    $form['id'] = [
+      '#type' => 'machine_name',
+      '#default_value' => $entity->id(),
+      '#machine_name' => [
+        'exists' => [$this, 'exist'],
+      ],
+      '#disabled' => !$entity->isNew(),
+    ];
     $entity_types = $this->entityTypeManager->getDefinitions();
     $entity_types = array_filter($entity_types, fn($entity_type) => $entity_type instanceof ContentEntityType);
     $entity_types = array_map(fn($entity_type) => $entity_type->getLabel(), $entity_types);
-    $form['entity_type'] = [
-      '#type'         => 'select',
-      '#title'        => $this->t('Targeted entity type'),
-      '#options'      => $entity_types,
+    $form['target_entity'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Targeted entity type'),
+      '#options' => $entity_types,
       '#empty_option' => '- Select -',
-      '#required'     => TRUE,
-      '#ajax'         => [
+      '#required' => TRUE,
+      '#ajax' => [
         'callback' => '::bundlesCallback',
-        'wrapper'  => 'bundles-container',
+        'wrapper' => 'bundles-container',
       ],
-      '#description'  => $this->t('Select the destination content type'),
+      '#description' => $this->t('Select the destination content type'),
+      '#default_value' => $entity->get('target_entity'),
     ];
 
     $form['container'] = [
-      '#type'       => 'container',
+      '#type' => 'container',
       '#attributes' => ['id' => 'bundles-container'],
     ];
 
-    if (isset($this->submitted['entity_type']) && !empty($this->submitted['entity_type'])) {
-      $bundles = $this->entityTypeBundleInfo->getBundleInfo($this->submitted['entity_type']);
+    if ((isset($this->submitted['target_entity']) && !empty($this->submitted['target_entity'])) || !$entity->isNew()) {
+      $bundles = $this->entityTypeBundleInfo->getBundleInfo($this->submitted['target_entity'] ?? $entity->get('target_entity'));
       $bundles = array_map(fn($bundle) => $bundle['label'], $bundles);
-      $form['container']['bundle'] = [
-        '#type'         => 'select',
-        '#title'        => $this->t('Targeted bundle'),
-        '#options'      => $bundles,
+      $form['container']['target_bundle'] = [
+        '#type' => 'select',
+        '#title' => $this->t('Targeted bundle'),
+        '#options' => $bundles,
         '#empty_option' => '- Select -',
-        '#required'     => TRUE,
-        '#ajax'         => [
+        '#required' => TRUE,
+        '#ajax' => [
           'callback' => '::bundlesCallback',
-          'wrapper'  => 'bundles-container',
+          'wrapper' => 'bundles-container',
         ],
-        '#description'  => $this->t('Select the targeted bundle'),
+        '#description' => $this->t('Select the targeted bundle'),
+        '#default_value' => $entity->get('target_bundle'),
       ];
-
-      if (isset($this->submitted['bundle']) && !empty($this->submitted['bundle'])) {
-
-        $form['container']['label'] = [
-          '#type'        => 'textfield',
-          '#title'       => $this->t('Migration key'),
-          '#required'    => TRUE,
-          '#description' => $this->t("Enter a unique key to identify the migration performed.<br>
-                                    This key is essential for tracking and managing the migration process.<br>
-                                    The migration config will be named as 'migrate_plus.migration.[entity]_[bundle]_migration_[key]' for easy tracking "),
-        ];
-        $user_roles = \Drupal::currentUser()->getRoles();
-        if (in_array('administrator', $user_roles)) {
-          $groups = $this->entityTypeManager->getStorage('migration_group')
-            ->loadMultiple();
-          $groups = array_map(fn($group) => $group->label(), $groups);
-          $current_path = $current_path = \Drupal::service('path.current')->getPath();
-          $link = Url::fromRoute('entity.migration_group.add_form', ['destination' => $current_path])
-            ->toString(TRUE)
-            ->getGeneratedUrl();
-          $form['container']['migration_group'] = [
-            '#type' => 'select',
-            '#title' => $this->t('Migration group'),
-            '#options' => $groups,
-            '#empty_option' => '- Select -',
-            '#required' => TRUE,
-            '#description' => $this->t('Select an existing migration group or <a href="@link">Create new migration group</a>', ['@link' => $link]),
-          ];
-        }
-
-        $form['container']['delimiter'] = [
-          '#type'        => 'textfield',
-          '#title'       => $this->t('Delimiter'),
-          '#required'    => TRUE,
-          '#description' => $this->t('Enter the delimiter used in the CSV file.'),
+      if ((isset($this->submitted['target_bundle']) && !empty($this->submitted['target_bundle'])) || !$entity->isNew()) {
+        $form['container']['concerned_fields'] = [
+          '#type' => 'checkboxes',
+          '#title' => t('Concerned fields'),
+          '#options' => $entity->isNew() ?
+          $this->dynamicImportHelper->getRelatedFields($this->submitted['target_entity'], $this->submitted['target_bundle'], TRUE)
+          : $this->dynamicImportHelper->getRelatedFields($entity->get('target_entity'), $entity->get('target_bundle'), TRUE),
+          '#default_value' => $entity->get('concerned_fields'),
         ];
 
-        $form['container']['csv'] = [
-          '#type'              => 'managed_file',
-          '#title'             => $this->t('CSV file'),
-          '#name'              => 'csv',
-          '#upload_location'   => 'private://migrate-tmp',
-          '#upload_validators' => [
-            'file_validate_extensions' => ['csv'],
-          ],
-          '#description'       => t("Load the csv file to import.<br>") . $message,
-          '#required'          => TRUE,
+        $form['container']['is_translation'] = [
+          '#type' => 'checkbox',
+          '#title' => $this->t('This is a translation'),
+          '#description' => $this->t("For translations of existing content, please check this checkbox."),
+          '#default_value' => $entity->get('is_translation'),
         ];
 
-        $form['container']['translation'] = [
-          '#type'        => 'checkbox',
-          '#title'       => $this->t('This is a translation'),
-          '#description' => $this->t("For translations of existing content, please check this checkbox.<br>
-                                            Ensures accurate processing and integration of translated data."),
-        ];
-
-        $form['container']['language'] = [
-          '#type'          => 'language_select',
-          '#title'         => $this->t('language'),
-          '#default_value' => $this->languageManager->getDefaultLanguage()
-            ->getId(),
-        ];
-
-        $form['container']['rollback'] = [
-          '#type'        => 'checkbox',
-          '#title'       => $this->t('Rollback'),
-          '#description' => $this->t("Selecting 'Rollback' triggers a reversal of all migrations linked to the specified entity.<br>
-                                             <b>Caution:</b> This action undoes changes made by the migrations."),
-        ];
-
-        $form['container']['submit'] = [
-          '#type'        => 'submit',
-          '#value'       => $this->t("Start process"),
-          '#button_type' => 'primary',
+        $form['container']['translation_langcode'] = [
+          '#type' => 'language_select',
+          '#title' => $this->t('language'),
+          '#default_value' => $entity->get('translation_langcode'),
         ];
 
       }
 
     }
+
     return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state) {
+    $form = parent::buildForm($form, $form_state);
+    $form['actions']['generate'] = [
+      '#type' => 'submit',
+      '#value' => t('Generate CSV model'),
+      '#submit' => ['::generateCsvModel'],
+      '#weight' => 10,
+    ];
+    $form['actions']['execute'] = [
+      '#type' => 'submit',
+      '#value' => t('Execute this migration'),
+      '#submit' => ['::executeDynamicImport'],
+      '#weight' => 10,
+    ];
+    $form['actions']['export'] = [
+      '#type' => 'submit',
+      '#value' => t('Export existing content'),
+      '#submit' => ['::dynamicExport'],
+      '#weight' => 10,
+    ];
+    return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function save(array $form, FormStateInterface $form_state) {
+    $example = $this->entity;
+    $status = $example->save();
+
+    if ($status === SAVED_NEW) {
+      $this->messenger()->addMessage($this->t('The %label Example created.', [
+        '%label' => $example->label(),
+      ]));
+    }
+    else {
+      $this->messenger()->addMessage($this->t('The %label Example updated.', [
+        '%label' => $example->label(),
+      ]));
+    }
+
+    $form_state->setRedirect('entity.dynamic_import.collection');
+  }
+
+  /**
+   * Helper function to check whether an Example configuration entity exists.
+   */
+  public function exist($id) {
+    $entity = $this->entityTypeManager->getStorage('dynamic_import')->getQuery()
+      ->condition('id', $id)
+      ->execute();
+    return (bool) $entity;
+  }
+
+  /**
+   * Form validation.
+   */
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    $name = $form_state->getTriggeringElement()['#name'];
+    $this->submitted[$name] = $form_state->getValue($name);
+    parent::validateForm($form, $form_state);
   }
 
   /**
@@ -208,411 +238,203 @@ class DynamicImportForm extends FormBase {
   }
 
   /**
-   * {@inheritDoc}
+   * Submit function for generate button.
    */
-  public function submitForm(array &$form, FormStateInterface $form_state) {
+  public function generateCsvModel(&$form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
-    $data = [];
-    $id = "{$values['entity_type']}_{$values['bundle']}_migration_{$values['label']}";
+    $this->dynamicImportHelper->generateCsvModel(
+        $values['target_entity'],
+        $values['target_bundle'],
+        $values['concerned_fields'],
+        $values['is_translation']
+      );
+  }
 
-    $fid = (int) reset($values['csv']);
-    $file = File::load($fid);
-    $file_path = NULL;
-    if ($file) {
-      $file_path = $file->getFileUri();
+  /**
+   * Submit function for execute button.
+   */
+  public function executeDynamicImport(&$form, FormStateInterface $form_state) {
+    $values = $form_state->getValues();
+    $header = $this->dynamicImportHelper->generateCsvModel(
+        $values['target_entity'],
+        $values['target_bundle'],
+        $values['concerned_fields'],
+        $values['is_translation'],
+        NULL,
+        TRUE
+      );
+
+    $data = $this->dynamicImportHelper->generateMigrationConfig(
+        $values['id'],
+        $values['label'],
+        $header,
+        $values['target_entity'],
+        $values['target_bundle'],
+        $values['is_translation'],
+        $values['translation_langcode']
+      );
+
+    $config_name = "migrate_plus.migration.{$values['id']}";
+    $migration_config = \Drupal::configFactory()
+      ->getEditable($config_name);
+    $migration_config->setData($data);
+    $migration_config->save();
+    drupal_flush_all_caches();
+    $form_state->setRedirect('vactory_dynamic_import.execute', ['id' => $config_name]);
+    $form_state->setIgnoreDestination();
+
+  }
+
+  /**
+   * Export content based on dynamic import config.
+   */
+  public function dynamicExport(&$form, FormStateInterface $form_state) {
+    $values = $form_state->getValues();
+    $moduleHandler = \Drupal::service('module_handler');
+    $alias_manager = \Drupal::service('path_alias.manager');
+    $media_decoupled_manager = NULL;
+    if ($moduleHandler->moduleExists('vactory_decoupled')) {
+      $media_decoupled_manager = \Drupal::service('vacory_decoupled.media_file_manager');
     }
-    $header = [];
-    if ($file_path) {
-      $path = \Drupal::service('file_system')->realpath($file_path);
-      $header = $this->getCsvHeader($path, $values['delimiter']);
-    }
 
-    $data['id'] = $id;
-    $data['label'] = "{$values['entity_type']} {$values['bundle']} migration";
-
-    if (isset($values['migration_group'])) {
-      $data['migration_group'] = $values['migration_group'];
-    }
-
-    $data['source'] = [
-      'plugin'           => 'csv',
-      'header_row_count' => 1,
-      'ids'              => ['id'],
-      'delimiter'        => $values['delimiter'],
-      'path'             => $file_path,
-      'constants'        => [
-        'dest_path' => "public://migrated-{$values['bundle']}/",
-      ],
-    ];
-
-    $data['destination'] = [
-      'plugin'         => 'entity:' . $values['entity_type'],
-      'default_bundle' => $values['bundle'],
-    ];
-
-    if ($values['translation']) {
-      $data['destination']['translations'] = 'true';
-    }
-
-    $data['process'] = [];
-
-    if ($values['language'] != $this->languageManager->getDefaultLanguage()->getId()) {
-      $data['process']['langcode'] = [
-        'plugin'        => 'default_value',
-        'default_value' => $values['language'],
-      ];
-    }
-
-    if ($values['translation']) {
-      $data['process']['content_translation_source'] = [
-        'plugin'        => 'default_value',
-        'default_value' => $this->languageManager->getDefaultLanguage()
-          ->getId(),
-      ];
-      $data['process']['default_langcode'] = [
-        'plugin'        => 'default_value',
-        'default_value' => 0,
-      ];
-      $entity_type_definition = $this->entityTypeManager->getDefinition($values['entity_type']);
-      $id_field = $entity_type_definition->getKey('id');
+    $file_url_generator = \Drupal::service('file_url_generator');
+    $header = $this->dynamicImportHelper->generateCsvModel(
+      $values['target_entity'],
+      $values['target_bundle'],
+      $values['concerned_fields'],
+      $values['is_translation'],
+      NULL,
+      TRUE
+    );
+    $storage = $this->entityTypeManager->getStorage($values['target_entity']);
+    $query = $storage->getQuery();
+    $query->accessCheck(FALSE);
+    if ($values['target_entity'] !== $values['target_bundle']) {
+      $entity_type_definition = $this->entityTypeManager->getDefinition($values['target_entity']);
       $bundle_field = $entity_type_definition->getKey('bundle');
-
-      $data['process'][$id_field] = [
-        'plugin'        => 'translation_legacy_id',
-        'entity'        => $values['entity_type'],
-        'bundle'        => $values['bundle'],
-        'mapping_field' => 'legacy_id',
-        'bundle_key'    => $bundle_field,
-        'source'        => 'original',
-      ];
+      $query->condition($bundle_field, $values['target_bundle']);
     }
-
-    foreach ($header as $field) {
-      if ($field == 'id') {
-        $data['process']['legacy_id'] = $field;
-      }
-      else {
-        $config = $field ? explode('|', $field) : [];
-        if (is_array($config) && count($config) == 3) {
+    $ids = $query->execute();
+    $data = [];
+    foreach ($ids as $id) {
+      $entity_data = [];
+      $entity = $storage->load($id);
+      foreach ($header as $header_item) {
+        if ($header_item == 'id') {
+          $entity_data['id'] = $entity->id();
+        }
+        else {
+          $config = $header_item ? explode('|', $header_item) : [];
           $plugin = $config[0];
-          $mapped_field = str_replace(':', '/', $config[1]);
+          $field = $config[1];
           $info = $config[2];
-          if ($plugin == '-' && $info == '-') {
-            $data['process'][$mapped_field] = $field;
-          }
-          else {
+          if (is_array($config) && count($config) == 3) {
+            $split = explode(':', $field);
+            if ($plugin == '-' && $info == '-') {
+              if (count($split) == 1) {
+                if ($field == 'path' && $values['target_entity'] == 'node') {
+                  $alias = $alias_manager->getAliasByPath('/node/' . $entity->id());
+                  $entity_data[$header_item] = $alias;
+                }
+                else {
+                  $entity_data[$header_item] = $entity->get($field)->value;
+                }
+              }
+              if (count($split) == 2) {
+                $value = $entity->get(reset($split))->getValue();
+                $entity_data[$header_item] = $value[0][end($split)];
+              }
+            }
+            if ($plugin == 'term') {
+              $term_id = $entity->get($field)->target_id;
+              $term = Term::load($term_id);
+              $entity_data[$header_item] = $term->label();
+            }
             if ($plugin == 'date') {
-              $data['process'][$mapped_field] = [
-                'plugin'      => 'format_date',
-                'source'      => $field,
-                'from_format' => $info,
-                'to_format'   => 'Y-m-d',
-              ];
+              $value = $entity->get(reset($split))->getValue();
+              $entity_data[$header_item] = $value[0][end($split)];
+
             }
             if ($plugin == 'media') {
-              if ($info == 'remote_video') {
-                $data['process'][$mapped_field] = [
-                  'plugin' => 'remote_video_import',
-                  'source' => $field,
-                ];
-              }
-              elseif ($info !== 'image_alt') {
-                $data['process'][$mapped_field] = [
-                  'plugin' => 'media_import',
-                  'destination' => 'constants/dest_path',
-                  'media_bundle' => $info,
-                  'media_field_name' => 'field_media_' . $info,
-                  'source' => $field,
-                  'skip_on_error'    => 'true',
-                ];
-                if ($info == 'image') {
-                  $data['process'][$mapped_field]['alt_field'] = $field . '_alt';
+              if ($info !== 'image_alt') {
+                $media_id = $entity->get($field)->target_id;
+                $media = isset($media_id) ? Media::load($media_id) : NULL;
+                if (!$media instanceof MediaInterface) {
+                  $entity_data[$header_item] = '';
+                  if ($info == 'image') {
+                    $key = "media|{$field}|image_alt";
+                    $entity_data[$key] = $media->thumbnail->alt;
+                  }
+                  continue;
+                }
+                if ($info == 'remote_video') {
+                  $url = $media->get(self::MEDIA_FIELD_NAMES[$info])->value;
+                  $entity_data[$header_item] = $url;
+                }
+                else {
+                  $fid = $media->get(self::MEDIA_FIELD_NAMES[$info])->target_id;
+                  $file = $fid ? File::load($fid) : NULL;
+                  if (!$file instanceof FileInterface) {
+                    $entity_data[$header_item] = '';
+                    if ($info == 'image') {
+                      $key = "media|{$field}|image_alt";
+                      $entity_data[$key] = $media->thumbnail->alt;
+                    }
+                    continue;
+                  }
+                  $image_uri = $file->getFileUri();
+
+                  $url = '';
+                  if ($moduleHandler->moduleExists('vactory_decoupled') && !is_null($media_decoupled_manager)) {
+                    $url = $media_decoupled_manager->getMediaAbsoluteUrl($image_uri);
+                  }
+                  else {
+                    $url = $file_url_generator->generateAbsoluteString($image_uri);
+                  }
+                  $entity_data[$header_item] = $url;
+                  if ($info == 'image') {
+                    $key = "media|{$field}|image_alt";
+                    $entity_data[$key] = $media->thumbnail->alt;
+                  }
                 }
               }
             }
             if ($plugin == 'file') {
-              $data['process'][$mapped_field] = [
-                'plugin'        => 'file_import',
-                'destination'   => 'constants/dest_path',
-                'source'        => $field,
-                'skip_on_error' => 'true',
-              ];
-            }
-            if ($plugin == 'term') {
-              $target_bundle = $this->getTermTargetBundle($values['entity_type'], $values['bundle'], $mapped_field);
-              if (!$target_bundle['status']) {
-                $form_state->setErrorByName('csv', $target_bundle['value']);
+              $fid = $entity->get($field)->target_id;
+              $file = $fid ? File::load($fid) : NULL;
+              if (!$file instanceof FileInterface) {
+                $entity_data[$header_item] = '';
+                continue;
+              }
+              $image_uri = $file->getFileUri();
+              if ($moduleHandler->moduleExists('vactory_decoupled') && !is_null($media_decoupled_manager)) {
+                $url = $media_decoupled_manager->getMediaAbsoluteUrl($image_uri);
               }
               else {
-                if ($info == 'id') {
-                  $data['process'][$mapped_field] = [
-                    'plugin' => 'dynamic_term_import',
-                    'bundle' => $target_bundle['value'],
-                    'source' => $field,
-                  ];
-                }
-                if ($info == '-') {
-                  $data['process'][$mapped_field] = [
-                    [
-                      'plugin'    => 'explode',
-                      'delimiter' => '|',
-                      'source'    => $field,
-                    ],
-                    [
-                      'plugin'      => 'entity_lookup',
-                      'value_key'   => 'name',
-                      'bundle_key'  => 'vid',
-                      'bundle'      => $target_bundle['value'],
-                      'entity_type' => 'taxonomy_term',
-                    ],
-                  ];
-                }
-                if ($info == '+') {
-                  $data['process'][$mapped_field] = [
-                    [
-                      'plugin'    => 'explode',
-                      'delimiter' => '|',
-                      'source'    => $field,
-                    ],
-                    [
-                      'plugin'      => 'entity_generate',
-                      'value_key'   => 'name',
-                      'bundle_key'  => 'vid',
-                      'bundle'      => $target_bundle['value'],
-                      'entity_type' => 'taxonomy_term',
-                    ],
-                  ];
-                }
+                $url = $file_url_generator->generateAbsoluteString($image_uri);
+              }
+              $entity_data[$header_item] = $url;
+            }
+            if ($plugin == 'wysiwyg') {
+              if (count($split) == 2) {
+                $value = $entity->get(reset($split))->getValue();
+                $entity_data[$header_item] = $value[0][end($split)];
               }
             }
           }
         }
       }
-    }
-    $migration_config = \Drupal::configFactory()
-      ->getEditable("migrate_plus.migration.{$id}");
-    $migration_config->setData($data);
-    $migration_config->save();
-    drupal_flush_all_caches();
-
-    if ($values['rollback']) {
-      $url = Url::fromRoute('vactory_dynamic_import.rollback')
-        ->setRouteParameters([
-          'migration' => $id,
-          'rollback'  => "{$values['entity_type']}_{$values['bundle']}_migration_",
-          'delimiter' => $values['delimiter'],
-        ]);
-
-      $form_state->setRedirectUrl($url);
-    }
-    else {
-      $url = Url::fromRoute('vactory_dynamic_import.import')
-        ->setRouteParameters([
-          'migration' => $id,
-          'delimiter' => $values['delimiter'],
-        ]);
-
-      $form_state->setRedirectUrl($url);
-    }
-  }
-
-  /**
-   * Form validation.
-   */
-  public function validateForm(array &$form, FormStateInterface $form_state) {
-    $name = $form_state->getTriggeringElement()['#name'];
-    $this->submitted[$name] = $form_state->getValue($name);
-    $triggeringElement = $form_state->getTriggeringElement();
-    if ($triggeringElement['#name'] == 'csv_remove_button') {
-      return;
-    }
-    $csv = $form_state->getValue('csv');
-    $entity_type = $form_state->getValue('entity_type');
-    $bundle = $form_state->getValue('bundle');
-    $delimiter = $form_state->getValue('delimiter');
-    $delimiter = $delimiter ? trim($delimiter) : $delimiter;
-    $label = $form_state->getValue('label');
-    $translation = $form_state->getValue('translation');
-    $language = $form_state->getValue('language');
-    if (isset($label)) {
-      $config_id = "migrate_plus.migration.{$entity_type}_{$bundle}_migration_{$label}";
-      $query = \Drupal::database()
-        ->select('config', 'c')
-        ->condition('c.name', $config_id, '=');
-
-      $count = $query->countQuery()->execute()->fetchField();
-      if ($count != 0) {
-        $form_state->setErrorByName('label', $this->t('Label already used'));
-      }
+      $data[] = $entity_data;
     }
 
-    if (isset($translation) || isset($language)) {
-      if ($translation && $language == $this->languageManager->getDefaultLanguage()->getId()) {
-        $form_state->setErrorByName('language', $this->t('Cannot use translation with default language'));
-      }
-    }
+    $delimiter = \Drupal::config('vactory_migrate.settings')->get('delimiter') ?? ',';
+    $path = $this->dynamicImportHelper->generateCsv($header, $data, "{$values['target_entity']}--{$values['target_bundle']}--export", $delimiter);
 
-    // Validation de header.
-    if (isset($csv)) {
-      $fid = (int) reset($csv);
-      $file = File::load($fid);
-      $file_path = NULL;
-      if ($file) {
-        $file_path = \Drupal::service('file_system')
-          ->realpath($file->getFileUri());
-      }
-      $header = $this->getCsvHeader($file_path, $delimiter);
-
-      if (!empty($header)) {
-        if (!in_array('id', $header)) {
-          $form_state->setErrorByName('csv', $this->t("The uploaded CSV file must include an 'id' column for proper processing."));
-        }
-
-        if ($translation && !in_array('original', $header)) {
-          $form_state->setErrorByName('csv', $this->t("The uploaded CSV file must include an 'original' column for migrating translations."));
-        }
-
-        $check_content = $this->isValidCsvContent($file_path, $delimiter, count($header));
-        if (!$check_content['status']) {
-          $form_state->setErrorByName('csv', $this->t('Invalid CSV content format at line') . ' ' . $check_content['line']);
-        }
-        $check_duplicated_id = $this->isColumnDuplicated($file_path, $delimiter, 'id');
-        if (!$check_duplicated_id['status']) {
-          $form_state->setErrorByName('csv', $this->t('CSV contains duplicated ID :') . ' ' . $check_duplicated_id['value']);
-        }
-        $check_fields = $this->isValidFields($entity_type, $bundle, $header);
-        if (!$check_fields['status']) {
-          $form_state->setErrorByName('csv', $this->t('CSV header contains unknown fields :') . ' ' . implode(', ', $check_fields['fields']));
-        }
-      }
-    }
-
-    parent::validateForm($form, $form_state);
-  }
-
-  /**
-   * Get csv Header.
-   */
-  private function getCsvHeader($path, $delimiter) {
-    $csv = fopen($path, 'r');
-    if ($csv) {
-      $header = fgetcsv($csv, NULL, $delimiter);
-      return $header;
-    }
-    return [];
-  }
-
-  /**
-   * Check csv format.
-   */
-  private function isValidCsvContent($path, $delimiter, $expected_columns) {
-    $index = 0;
-    $handle = fopen($path, 'r');
-    if ($handle === FALSE) {
-      return FALSE;
-    }
-
-    while (($row = fgetcsv($handle, 0, $delimiter)) !== FALSE) {
-      if (count($row) != $expected_columns) {
-        return ['status' => FALSE, 'line' => $index + 1];
-      }
-      $index++;
-    }
-
-    fclose($handle);
-    return ['status' => TRUE];
-  }
-
-  /**
-   * Check if csv files contains duplicated column value.
-   */
-  private function isColumnDuplicated($file_path, $delimiter, $column_name) {
-    $handle = fopen($file_path, 'r');
-    if ($handle === FALSE) {
-      return FALSE;
-    }
-
-    $header = fgetcsv($handle, 0, $delimiter);
-    $column_index = array_search($column_name, $header);
-    if ($column_index === FALSE) {
-      fclose($handle);
-      return FALSE;
-    }
-
-    $values = [];
-    while (($row = fgetcsv($handle, 0, $delimiter)) !== FALSE) {
-      if (isset($row[$column_index])) {
-        $value = $row[$column_index];
-        if (in_array($value, $values)) {
-          fclose($handle);
-          return [
-            'status' => FALSE,
-            'value'  => $value,
-          ];
-        }
-        $values[] = $value;
-      }
-    }
-
-    fclose($handle);
-    return ['status' => TRUE];
-  }
-
-  /**
-   * Check if field exists for an entity and bundle.
-   */
-  private function isValidFields($entity_type_id, $bundle, $header) {
-    $field_definitions = $this->entityFieldManager->getFieldDefinitions($entity_type_id, $bundle);
-    $fields = array_keys($field_definitions);
-
-    $unknown_fields = [];
-
-    foreach ($header as $field) {
-      if ($field != 'id' && $field != 'original') {
-        $config = $field ? explode('|', $field) : [];
-        $extracted_field = $config[1] ?? '';
-        $field = $extracted_field ? explode(':', $extracted_field) : [];
-        $field = $field[0] ?? '';
-        if (!in_array($field, $fields) && $field != 'id' && $field != 'original') {
-          $unknown_fields[] = $field;
-        }
-      }
-    }
-
-    if (count($unknown_fields) == 0) {
-      return ['status' => TRUE];
-    }
-    else {
-      return [
-        'status' => FALSE,
-        'fields' => $unknown_fields,
-      ];
-    }
-  }
-
-  /**
-   * Get Term Target Bundle By Field.
-   */
-  private function getTermTargetBundle($entity_type, $bundle, $field) {
-    $splitted = $field ? explode('/', $field) : [];
-    $field = $splitted[0] ?? '';
-    $field_definitions = $this->entityFieldManager->getFieldDefinitions($entity_type, $bundle);
-    foreach ($field_definitions as $field_name => $field_definition) {
-      if ($field_name == $field) {
-        $settings = $field_definition->getSettings();
-        if ($settings['target_type'] !== 'taxonomy_term') {
-          return [
-            'status' => FALSE,
-            'value'  => "{$field_name} configuration is not correct",
-          ];
-        }
-        $target_bundle = $settings['handler_settings']['target_bundles'];
-        return [
-          'status' => TRUE,
-          'value'  => reset($target_bundle),
-        ];
-      }
-    }
+    $response = new BinaryFileResponse(\Drupal::service('file_system')
+      ->realPath($path), 200, [], FALSE);
+    $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, "{$values['target_entity']}--{$values['target_bundle']}--export" . '.csv');
+    $response->deleteFileAfterSend(TRUE);
+    $response->send();
   }
 
 }

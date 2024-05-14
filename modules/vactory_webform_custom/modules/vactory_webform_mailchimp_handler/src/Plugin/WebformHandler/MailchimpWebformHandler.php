@@ -279,7 +279,8 @@ class MailchimpWebformHandler extends WebformHandlerBase {
   protected function getLists() {
     $lists = [];
 
-    if (isset($this->configuration['api_key']) && isset($this->configuration['server_prefix'])) {
+    if (isset($this->configuration['api_key']) && isset($this->configuration['server_prefix']) 
+      && !empty($this->configuration['api_key']) && !empty($this->configuration['server_prefix'])) {
       $client = new MailchimpMarketing\ApiClient();
       $client->setConfig([
         'apiKey' => $this->configuration['api_key'],

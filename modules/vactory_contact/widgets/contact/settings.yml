@@ -1,0 +1,21 @@
+name: 'Simple'
+multiple: FALSE
+category: 'Formulaires'
+enabled: TRUE
+fields:
+  webform:
+    type: webform_decoupled
+    label: 'Formulaire'
+    options:
+      '#required': TRUE
+  title:
+    type: text
+    label: "Titre"
+  intro:
+    type: text_format
+    label: 'Introduction'
+    options:
+      '#format': 'full_html'
+  link:
+    type: url_extended
+    label: 'Lien'

@@ -171,6 +171,7 @@ class VactoryRemotePostWebformHandler extends WebformHandlerBase {
       'messages' => [],
       // Custom error response redirect URL.
       'error_url' => '',
+      'datalayer_mapping' => '',
     ];
   }
 
@@ -373,7 +374,6 @@ class VactoryRemotePostWebformHandler extends WebformHandlerBase {
       '#default_value' => $this->configuration['debug'],
     ];
 
-
     // Submission data.
     $form['submission_data'] = [
       '#type' => 'details',
@@ -408,7 +408,7 @@ class VactoryRemotePostWebformHandler extends WebformHandlerBase {
       '#markup' => '<table class="table"><tbody><tr><th>Webform field key</th><th>Remote field key</th></tr>',
     ];
     $data_fields = $this->getWebform()->getElementsDecodedAndFlattened();
-    
+
     $elemets_to_exclude = [
       'webform_flexbox',
       'webform_wizard_page',
@@ -440,6 +440,19 @@ class VactoryRemotePostWebformHandler extends WebformHandlerBase {
     }
     $form['fields_mapping']['table_closer'] = [
       '#markup' => '</tbody></table>',
+    ];
+
+    $form['datalayer'] = [
+      '#type' => 'details',
+      '#title' => t('Datalayer mapping'),
+    ];
+
+    $form['datalayer']['datalayer_mapping'] = [
+      '#type' => 'webform_codemirror',
+      '#mode' => 'yaml',
+      '#title' => $this->t('Datalayer mapping'),
+      '#description' => $this->t('Enter response field that will be pushed in datalayer.'),
+      '#default_value' => $this->configuration['datalayer_mapping'],
     ];
 
     $this->elementTokenValidate($form);
@@ -551,6 +564,10 @@ class VactoryRemotePostWebformHandler extends WebformHandlerBase {
       $this->handleError($state, $message, $request_url, $request_method, $request_type, $request_options, $response);
       return;
     }
+    $moduleHandler = \Drupal::service('module_handler');
+    if ($moduleHandler->moduleExists('vactory_decoupled_webform')) {
+      $this->pushDatalayer($response);
+    }
 
     // If debugging is enabled, display the request and response.
     $this->debug(t('Remote post successful!'), $state, $request_url, $request_method, $request_type, $request_options, $response, 'warning');
@@ -647,10 +664,10 @@ class VactoryRemotePostWebformHandler extends WebformHandlerBase {
     }
 
     $data_fields = $this->getWebform()->getElementsDecodedAndFlattened();
-    foreach ($data as $key => $value){
-      if (key_exists($key,$data_fields) && $data_fields[$key]['#type'] == 'webform_term_select'){
+    foreach ($data as $key => $value) {
+      if (array_key_exists($key, $data_fields) && $data_fields[$key]['#type'] == 'webform_term_select') {
         $term = Term::load($data[$key]);
-        if ($term){
+        if ($term) {
           $option_label = $term->getName();
           $data[$key] = $option_label;
         }
@@ -663,7 +680,7 @@ class VactoryRemotePostWebformHandler extends WebformHandlerBase {
     foreach ($data as $key => $value) {
       if (!empty($this->configuration[$key . '_remote_key'])) {
         $data[$this->configuration[$key . '_remote_key']] = $value;
-        if ($this->configuration[$key . '_remote_key'] !=  $key){
+        if ($this->configuration[$key . '_remote_key'] != $key) {
           unset($data[$key]);
         }
       }
@@ -862,7 +879,10 @@ class VactoryRemotePostWebformHandler extends WebformHandlerBase {
 
     $build = [
       '#type' => 'details',
-      '#title' => $this->t('Debug: Remote post: @title [@state]', ['@title' => $this->label(), '@state' => $state]),
+      '#title' => $this->t('Debug: Remote post: @title [@state]', [
+        '@title' => $this->label(),
+        '@state' => $state,
+      ]),
     ];
 
     // State.
@@ -870,7 +890,10 @@ class VactoryRemotePostWebformHandler extends WebformHandlerBase {
       '#type' => 'item',
       '#title' => $this->t('Submission state/operation:'),
       '#markup' => $state,
-      '#wrapper_attributes' => ['class' => ['container-inline'], 'style' => 'margin: 0'],
+      '#wrapper_attributes' => [
+        'class' => ['container-inline'],
+        'style' => 'margin: 0',
+      ],
     ];
 
     // Request.
@@ -879,19 +902,28 @@ class VactoryRemotePostWebformHandler extends WebformHandlerBase {
       '#type' => 'item',
       '#title' => $this->t('Request URL'),
       '#markup' => $request_url,
-      '#wrapper_attributes' => ['class' => ['container-inline'], 'style' => 'margin: 0'],
+      '#wrapper_attributes' => [
+        'class' => ['container-inline'],
+        'style' => 'margin: 0',
+      ],
     ];
     $build['request_method'] = [
       '#type' => 'item',
       '#title' => $this->t('Request method'),
       '#markup' => $request_method,
-      '#wrapper_attributes' => ['class' => ['container-inline'], 'style' => 'margin: 0'],
+      '#wrapper_attributes' => [
+        'class' => ['container-inline'],
+        'style' => 'margin: 0',
+      ],
     ];
     $build['request_type'] = [
       '#type' => 'item',
       '#title' => $this->t('Request type'),
       '#markup' => $request_type,
-      '#wrapper_attributes' => ['class' => ['container-inline'], 'style' => 'margin: 0'],
+      '#wrapper_attributes' => [
+        'class' => ['container-inline'],
+        'style' => 'margin: 0',
+      ],
     ];
     $build['request_options'] = [
       '#type' => 'item',
@@ -911,7 +943,10 @@ class VactoryRemotePostWebformHandler extends WebformHandlerBase {
         '#type' => 'item',
         '#title' => $this->t('Response status code:'),
         '#markup' => $response->getStatusCode(),
-        '#wrapper_attributes' => ['class' => ['container-inline'], 'style' => 'margin: 0'],
+        '#wrapper_attributes' => [
+          'class' => ['container-inline'],
+          'style' => 'margin: 0',
+        ],
       ];
       $build['response_header'] = [
         '#type' => 'item',
@@ -1091,6 +1126,42 @@ class VactoryRemotePostWebformHandler extends WebformHandlerBase {
   protected function buildTokenTreeElement(array $token_types = ['webform', 'webform_submission'], $description = NULL) {
     $description = $description ?: $this->t('Use [webform_submission:values:ELEMENT_KEY:raw] to get plain text values.');
     return parent::buildTokenTreeElement($token_types, $description);
+  }
+
+  /**
+   * Fills datalayer field.
+   */
+  private function pushDatalayer($response) {
+    $database = \Drupal::service('database');
+    $sid = $this->webformSubmission->id();
+    $datalayer_mapping = Yaml::decode($this->configuration['datalayer_mapping']);
+    $response_data = $this->getResponseData($response);
+    $datalayer = [];
+    foreach ($datalayer_mapping as $datalayer_key => $response_key) {
+      if (array_key_exists($response_key, $response_data)) {
+        $datalayer[$datalayer_key] = $response_data[$response_key];
+      }
+    }
+
+    $query = $database->select('webform_submission', 'ws');
+    $query->fields('ws', ['datalayer']);
+    $query->condition('ws.sid', $sid);
+
+    $data = $query->execute()->fetchAssoc();
+    $updated_datalayer = [];
+    if (!empty($data['datalayer'])) {
+      $data = json_decode($data['datalayer'], TRUE);
+      $data['data'] = array_merge($data['data'], $datalayer);
+      $updated_datalayer = $data;
+    }
+    else {
+      $updated_datalayer['data'] = $datalayer;
+    }
+
+    $database->update('webform_submission')
+      ->fields(['datalayer' => json_encode($updated_datalayer)])
+      ->condition('sid', $sid)
+      ->execute();
   }
 
 }

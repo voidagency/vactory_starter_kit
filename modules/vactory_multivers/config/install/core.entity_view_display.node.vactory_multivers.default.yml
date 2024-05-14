@@ -1,0 +1,41 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.field.node.vactory_multivers.field_multivers
+    - field.field.node.vactory_multivers.field_vactory_paragraphs
+    - node.type.vactory_multivers
+  module:
+    - entity_reference_revisions
+    - user
+id: node.vactory_multivers.default
+targetEntityType: node
+bundle: vactory_multivers
+mode: default
+content:
+  field_multivers:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 101
+    region: content
+  field_vactory_paragraphs:
+    type: entity_reference_revisions_entity_view
+    label: hidden
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    weight: 107
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
+hidden:
+  addtoany: true
+  langcode: true
+  search_api_excerpt: true

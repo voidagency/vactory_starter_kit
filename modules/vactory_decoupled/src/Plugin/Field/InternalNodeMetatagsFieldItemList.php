@@ -3,17 +3,17 @@
 namespace Drupal\vactory_decoupled\Plugin\Field;
 
 use Drupal\Component\Utility\UrlHelper;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Field\FieldItemList;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Site\Settings;
 use Drupal\Core\TypedData\ComputedItemListTrait;
 use Drupal\Core\TypedData\TraversableTypedDataInterface;
-use Drupal\node\Entity\Node;
 
 /**
  * Metatags per node.
  */
-class InternalNodeMetatagsFieldItemList extends FieldItemList
-{
+class InternalNodeMetatagsFieldItemList extends FieldItemList {
 
   use ComputedItemListTrait;
 
@@ -66,8 +66,17 @@ class InternalNodeMetatagsFieldItemList extends FieldItemList
    */
   protected $request;
 
-  public static function createInstance($definition, $name = NULL, TraversableTypedDataInterface $parent = NULL)
-  {
+  /**
+   * Cacheability.
+   *
+   * @var \Drupal\Core\Cache\CacheableMetadata
+   */
+  protected ?CacheableMetadata $cacheMetadata = NULL;
+
+  /**
+   * Create instance.
+   */
+  public static function createInstance($definition, $name = NULL, TraversableTypedDataInterface $parent = NULL) {
     $instance = parent::createInstance($definition, $name, $parent);
     $container = \Drupal::getContainer();
     $instance->entityRepository = $container->get('entity.repository');
@@ -77,15 +86,15 @@ class InternalNodeMetatagsFieldItemList extends FieldItemList
     $instance->configFactory = $container->get('config.factory');
     $instance->vactoryDecoupledHelper = $container->get('vactory_decoupled.helper');
     $instance->request = $container->get('request_stack')->getCurrentRequest();
+    $instance->cacheMetadata = new CacheableMetadata();
     return $instance;
   }
 
   /**
    * {@inheritdoc}
    */
-  protected function computeValue()
-  {
-    /** @var Node $entity */
+  protected function computeValue() {
+    /** @var \Drupal\node\Entity\Node $entity */
     $entity = $this->getEntity();
     $entity_type = $entity->getEntityTypeId();
 
@@ -116,6 +125,7 @@ class InternalNodeMetatagsFieldItemList extends FieldItemList
     $tags = $this->metatagManager->generateRawElements($metatags, $entity);
     $normalized_tags = [];
     $host = $this->request->getSchemeAndHttpHost();
+    $query = $this->request->query->all("q");
     $frontend_url = Settings::get('BASE_FRONTEND_URL', 'frontend_url');
     $media_url = Settings::get('BASE_MEDIA_URL', 'media_url');
     $site_config = $this->configFactory->get('system.site');
@@ -127,14 +137,19 @@ class InternalNodeMetatagsFieldItemList extends FieldItemList
         $is_url = UrlHelper::isValid($value, TRUE);
         $is_internal_url = str_starts_with($value, $host);
         if ($concerned_attr && $is_url && $is_internal_url) {
-          $url_pieces = explode('/', $value);
-          $last_piece = array_pop($url_pieces) ?? '';
-          $is_file = str_contains($last_piece, '.');
-          $replacement = $is_file ? $media_url : $frontend_url;
-          $value = str_replace($host, $replacement, $value);
-          // Replace front page alias with empty string.
-          $value = str_replace($front_page, '', $value);
-          $value = str_replace($front_page_alias, '', $value);
+          if ($key !== 'canonical_url') {
+            $url_pieces = explode('/', $value);
+            $last_piece = array_pop($url_pieces) ?? '';
+            $is_file = str_contains($last_piece, '.');
+            $replacement = $is_file ? $media_url : $frontend_url;
+            $value = str_replace($host, $replacement, $value);
+            // Replace front page alias with empty string.
+            $value = str_replace($front_page, '', $value);
+            $value = str_replace($front_page_alias, '', $value);
+          }
+          elseif (!empty($query)) {
+            $value = $value . '?' . http_build_query($query);
+          }
         }
       }
       $normalized_tags[] = [
@@ -144,6 +159,24 @@ class InternalNodeMetatagsFieldItemList extends FieldItemList
       ];
     }
 
+    $this->cacheMetadata->addCacheContexts(['url.query_args:q']);
     $this->list[0] = $this->createItem(0, $normalized_tags);
   }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function access($operation = 'view', AccountInterface $account = NULL, $return_as_object = FALSE) {
+    $access = parent::access($operation, $account, TRUE);
+    if ($return_as_object) {
+      $this->ensureComputedValue();
+      \assert($this->cacheMetadata instanceof CacheableMetadata);
+      $access->addCacheableDependency($this->cacheMetadata);
+
+      return $access;
+    }
+
+    return $access->isAllowed();
+  }
+
 }

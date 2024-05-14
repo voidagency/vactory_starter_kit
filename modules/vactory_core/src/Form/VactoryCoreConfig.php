@@ -47,6 +47,24 @@ class VactoryCoreConfig extends ConfigFormBase {
       '#default_value' => $config->get('http_client_ssl_verification') ?? TRUE,
     ];
 
+    $form['generate_pdf_thumbnail_wrapper'] = [
+      '#type' => 'fieldset',
+      '#title' => $this
+        ->t('thumbnails des media de type PDF'),
+    ];
+
+    $form['generate_pdf_thumbnail_wrapper']['generate_pdf_thumbnail'] = [
+      '#type' => 'checkbox',
+      '#title' => t("Activer la création des thumbnails des media de type PDF"),
+      '#default_value' => $config->get('generate_pdf_thumbnail') ?? FALSE,
+    ];
+
+    $form['generate_pdf_thumbnail_wrapper']['requirements'] = [
+      '#type' => 'item',
+      '#title' => t('Requirements Status'),
+      '#markup' => $this->getRequirementsMarkup(),
+    ];
+
     return $form;
   }
 
@@ -55,10 +73,26 @@ class VactoryCoreConfig extends ConfigFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $http_client_ssl_verification = $form_state->getValue('http_client_ssl_verification');
+    $generate_pdf_thumbnail = $form_state->getValue('generate_pdf_thumbnail');
     $this->config('vactory_core.global_config')
       ->set('http_client_ssl_verification', $http_client_ssl_verification)
+      ->set('generate_pdf_thumbnail', $generate_pdf_thumbnail)
       ->save();
     parent::submitForm($form, $form_state);
+  }
+
+  /**
+   * Helper function to get the markup for requirements status.
+   */
+  private function getRequirementsMarkup() {
+    // Check if Imagick extension is loaded.
+    $imagick_installed = extension_loaded('imagick');
+
+    $output = '<div>';
+    $output .= 'Imagick Extension: ' . ($imagick_installed ? 'Installed' : 'Not Installed');
+    $output .= '</div>';
+
+    return $output;
   }
 
 }

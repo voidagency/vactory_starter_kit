@@ -1,0 +1,10 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - node.type.vactory_seo
+id: node.vactory_seo
+target_entity_type_id: node
+target_bundle: vactory_seo
+default_langcode: site_default
+language_alterable: false

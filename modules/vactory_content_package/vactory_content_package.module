@@ -30,10 +30,6 @@ function vactory_content_package_entity_base_field_info(EntityTypeInterface $ent
         'max_length' => 255,
         'text_processing' => 0,
       ])
-      ->setDisplayOptions('form', [
-        'type' => 'string_textfield_with_counter',
-        'weight' => 3,
-      ])
       ->setDisplayConfigurable('form', TRUE);
 
     $fields['node_content_package_exclude'] = BaseFieldDefinition::create('boolean')
@@ -69,10 +65,6 @@ function vactory_content_package_entity_base_field_info(EntityTypeInterface $ent
         'default_value' => '',
         'max_length' => 255,
         'text_processing' => 0,
-      ])
-      ->setDisplayOptions('form', [
-        'type' => 'string_textfield_with_counter',
-        'weight' => 3,
       ]);
   }
   return $fields;

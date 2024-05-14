@@ -1,0 +1,338 @@
+<?php
+
+/**
+ * @file
+ * Vactory Newsletter module.
+ */
+
+use Drupal\block_content\Entity\BlockContent;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Url;
+use Drupal\views\ViewExecutable;
+use GuzzleHttp\Exception\RequestException;
+use MailchimpMarketing\ApiClient;
+use Symfony\Component\HttpFoundation\RedirectResponse;
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_mailchimp_newsletter_theme() {
+  return [
+    // Node > Newsletter Mailchimp tpl.
+    'node__newsletter__mailchimp_newsletter' => [
+      'base hook' => 'node',
+      'template'  => 'mailchimp_newsletter',
+    ],
+    // Node > Vactory Newsletter inline card simple.
+    'node__newsletter_inline_card_simple' => [
+      'base hook' => 'node',
+      'template'  => 'newsletter_inline_card_simple',
+    ],
+    // Node > Vactory Newsletter inline card with an image.
+    'node__newsletter_inline_card_image' => [
+      'base hook' => 'node',
+      'template'  => 'newsletter_inline_card_image',
+    ],
+    'vactory_mailchimp_newsletter_block_filtred_by_taxonomy' => [
+      'template' => 'block-filtred-by-taxonomy',
+      "variables" => [
+        "content" => [],
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_entity_operation().
+ */
+function vactory_mailchimp_newsletter_entity_operation(EntityInterface $entity) {
+  $route_name = Drupal::routeMatch()->getRouteName();
+  if ($route_name == 'view.newsletter.listing') {
+    $recipients = \Drupal::service('vactory_mailchimp_newsletter.campaigns.manage')->mailchimpGetInfos()['list_id'];
+    $operations = [];
+    $operations['sendNewsletter'] = [
+      'title' => t('Envoyer'),
+      'url' => Url::fromRoute('vactory_mailchimp_newsletter.newsletter_send',
+       ['node' => $entity->id(), 'recipients' => $recipients]),
+      'weight' => 150,
+    ];
+    return $operations;
+  }
+}
+
+/**
+ * Implements hook_preprocess().
+ */
+function vactory_mailchimp_newsletter_preprocess(&$variables) {
+  global $base_url;
+  $variables['base_url'] = $base_url;
+}
+
+/**
+ * Implements hook_node_presave().
+ */
+function vactory_mailchimp_newsletter_node_presave($node) {
+  if ($node->bundle() === 'newsletter' && $node->get('send_test')->value == 1 && !empty($node->get('test_audience')->value) && !empty($node->get('tester_email')->value)) {
+    $url = Url::fromRoute('view.newsletter.listing');
+    $tester_email = $node->get('tester_email')->value;
+    $list_id = $node->get('test_audience')->value;
+    $mc_campaign = mailchimp_get_api_object('MailchimpCampaigns');
+    if (!$mc_campaign) {
+      throw new Exception('Cannot send campaign without Mailchimp API. Check API key has been entered.');
+    }
+    /** @var \Mailchimp\MailchimpLists $mcapi */
+    $mcapi = mailchimp_get_api_object('MailchimpLists');
+
+    // Get list members.
+    $members = $mcapi->getMembers($list_id, ['count' => 50]);
+    $email_already_exist = FALSE;
+    // Check if member is already exist.
+    if (!empty($members->members)) {
+      foreach ($members->members as $key => $value) {
+        $email = $value->email_address;
+        if ($email == $tester_email) {
+          $email_already_exist = TRUE;
+        }
+      }
+    }
+    // Add subscriber.
+    if (!$email_already_exist) {
+      $mcapi->addMember($list_id, $tester_email, ['status' => 'subscribed']);
+    }
+    // Send created newsletter via mailchimp.
+    \Drupal::service('vactory_mailchimp_newsletter.campaigns.manage')->mailchimpSendNewsletter($node, $list_id);
+    return new RedirectResponse($url->toString());
+  }
+}
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function vactory_mailchimp_newsletter_entity_base_field_info(EntityTypeInterface $entity_type) {
+  $fields = [];
+  // Using the Newsletter MailchimpWebformHandler config.
+  $mc_infos = \Drupal::service('vactory_mailchimp_newsletter.campaigns.manage')->mailchimpGetInfos();
+
+  if ($entity_type->id() === 'node') {
+    // The tester mail.
+    $fields['tester_email'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Mon email'))
+      ->setDescription(t('Set your email.'))
+      ->setSettings([
+        'max_length' => 255,
+        'text_processing' => 0,
+      ])
+      ->setTranslatable(TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'string_textfield',
+        'weight' => -10,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayConfigurable('field', TRUE);
+
+    $fields['test_audience'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Test Audience'))
+      ->setDescription(t('Select the Test list you want to send this submission to.'))
+      ->setRevisionable(TRUE)
+      ->setTranslatable(TRUE)
+      ->setSetting('allowed_values', get_lists($mc_infos))
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE)
+      ->setDisplayOptions('form', [
+        'type'   => 'options_select',
+        'weight' => -6,
+      ]);
+
+    $fields['send_test'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Envoyer un test'))
+      ->setRevisionable(TRUE)
+      ->setTranslatable(TRUE)
+      ->setDisplayOptions('form', [
+        'type'     => 'boolean_checkbox',
+        'settings' => [
+          'display_label' => TRUE,
+        ],
+        'weight'   => 45,
+      ])
+      ->setDisplayConfigurable('form', TRUE);
+
+  }
+  return $fields;
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function vactory_mailchimp_newsletter_form_node_form_alter(&$form) {
+  $form['node_newsletter_test'] = [
+    '#type'        => 'details',
+    '#title'       => t('Newsletter test'),
+    '#description' => t('Send a newsletter test.'),
+    '#group'       => 'advanced',
+    '#open'        => FALSE,
+    '#access'      => \Drupal::currentUser()
+      ->hasPermission('administrer newsletter'),
+  ];
+  $form['tester_email']['#group'] = 'node_newsletter_test';
+  $form['test_audience']['#group'] = 'node_newsletter_test';
+  $form['send_test']['#group'] = 'node_newsletter_test';
+}
+
+/**
+ * Get Mailchimp lists.
+ */
+function get_lists($mc_infos) {
+  $lists = [];
+
+  if (isset($mc_infos['api_key']) && isset($mc_infos['server_prefix'])) {
+    $client = new ApiClient();
+    $client->setConfig([
+      'apiKey' => $mc_infos['api_key'],
+      'server' => $mc_infos['server_prefix'],
+    ]);
+
+    try {
+      $response = $client->lists->getAllLists(NULL, NULL, 50, 0);
+    }
+    catch (RequestException $request_exception) {
+      $response['message'] = t("An exception occurred while getting Mailchimp lists: @message", ['@message' => $request_exception->getMessage()]);
+      \Drupal::logger('vactory_mailchimp')->error($response['message']);
+    }
+
+    if (isset($response->total_items) && $response->total_items > 0) {
+      foreach ($response->lists as $list) {
+        $lists[$list->id] = $list->name;
+      }
+    }
+  }
+
+  return $lists;
+}
+
+/**
+ * Implements hook_views_pre_view().
+ */
+function vactory_mailchimp_newsletter_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
+  $route_name = Drupal::routeMatch()->getRouteName();
+  // Do nothing in jsonapi call case.
+  if (strpos($route_name, 'jsonapi') === 0) {
+    return;
+  }
+  // Check if header is enabled.
+  $is_header_enabled = !empty($view->display_handler->options['header']) ? TRUE : FALSE;
+  if ($view->id() == 'newsletter' && $is_header_enabled) {
+    // Get the header block machine name.
+    $block_machine_name = $view->display_handler->options['header']['entity_block_content']['target'];
+    if (!empty($block_machine_name)) {
+      $entity_manager = \Drupal::service('entity_type.manager');
+      // Load Block by machine name.
+      $block = $entity_manager->getStorage('block_content')
+        ->loadByProperties(['block_machine_name' => $block_machine_name]);
+
+      if (is_array($block) && reset($block) instanceof BlockContent) {
+        // Get block view display.
+        $block_content = $entity_manager->getViewBuilder('block_content')
+          ->view(reset($block));
+        // Override the view header for the current display.
+        $item = [
+          'id' => 'area_text_custom',
+          'table' => 'views',
+          'field' => 'area_text_custom',
+          'relationship' => 'none',
+          'group_type' => 'none',
+          'admin_label' => '',
+          'empty' => TRUE,
+          'tokenize' => FALSE,
+          'content' => \Drupal::service('renderer')
+            ->render($block_content),
+          'plugin_id' => 'text_custom',
+        ];
+        $view->setHandler($display_id, 'header', 'area_text_custom', $item);
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_HOOK().
+ */
+function vactory_mailchimp_newsletter_preprocess_views_view(&$variables) {
+  $view = $variables['view'];
+  if ($view instanceof ViewExecutable && $view->id() === 'newsletter' && $view->display_handler->getPluginId() === 'block') {
+    $args = $view->args;
+    if (count($args) > 1 && isset($args[1]) && is_array($args[1])) {
+      $meta_data = $args[1];
+      if (isset($meta_data['news_term_id'])) {
+        $args[0] = $meta_data['news_term_id'];
+      }
+      $term = Drupal::entityTypeManager()->getStorage('taxonomy_term')
+        ->load($args[0]);
+      $parents = $term->get('parent')->getValue();
+      $parents = array_filter($parents, function ($parent) {
+        return $parent['target_id'] !== '0' && $parent['target_id'] !== 0;
+      });
+      $has_parent = !empty($parents);
+      if (isset($meta_data['override_more_link']) && $meta_data['override_more_link']) {
+        $use_more = $view->display_handler->options['use_more'];
+        $link_display = $view->display_handler->options['link_display'];
+        if ($use_more && $link_display) {
+          $handlers_configurations = $view->displayHandlers->getConfiguration();
+          if (isset($handlers_configurations[$link_display])) {
+            $filters = $handlers_configurations[$link_display]['display_options']['filters'];
+            if (!empty($filters)) {
+              $filter_name = '';
+              // Check in view filter if we have taxonomy tid depth filter.
+              $taxonomy_tid_depth_filter = array_filter($filters, function ($filter) {
+                return $filter['plugin_id'] === 'taxonomy_index_tid_depth';
+              });
+              // In case of parent term & view taxonomy tid depth filter exist.
+              if (!$has_parent && !empty($taxonomy_tid_depth_filter)) {
+                $filter_name = reset($taxonomy_tid_depth_filter)['id'];
+              }
+              if (empty($filter_name)) {
+                $filters_ids = array_map(function ($filter) {
+                  return isset($filter['expose']['identifier']) ? $filter['expose']['identifier'] : $filter['id'];
+                }, $filters);
+                $field_name = $meta_data['field_name'];
+                $matches = preg_grep('#(.)*' . $field_name . '(.)*#', array_flip($filters_ids));
+                if (!empty($matches)) {
+                  $filter_name = array_keys($matches)[0];
+                }
+              }
+              if (isset($variables['more']['#url']) && !empty($filter_name)) {
+                $listing_route = 'view.' . $view->id() . '.' . $link_display;
+                $variables['more']['#url'] = Url::fromRoute($listing_route, [$filter_name => $args[0]]);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function vactory_mailchimp_newsletter_form_alter(&$form, &$form_state, $form_id) {
+  if (in_array($form_id, ['node_newsletter_edit_form', 'node_newsletter_form'])) {
+    $form['field_vactory_datetime']['#states'] = [
+      'visible' => [
+        ':input[name="field_envoi_planifie[value]"]' => [
+          'checked' => TRUE,
+        ]
+      ]
+    ];
+    $form['field_recurrence']['#states'] = [
+      'visible' => [
+        ':input[name="field_envoi_planifie[value]"]' => [
+          'checked' => TRUE,
+        ]
+      ]
+    ];
+  }
+}

@@ -1,0 +1,31 @@
+<?php
+
+/**
+ * @file
+ * Related hooks.
+ */
+
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+
+/**
+ * Implements hook_entity_bundle_field_info().
+ */
+function vactory_seo_entity_bundle_field_info(EntityTypeInterface $entity_type, $bundle, array $base_field_definitions) {
+
+  $fields = [];
+
+  if ($entity_type->id() == 'node' && $bundle == 'vactory_seo') {
+    $fields['seo_search_result'] = BaseFieldDefinition::create('map')
+      ->setLabel(t('SEO searh result'))
+      ->setDescription(t('SEO searh result'))
+      ->setTranslatable(FALSE)
+      ->setClass('\Drupal\vactory_seo\Plugin\Field\SeoSearchResultFieldItemList')
+      ->setComputed(TRUE)
+      ->setReadOnly(TRUE)
+      ->setTargetEntityTypeId($entity_type->id())
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE);
+  }
+  return $fields;
+}

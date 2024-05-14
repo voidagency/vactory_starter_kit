@@ -6,7 +6,7 @@ use Drupal\Core\File\FileUrlGeneratorInterface;
 use Drupal\Core\Site\Settings;
 
 /**
- * Decoupled media file manager
+ * Decoupled media file manager.
  */
 class MediaFilesManager {
 
@@ -17,6 +17,9 @@ class MediaFilesManager {
    */
   protected $fileUrlGenerator;
 
+  /**
+   * Constructor.
+   */
   public function __construct(FileUrlGeneratorInterface $fileUrlGenerator) {
     $this->fileUrlGenerator = $fileUrlGenerator;
   }
@@ -47,7 +50,7 @@ class MediaFilesManager {
       $query = $url_info['query'] ?? '';
       if (!empty($path)) {
         if ($base_media_url = Settings::get('BASE_MEDIA_URL', '')) {
-          $query = !empty($query) ? "?{$query}": $query;
+          $query = !empty($query) ? "?{$query}" : $query;
           $path = "{$path}{$query}";
           $url = $base_media_url . $path;
         }

@@ -1,0 +1,16 @@
+name: 'Vactory SEO'
+description: 'Provide SEO contant type'
+type: module
+core_version_requirement: '^9.4 || ^10'
+package: Vactory
+dependencies:
+  - 'drupal:field'
+  - 'drupal:language'
+  - 'drupal:link'
+  - 'drupal:media_library'
+  - 'drupal:menu_ui'
+  - 'drupal:node'
+  - 'drupal:path'
+  - 'drupal:text'
+  - 'drupal:user'
+  - 'scheduler:scheduler'

@@ -19,7 +19,7 @@ fields:
       '#default_value':
         resource: node--vactory_blog
         filters:
-          - fields[node--vactory_blog]=drupal_internal__nid,path,title,field_blog_category,field_vactory_excerpt,field_blog_tags,field_vactory_media
+          - fields[node--vactory_blog]=drupal_internal__nid,path,title,field_blog_category,field_vactory_excerpt,field_blog_tags,field_vactory_media,is_flagged,has_flag
           - fields[taxonomy_term--vactory_blog_categories]=tid,name,term_2_slug
           - fields[taxonomy_term--vactory_blog_tags]=tid,name,term_2_slug
           - fields[media--image]=name,thumbnail

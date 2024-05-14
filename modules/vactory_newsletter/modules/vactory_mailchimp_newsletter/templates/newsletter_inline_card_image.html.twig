@@ -1,0 +1,39 @@
+
+{% set excerpt = (content.field_vactory_excerpt.0 is not empty) ? content.field_vactory_excerpt.0['#text'] : '' %}
+{# piture #}
+{% set image_title = (content.field_vactory_media.0 is not empty) ? field_vactory_media.0['#title']: '' %}
+{% set image_id = (content.field_vactory_media.0 is not empty) ? content.field_vactory_media.0['#media'].field_media_image.0.target_id : '' %}
+{% set image = (image_id is not empty) ? get_image_info(image_id): '' %}
+<tr>
+  <td style="height: 14px"></td>
+</tr>
+
+<tr>
+  <td align="left" valign="top" style="font-size:0; padding: 0 20px;">
+    <div style="display:inline-block;vertical-align:top;">
+      <table class="mobile-w-full mobile-mb-10" style="width: 211px" cellspacing="0" cellpadding="0" border="0">
+        <tr>
+          <td>
+            <img class="img-fluid" src="{{ image.url }}" alt="{{ image.alt }}" title="{{ image.title }}" width="{{ image.width }}" height="{{ image.height }}">
+          </td>
+        </tr>
+      </table>
+    </div>
+    <div class="mobile-px-0" style="display:inline-block;vertical-align:top; padding: 0 20px;">
+      <table class="mobile-w-full" style="width: 300px" cellspacing="0" cellpadding="0" border="0">
+        <tr>
+          <td>
+            <h3 style="font-family: 'Arial'; font-style: normal; font-weight: 700; font-size: 12px; line-height: 14px; color: #000000; margin-bottom: 7px;">{{ label }}</h3>
+            <div style="font-family: 'Arial'; font-style: normal; font-weight: 400; font-size: 10px; line-height: 14px; color: #635764; margin-bottom: 7px;">{{ excerpt |raw }}</div>
+            {% if url is not null %}
+              <a href="{{ base_url ~ url }}" style="font-family: 'Arial'; font-style: normal; font-weight: 700; font-size: 10px; line-height: 14px; color: #F9B900; text-decoration: none;">{{ 'Lire la suite' |t }}</a>
+            {% endif %}
+          </td>
+        </tr>
+      </table>
+    </div>
+  </td>
+</tr>
+<tr>
+  <td style="height: 14px"></td>
+</tr>

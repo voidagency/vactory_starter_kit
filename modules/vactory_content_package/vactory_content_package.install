@@ -20,10 +20,6 @@ function vactory_content_package_install($is_syncing) {
       'default_value' => '',
       'max_length' => 255,
       'text_processing' => 0,
-    ])
-    ->setDisplayOptions('form', [
-      'type' => 'string_textfield_with_counter',
-      'weight' => 3,
     ]);
   $term_id_definition = BaseFieldDefinition::create('string')
     ->setLabel(t('Term machine name'))
@@ -34,10 +30,6 @@ function vactory_content_package_install($is_syncing) {
       'default_value' => '',
       'max_length' => 255,
       'text_processing' => 0,
-    ])
-    ->setDisplayOptions('form', [
-      'type' => 'string_textfield_with_counter',
-      'weight' => 3,
     ]);
 
   // Install node machine name new field.
@@ -47,35 +39,41 @@ function vactory_content_package_install($is_syncing) {
   Drupal::entityDefinitionUpdateManager()
     ->installFieldStorageDefinition('term_id', 'taxonomy_term', 'vactory_content_package', $term_id_definition);
 
-  // Update form displays.
-  vactory_content_package_update_form_display('node', 'node_id');
-  vactory_content_package_update_form_display('taxonomy_term', 'term_id');
+  $database = \Drupal::service('database');
+  $logger = \Drupal::logger('vactory_content_package');
+  // Nodes.
+  $sql = "SELECT nid from node_field_data ";
+  $sql .= "WHERE  node_id IS NULL";
 
-  $node_storage = Drupal::entityTypeManager()->getStorage('node');
-  $nids = $node_storage->getQuery()
-    ->condition('type', 'vactory_page')
-    ->accessCheck(FALSE)
-    ->execute();
-  if (!empty($nids)) {
-    $nodes = $node_storage->loadMultiple($nids);
-    foreach ($nodes as $node) {
-      try {
-        $node->save();
-      } catch (Exception $e) {
-      }
-    }
-  }
+  $query = $database->query($sql);
+  $result = $query->fetchAll(\PDO::FETCH_ASSOC);
+  $node_count = count($result);
 
-  $term_storage = Drupal::entityTypeManager()->getStorage('taxonomy_term');
-  $terms = $term_storage->loadMultiple();
-  if (!empty($terms)) {
-    foreach ($terms as $term) {
-      try {
-        $term->save();
-      } catch (Exception $e) {
-      }
-    }
+  $logger->debug("Process starting: updating {$node_count} nodes.");
+  foreach ($result as $row) {
+    $database->update('node_field_data')
+      ->fields(['node_id' => uniqid()])
+      ->condition('nid', $row['nid'])
+      ->execute();
   }
+  $logger->debug("Process finished: updating {$node_count} nodes.");
+
+  // Terms.
+  $sql = "SELECT tid from taxonomy_term_field_data ";
+  $sql .= "WHERE  term_id IS NULL";
+
+  $query = $database->query($sql);
+  $result = $query->fetchAll(\PDO::FETCH_ASSOC);
+  $term_count = count($result);
+
+  $logger->debug("Process starting: updating {$term_count} terms.");
+  foreach ($result as $row) {
+    $database->update('taxonomy_term_field_data')
+      ->fields(['term_id' => uniqid()])
+      ->condition('tid', $row['tid'])
+      ->execute();
+  }
+  $logger->debug("Process finished: updating {$node_count} terms.");
 }
 
 /**
@@ -139,6 +137,6 @@ function vactory_content_package_update_9572() {
     ->setDisplayConfigurable('form', TRUE);
 
   \Drupal::entityDefinitionUpdateManager()
-  ->installFieldStorageDefinition('block_content_package_exclude', 'block_content', 'block_content', $storage_definition);
+    ->installFieldStorageDefinition('block_content_package_exclude', 'block_content', 'block_content', $storage_definition);
 
 }

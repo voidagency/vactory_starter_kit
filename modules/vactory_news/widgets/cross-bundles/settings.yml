@@ -25,7 +25,7 @@ fields:
           - sort[sort-vactory-date][path]=field_vactory_date
           - sort[sort-vactory-date][direction]=DESC
 
-          - fields[node--vactory_news]=drupal_internal__nid,path,title,field_vactory_news_theme,field_vactory_media,field_vactory_excerpt,field_vactory_date
+          - fields[node--vactory_news]=drupal_internal__nid,path,title,field_vactory_news_theme,field_vactory_media,field_vactory_excerpt,field_vactory_date,is_flagged,has_flag
           - fields[taxonomy_term--vactory_news_theme]=tid,name
           - include=field_vactory_publication_theme,field_vactory_news_theme,field_vactory_media,field_vactory_media.thumbnail
 

@@ -1,0 +1,7 @@
+vactory_decoupled_image_styles.settings_form:
+  path: '/admin/config/system/vactory-image-styles-config'
+  defaults:
+    _title: 'Vactory image styles config'
+    _form: '\Drupal\vactory_decoupled_image_styles\Form\ImageStylesConfig'
+  requirements:
+    _permission: 'administer site configuration'

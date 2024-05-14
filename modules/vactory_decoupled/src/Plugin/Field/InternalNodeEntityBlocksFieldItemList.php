@@ -7,17 +7,19 @@ use Drupal\Core\Field\FieldItemList;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\TypedData\ComputedItemListTrait;
 use Drupal\Core\TypedData\TraversableTypedDataInterface;
-use Drupal\node\Entity\Node;
-use Drupal\vactory_decoupled\BlocksManager;
 
 /**
  * Blocks per node.
  */
-class InternalNodeEntityBlocksFieldItemList extends FieldItemList
-{
+class InternalNodeEntityBlocksFieldItemList extends FieldItemList {
 
   use ComputedItemListTrait;
 
+  /**
+   * Cacheability.
+   *
+   * @var \Drupal\Core\Cache\CacheableMetadata|null
+   */
   protected ?CacheableMetadata $cacheMetadata = NULL;
 
   /**
@@ -44,8 +46,7 @@ class InternalNodeEntityBlocksFieldItemList extends FieldItemList
   /**
    * {@inheritDoc}
    */
-  public static function createInstance($definition, $name = NULL, TraversableTypedDataInterface $parent = NULL)
-  {
+  public static function createInstance($definition, $name = NULL, TraversableTypedDataInterface $parent = NULL) {
     $instance = parent::createInstance($definition, $name, $parent);
     $container = \Drupal::getContainer();
     $instance->blockManager = $container->get('vactory_decoupled.blocksManager');
@@ -55,16 +56,14 @@ class InternalNodeEntityBlocksFieldItemList extends FieldItemList
     return $instance;
   }
 
-
   /**
    * {@inheritdoc}
    */
-  protected function computeValue()
-  {
-    /** @var Node $entity */
+  protected function computeValue() {
+    /** @var \Drupal\node\Entity\Node $entity */
     $entity = $this->getEntity();
     $entity_type = $entity->getEntityTypeId();
-    /** @var BlocksManager $block_manager */
+    /** @var \Drupal\vactory_decoupled\BlocksManager $block_manager */
     /*$block_manager = \Drupal::service('vactory_decoupled.blocksManager');*/
 
     if (!in_array($entity_type, ['node'])) {
@@ -89,29 +88,31 @@ class InternalNodeEntityBlocksFieldItemList extends FieldItemList
     ];
     $this->cacheMetadata->addCacheTags($tags);
     $this->moduleHandler->alter('internal_blocks_cacheability', $this->cacheMetadata, $entity, $value);
+    $this->moduleHandler->alter('node_internal_blocks', $value, $entity);
     $this->list[0] = $this->createItem(0, $value);
   }
 
-  public function access($operation = 'view', AccountInterface $account = NULL, $return_as_object = FALSE)
-  {
+  /**
+   * {@inheritdoc}
+   */
+  public function access($operation = 'view', AccountInterface $account = NULL, $return_as_object = FALSE) {
     $access = parent::access($operation, $account, TRUE);
 
     if ($return_as_object) {
       // Here you witness a pure hack. The thing is that JSON:API
       // normalization does not compute cacheable metadata for
       // computed relations like this one.
-      /** @see \Drupal\jsonapi\JsonApiResource\ResourceIdentifier */
-      /** @see \Drupal\jsonapi\Normalizer\ResourceIdentifierNormalizer */
+      /* @see \Drupal\jsonapi\JsonApiResource\ResourceIdentifier */
+      /* @see \Drupal\jsonapi\Normalizer\ResourceIdentifierNormalizer */
       // However, thanks to the access check, its result is added
       // as a cacheable dependency to the normalization.
-      /** @see \Drupal\jsonapi\Normalizer\ResourceObjectNormalizer::serializeField() */
+      /* @see \Drupal\jsonapi\Normalizer\ResourceObjectNormalizer::serializeField() */
       $this->ensureComputedValue();
       \assert($this->cacheMetadata instanceof CacheableMetadata);
       $access->addCacheableDependency($this->cacheMetadata);
 
       return $access;
     }
-
     return $access->isAllowed();
   }
 

@@ -142,11 +142,15 @@ class DynamicFieldManager {
   protected $termResultCount;
 
   /**
+   * Token.
+   *
    * @var \Drupal\Core\Utility\Token
    */
   protected $token;
 
   /**
+   * Http client.
+   *
    * @var \GuzzleHttp\Client
    */
   protected $httpClient;
@@ -156,7 +160,6 @@ class DynamicFieldManager {
    */
   public function __construct(EntityTypeManagerInterface $entity_type_manager, $plateform_provider, MediaFilesManager $mediaFilesManager, EntityRepositoryInterface $entityRepository, JsonApiGenerator $jsonApiGenerator, SlugManager $slugManager, ModuleHandlerInterface $moduleHandler, LanguageManagerInterface $languageManager, ViewsToApi $viewsToApi, ConfigFactoryInterface $configFactory, Token $token, Client $httpClient) {
     $this->entityTypeManager = $entity_type_manager;
-    $this->language = $languageManager->getCurrentLanguage()->getId();
     $this->platformProvider = $plateform_provider;
     $this->imageStyles = ImageStyle::loadMultiple();
     $this->siteConfig = $configFactory->get('system.site');
@@ -166,6 +169,7 @@ class DynamicFieldManager {
     $this->slugManager = $slugManager;
     $this->moduleHandler = $moduleHandler;
     $this->languageManager = $languageManager;
+    $this->language = $languageManager->getCurrentLanguage()->getId();
     $this->viewsToApi = $viewsToApi;
     $this->token = $token;
     $this->httpClient = $httpClient;
@@ -354,11 +358,11 @@ class DynamicFieldManager {
               }
             }
 
-            // $format = $info['options']['#format'] ?? 'full_html';
+            $format = $info['options']['#format'] ?? 'full_html';
             $build = [
               // '#type'   => 'processed_text',
-              '#text' => $text,
-              // '#format' => $format,
+              '#text' => (string) check_markup($text, $format),
+              '#format' => $format,
             ];
 
             $value = ['value' => $build];
@@ -427,6 +431,7 @@ class DynamicFieldManager {
             $key = array_keys($value)[0];
             $media_img = $value[$key]['media_google_sheet'] ?? NULL;
             $image_data = [];
+            $file = NULL;
             if (isset($value[$key]['selection'])) {
               foreach ($value[$key]['selection'] as $media) {
                 $file = $this->mediaStorage->load($media['target_id']);
@@ -471,6 +476,9 @@ class DynamicFieldManager {
                   $image_data = [$image_item];
                 }
               }
+            }
+            if ($file) {
+              $this->moduleHandler->alter('df_manager_image', $image_data, $file->thumbnail->entity);
             }
             $value = $image_data;
           }
@@ -671,6 +679,10 @@ class DynamicFieldManager {
               $retrievedContent = $contentService->getContent($media_ytb);
               $media = !empty($retrievedContent) ? $this->mediaStorage->load($retrievedContent) : NULL;
               if ($media instanceof MediaInterface) {
+                $video_url = $media->get('field_media_oembed_video')->value;
+                $thumbnail_maxres = $this->getYoutubeThumbnail($video_url);
+                $thumbnail_uri = $this->getDefaultYoutubeThumbnail($media);
+                $thumbnail = $this->mediaFilesManager->getMediaAbsoluteUrl($thumbnail_uri);
                 $value = [
                   'id'   => $media->uuid(),
                   'name' => $media->getName(),

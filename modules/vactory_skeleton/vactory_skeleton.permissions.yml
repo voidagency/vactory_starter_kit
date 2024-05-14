@@ -1,0 +1,5 @@
+# Custom permission to add skeleton for nodes.
+administer fields node skeleton:
+  title: 'Administer fields node skeleton'
+  description: 'Permission to add skeleton for nodes.'
+  restrict access: TRUE

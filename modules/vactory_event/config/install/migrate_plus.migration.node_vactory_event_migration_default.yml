@@ -1,0 +1,53 @@
+id: node_vactory_event_migration_default
+migration_group: default
+label: 'node vactory_event migration'
+source:
+  plugin: csv
+  header_row_count: 1
+  ids:
+    - id
+  delimiter: ','
+  path: 'profiles/contrib/vactory_starter_kit/modules/vactory_event/artifacts/node-vactory_event.csv'
+  constants:
+    dest_path: 'public://migrated-vactory_event/'
+process:
+  legacy_id: id
+  title: '-|title|-'
+  node_summary: '-|node_summary|-'
+  body/value: '-|body:value|-'
+  field_vactory_date_interval/value: '-|field_vactory_date_interval:value|-'
+  field_vactory_date_interval/end_value: '-|field_vactory_date_interval:end_value|-'
+  field_vactory_excerpt/value: '-|field_vactory_excerpt:value|-'
+  field_vactory_media:
+    plugin: media_import
+    destination: constants/dest_path
+    media_bundle: image
+    media_field_name: field_media_image
+    source: media|field_vactory_media|image
+    skip_on_error: 'true'
+    alt_field: media|field_vactory_media|image_alt
+  field_vactory_taxonomy_1:
+    -
+      plugin: explode
+      delimiter: '|'
+      source: term|field_vactory_taxonomy_1|+
+    -
+      plugin: entity_generate
+      value_key: name
+      bundle_key: vid
+      bundle: vactory_event_category
+      entity_type: taxonomy_term
+  field_vactory_taxonomy_2:
+    -
+      plugin: explode
+      delimiter: '|'
+      source: term|field_vactory_taxonomy_2|+
+    -
+      plugin: entity_generate
+      value_key: name
+      bundle_key: vid
+      bundle: vactory_event_citys
+      entity_type: taxonomy_term
+destination:
+  plugin: 'entity:node'
+  default_bundle: vactory_event

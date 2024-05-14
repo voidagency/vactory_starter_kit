@@ -1,0 +1,31 @@
+name: 'Favorite listing'
+multiple: FALSE
+category: 'News'
+enabled: TRUE
+fields:
+  collection:
+    type: json_api_collection
+    label: 'JSON:API'
+    options:
+      '#required': TRUE
+      '#default_value':
+        id: "vactory_news_favorite"
+        resource: node--vactory_news
+        filters:
+          - fields[node--vactory_news]=drupal_internal__nid,path,title,field_vactory_news_theme,field_vactory_media,field_vactory_excerpt,field_vactory_date,is_flagged,has_flag
+          - fields[taxonomy_term--vactory_news_theme]=tid,name
+          - fields[media--image]=name,thumbnail
+          - fields[file--image]=filename,uri
+          - include=field_vactory_news_theme,field_vactory_media,field_vactory_media.thumbnail
+          - page[offset]=0
+          - page[limit]=9
+          - sort[sort-vactory-date][path]=field_vactory_date
+          - sort[sort-vactory-date][direction]=DESC
+          - filter[status][value]=1
+          - "[vactory:flagged_nodes:vactory_news]"
+        cache_tags:
+          - flaggging_list
+        cache_contexts:
+          - user
+        vocabularies:
+          vactory_news_theme: vactory_news_theme

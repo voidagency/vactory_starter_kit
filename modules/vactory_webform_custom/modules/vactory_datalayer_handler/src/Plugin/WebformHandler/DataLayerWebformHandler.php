@@ -26,6 +26,7 @@ class DataLayerWebformHandler extends WebformHandlerBase {
   public function defaultConfiguration() {
     return [
       'fields' => [],
+      'event' => '',
     ];
   }
 
@@ -39,7 +40,13 @@ class DataLayerWebformHandler extends WebformHandlerBase {
     foreach ($elements as $element_key => $element) {
       $options[$element_key] = (isset($element['#title']) ? $element['#title'] : '');
     }
-
+    $form['event'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Event'),
+      '#description' => $this->t('Datalayer event name.'),
+      '#required' => TRUE,
+      '#default_value' => $this->configuration['event'],
+    ];
     $form['fields'] = [
       '#type' => 'webform_multiple',
       '#title' => $this->t('Fields'),
@@ -110,12 +117,43 @@ class DataLayerWebformHandler extends WebformHandlerBase {
       }
     }
     if (!empty($layerDataAttributes)) {
+      $moduleHandler = \Drupal::service('module_handler');
+      if ($moduleHandler->moduleExists('vactory_decoupled_webform')) {
+        $this->pushDatalayer($layerDataAttributes);
+      }
       $build = [
         '#children' => '<script>dataLayer = [' . json_encode($layerDataAttributes) . ']; document.querySelector(".messages > script").parentNode.style.display = \'none\';</script>',
       ];
 
       $this->messenger()->addMessage(\Drupal::service('renderer')->renderPlain($build), 'success');
     }
+  }
+
+  /**
+   * Fills datalayer field.
+   */
+  private function pushDatalayer($layerDataAttributes) {
+    $database = \Drupal::service('database');
+    $sid = $this->webformSubmission->id();
+    $datalayer = [
+      'data' => $layerDataAttributes,
+      'event' => $this->configuration['event'],
+    ];
+
+    $query = $database->select('webform_submission', 'ws');
+    $query->fields('ws', ['datalayer']);
+    $query->condition('ws.sid', $sid);
+    $data = $query->execute()->fetchAssoc();
+
+    if (!empty($data['datalayer'])) {
+      $data = json_decode($data['datalayer'], TRUE);
+      $datalayer['data'] = array_merge($data['data'], $datalayer['data']);
+    }
+
+    $database->update('webform_submission')
+      ->fields(['datalayer' => json_encode($datalayer)])
+      ->condition('sid', $sid)
+      ->execute();
   }
 
 }

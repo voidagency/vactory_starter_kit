@@ -3,11 +3,8 @@
 namespace Drupal\vactory_decoupled\Plugin\jsonapi\FieldEnhancer;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\Core\Site\Settings;
-use Drupal\Core\StreamWrapper\StreamWrapperManager;
-use Drupal\Core\Url;
-use Drupal\image\Entity\ImageStyle;
 use Drupal\jsonapi_extras\Plugin\ResourceFieldEnhancerBase;
 use Drupal\vactory_decoupled\MediaFilesManager;
 use Shaper\Util\Context;
@@ -39,6 +36,13 @@ class VactoryFileImageEnhancer extends ResourceFieldEnhancerBase implements Cont
   protected $mediaFilesManager;
 
   /**
+   * Module handler service.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
    * {@inheritdoc}
    */
   public function __construct(
@@ -46,11 +50,13 @@ class VactoryFileImageEnhancer extends ResourceFieldEnhancerBase implements Cont
     $plugin_id,
     array $plugin_definition,
     EntityTypeManagerInterface $entity_type_manager,
-    MediaFilesManager $mediaFilesManager
+    MediaFilesManager $mediaFilesManager,
+    ModuleHandlerInterface $moduleHandler
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->entityTypeManager = $entity_type_manager;
     $this->mediaFilesManager = $mediaFilesManager;
+    $this->moduleHandler = $moduleHandler;
   }
 
   /**
@@ -62,7 +68,8 @@ class VactoryFileImageEnhancer extends ResourceFieldEnhancerBase implements Cont
       $plugin_id,
       $plugin_definition,
       $container->get('entity_type.manager'),
-      $container->get('vacory_decoupled.media_file_manager')
+      $container->get('vacory_decoupled.media_file_manager'),
+      $container->get('module_handler')
     );
   }
 
@@ -73,10 +80,6 @@ class VactoryFileImageEnhancer extends ResourceFieldEnhancerBase implements Cont
     if (isset($data['value']) && !empty($data['value'])) {
       $origin_uri = $data['value'];
 
-      /*$image_app_base_url = Url::fromUserInput('/app-image/')
-        ->setAbsolute()->toString();
-      $lqipImageStyle = ImageStyle::load('lqip');*/
-
       $medias = $this->entityTypeManager->getStorage('file')
         ->loadByProperties(['uri' => $origin_uri]);
       $media = reset($medias);
@@ -84,15 +87,11 @@ class VactoryFileImageEnhancer extends ResourceFieldEnhancerBase implements Cont
       $uri = $media->getFileUri();
       $data['value'] = [
         '_default'  => $this->mediaFilesManager->getMediaAbsoluteUrl($uri),
-        //'_lqip'     => $this->mediaFilesManager->convertToMediaAbsoluteUrl($lqipImageStyle->buildUrl($uri)),
-        //'uri'       => StreamWrapperManager::getTarget($uri),
-        //'fid'       => $media->id(),
         'file_name' => $media->label(),
-        //'base_url'  => $image_app_base_url,
-        'meta' => $media->getAllMetadata()
+        'meta' => $media->getAllMetadata(),
       ];
+      $this->moduleHandler->alter('vactory_file_image_enhancer', $data, $media);
 
-//      $data['value'] = \Drupal::service('file_url_generator')->generateAbsoluteString($data['value']);
     }
     return $data;
   }

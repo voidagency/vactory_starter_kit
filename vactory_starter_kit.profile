@@ -6,6 +6,9 @@
  */
 
 use Drupal\language\Entity\ConfigurableLanguage;
+use Drupal\migrate\MigrateExecutable;
+use Drupal\migrate\MigrateMessage;
+use Drupal\migrate\Plugin\MigrationInterface;
 
 /**
  * Implements hook_form_alter().
@@ -46,6 +49,26 @@ function vactory_starter_kit_install_tasks(&$install_state) {
   return [
     'vactory_starter_kit_configure_multilingual' => [
       'display_name' => t('Configure multilingual'),
+      'display'      => TRUE,
+      'type'         => 'batch',
+    ],
+    'vactory_decoupled_module_configure_form' => [
+      'display_name' => t('Configure additional modules'),
+      'type' => 'form',
+      'function' => 'Drupal\vactory_starter_kit\Installer\Form\ModuleConfigureForm',
+    ],
+    'vactory_decoupled_module_install' => [
+      'display_name' => t('Install additional modules'),
+      'display'      => TRUE,
+      'type'         => 'batch',
+    ],
+    'vactory_decoupled_module_import_nodes' => [
+      'display_name' => t('Import nodes'),
+      'type' => 'form',
+      'function' => 'Drupal\vactory_starter_kit\Installer\Form\ImportNodes',
+    ],
+    'vactory_decoupled_module_import_nodes_batch' => [
+      'display_name' => t('Import nodes batch'),
       'display'      => TRUE,
       'type'         => 'batch',
     ],
@@ -98,7 +121,7 @@ function vactory_starter_kit_after_install_finished(array &$install_state) {
   global $base_url;
 
   // After install direction.
-  $after_install_direction = $base_url . '/?welcome';
+  $after_install_direction = $base_url;
 
   install_finished($install_state);
   $output = [];
@@ -138,4 +161,88 @@ function vactory_starter_kit_after_install_finished(array &$install_state) {
   $output['#attached']['html_head'][] = [$meta_redirect, 'meta_redirect'];
 
   return $output;
+}
+
+/**
+ * Installs the vactory_decoupled modules.
+ *
+ * @param array $install_state
+ *   The install state.
+ */
+function vactory_decoupled_module_install(array &$install_state) {
+  set_time_limit(0);
+  $extensions = $install_state['forms']['vactory_decoupled_additional_modules'];
+  $form_values = $install_state['forms']['form_state_values'];
+
+  $optional_modules_manager = \Drupal::service('plugin.manager.vactory_decoupled.optional_modules');
+  $definitions = array_map(function ($extension_name) use ($optional_modules_manager) {
+    return $optional_modules_manager->getDefinition($extension_name);
+  }, $extensions);
+  $modules = array_filter($definitions, function (array $definition) {
+    return $definition['type'] == 'module';
+  });
+  $batch = [];
+
+  // Add all selected languages.
+  foreach ($modules as $module) {
+    $batch['operations'][] = [
+      'install_single_module',
+      (array) $module['id'],
+    ];
+  }
+
+  return $batch;
+}
+
+/**
+ * Install a module.
+ */
+function install_single_module($module) {
+  $installer = \Drupal::service('module_installer');
+  $installer->install([$module]);
+}
+
+/**
+ * Installs the vactory_decoupled modules.
+ *
+ * @param array $install_state
+ *   The install state.
+ */
+function vactory_decoupled_module_import_nodes_batch(array &$install_state) {
+  set_time_limit(0);
+  $migrations = $install_state['forms']['vactory_decoupled_import_nodes'];
+
+  $batch = [];
+
+  foreach ($migrations as $migration) {
+    $batch['operations'][] = [
+      'execute_migration',
+      (array) $migration,
+    ];
+  }
+
+  return $batch;
+
+}
+
+/**
+ * Batch callback.
+ */
+function execute_migration($id, &$context) {
+  $manager = \Drupal::service('plugin.manager.migration');
+  $split = explode('.', $id);
+  $migration_id = end($split);
+  if (!isset($migration_id)) {
+    return;
+  }
+  $migration = $manager->createInstance($migration_id);
+  $migration->getIdMap()->prepareUpdate();
+  $executable = new MigrateExecutable($migration, new MigrateMessage());
+
+  try {
+    $executable->import();
+  }
+  catch (\Exception $e) {
+    $migration->setStatus(MigrationInterface::STATUS_IDLE);
+  }
 }

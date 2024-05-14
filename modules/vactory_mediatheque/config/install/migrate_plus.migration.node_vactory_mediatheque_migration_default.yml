@@ -1,0 +1,66 @@
+id: node_vactory_mediatheque_migration_default
+migration_group: default
+label: 'node vactory_mediatheque migration'
+source:
+  plugin: csv
+  header_row_count: 1
+  ids:
+    - id
+  delimiter: ','
+  path: 'profiles/contrib/vactory_starter_kit/modules/vactory_mediatheque/assets/migrate/node-vactory_mediatheque.csv'
+  constants:
+    dest_path: 'public://migrated-vactory_mediatheque/'
+process:
+  legacy_id: id
+  title: '-|title|-'
+  node_summary: '-|node_summary|-'
+  field_body/value: '-|field_body:value|-'
+  field_mediatheque_date/value:
+    plugin: format_date
+    source: 'date|field_mediatheque_date:value|Y-m-d'
+    from_format: Y-m-d
+    to_format: Y-m-d
+  field_mediatheque_theme:
+    -
+      plugin: explode
+      delimiter: '|'
+      source: term|field_mediatheque_theme|+
+    -
+      plugin: entity_generate
+      value_key: name
+      bundle_key: vid
+      bundle: mediatheque_theme_albums
+      entity_type: taxonomy_term
+  field_mediatheque_type:
+    -
+      plugin: explode
+      delimiter: '|'
+      source: term|field_mediatheque_type|+
+    -
+      plugin: entity_generate
+      value_key: name
+      bundle_key: vid
+      bundle: mediatheque_types
+      entity_type: taxonomy_term
+  field_mediatheque_video:
+    plugin: remote_video_import
+    source: media|field_mediatheque_video|remote_video
+  field_vactory_excerpt/value: '-|field_vactory_excerpt:value|-'
+  field_vactory_media:
+    plugin: media_import
+    destination: constants/dest_path
+    media_bundle: image
+    media_field_name: field_media_image
+    source: media|field_vactory_media|image
+    skip_on_error: 'true'
+    alt_field: media|field_vactory_media|image_alt
+  field_vactory_media_document:
+    plugin: media_import
+    destination: constants/dest_path
+    media_bundle: file
+    media_field_name: field_media_file
+    source: media|field_vactory_media_document|file
+    skip_on_error: 'true'
+destination:
+  plugin: 'entity:node'
+  default_bundle: vactory_mediatheque

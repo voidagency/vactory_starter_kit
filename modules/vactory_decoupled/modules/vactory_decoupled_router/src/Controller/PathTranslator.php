@@ -52,6 +52,11 @@ class PathTranslator extends ControllerBase {
   protected $systemRoutes = [];
 
   /**
+   * Current langcode.
+   */
+  protected $currentLangcode;
+
+  /**
    * EventInfoController constructor.
    *
    * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $event_dispatcher
@@ -70,6 +75,7 @@ class PathTranslator extends ControllerBase {
     $this->jsonapi_resource_type_respository = $jsonapi_resource_type_respository;
     $this->entityTypeManager = $entityTypeManager;
     $this->systemRoutes = $this->entityTypeManager->getStorage('vactory_route')->loadMultiple();
+    $this->currentLangcode = $this->languageManager()->getCurrentLanguage()->getId();
   }
 
   /**
@@ -108,12 +114,14 @@ class PathTranslator extends ControllerBase {
     try {
       // Drupal routes.
       $match_info = $this->router->match($path);
-    } catch (\Exception $exception) {
+    }
+    catch (\Exception $exception) {
       try {
         // System routes.
         $info = $this->getRouteFromRequest($request);
         $match_info = $this->router->match($info['path']);
-      } catch (\Exception $e) {
+      }
+      catch (\Exception $e) {
         // $this->response->setStatusCode(404);
         $info = [
           '_route' => 'error_page',
@@ -149,7 +157,7 @@ class PathTranslator extends ControllerBase {
             return;
           }
           $redirects_trace[] = [
-            'to' => $login_route->getAlias(),
+            'to' => '/' . $this->currentLangcode . $login_route->getAlias(),
             'status' => 301,
             'from' => $path,
           ];
@@ -300,7 +308,8 @@ class PathTranslator extends ControllerBase {
       $match_info['entity'] instanceof EntityInterface
     ) {
       $entity = $match_info['entity'];
-    } else {
+    }
+    else {
       $entity_type_id = $this->findEntityTypeFromRoute($route);
       /** @var \Drupal\Core\Entity\EntityInterface $entity */
       // @todo $match_info[$entity_type_id] is broken for JSON API 2.x routes.
@@ -312,6 +321,18 @@ class PathTranslator extends ControllerBase {
         $match_info[$entity_type_id] instanceof EntityInterface
       ) {
         $entity = $match_info[$entity_type_id];
+      }
+    }
+
+    // Do not return unpublished entity.
+    if (isset($entity)) {
+      $entity_type_id = $this->findEntityTypeFromRoute($route);
+      $entity_type_definition = $this->entityTypeManager->getDefinition($entity_type_id);
+      $status = $entity_type_definition->getKey('status');
+      $status = !$status ? $entity_type_definition->getKey('published') : $status;
+      $entity_status = $entity->get($status)->value;
+      if (!$entity_status) {
+        $entity = NULL;
       }
     }
 
@@ -376,5 +397,5 @@ class PathTranslator extends ControllerBase {
       return $carry;
     }, NULL);
   }
-  
+
 }

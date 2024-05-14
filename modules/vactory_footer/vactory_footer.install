@@ -1,0 +1,45 @@
+<?php
+
+/**
+ * @file
+ * Install file.
+ */
+
+use Drupal\block\Entity\Block;
+use Drupal\block_content\Entity\BlockContent;
+
+/**
+ * Implements hook_install().
+ */
+function vactory_footer_install() {
+  $widget_data = [];
+  // Create a new block content entity.
+  $block_content = BlockContent::create([
+    'type' => 'vactory_block_component',
+    'info' => 'Default footer',
+    'block_machine_name' => 'default_footer',
+    'field_dynamic_block_components' => [
+      'widget_id' => 'vactory_footer:footer-variant1',
+      'widget_data' => json_encode($widget_data),
+    ],
+  ]);
+  // Save the block contant.
+  $block_content->save();
+
+  // Create a new block configuration.
+  $block = Block::create([
+    'id' => 'vactory_decoupled_default_footer',
+    'plugin' => 'block_content:' . $block_content->get('uuid')->value,
+    'region' => 'footer',
+    'theme' => 'vactory',
+    'status' => TRUE,
+    'settings' => [
+      'label' => 'Vactory Decoupled Default Footer',
+    ],
+    'visibility' => [],
+  ]);
+
+  // Save the block configuration.
+  $block->save();
+
+}

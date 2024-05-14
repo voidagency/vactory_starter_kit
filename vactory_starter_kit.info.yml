@@ -60,6 +60,7 @@ install:
   - datetime
   - datetime_range
   # Vactory Contrib
+  - memcache
   - ctools
   - colorapi
   - features
@@ -161,8 +162,8 @@ install:
   - vactory_page
   - vactory_search
   - vactory_search_overlay
-  - vactory_header
-  - vactory_footer
+#  - vactory_header
+#  - vactory_footer
   # - vactory_google_places
   - vactory_dynamic_field
   # Vactory Custom
@@ -172,13 +173,17 @@ install:
   - vactory_cross_content
   - vactory_espace_prive
   - vactory_jquerycolorpicker_css_fix
-  - dblog
+  - log_stdout
   - vactory_decoupled
   - vactory_decoupled_router
   - vactory_decoupled_router_default_pages
   - vactory_decoupled_webform
+  - vactory_decoupled_search
+  - vactory_decoupled_espace_prive
   - shield
   - vactory_jsonapi_extras
+  - vactory_dynamic_import
+  - menu_manipulator
 themes:
   - vactory
   - claro

@@ -1,4 +1,4 @@
-delimiter: ';'
+delimiter: ','
 batch_size: 50
 dependencies:
   enforced:

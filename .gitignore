@@ -24,4 +24,4 @@ node_modules
 vendor
 cghooks.lock
 .vscode
-
+.scannerwork

@@ -1,27 +1,27 @@
 (function ($, Drupal) {
     Drupal.vactoryContentInlineEditUI = {
         // Event delegation for dynamically added fields
-        bindFieldEvents: function () {
-            $(document).on(
-                "input",
-                ".paragraph-field, .paragraph-url-extended-field",
-                function () {
-                    Drupal.vactoryContentInlineEditUI.showEditControls(
-                        $(this).closest(".paragraph-wrapper")
-                    );
-                }
-            );
-        },
-        bindCkeditorEvents: function () {
-            $("textarea[data-ckeditor5-id]").each(function () {
-                let element = this;
-                Drupal.editors.ckeditor5.onChange(element, function () {
-                    Drupal.vactoryContentInlineEditUI.showEditControls(
-                        $(element).closest(".paragraph-wrapper")
-                    );
-                });
-            });
-        },
+        // bindFieldEvents: function () {
+        //     $(document).on(
+        //         "input",
+        //         ".paragraph-field, .paragraph-url-extended-field",
+        //         function () {
+        //             Drupal.vactoryContentInlineEditUI.showEditControls(
+        //                 $(this).closest(".paragraph-wrapper")
+        //             );
+        //         }
+        //     );
+        // },
+        // bindCkeditorEvents: function () {
+        //     $("textarea[data-ckeditor5-id]").each(function () {
+        //         let element = this;
+        //         Drupal.editors.ckeditor5.onChange(element, function () {
+        //             Drupal.vactoryContentInlineEditUI.showEditControls(
+        //                 $(element).closest(".paragraph-wrapper")
+        //             );
+        //         });
+        //     });
+        // },
 
         showEditControls: function (container) {
             if (container.find(".edit-controls").length === 0) {
@@ -63,20 +63,41 @@
                 const fieldFormat = fieldInput.data("field-format");
                 const fieldValue = fieldInput.val();
                 const isExtraField = fieldInput.data("is-extra-field");
+                const group = fieldInput.data("group");
 
                 if (isExtraField) {
-                    if (fieldFormat) {
-                        const editor = Drupal.CKEditor5Instances.get(
-                            textarea.attr("data-ckeditor5-id")
-                        );
-                        if (editor) {
-                            updatedData.extra_fields[fieldName] = {
-                                value: editor.getData(),
-                                format: fieldFormat,
-                            };
+                    if (group) {
+                        if (updatedData.extra_fields[group] === undefined) {
+                            updatedData.extra_fields[group] = {};
                         }
-                    } else {
-                        updatedData.extra_fields[fieldName] = fieldValue;
+                        if (fieldFormat) {
+                            const editor = Drupal.CKEditor5Instances.get(
+                                textarea.attr("data-ckeditor5-id")
+                            );
+                            if (editor) {
+                                updatedData.extra_fields[group][fieldName] = {
+                                    value: editor.getData(),
+                                    format: fieldFormat,
+                                };
+                            }
+                        } else {
+                            updatedData.extra_fields[group][fieldName] = fieldValue;
+                        }
+                    }
+                    else {
+                        if (fieldFormat) {
+                            const editor = Drupal.CKEditor5Instances.get(
+                                textarea.attr("data-ckeditor5-id")
+                            );
+                            if (editor) {
+                                updatedData.extra_fields[fieldName] = {
+                                    value: editor.getData(),
+                                    format: fieldFormat,
+                                };
+                            }
+                        } else {
+                            updatedData.extra_fields[fieldName] = fieldValue;
+                        }
                     }
                 } else {
                     // Assuming component index is available as a data attribute
@@ -84,20 +105,42 @@
                     if (updatedData.components[componentIndex] === undefined) {
                         updatedData.components[componentIndex] = {};
                     }
-                    if (fieldFormat) {
-                        const editor = Drupal.CKEditor5Instances.get(
-                            textarea.attr("data-ckeditor5-id")
-                        );
-                        if (editor) {
-                            updatedData.components[componentIndex][fieldName] =
-                                {
-                                    value: editor.getData(),
-                                    format: fieldFormat,
-                                };
+                    if (group) {
+                        if (updatedData.components[componentIndex][group] === undefined) {
+                            updatedData.components[componentIndex][group] = {};
                         }
-                    } else {
-                        updatedData.components[componentIndex][fieldName] =
-                            fieldValue;
+                        if (fieldFormat) {
+                            const editor = Drupal.CKEditor5Instances.get(
+                                textarea.attr("data-ckeditor5-id")
+                            );
+                            if (editor) {
+                                updatedData.components[componentIndex][group][fieldName] =
+                                    {
+                                        value: editor.getData(),
+                                        format: fieldFormat,
+                                    };
+                            }
+                        } else {
+                            updatedData.components[componentIndex][group][fieldName] =
+                                fieldValue;
+                        }
+                    }
+                    else {
+                        if (fieldFormat) {
+                            const editor = Drupal.CKEditor5Instances.get(
+                                textarea.attr("data-ckeditor5-id")
+                            );
+                            if (editor) {
+                                updatedData.components[componentIndex][fieldName] =
+                                    {
+                                        value: editor.getData(),
+                                        format: fieldFormat,
+                                    };
+                            }
+                        } else {
+                            updatedData.components[componentIndex][fieldName] =
+                                fieldValue;
+                        }
                     }
                 }
             });
@@ -106,6 +149,7 @@
                 const $fieldset = $(this);
                 const fieldName = $fieldset.data("field-name");
                 const isExtraField = $fieldset.data("is-extra-field");
+                const group = $fieldset.data("group");
 
                 let urlData = {};
                 $fieldset.find('input[type="text"]').each(function () {
@@ -119,17 +163,29 @@
                         urlData.url = $input.val();
                     }
                     if (isExtraField) {
-                        updatedData.extra_fields[fieldName] = urlData;
+                        if (group) {
+                            if (updatedData.extra_fields[group] === undefined ) {
+                                updatedData.extra_fields[group] = {};
+                            }
+                            updatedData.extra_fields[group][fieldName] = urlData;
+                        }
+                        else {
+                            updatedData.extra_fields[fieldName] = urlData;
+                        }
                     } else {
-                        const componentIndex =
-                            $fieldset.data("component-index");
-                        if (
-                            updatedData.components[componentIndex] === undefined
-                        ) {
+                        const componentIndex = $fieldset.data("component-index");
+                        if (updatedData.components[componentIndex] === undefined ) {
                             updatedData.components[componentIndex] = {};
                         }
-                        updatedData.components[componentIndex][fieldName] =
-                            urlData;
+                        if (group) {
+                            if (updatedData.components[componentIndex][group] === undefined) {
+                                updatedData.components[componentIndex][group] = {};
+                            }
+                            updatedData.components[componentIndex][group][fieldName] = urlData;
+                        }
+                        else {
+                            updatedData.components[componentIndex][fieldName] = urlData;
+                        }
                     }
                 });
             });
@@ -156,7 +212,7 @@
                 function (response) {
                     // Success callback
                     _this.hideLoader(container);
-                    container.find(".edit-controls").remove();
+                    // container.find(".edit-controls").remove();
                 },
                 function (error) {
                     // Error callback
@@ -199,14 +255,14 @@
                     }
                 });
             });
-            container.find(".edit-controls").remove();
+            // container.find(".edit-controls").remove();
         },
 
         showLoader: function (container) {
             // Add loader to the widget container
             const loader = $("<div>").addClass("loader");
             container.append(loader);
-            container.find(".edit-controls").hide(); // Hide edit controls
+            // container.find(".edit-controls").hide(); // Hide edit controls
             container.find(".loader").show(); // Show loader
         },
 
@@ -220,7 +276,14 @@
 
     // Initialize the event binding
     $(document).ready(function () {
-        Drupal.vactoryContentInlineEditUI.bindFieldEvents();
-        Drupal.vactoryContentInlineEditUI.bindCkeditorEvents();
+
+        $('.paragraph-wrapper').each(function() {
+            var no_control = $(this).data('no-control');
+            if (!no_control) {
+                Drupal.vactoryContentInlineEditUI.showEditControls($(this));
+            }
+        });
+        // Drupal.vactoryContentInlineEditUI.bindFieldEvents();
+        // Drupal.vactoryContentInlineEditUI.bindCkeditorEvents();
     });
 })(jQuery, Drupal);

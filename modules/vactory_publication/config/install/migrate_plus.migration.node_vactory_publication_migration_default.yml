@@ -1,0 +1,59 @@
+id: node_vactory_publication_migration_default
+migration_group: default
+label: 'node vactory_publication migration'
+source:
+  plugin: csv
+  header_row_count: 1
+  ids:
+    - id
+  delimiter: ','
+  path: 'profiles/contrib/vactory_starter_kit/modules/vactory_publication/assets/node-vactory_publication.csv'
+  constants:
+    dest_path: 'public://migrated-vactory_publication/'
+process:
+  legacy_id: id
+  title: '-|title|-'
+  node_summary: '-|node_summary|-'
+  body/value: '-|body:value|-'
+  field_vactory_call_to_action/uri: '-|field_vactory_call_to_action:uri|-'
+  field_vactory_call_to_action/title: '-|field_vactory_call_to_action:title|-'
+  field_vactory_date/value:
+    plugin: format_date
+    source: 'date|field_vactory_date:value|Y-m-d'
+    from_format: Y-m-d
+    to_format: Y-m-d
+  field_vactory_document:
+    plugin: file_import
+    destination: constants/dest_path
+    source: file|field_vactory_document|-
+    skip_on_error: 'true'
+  field_vactory_excerpt/value: '-|field_vactory_excerpt:value|-'
+  field_vactory_media:
+    plugin: media_import
+    destination: constants/dest_path
+    media_bundle: image
+    media_field_name: field_media_image
+    source: media|field_vactory_media|image
+    skip_on_error: 'true'
+    alt_field: media|field_vactory_media|image_alt
+  field_vactory_media_document:
+    plugin: media_import
+    destination: constants/dest_path
+    media_bundle: file
+    media_field_name: field_media_file
+    source: media|field_vactory_media_document|file
+    skip_on_error: 'true'
+  field_vactory_publication_theme:
+    -
+      plugin: explode
+      delimiter: '|'
+      source: term|field_vactory_publication_theme|+
+    -
+      plugin: entity_generate
+      value_key: name
+      bundle_key: vid
+      bundle: vactory_publication_theme
+      entity_type: taxonomy_term
+destination:
+  plugin: 'entity:node'
+  default_bundle: vactory_publication

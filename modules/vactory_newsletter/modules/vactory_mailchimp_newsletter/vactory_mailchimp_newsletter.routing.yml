@@ -1,0 +1,12 @@
+vactory_mailchimp_newsletter.newsletter_send:
+  path: '/newsletter_send/{node}/{recipients}'
+  defaults:
+    _controller: '\Drupal\vactory_mailchimp_newsletter\Controller\CampaignsController::sendNewsletter'
+    _title: 'Envoyer une newsletter'
+  requirements:
+    _permission: 'administrer newsletter'
+  options:
+    no_cache: 'TRUE'
+    parameters:
+      node:
+        type: entity:node

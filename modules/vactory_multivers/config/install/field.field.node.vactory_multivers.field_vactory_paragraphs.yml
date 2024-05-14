@@ -1,0 +1,47 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.node.field_vactory_paragraphs
+    - node.type.vactory_multivers
+    - paragraphs.paragraphs_type.vactory_component
+    - paragraphs.paragraphs_type.vactory_paragraph_multi_template
+  module:
+    - entity_reference_revisions
+id: node.vactory_multivers.field_vactory_paragraphs
+field_name: field_vactory_paragraphs
+entity_type: node
+bundle: vactory_multivers
+label: Paragraphs
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:paragraph'
+  handler_settings:
+    target_bundles:
+      vactory_component: vactory_component
+      vactory_paragraph_multi_template: vactory_paragraph_multi_template
+    negate: 0
+    target_bundles_drag_drop:
+      paragraph_background_wrapper:
+        weight: 7
+        enabled: false
+      vactory_component:
+        weight: 8
+        enabled: true
+      vactory_paragraph_block:
+        weight: 9
+        enabled: false
+      vactory_paragraph_multi_template:
+        weight: 10
+        enabled: true
+      vactory_paragraph_tab:
+        weight: 11
+        enabled: false
+      views_reference:
+        weight: 12
+        enabled: false
+field_type: entity_reference_revisions

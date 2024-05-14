@@ -54,7 +54,7 @@
     "drupal/taxonomy_import": "^2.0@alpha",
     "drupal/token": "^1.7",
     "drupal/twig_tweak": "^3.2",
-    "drupal/ultimate_cron": "^2.0.0-alpha5",
+    "drupal/ultimate_cron": "^2.0@alpha",
     "drupal/viewsreference": "^2.0@beta",
     "drupal/webform": "^6.2@beta",
     "drupal/xmlsitemap": "^1.2",
@@ -91,7 +91,7 @@
     "drupal/search_api_autocomplete": "^1.4",
     "drupal/chosen": "^3.0",
     "drupal/media_library_form_element": "^2.0",
-    "drupal/paragraphs_edit": "^2.0",
+    "drupal/paragraphs_edit": "^3.0",
     "drupal/views_autocomplete_filters": "^1.3",
     "drupal/dropzonejs": "^2.3",
     "drupal/tinypng": "^1.0@RC",
@@ -113,7 +113,7 @@
     "drupal/memcache": "^2.2",
     "drupal/oauth_login_oauth2": "^2.6",
     "drupal/recaptcha": "^3.0",
-    "drupal/scheduler": "^1.3",
+    "drupal/scheduler": "^2.0",
     "drupal/seckit": "^2.0",
     "drupal/simplify_menu": "^3.0@beta",
     "drupal/smart_trim": "^2.0",
@@ -134,7 +134,7 @@
     "phpoffice/phpspreadsheet": "^1.20",
     "mpdf/mpdf": "^8.0",
     "drupal/admin_feedback": "^2.2",
-    "drupal/views_json_source": "^1.1",
+    "drupal/views_json_source": "^2.0",
     "drupal/jsonapi_extras": "^3.20",
     "drupal/simple_oauth": "^5.2",
     "drupal/decoupled_router": "^2.0",
@@ -159,7 +159,7 @@
     "drupal/search_api_ai": "^1.0@alpha",
     "drupal/onesignal": "^3.0",
     "stevenmaguire/oauth2-keycloak": "^5.0",
-    "drupal/openai": "1.0.0-alpha17",
+    "drupal/openai": "^1.0@beta",
     "voidagency/jquery_colorpicker": "^4.0",
     "voidagency/merge_translations": "^2.0",
     "voidagency/easy_install": "^10.6",
@@ -168,7 +168,13 @@
     "voidagency/mobile_native_share": "^2.0",
     "voidagency/amptheme": "^3.0",
     "voidagency/cloudinary": "^3.0",
-    "voidagency/block_list_override": "^2.0"
+    "voidagency/block_list_override": "^2.0",
+    "drupal/amptheme": "^3.1",
+    "drupal/yaml_editor": "^1.2",
+    "drupal/menu_manipulator": "^3.0",
+    "drupal/log_stdout": "^1.5",
+    "drupal/image_effects": "^3.6",
+    "drupal/imagemagick": "^3.7"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.3",
@@ -198,7 +204,7 @@
     "patches": {
       "drupal/simplify_menu": {
         "Add support for options.": "https://gist.githubusercontent.com/voidagency/0c4efddd8f379229c7416e66a1d44de3/raw/825d324ae399de35f47d2a99aca7baae509abdbc/simplify_menu-support-options.patch",
-        "Add callable : filterLanguage": "https://gist.githubusercontent.com/voidagency/7fa6544eb226eaf1a878160fec1717a2/raw/d7cfa71bdd4100569c0930d1041bb88c2ee0939c/add-filterLanguage-callable.patch"
+        "Add callable : filterLanguage": "https://gist.githubusercontent.com/ismail-void/73d5a8497bc09443ae5a6e7467609dd3/raw/adb696894af3b6fcbf5adab7c199432e839f8403/add-filterLanguage-callable.patch"
       },
       "drupal/features": {
         "Export config translation": "https://www.drupal.org/files/issues/features_export-config-translation-2869336-2.patch"
@@ -226,7 +232,8 @@
       "voidagency/jquery_colorpicker": {
         "jQuery color picker resolve vendor path": "https://gist.githubusercontent.com/voidagency/606f9343e9c7e9b99858088d7db111f1/raw/5216cc90d89e68916b4a17b60e07466286a18397/jquery-color-picker-resolve-vendor-path.patch",
         "jQuery color picker remove vendor dependencies": "https://gist.githubusercontent.com/voidagency/17af206778d4ea598b93dd10769556a0/raw/538e683f77b15945a41b99548a6b0d1ca2315225/jquery-colorpicker-remove-vendor-dependencies.patch",
-        "jQuery color picker update background (drupalSettings variable)": "https://gist.githubusercontent.com/voidagency/94489fb9998406959ebefb31a758f39c/raw/6692adac21ef17ea4d66d69584159a6802707404/jquery-colorpicker-update-background.patch"
+        "jQuery color picker update background (drupalSettings variable)": "https://gist.githubusercontent.com/voidagency/94489fb9998406959ebefb31a758f39c/raw/6692adac21ef17ea4d66d69584159a6802707404/jquery-colorpicker-update-background.patch",
+        "jQuery color picker default color": "https://gist.githubusercontent.com/voidagency/35c94c16af59f3eea64aa4d05805db15/raw/6dc9b83bbf9e0fa2df18ab2b3b0b6e460546cbe6/jquery_color_picker_default_color.patch"
       },
       "drupal/webform": {
         "Invoke alter hook after webform handlers execution": "https://gist.githubusercontent.com/voidagency/6871bd7544b621e2c4221126c5dfec50/raw/7595d19a34e18ab9f719b7f917c02b10a4a40caf/webform-post-handlers-hook.patch"
@@ -258,6 +265,9 @@
       },
       "drupal/search_api_ai": {
         "Seach ai pinecone free account issue": "https://gist.githubusercontent.com/khalidbouhouch77/097184b7b3e611ff5e052902486601f3/raw/d7255c4f884aeb39eb68830d8cd77821eeee3634/search-api-pineconebackend-namespace-lang.patch"
+      },
+      "drupal/file_entity": {
+        "Fix missing bundle entity, entity type file_type, entity id undefined": "https://gist.githubusercontent.com/voidagency/b2ec60b41a9ef234ba860c03c05410f4/raw/cea45bcd86a2063d7460a99d1757719035a75314/remove-undefined-bundle-from-entity-type-file-type.patch"
       }
     }
   },

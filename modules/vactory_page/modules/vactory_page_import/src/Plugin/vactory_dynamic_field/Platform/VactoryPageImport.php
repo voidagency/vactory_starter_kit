@@ -28,7 +28,7 @@ class VactoryPageImport extends VactoryDynamicFieldPluginBase {
   public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
     $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
     $instance->extensionPathResolver = $container->get('extension.path.resolver');
-    $uri = 'private://imported-pages-df';
+    $uri = 'sites/default/private/imported-pages-df';
     if (!file_exists($uri)) {
       mkdir($uri);
     }

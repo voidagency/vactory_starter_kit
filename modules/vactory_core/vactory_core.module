@@ -17,13 +17,16 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Url;
+use Drupal\file\FileInterface;
 use Drupal\jquery_colorpicker\Plugin\Field\FieldWidget\JQueryColorpickerWidget;
+use Drupal\media\MediaInterface;
 use Drupal\symfony_mailer\Address;
 use Drupal\symfony_mailer\EmailInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Drupal\core\Site\Settings;
+use Drupal\file\Entity\File;
 
 /**
  * Implements hook_theme().
@@ -588,5 +591,68 @@ function vactory_core_js_alter(&$js) {
         $js[$key]['preprocess'] = FALSE;
       }
     }
+  }
+}
+
+/**
+ * Implements hook_ENTITY_presave().
+ */
+function vactory_core_media_presave(MediaInterface $media) {
+  if ($media->bundle() == 'file' && $media->hasField('field_media_file')) {
+    $feature_enabled = \Drupal::configFactory()->get('vactory_core.global_config')->get('generate_pdf_thumbnail');
+    if (!$feature_enabled) {
+      return;
+    }
+    $imagick_enabled = extension_loaded('imagick');
+
+    if (!$imagick_enabled) {
+      return;
+    }
+    $original_fid = NULL;
+    if (!$media->isNew()) {
+      $original_fid = $media->original->get('field_media_file')->target_id;
+    }
+    $fid = $media->get('field_media_file')->target_id;
+    if ($original_fid == $fid) {
+      return;
+    }
+    $file = $fid ? File::load($fid) : NULL;
+    if (!$file instanceof FileInterface) {
+      return;
+    }
+    if ($file->getMimeType() !== 'application/pdf') {
+      return;
+    }
+
+    $image_uri = $file->getFileUri();
+    $fileSystem = \Drupal::service('file_system');
+    $pdf_file_path = $fileSystem->realpath($image_uri);
+    $extension = 'png';
+    $thumbnails_dir_uri = 'public://pdf-thumbnails';
+    $unqid = uniqid();
+    $thumbnail_name = "{$fid}-{$unqid}.{$extension}";
+    if (!file_exists($thumbnails_dir_uri)) {
+      mkdir($thumbnails_dir_uri, 0777, TRUE);
+    }
+    $thumbnail_path = $fileSystem->realpath($thumbnails_dir_uri) . '/' . $thumbnail_name;
+
+    $image = new \Imagick();
+    $image->setBackgroundColor('white');
+    $image->readImage($pdf_file_path . '[0]');
+    $image->setImageAlphaChannel(\Imagick::ALPHACHANNEL_REMOVE);
+    $image->setResolution(300, 300);
+    $image->setImageFormat($extension);
+    $image->writeImage($thumbnail_path);
+    $image->clear();
+    $image->destroy();
+
+    $file = File::create([
+      'uri' => $thumbnails_dir_uri . '/' . $thumbnail_name,
+    ]);
+    $file->save();
+
+    $media->thumbnail = [
+      'target_id' => $file->id(),
+    ];
   }
 }

@@ -1,0 +1,3 @@
+{% set newsletter_id = content.newsletter_id %}
+{% set newsletter_block_id = content.newsletter_block_id %}
+{{ drupal_view('newsletter', newsletter_block_id, newsletter_id) }}
