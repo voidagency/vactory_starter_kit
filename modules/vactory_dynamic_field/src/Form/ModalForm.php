@@ -360,7 +360,7 @@ class ModalForm extends FormBase {
             $element_options = isset($field_info['options']) ? $field_info['options'] : [];
 
             $ds_field_name = '';
-            if ($element_type == 'image' || $element_type == 'file') {
+            if ($element_type == 'image' || $element_type == 'file'|| $element_type == 'remote_video') {
               // Save a copy of current parent.
               $form_parents = $form['#parents'] ?? [];
               $form['#parents'] = [
@@ -401,7 +401,7 @@ class ModalForm extends FormBase {
               ];
             }
 
-            if ($element_type == 'image' || $element_type == 'file') {
+            if ($element_type == 'image' || $element_type == 'file'|| $element_type == 'remote_video') {
               // Restore parent for other fields.
               $form['#parents'] = $form_parents;
             }
@@ -414,7 +414,7 @@ class ModalForm extends FormBase {
           $element_options = isset($field['options']) ? $field['options'] : [];
 
           $ds_field_name = '';
-          if ($element_type == 'image' || $element_type == 'file') {
+          if ($element_type == 'image' || $element_type == 'file'|| $element_type == 'remote_video') {
             // Save a copy of current parent.
             $form_parents = $form['#parents'] ?? [];
             $form['#parents'] = ['components', 'extra_field', $field_id];
@@ -445,7 +445,7 @@ class ModalForm extends FormBase {
             $this->textformatFields[] = ['components', 'extra_field', $field_id];
           }
 
-          if ($element_type == 'image' || $element_type == 'file') {
+          if ($element_type == 'image' || $element_type == 'file'|| $element_type == 'remote_video') {
             // Restore parent for other fields.
             $form['#parents'] = $form_parents;
           }
