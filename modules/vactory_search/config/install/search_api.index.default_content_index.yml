@@ -1,60 +1,67 @@
 langcode: fr
 status: true
 dependencies:
+  config:
+    - search_api.server.default_server
+    - core.entity_view_mode.node.full
   module:
     - node
     - vactory_field
     - search_api
     - search_api_exclude_entity
-  config:
-    - search_api.server.default_server
-    - core.entity_view_mode.node.full
-  enforced:
-    module:
-      - vactory_search
+_core:
+  default_config_hash: v9IHidK-MYkb9hSiAAoEBWu9v1XVNMIzu1gmU79zPjQ
 id: default_content_index
-name: 'Default content index'
-description: 'Default content index created for Vactory'
+name: "Default content index"
+description: "Default content index created for Vactory"
 read_only: false
 field_settings:
   created:
-    label: 'Authored on'
-    datasource_id: 'entity:node'
+    label: "Authored on"
+    datasource_id: "entity:node"
     property_path: created
     type: date
     dependencies:
       module:
         - node
+  langcode:
+    label: Langue
+    datasource_id: "entity:node"
+    property_path: langcode
+    type: string
+    dependencies:
+      module:
+        - node
   node_grants:
-    label: 'Node access information'
+    label: "Node access information"
     property_path: search_api_node_grants
     type: string
     indexed_locked: true
     type_locked: true
     hidden: true
   node_summary:
-    label: 'Page description'
-    datasource_id: 'entity:node'
+    label: "Page description"
+    datasource_id: "entity:node"
     property_path: node_summary
     type: text
     dependencies:
       module:
         - vactory_field
   rendered_item:
-    label: 'Rendered HTML output'
+    label: "Rendered HTML output"
     property_path: rendered_item
     type: text
     configuration:
       roles:
-        anonymous: anonymous
+        - anonymous
       view_mode:
-        'entity:node':
+        "entity:node":
           vactory_news: full
           vactory_page: full
           vactory_publication: full
   status:
     label: Published
-    datasource_id: 'entity:node'
+    datasource_id: "entity:node"
     property_path: status
     type: boolean
     indexed_locked: true
@@ -64,7 +71,7 @@ field_settings:
         - node
   title:
     label: Title
-    datasource_id: 'entity:node'
+    datasource_id: "entity:node"
     property_path: title
     type: text
     boost: !!float 2
@@ -72,8 +79,8 @@ field_settings:
       module:
         - node
   type:
-    label: 'Content type'
-    datasource_id: 'entity:node'
+    label: "Content type"
+    datasource_id: "entity:node"
     property_path: type
     type: string
     dependencies:
@@ -81,7 +88,7 @@ field_settings:
         - node
   uid:
     label: uid
-    datasource_id: 'entity:node'
+    datasource_id: "entity:node"
     property_path: uid
     type: integer
     indexed_locked: true
@@ -94,34 +101,39 @@ field_settings:
     property_path: search_api_url
     type: string
 datasource_settings:
-  'entity:node':
+  "entity:node":
     bundles:
       default: true
       selected:
         - page
     languages:
       default: true
-      selected: {  }
+      selected: {}
 processor_settings:
-  add_url: {  }
-  aggregated_field: {  }
+  add_url: {}
+  aggregated_field: {}
   content_access:
     weights:
       preprocess_query: -50
-  entity_status: {  }
+  custom_value: {}
+  entity_status: {}
+  entity_type: {}
   highlight:
-    highlight: always
-    highlight_partial: true
-    excerpt: true
-    excerpt_length: 256
-    exclude_fields:
-      - rendered_item
-      - title
-    prefix: '<strong>'
-    suffix: '</strong>'
     weights:
       postprocess_query: 0
+    prefix: "<strong>"
+    suffix: "</strong>"
+    excerpt: true
+    excerpt_always: false
+    excerpt_length: 256
+    exclude_fields:
+      - title
+    highlight: always
+    highlight_partial: true
   html_filter:
+    weights:
+      preprocess_index: -50
+      preprocess_query: -46
     all_fields: false
     fields:
       - rendered_item
@@ -129,51 +141,49 @@ processor_settings:
     alt: false
     tags:
       b: 2
-      em: 1
       h1: 5
       h2: 3
       h3: 2
       strong: 2
-      u: 1
-    weights:
-      preprocess_index: -50
-      preprocess_query: -46
   ignorecase:
+    weights:
+      preprocess_index: -47
+      preprocess_query: -47
     all_fields: false
     fields:
       - rendered_item
       - title
-    weights:
-      preprocess_index: -47
-      preprocess_query: -47
-  rendered_item: {  }
+  language_with_fallback: {}
+  rendered_item: {}
   search_api_exclude_entity_processor:
     fields:
       node:
         - field_exclude_from_search
   tokenizer:
-    all_fields: false
-    fields:
-      - rendered_item
-      - title
-    spaces: ''
-    overlap_cjk: 1
-    minimum_word_size: '3'
     weights:
       preprocess_index: -49
       preprocess_query: -49
-  transliteration:
     all_fields: false
     fields:
       - rendered_item
       - title
+    spaces: ""
+    ignored: ._-
+    overlap_cjk: 1
+    minimum_word_size: "3"
+  transliteration:
     weights:
       preprocess_index: -48
       preprocess_query: -48
+    all_fields: false
+    fields:
+      - rendered_item
+      - title
 tracker_settings:
   default:
     indexing_order: fifo
 options:
-  index_directly: false
   cron_limit: 50
+  index_directly: false
+  track_changes_in_references: true
 server: default_server
