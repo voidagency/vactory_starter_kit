@@ -11,6 +11,12 @@ fields:
       options:
         '#description': 'Use Cloudinary url following this path: https://res.cloudinary.com/CLOUD_ID/video/upload/f_webm,q_auto/VIDEO_PATH.webm'
         '#required': TRUE
+    image:
+      type: image
+      label: 'Mobile Image'
+    show_image:
+      type: checkbox
+      label: "Show Mobile image in Mobile devices instead of the video"
   group_banner_title:
     g_title: 'Title'
     custom_title:
