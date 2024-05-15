@@ -271,6 +271,16 @@ class PageExportService {
 
     foreach ($sheetData as $sheetName => $data) {
       // Add a new sheet.
+      // Define a list of invalid characters to exclude from the title.
+      $invalidCharacters = ['*', ':', '/', '\\', '?', '[', ']'];
+
+      // Remove any invalid characters from the title.
+      $sheetName = str_replace($invalidCharacters, '', $sheetName);
+
+      // Ensure the title length < 31.
+      if (strlen($sheetName) > 30) {
+        $sheetName = substr($sheetName, 0, 27) . '...';
+      }
       $activeSheet = $spreadsheet->createSheet()->setTitle($sheetName);
       $spreadsheet->setActiveSheetIndex($spreadsheet->getIndex($activeSheet));
 
