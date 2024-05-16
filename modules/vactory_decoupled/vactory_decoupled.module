@@ -69,7 +69,7 @@ function vactory_decoupled_form_alter(&$form, FormStateInterface $form_state, $f
       foreach ($form['strings'] as $lid => $string) {
         if (is_numeric($lid)) {
           $context = $form['strings'][$lid]['original']['0']['#context']['context'] ?? '';
-          if($context === '_FRONTEND') {
+          if ($context === '_FRONTEND') {
             $form['strings'][$lid]['delete'] = [
               '#type' => 'checkbox',
               '#title' => t('Delete translation'),
@@ -82,7 +82,7 @@ function vactory_decoupled_form_alter(&$form, FormStateInterface $form_state, $f
         '#type' => 'submit',
         '#name' => 'delete',
         '#value' => t('Delete translations'),
-        '#submit' => ['deleteTranslations'],
+        '#submit' => ['delete_translations'],
         '#button_type' => 'danger',
         '#states' => [
           'visible' => [
@@ -477,7 +477,7 @@ function _auth_make_unitials_from_single_word($name) {
 /**
  * Implements hook_mail_alter().
  *
- * @deprecated To be removed once swiftmailer contrib module has been removed.
+ * @todo To be removed once swiftmailer contrib module has been removed.
  */
 function vactory_decoupled_mail_alter(&$message) {
   $langcode = $message['langcode'];
@@ -678,6 +678,7 @@ function vactory_decoupled_validation_constraint_alter(array &$definitions) {
 function vactory_decoupled_cache_flush() {
   clear_next_cache();
   opcache_reset();
+  clear_next_nginx_cache('*');
 }
 
 /**
@@ -701,6 +702,10 @@ function vactory_decoupled_entity_update(EntityInterface $entity) {
   if ($entity instanceof Node && !$entity->isNew()) {
     $query = get_node_info($entity);
     clear_next_cache($query);
+    // Need to remove router cache when a page is unpublished.
+    $router_query = get_node_router_info($entity);
+    clear_next_cache($router_query);
+    clear_next_nginx_cache($router_query['slug']);
   }
 
   if ($entity instanceof MenuItemExtrasMenuLinkContent && !isset($loaded)) {
@@ -747,6 +752,19 @@ function get_node_info($entity) {
 }
 
 /**
+ * Get given node slug.
+ */
+function get_node_router_info($entity) {
+  $nid = $entity->id();
+  $langcode = $entity->language()->getId();
+  $alias = \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $nid, $langcode);
+  return [
+    'invalidate' => 'router',
+    'slug' => ltrim($alias, '/'),
+  ];
+}
+
+/**
  * Implements hook_entity_delete().
  */
 function vactory_decoupled_entity_delete(EntityInterface $entity) {
@@ -760,7 +778,7 @@ function vactory_decoupled_entity_delete(EntityInterface $entity) {
 }
 
 /**
- * Clears frontend cache.
+ * Clears frontend cache (redis).
  */
 function clear_next_cache($query = []) {
   $front_end_url = Settings::get('BASE_FRONTEND_URL');
@@ -956,7 +974,7 @@ function vactory_decoupled_taxonomy_term_presave(EntityInterface $entity) {
 /**
  * Delete selected translations of _FRONTEND context.
  */
-function deleteTranslations(array $form, FormStateInterface $form_state) {
+function delete_translations(array $form, FormStateInterface $form_state) {
   $langcode = $form_state->getValue('langcode');
   $delete = [];
   foreach ($form_state->getValue('strings') as $lid => $new_translation) {
@@ -979,5 +997,33 @@ function deleteTranslations(array $form, FormStateInterface $form_state) {
 function locale_translate_edit_form_validator(&$form, FormStateInterface $form_state) {
   if ($form_state->getTriggeringElement()['#name'] === 'delete') {
     return;
+  }
+}
+
+/**
+ * Clears frontend cache (nginx).
+ */
+function clear_next_nginx_cache($path = '') {
+  $front_end_url = Settings::get('BASE_FRONTEND_URL');
+
+  if (!isset($front_end_url) || $front_end_url == '') {
+    \Drupal::logger('clear_next_nginx_cache')
+      ->warning('BASE_FRONTEND_URL env variable is undefined');
+    return FALSE;
+  }
+
+  $client = \Drupal::httpClient();
+
+  try {
+    $request = $client->request('PURGE', $front_end_url . '/' . $path);
+    \Drupal::logger('clear_next_nginx_cache')->info('Next nginx cache cleared for ' . $path);
+  }
+  catch (ServerException $e) {
+    \Drupal::logger('clear_next_nginx_cache')
+      ->warning("Next nginx cache cleared for {$path} (no cache found)");
+  }
+  catch (RequestException $e) {
+    \Drupal::logger('clear_next_nginx_cache')
+      ->warning("Next nginx cache cleared for {$path} (no cache found)");
   }
 }

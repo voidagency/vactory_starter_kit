@@ -1,0 +1,5 @@
+vactory_page_import.import:
+  title: 'Vactory Page Import (VPI)'
+  parent: system.admin_structure
+  description: 'import/export pages via excel file'
+  route_name: vactory_page_import.import

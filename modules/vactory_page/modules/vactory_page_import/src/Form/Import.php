@@ -302,7 +302,7 @@ class Import extends FormBase {
             }
           }
         }
-        if (str_starts_with($key, 'multiple')) {
+        elseif (str_starts_with($key, 'multiple')) {
           $paragraph_entity = $this->pageImportService->findParagraphByNodeAndKey($node, $key);
           if ($paragraph_entity) {
             foreach ($value as $tab_key => $tab_values) {
@@ -419,6 +419,14 @@ class Import extends FormBase {
             $node->save();
           }
 
+        }
+        elseif (!in_array($key, ['language', 'id', 'machine_name'])) {
+          $concerned_node_trans = $node;
+          if ($language !== 'original' && $node->hasTranslation($language)) {
+            $concerned_node_trans = $node->getTranslation($language);
+          }
+          $concerned_node_trans->set($key, $value);
+          $concerned_node_trans->save();
         }
       }
     }
