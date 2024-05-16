@@ -140,6 +140,13 @@ class ModalForm extends FormBase {
    */
   protected $isAutoPopulateEnabled;
 
+   /**
+   * Indicates if All category DF feature is enabled.
+   *
+   * @var bool
+   */
+  protected $isAllCategoryEnabled;
+
   /**
    * Constructs a new ExampleConfigEntityExternalForm.
    *
@@ -167,6 +174,8 @@ class ModalForm extends FormBase {
     $this->isDropdownSelectMode = \Drupal::config('vactory_dynamic_field.settings')->get('is_dropdown_select_templates');
     $this->isPendingContentEnabled = (bool) \Drupal::config('vactory_dynamic_field.settings')->get('pending_content');
     $this->isAutoPopulateEnabled = (bool) \Drupal::config('vactory_dynamic_field.settings')->get('auto_populate');
+    $this->isAllCategoryEnabled = (bool) \Drupal::config('vactory_dynamic_field.settings')->get('all_category'); 
+
   }
 
   /**
@@ -743,16 +752,18 @@ class ModalForm extends FormBase {
     // List of widgets.
     $widgets_list = $this->widgetsManager->getModalWidgetsList($allowedProviders);
     
-    //! Add the "All" category containing all DF.
-    $all_widgets = [];
-    foreach ($widgets_list as $category => $widgets) {
-      foreach ($widgets as $widget_id => $widget) {
-        $all_widgets[$widget_id] = $widget; // Add all widgets to the "All" category.
+    //! Add the "All" Category containing all DF if Enabled.
+    if ($this->isAllCategoryEnabled) {
+      $all_widgets = [];
+      foreach ($widgets_list as $category => $widgets) {
+        foreach ($widgets as $widget_id => $widget) {
+          $all_widgets[$widget_id] = $widget; // Add all widgets to the "All" category.
+        }
       }
-    }
-    // Add the "All" category to the beginning of the list.
-    $widgets_list = ['All' => $all_widgets] + $widgets_list;
+      // Add the "All" category to the beginning of the list.
+      $widgets_list = ['All' => $all_widgets] + $widgets_list;
     //! END
+    }
 
     $this->widgetsList = $widgets_list;
 
