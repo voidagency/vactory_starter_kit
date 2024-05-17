@@ -86,8 +86,8 @@ elements: |-
       Débutant: Débutant
       '1 à 3 ans ': '1 à 3 ans '
       '3 à 5 ans': '3 à 5 ans'
-      '5 ans à 10 an': '5 ans à 10 an'
-      'Plus de10 ans ': 'Plus de10 ans '
+      '5 ans à 10 ans': '5 ans à 10 ans'
+      'Plus de 10 ans ': 'Plus de 10 ans '
     '#required': true
   disponibilite:
     '#type': select
