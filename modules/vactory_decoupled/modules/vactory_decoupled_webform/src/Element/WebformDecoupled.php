@@ -11,14 +11,12 @@ use Drupal\webform\Entity\Webform;
  *
  * @FormElement("webform_decoupled")
  */
-class WebformDecoupled extends FormElement
-{
+class WebformDecoupled extends FormElement {
 
   /**
    * {@inheritDoc}
    */
-  public function getInfo()
-  {
+  public function getInfo() {
     $class = get_class($this);
 
     return [
@@ -36,8 +34,7 @@ class WebformDecoupled extends FormElement
   /**
    * Element process callback.
    */
-  public static function processElement(array &$element, FormStateInterface $form_state, array &$complete_form)
-  {
+  public static function processElement(array &$element, FormStateInterface $form_state, array &$complete_form) {
     $has_access = \Drupal::currentUser()
       ->hasPermission('administer webform_decoupled props');
     $element['#tree'] = TRUE;
@@ -46,6 +43,7 @@ class WebformDecoupled extends FormElement
       '#type' => 'select',
       '#required' => TRUE,
       '#title' => t('Webform'),
+      '#empty_option' => t('- Select -'),
       '#options' => self::getWebforms(),
       '#default_value' => $element['#default_value']['webform_id'] ?? '',
     ];
@@ -55,7 +53,7 @@ class WebformDecoupled extends FormElement
       '#title' => t('Style'),
       '#description' => t('A style Object used for theming.'),
       '#default_value' => $element['#default_value']['style'] ?? '',
-      '#attributes' => array('dir' => 'ltr'),
+      '#attributes' => ['dir' => 'ltr'],
       '#access' => $has_access,
     ];
 
@@ -64,7 +62,7 @@ class WebformDecoupled extends FormElement
       '#title' => t('Buttons'),
       '#description' => t('A style Object used for theming.'),
       '#default_value' => $element['#default_value']['buttons'] ?? '',
-      '#attributes' => array('dir' => 'ltr'),
+      '#attributes' => ['dir' => 'ltr'],
       '#access' => $has_access,
     ];
 
@@ -74,8 +72,7 @@ class WebformDecoupled extends FormElement
   /**
    * Form element validate callback.
    */
-  public static function validateElement(&$element, FormStateInterface $form_state, &$form)
-  {
+  public static function validateElement(&$element, FormStateInterface $form_state, &$form) {
     $webform_id = $element['id']['#value'];
     $style = $element['style']['#value'];
     $webform = Webform::load($webform_id);
@@ -98,8 +95,7 @@ class WebformDecoupled extends FormElement
    * @return array
    *   The webforms list.
    */
-  protected static function getWebforms(): array
-  {
+  protected static function getWebforms(): array {
     $forms_options = [];
     $styles = \Drupal::entityTypeManager()->getStorage('webform')->loadMultiple();
 
