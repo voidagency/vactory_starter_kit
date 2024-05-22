@@ -171,7 +171,7 @@ function block_admin_display_submit($form, FormStateInterface $form_state) {
  */
 function gatsby_node_form_submit(&$form, FormStateInterface $form_state) {
   $path = $form_state->getValue('path');
-  $url = !empty($path[0]['alias']) ? '/' . $path[0]['langcode'] . $path[0]['alias'] : $path[0]['source'];
+  $url = !empty($path[0]['alias']) ? '/' . $path[0]['langcode'] . $path[0]['alias'] : '/' . $path[0]['langcode'] . $path[0]['source'];
   $nid = $form_state->getValue('nid');
   $siteConfig = \Drupal::config('system.site');
   $front_uri = $siteConfig->get('page.front');
