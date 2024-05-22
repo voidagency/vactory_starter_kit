@@ -33,6 +33,8 @@ class RouteSubscriber extends RouteSubscriberBase {
     foreach ($routes as $route_name => $route) {
       // We're only interested in jsonapi resources routes.
       if (strpos($route_name, 'jsonapi.') === 0 && $resource_type = $route->getDefault('resource_type')) {
+        // Disable user collection endpoint for anonymous user.
+        $this->disableAnonymousAccessToJsonApiEndpoint($route, $route_name, "jsonapi.user--user.collection", "GET");
         // Load resource config if exist.
         $resource_config = $this->entityTypeManager->getStorage('jsonapi_resource_config')
           ->loadByProperties(['resourceType' => $resource_type]);
@@ -51,6 +53,18 @@ class RouteSubscriber extends RouteSubscriberBase {
     }
     if ($route = $collection->get('simple_oauth.userinfo')) {
       $route->setDefault('_controller', 'Drupal\vactory_decoupled\Controller\UserInfo::handle');
+    }
+  }
+
+  /**
+   * Disable access to json api endpoint for anonymous user.
+   */
+  protected function disableAnonymousAccessToJsonApiEndpoint(&$route, $route_name, $concerned_route_name, $concerned_method) {
+    $methods = $route->getMethods();
+    if ($route_name === $concerned_route_name && in_array($concerned_method, $methods)) {
+      $requirements = $route->getRequirements();
+      $requirements['_role'] = "authenticated";
+      $route->setRequirements($requirements);
     }
   }
 
