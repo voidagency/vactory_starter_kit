@@ -195,6 +195,13 @@ trait FormWidgetTrait {
       $options['#default_value'] = array_merge($options['#default_value'], $default_value);
     }
 
+    // Webform Decoupled default value.
+    if ($type === 'webform_decoupled' && $default_value) {
+      $options['#default_value'] = array_merge($options['#default_value'] ?? [], $default_value);
+      $options['#default_value']['webform_id'] = $options['#default_value']['id'];
+      unset($options['#default_value']['id']);
+    }
+
     // Node queue default value.
     if ($type === 'node_queue' && $default_value) {
       $options['#default_value'] = array_merge($options['#default_value'] ?? [], $default_value);

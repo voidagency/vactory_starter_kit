@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\user\Entity\User;
 use Drupal\user\UserInterface;
 use Drupal\user_registrationpassword\UserRegistrationPassword;
@@ -37,12 +38,11 @@ function vactory_decoupled_espace_prive_decoupled_webform_data_presubmit_alter(a
     $new_name = email_registration_cleanup_username($new_name);
     $user_data['name'] = email_registration_unique_username($new_name);
 
-
     $userSettings = \Drupal::configFactory()->get('user.settings');
     $approval_settings = $userSettings->get('register');
     $user_registrationpassword_type = \Drupal::configFactory()
-        ->getEditable('user_registrationpassword.settings')
-        ->get('registration') ?? [];
+      ->getEditable('user_registrationpassword.settings')
+      ->get('registration') ?? [];
 
     if ($approval_settings === UserInterface::REGISTER_VISITORS &&
       ($user_registrationpassword_type == UserRegistrationPassword::NO_VERIFICATION ||
@@ -53,7 +53,8 @@ function vactory_decoupled_espace_prive_decoupled_webform_data_presubmit_alter(a
     try {
       $account = User::create($user_data);
       $account->save();
-    } catch (\Exception $exception) {
+    }
+    catch (\Exception $exception) {
       $error_message = [
         'error' => [
           'message' => t("Une erreur s'est produite"),
@@ -67,9 +68,11 @@ function vactory_decoupled_espace_prive_decoupled_webform_data_presubmit_alter(a
         case UserRegistrationPassword::NO_VERIFICATION:
           _user_mail_notify('register_no_approval_required', $account);
           break;
+
         case UserRegistrationPassword::VERIFICATION_DEFAULT:
           _user_mail_notify('register_no_approval_required', $account);
           break;
+
         case UserRegistrationPassword::VERIFICATION_PASS:
           _user_registrationpassword_mail_notify('register_confirmation_with_pass', $account);
           break;
@@ -101,12 +104,13 @@ function vactory_decoupled_espace_prive_decoupled_webform_data_presubmit_alter(a
     unset($user_data['in_draft']);
     unset($user_data['csrfToken']);
 
-    foreach ($user_data as $field => $value){
+    foreach ($user_data as $field => $value) {
       $user->set($field, $value);
     }
-    try{
+    try {
       $user->save();
-    } catch (\Exception $exception) {
+    }
+    catch (\Exception $exception) {
       $error_message = [
         'error' => [
           'message' => t("Une erreur s'est produite:") . $exception->getMessage(),
@@ -139,5 +143,14 @@ function vactory_decoupled_espace_prive_decoupled_df_format_alter(&$value, &$inf
   if ($info['uuid'] == 'vactory_decoupled_espace_prive:signup') {
     $cacheTags = Cache::mergeTags($cacheability->getCacheTags(), ['config:user_registrationpassword.settings']);
     $cacheability->setCacheTags($cacheTags);
+  }
+}
+
+/**
+ * Implements hook_entity_base_field_info_alter().
+ */
+function vactory_decoupled_espace_prive_entity_base_field_info_alter(&$fields, EntityTypeInterface $entity_type) {
+  if ($entity_type->id() == 'user') {
+    $fields['pass']->addConstraint('VactoryPasswordPolicyConstraint');
   }
 }
