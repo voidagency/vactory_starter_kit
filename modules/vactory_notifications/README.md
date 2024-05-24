@@ -91,8 +91,11 @@ You can execute the following drush command to clean expired notifications entit
 
 You could also add this command to your crontab conf file.
 
-## Loom demo video
+## Loom demo video :
 https://www.loom.com/share/a8b79aa700d14d7cb9af3f46a29cfeaf
+
+## Loom notifications par mail :
+https://www.loom.com/share/a774525e8d7c47649cb8d98a62b071de 
 
 ## Maintainers
 Brahim KHOUY <b.khouy@void.fr>
