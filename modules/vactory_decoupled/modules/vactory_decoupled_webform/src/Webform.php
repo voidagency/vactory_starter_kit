@@ -414,7 +414,7 @@ class Webform {
       'checkbox'                 => 'checkbox',
       'webform_terms_of_service' => 'checkbox',
       'select'                   => 'select',
-      'webform_select_other'     => 'select',
+      'webform_select_other'     => 'webform_select_other',
       'webform_term_select'      => 'select',
       'webform_term_checkboxes'  => 'checkboxes',
       'radios'                   => 'radios',
@@ -442,6 +442,7 @@ class Webform {
     $properties['type'] = $ui_type;
     // phpcs:disable
     (isset($item['#title']) && !is_null($item['#title'])) ? $properties['label'] = $item['#title'] : NULL;
+    (isset($item['#other__title']) && !is_null($item['#other__title'])) ? $properties['otherTitle'] = $item['#other__title'] : NULL;
     (array_key_exists('#webform_parent_flexbox', $item) && $item['#webform_parent_flexbox']) ? $properties['flex'] = (array_key_exists('#flex', $item) ? $item['#flex'] : 1) : 1;
     (isset($item['#placeholder']) && !is_null($item['#placeholder'])) ? $properties['placeholder'] = (string) t($item['#placeholder']) : NULL;
     (isset($item['#description']) && !is_null($item['#description'])) ? $properties['helperText'] = (string) t($item['#description']) : NULL;
