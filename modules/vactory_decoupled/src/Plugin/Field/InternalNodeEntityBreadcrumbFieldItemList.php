@@ -215,11 +215,11 @@ class InternalNodeEntityBreadcrumbFieldItemList extends FieldItemList {
               $piece = $trans_node->label();
             }
           }
-          $links[] = Link::fromTextAndUrl(t($piece), Url::fromUserInput($cumul));
+          $links[] = Link::fromTextAndUrl($piece, Url::fromUserInput($cumul));
           $cumul .= '/';
         }
         else {
-          $links[] = t($piece);
+          $links[] = $piece;
         }
       }
     }
