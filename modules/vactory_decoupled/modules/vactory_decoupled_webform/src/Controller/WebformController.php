@@ -238,7 +238,7 @@ class WebformController extends ControllerBase {
     }
     else {
       return new JsonResponse([
-        'error' => t('Cannot generate captcha'),
+        'error' => t('Cannot generate captcha', [], ['context', '_FRONTEND']),
       ], 400);
     }
 
