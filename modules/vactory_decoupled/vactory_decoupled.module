@@ -852,7 +852,8 @@ function vactory_decoupled_jsonapi_default_enhancers_info() {
  */
 function vactory_decoupled_form_jsonapi_resource_config_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $config_resource = $form_state->getFormObject()->getEntity();
-  $default_roles = $config_resource->getThirdPartySetting('vactory_decoupled', 'roles', []);
+  $default_collection_roles = $config_resource->getThirdPartySetting('vactory_decoupled', 'collection_roles', []);
+  $default_individual_roles = $config_resource->getThirdPartySetting('vactory_decoupled', 'individual_roles', []);
   $form['access'] = [
     '#type' => 'details',
     '#title' => t('Access'),
@@ -862,12 +863,31 @@ function vactory_decoupled_form_jsonapi_resource_config_edit_form_alter(&$form, 
   $roles = array_map(function ($role) {
     return $role->label();
   }, $roles);
-  $form['access']['roles'] = [
+  $form['access']['collection'] = [
+    '#type' => 'details',
+    '#tree' => TRUE,
+    '#open' => FALSE,
+    '#title' => t('Collection Access'),
+  ];
+  $form['access']['collection']['roles'] = [
     '#type' => 'checkboxes',
     '#title' => t('Roles'),
     '#options' => $roles,
-    '#description' => t('Users with given roles could access this resource, if no role has been selected then do nothing (of course an api key or jsonapi token is required when the original jsonapi resource is protected)'),
-    '#default_value' => $default_roles,
+    '#description' => t('Users with given roles could access this collection resource, if no role has been selected then do nothing (of course an api key or jsonapi token is required when the original jsonapi resource is protected)'),
+    '#default_value' => $default_collection_roles,
+  ];
+  $form['access']['individual'] = [
+    '#type' => 'details',
+    '#open' => FALSE,
+    '#tree' => TRUE,
+    '#title' => t('Individual Access'),
+  ];
+  $form['access']['individual']['roles'] = [
+    '#type' => 'checkboxes',
+    '#title' => t('Roles'),
+    '#options' => $roles,
+    '#description' => t('Users with given roles could access this resource individual, if no role has been selected then do nothing (of course an api key or jsonapi token is required when the original jsonapi resource is protected)'),
+    '#default_value' => $default_individual_roles,
   ];
   $form['#entity_builders'][] = 'vactory_decoupled_jsonapi_resource_config_builder';
 }
@@ -876,8 +896,10 @@ function vactory_decoupled_form_jsonapi_resource_config_edit_form_alter(&$form, 
  * Jsonapi resource config entity builder callback.
  */
 function vactory_decoupled_jsonapi_resource_config_builder($entity_type, JsonapiResourceConfig $config_resource, &$form, FormStateInterface $form_state) {
-  $roles = $form_state->getValue('roles');
-  $config_resource->setThirdPartySetting('vactory_decoupled', 'roles', $roles);
+  $collection_roles = $form_state->getValue('collection')['roles'] ?? [];
+  $individual_roles = $form_state->getValue('individual')['roles'] ?? [];
+  $config_resource->setThirdPartySetting('vactory_decoupled', 'collection_roles', $collection_roles);
+  $config_resource->setThirdPartySetting('vactory_decoupled', 'individual_roles', $individual_roles);
 }
 
 /**

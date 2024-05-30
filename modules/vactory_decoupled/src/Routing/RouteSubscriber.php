@@ -33,20 +33,24 @@ class RouteSubscriber extends RouteSubscriberBase {
     foreach ($routes as $route_name => $route) {
       // We're only interested in jsonapi resources routes.
       if (strpos($route_name, 'jsonapi.') === 0 && $resource_type = $route->getDefault('resource_type')) {
-        // Disable user collection endpoint for anonymous user.
-        $this->disableAnonymousAccessToJsonApiEndpoint($route, $route_name, "jsonapi.user--user.collection", "GET");
         // Load resource config if exist.
         $resource_config = $this->entityTypeManager->getStorage('jsonapi_resource_config')
           ->loadByProperties(['resourceType' => $resource_type]);
         if (!empty($resource_config)) {
           $resource_config = reset($resource_config);
           // Get resource config authorized roles.
-          $roles = $resource_config->getThirdPartySetting('vactory_decoupled', 'roles', []);
-          $roles = array_filter($roles);
-          if (!empty($roles)) {
-            $requirements = $route->getRequirements();
-            $requirements['_role'] = implode('+', $roles);
-            $route->setRequirements($requirements);
+          $collection_roles = $resource_config->getThirdPartySetting('vactory_decoupled', 'collection_roles', []);
+          $collection_roles = array_filter($collection_roles);
+          // Allow access to collection endpoint.
+          if (str_ends_with($route_name, ".collection") && !empty($collection_roles)) {
+            $this->addRolesToJsonApiEndPoint($route, $collection_roles);
+          }
+
+          $individual_roles = $resource_config->getThirdPartySetting('vactory_decoupled', 'individual_roles', []);
+          $individual_roles = array_filter($individual_roles);
+          // Allow access to individual resource (GET, POST, PATCH, DELETE).
+          if (!str_ends_with($route_name, ".collection") && !empty($individual_roles)) {
+            $this->addRolesToJsonApiEndPoint($route, $individual_roles);
           }
         }
       }
@@ -57,15 +61,12 @@ class RouteSubscriber extends RouteSubscriberBase {
   }
 
   /**
-   * Disable access to json api endpoint for anonymous user.
+   * Allow access to json api endpoint per roles.
    */
-  protected function disableAnonymousAccessToJsonApiEndpoint(&$route, $route_name, $concerned_route_name, $concerned_method) {
-    $methods = $route->getMethods();
-    if ($route_name === $concerned_route_name && in_array($concerned_method, $methods)) {
-      $requirements = $route->getRequirements();
-      $requirements['_role'] = "authenticated";
-      $route->setRequirements($requirements);
-    }
+  protected function addRolesToJsonApiEndPoint(&$route, $roles) {
+    $requirements = $route->getRequirements();
+    $requirements['_role'] = implode('+', $roles);
+    $route->setRequirements($requirements);
   }
 
 }
