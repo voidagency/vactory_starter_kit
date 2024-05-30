@@ -152,14 +152,14 @@ class WebformController extends ControllerBase {
     }
 
     $webform_submission = WebformSubmissionForm::submitWebformSubmission($webform_submission);
-    $datalayer_handler_enabled = $this->isHandlerEnabled($webform, 'vactory_datalayer_handler');
-    $datalayer = NULL;
-    if ($datalayer_handler_enabled) {
-      $submission = WebformSubmission::load($webform_submission->id());
-      $datalayer = $submission->get('datalayer')->value;
-    }
     // Check if submit was successful.
     if ($webform_submission instanceof WebformSubmissionInterface) {
+      $datalayer_handler_enabled = $this->isHandlerEnabled($webform, 'vactory_datalayer_handler');
+      $datalayer = NULL;
+      if ($datalayer_handler_enabled) {
+        $submission = WebformSubmission::load($webform_submission->id());
+        $datalayer = $submission->get('datalayer')->value;
+      }
       return new JsonResponse([
         'sid' => $webform_submission->id(),
         'crypted_sid' => $this->vactoryDevTools->encrypt('vactory_tender' . $webform_submission->id()),
