@@ -183,10 +183,11 @@ function gatsby_node_form_submit(&$form, FormStateInterface $form_state) {
 
   // Redirect to the alias if it exists, otherwise use the node URL.
   if (isset($url)) {
-    $revision_param = '';
     if (in_array('moderation_state', $form_state->getValues())
       && $form_state->getValue('moderation_state')[0]['value'] == 'draft'
     ) {
+      $sessionless_page = Settings::get('sessionless_page_url', '/account/sessionless');
+      $frontend_url .= $sessionless_page;
       $latest_revision = \Drupal::entityTypeManager()
         ->getStorage('node')->getQuery()
         ->accessCheck('FALSE')
@@ -196,9 +197,13 @@ function gatsby_node_form_submit(&$form, FormStateInterface $form_state) {
       $revision_id = array_keys($latest_revision);
       $revision_id = reset($revision_id);
       $revision_param = '?revision=' . $revision_id;
+
+      $gatsby_url = Url::fromUri($frontend_url . '?callbackUrl=' . $url . $revision_param)->toString();
+      $response = new RedirectResponse($gatsby_url);
+      $response->send();
     }
 
-    $gatsby_url = Url::fromUri($frontend_url . $url . $revision_param)->toString();
+    $gatsby_url = Url::fromUri($frontend_url . $url)->toString();
     $response = new RedirectResponse($gatsby_url);
     $response->send();
   }

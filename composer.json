@@ -239,7 +239,9 @@
         "Invoke alter hook after webform handlers execution": "https://gist.githubusercontent.com/voidagency/6871bd7544b621e2c4221126c5dfec50/raw/7595d19a34e18ab9f719b7f917c02b10a4a40caf/webform-post-handlers-hook.patch"
       },
       "drupal/simple_oauth": {
-        "Auth revoke on profile update": "https://www.drupal.org/files/issues/2019-04-15/simple_oauth-auth-revoke-2946882-34.patch"
+        "Auth revoke on profile update": "https://www.drupal.org/files/issues/2019-04-15/simple_oauth-auth-revoke-2946882-34.patch",
+        "Registered claims error after upgrading from 5.0.5 to 5.2.0": "https://gist.githubusercontent.com/ismail-void/539733588565017233ef8d26907823df/raw/6eeeb0cdc770a3d6a0d4e643b8b0b5d0319c31c2/fix-registered-claims-error.patch",
+        "the /oauth/jwks endpoint should be accessible without authentication": "https://gist.githubusercontent.com/ismail-void/21cea77b322c5cd466655f7aaec7d826/raw/29a7ed7180c218d5169e5a7f22f2839e7347d55e/jwks-endpoint-accessible-without-authentication.patch"
       },
       "drupal/captcha": {
         "Fix captcha error message translation": "https://gist.githubusercontent.com/voidagency/11480147ce444bf3b4b7c5539f213452/raw/5a2d3f39bc5f795bb25b5c91ab050ad8d9ad1837/fix-captcha-error-message-translation.patch"
