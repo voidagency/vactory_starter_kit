@@ -6,6 +6,8 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Logger\LoggerChannelFactory;
 use Drupal\Core\Mail\MailManagerInterface;
+use Drupal\Core\Utility\Token;
+use Drupal\user\Entity\User;
 use Drupal\user\Event\UserEvents;
 use Drupal\user\Event\UserFloodEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -51,13 +53,21 @@ class VactoryFloodControlSubscriber implements EventSubscriberInterface {
   protected $vactoryFloodControlConfig;
 
   /**
+   * Token.
+   *
+   * @var \Drupal\Core\Utility\Token
+   */
+  protected $token;
+
+  /**
    * Constructor.
    */
-  public function __construct(MailManagerInterface $mail_manager, LanguageManagerInterface $language_manager, LoggerChannelFactory $logger, ConfigFactoryInterface $configFactory,) {
+  public function __construct(MailManagerInterface $mail_manager, LanguageManagerInterface $language_manager, LoggerChannelFactory $logger, ConfigFactoryInterface $configFactory, Token $token) {
     $this->mailManager = $mail_manager;
     $this->languageManager = $language_manager;
     $this->logger = $logger;
     $this->vactoryFloodControlConfig = $configFactory->get('vactory_flood_control.settings');
+    $this->token = $token;
   }
 
   /**
@@ -74,13 +84,22 @@ class VactoryFloodControlSubscriber implements EventSubscriberInterface {
    */
   public function onUserBlock(UserFloodEvent $floodEvent) {
     $user_id = $floodEvent->getUid();
-    $message = "Flood control blocked login attempt for uid {$user_id}";
+    $user_ip = '';
     if ($floodEvent->hasIp()) {
-      $ip = $floodEvent->getIp();
-      $message .= " from {$ip}";
+      $user_ip = $floodEvent->getIp();
     }
+    $subject = $this->vactoryFloodControlConfig->get('user_flood_notification_subject');
+    $message = $this->vactoryFloodControlConfig->get('user_flood_notification_body');
+    $user = User::load($user_id);
+    $tokens_data = [
+      'vactory_flood_control_user' => $user,
+      'vactory_flood_control_ip' => $user_ip,
+    ];
+    $message = $this->token->replace($message, $tokens_data);
+    $subject = $this->token->replace($subject, $tokens_data);
+
     $emails = $this->vactoryFloodControlConfig->get('emails');
-    $this->sendFloodNotificationByMail('Flood control (User blocked)', $emails, $message);
+    $this->sendFloodNotificationByMail($subject, $emails, $message);
     $this->logger->get('vactory_flood_control')->info($message);
   }
 
@@ -89,8 +108,14 @@ class VactoryFloodControlSubscriber implements EventSubscriberInterface {
    */
   public function onIpBlock(UserFloodEvent $floodEvent) {
     $emails = $this->vactoryFloodControlConfig->get('emails');
-    $message = 'Flood control blocked login attempt from ' . $floodEvent->getIp();
-    $this->sendFloodNotificationByMail('Flood control (User blocked)', $emails, $message);
+    $subject = $this->vactoryFloodControlConfig->get('user_flood_notification_subject_ip');
+    $message = $this->vactoryFloodControlConfig->get('user_flood_notification_body_ip');
+    $tokens_data = [
+      'vactory_flood_control_ip' => $floodEvent->getIp(),
+    ];
+    $subject = $this->token->replace($subject, $tokens_data);
+    $message = $this->token->replace($message, $tokens_data);
+    $this->sendFloodNotificationByMail($subject, $emails, $message);
     $this->logger->get('vactory_flood_control')->info($message);
   }
 

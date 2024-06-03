@@ -5,6 +5,8 @@
  * Module related hooks.
  */
 
+use Drupal\Core\Form\FormStateInterface;
+
 /**
  * Implements hook_mail().
  */
@@ -17,5 +19,78 @@ function vactory_flood_control_mail($key, &$message, $params) {
       $message['options'] = $params['options'];
       break;
   }
+}
 
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function vactory_flood_control_form_user_admin_settings_alter(&$form, FormStateInterface $form_state, $form_id) {
+  $config = \Drupal::config('vactory_flood_control.settings');
+
+  $form['user_flood_notification'] = [
+    '#type' => 'details',
+    '#title' => t('User flood notification'),
+    '#collapsible' => TRUE,
+    '#collapsed' => TRUE,
+    '#description' => t('Email content to notify administrators of a user block.'),
+    '#group' => 'email',
+  ];
+
+  $form['user_flood_notification']['blocked_user'] = [
+    '#type' => 'fieldset',
+    '#title' => t('Blocked user'),
+  ];
+
+  $form['user_flood_notification']['blocked_user']['user_flood_notification_subject'] = [
+    '#type' => 'textfield',
+    '#title' => t('Subject'),
+    '#default_value' => $config->get('user_flood_notification_subject'),
+    '#maxlength' => 180,
+  ];
+  $form['user_flood_notification']['blocked_user']['user_flood_notification_body'] = [
+    '#type' => 'textarea',
+    '#title' => t('Body'),
+    '#default_value' => $config->get('user_flood_notification_body'),
+    '#rows' => 15,
+  ];
+
+  $form['user_flood_notification']['blocked_ip'] = [
+    '#type' => 'fieldset',
+    '#title' => t('Blocked IP'),
+  ];
+
+  $form['user_flood_notification']['blocked_ip']['user_flood_notification_subject_ip'] = [
+    '#type' => 'textfield',
+    '#title' => t('Subject'),
+    '#default_value' => $config->get('user_flood_notification_subject_ip'),
+    '#maxlength' => 180,
+  ];
+  $form['user_flood_notification']['blocked_ip']['user_flood_notification_body_ip'] = [
+    '#type' => 'textarea',
+    '#title' => t('Body'),
+    '#default_value' => $config->get('user_flood_notification_body_ip'),
+    '#rows' => 15,
+  ];
+
+  // Register our extra submit function.
+  $form['#submit'][] = 'vactory_flood_control_admin_settings_submit';
+}
+
+/**
+ * Submit handler for the user admin form.
+ */
+function vactory_flood_control_admin_settings_submit(&$form, FormStateInterface $form_state) {
+  $config = \Drupal::configFactory()->getEditable('vactory_flood_control.settings');
+
+  // Save mail data.
+  $config
+    ->set('user_flood_notification_subject', $form_state->getValue('user_flood_notification_subject'))
+    ->set('user_flood_notification_body', $form_state->getValue('user_flood_notification_body'));
+
+  $config
+    ->set('user_flood_notification_subject_ip', $form_state->getValue('user_flood_notification_subject_ip'))
+    ->set('user_flood_notification_body_ip', $form_state->getValue('user_flood_notification_body_ip'));
+
+  // Save configs.
+  $config->save();
 }
