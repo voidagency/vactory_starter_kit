@@ -91,6 +91,8 @@ class Webform {
 
   /**
    * Form with test values.
+   *
+   * @var array
    */
   protected $formWithTestsValues = [];
 
@@ -113,7 +115,10 @@ class Webform {
   /**
    * The excluded webform from test.
    */
-  const WEBFORM_TESTS_EXCLUDED = ['vactory_espace_prive_edit', 'vactory_espace_prive_register'];
+  const WEBFORM_TESTS_EXCLUDED = [
+    'vactory_espace_prive_edit',
+    'vactory_espace_prive_register',
+  ];
 
   /**
    * {@inheritDoc}
@@ -150,7 +155,8 @@ class Webform {
     if ($this->checkIfWeShouldPrepareTestsValues()) {
       $webformAux = $this->webform;
       $this->formWithTestsValues = $this->renderer->executeInRenderContext(new RenderContext(), static function () use ($webformAux) {
-        return $webformAux->getSubmissionForm([], 'test')['elements'] ?? [];;
+        $submission_form = $webformAux->getSubmissionForm([], 'test');
+        return $submission_form['elements'] ?? [];
       });
     }
     $elements = $this->webform->getElementsInitialized();
@@ -414,7 +420,7 @@ class Webform {
       'checkbox'                 => 'checkbox',
       'webform_terms_of_service' => 'checkbox',
       'select'                   => 'select',
-      'webform_select_other'     => 'select',
+      'webform_select_other'     => 'webform_select_other',
       'webform_term_select'      => 'select',
       'webform_term_checkboxes'  => 'checkboxes',
       'radios'                   => 'radios',
@@ -442,6 +448,7 @@ class Webform {
     $properties['type'] = $ui_type;
     // phpcs:disable
     (isset($item['#title']) && !is_null($item['#title'])) ? $properties['label'] = $item['#title'] : NULL;
+    (isset($item['#other__title']) && !is_null($item['#other__title'])) ? $properties['otherTitle'] = $item['#other__title'] : NULL;
     (array_key_exists('#webform_parent_flexbox', $item) && $item['#webform_parent_flexbox']) ? $properties['flex'] = (array_key_exists('#flex', $item) ? $item['#flex'] : 1) : 1;
     (isset($item['#placeholder']) && !is_null($item['#placeholder'])) ? $properties['placeholder'] = (string) t($item['#placeholder']) : NULL;
     (isset($item['#description']) && !is_null($item['#description'])) ? $properties['helperText'] = (string) t($item['#description']) : NULL;
@@ -592,7 +599,7 @@ class Webform {
 
     // Override default values when the query params include test.
     if ($this->checkIfWeShouldPrepareTestsValues()) {
-      $this->prepareFormElementTestValue($field_name , $properties);
+      $this->prepareFormElementTestValue($field_name, $properties);
     }
 
     return $properties;
@@ -611,7 +618,7 @@ class Webform {
    */
   private function prepareFormElementTestValue($field_name, &$properties) {
     $parents = $this->findParents($field_name, $this->formWithTestsValues);
-    $child = !empty($parents) ?  NestedArray::getValue($this->formWithTestsValues, array_merge($parents, [$field_name])) : [];
+    $child = !empty($parents) ? NestedArray::getValue($this->formWithTestsValues, array_merge($parents, [$field_name])) : [];
     $concenedElement = !empty($child) && in_array($field_name, $child['#array_parents'] ?? []) ? $child : $this->formWithTestsValues[$field_name];
     $properties['default_value'] = $concenedElement['#default_value'] ?? '';
     if ($properties['type'] == 'upload') {
@@ -624,7 +631,7 @@ class Webform {
    */
   private function prepareUploadElementTestValue(&$properties) {
     if (!$properties['isMultiple']) {
-      $fid = is_array($properties['default_value']) ? array_values($properties['default_value'])[0] : null;
+      $fid = is_array($properties['default_value']) ? array_values($properties['default_value'])[0] : NULL;
       if (!is_null($fid)) {
         $properties['default_value'] = $this->preparePreviewInfos($fid);
         return;
@@ -757,20 +764,21 @@ class Webform {
   /**
    * Find the parent elements of a specified key within an array.
    */
-  protected function findParents($key, $array, $parentKey = null, &$parents = array()) {
+  protected function findParents($key, $array, $parentKey = NULL, &$parents = []) {
     foreach ($array as $currentKey => $value) {
-        if ($currentKey === $key) {
-            // If the current key matches the target key, add the parent to the list.
-            if ($parentKey !== null && !str_starts_with($parentKey, '#')) {
-                $parents[] = $parentKey;
-            }
-            break;
+      if ($currentKey === $key) {
+        // If current key matches target key, add the parent to the list.
+        if ($parentKey !== NULL && !str_starts_with($parentKey, '#')) {
+          $parents[] = $parentKey;
         }
+        break;
+      }
 
-        if (is_array($value)) {
-            // Recursively search in the current sub-array with the current key as the parent.
-            $this->findParents($key, $value, $currentKey, $parents);
-        }
+      if (is_array($value)) {
+        // Recursively search in current sub-array
+        // with current key as the parent.
+        $this->findParents($key, $value, $currentKey, $parents);
+      }
     }
     return $parents;
   }

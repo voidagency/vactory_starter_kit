@@ -4,6 +4,8 @@ dependencies:
   enforced:
     module:
       - vactory_job_ads
+_core:
+  default_config_hash: gbrpgGMWSSTBMKM1oxaE9hxr15WqREkHaQv5KKLj2Gg
 weight: 0
 open: null
 close: null
@@ -13,7 +15,7 @@ archive: false
 id: vactory_job_application
 title: 'Job Application'
 description: ''
-category: ''
+categories: {  }
 elements: |-
   job_ad:
     '#type': hidden
@@ -25,12 +27,10 @@ elements: |-
     '#type': textfield
     '#title': 'First Name'
     '#required': true
-    '#required_error': 'Enter your first name *'
   last_name:
     '#type': textfield
     '#title': 'Last Name'
     '#required': true
-    '#required_error': 'Enter your last name *'
   email_:
     '#type': email
     '#title': Email
@@ -48,12 +48,14 @@ elements: |-
     '#required': true
     '#max_filesize': '3'
     '#file_extensions': 'pdf doc docx'
+    '#default_file': ''
   cover_letter:
     '#type': webform_document_file
     '#title': 'Cover Letter'
     '#max_filesize': '3'
     '#file_extensions': 'pdf doc docx'
     '#sanitize': true
+    '#default_file': ''
   actions:
     '#type': webform_actions
     '#title': 'Submit button(s)'
@@ -139,7 +141,7 @@ settings:
   confirmation_type: message
   confirmation_url: ''
   confirmation_title: ''
-  confirmation_message: "Your application has been successfully submitted."
+  confirmation_message: 'Your application has been successfully submitted.'
   confirmation_attributes: {  }
   confirmation_back: true
   confirmation_back_label: ''
@@ -167,8 +169,8 @@ settings:
 access:
   create:
     roles:
-    - anonymous
-    - authenticated
+      - anonymous
+      - authenticated
     users: {  }
     permissions: {  }
   view_any:
@@ -222,7 +224,7 @@ handlers:
     weight: 0
     settings:
       states:
-      - completed
+        - completed
       to_mail: _default
       to_options: {  }
       bcc_mail: ''
