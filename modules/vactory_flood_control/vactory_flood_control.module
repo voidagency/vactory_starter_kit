@@ -34,6 +34,7 @@ function vactory_flood_control_form_user_admin_settings_alter(&$form, FormStateI
     '#collapsed' => TRUE,
     '#description' => t('Email content to notify administrators of a user block.'),
     '#group' => 'email',
+    '#tree' => TRUE,
   ];
 
   $form['user_flood_notification']['blocked_user'] = [
@@ -44,13 +45,13 @@ function vactory_flood_control_form_user_admin_settings_alter(&$form, FormStateI
   $form['user_flood_notification']['blocked_user']['user_flood_notification_subject'] = [
     '#type' => 'textfield',
     '#title' => t('Subject'),
-    '#default_value' => $config->get('user_flood_notification_subject'),
+    '#default_value' => $config->get('user_flood_notification.blocked_user.user_flood_notification_subject'),
     '#maxlength' => 180,
   ];
   $form['user_flood_notification']['blocked_user']['user_flood_notification_body'] = [
     '#type' => 'textarea',
     '#title' => t('Body'),
-    '#default_value' => $config->get('user_flood_notification_body'),
+    '#default_value' => $config->get('user_flood_notification.blocked_user.user_flood_notification_body'),
     '#rows' => 15,
   ];
 
@@ -62,13 +63,13 @@ function vactory_flood_control_form_user_admin_settings_alter(&$form, FormStateI
   $form['user_flood_notification']['blocked_ip']['user_flood_notification_subject_ip'] = [
     '#type' => 'textfield',
     '#title' => t('Subject'),
-    '#default_value' => $config->get('user_flood_notification_subject_ip'),
+    '#default_value' => $config->get('user_flood_notification.blocked_ip.user_flood_notification_subject_ip'),
     '#maxlength' => 180,
   ];
   $form['user_flood_notification']['blocked_ip']['user_flood_notification_body_ip'] = [
     '#type' => 'textarea',
     '#title' => t('Body'),
-    '#default_value' => $config->get('user_flood_notification_body_ip'),
+    '#default_value' => $config->get('user_flood_notification.blocked_ip.user_flood_notification_body_ip'),
     '#rows' => 15,
   ];
 
@@ -82,15 +83,16 @@ function vactory_flood_control_form_user_admin_settings_alter(&$form, FormStateI
 function vactory_flood_control_admin_settings_submit(&$form, FormStateInterface $form_state) {
   $config = \Drupal::configFactory()->getEditable('vactory_flood_control.settings');
 
-  // Save mail data.
-  $config
-    ->set('user_flood_notification_subject', $form_state->getValue('user_flood_notification_subject'))
-    ->set('user_flood_notification_body', $form_state->getValue('user_flood_notification_body'));
-
-  $config
-    ->set('user_flood_notification_subject_ip', $form_state->getValue('user_flood_notification_subject_ip'))
-    ->set('user_flood_notification_body_ip', $form_state->getValue('user_flood_notification_body_ip'));
+  // Save data.
+  $config->set('user_flood_notification', $form_state->getValue('user_flood_notification'));
 
   // Save configs.
   $config->save();
+}
+
+/**
+ * Implements hook_config_translation_info_alter().
+ */
+function vactory_flood_control_config_translation_info_alter(&$info) {
+  $info['entity.user.admin_form']['names'][] = 'vactory_flood_control.settings';
 }
