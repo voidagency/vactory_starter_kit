@@ -203,7 +203,7 @@ function vactory_news_jsonapi_vcc_normalized_node_alter(array &$normalized_node,
             $uri = $file->getFileUri();
             $fileResult = [];
             $media_file_manager = \Drupal::service('vacory_decoupled.media_file_manager');
-            $fileResult['gi'] = $media_file_manager->getMediaAbsoluteUrl($uri);
+            $fileResult['_default'] = $media_file_manager->getMediaAbsoluteUrl($uri);
             if (\Drupal::moduleHandler()->moduleExists('vactory_decoupled_image_styles')) {
               $image_styles = \Drupal::service('vactory_decoupled_image_styles.service')->getFileImageStyles($file);
               $original_file = $media_file_manager->getMediaAbsoluteUrl($uri);
