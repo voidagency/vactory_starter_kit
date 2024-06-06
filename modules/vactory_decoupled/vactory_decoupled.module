@@ -188,12 +188,15 @@ function gatsby_node_form_submit(&$form, FormStateInterface $form_state) {
     ) {
       $sessionless_page = Settings::get('sessionless_page_url', '/account/sessionless');
       $frontend_url .= $sessionless_page;
-      $latest_revision = \Drupal::entityTypeManager()
+      $latest_revision_query = \Drupal::entityTypeManager()
         ->getStorage('node')->getQuery()
         ->accessCheck('FALSE')
-        ->condition('nid', $nid)
-        ->latestRevision()
-        ->execute();
+        ->condition('nid', $nid);
+      if (!empty($path[0]['langcode'])) {
+        $latest_revision_query->condition('langcode', $path[0]['langcode']);
+      }
+      $latest_revision_query->latestRevision();
+      $latest_revision = $latest_revision_query->execute();
       $revision_id = array_keys($latest_revision);
       $revision_id = reset($revision_id);
       $revision_param = '?revision=' . $revision_id;
