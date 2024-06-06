@@ -1038,7 +1038,7 @@ function clear_next_nginx_cache($path = '') {
   $client = \Drupal::httpClient();
 
   try {
-    $request = $client->request('PURGE', $front_end_url . '/' . $path);
+    $request = $client->requestAsync('PURGE', $front_end_url . '/' . $path);
     \Drupal::logger('clear_next_nginx_cache')->info('Next nginx cache cleared for ' . $path);
   }
   catch (ServerException $e) {
