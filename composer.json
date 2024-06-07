@@ -240,7 +240,7 @@
       },
       "drupal/simple_oauth": {
         "Auth revoke on profile update": "https://www.drupal.org/files/issues/2019-04-15/simple_oauth-auth-revoke-2946882-34.patch",
-        "Registered claims error after upgrading from 5.0.5 to 5.2.0": "https://gist.githubusercontent.com/voidagency/50a350247c84e74cd0bdfb788f1ddcc0/raw/a9fba4fe002542bc1f43742a83965ddeaa3eaba8/fix-registered-claims-error.patch",
+        "Registered claims error after upgrading from 5.0.5 to 5.2.0": "https://gist.githubusercontent.com/ismail-void/539733588565017233ef8d26907823df/raw/6eeeb0cdc770a3d6a0d4e643b8b0b5d0319c31c2/fix-registered-claims-error.patch",
         "the /oauth/jwks endpoint should be accessible without authentication": "https://gist.githubusercontent.com/voidagency/fc4c7543f6bcd53d0f12ac4bb499aa77/raw/3a84f6cd17b3b02c42c5ea830d45b06eb3a0c3be/jwks-endpoint-accessible-without-authentication.patch"
       },
       "drupal/captcha": {
