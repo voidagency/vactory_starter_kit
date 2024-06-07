@@ -8,7 +8,11 @@
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\node\Entity\Node;
+use Drupal\node\Entity\NodeType;
 use Drupal\node\NodeTypeInterface;
+use Drupal\views\ResultRow;
+use Drupal\views\ViewExecutable;
 
 /**
  * Implements hook_theme().
@@ -179,4 +183,84 @@ function vactory_cross_content_entity_base_field_info(EntityTypeInterface $entit
       ->setDisplayConfigurable('view', FALSE);
   }
   return $fields;
+}
+
+/**
+ * Implements hook_views_post_execute().
+ */
+function vactory_cross_content_views_post_execute(ViewExecutable $view) {
+  // Check if this is the specific view we want to alter.
+  if ($view->id() == 'vactory_cross_content') {
+    // Get the number of results in the view.
+    $result_count = count($view->result);
+
+    // Get view content type.
+    $view_type = $view->filter['type']->value;
+    if (empty($view_type)) {
+      return;
+    }
+    $content_type = reset($view_type);
+    $type = NodeType::load($content_type);
+    if (!isset($type)) {
+      return;
+    }
+
+    // Get VCC number.
+    $vcc_number = $type->getThirdPartySetting('vactory_cross_content', 'nombre_elements', 3);
+    $taxonomy_field = $type->getThirdPartySetting('vactory_cross_content', 'taxonomy_field', '');
+    if ($result_count > 0 && $result_count < $vcc_number) {
+      // Determine how many items to add.
+      $items_to_add = $vcc_number - $result_count;
+
+      // Get node terms.
+      $term_ids = $view->filter['tid']->value;
+
+      // Load additional items to add.
+      $additional_items = _get_additional_items($items_to_add, $content_type, $term_ids, $taxonomy_field);
+
+      // Add the additional items to the view results.
+      foreach ($additional_items as $item) {
+        $view->result[] = $item;
+      }
+    }
+  }
+}
+
+/**
+ * Fetch additional items to add to the view results.
+ */
+function _get_additional_items($count, $node_type, $term_ids, $taxonomy_field) {
+  $language = \Drupal::languageManager()->getCurrentLanguage()->getId();
+  $query = \Drupal::entityQuery('node')
+    ->condition('type', $node_type)
+    ->condition('status', 1)
+    ->condition('langcode', $language)
+    ->accessCheck(TRUE)
+    ->range(0, $count);
+  if (isset($taxonomy_field) && !empty($taxonomy_field) && $taxonomy_field !== 'none') {
+    $query->condition($taxonomy_field, $term_ids, 'NOT IN');
+  }
+  $result = $query->execute();
+
+  $nids = array_values($result);
+  $nodes = Node::loadMultiple($nids);
+
+  // Transform the nodes to the format expected by the view.
+  $additional_items = [];
+  foreach ($nodes as $node) {
+    // Create a result array for each node.
+    $row_data = [
+      'nid' => $node->id(),
+      '_entity' => $node,
+      'title' => $node->label(),
+    ];
+
+    // Create a ResultRow object with the result array.
+    $row = new ResultRow($row_data);
+
+    // Add the ResultRow object to the additional items array.
+    $additional_items[] = $row;
+  }
+
+  return $additional_items;
 }
