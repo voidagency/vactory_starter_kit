@@ -1,0 +1,37 @@
+name: 'Six Columns coming - Events'
+multiple: FALSE
+category: 'Events'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: "Titre"
+  description:
+    type: text_format
+    label: 'Description'
+    options:
+      '#format': 'basic_html'
+  collection:
+    type: json_api_collection
+    label: 'JSON:API'
+    options:
+      '#required': TRUE
+      '#default_value':
+        resource: node--vactory_event
+        filters:
+          - fields[node--vactory_event]=drupal_internal__nid,path,title,field_vactory_taxonomy_1,field_vactory_taxonomy_2,field_vactory_date_interval,field_vactory_date_interval.value,field_vactory_tags,field_vactory_media,field_vactory_excerpt
+          - fields[taxonomy_term--vactory_event_category]=tid,name,term_2_slug
+          - fields[taxonomy_term--vactory_event_citys]=tid,name,term_2_slug
+          - fields[taxonomy_term--tags]=tid,name,term_2_slug
+          - fields[media--image]=name,thumbnail
+          - fields[file--image]=filename,uri
+          - include=field_vactory_taxonomy_1,field_vactory_taxonomy_2,field_vactory_tags,field_vactory_media,field_vactory_media.thumbnail
+          - filter[status][value]=1
+          - page[limit]=6
+          - filter[field_vactory_date_interval.value][path]=field_vactory_date_interval.value
+          - filter[field_vactory_date_interval.value][value]=[current-date:html_date]
+          - filter[field_vactory_date_interval.value][operator]=>=
+          - sort=-field_vactory_date_interval.value
+  link:
+    type: url_extended
+    label: 'Lien'

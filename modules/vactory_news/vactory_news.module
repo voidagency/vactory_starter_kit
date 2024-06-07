@@ -140,7 +140,7 @@ function vactory_news_preprocess_views_view(&$variables) {
               $taxonomy_tid_depth_filter = array_filter($filters, function ($filter) {
                 return $filter['plugin_id'] === 'taxonomy_index_tid_depth';
               });
-              // In case of parent term and view taxonomy tid depth filter exist.
+              // Case of parent term and view taxonomy tid depth filter exist.
               if (!$has_parent && !empty($taxonomy_tid_depth_filter)) {
                 $filter_name = reset($taxonomy_tid_depth_filter)['id'];
               }
@@ -178,7 +178,7 @@ function vactory_news_preprocess_views_view(&$variables) {
  * @param string $base_node_type
  *   Base node content type machine name.
  */
-function vactory_news_jsonapi_vcc_normalized_node_alter(&$normalized_node, $context, $base_node_type) {
+function vactory_news_jsonapi_vcc_normalized_node_alter(array &$normalized_node, $context, $base_node_type) {
   if ($base_node_type === 'vactory_news') {
     /** @var \Drupal\node\NodeInterface $node */
     $node = $context['node'];
@@ -204,6 +204,14 @@ function vactory_news_jsonapi_vcc_normalized_node_alter(&$normalized_node, $cont
             $fileResult = [];
             $media_file_manager = \Drupal::service('vacory_decoupled.media_file_manager');
             $fileResult['_default'] = $media_file_manager->getMediaAbsoluteUrl($uri);
+            if (\Drupal::moduleHandler()->moduleExists('vactory_decoupled_image_styles')) {
+              $image_styles = \Drupal::service('vactory_decoupled_image_styles.service')->getFileImageStyles($file);
+              $original_file = $media_file_manager->getMediaAbsoluteUrl($uri);
+              $fileResult['_default'] = [
+                '_original' => $original_file,
+                ...$image_styles,
+              ];
+            }
             $fileResult['_lqip'] = $media_file_manager->convertToMediaAbsoluteUrl($lqipImageStyle->buildUrl($uri));
             $fileResult['uri'] = StreamWrapperManager::getTarget($uri);
             $fileResult['fid'] = $fid;
@@ -225,7 +233,7 @@ function vactory_news_jsonapi_vcc_normalized_node_alter(&$normalized_node, $cont
       $resultDate = [];
       $date_field_name = 'field_vactory_date';
       $d = isset($node->get($date_field_name)
-          ->getValue()[0]['value']) ? DateTime::createFromFormat('Y-m-d', $node->get($date_field_name)
+        ->getValue()[0]['value']) ? DateTime::createFromFormat('Y-m-d', $node->get($date_field_name)
         ->getValue()[0]['value']) : '';
       if ($d != '') {
         $vactory_date_timestamp = $d->getTimestamp();
@@ -288,7 +296,9 @@ function vactory_news_json_api_collection_alter(&$filters, &$context) {
       $filters["page[offset]"] = intval($query["page"]) > 0 ? (intval($query["page"]) - 1) * $filters["page[limit]"] : 0;
     }
 
-    if (isset($query["sort"]) && in_array(strtolower($query["sort"]), ["asc", "desc"])) {
+    if (isset($query["sort"])
+      && in_array(strtolower($query["sort"]), ["asc", "desc"])
+    ) {
       $filters["sort[sort-vactory-date][direction]"] = strtolower($query["sort"]);
     }
 
@@ -296,7 +306,7 @@ function vactory_news_json_api_collection_alter(&$filters, &$context) {
       $theme = $query["theme"];
       $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties([
         'vid' => 'vactory_news_theme',
-        'term_2_slug' => $query["theme"]
+        'term_2_slug' => $query["theme"],
       ]);
 
       if (!$terms) {

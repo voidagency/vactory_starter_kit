@@ -1,0 +1,11 @@
+services:
+  vactory_flood_control.route_subscriber:
+    class: Drupal\vactory_flood_control\Routing\VactoryFloodControlRouteSubscriber
+    tags:
+      - { name: event_subscriber }
+
+  vactory_flood_control.flood_subscriber:
+    class: Drupal\vactory_flood_control\EventSubscriber\VactoryFloodControlSubscriber
+    arguments: ['@plugin.manager.mail', '@language_manager', '@logger.factory', '@config.factory', '@token']
+    tags:
+      - { name: event_subscriber }

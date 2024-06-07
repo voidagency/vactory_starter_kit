@@ -2,9 +2,9 @@
 
 namespace Drupal\vactory_decoupled\Controller;
 
-use Drupal\Core\Flood\FloodInterface;
 use Drupal\simple_oauth\Controller\Oauth2Token;
 use Drupal\simple_oauth\Plugin\Oauth2GrantManagerInterface;
+use Drupal\user\UserFloodControl;
 use League\OAuth2\Server\Repositories\ClientRepositoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -14,58 +14,79 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 
 /**
- * Class DecoupledOauth2Token
+ * Get oauth2 token.
  *
  * @package Drupal\vactory_decoupled\Controller
  */
 class DecoupledOauth2Token extends Oauth2Token {
 
   /**
-   * @var \Drupal\Core\Flood\FloodInterface
+   * User flood control.
+   *
+   * @var \Drupal\user\UserFloodControl
    */
   protected $flood;
 
   /**
+   * Config factory.
+   *
    * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
   protected $configFactory;
 
   /**
+   * Entity type manager.
+   *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
 
   /**
+   * Module handler.
+   *
    * @var \Drupal\Core\Extension\ModuleHandlerInterface
    */
   protected $moduleHandler;
 
   /**
    * User limit.
+   *
+   * @var string
    */
   protected $userLimit;
 
   /**
    * User window.
+   *
+   * @var string
    */
   protected $userWindow;
 
   /**
    * User ip limit.
+   *
+   * @var string
    */
   protected $userIpLimit;
 
   /**
    * User ip window.
+   *
+   * @var string
    */
   protected $userIpWindow;
-
 
   /**
    * DecoupledOauth2Token constructor.
    */
-  public function __construct(Oauth2GrantManagerInterface $grant_manager, ClientRepositoryInterface $client_repository, FloodInterface $flood, ConfigFactoryInterface $configFactory, EntityTypeManagerInterface $entityTypeManager,
-                              ModuleHandlerInterface $moduleHandler) {
+  public function __construct(
+    Oauth2GrantManagerInterface $grant_manager,
+    ClientRepositoryInterface $client_repository,
+    UserFloodControl $flood,
+    ConfigFactoryInterface $configFactory,
+    EntityTypeManagerInterface $entityTypeManager,
+    ModuleHandlerInterface $moduleHandler
+  ) {
     parent::__construct($grant_manager, $client_repository);
     $this->flood = $flood;
     $this->configFactory = $configFactory;
@@ -74,15 +95,15 @@ class DecoupledOauth2Token extends Oauth2Token {
 
     if ($this->moduleHandler->moduleExists('flood_control')) {
       $this->userLimit = $this->configFactory->get('user.flood')
-          ->get('user_limit') ?? 5;
+        ->get('user_limit') ?? 5;
       $this->userWindow = $this->configFactory->get('user.flood')
-          ->get('user_window') ?? 300;
+        ->get('user_window') ?? 300;
 
       $this->userIpLimit = $this->configFactory->get('user.flood')
-          ->get('ip_limit') ?? 50;
+        ->get('ip_limit') ?? 50;
 
       $this->userIpWindow = $this->configFactory->get('user.flood')
-          ->get('ip_window') ?? 3600;
+        ->get('ip_window') ?? 3600;
 
     }
 
@@ -95,7 +116,7 @@ class DecoupledOauth2Token extends Oauth2Token {
     return new static(
       $container->get('plugin.manager.oauth2_grant.processor'),
       $container->get('simple_oauth.repositories.client'),
-      $container->get('flood'),
+      $container->get('user.flood_control'),
       $container->get('config.factory'),
       $container->get('entity_type.manager'),
       $container->get('module_handler')
@@ -110,7 +131,7 @@ class DecoupledOauth2Token extends Oauth2Token {
 
     $body = $request->getParsedBody();
     if (!empty($body['username']) && !empty($body['password'])) {
-      $isEmail = strpos($body['username'], '@') !== false;
+      $isEmail = strpos($body['username'], '@') !== FALSE;
 
       $property = $isEmail ? 'mail' : 'name';
       $account_search = $this->entityTypeManager
