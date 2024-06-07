@@ -39,12 +39,18 @@ class RouteSubscriber extends RouteSubscriberBase {
         if (!empty($resource_config)) {
           $resource_config = reset($resource_config);
           // Get resource config authorized roles.
-          $roles = $resource_config->getThirdPartySetting('vactory_decoupled', 'roles', []);
-          $roles = array_filter($roles);
-          if (!empty($roles)) {
-            $requirements = $route->getRequirements();
-            $requirements['_role'] = implode('+', $roles);
-            $route->setRequirements($requirements);
+          $collection_roles = $resource_config->getThirdPartySetting('vactory_decoupled', 'collection_roles', []);
+          $collection_roles = array_filter($collection_roles);
+          // Allow access to collection endpoint.
+          if (str_ends_with($route_name, ".collection") && !empty($collection_roles)) {
+            $this->addRolesToJsonApiEndPoint($route, $collection_roles);
+          }
+
+          $individual_roles = $resource_config->getThirdPartySetting('vactory_decoupled', 'individual_roles', []);
+          $individual_roles = array_filter($individual_roles);
+          // Allow access to individual resource (GET, POST, PATCH, DELETE).
+          if (!str_ends_with($route_name, ".collection") && !empty($individual_roles)) {
+            $this->addRolesToJsonApiEndPoint($route, $individual_roles);
           }
         }
       }
@@ -52,6 +58,15 @@ class RouteSubscriber extends RouteSubscriberBase {
     if ($route = $collection->get('simple_oauth.userinfo')) {
       $route->setDefault('_controller', 'Drupal\vactory_decoupled\Controller\UserInfo::handle');
     }
+  }
+
+  /**
+   * Allow access to json api endpoint per roles.
+   */
+  protected function addRolesToJsonApiEndPoint(&$route, $roles) {
+    $requirements = $route->getRequirements();
+    $requirements['_role'] = implode('+', $roles);
+    $route->setRequirements($requirements);
   }
 
 }
