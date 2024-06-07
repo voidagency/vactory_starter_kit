@@ -140,7 +140,7 @@ class ModalForm extends FormBase {
    */
   protected $isAutoPopulateEnabled;
 
-   /**
+  /**
    * Indicates if All category DF feature is enabled.
    *
    * @var bool
@@ -174,8 +174,7 @@ class ModalForm extends FormBase {
     $this->isDropdownSelectMode = \Drupal::config('vactory_dynamic_field.settings')->get('is_dropdown_select_templates');
     $this->isPendingContentEnabled = (bool) \Drupal::config('vactory_dynamic_field.settings')->get('pending_content');
     $this->isAutoPopulateEnabled = (bool) \Drupal::config('vactory_dynamic_field.settings')->get('auto_populate');
-    $this->isAllCategoryEnabled = (bool) \Drupal::config('vactory_dynamic_field.settings')->get('all_category'); 
-
+    $this->isAllCategoryEnabled = (bool) \Drupal::config('vactory_dynamic_field.settings')->get('all_category');
   }
 
   /**
@@ -751,18 +750,18 @@ class ModalForm extends FormBase {
 
     // List of widgets.
     $widgets_list = $this->widgetsManager->getModalWidgetsList($allowedProviders);
-    
-    //! Add the "All" Category containing all DF if Enabled.
+
+    // Add the "All" Category containing all DF if Enabled.
     if ($this->isAllCategoryEnabled) {
       $all_widgets = [];
       foreach ($widgets_list as $category => $widgets) {
         foreach ($widgets as $widget_id => $widget) {
-          $all_widgets[$widget_id] = $widget; // Add all widgets to the "All" category.
+          // Add all widgets to the "All" category.
+          $all_widgets[$widget_id] = $widget;
         }
       }
       // Add the "All" category to the beginning of the list.
       $widgets_list = ['All' => $all_widgets] + $widgets_list;
-    //! END
     }
 
     $this->widgetsList = $widgets_list;
@@ -905,24 +904,24 @@ class ModalForm extends FormBase {
     ];
 
     // Sort tabs by categories names.
-     //! Ensure "All" is first
+    // Ensure "All" is first.
     if (isset($form['templates_tabs']['All'])) {
       // Store the 'All' category and remove it from the tabs.
       $all_cat_tab = $form['templates_tabs']['All'];
       unset($form['templates_tabs']['All']);
-  
+
       // Sort the rest of the tabs.
-      ksort($form['templates_tabs']); 
-  
+      ksort($form['templates_tabs']);
+
       // Reinsert 'All' at the beginning.
       $sorted_tabs = ['All' => $all_cat_tab] + $form['templates_tabs'];
-    } else {
-      ksort($form['templates_tabs']); 
+    }
+    else {
+      ksort($form['templates_tabs']);
       $sorted_tabs = $form['templates_tabs'];
     }
-    //* affect the sorted ele to the form
+    // Affect the sorted ele to the form.
     $form['templates_tabs'] = $sorted_tabs;
-    //! END
 
     $form['#attached']['library'][] = 'core/drupal.ajax';
     $form['#attached']['library'][] = 'core/drupal.dialog.ajax';

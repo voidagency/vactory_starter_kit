@@ -62,14 +62,11 @@ class DynamicFieldSettingsForm extends ConfigFormBase {
         ->get('auto_populate'),
     ];
 
-    
-     $form['all_category'] = [
+    $form['all_category'] = [
       '#type' => 'checkbox',
       '#title' => t('Enable "ALL" Category for DF.'),
-      '#default_value' => $this->config('vactory_dynamic_field.settings')
-        ->get('all_category'),
+      '#default_value' => $this->config('vactory_dynamic_field.settings')->get('all_category'),
     ];
-    
 
     $form['excluded_widgets'] = [
       '#type' => 'textarea',
@@ -92,7 +89,7 @@ class DynamicFieldSettingsForm extends ConfigFormBase {
       ->set('excluded_widgets', $form_state->getValue('excluded_widgets'))
       ->set('pending_content', $form_state->getValue('pending_content'))
       ->set('auto_populate', $form_state->getValue('auto_populate'))
-      ->set('all_category', $form_state->getValue('all_category'))  
+      ->set('all_category', $form_state->getValue('all_category'))
       ->save();
     parent::submitForm($form, $form_state);
     drupal_flush_all_caches();

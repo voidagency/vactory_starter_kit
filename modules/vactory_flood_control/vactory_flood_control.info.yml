@@ -1,0 +1,6 @@
+name: Vactory Flood Controle
+type: module
+package: vactory
+core_version_requirement: ^9 || ^10
+dependencies:
+  - flood_control

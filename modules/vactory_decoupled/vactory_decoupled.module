@@ -171,7 +171,7 @@ function block_admin_display_submit($form, FormStateInterface $form_state) {
  */
 function gatsby_node_form_submit(&$form, FormStateInterface $form_state) {
   $path = $form_state->getValue('path');
-  $url = !empty($path[0]['alias']) ? '/' . $path[0]['langcode'] . $path[0]['alias'] : $path[0]['source'];
+  $url = !empty($path[0]['alias']) ? '/' . $path[0]['langcode'] . $path[0]['alias'] : '/' . $path[0]['langcode'] . $path[0]['source'];
   $nid = $form_state->getValue('nid');
   $siteConfig = \Drupal::config('system.site');
   $front_uri = $siteConfig->get('page.front');
@@ -183,7 +183,30 @@ function gatsby_node_form_submit(&$form, FormStateInterface $form_state) {
 
   // Redirect to the alias if it exists, otherwise use the node URL.
   if (isset($url)) {
-    $gatsby_url = Url::fromUri($frontend_url . $url . '/__preview')->toString();
+    if (in_array('moderation_state', $form_state->getValues())
+      && $form_state->getValue('moderation_state')[0]['value'] == 'draft'
+    ) {
+      $sessionless_page = Settings::get('sessionless_page_url', '/account/sessionless');
+      $frontend_url .= $sessionless_page;
+      $latest_revision_query = \Drupal::entityTypeManager()
+        ->getStorage('node')->getQuery()
+        ->accessCheck('FALSE')
+        ->condition('nid', $nid);
+      if (!empty($path[0]['langcode'])) {
+        $latest_revision_query->condition('langcode', $path[0]['langcode']);
+      }
+      $latest_revision_query->latestRevision();
+      $latest_revision = $latest_revision_query->execute();
+      $revision_id = array_keys($latest_revision);
+      $revision_id = reset($revision_id);
+      $revision_param = '?revision=' . $revision_id;
+
+      $gatsby_url = Url::fromUri($frontend_url . '?callbackUrl=' . $url . $revision_param)->toString();
+      $response = new RedirectResponse($gatsby_url);
+      $response->send();
+    }
+
+    $gatsby_url = Url::fromUri($frontend_url . $url)->toString();
     $response = new RedirectResponse($gatsby_url);
     $response->send();
   }
@@ -1015,7 +1038,7 @@ function clear_next_nginx_cache($path = '') {
   $client = \Drupal::httpClient();
 
   try {
-    $request = $client->request('PURGE', $front_end_url . '/' . $path);
+    $request = $client->requestAsync('PURGE', $front_end_url . '/' . $path);
     \Drupal::logger('clear_next_nginx_cache')->info('Next nginx cache cleared for ' . $path);
   }
   catch (ServerException $e) {
