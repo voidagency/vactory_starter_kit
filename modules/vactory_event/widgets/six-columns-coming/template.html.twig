@@ -26,7 +26,7 @@
         <div>{{ node.excerpt|striptags }}</div>
       {% endif %}
       {% if node.image is not empty %}
-        <div><img src="{{ node.image._default }}"></div>
+        <div><img src="{{ node.image._default }}" alt=""></div>
       {% endif %}
     </div>
   {% endfor %}
