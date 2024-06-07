@@ -151,7 +151,7 @@ function vactory_event_preprocess_views_view(&$variables) {
   if ($view instanceof ViewExecutable && $view->id() === 'vactory_event' && $view->display_handler->getPluginId() === 'block') {
     $args = $view->args;
     $arguments_infos = $view->argument;
-    if (count($args) > 2 && isset($args[2]) && is_array($args[2]) ) {
+    if (count($args) > 2 && isset($args[2]) && is_array($args[2])) {
       $meta_data = $args[2];
       $args[0] = $meta_data['category_term_id'];
       $term = Drupal::entityTypeManager()->getStorage('taxonomy_term')
@@ -186,7 +186,8 @@ function vactory_event_preprocess_views_view(&$variables) {
                 foreach ($field_names as $field_name) {
                   $filter_index = array_search($field_name, $arguments_infos);
                   $filter_name = '';
-                  // In case of parent term and view taxonomy tid depth filter exist.
+                  // In case of parent term and view
+                  // taxonomy tid depth filter exist.
                   if (!$has_parent && !empty($taxonomy_tid_depth_filter)) {
                     $filter_name = reset($taxonomy_tid_depth_filter)['id'];
                     $filter_name = !isset($more_link_params[$filter_name]) ? $filter_name : '';
@@ -229,7 +230,7 @@ function vactory_event_json_api_collection_alter(&$filters, &$context) {
       $theme = $query["theme"];
       $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties([
         'vid' => 'vactory_event_category',
-        'term_2_slug' => $query["theme"]
+        'term_2_slug' => $query["theme"],
       ]);
 
       if (!$terms) {
@@ -249,7 +250,7 @@ function vactory_event_json_api_collection_alter(&$filters, &$context) {
       $theme = $query["city"];
       $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties([
         'vid' => 'vactory_event_citys',
-        'term_2_slug' => $query["city"]
+        'term_2_slug' => $query["city"],
       ]);
 
       if (!$terms) {
@@ -268,7 +269,6 @@ function vactory_event_json_api_collection_alter(&$filters, &$context) {
   }
 }
 
-
 /**
  * A custom hook to alter the node access.
  *
@@ -281,8 +281,7 @@ function vactory_event_json_api_collection_alter(&$filters, &$context) {
  * @param string $base_node_type
  *   Base node content type machine name.
  */
-function vactory_event_jsonapi_vcc_normalized_node_alter(&$normalized_node, $context, $base_node_type)
-{
+function vactory_event_jsonapi_vcc_normalized_node_alter(array &$normalized_node, $context, $base_node_type) {
   if ($base_node_type === 'vactory_event') {
     /** @var \Drupal\node\NodeInterface $node */
     $node = $context['node'];
@@ -308,6 +307,14 @@ function vactory_event_jsonapi_vcc_normalized_node_alter(&$normalized_node, $con
             $fileResult = [];
             $media_file_manager = \Drupal::service('vacory_decoupled.media_file_manager');
             $fileResult['_default'] = $media_file_manager->getMediaAbsoluteUrl($uri);
+            if (\Drupal::moduleHandler()->moduleExists('vactory_decoupled_image_styles')) {
+              $image_styles = \Drupal::service('vactory_decoupled_image_styles.service')->getFileImageStyles($file);
+              $original_file = $media_file_manager->getMediaAbsoluteUrl($uri);
+              $fileResult['_default'] = [
+                '_original' => $original_file,
+                ...$image_styles,
+              ];
+            }
             $fileResult['_lqip'] = $media_file_manager->convertToMediaAbsoluteUrl($lqipImageStyle->buildUrl($uri));
             $fileResult['uri'] = StreamWrapperManager::getTarget($uri);
             $fileResult['fid'] = $fid;
@@ -319,7 +326,6 @@ function vactory_event_jsonapi_vcc_normalized_node_alter(&$normalized_node, $con
           }
         }
       }
-
 
       // Get date.
       $dateFormats = \Drupal::entityTypeManager()
@@ -356,7 +362,7 @@ function vactory_event_jsonapi_vcc_normalized_node_alter(&$normalized_node, $con
             ->getTranslationFromContext($new_term);
           $term_tag = [
             'name' => $new_term_trans->label(),
-            'slug' => $new_term_trans->get('term_2_slug')->value ?? null,
+            'slug' => $new_term_trans->get('term_2_slug')->value ?? NULL,
           ];
         }
       }
@@ -371,7 +377,7 @@ function vactory_event_jsonapi_vcc_normalized_node_alter(&$normalized_node, $con
             ->getTranslationFromContext($new_term);
           $city_tag = [
             'name' => $new_term_trans->label(),
-            'slug' => $new_term_trans->get('term_2_slug')->value ?? null,
+            'slug' => $new_term_trans->get('term_2_slug')->value ?? NULL,
           ];
         }
       }
