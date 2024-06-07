@@ -1,0 +1,28 @@
+vactory_flood_control.settings:
+  type: config_object
+  label: 'Vactory flood control settings'
+  mapping:
+    user_flood_notification:
+      type: mapping
+      label: 'User Flood Notification'
+      mapping:
+        blocked_user:
+          type: mapping
+          label: 'Blocked user'
+          mapping:
+            user_flood_notification_subject:
+              type: text
+              label: 'User flood notification subject'
+            user_flood_notification_body:
+              type: text
+              label: 'User flood notification body'
+        blocked_ip:
+          type: mapping
+          label: 'Blocked IP'
+          mapping:
+            user_flood_notification_subject_ip:
+              type: text
+              label: 'User flood notification subject IP'
+            user_flood_notification_body_ip:
+              type: text
+              label: 'User flood notification body IP'
