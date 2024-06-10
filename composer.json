@@ -131,7 +131,7 @@
     "drupal/multiple_fields_remove_button": "^2.2",
     "drupal/filefield_paths": "^1.0@beta",
     "drupal/workbench_moderation": "^1.6",
-    "phpoffice/phpspreadsheet": "^1.20",
+    "phpoffice/phpspreadsheet": "^2.1",
     "mpdf/mpdf": "^8.0",
     "drupal/admin_feedback": "^2.2",
     "drupal/views_json_source": "^2.0",
