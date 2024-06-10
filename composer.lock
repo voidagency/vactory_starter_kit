@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cf9a8d66c3df135f1d37152355689ad7",
+    "content-hash": "59c5812576ae332e146ddb63b3dab515",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -10724,26 +10724,26 @@
         },
         {
             "name": "drupal/views_autocomplete_filters",
-            "version": "1.7.0",
+            "version": "2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/views_autocomplete_filters.git",
-                "reference": "8.x-1.7"
+                "reference": "2.0.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/views_autocomplete_filters-8.x-1.7.zip",
-                "reference": "8.x-1.7",
-                "shasum": "4061cac83e39279bbf5515b8ba8f8685b27b4023"
+                "url": "https://ftp.drupal.org/files/projects/views_autocomplete_filters-2.0.2.zip",
+                "reference": "2.0.2",
+                "shasum": "745fc3630fb90f79a22d782efe4bbda16ef4a025"
             },
             "require": {
-                "drupal/core": "^8 || ^9 || ^10"
+                "drupal/core": "^10 || ^11"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-1.7",
-                    "datestamp": "1697624365",
+                    "version": "2.0.2",
+                    "datestamp": "1711629268",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
