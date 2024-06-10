@@ -184,6 +184,7 @@ install:
   - vactory_jsonapi_extras
   - vactory_dynamic_import
   - menu_manipulator
+  - content_moderation
 themes:
   - vactory
   - claro
