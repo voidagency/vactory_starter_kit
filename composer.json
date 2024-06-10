@@ -80,7 +80,7 @@
     "drupal/views_bulk_operations": "^4.1",
     "drupal/views_bulk_edit": "^2.5",
     "drupal/styleguide": "^2.0@beta",
-    "drupal/search_api_exclude_entity": "^1.3.0",
+    "drupal/search_api_exclude_entity": "^2.0.0",
     "drupal/responsive_favicons": "1.x-dev@dev",
     "drupal/minifyhtml": "^2.0",
     "drupal/flag": "^4.0@beta",
