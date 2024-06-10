@@ -27,6 +27,11 @@ function vactory_flood_control_mail($key, &$message, $params) {
 function vactory_flood_control_form_user_admin_settings_alter(&$form, FormStateInterface $form_state, $form_id) {
   $config = \Drupal::config('vactory_flood_control.settings');
 
+  $form['flood_message_display'] = [
+    '#type' => 'checkbox',
+    '#title' => t('Display message if account is blocked due to flood control.'),
+  ];
+
   $form['user_flood_notification'] = [
     '#type' => 'details',
     '#title' => t('User flood notification'),
@@ -85,6 +90,7 @@ function vactory_flood_control_admin_settings_submit(&$form, FormStateInterface 
 
   // Save data.
   $config->set('user_flood_notification', $form_state->getValue('user_flood_notification'));
+  $config->set('flood_message_display', $form_state->getValue('flood_message_display'));
 
   // Save configs.
   $config->save();

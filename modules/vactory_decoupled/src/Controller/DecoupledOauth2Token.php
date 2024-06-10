@@ -129,6 +129,14 @@ class DecoupledOauth2Token extends Oauth2Token {
   public function token(ServerRequestInterface $request) {
     $response = parent::token($request);
 
+    $flood_message_display = $this->configFactory->get('vactory_flood_control.settings')->get('flood_message_display') ?? FALSE;
+    $flood_user_message = 'There have been more than %s failed login attempts for this account. It is temporarily blocked. Try again later or request a new password.';
+    $flood_ip_message = "Trop d'échecs de connexion à partir de votre adresse IP. Cette adresse IP est temporairement bloquée. Réessayer ultérieurement";
+    if (!$flood_message_display) {
+      $flood_user_message = 'The account information provided was invalid.';
+      $flood_ip_message = 'The account information provided was invalid.';
+    }
+
     $body = $request->getParsedBody();
     if (!empty($body['username']) && !empty($body['password'])) {
       $isEmail = strpos($body['username'], '@') !== FALSE;
@@ -143,10 +151,10 @@ class DecoupledOauth2Token extends Oauth2Token {
         if (!$isAllowed || !$isAllowedIp) {
           $responseError = [
             'error' => 'flood_control_error',
-            'message' => sprintf('There have been more than %s failed login attempts for this account. It is temporarily blocked. Try again later or request a new password.', $this->userLimit),
+            'message' => sprintf($flood_user_message, $this->userLimit),
           ];
           if (!$isAllowedIp) {
-            $responseError['message'] = "Trop d'échecs de connexion à partir de votre adresse IP. Cette adresse IP est temporairement bloquée. Réessayer ultérieurement";
+            $responseError['message'] = $flood_ip_message;
           }
           return new JsonResponse($responseError, 400);
         }
