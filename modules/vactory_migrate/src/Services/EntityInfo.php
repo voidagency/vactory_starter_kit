@@ -45,6 +45,10 @@ class EntityInfo {
    * Get migration destination info.
    */
   public function getDestinationByMigrationId($migration_id) {
+    $config_prefix = 'migrate_plus.migration.';
+    if (str_starts_with($migration_id, $config_prefix)) {
+      $migration_id = str_replace($config_prefix, '', $migration_id);
+    }
     $migration_config = \Drupal::entityTypeManager()
       ->getStorage('migration')
       ->load($migration_id);

@@ -149,10 +149,11 @@ class Rollback {
   public static function dbDelete($table, $column, $id, $operator = '=', $langcode = '') {
     $databaseService = \Drupal::service('database');
     $transaction = $databaseService->startTransaction();
+    $default_langcode = \Drupal::languageManager()->getDefaultLanguage()->getId();
     try {
       $delete_query = $databaseService->delete($table)
         ->condition($column, $id, $operator);
-      if (!empty($langcode)) {
+      if (!empty($langcode) && $langcode !== $default_langcode) {
         $delete_query->condition('langcode', $langcode);
       }
       $delete_query->execute();

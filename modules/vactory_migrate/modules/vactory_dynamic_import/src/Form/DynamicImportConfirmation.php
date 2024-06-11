@@ -77,7 +77,7 @@ class DynamicImportConfirmation extends FormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $migration_id = \Drupal::request()->query->get('migration');
     $this->importService->import($migration_id);
-    $form_state->setRedirect('vactory_dynamic_import.execute', ['id' => 'migrate_plus.migration' . $migration_id]);
+    $form_state->setRedirect('vactory_dynamic_import.execute', ['id' => 'migrate_plus.migration.' . $migration_id]);
   }
 
   /**
@@ -85,7 +85,7 @@ class DynamicImportConfirmation extends FormBase {
    */
   public function cancel(array &$form, FormStateInterface $form_state) {
     $migration_id = \Drupal::request()->query->get('migration');
-    $form_state->setRedirect('vactory_dynamic_import.execute', ['id' => 'migrate_plus.migration' . $migration_id]);
+    $form_state->setRedirect('vactory_dynamic_import.execute', ['id' => 'migrate_plus.migration.' . $migration_id]);
   }
 
 }
