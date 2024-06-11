@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\vactory_migrate\Commands;
+namespace Drupal\vactory_migrate\Drush\Commands;
 
 use Drupal\vactory_migrate\Services\Import;
 use Drupal\vactory_migrate\Services\Rollback;
