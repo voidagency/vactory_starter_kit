@@ -79,6 +79,11 @@ class UrlExtendedElement extends FormElement {
       '#type' => 'details',
       '#title' => t('Link attributes'),
     ];
+    $element['attributes']['label'] = [
+      '#type' => 'textfield',
+      '#title' => t('Link Label'),
+      '#default_value' => isset($default_values['attributes']['label']) ? $default_values['attributes']['label'] : '',
+    ];
     $element['attributes']['class'] = [
       '#type' => 'textfield',
       '#title' => t('Link classes'),

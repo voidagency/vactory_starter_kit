@@ -94,6 +94,7 @@ class DynamicFieldJsonGenerator extends ModalForm {
           'title' => $this->getDummyData('text'),
           'url' => $this->getDummyData('url'),
           'attributes' => [
+            'label' => '',
             'class' => '',
             'id' => 'link-' . uniqid(),
             'target' => '_self',
