@@ -71,7 +71,7 @@ class PageExportService {
           continue;
         }
 
-        if ($widget_settings['multiple']) {
+        if (isset($widget_settings['multiple']) && $widget_settings['multiple']) {
           foreach ($widget_data as $key => $value) {
             if ($key == 'extra_field') {
               foreach ($value as $field_key => $field_value) {
@@ -158,6 +158,9 @@ class PageExportService {
 
         foreach ($paragraph_tabs_ids as $tab_index => $paragraph_tab_id) {
           $paragraph_tab_entity = Paragraph::load($paragraph_tab_id['target_id']);
+          if ($language !== 'original' && $paragraph_tab_entity->hasTranslation($language)) {
+            $paragraph_tab_entity = $paragraph_tab_entity->getTranslation($language);
+          }
           $tab_title = $paragraph_tab_entity->get('field_vactory_title')->value;
           $tab_key = $this->toSnakeCase($tab_title);
           $tab_templates = $paragraph_tab_entity->get('field_tab_templates')->getValue();
@@ -270,6 +273,11 @@ class PageExportService {
     $spreadsheet->removeSheetByIndex(0);
 
     foreach ($sheetData as $sheetName => $data) {
+      $translation_matching = $this->validateTranslationMatching($data);
+      if (!$translation_matching['status']) {
+        \Drupal::messenger()->addError("Les traductions du paragraphe {$translation_matching['error']} sur la page {$sheetName} ne correspondent pas bien. Merci vérifier et ajuster,");
+        return FALSE;
+      }
       // Add a new sheet.
       // Define a list of invalid characters to exclude from the title.
       $invalidCharacters = ['*', ':', '/', '\\', '?', '[', ']'];
@@ -488,6 +496,70 @@ class PageExportService {
       ],
     ];
     return $style;
+  }
+
+  /**
+   * Check if translations have same content structure.
+   */
+  private function validateTranslationMatching(array $data) {
+    if (count($data) == 1) {
+      // Page has only the original version.
+      return [
+        'status' => TRUE,
+      ];
+    }
+    else {
+      $original_paragraphs = $data['original']['paragraphs'] ?? [];
+      foreach ($original_paragraphs as $key => $value) {
+        if (!is_array($value)) {
+          continue;
+        }
+        $count = $this->countLastLevelItems($value);
+        foreach ($data as $language => $page) {
+          if ($language !== 'original') {
+            $paragraph_translation = $page['paragraphs'][$key] ?? NULL;
+            if (!isset($paragraph_translation)) {
+              return [
+                'status' => FALSE,
+                'error' => $key,
+              ];
+            }
+            if (!is_array($paragraph_translation)) {
+              continue;
+            }
+            $translation_count = $this->countLastLevelItems($paragraph_translation);
+            if ($translation_count !== $count) {
+              return [
+                'status' => FALSE,
+                'error' => $key,
+              ];
+            }
+          }
+        }
+      }
+      return [
+        'status' => TRUE,
+      ];
+    }
+  }
+
+  /**
+   * Count excel column items.
+   */
+  private function countLastLevelItems(array $array) {
+    $count = 0;
+    $traverse = function (array $array) use (&$traverse, &$count) {
+      foreach ($array as $value) {
+        if (is_array($value)) {
+          $traverse($value);
+        }
+        else {
+          $count++;
+        }
+      }
+    };
+    $traverse($array);
+    return $count;
   }
 
 }

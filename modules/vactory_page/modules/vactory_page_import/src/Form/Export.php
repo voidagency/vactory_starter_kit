@@ -117,10 +117,30 @@ class Export extends FormBase {
       }
     }
     $filapath = $this->pageExportService->createExcelFromArray($pages_data);
-    $response = new BinaryFileResponse($filapath, 200, [], FALSE);
-    $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, "pages.xlsx");
-    $response->deleteFileAfterSend(TRUE);
-    $response->send();
+    if ($filapath) {
+      $response = new BinaryFileResponse($filapath, 200, [], FALSE);
+      $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, "pages.xlsx");
+      $response->deleteFileAfterSend(TRUE);
+      $response->send();
+    }
+  }
+
+  /**
+   * Form submission validator.
+   *
+   * @param array $form
+   *   An associative array containing the structure of the form.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   The current state of the form.
+   */
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    $pages = $form_state->getValue('pages');
+    $pages = array_filter($pages, function ($item) {
+      return $item !== 0;
+    });
+    if (empty($pages)) {
+      $form_state->setErrorByName('pages', 'Veuillez choisir les pages à exporter');
+    }
   }
 
 }
