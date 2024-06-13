@@ -376,13 +376,13 @@ class DynamicImportForm extends EntityForm {
                   $entity_data[$header_item] = '';
                   if ($info == 'image') {
                     $key = "media|{$field}|image_alt";
-                    $entity_data[$key] = $media->thumbnail->alt;
+                    $entity_data[$key] = '';
                   }
                   continue;
                 }
                 if ($info == 'remote_video') {
                   $url = $media->get(self::MEDIA_FIELD_NAMES[$info])->value;
-                  $entity_data[$header_item] = $url;
+                  $entity_data[$header_item] = $url . " ({$media_id})";
                 }
                 else {
                   $fid = $media->get(self::MEDIA_FIELD_NAMES[$info])->target_id;
@@ -404,7 +404,7 @@ class DynamicImportForm extends EntityForm {
                   else {
                     $url = $file_url_generator->generateAbsoluteString($image_uri);
                   }
-                  $entity_data[$header_item] = $url;
+                  $entity_data[$header_item] = $url . " ({$media_id})";
                   if ($info == 'image') {
                     $key = "media|{$field}|image_alt";
                     $entity_data[$key] = $media->thumbnail->alt;

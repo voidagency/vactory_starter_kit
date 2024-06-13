@@ -5,6 +5,7 @@ namespace Drupal\vactory_migrate\Plugin\migrate\process;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\StreamWrapper\StreamWrapperManagerInterface;
 use Drupal\media\Entity\Media;
+use Drupal\media\MediaInterface;
 use Drupal\migrate\MigrateExecutableInterface;
 use Drupal\migrate\Plugin\MigrateProcessInterface;
 use Drupal\migrate\Row;
@@ -157,6 +158,14 @@ class MediaImport extends FileImport {
    * {@inheritdoc}
    */
   public function transform($value, MigrateExecutableInterface $migrate_executable, Row $row, $destination_property) {
+    if ($this->isValidPattern($value)) {
+      $exract = $this->extractTextWithParentheses($value);
+      $mid = $exract['in'];
+      $media = Media::load($mid);
+      if ($media instanceof MediaInterface) {
+        return $mid;
+      }
+    }
     $value = parent::transform($value, $migrate_executable, $row, $destination_property);
     if (!$value) {
       return NULL;
@@ -193,6 +202,37 @@ class MediaImport extends FileImport {
       return $media->id();
     }
     return NULL;
+  }
+
+  /**
+   * Extract text with parentheses.
+   */
+  private function extractTextWithParentheses($text) {
+    // Define a regular expression pattern for text inside parentheses.
+    $pattern = '/\((.*?)\)/';
+
+    // Match all occurrences of text inside parentheses.
+    preg_match_all($pattern, $text, $matches);
+
+    // Get the last match (content inside the last parentheses).
+    $lastMatch = end($matches[1]);
+
+    // Extract the text outside parentheses.
+    $textOutsideParentheses = trim(str_replace(end($matches[0]), '', $text));
+
+    // Return an associative array with extracted text.
+    return [
+      'in' => $lastMatch ?? '',
+      'out' => $textOutsideParentheses,
+    ];
+  }
+
+  /**
+   * Check if the input text matches the given regex pattern.
+   */
+  private function isValidPattern($text) {
+    $pattern = '/\((.*?)\)/';
+    return preg_match($pattern, $text) === 1;
   }
 
 }
