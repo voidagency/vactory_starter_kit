@@ -13,7 +13,7 @@ use Drush\Attributes as CLI;
  *
  * See these files for an example of injecting Drupal services:
  *   - http://cgit.drupalcode.org/devel/tree/src/Commands/DevelCommands.php
- *   - http://cgit.drupalcode.org/devel/tree/drush.services.yml
+ *   - http://cgit.drupalcode.org/devel/tree/drush.services.yml.
  */
 class NotificationsDrushCommands extends DrushCommands {
 
@@ -51,7 +51,8 @@ class NotificationsDrushCommands extends DrushCommands {
    * @usage cen
    *   Clear expired notifications using batch mode.
    */
-  #[CLI\Command(name: 'clear-expired-notifications', aliases: ['cen', 'clear-expired-notifications'])]
+  #[CLI\Command(name: 'clear-expired-notifications',
+    aliases: ['cen', 'clear-expired-notifications'])]
   public function clearNotificationsData($options = []) {
     $this->loggerChannelFactory->get('notifications_cleaner')
       ->info('Clearing expired notifications entities batch operations start');
@@ -94,4 +95,5 @@ class NotificationsDrushCommands extends DrushCommands {
         ->info('No expired notifications has been found');
     }
   }
+
 }
