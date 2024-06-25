@@ -76,6 +76,13 @@ class InternalNodeEntityBreadcrumbFieldItemList extends FieldItemList {
   protected $routeProvider;
 
   /**
+   * The path validator service.
+   *
+   * @var \Drupal\Core\Path\PathValidatorInterface
+   */
+  protected $pathValidator;
+
+  /**
    * {@inheritDoc}
    */
   public static function createInstance($definition, $name = NULL, TraversableTypedDataInterface $parent = NULL) {
@@ -88,6 +95,7 @@ class InternalNodeEntityBreadcrumbFieldItemList extends FieldItemList {
     $instance->entityRepository = $container->get('entity.repository');
     $instance->menuLinkManager = $container->get('plugin.manager.menu.link');
     $instance->routeProvider = $container->get('router.route_provider');
+    $instance->pathValidator = $container->get('path.validator');
     return $instance;
   }
 
@@ -113,11 +121,6 @@ class InternalNodeEntityBreadcrumbFieldItemList extends FieldItemList {
 
     // Attempt to grab links from menu.
     $links = $this->getFromMenu($entity);
-
-    /* if (empty($links)) {
-      //Attempt to load from content type.
-      $links = $this->getFromContentTypeMenu($entity);
-    }*/
 
     if (empty($links)) {
       // Attempt to load from path.
@@ -200,7 +203,7 @@ class InternalNodeEntityBreadcrumbFieldItemList extends FieldItemList {
         $path = $this->aliasManager->getPathByAlias($cumul);
         // $found_routes = $this->routeProvider->getRoutesByPattern($path);
         // $route_iterator = $found_routes->getIterator();
-        if (isset($path) && !empty($path)) {
+        if (isset($path) && !empty($path) && $this->pathValidator->isValid($path)) {
           $matches = [];
           preg_match_all('!\d+!', $path, $matches);
           $prospect_nid = $matches[0][0] ?? NULL;
@@ -212,11 +215,11 @@ class InternalNodeEntityBreadcrumbFieldItemList extends FieldItemList {
               $piece = $trans_node->label();
             }
           }
-          $links[] = Link::fromTextAndUrl(t($piece), Url::fromUserInput($cumul));
+          $links[] = Link::fromTextAndUrl($piece, Url::fromUserInput($cumul));
           $cumul .= '/';
         }
         else {
-          $links[] = t($piece);
+          $links[] = $piece;
         }
       }
     }

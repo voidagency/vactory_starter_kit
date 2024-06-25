@@ -2,9 +2,9 @@
 
 namespace Drupal\vactory_cross_content\Plugin\Block;
 
-use Drupal;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Block\BlockPluginInterface;
+use Drupal\Core\Extension\ModuleHandler;
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -27,16 +27,24 @@ class CrossContentBlock extends BlockBase implements BlockPluginInterface, Conta
   /**
    * Vactory Cross Content Manager service.
    *
-   * @var VactoryCrossContentManager
+   * @var \Drupal\vactory_cross_content\Services\VactoryCrossContentManager
    */
   protected $crossContentManager;
 
   /**
+   * Module handler.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandler
+   */
+  protected $moduleHandler;
+
+  /**
    * {@inheritDoc}
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, VactoryCrossContentManager $crossContentManager) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, VactoryCrossContentManager $crossContentManager, ModuleHandler $moduleHandler) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->crossContentManager = $crossContentManager;
+    $this->moduleHandler = $moduleHandler;
   }
 
   /**
@@ -47,7 +55,8 @@ class CrossContentBlock extends BlockBase implements BlockPluginInterface, Conta
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('vactory_cross_content.manager')
+      $container->get('vactory_cross_content.manager'),
+      $container->get('module_handler')
     );
   }
 
@@ -87,7 +96,7 @@ class CrossContentBlock extends BlockBase implements BlockPluginInterface, Conta
    */
   public function build() {
     /** @var \Drupal\node\NodeInterface $node */
-    $node = Drupal::routeMatch()->getParameter('node');
+    $node = \Drupal::routeMatch()->getParameter('node');
 
     if (!$node) {
       return [];
@@ -98,7 +107,7 @@ class CrossContentBlock extends BlockBase implements BlockPluginInterface, Conta
     if ($type->getThirdPartySetting('vactory_cross_content', 'enabling', '') <> 1) {
       return NULL;
     }
-    $title =  (!empty($this->configuration['title'])) ? $this->configuration['title'] : '';
+    $title = (!empty($this->configuration['title'])) ? $this->configuration['title'] : '';
     $view = $this->crossContentManager->getCrossContentView($type, $node, $this->configuration);
     if (empty($view) || !is_object($view)) {
       return [];
@@ -109,7 +118,7 @@ class CrossContentBlock extends BlockBase implements BlockPluginInterface, Conta
       return ['#markup' => ''];
     }
     return [
-      '#theme' =>'vcc_block',
+      '#theme' => 'vcc_block',
       '#block' => $view->render('block_list'),
       '#title' => $title,
       '#cache' => [
@@ -147,7 +156,7 @@ class CrossContentBlock extends BlockBase implements BlockPluginInterface, Conta
       '#type'          => 'radios',
       '#description'   => '',
       '#options'       => $view_modes,
-      '#default_value' => $this->configuration['view_mode'],
+      '#default_value' => isset($this->configuration['view_mode']) && !empty($this->configuration['view_mode']) ? $this->configuration['view_mode'] : 'vactory_views_grid',
     ];
 
     $form['view_options'] = [
@@ -192,11 +201,11 @@ class CrossContentBlock extends BlockBase implements BlockPluginInterface, Conta
       '#open'  => FALSE,
     ];
 
-    $form ['view_modes']['display_mode'] = [
+    $form['view_modes']['display_mode'] = [
       '#type'          => 'radios',
       '#description'   => '',
       '#options'       => $display_modes,
-      '#default_value' => $this->configuration['display_mode'],
+      '#default_value' => isset($this->configuration['display_mode']) && !empty($this->configuration['display_mode']) ? $this->configuration['display_mode'] : 'card',
     ];
 
     $form['nombre_elements'] = [
@@ -219,6 +228,14 @@ class CrossContentBlock extends BlockBase implements BlockPluginInterface, Conta
       '#description'   => t('Choose the title to display for the more Link , leave it empty to disable it'),
       '#default_value' => $this->configuration['more_link_label'],
     ];
+
+    // Hide view config if vactory_decoupled is enabled.
+    if ($this->moduleHandler->moduleExists('vactory_decoupled')) {
+      $form['view_styles_options']['#access'] = FALSE;
+      $form['view_options']['#access'] = FALSE;
+      $form['view_modes']['#access'] = FALSE;
+    }
+
     return $form;
   }
 

@@ -1,0 +1,24 @@
+name: 'List Term Anchor - Glossary'
+multiple: FALSE
+category: 'Glossary'
+enabled: TRUE
+fields:
+  collection:
+    type: json_api_collection
+    label: 'JSON:API'
+    options:
+      '#required': TRUE
+      '#default_value':
+        resource: node--vactory_glossary
+        filters:
+        - fields[node--vactory_glossary]=drupal_internal__nid,path,title,body,field_vactory_taxonomy_1,field_vactory_tags
+        - fields[taxonomy_term--vactory_glossary]=tid,name
+        - fields[taxonomy_term--tags]=tid,name
+        - include=field_vactory_taxonomy_1,field_vactory_tags
+        - page[offset]=0
+        - page[limit]=20
+        - sort=title
+        - filter[status][value]=1
+        vocabularies:
+          vactory_glossary: vactory_glossary
+          tags: tags

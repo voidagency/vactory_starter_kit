@@ -1,0 +1,10 @@
+langcode: en
+emails: 'admin@void.fr'
+user_flood_notification:
+  blocked_user:
+    user_flood_notification_subject: ''
+    user_flood_notification_body: ''
+  blocked_ip:
+    user_flood_notification_subject_ip: ''
+    user_flood_notification_body_ip: ''
+flood_message_display: 0

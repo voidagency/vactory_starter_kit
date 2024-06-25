@@ -1,0 +1,11 @@
+langcode: en
+status: true
+dependencies: {  }
+name: dark
+label: dark
+effects:
+  94939cf0-3da7-4172-b062-8b5df7e3797a:
+    uuid: 94939cf0-3da7-4172-b062-8b5df7e3797a
+    id: image_desaturate
+    weight: 2
+    data: {  }
