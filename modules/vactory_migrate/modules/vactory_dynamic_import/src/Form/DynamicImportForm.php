@@ -360,8 +360,14 @@ class DynamicImportForm extends EntityForm {
             }
             if ($plugin == 'term') {
               $term_id = $entity->get($field)->target_id;
-              $term = Term::load($term_id);
-              $entity_data[$header_item] = $term->label();
+              if ($term_id) {
+                $term = Term::load($term_id);
+                $entity_data[$header_item] = $term->label();
+              }
+              else {
+                $entity_data[$header_item] = '';
+              }
+              
             }
             if ($plugin == 'date') {
               $value = $entity->get(reset($split))->getValue();
