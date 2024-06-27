@@ -360,19 +360,11 @@ class DynamicImportForm extends EntityForm {
             }
             if ($plugin == 'term') {
               $term_id = $entity->get($field)->target_id;
-              if ($term_id) {
-                $term = Term::load($term_id);
-                $entity_data[$header_item] = $term->label();
-              }
-              else {
-                $entity_data[$header_item] = '';
-              }
-              
+              $entity_data[$header_item] = $term_id ? Term::load($term_id)->label() : '';
             }
             if ($plugin == 'date') {
               $value = $entity->get(reset($split))->getValue();
               $entity_data[$header_item] = $value[0][end($split)];
-
             }
             if ($plugin == 'media') {
               if ($info !== 'image_alt') {
