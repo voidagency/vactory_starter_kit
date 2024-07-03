@@ -1,0 +1,161 @@
+<?php
+
+/**
+ * @file
+ * Module file.
+ */
+
+use Drupal\Core\Cache\Cache;
+use Drupal\node\Entity\Node;
+use Drupal\node\Entity\NodeType;
+
+/**
+ * Implements hook_decoupled_df_format_alter().
+ */
+function vactory_decoupled_cross_content_decoupled_df_format_alter(&$value, &$info, &$cacheability) {
+
+  if ($info['type'] === 'json_api_cross_content' && !empty($value)) {
+    $value = array_merge($info['options']['#default_value'], $value);
+    $query = \Drupal::request()->query->all("q");
+    $node_id = $query['entity_id'];
+    $resource = $value['resource'];
+    $split = explode('--', $resource);
+    $content_type = end($split);
+    $language = \Drupal::languageManager()->getCurrentLanguage()->getId();
+
+    $type = NodeType::load($content_type);
+    // @todo handle  $isEnabled = $type->getThirdPartySetting('vactory_cross_content', 'enabling', '');.
+    // @todo handle  $content_type_selected = $type->getThirdPartySetting('vactory_cross_content', 'content_type', '');.
+    // @todo handle  $more_link = $type->getThirdPartySetting('vactory_cross_content', 'more_link', '');.
+    // @todo handle  $more_link_label = $type->getThirdPartySetting('vactory_cross_content', 'more_link_label', '');.
+    $taxonomy_field = $type->getThirdPartySetting('vactory_cross_content', 'taxonomy_field', '');
+    $term_ids = $type->getThirdPartySetting('vactory_cross_content', 'terms', '');
+    $page_limit = _find_element_starting_with($value['filters'], 'page[limit]=');
+    $nbr = $type->getThirdPartySetting('vactory_cross_content', 'nombre_elements', 3);
+    if (isset($page_limit)) {
+      $split = explode('=', $page_limit);
+      $nbr = end($split);
+    }
+
+    if (isset($taxonomy_field) && !empty($taxonomy_field) && $taxonomy_field !== 'none') {
+      $node = Node::load($node_id);
+      $node_term_ids = $node->get($taxonomy_field)->getValue();
+      $node_term_ids = array_map(function ($item) {
+        return $item['target_id'];
+      }, $node_term_ids);
+
+      $query = _prepare_base_query($content_type, $node_id, $language, $nbr);
+      $query->condition($taxonomy_field, $node_term_ids, 'IN');
+
+      $result = $query->execute();
+
+      if (count($result) < $nbr) {
+        // Complete the block with random nodes.
+        $items_to_add = $nbr - count($result);
+        $query = _prepare_base_query($content_type, $node_id, $language, $items_to_add);
+
+        $query->condition($taxonomy_field, $node_term_ids, 'NOT IN');
+
+        $result = [...$result, ...$query->execute()];
+      }
+
+      _prepare_nodes_filter($value, $result);
+
+    }
+    elseif (!empty($term_ids)) {
+      $filtring_terms = [];
+      $terms_options = [];
+      $taxonomies_list = \Drupal::service('vactory')->getTaxonomyList($type->get('type'));
+      foreach ($taxonomies_list as $taxonomy) {
+        $terms_options[$taxonomy[0]] = \Drupal::service('vactory')->getTermsFromTaxonomy($taxonomy[0], $type->get('type'));
+      }
+      foreach ($term_ids as $tid) {
+        $taxonomy = _find_parent_key($terms_options, $tid);
+        $taxonomy_field = $taxonomies_list[$taxonomy][1];
+        $filtring_terms[$taxonomy_field][] = $tid;
+      }
+
+      $query = _prepare_base_query($content_type, $node_id, $language, $nbr);
+
+      foreach ($filtring_terms as $key => $tids) {
+        $query->condition($key, $tids, 'IN');
+      }
+
+      $result = $query->execute();
+
+      if (count($result) < $nbr) {
+        // Complete the block with random nodes.
+        $items_to_add = $nbr - count($result);
+        $query = _prepare_base_query($content_type, $node_id, $language, $items_to_add);
+
+        foreach ($filtring_terms as $key => $tids) {
+          $query->condition($key, $tids, 'NOT IN');
+        }
+
+        $result = [...$result, ...$query->execute()];
+      }
+
+      _prepare_nodes_filter($value, $result);
+
+    }
+
+    $json_api_generator_service = \Drupal::service('vactory_decoupled.jsonapi.generator');
+    $response = $json_api_generator_service->fetch($value);
+    $cache = $response['cache'];
+    unset($response['cache']);
+
+    $cacheTags = Cache::mergeTags($cacheability->getCacheTags(), $cache['tags']);
+    $cacheability->setCacheTags($cacheTags);
+    $cacheContexts = Cache::mergeContexts($cacheability->getCacheContexts(), $cache['contexts']);
+    $cacheability->setCacheContexts($cacheContexts);
+    $value = $response;
+  }
+}
+
+/**
+ * Find the parent key of a subarray containing a specific key.
+ */
+function _find_parent_key($mainArray, $keyToFind) {
+  foreach ($mainArray as $parentKey => $subArray) {
+    if (is_array($subArray) && array_key_exists($keyToFind, $subArray)) {
+      return $parentKey;
+    }
+  }
+  return NULL;
+}
+
+/**
+ * Find the first element in an array that starts with a specified value.
+ */
+function _find_element_starting_with(array $array, string $startValue) {
+  foreach ($array as $element) {
+    if (str_starts_with($element, $startValue)) {
+      return $element;
+    }
+  }
+  return NULL;
+}
+
+/**
+ * Prepare a base entity query for nodes with specified conditions.
+ */
+function _prepare_base_query($content_type, $node_id, $language, $limit) {
+  return \Drupal::entityQuery('node')
+    ->condition('type', $content_type)
+    ->condition('nid', $node_id, '<>')
+    ->condition('status', 1)
+    ->condition('langcode', $language)
+    ->accessCheck(TRUE)
+    ->range(0, $limit);
+}
+
+/**
+ * Prepare filters for nodes based on a list of IDs.
+ */
+function _prepare_nodes_filter(array &$value, array $ids) {
+  $value['filters'][] = "filter[cross-content-taxonomy][condition][path]=drupal_internal__nid";
+  $value['filters'][] = "filter[cross-content-taxonomy][condition][operator]=IN";
+  foreach ($ids as $key => $id) {
+    $value['filters'][] = "filter[cross-content-taxonomy][condition][value][{$key}]={$id}";
+  }
+}

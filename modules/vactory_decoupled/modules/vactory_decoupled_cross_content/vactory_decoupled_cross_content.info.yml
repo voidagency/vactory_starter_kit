@@ -1,0 +1,6 @@
+name: Vactory Decoupled Cross Content
+description: 'Vactory Decoupled Cross Content'
+type: module
+core_version_requirement: ^9 || ^10
+version: 8.x-1.0
+package: Vactory
