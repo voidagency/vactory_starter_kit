@@ -17,6 +17,7 @@ use Drupal\Component\Serialization\Json;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Access\AccessResult;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Implements hook_help().
@@ -482,7 +483,7 @@ function vactory_locator_json_api_collection_alter(&$filters, &$context) {
       ]);
 
       if (!$terms) {
-        throw new \Exception("[Locator - hook_json_api_collection_alter] term '$theme' not found.");
+        throw new NotFoundHttpException("[Locator - hook_json_api_collection_alter] term '$theme' not found.");
       }
 
       if ($terms) {

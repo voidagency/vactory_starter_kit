@@ -7,6 +7,7 @@
 
 use Drupal\views\ViewExecutable;
 use Drupal\block_content\Entity\BlockContent;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Implements hook_theme().
@@ -127,7 +128,7 @@ function vactory_publication_json_api_collection_alter(&$filters, &$context) {
       ]);
 
       if (!$terms) {
-        throw new \Exception("[Publication - hook_json_api_collection_alter] term '$theme' not found.");
+        throw new NotFoundHttpException("[Publication - hook_json_api_collection_alter] term '$theme' not found.");
       }
 
       if ($terms) {

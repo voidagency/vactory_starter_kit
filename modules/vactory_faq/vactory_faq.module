@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Form\FormStateInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Implements hook_theme().
@@ -82,7 +83,7 @@ function vactory_faq_json_api_collection_alter(&$filters, &$context) {
       ]);
 
       if (!$terms) {
-        throw new \Exception("[News - hook_json_api_collection_alter] term '$term' not found.");
+        throw new NotFoundHttpException("[News - hook_json_api_collection_alter] term '$term' not found.");
       }
 
       if ($terms) {

@@ -7,6 +7,7 @@
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\taxonomy\Entity\Term;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Implements hook_theme().
@@ -123,7 +124,7 @@ function vactory_mediatheque_json_api_collection_alter(&$filters, &$context) {
       ]);
 
       if (!$terms) {
-        throw new \Exception("[Mediatheque - hook_json_api_collection_alter] term '$theme' not found.");
+        throw new NotFoundHttpException("[Mediatheque - hook_json_api_collection_alter] term '$theme' not found.");
       }
 
       if ($terms) {
@@ -143,7 +144,7 @@ function vactory_mediatheque_json_api_collection_alter(&$filters, &$context) {
       ]);
 
       if (!$terms) {
-        throw new \Exception("[Mediatheque - hook_json_api_collection_alter] term '$theme' not found.");
+        throw new NotFoundHttpException("[Mediatheque - hook_json_api_collection_alter] term '$theme' not found.");
       }
 
       if ($terms) {
@@ -164,7 +165,7 @@ function vactory_mediatheque_json_api_collection_alter(&$filters, &$context) {
       ]);
 
       if (!$terms) {
-        throw new \Exception("[Mediatheque - hook_json_api_collection_alter] term '$theme' not found.");
+        throw new NotFoundHttpException("[Mediatheque - hook_json_api_collection_alter] term '$theme' not found.");
       }
 
       if ($terms) {
