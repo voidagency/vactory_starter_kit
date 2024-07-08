@@ -2,3 +2,4 @@ is_dropdown_select_templates: false
 pending_content: true
 auto_populate: false
 all_category: false
+decoupled_edit_live_mode: false
