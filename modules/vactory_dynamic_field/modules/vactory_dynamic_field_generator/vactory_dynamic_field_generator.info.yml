@@ -1,0 +1,5 @@
+name: 'Dynamic Field Templates Generator'
+type: module
+description: 'Automatically generate Twig files from a the dynamic fields settings YAML file.'
+package: Custom
+core_version_requirement: ^10
