@@ -351,15 +351,18 @@ class DynamicFieldManager {
               if ($settings['multiple'] && $parent_keys[0] == 'fields') {
                 $index = ((int) $component['_weight']) - 1;
                 $path[] = "$index";
-              }
-              else {
-                $path[] = 0;
+                if (($key = array_search('fields', $path)) !== FALSE) {
+                  unset($path[$key]);
+                }
               }
 
               $path[] = $field_key;
 
               if (($key = array_search('fields', $path)) !== FALSE) {
-                unset($path[$key]);
+                $path[$key] = 0;
+              }
+              if (($key = array_search('extra_fields', $path)) !== FALSE) {
+                $path[$key] = 'extra_field';
               }
               $path = implode('.', $path);
               $value = "<LiveMode id=\"{$path}\">{$value}</LiveMode>";
