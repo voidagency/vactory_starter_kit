@@ -2,3 +2,8 @@ administer field node settings:
   title: 'Administer node settings'
   description: 'Administer the node settings params.'
   restrict access: TRUE
+
+edit content live mode:
+  title: 'Edit content live mode'
+  description: 'Edit content live mode.'
+  restrict access: TRUE
