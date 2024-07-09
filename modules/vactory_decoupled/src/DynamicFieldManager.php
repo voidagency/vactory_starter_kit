@@ -330,6 +330,11 @@ class DynamicFieldManager {
                 }, $path_terms);
                 unset($value['attributes']['path_terms']);
               }
+              $path = $this->handleEditLiveModeFormat($parent_keys, $settings, $component, $field_key);
+              if ($path) {
+                $path .= '.title';
+                $value['title'] = "<LiveMode id=\"{$path}\">{$value['title']}</LiveMode>";
+              }
             }
 
             // Check for external links.
@@ -345,26 +350,8 @@ class DynamicFieldManager {
                 $value = $retrievedContent;
               }
             }
-            $decoupled_edit_live_mode = $this->configFactory->get('vactory_dynamic_field.settings')->get('decoupled_edit_live_mode');
-            if ($decoupled_edit_live_mode) {
-              $path = $parent_keys;
-              if ($settings['multiple'] && $parent_keys[0] == 'fields') {
-                $index = ((int) $component['_weight']) - 1;
-                $path[] = "$index";
-                if (($key = array_search('fields', $path)) !== FALSE) {
-                  unset($path[$key]);
-                }
-              }
-
-              $path[] = $field_key;
-
-              if (($key = array_search('fields', $path)) !== FALSE) {
-                $path[$key] = 0;
-              }
-              if (($key = array_search('extra_fields', $path)) !== FALSE) {
-                $path[$key] = 'extra_field';
-              }
-              $path = implode('.', $path);
+            $path = $this->handleEditLiveModeFormat($parent_keys, $settings, $component, $field_key);
+            if ($path) {
               $value = "<LiveMode id=\"{$path}\">{$value}</LiveMode>";
             }
           }
@@ -885,6 +872,35 @@ class DynamicFieldManager {
       return $uri;
     }
     return '';
+  }
+
+  /**
+   * Generate field path for edit live mode.
+   */
+  private function handleEditLiveModeFormat($parent_keys, $settings, $component, $field_key) {
+    $decoupled_edit_live_mode = $this->configFactory->get('vactory_dynamic_field.settings')->get('decoupled_edit_live_mode');
+    if ($decoupled_edit_live_mode) {
+      $path = $parent_keys;
+      if ($settings['multiple'] && $parent_keys[0] == 'fields') {
+        $index = ((int) $component['_weight']) - 1;
+        $path[] = "$index";
+        if (($key = array_search('fields', $path)) !== FALSE) {
+          unset($path[$key]);
+        }
+      }
+
+      $path[] = $field_key;
+
+      if (($key = array_search('fields', $path)) !== FALSE) {
+        $path[$key] = 0;
+      }
+      if (($key = array_search('extra_fields', $path)) !== FALSE) {
+        $path[$key] = 'extra_field';
+      }
+      $path = implode('.', $path);
+      return $path;
+    }
+    return NULL;
   }
 
 }
