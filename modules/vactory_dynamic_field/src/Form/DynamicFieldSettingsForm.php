@@ -68,6 +68,12 @@ class DynamicFieldSettingsForm extends ConfigFormBase {
       '#default_value' => $this->config('vactory_dynamic_field.settings')->get('all_category'),
     ];
 
+    $form['decoupled_edit_live_mode'] = [
+      '#type' => 'checkbox',
+      '#title' => t('Enable decoupled edit live mode.'),
+      '#default_value' => $this->config('vactory_dynamic_field.settings')->get('decoupled_edit_live_mode') ?? FALSE,
+    ];
+
     $form['excluded_widgets'] = [
       '#type' => 'textarea',
       '#title' => t('Excluded widgets'),
@@ -90,6 +96,7 @@ class DynamicFieldSettingsForm extends ConfigFormBase {
       ->set('pending_content', $form_state->getValue('pending_content'))
       ->set('auto_populate', $form_state->getValue('auto_populate'))
       ->set('all_category', $form_state->getValue('all_category'))
+      ->set('decoupled_edit_live_mode', $form_state->getValue('decoupled_edit_live_mode'))
       ->save();
     parent::submitForm($form, $form_state);
     drupal_flush_all_caches();

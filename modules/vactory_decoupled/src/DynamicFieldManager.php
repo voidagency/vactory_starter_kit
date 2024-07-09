@@ -163,6 +163,7 @@ class DynamicFieldManager {
     $this->platformProvider = $plateform_provider;
     $this->imageStyles = ImageStyle::loadMultiple();
     $this->siteConfig = $configFactory->get('system.site');
+    $this->configFactory = $configFactory;
     $this->mediaFilesManager = $mediaFilesManager;
     $this->entityRepository = $entityRepository;
     $this->jsonApiGenerator = $jsonApiGenerator;
@@ -343,6 +344,25 @@ class DynamicFieldManager {
               if ($retrievedContent) {
                 $value = $retrievedContent;
               }
+            }
+            $decoupled_edit_live_mode = $this->configFactory->get('vactory_dynamic_field.settings')->get('decoupled_edit_live_mode');
+            if ($decoupled_edit_live_mode) {
+              $path = $parent_keys;
+              if ($settings['multiple'] && $parent_keys[0] == 'fields') {
+                $index = ((int) $component['_weight']) - 1;
+                $path[] = "$index";
+              }
+              else {
+                $path[] = 0;
+              }
+
+              $path[] = $field_key;
+
+              if (($key = array_search('fields', $path)) !== FALSE) {
+                unset($path[$key]);
+              }
+              $path = implode('.', $path);
+              $value = "<LiveMode id=\"{$path}\">{$value}</LiveMode>";
             }
           }
 
