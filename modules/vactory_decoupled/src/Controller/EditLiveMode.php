@@ -111,7 +111,8 @@ class EditLiveMode extends ControllerBase {
     foreach ($keys as $key) {
       if (isset($current[$key])) {
         $current = &$current[$key];
-      } else {
+      }
+      else {
         return FALSE;
       }
     }
