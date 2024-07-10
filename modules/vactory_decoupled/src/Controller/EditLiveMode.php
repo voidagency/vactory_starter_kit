@@ -125,6 +125,9 @@ class EditLiveMode extends ControllerBase {
    */
   private function fetchParagraph($paragraph_query) {
     $res = $paragraph_query->execute();
+    $language_manager = $this->languageManager();
+    $current_language = $language_manager->getCurrentLanguage()->getId();
+    $default_language = $language_manager->getDefaultLanguage()->getId();
 
     if (count($res) !== 1) {
       return [
@@ -133,7 +136,19 @@ class EditLiveMode extends ControllerBase {
       ];
     }
     $paragraph_id = reset($res);
-    return $this->entityTypeManager()->getStorage('paragraph')->load($paragraph_id);
+    $paragraph = $this->entityTypeManager()->getStorage('paragraph')->load($paragraph_id);
+    if ($current_language == $default_language) {
+      return $paragraph;
+    }
+    elseif ($paragraph->hasTranslation($current_language)) {
+      return $paragraph->getTranslation($current_language);
+    }
+    else {
+      return [
+        'code' => 400,
+        'message' => $this->t('No translation founded'),
+      ];
+    }
   }
 
 }

@@ -333,7 +333,7 @@ class DynamicFieldManager {
               $path = $this->handleEditLiveModeFormat($parent_keys, $settings, $component, $field_key);
               if (!is_null($path)) {
                 $path .= '.title';
-                $value['title'] = "<LiveMode id=\"{$path}\">{$value['title']}</LiveMode>";
+                $value['title'] = "{LiveMode id=\"{$path}\"}{$value['title']}{/LiveMode}";
               }
             }
 
@@ -352,7 +352,7 @@ class DynamicFieldManager {
             }
             $path = $this->handleEditLiveModeFormat($parent_keys, $settings, $component, $field_key);
             if (!is_null($path)) {
-              $value = "<LiveMode id=\"{$path}\">{$value}</LiveMode>";
+              $value = "{LiveMode id=\"{$path}\"}{$value}{/LiveMode}";
             }
           }
 
