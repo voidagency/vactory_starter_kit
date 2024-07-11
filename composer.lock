@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cf9a8d66c3df135f1d37152355689ad7",
+    "content-hash": "5ffdb45f4318b1a560425ff69ada123a",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -11100,6 +11100,70 @@
             }
         },
         {
+            "name": "drupal/views_url_alias",
+            "version": "3.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/views_url_alias.git",
+                "reference": "3.1.0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/views_url_alias-3.1.0.zip",
+                "reference": "3.1.0",
+                "shasum": "c06cca3df9525a37304881686e1224d87288b525"
+            },
+            "require": {
+                "drupal/core": "^8.8 || ^9 || ^10"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "3.1.0",
+                    "datestamp": "1711071321",
+                    "security-coverage": {
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "dstorozhuk",
+                    "homepage": "https://www.drupal.org/user/1361080"
+                },
+                {
+                    "name": "erikwebb",
+                    "homepage": "https://www.drupal.org/user/273404"
+                },
+                {
+                    "name": "jrockowitz",
+                    "homepage": "https://www.drupal.org/user/371407"
+                },
+                {
+                    "name": "L-four",
+                    "homepage": "https://www.drupal.org/user/357826"
+                },
+                {
+                    "name": "venugopp",
+                    "homepage": "https://www.drupal.org/user/2628911"
+                },
+                {
+                    "name": "_shY",
+                    "homepage": "https://www.drupal.org/user/3672933"
+                }
+            ],
+            "description": "Allows content related Views be filtered by path aliases.",
+            "homepage": "https://www.drupal.org/project/views_url_alias",
+            "support": {
+                "source": "https://git.drupalcode.org/project/views_url_alias"
+            }
+        },
+        {
             "name": "drupal/viewsreference",
             "version": "2.0.0-beta7",
             "source": {
@@ -20830,6 +20894,7 @@
         "drupal/jsonapi_user_resources": 10,
         "drupal/symfony_mailer": 15,
         "drupal/default_content": 15,
+        "drupal/gin": 5,
         "drupal/search_api_ai": 15,
         "drupal/openai": 10
     },
@@ -20839,5 +20904,5 @@
         "php": ">=7.3"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.3.0"
 }
