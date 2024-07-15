@@ -197,5 +197,4 @@ vactory_decoupled.edit_live_mode:
     _controller: '\Drupal\vactory_decoupled\Controller\EditLiveMode::edit'
   methods: [POST]
   requirements:
-    _permission: 'edit content live mode'
-    _format: 'json'
+    _access: 'TRUE'

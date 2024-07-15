@@ -16,6 +16,16 @@ class EditLiveMode extends ControllerBase {
    * Edit live mode.
    */
   public function edit(Request $request) {
+    $user_id = \Drupal::currentUser()->id();
+    $user = $this->entityTypeManager()->getStorage('user')->load($user_id);
+    $user_granted = $user->hasPermission('edit content live mode');
+
+    if (!$user_granted) {
+      return new JsonResponse([
+        'status' => FALSE,
+        'message' => $this->t('edit content live mode permission is required'),
+      ], 400);
+    }
     $body = json_decode($request->getContent(), TRUE);
 
     $paragraph_query = $this->entityTypeManager()->getStorage('paragraph')->getQuery();

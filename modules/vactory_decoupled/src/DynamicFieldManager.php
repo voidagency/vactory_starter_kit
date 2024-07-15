@@ -881,7 +881,9 @@ class DynamicFieldManager {
     // Check permission.
     // Ensure the user has 'edit content live mode' permission.
     // To utilize the edit live mode feature.
-    $user_granted = \Drupal::currentUser()->hasPermission('edit content live mode');
+    $user_id = \Drupal::currentUser()->id();
+    $user = $this->entityTypeManager->getStorage('user')->load($user_id);
+    $user_granted = $user->hasPermission('edit content live mode');
 
     // Check if the feature is enabled from vactory_dynamic_field setings.
     $decoupled_edit_live_mode = $this->configFactory->get('vactory_dynamic_field.settings')->get('decoupled_edit_live_mode');
