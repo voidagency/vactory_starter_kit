@@ -4,7 +4,6 @@ namespace Drupal\vactory_oauth_apikey\OAuth2\Server\Grant;
 
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\simple_oauth\Entities\UserEntity;
-use Drupal\user\Entity\User;
 use Drupal\user\UserAuthInterface;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Entities\UserEntityInterface;
@@ -90,7 +89,6 @@ class ApikeyGrant extends PasswordGrant {
       return NULL;
     }
 
-//      user_login_finalize($user);
     $user_entity = new UserEntity();
     $user_entity->setIdentifier($account->id());
     return $user_entity;
