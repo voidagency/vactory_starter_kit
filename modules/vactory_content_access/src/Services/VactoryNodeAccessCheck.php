@@ -44,12 +44,7 @@ class VactoryNodeAccessCheck {
   protected $moduleHandler;
 
   /**
-   * PriveAccessCheck constructor.
-   *
-   * @param \Drupal\Core\Session\AccountProxy $account
-   *   Current user account.
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
-   *   Entity type manager object.
+   * The vactory node access check construct.
    */
   public function __construct(AccountProxy $account, EntityTypeManagerInterface $entityTypeManager, ModuleHandlerInterface $module_handler) {
     $this->currentUserId = $account->id();
@@ -70,7 +65,8 @@ class VactoryNodeAccessCheck {
       }
       $is_accessible = FALSE;
       $current_user_id = $this->currentUserId;
-      $current_user_groups = $this->currentUserObject->get('field_user_groups')->getValue();
+      $current_user_groups = $this->currentUserObject->get('field_user_groups')
+        ->getValue();
       $node_groups = $node->get($fieldUserGroupName)->getValue();
       // Grant access to the user having uid = 1.
       if ($current_user_id === '1') {
@@ -111,11 +107,15 @@ class VactoryNodeAccessCheck {
           $is_accessible = TRUE;
         }
         if (!empty($node_allowed_roles)) {
-          $node_allowed_roles = array_map(function ($el) {
-            return $el['target_id'];
-          }, $node_allowed_roles);
-          if (count(array_intersect($current_user_roles, $node_allowed_roles)) > 0) {
-            $is_accessible = TRUE;
+          $is_negate_roles = $node->get("field_content_access_negate_roles")->value === "1";
+          $node_allowed_roles = array_map(fn($el) => $el['target_id'], $node_allowed_roles);
+          $role_intersect = count(array_intersect($current_user_roles, $node_allowed_roles)) > 0;
+
+          if ($role_intersect) {
+            $is_accessible = !$is_negate_roles;
+          }
+          else {
+            $is_accessible = $is_negate_roles;
           }
         }
       }
