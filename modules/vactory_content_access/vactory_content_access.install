@@ -13,7 +13,8 @@ use Drupal\Core\Field\FieldStorageDefinitionInterface;
  */
 function vactory_content_access_uninstall() {
   // Delete vactory content access config.
-  $notifications_config = Drupal::configFactory()->getEditable('vactory_content_access.settings');
+  $notifications_config = Drupal::configFactory()
+    ->getEditable('vactory_content_access.settings');
   $notifications_config->delete();
 }
 
@@ -83,7 +84,6 @@ function vactory_content_access_update_8903(&$sandbox) {
   $entityUpdateManager->installFieldStorageDefinition(
     'field_content_access_groups', 'node', 'vactory_content_access', $field_content_access_groups
   );
-
 }
 
 /**
@@ -141,6 +141,29 @@ function vactory_content_access_update_8905(&$sandbox) {
     ->setDisplayConfigurable('field', TRUE);
   Drupal::entityDefinitionUpdateManager()->installFieldStorageDefinition(
     'field_content_access_custom',
+    'node',
+    'vactory_content_access',
+    $field_content_access_custom
+  );
+}
+
+/**
+ * Install content access negate roles field.
+ */
+function vactory_content_access_update_9905(&$sandbox) {
+  $field_content_access_custom = BaseFieldDefinition::create('boolean')
+    ->setLabel(t('Negate roles'))
+    ->setDefaultValue(FALSE)
+    ->setTranslatable(TRUE)
+    ->setDisplayOptions('form', [
+      'type' => 'boolean_checkbox',
+      'weight' => -6,
+    ])
+    ->setDisplayConfigurable('view', TRUE)
+    ->setDisplayConfigurable('form', TRUE)
+    ->setDisplayConfigurable('field', TRUE);
+  Drupal::entityDefinitionUpdateManager()->installFieldStorageDefinition(
+    'field_content_access_negate_roles',
     'node',
     'vactory_content_access',
     $field_content_access_custom
