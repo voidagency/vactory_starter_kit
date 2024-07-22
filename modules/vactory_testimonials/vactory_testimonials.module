@@ -5,6 +5,8 @@
  * Contain related hooks.
  */
 
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+
 /**
  * Implements hook_theme().
  */
@@ -69,7 +71,7 @@ function vactory_testimonials_json_api_collection_alter(&$filters, &$context) {
         ]);
 
       if (!$terms) {
-        throw new \Exception("[Testimonials - hook_json_api_collection_alter] term '$theme' not found.");
+        throw new NotFoundHttpException("[Testimonials - hook_json_api_collection_alter] term '$theme' not found.");
       }
 
       if ($terms) {

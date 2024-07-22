@@ -182,7 +182,7 @@ function vactory_forums_json_api_collection_alter(&$filters, &$context) {
         ]);
 
       if (!$terms) {
-        throw new \Exception("[Forums - hook_json_api_collection_alter] term '$room' not found.");
+        throw new NotFoundHttpException("[Forums - hook_json_api_collection_alter] term '$room' not found.");
       }
 
       if ($terms) {
@@ -235,7 +235,7 @@ function vactory_forums_json_api_collection_alter(&$filters, &$context) {
         ]);
 
       if (!$terms) {
-        throw new \Exception("[Forums - hook_json_api_collection_alter] term '$thematic' not found.");
+        throw new NotFoundHttpException("[Forums - hook_json_api_collection_alter] term '$thematic' not found.");
       }
 
       if ($terms) {
