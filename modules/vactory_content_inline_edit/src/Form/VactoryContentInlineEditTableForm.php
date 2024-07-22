@@ -186,7 +186,7 @@ class VactoryContentInlineEditTableForm extends FormBase {
       '#markup' => '<img src="' . $paragraph['screenshot'] . '" alt="DF Image" width="300" height="250">',
     ];
     $container['title'] = [
-      '#markup' => '<h1>' . $this->t($paragraph['name']) . '</h1><hr>',
+      '#markup' => '<h1>' . $paragraph['name'] . '</h1><hr>',
     ];
 
     if (isset($paragraph['elements']['extra_fields'])) {
@@ -283,6 +283,7 @@ class VactoryContentInlineEditTableForm extends FormBase {
           '#attributes' => [
             'class' => ['paragraph-field'],
             'data-original-value' => $fieldConfig['mid'],
+            'data-is-media' => 'true',
           ],
         ];
         break;
@@ -297,6 +298,7 @@ class VactoryContentInlineEditTableForm extends FormBase {
           '#attributes' => [
             'class' => ['paragraph-field'],
             'data-original-value' => $fieldConfig['mid'],
+            'data-is-media' => 'true',
           ],
         ];
         break;
@@ -311,6 +313,7 @@ class VactoryContentInlineEditTableForm extends FormBase {
           '#attributes' => [
             'class' => ['paragraph-field'],
             'data-original-value' => $fieldConfig['mid'],
+            'data-is-media' => 'true',
           ],
         ];
         break;
@@ -325,6 +328,7 @@ class VactoryContentInlineEditTableForm extends FormBase {
           '#attributes' => [
             'class' => ['paragraph-field'],
             'data-original-value' => $fieldConfig['mid'],
+            'data-is-media' => 'true',
           ],
         ];
         break;
@@ -386,15 +390,20 @@ class VactoryContentInlineEditTableForm extends FormBase {
   private function createParagraphMultiplePreview($nodeId, $paragraph, &$form, FormStateInterface $form_state) {
     $container = [
       '#type' => 'container',
-      '#attributes' => ['class' => ['paragraph-wrapper'], 'data-no-control' => 'true'],
+      '#attributes' => [
+        'class' => [
+          'paragraph-wrapper',
+        ],
+        'data-no-control' => 'true',
+      ],
     ];
 
     $container['title'] = [
-      '#markup' => '<h1>' . $this->t($paragraph['title']) . '</h1>',
+      '#markup' => '<h1>' . $paragraph['title'] . '</h1>',
     ];
 
     $container['intro'] = [
-      '#markup' => '<p>' . $this->t($paragraph['introduction']) . '</p>',
+      '#markup' => '<p>' . $paragraph['introduction'] . '</p>',
     ];
 
     // Create the URL to the node edit page.
