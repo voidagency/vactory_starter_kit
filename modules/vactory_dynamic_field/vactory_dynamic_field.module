@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Primary module hooks for Vactory Wysiwyg Components module.
+ * Primary module hooks for Vactory dynamic field module.
  */
 
 define("VACTORY_DYNAMIC_FIELD_V_IMAGE_PLACEHOLDER", "data:image/gif;base64,R0lGODlhAQABAIAAAMLCwgAAACH5BAAAAAAALAAAAAABAAEAAAICRAEAOw==");
