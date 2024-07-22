@@ -1,13 +1,17 @@
+uuid: 4342f2e7-f5fa-4702-9e2f-ccdf4edc03b4
 langcode: en
 status: true
 dependencies:
   config:
+    - field.field.paragraph.vactory_paragraph_multi_template.field_background_color
     - field.field.paragraph.vactory_paragraph_multi_template.field_multi_paragraph_type
+    - field.field.paragraph.vactory_paragraph_multi_template.field_negate_roles
     - field.field.paragraph.vactory_paragraph_multi_template.field_paragraph_hide_lg
     - field.field.paragraph.vactory_paragraph_multi_template.field_paragraph_hide_sm
     - field.field.paragraph.vactory_paragraph_multi_template.field_paragraph_introduction
     - field.field.paragraph.vactory_paragraph_multi_template.field_position_image_x
     - field.field.paragraph.vactory_paragraph_multi_template.field_position_image_y
+    - field.field.paragraph.vactory_paragraph_multi_template.field_roles
     - field.field.paragraph.vactory_paragraph_multi_template.field_size_image
     - field.field.paragraph.vactory_paragraph_multi_template.field_titre_ancre
     - field.field.paragraph.vactory_paragraph_multi_template.field_vactory_flag
@@ -24,78 +28,98 @@ bundle: vactory_paragraph_multi_template
 mode: default
 content:
   field_multi_paragraph_type:
-    weight: 3
+    type: list_default
     label: hidden
     settings: {  }
     third_party_settings: {  }
-    type: list_default
+    weight: 3
+    region: content
+  field_negate_roles:
+    type: boolean
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: 18
     region: content
   field_paragraph_hide_lg:
-    weight: 6
+    type: boolean
     label: above
     settings:
       format: default
       format_custom_false: ''
       format_custom_true: ''
     third_party_settings: {  }
-    type: boolean
+    weight: 6
     region: content
   field_paragraph_hide_sm:
-    weight: 7
+    type: boolean
     label: above
     settings:
       format: default
       format_custom_false: ''
       format_custom_true: ''
     third_party_settings: {  }
-    type: boolean
+    weight: 7
     region: content
   field_paragraph_introduction:
-    weight: 5
+    type: basic_string
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: basic_string
+    weight: 5
     region: content
   field_position_image_x:
-    weight: 8
+    type: list_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: list_default
+    weight: 8
     region: content
   field_position_image_y:
-    weight: 9
+    type: list_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: list_default
+    weight: 9
+    region: content
+  field_roles:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 17
     region: content
   field_size_image:
-    weight: 10
+    type: list_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: list_default
+    weight: 10
     region: content
   field_vactory_paragraph_tab:
     type: entity_reference_revisions_entity_view
-    weight: 2
     label: hidden
     settings:
       view_mode: default
       link: ''
     third_party_settings: {  }
+    weight: 2
     region: content
   field_vactory_title:
-    weight: 4
+    type: string
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 4
     region: content
 hidden:
+  container_spacing: true
+  field_background_color: true
   field_titre_ancre: true
   field_vactory_flag: true
   field_vactory_flag_2: true

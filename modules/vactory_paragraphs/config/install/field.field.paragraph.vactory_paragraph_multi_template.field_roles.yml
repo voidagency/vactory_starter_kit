@@ -1,0 +1,23 @@
+uuid: 6ba8cddd-9880-476c-af59-d3475be976d4
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_roles
+    - paragraphs.paragraphs_type.vactory_paragraph_multi_template
+id: paragraph.vactory_paragraph_multi_template.field_roles
+field_name: field_roles
+entity_type: paragraph
+bundle: vactory_paragraph_multi_template
+label: Roles
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  handler: 'default:user_role'
+  handler_settings:
+    target_bundles: null
+    auto_create: false
+field_type: entity_reference
