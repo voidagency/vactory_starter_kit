@@ -250,6 +250,7 @@ class Webform {
       $schema['pages']['webform_preview']['preview']['preview_exclude_empty'] = isset($webform_settings['preview_exclude_empty']) && !empty($webform_settings['preview_exclude_empty']) ? $webform_settings['preview_exclude_empty'] : FALSE;
       $schema['pages']['webform_preview']['wizard']['prev_button_label'] = isset($webform_settings['wizard_prev_button_label']) && !empty($webform_settings['wizard_prev_button_label']) ? $webform_settings['wizard_prev_button_label'] : '';
       $schema['pages']['webform_preview']['wizard']['next_button_label'] = isset($webform_settings['wizard_next_button_label']) && !empty($webform_settings['wizard_next_button_label']) ? $webform_settings['wizard_next_button_label'] : '';
+      $schema['pages']['webform_preview']['wizard']['confirmation_label'] = isset($webform_settings['wizard_confirmation_label']) && !empty($webform_settings['wizard_confirmation_label']) ? $webform_settings['wizard_confirmation_label'] : '';
     }
     /*    $schema['draft']['settings']['draft'] = isset($this->webform->getSettings()['draft']) && !empty($this->webform->getSettings()['draft']) ? $this->webform->getSettings()['draft'] : 'none';*/
     /*    $schema['draft']['settings']['draft_auto_save'] = isset($this->webform->getSettings()['draft']) && !empty($this->webform->getSettings()['draft_auto_save']) ? $this->webform->getSettings()['draft_auto_save'] : FALSE; */
@@ -436,6 +437,7 @@ class Webform {
       'processed_text'           => 'rawhtml',
       'password'                 => 'password',
       'range'                    => 'range',
+      'webform_scale'            => 'webform_scale',
     ];
 
     $htmlInputTypes = [
@@ -465,7 +467,9 @@ class Webform {
     (isset($item['#date_date_min']) && !is_null($item['#date_date_min'])) ? $properties['dateMin'] = $item['#date_date_min'] : NULL;
     (isset($item['#date_date_max']) && !is_null($item['#date_date_max'])) ? $properties['dateMax'] = $item['#date_date_max'] : NULL;
     (isset($item['#min']) && !is_null($item['#min'])) ? $properties['attributes']['min'] = $item['#min'] : NULL;
+    (isset($item['#min_text']) && !is_null($item['#min_text'])) ? $properties['attributes']['minText'] = $item['#min_text'] : NULL;
     (isset($item['#max']) && !is_null($item['#max'])) ? $properties['attributes']['max'] = $item['#max'] : NULL;
+    (isset($item['#max_text']) && !is_null($item['#max_text'])) ? $properties['attributes']['maxText'] = $item['#max_text'] : NULL;
     (isset($item['#step']) && !is_null($item['#step'])) ? $properties['attributes']['step'] = $item['#step'] : NULL;
 
     // add custom properties
