@@ -16,9 +16,3 @@ services:
     class: Drupal\vactory_migrate\Services\Import
     arguments:
       - '@plugin.manager.migration'
-
-  vactory_migrate.commands:
-    class: \Drupal\vactory_migrate\Commands\Commands
-    tags:
-      - { name: drush.command }
-    arguments: ['@vactory_migrate.rollback', '@vactory_migrate.import']

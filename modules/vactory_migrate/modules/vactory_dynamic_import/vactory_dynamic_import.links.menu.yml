@@ -1,5 +1,5 @@
 entity.dynamic_import.collection:
-  title: 'Vactory Dynamic Import Entity'
+  title: 'Vactory Dynamic Import (VDI)'
   parent: system.admin_config_system
   description: 'Configure dynamic import using entity.'
   route_name: entity.dynamic_import.collection
