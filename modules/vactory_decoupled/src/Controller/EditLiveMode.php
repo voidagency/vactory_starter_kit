@@ -99,6 +99,7 @@ class EditLiveMode extends ControllerBase {
         break;
       }
     }
+    unset($item);
     $node->set('field_vactory_paragraphs', $node_paragraphs);
 
     $node->setNewRevision(TRUE);
@@ -161,6 +162,7 @@ class EditLiveMode extends ControllerBase {
         break;
       }
     }
+    unset($item);
 
     $main_paragraph->set('field_vactory_paragraph_tab', $main_paragraph_tabs);
     $main_paragraph->setNewRevision(TRUE);
@@ -184,6 +186,7 @@ class EditLiveMode extends ControllerBase {
         break;
       }
     }
+    unset($item);
     $node->set('field_vactory_paragraphs', $node_paragraphs);
 
     $node->setNewRevision(TRUE);
