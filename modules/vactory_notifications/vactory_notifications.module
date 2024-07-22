@@ -8,7 +8,6 @@
 use Drupal\Component\Serialization\Json;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Cache\Cache;
-use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
@@ -57,7 +56,7 @@ function vactory_notifications_theme($existing, $type, $theme, $path) {
 /**
  * Implements hook_ENTITY_TYPE_presave().
  */
-function vactory_notifications_node_presave(Drupal\Core\Entity\EntityInterface $entity) {
+function vactory_notifications_node_presave(EntityInterface $entity) {
   $notification_manager = \Drupal::service('vactory_notifications.manager');
   if ($entity->get('generate_notification')->value && $notification_manager->isNotificationsEnabledForBundle($entity->bundle())) {
     if ($entity->isNew()) {
@@ -108,11 +107,37 @@ function vactory_notification_generate($entity) {
     $notification_manager->notificationsAutoTranslate($notification);
   }
   // Notification by Mail.
-  $node_mail_subject = !empty($entity->get('mail_subject')->value) ? $entity->get('mail_subject')->value : $notification_config->get('mail_default_subject');
-  $node_mail_message = !empty($entity->get('mail_message')->value) ? $entity->get('mail_message')->value : $notification_config->get('mail_default_message');
+  if ($entity instanceof NodeInterface) {
+    $node_type = $entity->getType();
+    // Get the mail_content_types data.
+    $mail_content_types = $notification_config->get('mail_content_types');
+    if (isset($mail_content_types[$node_type])) {
+      // Check if mail_subject and mail_message are empty, and set default values.
+      if (empty($mail_content_types[$node_type]['mail_subject'])) {
+        $node_mail_subject = $notification_config->get('mail_default_subject') ?? $notification_config->get('mail_default_subject');
+      } 
+      else {
+        // Use the mail_subject from mail_content_types.
+        $node_mail_subject = $mail_content_types[$node_type]['mail_subject'];
+      }
+      if (empty($mail_content_types[$node_type]['mail_message']['value'])) {
+        $node_mail_message = $notification_config->get('mail_default_message') ?? $notification_config->get('mail_default_message');
+      } 
+      else {
+        // Use the mail_message from mail_content_types.
+        $node_mail_message = $mail_content_types[$node_type]['mail_message']['value'];
+      }
+    }
+    else {
+      $node_mail_subject = $notification_config->get('mail_default_subject');
+      $node_mail_message = $notification_config->get('mail_default_message');
+    }
+    $node_mail_subject = !empty($entity->get('mail_subject')->value) ? $entity->get('mail_subject')->value : $node_mail_subject;
+    $node_mail_message = !empty($entity->get('mail_message')->value) ? $entity->get('mail_message')->value : $node_mail_message;
+  }
   // Send a mail notification.
   $is_mail_active = $notification_config->get('mail_active');
-  if ($is_mail_active == 1) {
+  if ($is_mail_active === 1) {
     $existing_roles = Role::loadMultiple();
     $target_roles = [];
     foreach ($existing_roles as $key => $role) {
@@ -158,7 +183,7 @@ function vactory_notification_generate($entity) {
 /**
  * Implements hook_ENTITY_TYPE_insert().
  */
-function vactory_notifications_notifications_entity_insert(Drupal\Core\Entity\EntityInterface $entity) {
+function vactory_notifications_notifications_entity_insert(EntityInterface $entity) {
   $notification_manager = \Drupal::service('vactory_notifications.manager');
   $token = Drupal::token();
   $notification_config = Drupal::config('vactory_notifications.settings');
@@ -238,16 +263,16 @@ function vactory_notifications_entity_base_field_info(EntityTypeInterface $entit
       ->setDisplayConfigurable('field', TRUE);
 
     // Mail details/message.
-    $fields['mail_message'] = BaseFieldDefinition::create('string_long')
+    $fields['mail_message'] = BaseFieldDefinition::create('text_long')
       ->setLabel(t('Mail Notifications message'))
-      ->setDescription(t('Set the mail message of current node'))
+      ->setDescription(t('Set the mail message of current node.'))
       ->setSettings([
         'default_value' => '',
         'text_processing' => 0,
       ])
       ->setTranslatable(TRUE)
       ->setDisplayOptions('form', [
-        'type' => 'string_textarea',
+        'type' => 'text_textarea',
         'weight' => -1,
       ])
       ->setDisplayConfigurable('form', TRUE)
@@ -286,7 +311,7 @@ function vactory_notifications_form_alter(&$form, FormStateInterface $form_state
 /**
  * Implements hook_form_FORM_ID_alter().
  */
-function vactory_notifications_form_node_form_alter(&$form) {
+function vactory_notifications_form_node_form_alter(&$form, FormStateInterface $form_state) {
   $notifications_config = Drupal::config('vactory_notifications.settings');
   $form['node_notifications'] = [
     '#type' => 'details',
@@ -330,12 +355,30 @@ function vactory_notifications_form_node_form_alter(&$form) {
   $form['node_mail']['notifications_tokens_tree'] = get_token_tree();
   $form['mail_subject']['#group'] = 'node_mail';
   $form['mail_message']['#group'] = 'node_mail';
-
-  if (!isset($form['mail_subject']['widget'][0]['value']['#default_value']) || $route_name === 'entity.node.content_translation_add') {
-    $form['mail_subject']['widget'][0]['value']['#default_value'] = $notifications_config->get('mail_default_subject');
-  }
-  if (!isset($form['mail_message']['widget'][0]['value']['#default_value']) || $route_name === 'entity.node.content_translation_add') {
-    $form['mail_message']['widget'][0]['value']['#default_value'] = $notifications_config->get('mail_default_message');
+  $form['mail_message']['widget'][0]['#format'] = 'full_html';
+  if ($form_state->getFormObject()->getEntity() instanceof NodeInterface) {
+    $node_type = $form_state->getFormObject()->getEntity()->getType();
+    // Get the mail_content_types data.
+    $mail_content_types = $notifications_config->get('mail_content_types');
+    if (isset($mail_content_types[$node_type])) {
+      // Check if mail_subject and mail_message are empty, and set default values.
+      if (empty($mail_content_types[$node_type]['mail_subject'])) {
+        $node_mail_subject  = $notifications_config->get('mail_default_subject') ?? $notifications_config->get('mail_default_subject');
+      } 
+      else {
+        // Use the mail_subject from mail_content_types.
+        $node_mail_subject = $mail_content_types[$node_type]['mail_subject'];
+      }
+      if (empty($mail_content_types[$node_type]['mail_message']['value'])) {
+        $node_mail_message = $notifications_config->get('mail_default_message') ?? $notifications_config->get('mail_default_message');
+      } 
+      else {
+        // Use the mail_message from mail_content_types.
+        $node_mail_message = $mail_content_types[$node_type]['mail_message']['value'];
+      }
+    }
+    $form['mail_subject']['widget'][0]['value']['#default_value'] = $node_mail_subject;
+    $form['mail_message']['widget'][0]['#default_value'] = $node_mail_message;
   }
   // Check if notification are enabled for the current node bundle.
   $notification_manager = \Drupal::service('vactory_notifications.manager');
