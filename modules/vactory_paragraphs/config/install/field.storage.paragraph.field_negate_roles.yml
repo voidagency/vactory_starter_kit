@@ -1,0 +1,18 @@
+uuid: 20ec293f-ea30-455c-84a3-7693ee235013
+langcode: en
+status: true
+dependencies:
+  module:
+    - paragraphs
+id: paragraph.field_negate_roles
+field_name: field_negate_roles
+entity_type: paragraph
+type: boolean
+settings: {  }
+module: core
+locked: false
+cardinality: 1
+translatable: true
+indexes: {  }
+persist_with_no_fields: false
+custom_storage: false

@@ -1,38 +1,41 @@
+uuid: 731bedad-ff6d-4d5a-9afe-748bbebe2eb9
 langcode: en
 status: true
 dependencies:
   config:
-  - field.field.paragraph.vactory_paragraph_multi_template.field_background_color
-  - field.field.paragraph.vactory_paragraph_multi_template.field_multi_paragraph_type
-  - field.field.paragraph.vactory_paragraph_multi_template.field_paragraph_hide_lg
-  - field.field.paragraph.vactory_paragraph_multi_template.field_paragraph_hide_sm
-  - field.field.paragraph.vactory_paragraph_multi_template.field_paragraph_introduction
-  - field.field.paragraph.vactory_paragraph_multi_template.field_position_image_x
-  - field.field.paragraph.vactory_paragraph_multi_template.field_position_image_y
-  - field.field.paragraph.vactory_paragraph_multi_template.field_size_image
-  - field.field.paragraph.vactory_paragraph_multi_template.field_titre_ancre
-  - field.field.paragraph.vactory_paragraph_multi_template.field_vactory_flag
-  - field.field.paragraph.vactory_paragraph_multi_template.field_vactory_flag_2
-  - field.field.paragraph.vactory_paragraph_multi_template.field_vactory_paragraph_tab
-  - field.field.paragraph.vactory_paragraph_multi_template.field_vactory_title
-  - paragraphs.paragraphs_type.vactory_paragraph_multi_template
+    - field.field.paragraph.vactory_paragraph_multi_template.field_background_color
+    - field.field.paragraph.vactory_paragraph_multi_template.field_multi_paragraph_type
+    - field.field.paragraph.vactory_paragraph_multi_template.field_negate_roles
+    - field.field.paragraph.vactory_paragraph_multi_template.field_paragraph_hide_lg
+    - field.field.paragraph.vactory_paragraph_multi_template.field_paragraph_hide_sm
+    - field.field.paragraph.vactory_paragraph_multi_template.field_paragraph_introduction
+    - field.field.paragraph.vactory_paragraph_multi_template.field_position_image_x
+    - field.field.paragraph.vactory_paragraph_multi_template.field_position_image_y
+    - field.field.paragraph.vactory_paragraph_multi_template.field_roles
+    - field.field.paragraph.vactory_paragraph_multi_template.field_size_image
+    - field.field.paragraph.vactory_paragraph_multi_template.field_titre_ancre
+    - field.field.paragraph.vactory_paragraph_multi_template.field_vactory_flag
+    - field.field.paragraph.vactory_paragraph_multi_template.field_vactory_flag_2
+    - field.field.paragraph.vactory_paragraph_multi_template.field_vactory_paragraph_tab
+    - field.field.paragraph.vactory_paragraph_multi_template.field_vactory_title
+    - paragraphs.paragraphs_type.vactory_paragraph_multi_template
   module:
-  - field_group
-  - jquery_colorpicker
-  - media_library
-  - paragraphs
+    - field_group
+    - jquery_colorpicker
+    - media_library
+    - paragraphs
 third_party_settings:
   field_group:
     group_apparence:
       children:
-      - paragraph_identifier
-      - paragraph_container
-      - paragraph_css_class
-      - group_fond
+        - paragraph_identifier
+        - paragraph_container
+        - paragraph_css_class
+        - group_fond
       label: Apparence
       region: content
       parent_name: ''
-      weight: 8
+      weight: 9
       format_type: details
       format_settings:
         classes: ''
@@ -42,11 +45,11 @@ third_party_settings:
         required_fields: true
     group_fond:
       children:
-      - field_background_color
-      - paragraph_background_image
-      - group_positionner_l_image
-      - group_display
-      - paragraph_background_parallax
+        - field_background_color
+        - paragraph_background_image
+        - group_positionner_l_image
+        - group_display
+        - paragraph_background_parallax
       label: 'Couleur/Image de Fond'
       region: content
       parent_name: group_apparence
@@ -60,8 +63,8 @@ third_party_settings:
         required_fields: false
     group_display:
       children:
-      - field_paragraph_hide_lg
-      - field_paragraph_hide_sm
+        - field_paragraph_hide_lg
+        - field_paragraph_hide_sm
       label: Display
       region: content
       parent_name: group_fond
@@ -75,10 +78,10 @@ third_party_settings:
         required_fields: true
     group_positionner_l_image:
       children:
-      - field_position_image_x
-      - field_position_image_y
-      - field_size_image
-      label: 'Positionner l''image'
+        - field_position_image_x
+        - field_position_image_y
+        - field_size_image
+      label: "Positionner l'image"
       region: content
       parent_name: group_fond
       weight: 11
@@ -89,8 +92,22 @@ third_party_settings:
         open: false
         description: ''
         required_fields: true
-_core:
-  default_config_hash: 1W8TU1ZPE9PaqrC3V600McuDLeqTSH8Kx-8T5TfUUAI
+    group_roles:
+      children:
+        - field_roles
+        - field_negate_roles
+      label: Roles
+      region: content
+      parent_name: ''
+      weight: 10
+      format_type: details
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        open: false
+        description: ''
+        required_fields: true
 id: paragraph.vactory_paragraph_multi_template.default
 targetEntityType: paragraph
 bundle: vactory_paragraph_multi_template
@@ -113,6 +130,13 @@ content:
     weight: 1
     region: content
     settings: {  }
+    third_party_settings: {  }
+  field_negate_roles:
+    type: boolean_checkbox
+    weight: 9
+    region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   field_paragraph_hide_lg:
     type: boolean_checkbox
@@ -145,6 +169,12 @@ content:
   field_position_image_y:
     type: options_select
     weight: 10
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_roles:
+    type: options_select
+    weight: 8
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -240,7 +270,7 @@ content:
       placeholder: ''
     third_party_settings: {  }
   translation:
-    weight: 9
+    weight: 12
     region: content
     settings: {  }
     third_party_settings: {  }
