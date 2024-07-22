@@ -2,9 +2,7 @@
 
 namespace Drupal\vactory_decoupled;
 
-// use Drupal\entityqueue\Entity\EntityQueue;
 use Drupal\Core\Entity\EntityRepositoryInterface;
-use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
@@ -20,6 +18,11 @@ use Drupal\jsonapi\ResourceType\ResourceType;
  */
 class JsonApiGenerator {
 
+  /**
+   * Json api client.
+   *
+   * @var JsonApiClient
+   */
   protected $client;
 
   /**
@@ -53,17 +56,21 @@ class JsonApiGenerator {
   /**
    * Route match service.
    *
-   * @var RouteMatchInterface
+   * @var \Drupal\Core\Routing\RouteMatchInterface
    */
   protected $routeMatch;
 
   /**
-   * @var EntityStorageInterface
+   * Term storage.
+   *
+   * @var \Drupal\Core\Entity\EntityStorageInterface
    */
   protected $termStorage;
 
   /**
-   * @var EntityStorageInterface
+   * Term result Storage.
+   *
+   * @var \Drupal\Core\Entity\EntityStorageInterface
    */
   protected $termResultStorage;
 
@@ -98,7 +105,6 @@ class JsonApiGenerator {
    *
    * @return array
    *   The JSON structure of the requested resource.
-   *
    */
   public function fetch(array $config) {
     $id = $config['id'] ?? '';
@@ -107,12 +113,14 @@ class JsonApiGenerator {
     $exposed_vocabularies = $config['vocabularies'] ?? [];
     $entity_queue = $config['entity_queue'] ?? '';
     $entity_queue_field_id = $config['entity_queue_field_id'] ?? '';
+    $cache_tags = !empty($config['cache_tags']) ? explode("\n", $config['cache_tags']) : [];
+    $cache_contexts = !empty($config['cache_contexts']) ? explode("\n", $config['cache_contexts']) : [];
     $subqueue_items_ids = [];
 
     // Handle jsonapi filters tokens.
     $nested_filters = [];
     foreach ($filters as $key => $filter) {
-      if (strpos($filter, '[') === 0 && strpos($filter, ']') === strlen($filter)-1) {
+      if (strpos($filter, '[') === 0 && strpos($filter, ']') === strlen($filter) - 1) {
         // Token case.
         $filter = $this->token->replace($filter, []);
         $filter_pieces = is_string($filter) ? explode("\n", $filter) : [];
@@ -122,10 +130,12 @@ class JsonApiGenerator {
     }
     $filters = [...$filters, ...$nested_filters];
 
-    // Filters may be altered using hook_json_api_collection_alter which is triggered below.
-    // We need to keep a copy of the original filters to be used
+    // Filters may be altered using hook_json_api_collection_alter.
+    // which is triggered below.
+    // We need to keep a copy of the original filters to be used.
     // by the frontend Component.
-    // The client component only care about what has been set in the DF yml setting.
+    // The client component only care about.
+    // What has been set in the DF yml setting.
     $original_filters = $filters;
 
     // Add a filter for entity queue.
@@ -161,17 +171,17 @@ class JsonApiGenerator {
     }
 
     /*
-      * Allow other modules to override json_api_collection filters.
-      *
-      * @code
-      * Implements hook_json_api_collection_alter().
-      * function myModule_json_api_collection_alter(&$filters, &$context) {
-      *   $query = \Drupal::request()->query->all("q");
-      *   $id = $context['id'];
-      *   ... do something, like altering the filters
-      * }
-      * @endcode
-      */
+     * Allow other modules to override json_api_collection filters.
+     *
+     * @code
+     * Implements hook_json_api_collection_alter().
+     * function myModule_json_api_collection_alter(&$filters, &$context) {
+     *   $query = \Drupal::request()->query->all("q");
+     *   $id = $context['id'];
+     *   ... do something, like altering the filters
+     * }
+     * @endcode
+     */
 
     $hook_context = [
       'id' => $id,
@@ -181,7 +191,7 @@ class JsonApiGenerator {
     $params = $this->routeMatch->getParameters();
     if ($params) {
       if ($resource_type_param = $params->get('resource_type')) {
-        $hook_context["entity_bundle"] = $resource_type_param instanceof ResourceType ?  $resource_type_param->getBundle() : $resource_type_param;
+        $hook_context["entity_bundle"] = $resource_type_param instanceof ResourceType ? $resource_type_param->getBundle() : $resource_type_param;
       }
 
       if ($entity_param = $params->get('entity')) {
@@ -189,8 +199,8 @@ class JsonApiGenerator {
       }
     }
     $parsed['optional_filters_data'] = $config['optional_filters_data'] ?? [];
-    $hook_context['cache_tags'] = [];
-    $hook_context['cache_contexts'] = [];
+    $hook_context['cache_tags'] = $cache_tags;
+    $hook_context['cache_contexts'] = $cache_contexts;
     $hook_context['resource'] = $resource;
     $hook_context['optional_data'] = [];
     $this->moduleHandler->alter('json_api_collection', $parsed, $hook_context);
@@ -202,21 +212,27 @@ class JsonApiGenerator {
     $exposedTerms = $this->getExposedTerms($exposed_vocabularies);
     $response['cache']['tags'] = Cache::mergeTags($response['cache']['tags'], $exposedTerms['cache_tags'], $hook_context['cache_tags']);
     $response['cache']['contexts'] = Cache::mergeContexts($response['cache']['contexts'] ?? [], $hook_context['cache_contexts']);
-    
+
     $client_data = json_decode($response['data']);
 
-    // For entityqueue, we cannot use JSON:API sorting mecanism as we don't have any field attached to entities
-    // where it indicate a sorting value we can use. And since entity queues are limited to fewer items or we assume so.
-    // we are going to alter the response and do a dynamic sorting.
-    // @todo: we should only trigger if the results are less then 50 as it harcoded in JSON:API max return list
-    // we don't wanna mess with the order of the rest of the pages.
+    /*
+     * For entityqueue, we cannot use JSON:API sorting mecanism
+     * as we don't have any field attached to entities
+     * where it indicate a sorting value we can use.
+     * And since entity queues are limited to fewer items or we assume so.
+     * we are going to alter the response and do a dynamic sorting.
+     * @todo: we should only trigger if the results are less
+     *   then 50 as it harcoded in JSON:API max return list
+     * we don't wanna mess with the order of the rest of the pages.
+     */
     if (!empty($entity_queue) && count($subqueue_items_ids) > 0) {
       $items = $client_data->data ?? [];
       $result = array_map(static fn($entity_queue_id) => current(array_values(
         array_filter($items, static fn($entity) => intval($entity->attributes->{$entity_queue_field_id}) === intval($entity_queue_id))
         )), $subqueue_items_ids);
       $result = array_filter($result, function ($e) {
-        return $e; //when this value is false the element is removed.
+        // When this value is false the element is removed.
+        return $e;
       });
       $client_data->data = array_values($result);
     }
@@ -231,6 +247,9 @@ class JsonApiGenerator {
     ];
   }
 
+  /**
+   * Get exposed terms.
+   */
   protected function getExposedTerms(array $vocabularies) {
     $result = [];
     $cacheTags = [];
@@ -267,13 +286,14 @@ class JsonApiGenerator {
           'results' => [],
         ];
 
-        /**
+        /*
          * Used to add/modify term data.
          *
-         * How to use : hook_json_collection_exposed_term_alter($term, &$term_data).
+         * How to use :
+         *  hook_json_collection_exposed_term_alter($term, &$term_data).
          */
         $this->moduleHandler->alter('json_collection_exposed_term', $term, $term_data);
-        
+
         if ($term->hasField('results_count')) {
           $this->injectTaxonomyResultsCount($term, $term_data, $cacheTags);
         }
@@ -287,6 +307,9 @@ class JsonApiGenerator {
     ];
   }
 
+  /**
+   * Inject taxonomy results count.
+   */
   public function injectTaxonomyResultsCount($term, &$term_data, &$cacheTags) {
     $result_count_ids = $term->get('results_count')->getValue();
     if (!empty($result_count_ids)) {
