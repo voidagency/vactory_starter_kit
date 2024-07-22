@@ -14,6 +14,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Executable\ExecutableManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Logger\LoggerChannelFactory;
+use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\Theme\ThemeManagerInterface;
 use Drupal\Core\Cache\Cache;
 use Drupal\node\Entity\Node;
@@ -80,6 +81,11 @@ class BlocksManager
   protected $blockContentStorage;
 
   /**
+   * @var AccountProxyInterface
+   */
+  protected $accountProxy;
+
+  /**
    * {@inheritdoc}
    */
   public function __construct(
@@ -89,7 +95,8 @@ class BlocksManager
     ExecutableManagerInterface $condition_plugin_manager,
     JsonApiClient $json_api_client,
     ModuleHandlerInterface $moduleHandler,
-    LoggerChannelFactory $logger
+    LoggerChannelFactory $logger,
+    AccountProxyInterface $accountProxy,
   )
   {
     $this->pluginManagerBlock = $block_manager;
@@ -100,6 +107,7 @@ class BlocksManager
     $this->jsonApiClient = $json_api_client;
     $this->moduleHandler = $moduleHandler;
     $this->logger = $logger;
+    $this->accountProxy = $accountProxy;
   }
 
   public function getBlocksByNode($nid, $filter = [])
@@ -162,6 +170,8 @@ class BlocksManager
           $condition->setContextValue('path', $path);
         } else if (in_array($condition_id, ['entity_bundle:node', 'node_type'])) {
           $condition->setContextValue('node', $node);
+        } else if ($condition_id === 'user_role') {
+          $condition->setContextValue('user', $this->accountProxy->getAccount());
         }
 
         $conditions[$condition_id] = $condition;
@@ -270,7 +280,7 @@ class BlocksManager
     $data = [];
 
     if (strpos($plugin, ':') !== FALSE) {
-      list($plugin_type, $plugin_uuid) = explode(':', $plugin);
+      [$plugin_type, $plugin_uuid] = explode(':', $plugin);
       if ($plugin_type === 'block_content') {
         $data = $this->getContentBlock($plugin_uuid);
       }
