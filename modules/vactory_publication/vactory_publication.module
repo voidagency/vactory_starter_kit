@@ -116,15 +116,19 @@ function vactory_publication_json_api_collection_alter(&$filters, &$context) {
       $filters["page[offset]"] = intval($query["page"]) > 0 ? (intval($query["page"]) - 1) * $filters["page[limit]"] : 0;
     }
 
-    if (isset($query["sort"]) && in_array(strtolower($query["sort"]), ["asc", "desc"])) {
-      $filters["sort[sort-vactory-date][direction]"] = strtolower($query["sort"]);
+    if (isset($query["sort"]) && in_array(
+      strtolower($query["sort"]), ["asc", "desc"]
+    )) {
+      $filters["sort[sort-vactory-date][direction]"] = strtolower(
+        $query["sort"]
+      );
     }
 
     if (isset($query["theme"]) && $query["theme"] !== "all") {
       $theme = $query["theme"];
       $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties([
         'vid' => 'vactory_publication_theme',
-        'term_2_slug' => $query["theme"]
+        'term_2_slug' => $query["theme"],
       ]);
 
       if (!$terms) {
@@ -137,6 +141,27 @@ function vactory_publication_json_api_collection_alter(&$filters, &$context) {
         $filters["filter[publication_internal_theme][condition][path]"] = "field_vactory_publication_theme.drupal_internal__tid";
         $filters["filter[publication_internal_theme][condition][operator]"] = "=";
         $filters["filter[publication_internal_theme][condition][value]"] = $id;
+      }
+
+    }
+
+    if (isset($query["year"]) && $query["year"] !== "all") {
+      $theme = $query["year"];
+      $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties([
+        'vid' => 'publication_annee',
+        'term_2_slug' => $query["year"],
+      ]);
+
+      if (!$terms) {
+        throw new \Exception("[Publication - hook_json_api_collection_alter] term '$theme' not found.");
+      }
+
+      if ($terms) {
+        $term = reset($terms);
+        $id = $term->id();
+        $filters["filter[publication_internal_year][condition][path]"] = "field_publication_annee.drupal_internal__tid";
+        $filters["filter[publication_internal_year][condition][operator]"] = "=";
+        $filters["filter[publication_internal_year][condition][value]"] = $id;
       }
 
     }
