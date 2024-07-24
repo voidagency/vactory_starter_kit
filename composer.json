@@ -174,7 +174,8 @@
     "drupal/menu_manipulator": "^3.0",
     "drupal/log_stdout": "^1.5",
     "drupal/image_effects": "^3.6",
-    "drupal/imagemagick": "^3.7"
+    "drupal/imagemagick": "^3.7",
+    "drupal/simple_oauth_revoke": "^2.0"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.3",
