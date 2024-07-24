@@ -11,9 +11,8 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Drupal\user\Entity\User;
 use Drupal\node\Entity\Node;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Entity\EntityTypeInterface;
-use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\views\ViewExecutable;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Implements hook_theme().
@@ -355,7 +354,7 @@ function vactory_academy_json_api_collection_alter(&$filters, &$context) {
       ]);
 
       if (!$terms) {
-        throw new \Exception("[Academy - hook_json_api_collection_alter] term '$theme' not found.");
+        throw new NotFoundHttpException("[Academy - hook_json_api_collection_alter] term '$theme' not found.");
       }
 
       if ($terms) {
@@ -368,31 +367,4 @@ function vactory_academy_json_api_collection_alter(&$filters, &$context) {
 
     }
   }
-  if ($context['id'] === 'vactory_academy_favorite') {
-    $filters["filter[academy_internal_favorite][condition][path]"] = "drupal_internal__nid";
-    $filters["filter[academy_internal_favorite][condition][operator]"] = "IN";
-    $filters["filter[academy_internal_favorite][condition][value]"] = \Drupal::service('vactory_academy.flag')->getFlaggedNodes();
-    $context['cache_tags'][] = 'flagging_list';
-    $context['cache_contexts'][] = 'user';
-  }
-}
-
-/**
- * Implements hook_entity_base_field_info().
- */
-function vactory_academy_entity_base_field_info(EntityTypeInterface $entity_type) {
-  $fields = [];
-  if ($entity_type->id() === 'node') {
-    $fields['is_flagged'] = BaseFieldDefinition::create('boolean')
-      ->setComputed(TRUE)
-      ->setReadOnly(TRUE)
-      ->setTargetEntityTypeId($entity_type->id())
-      ->setDisplayConfigurable('form', FALSE)
-      ->setDisplayConfigurable('view', FALSE)
-      ->setClass('Drupal\vactory_academy\Field\IsFlaggedEntityFieldItemList')
-      ->setTranslatable(FALSE)
-      ->setRequired(FALSE);
-  }
-
-  return $fields;
 }

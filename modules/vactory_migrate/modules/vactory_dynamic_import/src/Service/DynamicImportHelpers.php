@@ -268,16 +268,8 @@ class DynamicImportHelpers {
       ];
       $entity_type_definition = $this->entityTypeManager->getDefinition($target_entity);
       $id_field = $entity_type_definition->getKey('id');
-      $bundle_field = $entity_type_definition->getKey('bundle');
 
-      $data['process'][$id_field] = [
-        'plugin'        => 'translation_legacy_id',
-        'entity'        => $target_entity,
-        'bundle'        => $target_bundle,
-        'mapping_field' => 'legacy_id',
-        'bundle_key'    => $bundle_field,
-        'source'        => 'original',
-      ];
+      $data['process'][$id_field] = 'original';
     }
 
     foreach ($header as $field) {

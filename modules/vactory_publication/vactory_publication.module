@@ -7,6 +7,7 @@
 
 use Drupal\views\ViewExecutable;
 use Drupal\block_content\Entity\BlockContent;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Implements hook_theme().
@@ -115,7 +116,10 @@ function vactory_publication_json_api_collection_alter(&$filters, &$context) {
       $filters["page[offset]"] = intval($query["page"]) > 0 ? (intval($query["page"]) - 1) * $filters["page[limit]"] : 0;
     }
 
-    if (isset($query["sort"]) && in_array(strtolower($query["sort"]), ["asc", "desc"])) {
+    if (
+      isset($query["sort"])
+      && in_array(strtolower($query["sort"]), ["asc", "desc"])
+    ) {
       $filters["sort[sort-vactory-date][direction]"] = strtolower($query["sort"]);
     }
 
@@ -123,11 +127,11 @@ function vactory_publication_json_api_collection_alter(&$filters, &$context) {
       $theme = $query["theme"];
       $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties([
         'vid' => 'vactory_publication_theme',
-        'term_2_slug' => $query["theme"]
+        'term_2_slug' => $query["theme"],
       ]);
 
       if (!$terms) {
-        throw new \Exception("[Publication - hook_json_api_collection_alter] term '$theme' not found.");
+        throw new NotFoundHttpException("[Publication - hook_json_api_collection_alter] term '$theme' not found.");
       }
 
       if ($terms) {

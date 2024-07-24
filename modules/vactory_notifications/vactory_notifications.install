@@ -1,8 +1,12 @@
 <?php
 
+/**
+ * @file
+ * Install file.
+ */
+
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\user\Entity\Role;
-use Drupal\vactory_notifications\Entity\NotificationsEntity;
 
 /**
  * Implements hook_install().
@@ -44,15 +48,15 @@ function vactory_notifications_update_8102(&$sandbox) {
   $notification_title_field = BaseFieldDefinition::create('string')
     ->setLabel(t('Notifications title'))
     ->setDescription(t('Set the noifications title of current node.'))
-    ->setSettings(array(
+    ->setSettings([
       'max_length' => 255,
       'text_processing' => 0,
-    ))
+    ])
     ->setTranslatable(TRUE)
-    ->setDisplayOptions('form', array(
+    ->setDisplayOptions('form', [
       'type' => 'string_textfield',
       'weight' => -6,
-    ))
+    ])
     ->setDisplayConfigurable('form', TRUE)
     ->setDisplayConfigurable('view', TRUE);
 
@@ -69,10 +73,10 @@ function vactory_notifications_update_8102(&$sandbox) {
       'text_processing' => 0,
     ])
     ->setTranslatable(TRUE)
-    ->setDisplayOptions('form', array(
+    ->setDisplayOptions('form', [
       'type' => 'string_textarea',
       'weight' => -1,
-    ))
+    ])
     ->setDisplayConfigurable('form', TRUE)
     ->setDisplayConfigurable('view', TRUE);
 
@@ -80,7 +84,6 @@ function vactory_notifications_update_8102(&$sandbox) {
     'notification_message', 'node', 'vactory_notifications', $notification_message_field
   );
 }
-
 
 /**
  * Install Mail notifications subject and message node fields.
@@ -91,15 +94,15 @@ function vactory_notifications_update_8103(&$sandbox) {
   $mail_subject_field = BaseFieldDefinition::create('string')
     ->setLabel(t('Mail Notifications subject'))
     ->setDescription(t('Set the mail noifications subject of current node.'))
-    ->setSettings(array(
+    ->setSettings([
       'max_length' => 255,
       'text_processing' => 0,
-    ))
+    ])
     ->setTranslatable(TRUE)
-    ->setDisplayOptions('form', array(
+    ->setDisplayOptions('form', [
       'type' => 'string_textfield',
       'weight' => -6,
-    ))
+    ])
     ->setDisplayConfigurable('form', TRUE)
     ->setDisplayConfigurable('view', TRUE);
 
@@ -116,10 +119,10 @@ function vactory_notifications_update_8103(&$sandbox) {
       'text_processing' => 0,
     ])
     ->setTranslatable(TRUE)
-    ->setDisplayOptions('form', array(
+    ->setDisplayOptions('form', [
       'type' => 'string_textarea',
       'weight' => -1,
-    ))
+    ])
     ->setDisplayConfigurable('form', TRUE)
     ->setDisplayConfigurable('view', TRUE);
 
@@ -138,12 +141,38 @@ function vactory_notifications_update_8105(&$sandbox) {
     ->setDescription(t('Check this to generate a notification for this content'))
     ->setTranslatable(TRUE)
     ->setDefaultValue(1)
-    ->setDisplayOptions('form', array(
+    ->setDisplayOptions('form', [
       'type' => 'boolean_checkbox',
-      'settings' => array(
+      'settings' => [
         'display_label' => TRUE,
-      ),
-    ))
+      ],
+    ])
     ->setDisplayConfigurable('form', TRUE);
   Drupal::entityDefinitionUpdateManager()->installFieldStorageDefinition('generate_notification', 'node', 'vactory_notifications', $field_definition);
+}
+
+/**
+ * Update Mail notifications message node widget type.
+ */
+function vactory_notifications_update_8106(&$sandbox) {
+  $entityUpdateManager = \Drupal::entityDefinitionUpdateManager();
+  // Get the existing field storage definition.
+  $field_storage = $entityUpdateManager->getFieldStorageDefinition('mail_message', 'node', 'vactory_notifications');
+  // Create a new field definition with the text_long type.
+  $new_mail_message_field = BaseFieldDefinition::create('text_textarea')
+    ->setLabel(t('Mail Notifications message'))
+    ->setDescription(t('Set the mail notification message of current node'))
+    ->setSettings([
+      'default_value' => '',
+      'text_processing' => 0,
+    ])
+    ->setTranslatable(TRUE)
+    ->setDisplayOptions('form', [
+      'type' => 'text_textarea',
+      'weight' => -1,
+    ])
+    ->setDisplayConfigurable('form', TRUE)
+    ->setDisplayConfigurable('view', TRUE);
+  // Update the field storage definition with the new field definition.
+  $entityUpdateManager->updateFieldStorageDefinition($field_storage, $new_mail_message_field);
 }

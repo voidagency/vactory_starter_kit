@@ -420,6 +420,7 @@ class ContentPackageImportManager implements ContentPackageImportManagerInterfac
             "title" => "Live Market",
             "url" => "/mode/1",
             "attributes" => [
+              "label" => "",
               "class" => "",
               "id" => "cta-mde3mdk4mzc4mju",
               "target" => "_self",
