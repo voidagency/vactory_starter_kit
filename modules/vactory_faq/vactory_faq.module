@@ -60,7 +60,6 @@ function vactory_faq_theme_suggestions_alter(array &$suggestions, array $variabl
   }
 }
 
-
 /**
  * Implements hook_json_api_collection_alter().
  */
@@ -79,7 +78,7 @@ function vactory_faq_json_api_collection_alter(&$filters, &$context) {
       $term = $query["term"];
       $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties([
         'vid' => 'faq_section',
-        'term_2_slug' => $query["term"]
+        'term_2_slug' => $query["term"],
       ]);
 
       if (!$terms) {

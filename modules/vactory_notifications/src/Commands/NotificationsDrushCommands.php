@@ -6,7 +6,6 @@ use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drush\Commands\DrushCommands;
-use Drush\Attributes as CLI;
 
 /**
  * A Drush command file.
@@ -51,8 +50,6 @@ class NotificationsDrushCommands extends DrushCommands {
    * @usage cen
    *   Clear expired notifications using batch mode.
    */
-  #[CLI\Command(name: 'clear-expired-notifications',
-    aliases: ['cen', 'clear-expired-notifications'])]
   public function clearNotificationsData($options = []) {
     $this->loggerChannelFactory->get('notifications_cleaner')
       ->info('Clearing expired notifications entities batch operations start');

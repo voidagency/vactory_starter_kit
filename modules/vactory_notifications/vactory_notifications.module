@@ -112,17 +112,18 @@ function vactory_notification_generate($entity) {
     // Get the mail_content_types data.
     $mail_content_types = $notification_config->get('mail_content_types');
     if (isset($mail_content_types[$node_type])) {
-      // Check if mail_subject and mail_message are empty, and set default values.
+      // Check if mail_subject and mail_message are empty.
+      // And set default values.
       if (empty($mail_content_types[$node_type]['mail_subject'])) {
         $node_mail_subject = $notification_config->get('mail_default_subject') ?? $notification_config->get('mail_default_subject');
-      } 
+      }
       else {
         // Use the mail_subject from mail_content_types.
         $node_mail_subject = $mail_content_types[$node_type]['mail_subject'];
       }
       if (empty($mail_content_types[$node_type]['mail_message']['value'])) {
         $node_mail_message = $notification_config->get('mail_default_message') ?? $notification_config->get('mail_default_message');
-      } 
+      }
       else {
         // Use the mail_message from mail_content_types.
         $node_mail_message = $mail_content_types[$node_type]['mail_message']['value'];
@@ -361,17 +362,18 @@ function vactory_notifications_form_node_form_alter(&$form, FormStateInterface $
     // Get the mail_content_types data.
     $mail_content_types = $notifications_config->get('mail_content_types');
     if (isset($mail_content_types[$node_type])) {
-      // Check if mail_subject and mail_message are empty, and set default values.
+      // Check if mail_subject and mail_message are empty.
+      // And set default values.
       if (empty($mail_content_types[$node_type]['mail_subject'])) {
-        $node_mail_subject  = $notifications_config->get('mail_default_subject') ?? $notifications_config->get('mail_default_subject');
-      } 
+        $node_mail_subject = $notifications_config->get('mail_default_subject') ?? $notifications_config->get('mail_default_subject');
+      }
       else {
         // Use the mail_subject from mail_content_types.
         $node_mail_subject = $mail_content_types[$node_type]['mail_subject'];
       }
       if (empty($mail_content_types[$node_type]['mail_message']['value'])) {
         $node_mail_message = $notifications_config->get('mail_default_message') ?? $notifications_config->get('mail_default_message');
-      } 
+      }
       else {
         // Use the mail_message from mail_content_types.
         $node_mail_message = $mail_content_types[$node_type]['mail_message']['value'];

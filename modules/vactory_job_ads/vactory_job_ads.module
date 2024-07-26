@@ -104,8 +104,7 @@ function vactory_job_ads_form_alter(&$form, FormStateInterface $form_state, $for
 }
 
 /**
- * @param $form
- * @param \Drupal\Core\Form\FormStateInterface $form_state
+ * Custom form validation.
  */
 function vactory_job_ads_form_validate(&$form, FormStateInterface $form_state) {
   $job = $form_state->getValue('job_ad');
@@ -216,7 +215,8 @@ function vactory_job_ads_webform_submission_presave(WebformSubmissionInterface $
   $original_data = $webform_submission->getOriginalData() + ['state' => NULL];
   $current_data = $webform_submission->getData();
 
-  // If submission is completed and state is not set then set state to completed.
+  // If submission is completed and state.
+  // Is not set then set state to completed.
   if ($webform_submission->isCompleted() && empty($current_data['state'])) {
     $current_data['state'] = 'completed';
   }
@@ -224,9 +224,12 @@ function vactory_job_ads_webform_submission_presave(WebformSubmissionInterface $
   if ($original_data['state'] !== $current_data['state']) {
     $flag = FALSE;
     $decryted_job_ad = \Drupal::service('vactory_core.tools')->decrypt($current_data['job_ad']);
-    if ($decryted_job_ad != null) {
+    if ($decryted_job_ad != NULL) {
       $decryted_job_ad = str_replace('vactory_job_ads:', '', $decryted_job_ad);
-      $job_ads = \Drupal::entityTypeManager()->getStorage('node')->loadByProperties(['nid' => $decryted_job_ad, 'type' => 'vactory_job_ads']);
+      $job_ads = \Drupal::entityTypeManager()->getStorage('node')->loadByProperties([
+        'nid' => $decryted_job_ad,
+        'type' => 'vactory_job_ads',
+      ]);
       $job_ads = reset($job_ads);
       if (isset($job_ads)) {
         $current_data['job_ad'] = $job_ads->label();
@@ -240,7 +243,6 @@ function vactory_job_ads_webform_submission_presave(WebformSubmissionInterface $
   }
 
 }
-
 
 /**
  * Implements hook_json_api_collection_alter().
@@ -275,7 +277,7 @@ function vactory_job_ads_json_api_collection_alter(&$filters, &$context) {
       $city = $query["city"];
       $cities = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties([
         'vid' => 'vactory_job_ads_city',
-        'term_2_slug' => $query["city"]
+        'term_2_slug' => $query["city"],
       ]);
 
       if (!$cities) {
@@ -297,7 +299,7 @@ function vactory_job_ads_json_api_collection_alter(&$filters, &$context) {
       $profession = $query["profession"];
       $professions = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties([
         'vid' => 'vactory_job_ads_profession',
-        'term_2_slug' => $query["profession"]
+        'term_2_slug' => $query["profession"],
       ]);
 
       if (!$professions) {

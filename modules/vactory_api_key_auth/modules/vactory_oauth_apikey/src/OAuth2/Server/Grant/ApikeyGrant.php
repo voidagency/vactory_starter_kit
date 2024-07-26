@@ -5,6 +5,7 @@ namespace Drupal\vactory_oauth_apikey\OAuth2\Server\Grant;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\simple_oauth\Entities\UserEntity;
 use Drupal\user\UserAuthInterface;
+use Drupal\vactory_oauth_apikey\Exception\UserAlreadyConnectedException;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Entities\UserEntityInterface;
 use League\OAuth2\Server\Exception\OAuthServerException;
@@ -62,6 +63,20 @@ class ApikeyGrant extends PasswordGrant {
       $this->getEmitter()->emit(new RequestEvent(RequestEvent::USER_AUTHENTICATION_FAILED, $request));
 
       throw OAuthServerException::invalidCredentials();
+    }
+
+    $current_time = \Drupal::time()->getRequestTime();
+    $query = \Drupal::database()->select('oauth2_token', 'o')
+      ->fields('o', ['id'])
+      ->condition('bundle', 'access_token')
+      ->condition('auth_user_id', $user->getIdentifier())
+      ->condition('status', 1)
+      ->condition('expire', $current_time, '>')
+      ->execute()
+      ->fetchCol();
+
+    if (!empty($query)) {
+      throw UserAlreadyConnectedException::create();
     }
 
     return $user;

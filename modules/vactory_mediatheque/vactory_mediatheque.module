@@ -120,7 +120,7 @@ function vactory_mediatheque_json_api_collection_alter(&$filters, &$context) {
       $theme = $query["year"];
       $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties([
         'vid' => 'medium_year',
-        'term_2_slug' => $query["year"]
+        'term_2_slug' => $query["year"],
       ]);
 
       if (!$terms) {
@@ -140,7 +140,7 @@ function vactory_mediatheque_json_api_collection_alter(&$filters, &$context) {
       $theme = $query["type"];
       $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties([
         'vid' => 'mediatheque_types',
-        'term_2_slug' => $query["type"]
+        'term_2_slug' => $query["type"],
       ]);
 
       if (!$terms) {
@@ -161,7 +161,7 @@ function vactory_mediatheque_json_api_collection_alter(&$filters, &$context) {
       $theme = $query["theme"];
       $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties([
         'vid' => 'mediatheque_theme_albums',
-        'term_2_slug' => $query["theme"]
+        'term_2_slug' => $query["theme"],
       ]);
 
       if (!$terms) {

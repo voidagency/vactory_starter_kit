@@ -45,25 +45,35 @@ The module configs are translated on:
 #### Mail settings
 This interface aims to activate notifications by mail.
 Select for each role associated the content types which users should recieve 
-mail notifications from. Empty choice means notifications are disabled for that role.
+mail notifications from.
+Empty choice means notifications are disabled for that role.
 
 #### Content type mail settings
-This feature enhances the notification by mail by allowing customized email notifications 
-for different content types. Previously, all content types used a common email template 
-for notifications. With this enhancement, administrators can define specific email 
+This feature enhances the notification by mail by allowing
+customized email notifications for different content types.
+Previously, all content types used a common email template 
+for notifications.
+With this enhancement, administrators can define specific email 
 subjects and bodies for each content type.
 ###### Key Components :
  1. Content Type Configuration Interface :
-	* This interface allows administrators to specify custom email subjects and bodies for individual content types.
+    * This interface allows administrators to specify custom email subjects
+      and bodies for individual content types.
 2. Email Notification Trigger :
-	* Whenever new content is added or updated, if custom email notification settings are configured for the respective content type.
+    * Whenever new content is added or updated, if custom
+      email notification settings are configured for the respective
+      content type.
 
 ##### Example :
 Suppose you have two content types: "News" and "Events."
--   For "News," you configure email notifications with the subject "New News Article Published!" and a body containing the article title and summary.
--   For "Events," you configure email notifications with the subject "New Event Added!" and a body containing event details and date.
+- For "News," you configure email notifications with the subject
+  "New News Article Published!" and a body containing the article
+  title and summary.
+- For "Events," you configure email notifications with the subject
+  "New Event Added!" and a body containing event details and date.
 
-When new content of each type is added, the respective email notification settings are utilized to send customized emails to subscribers.
+When new content of each type is added, the respective email
+notification settings are utilized to send customized emails to subscribers.
 
 ## Permissions
 The module defines the following permissions:
@@ -76,16 +86,19 @@ Edit notifications: Edit existing notifications.
 
 Delete notifications: Delete notifications.
 
-View notifications: View the notifications list, this permission is used to control access
-to the notifications view results on notification listing page (`/notifications`).
+View notifications: View the notifications list, this permission
+is used to control access to the notifications view results on
+notification listing page (`/notifications`).
 
 ## Tokens
-The module defines its own tokens to create notifications with dynamic title and message
-content, just click the link "Brows available tokens" showed in different module config pages,
+The module defines its own tokens to create notifications with
+dynamic title and message content, just click the link
+"Brows available tokens" showed in different module config pages,
 and in the token name 'Notifications' group choose the needed tokens.
 
 ## Clean expired notifications
-You can execute the following drush command to clean expired notifications entities:
+You can execute the following drush command to clean expired
+notifications entities:
 
 `drush cen`
 
