@@ -1,11 +1,15 @@
+uuid: 07cb15ac-fd5d-47af-bec0-fbe79059e3d7
 langcode: fr
 status: true
 dependencies:
   config:
+    - field.field.paragraph.vactory_component.field_background_color
+    - field.field.paragraph.vactory_component.field_negate_roles
     - field.field.paragraph.vactory_component.field_paragraph_hide_lg
     - field.field.paragraph.vactory_component.field_paragraph_hide_sm
     - field.field.paragraph.vactory_component.field_position_image_x
     - field.field.paragraph.vactory_component.field_position_image_y
+    - field.field.paragraph.vactory_component.field_roles
     - field.field.paragraph.vactory_component.field_size_image
     - field.field.paragraph.vactory_component.field_titre_ancre
     - field.field.paragraph.vactory_component.field_vactory_component
@@ -21,91 +25,111 @@ targetEntityType: paragraph
 bundle: vactory_component
 mode: default
 content:
-  field_paragraph_hide_lg:
-    weight: 8
+  field_negate_roles:
+    type: boolean
     label: above
     settings:
       format: default
       format_custom_false: ''
       format_custom_true: ''
     third_party_settings: {  }
+    weight: 18
+    region: content
+  field_paragraph_hide_lg:
     type: boolean
+    label: above
+    settings:
+      format: default
+      format_custom_false: ''
+      format_custom_true: ''
+    third_party_settings: {  }
+    weight: 8
     region: content
   field_paragraph_hide_sm:
-    weight: 9
+    type: boolean
     label: above
     settings:
       format: default
       format_custom_false: ''
       format_custom_true: ''
     third_party_settings: {  }
-    type: boolean
+    weight: 9
     region: content
   field_position_image_x:
-    weight: 14
+    type: list_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: list_default
+    weight: 14
     region: content
   field_position_image_y:
-    weight: 13
+    type: list_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: list_default
+    weight: 13
+    region: content
+  field_roles:
+    type: entity_reference_label
+    label: above
+    settings:
+      link: true
+    third_party_settings: {  }
+    weight: 17
     region: content
   field_size_image:
-    weight: 16
+    type: list_default
     label: above
     settings: {  }
     third_party_settings: {  }
-    type: list_default
+    weight: 16
     region: content
   field_titre_ancre:
-    weight: 4
+    type: string
     label: above
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 4
     region: content
   field_vactory_component:
-    weight: 2
+    type: field_wysiwyg_dynamic_formatter
     label: visually_hidden
     settings: {  }
     third_party_settings: {  }
-    type: field_wysiwyg_dynamic_formatter
+    weight: 2
     region: content
   field_vactory_flag:
-    weight: 1
+    type: boolean
     label: visually_hidden
     settings:
       format: boolean
-      format_custom_true: ''
       format_custom_false: ''
+      format_custom_true: ''
     third_party_settings: {  }
-    type: boolean
+    weight: 1
     region: content
   field_vactory_flag_2:
-    weight: 3
+    type: boolean
     label: visually_hidden
     settings:
       format: boolean
-      format_custom_true: ''
       format_custom_false: ''
+      format_custom_true: ''
     third_party_settings: {  }
-    type: boolean
+    weight: 3
     region: content
   field_vactory_title:
-    weight: 0
+    type: string
     label: visually_hidden
     settings:
       link_to_entity: false
     third_party_settings: {  }
-    type: string
+    weight: 0
     region: content
 hidden:
+  container_spacing: true
+  field_background_color: true
   paragraph_background_image: true
   paragraph_container: true
   search_api_excerpt: true

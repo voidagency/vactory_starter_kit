@@ -8,12 +8,11 @@ use Drupal\Component\Plugin\Exception\PluginNotFoundException;
 use Drupal\Core\Block\BlockManagerInterface;
 use Drupal\Core\Condition\ConditionAccessResolverTrait;
 use Drupal\Core\Condition\ConditionPluginCollection;
-use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Executable\ExecutableManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Logger\LoggerChannelFactory;
+use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\Theme\ThemeManagerInterface;
 use Drupal\Core\Cache\Cache;
 use Drupal\node\Entity\Node;
@@ -21,42 +20,42 @@ use Drupal\node\Entity\Node;
 /**
  * {@inheritdoc}
  */
-class BlocksManager
-{
+class BlocksManager {
+
   use ConditionAccessResolverTrait;
 
   /**
    * Drupal\Core\Block\BlockManagerInterface definition.
    *
-   * @var BlockManagerInterface
+   * @var \Drupal\Core\Block\BlockManagerInterface
    */
   protected $pluginManagerBlock;
 
   /**
    * Drupal\Core\Theme\ThemeManagerInterface definition.
    *
-   * @var ThemeManagerInterface
+   * @var \Drupal\Core\Theme\ThemeManagerInterface
    */
   protected $themeManager;
 
   /**
    * The entity type manager.
    *
-   * @var EntityTypeManagerInterface
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
 
   /**
    * The condition plugin manager.
    *
-   * @var ExecutableManagerInterface
+   * @var \Drupal\Core\Executable\ExecutableManagerInterface
    */
   protected $conditionPluginManager;
 
   /**
    * The JSON:API version generator of an entity..
    *
-   * @var JsonApiClient
+   * @var \Drupal\vactory_decoupled\JsonApiClient
    */
   protected $jsonApiClient;
 
@@ -75,9 +74,18 @@ class BlocksManager
   protected $logger;
 
   /**
-   * @var EntityStorageInterface
+   * The block content storage.
+   *
+   * @var \Drupal\Core\Entity\EntityStorageInterface
    */
   protected $blockContentStorage;
+
+  /**
+   * The account proxy service.
+   *
+   * @var \Drupal\Core\Session\AccountProxyInterface
+   */
+  protected $accountProxy;
 
   /**
    * {@inheritdoc}
@@ -89,9 +97,9 @@ class BlocksManager
     ExecutableManagerInterface $condition_plugin_manager,
     JsonApiClient $json_api_client,
     ModuleHandlerInterface $moduleHandler,
-    LoggerChannelFactory $logger
-  )
-  {
+    LoggerChannelFactory $logger,
+    AccountProxyInterface $accountProxy
+  ) {
     $this->pluginManagerBlock = $block_manager;
     $this->themeManager = $theme_manager;
     $this->entityTypeManager = $entity_type_manager;
@@ -100,10 +108,13 @@ class BlocksManager
     $this->jsonApiClient = $json_api_client;
     $this->moduleHandler = $moduleHandler;
     $this->logger = $logger;
+    $this->accountProxy = $accountProxy;
   }
 
-  public function getBlocksByNode($nid, $filter = [])
-  {
+  /**
+   * Get blocks by node.
+   */
+  public function getBlocksByNode($nid, $filter = []) {
     $blocks = [];
 
     if (!$nid) {
@@ -132,8 +143,10 @@ class BlocksManager
           return TRUE;
         });
       }
-    } catch (InvalidPluginDefinitionException $e) {
-    } catch (PluginNotFoundException $e) {
+    }
+    catch (InvalidPluginDefinitionException $e) {
+    }
+    catch (PluginNotFoundException $e) {
     }
 
     usort($blocks, function ($item1, $item2) {
@@ -145,13 +158,8 @@ class BlocksManager
 
   /**
    * Access control handler for the block.
-   *
-   * @param $blocks
-   * @param $nid
-   * @return array
    */
-  protected function getVisibleBlocks($blocks, $nid)
-  {
+  protected function getVisibleBlocks($blocks, $nid) {
     $node = Node::load($nid);
     $path = '/node/' . $nid;
     $visible_blocks = [];
@@ -160,8 +168,16 @@ class BlocksManager
       foreach ($block['visibilityConditions'] as $condition_id => $condition) {
         if ($condition_id === 'decoupled_request_path') {
           $condition->setContextValue('path', $path);
-        } else if (in_array($condition_id, ['entity_bundle:node', 'node_type'])) {
-          $condition->setContextValue('node', $node);
+        }
+        else {
+          if (in_array($condition_id, ['entity_bundle:node', 'node_type'])) {
+            $condition->setContextValue('node', $node);
+          }
+          else {
+            if ($condition_id === 'user_role') {
+              $condition->setContextValue('user', $this->accountProxy->getAccount());
+            }
+          }
         }
 
         $conditions[$condition_id] = $condition;
@@ -177,15 +193,8 @@ class BlocksManager
 
   /**
    * Block objects list.
-   *
-   * @return array
-   *   Blocks array.
-   *
-   * @throws InvalidPluginDefinitionException
-   * @throws PluginNotFoundException
    */
-  protected function getThemeBlocks()
-  {
+  protected function getThemeBlocks() {
     $name = __CLASS__ . '_' . __METHOD__;
     $blocks = &drupal_static($name, []);
 
@@ -209,13 +218,13 @@ class BlocksManager
       );
 
       if (!empty($region_blocks)) {
-        $region_blocks = (array)$region_blocks;
+        $region_blocks = (array) $region_blocks;
         $blocks_list = array_merge($blocks_list, $region_blocks);
       }
     }
 
-    $blocks_list = array_filter($blocks_list, function($block) {
-      return (strpos($block->getPluginId(), 'block_content:') !== false || strpos($block->getPluginId(), 'vactory_cross_content') !== false);
+    $blocks_list = array_filter($blocks_list, function ($block) {
+      return (strpos($block->getPluginId(), 'block_content:') !== FALSE || strpos($block->getPluginId(), 'vactory_cross_content') !== FALSE);
     });
 
     $blocks = array_map(function ($block) use ($conditionPluginManager) {
@@ -240,7 +249,6 @@ class BlocksManager
         'weight' => $block->getWeight(),
         'classification' => $classification,
         'content' => $block_content['block'] ?? '',
-        //'block_cache' => $block_content['cache'] ?? [],
         'visibilityConditions' => $visibilityCollection,
         'classes' => $block->getThirdPartySetting('block_class', 'classes'),
         'body_classes' => $block->getThirdPartySetting('block_page_class', 'body_classes') ?? '',
@@ -248,8 +256,11 @@ class BlocksManager
         'container' => $block->getThirdPartySetting('vactory_field', 'block_container') ?? 'narrow_width',
         'container_spacing' => $block->getThirdPartySetting('vactory_field', 'container_spacing') ?? 'small_space',
       ];
-      // Invoke internal block classification alter
-      $this->moduleHandler->invokeAll('internal_block_classification_alter', [&$classification, $block_info]);
+      // Invoke internal block classification alter.
+      $this->moduleHandler->invokeAll('internal_block_classification_alter', [
+        &$classification,
+        $block_info,
+      ]);
       $block_info['classification'] = $classification;
       return $block_info;
     }, $blocks_list);
@@ -258,19 +269,13 @@ class BlocksManager
   }
 
   /**
-   * @param string $plugin
-   *
-   * @return array
-   *
-   * @throws InvalidPluginDefinitionException
-   * @throws PluginNotFoundException
+   * Get block content.
    */
-  protected function getContent(string $plugin)
-  {
+  protected function getContent(string $plugin) {
     $data = [];
 
     if (strpos($plugin, ':') !== FALSE) {
-      list($plugin_type, $plugin_uuid) = explode(':', $plugin);
+      [$plugin_type, $plugin_uuid] = explode(':', $plugin);
       if ($plugin_type === 'block_content') {
         $data = $this->getContentBlock($plugin_uuid);
       }
@@ -281,18 +286,8 @@ class BlocksManager
 
   /**
    * Content block entity.
-   *
-   * @param string $uuid
-   *   Content block UUID.
-   *
-   * @return EntityInterface
-   *   Content block entity.
-   *
-   * @throws InvalidPluginDefinitionException
-   * @throws PluginNotFoundException
    */
-  private function getContentBlock(string $uuid)
-  {
+  private function getContentBlock(string $uuid) {
     $contentBlock = $this->blockContentStorage->loadByProperties(['uuid' => $uuid]);
     if (!empty($contentBlock)) {
       if (is_array($contentBlock)) {
@@ -306,7 +301,7 @@ class BlocksManager
         try {
           $filters = [
             "fields" => [
-              "block_content--vactory_block_component" => "block_machine_name,field_dynamic_block_components"
+              "block_content--vactory_block_component" => "block_machine_name,field_dynamic_block_components",
             ],
           ];
 
@@ -319,8 +314,10 @@ class BlocksManager
           if (isset($client_data['data']['attributes']['field_dynamic_block_components'])) {
             $contentBlock = $client_data['data']['attributes']['field_dynamic_block_components'];
           }
-        } catch (\Exception $e) {
-          $this->logger->get('vactory_decoupled')->error('Block @block_id not found', ['@block_id' => $uuid]);
+        }
+        catch (\Exception $e) {
+          $this->logger->get('vactory_decoupled')
+            ->error('Block @block_id not found', ['@block_id' => $uuid]);
         }
       }
       return [

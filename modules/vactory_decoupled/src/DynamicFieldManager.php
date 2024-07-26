@@ -163,6 +163,7 @@ class DynamicFieldManager {
     $this->platformProvider = $plateform_provider;
     $this->imageStyles = ImageStyle::loadMultiple();
     $this->siteConfig = $configFactory->get('system.site');
+    $this->configFactory = $configFactory;
     $this->mediaFilesManager = $mediaFilesManager;
     $this->entityRepository = $entityRepository;
     $this->jsonApiGenerator = $jsonApiGenerator;
@@ -329,6 +330,11 @@ class DynamicFieldManager {
                 }, $path_terms);
                 unset($value['attributes']['path_terms']);
               }
+              $path = $this->handleEditLiveModeFormat($parent_keys, $settings, $component, $field_key);
+              if (!is_null($path)) {
+                $path .= '.title';
+                $value['title'] = "{LiveMode id=\"{$path}\"}{$value['title']}{/LiveMode}";
+              }
             }
 
             // Check for external links.
@@ -343,6 +349,10 @@ class DynamicFieldManager {
               if ($retrievedContent) {
                 $value = $retrievedContent;
               }
+            }
+            $path = $this->handleEditLiveModeFormat($parent_keys, $settings, $component, $field_key);
+            if (!is_null($path)) {
+              $value = "{LiveMode id=\"{$path}\"}{$value}{/LiveMode}";
             }
           }
 
@@ -364,6 +374,15 @@ class DynamicFieldManager {
               '#text' => (string) check_markup($text, $format),
               '#format' => $format,
             ];
+            $path = $this->handleEditLiveModeFormat($parent_keys, $settings, $component, $field_key);
+            if (!is_null($path)) {
+              $val = (string) check_markup($text, $format);
+              $build = [
+                // '#type'   => 'processed_text',
+                '#text' => "<p>{LiveMode id=\"{$path}\"}</p>{$val}<p>{/LiveMode}</p>",
+                '#format' => $format,
+              ];
+            }
 
             $value = ['value' => $build];
           }
@@ -862,6 +881,55 @@ class DynamicFieldManager {
       return $uri;
     }
     return '';
+  }
+
+  /**
+   * Generate field path for edit live mode.
+   */
+  private function handleEditLiveModeFormat($parent_keys, $settings, $component, $field_key) {
+    // Check permission.
+    // Ensure the user has 'edit content live mode' permission.
+    // To utilize the edit live mode feature.
+    $user_id = \Drupal::currentUser()->id();
+    $user = $this->entityTypeManager->getStorage('user')->load($user_id);
+    $user_granted = $user->hasPermission('edit content live mode');
+
+    // Check if the feature is enabled from vactory_dynamic_field setings.
+    $decoupled_edit_live_mode = $this->configFactory->get('vactory_dynamic_field.settings')->get('decoupled_edit_live_mode');
+
+    if ($user_granted && $decoupled_edit_live_mode) {
+      $path = $parent_keys;
+      // In the case of multiple fields.
+      // Each component is indexed with its weight.
+      if ($settings['multiple'] && $parent_keys[0] == 'fields') {
+        $index = ((int) $component['_weight']) - 1;
+        $path[] = "$index";
+        // Remove 'fields' key from the path.
+        // Since each component has its own index.
+        if (($key = array_search('fields', $path)) !== FALSE) {
+          unset($path[$key]);
+        }
+      }
+      // Add field key to the path.
+      $path[] = $field_key;
+
+      // If DF is not multiple, only '0' key exists.
+      // So we replace fields with '0'.
+      if (($key = array_search('fields', $path)) !== FALSE) {
+        $path[$key] = 0;
+      }
+
+      // extra_fields are stored in json with key extra_fields.
+      // Remove the 's' to match more accurately.
+      if (($key = array_search('extra_fields', $path)) !== FALSE) {
+        $path[$key] = 'extra_field';
+      }
+
+      // Finally, join the constructed path parts to form the final path.
+      $path = implode('.', $path);
+      return $path;
+    }
+    return NULL;
   }
 
 }

@@ -155,6 +155,7 @@ class DynamicImportForm extends EntityForm {
           '#type' => 'language_select',
           '#title' => $this->t('language'),
           '#default_value' => $entity->get('translation_langcode'),
+          '#required' => TRUE,
         ];
 
       }
@@ -169,24 +170,26 @@ class DynamicImportForm extends EntityForm {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildForm($form, $form_state);
-    $form['actions']['generate'] = [
-      '#type' => 'submit',
-      '#value' => t('Generate CSV model'),
-      '#submit' => ['::generateCsvModel'],
-      '#weight' => 10,
-    ];
-    $form['actions']['execute'] = [
-      '#type' => 'submit',
-      '#value' => t('Execute this migration'),
-      '#submit' => ['::executeDynamicImport'],
-      '#weight' => 10,
-    ];
-    $form['actions']['export'] = [
-      '#type' => 'submit',
-      '#value' => t('Export existing content'),
-      '#submit' => ['::dynamicExport'],
-      '#weight' => 10,
-    ];
+    if (!$this->entity->isNew()) {
+      $form['actions']['generate'] = [
+        '#type' => 'submit',
+        '#value' => t('Generate CSV model'),
+        '#submit' => ['::generateCsvModel'],
+        '#weight' => 10,
+      ];
+      $form['actions']['execute'] = [
+        '#type' => 'submit',
+        '#value' => t('Execute this migration'),
+        '#submit' => ['::executeDynamicImport'],
+        '#weight' => 10,
+      ];
+      $form['actions']['export'] = [
+        '#type' => 'submit',
+        '#value' => t('Export existing content'),
+        '#submit' => ['::dynamicExport'],
+        '#weight' => 10,
+      ];
+    }
     return $form;
   }
 
@@ -318,10 +321,20 @@ class DynamicImportForm extends EntityForm {
     $data = [];
     foreach ($ids as $id) {
       $entity_data = [];
-      $entity = $storage->load($id);
+      $entity = NULL;
+      $default_entity = $storage->load($id);
+      if ($values['is_translation'] && $default_entity->hasTranslation($values['translation_langcode'])) {
+        $entity = $default_entity->getTranslation($values['translation_langcode']);
+      }
+      else {
+        $entity = $default_entity;
+      }
       foreach ($header as $header_item) {
         if ($header_item == 'id') {
           $entity_data['id'] = $entity->id();
+        }
+        elseif ($header_item == 'original') {
+          $entity_data['original'] = $entity->id();
         }
         else {
           $config = $header_item ? explode('|', $header_item) : [];
@@ -347,13 +360,11 @@ class DynamicImportForm extends EntityForm {
             }
             if ($plugin == 'term') {
               $term_id = $entity->get($field)->target_id;
-              $term = Term::load($term_id);
-              $entity_data[$header_item] = $term->label();
+              $entity_data[$header_item] = $term_id ? Term::load($term_id)->label() : '';
             }
             if ($plugin == 'date') {
               $value = $entity->get(reset($split))->getValue();
               $entity_data[$header_item] = $value[0][end($split)];
-
             }
             if ($plugin == 'media') {
               if ($info !== 'image_alt') {
@@ -363,13 +374,13 @@ class DynamicImportForm extends EntityForm {
                   $entity_data[$header_item] = '';
                   if ($info == 'image') {
                     $key = "media|{$field}|image_alt";
-                    $entity_data[$key] = $media->thumbnail->alt;
+                    $entity_data[$key] = '';
                   }
                   continue;
                 }
                 if ($info == 'remote_video') {
                   $url = $media->get(self::MEDIA_FIELD_NAMES[$info])->value;
-                  $entity_data[$header_item] = $url;
+                  $entity_data[$header_item] = $url . " ({$media_id})";
                 }
                 else {
                   $fid = $media->get(self::MEDIA_FIELD_NAMES[$info])->target_id;
@@ -391,7 +402,7 @@ class DynamicImportForm extends EntityForm {
                   else {
                     $url = $file_url_generator->generateAbsoluteString($image_uri);
                   }
-                  $entity_data[$header_item] = $url;
+                  $entity_data[$header_item] = $url . " ({$media_id})";
                   if ($info == 'image') {
                     $key = "media|{$field}|image_alt";
                     $entity_data[$key] = $media->thumbnail->alt;

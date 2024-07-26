@@ -49,11 +49,19 @@ class DynamicImportExecute extends ConfirmFormBase {
   protected $csv;
 
   /**
+   * Migrate entity info.
+   *
+   * @var \Drupal\vactory_migrate\Services\EntityInfo
+   */
+  protected $entityInfo;
+
+  /**
    * {@inheritDoc}
    */
   public static function create(ContainerInterface $container) {
     $instance = parent::create($container);
     $instance->rollbackService = $container->get('vactory_migrate.rollback');
+    $instance->entityInfo = $container->get('vactory_migrate.entity_info');
     return $instance;
   }
 
@@ -114,7 +122,7 @@ class DynamicImportExecute extends ConfirmFormBase {
         '#upload_validators' => [
           'file_validate_extensions' => ['csv'],
         ],
-        '#description'       => t("Load the csv file to import.<br>" . $message),
+        '#description'       => t("Load the csv file to import.<br>") . $message,
         '#required'          => TRUE,
       ];
       $form['container']['type'] = [
@@ -175,7 +183,7 @@ class DynamicImportExecute extends ConfirmFormBase {
 
       $check_content = $this->isValidCsvContent($file_path, $delimiter, count($header));
       if (!$check_content['status']) {
-        $form_state->setErrorByName('csv', $this->t('Invalid CSV content format at line ' . $check_content['line']));
+        $form_state->setErrorByName('csv', $this->t('Invalid CSV content format at line') . ' ' . $check_content['line']);
       }
       $id = $this->getMigrationId($migration_id);
       if (count($id) != 1) {
@@ -184,7 +192,7 @@ class DynamicImportExecute extends ConfirmFormBase {
       else {
         $check_duplicated_id = $this->isColumnDuplicated($file_path, $delimiter, reset($id));
         if (!$check_duplicated_id['status']) {
-          $form_state->setErrorByName('csv', $this->t('CSV contains duplicated ID : ' . $check_duplicated_id['value']));
+          $form_state->setErrorByName('csv', $this->t('CSV contains duplicated ID :') . ' ' . $check_duplicated_id['value']);
         }
       }
     }
@@ -230,17 +238,26 @@ class DynamicImportExecute extends ConfirmFormBase {
     $this->rollbackService->rollback($id);
 
     if ($type == 'full') {
-      $destination = $this->getMigrationDestination($migration_id);
+      $destination = $this->entityInfo->getDestinationByMigrationId($migration_id);
+      $langcode = $destination['langcode'];
+      $default_laguage = \Drupal::languageManager()->getDefaultLanguage()->getId();
       $entity_type_definition = \Drupal::entityTypeManager()->getDefinition($destination['entity']);
       $bundle_field = $entity_type_definition->getKey('bundle');
       $entity_storage = \Drupal::entityTypeManager()->getStorage($destination['entity']);
       $entity_ids = $entity_storage->getQuery()
         ->accessCheck(FALSE)
         ->condition($bundle_field, $destination['bundle'])
+        ->condition('langcode', $langcode)
         ->execute();
       foreach ($entity_ids as $entity_id) {
         $entity = $entity_storage->load($entity_id);
-        $entity->delete();
+        if ($langcode === $default_laguage) {
+          $entity->delete();
+        }
+        elseif ($entity->hasTranslation($langcode)) {
+          $entity->removeTranslation($langcode);
+          $entity->save();
+        }
       }
     }
 
@@ -304,19 +321,6 @@ class DynamicImportExecute extends ConfirmFormBase {
   }
 
   /**
-   * Get migration destination (entity and bundle).
-   */
-  private function getMigrationDestination($migration_id) {
-    $migration_config = \Drupal::configFactory()->get($migration_id);
-    $destination = $migration_config->get('destination');
-    $split = explode(':', $destination['plugin']);
-    return [
-      'entity' => end($split),
-      'bundle' => $destination['default_bundle'],
-    ];
-  }
-
-  /**
    * Get migration id column.
    */
   private function getMigrationId($migration_id) {
@@ -326,7 +330,7 @@ class DynamicImportExecute extends ConfirmFormBase {
   }
 
   /**
-   * check duplicated lines.
+   * Check duplicated lines.
    */
   private function isColumnDuplicated($file_path, $delimiter, $column_name) {
     $handle = fopen($file_path, 'r');
