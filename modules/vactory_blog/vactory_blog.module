@@ -10,6 +10,7 @@ use Drupal\image\Entity\ImageStyle;
 use Drupal\media\Entity\Media;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\file\Entity\File;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Implements hook_theme().
@@ -69,7 +70,7 @@ function vactory_blog_json_api_collection_alter(&$filters, &$context) {
         ]);
 
       if (!$terms) {
-        throw new \Exception("[Blog - hook_json_api_collection_alter] term '$theme' not found.");
+        throw new NotFoundHttpException("[Blog - hook_json_api_collection_alter] term '$theme' not found.");
       }
 
       if ($terms) {
@@ -91,7 +92,7 @@ function vactory_blog_json_api_collection_alter(&$filters, &$context) {
         ]);
 
       if (!$terms) {
-        throw new \Exception("[Blog - hook_json_api_collection_alter] term '$theme' not found.");
+        throw new NotFoundHttpException("[Blog - hook_json_api_collection_alter] term '$theme' not found.");
       }
 
       if ($terms) {

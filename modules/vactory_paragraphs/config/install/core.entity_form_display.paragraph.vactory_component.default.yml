@@ -1,12 +1,15 @@
+uuid: a0d33601-fb1a-46b7-bc2d-dd3488963c1d
 langcode: fr
 status: true
 dependencies:
   config:
     - field.field.paragraph.vactory_component.field_background_color
+    - field.field.paragraph.vactory_component.field_negate_roles
     - field.field.paragraph.vactory_component.field_paragraph_hide_lg
     - field.field.paragraph.vactory_component.field_paragraph_hide_sm
     - field.field.paragraph.vactory_component.field_position_image_x
     - field.field.paragraph.vactory_component.field_position_image_y
+    - field.field.paragraph.vactory_component.field_roles
     - field.field.paragraph.vactory_component.field_size_image
     - field.field.paragraph.vactory_component.field_titre_ancre
     - field.field.paragraph.vactory_component.field_vactory_component
@@ -76,7 +79,7 @@ third_party_settings:
         - field_position_image_y
         - field_position_image_x
         - field_size_image
-      label: 'Positionner l''image'
+      label: "Positionner l'image"
       region: content
       parent_name: group_fond
       weight: 2
@@ -87,6 +90,22 @@ third_party_settings:
         open: false
         description: ''
         required_fields: false
+    group_roles:
+      children:
+        - field_roles
+        - field_negate_roles
+      label: Roles
+      region: content
+      parent_name: ''
+      weight: 7
+      format_type: details
+      format_settings:
+        classes: ''
+        show_empty_fields: false
+        id: ''
+        open: false
+        description: 'Show or hide the template when the user has the following roles'
+        required_fields: true
 id: paragraph.vactory_component.default
 targetEntityType: paragraph
 bundle: vactory_component
@@ -103,6 +122,13 @@ content:
     weight: 0
     region: content
     settings: {  }
+    third_party_settings: {  }
+  field_negate_roles:
+    type: boolean_checkbox
+    weight: 9
+    region: content
+    settings:
+      display_label: true
     third_party_settings: {  }
   field_paragraph_hide_lg:
     type: boolean_checkbox
@@ -127,6 +153,12 @@ content:
   field_position_image_y:
     type: options_select
     weight: 13
+    region: content
+    settings: {  }
+    third_party_settings: {  }
+  field_roles:
+    type: options_select
+    weight: 8
     region: content
     settings: {  }
     third_party_settings: {  }
@@ -222,7 +254,7 @@ content:
       placeholder: ''
     third_party_settings: {  }
   translation:
-    weight: 8
+    weight: 6
     region: content
     settings: {  }
     third_party_settings: {  }

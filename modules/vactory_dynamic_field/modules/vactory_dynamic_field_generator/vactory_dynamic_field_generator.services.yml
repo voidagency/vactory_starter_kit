@@ -1,0 +1,32 @@
+services:
+  vactory_dynamic_field_generator.utils:
+    class: \Drupal\vactory_dynamic_field_generator\VactoryGeneratorUtils
+  vactory_dynamic_field_generator.generator.text:
+    class: \Drupal\vactory_dynamic_field_generator\Generators\TextGenerator
+    arguments: ['@vactory_dynamic_field_generator.utils']
+  vactory_dynamic_field_generator.generator.text_format:
+    class: \Drupal\vactory_dynamic_field_generator\Generators\TextFormatGenerator
+    arguments: ['@vactory_dynamic_field_generator.utils']
+  vactory_dynamic_field_generator.generator.image:
+    class: \Drupal\vactory_dynamic_field_generator\Generators\ImageGenerator
+    arguments: ['@vactory_dynamic_field_generator.utils']
+  vactory_dynamic_field_generator.generator.remote_video:
+    class: \Drupal\vactory_dynamic_field_generator\Generators\RemoteVideoGenerator
+    arguments: ['@vactory_dynamic_field_generator.utils']
+  vactory_dynamic_field_generator.generator.file:
+    class: \Drupal\vactory_dynamic_field_generator\Generators\FileGenerator
+    arguments: ['@vactory_dynamic_field_generator.utils']
+  vactory_dynamic_field_generator.generator.url_extended:
+    class: \Drupal\vactory_dynamic_field_generator\Generators\UrlExtendedGenerator
+    arguments: ['@vactory_dynamic_field_generator.utils']
+  vactory_dynamic_field_generator.factory.generate:
+    class: \Drupal\vactory_dynamic_field_generator\Generators\GeneratorFactory
+    arguments:
+      -
+        text: '@vactory_dynamic_field_generator.generator.text'
+        textarea: '@vactory_dynamic_field_generator.generator.text'
+        text_format: '@vactory_dynamic_field_generator.generator.text_format'
+        image: '@vactory_dynamic_field_generator.generator.image'
+        remote_video: '@vactory_dynamic_field_generator.generator.remote_video'
+        file: '@vactory_dynamic_field_generator.generator.file'
+        url_extended: '@vactory_dynamic_field_generator.generator.url_extended'

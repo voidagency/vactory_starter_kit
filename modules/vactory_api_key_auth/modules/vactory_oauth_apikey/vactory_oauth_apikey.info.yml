@@ -1,0 +1,8 @@
+name: Api Key Auth provider
+description: Provides new OAuth2 Api key grant type.
+type: module
+core_version_requirement: ^9 || ^10
+package: Vactory
+dependencies:
+  - simple_oauth
+  - vactory_api_key_auth

@@ -52,6 +52,7 @@ class Rollback {
     }
     $entity_type_id = $destination['entity'];
     $bundle = $destination['bundle'];
+    $langcode = $destination['langcode'];
 
     $tableInfo = $this->entityInfo->getRelatedTablesByEntityAndBundle($entity_type_id, $bundle);
 
@@ -77,7 +78,7 @@ class Rollback {
       foreach ($chunk as $ids) {
         $operations[] = [
           [static::class, 'rollbackCallback'],
-          [$ids, $tableInfo, $mapping_table, $message_table],
+          [$ids, $tableInfo, $mapping_table, $message_table, $langcode],
         ];
         $num_operations++;
       }
@@ -98,24 +99,24 @@ class Rollback {
   /**
    * Batch callback.
    */
-  public static function rollbackCallback($ids, $tableInfo, $mapping_table, $message_table, &$context) {
+  public static function rollbackCallback($ids, $tableInfo, $mapping_table, $message_table, $langcode, &$context) {
     $column_id = $tableInfo['id'];
     $tables = $tableInfo['tables'];
     $baseTable = $tableInfo['baseTable'];
     $dataTable = $tableInfo['dataTable'];
 
     foreach ($tables as $table) {
-      self::dbDelete($table, 'entity_id', $ids, 'IN');
+      self::dbDelete($table, 'entity_id', $ids, 'IN', $langcode);
     }
 
     // Delete from users_field_data table.
     if (isset($dataTable)) {
-      self::dbDelete($dataTable, $column_id, $ids, 'IN');
+      self::dbDelete($dataTable, $column_id, $ids, 'IN', $langcode);
     }
 
     // Delete from users table.
     if (isset($baseTable)) {
-      self::dbDelete($baseTable, $column_id, $ids, 'IN');
+      self::dbDelete($baseTable, $column_id, $ids, 'IN', $langcode);
     }
 
     // Delete messages && mapping.
@@ -145,13 +146,17 @@ class Rollback {
   /**
    * Delete database table.
    */
-  public static function dbDelete($table, $column, $id, $operator = '=') {
+  public static function dbDelete($table, $column, $id, $operator = '=', $langcode = '') {
     $databaseService = \Drupal::service('database');
     $transaction = $databaseService->startTransaction();
+    $default_langcode = \Drupal::languageManager()->getDefaultLanguage()->getId();
     try {
-      $databaseService->delete($table)
-        ->condition($column, $id, $operator)
-        ->execute();
+      $delete_query = $databaseService->delete($table)
+        ->condition($column, $id, $operator);
+      if (!empty($langcode) && $langcode !== $default_langcode) {
+        $delete_query->condition('langcode', $langcode);
+      }
+      $delete_query->execute();
     }
     catch (\Exception $e) {
       $transaction->rollBack();

@@ -190,3 +190,11 @@ vactory_decoupled.store_log_message:
     _disable_route_normalizer: 'TRUE'
   requirements:
     _permission: 'access content'
+
+vactory_decoupled.edit_live_mode:
+  path: /api/edit_live_mode
+  defaults:
+    _controller: '\Drupal\vactory_decoupled\Controller\EditLiveMode::edit'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
