@@ -156,9 +156,30 @@ class DynamicFieldManager {
   protected $httpClient;
 
   /**
+   * The edit live mode helper service.
+   *
+   * @var \Drupal\vactory_decoupled\EditLiveModeHelper
+   */
+  protected $editLiveModeHelper;
+
+  /**
    * {@inheritdoc}
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, $plateform_provider, MediaFilesManager $mediaFilesManager, EntityRepositoryInterface $entityRepository, JsonApiGenerator $jsonApiGenerator, SlugManager $slugManager, ModuleHandlerInterface $moduleHandler, LanguageManagerInterface $languageManager, ViewsToApi $viewsToApi, ConfigFactoryInterface $configFactory, Token $token, Client $httpClient) {
+  public function __construct(
+    EntityTypeManagerInterface $entity_type_manager,
+    $plateform_provider,
+    MediaFilesManager $mediaFilesManager,
+    EntityRepositoryInterface $entityRepository,
+    JsonApiGenerator $jsonApiGenerator,
+    SlugManager $slugManager,
+    ModuleHandlerInterface $moduleHandler,
+    LanguageManagerInterface $languageManager,
+    ViewsToApi $viewsToApi,
+    ConfigFactoryInterface $configFactory,
+    Token $token,
+    Client $httpClient,
+    EditLiveModeHelper $editLiveModeHelper
+  ) {
     $this->entityTypeManager = $entity_type_manager;
     $this->platformProvider = $plateform_provider;
     $this->imageStyles = ImageStyle::loadMultiple();
@@ -176,6 +197,7 @@ class DynamicFieldManager {
     $this->httpClient = $httpClient;
     $this->mediaStorage = $this->entityTypeManager->getStorage('media');
     $this->termResultCount = $this->moduleHandler->moduleExists('vactory_taxonomy_results') ? $this->entityTypeManager->getStorage('term_result_count') : NULL;
+    $this->editLiveModeHelper = $editLiveModeHelper;
   }
 
   /**
@@ -887,17 +909,9 @@ class DynamicFieldManager {
    * Generate field path for edit live mode.
    */
   private function handleEditLiveModeFormat($parent_keys, $settings, $component, $field_key) {
-    // Check permission.
-    // Ensure the user has 'edit content live mode' permission.
-    // To utilize the edit live mode feature.
-    $user_id = \Drupal::currentUser()->id();
-    $user = $this->entityTypeManager->getStorage('user')->load($user_id);
-    $user_granted = $user->hasPermission('edit content live mode');
+    $liveModeAllowed = $this->editLiveModeHelper->checkAccess();
 
-    // Check if the feature is enabled from vactory_dynamic_field setings.
-    $decoupled_edit_live_mode = $this->configFactory->get('vactory_dynamic_field.settings')->get('decoupled_edit_live_mode');
-
-    if ($user_granted && $decoupled_edit_live_mode) {
+    if ($liveModeAllowed) {
       $path = $parent_keys;
       // In the case of multiple fields.
       // Each component is indexed with its weight.

@@ -3,7 +3,9 @@
 namespace Drupal\vactory_decoupled\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\locale\StringDatabaseStorage;
 use Drupal\paragraphs\Entity\Paragraph;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -11,6 +13,31 @@ use Symfony\Component\HttpFoundation\Request;
  * Edit Live Mode Endpoint.
  */
 class EditLiveMode extends ControllerBase {
+
+  /**
+   * Language manager service.
+   *
+   * @var \Drupal\locale\StringDatabaseStorage
+   */
+  protected $stringDatabaseStorage;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function __construct(
+    StringDatabaseStorage $stringDatabaseStorage
+  ) {
+    $this->stringDatabaseStorage = $stringDatabaseStorage;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('locale.storage')
+    );
+  }
 
   /**
    * Edit live mode.
@@ -28,28 +55,38 @@ class EditLiveMode extends ControllerBase {
     }
     $body = json_decode($request->getContent(), TRUE);
 
-    $paragraph_query = $this->entityTypeManager()->getStorage('paragraph')->getQuery();
-    $paragraph_query->accessCheck(FALSE);
-
-    $is_multiple_paragraph = isset($body['paragraphTabId']) && isset($body['templateDelta']);
-    $result = NULL;
-    if (!$is_multiple_paragraph) {
-      $result = $this->handleParagraphComponent($paragraph_query, $body);
+    if (isset($body['type']) && $body['type'] === 'i18n') {
+      $result = $this->handleI18n($body);
+      if (is_array($result) && isset($result['code']) && isset($result['message'])) {
+        return new JsonResponse([
+          'message' => $result['message'],
+        ], $result['code']);
+      }
     }
     else {
-      $result = $this->handleParagraphMultiple($paragraph_query, $body);
-    }
+      $paragraph_query = $this->entityTypeManager()->getStorage('paragraph')->getQuery();
+      $paragraph_query->accessCheck(FALSE);
 
-    if (is_array($result) && isset($result['code']) && isset($result['message'])) {
+      $is_multiple_paragraph = isset($body['paragraphTabId']) && isset($body['templateDelta']);
+      $result = NULL;
+      if (!$is_multiple_paragraph) {
+        $result = $this->handleParagraphComponent($paragraph_query, $body);
+      }
+      else {
+        $result = $this->handleParagraphMultiple($paragraph_query, $body);
+      }
+
+      if (is_array($result) && isset($result['code']) && isset($result['message'])) {
+        return new JsonResponse([
+          'message' => $result['message'],
+        ], $result['code']);
+      }
+
       return new JsonResponse([
-        'message' => $result['message'],
-      ], $result['code']);
+        'status' => TRUE,
+        'message' => $this->t('Field updated !'),
+      ], 200);
     }
-
-    return new JsonResponse([
-      'status' => TRUE,
-      'message' => $this->t('Field updated !'),
-    ], 200);
 
   }
 
@@ -263,6 +300,35 @@ class EditLiveMode extends ControllerBase {
     else {
       return NULL;
     }
+  }
+
+  /**
+   * Handle i18n translatyion edit.
+   */
+  private function handleI18n($body) {
+    $string = $this->stringDatabaseStorage->findString([
+      'source' => $body['id'],
+      'context' => '_FRONTEND',
+    ]);
+
+    if (is_null($string)) {
+      return [
+        'code' => 400,
+        'message' => $this->t('Cannot get key:') . ' ' . $body['id'],
+      ];
+    }
+
+    $this->stringDatabaseStorage->createTranslation([
+      'lid' => $string->lid,
+      'language' => $this->languageManager()->getCurrentLanguage()->getId(),
+      'translation' => $body['content'],
+    ])->save();
+
+    return [
+      'code' => 200,
+      'message' => $this->t("Translation updated"),
+    ];
+
   }
 
 }
