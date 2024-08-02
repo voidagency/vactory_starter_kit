@@ -5,19 +5,23 @@ namespace Drupal\vactory_decoupled\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\locale\StringDatabaseStorage;
+use Drupal\vactory_decoupled\EditLiveModeHelper;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
-// @todo: add form to add string
-// @todo: use Context for storing these values.
-// @todo: t('WELCOME REACT', array(), array('context' => '_FRONTEND'));
+// @todo Add form to add string
+// @todo Use Context for storing these values.
+// @todo T('WELCOME REACT', array(), array('context' => '_FRONTEND'));
 
+/**
+ * Translation controller.
+ */
 class TranslationsController extends ControllerBase {
 
   /**
    * Language manager service.
    *
-   * @var LanguageManagerInterface
+   * @var \Drupal\Core\Language\LanguageManagerInterface
    */
   protected $languageManager;
 
@@ -26,17 +30,26 @@ class TranslationsController extends ControllerBase {
    *
    * @var \Drupal\locale\StringDatabaseStorage
    */
-    protected $stringDatabaseStorage;
+  protected $stringDatabaseStorage;
+
+  /**
+   * The edit live mode helper service.
+   *
+   * @var \Drupal\vactory_decoupled\EditLiveModeHelper
+   */
+  protected $editLiveModeHelper;
 
   /**
    * {@inheritdoc}
    */
   public function __construct(
     LanguageManagerInterface $languageManager,
-    StringDatabaseStorage $stringDatabaseStorage
+    StringDatabaseStorage $stringDatabaseStorage,
+    EditLiveModeHelper $editLiveModeHelper,
   ) {
     $this->languageManager = $languageManager;
     $this->stringDatabaseStorage = $stringDatabaseStorage;
+    $this->editLiveModeHelper = $editLiveModeHelper;
   }
 
   /**
@@ -45,7 +58,8 @@ class TranslationsController extends ControllerBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('language_manager'),
-      $container->get('locale.storage')
+      $container->get('locale.storage'),
+      $container->get('vactory_decoupled.edit_live_mode_helper')
     );
   }
 
@@ -53,6 +67,7 @@ class TranslationsController extends ControllerBase {
    * Output all drupal translations.
    *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   json response
    */
   public function index() {
     $languages = $this->languageManager->getLanguages();
@@ -76,6 +91,7 @@ class TranslationsController extends ControllerBase {
    *   The language to fetch.
    *
    * @return array
+   *   result
    */
   public function getResults($langcode = 'en') {
     $conditions = ['language' => $langcode, 'context' => '_FRONTEND'];
@@ -85,11 +101,15 @@ class TranslationsController extends ControllerBase {
     ];
     $result = $this->stringDatabaseStorage->getTranslations($conditions, $options);
     $b = array_map(function ($t) {
+      $translation = !empty($t->translation) ? $t->translation : $t->source;
+      $liveModeFormat = "{LiveModeI18n id=\"{$t->source}\"}{$translation}{/LiveModeI18n}";
+      $liveModeAllowed = $this->editLiveModeHelper->checkAccess();
       return [
         'source'      => $t->source,
-        'translation' => !empty($t->translation) ? $t->translation : $t->source,
+        'translation' => $liveModeAllowed ? $liveModeFormat : $translation,
       ];
     }, $result);
     return $b;
   }
+
 }
