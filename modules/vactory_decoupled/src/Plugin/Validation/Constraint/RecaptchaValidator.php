@@ -98,7 +98,7 @@ class RecaptchaValidator extends ConstraintValidator implements ContainerInjecti
     $config = \Drupal::config('recaptcha.settings');
     $recaptcha_secret_key = $config->get('secret_key');
     // Use Drupal::httpClient() to circumvent all issues with the Google library.
-    $recaptcha = new ReCaptcha($recaptcha_secret_key, new Drupal8Post());
+    $recaptcha = new ReCaptcha($recaptcha_secret_key, new Drupal8Post(\Drupal::httpClient()));
 
     // Ensures the hostname matches. Required if "Domain Name Validation" is
     // disabled for credentials.
