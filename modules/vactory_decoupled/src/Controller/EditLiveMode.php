@@ -3,11 +3,17 @@
 namespace Drupal\vactory_decoupled\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\File\FileSystemInterface;
+use Drupal\Core\StreamWrapper\PublicStream;
+use Drupal\file\Entity\File;
 use Drupal\locale\StringDatabaseStorage;
+use Drupal\media\Entity\Media;
 use Drupal\paragraphs\Entity\Paragraph;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Edit Live Mode Endpoint.
@@ -22,12 +28,21 @@ class EditLiveMode extends ControllerBase {
   protected $stringDatabaseStorage;
 
   /**
+   * The file system service.
+   *
+   * @var \Drupal\Core\File\FileSystemInterface
+   */
+  protected $fileSystem;
+
+  /**
    * {@inheritdoc}
    */
   public function __construct(
-    StringDatabaseStorage $stringDatabaseStorage
+    StringDatabaseStorage $stringDatabaseStorage,
+    FileSystemInterface $file_system
   ) {
     $this->stringDatabaseStorage = $stringDatabaseStorage;
+    $this->fileSystem = $file_system;
   }
 
   /**
@@ -35,7 +50,8 @@ class EditLiveMode extends ControllerBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('locale.storage')
+      $container->get('locale.storage'),
+      $container->get('file_system')
     );
   }
 
@@ -237,7 +253,7 @@ class EditLiveMode extends ControllerBase {
   /**
    * Edit DF component.
    */
-  private function editData(array &$data, string $keyString, string $newValue) {
+  private function editData(array &$data, string $keyString, $newValue) {
     $keys = explode('.', $keyString);
     $current = &$data;
 
@@ -328,6 +344,86 @@ class EditLiveMode extends ControllerBase {
       'code' => 200,
       'message' => $this->t("Translation updated"),
     ];
+
+  }
+
+  /**
+   * Edit live mode image.
+   */
+  public function editImage(Request $request) {
+    $user_id = \Drupal::currentUser()->id();
+    $user = $this->entityTypeManager()->getStorage('user')->load($user_id);
+    $user_granted = $user->hasPermission('edit content live mode');
+
+    if (!$user_granted) {
+      return new JsonResponse([
+        'status' => FALSE,
+        'message' => $this->t('edit content live mode permission is required'),
+      ], 400);
+    }
+    $file = $request->files->get('file');
+    $body = $request->request->all();
+    if (!$file instanceof UploadedFile) {
+      return new JsonResponse([
+        'error' => 'No file uploaded',
+      ], Response::HTTP_BAD_REQUEST);
+    }
+
+    // Move the file to Drupal's public file system.
+    $directory = PublicStream::basePath() . '/live-mode-images';
+    $this->fileSystem->prepareDirectory($directory, FileSystemInterface::CREATE_DIRECTORY);
+    $file->move($directory, $file->getClientOriginalName());
+
+    // Create the file entity.
+    $file_entity = File::create([
+      'uri' => 'public://live-mode-images/' . $file->getClientOriginalName(),
+    ]);
+    $file_entity->save();
+
+    // Create the media entity.
+    $media = Media::create([
+      'bundle' => 'image',
+      'name' => $file->getClientOriginalName(),
+      'status' => 1,
+      'field_media_image' => [
+        'target_id' => $file_entity->id(),
+        'alt' => $file->getClientOriginalName(),
+        'title' => $file->getClientOriginalName(),
+      ],
+    ]);
+    $media->save();
+
+    $paragraph_query = $this->entityTypeManager()->getStorage('paragraph')->getQuery();
+    $paragraph_query->accessCheck(FALSE);
+
+    $is_multiple_paragraph = isset($body['paragraphTabId']) && isset($body['templateDelta']);
+
+    $body['content'] = [
+      uniqid() => [
+        'selection' => [
+          [
+            'target_id' => $media->id(),
+          ],
+        ],
+      ],
+    ];
+    if (!$is_multiple_paragraph) {
+      $result = $this->handleParagraphComponent($paragraph_query, $body);
+    }
+    else {
+      $result = $this->handleParagraphMultiple($paragraph_query, $body);
+    }
+
+    if (is_array($result) && isset($result['code']) && isset($result['message'])) {
+      return new JsonResponse([
+        'message' => $result['message'],
+      ], $result['code']);
+    }
+
+    return new JsonResponse([
+      'status' => TRUE,
+      'message' => $this->t('Image updated !'),
+    ], 200);
 
   }
 

@@ -481,7 +481,10 @@ class DynamicFieldManager {
                   $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $file->getCacheTags());
                   $this->cacheability->setCacheTags($cacheTags);
                   $uri = $file->thumbnail->entity->getFileUri();
-                  $image_item['_default'] = $this->mediaFilesManager->getMediaAbsoluteUrl($uri);
+                  $image_item['_default'] = [
+                    'src' => $this->mediaFilesManager->getMediaAbsoluteUrl($uri),
+                    'live_mode' => $this->handleEditLiveModeFormat($parent_keys, $settings, $component, $field_key),
+                  ];
                   $image_item['file_name'] = $file->label();
                   if (!empty($file->get('field_media_image')->getValue())) {
                     $image_item['meta'] = $file->get('field_media_image')

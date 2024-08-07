@@ -5,15 +5,13 @@
  * Hooks for vactory_decoupled_image_styles module.
  */
 
-use Drupal\Core\Config\Entity\ConfigEntityInterface;
-
 /**
  * Implements hook_vactory_file_image_enhancer_alter().
  */
 function vactory_decoupled_image_styles_vactory_file_image_enhancer_alter(&$data, $media) {
   $image_styles = \Drupal::service('vactory_decoupled_image_styles.service')->getFileImageStyles($media);
-  $original = $data['value']['_default'];
-  $data['value']['_default'] = [
+  $original = $data['value']['_default']['src'];
+  $data['value']['_default']['src'] = [
     '_original' => $original,
     ...$image_styles,
   ];
@@ -24,8 +22,8 @@ function vactory_decoupled_image_styles_vactory_file_image_enhancer_alter(&$data
  */
 function vactory_decoupled_image_styles_df_manager_image_alter(&$data, $media) {
   $image_styles = \Drupal::service('vactory_decoupled_image_styles.service')->getFileImageStyles($media);
-  $original = $data['0']['_default'];
-  $data['0']['_default'] = [
+  $original = $data['0']['_default']['src'];
+  $data['0']['_default']['src'] = [
     '_original' => $original,
     ...$image_styles,
   ];
