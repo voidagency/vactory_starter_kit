@@ -12,7 +12,6 @@ use Drupal\jsonapi\JsonApiResource\NullIncludedData;
 use Drupal\jsonapi\ResourceResponse;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
-use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpKernel\KernelEvents;
 use ReCaptcha\ReCaptcha;
 use Drupal\recaptcha\ReCaptcha\RequestMethod\Drupal8Post;
@@ -24,8 +23,7 @@ use Drupal\jsonapi\Exception\EntityAccessDeniedHttpException;
  * @internal JSON:API maintains no PHP API. The API is the HTTP API. This class
  *   may change at any time and could break any dependencies on it.
  */
-class JsonApiReCaptchaSubscriber implements EventSubscriberInterface
-{
+class JsonApiReCaptchaSubscriber implements EventSubscriberInterface {
 
   /**
    * The configuration factory.
@@ -43,9 +41,6 @@ class JsonApiReCaptchaSubscriber implements EventSubscriberInterface
 
   /**
    * Constructs a new JsonapiReCaptchaSubscriber.
-   *
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The config factory.
    */
   public function __construct(ConfigFactoryInterface $config_factory, LoggerChannelFactory $logger) {
     $this->config = $config_factory;
@@ -55,14 +50,9 @@ class JsonApiReCaptchaSubscriber implements EventSubscriberInterface
   /**
    * {@inheritdoc}
    */
-  public static function getSubscribedEvents()
-  {
+  public static function getSubscribedEvents() {
     $events = [];
     $events[KernelEvents::REQUEST][] = ['onKernelRequest'];
-    // $events[MaintenanceModeEvents::MAINTENANCE_MODE_REQUEST][] = [
-    //   'onMaintenanceModeRequest',
-    //   -800,
-    // ];
     return $events;
   }
 
@@ -72,19 +62,15 @@ class JsonApiReCaptchaSubscriber implements EventSubscriberInterface
    * @param \Symfony\Component\HttpKernel\Event\RequestEvent $event
    *   The event to process.
    */
-  public function onKernelRequest(RequestEvent $event)
-  {
+  public function onKernelRequest(RequestEvent $event) {
     $request = $event->getRequest();
-
-    /*if ($request->getRequestFormat() !== 'api_json') {
-      return;
-    }*/
 
     if (strtoupper($request->getMethod()) !== "POST") {
       return;
     }
 
-    $secure_routes_raw = $this->config->get('vactory_decoupled.settings')->get('routes', '');
+    $secure_routes_raw = $this->config->get('vactory_decoupled.settings')
+      ->get('routes', '');
     $secure_routes = is_string($secure_routes_raw) ? explode("\n", $secure_routes_raw) : [];
     $secure_routes = array_map(function ($route) {
       return trim($route);
@@ -97,7 +83,7 @@ class JsonApiReCaptchaSubscriber implements EventSubscriberInterface
       return;
     }
 
-    $payload = json_decode($request->getContent(), true);
+    $payload = json_decode($request->getContent(), TRUE);
     $recaptcha_token = isset($payload['g-recaptcha-response']) ? $payload['g-recaptcha-response'] : $request->get('g-recaptcha-response', "");
     $isValid = $this->isValidRecaptchaToken($recaptcha_token);
 
@@ -118,8 +104,7 @@ class JsonApiReCaptchaSubscriber implements EventSubscriberInterface
   /**
    * CAPTCHA Callback; Validates the reCAPTCHA code.
    */
-  private function isValidRecaptchaToken($recaptcha_token)
-  {
+  private function isValidRecaptchaToken($recaptcha_token) {
     $config = $this->config->get('recaptcha.settings');
 
     $recaptcha_secret_key = $config->get('secret_key');
@@ -127,7 +112,6 @@ class JsonApiReCaptchaSubscriber implements EventSubscriberInterface
       return FALSE;
     }
 
-    // Use Drupal::httpClient() to circumvent all issues with the Google library.
     $recaptcha = new ReCaptcha($recaptcha_secret_key, new Drupal8Post(\Drupal::httpClient()));
 
     // Ensures the hostname matches. Required if "Domain Name Validation" is
@@ -144,8 +128,8 @@ class JsonApiReCaptchaSubscriber implements EventSubscriberInterface
     if ($resp->isSuccess()) {
       // Verified!
       return TRUE;
-    } else {
-      // Error code reference, https://developers.google.com/recaptcha/docs/verify
+    }
+    else {
       $error_codes = [
         'action-mismatch' => t('Expected action did not match.'),
         'apk_package_name-mismatch' => t('Expected APK package name did not match.'),
@@ -167,15 +151,19 @@ class JsonApiReCaptchaSubscriber implements EventSubscriberInterface
       ];
       foreach ($resp->getErrorCodes() as $code) {
         if (isset($info_codes[$code])) {
-          $this->logger->get('reCAPTCHA web service')->info('@info', ['@info' => $info_codes[$code]]);
-        } else {
+          $this->logger->get('reCAPTCHA web service')
+            ->info('@info', ['@info' => $info_codes[$code]]);
+        }
+        else {
           if (!isset($error_codes[$code])) {
             $code = 'unknown-error';
           }
-          $this->logger->get('reCAPTCHA web service')->error('@error', ['@error' => $error_codes[$code]]);
+          $this->logger->get('reCAPTCHA web service')
+            ->error('@error', ['@error' => $error_codes[$code]]);
         }
       }
     }
     return FALSE;
   }
+
 }
