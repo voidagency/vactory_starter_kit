@@ -271,7 +271,8 @@
         "Seach ai pinecone free account issue": "https://gist.githubusercontent.com/khalidbouhouch77/097184b7b3e611ff5e052902486601f3/raw/d7255c4f884aeb39eb68830d8cd77821eeee3634/search-api-pineconebackend-namespace-lang.patch"
       },
       "drupal/file_entity": {
-        "Fix missing bundle entity, entity type file_type, entity id undefined": "https://gist.githubusercontent.com/voidagency/b2ec60b41a9ef234ba860c03c05410f4/raw/cea45bcd86a2063d7460a99d1757719035a75314/remove-undefined-bundle-from-entity-type-file-type.patch"
+        "Fix missing bundle entity, entity type file_type, entity id undefined": "https://gist.githubusercontent.com/voidagency/b2ec60b41a9ef234ba860c03c05410f4/raw/cea45bcd86a2063d7460a99d1757719035a75314/remove-undefined-bundle-from-entity-type-file-type.patch",
+        "Fix the entity:file:undefined plugin does not exist": "https://git.drupalcode.org/project/file_entity/-/merge_requests/15.diff"
       }
     }
   },
