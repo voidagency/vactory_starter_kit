@@ -265,7 +265,9 @@ class PathTranslator extends ControllerBase {
     $routes = new Routing\RouteCollection();
 
     foreach ($this->systemRoutes as $route) {
-      $routes->add($route->id(), new Routing\Route($route->getAlias()));
+      $auxRoute = new Routing\Route($route->getAlias());
+      $auxRoute->setOption("utf8", TRUE);
+      $routes->add($route->id(), $auxRoute);
     }
 
     $context = new RequestContext();
