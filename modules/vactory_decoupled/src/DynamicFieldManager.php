@@ -912,41 +912,47 @@ class DynamicFieldManager {
    * Generate field path for edit live mode.
    */
   private function handleEditLiveModeFormat($parent_keys, $settings, $component, $field_key) {
-    $liveModeAllowed = $this->editLiveModeHelper->checkAccess();
-
-    if ($liveModeAllowed) {
-      $path = $parent_keys;
-      // In the case of multiple fields.
-      // Each component is indexed with its weight.
-      if ($settings['multiple'] && $parent_keys[0] == 'fields') {
-        $index = ((int) $component['_weight']) - 1;
-        $path[] = "$index";
-        // Remove 'fields' key from the path.
-        // Since each component has its own index.
-        if (($key = array_search('fields', $path)) !== FALSE) {
-          unset($path[$key]);
-        }
-      }
-      // Add field key to the path.
-      $path[] = $field_key;
-
-      // If DF is not multiple, only '0' key exists.
-      // So we replace fields with '0'.
-      if (($key = array_search('fields', $path)) !== FALSE) {
-        $path[$key] = 0;
-      }
-
-      // extra_fields are stored in json with key extra_fields.
-      // Remove the 's' to match more accurately.
-      if (($key = array_search('extra_fields', $path)) !== FALSE) {
-        $path[$key] = 'extra_field';
-      }
-
-      // Finally, join the constructed path parts to form the final path.
-      $path = implode('.', $path);
-      return $path;
+    $info = NestedArray::getValue($settings, array_merge((array) $parent_keys, [$field_key]));
+    if (isset($info['options']) && isset($info['options']['#live_mode_ignore']) && $info['options']['#live_mode_ignore'] == TRUE) {
+      return NULL;
     }
-    return NULL;
+
+    $liveModeAllowed = $this->editLiveModeHelper->checkAccess();
+    if (!$liveModeAllowed) {
+      return NULL;
+    }
+
+    $path = $parent_keys;
+    // In the case of multiple fields.
+    // Each component is indexed with its weight.
+    if ($settings['multiple'] && $parent_keys[0] == 'fields') {
+      $index = ((int) $component['_weight']) - 1;
+      $path[] = "$index";
+      // Remove 'fields' key from the path.
+      // Since each component has its own index.
+      if (($key = array_search('fields', $path)) !== FALSE) {
+        unset($path[$key]);
+      }
+    }
+    // Add field key to the path.
+    $path[] = $field_key;
+
+    // If DF is not multiple, only '0' key exists.
+    // So we replace fields with '0'.
+    if (($key = array_search('fields', $path)) !== FALSE) {
+      $path[$key] = 0;
+    }
+
+    // extra_fields are stored in json with key extra_fields.
+    // Remove the 's' to match more accurately.
+    if (($key = array_search('extra_fields', $path)) !== FALSE) {
+      $path[$key] = 'extra_field';
+    }
+
+    // Finally, join the constructed path parts to form the final path.
+    $path = implode('.', $path);
+    return $path;
+
   }
 
 }
