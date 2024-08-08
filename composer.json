@@ -272,6 +272,9 @@
       },
       "drupal/file_entity": {
         "Fix missing bundle entity, entity type file_type, entity id undefined": "https://gist.githubusercontent.com/voidagency/b2ec60b41a9ef234ba860c03c05410f4/raw/cea45bcd86a2063d7460a99d1757719035a75314/remove-undefined-bundle-from-entity-type-file-type.patch"
+      },
+      "drupal/media_library_form_element": {
+        "Fix: explode(): Argument #2 ($string) must be of type string, array given": "https://www.drupal.org/files/issues/2023-05-10/check-default-value-not-array-15044301-16.patch"
       }
     }
   },
