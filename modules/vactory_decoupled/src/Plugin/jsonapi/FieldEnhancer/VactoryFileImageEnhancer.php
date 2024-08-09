@@ -86,9 +86,7 @@ class VactoryFileImageEnhancer extends ResourceFieldEnhancerBase implements Cont
 
       $uri = $media->getFileUri();
       $data['value'] = [
-        '_default'  => [
-          'src' => $this->mediaFilesManager->getMediaAbsoluteUrl($uri),
-        ],
+        '_default'  => $this->mediaFilesManager->getMediaAbsoluteUrl($uri),
         'file_name' => $media->label(),
         'meta' => $media->getAllMetadata(),
       ];
