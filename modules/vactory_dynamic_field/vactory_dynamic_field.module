@@ -17,6 +17,7 @@ use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Language\Language;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\media\Entity\Media;
+use Drupal\user\Entity\User;
 
 /**
  * Implements hook_theme().
@@ -333,6 +334,8 @@ function vactory_dynamic_field_form_alter(&$form, FormStateInterface $form_state
 function vactory_dynamic_field_paragraph_access(EntityInterface $entity, $operation, AccountInterface $account) {
   $admin_context = drupal::service('router.admin_context');
   if ($operation === 'view' && !$admin_context->isAdminRoute()) {
+    $uid = $account->id();
+    $account = User::load($uid);
     $user_roles = $account->getRoles();
     $negate_roles = $entity->hasField('field_negate_roles') ? $entity->get('field_negate_roles')->value ?? 0 : 0;
     $paragraph_roles = $entity->hasField('field_roles') ? $entity->get('field_roles')
