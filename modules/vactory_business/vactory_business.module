@@ -124,7 +124,8 @@ function vactory_business_decoupled_webform_data_presubmit_alter(array &$webform
         ],
       ],
     ];
-    $account = Drupal::currentUser();
+    $user_id = \Drupal::currentUser()->id();
+    $account = \Drupal::entityTypeManager()->getStorage('user')->load($user_id);
     $has_access = TRUE;
     if ($account->isAnonymous()) {
       $has_access = FALSE;
