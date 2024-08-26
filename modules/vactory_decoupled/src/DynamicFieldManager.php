@@ -2,6 +2,7 @@
 
 namespace Drupal\vactory_decoupled;
 
+use Drupal\block_content\Entity\BlockContent;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityRepositoryInterface;
@@ -951,6 +952,12 @@ class DynamicFieldManager {
 
     // Finally, join the constructed path parts to form the final path.
     $path = implode('.', $path);
+
+    $entity = \Drupal::routeMatch()->getParameter('entity');
+    if ($entity instanceof BlockContent) {
+      $path = "block:{$entity->id()}|{$path}";
+    }
+
     return $path;
 
   }

@@ -2,6 +2,7 @@
 
 namespace Drupal\vactory_decoupled\Controller;
 
+use Drupal\block_content\Entity\BlockContent;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\StreamWrapper\PublicStream;
@@ -73,6 +74,14 @@ class EditLiveMode extends ControllerBase {
 
     if (isset($body['type']) && $body['type'] === 'i18n') {
       $result = $this->handleI18n($body);
+      if (is_array($result) && isset($result['code']) && isset($result['message'])) {
+        return new JsonResponse([
+          'message' => $result['message'],
+        ], $result['code']);
+      }
+    }
+    elseif ($res = $this->isDfBlock($body['id'])) {
+      $result = $this->handleDfBlock($res, $body);
       if (is_array($result) && isset($result['code']) && isset($result['message'])) {
         return new JsonResponse([
           'message' => $result['message'],
@@ -425,6 +434,110 @@ class EditLiveMode extends ControllerBase {
       'message' => $this->t('Image updated !'),
     ], 200);
 
+  }
+
+  /**
+   * Validates the given ID and extracts the block ID and the ID if valid.
+   *
+   * The function checks if the input string is in the format "block:id|value",
+   * where:
+   * - "block:id" must be in the format `block:number` (e.g., `block:123`).
+   * - The second part after the `|` can be any string.
+   *
+   * If the format is valid, the function returns an array containing:
+   * - 'block_id': The extracted numeric ID from "block:id".
+   * - 'id': The second part of the string after the `|`.
+   *
+   * Otherwise, it returns `FALSE`.
+   *
+   * @param string $id
+   *   The ID string to validate and extract from.
+   *
+   * @return mixed
+   *   An array with 'block_id' and 'id' if valid,
+   *   or `FALSE` if the format is invalid.
+   */
+  private function isDfBlock(string $id) {
+    // Check if the ID contains two parts separated by "|".
+    $parts = explode('|', $id);
+
+    // Ensure there are exactly two parts.
+    if (count($parts) !== 2) {
+      return FALSE;
+    }
+
+    // Check if the first part is in the format block:id.
+    if (preg_match('/^block:(\d+)$/', $parts[0], $matches)) {
+      // Extract the id from the first part.
+      return [
+        'block_id' => $matches[1],
+        'id' => $parts[1],
+      ];
+    }
+
+    return FALSE;
+  }
+
+  /**
+   * Handles the dynamic block update by processing the provided data.
+   *
+   * The function loads the block content specified by `block_id`, retrieves its
+   * components, and updates the relevant part based on the provided data.
+   * It returns error if the block is not found or the target field is missing.
+   *
+   * @param array $res
+   *   An array containing the 'block_id' and the specific 'id' to be edited.
+   * @param array $body
+   *   An array containing the data to be used for updating the block.
+   *
+   * @return array
+   *   An associative array with a status 'code' and a 'message'.
+   *   - 'code' => 200 if the update was successful, 400 otherwise.
+   *   - 'message' => A message indicating the result of the operation.
+   *
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   */
+  private function handleDfBlock(array $res, array $body) {
+    $block = BlockContent::load($res['block_id']);
+    if (!$block) {
+      return [
+        'code' => 400,
+        'message' => $this->t('Cannot find target block !'),
+      ];
+    }
+
+    $language_manager = $this->languageManager();
+    $current_language = $language_manager->getCurrentLanguage()->getId();
+    $default_language = $language_manager->getDefaultLanguage()->getId();
+
+    if ($current_language !== $default_language && $block->hasTranslation($current_language)) {
+      $block = $block->getTranslation($current_language);
+    }
+
+    $component = $block->get('field_dynamic_block_components')->getValue();
+    $component_data = json_decode($component[0]['widget_data'], TRUE);
+    $edited = $this->editData($component_data, $res['id'], $body['content']);
+    if (!$edited) {
+      return [
+        'code' => 400,
+        'message' => $this->t('Cannot find concerned field'),
+      ];
+    }
+
+    $component_data = json_encode($component_data);
+    $component[0]['widget_data'] = $component_data;
+    $block->field_dynamic_block_components = $component;
+    $block->setNewRevision(TRUE);
+    $block->revision_log = 'Update from live mode : ' . json_encode($body);
+    $block->setRevisionCreationTime(time());
+    $block->setRevisionUserId(\Drupal::currentUser()->id());
+    $block->set('revision_translation_affected', TRUE);
+    $block->save();
+
+    return [
+      'code' => 200,
+      'message' => $this->t('Block updated !'),
+    ];
   }
 
 }
