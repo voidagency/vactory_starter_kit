@@ -416,7 +416,15 @@ class EditLiveMode extends ControllerBase {
         ],
       ],
     ];
-    if (!$is_multiple_paragraph) {
+    if ($res = $this->isDfBlock($body['id'])) {
+      $result = $this->handleDfBlock($res, $body);
+      if (is_array($result) && isset($result['code']) && isset($result['message'])) {
+        return new JsonResponse([
+          'message' => $result['message'],
+        ], $result['code']);
+      }
+    }
+    elseif (!$is_multiple_paragraph) {
       $result = $this->handleParagraphComponent($paragraph_query, $body);
     }
     else {
