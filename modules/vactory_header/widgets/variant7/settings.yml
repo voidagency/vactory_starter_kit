@@ -1,0 +1,17 @@
+name: "Header Mega Menu"
+multiple: TRUE
+category: "Headers"
+enabled: TRUE
+fields:
+  cta:
+    type: url_extended
+    label: "Add extra button"
+extra_fields:
+  header_logo:
+    type: image
+    label: "Header's logo"
+  use_menu:
+    type: text
+    label: "Menu ID"
+    options:
+      "#description": "Menu machine name, Default to: mega-menu"

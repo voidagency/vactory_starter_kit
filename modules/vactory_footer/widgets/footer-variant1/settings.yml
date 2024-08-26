@@ -1,26 +1,42 @@
-name: 'Footer variant 1'
+name: "Footer variant 1"
 multiple: FALSE
-category: 'Layout'
+category: "Layout"
 enabled: TRUE
 fields:
-  enableThemeSwitcher:
-    type: checkbox
-    label: "Activer Dark Mode"
-  enableNewsletter:
-    type: checkbox
-    label: "Afficher newsletter"
+  webform:
+    type: webform_decoupled
+    label: "Newsletter Formulaire"
+    options:
+      "#required": TRUE
   newsletterTitle:
     type: text
-    label: 'Newsletter Title'
+    label: "Newsletter Title"
+    options:
+      "#required": TRUE
   newsletterSubtitle:
     type: text
-    label: 'Newsletter Subtitle'
-  newsletterbtn:
+    label: "Newsletter Subtitle"
+    options:
+      "#required": TRUE
+  footer_top:
     type: text
-    label: 'Newsletter Button Text'
+    label: "Footer Top Menu ID"
+    options:
+      "#description": "Footer Top Machine Menu."
+      "#required": TRUE
+  footer_bottom:
+    type: text
+    label: "Footer Bottom Menu ID"
+    options:
+      "#description": "Footer Bottom Machine Menu."
+      "#required": TRUE
   logo:
     type: image
     label: Footer's logo
+    options:
+      "#required": TRUE
   copyrights:
-    type: text
-    label: 'copyrights Text'
+    type: text_format
+    label: "copyrights Text"
+    options:
+      "#format": "full_html"
