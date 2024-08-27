@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "164a6d83df5685f97b53881dc3d3af07",
+    "content-hash": "b053849cc38968c9ba1d728e2d2cb172",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -9021,17 +9021,17 @@
         },
         {
             "name": "drupal/simplify_menu",
-            "version": "3.1.1",
+            "version": "3.2.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/simplify_menu.git",
-                "reference": "3.1.1"
+                "reference": "3.2.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/simplify_menu-3.1.1.zip",
-                "reference": "3.1.1",
-                "shasum": "03babea75fb5c9473cad3d131b96553ff8cc0956"
+                "url": "https://ftp.drupal.org/files/projects/simplify_menu-3.2.0.zip",
+                "reference": "3.2.0",
+                "shasum": "5b239e4da9d76cdeef9867ea7a37b749b34e8b54"
             },
             "require": {
                 "drupal/core": "^9 || ^10"
@@ -9039,8 +9039,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "3.1.1",
-                    "datestamp": "1690572635",
+                    "version": "3.2.0",
+                    "datestamp": "1722535735",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -9075,6 +9075,10 @@
                 {
                     "name": "shrop",
                     "homepage": "https://www.drupal.org/user/14767"
+                },
+                {
+                    "name": "slucero",
+                    "homepage": "https://www.drupal.org/user/1612534"
                 }
             ],
             "description": "Adds a TwigExtension that grants access to Drupal's menu render array so it can be used within a twig template.",
@@ -20937,7 +20941,6 @@
         "drupal/flag": 10,
         "drupal/tinypng": 5,
         "drupal/votingapi": 10,
-        "drupal/simplify_menu": 10,
         "drupal/social_auth_facebook": 5,
         "drupal/social_auth_google": 5,
         "drupal/domain": 10,
