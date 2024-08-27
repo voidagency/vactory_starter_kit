@@ -88,6 +88,14 @@ class EditLiveMode extends ControllerBase {
         ], $result['code']);
       }
     }
+    elseif ($res = $this->isParagraphTitle($body['id'])) {
+      $result = $this->handleParagraphTitle($res, $body);
+      if (is_array($result) && isset($result['code']) && isset($result['message'])) {
+        return new JsonResponse([
+          'message' => $result['message'],
+        ], $result['code']);
+      }
+    }
     else {
       $paragraph_query = $this->entityTypeManager()->getStorage('paragraph')->getQuery();
       $paragraph_query->accessCheck(FALSE);
@@ -144,33 +152,7 @@ class EditLiveMode extends ControllerBase {
     $paragraph->setNewRevision(TRUE);
     $paragraph->save();
     $last_paragraph_revision = $paragraph->getRevisionId();
-    $node = $this->entityTypeManager()->getStorage('node')->load($body['nid']);
-    $node = $this->getNodeTranslation($node);
-
-    if (is_null($node)) {
-      return [
-        'status' => 400,
-        'message' => $this->t('No translation founded for this page'),
-      ];
-    }
-
-    $node_paragraphs = $node->get('field_vactory_paragraphs')->getValue();
-    foreach ($node_paragraphs as &$item) {
-      if ($item['target_id'] == $body['paragraphId']) {
-        $item['target_revision_id'] = $last_paragraph_revision;
-        break;
-      }
-    }
-    unset($item);
-    $node->set('field_vactory_paragraphs', $node_paragraphs);
-
-    $node->setNewRevision(TRUE);
-    $node->revision_log = 'Update from live mode : ' . json_encode($body);
-    $node->setRevisionCreationTime(time());
-    $node->setRevisionUserId(\Drupal::currentUser()->id());
-    $node->set('revision_translation_affected', TRUE);
-    $node->save();
-
+    $this->handleNodeRevision($body, $body['paragraphId'], $last_paragraph_revision);
   }
 
   /**
@@ -230,33 +212,7 @@ class EditLiveMode extends ControllerBase {
     $main_paragraph->setNewRevision(TRUE);
     $main_paragraph->save();
     $last_main_paragraph_revision = $main_paragraph->getRevisionId();
-
-    $node = $this->entityTypeManager()->getStorage('node')->load($body['nid']);
-    $node = $this->getNodeTranslation($node);
-
-    if (is_null($node)) {
-      return [
-        'status' => 400,
-        'message' => $this->t('No translation founded for this page'),
-      ];
-    }
-
-    $node_paragraphs = $node->get('field_vactory_paragraphs')->getValue();
-    foreach ($node_paragraphs as &$item) {
-      if ($item['target_id'] == $body['paragraphId']) {
-        $item['target_revision_id'] = $last_main_paragraph_revision;
-        break;
-      }
-    }
-    unset($item);
-    $node->set('field_vactory_paragraphs', $node_paragraphs);
-
-    $node->setNewRevision(TRUE);
-    $node->revision_log = 'Update from live mode : ' . json_encode($body);
-    $node->setRevisionCreationTime(time());
-    $node->setRevisionUserId(\Drupal::currentUser()->id());
-    $node->set('revision_translation_affected', TRUE);
-    $node->save();
+    $this->handleNodeRevision($body, $body['paragraphId'], $last_main_paragraph_revision);
   }
 
   /**
@@ -546,6 +502,134 @@ class EditLiveMode extends ControllerBase {
       'code' => 200,
       'message' => $this->t('Block updated !'),
     ];
+  }
+
+  /**
+   * Validates the given ID string and extracts the numeric ID if valid.
+   *
+   * The function checks if the input string matches the format
+   * "paragraph_title|{$id}", where "{$id}" is a numeric identifier.
+   *
+   * If the format is valid, the function returns the extracted numeric ID.
+   * Otherwise, it returns `false`.
+   *
+   * @param string $id
+   *   The ID string to validate and extract from.
+   *
+   * @return mixed
+   *   The extracted numeric ID if valid, or `false` if the format is invalid.
+   */
+  private function isParagraphTitle(string $id) {
+    // Check if the ID matches the required format.
+    if (preg_match('/^paragraph_title\|(\d+)$/', $id, $matches)) {
+      // Return the extracted ID.
+      return $matches[1];
+    }
+
+    // Return false if the format is invalid.
+    return FALSE;
+  }
+
+  /**
+   * Handles the update of a paragraph's title.
+   *
+   * This function updates the title of a paragraph associated with a specific
+   * node. It retrieves the paragraph, sets a new title, creates a new revision,
+   * and saves the changes. After updating the paragraph, it also handles the
+   * node revision associated with the updated paragraph.
+   *
+   * @param int $res
+   *   The ID of the paragraph to update.
+   * @param array $body
+   *   An associative array containing the node ID ('nid') and
+   *   the new content ('content') for the paragraph title.
+   *
+   * @return array
+   *   An associative array with a status code
+   *   and message indicating the result of the operation.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   */
+  private function handleParagraphTitle($res, array $body) {
+    $paragraph_query = $this->entityTypeManager()->getStorage('paragraph')->getQuery();
+    $paragraph_query
+      ->accessCheck(FALSE)
+      ->condition('id', $res)
+      ->condition('parent_id', $body['nid'])
+      ->condition('parent_type', 'node')
+      ->condition('type', 'vactory_component');
+
+    $result = $this->fetchParagraph($paragraph_query);
+    if (!$result instanceof Paragraph) {
+      return $result;
+    }
+    $paragraph = $result;
+    $paragraph->set('field_vactory_title', $body['content']);
+    $paragraph->setNewRevision(TRUE);
+    $paragraph->save();
+
+    $last_paragraph_revision = $paragraph->getRevisionId();
+    $this->handleNodeRevision($body, $res, $last_paragraph_revision);
+
+    return [
+      'code' => 200,
+      'message' => $this->t('Paragraph title updated !'),
+    ];
+
+  }
+
+  /**
+   * Handles the creation of a new node revision after a paragraph update.
+   *
+   * This function updates the node's paragraph field to point to the new
+   * revision of the updated paragraph. It then creates and saves a new revision
+   * of the node.
+   *
+   * @param array $body
+   *   An associative array containing the node ID
+   *   ('nid') and additional data for the node.
+   * @param int $paragraphId
+   *   The ID of the paragraph that was updated.
+   * @param int $lastParagraphRevision
+   *   The ID of the latest paragraph revision.
+   *
+   * @return array|void
+   *   An associative array with a 'status' and 'message' indicating
+   *   the result of the operation. 'status' is 400 if the node is
+   *   not found or has no translation; otherwise, it returns void.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   */
+  private function handleNodeRevision(array $body, $paragraphId, $lastParagraphRevision) {
+    $node = $this->entityTypeManager()->getStorage('node')->load($body['nid']);
+    $node = $this->getNodeTranslation($node);
+
+    if (is_null($node)) {
+      return [
+        'status' => 400,
+        'message' => $this->t('No translation founded for this page'),
+      ];
+    }
+
+    $node_paragraphs = $node->get('field_vactory_paragraphs')->getValue();
+    foreach ($node_paragraphs as &$item) {
+      if ($item['target_id'] == $paragraphId) {
+        $item['target_revision_id'] = $lastParagraphRevision;
+        break;
+      }
+    }
+    unset($item);
+    $node->set('field_vactory_paragraphs', $node_paragraphs);
+
+    $node->setNewRevision(TRUE);
+    $node->revision_log = 'Update from live mode : ' . json_encode($body);
+    $node->setRevisionCreationTime(time());
+    $node->setRevisionUserId(\Drupal::currentUser()->id());
+    $node->set('revision_translation_affected', TRUE);
+    $node->save();
   }
 
 }
