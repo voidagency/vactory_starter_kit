@@ -115,7 +115,7 @@
     "drupal/recaptcha": "^3.0",
     "drupal/scheduler": "^2.0",
     "drupal/seckit": "^2.0",
-    "drupal/simplify_menu": "^3.0@beta",
+    "drupal/simplify_menu": "^3.2",
     "drupal/smart_trim": "^2.0",
     "drupal/twig_field_value": "^2.0",
     "drupal/twig_vardumper": "^3.1",
@@ -205,7 +205,6 @@
     "enable-patching": true,
     "patches": {
       "drupal/simplify_menu": {
-        "Add support for options.": "https://gist.githubusercontent.com/voidagency/0c4efddd8f379229c7416e66a1d44de3/raw/825d324ae399de35f47d2a99aca7baae509abdbc/simplify_menu-support-options.patch",
         "Add callable : filterLanguage": "https://gist.githubusercontent.com/ismail-void/73d5a8497bc09443ae5a6e7467609dd3/raw/adb696894af3b6fcbf5adab7c199432e839f8403/add-filterLanguage-callable.patch"
       },
       "drupal/features": {
