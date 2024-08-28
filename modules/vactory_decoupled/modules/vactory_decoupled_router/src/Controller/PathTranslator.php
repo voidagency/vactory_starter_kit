@@ -3,6 +3,7 @@
 namespace Drupal\vactory_decoupled_router\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Routing\RouteObjectInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -61,13 +62,21 @@ class PathTranslator extends ControllerBase {
   protected $currentLangcode;
 
   /**
+   * The entity repository service.
+   *
+   * @var \Drupal\Core\Entity\EntityRepositoryInterface
+   */
+  protected $entityRepository;
+
+  /**
    * EventInfoController constructor.
    */
   public function __construct(
     LoggerInterface $logger,
     UrlMatcherInterface $router,
     ResourceTypeRepository $jsonapiResourceTypeRepository,
-    EntityTypeManagerInterface $entityTypeManager
+    EntityTypeManagerInterface $entityTypeManager,
+    EntityRepositoryInterface $entityRepository,
   ) {
     $this->logger = $logger;
     $this->router = $router;
@@ -78,6 +87,7 @@ class PathTranslator extends ControllerBase {
     $this->currentLangcode = $this->languageManager()
       ->getCurrentLanguage()
       ->getId();
+    $this->entityRepository = $entityRepository;
   }
 
   /**
@@ -88,7 +98,8 @@ class PathTranslator extends ControllerBase {
       $container->get('logger.channel.vactory_decoupled_router'),
       $container->get('router.no_access_checks'),
       $container->get('jsonapi.resource_type.repository'),
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('entity.repository'),
     );
   }
 
@@ -133,7 +144,6 @@ class PathTranslator extends ControllerBase {
         $match_info = $error_match_info;
       }
     }
-
     /** @var \Drupal\Core\Entity\EntityInterface $entity */
     $entity = $this->findEntity($match_info);
     if (!$entity) {
@@ -152,7 +162,6 @@ class PathTranslator extends ControllerBase {
       $can_view = $entity->access('view', NULL, TRUE);
       if (!$can_view->isAllowed()) {
         if ($this->currentUser()->isAnonymous()) {
-
           // Redirect the anonymous user to the login page in case.
           // they do not have access to the current page.
           $login_route = $this->systemRoutes['account_login'];
@@ -186,10 +195,38 @@ class PathTranslator extends ControllerBase {
       $output['system'] = $info;
     }
 
+    if ($this->isFollowNodePathPattern($path) && $entity->hasTranslation($this->currentLangcode)) {
+      // Get the translated entity.
+      $trans_entity = $this->entityRepository->getTranslationFromContext($entity);
+
+      // Generate the alias URL string.
+      $alias = $trans_entity->toUrl()->toString();
+      // Check if the alias exists and does not follow the node path pattern.
+      if (!empty($alias) && !$this->isFollowNodePathPattern($alias)) {
+        $redirects_trace[] = [
+          'to' => $alias,
+          'status' => 301,
+          'from' => $path,
+        ];
+        $output['redirect'] = $redirects_trace;
+      }
+    }
+
     $this->response->headers->add(['Content-Type' => 'application/json']);
     $this->response->setData($output);
 
     return $this->response;
+  }
+
+  /**
+   * Check if path follow the /node/nid pattern.
+   */
+  private function isFollowNodePathPattern($path) {
+    // Define the pattern.
+    $pattern = '/\/node\/\d+$/';
+
+    // Check if the path matches the pattern.
+    return preg_match($pattern, $path);
   }
 
   /**
