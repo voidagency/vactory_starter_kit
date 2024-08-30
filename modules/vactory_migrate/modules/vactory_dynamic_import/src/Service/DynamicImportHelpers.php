@@ -360,6 +360,10 @@ class DynamicImportHelpers {
                       'source'    => $field,
                     ],
                     [
+                      'plugin' => 'callback',
+                      'callable' => 'trim',
+                    ],
+                    [
                       'plugin'      => 'entity_lookup',
                       'value_key'   => 'name',
                       'bundle_key'  => 'vid',
@@ -374,6 +378,10 @@ class DynamicImportHelpers {
                       'plugin'    => 'explode',
                       'delimiter' => '|',
                       'source'    => $field,
+                    ],
+                    [
+                      'plugin' => 'callback',
+                      'callable' => 'trim',
                     ],
                     [
                       'plugin'      => 'entity_generate',
