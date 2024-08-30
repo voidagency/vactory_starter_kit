@@ -290,6 +290,13 @@ class DynamicImportHelpers {
                 'default_value' => 0,
               ];
             }
+            elseif ($target_entity == 'user' && $mapped_field == 'roles') {
+              $data['process'][$mapped_field] = [
+                'plugin' => 'explode',
+                'delimiter' => '|',
+                'source' => $field,
+              ];
+            }
             else {
               $data['process'][$mapped_field] = $field;
             }
