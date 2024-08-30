@@ -349,6 +349,13 @@ class DynamicImportForm extends EntityForm {
                   $alias = $alias_manager->getAliasByPath('/node/' . $entity->id());
                   $entity_data[$header_item] = $alias;
                 }
+                elseif ($field == 'roles') {
+                  $roles = $entity->get($field)->getValue();
+                  $roles = array_map(function ($item) {
+                    return $item['target_id'];
+                  }, $roles);
+                  $entity_data[$header_item] = implode('|', $roles);
+                }
                 else {
                   $entity_data[$header_item] = $entity->get($field)->value;
                 }
