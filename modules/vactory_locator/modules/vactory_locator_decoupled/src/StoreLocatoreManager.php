@@ -178,8 +178,48 @@ class StoreLocatoreManager implements StoreLocatoreManagerInterface {
 
       $this->messenger->addError(t('Requête invalide!'));
       return new JsonResponse(['message' => t('Exception thrown')], 500);
-
     }
   }
 
+
+
+  /**
+   * Callback for `Open cage get location info.
+   * @param Request $request
+   * @return JsonResponse
+   */
+
+  public function getCityName(Request $request)
+  {
+    $query = $request->query->get('q');
+    if (empty($query)) return [];
+    try {
+      $client = $this->client;
+      $res = $client->get('https://api.opencagedata.com/geocode/v1/json', [
+        'query' => [
+          'q' => $query,
+          'language' => $this->language,
+          'key' => getenv('OPEN_CAGE_API'),
+          'no_annotations' => 1,
+          'country' => 'MA,FR',
+          'output' => 'json'
+        ],
+        'headers' => [
+          'cache-control' => 'max-age=86400,public',
+        ]
+      ]);
+      $response = json_decode($res->getBody(), TRUE);
+      //dump($response);
+      // $response["results"][0]["components"]["road"] . " " . $response["results"][0]["components"]["city"] . " " . $response["results"][0]["components"]["postcode"]
+      $adress = $response["results"][0]["components"]["road"];
+      $adress .= " " . $response["results"][0]["components"]["city"];
+      $adress .= " " .$response["results"][0]["components"]["postcode"];
+      $adress .= " " . $response["results"][0]["components"]["country"];
+      return new JsonResponse(['result' => $adress], 200);
+    } catch (\Exception $e) {
+      $this->messenger->addError(t('Requête invalide!'));
+      return [];
+    }
+    return "Agadir fountry maroc";
+  }
 }

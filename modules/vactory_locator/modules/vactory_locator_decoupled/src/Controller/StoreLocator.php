@@ -232,6 +232,11 @@ class StoreLocator extends ControllerBase {
     return $this->manager->getCities($request);
   }
 
+
+  public function citiesName(Request $request) {
+    return $this->manager->getCityName($request);
+  }
+
   /**
    * Defines an api to handle grouping of entities for now its handled via a view on
    * cities can be upgraded to handle multiple groupings.

@@ -17,4 +17,6 @@ interface StoreLocatoreManagerInterface {
 
   public function getCities (Request $request);
 
+  public function getCityName (Request $request);
+
 }
