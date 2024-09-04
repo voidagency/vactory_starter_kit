@@ -11,7 +11,9 @@ use Drupal\file\Entity\File;
 use Drupal\file\FileInterface;
 use Drupal\media\Entity\Media;
 use Drupal\media\MediaInterface;
+use Drupal\node\Entity\Node;
 use Drupal\taxonomy\Entity\Term;
+use Drupal\user\Entity\User;
 use Drupal\vactory_dynamic_import\Service\DynamicImportHelpers;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -397,6 +399,14 @@ class DynamicImportForm extends EntityForm {
             if ($plugin == 'term') {
               $term_id = $entity->get($field)->target_id;
               $entity_data[$header_item] = $term_id ? Term::load($term_id)->label() : '';
+            }
+            if ($plugin == 'node') {
+              $node_id = $entity->get($field)->target_id;
+              $entity_data[$header_item] = $node_id ? Node::load($node_id)->label() : '';
+            }
+            if ($plugin == 'user') {
+              $user_id = $entity->get($field)->target_id;
+              $entity_data[$header_item] = $user_id ? User::load($user_id)->getAccountName() : '';
             }
             if ($plugin == 'date') {
               $value = $entity->get(reset($split))->getValue();

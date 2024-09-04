@@ -115,6 +115,12 @@ class DynamicImportHelpers {
           if (isset($settings['target_type']) && $settings['target_type'] == 'taxonomy_term') {
             $field_type = 'taxonomy_term';
           }
+          if (isset($settings['target_type']) && $settings['target_type'] == 'node') {
+            $field_type = 'node';
+          }
+          if (isset($settings['target_type']) && $settings['target_type'] == 'user') {
+            $field_type = 'user';
+          }
         }
         if (!$field_storage) {
           $fields[$field_name] = $only_keys ? $field_name : [
@@ -197,6 +203,12 @@ class DynamicImportHelpers {
       }
       elseif ($original['type'] == 'text_with_summary') {
         $header[] = 'wysiwyg|' . $formatted_field . '|full_html';
+      }
+      elseif ($original['type'] == 'node') {
+        $header[] = 'node|' . $formatted_field . '|title';
+      }
+      elseif ($original['type'] == 'user') {
+        $header[] = 'user|' . $formatted_field . '|username';
       }
       else {
         $header[] = '-|' . $formatted_field . '|-';
@@ -406,6 +418,45 @@ class DynamicImportHelpers {
                 }
               }
             }
+            if ($plugin == 'node') {
+              $node_target_bundle = $this->getnodeTargetBundle($target_entity, $target_bundle, $mapped_field);
+              if (!$node_target_bundle['status']) {
+                continue;
+              }
+              elseif ($info == 'title') {
+                $data['process'][$mapped_field] = [
+                  [
+                    'plugin' => 'callback',
+                    'callable' => 'trim',
+                    'source' => $field,
+                  ],
+                  [
+                    'plugin'      => 'entity_lookup',
+                    'value_key'   => 'title',
+                    'bundle_key'  => 'type',
+                    'bundle'      => $node_target_bundle['value'],
+                    'entity_type' => 'node',
+                  ],
+                ];
+              }
+            }
+
+            if ($plugin == 'user') {
+              if ($info == 'username') {
+                $data['process'][$mapped_field] = [
+                  [
+                    'plugin' => 'callback',
+                    'callable' => 'trim',
+                    'source' => $field,
+                  ],
+                  [
+                    'plugin'      => 'entity_lookup',
+                    'value_key'   => 'name',
+                    'entity_type' => 'user',
+                  ],
+                ];
+              }
+            }
             if ($plugin == 'wysiwyg') {
               $split_field = explode('/', $mapped_field);
               if (end($split_field) === 'format') {
@@ -435,6 +486,31 @@ class DynamicImportHelpers {
       if ($field_name == $field) {
         $settings = $field_definition->getSettings();
         if ($settings['target_type'] !== 'taxonomy_term') {
+          return [
+            'status' => FALSE,
+            'value'  => "{$field_name} configuration is not correct",
+          ];
+        }
+        $target_bundle = $settings['handler_settings']['target_bundles'];
+        return [
+          'status' => TRUE,
+          'value'  => reset($target_bundle),
+        ];
+      }
+    }
+  }
+
+  /**
+   * Get Node Target Bundle By Field.
+   */
+  public function getNodeTargetBundle($entity_type, $bundle, $field) {
+    $splitted = $field ? explode('/', $field) : [];
+    $field = $splitted[0] ?? '';
+    $field_definitions = $this->entityFieldManager->getFieldDefinitions($entity_type, $bundle);
+    foreach ($field_definitions as $field_name => $field_definition) {
+      if ($field_name == $field) {
+        $settings = $field_definition->getSettings();
+        if ($settings['target_type'] !== 'node') {
           return [
             'status' => FALSE,
             'value'  => "{$field_name} configuration is not correct",
