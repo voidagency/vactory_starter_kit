@@ -319,24 +319,36 @@ class DynamicImportHelpers {
               }
               elseif ($info !== 'image_alt') {
                 $data['process'][$mapped_field] = [
-                  'plugin' => 'media_import',
-                  'destination' => 'constants/dest_path',
-                  'media_bundle' => $info,
-                  'media_field_name' => 'field_media_' . $info,
-                  'source' => $field,
-                  'skip_on_error'    => 'true',
+                  [
+                    'plugin' => 'callback',
+                    'callable' => 'trim',
+                    'source' => $field,
+                  ],
+                  [
+                    'plugin' => 'media_import',
+                    'destination' => 'constants/dest_path',
+                    'media_bundle' => $info,
+                    'media_field_name' => 'field_media_' . $info,
+                    'skip_on_error' => 'true',
+                  ],
                 ];
                 if ($info == 'image') {
-                  $data['process'][$mapped_field]['alt_field'] = $field . '_alt';
+                  $data['process'][$mapped_field][1]['alt_field'] = $field . '_alt';
                 }
               }
             }
             if ($plugin == 'file') {
               $data['process'][$mapped_field] = [
-                'plugin'        => 'file_import',
-                'destination'   => 'constants/dest_path',
-                'source'        => $field,
-                'skip_on_error' => 'true',
+                [
+                  'plugin' => 'callback',
+                  'callable' => 'trim',
+                  'source' => $field,
+                ],
+                [
+                  'plugin' => 'file_import',
+                  'destination' => 'constants/dest_path',
+                  'skip_on_error' => 'true',
+                ],
               ];
             }
             if ($plugin == 'term') {
@@ -360,6 +372,10 @@ class DynamicImportHelpers {
                       'source'    => $field,
                     ],
                     [
+                      'plugin' => 'callback',
+                      'callable' => 'trim',
+                    ],
+                    [
                       'plugin'      => 'entity_lookup',
                       'value_key'   => 'name',
                       'bundle_key'  => 'vid',
@@ -374,6 +390,10 @@ class DynamicImportHelpers {
                       'plugin'    => 'explode',
                       'delimiter' => '|',
                       'source'    => $field,
+                    ],
+                    [
+                      'plugin' => 'callback',
+                      'callable' => 'trim',
                     ],
                     [
                       'plugin'      => 'entity_generate',
