@@ -198,3 +198,11 @@ vactory_decoupled.edit_live_mode:
   methods: [POST]
   requirements:
     _access: 'TRUE'
+
+vactory_decoupled.edit_live_mode_image:
+  path: /api/edit_live_mode_image
+  defaults:
+    _controller: '\Drupal\vactory_decoupled\Controller\EditLiveMode::editImage'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
