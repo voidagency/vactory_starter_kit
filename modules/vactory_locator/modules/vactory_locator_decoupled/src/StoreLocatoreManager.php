@@ -2,7 +2,6 @@
 
 namespace Drupal\vactory_locator_decoupled;
 
-
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Cache\CacheableJsonResponse;
@@ -11,98 +10,89 @@ use GuzzleHttp\Client;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * Class StoreLocatoreManager.
+ *
+ * Provides various methods for managing store locator functionality.
+ */
 class StoreLocatoreManager implements StoreLocatoreManagerInterface {
-  
 
   /**
+   * Messenger service.
+   *
    * @var \Drupal\Core\Messenger\MessengerInterface
    */
   private $messenger;
 
   /**
-   * Config Object.
+   * Config factory service.
    *
    * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
   private $configFactory;
 
   /**
+   * HTTP client service.
+   *
    * @var \GuzzleHttp\Client
    */
   private Client $client;
 
   /**
+   * Current language.
+   *
    * @var string
    */
   private string $language;
 
+  /**
+   * Cache ID for storing cities' data.
+   */
   const CID = 'cities_json';
 
   /**
-   * MapManager constructor.
+   * StoreLocatoreManager constructor.
+   *
+   * Initializes services used by the store locator manager.
    */
-  public function __construct()
-  {
+  public function __construct() {
     $this->configFactory = \Drupal::service('config.factory');
     $this->messenger = \Drupal::service('messenger');
     $this->client = \Drupal::httpClient();
     $this->language = \Drupal::languageManager()->getCurrentLanguage()->getId();
-
   }
 
-
   /**
-   * GetSession id to optimise google request (pricewise).
+   * Retrieves the session ID for Google Places requests.
+   *
    * @link https://developers.google.com/maps/documentation/places/web-service/autocomplete
+   *
    * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The current request.
    *
    * @return string
+   *   The session ID.
    */
   public function v4(Request $request) {
     return $request->getSession()->getId();
   }
 
-
   /**
-   * To use in case you want to get lon/lat
-   * from Google (tooo pricey).
-   * @param $place_id
-   * @return array
-   */
-  // public function getDetails (string $place_id)
-  // {
-  //   if (!isset($place_id) || empty($place_id)) return [];
-  //   $client = \Drupal::httpClient();
-  //   $res = $client->get('https://maps.googleapis.com/maps/api/place/details/json', [
-  //     'query' => [
-  //       'place_id' => $place_id,
-  //       'language' => "fr",
-  //       'key' => getenv('GOOGLE_PLACES_API'),
-  //       'fields' => 'name,geometry'
-  //     ],
-  //   ]);
-  //   $response = json_decode($res->getBody(), TRUE);
-
-  //   return [
-  //     'result' => $response['result']['geometry']['location'],
-  //     'name' => $response['result']['name']
-  //   ];
-  // }
-
-
-  /**
-   * Gets lon/lat from opencage Webservice
-   * (Kinda cheap might also replace it with
-   * any other Geo service like
-   * positionStack).
+   * Performs a search query to retrieve geolocation data from OpenCage.
+   *
    * @param string $query
+   *   The query string containing the location to search for.
    *
    * @return array
+   *   The search results, including latitude and longitude.
    */
-  public function searchGeo (string $query)
-  {
-    if (empty($query)) return [];
+  public function searchGeo(string $query) {
+    if (empty($query)) {
+      return [];
+    }
+
     $client = $this->client;
+
     try {
       $res = $client->get('https://api.opencagedata.com/geocode/v1/json', [
         'query' => [
@@ -112,50 +102,59 @@ class StoreLocatoreManager implements StoreLocatoreManagerInterface {
           'no_annotations' => 1,
           'country' => 'MA,FR',
           'fields' => 'label,latitude,longitude,name',
-          'output' => 'json'
+          'output' => 'json',
         ],
         'headers' => [
           'cache-control' => 'max-age=86400,public',
-        ]
+        ],
       ]);
+
       $response = json_decode($res->getBody(), TRUE);
-      //$town = explode(",", $response['results'][0]['formatted'])[0];
+
       return [
         'result' => [
           'lat' => $response['results'][0]['geometry']['lat'],
-          'lng' => $response['results'][0]['geometry']['lng']
+          'lng' => $response['results'][0]['geometry']['lng'],
         ],
-        'name' => (isset($response['results'][0]['components']['city'])) ? ($response['results'][0]['components']['city']) : ($response['results'][0]['components']['country']) ,
+        'name' => $response['results'][0]['components']['city'] ?? $response['results'][0]['components']['country'],
       ];
-    } catch (\Exception $e) {
+    }
+    catch (\Exception $e) {
       $this->messenger->addError(t('Requête invalide!'));
-      \Drupal::logger('vactory_locator')->warning(t('Requête invalide! geolocalisation not found'));
+      \Drupal::logger('vactory_locator')->warning(t('Requête invalide! Geolocalisation not found.'));
       return new JsonResponse([], 200);
     }
   }
 
-
   /**
-   * Callback for `google places autocomplete API method.
-   * @param Request $request
-   * @return JsonResponse
+   * Retrieves a list of cities using Google Places Autocomplete API.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The current request containing the search query.
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   A JSON response containing the city data.
    */
-
-  public function getCities (Request $request) {
+  public function getCities(Request $request) {
     $client = $this->client;
     $query = $request->query->get('city');
-    if (strlen(trim($query)) < 3)  return new JsonResponse([], 200);
+
+    if (strlen(trim($query)) < 3) {
+      return new JsonResponse([], 200);
+    }
+
     try {
       $res = $client->get('https://maps.googleapis.com/maps/api/place/autocomplete/json', [
         'query' => [
-          'input' => Xss::filter($request->query->get('city')),
+          'input' => Xss::filter($query),
           'types' => '(regions)',
-          'language' => "fr",
+          'language' => 'fr',
           'key' => getenv('GOOGLE_PLACES_API'),
           'sessiontoken' => $this->v4($request),
           'components' => 'country:ma',
         ],
       ]);
+
       $response = json_decode($res->getBody(), TRUE);
       $cache['#cache'] = [
         'max-age' => Cache::PERMANENT,
@@ -164,37 +163,47 @@ class StoreLocatoreManager implements StoreLocatoreManagerInterface {
         ],
         'tags' => [
           self::CID . ':' . $query,
-        ]
+        ],
       ];
+
       if ($response['status'] !== 'OK') {
         $this->messenger->addError(t('Requête invalide!'));
         return new JsonResponse(['message' => t('Invalid Request!')], 500);
       }
-      $results = array_map(static fn($arr) => ['content' => $arr['description'], 'value' => $arr['place_id']], $response['predictions']);
 
-      $response = new CacheableJsonResponse($results, $res->getStatusCode());
-      $response->getCacheableMetadata()->addCacheableDependency(CacheableMetadata::createFromRenderArray($cache));
-      return $response;
-    } catch (\Exception $e) {
+      $results = array_map(static fn($arr) => [
+        'content' => $arr['description'],
+        'value' => $arr['place_id'],
+      ], $response['predictions']);
 
+      $cacheableResponse = new CacheableJsonResponse($results, $res->getStatusCode());
+      $cacheableResponse->getCacheableMetadata()->addCacheableDependency(CacheableMetadata::createFromRenderArray($cache));
+
+      return $cacheableResponse;
+    }
+    catch (\Exception $e) {
       $this->messenger->addError(t('Requête invalide!'));
-      \Drupal::logger('vactory_locator')->warning(t('GOOGLE PLACES API:Requête invalide! city not found'));
-      return new JsonResponse(['message' => t('GOOGLE_PLACES_API, City not found')], 200);
+      \Drupal::logger('vactory_locator')->warning(t('GOOGLE PLACES API: Requête invalide! City not found.'));
+      return new JsonResponse(['message' => t('GOOGLE_PLACES_API: City not found.')], 200);
     }
   }
 
-
-
   /**
-   * Callback for `Open cage get location info.
-   * @param Request $request
-   * @return JsonResponse
+   * Retrieves the city name using OpenCage API based on the provided query.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The current request containing the search query.
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   A JSON response containing the city name.
    */
-
-  public function getCityName(Request $request)
-  {
+  public function getCityName(Request $request) {
     $query = $request->query->get('q');
-    if (empty($query)) return [];
+
+    if (empty($query)) {
+      return new JsonResponse([], 200);
+    }
+
     try {
       $client = $this->client;
       $res = $client->get('https://api.opencagedata.com/geocode/v1/json', [
@@ -204,25 +213,26 @@ class StoreLocatoreManager implements StoreLocatoreManagerInterface {
           'key' => getenv('OPEN_CAGE_API'),
           'no_annotations' => 1,
           'country' => 'MA,FR',
-          'output' => 'json'
+          'output' => 'json',
         ],
         'headers' => [
           'cache-control' => 'max-age=86400,public',
-        ]
+        ],
       ]);
+
       $response = json_decode($res->getBody(), TRUE);
-      //dump($response);
-      // $response["results"][0]["components"]["road"] . " " . $response["results"][0]["components"]["city"] . " " . $response["results"][0]["components"]["postcode"]
-      $adress = $response["results"][0]["components"]["road"];
-      $adress .= " " . $response["results"][0]["components"]["city"];
-      $adress .= " " .$response["results"][0]["components"]["postcode"];
-      $adress .= " " . $response["results"][0]["components"]["country"];
-      return new JsonResponse(['result' => $adress], 200);
-    } catch (\Exception $e) {
-      $this->messenger->addError(t('Requête invalide!'));
-      \Drupal::logger('vactory_locator')->warning(t('OPEN CAGE API: Requête invalide! city name not found'));
-      return new JsonResponse(['message' => t('Exception thrown, City name not found')], 200);
+      $address = $response['results'][0]['components']['road'] . ' ' .
+        $response['results'][0]['components']['city'] . ' ' .
+        $response['results'][0]['components']['postcode'] . ' ' .
+        $response['results'][0]['components']['country'];
+
+      return new JsonResponse(['result' => $address], 200);
     }
-    return new JsonResponse([], 200);
+    catch (\Exception $e) {
+      $this->messenger->addError(t('Requête invalide!'));
+      \Drupal::logger('vactory_locator')->warning(t('OPEN CAGE API: Requête invalide! City name not found.'));
+      return new JsonResponse(['message' => t('Exception thrown: City name not found.')], 200);
+    }
   }
+
 }
