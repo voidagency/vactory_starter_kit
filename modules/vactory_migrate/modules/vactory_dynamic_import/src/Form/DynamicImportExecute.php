@@ -179,6 +179,7 @@ class DynamicImportExecute extends ConfirmFormBase {
         $file_path = \Drupal::service('file_system')
           ->realpath($file->getFileUri());
       }
+      $this->trimCsvHeader($file_path, $delimiter);
       $header = $this->getCsvHeader($file_path, $delimiter);
 
       $check_content = $this->isValidCsvContent($file_path, $delimiter, count($header));
@@ -382,6 +383,35 @@ class DynamicImportExecute extends ConfirmFormBase {
    */
   public function getCancelUrl() {
     return new Url('vactory_migrate_ui.import');
+  }
+
+  /**
+   * Helper function to trim the header of the CSV file.
+   */
+  protected function trimCsvHeader($file_uri, $delimiter = ',') {
+    $trimmed_data = [];
+    if (($handle = fopen($file_uri, 'r+')) !== FALSE) {
+      $header = fgetcsv($handle, NULL, $delimiter);
+      if ($header) {
+        // Trim each header field.
+        $trimmed_header = array_map('trim', $header);
+        $trimmed_data[] = $trimmed_header;
+
+        // Get the rest of the file content.
+        while (($data = fgetcsv($handle, NULL, $delimiter)) !== FALSE) {
+          $trimmed_data[] = $data;
+        }
+
+        // Rewrite the trimmed data back to the file.
+        rewind($handle);
+        foreach ($trimmed_data as $row) {
+          fputcsv($handle, $row);
+        }
+        // Truncate the file to remove any extra content from the original.
+        ftruncate($handle, ftell($handle));
+      }
+      fclose($handle);
+    }
   }
 
 }

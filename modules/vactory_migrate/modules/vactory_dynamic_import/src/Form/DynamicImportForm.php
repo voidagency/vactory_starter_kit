@@ -11,11 +11,11 @@ use Drupal\file\Entity\File;
 use Drupal\file\FileInterface;
 use Drupal\media\Entity\Media;
 use Drupal\media\MediaInterface;
+use Drupal\node\Entity\Node;
 use Drupal\taxonomy\Entity\Term;
+use Drupal\user\Entity\User;
 use Drupal\vactory_dynamic_import\Service\DynamicImportHelpers;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 /**
  * Form handler for the dynamic import add and edit forms.
@@ -293,14 +293,7 @@ class DynamicImportForm extends EntityForm {
    */
   public function dynamicExport(&$form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
-    $moduleHandler = \Drupal::service('module_handler');
-    $alias_manager = \Drupal::service('path_alias.manager');
-    $media_decoupled_manager = NULL;
-    if ($moduleHandler->moduleExists('vactory_decoupled')) {
-      $media_decoupled_manager = \Drupal::service('vacory_decoupled.media_file_manager');
-    }
 
-    $file_url_generator = \Drupal::service('file_url_generator');
     $header = $this->dynamicImportHelper->generateCsvModel(
       $values['target_entity'],
       $values['target_bundle'],
@@ -318,7 +311,45 @@ class DynamicImportForm extends EntityForm {
       $query->condition($bundle_field, $values['target_bundle']);
     }
     $ids = $query->execute();
-    $data = [];
+
+    $operations = [];
+
+    if (!empty($ids)) {
+      $chunks = array_chunk($ids, 1);
+      foreach ($chunks as $chunk) {
+        $operations[] = [
+          [static::class, 'dynamicExportBatchCallback'],
+          [$chunk, $values, $header],
+        ];
+      }
+      if (!empty($operations)) {
+        $batch = [
+          'title'      => 'Process of exporting ...',
+          'operations' => $operations,
+          'finished'   => [static::class, 'dynamicExportBatchFinished'],
+        ];
+        batch_set($batch);
+      }
+    }
+
+    $form_state->setRedirect('vactory_dynamic_import.download_form', ['dynamic_import' => $this->entity->id()]);
+    $form_state->setIgnoreDestination();
+  }
+
+  /**
+   * Export existing content batch callback.
+   */
+  public static function dynamicExportBatchCallback($ids, $values, $header, &$context) {
+    $storage = \Drupal::entityTypeManager()->getStorage($values['target_entity']);
+    $moduleHandler = \Drupal::service('module_handler');
+    $alias_manager = \Drupal::service('path_alias.manager');
+    $media_decoupled_manager = NULL;
+    if ($moduleHandler->moduleExists('vactory_decoupled')) {
+      $media_decoupled_manager = \Drupal::service('vacory_decoupled.media_file_manager');
+    }
+
+    $file_url_generator = \Drupal::service('file_url_generator');
+
     foreach ($ids as $id) {
       $entity_data = [];
       $entity = NULL;
@@ -368,6 +399,14 @@ class DynamicImportForm extends EntityForm {
             if ($plugin == 'term') {
               $term_id = $entity->get($field)->target_id;
               $entity_data[$header_item] = $term_id ? Term::load($term_id)->label() : '';
+            }
+            if ($plugin == 'node') {
+              $node_id = $entity->get($field)->target_id;
+              $entity_data[$header_item] = $node_id ? Node::load($node_id)->label() : '';
+            }
+            if ($plugin == 'user') {
+              $user_id = $entity->get($field)->target_id;
+              $entity_data[$header_item] = $user_id ? User::load($user_id)->getAccountName() : '';
             }
             if ($plugin == 'date') {
               $value = $entity->get(reset($split))->getValue();
@@ -442,17 +481,29 @@ class DynamicImportForm extends EntityForm {
           }
         }
       }
-      $data[] = $entity_data;
+      $context['results']['data'][] = $entity_data;
     }
 
-    $delimiter = \Drupal::config('vactory_migrate.settings')->get('delimiter') ?? ',';
-    $path = $this->dynamicImportHelper->generateCsv($header, $data, "{$values['target_entity']}--{$values['target_bundle']}--export", $delimiter);
+    $context['results']['header'] = $header;
+    $context['results']['filename'] = "{$values['target_entity']}--{$values['target_bundle']}--export";
 
-    $response = new BinaryFileResponse(\Drupal::service('file_system')
-      ->realPath($path), 200, [], FALSE);
-    $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, "{$values['target_entity']}--{$values['target_bundle']}--export" . '.csv');
-    $response->deleteFileAfterSend(TRUE);
-    $response->send();
+  }
+
+  /**
+   * Export existing content batch finish.
+   */
+  public static function dynamicExportBatchFinished($success, $results, $operations) {
+    if ($success) {
+      $header = $results['header'];
+      $data = $results['data'];
+      $filename = $results['filename'];
+      $delimiter = \Drupal::config('vactory_migrate.settings')->get('delimiter') ?? ',';
+      $path = \Drupal::service('vactory_dynamic_import.helper')->generateCsv($header, $data, $filename, $delimiter);
+      $_SESSION['dynamic_export_file_download'] = $path;
+    }
+    else {
+      \Drupal::messenger()->addError(t('An error occurred during export.'));
+    }
   }
 
 }
