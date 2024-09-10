@@ -14,6 +14,14 @@ vactory_dynamic_import.confirmation:
   requirements:
     _permission: 'administer dynamic imports'
 
+vactory_dynamic_import.download_form:
+  path: '/admin/config/vactory_dynamic_import/download_form'
+  defaults:
+    _form: 'Drupal\vactory_dynamic_import\Form\DownloadForm'
+    _title: 'Vactory Dynamic Import - Download Form'
+  requirements:
+    _permission: 'administer dynamic imports'
+
 # ====== Dynamic import config entity ======
 entity.dynamic_import.collection:
   path: '/admin/config/system/dynamic_import'
