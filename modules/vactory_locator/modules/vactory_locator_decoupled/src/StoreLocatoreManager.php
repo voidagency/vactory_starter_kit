@@ -129,7 +129,8 @@ class StoreLocatoreManager implements StoreLocatoreManagerInterface {
       ];
     } catch (\Exception $e) {
       $this->messenger->addError(t('Requête invalide!'));
-      return [];
+      \Drupal::logger('vactory_locator')->warning(t('Requête invalide! geolocalisation not found'));
+      return new JsonResponse([], 200);
     }
   }
 
@@ -177,7 +178,8 @@ class StoreLocatoreManager implements StoreLocatoreManagerInterface {
     } catch (\Exception $e) {
 
       $this->messenger->addError(t('Requête invalide!'));
-      return new JsonResponse(['message' => t('Exception thrown')], 500);
+      \Drupal::logger('vactory_locator')->warning(t('GOOGLE PLACES API:Requête invalide! city not found'));
+      return new JsonResponse(['message' => t('GOOGLE_PLACES_API, City not found')], 200);
     }
   }
 
@@ -218,8 +220,9 @@ class StoreLocatoreManager implements StoreLocatoreManagerInterface {
       return new JsonResponse(['result' => $adress], 200);
     } catch (\Exception $e) {
       $this->messenger->addError(t('Requête invalide!'));
-      return [];
+      \Drupal::logger('vactory_locator')->warning(t('OPEN CAGE API: Requête invalide! city name not found'));
+      return new JsonResponse(['message' => t('Exception thrown, City name not found')], 200);
     }
-    return "Agadir fountry maroc";
+    return new JsonResponse([], 200);
   }
 }
