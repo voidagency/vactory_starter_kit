@@ -47,6 +47,7 @@ class StoreLocatoreManager implements StoreLocatoreManagerInterface {
     $this->messenger = \Drupal::service('messenger');
     $this->client = \Drupal::httpClient();
     $this->language = \Drupal::languageManager()->getCurrentLanguage()->getId();
+
   }
 
 
@@ -124,14 +125,11 @@ class StoreLocatoreManager implements StoreLocatoreManagerInterface {
           'lat' => $response['results'][0]['geometry']['lat'],
           'lng' => $response['results'][0]['geometry']['lng']
         ],
-        'name' => (isset($response['results'][0]['components']['city'])) ? ($response['results'][0]['components']['city']) : ($response['results'][0]['components']['country']),
+        'name' => (isset($response['results'][0]['components']['city'])) ? ($response['results'][0]['components']['city']) : ($response['results'][0]['components']['country']) ,
       ];
     } catch (\Exception $e) {
-      \Drupal::logger('vactory_locator')->warning(t('Requête invalide! Geolocalisation exception'));
-      return new JsonResponse([], 200);
+      $this->messenger->addError(t('Requête invalide!'));
       return [];
-      \Drupal::logger('vactory_locator')->warning(t('Requête invalide! geolocalisation not found'));
-      return new JsonResponse([], 200);
     }
   }
 
@@ -169,8 +167,7 @@ class StoreLocatoreManager implements StoreLocatoreManagerInterface {
       ];
       if ($response['status'] !== 'OK') {
         $this->messenger->addError(t('Requête invalide!'));
-        \Drupal::logger('vactory_locator')->warning(t('Their is not result for this city'));
-        return new JsonResponse(['message' => t('Their is not result for this city')], 200);
+        return new JsonResponse(['message' => t('Invalid Request!')], 500);
       }
       $results = array_map(static fn($arr) => ['content' => $arr['description'], 'value' => $arr['place_id']], $response['predictions']);
 
@@ -178,9 +175,11 @@ class StoreLocatoreManager implements StoreLocatoreManagerInterface {
       $response->getCacheableMetadata()->addCacheableDependency(CacheableMetadata::createFromRenderArray($cache));
       return $response;
     } catch (\Exception $e) {
+
       $this->messenger->addError(t('Requête invalide!'));
-      \Drupal::logger('vactory_locator')->warning(t('Requête invalide! city not found'));
-      return new JsonResponse(['message' => t('Exception thrown, City not found')], 200);
+      return new JsonResponse(['message' => t('Exception thrown')], 500);
+
     }
   }
+
 }
