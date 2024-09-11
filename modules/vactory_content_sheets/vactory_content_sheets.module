@@ -1,21 +1,187 @@
 <?php
 
+/**
+ * @file
+ * Contain related hooks.
+ */
+
 use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Implements hook_field_widget_single_element_form_alter().
  */
 function vactory_content_sheets_field_widget_single_element_form_alter(&$element, FormStateInterface $form_state, array $context) {
-    $plugin_id = $context['widget']->getPluginId();
-    if ($plugin_id == 'media_library_widget') {
-        $route_name = \Drupal::routeMatch()->getRouteName();
-        if ($route_name == 'vactory_dynamic_field.open_modal_form') {
-            $element['media_google_sheet'] = [
-                '#type' => 'textfield',
-                '#title' => t('Media key'),
-                '#description' => t('This field serves to link the media with its associated value on a Google Sheet.'),
-            ];
-        }
+  $plugin_id = $context['widget']->getPluginId();
+  if ($plugin_id == 'media_library_widget') {
+    $route_name = \Drupal::routeMatch()->getRouteName();
+    if ($route_name == 'vactory_dynamic_field.open_modal_form') {
+      $element['media_google_sheet'] = [
+        '#type' => 'textfield',
+        '#title' => t('Media key'),
+        '#description' => t('This field serves to link the media with its associated value on a Google Sheet.'),
+      ];
     }
+  }
 }
-  
+
+/**
+ * Implements disable content sheets callback.
+ */
+function disable_content_sheets_callback($id, $entity_id, $type, $operation_details, &$context) {
+  $entity_type_manager = Drupal::entityTypeManager();
+  $content_service = Drupal::service("vactory_content_sheets.content_services");
+  $entity_repository = Drupal::service("entity.repository");
+  $language_manager = Drupal::service("language_manager");
+  $langs = array_keys($language_manager->getLanguages());
+  if ($entity_id && is_numeric($entity_id)) {
+    $entity = $entity_type_manager->getStorage($type)
+      ->load($entity_id);
+    if (!isset($entity)) {
+      return;
+    }
+
+    // Process nodes entites.
+    if ($type === "node") {
+      if (!$entity->hasField("field_vactory_paragraphs")) {
+        return;
+      }
+      $paragraphs = $entity->get("field_vactory_paragraphs")->getValue();
+      if (!isset($paragraphs)) {
+        return;
+      }
+      disable_content_sheets_for_nodes($id, $entity, $paragraphs, $context, $langs, $entity_repository, $entity_type_manager, $content_service);
+    }
+
+    // Process block content entities.
+    if ($type === "block_content") {
+      if (!$entity->hasField("field_dynamic_block_components")) {
+        return;
+      }
+      $paragraph = $entity->get("field_dynamic_block_components")->getValue()[0] ?? NULL;
+      if (!$paragraph) {
+        return;
+      }
+
+      disable_content_sheets_for_blocks($id, $entity, $paragraph, $context, $langs, $content_service, $entity_repository);
+    }
+
+  }
+}
+
+/**
+ * Disable content sheets for content blocks.
+ */
+function disable_content_sheets_for_blocks($id, $entity, $paragraph, $context, $langs, $content_service, $entity_repository) {
+  $data = $content_service->replaceContentSheetRegex($paragraph['widget_data'], $paragraph['widget_id']);
+  $entity->field_dynamic_block_components->setValue($data);
+  $processedLang[$entity->id()] = [];
+  try {
+    $entity->save();
+    array_push($processedLang[$entity->id()], $entity->get('langcode')->value);
+  }
+  catch (\Exception $e) {
+    \Drupal::logger("vactory_content_sheets")->warning($e->getMessage());
+  }
+  foreach ($langs as $lang) {
+    if ($lang == $entity->language()->getId()) {
+      continue;
+    }
+    if ($entity->hasTranslation($lang)) {
+      $translated_entity = $entity_repository->getTranslationFromContext($entity, $lang);
+      if ($translated_entity !== NULL) {
+        $paragraph = $translated_entity->get("field_dynamic_block_components")->getValue()[0] ?? NULL;
+        $data = $content_service->replaceContentSheetRegex($paragraph['widget_data'], $paragraph['widget_id'], $lang);
+        $translated_entity->field_dynamic_block_components->setValue($data);
+        try {
+          $translated_entity->save();
+          array_push($processedLang[$translated_entity->id()], $lang);
+        }
+        catch (\Exception $e) {
+          \Drupal::logger("vactory_content_sheets")->warning($e->getMessage());
+        }
+      }
+    }
+  }
+
+  $context['results'][] = "block-" . $id;
+  $context['message'] = t('Running Batch Block content id:@entity_id | Title: @title | Languages: @lang',
+    [
+      '@title' => $entity->label(),
+      '@entity_id' => $entity->id(),
+      '@lang' => implode(";", $processedLang[$entity->id()]),
+    ]
+  );
+}
+
+/**
+ * Disable content sheets for nodes.
+ */
+function disable_content_sheets_for_nodes($id, $entity, $paragraphs, $context, $langs, $entity_repository, $entity_type_manager, $content_service) {
+  foreach ($paragraphs as $pItem) {
+    $paragraph = $entity_type_manager->getStorage('paragraph')
+      ->load($pItem['target_id']);
+    if (!isset($paragraph)) {
+      return;
+    }
+    $processedLang[$entity->id()] = [];
+    $widget_data = $paragraph->get('field_vactory_component')
+      ->getValue()[0]['widget_data'];
+    $widget_id = $paragraph->get('field_vactory_component')
+      ->getValue()[0]['widget_id'];
+    $data = $content_service->replaceContentSheetRegex($widget_data, $widget_id);
+    $paragraph->field_vactory_component->setValue($data);
+    try {
+      $paragraph->save();
+      array_push($processedLang[$entity->id()], $entity->get('langcode')->value);
+    }
+    catch (\Exception $e) {
+      \Drupal::logger("vactory_content_sheets")->warning($e->getMessage());
+    }
+
+    // Get translations.
+    foreach ($langs as $lang) {
+      if ($lang == $paragraph->language()->getId()) {
+        continue;
+      }
+      if ($paragraph->hasTranslation($lang)) {
+        $translated_entity = $entity_repository->getTranslationFromContext($paragraph, $lang);
+        if ($translated_entity !== NULL) {
+          $trans_widget_data = $paragraph->get('field_vactory_component')
+            ->getValue()[0]['widget_data'];
+          $trans_widget_id = $paragraph->get('field_vactory_component')
+            ->getValue()[0]['widget_id'];
+          $data = $content_service->replaceContentSheetRegex($trans_widget_data, $trans_widget_id, $lang);
+          $translated_entity->field_vactory_component->setValue($data);
+          try {
+            $translated_entity->save();
+            array_push($processedLang[$entity->id()], $lang);
+          }
+          catch (\Exception $e) {
+            \Drupal::logger("vactory_content_sheets")
+              ->warning($e->getMessage());
+          }
+        }
+      }
+    }
+
+    $context['results'][] = "node-" . $id;
+    $context['message'] = t('Running Batch Node id:@entity_id | Title: @title | Languages: @lang | Bundle: @bundle',
+      [
+        '@title' => $entity->label(),
+        '@entity_id' => $entity->id(),
+        '@lang' => implode(";", $processedLang[$entity->id()]),
+        '@bundle' => $entity->getType(),
+      ]
+    );
+  }
+}
+
+/**
+ * Implements batch finished callback.
+ */
+function disable_content_sheets_finished($success, $results, $operations) {
+  $messenger = \Drupal::messenger();
+  if ($success) {
+    $messenger->addMessage(t('@count entities processed.', ['@count' => count($results)]));
+  }
+}
