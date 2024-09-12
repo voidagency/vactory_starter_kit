@@ -981,6 +981,7 @@ function vactory_decoupled_preprocess_html(&$variables) {
     'entity.user.canonical',
     'oauth2_token.authorize',
     'entity.webform.canonical',
+    'entity.comment.edit_form',
   ];
   if (!in_array($route_name, $exluded_routes)) {
     $langcode = Drupal::languageManager()->getCurrentLanguage()->getId();
