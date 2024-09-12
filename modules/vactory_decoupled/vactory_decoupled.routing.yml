@@ -206,3 +206,11 @@ vactory_decoupled.edit_live_mode_image:
   methods: [POST]
   requirements:
     _access: 'TRUE'
+
+vactory_decoupled.switch_lang_settings:
+  path: 'admin/config/system/decoupled-switch-lang-settings'
+  defaults:
+    _form: 'Drupal\vactory_decoupled\Form\DecoupledSwitchLangSettingsForm'
+    _title: 'Vactory Decoupled Switch Lang Settings'
+  requirements:
+    _permission: 'administer site configuration'
