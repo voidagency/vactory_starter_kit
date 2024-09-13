@@ -127,7 +127,11 @@ class InternalNodeEntityExtraFieldItemList extends FieldItemList {
     $langcodesList = array_keys($langcodes);
     if ($hide_untranslated) {
       $langcodesList = array_filter($langcodesList, function ($langcode) use ($entity) {
-        return $entity->hasTranslation($langcode);
+        $translated = $entity->hasTranslation($langcode);
+        if (!$translated) {
+          return FALSE;
+        }
+        return $entity->getTranslation($langcode)->isPublished();
       });
     }
     $data = [];
