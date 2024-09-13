@@ -18,6 +18,9 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
+/**
+ * Menu controler.
+ */
 class MenusController extends ControllerBase {
 
   /**
@@ -37,7 +40,7 @@ class MenusController extends ControllerBase {
   /**
    * Entity repository service.
    *
-   * @var EntityRepositoryInterface
+   * @var \Drupal\Core\Entity\EntityRepositoryInterface
    */
   protected $entityRepository;
 
@@ -210,8 +213,13 @@ class MenusController extends ControllerBase {
         if ($decoupled_link) {
           $decoupled_link_url = Url::fromUri($decoupled_link)->toString(TRUE)->getGeneratedUrl();
         }
+
+        $hide_menu_item = $menu_entity->get('hide_menu_item')->value ?? FALSE;
+        if ($hide_menu_item) {
+          continue;
+        }
       }
-      /* @var $org_link \Drupal\Core\Menu\MenuLinkInterface */
+      /** @var \Drupal\Core\Menu\MenuLinkInterface $org_link*/
       $org_link = $item_value['original_link'];
 
       $newValue = $this->getElementValue($org_link);
@@ -270,6 +278,7 @@ class MenusController extends ControllerBase {
    *   The link from the menu.
    *
    * @return array
+   *   Menu as array.
    */
   protected function getElementValue(MenuLinkInterface $link) {
     $siteConfig = $this->configFactory->get('system.site');
@@ -317,8 +326,6 @@ class MenusController extends ControllerBase {
    * This function is used to generate some variables we need to use.
    *
    * These variables are available in the url.
-   *
-   * @param $request
    */
   private function setup($request) {
     // Get and set the max depth if available.
@@ -333,4 +340,5 @@ class MenusController extends ControllerBase {
       $this->minDepth = $min;
     }
   }
+
 }
