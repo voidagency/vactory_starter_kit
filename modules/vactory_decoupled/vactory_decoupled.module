@@ -354,6 +354,17 @@ function vactory_decoupled_entity_base_field_info(EntityTypeInterface $entity_ty
         'type' => 'link_default',
         'weight' => -2,
       ]);
+    $fields['hide_menu_item'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Hide menu item'))
+      ->setRevisionable(TRUE)
+      ->setTranslatable(TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'boolean_checkbox',
+        'settings' => [
+          'display_label' => TRUE,
+        ],
+      ])
+      ->setDisplayConfigurable('form', TRUE);
   }
 
   if ($entity_type->id() === 'taxonomy_term') {
