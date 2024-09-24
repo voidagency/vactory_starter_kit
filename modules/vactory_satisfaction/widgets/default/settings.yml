@@ -1,0 +1,40 @@
+name: 'Default'
+multiple: TRUE
+category: 'Satisfaction'
+enabled: TRUE
+extra_fields:
+  title:
+    type: text
+    label: 'Survey title'
+  description:
+    type: textarea
+    label: 'Survey description'
+  next_label:
+    type: text
+    label: 'Next button label'
+  previous_label:
+    type: text
+    label: 'Previous button label'
+  submission_label:
+    type: text
+    label: 'Submission button label'
+
+fields:
+  question:
+    type: text
+    label: 'Question'
+    options:
+      '#required': TRUE
+  items:
+    type: vactory_satisfaction
+    label: 'Items'
+  display_mode:
+    type: select
+    label: 'Display mode'
+    options:
+      '#options':
+        - 'buttons': 'buttons'
+        - 'range': 'range'
+  optional_question:
+    type: textarea
+    label: 'Optional question'
