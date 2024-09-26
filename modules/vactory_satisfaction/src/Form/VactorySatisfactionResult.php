@@ -48,32 +48,65 @@ class VactorySatisfactionResult extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    // Prepare filter.
-    $pages_query = $this->database->select('vactory_satisfaction', 'vs');
-    $pages_query->fields('vs', ['nid']);
-    $pages_query->distinct();
-    $pages_query->addField('nfd', 'title');
-    $pages_query->join('node_field_data', 'nfd', 'vs.nid = nfd.nid');
-
-    $pages_result = $pages_query->execute()->fetchAll();
-    $pages = [];
-    foreach ($pages_result as $page_result) {
-      $pages[$page_result->nid] = $page_result->title;
+    // Purge confirmation.
+    $purge = \Drupal::request()->query->get('purge');
+    if (isset($purge)) {
+      $form_state->set('purge', $purge);
+      $form['confirm_message'] = [
+        '#type' => 'markup',
+        '#markup' => '<p>' . $this->t('Are you sure you want to purge all data? This action cannot be undone.') . '</p>',
+      ];
+      // Add purge button.
+      $form['actions']['process_purge'] = [
+        '#type' => 'submit',
+        '#value' => $this->t('Confirm Purge'),
+        '#button_type' => 'danger',
+        '#submit' => ['::purge'],
+      ];
+      $form['actions']['cancel'] = [
+        '#type' => 'submit',
+        '#value' => $this->t('Cancel'),
+        '#submit' => ['::cancelPurge'],
+        '#limit_validation_errors' => [],
+      ];
     }
+    // Default form.
+    else {
+      // Prepare filter.
+      $pages_query = $this->database->select('vactory_satisfaction', 'vs');
+      $pages_query->fields('vs', ['nid']);
+      $pages_query->distinct();
+      $pages_query->addField('nfd', 'title');
+      $pages_query->join('node_field_data', 'nfd', 'vs.nid = nfd.nid');
 
-    $form['filter'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Page'),
-      '#options' => $pages,
-      '#empty_option' => t('-- Page --'),
-    ];
+      $pages_result = $pages_query->execute()->fetchAll();
+      $pages = [];
+      foreach ($pages_result as $page_result) {
+        $pages[$page_result->nid] = $page_result->title;
+      }
 
-    // Add Export button.
-    $form['actions']['export_excel'] = [
-      '#type' => 'submit',
-      '#value' => $this->t('Export as Excel'),
-      '#submit' => ['::exportToExcel'],
-    ];
+      $form['filter'] = [
+        '#type' => 'select',
+        '#title' => $this->t('Page'),
+        '#options' => $pages,
+        '#empty_option' => t('-- All pages --'),
+      ];
+
+      // Add Export button.
+      $form['actions']['export_excel'] = [
+        '#type' => 'submit',
+        '#value' => $this->t('Export as Excel'),
+        '#submit' => ['::exportToExcel'],
+      ];
+
+      // Add purge button.
+      $form['actions']['purge'] = [
+        '#type' => 'submit',
+        '#value' => $this->t('Purge'),
+        '#button_type' => 'danger',
+        '#submit' => ['::confirmPurge'],
+      ];
+    }
 
     return $form;
   }
@@ -141,6 +174,38 @@ class VactorySatisfactionResult extends FormBase {
   }
 
   /**
+   * Purge submissions.
+   */
+  public function purge(array &$form, FormStateInterface $form_state) {
+    $nid = $form_state->get('purge');
+    // Delete query.
+    $query = $this->database->delete('vactory_satisfaction');
+
+    // If filter is set, add a condition on the nid field.
+    if (isset($nid) && !empty($nid)) {
+      $query->condition('nid', $nid);
+    }
+
+    $num_deleted = $query->execute();
+
+    // Show a message to the user.
+    if ($num_deleted > 0) {
+      $message = $this->formatPlural($num_deleted,
+        '1 submission has been purged.',
+        '@count submissions have been purged.'
+      );
+    }
+    else {
+      $message = $this->t('No submissions were found to purge.');
+    }
+
+    \Drupal::messenger()->addMessage($message);
+
+    // Reset the confirmation state.
+    $form_state->setRedirect('vactory_satisfaction.result');
+  }
+
+  /**
    * Export the table to an Excel file.
    */
   public function exportToExcel(array &$form, FormStateInterface $form_state) {
@@ -192,6 +257,22 @@ class VactorySatisfactionResult extends FormBase {
     }
 
     return $formatted;
+  }
+
+  /**
+   * Confirmation step for purging data.
+   */
+  public function confirmPurge(array &$form, FormStateInterface $form_state) {
+    $form_state->setRedirect('vactory_satisfaction.result', [
+      'purge' => $form_state->getValue('filter'),
+    ]);
+  }
+
+  /**
+   * Cancel the purge action.
+   */
+  public function cancelPurge(array &$form, FormStateInterface $form_state) {
+    $form_state->setRedirect('vactory_satisfaction.result');
   }
 
 }
