@@ -1,0 +1,16 @@
+vactory_satisfaction.store_response:
+  path: '/api/vactory_satisfaction'
+  defaults:
+    _controller: '\Drupal\vactory_satisfaction\Controller\VactorySatisfactionController::storeResponse'
+    _title: 'Store User Response'
+  methods: ['POST']
+  requirements:
+    _permission: 'access content'
+
+vactory_satisfaction.result:
+  path: 'admin/vactory_satisfaction/result'
+  defaults:
+    _form: '\Drupal\vactory_satisfaction\Form\VactorySatisfactionResult'
+    _title: 'Vactory Satisfaction Result'
+  requirements:
+    _permission: 'administer site configuration'
