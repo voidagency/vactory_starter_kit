@@ -91,7 +91,9 @@ function vactory_core_entity_type_build(array &$entity_types) {
 /**
  * Implements hook_mail_alter().
  *
- * @deprecated To be remove once swiftmailer contrib module has been removed.
+ * @deprecated in drupal:8.1.0 and is removed from drupal:9.1.0. To be removed
+ *   once the SwiftMailer contrib module has been removed.
+ * @see https://www.drupal.org/project/swiftmailer/issues/111
  */
 function vactory_core_mail_alter(&$message) {
   switch ($message['key']) {
@@ -682,7 +684,6 @@ function _get_profile__composer_version($profile_name) {
 
   $lock_content = file_get_contents($composer_lock_path);
   $lock_data = json_decode($lock_content, TRUE);
-
 
   if (json_last_error() !== JSON_ERROR_NONE) {
     return NULL;
