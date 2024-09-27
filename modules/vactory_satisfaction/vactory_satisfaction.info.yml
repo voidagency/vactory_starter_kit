@@ -1,10 +1,5 @@
-name: 'Publication'
-description: 'Provide publication content type and views listing.'
+name: 'Vactory Satisfaction'
+description: 'Designed to collect and manage user feedback.'
 type: module
 core_version_requirement: ^9 || ^10
-dependencies:
-  - vactory_core
-  - vactory_field
-  - vactory_views
-  - jsonapi_extras
 package: Vactory
