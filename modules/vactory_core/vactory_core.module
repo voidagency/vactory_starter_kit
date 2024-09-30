@@ -88,7 +88,9 @@ function vactory_core_entity_type_build(array &$entity_types) {
 /**
  * Implements hook_mail_alter().
  *
- * @deprecated To be remove once swiftmailer contrib module has been removed.
+ * @deprecated in drupal:8.1.0 and is removed from drupal:9.1.0. To be removed
+ *   once the SwiftMailer contrib module has been removed.
+ * @see https://www.drupal.org/project/swiftmailer/issues/111
  */
 function vactory_core_mail_alter(&$message) {
   switch ($message['key']) {
@@ -191,6 +193,13 @@ function vactory_core_tokens($type, $tokens, array $data, array $options, Bubble
             ->getActiveTheme()
             ->getName();
           $replacements[$original] = \Drupal::service('file_url_generator')->generateAbsoluteString(substr(theme_get_setting('logo.url', $theme_name), 1));
+          $moduleHandler = \Drupal::service('module_handler');
+          if ($moduleHandler->moduleExists('vactory_logo_per_language')) {
+            $logo_per_language = _get_logo_per_language($theme_name);
+            if ($logo_per_language) {
+              $replacements[$original] = $logo_per_language;
+            }
+          }
           break;
 
         case 'node_summary':
@@ -255,9 +264,10 @@ function vactory_core_form_alter(&$form, FormStateInterface &$form_state, $form_
       ->get('vactory_core.opengraph_default_image.settings')
       ->get('default_content_opengraph_images');
     if (isset($form['field_vactory_meta_tags']) && isset($opengraph_default_images[$node_type])) {
-      $form['field_vactory_meta_tags']['widget'][0]['open_graph']['og_image']['#default_value'] = $opengraph_default_images[$node_type]['default_opengraph_image'];
-      $form['field_vactory_meta_tags']['widget'][0]['open_graph']['og_image_url']['#default_value'] = $opengraph_default_images[$node_type]['default_opengraph_image'];
-      $form['field_vactory_meta_tags']['widget'][0]['open_graph']['og_image_secure_url']['#default_value'] = $opengraph_default_images[$node_type]['default_opengraph_image'];
+      $node_metatags = !empty($route_params->get('node')) && !empty($route_params->get('node')->get('field_vactory_meta_tags')->value) ? unserialize($route_params->get('node')->get('field_vactory_meta_tags')->value) : NULL;
+      $form['field_vactory_meta_tags']['widget'][0]['open_graph']['og_image']['#default_value'] = !empty($node_metatags["og_image"]) ? $node_metatags["og_image"] : $opengraph_default_images[$node_type]['default_opengraph_image'];
+      $form['field_vactory_meta_tags']['widget'][0]['open_graph']['og_image_url']['#default_value'] = !empty($node_metatags["og_image_url"]) ? $node_metatags["og_image_url"] : $opengraph_default_images[$node_type]['default_opengraph_image'];
+      $form['field_vactory_meta_tags']['widget'][0]['open_graph']['og_image_secure_url']['#default_value'] = !empty($node_metatags["og_image_secure_url"]) ? $node_metatags["og_image_secure_url"] : $opengraph_default_images[$node_type]['default_opengraph_image'];
     }
   }
 
