@@ -47,6 +47,9 @@ function vactory_core_theme() {
     // Add Factory Version.
     'status_report_general_info_vactory' => [
       'template' => 'status-report-page-vactory',
+      'variables' => [
+        'profile_version' => [],
+      ],
     ],
     'vactory_responsive_image'           => [
       'variables' => [
@@ -665,4 +668,44 @@ function vactory_core_media_presave(MediaInterface $media) {
       'target_id' => $file->id(),
     ];
   }
+}
+
+/**
+ * Implements hook_preprocess_hook().
+ */
+function vactory_core_preprocess_status_report_general_info_vactory(&$variables) {
+  $profile_name = 'voidagency/vactory_starter_kit';
+  $res = _get_profile__composer_version($profile_name);
+  if ($res) {
+    $variables['profile_version'] = $res;
+  }
+}
+
+/**
+ * Get the profile version from composer.lock.
+ */
+function _get_profile__composer_version($profile_name) {
+  $composer_lock_path = DRUPAL_ROOT . '/composer.lock';
+  if (!file_exists($composer_lock_path)) {
+    return NULL;
+  }
+
+  $lock_content = file_get_contents($composer_lock_path);
+  $lock_data = json_decode($lock_content, TRUE);
+
+  if (json_last_error() !== JSON_ERROR_NONE) {
+    return NULL;
+  }
+
+  foreach ($lock_data['packages'] as $package) {
+    if ($package['name'] === $profile_name) {
+      return [
+        'version' => $package['version'] ?? '',
+        'commit' => $package['source']['reference'] ?? '',
+        'time' => $package['time'] ?? '',
+      ];
+    }
+  }
+
+  return NULL;
 }
