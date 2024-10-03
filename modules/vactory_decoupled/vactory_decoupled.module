@@ -338,6 +338,14 @@ function vactory_decoupled_entity_base_field_info(EntityTypeInterface $entity_ty
       ->setTranslatable(FALSE)
       ->setRevisionable(FALSE)
       ->setDisplayConfigurable('form', TRUE);
+
+    $fields['field_live_mode'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Live mode'))
+      ->setTranslatable(FALSE)
+      ->setClass('\Drupal\vactory_decoupled\Plugin\Field\InternalLiveModeFieldItemList')
+      ->setComputed(TRUE)
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE);
   }
 
   if ($entity_type->id() === 'menu_link_content') {
