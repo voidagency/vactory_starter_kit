@@ -1,0 +1,34 @@
+langcode: en
+status: true
+dependencies:
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.vactory_help_center.body
+    - field.field.node.vactory_help_center.field_section
+    - node.type.vactory_help_center
+  module:
+    - text
+    - user
+id: node.vactory_help_center.teaser
+targetEntityType: node
+bundle: vactory_help_center
+mode: teaser
+content:
+  body:
+    type: text_summary_or_trimmed
+    label: hidden
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+    weight: 101
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 100
+    region: content
+hidden:
+  addtoany: true
+  field_section: true
+  langcode: true
+  search_api_excerpt: true

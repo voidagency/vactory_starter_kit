@@ -1,0 +1,34 @@
+<?php
+
+/**
+ * @file
+ * Contains vactory_help_center module.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function vactory_help_center_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if (in_array($form_id, [
+    'node_vactory_help_center_edit_form',
+    'node_vactory_help_center_form',
+  ])) {
+    $form['#validate'][] = '_vactory_help_center_validate_section';
+  }
+}
+
+/**
+ * Custom validation for the help center node form.
+ */
+function _vactory_help_center_validate_section(&$form, FormStateInterface $form_state) {
+  $section_terms = $form_state->getValue('field_section');
+  $section_term = reset($section_terms);
+  $term_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+  $term = $term_storage->load($section_term['target_id']);
+  $has_children = !empty($term_storage->getChildren($term));
+  if ($has_children) {
+    $form_state->setErrorByName('field_section', t('Please select a section from the lowest level of the hierarchy.'));
+  }
+}
