@@ -10,7 +10,7 @@ use Drupal\pathauto\AliasCleanerInterface;
 /**
  * Service class for generating Help Center URL aliases.
  */
-class HelpCenterPathGenerator {
+class HelpCenterHelper {
 
   /**
    * The entity type manager.
@@ -81,6 +81,63 @@ class HelpCenterPathGenerator {
     }
 
     return array_reverse($hierarchy);
+  }
+
+  /**
+   * Generate routers based on aliases and max depth.
+   */
+  public function generateRouters() {
+    $config = \Drupal::config('vactory_help_center.settings');
+    $aliases = $config->get('help_center_aliases');
+    $nodePath = $config->get('help_center_node');
+    // Delete existing help center routes.
+    $max_depth = $this->getTaxonomyMaxDepth();
+    $existing_routes = \Drupal::entityTypeManager()->getStorage('vactory_route')->loadByProperties([
+      'path' => $nodePath,
+    ]);
+    foreach ($existing_routes as $existing_route) {
+      $existing_route->delete();
+    }
+
+    // Generate new routes.
+    foreach ($aliases as $langcode => $alias) {
+      for ($depth = 1; $depth <= $max_depth; $depth++) {
+        $path_parts = [];
+        for ($i = 1; $i <= $depth; $i++) {
+          $path_parts[] = "{help_center_item_$i}";
+        }
+        $route = \Drupal::entityTypeManager()->getStorage('vactory_route')->create([
+          'id' => "help_center_level_{$depth}_{$langcode}",
+          'label' => "Help center level {$depth}",
+          'path' => $nodePath,
+          'alias' => $alias . '/' . implode('/', $path_parts),
+        ]);
+        $route->save();
+      }
+    }
+  }
+
+  /**
+   * Get taxonomy max depth.
+   */
+  private function getTaxonomyMaxDepth() {
+    $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('vactory_help_center', 0, NULL, TRUE);
+    $max_depth = 0;
+
+    foreach ($terms as $term) {
+      $parents = \Drupal::service('entity_type.manager')->getStorage('taxonomy_term')->loadParents($term->id());
+      $depth = 1;
+
+      while (!empty($parents)) {
+        $depth++;
+        $parent = reset($parents);
+        $parents = \Drupal::service('entity_type.manager')->getStorage('taxonomy_term')->loadParents($parent->id());
+      }
+
+      $max_depth = max($max_depth, $depth);
+    }
+
+    return $max_depth;
   }
 
 }

@@ -40,7 +40,7 @@ function vactory_help_center_tokens($type, $tokens, array $data, array $options,
     foreach ($tokens as $name => $original) {
       switch ($name) {
         case 'alias':
-          $alias_service = \Drupal::service('vactory_help_center.path_generator');
+          $alias_service = \Drupal::service('vactory_help_center.helper');
           $alias = $alias_service->generateAlias($node);
           $replacements[$original] = trim($alias, '/');
           break;

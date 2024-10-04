@@ -141,3 +141,20 @@ function vactory_help_center_decoupled_df_format_alter(&$value, &$info, &$cachea
     }
   }
 }
+
+/**
+ * Implements hook_taxonomy_term_presave().
+ */
+function vactory_help_center_taxonomy_term_presave($term) {
+  if ($term->bundle() == 'vactory_help_center') {
+    drupal_register_shutdown_function('_help_center_generate_routes');
+
+  }
+}
+
+/**
+ * Re-generates router.
+ */
+function _help_center_generate_routes() {
+  \Drupal::service('vactory_help_center.helper')->generateRouters();
+}

@@ -1,4 +1,4 @@
 services:
-  vactory_help_center.path_generator:
-    class: Drupal\vactory_help_center\Services\HelpCenterPathGenerator
+  vactory_help_center.helper:
+    class: Drupal\vactory_help_center\Services\HelpCenterHelper
     arguments: ['@entity_type.manager', '@pathauto.alias_cleaner']
