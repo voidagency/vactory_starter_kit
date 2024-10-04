@@ -1,0 +1,7 @@
+vactory_help_center.settings:
+  path: '/admin/config/help-center'
+  defaults:
+    _form: '\Drupal\vactory_help_center\Form\HelpCenterConfigForm'
+    _title: 'Help Center Configuration'
+  requirements:
+    _permission: 'administer site configuration'
