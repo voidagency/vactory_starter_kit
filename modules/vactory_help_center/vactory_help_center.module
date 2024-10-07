@@ -43,6 +43,7 @@ function vactory_help_center_decoupled_df_format_alter(&$value, &$info, &$cachea
     $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
     $current_term = 0;
     $storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+    $media_file_manager = Drupal::service('vacory_decoupled.media_file_manager');
     // Get term it using query params.
     foreach ($params as $key => $value) {
       if (!str_starts_with($key, 'help_center_item_')) {
@@ -79,9 +80,11 @@ function vactory_help_center_decoupled_df_format_alter(&$value, &$info, &$cachea
       foreach ($children as $child) {
         $url = $help_center_alias . '/' . $child->get('term_2_slug')->value;
         $child_translation = \Drupal::service('entity.repository')->getTranslationFromContext($child, $langcode);
+        $mid = $child->get('field_image')->target_id;
         $value['data'][] = [
           'label' => $child_translation->label(),
           'url' => $url,
+          'image' => $media_file_manager->getMediaAbsoluteUrlByMid($mid, TRUE),
         ];
       }
     }
@@ -93,9 +96,11 @@ function vactory_help_center_decoupled_df_format_alter(&$value, &$info, &$cachea
           foreach ($children as $child) {
             $url = $help_center_alias . '/' . implode('/', $params) . '/' . $child->get('term_2_slug')->value;
             $child_translation = \Drupal::service('entity.repository')->getTranslationFromContext($child, $langcode);
+            $mid = $child->get('field_image')->target_id;
             $data = [
               'label' => $child_translation->label(),
               'url' => $url,
+              'image' => $media_file_manager->getMediaAbsoluteUrlByMid($mid, TRUE),
             ];
             // Get immediate children (next level only).
             $grandchildren = $storage->getChildren($child);

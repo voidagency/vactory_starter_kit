@@ -4,6 +4,8 @@ namespace Drupal\vactory_decoupled;
 
 use Drupal\Core\File\FileUrlGeneratorInterface;
 use Drupal\Core\Site\Settings;
+use Drupal\file\Entity\File;
+use Drupal\media\Entity\Media;
 
 /**
  * Decoupled media file manager.
@@ -57,6 +59,41 @@ class MediaFilesManager {
       }
     }
     return $url;
+  }
+
+  /**
+   * Get media absolute url by Mid.
+   */
+  public function getMediaAbsoluteUrlByMid($mid, $withMeta = FALSE) {
+    $media = Media::load($mid);
+    if (!$media instanceof Media) {
+      return NULL;
+    }
+
+    $fid = $media->get('field_media_image')->target_id;
+    if (!is_numeric($fid)) {
+      return NULL;
+    }
+
+    $file = File::load($fid);
+    if (!$file instanceof File) {
+      return NULL;
+    }
+
+    $uri = $file->getFileUri();
+    $url = $this->getMediaAbsoluteUrl($uri);
+
+    if (!$withMeta) {
+      return $url;
+    }
+    else {
+      return [
+        'src' => $url,
+        'meta' => $media->get('field_media_image')
+          ->first()
+          ->getValue(),
+      ];
+    }
   }
 
 }
