@@ -19,5 +19,5 @@ third_party_settings:
     unpublish_revision: false
 name: 'Help center'
 vid: vactory_help_center
-description: ''
+description: 'Help Center Vocabulary'
 weight: 0
