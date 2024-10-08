@@ -1,0 +1,32 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - language
+    - node
+id: help_center
+label: 'Help center pattern'
+type: 'canonical_entities:node'
+pattern: '/help-center/[vactory_help_center:alias]/[node:title]'
+selection_criteria:
+  e0e07b6e-3e0d-4cee-921d-7bb2bd2c98e7:
+    id: 'entity_bundle:node'
+    negate: false
+    uuid: e0e07b6e-3e0d-4cee-921d-7bb2bd2c98e7
+    context_mapping:
+      node: node
+    bundles:
+      vactory_help_center: vactory_help_center
+  ffe7558e-30f2-4ab2-9d88-0cadb10735a6:
+    id: language
+    negate: false
+    uuid: ffe7558e-30f2-4ab2-9d88-0cadb10735a6
+    context_mapping:
+      language: 'node:langcode:language'
+    langcodes:
+      en: en
+selection_logic: and
+weight: -10
+relationships:
+  'node:langcode:language':
+    label: Language
