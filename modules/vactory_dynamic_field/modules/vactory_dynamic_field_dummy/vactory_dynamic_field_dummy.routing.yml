@@ -1,0 +1,7 @@
+vactory_dynamic_field_dummy.form:
+  path: '/admin/dyanmic_fields/generate'
+  defaults:
+    _title: 'Generate Page With Dynamic Fields'
+    _form: '\Drupal\vactory_dynamic_field_dummy\Form\GeneratePageForm'
+  requirements:
+    _permission: 'access content'
