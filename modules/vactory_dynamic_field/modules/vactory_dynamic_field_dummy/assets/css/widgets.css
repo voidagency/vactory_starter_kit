@@ -1,0 +1,28 @@
+.widget-grid {
+  margin: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.widget-row {
+  display: flex;
+  justify-content: flex-start;
+  gap: 20px;
+}
+.widget-row .form-item {
+  flex: 0 0 calc(33.33% - 14px);
+  margin: 0;
+}
+@media (max-width: 768px) {
+  .widget-row {
+    flex-wrap: wrap;
+  }
+  .widget-row .form-item {
+    flex: 0 0 calc(50% - 10px);
+  }
+}
+@media (max-width: 480px) {
+  .widget-row .form-item {
+    flex: 0 0 100%;
+  }
+}
