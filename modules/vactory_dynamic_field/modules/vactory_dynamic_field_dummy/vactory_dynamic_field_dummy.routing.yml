@@ -4,4 +4,6 @@ vactory_dynamic_field_dummy.form:
     _title: 'Generate Page With Dynamic Fields'
     _form: '\Drupal\vactory_dynamic_field_dummy\Form\GeneratePageForm'
   requirements:
-    _permission: 'access content'
+    _permission: 'administer site configuration'
+  options:
+    _admin_route: TRUE
