@@ -3,4 +3,4 @@ type: module
 description: 'Generate a page with all or selected dynamic fields filled with dummy content.'
 package: Vactory
 core_version_requirement: ^9 || ^10
-configure: vactory_dynamic_field_dummy.form
+configure: vactory_dynamic_field_dummy.form_generate

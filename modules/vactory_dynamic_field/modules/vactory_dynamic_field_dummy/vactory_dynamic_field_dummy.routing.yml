@@ -1,4 +1,4 @@
-vactory_dynamic_field_dummy.form:
+vactory_dynamic_field_dummy.form_generate:
   path: '/admin/dyanmic_fields/generate'
   defaults:
     _title: 'Generate Page With Dynamic Fields'
