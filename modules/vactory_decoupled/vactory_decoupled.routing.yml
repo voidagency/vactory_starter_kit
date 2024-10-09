@@ -214,3 +214,11 @@ vactory_decoupled.switch_lang_settings:
     _title: 'Vactory Decoupled Switch Lang Settings'
   requirements:
     _permission: 'administer site configuration'
+
+vactory_decoupled.duplicate_paragraph:
+  path: /api/paragraph/duplicate
+  defaults:
+    _controller: '\Drupal\vactory_decoupled\Controller\DuplicateParagraphController::duplicate'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'

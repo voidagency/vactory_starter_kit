@@ -1,0 +1,92 @@
+<?php
+
+/**
+ * @file
+ * Contains vactory_logo_per_language.module.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\file\Entity\File;
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function vactory_logo_per_language_form_system_theme_settings_alter(&$form, FormStateInterface $form_state) {
+  $theme = str_replace('.settings', '', $form['config_key']['#value']);
+  $form['logo']['use_language_specific_logo'] = [
+    '#type' => 'checkbox',
+    '#title' => t('Use language-specific logos'),
+    '#default_value' => theme_get_setting('use_language_specific_logo', $theme),
+  ];
+
+  $form['logo']['language_specific_logos'] = [
+    '#type' => 'details',
+    '#title' => t('Language-specific logos'),
+    '#open' => TRUE,
+    '#states' => [
+      'visible' => [
+        ':input[name="use_language_specific_logo"]' => ['checked' => TRUE],
+      ],
+    ],
+  ];
+
+  $languages = \Drupal::languageManager()->getLanguages();
+
+  foreach ($languages as $langcode => $language) {
+    $form['logo']['language_specific_logos']['logo_' . $langcode] = [
+      '#type' => 'managed_file',
+      '#title' => t('Logo for @language', ['@language' => $language->getName()]),
+      '#upload_location' => 'public://logos',
+      '#upload_validators' => [
+        'file_validate_extensions' => ['png gif jpg jpeg'],
+      ],
+      '#default_value' => theme_get_setting('logo_' . $langcode, $theme),
+    ];
+  }
+
+  $form['#submit'][] = 'vactory_logo_per_language_theme_settings_submit';
+}
+
+/**
+ * Custom submit handler for the theme settings form.
+ */
+function vactory_logo_per_language_theme_settings_submit($form, FormStateInterface $form_state) {
+  $languages = \Drupal::languageManager()->getLanguages();
+
+  foreach ($languages as $langcode => $language) {
+    $fid = $form_state->getValue(['logo_' . $langcode]);
+    if (!empty($fid[0])) {
+      $file = File::load($fid[0]);
+      $file->setPermanent();
+      $file->save();
+    }
+  }
+}
+
+/**
+ * Get logo per language.
+ */
+function _get_logo_per_language($theme_name) {
+  $moduleHandler = \Drupal::service('module_handler');
+  // For decoupled projects only.
+  if (!$moduleHandler->moduleExists('vactory_decoupled')) {
+    return NULL;
+  }
+  $use_language_specific_logo = theme_get_setting('use_language_specific_logo', $theme_name);
+  if (!$use_language_specific_logo) {
+    return NULL;
+  }
+
+  $language = \Drupal::languageManager()->getCurrentLanguage()->getId();
+  $logo = theme_get_setting('logo_' . $language, $theme_name);
+  if (empty($logo[0])) {
+    return NULL;
+  }
+
+  $file = File::load($logo[0]);
+  if (!$file instanceof File) {
+    return NULL;
+  }
+
+  return \Drupal::service('file_url_generator')->generateAbsoluteString($file->getFileUri());
+}
