@@ -163,3 +163,32 @@ function vactory_help_center_taxonomy_term_presave($term) {
 function _help_center_generate_routes() {
   \Drupal::service('vactory_help_center.helper')->generateRouters();
 }
+
+/**
+ * Implements hook_decoupled_breadcrumb_links_alter().
+ */
+function vactory_help_center_decoupled_breadcrumb_links_alter(&$links, $entity) {
+  if ($entity->getEntityTypeId() == 'node' && $entity->bundle() == 'vactory_help_center') {
+    $help_center_service = \Drupal::service('vactory_help_center.helper');
+    $links = $help_center_service->getNodeBreadcrumb($entity);
+  }
+
+  if (_is_help_center_page($entity)) {
+    $help_center_service = \Drupal::service('vactory_help_center.helper');
+    $links = $help_center_service->getPageBreadcrumb($entity);
+  }
+}
+
+/**
+ * Check if the entity is the HC page.
+ */
+function _is_help_center_page($entity) {
+  if (!$entity->getEntityTypeId() == 'vactory_page') {
+    return FALSE;
+  }
+
+  $node_url = \Drupal::config('vactory_help_center.settings')->get('help_center_node');
+  $node_id = explode('/', $node_url);
+  $node_id = end($node_id);
+  return $node_id == $entity->id();
+}

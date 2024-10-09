@@ -2,10 +2,15 @@
 
 namespace Drupal\vactory_help_center\Services;
 
+use Drupal\Core\Link;
+use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
+use Drupal\path_alias\AliasManagerInterface;
 use Drupal\taxonomy\TermInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\pathauto\AliasCleanerInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
+use Drupal\Core\Entity\EntityRepositoryInterface;
 
 /**
  * Service class for generating Help Center URL aliases.
@@ -27,16 +32,41 @@ class HelpCenterHelper {
   protected $aliasCleaner;
 
   /**
-   * Constructs a new HelpCenterPathGenerator object.
+   * Language manager.
    *
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   *   The entity type manager.
-   * @param \Drupal\pathauto\AliasCleanerInterface $alias_cleaner
-   *   The pathauto alias cleaner.
+   * @var \Drupal\Core\Language\LanguageManagerInterface
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, AliasCleanerInterface $alias_cleaner) {
+  protected $languageManager;
+
+  /**
+   * Alias manager.
+   *
+   * @var \Drupal\path_alias\AliasManagerInterface
+   */
+  protected $aliasManager;
+
+  /**
+   * Entity repository.
+   *
+   * @var \Drupal\Core\Entity\EntityRepositoryInterface
+   */
+  protected $entityRepository;
+
+  /**
+   * Constructs a new HelpCenterPathGenerator object.
+   */
+  public function __construct(
+    EntityTypeManagerInterface $entity_type_manager,
+    AliasCleanerInterface $alias_cleaner,
+    LanguageManagerInterface $language_manager,
+    AliasManagerInterface $alias_manager,
+    EntityRepositoryInterface $entity_repository
+  ) {
     $this->entityTypeManager = $entity_type_manager;
     $this->aliasCleaner = $alias_cleaner;
+    $this->languageManager = $language_manager;
+    $this->aliasManager = $alias_manager;
+    $this->entityRepository = $entity_repository;
   }
 
   /**
@@ -44,11 +74,13 @@ class HelpCenterHelper {
    *
    * @param \Drupal\node\NodeInterface $node
    *   The node entity.
+   * @param bool $as_array
+   *   Indicate whether to return the parts as an array or as a path.
    *
-   * @return string
+   * @return string|array
    *   The generated alias.
    */
-  public function generateAlias(NodeInterface $node) {
+  public function generateAlias(NodeInterface $node, bool $as_array = FALSE) {
     $alias_parts = [];
 
     // Get the selected section term.
@@ -56,6 +88,10 @@ class HelpCenterHelper {
     if (!empty($section_terms)) {
       $section_term = reset($section_terms);
       $alias_parts = $this->getTermHierarchy($section_term);
+    }
+
+    if ($as_array) {
+      return $alias_parts;
     }
 
     return implode('/', $alias_parts);
@@ -138,6 +174,85 @@ class HelpCenterHelper {
     }
 
     return $max_depth;
+  }
+
+  /**
+   * Get node (Help center) breadcrumb.
+   */
+  public function getNodeBreadcrumb($entity) {
+    $links = [];
+    $langcode = $this->languageManager->getCurrentLanguage()->getId();
+    $node_url = \Drupal::config('vactory_help_center.settings')->get('help_center_node');
+    $node_id = explode('/', $node_url);
+    $node_id = end($node_id);
+    $node = $this->entityTypeManager->getStorage('node')->load($node_id);
+    $node_alias = $this->aliasManager->getAliasByPath($node_url, $langcode);
+    $node_label = $this->entityRepository->getTranslationFromContext($node, $langcode)->label();
+    $links[] = Link::fromTextAndUrl($node_label, Url::fromUserInput($node_alias));
+
+    $hierarchy = $this->generateAlias($entity, TRUE);
+    $current_path = $node_alias;
+    $current_term = 0;
+    foreach ($hierarchy as $item) {
+      $url = "{$current_path}/{$item}";
+      $current_path = $url;
+      $terms = $this->entityTypeManager->getStorage('taxonomy_term')->loadByProperties([
+        'term_2_slug' => $item,
+        'vid' => 'vactory_help_center',
+        'parent' => $current_term,
+      ]);
+      if (empty($terms)) {
+        continue;
+      }
+      $term = reset($terms);
+      $current_term = $term->id();
+      $term_label = $this->entityRepository->getTranslationFromContext($term, $langcode)->label();
+      $links[] = Link::fromTextAndUrl($term_label, Url::fromUserInput($url));
+    }
+
+    $entity_label = $this->entityRepository->getTranslationFromContext($entity, $langcode)->label();
+    $entity_alias = $this->aliasManager->getAliasByPath('/node/' . $entity->id(), $langcode);
+    $links[] = Link::fromTextAndUrl($entity_label, Url::fromUserInput($entity_alias));
+
+    return $links;
+  }
+
+  /**
+   * Get help center page breadcrumb.
+   */
+  public function getPageBreadcrumb($entity) {
+    $links = [];
+    $langcode = $this->languageManager->getCurrentLanguage()->getId();
+    $node_url = "/node/{$entity->id()}";
+    $node_alias = $this->aliasManager->getAliasByPath($node_url, $langcode);
+    $node_label = $this->entityRepository->getTranslationFromContext($entity, $langcode)->label();
+    $links[] = Link::fromTextAndUrl($node_label, Url::fromUserInput($node_alias));
+
+    $params = \Drupal::request()->query->all("q");
+
+    $current_path = $node_alias;
+    $current_term = 0;
+    foreach ($params as $key => $item) {
+      if (!str_starts_with($key, 'help_center_item_')) {
+        continue;
+      }
+      $url = "{$current_path}/{$item}";
+      $current_path = $url;
+      $terms = $this->entityTypeManager->getStorage('taxonomy_term')->loadByProperties([
+        'term_2_slug' => $item,
+        'vid' => 'vactory_help_center',
+        'parent' => $current_term,
+      ]);
+      if (empty($terms)) {
+        continue;
+      }
+      $term = reset($terms);
+      $current_term = $term->id();
+      $term_label = $this->entityRepository->getTranslationFromContext($term, $langcode)->label();
+      $links[] = Link::fromTextAndUrl($term_label, Url::fromUserInput($url));
+    }
+
+    return $links;
   }
 
 }
