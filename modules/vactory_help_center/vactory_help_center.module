@@ -5,6 +5,7 @@
  * Contains vactory_help_center module.
  */
 
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
@@ -191,4 +192,22 @@ function _is_help_center_page($entity) {
   $node_id = explode('/', $node_url);
   $node_id = end($node_id);
   return $node_id == $entity->id();
+}
+
+/**
+ * Implements hook_decoupled_extra_field_value_alter().
+ */
+function vactory_help_center_decoupled_extra_field_value_alter(&$value, $context, CacheableMetadata $cacheability) {
+  $entity = $context['entity'];
+  if (_is_help_center_page($entity)) {
+    $help_center_service = \Drupal::service('vactory_help_center.helper');
+    $title = $help_center_service->getPageTitle($entity);
+    if ($title) {
+      $value['breadcrumb_title'] = $title;
+    }
+    $cacheability->addCacheTags([
+      'taxonomy_term_list:vactory_help_center',
+      'node_list:vactory_help_center',
+    ]);
+  }
 }

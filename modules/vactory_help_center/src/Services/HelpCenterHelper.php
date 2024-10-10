@@ -255,4 +255,33 @@ class HelpCenterHelper {
     return $links;
   }
 
+  /**
+   * Get help center page title.
+   */
+  public function getPageTitle($entity) {
+    $langcode = $this->languageManager->getCurrentLanguage()->getId();
+    $params = \Drupal::request()->query->all("q");
+    $storage = $this->entityTypeManager->getStorage('taxonomy_term');
+    $current_term = 0;
+    foreach ($params as $key => $item) {
+      if (!str_starts_with($key, 'help_center_item_')) {
+        continue;
+      }
+      $query = $storage->getQuery();
+      $query->accessCheck(TRUE);
+      $query->condition('vid', 'vactory_help_center');
+      $query->condition('term_2_slug', $item);
+      $query->condition('parent', $current_term);
+      $result = $query->execute();
+      if (!empty($result) && count($result) == 1) {
+        $current_term = reset($result);
+      }
+    }
+    if ($current_term == 0) {
+      return NULL;
+    }
+    $term = $storage->load($current_term);
+    return $this->entityRepository->getTranslationFromContext($term, $langcode)->label();
+  }
+
 }
