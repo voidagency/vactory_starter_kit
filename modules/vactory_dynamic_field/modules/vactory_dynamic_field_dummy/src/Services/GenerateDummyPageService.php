@@ -84,7 +84,7 @@ class GenerateDummyPageService {
       case 'url_extended':
         $item = [
           'title' => $random->word(12),
-          'url' => 'http://void.fr',
+          'url' => 'https://void.fr',
           'attributes' => [
             'target' => '_self',
             'rel' => '',
@@ -137,7 +137,7 @@ class GenerateDummyPageService {
    */
   private static function prepareImageField($random) {
     try {
-      $random_number = rand(1, 20);
+      $random_number = random_int(1, 20);
       $image_data = file_get_contents("https://picsum.photos/id/" . $random_number . "/650/650.jpg");
       $file_repository = \Drupal::service('file.repository');
       $image = $file_repository->writeData($image_data, "public://generated-media-for-dummy-content-{$random_number}.png", FileSystemInterface::EXISTS_REPLACE);
