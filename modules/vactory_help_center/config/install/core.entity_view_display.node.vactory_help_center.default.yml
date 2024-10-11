@@ -4,8 +4,10 @@ dependencies:
   config:
     - field.field.node.vactory_help_center.body
     - field.field.node.vactory_help_center.field_section
+    - field.field.node.vactory_help_center.field_vactory_paragraphs
     - node.type.vactory_help_center
   module:
+    - entity_reference_revisions
     - text
     - user
 id: node.vactory_help_center.default
@@ -27,6 +29,15 @@ content:
       link: true
     third_party_settings: {  }
     weight: 102
+    region: content
+  field_vactory_paragraphs:
+    type: entity_reference_revisions_entity_view
+    label: hidden
+    settings:
+      view_mode: default
+      link: ''
+    third_party_settings: {  }
+    weight: 13
     region: content
   links:
     settings: {  }
