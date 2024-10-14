@@ -1098,3 +1098,19 @@ function clear_next_nginx_cache($path = '') {
       ->warning("Next nginx cache cleared for {$path} (no cache found)");
   }
 }
+
+/**
+ * Implements hook_page_attachments_alter().
+ */
+function vactory_decoupled_page_attachments_alter(array &$attachments) {
+    $attachments['#attached']['html_head'][] = [
+        [
+            '#tag' => 'meta',
+            '#attributes' => [
+                'name' => 'robots',
+                'content' => 'noindex',
+            ],
+        ],
+        'robots_noindex',
+    ];
+}
