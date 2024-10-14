@@ -61,9 +61,22 @@
 
                 const fieldName = fieldInput.data("field-name");
                 const fieldFormat = fieldInput.data("field-format");
-                const fieldValue = fieldInput.val();
+                let fieldValue = fieldInput.val();
                 const isExtraField = fieldInput.data("is-extra-field");
                 const group = fieldInput.data("group");
+                const isMedia = fieldInput.data("is-media");
+
+                if (isMedia) {
+                    const old_value = fieldValue;
+                    fieldValue = {};
+                    fieldValue[Date.now()] = {
+                        'selection': [
+                            {
+                                'target_id': old_value
+                            }
+                        ]
+                    };
+                }
 
                 if (isExtraField) {
                     if (group) {

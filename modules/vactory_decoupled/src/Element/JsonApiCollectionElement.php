@@ -158,6 +158,28 @@ class JsonApiCollectionElement extends FormElement {
       ],
     ];
 
+    $element['cache_tags'] = [
+      '#type'               => 'textarea',
+      '#title'              => t('Cache Tags'),
+      '#placeholder'        => 'Cache tags',
+      '#description'        => t('Related cache tags per line'),
+      '#default_value'      => is_array($element['#default_value']['cache_tags']) ? implode("\n", $element['#default_value']['cache_tags']) : $element['#default_value']['cache_tags'],
+      '#wrapper_attributes' => [
+        'style' => $has_access ? NULL : 'display:none',
+      ],
+    ];
+
+    $element['cache_contexts'] = [
+      '#type'               => 'textarea',
+      '#title'              => t('Cache Contexts'),
+      '#placeholder'        => 'Cache Contexts',
+      '#description'        => t('Related cache contexts per line'),
+      '#default_value'      => is_array($element['#default_value']['cache_contexts']) ? implode("\n", $element['#default_value']['cache_contexts']) : $element['#default_value']['cache_contexts'],
+      '#wrapper_attributes' => [
+        'style' => $has_access ? NULL : 'display:none',
+      ],
+    ];
+
     return $element;
   }
 
@@ -177,26 +199,6 @@ class JsonApiCollectionElement extends FormElement {
     if ($input !== FALSE && $input !== NULL && isset($input['filters']) && !empty($input['filters'])) {
       $input['filters'] = array_map('trim', explode("\n", $input['filters']));
     }
-    // if ($input !== FALSE && $input !== NULL) {
-    //   if (isset($input['filters']) && !empty($input['filters'])) {
-    //     $parsed = [];
-    //     $lines = array_map('trim', explode("\n", $input['filters']));
-    //     foreach ($lines as $line) {
-    //       if ($line) {
-    //         [$name, $value] = explode("=", $line, 2);
-    //         $parsed[trim($name)] = urldecode(trim($value));
-    //       }
-    //     }
-    //     $input['filters'] = $parsed;
-    //   }
-    //   else {
-    //     $input['filters'] = []; 
-    //   }
-    // }
-    // else {
-    //   $input['filters'] = []; 
-    // }
-
     return is_array($input) ? $input : $element['#default_value'];
   }
 
@@ -272,6 +274,8 @@ class JsonApiCollectionElement extends FormElement {
    * Get Entity Storage.
    *
    * @return \Drupal\Core\Entity\EntityStorageInterface
+   *   entity storage interface.
+   *
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */

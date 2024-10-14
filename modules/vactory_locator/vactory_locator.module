@@ -17,6 +17,7 @@ use Drupal\Component\Serialization\Json;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Access\AccessResult;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Implements hook_help().
@@ -431,28 +432,30 @@ function generate_locator_path_alias($locator_storage, $locator_path_alias_orogi
   return generate_locator_path_alias($locator_storage, $locator_path_alias_oroginal, $locator_path_alias_oroginal . '-' . $index, $locator_entity, $index + 1);
 }
 
+/**
+ * Implements hook_df_jsonapi_output_alter().
+ */
 function vactory_locator_df_jsonapi_output_alter(&$content) {
-  if ($content['template'] == 'vactory_locator:default'){
+  if ($content['template'] == 'vactory_locator:default') {
 
-  $config = \Drupal::config('vactory_locator.settings');
+    $config = \Drupal::config('vactory_locator.settings');
 
-  $map_api_key = $config->get('map_api_key');
-  $marker = $config->get('locator_default_marker_url');
-  $content['config']['map_api_key'] = $map_api_key;
-  $content['config']['marker'] = $marker;
+    $map_api_key = $config->get('map_api_key');
+    $marker = $config->get('locator_default_marker_url');
+    $content['config']['map_api_key'] = $map_api_key;
+    $content['config']['marker'] = $marker;
 
-
-  $terms = \Drupal::entityTypeManager()
-    ->getStorage('taxonomy_term')
-    ->loadByProperties(['vid' => 'locator_category']);
-  $categories = [];
-  foreach ($terms as $term) {
-    $categories[] = [
-      "uuid" => $term->get('uuid')->value,
-      "name" => $term->getName(),
-    ];
-  }
-  $content['categories'] = $categories;
+    $terms = \Drupal::entityTypeManager()
+      ->getStorage('taxonomy_term')
+      ->loadByProperties(['vid' => 'locator_category']);
+    $categories = [];
+    foreach ($terms as $term) {
+      $categories[] = [
+        "uuid" => $term->get('uuid')->value,
+        "name" => $term->getName(),
+      ];
+    }
+    $content['categories'] = $categories;
   }
 
 }
@@ -472,17 +475,15 @@ function vactory_locator_json_api_collection_alter(&$filters, &$context) {
       $filters["page[offset]"] = intval($query["page"]) > 0 ? (intval($query["page"]) - 1) * $filters["page[limit]"] : 0;
     }
 
-
-
     if (isset($query["city"]) && $query["city"] !== "all") {
       $theme = $query["city"];
       $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties([
         'vid' => 'locator_city',
-        'term_2_slug' => $query["city"]
+        'term_2_slug' => $query["city"],
       ]);
 
       if (!$terms) {
-        throw new \Exception("[Locator - hook_json_api_collection_alter] term '$theme' not found.");
+        throw new NotFoundHttpException("[Locator - hook_json_api_collection_alter] term '$theme' not found.");
       }
 
       if ($terms) {
@@ -498,14 +499,13 @@ function vactory_locator_json_api_collection_alter(&$filters, &$context) {
 
 }
 
-
 /**
  * Implements hook_jsonapi_entity_filter_access().
  */
 function vactory_locator_jsonapi_entity_filter_access(EntityTypeInterface $entity_type, AccountInterface $account) {
   if ($entity_type->id() === 'locator_entity') {
     return ([
-      JSONAPI_FILTER_AMONG_ALL => AccessResult::allowed()
+      JSONAPI_FILTER_AMONG_ALL => AccessResult::allowed(),
     ]);
   }
 }

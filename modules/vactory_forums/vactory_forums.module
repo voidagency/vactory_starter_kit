@@ -166,9 +166,9 @@ function vactory_forums_json_api_collection_alter(&$filters, &$context) {
     }
 
     if (isset($query["sort"]) && in_array(strtolower($query["sort"]), [
-        "asc",
-        "desc",
-      ])) {
+      "asc",
+      "desc",
+    ])) {
       $filters["sort[sort-vactory-date][direction]"] = strtolower($query["sort"]);
     }
 
@@ -182,7 +182,7 @@ function vactory_forums_json_api_collection_alter(&$filters, &$context) {
         ]);
 
       if (!$terms) {
-        throw new \Exception("[Forums - hook_json_api_collection_alter] term '$room' not found.");
+        throw new NotFoundHttpException("[Forums - hook_json_api_collection_alter] term '$room' not found.");
       }
 
       if ($terms) {
@@ -206,9 +206,9 @@ function vactory_forums_json_api_collection_alter(&$filters, &$context) {
     }
 
     if (isset($query["sort"]) && in_array(strtolower($query["sort"]), [
-        "asc",
-        "desc",
-      ])) {
+      "asc",
+      "desc",
+    ])) {
       $filters["sort[sort-created][path]"] = "created";
       $filters["sort[sort-created][direction]"] = strtolower($query["sort"]);
     }
@@ -235,7 +235,7 @@ function vactory_forums_json_api_collection_alter(&$filters, &$context) {
         ]);
 
       if (!$terms) {
-        throw new \Exception("[Forums - hook_json_api_collection_alter] term '$thematic' not found.");
+        throw new NotFoundHttpException("[Forums - hook_json_api_collection_alter] term '$thematic' not found.");
       }
 
       if ($terms) {

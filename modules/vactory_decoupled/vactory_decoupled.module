@@ -30,6 +30,7 @@ use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Component\Utility\UrlHelper;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
+use GuzzleHttp\Exception\ConnectException;
 use Drupal\menu_item_extras\Entity\MenuItemExtrasMenuLinkContent;
 
 /**
@@ -337,6 +338,14 @@ function vactory_decoupled_entity_base_field_info(EntityTypeInterface $entity_ty
       ->setTranslatable(FALSE)
       ->setRevisionable(FALSE)
       ->setDisplayConfigurable('form', TRUE);
+
+    $fields['field_live_mode'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Live mode'))
+      ->setTranslatable(FALSE)
+      ->setClass('\Drupal\vactory_decoupled\Plugin\Field\InternalLiveModeFieldItemList')
+      ->setComputed(TRUE)
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE);
   }
 
   if ($entity_type->id() === 'menu_link_content') {
@@ -353,6 +362,17 @@ function vactory_decoupled_entity_base_field_info(EntityTypeInterface $entity_ty
         'type' => 'link_default',
         'weight' => -2,
       ]);
+    $fields['hide_menu_item'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Hide menu item'))
+      ->setRevisionable(TRUE)
+      ->setTranslatable(TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'boolean_checkbox',
+        'settings' => [
+          'display_label' => TRUE,
+        ],
+      ])
+      ->setDisplayConfigurable('form', TRUE);
   }
 
   if ($entity_type->id() === 'taxonomy_term') {
@@ -856,6 +876,11 @@ function clear_next_cache($query = []) {
     \Drupal::logger('clear_next_cache')->warning($e->getMessage());
     return FALSE;
   }
+  catch (ConnectException $e) {
+    \Drupal::logger('clear_next_cache')->warning($error_msg);
+    \Drupal::logger('clear_next_cache')->warning($e->getMessage());
+    return FALSE;
+  }
 }
 
 /**
@@ -975,6 +1000,7 @@ function vactory_decoupled_preprocess_html(&$variables) {
     'entity.user.canonical',
     'oauth2_token.authorize',
     'entity.webform.canonical',
+    'entity.comment.edit_form',
   ];
   if (!in_array($route_name, $exluded_routes)) {
     $langcode = Drupal::languageManager()->getCurrentLanguage()->getId();

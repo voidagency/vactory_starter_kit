@@ -1,0 +1,21 @@
+uuid: bfbc1b45-a7fa-4fdb-bb6e-af9b7b93a392
+langcode: en
+status: true
+dependencies:
+  config:
+    - field.storage.paragraph.field_negate_roles
+    - paragraphs.paragraphs_type.vactory_component
+id: paragraph.vactory_component.field_negate_roles
+field_name: field_negate_roles
+entity_type: paragraph
+bundle: vactory_component
+label: 'Negate Roles'
+description: ''
+required: false
+translatable: false
+default_value: {  }
+default_value_callback: ''
+settings:
+  on_label: '1'
+  off_label: '0'
+field_type: boolean

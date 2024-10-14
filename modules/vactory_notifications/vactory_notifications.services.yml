@@ -1,9 +1,4 @@
 services:
-  vactory_notifications.commands:
-    class: \Drupal\vactory_notifications\Commands\NotificationsDrushCommands
-    tags:
-      - { name: drush.command }
-    arguments: [ '@entity_type.manager', '@logger.factory' ]
   vactory_notifications.manager:
     class: Drupal\vactory_notifications\Services\VactoryNotificationsService
     arguments:

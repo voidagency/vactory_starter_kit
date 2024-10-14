@@ -190,3 +190,35 @@ vactory_decoupled.store_log_message:
     _disable_route_normalizer: 'TRUE'
   requirements:
     _permission: 'access content'
+
+vactory_decoupled.edit_live_mode:
+  path: /api/edit_live_mode
+  defaults:
+    _controller: '\Drupal\vactory_decoupled\Controller\EditLiveMode::edit'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+
+vactory_decoupled.edit_live_mode_image:
+  path: /api/edit_live_mode_image
+  defaults:
+    _controller: '\Drupal\vactory_decoupled\Controller\EditLiveMode::editImage'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+
+vactory_decoupled.switch_lang_settings:
+  path: 'admin/config/system/decoupled-switch-lang-settings'
+  defaults:
+    _form: 'Drupal\vactory_decoupled\Form\DecoupledSwitchLangSettingsForm'
+    _title: 'Vactory Decoupled Switch Lang Settings'
+  requirements:
+    _permission: 'administer site configuration'
+
+vactory_decoupled.duplicate_paragraph:
+  path: /api/paragraph/duplicate
+  defaults:
+    _controller: '\Drupal\vactory_decoupled\Controller\DuplicateParagraphController::duplicate'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'

@@ -1,0 +1,6 @@
+services:
+  vactory_migrate.commands:
+    class: \Drupal\vactory_migrate\Drush\Commands\Commands
+    tags:
+      - { name: drush.command }
+    arguments: ['@vactory_migrate.rollback', '@vactory_migrate.import']

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "cf9a8d66c3df135f1d37152355689ad7",
+    "content-hash": "b053849cc38968c9ba1d728e2d2cb172",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -8969,18 +8969,69 @@
             }
         },
         {
-            "name": "drupal/simplify_menu",
-            "version": "3.1.1",
+            "name": "drupal/simple_oauth_revoke",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
-                "url": "https://git.drupalcode.org/project/simplify_menu.git",
-                "reference": "3.1.1"
+                "url": "https://git.drupalcode.org/project/simple_oauth_revoke.git",
+                "reference": "2.0.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/simplify_menu-3.1.1.zip",
-                "reference": "3.1.1",
-                "shasum": "03babea75fb5c9473cad3d131b96553ff8cc0956"
+                "url": "https://ftp.drupal.org/files/projects/simple_oauth_revoke-2.0.0.zip",
+                "reference": "2.0.0",
+                "shasum": "45c781e9930efa8eed4f38879e466c1089f304e9"
+            },
+            "require": {
+                "drupal/core": "^10",
+                "drupal/simple_oauth": "^5.2"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "2.0.0",
+                    "datestamp": "1705612822",
+                    "security-coverage": {
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Float",
+                    "homepage": "https://www.drupal.org/float",
+                    "role": "Maintainer"
+                },
+                {
+                    "name": "mediabounds",
+                    "homepage": "https://www.drupal.org/user/292228"
+                }
+            ],
+            "description": "Adds an endpoint to revoke oauth tokens.",
+            "homepage": "https://www.drupal.org/project/simple_oauth_revoke",
+            "support": {
+                "source": "https://git.drupalcode.org/project/simple_oauth_revoke",
+                "issues": "https://www.drupal.org/project/issues/simple_oauth_revoke"
+            }
+        },
+        {
+            "name": "drupal/simplify_menu",
+            "version": "3.2.0",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/simplify_menu.git",
+                "reference": "3.2.0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/simplify_menu-3.2.0.zip",
+                "reference": "3.2.0",
+                "shasum": "5b239e4da9d76cdeef9867ea7a37b749b34e8b54"
             },
             "require": {
                 "drupal/core": "^9 || ^10"
@@ -8988,8 +9039,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "3.1.1",
-                    "datestamp": "1690572635",
+                    "version": "3.2.0",
+                    "datestamp": "1722535735",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -9024,6 +9075,10 @@
                 {
                     "name": "shrop",
                     "homepage": "https://www.drupal.org/user/14767"
+                },
+                {
+                    "name": "slucero",
+                    "homepage": "https://www.drupal.org/user/1612534"
                 }
             ],
             "description": "Adds a TwigExtension that grants access to Drupal's menu render array so it can be used within a twig template.",
@@ -11097,6 +11152,70 @@
             "support": {
                 "source": "https://git.drupalcode.org/project/views_json_source",
                 "issues": "https://www.drupal.org/project/issues/views_json_source"
+            }
+        },
+        {
+            "name": "drupal/views_url_alias",
+            "version": "3.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/views_url_alias.git",
+                "reference": "3.1.0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/views_url_alias-3.1.0.zip",
+                "reference": "3.1.0",
+                "shasum": "c06cca3df9525a37304881686e1224d87288b525"
+            },
+            "require": {
+                "drupal/core": "^8.8 || ^9 || ^10"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "drupal": {
+                    "version": "3.1.0",
+                    "datestamp": "1711071321",
+                    "security-coverage": {
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "dstorozhuk",
+                    "homepage": "https://www.drupal.org/user/1361080"
+                },
+                {
+                    "name": "erikwebb",
+                    "homepage": "https://www.drupal.org/user/273404"
+                },
+                {
+                    "name": "jrockowitz",
+                    "homepage": "https://www.drupal.org/user/371407"
+                },
+                {
+                    "name": "L-four",
+                    "homepage": "https://www.drupal.org/user/357826"
+                },
+                {
+                    "name": "venugopp",
+                    "homepage": "https://www.drupal.org/user/2628911"
+                },
+                {
+                    "name": "_shY",
+                    "homepage": "https://www.drupal.org/user/3672933"
+                }
+            ],
+            "description": "Allows content related Views be filtered by path aliases.",
+            "homepage": "https://www.drupal.org/project/views_url_alias",
+            "support": {
+                "source": "https://git.drupalcode.org/project/views_url_alias"
             }
         },
         {
@@ -20822,7 +20941,6 @@
         "drupal/flag": 10,
         "drupal/tinypng": 5,
         "drupal/votingapi": 10,
-        "drupal/simplify_menu": 10,
         "drupal/social_auth_facebook": 5,
         "drupal/social_auth_google": 5,
         "drupal/domain": 10,
@@ -20830,6 +20948,7 @@
         "drupal/jsonapi_user_resources": 10,
         "drupal/symfony_mailer": 15,
         "drupal/default_content": 15,
+        "drupal/gin": 5,
         "drupal/search_api_ai": 15,
         "drupal/openai": 10
     },
@@ -20839,5 +20958,5 @@
         "php": ">=7.3"
     },
     "platform-dev": [],
-    "plugin-api-version": "2.6.0"
+    "plugin-api-version": "2.3.0"
 }

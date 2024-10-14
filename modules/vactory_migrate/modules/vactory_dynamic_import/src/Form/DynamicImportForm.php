@@ -11,11 +11,11 @@ use Drupal\file\Entity\File;
 use Drupal\file\FileInterface;
 use Drupal\media\Entity\Media;
 use Drupal\media\MediaInterface;
+use Drupal\node\Entity\Node;
 use Drupal\taxonomy\Entity\Term;
+use Drupal\user\Entity\User;
 use Drupal\vactory_dynamic_import\Service\DynamicImportHelpers;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 /**
  * Form handler for the dynamic import add and edit forms.
@@ -155,6 +155,7 @@ class DynamicImportForm extends EntityForm {
           '#type' => 'language_select',
           '#title' => $this->t('language'),
           '#default_value' => $entity->get('translation_langcode'),
+          '#required' => TRUE,
         ];
 
       }
@@ -169,24 +170,26 @@ class DynamicImportForm extends EntityForm {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildForm($form, $form_state);
-    $form['actions']['generate'] = [
-      '#type' => 'submit',
-      '#value' => t('Generate CSV model'),
-      '#submit' => ['::generateCsvModel'],
-      '#weight' => 10,
-    ];
-    $form['actions']['execute'] = [
-      '#type' => 'submit',
-      '#value' => t('Execute this migration'),
-      '#submit' => ['::executeDynamicImport'],
-      '#weight' => 10,
-    ];
-    $form['actions']['export'] = [
-      '#type' => 'submit',
-      '#value' => t('Export existing content'),
-      '#submit' => ['::dynamicExport'],
-      '#weight' => 10,
-    ];
+    if (!$this->entity->isNew()) {
+      $form['actions']['generate'] = [
+        '#type' => 'submit',
+        '#value' => t('Generate CSV model'),
+        '#submit' => ['::generateCsvModel'],
+        '#weight' => 10,
+      ];
+      $form['actions']['execute'] = [
+        '#type' => 'submit',
+        '#value' => t('Execute this migration'),
+        '#submit' => ['::executeDynamicImport'],
+        '#weight' => 10,
+      ];
+      $form['actions']['export'] = [
+        '#type' => 'submit',
+        '#value' => t('Export existing content'),
+        '#submit' => ['::dynamicExport'],
+        '#weight' => 10,
+      ];
+    }
     return $form;
   }
 
@@ -290,14 +293,7 @@ class DynamicImportForm extends EntityForm {
    */
   public function dynamicExport(&$form, FormStateInterface $form_state) {
     $values = $form_state->getValues();
-    $moduleHandler = \Drupal::service('module_handler');
-    $alias_manager = \Drupal::service('path_alias.manager');
-    $media_decoupled_manager = NULL;
-    if ($moduleHandler->moduleExists('vactory_decoupled')) {
-      $media_decoupled_manager = \Drupal::service('vacory_decoupled.media_file_manager');
-    }
 
-    $file_url_generator = \Drupal::service('file_url_generator');
     $header = $this->dynamicImportHelper->generateCsvModel(
       $values['target_entity'],
       $values['target_bundle'],
@@ -315,13 +311,61 @@ class DynamicImportForm extends EntityForm {
       $query->condition($bundle_field, $values['target_bundle']);
     }
     $ids = $query->execute();
-    $data = [];
+
+    $operations = [];
+
+    if (!empty($ids)) {
+      $chunks = array_chunk($ids, 1);
+      foreach ($chunks as $chunk) {
+        $operations[] = [
+          [static::class, 'dynamicExportBatchCallback'],
+          [$chunk, $values, $header],
+        ];
+      }
+      if (!empty($operations)) {
+        $batch = [
+          'title'      => 'Process of exporting ...',
+          'operations' => $operations,
+          'finished'   => [static::class, 'dynamicExportBatchFinished'],
+        ];
+        batch_set($batch);
+      }
+    }
+
+    $form_state->setRedirect('vactory_dynamic_import.download_form', ['dynamic_import' => $this->entity->id()]);
+    $form_state->setIgnoreDestination();
+  }
+
+  /**
+   * Export existing content batch callback.
+   */
+  public static function dynamicExportBatchCallback($ids, $values, $header, &$context) {
+    $storage = \Drupal::entityTypeManager()->getStorage($values['target_entity']);
+    $moduleHandler = \Drupal::service('module_handler');
+    $alias_manager = \Drupal::service('path_alias.manager');
+    $media_decoupled_manager = NULL;
+    if ($moduleHandler->moduleExists('vactory_decoupled')) {
+      $media_decoupled_manager = \Drupal::service('vacory_decoupled.media_file_manager');
+    }
+
+    $file_url_generator = \Drupal::service('file_url_generator');
+
     foreach ($ids as $id) {
       $entity_data = [];
-      $entity = $storage->load($id);
+      $entity = NULL;
+      $default_entity = $storage->load($id);
+      if ($values['is_translation'] && $default_entity->hasTranslation($values['translation_langcode'])) {
+        $entity = $default_entity->getTranslation($values['translation_langcode']);
+      }
+      else {
+        $entity = $default_entity;
+      }
       foreach ($header as $header_item) {
         if ($header_item == 'id') {
           $entity_data['id'] = $entity->id();
+        }
+        elseif ($header_item == 'original') {
+          $entity_data['original'] = $entity->id();
         }
         else {
           $config = $header_item ? explode('|', $header_item) : [];
@@ -336,6 +380,13 @@ class DynamicImportForm extends EntityForm {
                   $alias = $alias_manager->getAliasByPath('/node/' . $entity->id());
                   $entity_data[$header_item] = $alias;
                 }
+                elseif ($field == 'roles') {
+                  $roles = $entity->get($field)->getValue();
+                  $roles = array_map(function ($item) {
+                    return $item['target_id'];
+                  }, $roles);
+                  $entity_data[$header_item] = implode('|', $roles);
+                }
                 else {
                   $entity_data[$header_item] = $entity->get($field)->value;
                 }
@@ -347,13 +398,19 @@ class DynamicImportForm extends EntityForm {
             }
             if ($plugin == 'term') {
               $term_id = $entity->get($field)->target_id;
-              $term = Term::load($term_id);
-              $entity_data[$header_item] = $term->label();
+              $entity_data[$header_item] = $term_id ? Term::load($term_id)->label() : '';
+            }
+            if ($plugin == 'node') {
+              $node_id = $entity->get($field)->target_id;
+              $entity_data[$header_item] = $node_id ? Node::load($node_id)->label() : '';
+            }
+            if ($plugin == 'user') {
+              $user_id = $entity->get($field)->target_id;
+              $entity_data[$header_item] = $user_id ? User::load($user_id)->getAccountName() : '';
             }
             if ($plugin == 'date') {
               $value = $entity->get(reset($split))->getValue();
               $entity_data[$header_item] = $value[0][end($split)];
-
             }
             if ($plugin == 'media') {
               if ($info !== 'image_alt') {
@@ -363,13 +420,13 @@ class DynamicImportForm extends EntityForm {
                   $entity_data[$header_item] = '';
                   if ($info == 'image') {
                     $key = "media|{$field}|image_alt";
-                    $entity_data[$key] = $media->thumbnail->alt;
+                    $entity_data[$key] = '';
                   }
                   continue;
                 }
                 if ($info == 'remote_video') {
                   $url = $media->get(self::MEDIA_FIELD_NAMES[$info])->value;
-                  $entity_data[$header_item] = $url;
+                  $entity_data[$header_item] = $url . " ({$media_id})";
                 }
                 else {
                   $fid = $media->get(self::MEDIA_FIELD_NAMES[$info])->target_id;
@@ -391,7 +448,7 @@ class DynamicImportForm extends EntityForm {
                   else {
                     $url = $file_url_generator->generateAbsoluteString($image_uri);
                   }
-                  $entity_data[$header_item] = $url;
+                  $entity_data[$header_item] = $url . " ({$media_id})";
                   if ($info == 'image') {
                     $key = "media|{$field}|image_alt";
                     $entity_data[$key] = $media->thumbnail->alt;
@@ -424,17 +481,29 @@ class DynamicImportForm extends EntityForm {
           }
         }
       }
-      $data[] = $entity_data;
+      $context['results']['data'][] = $entity_data;
     }
 
-    $delimiter = \Drupal::config('vactory_migrate.settings')->get('delimiter') ?? ',';
-    $path = $this->dynamicImportHelper->generateCsv($header, $data, "{$values['target_entity']}--{$values['target_bundle']}--export", $delimiter);
+    $context['results']['header'] = $header;
+    $context['results']['filename'] = "{$values['target_entity']}--{$values['target_bundle']}--export";
 
-    $response = new BinaryFileResponse(\Drupal::service('file_system')
-      ->realPath($path), 200, [], FALSE);
-    $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, "{$values['target_entity']}--{$values['target_bundle']}--export" . '.csv');
-    $response->deleteFileAfterSend(TRUE);
-    $response->send();
+  }
+
+  /**
+   * Export existing content batch finish.
+   */
+  public static function dynamicExportBatchFinished($success, $results, $operations) {
+    if ($success) {
+      $header = $results['header'];
+      $data = $results['data'];
+      $filename = $results['filename'];
+      $delimiter = \Drupal::config('vactory_migrate.settings')->get('delimiter') ?? ',';
+      $path = \Drupal::service('vactory_dynamic_import.helper')->generateCsv($header, $data, $filename, $delimiter);
+      $_SESSION['dynamic_export_file_download'] = $path;
+    }
+    else {
+      \Drupal::messenger()->addError(t('An error occurred during export.'));
+    }
   }
 
 }

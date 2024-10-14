@@ -1,0 +1,8 @@
+name: 'Search'
+multiple: FALSE
+category: 'Help center'
+enabled: TRUE
+fields:
+  help_center_search:
+    type: vactory_help_center_search
+    label: 'Help center search'

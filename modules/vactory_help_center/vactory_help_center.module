@@ -1,0 +1,224 @@
+<?php
+
+/**
+ * @file
+ * Contains vactory_help_center module.
+ */
+
+use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Form\FormStateInterface;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function vactory_help_center_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if (in_array($form_id, [
+    'node_vactory_help_center_edit_form',
+    'node_vactory_help_center_form',
+  ])) {
+    $form['#validate'][] = '_vactory_help_center_validate_section';
+  }
+}
+
+/**
+ * Custom validation for the help center node form.
+ */
+function _vactory_help_center_validate_section(&$form, FormStateInterface $form_state) {
+  $section_terms = $form_state->getValue('field_section');
+  $section_term = reset($section_terms);
+  $term_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+  $term = $term_storage->load($section_term['target_id']);
+  $has_children = !empty($term_storage->getChildren($term));
+  if ($has_children) {
+    $form_state->setErrorByName('field_section', t('Please select a section from the lowest level of the hierarchy.'));
+  }
+}
+
+/**
+ * Implements hook_decoupled_df_format_alter().
+ */
+function vactory_help_center_decoupled_df_format_alter(&$value, &$info, &$cacheability) {
+  if ($info['type'] === 'vactory_help_center') {
+    $params = \Drupal::request()->query->all("q");
+    $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
+    $current_term = 0;
+    $storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+    $media_file_manager = Drupal::service('vacory_decoupled.media_file_manager');
+    // Get term it using query params.
+    foreach ($params as $key => $value) {
+      if (!str_starts_with($key, 'help_center_item_')) {
+        continue;
+      }
+      $query = $storage->getQuery();
+      $query->accessCheck(TRUE);
+      $query->condition('vid', 'vactory_help_center');
+      $query->condition('term_2_slug', $value);
+      $query->condition('parent', $current_term);
+      $query->condition('langcode', $langcode);
+      $result = $query->execute();
+      if (!empty($result) && count($result) == 1) {
+        $current_term = reset($result);
+      }
+      else {
+        throw new NotFoundHttpException("[Vactory help center] term with slug '$value' not found.");
+      }
+    }
+    $config = \Drupal::config('vactory_help_center.settings');
+    $search_path = $config->get('help_center_search_node');
+    $search_path = \Drupal::service('path_alias.manager')->getAliasByPath($search_path, $langcode);
+    $value = [
+      'type' => 'terms',
+      'data' => [],
+      'search_path' => $langcode . $search_path,
+    ];
+    $help_center_aliases = $config->get('help_center_aliases');
+    $help_center_alias = $help_center_aliases[$langcode];
+    // Get first level.
+    if ($current_term == 0) {
+      $children = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree(
+        'vactory_help_center',
+        0,
+        1,
+        TRUE
+      );
+      foreach ($children as $child) {
+        $url = $help_center_alias . '/' . $child->get('term_2_slug')->value;
+        $child_translation = \Drupal::service('entity.repository')->getTranslationFromContext($child, $langcode);
+        $mid = $child->get('field_image')->target_id;
+        $value['data'][] = [
+          'label' => $child_translation->label(),
+          'url' => $url,
+          'image' => $media_file_manager->getMediaAbsoluteUrlByMid($mid, TRUE),
+        ];
+      }
+    }
+    else {
+      $term = $storage->load($current_term);
+      if ($term) {
+        $children = $storage->getChildren($term);
+        if (!empty($children)) {
+          foreach ($children as $child) {
+            $url = $help_center_alias . '/' . implode('/', $params) . '/' . $child->get('term_2_slug')->value;
+            $child_translation = \Drupal::service('entity.repository')->getTranslationFromContext($child, $langcode);
+            $mid = $child->get('field_image')->target_id;
+            $data = [
+              'label' => $child_translation->label(),
+              'url' => $url,
+              'image' => $media_file_manager->getMediaAbsoluteUrlByMid($mid, TRUE),
+            ];
+            // Get immediate children (next level only).
+            $grandchildren = $storage->getChildren($child);
+            if (!empty($grandchildren)) {
+              $data['children'] = [];
+              foreach ($grandchildren as $grandchild) {
+                $grandchild_url = $url . '/' . $grandchild->get('term_2_slug')->value;
+                $grandchild_translation = \Drupal::service('entity.repository')->getTranslationFromContext($grandchild, $langcode);
+                $data['children'][] = [
+                  'label' => $grandchild_translation->label(),
+                  'url' => $grandchild_url,
+                ];
+              }
+            }
+            $value['data'][] = $data;
+          }
+        }
+        // Get nodes (we are in the last level).
+        else {
+          $node_storage = \Drupal::entityTypeManager()->getStorage('node');
+          $node_query = $node_storage->getQuery();
+          $node_query->accessCheck(TRUE);
+          $node_query->condition('type', 'vactory_help_center');
+          $node_query->condition('status', 1);
+          $node_query->condition('langcode', $langcode);
+          $node_query->condition('field_section', $current_term);
+          $ids = $node_query->execute();
+          $ids = !empty($ids) ? $ids : [-1];
+          $nodes = $node_storage->loadMultiple($ids);
+          $value['type'] = 'nodes';
+          if (!empty($nodes)) {
+            $alias_manager = \Drupal::service('path_alias.manager');
+            foreach ($nodes as $node) {
+              $node_translation = \Drupal::service('entity.repository')->getTranslationFromContext($node, $langcode);
+              $value['data'][] = [
+                'label' => $node_translation->getTitle(),
+                'url' => $alias_manager->getAliasByPath('/node/' . $node->id()),
+              ];
+            }
+          }
+        }
+      }
+    }
+  }
+  if ($info['type'] === 'vactory_help_center_search') {
+    $params = \Drupal::request()->query->all("q");
+    $value = [];
+    if (array_key_exists('help-center-keyword', $params) && !empty($params['help-center-keyword'])) {
+      $value = \Drupal::service('vactory_help_center.helper')->search($params['help-center-keyword']);
+    }
+  }
+}
+
+/**
+ * Implements hook_taxonomy_term_presave().
+ */
+function vactory_help_center_taxonomy_term_presave($term) {
+  if ($term->bundle() == 'vactory_help_center') {
+    drupal_register_shutdown_function('_help_center_generate_routes');
+
+  }
+}
+
+/**
+ * Re-generates router.
+ */
+function _help_center_generate_routes() {
+  \Drupal::service('vactory_help_center.helper')->generateRouters();
+}
+
+/**
+ * Implements hook_decoupled_breadcrumb_links_alter().
+ */
+function vactory_help_center_decoupled_breadcrumb_links_alter(&$links, $entity) {
+  if ($entity->getEntityTypeId() == 'node' && $entity->bundle() == 'vactory_help_center') {
+    $help_center_service = \Drupal::service('vactory_help_center.helper');
+    $links = $help_center_service->getNodeBreadcrumb($entity);
+  }
+
+  if (_is_help_center_page($entity)) {
+    $help_center_service = \Drupal::service('vactory_help_center.helper');
+    $links = $help_center_service->getPageBreadcrumb($entity);
+  }
+}
+
+/**
+ * Check if the entity is the HC page.
+ */
+function _is_help_center_page($entity) {
+  if (!$entity->getEntityTypeId() == 'vactory_page') {
+    return FALSE;
+  }
+
+  $node_url = \Drupal::config('vactory_help_center.settings')->get('help_center_node');
+  $node_id = explode('/', $node_url);
+  $node_id = end($node_id);
+  return $node_id == $entity->id();
+}
+
+/**
+ * Implements hook_decoupled_extra_field_value_alter().
+ */
+function vactory_help_center_decoupled_extra_field_value_alter(&$value, $context, CacheableMetadata $cacheability) {
+  $entity = $context['entity'];
+  if (_is_help_center_page($entity)) {
+    $help_center_service = \Drupal::service('vactory_help_center.helper');
+    $title = $help_center_service->getPageTitle($entity);
+    if ($title) {
+      $value['breadcrumb_title'] = $title;
+    }
+    $cacheability->addCacheTags([
+      'taxonomy_term_list:vactory_help_center',
+      'node_list:vactory_help_center',
+    ]);
+  }
+}

@@ -98,8 +98,10 @@
     <div class="system-status-general-info__item">
       <span class="system-status-general-info__item-icon system-status-general-info__item-icon--d8"></span>
       <div class="system-status-general-info__item-details">
-        <h3 class="system-status-general-info__item-title">{{ 'Factory Version'|t }}</h3>
-        2.0.12
+        <h3 class="system-status-general-info__item-title">{{ 'Profile Version'|t }}</h3>
+        {% for key,value in profile_version %}
+          <h4 class="system-status-general-info__sub-item-title">{{ key }}</h4>{{ value }}
+        {% endfor %}
       </div>
     </div>
   </div>
