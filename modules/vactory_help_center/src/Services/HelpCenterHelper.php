@@ -284,4 +284,33 @@ class HelpCenterHelper {
     return $this->entityRepository->getTranslationFromContext($term, $langcode)->label();
   }
 
+  /**
+   * Search service.
+   */
+  public function search(string $keyword) {
+    $langcode = $this->languageManager->getCurrentLanguage()->getId();
+
+    $query = $this->entityTypeManager->getStorage('node')->getQuery()
+      ->condition('type', 'vactory_help_center')
+      ->condition('status', 1)
+      ->condition('title', $keyword, 'CONTAINS')
+      ->accessCheck(TRUE);
+
+    $nids = $query->execute();
+
+    $nodes = $this->entityTypeManager->getStorage('node')->loadMultiple($nids);
+
+    $result = [];
+    foreach ($nodes as $node) {
+      $path = '/node/' . $node->id();
+      $alias = $this->aliasManager->getAliasByPath($path, $langcode);
+      $node_translation = $this->entityRepository->getTranslationFromContext($node, $langcode);
+      $result[] = [
+        'title' => $node_translation->getTitle(),
+        'alias' => "/{$langcode}{$alias}",
+      ];
+    }
+    return $result;
+  }
+
 }

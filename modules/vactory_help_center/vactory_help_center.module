@@ -64,11 +64,15 @@ function vactory_help_center_decoupled_df_format_alter(&$value, &$info, &$cachea
         throw new NotFoundHttpException("[Vactory help center] term with slug '$value' not found.");
       }
     }
+    $config = \Drupal::config('vactory_help_center.settings');
+    $search_path = $config->get('help_center_search_node');
+    $search_path = \Drupal::service('path_alias.manager')->getAliasByPath($search_path, $langcode);
     $value = [
       'type' => 'terms',
       'data' => [],
+      'search_path' => $langcode . $search_path,
     ];
-    $help_center_aliases = \Drupal::config('vactory_help_center.settings')->get('help_center_aliases');
+    $help_center_aliases = $config->get('help_center_aliases');
     $help_center_alias = $help_center_aliases[$langcode];
     // Get first level.
     if ($current_term == 0) {
@@ -144,6 +148,13 @@ function vactory_help_center_decoupled_df_format_alter(&$value, &$info, &$cachea
           }
         }
       }
+    }
+  }
+  if ($info['type'] === 'vactory_help_center_search') {
+    $params = \Drupal::request()->query->all("q");
+    $value = [];
+    if (array_key_exists('help-center-keyword', $params) && !empty($params['help-center-keyword'])) {
+      $value = \Drupal::service('vactory_help_center.helper')->search($params['help-center-keyword']);
     }
   }
 }
