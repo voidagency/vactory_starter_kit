@@ -3,9 +3,9 @@
 namespace Drupal\vactory_help_center\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\vactory_help_center\Services\HelpCenterHelper;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Drupal\path_alias\AliasManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -14,17 +14,17 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class HelpCenterController extends ControllerBase {
 
   /**
-   * The path alias manager.
+   * Help center service.
    *
-   * @var \Drupal\path_alias\AliasManagerInterface
+   * @var \Drupal\vactory_help_center\Services\HelpCenterHelper
    */
-  protected $aliasManager;
+  protected $helpCenterHelper;
 
   /**
    * Constructs a HelpCenterController object.
    */
-  public function __construct(AliasManagerInterface $alias_manager) {
-    $this->aliasManager = $alias_manager;
+  public function __construct(HelpCenterHelper $helpCenterHelper) {
+    $this->helpCenterHelper = $helpCenterHelper;
   }
 
   /**
@@ -32,7 +32,7 @@ class HelpCenterController extends ControllerBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('path_alias.manager')
+      $container->get('vactory_help_center.helper')
     );
   }
 
@@ -47,29 +47,7 @@ class HelpCenterController extends ControllerBase {
    */
   public function getHelpCenterNodes(Request $request) {
     $keyword = $request->query->get('keyword', '');
-    $langcode = $this->languageManager()->getCurrentLanguage()->getId();
-
-    $query = $this->entityTypeManager()->getStorage('node')->getQuery()
-      ->condition('type', 'vactory_help_center')
-      ->condition('status', 1)
-      ->condition('title', $keyword, 'CONTAINS')
-      ->accessCheck(TRUE);
-
-    $nids = $query->execute();
-
-    $nodes = $this->entityTypeManager()->getStorage('node')->loadMultiple($nids);
-
-    $result = [];
-    foreach ($nodes as $node) {
-      $path = '/node/' . $node->id();
-      $alias = $this->aliasManager->getAliasByPath($path, $langcode);
-      $node_translation = \Drupal::service('entity.repository')->getTranslationFromContext($node, $langcode);
-      $result[] = [
-        'title' => $node_translation->getTitle(),
-        'alias' => "/{$langcode}{$alias}",
-      ];
-    }
-
+    $result = $this->helpCenterHelper->search($keyword);
     return new JsonResponse($result);
   }
 

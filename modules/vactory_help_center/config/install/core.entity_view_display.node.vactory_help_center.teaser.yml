@@ -5,6 +5,7 @@ dependencies:
     - core.entity_view_mode.node.teaser
     - field.field.node.vactory_help_center.body
     - field.field.node.vactory_help_center.field_section
+    - field.field.node.vactory_help_center.field_vactory_paragraphs
     - node.type.vactory_help_center
   module:
     - text
@@ -30,5 +31,6 @@ content:
 hidden:
   addtoany: true
   field_section: true
+  field_vactory_paragraphs: true
   langcode: true
   search_api_excerpt: true

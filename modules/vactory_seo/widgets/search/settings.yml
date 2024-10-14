@@ -1,0 +1,14 @@
+name: 'Seo Search'
+multiple: FALSE
+category: 'Seo'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: 'title'
+  description:
+    type: textarea
+    label: 'description'
+  seo_search:
+    type: vactory_seo_search
+    label: 'Seo Search'

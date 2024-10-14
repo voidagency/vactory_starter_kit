@@ -83,6 +83,14 @@ class HelpCenterConfigForm extends ConfigFormBase {
       '#default_value' => $config->get('help_center_node'),
       '#required' => TRUE,
     ];
+
+    $form['help_center_search_node'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Help Center Search Node'),
+      '#description' => $this->t('Enter the search node path (e.g., /node/456)'),
+      '#default_value' => $config->get('help_center_search_node'),
+      '#required' => TRUE,
+    ];
     $form['actions']['submit']['#value'] = $this->t('Rebuild router');
 
     return $form;
@@ -96,6 +104,10 @@ class HelpCenterConfigForm extends ConfigFormBase {
     if (!preg_match('/^\/node\/\d+$/', $node_path)) {
       $form_state->setErrorByName('help_center_node', $this->t('Invalid node path. It should be in the format /node/xx where xx is a number.'));
     }
+    $nod_search_path = $form_state->getValue('help_center_search_node');
+    if (!preg_match('/^\/node\/\d+$/', $nod_search_path)) {
+      $form_state->setErrorByName('help_center_search_node', $this->t('Invalid node search path. It should be in the format /node/xx where xx is a number.'));
+    }
   }
 
   /**
@@ -103,8 +115,11 @@ class HelpCenterConfigForm extends ConfigFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $node_path = $form_state->getValue('help_center_node');
+    $node_search_path = $form_state->getValue('help_center_search_node');
     $config = $this->config('vactory_help_center.settings');
-    $config->set('help_center_node', $node_path)->save();
+    $config->set('help_center_node', $node_path)
+      ->set('help_center_search_node', $node_search_path)
+      ->save();
 
     // Get aliases for all active languages.
     $languages = $this->languageManager->getLanguages();
