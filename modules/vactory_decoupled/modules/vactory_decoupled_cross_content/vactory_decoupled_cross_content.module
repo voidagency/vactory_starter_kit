@@ -24,7 +24,12 @@ function vactory_decoupled_cross_content_decoupled_df_format_alter(&$value, &$in
     $language = \Drupal::languageManager()->getCurrentLanguage()->getId();
 
     $type = NodeType::load($content_type);
-    // @todo handle  $isEnabled = $type->getThirdPartySetting('vactory_cross_content', 'enabling', '');.
+    $isEnabled = $type->getThirdPartySetting('vactory_cross_content', 'enabling', '');
+    if (!$isEnabled) {
+      $value = [];
+      return;
+    }
+
     // @todo handle  $content_type_selected = $type->getThirdPartySetting('vactory_cross_content', 'content_type', '');.
     // @todo handle  $more_link = $type->getThirdPartySetting('vactory_cross_content', 'more_link', '');.
     // @todo handle  $more_link_label = $type->getThirdPartySetting('vactory_cross_content', 'more_link_label', '');.
