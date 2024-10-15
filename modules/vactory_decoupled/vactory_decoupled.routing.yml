@@ -222,3 +222,10 @@ vactory_decoupled.duplicate_paragraph:
   methods: [POST]
   requirements:
     _access: 'TRUE'
+vactory_decoupled.delete_paragraph:
+  path: /api/paragraph/delete
+  defaults:
+    _controller: '\Drupal\vactory_decoupled\Controller\DuplicateParagraphController::delete'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
