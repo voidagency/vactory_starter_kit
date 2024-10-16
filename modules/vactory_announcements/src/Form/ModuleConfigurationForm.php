@@ -52,13 +52,16 @@ class ModuleConfigurationForm extends ConfigFormBase {
     ];
     // Email Add advert admin Tab.
     // Get admins && webmasters.
-    $users = User::loadMultiple();
+    $concerned_roles = ['administrator', 'webmaster'];
+    $query = \Drupal::entityTypeManager()->getStorage('user')->getQuery();
+    $query->condition('roles', $concerned_roles, 'IN');
+    $query->accessCheck(FALSE);
+    $uids = $query->execute();
+    $users = User::loadMultiple($uids);
+    // Build the receivers array.
     $receivers = [];
-    $concernedRoles = ['administrator', 'webmaster'];
     foreach ($users as $user) {
-      if (count(array_intersect($concernedRoles, $user->getRoles())) > 0) {
-        $receivers[$user->id()] = $user->getDisplayName();
-      }
+      $receivers[$user->id()] = $user->getDisplayName();
     }
     $form['notification_settings']['notification_mail_receiver'] = [
       '#type' => 'select',
