@@ -6,6 +6,9 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\node\Entity\Node;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Duplicate Paragraph Endpoint.
@@ -16,16 +19,9 @@ class DuplicateParagraphController extends ControllerBase {
    * Duplicate paragraphs.
    */
   public function duplicate(Request $request) {
-    $user_id = \Drupal::currentUser()->id();
-    $user = $this->entityTypeManager()->getStorage('user')->load($user_id);
-    $user_granted = $user->hasPermission('edit content live mode');
-    if (!$user_granted) {
-      return new JsonResponse([
-        'status' => FALSE,
-        'message' => $this->t('edit content live mode permission is required'),
-      ], 400);
-    }
-    $body = json_decode($request->getContent(), TRUE);
+    // Validate user permission.
+    $this->checkUserPermission();
+    $body = $this->parseRequestBody($request);
     $paragraph_id = $body['paragraph_id'] ?? NULL;
     $nid = $body['nid'] ?? NULL;
     $weight = $body['weight'] ?? 0;
@@ -41,10 +37,7 @@ class DuplicateParagraphController extends ControllerBase {
 
     $res = $paragraph_query->execute();
     if (count($res) !== 1) {
-      return [
-        'code' => 400,
-        'message' => $this->t('Cannot get target paragraph'),
-      ];
+      throw new NotFoundHttpException('Cannot get target paragraph.');
     }
     $paragraph_id = reset($res);
     $paragraph = $this->entityTypeManager()
@@ -70,13 +63,8 @@ class DuplicateParagraphController extends ControllerBase {
       }
     }
 
-    $node = Node::load($nid);
-    if (!isset($node)) {
-      return [
-        'code' => 400,
-        'message' => $this->t('Cannot get target node.'),
-      ];
-    }
+    // Load and validate node.
+    $node = $this->loadNode($nid);
     $paragraphs = $node->field_vactory_paragraphs->getValue() ?? [];
     $this->insertByWeight($paragraphs, [
       'target_id' => $duplicate_entity->id(),
@@ -92,6 +80,40 @@ class DuplicateParagraphController extends ControllerBase {
       'message' => $this->t('Paragraph duplicated !'),
       'paragraph' => $this->prepareComponentData($duplicate_entity),
     ], 200);
+  }
+
+  /**
+   * Delete paragraph.
+   */
+  public function delete(Request $request) {
+    try {
+      $this->checkUserPermission();
+
+      $body = $this->parseRequestBody($request);
+      $paragraph_id = $body['paragraph_id'] ?? NULL;
+      $nid = $body['nid'] ?? NULL;
+
+      $node = $this->loadNode($nid);
+
+      $paragraphs = $node->get('field_vactory_paragraphs')->getValue() ?? [];
+      $updated_paragraphs = $this->removeParagraph($paragraphs, $paragraph_id);
+
+      $node->set('field_vactory_paragraphs', $updated_paragraphs);
+      $node->save();
+
+      clear_next_cache();
+
+      return new JsonResponse([
+        'status' => TRUE,
+        'message' => $this->t('Paragraph successfully deleted.'),
+      ], 200);
+    }
+    catch (\Exception $e) {
+      return new JsonResponse([
+        'status' => FALSE,
+        'message' => $e->getMessage(),
+      ], $e->getCode() ?: 400);
+    }
   }
 
   /**
@@ -139,6 +161,52 @@ class DuplicateParagraphController extends ControllerBase {
       }, array_keys($newItems)),
       array_values($newItems)
     );
+  }
+
+  /**
+   * Check if user has live mode permission.
+   */
+  private function checkUserPermission() {
+    $user = $this->currentUser();
+    if (!$user->hasPermission('edit content live mode')) {
+      throw new AccessDeniedHttpException('Edit content live mode permission is required.');
+    }
+  }
+
+  /**
+   * Parse request body.
+   */
+  private function parseRequestBody(Request $request) {
+    $content = $request->getContent();
+    $body = json_decode($content, TRUE);
+    if (json_last_error() !== JSON_ERROR_NONE) {
+      throw new BadRequestHttpException('Invalid JSON payload.');
+    }
+    return $body;
+  }
+
+  /**
+   * Load Node by id.
+   */
+  private function loadNode($nid) {
+    $node = Node::load($nid);
+    if (!$node) {
+      throw new NotFoundHttpException('Cannot find target node.');
+    }
+    return $node;
+  }
+
+  /**
+   * Remove paragraph.
+   */
+  private function removeParagraph(array $paragraphs, int $paragraph_id) {
+    $updated_paragraphs = array_filter($paragraphs, function ($paragraph) use ($paragraph_id) {
+      return $paragraph['target_id'] != $paragraph_id;
+    });
+    if (count($updated_paragraphs) === count($paragraphs)) {
+      throw new NotFoundHttpException('Cannot find target paragraph.');
+    }
+    return array_values($updated_paragraphs);
   }
 
 }
