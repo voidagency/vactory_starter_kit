@@ -64,3 +64,48 @@ function vactory_banner_update_8701() {
   $field_banner_title_definition->setTranslatable(TRUE);
   $entity_definition_update_manager->updateFieldStorageDefinition($field_banner_title_definition);
 }
+
+/**
+ * Adds node_description/node_banner_showbreadcrumb fields to nodes.
+ */
+function vactory_banner_update_10702() {
+  // Create the field storage definition for the 'node_description' field.
+  $storage_definition_description = BaseFieldDefinition::create('string')
+    ->setLabel(t('Description'))
+    ->setDescription(t('A description field for the node.'))
+    ->setDisplayOptions('form', [
+      'label' => 'hidden',
+      'weight' => 32,
+    ])
+    ->setDisplayOptions('view', [
+      'region' => 'hidden',
+    ])
+    ->setDisplayConfigurable('form', TRUE)
+    ->setDisplayConfigurable('view', TRUE)
+    ->setRequired(FALSE);
+
+  // Install the field storage definition on the 'node' entity.
+  \Drupal::entityDefinitionUpdateManager()
+    ->installFieldStorageDefinition('node_banner_description', 'node', 'node', $storage_definition_description);
+
+  // Create the field storage definition for the 'show_breadcrumbs' field.
+  $storage_definition_show_breadcrumbs = BaseFieldDefinition::create('boolean')
+    ->setLabel(t('Show Breadcrumbs'))
+    ->setDescription(t('Check this box to display breadcrumbs on the node page.'))
+    ->setDefaultValue(TRUE)
+    ->setDisplayOptions('form', [
+      'type' => 'boolean_checkbox',
+      'label' => 'hidden',
+      'weight' => 33,
+    ])
+    ->setDisplayOptions('view', [
+      'region' => 'hidden',
+    ])
+    ->setDisplayConfigurable('form', TRUE)
+    ->setDisplayConfigurable('view', TRUE)
+    ->setRequired(FALSE);
+
+  // Install the field storage definition on the 'node' entity.
+  \Drupal::entityDefinitionUpdateManager()
+    ->installFieldStorageDefinition('node_banner_showbreadcrumb', 'node', 'node', $storage_definition_show_breadcrumbs);
+}

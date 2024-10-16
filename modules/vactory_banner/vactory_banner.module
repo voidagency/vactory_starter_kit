@@ -7,9 +7,9 @@
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\vactory_banner\Exceptions\BlockCreationException;
-use Drupal\vactory_core\Vactory;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Implements hook_theme().
@@ -18,7 +18,7 @@ function vactory_banner_theme($existing, $type, $theme, $path) {
   return [
     'block__block_content__vactory_banner' => [
       'base hook' => 'block',
-      'template'  => 'banner',
+      'template' => 'banner',
     ],
   ];
 }
@@ -40,7 +40,8 @@ function vactory_banner_preprocess_block(&$variables) {
     $current_route_name = \Drupal::routeMatch()->getRouteName();
 
     // Get current page title.
-    $variables['content']['page_title'] = ((isset($field_dynamic_title)) && $field_dynamic_title[0]['value'] == 1) ? Drupal::service('vactory')->getCurrentTitle() : '';
+    $variables['content']['page_title'] = ((isset($field_dynamic_title)) && $field_dynamic_title[0]['value'] == 1) ? Drupal::service('vactory')
+      ->getCurrentTitle() : '';
     // Get page title if current page not checked.
     $variables['content']['page_title'] = ((isset($dynamic_title[0]['value'])) && !empty($dynamic_title[0]['value'])) ? $dynamic_title[0]['value'] : $variables['content']['page_title'];
 
@@ -66,14 +67,14 @@ function vactory_banner_preprocess_block(&$variables) {
  */
 function vactory_banner_form_node_form_alter(&$form) {
   $form['node_banner_group'] = [
-    '#type'        => 'details',
-    '#title'       => t('Banner settings'),
+    '#type' => 'details',
+    '#title' => t('Banner settings'),
     '#description' => t('Create banner for this node.'),
-    '#group'       => 'advanced',
-    '#open'        => FALSE,
-    '#access'      => \Drupal::currentUser()
+    '#group' => 'advanced',
+    '#open' => FALSE,
+    '#access' => \Drupal::currentUser()
       ->hasPermission('administer fields node banner'),
-    '#attributes'  => ['class' => ['node-class-form']],
+    '#attributes' => ['class' => ['node-class-form']],
   ];
 
   $form['node_banner_title']['#group'] = 'node_banner_group';
@@ -86,7 +87,6 @@ function vactory_banner_form_node_form_alter(&$form) {
  * Implements hook_entity_base_field_info().
  */
 function vactory_banner_entity_base_field_info(EntityTypeInterface $entity_type) {
-
   if ($entity_type->id() === 'node') {
     $fields['node_banner_image'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Banner Image'))
@@ -101,7 +101,7 @@ function vactory_banner_entity_base_field_info(EntityTypeInterface $entity_type)
       ->setTargetEntityTypeId('node')
       ->setTranslatable(TRUE)
       ->setDisplayOptions('form', [
-        'type'   => 'media_library_widget',
+        'type' => 'media_library_widget',
         'weight' => 0,
       ]);
 
@@ -118,7 +118,7 @@ function vactory_banner_entity_base_field_info(EntityTypeInterface $entity_type)
       ->setTargetEntityTypeId('node')
       ->setTranslatable(TRUE)
       ->setDisplayOptions('form', [
-        'type'   =>'media_library_widget',
+        'type' => 'media_library_widget',
         'weight' => 0,
       ]);
 
@@ -126,7 +126,7 @@ function vactory_banner_entity_base_field_info(EntityTypeInterface $entity_type)
       ->setLabel(t('Banner Title'))
       ->setDescription(t('Set you custom title for banner'))
       ->setDisplayOptions('form', [
-        'label'  => 'hidden',
+        'label' => 'hidden',
         'weight' => 32,
       ])
       ->setDisplayOptions('view', [
@@ -139,6 +139,35 @@ function vactory_banner_entity_base_field_info(EntityTypeInterface $entity_type)
       ->setTranslatable(TRUE)
       ->setDisplayConfigurable('form', FALSE);
 
+    $fields['node_banner_description'] = BaseFieldDefinition::create('string')
+      ->setLabel(t('Banner Description'))
+      ->setDescription(t('Set you custom banner description'))
+      ->setDisplayOptions('form', [
+        'label' => 'hidden',
+        'weight' => 32,
+      ])
+      ->setDisplayOptions('view', [
+        'region' => 'hidden',
+      ])
+      ->setTargetEntityTypeId('node')
+      ->setTranslatable(TRUE)
+      ->setDisplayConfigurable('form', FALSE);
+
+    $fields['node_banner_showbreadcrumb'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Show Breadcrumbs'))
+      ->setDescription(t('Check this box to display breadcrumbs on this page.'))
+      ->setDefaultValue(TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'boolean_checkbox',
+        'label' => 'hidden',
+        'weight' => 32,
+      ])
+      ->setDisplayOptions('view', [
+        'region' => 'hidden',
+      ])
+      ->setTargetEntityTypeId('node')
+      ->setTranslatable(TRUE)
+      ->setDisplayConfigurable('form', FALSE);
     return $fields;
   }
 
@@ -164,7 +193,7 @@ function vactory_banner_preprocess_node(&$variables) {
 /**
  * Implements hook_field_widget_single_element_form_alter().
  */
-function vactory_banner_field_widget_single_element_form_alter(&$element, \Drupal\Core\Form\FormStateInterface $form_state, $context) {
+function vactory_banner_field_widget_single_element_form_alter(&$element, FormStateInterface $form_state, $context) {
   $banner_images_fields = [
     'node_banner_image',
     'node_banner_mobile_image',
@@ -184,12 +213,12 @@ function vactory_banner_field_widget_single_element_form_alter(&$element, \Drupa
     $widget_settings = Drupal::config('cloudinary_media_library_widget.settings');
 
     $settings = [
-    'cloud_name' => $sdk_settings->get('cloudinary_sdk_cloud_name'),
-    'api_key' => $sdk_settings->get('cloudinary_sdk_api_key'),
-    'bundle' => 'image',
-    'multiple' => $cardinality != 1,
-    'resource_type' => 'image',
-    'use_saml' => $widget_settings->get('cloudinary_saml_auth'),
+      'cloud_name' => $sdk_settings->get('cloudinary_sdk_cloud_name'),
+      'api_key' => $sdk_settings->get('cloudinary_sdk_api_key'),
+      'bundle' => 'image',
+      'multiple' => $cardinality != 1,
+      'resource_type' => 'image',
+      'use_saml' => $widget_settings->get('cloudinary_saml_auth'),
     ];
 
     $starting_folder = $widget_settings->get('cloudinary_starting_folder');
@@ -234,15 +263,20 @@ function vactory_banner_entity_insert(EntityInterface $block) {
   // Get default theme.
   $config = \Drupal::config('system.theme');
   $default_theme = $config->get('default');
-  /* @var Drupal\Core\Config\Entity\ConfigEntityStorage $blockEntityManager */
-  $entity_manager = \Drupal::service('entity_type.manager')->getStorage('block');
+  /**
+   * @var Drupal\Core\Config\Entity\ConfigEntityStorage $blockEntityManager
+   */
+  $entity_manager = \Drupal::service('entity_type.manager')
+    ->getStorage('block');
 
-  /* @var $bannerBlock \Drupal\block\BlockInterface */
+  /**
+   * @var \Drupal\block\BlockInterface $bannerBlock
+   */
   $banner_block = $entity_manager->create(
     [
-      'id'     => $block_id,
+      'id' => $block_id,
       'plugin' => 'block_content:' . $block->uuid(),
-      'theme'  => $default_theme,
+      'theme' => $default_theme,
     ]
   );
 
@@ -262,8 +296,7 @@ function vactory_banner_entity_insert(EntityInterface $block) {
 /**
  * Implements hook_preprocess_block_content_add_list().
  */
-function vactory_banner_preprocess_block_content_add_list(&$variables)
-{
+function vactory_banner_preprocess_block_content_add_list(&$variables) {
   if (\Drupal::moduleHandler()->moduleExists('vactory_decoupled')) {
     unset($variables['content']['vactory_banner']);
     unset($variables['types']['vactory_banner']);
