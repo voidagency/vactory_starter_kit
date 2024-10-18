@@ -81,6 +81,8 @@ function vactory_banner_form_node_form_alter(&$form) {
   $form['node_banner_image']['#group'] = 'node_banner_group';
   $form['node_banner_mobile_image']['#group'] = 'node_banner_group';
   $form['node_banner_video']['#group'] = 'node_banner_group';
+  $form['node_banner_description']['#group'] = 'node_banner_group';
+  $form['node_banner_showbreadcrumb']['#group'] = 'node_banner_group';
 }
 
 /**
