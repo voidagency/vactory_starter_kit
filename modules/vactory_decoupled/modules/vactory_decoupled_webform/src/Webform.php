@@ -597,6 +597,14 @@ class Webform {
       (isset($item['#output'])) ? $properties['output'] = $item['#output'] : NULL;
     }
 
+    if ($type === 'tel') {
+      $properties['attributes']['international'] = isset($item['#international']) && $item['#international'];
+      if ($properties['attributes']['international']) {
+        $properties['attributes']['international_initial_country'] = $item['#international_initial_country'] ?? "";
+        $properties['attributes']['international_preferred_countries'] = $item['#international_preferred_countries'] ?? [];
+      }
+    }
+
     if (isset($item['#states'])) {
       $properties['states'] = $this->getFormElementStates($item);
     }
