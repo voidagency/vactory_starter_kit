@@ -162,6 +162,16 @@ class SettingsForm extends ConfigFormBase {
         '#title' => $content_type->label(),
         '#group' => 'content_type_tab',
       ];
+      $form['mail_content_types'][$node_type_machine_name]['mail_send_on_publish'] = [
+        '#type' => 'checkbox',
+        '#title' => $this->t('Send email when node status is publish'),
+        '#default_value' => $config->get('mail_content_types')[$node_type_machine_name]['mail_send_on_publish'] ?? TRUE,
+      ];
+      $form['mail_content_types'][$node_type_machine_name]['mail_send_on_unpublish'] = [
+        '#type' => 'checkbox',
+        '#title' => $this->t('Send email when node status is unpublished'),
+        '#default_value' => $config->get('mail_content_types')[$node_type_machine_name]['mail_send_on_unpublish'] ?? FALSE,
+      ];
       $form['mail_content_types'][$node_type_machine_name]['mail_subject'] = [
         '#type' => 'textfield',
         '#title' => $this->t('Mail subject'),

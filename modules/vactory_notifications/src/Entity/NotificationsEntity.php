@@ -9,7 +9,7 @@ use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\user\UserInterface;
 
 /**
- * Class VactoryNotifications
+ * Class VactoryNotifications.
  *
  * @ingroup vactory_notifications
  * @ContentEntityType(
@@ -17,15 +17,20 @@ use Drupal\user\UserInterface;
  *   label = @Translation("Notifications entity"),
  *   handlers = {
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
- *     "list_builder" = "Drupal\vactory_notifications\NotificationsListBuilder",
- *     "views_data" = "Drupal\vactory_notifications\Entity\NotificationsEntityViewsData",
- *     "translation" = "Drupal\vactory_notifications\NotificationsEntityTranslationHandler",
+ *     "list_builder" =
+ *   "Drupal\vactory_notifications\NotificationsListBuilder",
+ *     "views_data" =
+ *   "Drupal\vactory_notifications\Entity\NotificationsEntityViewsData",
+ *     "translation" =
+ *   "Drupal\vactory_notifications\NotificationsEntityTranslationHandler",
  *     "form" = {
  *       "add" = "Drupal\vactory_notifications\Form\NotificationsForm",
  *       "edit" = "Drupal\vactory_notifications\Form\NotificationsForm",
- *       "delete" = "Drupal\vactory_notifications\Form\NotificationsDeleteForm",
+ *       "delete" =
+ *   "Drupal\vactory_notifications\Form\NotificationsDeleteForm",
  *     },
- *     "access" = "Drupal\vactory_notifications\NotificationsAccessControlHandler",
+ *     "access" =
+ *   "Drupal\vactory_notifications\NotificationsAccessControlHandler",
  *   },
  *   list_cache_contexts = { "user" },
  *   base_table = "notifications_entity",
@@ -41,16 +46,21 @@ use Drupal\user\UserInterface;
  *     "status" = "status",
  *   },
  *   links = {
- *     "canonical" = "/admin/structure/notifications_entity/{notifications_entity}",
- *     "edit-form" = "/admin/structure/notifications_entity/{notifications_entity}/edit",
- *     "delete-form" = "/admin/structure/notifications_entity/{notifications_entity}/delete",
+ *     "canonical" =
+ *   "/admin/structure/notifications_entity/{notifications_entity}",
+ *     "edit-form" =
+ *   "/admin/structure/notifications_entity/{notifications_entity}/edit",
+ *     "delete-form" =
+ *   "/admin/structure/notifications_entity/{notifications_entity}/delete",
  *     "collection" = "/admin/structure/notifications_entity/list"
  *   },
- *   field_ui_base_route = "vactory_notifications.notifications_settings",
  * )
  */
 class NotificationsEntity extends ContentEntityBase implements NotificationsInterface {
 
+  /**
+   * Pre create.
+   */
   public static function preCreate(EntityStorageInterface $storage, array &$values) {
     parent::preCreate($storage, $values);
     $values += [
@@ -58,6 +68,9 @@ class NotificationsEntity extends ContentEntityBase implements NotificationsInte
     ];
   }
 
+  /**
+   * Base field definitions.
+   */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     // Standard field, used as unique if primary index.
     $fields['id'] = BaseFieldDefinition::create('integer')
@@ -75,20 +88,20 @@ class NotificationsEntity extends ContentEntityBase implements NotificationsInte
     $fields['name'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Name'))
       ->setDescription(t('The name of the Notification entity.'))
-      ->setSettings(array(
+      ->setSettings([
         'default_value' => '',
         'max_length' => 255,
         'text_processing' => 0,
-      ))
-      ->setDisplayOptions('view', array(
+      ])
+      ->setDisplayOptions('view', [
         'label' => 'above',
         'type' => 'string',
         'weight' => -6,
-      ))
-      ->setDisplayOptions('form', array(
+      ])
+      ->setDisplayOptions('form', [
         'type' => 'string_textfield',
         'weight' => -6,
-      ))
+      ])
       ->setTranslatable(TRUE)
       ->setRequired(TRUE)
       ->setDisplayConfigurable('form', TRUE)
@@ -101,20 +114,20 @@ class NotificationsEntity extends ContentEntityBase implements NotificationsInte
       ->setSetting('target_type', 'user')
       ->setRequired(TRUE)
       ->setSetting('handler', 'default')
-      ->setDisplayOptions('view', array(
+      ->setDisplayOptions('view', [
         'label' => 'above',
         'type' => 'author',
         'weight' => -3,
-      ))
-      ->setDisplayOptions('form', array(
+      ])
+      ->setDisplayOptions('form', [
         'type' => 'entity_reference_autocomplete',
-        'settings' => array(
+        'settings' => [
           'match_operator' => 'CONTAINS',
           'size' => 60,
           'placeholder' => '',
-        ),
+        ],
         'weight' => -3,
-      ))
+      ])
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
@@ -125,20 +138,20 @@ class NotificationsEntity extends ContentEntityBase implements NotificationsInte
       ->setSetting('target_type', 'node')
       ->setRequired(TRUE)
       ->setSetting('handler', 'default')
-      ->setDisplayOptions('view', array(
+      ->setDisplayOptions('view', [
         'label' => 'above',
         'type' => 'author',
         'weight' => -2,
-      ))
-      ->setDisplayOptions('form', array(
+      ])
+      ->setDisplayOptions('form', [
         'type' => 'entity_reference_autocomplete',
-        'settings' => array(
+        'settings' => [
           'match_operator' => 'CONTAINS',
           'size' => 60,
           'placeholder' => '',
-        ),
+        ],
         'weight' => -2,
-      ))
+      ])
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayConfigurable('view', TRUE);
 
@@ -152,15 +165,15 @@ class NotificationsEntity extends ContentEntityBase implements NotificationsInte
       ])
       ->setTranslatable(TRUE)
       ->setRequired(TRUE)
-      ->setDisplayOptions('view', array(
+      ->setDisplayOptions('view', [
         'label' => 'hidden',
         'type' => 'author',
         'weight' => -1,
-      ))
-      ->setDisplayOptions('form', array(
+      ])
+      ->setDisplayOptions('form', [
         'type' => 'string_textarea',
         'weight' => -1,
-      ));
+      ]);
 
     // Notification status (is it published or not).
     $fields['status'] = BaseFieldDefinition::create('boolean')
@@ -172,8 +185,6 @@ class NotificationsEntity extends ContentEntityBase implements NotificationsInte
         'type' => 'boolean_checkbox',
         'weight' => 9,
       ]);
-
-
 
     // Notification concerned users (which users should be notified).
     $fields['notification_concerned_users'] = BaseFieldDefinition::create('string_long')
@@ -207,11 +218,7 @@ class NotificationsEntity extends ContentEntityBase implements NotificationsInte
   }
 
   /**
-   * Check if a user is concened by current notification.
-   *
-   * @param $uid
-   *
-   * @return boolean
+   * Check if a user is concerned by current notification.
    */
   public function isUserConcerned($uid) {
     $concerned_users = $this->getConcernedUsers();
@@ -220,10 +227,6 @@ class NotificationsEntity extends ContentEntityBase implements NotificationsInte
 
   /**
    * Check if current notification has been viewed by given user.
-   *
-   * @param $uid
-   *
-   * @return mixed
    */
   public function isViewedByUser($uid) {
     $notification_viewers = $this->getViewers();
@@ -232,8 +235,6 @@ class NotificationsEntity extends ContentEntityBase implements NotificationsInte
 
   /**
    * Check if current notification is published.
-   *
-   * @return boolean
    */
   public function isPublished() {
     return (boolean) $this->get('status')->value;
@@ -288,8 +289,6 @@ class NotificationsEntity extends ContentEntityBase implements NotificationsInte
 
   /**
    * Get current notification title.
-   *
-   * @return String
    */
   public function getTitle() {
     return $this->get('name')->value;
@@ -297,10 +296,6 @@ class NotificationsEntity extends ContentEntityBase implements NotificationsInte
 
   /**
    * Set current notification title.
-   *
-   * @param $title
-   *
-   * @return mixed
    */
   public function setTitle($title) {
     $this->set('name', $title);
@@ -309,8 +304,6 @@ class NotificationsEntity extends ContentEntityBase implements NotificationsInte
 
   /**
    * Get current notification message.
-   *
-   * @return mixed
    */
   public function getMessage() {
     return $this->get('notification_message')->value;
@@ -318,10 +311,6 @@ class NotificationsEntity extends ContentEntityBase implements NotificationsInte
 
   /**
    * Set current notification message.
-   *
-   * @param $message
-   *
-   * @return mixed
    */
   public function setMessage($message) {
     $this->set('notification_message', $message);
@@ -330,8 +319,6 @@ class NotificationsEntity extends ContentEntityBase implements NotificationsInte
 
   /**
    * Get current notification related content ID.
-   *
-   * @return mixed
    */
   public function getRelatedContent() {
     return $this->get('notification_related_content')->target_id;
@@ -339,8 +326,6 @@ class NotificationsEntity extends ContentEntityBase implements NotificationsInte
 
   /**
    * Get notification concerned users.
-   *
-   * @return array
    */
   public function getConcernedUsers() {
     return json_decode($this->get('notification_concerned_users')->value);
@@ -348,18 +333,14 @@ class NotificationsEntity extends ContentEntityBase implements NotificationsInte
 
   /**
    * Set notification concerned users.
-   *
-   * @return \Drupal\vactory_notifications\Entity\NotificationsEntity
    */
   public function setConcernedUsers(array $concerned_user) {
-     $this->set('notification_concerned_users', json_encode($concerned_user));
-     return $this;
+    $this->set('notification_concerned_users', json_encode($concerned_user));
+    return $this;
   }
 
   /**
    * Get notification viewers.
-   *
-   * @return array
    */
   public function getViewers() {
     return json_decode($this->get('notification_viewers')->value);
@@ -367,10 +348,6 @@ class NotificationsEntity extends ContentEntityBase implements NotificationsInte
 
   /**
    * Set notification viewers.
-   *
-   * @param $viewers_ids
-   *
-   * @return \Drupal\vactory_notifications\Entity\NotificationsEntity
    */
   public function setViewers(array $viewers_ids) {
     $this->set('notification_viewers', json_encode($viewers_ids));

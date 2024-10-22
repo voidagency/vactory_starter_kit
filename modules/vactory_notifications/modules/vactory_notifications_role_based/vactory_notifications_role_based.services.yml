@@ -1,0 +1,5 @@
+services:
+  vactory_notifications_role_based.manager:
+    class: Drupal\vactory_notifications_role_based\Services\RoleBasedNotificationsService
+    arguments:
+      - '@config.factory'

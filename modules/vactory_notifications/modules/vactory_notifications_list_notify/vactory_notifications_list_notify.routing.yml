@@ -1,0 +1,7 @@
+vactory_notifications_list_notify.notifications_settings:
+  path: '/admin/config/system/notifications-list-notify'
+  defaults:
+    _title: 'List notify'
+    _form: '\Drupal\vactory_notifications_list_notify\Form\NotificationsListNotifySettingsForm'
+  requirements:
+    _permission: 'administer notifications'
