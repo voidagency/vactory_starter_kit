@@ -1104,13 +1104,13 @@ function clear_next_nginx_cache($path = '') {
  */
 function vactory_decoupled_page_attachments_alter(array &$attachments) {
   $attachments['#attached']['html_head'][] = [
-      [
-          '#tag' => 'meta',
-          '#attributes' => [
-              'name' => 'robots',
-              'content' => 'noindex',
-          ],
+    [
+      '#tag' => 'meta',
+      '#attributes' => [
+        'name' => 'robots',
+        'content' => 'noindex',
       ],
-      'robots_noindex',
+    ],
+    'robots_noindex',
   ];
 }
