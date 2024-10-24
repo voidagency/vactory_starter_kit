@@ -1,0 +1,6 @@
+name: 'Vactory Notifications List Notify'
+type: module
+description: Enables automated content notifications via mailing list distribution.
+package: Vactory
+core_version_requirement: ^9 || ^10
+dependencies: vactory_notifications

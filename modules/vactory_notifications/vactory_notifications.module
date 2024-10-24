@@ -5,6 +5,7 @@
  * Vactory notifications custom module logic here.
  */
 
+use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Component\Serialization\Json;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Cache\Cache;
@@ -106,11 +107,11 @@ function vactory_notification_generate($entity) {
   if ($is_auto_translated) {
     $notification_manager->notificationsAutoTranslate($notification);
   }
+  $mail_content_types = $notification_config->get('mail_content_types');
   // Notification by Mail.
   if ($entity instanceof NodeInterface) {
     $node_type = $entity->getType();
     // Get the mail_content_types data.
-    $mail_content_types = $notification_config->get('mail_content_types');
     if (isset($mail_content_types[$node_type])) {
       // Check if mail_subject and mail_message are empty.
       // And set default values.
@@ -138,45 +139,63 @@ function vactory_notification_generate($entity) {
   }
   // Send a mail notification.
   $is_mail_active = $notification_config->get('mail_active');
-  if ($is_mail_active === 1) {
-    $existing_roles = Role::loadMultiple();
-    $target_roles = [];
-    foreach ($existing_roles as $key => $role) {
-      $mail_roles = $notification_config->get($key . '_content_types_mail');
-      if (isset($mail_roles) && !empty($mail_roles) && in_array($entity->bundle(), $mail_roles)) {
-        array_push($target_roles, $key);
-      }
-    }
-    if (!empty($target_roles) && isset($node_mail_subject) && isset($node_mail_message)) {
+  $send_on_publish = $mail_content_types[$entity->getType()]['mail_send_on_publish'] && $entity->status->value;
+  $send_on_unpublish = $mail_content_types[$entity->getType()]['mail_send_on_unpublish'] && !$entity->status->value;
+  if ($is_mail_active === 1 && ($send_on_publish || $send_on_unpublish) && can_send_notifications_based_user_roles($entity->getType())) {
+    if (isset($node_mail_subject) && isset($node_mail_message)) {
       $subject = $token->replace($node_mail_subject, ['entity' => $entity]);
       $message = $token->replace($node_mail_message, ['entity' => $entity]);
-      $users = User::loadMultiple();
-      foreach ($users as $user) {
-        if (count(array_intersect($user->getRoles(), $target_roles)) > 0 && !empty($user->getEmail())) {
-          $notification_manager->sendNotificationByMail($subject, $user->getEmail(), $message);
+
+      $use_broadcast_list = $entity->get('use_broadcast_list')->value;
+      if ($use_broadcast_list) {
+        // Get emails from broadcast_list_emails field.
+        $broadcast_list_emails = $entity->get('broadcast_list_emails')
+          ->getValue();
+        $broadcast_list_emails = array_column($broadcast_list_emails, 'value');
+        // Send to broadcast list emails.
+        foreach ($broadcast_list_emails as $email) {
+          $notification_manager->sendNotificationByMail($subject, $email, new FormattableMarkup($message, []));
         }
       }
-    }
-    // Generate a mail notification.
-    $mail_notification_data = [
-      'type' => 'notification_entity',
-      'mail_subject' => $token->replace($node_mail_subject, ['entity' => $entity]),
-      'user_id' => $user_id,
-      'notification_related_content' => $entity->id(),
-      'mail_message' => $token->replace($node_mail_message, ['entity' => $entity]),
-      'status' => TRUE,
-      'notification_concerned_users' => Json::encode($notification_users_ids),
-      'notification_viewers' => Json::encode([]),
-    ];
+      else {
+        $existing_roles = Role::loadMultiple();
+        $target_roles = [];
+        foreach ($existing_roles as $key => $role) {
+          $mail_roles = $notification_config->get($key . '_content_types_mail');
+          if (isset($mail_roles) && !empty($mail_roles) && in_array($entity->bundle(), $mail_roles)) {
+            array_push($target_roles, $key);
+          }
+        }
+        if (!empty($target_roles)) {
+          $users = User::loadMultiple();
+          foreach ($users as $user) {
+            if (count(array_intersect($user->getRoles(), $target_roles)) > 0 && !empty($user->getEmail())) {
+              $notification_manager->sendNotificationByMail($subject, $user->getEmail(), new FormattableMarkup($message, []));
+            }
+          }
+        }
+      }
+      // Generate a mail notification.
+      $mail_notification_data = [
+        'type' => 'notification_entity',
+        'mail_subject' => $subject,
+        'user_id' => $user_id,
+        'notification_related_content' => $entity->id(),
+        'mail_message' => $message,
+        'status' => TRUE,
+        'notification_concerned_users' => Json::encode($notification_users_ids),
+        'notification_viewers' => Json::encode([]),
+      ];
 
-    $mail_notification = Drupal::entityTypeManager()
-      ->getStorage('notifications_entity')
-      ->create($mail_notification_data);
-    $notification->save();
-    // Notifications auto translation feature.
-    $is_auto_translated = (boolean) $notification_config->get('auto_translation');
-    if ($is_auto_translated) {
-      $notification_manager->notificationsAutoTranslate($mail_notification);
+      $mail_notification = Drupal::entityTypeManager()
+        ->getStorage('notifications_entity')
+        ->create($mail_notification_data);
+      $notification->save();
+      // Notifications auto translation feature.
+      $is_auto_translated = (boolean) $notification_config->get('auto_translation');
+      if ($is_auto_translated) {
+        $notification_manager->notificationsAutoTranslate($mail_notification);
+      }
     }
   }
 }
@@ -397,6 +416,15 @@ function vactory_notifications_form_node_form_alter(&$form, FormStateInterface $
     $form['#attached']['library'][] = 'vactory_notifications/scripts';
     $form['#attached']['library'][] = 'vactory_notifications/styles';
   }
+  if (!can_send_notifications_based_user_roles($bundle)) {
+    $form['node_mail']['#access'] = FALSE;
+    $form['mail_subject']['#access'] = FALSE;
+    $form['mail_message']['#access'] = FALSE;
+    if (\Drupal::moduleHandler()->moduleExists('vactory_notifications_list_notify')) {
+      $form['use_broadcast_list']['#access'] = FALSE;
+      $form['broadcast_list_emails']['#access'] = FALSE;
+    }
+  }
 }
 
 /**
@@ -470,7 +498,8 @@ function get_token_tree() {
  */
 function vactory_notifications_batch_delete($ids, &$context) {
   if (!empty($ids)) {
-    $notifications_storage = Drupal::entityTypeManager()->getStorage('notifications_entity');
+    $notifications_storage = Drupal::entityTypeManager()
+      ->getStorage('notifications_entity');
     $entities = $notifications_storage->loadMultiple($ids);
     $notifications_storage->delete($entities);
   }
@@ -525,4 +554,16 @@ function vactory_notifications_entity_access(EntityInterface $entity, $operation
     }
     return AccessResult::forbidden();
   }
+}
+
+/**
+ * Can send notification based on user roles.
+ */
+function can_send_notifications_based_user_roles($bundle) {
+  if (\Drupal::moduleHandler()
+    ->moduleExists('vactory_notifications_role_based')) {
+    return \Drupal::service('vactory_notifications_role_based.manager')
+      ->canCurrentUserSendNotifications($bundle);
+  }
+  return TRUE;
 }
