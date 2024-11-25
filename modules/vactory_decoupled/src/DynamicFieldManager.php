@@ -706,10 +706,15 @@ class DynamicFieldManager {
               $thumbnail_maxres = $this->getYoutubeThumbnail($video_url);
               $thumbnail_uri = $this->getDefaultYoutubeThumbnail($media);
               $thumbnail = $this->mediaFilesManager->getMediaAbsoluteUrl($thumbnail_uri);
+              $transcription = '';
+              if ($media->hasField('field_transcription') && !$media->get('field_transcription')->isEmpty()) {
+                $transcription = $media->get('field_transcription')->value;
+              }
               $value = [
                 'id'   => $media->uuid(),
                 'name' => $media->getName(),
                 'url'  => $video_url,
+                'transcription' => $transcription,
                 'thumbnail' => [
                   'uri' => $thumbnail,
                   'maxres' => $thumbnail_maxres,
@@ -728,10 +733,15 @@ class DynamicFieldManager {
                 $thumbnail_maxres = $this->getYoutubeThumbnail($video_url);
                 $thumbnail_uri = $this->getDefaultYoutubeThumbnail($media);
                 $thumbnail = $this->mediaFilesManager->getMediaAbsoluteUrl($thumbnail_uri);
+                $transcription = '';
+                if ($media->hasField('field_transcription') && !$media->get('field_transcription')->isEmpty()) {
+                  $transcription = $media->get('field_transcription')->value;
+                }
                 $value = [
                   'id'   => $media->uuid(),
                   'name' => $media->getName(),
                   'url'  => $video_url,
+                  'transcription' => $transcription,
                   'thumbnail' => [
                     'uri' => $thumbnail,
                     'maxres' => $thumbnail_maxres,
