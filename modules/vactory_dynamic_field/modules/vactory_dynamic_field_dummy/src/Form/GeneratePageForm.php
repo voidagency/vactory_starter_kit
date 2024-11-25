@@ -164,6 +164,7 @@ class GeneratePageForm extends FormBase {
       'type' => 'vactory_page',
       'title' => $title,
       'langcode' => $current_lang->getId(),
+      'field_exclude_from_search' => TRUE,
     ];
     if (\Drupal::moduleHandler()->moduleExists('content_moderation')) {
       $node['moderation_state'] = 'published';
@@ -176,6 +177,14 @@ class GeneratePageForm extends FormBase {
     $node_entity = Node::create($node);
     $node_entity->setPublished(TRUE);
     $node_entity->isNew();
+    // Set XML sitemap settings.
+    $node_entity->xmlsitemap = [
+      'status' => 0,
+      'status_override' => 1,
+      'priority' => 0.5,
+      'priority_override' => 1,
+      'changefreq' => 0,
+    ];
     $node_entity->save();
 
     // Create batches.

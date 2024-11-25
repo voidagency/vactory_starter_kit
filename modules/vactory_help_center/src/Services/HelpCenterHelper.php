@@ -191,7 +191,7 @@ class HelpCenterHelper {
     $links[] = Link::fromTextAndUrl($node_label, Url::fromUserInput($node_alias));
 
     $hierarchy = $this->generateAlias($entity, TRUE);
-    $current_path = $node_alias;
+    $current_path = '/' . $langcode . $node_alias;
     $current_term = 0;
     foreach ($hierarchy as $item) {
       $url = "{$current_path}/{$item}";
@@ -230,7 +230,7 @@ class HelpCenterHelper {
 
     $params = \Drupal::request()->query->all("q");
 
-    $current_path = $node_alias;
+    $current_path = '/' . $langcode . $node_alias;
     $current_term = 0;
     foreach ($params as $key => $item) {
       if (!str_starts_with($key, 'help_center_item_')) {

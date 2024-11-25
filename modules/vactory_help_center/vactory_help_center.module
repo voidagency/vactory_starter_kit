@@ -70,10 +70,10 @@ function vactory_help_center_decoupled_df_format_alter(&$value, &$info, &$cachea
     $value = [
       'type' => 'terms',
       'data' => [],
-      'search_path' => $langcode . $search_path,
+      'search_path' => '/' . $langcode . $search_path,
     ];
     $help_center_aliases = $config->get('help_center_aliases');
-    $help_center_alias = $help_center_aliases[$langcode];
+    $help_center_alias = '/' . $langcode . $help_center_aliases[$langcode];
     // Get first level.
     if ($current_term == 0) {
       $children = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree(
@@ -142,7 +142,7 @@ function vactory_help_center_decoupled_df_format_alter(&$value, &$info, &$cachea
               $node_translation = \Drupal::service('entity.repository')->getTranslationFromContext($node, $langcode);
               $value['data'][] = [
                 'label' => $node_translation->getTitle(),
-                'url' => $alias_manager->getAliasByPath('/node/' . $node->id()),
+                'url' => '/' . $langcode . $alias_manager->getAliasByPath('/node/' . $node->id()),
               ];
             }
           }

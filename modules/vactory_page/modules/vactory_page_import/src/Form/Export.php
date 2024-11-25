@@ -5,8 +5,6 @@ namespace Drupal\vactory_page_import\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\Node;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -99,28 +97,69 @@ class Export extends FormBase {
     $pages = array_filter($pages, function ($item) {
       return $item !== 0;
     });
+
+    // Create a batch operation for each page.
+    $operations = [];
+    foreach ($pages as $page) {
+      $operations[] = [
+        [$this, 'processPage'],
+        [$page],
+      ];
+    }
+
+    $batch = [
+      'title' => $this->t('Exporting pages...'),
+      'operations' => $operations,
+      'finished' => [$this, 'batchFinished'],
+      'progress_message' => $this->t('Processed @current out of @total pages.'),
+      'init_message' => $this->t('Starting pages export...'),
+    ];
+
+    batch_set($batch);
+
+    $form_state->setRedirect('vactory_page_import.download_form');
+    $form_state->setIgnoreDestination();
+  }
+
+  /**
+   * Process a single page for export.
+   */
+  public function processPage($page, &$context) {
+    if (!isset($context['results']['pages_data'])) {
+      $context['results']['pages_data'] = [];
+    }
+
     $available_languages = \Drupal::languageManager()->getLanguages();
     $available_languages = array_filter($available_languages, function ($language) {
       return !$language->isDefault();
     });
 
-    $pages_data = [];
-    foreach ($pages as $page) {
-      $node = Node::load($page);
-      $title = $node->get('title')->value;
-      $pages_data[$title]['original'] = $this->pageExportService->constructNodeArray($node, 'original');
-      foreach (array_keys($available_languages) as $language) {
-        if ($node->hasTranslation($language)) {
-          $node_translation = $node->getTranslation($language);
-          $pages_data[$title][$language] = $this->pageExportService->constructNodeArray($node_translation, $language);
-        }
+    $node = Node::load($page);
+    $title = $node->get('title')->value;
+
+    $context['results']['pages_data'][$title]['original'] = $this->pageExportService->constructNodeArray($node, 'original');
+    foreach (array_keys($available_languages) as $language) {
+      if ($node->hasTranslation($language)) {
+        $node_translation = $node->getTranslation($language);
+        $context['results']['pages_data'][$title][$language] = $this->pageExportService->constructNodeArray($node_translation, $language);
       }
     }
-    $filapath = $this->pageExportService->createExcelFromArray($pages_data);
-    $response = new BinaryFileResponse($filapath, 200, [], FALSE);
-    $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, "pages.xlsx");
-    $response->deleteFileAfterSend(TRUE);
-    $response->send();
+
+    $context['message'] = $this->t('Processed page: @title', ['@title' => $title]);
+  }
+
+  /**
+   * Batch finished callback.
+   */
+  public function batchFinished($success, $results, $operations) {
+    if ($success) {
+      $filepath = $this->pageExportService->createExcelFromArray($results['pages_data']);
+      $_SESSION['dynamic_page_import_file_download'] = $filepath;
+    }
+    else {
+      $message = $this->t('An error occurred during the export process.');
+      \Drupal::messenger()->addError($message);
+    }
   }
 
 }

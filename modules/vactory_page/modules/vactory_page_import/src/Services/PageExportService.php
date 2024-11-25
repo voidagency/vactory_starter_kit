@@ -361,10 +361,11 @@ class PageExportService {
       mkdir($output_uri, 0777);
     }
     $time = time();
+    $file_name = "/pages_{$time}.xlsx";
     $file_path = \Drupal::service('file_system')
-      ->realpath($output_uri) . "/pages_{$time}.xlsx";
+      ->realpath($output_uri) . $file_name;
     $writer->save($file_path);
-    return $file_path;
+    return $output_uri . $file_name;
 
   }
 
