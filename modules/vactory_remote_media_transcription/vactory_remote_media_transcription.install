@@ -2,7 +2,8 @@
 
 /**
  * @file
- * Install, update and uninstall functions for the Vactory Remote Media Transcription module.
+ * Install, update, and uninstall functions for the 
+ * Vactory Remote Media Transcription module.
  */
 
 use Drupal\field\Entity\FieldConfig;
@@ -21,7 +22,6 @@ function vactory_remote_media_transcription_install() {
  */
 function _vactory_remote_media_transcription_create_transcription_field() {
   $field_storage = FieldStorageConfig::loadByName('media', 'field_transcription');
-  
   if (!$field_storage) {
     $field_storage = FieldStorageConfig::create([
       'field_name' => 'field_transcription',
@@ -33,9 +33,7 @@ function _vactory_remote_media_transcription_create_transcription_field() {
     ]);
     $field_storage->save();
   }
-
   $field = FieldConfig::loadByName('media', 'remote_video', 'field_transcription');
-  
   if (!$field) {
     $field = FieldConfig::create([
       'field_storage' => $field_storage,
@@ -48,7 +46,7 @@ function _vactory_remote_media_transcription_create_transcription_field() {
     ]);
     $field->save();
 
-    // Set form display settings
+    // Set form display settings.
     $entity_form_display = \Drupal::service('entity_display.repository')
       ->getFormDisplay('media', 'remote_video', 'default');
     $entity_form_display->setComponent('field_transcription', [
@@ -59,7 +57,7 @@ function _vactory_remote_media_transcription_create_transcription_field() {
       ],
     ])->save();
 
-    // Set view display settings
+    // Set view display settings.
     $entity_view_display = \Drupal::service('entity_display.repository')
     ->getViewDisplay('media', 'remote_video', 'default');
     $entity_view_display->setComponent('field_transcription', [
@@ -67,7 +65,6 @@ function _vactory_remote_media_transcription_create_transcription_field() {
       'weight' => 2,
       'label' => 'above',
     ])->save();
-
   }
 }
 
@@ -80,9 +77,8 @@ function vactory_remote_media_transcription_uninstall() {
   if ($field) {
     $field->delete();
   }
-  
   $field_storage = FieldStorageConfig::loadByName('media', 'field_transcription');
   if ($field_storage) {
     $field_storage->delete();
   }
-} 
+}

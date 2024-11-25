@@ -30,7 +30,8 @@ class TruncatedTextFormatter extends FormatterBase {
       // Limit the text to 50 characters.
       $text = mb_substr($item->value, 0, 50);
       if (mb_strlen($item->value) > 50) {
-        $text .= '...'; // Add ellipsis if the text is truncated.
+        // Add ellipsis if the text is truncated.
+        $text .= '...'; 
       }
 
       $elements[$delta] = [

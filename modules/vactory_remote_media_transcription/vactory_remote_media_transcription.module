@@ -14,14 +14,13 @@ use Drupal\media\MediaInterface;
  */
 function vactory_remote_media_transcription_field_widget_single_element_form_alter(&$element, FormStateInterface $form_state, array $context) {
   $plugin_id = $context['widget']->getPluginId();
-  
   if ($plugin_id == 'media_library_widget') {
     $field_definition = $context['items']->getFieldDefinition();
     $media_field_type = _vactory_remote_media_transcription_get_media_field_type($field_definition);
     $media_ids = $context['items']->getValue();
     if ($media_field_type === 'remote_video') {
 
-      // Get the media entity if it exists
+      // Get the media entity if it exists.
       $media = NULL;
       if (!empty($media_ids[0]['target_id'])) {
         $mid = $media_ids[0]['target_id'];
@@ -35,7 +34,7 @@ function vactory_remote_media_transcription_field_widget_single_element_form_alt
           '#weight' => 10,
         ];
 
-        // Get default value from media entity if it exists
+        // Get default value from media entity if it exists.
         $default_value = '';
         $default_format = 'full_html';
         if ($media instanceof MediaInterface && $media->hasField('field_transcription')) {
@@ -73,8 +72,8 @@ function vactory_remote_media_transcription_transcription_validate(&$element, Fo
       if (isset($component['video_transcription']) && is_array($component['video_transcription'])) {
         foreach ($component['video_transcription'] as $key => $transcription_data) {
           if (isset($transcription_data['transcription_wrapper']['transcription']['value'])) {
-            $transcription_value = $transcription_data['transcription_wrapper']['transcription']['value'];
-
+            $transcription_value = $transcription_data['transcription_wrapper']
+              ['transcription']['value'];
             // Save to the media entity.
             $mid = $form_state->get(['vactory_remote_media_transcription', 'media_id']);
             if ($mid) {
