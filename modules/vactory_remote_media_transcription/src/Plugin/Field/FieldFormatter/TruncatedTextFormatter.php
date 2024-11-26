@@ -76,5 +76,5 @@ class TruncatedTextFormatter extends FormatterBase implements FormatterInterface
 
     return $elements;
   }
-  
+
 }
