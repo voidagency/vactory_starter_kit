@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Install, update, and uninstall functions for the 
+ * Install, update, and uninstall functions for the
  * Vactory Remote Media Transcription module.
  */
 
@@ -59,9 +59,9 @@ function _vactory_remote_media_transcription_create_transcription_field() {
 
     // Set view display settings.
     $entity_view_display = \Drupal::service('entity_display.repository')
-    ->getViewDisplay('media', 'remote_video', 'default');
+      ->getViewDisplay('media', 'remote_video', 'default');
     $entity_view_display->setComponent('field_transcription', [
-      'type' => 'truncated_text', // Use the custom formatter.
+      'type' => 'truncated_text',
       'weight' => 2,
       'label' => 'above',
     ])->save();
