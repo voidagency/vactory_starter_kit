@@ -77,7 +77,10 @@ function vactory_remote_media_transcription_transcription_validate(&$element, Fo
           if (isset($transcription_data['transcription_wrapper']['transcription']['value'])) {
             $transcription_value = $transcription_data['transcription_wrapper']['transcription']['value'];
             // Save to the media entity.
-            $mid = $form_state->get(['vactory_remote_media_transcription', 'media_id']);
+            $mid = $form_state->get([
+              'vactory_remote_media_transcription',
+              'media_id',
+            ]);
             if ($mid) {
               $media = \Drupal::entityTypeManager()->getStorage('media')->load($mid);
               if ($media instanceof MediaInterface && $media->hasField('field_transcription') && !empty($transcription_value)) {
@@ -111,12 +114,12 @@ function _vactory_remote_media_transcription_get_media_field_type(FieldDefinitio
     }
   }
   return NULL;
-} 
+}
 
 /**
  * Implements hook_media_presave().
  */
-function vactory_remote_media_transcription_media_presave(Drupal\media\MediaInterface $media) {
+function vactory_remote_media_transcription_media_presave(MediaInterface $media) {
   if ($media->bundle() === 'remote_video' && $media->hasField('field_transcription')) {
     // Check if the transcription field needs to be updated.
     if ($transcription = \Drupal::request()->request->get('transcription')) {

@@ -28,7 +28,7 @@ class TruncatedTextFormatter extends FormatterBase implements FormatterInterface
    */
   public static function defaultSettings() {
     return [
-      'character_limit' => 50, // Default character limit.
+      'character_limit' => 50,
     ] + parent::defaultSettings();
   }
 
@@ -76,4 +76,5 @@ class TruncatedTextFormatter extends FormatterBase implements FormatterInterface
 
     return $elements;
   }
+  
 }
