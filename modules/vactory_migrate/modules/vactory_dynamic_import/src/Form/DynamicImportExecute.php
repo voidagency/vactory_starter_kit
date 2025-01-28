@@ -281,6 +281,8 @@ class DynamicImportExecute extends ConfirmFormBase {
     // Lancer rollback.
     $pieces = explode('.', $migration_id);
     $id = end($pieces);
+    $mapping_table = 'migrate_map_' . $id;
+    $message_table = 'migrate_message_' . $id;
 
     if ($type == 'rollback') {
       $this->rollbackService->rollback($id);
@@ -289,6 +291,15 @@ class DynamicImportExecute extends ConfirmFormBase {
       $destination = $this->entityInfo->getDestinationByMigrationId($migration_id);
       $entity_type = $destination['entity'];
       $bundle = $destination['bundle'];
+
+      // Delete migration tables directly
+      $database = \Drupal::database();
+      if ($database->schema()->tableExists($mapping_table)) {
+        $database->schema()->dropTable($mapping_table);
+      }
+      if ($database->schema()->tableExists($message_table)) {
+        $database->schema()->dropTable($message_table);
+      }
       
       // Create batch for deleting all nodes of the bundle
       $entity_storage = \Drupal::entityTypeManager()->getStorage($entity_type);
