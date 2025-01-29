@@ -19,8 +19,9 @@ steps:
     depends_on:
       - code-analysis
     commands:
-      - echo $${DRONE_COMMIT}
-      - docker build -f ./Dockerfile --build-arg COMMIT_ID=$${DRONE_COMMIT} -t vactory_starter_kit/build .
+      - echo $${DRONE_SOURCE_BRANCH}
+      - echo $${DRONE_TARGET_BRANCH}
+      - docker build -f ./Dockerfile --build-arg SOURCE_BRANCH_ID=$${DRONE_SOURCE_BRANCH} --build-arg TARGET_BRANCH_ID=$${DRONE_TARGET_BRANCH} -t vactory_starter_kit/build .
 volumes:
   - name: docker_sock
     host:
