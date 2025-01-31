@@ -15,7 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   id = "gtm_check",
  *   label = @Translation("Google Tag Manager Configuration Check"),
  *   description = @Translation("Verifies that Google Tag Manager is properly configured with a valid GTM ID"),
- *   category = "Analytics"
+ *   category = "analytics"
  * )
  */
 class GtmCheck extends ChecklistBase implements ContainerFactoryPluginInterface {
