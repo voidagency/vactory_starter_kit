@@ -123,7 +123,7 @@ class Rollback
             self::dbDelete($baseTable, $column_id, $ids, 'IN', $langcode);
         }
 
-        // Delete messages && mapping if tables exist
+        // Delete messages && mapping if tables exist.
         $database = \Drupal::database();
     
         if ($database->schema()->tableExists($mapping_table)) {

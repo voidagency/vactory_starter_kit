@@ -7,7 +7,6 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\file\Entity\File;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Render\Markup;
 
 /**
@@ -101,59 +100,59 @@ class DynamicImportExecute extends ConfirmFormBase
 
         $url_options = ['absolute' => true];
         $t_args = [
-        ':settings_url' => Url::fromUri('base:/admin/structure/file-types/manage/document/edit', $url_options)
-        ->toString(),
+            ':settings_url' => Url::fromUri('base:/admin/structure/file-types/manage/document/edit', $url_options)
+                ->toString(),
         ];
         $message = t('If you\'re having trouble uploading the csv file. Add <strong><em>text/csv</em></strong> <a target="_blank" href=":settings_url"> to the allowed <em>MIME types</em></a>.', $t_args);
 
         $form['migration'] = [
-        '#type'         => 'select',
-        '#title'        => $this->t('Migration'),
-        '#options'      => $this->getMigrationsList(),
-        '#empty_option' => $this->t("-- Choose import --"),
-        '#description'  => t("Choose the import to perform."),
-        '#required'     => true,
-        '#ajax'         => [
-        'callback' => '::promptCallback',
-        'wrapper'  => 'csv-container',
-        ],
-        '#default_value' => !is_null($this->migrationId) ? $this->migrationId : '',
-        '#disabled' => !is_null($this->migrationId),
+            '#type' => 'select',
+            '#title' => $this->t('Migration'),
+            '#options' => $this->getMigrationsList(),
+            '#empty_option' => $this->t("-- Choose import --"),
+            '#description' => t("Choose the import to perform."),
+            '#required' => true,
+            '#ajax' => [
+                'callback' => '::promptCallback',
+                'wrapper' => 'csv-container',
+            ],
+            '#default_value' => !is_null($this->migrationId) ? $this->migrationId : '',
+            '#disabled' => !is_null($this->migrationId),
         ];
 
         $form['container'] = [
-        '#type'       => 'container',
-        '#attributes' => ['id' => 'csv-container'],
+            '#type' => 'container',
+            '#attributes' => ['id' => 'csv-container'],
         ];
 
         $value = $form_state->getValue('migration');
         if ($value !== null || isset($this->migrationId)) {
             $form['container']['csv'] = [
-            '#type'              => 'managed_file',
-            '#title'             => $this->t('CSV file'),
-            '#name'              => 'csv',
-            '#upload_location'   => 'private://migrate-tmp',
-            '#upload_validators' => [
-            'file_validate_extensions' => ['csv'],
-            ],
-            '#description'       => t("Load the csv file to import.<br>") . $message,
-            '#required'          => true,
+                '#type' => 'managed_file',
+                '#title' => $this->t('CSV file'),
+                '#name' => 'csv',
+                '#upload_location' => 'private://migrate-tmp',
+                '#upload_validators' => [
+                    'file_validate_extensions' => ['csv'],
+                ],
+                '#description' => t("Load the csv file to import.<br>") . $message,
+                '#required' => true,
             ];
             $form['container']['type'] = [
-            '#type'        => 'radios',
-            '#title'       => $this->t("Strategy"),
-            '#options'     => [
-            'rollback' => $this->t('Replace existing data associated with this migration (Rollback)'),
-            'full' => $this->t('Completely replace the existing data (all existing nodes of the same bundle).'),
-            ],
-            '#required'    => true,
-            '#default_value' => 'rollback',
+                '#type' => 'radios',
+                '#title' => $this->t("Strategy"),
+                '#options' => [
+                    'rollback' => $this->t('Replace existing data associated with this migration (Rollback)'),
+                    'full' => $this->t('Completely replace the existing data (all existing nodes of the same bundle).'),
+                ],
+                '#required' => true,
+                '#default_value' => 'rollback',
             ];
 
             $form['container']['submit'] = [
-            '#type'        => 'submit',
-            '#value'       => $this->t("Start process"),
-            '#button_type' => 'primary',
+                '#type' => 'submit',
+                '#value' => $this->t("Start process"),
+                '#button_type' => 'primary',
             ];
         }
 
@@ -184,7 +183,7 @@ class DynamicImportExecute extends ConfirmFormBase
         $delimiter = \Drupal::config('vactory_migrate.settings')->get('delimiter');
         $migration_id = $form_state->getValue('migration');
         $csv = $form_state->getValue('csv');
-    
+
         // Validate that a file was uploaded
         if (empty($csv)) {
             $form_state->setErrorByName('csv', $this->t('Please upload a CSV file.'));
@@ -211,13 +210,13 @@ class DynamicImportExecute extends ConfirmFormBase
         // Now proceed with CSV validation
         $this->trimCsvHeader($file_path, $delimiter);
         $header = $this->getCsvHeader($file_path, $delimiter);
-    
+
         if (empty($header)) {
             $form_state->setErrorByName('csv', $this->t('The CSV file appears to be empty or malformed.'));
             return;
         }
 
-        // Add term normalization validation
+        // Add term normalization validation.
         $term_validation = $this->termNormalization->validateTerms($file_path, $header, $delimiter);
         if (!$term_validation['status']) {
             $error_message = $this->t('Term normalization issues found:') . '<br/><br/>';
@@ -226,8 +225,7 @@ class DynamicImportExecute extends ConfirmFormBase
             }
             $form_state->setErrorByName('csv', Markup::create($error_message));
             return;
-        }
-        elseif (!empty($term_validation['term_fields'])) {
+        } elseif (!empty($term_validation['term_fields'])) {
             \Drupal::messenger()->addStatus($this->t('Term validation passed successfully.'));
         }
 
@@ -293,13 +291,12 @@ class DynamicImportExecute extends ConfirmFormBase
 
         if ($type == 'rollback') {
             $this->rollbackService->rollback($id);
-        }
-        elseif ($type == 'full') {
+        } elseif ($type == 'full') {
             $destination = $this->entityInfo->getDestinationByMigrationId($migration_id);
             $entity_type = $destination['entity'];
             $bundle = $destination['bundle'];
 
-            // Delete migration tables directly
+            // Delete migration tables directly.
             $database = \Drupal::database();
             if ($database->schema()->tableExists($mapping_table)) {
                 $database->schema()->dropTable($mapping_table);
@@ -307,42 +304,42 @@ class DynamicImportExecute extends ConfirmFormBase
             if ($database->schema()->tableExists($message_table)) {
                 $database->schema()->dropTable($message_table);
             }
-      
-            // Create batch for deleting all nodes of the bundle
+
+            // Create batch for deleting all nodes of the bundle.
             $entity_storage = \Drupal::entityTypeManager()->getStorage($entity_type);
             $entity_type_definition = \Drupal::entityTypeManager()->getDefinition($entity_type);
             $bundle_field = $entity_type_definition->getKey('bundle');
-      
-            // For full replacement, we delete all entities of this bundle regardless of language
+
+            // We delete all entities of this bundle regardless of lang.
             $query = $entity_storage->getQuery()
                 ->accessCheck(false)
                 ->condition($bundle_field, $bundle);
-      
+
             $entity_ids = $query->execute();
-      
+
             if (!empty($entity_ids)) {
                 $chunks = array_chunk($entity_ids, $batch_size);
                 $operations = [];
-        
+
                 foreach ($chunks as $chunk) {
                     $operations[] = [
-                    [$this, 'deleteEntitiesBatch'],
-                    [$chunk, $entity_type, null], // Pass NULL for langcode to indicate full entity deletion
+                        [$this, 'deleteEntitiesBatch'],
+                        [$chunk, $entity_type, null],
                     ];
                 }
-        
+
                 $batch = [
-                'title' => t('Deleting all existing content of this type...'),
-                'operations' => $operations,
-                'finished' => [$this, 'deleteEntitiesBatchFinished'],
+                    'title' => t('Deleting all existing content of this type...'),
+                    'operations' => $operations,
+                    'finished' => [$this, 'deleteEntitiesBatchFinished'],
                 ];
-        
+
                 batch_set($batch);
             }
         }
 
         $url = Url::fromRoute('vactory_dynamic_import.confirmation')
-        ->setRouteParameters(['migration' => $id]);
+            ->setRouteParameters(['migration' => $id]);
 
         $form_state->setRedirectUrl($url);
     }
@@ -353,7 +350,7 @@ class DynamicImportExecute extends ConfirmFormBase
     public function deleteEntitiesBatch($ids, $entity_type, $langcode, &$context)
     {
         $entity_storage = \Drupal::entityTypeManager()->getStorage($entity_type);
-    
+
         foreach ($ids as $id) {
             $entity = $entity_storage->load($id);
             if ($entity) {
@@ -369,15 +366,14 @@ class DynamicImportExecute extends ConfirmFormBase
                     if ($langcode !== $entity->getUntranslated()->language()->getId() && count($entity->getTranslationLanguages()) > 1) {
                         $entity->removeTranslation($langcode);
                         $entity->save();
-                    }
-                    else {
+                    } else {
                         // If this is the only translation or it's the original language, delete the entire entity
                         $entity->delete();
                     }
                 }
             }
         }
-    
+
         if (!isset($context['results']['count'])) {
             $context['results']['count'] = 0;
         }
@@ -392,8 +388,7 @@ class DynamicImportExecute extends ConfirmFormBase
         if ($success) {
             $count = $results['count'] ?? 0;
             \Drupal::messenger()->addStatus(t('Deleted @count entities.', ['@count' => $count]));
-        }
-        else {
+        } else {
             \Drupal::messenger()->addError(t('An error occurred while deleting entities.'));
         }
     }
@@ -404,7 +399,7 @@ class DynamicImportExecute extends ConfirmFormBase
     private function getMigrationsList()
     {
         $migration_configs = \Drupal::configFactory()
-        ->listAll('migrate_plus.migration.');
+            ->listAll('migrate_plus.migration.');
         $migrations = [];
         foreach ($migration_configs as $migration_config) {
             $config = \Drupal::configFactory()->get($migration_config);
@@ -488,8 +483,8 @@ class DynamicImportExecute extends ConfirmFormBase
                 if (in_array($value, $values)) {
                     fclose($handle);
                     return [
-                    'status' => false,
-                    'value'  => $value,
+                        'status' => false,
+                        'value' => $value,
                     ];
                 }
                 $values[] = $value;
