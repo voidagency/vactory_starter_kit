@@ -288,12 +288,12 @@ class DynamicImportExecute extends ConfirmFormBase {
       $destination = $this->entityInfo->getDestinationByMigrationId($migration_id);
       $entity_type = $destination['entity'];
       $bundle = $destination['bundle'];
-      
+
       // Create batch for deleting all nodes of the bundle.
       $entity_storage = \Drupal::entityTypeManager()->getStorage($entity_type);
       $entity_type_definition = \Drupal::entityTypeManager()->getDefinition($entity_type);
       $bundle_field = $entity_type_definition->getKey('bundle');
-      
+
       // For full replacement, we delete all entities of this bundle.
       $query = $entity_storage->getQuery()
         ->accessCheck(FALSE)
@@ -344,8 +344,8 @@ class DynamicImportExecute extends ConfirmFormBase {
         // Otherwise, try to remove just the translation.
         elseif ($entity->hasTranslation($langcode)) {
           // Only try to remove the translation if:
-          // 1. It's not the default language translation
-          // 2. The entity has more than one translation (can't remove the last translation)
+          // 1. It's not the default language translation.
+          // 2. The entity has more than one translation.
           if ($langcode !== $entity->getUntranslated()->language()->getId() && count($entity->getTranslationLanguages()) > 1) {
             $entity->removeTranslation($langcode);
             $entity->save();

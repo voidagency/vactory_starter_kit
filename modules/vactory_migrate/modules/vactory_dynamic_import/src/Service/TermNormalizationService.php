@@ -16,7 +16,13 @@ class TermNormalizationService {
 
   protected PhpTransliteration $transliteration;
 
-
+  /**
+   * __construct
+   *
+   * @param PhpTransliteration transliteration
+   *
+   * @return void
+   */
   public function __construct(PhpTransliteration $transliteration) {
     $this->transliteration = $transliteration;
   }
@@ -202,19 +208,20 @@ class TermNormalizationService {
       $original = $term_values[$field_config]['originals'][$normalized_index];
       $differences = $this->identifyDifferences($value, $original);
     }
-    // Check for missing characters before checking stripped version
+    // Check for missing characters before checking stripped version.
     elseif ($this->hasMissingCharacterDifference($value, $term_values[$field_config]['originals'][0])) {
       $differences = ['missing_characters'];
     }
     elseif ($stripped_index !== FALSE) {
-      // If stripped versions match but normalized don't, it's a word boundary variation.
+      // If stripped versions match but normalized don't.
       $differences = ['word_boundaries'];
     }
 
-    // Add variation or new original
+    // Add variation or new original.
     if (!empty($differences)) {
       $this->addVariation($value, $field_config, $line_number, $term_values, $errors, $differences);
-    } else {
+    }
+    else {
       // Add as a new original.
       $term_values[$field_config]['originals'][] = $value;
       $term_values[$field_config]['normalized_originals'][] = $normalized_value;
@@ -272,7 +279,7 @@ class TermNormalizationService {
 
     // If they're exactly the same after normalization but different originally.
     if ($norm1 === $norm2 && $term1 !== $term2) {
-      return true;
+      return TRUE;
     }
 
     // Check for joined words vs separated words.
@@ -283,7 +290,7 @@ class TermNormalizationService {
     if (count($words1) !== count($words2)) {
       $joined1 = strtolower(implode('', $words1));
       $joined2 = strtolower(implode('', $words2));
-      
+
       if ($joined1 === $joined2) {
         return TRUE;
       }
@@ -300,7 +307,7 @@ class TermNormalizationService {
     $norm1 = $this->normalizeForComparison($term1);
     $norm2 = $this->normalizeForComparison($term2);
 
-    // If the terms are already identical after normalization, no missing character difference
+    // If the terms are already identical after normalization, no missing char.
     if ($norm1 === $norm2) {
       return FALSE;
     }
@@ -309,12 +316,12 @@ class TermNormalizationService {
     $words1 = $this->splitIntoWords($norm1);
     $words2 = $this->splitIntoWords($norm2);
 
-    // Single word case
+    // Single word case.
     if (count($words1) === 1 && count($words2) === 1) {
       return $this->isMissingCharacterInWord($words1[0], $words2[0]);
     }
 
-    // If the number of words is diff, it's not a missing character diff.
+    // If the number of words is diff, it's not a missing char diff.
     if (count($words1) !== count($words2)) {
       return FALSE;
     }
@@ -338,8 +345,8 @@ class TermNormalizationService {
   /**
    * Checks if two words differ by a missing character.
    */
-protected function isMissingCharacterInWord($word1, $word2): bool {
-    // Normalize the words first
+  protected function isMissingCharacterInWord($word1, $word2): bool {
+    // Normalize the words first.
     $word1 = mb_strtolower($word1);
     $word2 = mb_strtolower($word2);
 
@@ -372,7 +379,7 @@ protected function isMissingCharacterInWord($word1, $word2): bool {
   protected function splitIntoWords($term): array {
     // First, handle CamelCase.
     $term = preg_replace('/(?<!^)(?=[A-Z])/', ' $0', $term);
-    
+
     // Handle numbers as word boundaries.
     $term = preg_replace('/(?<=\d)(?=\D)|(?<=\D)(?=\d)/', ' ', $term);
 
@@ -382,7 +389,7 @@ protected function isMissingCharacterInWord($word1, $word2): bool {
     // Split on spaces and filter empty values.
     return array_values(array_filter(
       explode(' ', $term),
-      function($word) {
+      function ($word) {
         return trim($word) !== '';
       }
     ));
@@ -419,10 +426,10 @@ protected function isMissingCharacterInWord($word1, $word2): bool {
     $term_values[$field_config]['lines'][] = $line_number;
 
     if (!isset($errors[$field_config])) {
-        $errors[$field_config] = [
-      'field' => $field_config,
-      'originals' => $term_values[$field_config]['originals'], // Include all originals.
-      'variations' => [
+      $errors[$field_config] = [
+        'field' => $field_config,
+        'originals' => $term_values[$field_config]['originals'], // Include all originals.
+        'variations' => [
         [
           'value' => $value,
           'differences' => $differences,
@@ -430,15 +437,16 @@ protected function isMissingCharacterInWord($word1, $word2): bool {
         ],
       ],
       'duplicates' => $term_values[$field_config]['duplicates'],
-      'lines' => $term_values[$field_config]['lines'],
-    ];
-    } else {
+        'lines' => $term_values[$field_config]['lines'],
+      ];
+    }
+    else {
       $errors[$field_config]['variations'][] = [
         'value' => $value,
-            'differences' => $differences,
-            'lines' => [$line_number],
-        ];
-        $errors[$field_config]['lines'][] = $line_number;
+        'differences' => $differences,
+        'lines' => [$line_number],
+      ];
+      $errors[$field_config]['lines'][] = $line_number;
     }
   }
 
@@ -465,7 +473,7 @@ protected function isMissingCharacterInWord($word1, $word2): bool {
       foreach ($data['variations'] as $variation) {
         $message .= '  • "' . $variation['value'] . '"';
         if (!empty($variation['differences'])) {
-          $diff_display = array_map(function($diff) {
+          $diff_display = array_map(function ($diff) {
             // Special handling for similarity differences.
             if (strpos($diff, 'similarity_') === 0) {
               return 'similar (' . str_replace('similarity_', '', $diff) . '%)';

@@ -40,7 +40,7 @@ class TermNormalizationServiceTest extends KernelTestBase {
   /**
    * Tests a banned IP.
    */
-  public function testValidCSVContainsNoErrors() {
+  public function testValidCsvContainsNoErrors() {
     $delimiter = ",";
     $file_path = "profiles/contrib/vactory_starter_kit/modules/vactory_migrate/modules/vactory_dynamic_import/tests/artifacts/TestVDI_0.csv";
 
@@ -60,7 +60,11 @@ class TermNormalizationServiceTest extends KernelTestBase {
     $response = $this->termNormalization->validateTerms($file_path, $header, $delimiter);
     dump($response);
 
-    $this->assertEquals(["status" => TRUE, "errors" => [], "term_fields" => TRUE], $response);
+    $this->assertEquals([
+      "status" => TRUE,
+      "errors" => [],
+      "term_fields" => TRUE
+    ], $response);
   }
 
   /**
