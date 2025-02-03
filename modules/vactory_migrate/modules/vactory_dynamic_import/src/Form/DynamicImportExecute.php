@@ -351,7 +351,7 @@ class DynamicImportExecute extends ConfirmFormBase {
             $entity->save();
           }
           else {
-            // If this is the only translation or it's the original language, delete entity.
+            // If this is the only translation, delete entity.
             $entity->delete();
           }
         }
