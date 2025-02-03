@@ -6,7 +6,7 @@ RUN if [ -z "$TARGET_BRANCH_ID" ]; then echo 'Docker build arg TARGET_BRANCH_ID 
 
 USER 0
 RUN rm -rf /var/www/html
-RUN git clone --progress https://github.com/voidagency/vactory_starter_kit.git /var/www/html
+RUN git clone https://github.com/voidagency/vactory_starter_kit.git /var/www/html
 WORKDIR /var/www/html/
 RUN composer install
 RUN git checkout $SOURCE_BRANCH_ID
