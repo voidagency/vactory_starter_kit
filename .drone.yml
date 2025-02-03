@@ -16,8 +16,6 @@ steps:
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
-    depends_on:
-      - code-analysis
     commands:
       - echo $${DRONE_SOURCE_BRANCH}
       - echo $${DRONE_TARGET_BRANCH}
