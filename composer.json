@@ -274,6 +274,9 @@
       },
       "drupal/media_library_form_element": {
         "Fix: explode(): Argument #2 ($string) must be of type string, array given": "https://www.drupal.org/files/issues/2023-05-10/check-default-value-not-array-15044301-16.patch"
+      },
+      "drupal/search_api": {
+        "Exclude paragraphs and decode HTML in search API rendered items": "https://gist.githubusercontent.com/SalahE-Ghannouch/9458b3b230f998f5ce5b6790258010dd/raw/954a640363d962ef2dc1475d2aa52c65ba32ea44/search-api-rendered-item-exclude-paragraphs-decode-html.patch"
       }
     }
   },
