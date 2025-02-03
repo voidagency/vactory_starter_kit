@@ -13,12 +13,19 @@ use Drupal\Core\Transliteration\PhpTransliteration;
  */
 class TermNormalizationService {
   use StringTranslationTrait;
+
+  /**
+   * The Transliteration service.
+   *
+   * @var \Drupal\Core\Transliteration\PhpTransliteration
+   */
   protected PhpTransliteration $transliteration;
 
   /**
-   * __construct.
+   * Construct.
    *
    * @param \Drupal\Core\Transliteration\PhpTransliteration $transliteration
+   *   The Transliteration service.
    *
    * @return void
    */
