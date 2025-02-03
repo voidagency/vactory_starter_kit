@@ -13,13 +13,12 @@ use Drupal\Core\Transliteration\PhpTransliteration;
  */
 class TermNormalizationService {
   use StringTranslationTrait;
-
   protected PhpTransliteration $transliteration;
 
   /**
-   * __construct
+   * __construct.
    *
-   * @param PhpTransliteration transliteration
+   * @param \Drupal\Core\Transliteration\PhpTransliteration $transliteration
    *
    * @return void
    */
@@ -428,15 +427,15 @@ class TermNormalizationService {
     if (!isset($errors[$field_config])) {
       $errors[$field_config] = [
         'field' => $field_config,
-        'originals' => $term_values[$field_config]['originals'], // Include all originals.
+        'originals' => $term_values[$field_config]['originals'],
         'variations' => [
         [
           'value' => $value,
           'differences' => $differences,
           'lines' => [$line_number],
         ],
-      ],
-      'duplicates' => $term_values[$field_config]['duplicates'],
+        ],
+        'duplicates' => $term_values[$field_config]['duplicates'],
         'lines' => $term_values[$field_config]['lines'],
       ];
     }
@@ -492,4 +491,5 @@ class TermNormalizationService {
     }
     return $error_messages;
   }
+
 }
