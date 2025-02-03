@@ -63,7 +63,7 @@ class TermNormalizationServiceTest extends KernelTestBase {
     $this->assertEquals([
       "status" => TRUE,
       "errors" => [],
-      "term_fields" => TRUE
+      "term_fields" => TRUE,
     ], $response);
   }
 
