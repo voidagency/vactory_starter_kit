@@ -14,7 +14,9 @@
 ] %}
 
 <div{{ attributes.addClass(classes) }}>
-  <strong{{ title_attributes.addClass(title_classes) }}>{{ label }}</strong>
+  {% if not label_hidden %}
+    <strong{{ title_attributes.addClass(title_classes) }}>{{ label }}</strong>
+  {% endif %}
   {% for item in items %}
     {% if item.paragraph_type is not null %}
       {#case of opener#}
