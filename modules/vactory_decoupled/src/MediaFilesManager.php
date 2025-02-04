@@ -12,6 +12,15 @@ use Drupal\media\Entity\Media;
  */
 class MediaFilesManager {
 
+  const MEDIA_FIELD_NAMES = [
+    'audio' => 'field_media_audio_file',
+    'image' => 'field_media_image',
+    'file' => 'field_media_file',
+    'remote_video' => 'field_media_oembed_video',
+    'video' => 'field_media_video_file',
+    'onboarding_video' => 'field_video_onboarding',
+  ];
+
   /**
    * File url generator service.
    *
@@ -70,7 +79,10 @@ class MediaFilesManager {
       return NULL;
     }
 
-    $fid = $media->get('field_media_image')->target_id;
+    $bundle = $media->bundle();
+    $field = self::MEDIA_FIELD_NAMES[$bundle];
+
+    $fid = $media->get($field)->target_id;
     if (!is_numeric($fid)) {
       return NULL;
     }

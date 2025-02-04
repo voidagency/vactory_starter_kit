@@ -328,7 +328,11 @@ class DynamicFieldManager {
             else {
               if (!empty($value['url']) && !UrlHelper::isExternal($value['url'])) {
                 $front_uri = $this->siteConfig->get('page.front');
-                if ($front_uri === $value['url']) {
+                if (preg_match('#^/media/(\d+)$#', $value['url'], $matches)) {
+                  $mid = (int) $matches[1];
+                  $value['url'] = $this->mediaFilesManager->getMediaAbsoluteUrlByMid($mid);
+                }
+                elseif ($front_uri === $value['url']) {
                   $value['url'] = Url::fromRoute('<front>')->toString();
                 }
                 else {
