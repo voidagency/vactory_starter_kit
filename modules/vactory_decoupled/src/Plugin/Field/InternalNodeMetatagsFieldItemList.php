@@ -141,13 +141,13 @@ class InternalNodeMetatagsFieldItemList extends FieldItemList {
           $last_piece = array_pop($url_pieces) ?? '';
           $is_file = str_contains($last_piece, '.');
           $replacement = $is_file ? $media_url : $frontend_url;
-          $value = str_replace($host, $replacement, $value);
+          $value = $key == 'canonical_url' ? $value : str_replace($host, $replacement, $value);
           // Replace front page alias with empty string.
           $value = str_replace($front_page, '', $value);
           $value = str_replace($front_page_alias, '', $value);
-          if ($key == 'canonical_url' && !empty($query)) {
-            $value = $value . '?' . http_build_query($query);
-          }
+        }
+        if ($key == 'canonical_url' && !empty($query)) {
+          $value = $value . '?' . http_build_query($query);
         }
       }
       $normalized_tags[] = [
