@@ -62,6 +62,9 @@ class Import {
     $migration->set('source', $source);
     $migration->getIdMap()->prepareUpdate();
 
+    // Store the batched_files in context for cleanup.
+    $context['results']['batched_files_dir'] = $batched_files_dir;
+
     $executable = new MigrateExecutable($migration, new MigrateMessage());
     try {
       $result = $executable->import();
@@ -87,7 +90,6 @@ class Import {
       if ($result == MigrationInterface::RESULT_FAILED) {
         \Drupal::messenger()->addStatus('Migration failed.');
       }
-      $context['results']['batched_files_dir'] = $batched_files_dir;
     }
     catch (\Exception $e) {
       \Drupal::messenger()->addStatus($e->getMessage());
@@ -99,11 +101,20 @@ class Import {
    * Batch finished callback.
    */
   public function importFinished($success, $results, $operations) {
-    if ($success) {
-      $batched_files_dir = $results['batched_files_dir'];
-      $this->deleteDirectoryByUri($batched_files_dir);
+    // Ensure batched_files_dir exists in results.
+    if ($success && isset($results['batched_files_dir'])) {
+      $this->deleteDirectoryByUri($results['batched_files_dir']);
       $message = "Import process finished successfully.";
       \Drupal::messenger()->addStatus($message);
+    }
+    elseif (!$success) {
+      \Drupal::messenger()->addError(t('An error occurred during the import process.'));
+    }
+
+    // Clean up any remaining temporary directories.
+    $batched_files_base = 'private://migrate-csv/';
+    if (file_exists(\Drupal::service('file_system')->realpath($batched_files_base))) {
+      $this->deleteDirectoryByUri($batched_files_base);
     }
   }
 
