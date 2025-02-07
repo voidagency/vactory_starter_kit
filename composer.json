@@ -276,7 +276,7 @@
         "Fix: explode(): Argument #2 ($string) must be of type string, array given": "https://www.drupal.org/files/issues/2023-05-10/check-default-value-not-array-15044301-16.patch"
       },
       "drupal/search_api": {
-        "Decode HTML in search API rendered items": "https://gist.githubusercontent.com/voidagency/4267995807acd89116187e2c2091c4a5/raw/47736277edc43d81e012744a08f8feba09674b63/54411-search-api-rendered-item-decode-html.patch"
+        "Decode HTML in search API rendered items": "https://gist.githubusercontent.com/voidagency/5396da024459bc289c5ebe04af62fe4f/raw/28569f005d0e5a4e19742526eba8aa34fe3471e5/54411-search-api-rendered-item-decode-html.patch"
       }
     }
   },
