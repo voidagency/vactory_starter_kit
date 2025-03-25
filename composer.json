@@ -12,10 +12,8 @@
     "symfony/finder": "~4.0|~5.0|~6.0",
     "webmozart/path-util": "^2.3",
     "google/apiclient": "~2.0",
-    "commerceguys/addressing": "~1.0",
     "commerceguys/intl": "^0.7.5",
     "lullabot/amp": "^2.0.4",
-    "drupal/address": "^1.9",
     "drupal/addtoany": "^2.0",
     "drupal/advagg": "^6.0@alpha",
     "drupal/backup_migrate": "^5.1",
@@ -176,7 +174,9 @@
     "drupal/image_effects": "^3.6",
     "drupal/imagemagick": "^3.7",
     "drupal/views_url_alias": "^3.1",
-    "drupal/simple_oauth_revoke": "^2.0"
+    "drupal/simple_oauth_revoke": "^2.0",
+    "drupal/address": "^2.0",
+    "commerceguys/addressing": "^2.2"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.3",
