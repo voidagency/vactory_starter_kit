@@ -5,7 +5,6 @@ namespace Drupal\vactory_icon\Plugin\VactoryIconProvider;
 use Drupal\Core\Config\Config;
 use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\vactory_icon\Annotation\VactoryIconProvider;
 use Drupal\vactory_icon\VactoryIconProviderBase;
 
 /**
@@ -61,11 +60,12 @@ class XmlSourceIconProvider extends VactoryIconProviderBase {
       foreach ($svgs_infos['symbol'] as $info) {
         $svg_id = $info['@attributes']['id'];
         $svg_ids[] = $svg_id;
-        if (count($info['path']) > 1) {
+        if (!empty($info['path']) && is_array($info['path']) && count($info['path']) > 1) {
           foreach ($info['path'] as $path) {
             $svg_paths_d[$svg_id][] = $path['@attributes']['d'];
           }
-        } else {
+        }
+        else {
           $svg_paths_d[$svg_id] = $info['path']['@attributes']['d'];
         }
         $element['#options'][$svg_id] = $svg_id;
