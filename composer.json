@@ -176,7 +176,8 @@
     "drupal/image_effects": "^3.6",
     "drupal/imagemagick": "^3.7",
     "drupal/views_url_alias": "^3.1",
-    "drupal/simple_oauth_revoke": "^2.0"
+    "drupal/simple_oauth_revoke": "^2.0",
+    "drupal/health_check": "^3.1"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.3",
