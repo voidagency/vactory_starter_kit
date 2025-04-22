@@ -1,4 +1,4 @@
-FROM vactory/php-ubi9:8.1.11
+FROM vactory/php-ubi9:8.3.14
 ARG SOURCE_BRANCH_ID
 ARG TARGET_BRANCH_ID
 RUN if [ -z "$SOURCE_BRANCH_ID" ]; then echo 'Docker build arg SOURCE_BRANCH_ID must be specified. Exiting.'; exit 1; fi
