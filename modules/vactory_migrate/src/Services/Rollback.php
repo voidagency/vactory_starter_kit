@@ -67,7 +67,7 @@ class Rollback {
     }
 
     // Query rows.
-    $query = $this->database->query("SELECT destid1 FROM ${mapping_table} WHERE destid1 IS NOT NULL");
+    $query = $this->database->query("SELECT destid1 FROM {$mapping_table} WHERE destid1 IS NOT NULL");
     $rows = $query->fetchAll(\PDO::FETCH_COLUMN, 0);
 
     $operations = [];
