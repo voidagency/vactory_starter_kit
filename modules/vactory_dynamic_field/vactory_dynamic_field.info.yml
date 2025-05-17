@@ -12,3 +12,4 @@ dependencies:
   - textfield_counter
   - yaml_editor
   - paragraphs_edit
+  - linkit
