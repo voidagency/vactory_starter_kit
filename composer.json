@@ -20,7 +20,7 @@
     "drupal/advagg": "^6.0@alpha",
     "drupal/backup_migrate": "^5.1",
     "drupal/better_exposed_filters": "^6.0",
-    "drupal/block_class": "^2.0",
+    "drupal/block_class": "3.0.0",
     "drupal/block_field": "^1.0.0-rc1",
     "drupal/captcha": "^2.0",
     "drupal/coffee": "1.x-dev@dev",
@@ -86,7 +86,7 @@
     "drupal/flag": "^4.0@beta",
     "drupal/rate": "3.1.0",
     "masterminds/html5": "^2.3",
-    "drupal/link_attributes": "^1.9",
+    "drupal/link_attributes": "2.1.1",
     "drupal/entity_embed": "^1.0",
     "drupal/search_api_autocomplete": "^1.4",
     "drupal/chosen": "^3.0",
@@ -96,7 +96,7 @@
     "drupal/dropzonejs": "^2.3",
     "drupal/tinypng": "^1.0@RC",
     "drupal/field_group": "^3.1",
-    "drupal/csv_serialization": "^3.0",
+    "drupal/csv_serialization": "4.0.1",
     "drupal/votingapi": "^3.0@beta",
     "drupal/amp": "^3.8",
     "drupal/crop": "^2.1",
@@ -177,7 +177,8 @@
     "drupal/imagemagick": "^3.7",
     "drupal/views_url_alias": "^3.1",
     "drupal/simple_oauth_revoke": "^2.0",
-    "drupal/health_check": "^3.1"
+    "drupal/health_check": "^3.1",
+    "league/csv": "9.16.0"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.3",

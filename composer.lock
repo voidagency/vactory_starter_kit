@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "b7a57e4148b2517cae68e52b0658cb7a",
+    "content-hash": "73e66ebbc0861e8f8611695da45a9b97",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -1803,26 +1803,26 @@
         },
         {
             "name": "drupal/block_class",
-            "version": "2.0.11",
+            "version": "3.0.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/block_class.git",
-                "reference": "2.0.11"
+                "reference": "3.0.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/block_class-2.0.11.zip",
-                "reference": "2.0.11",
-                "shasum": "bd098ef0071b5baca1248c0deaa9bbedc0ddcaf4"
+                "url": "https://ftp.drupal.org/files/projects/block_class-3.0.0.zip",
+                "reference": "3.0.0",
+                "shasum": "41993c9ee6b925ec30e927cb557bafd9d5c05461"
             },
             "require": {
-                "drupal/core": "^8 || ^9 || ^10"
+                "drupal/core": "^9 || ^10 || ^11"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "2.0.11",
-                    "datestamp": "1672065313",
+                    "version": "3.0.0",
+                    "datestamp": "1723241676",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -2741,21 +2741,21 @@
         },
         {
             "name": "drupal/csv_serialization",
-            "version": "3.0.0",
+            "version": "4.0.1",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/csv_serialization.git",
-                "reference": "3.0.0"
+                "reference": "4.0.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/csv_serialization-3.0.0.zip",
-                "reference": "3.0.0",
-                "shasum": "7365f98428ab26b3f94527388583e4da8c9dc2fc"
+                "url": "https://ftp.drupal.org/files/projects/csv_serialization-4.0.1.zip",
+                "reference": "4.0.1",
+                "shasum": "cd172acbf6b5996daa88b0d8d897074c5fe742dd"
             },
             "require": {
-                "drupal/core": "^10",
-                "league/csv": "^9.1"
+                "drupal/core": "^10 || ^11",
+                "league/csv": "^9.16"
             },
             "require-dev": {
                 "drupal/coder": "^8.3"
@@ -2763,8 +2763,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "3.0.0",
-                    "datestamp": "1681824255",
+                    "version": "4.0.1",
+                    "datestamp": "1723473162",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -6007,26 +6007,30 @@
         },
         {
             "name": "drupal/link_attributes",
-            "version": "1.14.0",
+            "version": "2.1.1",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/link_attributes.git",
-                "reference": "8.x-1.14"
+                "reference": "2.1.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/link_attributes-8.x-1.14.zip",
-                "reference": "8.x-1.14",
-                "shasum": "fa4f27ecaed7e6b3c58c0adc679918a9beb7ded5"
+                "url": "https://ftp.drupal.org/files/projects/link_attributes-2.1.1.zip",
+                "reference": "2.1.1",
+                "shasum": "fc71571fc41adeda6b39ccefd3c8e21955c0d96f"
             },
             "require": {
-                "drupal/core": "^9 || ^10"
+                "drupal/core": "^9 || ^10 || ^11",
+                "php": ">=8.0"
+            },
+            "require-dev": {
+                "drupal/linkit": "~6 || ~7"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-1.14",
-                    "datestamp": "1687393687",
+                    "version": "2.1.1",
+                    "datestamp": "1721366572",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -13429,35 +13433,39 @@
         },
         {
             "name": "league/csv",
-            "version": "9.8.0",
+            "version": "9.16.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/csv.git",
-                "reference": "9d2e0265c5d90f5dd601bc65ff717e05cec19b47"
+                "reference": "998280c6c34bd67d8125fdc8b45bae28d761b440"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/csv/zipball/9d2e0265c5d90f5dd601bc65ff717e05cec19b47",
-                "reference": "9d2e0265c5d90f5dd601bc65ff717e05cec19b47",
+                "url": "https://api.github.com/repos/thephpleague/csv/zipball/998280c6c34bd67d8125fdc8b45bae28d761b440",
+                "reference": "998280c6c34bd67d8125fdc8b45bae28d761b440",
                 "shasum": ""
             },
             "require": {
-                "ext-json": "*",
-                "ext-mbstring": "*",
-                "php": "^7.4 || ^8.0"
+                "ext-filter": "*",
+                "php": "^8.1.2"
             },
             "require-dev": {
-                "ext-curl": "*",
+                "doctrine/collections": "^2.2.2",
                 "ext-dom": "*",
-                "friendsofphp/php-cs-fixer": "^v3.4.0",
-                "phpstan/phpstan": "^1.3.0",
-                "phpstan/phpstan-phpunit": "^1.0.0",
-                "phpstan/phpstan-strict-rules": "^1.1.0",
-                "phpunit/phpunit": "^9.5.11"
+                "ext-xdebug": "*",
+                "friendsofphp/php-cs-fixer": "^3.57.1",
+                "phpbench/phpbench": "^1.2.15",
+                "phpstan/phpstan": "^1.11.1",
+                "phpstan/phpstan-deprecation-rules": "^1.2.0",
+                "phpstan/phpstan-phpunit": "^1.4.0",
+                "phpstan/phpstan-strict-rules": "^1.6.0",
+                "phpunit/phpunit": "^10.5.16 || ^11.1.3",
+                "symfony/var-dumper": "^6.4.6 || ^7.0.7"
             },
             "suggest": {
-                "ext-dom": "Required to use the XMLConverter and or the HTMLConverter classes",
-                "ext-iconv": "Needed to ease transcoding CSV using iconv stream filters"
+                "ext-dom": "Required to use the XMLConverter and the HTMLConverter classes",
+                "ext-iconv": "Needed to ease transcoding CSV using iconv stream filters",
+                "ext-mbstring": "Needed to ease transcoding CSV using mb stream filters"
             },
             "type": "library",
             "extra": {
@@ -13509,7 +13517,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2022-01-04T00:13:07+00:00"
+            "time": "2024-05-24T11:04:54+00:00"
         },
         {
             "name": "league/event",
