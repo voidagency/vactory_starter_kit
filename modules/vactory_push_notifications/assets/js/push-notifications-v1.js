@@ -10,13 +10,13 @@
     cookieName = drupalSettings.pushNotification.cookie.name,
     cookieIsSecure = drupalSettings.pushNotification.cookie.has_https;
 
-  // Can we create cookies ?
-  if (!$.isFunction($.cookie)) {
-    console.warn('Could not create a cookie for push notifications module. $.cookie still in use ?');
+  // Check if Cookies library is available
+  if (typeof Cookies === 'undefined') {
+    console.warn('Could not create a cookie for push notifications module. js-cookie library not loaded');
     delays = 0;
   }
   else {
-    var notification_cookie_how_many = $.cookie(cookieName);
+    var notification_cookie_how_many = Cookies.get(cookieName);
 
     // Default value.
     notification_cookie_how_many = (typeof notification_cookie_how_many === 'undefined') ? 0 : parseInt(notification_cookie_how_many);
@@ -24,13 +24,13 @@
       $('.push-notifications.variant1').show();
     }
     else {
-    // We reached the limit.
-    // No delay loader + notification not showing
+      // We reached the limit.
+      // No delay loader + notification not showing
       $('.push-notifications.variant1').show();
       // Increase display time.
       var cookie_value = notification_cookie_how_many > 0 ? notification_cookie_how_many++ : 1;
       // Save for 365 days.
-      $.cookie(cookieName, cookie_value, {
+      Cookies.set(cookieName, cookie_value, {
         expires: 365,
         path: '/',
         secure: cookieIsSecure

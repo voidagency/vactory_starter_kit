@@ -11,14 +11,15 @@
     buildTours: function (toursSettings) {
       // Check either the steps selectors exist or not, delete step with invalid selector.
       toursSettings.steps = $.grep(toursSettings.steps, function (step) {
-        return step.element === '' ? true : document.querySelector(step.element);
+        return step.element === ""
+          ? true
+          : document.querySelector(step.element);
       });
       // Loop through steps and use selector if exist.
       toursSettings.steps.forEach(function (step) {
-        if (step.element !== '') {
+        if (step.element !== "") {
           step.element = document.querySelector(step.element);
-        }
-        else {
+        } else {
           // Empty selector means displaying an elementless introduction.
           delete step.element;
         }
@@ -35,23 +36,30 @@
       delete toursSettings.tourDisplayCounter;
       delete toursSettings.blockMachineName;
       delete toursSettings.useHints;
-      if (!$.cookie('ugToursCounter_' + blockMachineName)) {
+
+      const cookieName = "ugToursCounter_" + blockMachineName;
+
+      if (!Cookies.get(cookieName)) {
         // Initialize tour counter cookie variable if not exist.
-        $.cookie('ugToursCounter_' + blockMachineName, tourDisplayCounter);
+        Cookies.set(cookieName, tourDisplayCounter);
       }
-      if (parseInt($.cookie('ugToursCounter_' + blockMachineName)) <= tourDisplayCounter && parseInt($.cookie('ugToursCounter_' + blockMachineName)) > 0) {
+
+      const currentCounter = parseInt(Cookies.get(cookieName) || "0");
+
+      if (currentCounter <= tourDisplayCounter && currentCounter > 0) {
         // Init intro js with specific options.
         var introjs = introJs().setOptions(toursSettings).start();
         introjs.onbeforeexit(function () {
-          if (!!$.cookie('ugToursCounter_' + blockMachineName)) {
-            $.cookie('ugToursCounter_' + blockMachineName, parseInt($.cookie('ugToursCounter_' + blockMachineName)) - 1);
+          if (Cookies.get(cookieName)) {
+            Cookies.set(cookieName, currentCounter - 1);
           }
         });
         if (startWithStep > 0) {
           introjs.goToStepNumber(startWithStep);
         }
       }
-      if (useHints && parseInt($.cookie('ugToursCounter_' + blockMachineName)) === 0) {
+
+      if (useHints && currentCounter === 0) {
         // Manage Hints cases.
         toursSettings.steps = $.grep(toursSettings.steps, function (step) {
           return step.element !== undefined;
@@ -67,8 +75,8 @@
         toursSettings.steps.forEach(function (step, index) {
           $(step.element).mouseenter(function () {
             introjsHints = introJs().setOptions(toursSettings);
-            introjsHints.start().goToStepNumber(index+1);
-            $('.introjs-overlay').css('z-index', -1);
+            introjsHints.start().goToStepNumber(index + 1);
+            $(".introjs-overlay").css("z-index", -1);
           });
           $(step.element).mouseleave(function () {
             if (introjsHints) {
@@ -78,6 +86,5 @@
         });
       }
     },
-
   };
 })(jQuery, Drupal);
