@@ -14,13 +14,13 @@
 
   // Only for Anonymous.
   if (isAnonymous) {
-    // Can we create cookies ?
-    if (!$.isFunction($.cookie)) {
-      console.warn('Could not create a cookie for splash screen module. $.cookie still in use ?');
+    // Check if Cookies.js is available
+    if (typeof Cookies === 'undefined') {
+      console.warn('Could not create a cookie for splash screen module. js-cookie library not loaded.');
       delays = 0;
     }
     else {
-      var splash_cookie_how_many = $.cookie(cookieName);
+      var splash_cookie_how_many = Cookies.get(cookieName);
 
       // Default value.
       splash_cookie_how_many = (typeof splash_cookie_how_many === 'undefined') ? 1 : parseInt(splash_cookie_how_many);
@@ -41,7 +41,7 @@
         // Increase display time.
         var cookie_value = splash_cookie_how_many > 0 ? splash_cookie_how_many + 1 : 1;
         // Save for 365 days.
-        $.cookie(cookieName, cookie_value, {
+        Cookies.set(cookieName, cookie_value, {
           expires: 365,
           path: '/',
           secure: cookieIsSecure

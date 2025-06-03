@@ -1,10 +1,13 @@
 (function ($, Drupal, drupalSettings) {
     $(document).ready(function () {
         var element = ("#v8-modal");
-        var using_cookie =  parseInt(drupalSettings.cookie_pop);
+        var using_cookie = parseInt(drupalSettings.cookie_pop);
         if (using_cookie !== 0) {
-            if (typeof $.cookie('popupdf') === "undefined") {
-                $.cookie('popupdf', using_cookie, { expires: 7, path: drupalSettings.current_path});
+            if (typeof Cookies.get('popupdf') === "undefined") {
+                Cookies.set('popupdf', using_cookie, { 
+                    expires: 7, 
+                    path: drupalSettings.current_path 
+                });
             } else {
                 return;
             }
@@ -15,13 +18,11 @@
             $(backDrop).removeClass('modal-backdrop');
         });
         $(element).find('.close').on('click', function (e) {
-          $(element).find('.modal-body iframe').each(function(index) {
-            $(this).attr('src', $(this).attr('src'));
-          });
+            $(element).find('.modal-body iframe').each(function(index) {
+                $(this).attr('src', $(this).attr('src'));
+            });
         });
-       $(element).modal('show');
-
+        $(element).modal('show');
     });
-
 })(jQuery, Drupal, drupalSettings);
 
