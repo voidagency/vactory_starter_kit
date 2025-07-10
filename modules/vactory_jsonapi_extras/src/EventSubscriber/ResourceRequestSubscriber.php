@@ -18,16 +18,22 @@ use Symfony\Component\HttpKernel\KernelEvents;
 class ResourceRequestSubscriber implements EventSubscriberInterface {
 
   /**
-   * @var EntityTypeManagerInterface
+   * The entity type manager service.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
 
   /**
-   * @var RouteMatchInterface
+   * The route match service..
+   *
+   * @var \Drupal\Core\Routing\RouteMatchInterface
    */
   protected $routeMatch;
 
   /**
+   * The token service.
+   *
    * @var \Drupal\Core\Utility\Token
    */
   protected $token;
@@ -232,11 +238,11 @@ class ResourceRequestSubscriber implements EventSubscriberInterface {
       $name = trim($name);
       if (!empty($name) && !empty($value)) {
         if ($name === 'filter') {
-          $recieved_filters = $request->query->get('filter', []);
+          $recieved_filters = $request->query->all()['filter'] ?? [];
           $value = array_merge($recieved_filters, $value);
         }
         if ($name === 'page') {
-          $recieved_filters = $request->query->get('page', []);
+          $recieved_filters = $request->query->all()['page'] ?? [];
           $value = array_merge($recieved_filters, $value);
         }
         $request->query->set($name, $value);

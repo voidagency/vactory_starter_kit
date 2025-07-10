@@ -597,6 +597,14 @@ class Webform {
       (isset($item['#output'])) ? $properties['output'] = $item['#output'] : NULL;
     }
 
+    if ($type === 'tel') {
+      $properties['attributes']['international'] = isset($item['#international']) && $item['#international'];
+      if ($properties['attributes']['international']) {
+        $properties['attributes']['international_initial_country'] = $item['#international_initial_country'] ?? "";
+        $properties['attributes']['international_preferred_countries'] = $item['#international_preferred_countries'] ?? [];
+      }
+    }
+
     if (isset($item['#states'])) {
       $properties['states'] = $this->getFormElementStates($item);
     }
@@ -718,9 +726,10 @@ class Webform {
           continue;
         }
         $element_key = WebformSubmissionConditionsValidator::getInputNameAsArray($input_name, 0);
+        $value = WebformSubmissionConditionsValidator::getInputNameAsArray($input_name, 1) ?? NULL;
         $item['element'] = $element_key;
         $item['operator'] = $operator_exists ? array_keys($condition[$selector])[0] : array_keys($condition)[0];
-        $item['value'] = $operator_exists ? $condition[$selector][$item['operator']] : $condition[$item['operator']];
+        $item['value'] = isset($value) ? $value : ($operator_exists ? $condition[$selector][$item['operator']] : $condition[$item['operator']]);
         array_push($conditions_to_append, $item);
       }
       $states[$state]['operator'] = $operator;

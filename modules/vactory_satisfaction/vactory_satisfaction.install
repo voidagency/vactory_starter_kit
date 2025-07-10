@@ -1,0 +1,50 @@
+<?php
+
+/**
+ * @file
+ * Install file.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function vactory_satisfaction_schema() {
+  $schema['vactory_satisfaction'] = [
+    'description' => 'Table to store satisfaction responses.',
+    'fields' => [
+      'id' => [
+        'description' => 'Primary key: unique response ID.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'uid' => [
+        'description' => 'User ID of the respondent.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'nid' => [
+        'description' => 'Node ID of the content the user responded to.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'response' => [
+        'description' => 'User response stored as a JSON object.',
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => TRUE,
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'uid' => ['uid'],
+      'nid' => ['nid'],
+    ],
+  ];
+
+  return $schema;
+}

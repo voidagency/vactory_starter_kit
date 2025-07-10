@@ -338,6 +338,14 @@ function vactory_decoupled_entity_base_field_info(EntityTypeInterface $entity_ty
       ->setTranslatable(FALSE)
       ->setRevisionable(FALSE)
       ->setDisplayConfigurable('form', TRUE);
+
+    $fields['field_live_mode'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Live mode'))
+      ->setTranslatable(FALSE)
+      ->setClass('\Drupal\vactory_decoupled\Plugin\Field\InternalLiveModeFieldItemList')
+      ->setComputed(TRUE)
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE);
   }
 
   if ($entity_type->id() === 'menu_link_content') {
@@ -354,6 +362,17 @@ function vactory_decoupled_entity_base_field_info(EntityTypeInterface $entity_ty
         'type' => 'link_default',
         'weight' => -2,
       ]);
+    $fields['hide_menu_item'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Hide menu item'))
+      ->setRevisionable(TRUE)
+      ->setTranslatable(TRUE)
+      ->setDisplayOptions('form', [
+        'type' => 'boolean_checkbox',
+        'settings' => [
+          'display_label' => TRUE,
+        ],
+      ])
+      ->setDisplayConfigurable('form', TRUE);
   }
 
   if ($entity_type->id() === 'taxonomy_term') {
@@ -971,8 +990,28 @@ function redirectToFrontend($from_404 = FALSE) {
  * Implements hook_preprocess_HOOK().
  */
 function vactory_decoupled_preprocess_html(&$variables) {
+  $excluded_paths_raw = \Drupal::configFactory()
+    ->get('vactory_decoupled.settings')
+    ->get('iframe_excluded_paths', '');
+  $excluded_paths = is_string($excluded_paths_raw) ? explode("\n", $excluded_paths_raw) : [];
+  $excluded_paths = array_map(function ($route) {
+    return trim($route);
+  }, $excluded_paths);
+  $current_path = \Drupal::request()->getPathInfo();
+  $internal_path = \Drupal::service('path.current')->getPath();
+
+  // Remove language prefix from current paths.
+  $current_path_no_lang = preg_replace('#^/[a-z]{2,}(-[a-z]+)?(?=/$|$|/)#', '', $current_path);
+  $current_path_no_lang = $current_path_no_lang ?: '/';
+
+  $is_path_excluded = count(array_intersect($excluded_paths, [
+    $current_path_no_lang ?? "",
+    $internal_path ?? "",
+    $current_path ?? "",
+  ])) > 0;
+
   $route_name = Drupal::routeMatch()->getRouteName();
-  $exluded_routes = [
+  $excluded_routes = [
     'user.login',
     'user.register',
     'user.pass',
@@ -981,8 +1020,9 @@ function vactory_decoupled_preprocess_html(&$variables) {
     'entity.user.canonical',
     'oauth2_token.authorize',
     'entity.webform.canonical',
+    'entity.comment.edit_form',
   ];
-  if (!in_array($route_name, $exluded_routes)) {
+  if (!in_array($route_name, $excluded_routes) && !$is_path_excluded) {
     $langcode = Drupal::languageManager()->getCurrentLanguage()->getId();
     $current_path = \Drupal::service('path.current')->getPath();
     $alias = \Drupal::service('path_alias.manager')->getAliasByPath($current_path);
@@ -1077,4 +1117,20 @@ function clear_next_nginx_cache($path = '') {
     \Drupal::logger('clear_next_nginx_cache')
       ->warning("Next nginx cache cleared for {$path} (no cache found)");
   }
+}
+
+/**
+ * Implements hook_page_attachments_alter().
+ */
+function vactory_decoupled_page_attachments_alter(array &$attachments) {
+  $attachments['#attached']['html_head'][] = [
+    [
+      '#tag' => 'meta',
+      '#attributes' => [
+        'name' => 'robots',
+        'content' => 'noindex',
+      ],
+    ],
+    'robots_noindex',
+  ];
 }

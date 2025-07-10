@@ -1,0 +1,52 @@
+name: 'Default'
+multiple: TRUE
+category: 'Satisfaction'
+enabled: TRUE
+extra_fields:
+  group_global_settings:
+    g_title: 'Global settings'
+    title:
+      type: text
+      label: 'title'
+    description:
+      type: textarea
+      label: 'description'
+    next_label:
+      type: text
+      label: 'Next button label'
+    previous_label:
+      type: text
+      label: 'Previous button label'
+    submission_label:
+      type: text
+      label: 'Submission button label'
+  group_confirmation_page:
+    g_title: 'Confirmation page'
+    title:
+      type: text
+      label: 'title'
+    description:
+      type: textarea
+      label: 'description'
+    link:
+      type: url_extended
+      label: 'Link'
+fields:
+  question:
+    type: text
+    label: 'Question'
+    options:
+      '#required': TRUE
+  items:
+    type: vactory_satisfaction
+    label: 'Items'
+  display_mode:
+    type: select
+    label: 'Display mode'
+    options:
+      '#options':
+        - 'buttons': 'buttons'
+        - 'range': 'range'
+  optional_question:
+    type: textarea
+    label: 'Optional question'

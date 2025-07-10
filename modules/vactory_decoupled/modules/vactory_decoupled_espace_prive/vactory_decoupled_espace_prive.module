@@ -102,7 +102,10 @@ function vactory_decoupled_espace_prive_decoupled_webform_data_presubmit_alter(a
     // Unset unused data.
     unset($user_data['webform_id']);
     unset($user_data['in_draft']);
-    unset($user_data['csrfToken']);
+    // Ensure csrfToken field exists before attempting to unset it.
+    if (isset($user_data['csrf_token'])) {
+      unset($user_data['csrf_token']);
+    }
 
     foreach ($user_data as $field => $value) {
       $user->set($field, $value);

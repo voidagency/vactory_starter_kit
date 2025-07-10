@@ -1,0 +1,8 @@
+vactory_paragraph_clipboard.paste:
+  path: '/ajax/paragraph-clipboard/paste'
+  defaults:
+    _controller: '\Drupal\vactory_paragraph_clipboard\Controller\ClipboardController::paste'
+  requirements:
+    _permission: 'edit paragraph content'
+  options:
+    _theme: ajax_base_page 

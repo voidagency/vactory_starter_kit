@@ -5,8 +5,6 @@
  * Hooks for vactory_decoupled_image_styles module.
  */
 
-use Drupal\Core\Config\Entity\ConfigEntityInterface;
-
 /**
  * Implements hook_vactory_file_image_enhancer_alter().
  */
@@ -25,6 +23,16 @@ function vactory_decoupled_image_styles_vactory_file_image_enhancer_alter(&$data
 function vactory_decoupled_image_styles_df_manager_image_alter(&$data, $media) {
   $image_styles = \Drupal::service('vactory_decoupled_image_styles.service')->getFileImageStyles($media);
   $original = $data['0']['_default'];
+
+  $liveModeID = NULL;
+  $pattern = '/{LiveMode\s*id="([^"]+)"}([\s\S]*){\/LiveMode}/i';
+  if (preg_match($pattern, $original, $matches)) {
+    $liveModeID = $matches[1];
+  }
+  $image_styles = array_map(function ($item) use ($liveModeID) {
+    return "{LiveMode id=\"{$liveModeID}\"}{$item}{/LiveMode}";
+  }, $image_styles);
+
   $data['0']['_default'] = [
     '_original' => $original,
     ...$image_styles,

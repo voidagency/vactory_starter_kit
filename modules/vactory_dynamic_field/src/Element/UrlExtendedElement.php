@@ -61,13 +61,17 @@ class UrlExtendedElement extends FormElement {
       '#required' => $element['#required'],
       '#default_value' => isset($default_values['title']) ? $default_values['title'] : '',
     ];
+
     $element['url'] = [
-      '#type' => 'textfield',
+      '#type' => 'linkit',
       '#title' => t('Link URL'),
+      '#description' => t('Type the title of the content to link.'),
       '#required' => $element['#required'],
-      '#maxlength' => 1024,
+      '#autocomplete_route_name' => 'linkit.autocomplete',
       '#default_value' => isset($default_values['url']) ? $default_values['url'] : '',
-      '#description' => t('An external URL or internal path, <br> Examples for an internal path: <strong>/node/1</strong> or <strong>/path-example-alias</strong><br>Examples for an external path: <strong>https://example.com</strong>'),
+      '#autocomplete_route_parameters' => [
+        'linkit_profile_id' => 'default',
+      ],
     ];
 
     if (isset($retrievedContent)) {

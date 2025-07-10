@@ -1,0 +1,7 @@
+name: Vactory Logo Per Language
+type: module
+description: 'Provides functionality to use different logos for different languages.'
+package: Custom
+core_version_requirement: ^8 || ^9 || ^10
+dependencies:
+  - drupal:language

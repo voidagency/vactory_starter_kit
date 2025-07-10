@@ -6,3 +6,6 @@ services:
       - '@language_manager'
       - '@entity_type.manager'
       - '@config.factory'
+  vactory_dynamic_import.term_normalization:
+    class: Drupal\vactory_dynamic_import\Service\TermNormalizationService
+    arguments: ['@transliteration']

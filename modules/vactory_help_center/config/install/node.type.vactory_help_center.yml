@@ -1,0 +1,43 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - menu_ui
+    - scheduler
+    - vactory_cross_content
+    - vactory_node_view_count
+third_party_settings:
+  menu_ui:
+    available_menus:
+      - main
+    parent: 'main:'
+  scheduler:
+    expand_fieldset: when_required
+    fields_display_mode: vertical_tab
+    publish_enable: false
+    publish_past_date: error
+    publish_past_date_created: false
+    publish_required: false
+    publish_revision: false
+    publish_touch: false
+    show_message_after_update: true
+    unpublish_enable: false
+    unpublish_required: false
+    unpublish_revision: false
+  vactory_cross_content:
+    enabling: 0
+    taxonomy_field: none
+    terms: {  }
+    nombre_elements: '3'
+    more_link: ''
+    more_link_label: ''
+    content_type: {  }
+  vactory_node_view_count:
+    enabling_count_node: 0
+name: 'Help Center'
+type: vactory_help_center
+description: 'Help center content.'
+help: ''
+new_revision: true
+preview_mode: 1
+display_submitted: false

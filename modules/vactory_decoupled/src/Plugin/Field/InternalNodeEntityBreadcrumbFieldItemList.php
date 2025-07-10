@@ -83,6 +83,13 @@ class InternalNodeEntityBreadcrumbFieldItemList extends FieldItemList {
   protected $pathValidator;
 
   /**
+   * Module handler.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
    * {@inheritDoc}
    */
   public static function createInstance($definition, $name = NULL, TraversableTypedDataInterface $parent = NULL) {
@@ -96,6 +103,7 @@ class InternalNodeEntityBreadcrumbFieldItemList extends FieldItemList {
     $instance->menuLinkManager = $container->get('plugin.manager.menu.link');
     $instance->routeProvider = $container->get('router.route_provider');
     $instance->pathValidator = $container->get('path.validator');
+    $instance->moduleHandler = $container->get('module_handler');
     return $instance;
   }
 
@@ -126,6 +134,8 @@ class InternalNodeEntityBreadcrumbFieldItemList extends FieldItemList {
       // Attempt to load from path.
       $links = $this->getFromPath($entity);
     }
+
+    $this->moduleHandler->alter('decoupled_breadcrumb_links', $links, $entity);
 
     if (!empty($links)) {
       $show_current_langcode = $config->get('show_current_langcode');

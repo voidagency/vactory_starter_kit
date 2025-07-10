@@ -1,0 +1,89 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Vactory Paragraph Clipboard module.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Field\WidgetInterface;
+
+/**
+ * Implements hook_field_widget_single_element_form_alter().
+ */
+function vactory_paragraph_clipboard_field_widget_single_element_form_alter(&$element, FormStateInterface $form_state, $context) {
+  if (!isset($context['widget']) || !($context['widget'] instanceof WidgetInterface)) {
+    return;
+  }
+
+  // Vérifier si c'est un widget de paragraphe.
+  if ($context['widget']->getPluginId() !== 'entity_reference_paragraphs') {
+    return;
+  }
+
+  // Try to get paragraph entity and delta.
+  $paragraph = $context['items']->get($context['delta'])->entity ?? NULL;
+
+  // Prepare data attributes.
+  $data_attributes = [
+    'data-paragraph-delta' => $context['delta'],
+  ];
+
+  // If paragraph entity exists, add its ID.
+  if ($paragraph && method_exists($paragraph, 'id')) {
+    $data_attributes['data-paragraph-id'] = $paragraph->id();
+    $data_attributes['data-paragraph-title'] = $paragraph->get('field_vactory_title')->value;
+  }
+
+  // Ajouter la bibliothèque.
+  $element['#attached']['library'][] = 'vactory_paragraph_clipboard/clipboard';
+
+  $module_path = \Drupal::service('extension.list.module')->getPath('vactory_paragraph_clipboard');
+  $path = "/{$module_path}/assets/copy.png";
+
+  // Ajouter les boutons copier.
+  $element['top']['clipboard_actions'] = [
+    '#type' => 'container',
+    '#weight' => 3,
+    '#attributes' => [
+      'class' => [
+        'paragraph-clipboard-copy',
+        'clipboard-hover-effect',
+      ],
+      ...$data_attributes,
+    ],
+    'copy' => [
+      '#markup' => '<img src="' . $path . '" alt="DF Image" width="30" height="30">',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_field_widget_form_alter().
+ */
+function vactory_paragraph_clipboard_field_widget_complete_form_alter(&$field_widget_complete_form, FormStateInterface $form_state, $context) {
+  if (!isset($context['widget']) || !($context['widget'] instanceof WidgetInterface)) {
+    return;
+  }
+
+  // Vérifier si c'est un widget de paragraphe.
+  if ($context['widget']->getPluginId() !== 'entity_reference_paragraphs') {
+    return;
+  }
+
+  // Ajouter la bibliothèque.
+  $field_widget_complete_form['#attached']['library'][] = 'vactory_paragraph_clipboard/clipboard';
+
+  $node_id = $context['items']->getParent()->getEntity()->id();
+  // Ajouter les boutons coller.
+  $field_widget_complete_form['paste'] = [
+    '#type' => 'button',
+    '#value' => t('Paste'),
+    '#attributes' => [
+      'class' => ['paragraph-clipboard-paste'],
+      'style' => 'display: none;',
+      'data-node-id' => $node_id,
+    ],
+  ];
+
+}

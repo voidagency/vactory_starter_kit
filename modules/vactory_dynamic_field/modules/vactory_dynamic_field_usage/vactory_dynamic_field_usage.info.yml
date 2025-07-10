@@ -1,0 +1,7 @@
+name: 'Vactory Dynamic field usage'
+type: module
+description: 'Get an inventory of dynamic field in use'
+package: Vactory
+core_version_requirement: ^10
+dependencies:
+  - vactory_dynamic_field:vactory_dynamic_field

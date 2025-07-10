@@ -1,0 +1,70 @@
+{#
+/**
+ * @file
+ * Default theme implementation for the checklist dashboard.
+ *
+ * Available variables:
+ * - results: An array of check results grouped by category.
+ */
+#}
+
+<div class="checklist-dashboard">
+  {% for category, checks in results %}
+    <div class="checklist-category">
+      <h2>{{ category|title }}</h2>
+
+      <table aria-describedby="Checklist table">
+        <thead>
+          <tr>
+            <th>{{ 'Status'|t }}</th>
+            <th>{{ 'Vérification'|t }}</th>
+            <th>{{ 'Description'|t }}</th>
+            <th>{{ 'Résultat'|t }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for check in checks %}
+            <tr>
+              <td class="checklist-status">
+                <span class="checklist-icon {{ check.result.status ? 'success' : 'error' }}">
+                  {{ check.result.status ? '✓' : '✗' }}
+                </span>
+              </td>
+              <td>{{ check.label }}</td>
+              <td>{{ check.description }}</td>
+              <td>
+                <div class="checklist-message">
+                  {{ check.result.message }}
+                </div>
+                
+                {% if check.result.details %}
+                  <details class="checklist-details">
+                    <summary>{{ 'Détails'|t }}</summary>
+                    <table class="details-table" aria-describedby="Checklist table">
+                      <thead>
+                        <tr>
+                          {% for key, value in check.result.details[0] %}
+                            <th>{{ key|title }}</th>
+                          {% endfor %}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {% for detail in check.result.details %}
+                          <tr>
+                            {% for value in detail %}
+                              <td>{{ value }}</td>
+                            {% endfor %}
+                          </tr>
+                        {% endfor %}
+                      </tbody>
+                    </table>
+                  </details>
+                {% endif %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endfor %}
+</div> 

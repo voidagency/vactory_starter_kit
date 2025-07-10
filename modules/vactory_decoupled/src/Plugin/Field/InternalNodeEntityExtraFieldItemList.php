@@ -79,7 +79,10 @@ class InternalNodeEntityExtraFieldItemList extends FieldItemList {
       'entity' => $entity,
     ];
     \Drupal::moduleHandler()->alter('decoupled_extra_field_value', $value, $context, $this->cacheMetadata);
-    $this->cacheMetadata->addCacheTags(['config:vactory_decoupled.settings']);
+    $this->cacheMetadata->addCacheTags([
+      'config:vactory_decoupled.settings',
+      'vactory_decoupled.switch_lang_settings',
+    ]);
     $this->list[0] = $this->createItem(0, $value);
   }
 
@@ -115,11 +118,22 @@ class InternalNodeEntityExtraFieldItemList extends FieldItemList {
    */
   protected function getTranslations($entity) {
     $siteConfig = \Drupal::config('system.site');
+    $switch_lang_settings = \Drupal::config('vactory_decoupled.switch_lang_settings');
+    $hide_untranslated = $switch_lang_settings->get('hide_untranslated');
     $front_uri = $siteConfig->get('page.front');
     $internal_uri = "/node/" . $entity->id();
 
     $langcodes = $this->languageManager->getLanguages();
     $langcodesList = array_keys($langcodes);
+    if ($hide_untranslated) {
+      $langcodesList = array_filter($langcodesList, function ($langcode) use ($entity) {
+        $translated = $entity->hasTranslation($langcode);
+        if (!$translated) {
+          return FALSE;
+        }
+        return $entity->getTranslation($langcode)->isPublished();
+      });
+    }
     $data = [];
 
     // Frontpage special case.

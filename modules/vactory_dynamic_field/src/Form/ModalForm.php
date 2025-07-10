@@ -979,7 +979,14 @@ class ModalForm extends FormBase {
     // Check if auto populate is checked.
     if ($form_state->getValue('auto_populate') == 1) {
       $widget_id = $this->widget;
-      $isDummy = json_encode(['auto-populate' => TRUE]);
+      $df_generated_data = [];
+      if (\Drupal::service('module_handler')->moduleExists('vactory_dynamic_field_dummy')) {
+        $widget = $this->widgetsManager->loadSettings($widget_id);
+        // phpcs:disable
+        $df_generated_data = \Drupal\vactory_dynamic_field_dummy\Services\GenerateDummyPageService::prepareContent($widget) ?? [];
+        // phpcs:enable
+      }
+      $isDummy = json_encode(['auto-populate' => TRUE, ...$df_generated_data]);
       // Pass the selection to the field widget based on the current widget ID.
       $response = new AjaxResponse();
       $response->addCommand(new InvokeCommand("[data-dynamic-widget-value=\"$this->fieldId\"]", 'val', [$isDummy]))

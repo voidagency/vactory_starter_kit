@@ -1,0 +1,6 @@
+vactory_checklist.dashboard:
+  title: 'Vactory checklist'
+  description: 'Vactory checklist dashboard'
+  route_name: vactory_checklist.dashboard
+  parent: system.admin_reports
+  weight: 10

@@ -1,0 +1,14 @@
+name: 'Default'
+multiple: FALSE
+category: 'Help center'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: 'title'
+  description:
+    type: textarea
+    label: 'description'
+  help_center:
+    type: vactory_help_center
+    label: 'Help center'

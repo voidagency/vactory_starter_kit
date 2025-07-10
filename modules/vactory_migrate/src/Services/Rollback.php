@@ -67,7 +67,7 @@ class Rollback {
     }
 
     // Query rows.
-    $query = $this->database->query("SELECT destid1 FROM ${mapping_table} WHERE destid1 IS NOT NULL");
+    $query = $this->database->query("SELECT destid1 FROM {$mapping_table} WHERE destid1 IS NOT NULL");
     $rows = $query->fetchAll(\PDO::FETCH_COLUMN, 0);
 
     $operations = [];
@@ -119,10 +119,17 @@ class Rollback {
       self::dbDelete($baseTable, $column_id, $ids, 'IN', $langcode);
     }
 
-    // Delete messages && mapping.
-    self::dbDelete($mapping_table, 'destid1', $ids, 'IN');
-    self::dropTable($mapping_table);
-    self::dropTable($message_table);
+    // Delete messages && mapping if tables exist.
+    $database = \Drupal::database();
+
+    if ($database->schema()->tableExists($mapping_table)) {
+      self::dbDelete($mapping_table, 'destid1', $ids, 'IN');
+      self::dropTable($mapping_table);
+    }
+
+    if ($database->schema()->tableExists($message_table)) {
+      self::dropTable($message_table);
+    }
 
     if (!isset($context['results']['count'])) {
       $context['results']['count'] = 0;
@@ -130,7 +137,6 @@ class Rollback {
     $context['results']['count'] += count($ids);
 
     drupal_flush_all_caches();
-
   }
 
   /**
@@ -148,6 +154,12 @@ class Rollback {
    */
   public static function dbDelete($table, $column, $id, $operator = '=', $langcode = '') {
     $databaseService = \Drupal::service('database');
+
+    // Check if table exists before attempting to delete.
+    if (!$databaseService->schema()->tableExists($table)) {
+      return;
+    }
+
     $transaction = $databaseService->startTransaction();
     $default_langcode = \Drupal::languageManager()->getDefaultLanguage()->getId();
     try {

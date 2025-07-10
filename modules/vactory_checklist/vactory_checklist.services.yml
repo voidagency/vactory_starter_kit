@@ -1,0 +1,4 @@
+services:
+  plugin.manager.vactory_checklist:
+    class: Drupal\vactory_checklist\ChecklistPluginManager
+    parent: default_plugin_manager 

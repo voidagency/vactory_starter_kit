@@ -23,7 +23,6 @@ use Drupal\Core\Routing\AdminContext;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
 use Drupal\domain\DomainInterface;
-use Drupal\domain\DomainNegotiatorInterface;
 use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
 use Drupal\vactory_core\Services\VactoryDevTools;
@@ -183,6 +182,20 @@ class MenuBasedBreadcrumbBuilder implements BreadcrumbBuilderInterface {
    * @var \Drupal\Core\Entity\EntityRepositoryInterface
    */
   protected $entityRepository;
+
+  /**
+   * The current path service.
+   *
+   * @var \Drupal\Core\Path\CurrentPathStack
+   */
+  protected $currentPath;
+
+  /**
+   * The title resolver service.
+   *
+   * @var \Drupal\Core\Controller\TitleResolverInterface
+   */
+  protected $titleResolver;
 
   /**
    * {@inheritdoc}
@@ -529,7 +542,7 @@ class MenuBasedBreadcrumbBuilder implements BreadcrumbBuilderInterface {
           }
         }
         elseif ($this->config->get(VactoryBreadcrumbConstants::INCLUDE_INVALID_PATHS)) {
-          // TODO: exclude the 404 page and other's with a system path.
+          // @todo Exclude the 404 page and other's with a system path.
           $title = str_replace(['-', '_'], ' ', Unicode::ucfirst(end($path_elements)));
           $links[] = Link::createFromRoute($title, '<none>');
         }
@@ -582,7 +595,7 @@ class MenuBasedBreadcrumbBuilder implements BreadcrumbBuilderInterface {
       }
 
       if ($this->config->get('include_domain') && \Drupal::moduleHandler()->moduleExists('domain_access')) {
-        /** @var DomainNegotiatorInterface $domain_nigociator */
+        /** @var \Drupal\domain\DomainNegotiatorInterface $domain_nigociator */
         $domain_nigociator = \Drupal::service('domain.negotiator');
         $active_domain = $domain_nigociator->getActiveDomain();
         if ($active_domain instanceof DomainInterface) {
@@ -642,12 +655,12 @@ class MenuBasedBreadcrumbBuilder implements BreadcrumbBuilderInterface {
    */
   public function removeSuccessiveDuplicates(&$links) {
     foreach ($links as $key => $link) {
-      if (isset($links[$key+1])) {
+      if (isset($links[$key + 1])) {
         $link_text = $link->getText();
         if ($link_text instanceof MarkupInterface) {
           $link_text = $link_text->__toString();
         }
-        $next_link_text = $links[$key+1]->getText();
+        $next_link_text = $links[$key + 1]->getText();
         if ($next_link_text instanceof MarkupInterface) {
           $next_link_text = $next_link_text->__toString();
         }

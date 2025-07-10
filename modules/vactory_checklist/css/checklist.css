@@ -1,0 +1,41 @@
+.checklist-dashboard table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1em 0;
+}
+
+.checklist-dashboard th,
+.checklist-dashboard td {
+  padding: 12px;
+  text-align: left;
+  border: 1px solid #ddd;
+}
+
+.checklist-dashboard th {
+  background-color: #f5f5f5;
+}
+
+.checklist-dashboard tr:hover {
+  background-color: #f9f9f9;
+}
+
+.checklist-icon {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.checklist-icon.success {
+  color: #28a745;
+}
+
+.checklist-icon.error {
+  color: #dc3545;
+}
+
+.checklist-details {
+  margin-top: 0.5em;
+}
+
+.checklist-category {
+  margin-bottom: 2em;
+} 

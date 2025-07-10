@@ -1,0 +1,5 @@
+name: 'Vactory Satisfaction'
+description: 'Designed to collect and manage user feedback.'
+type: module
+core_version_requirement: ^9 || ^10
+package: Vactory

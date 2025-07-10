@@ -1,0 +1,7 @@
+vactory_checklist.dashboard:
+  path: '/admin/reports/vactory-checklist'
+  defaults:
+    _controller: '\Drupal\vactory_checklist\Controller\DashboardController::dashboard'
+    _title: 'Tableau de bord des vérifications'
+  requirements:
+    _permission: 'access vactory checklist dashboard' 

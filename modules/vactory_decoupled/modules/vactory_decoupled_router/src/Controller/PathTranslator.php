@@ -3,6 +3,7 @@
 namespace Drupal\vactory_decoupled_router\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Routing\RouteObjectInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -13,12 +14,12 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Url;
 use Symfony\Component\Routing\Route;
 use Drupal\Core\Entity\ContentEntityType;
-use Symfony\Component\Routing;
 use Symfony\Component\Routing\RequestContext;
 use Symfony\Component\Routing\Matcher\UrlMatcher;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
 use Drupal\jsonapi\ResourceType\ResourceTypeRepository;
+use Symfony\Component\Routing\RouteCollection;
 
 /**
  * Controller that receives the path to inspect.
@@ -37,7 +38,7 @@ class PathTranslator extends ControllerBase {
    *
    * @var \Drupal\jsonapi\ResourceType\ResourceTypeRepository
    */
-  private $jsonapi_resource_type_respository;
+  private $jsonapiResourceTypeRepository;
 
   /**
    * Entity type manager service.
@@ -48,34 +49,45 @@ class PathTranslator extends ControllerBase {
 
   /**
    * System routes.
+   *
+   * @var array|\Drupal\Core\Entity\EntityInterface[]
    */
   protected $systemRoutes = [];
 
   /**
    * Current langcode.
+   *
+   * @var string
    */
   protected $currentLangcode;
 
   /**
-   * EventInfoController constructor.
+   * The entity repository service.
    *
-   * @param \Symfony\Component\EventDispatcher\EventDispatcherInterface $event_dispatcher
-   *   Event dispatcher service.
-   * @param \Symfony\Component\HttpKernel\HttpKernelInterface $http_kernel
-   *   The HTTP kernel.
+   * @var \Drupal\Core\Entity\EntityRepositoryInterface
+   */
+  protected $entityRepository;
+
+  /**
+   * EventInfoController constructor.
    */
   public function __construct(
     LoggerInterface $logger,
     UrlMatcherInterface $router,
-    ResourceTypeRepository $jsonapi_resource_type_respository,
-    EntityTypeManagerInterface $entityTypeManager
+    ResourceTypeRepository $jsonapiResourceTypeRepository,
+    EntityTypeManagerInterface $entityTypeManager,
+    EntityRepositoryInterface $entityRepository,
   ) {
     $this->logger = $logger;
     $this->router = $router;
-    $this->jsonapi_resource_type_respository = $jsonapi_resource_type_respository;
+    $this->jsonapiResourceTypeRepository = $jsonapiResourceTypeRepository;
     $this->entityTypeManager = $entityTypeManager;
-    $this->systemRoutes = $this->entityTypeManager->getStorage('vactory_route')->loadMultiple();
-    $this->currentLangcode = $this->languageManager()->getCurrentLanguage()->getId();
+    $this->systemRoutes = $this->entityTypeManager->getStorage('vactory_route')
+      ->loadMultiple();
+    $this->currentLangcode = $this->languageManager()
+      ->getCurrentLanguage()
+      ->getId();
+    $this->entityRepository = $entityRepository;
   }
 
   /**
@@ -86,7 +98,8 @@ class PathTranslator extends ControllerBase {
       $container->get('logger.channel.vactory_decoupled_router'),
       $container->get('router.no_access_checks'),
       $container->get('jsonapi.resource_type.repository'),
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('entity.repository'),
     );
   }
 
@@ -106,7 +119,7 @@ class PathTranslator extends ControllerBase {
     $error_match_info = $this->router->match($error_route->getPath());
 
     // Assume a 200 from start.
-    $this->response = new JsonResponse([],200);
+    $this->response = new JsonResponse([], 200);
 
     $output = [];
     $output['status'] = 200;
@@ -131,7 +144,6 @@ class PathTranslator extends ControllerBase {
         $match_info = $error_match_info;
       }
     }
-
     /** @var \Drupal\Core\Entity\EntityInterface $entity */
     $entity = $this->findEntity($match_info);
     if (!$entity) {
@@ -150,7 +162,8 @@ class PathTranslator extends ControllerBase {
       $can_view = $entity->access('view', NULL, TRUE);
       if (!$can_view->isAllowed()) {
         if ($this->currentUser()->isAnonymous()) {
-          // Redirect the anonymous user to the login page in case they do not have access to the current page.
+          // Redirect the anonymous user to the login page in case.
+          // they do not have access to the current page.
           $login_route = $this->systemRoutes['account_login'];
           if (!isset($login_route)) {
             $this->logger->error('System route account_login is not found. Create one at /admin/config/system/vactory_router');
@@ -182,10 +195,38 @@ class PathTranslator extends ControllerBase {
       $output['system'] = $info;
     }
 
+    if ($this->isFollowNodePathPattern($path) && $entity->hasTranslation($this->currentLangcode)) {
+      // Get the translated entity.
+      $trans_entity = $this->entityRepository->getTranslationFromContext($entity);
+
+      // Generate the alias URL string.
+      $alias = $trans_entity->toUrl()->toString();
+      // Check if the alias exists and does not follow the node path pattern.
+      if (!empty($alias) && !$this->isFollowNodePathPattern($alias)) {
+        $redirects_trace[] = [
+          'to' => $alias,
+          'status' => 301,
+          'from' => $path,
+        ];
+        $output['redirect'] = $redirects_trace;
+      }
+    }
+
     $this->response->headers->add(['Content-Type' => 'application/json']);
     $this->response->setData($output);
 
     return $this->response;
+  }
+
+  /**
+   * Check if path follow the /node/nid pattern.
+   */
+  private function isFollowNodePathPattern($path) {
+    // Define the pattern.
+    $pattern = '/\/node\/\d+$/';
+
+    // Check if the path matches the pattern.
+    return preg_match($pattern, $path);
   }
 
   /**
@@ -205,7 +246,7 @@ class PathTranslator extends ControllerBase {
    */
   protected function getEntityOutput($entity) {
     $entity_type_id = $entity->getEntityTypeId();
-    $rt = $this->jsonapi_resource_type_respository->get($entity_type_id, $entity->bundle());
+    $rt = $this->jsonapiResourceTypeRepository->get($entity_type_id, $entity->bundle());
     $type_name = $rt->getTypeName();
     $route_name = sprintf('jsonapi.%s.individual', $type_name);
     $individual = Url::fromRoute(
@@ -261,11 +302,12 @@ class PathTranslator extends ControllerBase {
   private function getRouteFromRequest(Request $request) {
     $path = $this->getPathFromRequest($request);
 
-    // @todo: cache this ?
-    $routes = new Routing\RouteCollection();
+    $routes = new RouteCollection();
 
     foreach ($this->systemRoutes as $route) {
-      $routes->add($route->id(), new Routing\Route($route->getAlias()));
+      $auxRoute = new Route($route->getAlias());
+      $auxRoute->setOption("utf8", TRUE);
+      $routes->add($route->id(), $auxRoute);
     }
 
     $context = new RequestContext();
@@ -276,7 +318,7 @@ class PathTranslator extends ControllerBase {
     $data = $matcher->match($path);
     $match_info = [
       '_query' => $data,
-      '_route' => $data['_route']
+      '_route' => $data['_route'],
     ];
     unset($match_info['_query']['_route']);
     $route = $this->systemRoutes[$match_info['_route']];

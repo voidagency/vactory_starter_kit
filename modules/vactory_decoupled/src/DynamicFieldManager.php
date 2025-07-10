@@ -2,6 +2,7 @@
 
 namespace Drupal\vactory_decoupled;
 
+use Drupal\block_content\Entity\BlockContent;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityRepositoryInterface;
@@ -156,9 +157,30 @@ class DynamicFieldManager {
   protected $httpClient;
 
   /**
+   * The edit live mode helper service.
+   *
+   * @var \Drupal\vactory_decoupled\EditLiveModeHelper
+   */
+  protected $editLiveModeHelper;
+
+  /**
    * {@inheritdoc}
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, $plateform_provider, MediaFilesManager $mediaFilesManager, EntityRepositoryInterface $entityRepository, JsonApiGenerator $jsonApiGenerator, SlugManager $slugManager, ModuleHandlerInterface $moduleHandler, LanguageManagerInterface $languageManager, ViewsToApi $viewsToApi, ConfigFactoryInterface $configFactory, Token $token, Client $httpClient) {
+  public function __construct(
+    EntityTypeManagerInterface $entity_type_manager,
+    $plateform_provider,
+    MediaFilesManager $mediaFilesManager,
+    EntityRepositoryInterface $entityRepository,
+    JsonApiGenerator $jsonApiGenerator,
+    SlugManager $slugManager,
+    ModuleHandlerInterface $moduleHandler,
+    LanguageManagerInterface $languageManager,
+    ViewsToApi $viewsToApi,
+    ConfigFactoryInterface $configFactory,
+    Token $token,
+    Client $httpClient,
+    EditLiveModeHelper $editLiveModeHelper
+  ) {
     $this->entityTypeManager = $entity_type_manager;
     $this->platformProvider = $plateform_provider;
     $this->imageStyles = ImageStyle::loadMultiple();
@@ -176,6 +198,7 @@ class DynamicFieldManager {
     $this->httpClient = $httpClient;
     $this->mediaStorage = $this->entityTypeManager->getStorage('media');
     $this->termResultCount = $this->moduleHandler->moduleExists('vactory_taxonomy_results') ? $this->entityTypeManager->getStorage('term_result_count') : NULL;
+    $this->editLiveModeHelper = $editLiveModeHelper;
   }
 
   /**
@@ -305,7 +328,11 @@ class DynamicFieldManager {
             else {
               if (!empty($value['url']) && !UrlHelper::isExternal($value['url'])) {
                 $front_uri = $this->siteConfig->get('page.front');
-                if ($front_uri === $value['url']) {
+                if (preg_match('#^/media/(\d+)$#', $value['url'], $matches)) {
+                  $mid = (int) $matches[1];
+                  $value['url'] = $this->mediaFilesManager->getMediaAbsoluteUrlByMid($mid);
+                }
+                elseif ($front_uri === $value['url']) {
                   $value['url'] = Url::fromRoute('<front>')->toString();
                 }
                 else {
@@ -459,7 +486,10 @@ class DynamicFieldManager {
                   $cacheTags = Cache::mergeTags($this->cacheability->getCacheTags(), $file->getCacheTags());
                   $this->cacheability->setCacheTags($cacheTags);
                   $uri = $file->thumbnail->entity->getFileUri();
-                  $image_item['_default'] = $this->mediaFilesManager->getMediaAbsoluteUrl($uri);
+                  $live_mode = $this->handleEditLiveModeFormat($parent_keys, $settings, $component, $field_key);
+                  $src = $this->mediaFilesManager->getMediaAbsoluteUrl($uri);
+                  $src = $live_mode ? "{LiveMode id=\"{$live_mode}\"}{$src}{/LiveMode}" : $src;
+                  $image_item['_default'] = $src;
                   $image_item['file_name'] = $file->label();
                   if (!empty($file->get('field_media_image')->getValue())) {
                     $image_item['meta'] = $file->get('field_media_image')
@@ -887,49 +917,53 @@ class DynamicFieldManager {
    * Generate field path for edit live mode.
    */
   private function handleEditLiveModeFormat($parent_keys, $settings, $component, $field_key) {
-    // Check permission.
-    // Ensure the user has 'edit content live mode' permission.
-    // To utilize the edit live mode feature.
-    $user_id = \Drupal::currentUser()->id();
-    $user = $this->entityTypeManager->getStorage('user')->load($user_id);
-    $user_granted = $user->hasPermission('edit content live mode');
-
-    // Check if the feature is enabled from vactory_dynamic_field setings.
-    $decoupled_edit_live_mode = $this->configFactory->get('vactory_dynamic_field.settings')->get('decoupled_edit_live_mode');
-
-    if ($user_granted && $decoupled_edit_live_mode) {
-      $path = $parent_keys;
-      // In the case of multiple fields.
-      // Each component is indexed with its weight.
-      if ($settings['multiple'] && $parent_keys[0] == 'fields') {
-        $index = ((int) $component['_weight']) - 1;
-        $path[] = "$index";
-        // Remove 'fields' key from the path.
-        // Since each component has its own index.
-        if (($key = array_search('fields', $path)) !== FALSE) {
-          unset($path[$key]);
-        }
-      }
-      // Add field key to the path.
-      $path[] = $field_key;
-
-      // If DF is not multiple, only '0' key exists.
-      // So we replace fields with '0'.
-      if (($key = array_search('fields', $path)) !== FALSE) {
-        $path[$key] = 0;
-      }
-
-      // extra_fields are stored in json with key extra_fields.
-      // Remove the 's' to match more accurately.
-      if (($key = array_search('extra_fields', $path)) !== FALSE) {
-        $path[$key] = 'extra_field';
-      }
-
-      // Finally, join the constructed path parts to form the final path.
-      $path = implode('.', $path);
-      return $path;
+    $info = NestedArray::getValue($settings, array_merge((array) $parent_keys, [$field_key]));
+    if (isset($info['options']) && isset($info['options']['#live_mode_ignore']) && $info['options']['#live_mode_ignore'] == TRUE) {
+      return NULL;
     }
-    return NULL;
+
+    $liveModeAllowed = $this->editLiveModeHelper->checkAccess();
+    if (!$liveModeAllowed) {
+      return NULL;
+    }
+
+    $path = $parent_keys;
+    // In the case of multiple fields.
+    // Each component is indexed with its weight.
+    if ($settings['multiple'] && $parent_keys[0] == 'fields') {
+      $index = ((int) $component['_weight']) - 1;
+      $path[] = "$index";
+      // Remove 'fields' key from the path.
+      // Since each component has its own index.
+      if (($key = array_search('fields', $path)) !== FALSE) {
+        unset($path[$key]);
+      }
+    }
+    // Add field key to the path.
+    $path[] = $field_key;
+
+    // If DF is not multiple, only '0' key exists.
+    // So we replace fields with '0'.
+    if (($key = array_search('fields', $path)) !== FALSE) {
+      $path[$key] = 0;
+    }
+
+    // extra_fields are stored in json with key extra_fields.
+    // Remove the 's' to match more accurately.
+    if (($key = array_search('extra_fields', $path)) !== FALSE) {
+      $path[$key] = 'extra_field';
+    }
+
+    // Finally, join the constructed path parts to form the final path.
+    $path = implode('.', $path);
+
+    $entity = \Drupal::routeMatch()->getParameter('entity');
+    if ($entity instanceof BlockContent) {
+      $path = "block:{$entity->id()}|{$path}";
+    }
+
+    return $path;
+
   }
 
 }

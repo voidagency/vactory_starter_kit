@@ -1,0 +1,6 @@
+services:
+  vactory_dynamic_field_dummy.commands:
+    class: Drupal\vactory_dynamic_field_dummy\Commands\DynamicFieldDummyCommands
+    arguments: [ '@vactory_dynamic_field.vactory_provider_manager' ]
+    tags:
+      - { name: drush.command }
