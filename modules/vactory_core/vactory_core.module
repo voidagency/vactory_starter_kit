@@ -685,6 +685,12 @@ function vactory_core_preprocess_status_report_general_info_vactory(&$variables)
   if ($res) {
     $variables['profile_version'] = $res;
   }
+
+  $dashboard_name = 'voidagency/vactory_dashboard';
+  $dashbaord_info = _get_profile__composer_version($dashboard_name);
+  if ($dashbaord_info) {
+    $variables['vactory_dashboard_version'] = $dashbaord_info;
+  }
 }
 
 /**
