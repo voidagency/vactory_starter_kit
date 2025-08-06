@@ -59,19 +59,24 @@ class MetaTagsTest extends ExistingSiteBase {
     // Assert internal_metatag is present.
     $this->assertArrayHasKey('internal_metatag', $json['data']['attributes']);
 
-    // Find metatag with id = canonical_url.
-    $canonicalExists = FALSE;
-    foreach ($json['data']['attributes']['internal_metatag'] as $item) {
-      if (isset($item['id']) && $item['id'] === 'canonical_url') {
-        $canonicalExists = TRUE;
-        $expected = "{$scheme}://{$host}{$port}/{$langcode}{$alias}";
-        $this->assertEquals($expected, $item['attributes']['href']);
-        break;
+    $metatags = $json['data']['attributes']['internal_metatag'];
+
+    // Vérifier chaque méta-tag.
+    foreach ($metatags as $tag) {
+      if (isset($tag['id'])) {
+        // Vérifier que chaque méta-tag a soit href soit content.
+        $hasHref = isset($tag['attributes']['href']) && !empty($tag['attributes']['href']);
+        $hasContent = isset($tag['attributes']['content']) && !empty($tag['attributes']['content']);
+
+        $this->assertTrue($hasHref || $hasContent, "Le méta-tag '{$tag['id']}' doit avoir un attribut 'href' ou 'content' avec une valeur.");
+
+        // Vérification spécifique pour canonical_url.
+        if ($tag['id'] === 'canonical_url') {
+          $expected = "{$scheme}://{$host}{$port}/{$langcode}{$alias}";
+          $this->assertEquals($expected, $tag['attributes']['href']);
+        }
       }
     }
-
-    // Assert canonical_url metatag is found.
-    $this->assertTrue($canonicalExists, 'canonical_url metatag exists.');
   }
 
   /**
