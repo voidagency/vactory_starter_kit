@@ -45,7 +45,7 @@ class JsonApiCollectionTest extends ExistingSiteBase {
     ],
   ];
 
-  const DF_CREATOR_MODULE = 'vactory_page_import';
+  const DF_CREATOR_MODULE = 'vactory_dynamic_field_volatile';
 
   /**
    * Track if we installed the module during test.
@@ -205,7 +205,7 @@ class JsonApiCollectionTest extends ExistingSiteBase {
    */
   protected function writeDfFile(array $content, $name): bool {
     $yaml_config = Yaml::encode($content);
-    $dest_uri = 'private://imported-pages-df';
+    $dest_uri = 'private://volatile-df';
     $dest_df_uri = $dest_uri . '/' . $name;
 
     if (!file_exists($dest_df_uri)) {
