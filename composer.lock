@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "73e66ebbc0861e8f8611695da45a9b97",
+    "content-hash": "86b67a6a630ca461325a3d281e8dce16",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -6111,20 +6111,20 @@
         },
         {
             "name": "drupal/linkit",
-            "version": "6.1.2",
+            "version": "7.0.8",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/linkit.git",
-                "reference": "6.1.2"
+                "reference": "7.0.8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/linkit-6.1.2.zip",
-                "reference": "6.1.2",
-                "shasum": "63fb311d2b78df81a9a588330429b640ec7da0e8"
+                "url": "https://ftp.drupal.org/files/projects/linkit-7.0.8.zip",
+                "reference": "7.0.8",
+                "shasum": "3a16053650934b3942cf369ac1ee3ad85c655d45"
             },
             "require": {
-                "drupal/core": "^10.1"
+                "drupal/core": "^10.1 || ^11"
             },
             "require-dev": {
                 "drupal/ckeditor": "*",
@@ -6133,8 +6133,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "6.1.2",
-                    "datestamp": "1696865478",
+                    "version": "7.0.8",
+                    "datestamp": "1754406731",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"

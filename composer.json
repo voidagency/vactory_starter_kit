@@ -72,7 +72,7 @@
     "drupal/migrate_tools": "^6.0",
     "drupal/migrate_source_csv": "^3.1.0",
     "drupal/link_target": "^1.2.0",
-    "drupal/linkit": "^6.1",
+    "drupal/linkit": "^7.0",
     "drupal/stage_file_proxy": "^2.0",
     "drupal/editor_advanced_link": "^2.2",
     "drupal/media_responsive_thumbnail": "^1.5",
