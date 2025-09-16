@@ -1,0 +1,9 @@
+vactory_content_diff.form:
+  path: '/admin/content/diff'
+  defaults:
+    _form: '\Drupal\vactory_content_diff\Form\ContentDiffForm'
+    _title: 'Content diff'
+  requirements:
+    _permission: 'access content diff'
+  options:
+    _admin_route: true 

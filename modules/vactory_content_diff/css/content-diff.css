@@ -1,0 +1,8 @@
+.content-diff-results td.content-diff-new, .content-diff-results .content-diff-new {
+  background-color: #e6ffed;
+  color: #044a14;
+}
+
+.content-diff-results {
+  margin-top: 1rem;
+} 

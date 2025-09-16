@@ -1,0 +1,241 @@
+<?php
+
+namespace Drupal\vactory_content_diff\Service;
+
+use Drupal\Core\Messenger\MessengerInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Core\StringTranslation\TranslationInterface;
+use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\GuzzleException;
+
+/**
+ * Service for fetching remote content and comparing with local nodes.
+ */
+class ContentDiffService {
+
+  use StringTranslationTrait;
+
+  /**
+   * HTTP client for remote requests.
+   *
+   * @var \GuzzleHttp\ClientInterface
+   */
+  protected $httpClient;
+
+  /**
+   * Messenger service for user messages.
+   *
+   * @var \Drupal\Core\Messenger\MessengerInterface
+   */
+  protected $messenger;
+
+  /**
+   * Logger channel.
+   *
+   * @var \Psr\Log\LoggerInterface
+   */
+  protected $logger;
+
+  /**
+   * Constructs the service.
+   */
+  public function __construct(ClientInterface $http_client, MessengerInterface $messenger, $logger_factory, TranslationInterface $string_translation) {
+    $this->httpClient = $http_client;
+    $this->messenger = $messenger;
+    $this->stringTranslation = $string_translation;
+    // Resolve a concrete logger channel.
+    if (method_exists($logger_factory, 'get')) {
+      $this->logger = $logger_factory->get('vactory_content_diff');
+    }
+    else {
+      $this->logger = $logger_factory;
+    }
+  }
+
+  /**
+   * Fetches remote nodes via JSON:API Cross Bundles endpoint.
+   *
+   * @param string $url
+   *   Base URL of the remote instance (e.g., https://remote.tld).
+   *
+   * @return array
+   *   Decoded JSON:API data array with 'data' key, empty on failure.
+   */
+  public function fetchRemoteContent(string $url): array {
+    $base = rtrim($url, '/');
+    $endpoint = $base . '/api/node';
+    try {
+      $this->messenger->addStatus($this->t('Fetching remote content from @url ...', ['@url' => $endpoint]));
+      $response = $this->httpClient->request('GET', $endpoint, [
+        'headers' => [
+          'Accept' => 'application/vnd.api+json, application/json',
+        ],
+        'timeout' => 20,
+      ]);
+      $status = $response->getStatusCode();
+      if ($status !== 200) {
+        $this->logger->error('Remote fetch failed with HTTP @code for @url', [
+          '@code' => $status,
+          '@url' => $endpoint,
+        ]);
+        $this->messenger->addError($this->t('Remote fetch failed with HTTP @code.', ['@code' => $status]));
+        return [];
+      }
+      $json = (string) $response->getBody();
+      $decoded = json_decode($json, TRUE);
+      if (!is_array($decoded)) {
+        $this->logger->error('Invalid JSON response from @url', ['@url' => $endpoint]);
+        $this->messenger->addError($this->t('Invalid JSON response from remote endpoint.'));
+        return [];
+      }
+      return $decoded;
+    }
+    catch (GuzzleException $e) {
+      $this->logger->error('HTTP error fetching remote content: @message', ['@message' => $e->getMessage()]);
+      $this->messenger->addError($this->t('HTTP error fetching remote content.'));
+    }
+    catch (\Throwable $e) {
+      $this->logger->error('Unexpected error: @message', ['@message' => $e->getMessage()]);
+      $this->messenger->addError($this->t('Unexpected error occurred fetching remote content.'));
+    }
+    return [];
+  }
+
+  /**
+   * Handles pagination for the JSON:API endpoint and aggregates all nodes.
+   *
+   * JSON:API Cross Bundles usually returns pagination links under 'links.next'.
+   *
+   * @param string $url
+   *   Base URL of the remote instance.
+   *
+   * @return array
+   *   Merged array of remote node resource objects.
+   */
+  public function handlePagination(string $url): array {
+    $all = [];
+    $current = $this->fetchRemoteContent($url);
+    if (empty($current)) {
+      return [];
+    }
+    $page = 1;
+    while (TRUE) {
+      if (!empty($current['data']) && is_array($current['data'])) {
+        $all = array_merge($all, $current['data']);
+      }
+      // Progress message.
+      $this->messenger->addStatus($this->t('Fetched page @num, total items: @count', [
+        '@num' => $page,
+        '@count' => count($all),
+      ]));
+      $page++;
+
+      $next = $current['links']['next']['href'] ?? NULL;
+      if (!$next) {
+        break;
+      }
+
+      try {
+        $response = $this->httpClient->request('GET', $next, [
+          'headers' => [
+            'Accept' => 'application/vnd.api+json, application/json',
+          ],
+          'timeout' => 20,
+        ]);
+        if ($response->getStatusCode() !== 200) {
+          $this->logger->warning('Pagination fetch failed with HTTP @code for @url', [
+            '@code' => $response->getStatusCode(),
+            '@url' => $next,
+          ]);
+          break;
+        }
+        $json = (string) $response->getBody();
+        $current = json_decode($json, TRUE) ?: [];
+      }
+      catch (GuzzleException $e) {
+        $this->logger->error('HTTP error during pagination: @message', ['@message' => $e->getMessage()]);
+        break;
+      }
+      catch (\Throwable $e) {
+        $this->logger->error('Unexpected error during pagination: @message', ['@message' => $e->getMessage()]);
+        break;
+      }
+    }
+
+    return $all;
+  }
+
+  /**
+   * Compares remote nodes with local by UUID.
+   *
+   * @param array $remote_nodes
+   *   Remote node resource objects (from JSON:API).
+   *
+   * @return array
+   *   Array of comparison rows: [title, bundle, status, status_class].
+   */
+  public function compareWithLocal(array $remote_nodes): array {
+    $results = [];
+    foreach ($remote_nodes as $item) {
+      $uuid = $item['id'] ?? NULL;
+      $attributes = $item['attributes'] ?? [];
+      $title = $attributes['title'] ?? '';
+      $bundle = $item['type'] ?? '';
+      $status_label = 'Already exists';
+      $status_class = '';
+      if ($uuid) {
+        $existing = \Drupal::entityQuery('node')->condition('uuid', $uuid)->accessCheck(TRUE)->range(0, 1)->execute();
+        if (empty($existing)) {
+          $status_label = 'New content';
+          $status_class = 'content-diff-new';
+        }
+      }
+      $results[] = [
+        'title' => $title,
+        'bundle' => $bundle,
+        'status' => $status_label,
+        'status_class' => $status_class,
+      ];
+    }
+    return $results;
+  }
+
+  /**
+   * Builds the table render array for the form.
+   *
+   * @param array $compared_data
+   *   Data from compareWithLocal().
+   *
+   * @return array
+   *   Render array table definition.
+   */
+  public function buildResultsTable(array $compared_data): array {
+    $rows = [];
+    foreach ($compared_data as $row) {
+      $rows[] = [
+        'data' => [
+          $row['title'] ?? '',
+          $row['bundle'] ?? '',
+          [
+            'data' => [
+              '#markup' => $row['status'] ?? '',
+            ],
+            'class' => [$row['status_class'] ?: ''],
+          ],
+        ],
+      ];
+    }
+
+    return [
+      '#type' => 'table',
+      '#header' => [
+        $this->t('Title'),
+        $this->t('Type'),
+        $this->t('Status'),
+      ],
+      '#rows' => $rows,
+      '#attributes' => ['class' => ['content-diff-results']],
+    ];
+  }
+
+}
