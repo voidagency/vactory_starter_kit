@@ -96,8 +96,9 @@ class ContentDiffForm extends FormBase {
       }
       $status_options = [
         '' => $this->t('- Any -'),
-        'Already exists' => $this->t('Already exists'),
-        'New content' => $this->t('New content'),
+        'Synchronized' => $this->t('Synchronized'),
+        'Modified' => $this->t('Modified'),
+        'New entity' => $this->t('New entity'),
       ];
 
       $form['results_wrapper']['filters'] = [

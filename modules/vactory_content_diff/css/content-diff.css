@@ -3,6 +3,16 @@
   color: #044a14;
 }
 
+.content-diff-results td.content-diff-modified, .content-diff-results .content-diff-modified {
+  background-color: #ffecec;
+  color: #8a1f11;
+}
+
+.content-diff-results td.content-diff-synchronized, .content-diff-results .content-diff-synchronized {
+  background-color: #f2f2f2;
+  color: #333333;
+}
+
 .content-diff-results {
   margin-top: 1rem;
 }

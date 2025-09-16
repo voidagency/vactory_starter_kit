@@ -166,7 +166,7 @@ class ContentDiffService {
   }
 
   /**
-   * Compares remote nodes with local by UUID.
+   * Compares remote nodes with local by UUID and changed timestamp.
    *
    * @param array $remote_nodes
    *   Remote node resource objects (from JSON:API).
@@ -176,20 +176,52 @@ class ContentDiffService {
    */
   public function compareWithLocal(array $remote_nodes): array {
     $results = [];
+    $storage = \Drupal::entityTypeManager()->getStorage('node');
+
     foreach ($remote_nodes as $item) {
       $uuid = $item['id'] ?? NULL;
       $attributes = $item['attributes'] ?? [];
       $title = $attributes['title'] ?? '';
-      $bundle = $item['type'] ? str_replace('node--', '', $item['type']) : '';
-      $status_label = 'Already exists';
-      $status_class = '';
-      if ($uuid) {
-        $existing = \Drupal::entityQuery('node')->condition('uuid', $uuid)->accessCheck(TRUE)->range(0, 1)->execute();
-        if (empty($existing)) {
-          $status_label = 'New content';
-          $status_class = 'content-diff-new';
+      $bundle = $item['type'] ?? '';
+
+      // Determine remote changed timestamp.
+      $remote_changed_raw = $attributes['changed'] ?? NULL;
+      $remote_changed = NULL;
+      if ($remote_changed_raw !== NULL) {
+        if (is_numeric($remote_changed_raw)) {
+          $remote_changed = (int) $remote_changed_raw;
+        }
+        else {
+          $remote_changed = strtotime((string) $remote_changed_raw) ?: NULL;
         }
       }
+
+      $status_label = 'Synchronized';
+      $status_class = 'content-diff-synchronized';
+
+      if ($uuid) {
+        $nids = \Drupal::entityQuery('node')->condition('uuid', $uuid)->accessCheck(TRUE)->range(0, 1)->execute();
+        if (empty($nids)) {
+          $status_label = 'New entity';
+          $status_class = 'content-diff-new';
+        }
+        else {
+          $nid = reset($nids);
+          $node = $storage->load($nid);
+          if ($node) {
+            $local_changed = (int) $node->getChangedTime();
+            if ($remote_changed !== NULL && $remote_changed !== $local_changed) {
+              $status_label = 'Modified';
+              $status_class = 'content-diff-modified';
+            }
+            else {
+              $status_label = 'Synchronized';
+              $status_class = 'content-diff-synchronized';
+            }
+          }
+        }
+      }
+
       $results[] = [
         'title' => $title,
         'bundle' => $bundle,
