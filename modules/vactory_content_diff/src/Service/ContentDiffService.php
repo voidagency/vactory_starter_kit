@@ -180,7 +180,7 @@ class ContentDiffService {
       $uuid = $item['id'] ?? NULL;
       $attributes = $item['attributes'] ?? [];
       $title = $attributes['title'] ?? '';
-      $bundle = $item['type'] ?? '';
+      $bundle = $item['type'] ? str_replace('node--', '', $item['type']) : '';
       $status_label = 'Already exists';
       $status_class = '';
       if ($uuid) {
