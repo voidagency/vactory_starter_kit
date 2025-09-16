@@ -7,6 +7,7 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslationInterface;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
+use Drupal\vactory_content_diff\ContentDiffStatus;
 
 /**
  * Service for fetching remote content and comparing with local nodes.
@@ -172,7 +173,7 @@ class ContentDiffService {
    *   Remote node resource objects (from JSON:API).
    *
    * @return array
-   *   Array of comparison rows: [title, bundle, status, status_class].
+   *   Array of rows: [title, bundle, status_key, status, status_class].
    */
   public function compareWithLocal(array $remote_nodes): array {
     $results = [];
@@ -182,7 +183,7 @@ class ContentDiffService {
       $uuid = $item['id'] ?? NULL;
       $attributes = $item['attributes'] ?? [];
       $title = $attributes['title'] ?? '';
-      $bundle = $item['type'] ?? '';
+      $bundle = $item['type'] ? str_replace('node--', '', $item['type']) : '';
 
       // Determine remote changed timestamp.
       $remote_changed_raw = $attributes['changed'] ?? NULL;
@@ -196,14 +197,13 @@ class ContentDiffService {
         }
       }
 
-      $status_label = 'Synchronized';
-      $status_class = 'content-diff-synchronized';
+      // Default status: synchronized.
+      $status = ContentDiffStatus::SYNCHRONIZED;
 
       if ($uuid) {
         $nids = \Drupal::entityQuery('node')->condition('uuid', $uuid)->accessCheck(TRUE)->range(0, 1)->execute();
         if (empty($nids)) {
-          $status_label = 'New entity';
-          $status_class = 'content-diff-new';
+          $status = ContentDiffStatus::NEW_ENTITY;
         }
         else {
           $nid = reset($nids);
@@ -211,12 +211,10 @@ class ContentDiffService {
           if ($node) {
             $local_changed = (int) $node->getChangedTime();
             if ($remote_changed !== NULL && $remote_changed !== $local_changed) {
-              $status_label = 'Modified';
-              $status_class = 'content-diff-modified';
+              $status = ContentDiffStatus::MODIFIED;
             }
             else {
-              $status_label = 'Synchronized';
-              $status_class = 'content-diff-synchronized';
+              $status = ContentDiffStatus::SYNCHRONIZED;
             }
           }
         }
@@ -225,8 +223,9 @@ class ContentDiffService {
       $results[] = [
         'title' => $title,
         'bundle' => $bundle,
-        'status' => $status_label,
-        'status_class' => $status_class,
+        'status_key' => $status['key'],
+        'status' => $status['label'],
+        'status_class' => $status['class'],
       ];
     }
     return $results;

@@ -7,6 +7,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\vactory_content_diff\Service\ContentDiffService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\State\StateInterface;
+use Drupal\vactory_content_diff\ContentDiffStatus;
 
 /**
  * Provides the Content Diff admin form.
@@ -94,12 +95,11 @@ class ContentDiffForm extends FormBase {
       foreach ($bundle_info as $machine_name => $info) {
         $type_options[$machine_name] = $info['label'] ?? $machine_name;
       }
-      $status_options = [
-        '' => $this->t('- Any -'),
-        'Synchronized' => $this->t('Synchronized'),
-        'Modified' => $this->t('Modified'),
-        'New entity' => $this->t('New entity'),
-      ];
+
+      $status_options = ['' => $this->t('- Any -')];
+      $status_options[ContentDiffStatus::SYNCHRONIZED['key']] = ContentDiffStatus::SYNCHRONIZED['label'];
+      $status_options[ContentDiffStatus::MODIFIED['key']] = ContentDiffStatus::MODIFIED['label'];
+      $status_options[ContentDiffStatus::NEW_ENTITY['key']] = ContentDiffStatus::NEW_ENTITY['label'];
 
       $form['results_wrapper']['filters'] = [
         '#type' => 'details',
@@ -233,9 +233,9 @@ class ContentDiffForm extends FormBase {
    * Build filtered table rows from compared dataset and filters.
    *
    * @param array $compared
-   *   Dataset with keys: title, bundle, status, status_class.
+   *   Dataset with keys: title, bundle, status_key, status, status_class.
    * @param array $filters
-   *   Keys: title, type, status.
+   *   Keys: title, type, status (status_key).
    *
    * @return array
    *   Table rows.
@@ -251,6 +251,7 @@ class ContentDiffForm extends FormBase {
       $bundle = (string) ($row['bundle'] ?? '');
       $status = (string) ($row['status'] ?? '');
       $status_class = (string) ($row['status_class'] ?? '');
+      $status_key = (string) ($row['status_key'] ?? '');
 
       if ($title_filter !== '' && mb_strpos(mb_strtolower($title), $title_filter) === FALSE) {
         continue;
@@ -258,7 +259,7 @@ class ContentDiffForm extends FormBase {
       if ($type_filter !== '' && $bundle !== $type_filter) {
         continue;
       }
-      if ($status_filter !== '' && $status !== $status_filter) {
+      if ($status_filter !== '' && $status_key !== $status_filter) {
         continue;
       }
 
