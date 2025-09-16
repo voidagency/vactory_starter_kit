@@ -79,14 +79,6 @@ class ContentDiffForm extends FormBase {
       '#type' => 'submit',
       '#value' => $this->t('Compare content'),
       '#button_type' => 'primary',
-      '#ajax' => [
-        'callback' => '::ajaxRefresh',
-        'wrapper' => 'content-diff-results-wrapper',
-        'progress' => [
-          'type' => 'throbber',
-          'message' => $this->t('Comparing content, please wait...'),
-        ],
-      ],
     ];
 
     $form['results_wrapper'] = [
@@ -108,13 +100,6 @@ class ContentDiffForm extends FormBase {
     $form['#attached']['library'][] = 'vactory_content_diff/content_diff';
 
     return $form;
-  }
-
-  /**
-   * AJAX callback to refresh the results table area.
-   */
-  public function ajaxRefresh(array &$form, FormStateInterface $form_state) {
-    return $form['results_wrapper'];
   }
 
   /**
@@ -155,9 +140,6 @@ class ContentDiffForm extends FormBase {
 
     // Compare with local by UUID.
     $compared = $this->diffService->compareWithLocal($remote_nodes);
-
-    // Transform to table rows for inline rendering in form.
-    $table = $this->diffService->buildResultsTable($compared);
 
     // Convert rows to simple rows embedding CSS classes for the status.
     $rows = [];

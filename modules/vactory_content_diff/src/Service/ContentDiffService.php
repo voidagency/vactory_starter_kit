@@ -200,42 +200,4 @@ class ContentDiffService {
     return $results;
   }
 
-  /**
-   * Builds the table render array for the form.
-   *
-   * @param array $compared_data
-   *   Data from compareWithLocal().
-   *
-   * @return array
-   *   Render array table definition.
-   */
-  public function buildResultsTable(array $compared_data): array {
-    $rows = [];
-    foreach ($compared_data as $row) {
-      $rows[] = [
-        'data' => [
-          $row['title'] ?? '',
-          $row['bundle'] ?? '',
-          [
-            'data' => [
-              '#markup' => $row['status'] ?? '',
-            ],
-            'class' => [$row['status_class'] ?: ''],
-          ],
-        ],
-      ];
-    }
-
-    return [
-      '#type' => 'table',
-      '#header' => [
-        $this->t('Title'),
-        $this->t('Type'),
-        $this->t('Status'),
-      ],
-      '#rows' => $rows,
-      '#attributes' => ['class' => ['content-diff-results']],
-    ];
-  }
-
 }
