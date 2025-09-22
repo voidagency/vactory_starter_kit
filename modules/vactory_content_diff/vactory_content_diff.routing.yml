@@ -6,4 +6,18 @@ vactory_content_diff.form:
   requirements:
     _permission: 'access content diff'
   options:
-    _admin_route: true 
+    _admin_route: true
+
+# Route pour la comparaison détaillée
+vactory_content_diff.compare:
+  path: '/admin/content/diff/compare/{bundle}/{uuid}'
+  defaults:
+    _controller: '\Drupal\vactory_content_diff\Controller\ContentDiffCompareController::compare'
+  requirements:
+    _permission: 'administer content'
+  options:
+    parameters:
+      bundle:
+        type: string
+      uuid:
+        type: string

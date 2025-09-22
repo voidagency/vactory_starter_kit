@@ -2,12 +2,15 @@
 
 namespace Drupal\vactory_content_diff\Form;
 
+use Drupal\Component\Serialization\Json;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Link;
 use Drupal\vactory_content_diff\Service\ContentDiffService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\State\StateInterface;
 use Drupal\vactory_content_diff\ContentDiffStatus;
+use Drupal\Core\Url;
 
 /**
  * Provides the Content Diff admin form.
@@ -152,15 +155,21 @@ class ContentDiffForm extends FormBase {
       if (!empty($rows)) {
         $form['results_wrapper']['results_table'] = [
           '#type' => 'table',
-          '#header' => [$this->t('Title'), $this->t('Type'), $this->t('Status')],
+          '#header' => [
+            $this->t('Title'),
+            $this->t('Type'),
+            $this->t('Status'),
+            $this->t('Diff'),
+          ],
           '#rows' => $rows,
           '#attributes' => ['class' => ['content-diff-results']],
         ];
       }
     }
 
-    // Attach module CSS.
+    // Attach module CSS and dialog.
     $form['#attached']['library'][] = 'vactory_content_diff/content_diff';
+    $form['#attached']['library'][] = 'core/drupal.dialog.ajax';
 
     return $form;
   }
@@ -252,6 +261,7 @@ class ContentDiffForm extends FormBase {
       $status = (string) ($row['status'] ?? '');
       $status_class = (string) ($row['status_class'] ?? '');
       $status_key = (string) ($row['status_key'] ?? '');
+      $uuid = (string) ($row['uuid'] ?? ($row['id'] ?? ''));
 
       if ($title_filter !== '' && mb_strpos(mb_strtolower($title), $title_filter) === FALSE) {
         continue;
@@ -261,6 +271,26 @@ class ContentDiffForm extends FormBase {
       }
       if ($status_filter !== '' && $status_key !== $status_filter) {
         continue;
+      }
+
+      $diff_cell = ['data' => ['#markup' => '']];
+      if ($status_key === ContentDiffStatus::MODIFIED['key'] && $uuid && $bundle) {
+        $url = Url::fromRoute('vactory_content_diff.compare', [
+          'bundle' => $bundle,
+          'uuid' => $uuid,
+        ],
+        [
+          'attributes' =>
+            [
+              'class' => ['use-ajax'],
+              'data-dialog-type' => 'modal',
+              'data-dialog-options' => Json::encode(['width' => '100%']),
+            ],
+        ]);
+        $link = Link::fromTextAndUrl($this->t('View diff'), $url)->toRenderable();
+        $diff_cell = [
+          'data' => $link,
+        ];
       }
 
       $rows[] = [
@@ -273,6 +303,7 @@ class ContentDiffForm extends FormBase {
             ],
             'class' => [$status_class ?: ''],
           ],
+          $diff_cell,
         ],
       ];
     }

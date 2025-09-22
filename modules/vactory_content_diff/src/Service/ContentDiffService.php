@@ -226,6 +226,7 @@ class ContentDiffService {
         'status_key' => $status['key'],
         'status' => $status['label'],
         'status_class' => $status['class'],
+        'uuid' => $uuid,
       ];
     }
     return $results;
