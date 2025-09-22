@@ -4,6 +4,7 @@ namespace Drupal\vactory_decoupled_webform\Plugin\rest\resource;
 
 use Drupal\Component\Utility\Bytes;
 use Drupal\Component\Utility\Environment;
+use Drupal\Core\File\FileExists;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\file\Entity\File;
 use Drupal\file\Plugin\rest\resource\FileUploadResource;
@@ -96,7 +97,7 @@ class WebformFileUploadResource extends FileUploadResource {
 
       // This will take care of altering $file_uri if a file already exists.
       \Drupal::service('file_system')
-        ->getDestinationFilename($temp_file_path, $file_uri);
+        ->getDestinationFilename($temp_file_path, FileExists::Rename);
 
       // Lock based on the prepared file URI.
       $lock_id = $this->generateLockIdFromFileUri($file_uri);
@@ -109,7 +110,7 @@ class WebformFileUploadResource extends FileUploadResource {
       $file = File::create([]);
       $file->setOwnerId($this->currentUser->id());
       $file->setFilename($filename);
-      $file->setMimeType($this->mimeTypeGuesser->guessMimeType($prepared_filename));
+      $file->setMimeType(\Drupal::service("file.mime_type.guesser")->guessMimeType($prepared_filename));
       $file->setFileUri($file_uri);
       // Set the size. This is done in File::preSave() but we validate the file
       // before it is saved.
@@ -123,7 +124,7 @@ class WebformFileUploadResource extends FileUploadResource {
       // FILE_EXISTS_ERROR as the file location has already been determined above
       // in file_unmanaged_prepare().
       if (!\Drupal::service('file_system')
-        ->move($temp_file_path, $file_uri, FileSystemInterface::EXISTS_ERROR)) {
+        ->move($temp_file_path, $file_uri, FileExists::Error)) {
         throw new HttpException(500, 'Temporary file could not be moved to file location');
       }
 
