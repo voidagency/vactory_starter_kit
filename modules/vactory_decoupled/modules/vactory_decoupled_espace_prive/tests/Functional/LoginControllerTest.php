@@ -121,6 +121,13 @@ class LoginControllerTest extends ExistingSiteBase {
   protected array $modulesInstalledDuringTest = [];
 
   /**
+   * Flood fid max au démarrage du test.
+   *
+   * @var int
+   */
+  protected int $startFloodFid = 0;
+
+  /**
    * {@inheritDoc}
    */
   protected function setUp(): void {
@@ -138,6 +145,15 @@ class LoginControllerTest extends ExistingSiteBase {
     $this->adminPassword = 'Admin@Void123';
     $this->admin = $this->createUser([], NULL, FALSE, ['pass' => $this->adminPassword]);
 
+    // Enregistrer le dernier fid flood avant ce test.
+    $this->startFloodFid = (int) \Drupal::database()
+      ->select('flood', 'f')
+      ->fields('f', ['fid'])
+      ->orderBy('fid', 'DESC')
+      ->range(0, 1)
+      ->execute()
+      ->fetchField();
+
     // Génération des clés RSA.
     $this->keysDir = DRUPAL_ROOT . '/oauth-keys';
     if (!is_dir($this->keysDir)) {
@@ -147,6 +163,7 @@ class LoginControllerTest extends ExistingSiteBase {
     $this->privateKeyPath = $this->keysDir . '/private_test.key';
     $this->publicKeyPath = $this->keysDir . '/public_test.key';
 
+    // Generate and persist a new RSA key pair private/public.
     if (!file_exists($this->privateKeyPath) || !file_exists($this->publicKeyPath)) {
       $res = openssl_pkey_new([
         "private_key_bits" => 4096,
@@ -644,27 +661,15 @@ class LoginControllerTest extends ExistingSiteBase {
       $flood->clear('user.failed_login_user', (string) $this->admin->id());
       $flood->clear('user.failed_login_ip');
     }
-
-    // Clear last flood entries created by this test.
+    // Supprimer uniquement les floods créés pendant ce test.
     $connection = \Drupal::database();
-
-    // Supprimer les derniers floods.
-    $floods = $connection->select('flood', 'f')
-      ->fields('f', ['fid'])
+    $connection->delete('flood')
+      ->condition('fid', $this->startFloodFid, '>')
       ->condition('event', [
         'user.failed_login_ip',
         'user.failed_login_user',
       ], 'IN')
-      ->orderBy('fid', 'DESC')
-      ->range(0, 10)
-      ->execute()
-      ->fetchCol();
-
-    if (!empty($floods)) {
-      $connection->delete('flood')
-        ->condition('fid', $floods, 'IN')
-        ->execute();
-    }
+      ->execute();
 
     // Désinstaller les modules installés pendant le test.
     if (!empty($this->modulesInstalledDuringTest)) {
