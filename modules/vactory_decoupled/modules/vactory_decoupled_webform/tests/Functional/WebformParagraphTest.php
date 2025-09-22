@@ -64,26 +64,22 @@ class WebformParagraphTest extends ExistingSiteBase {
   protected ClientInterface $httpClient;
 
   /**
+   * Track modules installed during the test.
+   *
+   * @var string[]
+   */
+  protected array $modulesInstalledDuringTest = [];
+
+  /**
    * {@inheritdoc}
    */
   protected function setUp(): void {
     parent::setUp();
 
-    // Vérifier si les modules nécessaires sont actifs avant de lancer le test.
-    $this->assertTrue(
-      \Drupal::moduleHandler()->moduleExists('webform'),
-      'Le module "webform" doit être activé pour exécuter ce test.'
-    );
-
-    $this->assertTrue(
-      \Drupal::moduleHandler()->moduleExists('vactory_decoupled'),
-      'Le module "vactory_decoupled" doit être activé pour exécuter ce test.'
-    );
-
-    $this->assertTrue(
-      \Drupal::moduleHandler()->moduleExists('vactory_decoupled_webform'),
-      'Le module "vactory_decoupled_webform" doit être activé pour exécuter ce test.'
-    );
+    // Assurer que les modules sont installés.
+    $this->ensureModuleInstalled('webform');
+    $this->ensureModuleInstalled('vactory_decoupled');
+    $this->ensureModuleInstalled('vactory_decoupled_webform');
 
     // Retrieve core services.
     $this->entityTypeManager = \Drupal::entityTypeManager();
@@ -279,6 +275,19 @@ class WebformParagraphTest extends ExistingSiteBase {
   }
 
   /**
+   * Ensure a module is installed and track if we installed it during the test.
+   */
+  protected function ensureModuleInstalled(string $module_name): void {
+    $moduleHandler = \Drupal::service('module_handler');
+    $moduleInstaller = \Drupal::service('module_installer');
+
+    if (!$moduleHandler->moduleExists($module_name)) {
+      $moduleInstaller->install([$module_name]);
+      $this->modulesInstalledDuringTest[] = $module_name;
+    }
+  }
+
+  /**
    * {@inheritdoc}
    */
   protected function tearDown(): void {
@@ -287,6 +296,11 @@ class WebformParagraphTest extends ExistingSiteBase {
     }
     if (isset($this->webform) && $this->webform) {
       $this->webform->delete();
+    }
+    // Désinstaller les modules installés pendant le test.
+    if (!empty($this->modulesInstalledDuringTest)) {
+      $moduleInstaller = \Drupal::service('module_installer');
+      $moduleInstaller->uninstall($this->modulesInstalledDuringTest);
     }
     parent::tearDown();
   }
