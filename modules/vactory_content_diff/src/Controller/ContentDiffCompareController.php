@@ -69,7 +69,7 @@ class ContentDiffCompareController extends ControllerBase {
   public function compare($bundle, $uuid, Request $request) {
     try {
       // Get remote URL from session.
-      $remote_url = "http://php.vactory8.orb.local:8080";
+      $remote_url = \Drupal::service('state')->get('vactory_content_diff.remote_url', '');
       if (!$remote_url) {
         return new JsonResponse([
           'status' => 'error',
@@ -78,7 +78,13 @@ class ContentDiffCompareController extends ControllerBase {
       }
 
       // Get current site base URL for local JSON API call.
-      $local_base_url = "http://php.vactory2.orb.local:8080";
+      $local_base_url = \Drupal::service('state')->get('vactory_content_diff.local_url', '');
+      if (!$local_base_url) {
+        return new JsonResponse([
+          'status' => 'error',
+          'message' => 'Local URL not configured.',
+        ], 400);
+      }
 
       // Fetch both nodes via JSON API with includes for paragraphs.
       $local_data = $this->fetchNodeViaJsonApi($local_base_url, $bundle, $uuid);

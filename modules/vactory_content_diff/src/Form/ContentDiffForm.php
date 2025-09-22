@@ -79,6 +79,16 @@ class ContentDiffForm extends FormBase {
       '#default_value' => $form_state->getValue('remote_url') ?: $saved_remote_url,
     ];
 
+    $saved_local_url = (string) $this->state->get('vactory_content_diff.local_url', '');
+
+    $form['local_url'] = [
+      '#type' => 'url',
+      '#title' => $this->t('Local instance base URL'),
+      '#description' => $this->t('Example: https://remote.example.com'),
+      '#required' => TRUE,
+      '#default_value' => $form_state->getValue('local_url') ?: $saved_local_url,
+    ];
+
     $form['submit'] = [
       '#type' => 'submit',
       '#value' => $this->t('Compare content'),
@@ -204,9 +214,11 @@ class ContentDiffForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $remote_url = trim((string) $form_state->getValue('remote_url'));
+    $local_url = trim((string) $form_state->getValue('local_url'));
 
     // Persist URL for next time.
     $this->state->set('vactory_content_diff.remote_url', $remote_url);
+    $this->state->set('vactory_content_diff.local_url', $local_url);
 
     // Fetch and paginate remote nodes.
     $remote_nodes = $this->diffService->handlePagination($remote_url);
