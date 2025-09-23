@@ -55,18 +55,15 @@ class WysiwygDynamicField extends SingleContentSyncFieldProcessorPluginBase impl
   protected EntityRepositoryInterface $entityRepository;
 
   /**
-   * Constructs new FileAsset plugin instance.
+   * Constructs new WysiwygDynamicField plugin instance.
    *
    * @param array $configuration
-   *   A configuration array containing information about the plugin instance.
-   * @param string $plugin_id
-   *   The plugin_id for the plugin instance.
-   * @param mixed $plugin_definition
-   *   The plugin implementation definition.
+   * @param $plugin_id
+   * @param $plugin_definition
    * @param \Drupal\single_content_sync\ContentExporterInterface $exporter
-   *   The content exporter service.
    * @param \Drupal\single_content_sync\ContentImporterInterface $importer
-   *   The content importer service.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   * @param \Drupal\Core\Entity\EntityRepositoryInterface $entity_repository
    */
   public function __construct(
     array $configuration,
@@ -249,7 +246,7 @@ class WysiwygDynamicField extends SingleContentSyncFieldProcessorPluginBase impl
       $media_element['exported_media'] = $value;
     }
     catch (\Exception $e) {
-      // Log the error but continue processing
+      // Log the error but continue processing.
       \Drupal::logger('single_content_sync')
         ->error('Error processing image media @id: @error', [
           '@id' => $target_id,
