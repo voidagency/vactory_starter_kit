@@ -1,6 +1,6 @@
 services:
   vactory_content_diff.fetch_command:
     class: 'Drupal\vactory_content_diff\Commands\ContentDiffFetchCommands'
-    arguments: [ '@http_client', '@entity_type.manager' ]
+    arguments: [ '@vactory_content_diff.service' ]
     tags:
       - { name: drush.command }

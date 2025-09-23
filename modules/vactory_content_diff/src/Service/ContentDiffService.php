@@ -2,12 +2,13 @@
 
 namespace Drupal\vactory_content_diff\Service;
 
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslationInterface;
 use Drupal\vactory_content_diff\ContentDiffConst;
 use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\GuzzleException;
 
 /**
  * Service for fetching remote content and comparing with local nodes.
@@ -38,9 +39,22 @@ class ContentDiffService {
   protected $logger;
 
   /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
    * Constructs the service.
    */
-  public function __construct(ClientInterface $http_client, MessengerInterface $messenger, $logger_factory, TranslationInterface $string_translation) {
+  public function __construct(
+    ClientInterface $http_client,
+    MessengerInterface $messenger,
+    $logger_factory,
+    TranslationInterface $string_translation,
+    EntityTypeManagerInterface $entity_type_manager
+  ) {
     $this->httpClient = $http_client;
     $this->messenger = $messenger;
     $this->stringTranslation = $string_translation;
@@ -51,139 +65,84 @@ class ContentDiffService {
     else {
       $this->logger = $logger_factory;
     }
+    $this->entityTypeManager = $entity_type_manager;
   }
 
   /**
-   * Fetches remote nodes via JSON:API Cross Bundles endpoint.
-   *
-   * @param string $url
-   *   Base URL of the remote instance (e.g., https://remote.tld).
-   *
-   * @return array
-   *   Decoded JSON:API data array with 'data' key, empty on failure.
+   * Get content entity types that should be fetched.
    */
-  public function fetchRemoteContent(string $url): array {
-    $base = rtrim($url, '/');
-    $endpoint = $base . '/api/node';
-    try {
-      $this->messenger->addStatus($this->t('Fetching remote content from @url ...', ['@url' => $endpoint]));
-      $response = $this->httpClient->request('GET', $endpoint, [
-        'headers' => [
-          'Accept' => 'application/vnd.api+json, application/json',
-        ],
-        'timeout' => 20,
-      ]);
-      $status = $response->getStatusCode();
-      if ($status !== 200) {
-        $this->logger->error('Remote fetch failed with HTTP @code for @url', [
-          '@code' => $status,
-          '@url' => $endpoint,
-        ]);
-        $this->messenger->addError($this->t('Remote fetch failed with HTTP @code.', ['@code' => $status]));
-        return [];
-      }
-      $json = (string) $response->getBody();
-      $decoded = json_decode($json, TRUE);
-      if (!is_array($decoded)) {
-        $this->logger->error('Invalid JSON response from @url', ['@url' => $endpoint]);
-        $this->messenger->addError($this->t('Invalid JSON response from remote endpoint.'));
-        return [];
-      }
-      return $decoded;
-    }
-    catch (GuzzleException $e) {
-      $this->logger->error('HTTP error fetching remote content: @message', ['@message' => $e->getMessage()]);
-      $this->messenger->addError($this->t('HTTP error fetching remote content.'));
-    }
-    catch (\Throwable $e) {
-      $this->logger->error('Unexpected error: @message', ['@message' => $e->getMessage()]);
-      $this->messenger->addError($this->t('Unexpected error occurred fetching remote content.'));
-    }
-    return [];
+  public function getContentEntityTypes(): array {
+    return [
+      'taxonomy_term',
+      'node',
+    ];
   }
 
   /**
-   * Handles pagination for the JSON:API endpoint and aggregates all nodes.
-   *
-   * JSON:API Cross Bundles usually returns pagination links under 'links.next'.
-   *
-   * @param string $url
-   *   Base URL of the remote instance.
-   *
-   * @return array
-   *   Merged array of remote node resource objects.
+   * Fetch remote entities with pagination using HTTP client.
    */
-  public function handlePagination(string $url): array {
-    $all = [];
-    $current = $this->fetchRemoteContent($url);
-    if (empty($current)) {
-      return [];
-    }
-    $page = 1;
-    while (TRUE) {
-      if (!empty($current['data']) && is_array($current['data'])) {
-        $all = array_merge($all, $current['data']);
-      }
-      // Progress message.
-      $this->messenger->addStatus($this->t('Fetched page @num, total items: @count', [
-        '@num' => $page,
-        '@count' => count($all),
-      ]));
-      $page++;
+  public function fetchRemoteEntities(string $remote_url, string $entity_type_id): array {
+    $base = rtrim($remote_url, '/');
+    $api_endpoint = $base . '/api/' . $entity_type_id;
 
-      $next = $current['links']['next']['href'] ?? NULL;
-      if (!$next) {
-        break;
-      }
+    $all_entities = [];
+    $current_url = $api_endpoint;
 
+    while ($current_url) {
       try {
-        $response = $this->httpClient->request('GET', $next, [
+        $response = $this->httpClient->request('GET', $current_url, [
           'headers' => [
             'Accept' => 'application/vnd.api+json, application/json',
           ],
-          'timeout' => 20,
+          'timeout' => 30,
         ]);
-        if ($response->getStatusCode() !== 200) {
-          $this->logger->warning('Pagination fetch failed with HTTP @code for @url', [
-            '@code' => $response->getStatusCode(),
-            '@url' => $next,
-          ]);
-          break;
+
+        if ($response->getStatusCode() === 200) {
+          $data = json_decode((string) $response->getBody(), TRUE);
+          $entities = $data['data'] ?? [];
+
+          if (!empty($entities)) {
+            $all_entities = array_merge($all_entities, $entities);
+          }
+
+          $current_url = $data['links']['next']['href'] ?? NULL;
         }
-        $json = (string) $response->getBody();
-        $current = json_decode($json, TRUE) ?: [];
-      }
-      catch (GuzzleException $e) {
-        $this->logger->error('HTTP error during pagination: @message', ['@message' => $e->getMessage()]);
-        break;
+        else {
+          if ($response->getStatusCode() === 404) {
+            // Endpoint doesn't exist for this entity type, skip silently.
+            break;
+          }
+          else {
+            $this->logger->warning('HTTP ' . $response->getStatusCode() . ' for ' . $current_url);
+            break;
+          }
+        }
       }
       catch (\Throwable $e) {
-        $this->logger->error('Unexpected error during pagination: @message', ['@message' => $e->getMessage()]);
+        $this->logger->error('Error fetching ' . $entity_type_id . ': ' . $e->getMessage());
         break;
       }
     }
 
-    return $all;
+    return $all_entities;
   }
 
   /**
-   * Compares remote nodes with local by UUID and changed timestamp.
-   *
-   * @param array $remote_nodes
-   *   Remote node resource objects (from JSON:API).
-   *
-   * @return array
-   *   Array of rows: [title, bundle, status_key, status, status_class].
+   * Compare remote entities with local ones using the same logic as the form.
    */
-  public function compareWithLocal(array $remote_nodes): array {
+  public function compareWithLocal(array $remote_entities, string $entity_type_id): array {
     $results = [];
-    $storage = \Drupal::entityTypeManager()->getStorage('node');
+    $storage = $this->entityTypeManager->getStorage($entity_type_id);
 
-    foreach ($remote_nodes as $item) {
+    foreach ($remote_entities as $item) {
       $uuid = $item['id'] ?? NULL;
       $attributes = $item['attributes'] ?? [];
-      $title = $attributes['title'] ?? '';
-      $bundle = $item['type'] ? str_replace('node--', '', $item['type']) : '';
+
+      // Get title based on entity type.
+      $title = $this->getEntityTitle($attributes, $entity_type_id);
+
+      // Get bundle.
+      $bundle = $this->getEntityBundle($item, $entity_type_id);
 
       // Determine remote changed timestamp.
       $remote_changed_raw = $attributes['changed'] ?? NULL;
@@ -198,23 +157,26 @@ class ContentDiffService {
       }
 
       // Default status: synchronized.
-      $status = ContentDiffConst::STATUS['synchronized'];
+      $status = 'synchronized';
 
       if ($uuid) {
-        $nids = \Drupal::entityQuery('node')->condition('uuid', $uuid)->accessCheck(TRUE)->range(0, 1)->execute();
+        $nids = \Drupal::entityQuery($entity_type_id)
+          ->condition('uuid', $uuid)
+          ->accessCheck(TRUE)
+          ->range(0, 1)
+          ->execute();
+
         if (empty($nids)) {
-          $status = ContentDiffConst::STATUS['new'];
+          $status = 'new';
         }
         else {
           $nid = reset($nids);
-          $node = $storage->load($nid);
-          if ($node) {
-            $local_changed = (int) $node->getChangedTime();
+          $local_entity = $storage->load($nid);
+
+          if ($local_entity) {
+            $local_changed = (int) $local_entity->getChangedTime();
             if ($remote_changed !== NULL && $remote_changed !== $local_changed) {
-              $status = ContentDiffConst::STATUS['modified'];
-            }
-            else {
-              $status = ContentDiffConst::STATUS['synchronized'];
+              $status = 'modified';
             }
           }
         }
@@ -223,13 +185,74 @@ class ContentDiffService {
       $results[] = [
         'title' => $title,
         'bundle' => $bundle,
-        'status_key' => $status['key'],
-        'status' => $status['label'],
-        'status_class' => $status['class'],
+        'status' => $status,
         'uuid' => $uuid,
+        'entity_type' => $entity_type_id,
       ];
     }
+
     return $results;
+  }
+
+  /**
+   * Get entity title from attributes based on entity type.
+   */
+  protected function getEntityTitle(array $attributes, string $entity_type_id): string {
+    $title_fields = [
+      'node' => 'title',
+      'taxonomy_term' => 'name',
+    ];
+
+    $title_field = $title_fields[$entity_type_id] ?? 'title';
+    return (string) ($attributes[$title_field] ?? '');
+  }
+
+  /**
+   * Get entity bundle from remote entity data.
+   */
+  protected function getEntityBundle(array $remote_entity, string $entity_type_id): string {
+    if ($entity_type_id === 'file') {
+      return 'file';
+    }
+
+    $type = $remote_entity['type'] ?? '';
+    return str_replace($entity_type_id . '--', '', $type);
+  }
+
+  /**
+   * Generate CSV file with results.
+   */
+  public function generateCsv(array $results): string {
+    // Utiliser le système de fichiers privé de Drupal.
+    $csv_path = ContentDiffConst::FILE_PATH . '/' . ContentDiffConst::FILE_NAME;
+
+    // S'assurer que le répertoire existe.
+    $directory = ContentDiffConst::FILE_PATH;
+    \Drupal::service('file_system')->prepareDirectory($directory, FileSystemInterface::CREATE_DIRECTORY);
+
+    $file = fopen($csv_path, 'w');
+    if (!$file) {
+      $this->logger->error('Cannot create CSV file: ' . $csv_path);
+      return '';
+    }
+
+    // Write CSV header (same columns as the form table).
+    fputcsv($file, ['title', 'uuid', 'type', 'bundle', 'status']);
+
+    // Write data rows.
+    foreach ($results as $row) {
+      fputcsv($file, [
+        $row['title'],
+        $row['uuid'],
+        $row['entity_type'],
+        $row['bundle'],
+        $row['status'],
+      ]);
+    }
+
+    fclose($file);
+
+    return $csv_path;
   }
 
 }
