@@ -56,14 +56,6 @@ class WysiwygDynamicField extends SingleContentSyncFieldProcessorPluginBase impl
 
   /**
    * Constructs new WysiwygDynamicField plugin instance.
-   *
-   * @param array $configuration
-   * @param $plugin_id
-   * @param $plugin_definition
-   * @param \Drupal\single_content_sync\ContentExporterInterface $exporter
-   * @param \Drupal\single_content_sync\ContentImporterInterface $importer
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   * @param \Drupal\Core\Entity\EntityRepositoryInterface $entity_repository
    */
   public function __construct(
     array $configuration,
