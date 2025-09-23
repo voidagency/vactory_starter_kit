@@ -10,7 +10,6 @@ use Drupal\Core\State\StateInterface;
 use Drupal\Core\Url;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\vactory_content_diff\ContentDiffConst;
-use Drupal\vactory_content_diff\ContentDiffStatus;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -254,9 +253,9 @@ class ContentDiffCsvForm extends FormBase {
    */
   protected function getStatusOptions(): array {
     $options = ['' => $this->t('- Any -')];
-    $options[ContentDiffStatus::SYNCHRONIZED['key']] = ContentDiffStatus::SYNCHRONIZED['label'];
-    $options[ContentDiffStatus::MODIFIED['key']] = ContentDiffStatus::MODIFIED['label'];
-    $options[ContentDiffStatus::NEW_ENTITY['key']] = ContentDiffStatus::NEW_ENTITY['label'];
+    foreach (ContentDiffConst::STATUS as $key => $status) {
+      $options[$key] = $status['label'];
+    }
     return $options;
   }
 
@@ -287,25 +286,12 @@ class ContentDiffCsvForm extends FormBase {
         continue;
       }
 
-      // Determine status class and key.
-      $status_class = '';
-      $status_label = '';
-      foreach (
-        [
-          ContentDiffStatus::SYNCHRONIZED,
-          ContentDiffStatus::MODIFIED,
-          ContentDiffStatus::NEW_ENTITY,
-        ] as $status_const) {
-        if ($status_key === $status_const['key']) {
-          $status_class = $status_const['class'];
-          $status_label = $status_const['label'];
-          break;
-        }
-      }
+      // Determine status object.
+      $status = ContentDiffConst::STATUS[$status_key];
 
       // Build diff cell.
       $diff_cell = ['data' => ['#markup' => '']];
-      if ($status_key === ContentDiffStatus::MODIFIED['key'] && $uuid && $bundle) {
+      if ($status_key === 'modified' && $uuid && $bundle) {
         $url = Url::fromRoute('vactory_content_diff.compare', [
           'bundle' => $bundle,
           'uuid' => $uuid,
@@ -331,9 +317,9 @@ class ContentDiffCsvForm extends FormBase {
           $bundle,
           [
             'data' => [
-              '#markup' => $status_label,
+              '#markup' => $status['label'],
             ],
-            'class' => [$status_class ?: ''],
+            'class' => [$status['class'] ?: ''],
           ],
           $diff_cell,
         ],

@@ -5,9 +5,9 @@ namespace Drupal\vactory_content_diff\Service;
 use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\StringTranslation\TranslationInterface;
+use Drupal\vactory_content_diff\ContentDiffConst;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
-use Drupal\vactory_content_diff\ContentDiffStatus;
 
 /**
  * Service for fetching remote content and comparing with local nodes.
@@ -198,12 +198,12 @@ class ContentDiffService {
       }
 
       // Default status: synchronized.
-      $status = ContentDiffStatus::SYNCHRONIZED;
+      $status = ContentDiffConst::STATUS['synchronized'];
 
       if ($uuid) {
         $nids = \Drupal::entityQuery('node')->condition('uuid', $uuid)->accessCheck(TRUE)->range(0, 1)->execute();
         if (empty($nids)) {
-          $status = ContentDiffStatus::NEW_ENTITY;
+          $status = ContentDiffConst::STATUS['new'];
         }
         else {
           $nid = reset($nids);
@@ -211,10 +211,10 @@ class ContentDiffService {
           if ($node) {
             $local_changed = (int) $node->getChangedTime();
             if ($remote_changed !== NULL && $remote_changed !== $local_changed) {
-              $status = ContentDiffStatus::MODIFIED;
+              $status = ContentDiffConst::STATUS['modified'];
             }
             else {
-              $status = ContentDiffStatus::SYNCHRONIZED;
+              $status = ContentDiffConst::STATUS['synchronized'];
             }
           }
         }

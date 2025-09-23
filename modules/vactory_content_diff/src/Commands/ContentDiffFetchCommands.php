@@ -5,7 +5,6 @@ namespace Drupal\vactory_content_diff\Commands;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\vactory_content_diff\ContentDiffConst;
 use Drush\Commands\DrushCommands;
-use Drupal\vactory_content_diff\ContentDiffStatus;
 use GuzzleHttp\ClientInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 
@@ -180,7 +179,7 @@ class ContentDiffFetchCommands extends DrushCommands {
       }
 
       // Default status: synchronized.
-      $status = ContentDiffStatus::SYNCHRONIZED;
+      $status = ContentDiffConst::STATUS['synchronized'];
 
       if ($uuid) {
         $nids = \Drupal::entityQuery($entity_type_id)
@@ -190,7 +189,7 @@ class ContentDiffFetchCommands extends DrushCommands {
           ->execute();
 
         if (empty($nids)) {
-          $status = ContentDiffStatus::NEW_ENTITY;
+          $status = ContentDiffConst::STATUS['new'];
         }
         else {
           $nid = reset($nids);
@@ -199,10 +198,10 @@ class ContentDiffFetchCommands extends DrushCommands {
           if ($local_entity) {
             $local_changed = (int) $local_entity->getChangedTime();
             if ($remote_changed !== NULL && $remote_changed !== $local_changed) {
-              $status = ContentDiffStatus::MODIFIED;
+              $status = ContentDiffConst::STATUS['modified'];
             }
             else {
-              $status = ContentDiffStatus::SYNCHRONIZED;
+              $status = ContentDiffConst::STATUS['synchronized'];
             }
           }
         }
