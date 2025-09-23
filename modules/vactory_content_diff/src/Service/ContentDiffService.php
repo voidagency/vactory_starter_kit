@@ -72,10 +72,7 @@ class ContentDiffService {
    * Get content entity types that should be fetched.
    */
   public function getContentEntityTypes(): array {
-    return [
-      'taxonomy_term',
-      'node',
-    ];
+    return ContentDiffConst::SUPPORTED_ENTITY_TYPES;
   }
 
   /**
@@ -198,13 +195,14 @@ class ContentDiffService {
    * Get entity title from attributes based on entity type.
    */
   protected function getEntityTitle(array $attributes, string $entity_type_id): string {
-    $title_fields = [
-      'node' => 'title',
-      'taxonomy_term' => 'name',
-    ];
 
-    $title_field = $title_fields[$entity_type_id] ?? 'title';
-    return (string) ($attributes[$title_field] ?? '');
+    // Get the entity type definition.
+    $entity_type = $this->entityTypeManager->getDefinition($entity_type_id);
+
+    // Get the label key from entity type definition.
+    $label_key = $entity_type->getKey('label') ?? 'title';
+
+    return (string) ($attributes[$label_key] ?? '');
   }
 
   /**

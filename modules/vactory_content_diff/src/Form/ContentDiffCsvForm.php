@@ -249,20 +249,11 @@ class ContentDiffCsvForm extends FormBase {
    */
   protected function getTypeOptions(array $csv_data): array {
     $options = ['' => $this->t('- Any -')];
-    $types = [];
 
-    foreach ($csv_data as $row) {
-      $type = $row['type'] ?? '';
-      if ($type && !in_array($type, $types)) {
-        $types[] = $type;
-      }
+    foreach (ContentDiffConst::SUPPORTED_ENTITY_TYPES as $entity_type) {
+
+      $options[$entity_type] = $entity_type;
     }
-
-    sort($types);
-    foreach ($types as $type) {
-      $options[$type] = $type;
-    }
-
     return $options;
   }
 
