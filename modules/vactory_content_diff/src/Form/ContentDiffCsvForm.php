@@ -164,6 +164,7 @@ class ContentDiffCsvForm extends FormBase {
     $form['filters']['filter_status'] = [
       '#type' => 'select',
       '#title' => $this->t('Status'),
+      '#description' => $this->t('Select one or more status to filter the results. Hold Ctrl/Cmd to select multiple options.') . '<br><br>' . $this->t('Available statuses:') . '<br>' . $this->getStatusDescriptions(),
       '#options' => $this->getStatusOptions(),
       '#multiple' => TRUE,
       '#default_value' => $form_state->getValue('filter_status') ?: [],
@@ -267,6 +268,17 @@ class ContentDiffCsvForm extends FormBase {
       $options[$key] = $status['label'];
     }
     return $options;
+  }
+
+  /**
+   * Get status descriptions for field description.
+   */
+  protected function getStatusDescriptions(): string {
+    $descriptions = [];
+    foreach (ContentDiffConst::STATUS as $status) {
+      $descriptions[] = $status['label'] . ': ' . $status['description'];
+    }
+    return implode('<br>', $descriptions);
   }
 
   /**
