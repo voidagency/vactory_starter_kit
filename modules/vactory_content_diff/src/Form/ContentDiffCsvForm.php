@@ -165,7 +165,8 @@ class ContentDiffCsvForm extends FormBase {
       '#type' => 'select',
       '#title' => $this->t('Status'),
       '#options' => $this->getStatusOptions(),
-      '#default_value' => (string) $form_state->getValue('filter_status') ?: '',
+      '#multiple' => TRUE,
+      '#default_value' => $form_state->getValue('filter_status') ?: [],
       '#ajax' => [
         'callback' => '::ajaxRefresh',
         'event' => 'change',
@@ -182,7 +183,7 @@ class ContentDiffCsvForm extends FormBase {
     $filters = [
       'title' => (string) $form_state->getValue('filter_title') ?: '',
       'type' => (string) $form_state->getValue('filter_type') ?: '',
-      'status' => (string) $form_state->getValue('filter_status') ?: '',
+      'status' => $form_state->getValue('filter_status') ?: [],
     ];
     $rows = $this->buildFilteredRows($csv_data, $filters);
 
@@ -275,7 +276,7 @@ class ContentDiffCsvForm extends FormBase {
     $rows = [];
     $title_filter = mb_strtolower($filters['title'] ?? '');
     $type_filter = $filters['type'] ?? '';
-    $status_filter = $filters['status'] ?? '';
+    $status_filter = $filters['status'] ?? [];
 
     foreach ($csv_data as $row) {
       $title = (string) ($row['title'] ?? '');
@@ -291,7 +292,7 @@ class ContentDiffCsvForm extends FormBase {
       if ($type_filter !== '' && $type !== $type_filter) {
         continue;
       }
-      if ($status_filter !== '' && $status_key !== $status_filter) {
+      if (!empty($status_filter) && !in_array($status_key, $status_filter)) {
         continue;
       }
 
