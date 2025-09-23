@@ -1,8 +1,9 @@
-vactory_content_diff.form:
-  path: '/admin/content/diff'
+# Route pour afficher le rapport CSV
+vactory_content_diff.csv_report:
+  path: '/admin/content/diff/csv-report'
   defaults:
-    _form: '\Drupal\vactory_content_diff\Form\ContentDiffForm'
-    _title: 'Content diff'
+    _form: '\Drupal\vactory_content_diff\Form\ContentDiffCsvForm'
+    _title: 'CSV Report'
   requirements:
     _permission: 'access content diff'
   options:

@@ -274,7 +274,7 @@ class ContentDiffFetchCommands extends DrushCommands {
         $row['uuid'],
         $row['entity_type'],
         $row['bundle'],
-        $row['status'],
+        $row['status_key'],
       ]);
     }
 

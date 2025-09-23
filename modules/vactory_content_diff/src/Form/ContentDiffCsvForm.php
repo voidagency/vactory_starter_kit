@@ -1,0 +1,358 @@
+<?php
+
+namespace Drupal\vactory_content_diff\Form;
+
+use Drupal\Component\Serialization\Json;
+use Drupal\Core\Form\FormBase;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Link;
+use Drupal\Core\State\StateInterface;
+use Drupal\Core\Url;
+use Drupal\Core\File\FileSystemInterface;
+use Drupal\vactory_content_diff\ContentDiffConst;
+use Drupal\vactory_content_diff\ContentDiffStatus;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
+/**
+ * Provides the Content Diff CSV display form.
+ */
+class ContentDiffCsvForm extends FormBase {
+
+  /**
+   * The file system service.
+   *
+   * @var \Drupal\Core\File\FileSystemInterface
+   */
+  protected $fileSystem;
+
+  /**
+   * State API service.
+   *
+   * @var \Drupal\Core\State\StateInterface
+   */
+  protected $state;
+
+  /**
+   * Constructs the form object.
+   */
+  public function __construct(FileSystemInterface $file_system, StateInterface $state) {
+    $this->fileSystem = $file_system;
+    $this->state = $state;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('file_system'),
+      $container->get('state')
+    );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getFormId() {
+    return 'vactory_content_diff_csv_form';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state) {
+    $form['#attributes']['class'][] = 'vactory-content-diff-csv-form';
+
+    // Check if CSV file exists.
+    $csv_path = ContentDiffConst::FILE_PATH . '/' . ContentDiffConst::FILE_NAME;
+    $real_path = $this->fileSystem->realpath($csv_path);
+
+    if (!$real_path || !file_exists($real_path)) {
+      $form['no_file'] = [
+        '#type' => 'markup',
+        '#markup' => '<div class="messages messages--warning">' . $this->t('No CSV report found. Please run the drush command first: drush vactory_content_diff_fetch --remote_url=https://your-remote-site.com') . '</div>',
+      ];
+      return $form;
+    }
+
+    // Read CSV file.
+    $csv_data = $this->readCsvFile($real_path);
+
+    if (empty($csv_data)) {
+      $form['no_data'] = [
+        '#type' => 'markup',
+        '#markup' => '<div class="messages messages--warning">' . $this->t('CSV file is empty or could not be read.') . '</div>',
+      ];
+      return $form;
+    }
+
+    // Build urls.
+    $form['urls'] = [
+      '#type' => 'details',
+      '#title' => $this->t('URLs'),
+      '#open' => TRUE,
+    ];
+
+    $saved_remote_url = (string) $this->state->get('vactory_content_diff.remote_url', '');
+
+    $form['urls']['remote_url'] = [
+      '#type' => 'url',
+      '#title' => $this->t('Remote instance base URL'),
+      '#description' => $this->t('Example: https://remote.example.com'),
+      '#required' => TRUE,
+      '#default_value' => $form_state->getValue('remote_url') ?: $saved_remote_url,
+    ];
+
+    $saved_local_url = (string) $this->state->get('vactory_content_diff.local_url', '');
+
+    $form['urls']['local_url'] = [
+      '#type' => 'url',
+      '#title' => $this->t('Local instance base URL'),
+      '#description' => $this->t('Example: https://remote.example.com'),
+      '#required' => TRUE,
+      '#default_value' => $form_state->getValue('local_url') ?: $saved_local_url,
+    ];
+
+    // Build filters.
+    $form['filters'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Filters'),
+      '#open' => TRUE,
+      '#attributes' => ['class' => ['content-diff-filters']],
+    ];
+
+    $form['filters']['filter_title'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Title'),
+      '#default_value' => (string) $form_state->getValue('filter_title') ?: '',
+      '#ajax' => [
+        'callback' => '::ajaxRefresh',
+        'event' => 'change',
+        'wrapper' => 'content-diff-results-wrapper',
+      ],
+    ];
+
+    $form['filters']['filter_type'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Type'),
+      '#options' => $this->getTypeOptions($csv_data),
+      '#default_value' => (string) $form_state->getValue('filter_type') ?: '',
+      '#ajax' => [
+        'callback' => '::ajaxRefresh',
+        'event' => 'change',
+        'wrapper' => 'content-diff-results-wrapper',
+      ],
+    ];
+
+    $form['filters']['filter_status'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Status'),
+      '#options' => $this->getStatusOptions(),
+      '#default_value' => (string) $form_state->getValue('filter_status') ?: '',
+      '#ajax' => [
+        'callback' => '::ajaxRefresh',
+        'event' => 'change',
+        'wrapper' => 'content-diff-results-wrapper',
+      ],
+    ];
+
+    $form['results_wrapper'] = [
+      '#type' => 'container',
+      '#attributes' => ['id' => 'content-diff-results-wrapper'],
+    ];
+
+    // Build filtered rows.
+    $filters = [
+      'title' => (string) $form_state->getValue('filter_title') ?: '',
+      'type' => (string) $form_state->getValue('filter_type') ?: '',
+      'status' => (string) $form_state->getValue('filter_status') ?: '',
+    ];
+    $rows = $this->buildFilteredRows($csv_data, $filters);
+
+    if (!empty($rows)) {
+      $form['results_wrapper']['results_table'] = [
+        '#type' => 'table',
+        '#header' => [
+          $this->t('Title'),
+          $this->t('UUID'),
+          $this->t('Type'),
+          $this->t('Bundle'),
+          $this->t('Status'),
+          $this->t('Diff'),
+        ],
+        '#rows' => $rows,
+        '#attributes' => ['class' => ['content-diff-results']],
+      ];
+    }
+
+    // Attach module CSS and dialog.
+    $form['#attached']['library'][] = 'vactory_content_diff/content_diff';
+    $form['#attached']['library'][] = 'core/drupal.dialog.ajax';
+
+    return $form;
+  }
+
+  /**
+   * AJAX callback to refresh the results and filters area.
+   */
+  public function ajaxRefresh(array &$form, FormStateInterface $form_state) {
+    $form_state->setRebuild(TRUE);
+    return $form['results_wrapper'];
+  }
+
+  /**
+   * Read CSV file and return data array.
+   */
+  protected function readCsvFile(string $file_path): array {
+    $data = [];
+
+    if (($handle = fopen($file_path, 'r')) !== FALSE) {
+      // Skip header row.
+      $header = fgetcsv($handle);
+
+      while (($row = fgetcsv($handle)) !== FALSE) {
+        if (count($row) >= 5) {
+          $data[] = [
+            'title' => $row[0] ?? '',
+            'uuid' => $row[1] ?? '',
+            'type' => $row[2] ?? '',
+            'bundle' => $row[3] ?? '',
+            'status' => $row[4] ?? '',
+          ];
+        }
+      }
+      fclose($handle);
+    }
+
+    return $data;
+  }
+
+  /**
+   * Get type options from CSV data.
+   */
+  protected function getTypeOptions(array $csv_data): array {
+    $options = ['' => $this->t('- Any -')];
+    $types = [];
+
+    foreach ($csv_data as $row) {
+      $type = $row['type'] ?? '';
+      if ($type && !in_array($type, $types)) {
+        $types[] = $type;
+      }
+    }
+
+    sort($types);
+    foreach ($types as $type) {
+      $options[$type] = $type;
+    }
+
+    return $options;
+  }
+
+  /**
+   * Get status options.
+   */
+  protected function getStatusOptions(): array {
+    $options = ['' => $this->t('- Any -')];
+    $options[ContentDiffStatus::SYNCHRONIZED['key']] = ContentDiffStatus::SYNCHRONIZED['label'];
+    $options[ContentDiffStatus::MODIFIED['key']] = ContentDiffStatus::MODIFIED['label'];
+    $options[ContentDiffStatus::NEW_ENTITY['key']] = ContentDiffStatus::NEW_ENTITY['label'];
+    return $options;
+  }
+
+  /**
+   * Build filtered table rows from CSV data and filters.
+   */
+  protected function buildFilteredRows(array $csv_data, array $filters): array {
+    $rows = [];
+    $title_filter = mb_strtolower($filters['title'] ?? '');
+    $type_filter = $filters['type'] ?? '';
+    $status_filter = $filters['status'] ?? '';
+
+    foreach ($csv_data as $row) {
+      $title = (string) ($row['title'] ?? '');
+      $uuid = (string) ($row['uuid'] ?? '');
+      $type = (string) ($row['type'] ?? '');
+      $bundle = (string) ($row['bundle'] ?? '');
+      $status_key = (string) ($row['status'] ?? '');
+
+      // Apply filters.
+      if ($title_filter !== '' && mb_strpos(mb_strtolower($title), $title_filter) === FALSE) {
+        continue;
+      }
+      if ($type_filter !== '' && $type !== $type_filter) {
+        continue;
+      }
+      if ($status_filter !== '' && $status_key !== $status_filter) {
+        continue;
+      }
+
+      // Determine status class and key.
+      $status_class = '';
+      $status_label = '';
+      foreach (
+        [
+          ContentDiffStatus::SYNCHRONIZED,
+          ContentDiffStatus::MODIFIED,
+          ContentDiffStatus::NEW_ENTITY,
+        ] as $status_const) {
+        if ($status_key === $status_const['key']) {
+          $status_class = $status_const['class'];
+          $status_label = $status_const['label'];
+          break;
+        }
+      }
+
+      // Build diff cell.
+      $diff_cell = ['data' => ['#markup' => '']];
+      if ($status_key === ContentDiffStatus::MODIFIED['key'] && $uuid && $bundle) {
+        $url = Url::fromRoute('vactory_content_diff.compare', [
+          'bundle' => $bundle,
+          'uuid' => $uuid,
+        ],
+        [
+          'attributes' => [
+            'class' => ['use-ajax'],
+            'data-dialog-type' => 'modal',
+            'data-dialog-options' => Json::encode(['width' => '100%']),
+          ],
+        ]);
+        $link = Link::fromTextAndUrl($this->t('View diff'), $url)->toRenderable();
+        $diff_cell = [
+          'data' => $link,
+        ];
+      }
+
+      $rows[] = [
+        'data' => [
+          $title,
+          $uuid,
+          $type,
+          $bundle,
+          [
+            'data' => [
+              '#markup' => $status_label,
+            ],
+            'class' => [$status_class ?: ''],
+          ],
+          $diff_cell,
+        ],
+      ];
+    }
+
+    return $rows;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state) {
+    $remote_url = trim((string) $form_state->getValue('remote_url'));
+    $local_url = trim((string) $form_state->getValue('local_url'));
+
+    // Persist URL for next time.
+    $this->state->set('vactory_content_diff.remote_url', $remote_url);
+    $this->state->set('vactory_content_diff.local_url', $local_url);
+  }
+
+}
