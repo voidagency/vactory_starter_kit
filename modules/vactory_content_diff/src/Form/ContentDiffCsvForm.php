@@ -62,35 +62,25 @@ class ContentDiffCsvForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form['#attributes']['class'][] = 'vactory-content-diff-csv-form';
 
-    // Check if CSV file exists.
-    $csv_path = ContentDiffConst::FILE_PATH . '/' . ContentDiffConst::FILE_NAME;
-    $real_path = $this->fileSystem->realpath($csv_path);
-
-    if (!$real_path || !file_exists($real_path)) {
-      $form['no_file'] = [
-        '#type' => 'markup',
-        '#markup' => '<div class="messages messages--warning">' . $this->t('No CSV report found. Please run the drush command first: drush vactory_content_diff_fetch --remote_url=https://your-remote-site.com') . '</div>',
-      ];
-      return $form;
-    }
-
-    // Read CSV file.
-    $csv_data = $this->readCsvFile($real_path);
-
-    if (empty($csv_data)) {
-      $form['no_data'] = [
-        '#type' => 'markup',
-        '#markup' => '<div class="messages messages--warning">' . $this->t('CSV file is empty or could not be read.') . '</div>',
-      ];
-      return $form;
-    }
-
     // Build urls.
     $form['urls'] = [
       '#type' => 'details',
       '#title' => $this->t('URLs'),
       '#open' => TRUE,
     ];
+
+    $instructions = [
+      $this->t("This interface lists the content differences after running the command drush vactory_content_diff_fetch."),
+      $this->t("The command drush vactory_content_diff_fetch uses the value of the Remote instance base URL field to determine which instance to compare with."),
+      $this->t("If you have changed the Remote instance base URL, make sure to rerun the command in order to fetch the updated differences."),
+    ];
+
+    foreach ($instructions as $key => $instruction) {
+      $form['urls']['instuction' . $key] = [
+        '#type' => 'markup',
+        '#markup' => '<p class="messages messages--warning">' . $instruction . '</p>',
+      ];
+    }
 
     $saved_remote_url = (string) $this->state->get('vactory_content_diff.remote_url', '');
 
@@ -111,6 +101,34 @@ class ContentDiffCsvForm extends FormBase {
       '#required' => TRUE,
       '#default_value' => $form_state->getValue('local_url') ?: $saved_local_url,
     ];
+
+    $form['urls']['submit'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Save'),
+    ];
+
+    // Check if CSV file exists.
+    $csv_path = ContentDiffConst::FILE_PATH . '/' . ContentDiffConst::FILE_NAME;
+    $real_path = $this->fileSystem->realpath($csv_path);
+
+    if (!$real_path || !file_exists($real_path)) {
+      $form['no_file'] = [
+        '#type' => 'markup',
+        '#markup' => '<div class="messages messages--warning">' . $this->t('No CSV report found. Please run the drush command first: drush vactory_content_diff_fetch') . '</div>',
+      ];
+      return $form;
+    }
+
+    // Read CSV file.
+    $csv_data = $this->readCsvFile($real_path);
+
+    if (empty($csv_data)) {
+      $form['no_data'] = [
+        '#type' => 'markup',
+        '#markup' => '<div class="messages messages--warning">' . $this->t('CSV file is empty or could not be read. Please run the drush command first: drush vactory_content_diff_fetch') . '</div>',
+      ];
+      return $form;
+    }
 
     // Build filters.
     $form['filters'] = [

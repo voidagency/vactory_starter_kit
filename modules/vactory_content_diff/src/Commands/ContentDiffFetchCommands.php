@@ -30,14 +30,13 @@ class ContentDiffFetchCommands extends DrushCommands {
    *
    * @command vactory_content_diff_fetch
    * @aliases vcd-fetch
-   * @option remote_url Remote instance base URL
-   * @usage drush vactory_content_diff_fetch --remote_url=https://remote.example.com
+   * @usage drush vactory_content_diff_fetch
    */
-  public function fetch($options = ['remote_url' => NULL]) {
-    $remote_url = $options['remote_url'] ?? '';
+  public function fetch() {
+    $remote_url = \Drupal::service('state')->get('vactory_content_diff.remote_url', '');
 
     if (empty($remote_url)) {
-      $this->logger()->error('Remote URL is required. Use --remote_url option.');
+      $this->logger()->error('Remote URL is required. Please go to /admin/content/diff and configure it.');
       return;
     }
 
