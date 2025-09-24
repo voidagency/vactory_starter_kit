@@ -9,6 +9,7 @@ use Drupal\Core\Link;
 use Drupal\Core\State\StateInterface;
 use Drupal\Core\Url;
 use Drupal\Core\File\FileSystemInterface;
+use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\vactory_content_diff\ContentDiffConst;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -32,11 +33,19 @@ class ContentDiffCsvForm extends FormBase {
   protected $state;
 
   /**
+   * The entity type bundle info service.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeBundleInfoInterface
+   */
+  protected $entityTypeBundleInfo;
+
+  /**
    * Constructs the form object.
    */
-  public function __construct(FileSystemInterface $file_system, StateInterface $state) {
+  public function __construct(FileSystemInterface $file_system, StateInterface $state, EntityTypeBundleInfoInterface $entity_type_bundle_info) {
     $this->fileSystem = $file_system;
     $this->state = $state;
+    $this->entityTypeBundleInfo = $entity_type_bundle_info;
   }
 
   /**
@@ -45,7 +54,8 @@ class ContentDiffCsvForm extends FormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('file_system'),
-      $container->get('state')
+      $container->get('state'),
+      $container->get('entity_type.bundle.info')
     );
   }
 
@@ -61,6 +71,10 @@ class ContentDiffCsvForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form['#attributes']['class'][] = 'vactory-content-diff-csv-form';
+
+    // Add a wrapper for the entire form content.
+    $form['#prefix'] = '<div id="vactory-content-diff-form-wrapper">';
+    $form['#suffix'] = '</div>';
 
     // Build urls.
     $form['urls'] = [
@@ -143,9 +157,9 @@ class ContentDiffCsvForm extends FormBase {
       '#title' => $this->t('Title'),
       '#default_value' => (string) $form_state->getValue('filter_title') ?: '',
       '#ajax' => [
-        'callback' => '::ajaxRefresh',
+        'callback' => '::ajaxRefreshForm',
         'event' => 'change',
-        'wrapper' => 'content-diff-results-wrapper',
+        'wrapper' => 'vactory-content-diff-form-wrapper',
       ],
     ];
 
@@ -155,11 +169,35 @@ class ContentDiffCsvForm extends FormBase {
       '#options' => $this->getTypeOptions($csv_data),
       '#default_value' => (string) $form_state->getValue('filter_type') ?: '',
       '#ajax' => [
-        'callback' => '::ajaxRefresh',
+        'callback' => '::ajaxRefreshForm',
         'event' => 'change',
-        'wrapper' => 'content-diff-results-wrapper',
+        'wrapper' => 'vactory-content-diff-form-wrapper',
       ],
     ];
+
+    $selected_type = $form_state->getValue('filter_type') ?: '';
+
+    // Check if the type has changed and reset bundle if needed.
+    $previous_type = $form_state->get('previous_type') ?: '';
+    if ($selected_type !== $previous_type) {
+      // Type has changed, reset the bundle value.
+      $form_state->setValue('filter_bundle', '');
+      $form_state->set('previous_type', $selected_type);
+    }
+
+    if ($selected_type) {
+      $form['filters']['filter_bundle'] = [
+        '#type' => 'select',
+        '#title' => $this->t('Bundle'),
+        '#options' => $this->getBundleOptions($selected_type),
+        '#default_value' => (string) $form_state->getValue('filter_bundle') ?: '',
+        '#ajax' => [
+          'callback' => '::ajaxRefreshForm',
+          'event' => 'change',
+          'wrapper' => 'vactory-content-diff-form-wrapper',
+        ],
+      ];
+    }
 
     $form['filters']['filter_status'] = [
       '#type' => 'select',
@@ -169,9 +207,9 @@ class ContentDiffCsvForm extends FormBase {
       '#multiple' => TRUE,
       '#default_value' => $form_state->getValue('filter_status') ?: [],
       '#ajax' => [
-        'callback' => '::ajaxRefresh',
+        'callback' => '::ajaxRefreshForm',
         'event' => 'change',
-        'wrapper' => 'content-diff-results-wrapper',
+        'wrapper' => 'vactory-content-diff-form-wrapper',
       ],
     ];
 
@@ -184,6 +222,7 @@ class ContentDiffCsvForm extends FormBase {
     $filters = [
       'title' => (string) $form_state->getValue('filter_title') ?: '',
       'type' => (string) $form_state->getValue('filter_type') ?: '',
+      'bundle' => (string) $form_state->getValue('filter_bundle') ?: '',
       'status' => $form_state->getValue('filter_status') ?: [],
     ];
     $rows = $this->buildFilteredRows($csv_data, $filters);
@@ -212,11 +251,11 @@ class ContentDiffCsvForm extends FormBase {
   }
 
   /**
-   * AJAX callback to refresh the results and filters area.
+   * AJAX callback to refresh the entire form.
    */
-  public function ajaxRefresh(array &$form, FormStateInterface $form_state) {
+  public function ajaxRefreshForm(array &$form, FormStateInterface $form_state) {
     $form_state->setRebuild(TRUE);
-    return $form['results_wrapper'];
+    return $form;
   }
 
   /**
@@ -271,6 +310,34 @@ class ContentDiffCsvForm extends FormBase {
   }
 
   /**
+   * Get bundle options for a given entity type.
+   */
+  protected function getBundleOptions(string $entity_type): array {
+    $options = ['' => $this->t('- Any -')];
+
+    if (empty($entity_type)) {
+      return $options;
+    }
+
+    try {
+      $bundle_info = $this->entityTypeBundleInfo->getBundleInfo($entity_type);
+
+      foreach ($bundle_info as $bundle_id => $bundle_data) {
+        $options[$bundle_id] = $bundle_data['label'] ?? $bundle_id;
+      }
+    }
+    catch (\Exception $e) {
+      // If there's an error getting bundles, just return the basic options.
+      \Drupal::logger('vactory_content_diff')->warning('Error getting bundles for entity type @type: @message', [
+        '@type' => $entity_type,
+        '@message' => $e->getMessage(),
+      ]);
+    }
+
+    return $options;
+  }
+
+  /**
    * Get status descriptions for field description.
    */
   protected function getStatusDescriptions(): string {
@@ -288,6 +355,7 @@ class ContentDiffCsvForm extends FormBase {
     $rows = [];
     $title_filter = mb_strtolower($filters['title'] ?? '');
     $type_filter = $filters['type'] ?? '';
+    $bundle_filter = $filters['bundle'] ?? '';
     $status_filter = $filters['status'] ?? [];
 
     foreach ($csv_data as $row) {
@@ -302,6 +370,9 @@ class ContentDiffCsvForm extends FormBase {
         continue;
       }
       if ($type_filter !== '' && $type !== $type_filter) {
+        continue;
+      }
+      if ($bundle_filter !== '' && $bundle !== $bundle_filter) {
         continue;
       }
       if (!empty($status_filter) && !in_array($status_key, $status_filter)) {
