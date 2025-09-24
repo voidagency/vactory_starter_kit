@@ -397,7 +397,7 @@ class Webform {
 
     if (isset($item['#default_file'])) {
       $properties['default_value'] = $this->defaultValueTokensReplace($item, $field_name, '#default_file');
-      if (!empty($properties['default_value'])) {
+      if (!empty($properties['default_value']) && is_string($properties['default_value'])) {
         $decoded = json_decode($properties['default_value']);
         $properties['default_value'] = json_last_error() === JSON_ERROR_NONE ? $decoded : $properties['default_value'];
       }
@@ -453,7 +453,7 @@ class Webform {
     (isset($item['#other__title']) && !is_null($item['#other__title'])) ? $properties['otherTitle'] = $item['#other__title'] : NULL;
     (array_key_exists('#webform_parent_flexbox', $item) && $item['#webform_parent_flexbox']) ? $properties['flex'] = (array_key_exists('#flex', $item) ? $item['#flex'] : 1) : 1;
     (isset($item['#placeholder']) && !is_null($item['#placeholder'])) ? $properties['placeholder'] = (string) t($item['#placeholder']) : NULL;
-    (isset($item['#description']) && !is_null($item['#description'])) ? $properties['helperText'] = (string) t($item['#description']) : NULL;
+    if (isset($item['#description'])) {$properties['helperText'] = (string) t($item['#description']);if (isset($item['#description_display'])) {$properties['description_display'] = $item['#description_display'];}}
     (isset($item['#readonly']) && !is_null($item['#readonly'])) ? $properties['readOnly'] = $item['#readonly'] : NULL;
     (isset($htmlInputTypes[$type]) && !is_null($htmlInputTypes[$type])) ? $properties['htmlInputType'] = $htmlInputTypes[$type] : NULL;
     (isset($item['#options']) && !is_null($item['#options'])) ? $properties['options'] = $this->formatOptions($item['#options'] ?? []) : NULL;
