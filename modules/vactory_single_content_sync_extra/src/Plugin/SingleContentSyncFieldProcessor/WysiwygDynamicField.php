@@ -189,6 +189,24 @@ class WysiwygDynamicField extends SingleContentSyncFieldProcessorPluginBase impl
         if (is_array($value) && isset($value['format'], $value['value'])) {
           $this->processWysiwygExport($value);
         }
+        // Handle case of Nested arrays (components, extra_field).
+        if (is_array($value)) {
+          // Recurse into nested arrays.
+          $value = $this->processWidgetDataExport([$value])[0] ?? $value;
+
+          // Check for WYSIWYG.
+          if (isset($value['format'], $value['value'])) {
+            $this->processWysiwygExport($value);
+          }
+
+          // Check for media element.
+          if ($this->isMediaElement($value)) {
+            $value = [
+              'original' => $value,
+              'single_content_sync_media' => $this->processMediaExport($value),
+            ];
+          }
+        }
       }
     }
     return $data;
@@ -287,7 +305,7 @@ class WysiwygDynamicField extends SingleContentSyncFieldProcessorPluginBase impl
   /**
    * Process wysiwyg export.
    */
-  private function processWysiwygExport(array &$value) {
+  public function processWysiwygExport(array &$value) {
     $text = $value['value'] ?? NULL;
 
     $dom = Html::load($text);
