@@ -11,6 +11,8 @@ use Drupal\Core\Url;
 use Drupal\Component\Serialization\Json;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use GuzzleHttp\ClientInterface;
+use Drupal\taxonomy\Entity\Vocabulary;
+use Drupal\taxonomy\Entity\Term;
 
 /**
  * Test l'affichage et la soumission d’un webform - decoupled.
@@ -88,6 +90,20 @@ class WebformElementsTest extends ExistingSiteBase {
    * @var \Drupal\vactory_decoupled_webform\Webform
    */
   protected $webformService;
+
+  /**
+   * Test vocabulary for select/check elements.
+   *
+   * @var \Drupal\taxonomy\Entity\Vocabulary|null
+   */
+  protected ?Vocabulary $vocabulary = NULL;
+
+  /**
+   * Stores the expected options for taxonomy term-based webform elements.
+   *
+   * @var array
+   */
+  protected array $termOptions = [];
 
   /**
    * {@inheritdoc}
@@ -180,10 +196,8 @@ class WebformElementsTest extends ExistingSiteBase {
     $this->assertEquals($this->webform->id(), $widgetData['components'][0]['webform']['id'], 'Webform ID should match the test form.');
 
     $elements = $widgetData['components'][0]['webform']['elements'];
-
-    // Webform ID.
+    // Webform Exepected Elements.
     $expectedElements = [
-      // Text fields.
       'name' => ['type' => 'text', 'required' => TRUE],
       'email' => [
         'type' => 'text',
@@ -256,10 +270,6 @@ class WebformElementsTest extends ExistingSiteBase {
         'options_count' => 2,
       ],
 
-      // Term selects & checkboxes.
-      'term_select' => ['type' => 'select', 'options' => TRUE],
-      'term_checkboxes' => ['type' => 'checkboxes', 'options' => TRUE],
-
       // Radios other.
       'radios_other' => ['type' => 'radios', 'options_count' => 2],
 
@@ -328,6 +338,21 @@ class WebformElementsTest extends ExistingSiteBase {
         ],
         'flexTotal' => 2,
       ],
+      // Term selects & checkboxes.
+      'webform_term_select' => [
+        'type' => 'select',
+        'label' => 'Select a Term',
+        'validation' => ['required' => TRUE],
+        'options' => $this->termOptions,
+        'isMultiple' => FALSE,
+      ],
+      'webform_term_checkboxes' => [
+        'type' => 'checkboxes',
+        'label' => 'Select Multiple Terms',
+        'validation' => ['required' => TRUE],
+        'options' => $this->termOptions,
+        'isMultiple' => TRUE,
+      ],
     ];
 
     foreach ($expectedElements as $field => $rules) {
@@ -346,6 +371,7 @@ class WebformElementsTest extends ExistingSiteBase {
       $this->assertMinMaxText($field, $rules, $element);
       $this->assertChildren($field, $rules, $element);
       $this->assertFlexbox($field, $rules, $element);
+      $this->assertTermElements($field, $rules, $element);
     }
 
     // Vérifier les elements de Multi step Form.
@@ -526,6 +552,51 @@ class WebformElementsTest extends ExistingSiteBase {
   }
 
   /**
+   * Assert that a term select or checkboxes exist and have the correct options.
+   *
+   * @param string $field
+   *   The field machine name.
+   * @param array $rules
+   *   Rules containing expected options.
+   * @param array $element
+   *   The webform element array.
+   */
+  private function assertTermElements(string $field, array $rules, array $element): void {
+
+    if (isset($rules['type']) && isset($element['type'])) {
+      $this->assertEquals($rules['type'], $element['type'], "Field '$field' type should match.");
+    }
+    // Vérifie les options (les valeurs, pas les labels).
+    if (isset($rules['options'], $element['options'])) {
+      // Valeurs attendues.
+      $expectedValues = array_keys($rules['options']);
+
+      // Valeurs réelles.
+      $actualValues = array_column($element['options'], 'value');
+
+      $this->assertEquals(
+        $expectedValues,
+        $actualValues,
+        "Field '$field' option values should match."
+      );
+
+      // Vérifie les labels des enfants si breadcrumb est désactivé.
+      if (empty($element['#breadcrumb'])) {
+        foreach ($element['options'] as $index => $option) {
+          // Enfants aux indices pairs (à partir de 0, donc 1, 3, 5).
+          if ($index % 2 === 1) {
+            $this->assertStringStartsWith(
+              '-',
+              $option['label'],
+              "Field '$field' child label '{$option['label']}' should start with '-'"
+            );
+          }
+        }
+      }
+    }
+  }
+
+  /**
    * Assert structure and elements of a multi-step webform.
    *
    * @param array $widgetDataMultiStep
@@ -596,6 +667,20 @@ class WebformElementsTest extends ExistingSiteBase {
    *   The created webform entity.
    */
   protected function createWebform(): Webform {
+
+    // Create taxonomy for test select and checkboxes.
+    $vocabulary = $this->vocabulary = $this->createTestVocabulary('tags', 'Tags');
+    // Prepare term options from the test vocabulary.
+    $terms = $this->createTestTerms('tags', [
+      'Parent A' => ['Term A'],
+      'Parent B' => ['Term B'],
+      'Parent C' => ['Term C'],
+    ]);
+    $this->termOptions = [];
+    foreach ($terms as $term) {
+      $this->termOptions[$term->id()] = $term->getName();
+    }
+
     $webform = Webform::create([
       'id' => 'contact_phpunit_test',
       'title' => 'Contact Webform PHPUnit',
@@ -711,7 +796,7 @@ class WebformElementsTest extends ExistingSiteBase {
           '#title' => 'Birth date',
           '#required' => TRUE,
           '#date_date_min' => '1900-01-01',
-          '#date_date_max' => date('Y-m-d'),
+          '#date_date_max' => '2025-09-24',
           '#wrapper_attributes' => ['class' => []],
         ],
         'appointment_time' => [
@@ -759,15 +844,19 @@ class WebformElementsTest extends ExistingSiteBase {
           '#title' => 'Select with Other',
           '#options' => ['Option A' => 'A', 'Option B' => 'B'],
         ],
-        'term_select' => [
+        'webform_term_select' => [
           '#type' => 'webform_term_select',
-          '#title' => 'Category',
-          '#vocabulary' => 'tags',
+          '#title' => 'Select a Term',
+          '#vocabulary' => $vocabulary->id(),
+          '#breadcrumb' => '',
+          '#required' => TRUE,
         ],
-        'term_checkboxes' => [
+        'webform_term_checkboxes' => [
           '#type' => 'webform_term_checkboxes',
-          '#title' => 'Tags',
-          '#vocabulary' => 'tags',
+          '#title' => 'Select Multiple Terms',
+          '#vocabulary' => $vocabulary->id(),
+          '#breadcrumb' => '',
+          '#required' => TRUE,
         ],
         'radios_other' => [
           '#type' => 'webform_radios_other',
@@ -779,7 +868,7 @@ class WebformElementsTest extends ExistingSiteBase {
           '#type' => 'webform_document_file',
           '#title' => 'Upload document',
           '#upload_validators' => ['file_validate_extensions' => ['pdf doc docx']],
-          '#default_file' => DRUPAL_ROOT . '/profiles/contrib/vactory_starter_kit/modules/vactory_decoupled/modules/vactory_decoupled_webform/tests/Functional/defaultfile.pdf',
+          '#default_file' => DRUPAL_ROOT . '/profiles/contrib/vactory_starter_kit/modules/vactory_decoupled/modules/vactory_decoupled_webform/assets/defaultfile.pdf',
           '#max_files' => 3,
           '#max_filesize' => 5242880,
         ],
@@ -914,6 +1003,87 @@ class WebformElementsTest extends ExistingSiteBase {
   }
 
   /**
+   * Create a vocabulary for test.
+   */
+  protected function createTestVocabulary(string $vid = 'tags', string $name = 'Tags'): Vocabulary {
+    $vocabulary = Vocabulary::load($vid);
+    if (!$vocabulary) {
+      $vocabulary = Vocabulary::create([
+        'vid' => $vid,
+        'description' => '',
+        'name' => $name,
+        'hierarchy' => 0,
+      ]);
+      $vocabulary->save();
+    }
+    return $vocabulary;
+  }
+
+  /**
+   * Create Terms Taxonomy for test with optional parent-child hierarchy.
+   */
+  protected function createTestTerms(string $vocabulary_id = 'tags', array $terms_tree = []): array {
+    $created_terms = [];
+
+    // Load the vocabulary.
+    $vocabulary = \Drupal::entityTypeManager()
+      ->getStorage('taxonomy_vocabulary')
+      ->load($vocabulary_id);
+
+    if (!$vocabulary) {
+      throw new \Exception("Vocabulary '$vocabulary_id' does not exist.");
+    }
+
+    // First, create parent terms.
+    foreach ($terms_tree as $parent_name => $children) {
+      // Check if the parent term already exists.
+      $parent_terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')
+        ->loadByProperties([
+          'name' => $parent_name,
+          'vid' => $vocabulary_id,
+        ]);
+
+      if ($parent_terms) {
+        $parent_term = reset($parent_terms);
+      }
+      else {
+        $parent_term = Term::create([
+          'name' => $parent_name,
+          'vid' => $vocabulary_id,
+        ]);
+        $parent_term->save();
+      }
+
+      $created_terms[$parent_name] = $parent_term;
+
+      // Create child terms if provided.
+      foreach ($children as $child_name) {
+        $child_terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')
+          ->loadByProperties([
+            'name' => $child_name,
+            'vid' => $vocabulary_id,
+          ]);
+
+        if ($child_terms) {
+          $child_term = reset($child_terms);
+        }
+        else {
+          $child_term = Term::create([
+            'name' => $child_name,
+            'vid' => $vocabulary_id,
+            'parent' => [$parent_term->id()],
+          ]);
+          $child_term->save();
+        }
+
+        $created_terms[$child_name] = $child_term;
+      }
+    }
+
+    return $created_terms;
+  }
+
+  /**
    * Ensure a module is installed and track if we installed it during the test.
    */
   protected function ensureModuleInstalled(string $module_name): void {
@@ -958,6 +1128,10 @@ class WebformElementsTest extends ExistingSiteBase {
     }
     if (isset($this->webformMultiStep) && $this->webformMultiStep) {
       $this->webformMultiStep->delete();
+    }
+    // Delete vocabulary created for the test.
+    if (isset($this->vocabulary) && $this->vocabulary) {
+      $this->vocabulary->delete();
     }
     // Désinstaller les modules installés pendant le test.
     if (!empty($this->modulesInstalledDuringTest)) {
