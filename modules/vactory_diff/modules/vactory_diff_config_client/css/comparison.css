@@ -1,0 +1,226 @@
+/* Styles pour l'interface de comparaison Vactory Diff */
+
+.comparison-summary {
+  background: #f8f9fa;
+  padding: 15px;
+  border-radius: 4px;
+  margin-bottom: 20px;
+  border-left: 4px solid #007cba;
+}
+
+.comparison-summary h3 {
+  margin-top: 0;
+  color: #0073aa;
+}
+
+.summary-stats {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+}
+
+.summary-stats .stat {
+  padding: 5px 10px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.summary-stats .stat.added {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.summary-stats .stat.modified {
+  background-color: #fff3cd;
+  color: #856404;
+}
+
+.summary-stats .stat.deleted {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.config-diff-results {
+  margin-top: 20px;
+}
+
+.config-section {
+  margin-bottom: 30px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.config-section-title {
+  margin: 0;
+  padding: 15px 20px;
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+  position: relative;
+  transition: background-color 0.2s;
+}
+
+.config-section-title:hover {
+  opacity: 0.9;
+}
+
+.config-section-title::after {
+  content: '▼';
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  transition: transform 0.2s;
+}
+
+.config-section-title.collapsed::after {
+  transform: translateY(-50%) rotate(-90deg);
+}
+
+.config-section-description {
+  margin: 0;
+  padding: 10px 20px;
+  background-color: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+  color: #6c757d;
+  font-style: italic;
+}
+
+.config-section--added .config-section-title {
+  background-color: #28a745;
+}
+
+.config-section--modified .config-section-title {
+  background-color: #ffc107;
+  color: #212529;
+}
+
+.config-section--deleted .config-section-title {
+  background-color: #dc3545;
+}
+
+.config-list {
+  border: none;
+  border-radius: 0;
+}
+
+.config-item {
+  border-bottom: 1px solid #eee;
+  padding: 20px;
+  background-color: white;
+}
+
+.config-item:last-child {
+  border-bottom: none;
+}
+
+.config-name {
+  margin: 0 0 15px 0;
+  color: #0073aa;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.config-description {
+  color: #666;
+  font-style: italic;
+}
+
+.diff-view {
+  margin-top: 10px;
+}
+
+.diff-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  border: 1px solid #ddd;
+}
+
+.diff-table th,
+.diff-table td {
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  text-align: left;
+  vertical-align: top;
+}
+
+.diff-table th {
+  background-color: #f8f9fa;
+  font-weight: bold;
+  color: #495057;
+}
+
+.diff-key {
+  font-weight: bold;
+  background-color: #f8f9fa;
+  width: 200px;
+}
+
+.diff-local {
+  background-color: #fff3cd;
+  font-family: monospace;
+  font-size: 12px;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.diff-remote {
+  background-color: #d1ecf1;
+  font-family: monospace;
+  font-size: 12px;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.diff-row--added_locally .diff-local {
+  background-color: #d4edda;
+}
+
+.diff-row--deleted_locally .diff-remote {
+  background-color: #f8d7da;
+}
+
+.diff-row--modified .diff-local {
+  background-color: #fff3cd;
+}
+
+.diff-row--modified .diff-remote {
+  background-color: #cce5ff;
+}
+
+.config-list--added .config-item {
+  border-left: 4px solid #28a745;
+}
+
+.config-list--modified .config-item {
+  border-left: 4px solid #ffc107;
+}
+
+.config-list--deleted .config-item {
+  border-left: 4px solid #dc3545;
+}
+
+#comparison-loading {
+  text-align: center;
+  padding: 20px;
+}
+
+.ajax-progress-throbber {
+  display: inline-block;
+}
+
+.throbber {
+  width: 16px;
+  height: 16px;
+  background: url('../../../../../core/misc/throbber-active.gif') no-repeat;
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.ajax-progress-throbber .message {
+  margin-left: 10px;
+  vertical-align: middle;
+} 

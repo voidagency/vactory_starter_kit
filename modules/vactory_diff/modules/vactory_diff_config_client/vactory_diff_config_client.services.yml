@@ -1,0 +1,4 @@
+services:
+  vactory_diff_config_client.comparison:
+    class: Drupal\vactory_diff_config_client\Service\ConfigComparisonService
+    arguments: ['@http_client', '@vactory_diff.config_helper', '@config.factory', '@logger.factory'] 

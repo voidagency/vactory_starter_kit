@@ -1,0 +1,11 @@
+comparison:
+  version: 1.x
+  css:
+    theme:
+      css/comparison.css: {}
+  js:
+    js/comparison.js: {}
+  dependencies:
+    - core/drupal
+    - core/jquery
+    - core/drupal.ajax 

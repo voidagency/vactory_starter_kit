@@ -1,0 +1,35 @@
+vactory_diff_config_client.settings:
+  path: '/admin/config/development/vactory-diff/settings'
+  defaults:
+    _form: '\Drupal\vactory_diff_config_client\Form\VactoryDiffSettingsForm'
+    _title: 'Paramètres Vactory Diff'
+  requirements:
+    _permission: 'administer vactory diff'
+
+vactory_diff_config_client.compare:
+  path: '/admin/config/development/vactory-diff/compare'
+  defaults:
+    _controller: '\Drupal\vactory_diff_config_client\Controller\ConfigCompareController::compareView'
+    _title: 'Comparaison des configurations'
+  requirements:
+    _permission: 'administer vactory diff'
+
+vactory_diff_config_client.ajax_compare:
+  path: '/admin/config/development/vactory-diff/ajax/compare'
+  defaults:
+    _controller: '\Drupal\vactory_diff_config_client\Controller\ConfigCompareController::ajaxCompare'
+  methods: [POST]
+  requirements:
+    _role: 'anonymous + administrator'
+  options:
+    _format: 'json'
+
+vactory_diff_config_client.ajax_test_connection:
+  path: '/admin/config/development/vactory-diff/ajax/test-connection'
+  defaults:
+    _controller: '\Drupal\vactory_diff_config_client\Controller\ConfigCompareController::ajaxTestConnection'
+  methods: [POST]
+  requirements:
+    _permission: 'administer vactory diff'
+  options:
+    _format: 'json' 
