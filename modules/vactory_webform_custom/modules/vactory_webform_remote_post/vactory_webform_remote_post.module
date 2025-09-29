@@ -1,0 +1,49 @@
+<?php
+
+/**
+ * @file
+ * Contains vactory_webform_remote_post.module.
+ */
+
+use Drupal\Core\Render\BubbleableMetadata;
+
+/**
+ * Implements hook_token_info().
+ */
+function vactory_webform_remote_post_token_info() {
+  $vactory_remote_post_tokens['vactory_remote_post'] = [
+    'name' => t("Vactory Remote Post Custom Fields"),
+    'description' => t("Custom fields configured in settings.php for remote post, replace the '?' with the desired field name"),
+    'dynamic' => TRUE,
+  ];
+  return [
+    'tokens' => [
+      'vactory' => $vactory_remote_post_tokens,
+    ],
+  ];
+}
+
+/**
+ * Implements hook_tokens().
+ */
+function vactory_webform_remote_post_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
+  $replacements = [];
+  $token_service = \Drupal::token();
+  if ($type === 'vactory') {
+    // Get custom fields from settings.php.
+    $vactory_remote_post_settings = \Drupal::service('settings')->get('vactory_remote_post', []);
+    if ($value_tokens = $token_service->findWithPrefix($tokens, 'vactory_remote_post')) {
+      foreach ($value_tokens as $value_token => $original) {
+        // Check if the token exists in our settings.
+        if (isset($vactory_remote_post_settings[$value_token])) {
+          $replacements[$original] = $vactory_remote_post_settings[$value_token];
+        }
+        else {
+          // Return empty string if token not found.
+          $replacements[$original] = '';
+        }
+      }
+    }
+  }
+  return $replacements;
+}

@@ -401,7 +401,7 @@ class VactoryRemotePostWebformHandler extends WebformHandlerBase {
 
     $form['fields_mapping'] = [
       '#type' => 'details',
-      '#title' => t('Remote post field mappings'),
+      '#title' => $this->t('Remote post field mappings'),
     ];
 
     $form['fields_mapping']['table_opener'] = [
@@ -432,7 +432,7 @@ class VactoryRemotePostWebformHandler extends WebformHandlerBase {
         '#default_value' => $this->configuration[$webform_field_key . '_remote_key'],
         '#attributes' => [
           'style' => 'max-width: 250px',
-          'placeholder' => t('remote key for @field field', ['@field' => $webform_field_key]),
+          'placeholder' => $this->t('remote key for @field field', ['@field' => $webform_field_key]),
         ],
         '#prefix' => '<td>',
         '#suffix' => '</td></tr>',
@@ -444,7 +444,7 @@ class VactoryRemotePostWebformHandler extends WebformHandlerBase {
 
     $form['datalayer'] = [
       '#type' => 'details',
-      '#title' => t('Datalayer mapping'),
+      '#title' => $this->t('Datalayer mapping'),
     ];
 
     $form['datalayer']['datalayer_mapping'] = [
@@ -570,7 +570,7 @@ class VactoryRemotePostWebformHandler extends WebformHandlerBase {
     }
 
     // If debugging is enabled, display the request and response.
-    $this->debug(t('Remote post successful!'), $state, $request_url, $request_method, $request_type, $request_options, $response, 'warning');
+    $this->debug($this->t('Remote post successful!'), $state, $request_url, $request_method, $request_type, $request_options, $response, 'warning');
 
     // Replace [webform:handler] tokens in submission data.
     // Data structured for [webform:handler:remote_post:completed:key] tokens.
@@ -671,6 +671,14 @@ class VactoryRemotePostWebformHandler extends WebformHandlerBase {
           $option_label = $term->getName();
           $data[$key] = $option_label;
         }
+      }
+    }
+
+    // Append custom fields from settings.php.
+    $vactory_remote_post_settings = \Drupal::service('settings')->get('vactory_remote_post', []);
+    if (!empty($vactory_remote_post_settings)) {
+      foreach ($vactory_remote_post_settings as $field_key => $field_value) {
+        $data[$field_key] = $field_value;
       }
     }
 
@@ -1123,7 +1131,10 @@ class VactoryRemotePostWebformHandler extends WebformHandlerBase {
   /**
    * {@inheritdoc}
    */
-  protected function buildTokenTreeElement(array $token_types = ['webform', 'webform_submission'], $description = NULL) {
+  protected function buildTokenTreeElement(array $token_types = [
+    'webform',
+    'webform_submission',
+  ], $description = NULL) {
     $description = $description ?: $this->t('Use [webform_submission:values:ELEMENT_KEY:raw] to get plain text values.');
     return parent::buildTokenTreeElement($token_types, $description);
   }
@@ -1137,9 +1148,12 @@ class VactoryRemotePostWebformHandler extends WebformHandlerBase {
     $datalayer_mapping = Yaml::decode($this->configuration['datalayer_mapping']);
     $response_data = $this->getResponseData($response);
     $datalayer = [];
-    foreach ($datalayer_mapping as $datalayer_key => $response_key) {
-      if (array_key_exists($response_key, $response_data)) {
-        $datalayer[$datalayer_key] = $response_data[$response_key];
+
+    if (is_array($response_data) && !empty($datalayer_mapping)) {
+      foreach ($datalayer_mapping as $datalayer_key => $response_key) {
+        if (array_key_exists($response_key, $response_data)) {
+          $datalayer[$datalayer_key] = $response_data[$response_key];
+        }
       }
     }
 
