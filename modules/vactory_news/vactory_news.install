@@ -5,6 +5,10 @@
  * Install file.
  */
 
+use Symfony\Component\Yaml\Yaml;
+use Drupal\Core\Config\InstallStorage;
+use Drupal\Core\Config\StorageInterface;
+use Drupal\Core\Config\FileStorage;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\vactory_news\Exceptions\BlockCreationException;
 use Drupal\block_content\Entity\BlockContent;
@@ -138,6 +142,32 @@ function vactory_news_install() {
   else {
     \Drupal::logger('vactory_news')
       ->warning('Three columns block : The paragraph was not added because the widget settings do not have the expected structure.');
+  }
+
+  // Install optional configs using the same logic as vactory_user_install.
+  $module_name = preg_replace('/_install$/', '', __FUNCTION__);
+  $module_path = \Drupal::service('module_handler')->getModule($module_name)->getPath();
+
+  // Install optional configs.
+  $optional_install_path = $module_path . '/' . InstallStorage::CONFIG_OPTIONAL_DIRECTORY;
+  if (is_dir($optional_install_path)) {
+    $config_installer = \Drupal::service('config.installer');
+    $config_installer->installDefaultConfig('module', $module_name);
+
+    // Install any optional config the module provides.
+    $storage = new FileStorage($optional_install_path, StorageInterface::DEFAULT_COLLECTION);
+    $config_installer->installOptionalConfig($storage, '');
+
+    // Have the .settings.yml configs into the active config.
+    $settings_config_files = \Drupal::service('file_system')->scanDirectory($optional_install_path, '/^.*\\.(settings.yml)$/i');
+    if (isset($settings_config_files) && is_array($settings_config_files)) {
+      foreach ($settings_config_files as $settings_config_file) {
+        $settings_config_file_content = file_get_contents(DRUPAL_ROOT . '/' . $settings_config_file->uri);
+        $settings_config_file_data = (array) Yaml::parse($settings_config_file_content);
+        $config_factory = \Drupal::configFactory()->getEditable($settings_config_file->name);
+        $config_factory->setData($settings_config_file_data)->save(TRUE);
+      }
+    }
   }
 
 }
