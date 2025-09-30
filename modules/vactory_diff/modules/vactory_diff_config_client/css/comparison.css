@@ -57,26 +57,6 @@
   font-size: 18px;
   font-weight: bold;
   color: white;
-  cursor: pointer;
-  position: relative;
-  transition: background-color 0.2s;
-}
-
-.config-section-title:hover {
-  opacity: 0.9;
-}
-
-.config-section-title::after {
-  content: '▼';
-  position: absolute;
-  right: 20px;
-  top: 50%;
-  transform: translateY(-50%);
-  transition: transform 0.2s;
-}
-
-.config-section-title.collapsed::after {
-  transform: translateY(-50%) rotate(-90deg);
 }
 
 .config-section-description {
@@ -223,4 +203,4 @@
 .ajax-progress-throbber .message {
   margin-left: 10px;
   vertical-align: middle;
-} 
+}

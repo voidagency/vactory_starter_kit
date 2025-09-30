@@ -54,15 +54,8 @@
    */
   Drupal.behaviors.vactoryDiffComparison = {
     attach: function (context, settings) {
-      // Plus besoin de gestion d'onglets, tout le contenu est affiché
-      // Optionnel : ajouter des fonctionnalités d'amélioration UX ici
-      
-      // Exemple : plier/déplier les sections de configurations
-      $(context).find('.config-section-title').once('vactory-diff-toggle').on('click', function() {
-        $(this).closest('.config-section').find('.config-list').slideToggle();
-        $(this).toggleClass('collapsed');
-      });
+      // Interface simple sans interactions complexes
     }
   };
 
-})(jQuery, Drupal); 
+})(jQuery, Drupal);
