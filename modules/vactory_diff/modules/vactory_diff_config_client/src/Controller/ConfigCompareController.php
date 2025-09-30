@@ -85,75 +85,31 @@ class ConfigCompareController extends ControllerBase {
     $config = $this->configFactory->get('vactory_diff_config_client.settings');
     $remote_url = $config->get('remote_url');
 
-    $build = [];
-
-    // Vérifier si l'URL distante est configurée.
+    // Check if remote URL is configured.
     if (empty($remote_url)) {
-      $build['error'] = [
-        '#type' => 'item',
-        '#markup' => '
-          <div class="messages messages--warning">' .
-        $this->t('Veuillez d\'abord configurer l\'URL de l\'instance distante dans les <a href="@settings_url">paramètres</a>.', [
-          '@settings_url' => '/admin/config/development/vactory-diff/settings',
-        ])
-        . '</div>',
+      $error_message = $this->t('Veuillez d\'abord configurer l\'URL de l\'instance distante dans les <a href="@settings_url">paramètres</a>.', [
+        '@settings_url' => '/admin/config/development/vactory-diff/settings',
+      ]);
+
+      return [
+        '#theme' => 'vactory_diff_comparison',
+        '#remote_url' => '',
+        '#results' => [],
+        '#error_message' => $error_message,
+        '#attached' => ['library' => ['vactory_diff_config_client/comparison']],
       ];
-      return $build;
     }
 
-    // Interface de comparaison.
-    $build['header'] = [
-      '#type' => 'item',
-      '#markup' => '<h2>' . $this->t('Comparaison des configurations') . '</h2>',
-    ];
-
-    $build['description'] = [
-      '#type' => 'item',
-      '#markup' => '<p>' . $this->t("Comparez les configurations entre cette instance locale et l'instance distante configurée : <strong>@url</strong>", [
-        '@url' => $remote_url,
-      ]) . '</p>',
-    ];
-
-    // Bouton de comparaison.
-    $build['compare_button'] = [
-      '#type' => 'button',
-      '#value' => $this->t('Récupérer et comparer'),
-      '#attributes' => [
-        'id' => 'compare-configs-btn',
-        'class' => ['button', 'button--primary'],
-        'onclick' => 'startComparison()',
-      ],
-    ];
-
-    // Zone de chargement.
-    $build['loading'] = [
-      '#type' => 'container',
-      '#attributes' => [
-        'id' => 'comparison-loading',
-        'style' => 'display: none;',
-      ],
-      'content' => [
-        '#markup' => '<div class="ajax-progress ajax-progress-throbber"><div class="throbber">&nbsp;</div><div class="message">' .
-        $this->t('Comparaison en cours, veuillez patienter...') . '</div></div>',
-      ],
-    ];
-
-    // Zone de résultats.
-    $build['results'] = [
-      '#type' => 'container',
-      '#attributes' => ['id' => 'comparison-results'],
-    ];
-
-    // Afficher les résultats de la dernière comparaison si disponible.
+    // Get last comparison results if available.
     $comparison_results = $config->get('comparison_results');
-    if (!empty($comparison_results)) {
-      $build['results']['content'] = $this->buildComparisonResults($comparison_results);
-    }
 
-    // Ajouter le JavaScript et CSS nécessaires.
-    $build['#attached']['library'][] = 'vactory_diff_config_client/comparison';
-
-    return $build;
+    return [
+      '#theme' => 'vactory_diff_comparison',
+      '#remote_url' => $remote_url,
+      '#results' => $comparison_results,
+      '#error_message' => '',
+      '#attached' => ['library' => ['vactory_diff_config_client/comparison']],
+    ];
   }
 
   /**
@@ -186,7 +142,7 @@ class ConfigCompareController extends ControllerBase {
         ], 500);
       }
 
-      // Générer le HTML des résultats.
+      // Generate HTML using Twig template.
       $results_html = $this->renderComparisonResults($comparison_results);
 
       return new JsonResponse([
@@ -234,69 +190,7 @@ class ConfigCompareController extends ControllerBase {
   }
 
   /**
-   * Build comparison results render array.
-   *
-   * @param array $results
-   *   The comparison results.
-   *
-   * @return array
-   *   Render array for the results.
-   */
-  protected function buildComparisonResults(array $results): array {
-    $build = [];
-
-    if (empty($results['summary'])) {
-      return $build;
-    }
-
-    $summary = $results['summary'];
-    $differences = $results['differences'] ?? [];
-
-    // En-tête avec résumé.
-    $build['summary'] = [
-      '#type' => 'item',
-      '#markup' => $this->t(
-        '<div class="comparison-summary">
-       <h3>@title</h3>
-       <p>@date_text</p>
-       <div class="summary-stats">
-         <span class="stat added">@added</span> | 
-         <span class="stat modified">@modified</span> | 
-         <span class="stat deleted">@deleted</span>
-       </div>
-     </div>',
-        [
-          '@title' => $this->t('Résumé de la comparaison'),
-          '@date_text' => $this->t('Comparaison effectuée le @date', [
-            '@date' => date('d/m/Y H:i:s', strtotime($results['timestamp'])),
-          ]),
-          '@added' => $this->t('@count ajoutées', ['@count' => $summary['added']]),
-          '@modified' => $this->t('@count modifiées', ['@count' => $summary['modified']]),
-          '@deleted' => $this->t('@count supprimées', ['@count' => $summary['deleted']]),
-        ]
-      ),
-    ];
-
-    // Affichage des différences.
-    if ($summary['total_differences'] > 0) {
-      $build['differences'] = [
-        '#type' => 'item',
-        '#markup' => $this->buildLinearResults($differences),
-      ];
-    }
-    else {
-      $build['no_differences'] = [
-        '#type' => 'item',
-        '#markup' => '<div class="messages messages--status">' .
-        $this->t('Aucune différence trouvée. Les configurations sont identiques.') . '</div>',
-      ];
-    }
-
-    return $build;
-  }
-
-  /**
-   * Render comparison results to HTML.
+   * Render comparison results using Twig template.
    *
    * @param array $results
    *   The comparison results.
@@ -305,125 +199,11 @@ class ConfigCompareController extends ControllerBase {
    *   HTML string of the results.
    */
   protected function renderComparisonResults(array $results): string {
-    $build = $this->buildComparisonResults($results);
+    $build = [
+      '#theme' => 'vactory_diff_results',
+      '#results' => $results,
+    ];
     return \Drupal::service('renderer')->render($build);
-  }
-
-  /**
-   * Build linear interface for different types of differences.
-   *
-   * @param array $differences
-   *   The differences array.
-   *
-   * @return string
-   *   HTML for the linear interface.
-   */
-  protected function buildLinearResults(array $differences): string {
-    $html = '<div class="config-diff-results">';
-
-    // Configurations ajoutées.
-    if (!empty($differences['added'])) {
-      $html .= '<div class="config-section config-section--added">';
-      $html .= '<h3 class="config-section-title">' .
-        $this->t('Configurations ajoutées (@count)', ['@count' => count($differences['added'])]) . '</h3>';
-      $html .= '<p class="config-section-description">' .
-        $this->t('Ces configurations existent localement mais pas sur le serveur distant.') . '</p>';
-      $html .= $this->buildConfigList($differences['added'], 'added');
-      $html .= '</div>';
-    }
-
-    // Configurations modifiées.
-    if (!empty($differences['modified'])) {
-      $html .= '<div class="config-section config-section--modified">';
-      $html .= '<h3 class="config-section-title">' .
-        $this->t('Configurations modifiées (@count)', ['@count' => count($differences['modified'])]) . '</h3>';
-      $html .= '<p class="config-section-description">' .
-        $this->t('Ces configurations ont des valeurs différentes entre local et distant.') . '</p>';
-      $html .= $this->buildConfigList($differences['modified'], 'modified');
-      $html .= '</div>';
-    }
-
-    // Configurations supprimées.
-    if (!empty($differences['deleted'])) {
-      $html .= '<div class="config-section config-section--deleted">';
-      $html .= '<h3 class="config-section-title">' .
-        $this->t('Configurations supprimées (@count)', ['@count' => count($differences['deleted'])]) . '</h3>';
-      $html .= '<p class="config-section-description">' .
-        $this->t('Ces configurations existent sur le serveur distant mais pas localement.') . '</p>';
-      $html .= $this->buildConfigList($differences['deleted'], 'deleted');
-      $html .= '</div>';
-    }
-
-    $html .= '</div>';
-
-    return $html;
-  }
-
-  /**
-   * Build configuration list for a specific type.
-   *
-   * @param array $configs
-   *   The configurations.
-   * @param string $type
-   *   The type of difference.
-   *
-   * @return string
-   *   HTML for the configuration list.
-   */
-  protected function buildConfigList(array $configs, string $type): string {
-    $html = '<div class="config-list config-list--' . $type . '">';
-
-    foreach ($configs as $config_data) {
-      $config_name = $config_data['name'] ?? 'Configuration inconnue';
-
-      $html .= '<div class="config-item">';
-      $html .= '<h4 class="config-name">' . htmlspecialchars($config_name) . '</h4>';
-
-      if ($type === 'modified' && isset($config_data['diff'])) {
-        $html .= '<div class="config-diff">';
-        $html .= $this->buildDiffView($config_data['diff']);
-        $html .= '</div>';
-      }
-
-      $html .= '</div>';
-    }
-
-    $html .= '</div>';
-
-    return $html;
-  }
-
-  /**
-   * Build diff view for modified configurations.
-   *
-   * @param array $diff
-   *   The diff data.
-   *
-   * @return string
-   *   HTML for the diff view.
-   */
-  protected function buildDiffView(array $diff): string {
-    $html = '<div class="diff-view">';
-
-    if (!empty($diff['changes'])) {
-      $html .= '<table class="diff-table">';
-      $html .= '<thead><tr><th>' . $this->t('Clé') . '</th><th>' . $this->t('Local') . '</th><th>' . $this->t('Distant') . '</th></tr></thead>';
-      $html .= '<tbody>';
-
-      foreach ($diff['changes'] as $change) {
-        $html .= '<tr class="diff-row diff-row--' . $change['change_type'] . '">';
-        $html .= '<td class="diff-key">' . htmlspecialchars($change['key']) . '</td>';
-        $html .= '<td class="diff-local">' . htmlspecialchars(json_encode($change['local_value'], JSON_PRETTY_PRINT)) . '</td>';
-        $html .= '<td class="diff-remote">' . htmlspecialchars(json_encode($change['remote_value'], JSON_PRETTY_PRINT)) . '</td>';
-        $html .= '</tr>';
-      }
-
-      $html .= '</tbody></table>';
-    }
-
-    $html .= '</div>';
-
-    return $html;
   }
 
 }

@@ -1,0 +1,46 @@
+{#
+/**
+ * @file
+ * Template for Vactory Diff comparison interface.
+ *
+ * Available variables:
+ * - remote_url: The configured remote URL
+ * - results: Comparison results array
+ * - error_message: Error message if any
+ */
+#}
+<div class="vactory-diff-comparison">
+  {% if error_message %}
+    <div class="messages messages--warning">
+      {{ error_message|raw }}
+    </div>
+  {% else %}
+    {# Header #}
+    <div class="comparison-header">
+      <h2>{{ 'Comparaison des configurations'|t }}</h2>
+      <p>{{ 'Comparez les configurations entre cette instance locale et l\'instance distante configurée :'|t }} <strong>{{ remote_url }}</strong></p>
+    </div>
+
+    {# Compare button #}
+    <div class="comparison-actions">
+      <button type="button" id="compare-configs-btn" class="button button--primary" onclick="startComparison()">
+        {{ 'Récupérer et comparer'|t }}
+      </button>
+    </div>
+
+    {# Loading zone #}
+    <div id="comparison-loading" style="display: none;">
+      <div class="ajax-progress ajax-progress-throbber">
+        <div class="throbber">&nbsp;</div>
+        <div class="message">{{ 'Comparaison en cours, veuillez patienter...'|t }}</div>
+      </div>
+    </div>
+
+    {# Results zone #}
+    <div id="comparison-results">
+      {% if results %}
+        {{ include('vactory-diff-results.html.twig', {results: results}) }}
+      {% endif %}
+    </div>
+  {% endif %}
+</div>

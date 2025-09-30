@@ -1,0 +1,114 @@
+{#
+/**
+ * @file
+ * Template for Vactory Diff comparison results.
+ *
+ * Available variables:
+ * - results: Comparison results array with summary and differences
+ */
+#}
+
+{% if results.summary %}
+  {# Summary section #}
+  <div class="comparison-summary">
+    <h3>{{ 'Résumé de la comparaison'|t }}</h3>
+    <p>{{ 'Comparaison effectuée le @date'|t({'@date': results.timestamp|date('d/m/Y H:i:s')}) }}</p>
+    <div class="summary-stats">
+      <span class="stat added">{{ '@count ajoutées'|t({'@count': results.summary.added}) }}</span> | 
+      <span class="stat modified">{{ '@count modifiées'|t({'@count': results.summary.modified}) }}</span> | 
+      <span class="stat deleted">{{ '@count supprimées'|t({'@count': results.summary.deleted}) }}</span>
+    </div>
+  </div>
+
+  {# Differences section #}
+  {% if results.summary.total_differences > 0 %}
+    <div class="config-diff-results">
+      
+      {# Added configurations #}
+      {% if results.differences.added %}
+        <div class="config-section config-section--added">
+          <h3 class="config-section-title">
+            {{ 'Configurations ajoutées (@count)'|t({'@count': results.differences.added|length}) }}
+          </h3>
+          <p class="config-section-description">
+            {{ 'Ces configurations existent localement mais pas sur le serveur distant.'|t }}
+          </p>
+          <div class="config-list config-list--added">
+            {% for config in results.differences.added %}
+              <div class="config-item">
+                <h4 class="config-name">{{ config.name }}</h4>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
+      {# Modified configurations #}
+      {% if results.differences.modified %}
+        <div class="config-section config-section--modified">
+          <h3 class="config-section-title">
+            {{ 'Configurations modifiées (@count)'|t({'@count': results.differences.modified|length}) }}
+          </h3>
+          <p class="config-section-description">
+            {{ 'Ces configurations ont des valeurs différentes entre local et distant.'|t }}
+          </p>
+          <div class="config-list config-list--modified">
+            {% for config in results.differences.modified %}
+              <div class="config-item">
+                <h4 class="config-name">{{ config.name }}</h4>
+                {% if config.diff and config.diff.changes %}
+                  <div class="config-diff">
+                    <div class="diff-view">
+                      <table class="diff-table">
+                        <thead>
+                          <tr>
+                            <th>{{ 'Clé'|t }}</th>
+                            <th>{{ 'Local'|t }}</th>
+                            <th>{{ 'Distant'|t }}</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {% for key, change in config.diff.changes %}
+                            <tr class="diff-row diff-row--{{ change.change_type }}">
+                              <td class="diff-key">{{ change.key }}</td>
+                              <td class="diff-local">{{ change.local_value|json_encode(constant('JSON_PRETTY_PRINT')) }}</td>
+                              <td class="diff-remote">{{ change.remote_value|json_encode(constant('JSON_PRETTY_PRINT')) }}</td>
+                            </tr>
+                          {% endfor %}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                {% endif %}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
+      {# Deleted configurations #}
+      {% if results.differences.deleted %}
+        <div class="config-section config-section--deleted">
+          <h3 class="config-section-title">
+            {{ 'Configurations supprimées (@count)'|t({'@count': results.differences.deleted|length}) }}
+          </h3>
+          <p class="config-section-description">
+            {{ 'Ces configurations existent sur le serveur distant mais pas localement.'|t }}
+          </p>
+          <div class="config-list config-list--deleted">
+            {% for config in results.differences.deleted %}
+              <div class="config-item">
+                <h4 class="config-name">{{ config.name }}</h4>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
+    </div>
+  {% else %}
+    <div class="messages messages--status">
+      {{ 'Aucune différence trouvée. Les configurations sont identiques.'|t }}
+    </div>
+  {% endif %}
+{% endif %}

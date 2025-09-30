@@ -16,18 +16,3 @@ function vactory_diff_help($route_name, RouteMatchInterface $route_match) {
       return '<p>' . t('Ce module fournit des outils pour comparer les configurations entre différentes instances Drupal.') . '</p>';
   }
 }
-
-/**
- * Implements hook_theme().
- */
-function vactory_diff_theme() {
-  return [
-    'vactory_diff_comparison_table' => [
-      'variables' => [
-        'differences' => [],
-        'summary' => [],
-      ],
-      'template' => 'vactory-diff-comparison-table',
-    ],
-  ];
-}
