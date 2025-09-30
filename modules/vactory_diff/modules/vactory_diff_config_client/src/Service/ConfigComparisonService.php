@@ -92,14 +92,12 @@ class ConfigComparisonService {
         $body = $response->getBody()->getContents();
         $data = json_decode($body, TRUE);
 
-        if (json_last_error() === JSON_ERROR_NONE && $this->configHelper->validateConfigData($data)) {
-          $this->logger->info('Successfully fetched @count remote configurations', [
-            '@count' => count($data['configs'] ?? []),
-          ]);
+        if (json_last_error() === JSON_ERROR_NONE) {
+          $this->logger->info('Successfully fetched remote configurations');
           return $data;
         }
         else {
-          $this->logger->error('Invalid JSON response or data structure from remote API');
+          $this->logger->error('Invalid JSON response from remote API');
           return NULL;
         }
       }
@@ -143,17 +141,23 @@ class ConfigComparisonService {
       ];
     }
 
+    // Compter les configurations depuis le format groupé.
+    $total = 0;
+    foreach ($remote_data['configs'] ?? [] as $type_data) {
+      $total += $type_data['count'] ?? 0;
+    }
+
     return [
       'success' => TRUE,
       'message' => sprintf(
         'Connexion réussie. %d configurations trouvées sur "%s".',
-        count($remote_data['configs'] ?? []),
+        $total,
         $remote_data['site_name'] ?? 'Site inconnu'
       ),
       'remote_info' => [
         'site_name' => $remote_data['site_name'] ?? '',
         'timestamp' => $remote_data['timestamp'] ?? '',
-        'count' => count($remote_data['configs'] ?? []),
+        'count' => $total,
       ],
     ];
   }
@@ -162,63 +166,93 @@ class ConfigComparisonService {
    * Compare local and remote configurations.
    *
    * @param array $local_data
-   *   Local configuration data.
+   *   Local configuration data grouped by type.
    * @param array $remote_data
-   *   Remote configuration data.
+   *   Remote configuration data grouped by type.
    *
    * @return array
    *   Array containing comparison results.
    */
   public function compareConfigs(array $local_data, array $remote_data): array {
-    $local_configs = $local_data['configs'] ?? [];
-    $remote_configs = $remote_data['configs'] ?? [];
+    $local_by_type = $local_data['configs_by_type'] ?? [];
+    $remote_by_type = $remote_data['configs'] ?? [];
 
-    $added = [];
-    $modified = [];
-    $deleted = [];
+    $added_by_type = [];
+    $modified_by_type = [];
+    $deleted_by_type = [];
+
+    $total_added = 0;
+    $total_modified = 0;
+    $total_deleted = 0;
 
     try {
-      // Configs ajoutées (présentes en local mais pas sur le serveur distant).
-      foreach ($local_configs as $config_name => $local_config) {
-        if (!isset($remote_configs[$config_name])) {
-          $added[] = [
-            'name' => $config_name,
-            'local_data' => $local_config,
-          ];
-        }
-      }
+      // Obtenir tous les types uniques.
+      $all_types = array_unique(array_merge(
+        array_keys($local_by_type),
+        array_keys($remote_by_type)
+      ));
 
-      // Configs supprimées (présentes sur le serveur distant, pas en local).
-      foreach ($remote_configs as $config_name => $remote_config) {
-        if (!isset($local_configs[$config_name])) {
-          $deleted[] = [
-            'name' => $config_name,
-            'remote_data' => $remote_config,
-          ];
-        }
-      }
+      // Comparer type par type.
+      foreach ($all_types as $type) {
+        $local_configs = $local_by_type[$type]['configs'] ?? [];
+        $remote_configs = $remote_by_type[$type]['configs'] ?? [];
 
-      // Configurations modifiées (différentes entre local et distant).
-      foreach ($local_configs as $config_name => $local_config) {
-        if (isset($remote_configs[$config_name])) {
-          $remote_config = $remote_configs[$config_name];
-          try {
-            if ($this->configsAreDifferent($local_config, $remote_config)) {
-              $modified[] = [
-                'name' => $config_name,
-                'local_data' => $local_config,
-                'remote_data' => $remote_config,
-                'diff' => $this->generateDiff($config_name, $local_config, $remote_config),
-              ];
+        // Configs ajoutées pour ce type.
+        foreach ($local_configs as $config_name => $local_config) {
+          if (!isset($remote_configs[$config_name])) {
+            if (!isset($added_by_type[$type])) {
+              $added_by_type[$type] = [];
             }
+            $added_by_type[$type][] = [
+              'name' => $config_name,
+              'type' => $type,
+              'local_data' => $local_config,
+            ];
+            $total_added++;
           }
-          catch (\Exception $e) {
-            $this->logger->warning('Error comparing config @name: @message', [
-              '@name' => $config_name,
-              '@message' => $e->getMessage(),
-            ]);
-            // Continuer avec les autres configurations.
-            continue;
+        }
+
+        // Configs supprimées pour ce type.
+        foreach ($remote_configs as $config_name => $remote_config) {
+          if (!isset($local_configs[$config_name])) {
+            if (!isset($deleted_by_type[$type])) {
+              $deleted_by_type[$type] = [];
+            }
+            $deleted_by_type[$type][] = [
+              'name' => $config_name,
+              'type' => $type,
+              'remote_data' => $remote_config,
+            ];
+            $total_deleted++;
+          }
+        }
+
+        // Configs modifiées pour ce type.
+        foreach ($local_configs as $config_name => $local_config) {
+          if (isset($remote_configs[$config_name])) {
+            $remote_config = $remote_configs[$config_name];
+            try {
+              if ($this->configsAreDifferent($local_config, $remote_config)) {
+                if (!isset($modified_by_type[$type])) {
+                  $modified_by_type[$type] = [];
+                }
+                $modified_by_type[$type][] = [
+                  'name' => $config_name,
+                  'type' => $type,
+                  'local_data' => $local_config,
+                  'remote_data' => $remote_config,
+                  'diff' => $this->generateDiff($config_name, $local_config, $remote_config),
+                ];
+                $total_modified++;
+              }
+            }
+            catch (\Exception $e) {
+              $this->logger->warning('Error comparing config @name: @message', [
+                '@name' => $config_name,
+                '@message' => $e->getMessage(),
+              ]);
+              continue;
+            }
           }
         }
       }
@@ -227,36 +261,40 @@ class ConfigComparisonService {
       $this->logger->error('Error during config comparison: @message', [
         '@message' => $e->getMessage(),
       ]);
-      // Retourner des résultats partiels plutôt qu'échouer complètement.
     }
+
+    // Trier les résultats par type.
+    ksort($added_by_type);
+    ksort($modified_by_type);
+    ksort($deleted_by_type);
 
     $comparison_results = [
       'timestamp' => date('c'),
       'local_info' => [
         'site_name' => $local_data['site_name'] ?? '',
-        'count' => count($local_configs),
+        'count' => $local_data['total_count'] ?? 0,
       ],
       'remote_info' => [
         'site_name' => $remote_data['site_name'] ?? '',
-        'count' => count($remote_configs),
+        'count' => $remote_data['total_count'] ?? 0,
       ],
       'summary' => [
-        'added' => count($added),
-        'modified' => count($modified),
-        'deleted' => count($deleted),
-        'total_differences' => count($added) + count($modified) + count($deleted),
+        'added' => $total_added,
+        'modified' => $total_modified,
+        'deleted' => $total_deleted,
+        'total_differences' => $total_added + $total_modified + $total_deleted,
       ],
-      'differences' => [
-        'added' => $added,
-        'modified' => $modified,
-        'deleted' => $deleted,
+      'differences_by_type' => [
+        'added' => $added_by_type,
+        'modified' => $modified_by_type,
+        'deleted' => $deleted_by_type,
       ],
     ];
 
     $this->logger->info('Configuration comparison completed: @added added, @modified modified, @deleted deleted', [
-      '@added' => count($added),
-      '@modified' => count($modified),
-      '@deleted' => count($deleted),
+      '@added' => $total_added,
+      '@modified' => $total_modified,
+      '@deleted' => $total_deleted,
     ]);
 
     return $comparison_results;
@@ -415,23 +453,25 @@ class ConfigComparisonService {
    */
   public function performFullComparison(string $url): ?array {
     try {
-      // Récupérer les données distantes.
+      // Récupérer les données distantes (déjà groupées par type).
       $remote_data = $this->fetchRemoteConfig($url);
       if ($remote_data === NULL) {
         return NULL;
       }
 
-      // Récupérer les données locales.
+      // Récupérer les données locales et les grouper par type.
       $local_configs = $this->configHelper->getAllConfigurations();
       $local_info = $this->configHelper->getSiteInfo();
+      $local_by_type = $this->configHelper->groupConfigsByType($local_configs);
 
       $local_data = [
         'timestamp' => $local_info['timestamp'],
         'site_name' => $local_info['site_name'],
-        'configs' => $local_configs,
+        'total_count' => count($local_configs),
+        'configs_by_type' => $local_by_type,
       ];
 
-      // Comparer les configurations.
+      // Comparer les configurations (type par type).
       $comparison_results = $this->compareConfigs($local_data, $remote_data);
 
       // Sauvegarder les résultats.

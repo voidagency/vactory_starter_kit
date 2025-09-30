@@ -204,3 +204,36 @@
   margin-left: 10px;
   vertical-align: middle;
 }
+
+/* Styles pour les groupes de types de configuration */
+.config-type-group {
+  margin-bottom: 20px;
+}
+
+.config-type-title {
+  margin: 0 0 10px 0;
+  padding: 8px 12px;
+  background-color: #e9ecef;
+  border-left: 4px solid #6c757d;
+  font-size: 15px;
+  font-weight: 600;
+  color: #495057;
+}
+
+.config-section--added .config-type-title {
+  background-color: #d4edda;
+  border-left-color: #28a745;
+  color: #155724;
+}
+
+.config-section--modified .config-type-title {
+  background-color: #fff3cd;
+  border-left-color: #ffc107;
+  color: #856404;
+}
+
+.config-section--deleted .config-type-title {
+  background-color: #f8d7da;
+  border-left-color: #dc3545;
+  color: #721c24;
+}

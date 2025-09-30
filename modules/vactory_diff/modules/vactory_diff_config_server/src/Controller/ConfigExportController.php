@@ -68,13 +68,16 @@ class ConfigExportController extends ControllerBase {
       // Récupérer toutes les configurations.
       $configs = $this->configHelper->getAllConfigurations();
 
-      // Préparer la réponse.
+      // Grouper les configurations par type.
+      $configs_by_type = $this->configHelper->groupConfigsByType($configs);
+
+      // Préparer la réponse avec les configurations classées par type.
       $response_data = [
         'timestamp' => $site_info['timestamp'],
         'site_name' => $site_info['site_name'],
         'site_uuid' => $site_info['site_uuid'],
-        'configs' => $configs,
-        'count' => count($configs),
+        'total_count' => count($configs),
+        'configs' => $configs_by_type,
       ];
 
       $this->logger->info('Configuration export successful. @count configurations exported.', [
@@ -97,60 +100,6 @@ class ConfigExportController extends ControllerBase {
       return new JsonResponse([
         'error' => TRUE,
         'message' => 'Une erreur est survenue lors de l\'export des configurations.',
-        'timestamp' => date('c'),
-      ], 500);
-    }
-  }
-
-  /**
-   * Get configuration for a specific config name.
-   *
-   * @param \Symfony\Component\HttpFoundation\Request $request
-   *   The request object.
-   * @param string $config_name
-   *   The configuration name.
-   *
-   * @return \Symfony\Component\HttpFoundation\JsonResponse
-   *   JSON response containing the specific configuration.
-   */
-  public function exportSingle(Request $request, string $config_name): JsonResponse {
-    try {
-      $config_data = $this->configHelper->getConfiguration($config_name);
-
-      if ($config_data === NULL) {
-        return new JsonResponse([
-          'error' => TRUE,
-          'message' => 'Configuration non trouvée.',
-          'config_name' => $config_name,
-          'timestamp' => date('c'),
-        ], 404);
-      }
-
-      $site_info = $this->configHelper->getSiteInfo();
-
-      $response_data = [
-        'timestamp' => $site_info['timestamp'],
-        'site_name' => $site_info['site_name'],
-        'config_name' => $config_name,
-        'config_data' => $config_data,
-      ];
-
-      $this->logger->info('Single configuration export successful for @name.', [
-        '@name' => $config_name,
-      ]);
-
-      return new JsonResponse($response_data);
-    }
-    catch (\Exception $e) {
-      $this->logger->error('Error during single configuration export for @name: @message', [
-        '@name' => $config_name,
-        '@message' => $e->getMessage(),
-      ]);
-
-      return new JsonResponse([
-        'error' => TRUE,
-        'message' => 'Une erreur est survenue lors de l\'export de la configuration.',
-        'config_name' => $config_name,
         'timestamp' => date('c'),
       ], 500);
     }

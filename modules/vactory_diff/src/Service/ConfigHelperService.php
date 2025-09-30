@@ -5,11 +5,16 @@ namespace Drupal\vactory_diff\Service;
 use Drupal\Core\Config\StorageInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Config\Entity\ConfigEntityInterface;
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 
 /**
  * Service helper pour la gestion des configurations.
  */
 class ConfigHelperService {
+
+  use StringTranslationTrait;
 
   /**
    * The configuration storage.
@@ -33,6 +38,20 @@ class ConfigHelperService {
   protected $logger;
 
   /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
+   * The config entity definitions.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeInterface[]
+   */
+  protected $definitions;
+
+  /**
    * Constructs a ConfigHelperService object.
    *
    * @param \Drupal\Core\Config\StorageInterface $config_storage
@@ -41,11 +60,14 @@ class ConfigHelperService {
    *   The configuration factory.
    * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger_factory
    *   The logger factory.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
    */
-  public function __construct(StorageInterface $config_storage, ConfigFactoryInterface $config_factory, LoggerChannelFactoryInterface $logger_factory) {
+  public function __construct(StorageInterface $config_storage, ConfigFactoryInterface $config_factory, LoggerChannelFactoryInterface $logger_factory, EntityTypeManagerInterface $entity_type_manager) {
     $this->configStorage = $config_storage;
     $this->configFactory = $config_factory;
     $this->logger = $logger_factory->get('vactory_diff');
+    $this->entityTypeManager = $entity_type_manager;
   }
 
   /**
@@ -77,29 +99,6 @@ class ConfigHelperService {
     }
 
     return $configs;
-  }
-
-  /**
-   * Get configuration data for a specific config name.
-   *
-   * @param string $config_name
-   *   The configuration name.
-   *
-   * @return array|null
-   *   The configuration data or NULL if not found.
-   */
-  public function getConfiguration(string $config_name): ?array {
-    try {
-      $config_data = $this->configStorage->read($config_name);
-      return $config_data !== FALSE ? $config_data : NULL;
-    }
-    catch (\Exception $e) {
-      $this->logger->error('Error retrieving configuration @name: @message', [
-        '@name' => $config_name,
-        '@message' => $e->getMessage(),
-      ]);
-      return NULL;
-    }
   }
 
   /**
@@ -139,6 +138,71 @@ class ConfigHelperService {
     }
 
     return TRUE;
+  }
+
+  /**
+   * Detect the configuration entity type from config name.
+   *
+   * @param string $config_name
+   *   The configuration name.
+   *
+   * @return string
+   *   The human-readable configuration type.
+   */
+  public function detectConfigType(string $config_name): string {
+    // Initialize definitions if not already done.
+    if (!$this->definitions) {
+      $this->definitions = [];
+      foreach ($this->entityTypeManager->getDefinitions() as $entity_type => $definition) {
+        if ($definition->entityClassImplements(ConfigEntityInterface::class)) {
+          $this->definitions[$entity_type] = $definition;
+        }
+      }
+    }
+
+    // Check if this is a config entity.
+    foreach ($this->definitions as $entity_type => $definition) {
+      $prefix = $definition->getConfigPrefix() . '.';
+      if (str_starts_with($config_name, $prefix)) {
+        return $definition->getLabel()->render();
+      }
+    }
+
+    // If not a config entity, it's a simple configuration.
+    return $this->t('Simple configuration')->render();
+  }
+
+  /**
+   * Group configurations by type.
+   *
+   * @param array $configs
+   *   Array of configurations.
+   *
+   * @return array
+   *   Configurations grouped by type.
+   */
+  public function groupConfigsByType(array $configs): array {
+    $grouped = [];
+
+    foreach ($configs as $config_name => $config_data) {
+      $type = $this->detectConfigType($config_name);
+
+      if (!isset($grouped[$type])) {
+        $grouped[$type] = [
+          'type' => $type,
+          'configs' => [],
+          'count' => 0,
+        ];
+      }
+
+      $grouped[$type]['configs'][$config_name] = $config_data;
+      $grouped[$type]['count']++;
+    }
+
+    // Trier par nom de type.
+    ksort($grouped);
+
+    return $grouped;
   }
 
 }
