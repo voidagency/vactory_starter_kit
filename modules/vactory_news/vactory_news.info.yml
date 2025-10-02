@@ -7,5 +7,4 @@ dependencies:
   - vactory_field
   - vactory_views
   - scheduler
-  - googlenews_sitemap
 package: Vactory
