@@ -140,10 +140,6 @@ function vactory_news_install() {
       ->warning('Three columns block : The paragraph was not added because the widget settings do not have the expected structure.');
   }
 
-  // Install optional configs using the same logic as vactory_user_install.
-  $module_name = preg_replace('/_install$/', '', __FUNCTION__);
-  $module_path = \Drupal::service('module_handler')->getModule($module_name)->getPath();
-
 }
 
 /**
