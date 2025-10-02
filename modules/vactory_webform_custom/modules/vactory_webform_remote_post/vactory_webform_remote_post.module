@@ -13,7 +13,7 @@ use Drupal\Core\Render\BubbleableMetadata;
 function vactory_webform_remote_post_token_info() {
   $vactory_remote_post_tokens['vactory_remote_post'] = [
     'name' => t("Vactory Remote Post Custom Fields"),
-    'description' => t("Custom fields configured in settings.php for remote post, replace the '?' with the desired field name"),
+    'description' => t("Custom fields configured in settings.php or settings.docker.php for remote post, replace the '?' with the desired field name"),
     'dynamic' => TRUE,
   ];
   return [

@@ -674,14 +674,6 @@ class VactoryRemotePostWebformHandler extends WebformHandlerBase {
       }
     }
 
-    // Append custom fields from settings.php.
-    $vactory_remote_post_settings = \Drupal::service('settings')->get('vactory_remote_post', []);
-    if (!empty($vactory_remote_post_settings)) {
-      foreach ($vactory_remote_post_settings as $field_key => $field_value) {
-        $data[$field_key] = $field_value;
-      }
-    }
-
     // Replace tokens.
     $data = $this->replaceTokens($data, $webform_submission);
 
