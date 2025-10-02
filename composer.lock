@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "86b67a6a630ca461325a3d281e8dce16",
+    "content-hash": "4ff5945044178bebbaf007f00a714534",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -4802,6 +4802,46 @@
                     "url": "https://paypal.me/saschaeggi"
                 }
             ]
+        },
+        {
+            "name": "drupal/google_news_sitemap",
+            "version": "dev-1.0.x",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/google_news_sitemap.git",
+                "reference": "1647c3f6aa20e390a5df68fd57c11bac1557c147"
+            },
+            "require": {
+                "drupal/core": "^10 | ^11"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "branch-alias": {
+                    "dev-1.0.x": "1.0.x-dev"
+                },
+                "drupal": {
+                    "version": "1.0.x-dev",
+                    "datestamp": "1741256974",
+                    "security-coverage": {
+                        "status": "not-covered",
+                        "message": "Dev releases are not covered by Drupal security advisories."
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "ajay gadhavana",
+                    "homepage": "https://www.drupal.org/user/2784415"
+                }
+            ],
+            "homepage": "https://www.drupal.org/project/google_news_sitemap",
+            "support": {
+                "source": "https://git.drupalcode.org/project/google_news_sitemap"
+            }
         },
         {
             "name": "drupal/google_tag",
@@ -20990,6 +21030,7 @@
         "drupal/filefield_paths": 10,
         "drupal/flag": 10,
         "drupal/gin": 5,
+        "drupal/google_news_sitemap": 20,
         "drupal/jsonapi_user_resources": 10,
         "drupal/lang_dropdown": 10,
         "drupal/openai": 10,
