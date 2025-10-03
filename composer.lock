@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "4ff5945044178bebbaf007f00a714534",
+    "content-hash": "0f531665629681c846e19e6224e9ae5b",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -11559,6 +11559,56 @@
             }
         },
         {
+            "name": "drupal/webform_import_tab",
+            "version": "dev-1.0.x",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/webform_import_tab.git",
+                "reference": "7a6114ed2a9ea5e02dfb4365a7c1b685e3e0c5ad"
+            },
+            "require": {
+                "drupal/core": "^8.8 || ^9 || ^10",
+                "drupal/webform": "*"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "branch-alias": {
+                    "dev-1.0.x": "1.0.x-dev"
+                },
+                "drupal": {
+                    "version": "1.0.x-dev",
+                    "datestamp": "1706911366",
+                    "security-coverage": {
+                        "status": "not-covered",
+                        "message": "Project has not opted into security advisory coverage!"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "authors": [
+                {
+                    "name": "bryden",
+                    "homepage": "https://www.drupal.org/user/1969084"
+                },
+                {
+                    "name": "ptsimard",
+                    "homepage": "https://www.drupal.org/user/1972814"
+                },
+                {
+                    "name": "spotzero",
+                    "homepage": "https://www.drupal.org/user/657848"
+                }
+            ],
+            "description": "Add an import tab to webforms.",
+            "homepage": "http://drupal.org/project/webform_import_tab",
+            "support": {
+                "source": "https://git.drupalcode.org/project/webform_import_tab"
+            }
+        },
+        {
             "name": "drupal/workbench_moderation",
             "version": "1.7.0",
             "source": {
@@ -21046,7 +21096,8 @@
         "drupal/ultimate_cron": 15,
         "drupal/viewsreference": 10,
         "drupal/votingapi": 10,
-        "drupal/webform": 10
+        "drupal/webform": 10,
+        "drupal/webform_import_tab": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
