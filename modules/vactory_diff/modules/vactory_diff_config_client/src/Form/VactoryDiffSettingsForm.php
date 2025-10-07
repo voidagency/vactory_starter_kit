@@ -108,8 +108,8 @@ class VactoryDiffSettingsForm extends ConfigFormBase {
     ];
 
     // Afficher les informations de la dernière comparaison si disponible.
-    $last_comparison = $config->get('last_comparison');
-    if ($last_comparison) {
+    $last_comparison_timestamp = $this->comparisonService->getLastComparisonTimestamp();
+    if ($last_comparison_timestamp) {
       $form['last_comparison'] = [
         '#type' => 'fieldset',
         '#title' => $this->t('Dernière comparaison'),
@@ -120,11 +120,11 @@ class VactoryDiffSettingsForm extends ConfigFormBase {
       $form['last_comparison']['info'] = [
         '#type' => 'item',
         '#markup' => $this->t('Dernière comparaison effectuée le @date', [
-          '@date' => date('d/m/Y H:i:s', strtotime($last_comparison)),
+          '@date' => date('d/m/Y H:i:s', strtotime($last_comparison_timestamp)),
         ]),
       ];
 
-      $comparison_results = $config->get('comparison_results');
+      $comparison_results = $this->comparisonService->loadComparisonResults();
       if (!empty($comparison_results['summary'])) {
         $summary = $comparison_results['summary'];
         $form['last_comparison']['summary'] = [

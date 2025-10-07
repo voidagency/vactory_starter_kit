@@ -3,6 +3,7 @@
 namespace Drupal\vactory_diff_config_client\Service;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\vactory_diff\Service\ConfigHelperService;
 use GuzzleHttp\ClientInterface;
@@ -35,6 +36,13 @@ class ConfigComparisonService {
   protected $configFactory;
 
   /**
+   * The file system service.
+   *
+   * @var \Drupal\Core\File\FileSystemInterface
+   */
+  protected $fileSystem;
+
+  /**
    * Logger channel.
    *
    * @var \Drupal\Core\Logger\LoggerChannelInterface
@@ -50,13 +58,16 @@ class ConfigComparisonService {
    *   The config helper service.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The configuration factory.
+   * @param \Drupal\Core\File\FileSystemInterface $file_system
+   *   The file system service.
    * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger_factory
    *   The logger factory.
    */
-  public function __construct(ClientInterface $http_client, ConfigHelperService $config_helper, ConfigFactoryInterface $config_factory, LoggerChannelFactoryInterface $logger_factory) {
+  public function __construct(ClientInterface $http_client, ConfigHelperService $config_helper, ConfigFactoryInterface $config_factory, FileSystemInterface $file_system, LoggerChannelFactoryInterface $logger_factory) {
     $this->httpClient = $http_client;
     $this->configHelper = $config_helper;
     $this->configFactory = $config_factory;
+    $this->fileSystem = $file_system;
     $this->logger = $logger_factory->get('vactory_diff_config_client');
   }
 
@@ -474,11 +485,8 @@ class ConfigComparisonService {
       // Comparer les configurations (type par type).
       $comparison_results = $this->compareConfigs($local_data, $remote_data);
 
-      // Sauvegarder les résultats.
-      $config = $this->configFactory->getEditable('vactory_diff_config_client.settings');
-      $config->set('last_comparison', $comparison_results['timestamp']);
-      $config->set('comparison_results', $comparison_results);
-      $config->save();
+      // Sauvegarder les résultats dans un fichier privé.
+      $this->saveComparisonResults($comparison_results);
 
       return $comparison_results;
     }
@@ -488,6 +496,120 @@ class ConfigComparisonService {
       ]);
       return NULL;
     }
+  }
+
+  /**
+   * Save comparison results to a private file.
+   *
+   * @param array $results
+   *   The comparison results to save.
+   *
+   * @return bool
+   *   TRUE if saved successfully, FALSE otherwise.
+   */
+  protected function saveComparisonResults(array $results): bool {
+    try {
+      // Créer le répertoire si nécessaire.
+      $directory = 'private://config-diff';
+      if (!$this->fileSystem->prepareDirectory($directory, FileSystemInterface::CREATE_DIRECTORY)) {
+        $this->logger->error('Unable to create directory @directory', [
+          '@directory' => $directory,
+        ]);
+        return FALSE;
+      }
+
+      // Chemin du fichier de résultats.
+      $file_path = $directory . '/report.json';
+
+      // Encoder les résultats en JSON.
+      $json_data = json_encode($results, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+      if ($json_data === FALSE) {
+        $this->logger->error('Unable to encode comparison results to JSON');
+        return FALSE;
+      }
+
+      // Écrire le fichier.
+      $file_uri = $this->fileSystem->saveData($json_data, $file_path, FileSystemInterface::EXISTS_REPLACE);
+      if ($file_uri === FALSE) {
+        $this->logger->error('Unable to save comparison results to @file', [
+          '@file' => $file_path,
+        ]);
+        return FALSE;
+      }
+
+      $this->logger->info('Comparison results saved to @file', [
+        '@file' => $file_uri,
+      ]);
+
+      return TRUE;
+    }
+    catch (\Exception $e) {
+      $this->logger->error('Error saving comparison results: @message', [
+        '@message' => $e->getMessage(),
+      ]);
+      return FALSE;
+    }
+  }
+
+  /**
+   * Load comparison results from the private file.
+   *
+   * @return array|null
+   *   The comparison results or NULL if not found or error.
+   */
+  public function loadComparisonResults(): ?array {
+    try {
+      $file_path = 'private://config-diff/report.json';
+
+      // Vérifier si le fichier existe.
+      if (!file_exists($file_path)) {
+        $this->logger->info('No comparison results file found at @file', [
+          '@file' => $file_path,
+        ]);
+        return NULL;
+      }
+
+      // Lire le contenu du fichier.
+      $json_data = file_get_contents($file_path);
+      if ($json_data === FALSE) {
+        $this->logger->error('Unable to read comparison results from @file', [
+          '@file' => $file_path,
+        ]);
+        return NULL;
+      }
+
+      // Décoder le JSON.
+      $results = json_decode($json_data, TRUE);
+      if ($results === NULL) {
+        $this->logger->error('Invalid JSON in comparison results file @file', [
+          '@file' => $file_path,
+        ]);
+        return NULL;
+      }
+
+      $this->logger->info('Comparison results loaded from @file', [
+        '@file' => $file_path,
+      ]);
+
+      return $results;
+    }
+    catch (\Exception $e) {
+      $this->logger->error('Error loading comparison results: @message', [
+        '@message' => $e->getMessage(),
+      ]);
+      return NULL;
+    }
+  }
+
+  /**
+   * Get the timestamp of the last comparison.
+   *
+   * @return string|null
+   *   The timestamp of the last comparison or NULL if not available.
+   */
+  public function getLastComparisonTimestamp(): ?string {
+    $results = $this->loadComparisonResults();
+    return $results['timestamp'] ?? NULL;
   }
 
 }

@@ -1,4 +1,2 @@
 remote_url: ''
-connection_timeout: 30
-last_comparison: null
-comparison_results: [] 
+connection_timeout: 30 

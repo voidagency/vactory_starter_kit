@@ -101,7 +101,7 @@ class ConfigCompareController extends ControllerBase {
     }
 
     // Get last comparison results if available.
-    $comparison_results = $config->get('comparison_results');
+    $comparison_results = $this->comparisonService->loadComparisonResults();
 
     return [
       '#theme' => 'vactory_diff_comparison',
