@@ -8,6 +8,7 @@ use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\vactory_diff\Service\ConfigHelperService;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * Service for comparing configurations between local and remote instances.
@@ -206,7 +207,10 @@ class ConfigComparisonService {
       // Comparer type par type.
       foreach ($all_types as $type) {
         $local_configs = $local_by_type[$type]['configs'] ?? [];
-        $remote_configs = $remote_by_type[$type]['configs'] ?? [];
+        $remote_configs_raw = $remote_by_type[$type]['configs'] ?? [];
+
+        // Parser les configurations YAML du serveur distant.
+        $remote_configs = $this->parseRemoteConfigs($remote_configs_raw);
 
         // Configs ajoutées pour ce type.
         foreach ($local_configs as $config_name => $local_config) {
@@ -610,6 +614,37 @@ class ConfigComparisonService {
   public function getLastComparisonTimestamp(): ?string {
     $results = $this->loadComparisonResults();
     return $results['timestamp'] ?? NULL;
+  }
+
+  /**
+   * Parse remote configurations from YAML strings to arrays.
+   *
+   * @param array $remote_configs_raw
+   *   Raw remote configurations (YAML strings).
+   *
+   * @return array
+   *   Parsed configurations as arrays.
+   */
+  protected function parseRemoteConfigs(array $remote_configs_raw): array {
+    $parsed_configs = [];
+
+    foreach ($remote_configs_raw as $config_name => $yaml_string) {
+      try {
+        // Parser le YAML en array.
+        $config_data = Yaml::parse($yaml_string);
+        $parsed_configs[$config_name] = $config_data;
+      }
+      catch (\Exception $e) {
+        $this->logger->warning('Error parsing YAML for config @name: @message', [
+          '@name' => $config_name,
+          '@message' => $e->getMessage(),
+        ]);
+
+        $parsed_configs[$config_name] = [];
+      }
+    }
+
+    return $parsed_configs;
   }
 
 }

@@ -8,6 +8,7 @@ use Drupal\vactory_diff\Service\ConfigHelperService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Yaml\Yaml;
 
 /**
  * Controller for configuration export API.
@@ -71,13 +72,16 @@ class ConfigExportController extends ControllerBase {
       // Grouper les configurations par type.
       $configs_by_type = $this->configHelper->groupConfigsByType($configs);
 
+      // Convertir les configs en YAML pour préserver les types de données.
+      $configs_yaml = $this->convertConfigsToYaml($configs_by_type);
+
       // Préparer la réponse avec les configurations classées par type.
       $response_data = [
         'timestamp' => $site_info['timestamp'],
         'site_name' => $site_info['site_name'],
         'site_uuid' => $site_info['site_uuid'],
         'total_count' => count($configs),
-        'configs' => $configs_by_type,
+        'configs' => $configs_yaml,
       ];
 
       $this->logger->info('Configuration export successful. @count configurations exported.', [
@@ -103,6 +107,35 @@ class ConfigExportController extends ControllerBase {
         'timestamp' => date('c'),
       ], 500);
     }
+  }
+
+  /**
+   * Convert configurations to YAML format to preserve data types.
+   *
+   * @param array $configs_by_type
+   *   Configurations grouped by type.
+   *
+   * @return array
+   *   Configurations with YAML strings instead of arrays.
+   */
+  protected function convertConfigsToYaml(array $configs_by_type): array {
+    $yaml_configs = [];
+
+    foreach ($configs_by_type as $type => $type_data) {
+      $yaml_configs[$type] = [
+        'type' => $type_data['type'],
+        'count' => $type_data['count'],
+        'configs' => [],
+      ];
+
+      foreach ($type_data['configs'] as $config_name => $config_data) {
+        // Convertir chaque configuration en YAML.
+        $yaml_string = Yaml::dump($config_data, 10, 2, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK);
+        $yaml_configs[$type]['configs'][$config_name] = $yaml_string;
+      }
+    }
+
+    return $yaml_configs;
   }
 
 }
