@@ -63,59 +63,17 @@
                 <h4 class="config-type-title">{{ type }}</h4>
                 {% for config in configs %}
                   <div class="config-item">
-                    <span class="config-name">{{ config.name }}</span>
-                    {% if config.diff and config.diff.changes %}
-                      <div class="config-diff">
-                        {# Affichage de la diff visuelle #}
-                        {% if config.diff.visual_diff %}
-                          <div class="visual-diff">
-                            <div class="diff-header">
-                              <h5>{{ 'Diff visuelle'|t }}</h5>
-                              <div class="diff-summary">
-                                <span class="diff-summary-item diff-added">+{{ config.diff.visual_diff.summary.added }} {{ 'ajoutées'|t }}</span>
-                                <span class="diff-summary-item diff-removed">-{{ config.diff.visual_diff.summary.removed }} {{ 'supprimées'|t }}</span>
-                              </div>
-                            </div>
-                            <div class="diff-content">
-                              <pre class="diff-output">
-                                <code>
-                                  {% for line in config.diff.visual_diff.lines %}
-                                    <span class="diff-line diff-line--{{ line.type }}">{{ line.content }}</span>
-                                  {% endfor %}
-                                </code>
-                              </pre>
-                            </div>
-                          </div>
-                        {% endif %}
-
-                        {# Affichage détaillé des changements (optionnel) #}
-                        <div class="detailed-diff">
-                          <details>
-                            <summary>{{ 'Voir les détails des changements'|t }}</summary>
-                            <div class="diff-view">
-                              <table class="diff-table">
-                                <thead>
-                                  <tr>
-                                    <th>{{ 'Clé'|t }}</th>
-                                    <th>{{ 'Local'|t }}</th>
-                                    <th>{{ 'Distant'|t }}</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {% for key, change in config.diff.changes %}
-                                    <tr class="diff-row diff-row--{{ change.change_type }}">
-                                      <td class="diff-key">{{ change.key }}</td>
-                                      <td class="diff-local">{{ change.local_value|json_encode(constant('JSON_PRETTY_PRINT')) }}</td>
-                                      <td class="diff-remote">{{ change.remote_value|json_encode(constant('JSON_PRETTY_PRINT')) }}</td>
-                                    </tr>
-                                  {% endfor %}
-                                </tbody>
-                              </table>
-                            </div>
-                          </details>
-                        </div>
-                      </div>
-                    {% endif %}
+                    <div class="config-header">
+                      <span class="config-name">{{ config.name }}</span>
+                      {% if config.diff and config.diff.changes %}
+                        <a href="/admin/config/development/vactory-diff/ajax/diff-modal/{{ config.name|url_encode }}" 
+                           class="btn btn-primary btn-sm view-changes-btn use-ajax" 
+                           data-dialog-type="modal"
+                           data-dialog-options='{"width":"90%"}'>
+                          {{ 'Voir les changements'|t }}
+                        </a>
+                      {% endif %}
+                    </div>
                   </div>
                 {% endfor %}
               </div>

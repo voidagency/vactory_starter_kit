@@ -190,6 +190,57 @@ class ConfigCompareController extends ControllerBase {
   }
 
   /**
+   * Ajax callback for diff modal.
+   *
+   * @param string $config_name
+   *   The configuration name.
+   *
+   * @return array
+   *   Render array for modal content.
+   */
+  public function ajaxDiffModal(string $config_name): array {
+    // Charger les résultats de la dernière comparaison.
+    $comparison_results = $this->comparisonService->loadComparisonResults();
+
+    if (!$comparison_results) {
+      return [
+        '#markup' => '<div class="messages messages--error">' . $this->t('Aucune comparaison disponible.') . '</div>',
+      ];
+    }
+
+    // Trouver la configuration dans les résultats.
+    $config_diff = NULL;
+    $config_type = '';
+
+    foreach ($comparison_results['differences_by_type']['modified'] ?? [] as $type => $configs) {
+      foreach ($configs as $config) {
+        if ($config['name'] === $config_name) {
+          $config_diff = $config['diff'] ?? NULL;
+          $config_type = $type;
+          break 2;
+        }
+      }
+    }
+
+    if (!$config_diff) {
+      return [
+        '#markup' => '<div class="messages messages--error">' . $this->t('Configuration non trouvée.') . '</div>',
+      ];
+    }
+
+    // Générer le contenu du modal.
+    return [
+      '#theme' => 'vactory_diff_modal',
+      '#config_name' => $config_name,
+      '#config_type' => $config_type,
+      '#diff_data' => $config_diff,
+      '#attached' => [
+        'library' => ['vactory_diff_config_client/comparison'],
+      ],
+    ];
+  }
+
+  /**
    * Render comparison results using Twig template.
    *
    * @param array $results

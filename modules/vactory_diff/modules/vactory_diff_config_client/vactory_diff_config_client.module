@@ -24,5 +24,13 @@ function vactory_diff_config_client_theme() {
       ],
       'template' => 'vactory-diff-results',
     ],
+    'vactory_diff_modal' => [
+      'variables' => [
+        'config_name' => '',
+        'config_type' => '',
+        'diff_data' => [],
+      ],
+      'template' => 'vactory-diff-modal',
+    ],
   ];
 }

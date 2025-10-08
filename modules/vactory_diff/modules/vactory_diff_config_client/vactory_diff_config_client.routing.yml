@@ -32,4 +32,13 @@ vactory_diff_config_client.ajax_test_connection:
   requirements:
     _permission: 'administer vactory diff'
   options:
-    _format: 'json' 
+    _format: 'json'
+
+vactory_diff_config_client.ajax_diff_modal:
+  path: '/admin/config/development/vactory-diff/ajax/diff-modal/{config_name}'
+  defaults:
+    _controller: '\Drupal\vactory_diff_config_client\Controller\ConfigCompareController::ajaxDiffModal'
+  requirements:
+    _permission: 'administer vactory diff'
+  options:
+    _admin_route: TRUE 
