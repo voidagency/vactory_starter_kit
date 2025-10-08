@@ -14,8 +14,8 @@
     <h3>{{ 'Résumé de la comparaison'|t }}</h3>
     <p>{{ 'Comparaison effectuée le @date'|t({'@date': results.timestamp|date('d/m/Y H:i:s')}) }}</p>
     <div class="summary-stats">
-      <span class="stat added">{{ '@count ajoutées'|t({'@count': results.summary.added}) }}</span> | 
-      <span class="stat modified">{{ '@count modifiées'|t({'@count': results.summary.modified}) }}</span> | 
+      <span class="stat added">{{ '@count ajoutées'|t({'@count': results.summary.added}) }}</span> |
+      <span class="stat modified">{{ '@count modifiées'|t({'@count': results.summary.modified}) }}</span> |
       <span class="stat deleted">{{ '@count supprimées'|t({'@count': results.summary.deleted}) }}</span>
     </div>
   </div>
@@ -23,7 +23,7 @@
   {# Differences section #}
   {% if results.summary.total_differences > 0 %}
     <div class="config-diff-results">
-      
+
       {# Added configurations by type #}
       {% if results.differences_by_type.added %}
         <div class="config-section config-section--added">
@@ -66,25 +66,53 @@
                     <span class="config-name">{{ config.name }}</span>
                     {% if config.diff and config.diff.changes %}
                       <div class="config-diff">
-                        <div class="diff-view">
-                          <table class="diff-table">
-                            <thead>
-                              <tr>
-                                <th>{{ 'Clé'|t }}</th>
-                                <th>{{ 'Local'|t }}</th>
-                                <th>{{ 'Distant'|t }}</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {% for key, change in config.diff.changes %}
-                                <tr class="diff-row diff-row--{{ change.change_type }}">
-                                  <td class="diff-key">{{ change.key }}</td>
-                                  <td class="diff-local">{{ change.local_value|json_encode(constant('JSON_PRETTY_PRINT')) }}</td>
-                                  <td class="diff-remote">{{ change.remote_value|json_encode(constant('JSON_PRETTY_PRINT')) }}</td>
-                                </tr>
-                              {% endfor %}
-                            </tbody>
-                          </table>
+                        {# Affichage de la diff visuelle #}
+                        {% if config.diff.visual_diff %}
+                          <div class="visual-diff">
+                            <div class="diff-header">
+                              <h5>{{ 'Diff visuelle'|t }}</h5>
+                              <div class="diff-summary">
+                                <span class="diff-summary-item diff-added">+{{ config.diff.visual_diff.summary.added }} {{ 'ajoutées'|t }}</span>
+                                <span class="diff-summary-item diff-removed">-{{ config.diff.visual_diff.summary.removed }} {{ 'supprimées'|t }}</span>
+                              </div>
+                            </div>
+                            <div class="diff-content">
+                              <pre class="diff-output">
+                                <code>
+                                  {% for line in config.diff.visual_diff.lines %}
+                                    <span class="diff-line diff-line--{{ line.type }}">{{ line.content }}</span>
+                                  {% endfor %}
+                                </code>
+                              </pre>
+                            </div>
+                          </div>
+                        {% endif %}
+
+                        {# Affichage détaillé des changements (optionnel) #}
+                        <div class="detailed-diff">
+                          <details>
+                            <summary>{{ 'Voir les détails des changements'|t }}</summary>
+                            <div class="diff-view">
+                              <table class="diff-table">
+                                <thead>
+                                  <tr>
+                                    <th>{{ 'Clé'|t }}</th>
+                                    <th>{{ 'Local'|t }}</th>
+                                    <th>{{ 'Distant'|t }}</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {% for key, change in config.diff.changes %}
+                                    <tr class="diff-row diff-row--{{ change.change_type }}">
+                                      <td class="diff-key">{{ change.key }}</td>
+                                      <td class="diff-local">{{ change.local_value|json_encode(constant('JSON_PRETTY_PRINT')) }}</td>
+                                      <td class="diff-remote">{{ change.remote_value|json_encode(constant('JSON_PRETTY_PRINT')) }}</td>
+                                    </tr>
+                                  {% endfor %}
+                                </tbody>
+                              </table>
+                            </div>
+                          </details>
                         </div>
                       </div>
                     {% endif %}

@@ -9,6 +9,8 @@ use Drupal\vactory_diff\Service\ConfigHelperService;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\RequestException;
 use Symfony\Component\Yaml\Yaml;
+use SebastianBergmann\Diff\Differ;
+use SebastianBergmann\Diff\Output\UnifiedDiffOutputBuilder;
 
 /**
  * Service for comparing configurations between local and remote instances.
@@ -332,6 +334,7 @@ class ConfigComparisonService {
     $diff = [
       'config_name' => $config_name,
       'changes' => [],
+      'visual_diff' => $this->generateVisualDiff($config_name, $local_data, $remote_data),
     ];
 
     // Comparer chaque clé récursivement.
@@ -645,6 +648,84 @@ class ConfigComparisonService {
     }
 
     return $parsed_configs;
+  }
+
+  /**
+   * Generate visual diff for configuration comparison.
+   *
+   * @param string $config_name
+   *   The configuration name.
+   * @param array $local_data
+   *   Local configuration data.
+   * @param array $remote_data
+   *   Remote configuration data.
+   *
+   * @return array
+   *   Array containing visual diff information.
+   */
+  protected function generateVisualDiff(string $config_name, array $local_data, array $remote_data): array {
+    try {
+      // Convertir les données en YAML pour une meilleure lisibilité.
+      $local_yaml = Yaml::dump($local_data, 10, 2, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK);
+      $remote_yaml = Yaml::dump($remote_data, 10, 2, Yaml::DUMP_MULTI_LINE_LITERAL_BLOCK);
+
+      // Créer le diff avec SebastianBergmann\Diff.
+      $builder = new UnifiedDiffOutputBuilder(
+        "--- Local: $config_name\n+++ Remote: $config_name\n",
+        TRUE
+      );
+      $differ = new Differ($builder);
+      $diff_output = $differ->diff($remote_yaml, $local_yaml);
+
+      // Parser le diff pour créer une structure plus lisible.
+      $diff_lines = explode("\n", $diff_output);
+      $parsed_diff = [
+        'raw_diff' => $diff_output,
+        'lines' => [],
+        'summary' => [
+          'added' => 0,
+          'removed' => 0,
+          'modified' => 0,
+        ],
+      ];
+
+      foreach ($diff_lines as $line) {
+        $line_type = 'context';
+        $content = $line;
+
+        if (str_starts_with($line, '+')) {
+          $line_type = 'added';
+          $parsed_diff['summary']['added']++;
+        }
+        elseif (str_starts_with($line, '-')) {
+          $line_type = 'removed';
+          $parsed_diff['summary']['removed']++;
+        }
+        elseif (str_starts_with($line, '@')) {
+          $line_type = 'header';
+        }
+
+        $parsed_diff['lines'][] = [
+          'type' => $line_type,
+          'content' => $content,
+          'line_number' => count($parsed_diff['lines']),
+        ];
+      }
+
+      return $parsed_diff;
+    }
+    catch (\Exception $e) {
+      $this->logger->warning('Error generating visual diff for @name: @message', [
+        '@name' => $config_name,
+        '@message' => $e->getMessage(),
+      ]);
+
+      return [
+        'raw_diff' => 'Error generating diff',
+        'lines' => [],
+        'summary' => ['added' => 0, 'removed' => 0, 'modified' => 0],
+      ];
+    }
   }
 
 }

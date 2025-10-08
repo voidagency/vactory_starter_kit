@@ -237,3 +237,152 @@
   border-left-color: #dc3545;
   color: #721c24;
 }
+
+/* Styles pour les diffs visuelles */
+.visual-diff {
+  margin-top: 15px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.diff-header {
+  background-color: #f8f9fa;
+  padding: 12px 15px;
+  border-bottom: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.diff-header h5 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #495057;
+}
+
+.diff-summary {
+  display: flex;
+  gap: 10px;
+}
+
+.diff-summary-item {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.diff-summary-item.diff-added {
+  background-color: #d4edda;
+  color: #155724;
+}
+
+.diff-summary-item.diff-removed {
+  background-color: #f8d7da;
+  color: #721c24;
+}
+
+.diff-content {
+  background-color: #f8f9fa;
+  padding: 0;
+}
+
+.diff-output {
+  margin: 0;
+  padding: 15px;
+  background-color: #ffffff;
+  border: none;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 12px;
+  line-height: 1.4;
+  overflow-x: auto;
+  white-space: pre;
+}
+
+.diff-line {
+  display: block;
+  padding: 2px 0;
+}
+
+.diff-line--added {
+  background-color: #d4edda;
+  color: #155724;
+  border-left: 3px solid #28a745;
+  padding-left: 8px;
+}
+
+.diff-line--removed {
+  background-color: #f8d7da;
+  color: #721c24;
+  border-left: 3px solid #dc3545;
+  padding-left: 8px;
+}
+
+.diff-line--header {
+  background-color: #e9ecef;
+  color: #495057;
+  font-weight: bold;
+  padding: 4px 8px;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.diff-line--context {
+  color: #6c757d;
+}
+
+/* Styles pour les détails détaillés */
+.detailed-diff {
+  margin-top: 15px;
+}
+
+.detailed-diff details {
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.detailed-diff summary {
+  background-color: #f8f9fa;
+  padding: 12px 15px;
+  cursor: pointer;
+  font-weight: 600;
+  color: #495057;
+  border-bottom: 1px solid #ddd;
+}
+
+.detailed-diff summary:hover {
+  background-color: #e9ecef;
+}
+
+.detailed-diff .diff-view {
+  padding: 15px;
+  background-color: white;
+}
+
+/* Amélioration de l'affichage des lignes de diff */
+.diff-output code {
+  background: none;
+  padding: 0;
+  font-size: inherit;
+  color: inherit;
+}
+
+/* Responsive design pour les diffs */
+@media (max-width: 768px) {
+  .diff-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  
+  .diff-summary {
+    flex-wrap: wrap;
+  }
+  
+  .diff-output {
+    font-size: 11px;
+    padding: 10px;
+  }
+}
