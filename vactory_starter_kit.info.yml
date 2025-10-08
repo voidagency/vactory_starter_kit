@@ -186,6 +186,7 @@ install:
   - menu_manipulator
   - content_moderation
   - views_url_alias
+  - webform_import_tab
 themes:
   - vactory
   - claro
