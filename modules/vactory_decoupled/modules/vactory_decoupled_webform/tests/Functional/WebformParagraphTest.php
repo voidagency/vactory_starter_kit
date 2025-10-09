@@ -3,16 +3,14 @@
 namespace Drupal\vactory_decoupled\Tests\Functional;
 
 use weitzman\DrupalTestTraits\ExistingSiteBase;
-use Drupal\user\Entity\User;
 use Drupal\paragraphs\Entity\Paragraph;
-use Drupal\node\Entity\Node;
 use Drupal\webform\Entity\Webform;
 use Drupal\webform\WebformInterface;
 use Drupal\webform\Entity\WebformSubmission;
 use Drupal\Core\Url;
 use Drupal\Component\Serialization\Json;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use GuzzleHttp\ClientInterface;
+use Drupal\Core\Serialization\Yaml;
 
 /**
  * Test l'affichage et la soumission d’un webform - decoupled.
@@ -21,26 +19,30 @@ use GuzzleHttp\ClientInterface;
  */
 class WebformParagraphTest extends ExistingSiteBase {
 
-  /**
-   * Admin password used for authentication.
-   *
-   * @var \Drupal\user\Entity\User
-   */
-  protected User $admin;
+  const DF_CREATOR_MODULE = 'vactory_dynamic_field_volatile';
+
+  const DEFAULT_COLLECTION_SETTING = [
+    'name' => 'Simple webform',
+    'multiple' => FALSE,
+    'category' => 'Formulaires',
+    'enabled' => TRUE,
+    'fields' => [
+      'webform' => [
+        'type' => 'webform_decoupled',
+        'label' => 'Formulaire',
+        'options' => [
+          '#required' => TRUE,
+        ],
+      ],
+    ],
+  ];
 
   /**
-   * Node used for testing.
+   * Track created DF files for cleanup.
    *
-   * @var \Drupal\node\Entity\Node
+   * @var array
    */
-  protected Node $node;
-
-  /**
-   * Paragraph user for testing.
-   *
-   * @var \Drupal\paragraphs\Entity\Paragraph
-   */
-  protected Paragraph $paragraph;
+  protected $createdDfFiles = [];
 
   /**
    * Paragraph user for testing.
@@ -48,13 +50,6 @@ class WebformParagraphTest extends ExistingSiteBase {
    * @var \Drupal\webform\Entity\Webform
    */
   protected Webform $webform;
-
-  /**
-   * Entity Type Manager.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected EntityTypeManagerInterface $entityTypeManager;
 
   /**
    * Client Interface.
@@ -80,14 +75,14 @@ class WebformParagraphTest extends ExistingSiteBase {
     $this->ensureModuleInstalled('webform');
     $this->ensureModuleInstalled('vactory_decoupled');
     $this->ensureModuleInstalled('vactory_decoupled_webform');
+    $this->ensureModuleInstalled(self::DF_CREATOR_MODULE);
 
     // Retrieve core services.
-    $this->entityTypeManager = \Drupal::entityTypeManager();
     $this->httpClient = \Drupal::httpClient();
 
     // Create and log in an admin user using DTT helper.
-    $this->admin = $this->createUser([], NULL, TRUE);
-    $this->drupalLogin($this->admin);
+    $admin = $this->createUser([], NULL, TRUE);
+    $this->drupalLogin($admin);
 
     // Create test webform.
     $this->webform = Webform::create([
@@ -108,11 +103,16 @@ class WebformParagraphTest extends ExistingSiteBase {
    * Teste l’affichage du webform dans un paragraphe.
    */
   public function testDecoupledWebform(): void {
-    // Create the paragraph : Vactory_Component.
-    $this->paragraph = Paragraph::create([
+    // Prepare the DF.
+    $df_name = 'test-webform';
+    $this->writeDfFile(self::DEFAULT_COLLECTION_SETTING, $df_name);
+    $widget_id = implode(':', [self::DF_CREATOR_MODULE, $df_name]);
+
+    // Create paragraph.
+    $paragraph = Paragraph::create([
       'type' => 'vactory_component',
       'field_vactory_component' => [
-        'widget_id' => 'vactory_decoupled_webform:webform',
+        'widget_id' => $widget_id,
         'widget_data' => json_encode([
           [
             'webform' => [
@@ -123,26 +123,24 @@ class WebformParagraphTest extends ExistingSiteBase {
         ]),
       ],
     ]);
-    $this->paragraph->save();
-
-    $paragraphStorage = $this->entityTypeManager->getStorage('paragraph');
+    $paragraph->save();
 
     // Create the node (Vactory_Page) : with DTT helper.
-    $this->node = $this->createNode([
+    $node = $this->createNode([
       'type' => 'vactory_page',
       'title' => 'Page_avec_formulaire_PHP_UNIT_' . time(),
       'status' => 1,
       'moderation_state' => 'published',
       'field_vactory_paragraphs' => [
         [
-          'target_id' => $this->paragraph->id(),
-          'target_revision_id' => $paragraphStorage->getLatestRevisionId($this->paragraph->id()),
+          'target_id' => $paragraph->id(),
+          'target_revision_id' => $paragraph->getRevisionId(),
         ],
       ],
     ]);
 
     // Test with json api.
-    $langcode = $this->node->language()->getId();
+    $langcode = $node->language()->getId();
     $parsedUrl = parse_url($this->baseUrl);
 
     // Fallbacks.
@@ -151,7 +149,7 @@ class WebformParagraphTest extends ExistingSiteBase {
     $port = isset($parsedUrl['port']) ? ':' . $parsedUrl['port'] : '';
 
     // URL finale.
-    $fullUrl = "{$scheme}://{$host}{$port}/{$langcode}/api/node/vactory_page/{$this->node->uuid()}?include=field_vactory_paragraphs";
+    $fullUrl = "{$scheme}://{$host}{$port}/{$langcode}/api/node/vactory_page/{$node->uuid()}?include=field_vactory_paragraphs";
 
     $this->drupalGet($fullUrl);
     $this->assertSession()->statusCodeEquals(200);
@@ -163,7 +161,7 @@ class WebformParagraphTest extends ExistingSiteBase {
 
     // Vérifier que le widget_id est correct.
     $this->assertEquals(
-      'vactory_decoupled_webform:webform',
+      $widget_id,
       $component['widget_id'],
       'Widget ID should be vactory_decoupled_webform:webform.'
     );
@@ -181,10 +179,20 @@ class WebformParagraphTest extends ExistingSiteBase {
     );
 
     // Vérifier qu’un champ email existe avec required=true.
+    $elements = $widgetData['components'][0]['webform']['elements'] ?? NULL;
+    $this->assertNotNull($elements, 'Webform elements should exist.');
+
+    $this->assertArrayHasKey('email', $elements, 'Email field should exist in elements.');
+    $this->assertArrayHasKey('validation', $elements['email'], 'Email field should have validation key.');
+    $this->assertArrayHasKey('required', $elements['email']['validation'], 'Email field should have required key.');
+
     $this->assertTrue(
-      $widgetData['components'][0]['webform']['elements']['email']['validation']['required'],
+      $elements['email']['validation']['required'],
       'Email field should be required.'
     );
+
+    // Cleanup.
+    $paragraph->delete();
   }
 
   /**
@@ -291,9 +299,13 @@ class WebformParagraphTest extends ExistingSiteBase {
    * {@inheritdoc}
    */
   protected function tearDown(): void {
-    if (isset($this->paragraph) && $this->paragraph) {
-      $this->paragraph->delete();
+    // Clean up created DF files.
+    foreach ($this->createdDfFiles as $dfPath) {
+      if (file_exists($dfPath)) {
+        $this->removeDirectory($dfPath);
+      }
     }
+
     if (isset($this->webform) && $this->webform) {
       $this->webform->delete();
     }
@@ -303,6 +315,59 @@ class WebformParagraphTest extends ExistingSiteBase {
       $moduleInstaller->uninstall($this->modulesInstalledDuringTest);
     }
     parent::tearDown();
+  }
+
+  /**
+   * Write DF file and track for cleanup.
+   *
+   * @param array $content
+   *   The content to write.
+   * @param string $name
+   *   The DF name.
+   *
+   * @return bool
+   *   TRUE if file was written successfully.
+   */
+  protected function writeDfFile(array $content, $name): bool {
+    $yaml_config = Yaml::encode($content);
+    $dest_uri = 'private://volatile-df';
+    $dest_df_uri = $dest_uri . '/' . $name;
+
+    if (!file_exists($dest_df_uri)) {
+      mkdir($dest_df_uri, 0777, TRUE);
+    }
+
+    $filepath = \Drupal::service('file_system')->realpath($dest_df_uri . '/settings.yml');
+    $printed = file_put_contents($filepath, $yaml_config);
+
+    // Track the directory for cleanup.
+    $this->createdDfFiles[] = \Drupal::service('file_system')->realpath($dest_df_uri);
+
+    return (bool) $printed;
+  }
+
+  /**
+   * Recursively remove a directory and its contents.
+   *
+   * @param string $dir
+   *   The directory path to remove.
+   */
+  protected function removeDirectory(string $dir): void {
+    if (!is_dir($dir)) {
+      return;
+    }
+
+    $files = array_diff(scandir($dir), ['.', '..']);
+    foreach ($files as $file) {
+      $path = $dir . DIRECTORY_SEPARATOR . $file;
+      if (is_dir($path)) {
+        $this->removeDirectory($path);
+      }
+      else {
+        unlink($path);
+      }
+    }
+    rmdir($dir);
   }
 
 }
