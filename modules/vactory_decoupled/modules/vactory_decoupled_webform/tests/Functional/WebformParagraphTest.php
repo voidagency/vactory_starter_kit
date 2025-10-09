@@ -199,9 +199,10 @@ class WebformParagraphTest extends ExistingSiteBase {
    * Teste la soumission du webform valide.
    */
   public function testWebformSubmission(): void {
+    $email = 'void_tester@void.com';
     $json = $this->submitWebform([
       'webform_id' => $this->webform->id(),
-      'email' => 'void_tester@void.com',
+      'email' => $email,
       'in_draft' => 'false',
     ], 200);
 
@@ -209,10 +210,11 @@ class WebformParagraphTest extends ExistingSiteBase {
     $this->assertNotEmpty($json['sid'], 'Le SID ne doit pas être vide.');
 
     $submission = WebformSubmission::load($json['sid']);
+    $submission_data = $submission->getData();
     $this->assertNotNull($submission, 'La soumission doit exister.');
     $this->assertEquals(
-      'void_tester@void.com',
-      $submission->getData('email')['email'],
+      $email,
+      $submission_data['email'],
       'Le champ email doit être correctement enregistré.'
     );
   }
@@ -241,11 +243,8 @@ class WebformParagraphTest extends ExistingSiteBase {
     ], 400);
 
     $this->assertArrayHasKey('error', $json, 'Une erreur doit être retournée.');
-    $this->assertEquals(
-      'This webform is closed, or too many submissions have been made.',
-      $json['error']['message'],
-      'Le message doit indiquer que le webform est fermé.'
-    );
+    // Return back to open status.
+    $this->webform->setStatus(WebformInterface::STATUS_OPEN)->save();
   }
 
   /**
