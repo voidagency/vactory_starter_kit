@@ -3,10 +3,8 @@
 namespace Drupal\vactory_jsonapi_cross_bundles\Tests\Functional;
 
 use weitzman\DrupalTestTraits\ExistingSiteBase;
-use Drupal\user\Entity\User;
+use Drupal\Core\Serialization\Yaml;
 use Drupal\paragraphs\Entity\Paragraph;
-use Drupal\node\Entity\Node;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 
 /**
  * Test l'affichage et l'existence de cross bundels.
@@ -15,33 +13,48 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
  */
 class VactoryCrossBundlesTest extends ExistingSiteBase {
 
-  /**
-   * Admin password used for authentication.
-   *
-   * @var \Drupal\user\Entity\User
-   */
-  protected User $admin;
+  const DF_CREATOR_MODULE = 'vactory_dynamic_field_volatile';
 
   /**
-   * Node used for testing.
+   * Track created DF files for cleanup.
    *
-   * @var \Drupal\node\Entity\Node
+   * @var array
    */
-  protected Node $node;
+  protected $createdDfFiles = [];
 
-  /**
-   * Paragraph user for testing.
-   *
-   * @var \Drupal\paragraphs\Entity\Paragraph
-   */
-  protected Paragraph $paragraph;
-
-  /**
-   * Entity Type Manager.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected EntityTypeManagerInterface $entityTypeManager;
+  const DEFAULT_COLLECTION_SETTING = [
+    'name' => 'Cross bundles example',
+    'multiple' => FALSE,
+    'category' => 'News',
+    'enabled' => TRUE,
+    'fields' => [
+      'collection' => [
+        'type' => 'json_api_cross_bundles',
+        'label' => 'JSON:API',
+        'options' => [
+          '#required' => TRUE,
+          '#default_value' => [
+            'resource' => [
+              'entity_type' => 'node',
+              'bundle' => [
+                'vactory_news',
+                'vactory_publication',
+              ],
+            ],
+            'filters' => [
+              'fields[node--vactory_news]=drupal_internal__nid,title',
+              'fields[node--vactory_publication]=drupal_internal__nid,title',
+              'page[offset]=0',
+              'page[limit]=9',
+              'filter[status][value]=1',
+              'sort[date][path]=field_vactory_date',
+              'sort[date][direction]=DESC',
+            ],
+          ],
+        ],
+      ],
+    ],
+  ];
 
   /**
    * Track modules installed during the test.
@@ -59,39 +72,26 @@ class VactoryCrossBundlesTest extends ExistingSiteBase {
     // Assurer que les modules sont installés.
     $this->ensureModuleInstalled('jsonapi_cross_bundles');
     $this->ensureModuleInstalled('vactory_jsonapi_cross_bundles');
-
-    // Retrieve core services.
-    $this->entityTypeManager = \Drupal::entityTypeManager();
-    $this->httpClient = \Drupal::httpClient();
+    $this->ensureModuleInstalled('vactory_news');
+    $this->ensureModuleInstalled('vactory_publication');
+    $this->ensureModuleInstalled(self::DF_CREATOR_MODULE);
 
     // Create and log in an admin user using DTT helper.
-    $this->admin = $this->createUser([], NULL, TRUE);
-    $this->drupalLogin($this->admin);
+    $admin = $this->createUser([], NULL, TRUE);
+    $this->drupalLogin($admin);
 
-    // Create the paragraph : Vactory_Component.
-    $this->paragraph = Paragraph::create([
-      'type' => 'vactory_component',
-      'field_vactory_component' => [
-        'widget_id' => 'vactory_news:cross-bundles',
-        'widget_data' => json_encode($this->setWidgetData()),
-      ],
-    ]);
-    $this->paragraph->save();
-
-    $paragraphStorage = $this->entityTypeManager->getStorage('paragraph');
-
-    // Create the node (Vactory_Page) : with DTT helper.
-    $this->node = $this->createNode([
-      'type' => 'vactory_page',
-      'title' => 'Page_avec Cross content_' . time(),
+    // Create node (news).
+    $this->createNode([
+      'type' => 'vactory_news',
+      'title' => 'news test ' . uniqid(),
       'status' => 1,
-      'moderation_state' => 'published',
-      'field_vactory_paragraphs' => [
-        [
-          'target_id' => $this->paragraph->id(),
-          'target_revision_id' => $paragraphStorage->getLatestRevisionId($this->paragraph->id()),
-        ],
-      ],
+    ]);
+
+    // Create node (publication).
+    $this->createNode([
+      'type' => 'vactory_publication',
+      'title' => 'publication test ' . uniqid(),
+      'status' => 1,
     ]);
   }
 
@@ -99,8 +99,45 @@ class VactoryCrossBundlesTest extends ExistingSiteBase {
    * Tester l’affichage du node avec cross Bundles.
    */
   public function testCrossBundles(): void {
+
+    // Prepare the DF.
+    $df_name = 'test-cross-bundles-listing';
+    $this->writeDfFile(self::DEFAULT_COLLECTION_SETTING, $df_name);
+
+    // Create a JSON API Collection paragraph.
+    $widget_data = [
+      [
+        'collection' => self::DEFAULT_COLLECTION_SETTING['fields']['collection']['options']['#default_value'],
+      ],
+    ];
+    $widget_id = implode(':', [self::DF_CREATOR_MODULE, $df_name]);
+
+    // Create the paragraph : Vactory_Component.
+    $paragraph = Paragraph::create([
+      'type' => 'vactory_component',
+      'field_vactory_component' => [
+        'widget_id' => $widget_id,
+        'widget_data' => json_encode($widget_data),
+      ],
+    ]);
+    $paragraph->save();
+
+    // Create the node (Vactory_Page) : with DTT helper.
+    $node = $this->createNode([
+      'type' => 'vactory_page',
+      'title' => 'Cross bundle listing test ' . time(),
+      'status' => 1,
+      'moderation_state' => 'published',
+      'field_vactory_paragraphs' => [
+        [
+          'target_id' => $paragraph->id(),
+          'target_revision_id' => $paragraph->getRevisionId(),
+        ],
+      ],
+    ]);
+
     // Test with json api.
-    $langcode = $this->node->language()->getId();
+    $langcode = $node->language()->getId();
     $parsedUrl = parse_url($this->baseUrl);
 
     // Fallbacks.
@@ -109,7 +146,7 @@ class VactoryCrossBundlesTest extends ExistingSiteBase {
     $port = isset($parsedUrl['port']) ? ':' . $parsedUrl['port'] : '';
 
     // URL finale.
-    $fullUrl = "{$scheme}://{$host}{$port}/{$langcode}/api/node/vactory_page/{$this->node->uuid()}?include=field_vactory_paragraphs";
+    $fullUrl = "{$scheme}://{$host}{$port}/{$langcode}/api/node/vactory_page/{$node->uuid()}?include=field_vactory_paragraphs";
 
     $this->drupalGet($fullUrl);
     $this->assertSession()->statusCodeEquals(200);
@@ -121,7 +158,7 @@ class VactoryCrossBundlesTest extends ExistingSiteBase {
 
     // Vérifier que le widget_id est correct.
     $this->assertEquals(
-      'vactory_news:cross-bundles',
+      $widget_id,
       $component['widget_id'],
       'Widget ID should be vactory_news:cross-bundles.'
     );
@@ -136,101 +173,13 @@ class VactoryCrossBundlesTest extends ExistingSiteBase {
 
     // On extrait juste les "type".
     $types = array_column($items, 'type');
+
     // On s'assure qu'on a bien nos deux types.
     $this->assertContains('node--vactory_news', $types, 'Widget data doit contenir un node vactory_news.');
     $this->assertContains('node--vactory_publication', $types, 'Widget data doit contenir un node vactory_publication.');
-  }
 
-  /**
-   * Helper générer le widget_data (vactory_news:cross-bundles).
-   *
-   * @return array
-   *   Tableau de configuration du widget.
-   */
-  protected function setWidgetData(): array {
-    return [
-      "0" => [
-        "collection" => [
-          "resource" => [
-            "entity_type" => "node",
-            "bundle" => [
-              "vactory_news" => "vactory_news",
-              "vactory_publication" => "vactory_publication",
-              "vactory_academy" => 0,
-              "vactory_blog" => 0,
-              "vactory_event" => 0,
-              "vactory_faq" => 0,
-              "vactory_forum" => 0,
-              "vactory_glossary" => 0,
-              "vactory_help_center" => 0,
-              "vactory_job_ads" => 0,
-              "vactory_mediatheque" => 0,
-              "vactory_multivers" => 0,
-              "vactory_page" => 0,
-              "vactory_press_kit" => 0,
-              "vactory_press_release" => 0,
-              "vactory_seo" => 0,
-              "vactory_testimonials" => 0,
-            ],
-            "submit" => "update entity reference",
-          ],
-          "filters" => [
-            "sort[date][path]=field_vactory_date",
-            "sort[date][direction]=DESC",
-            "page[offset]=0",
-            "page[limit]=9",
-            "filter[status][value]=1",
-            "sort[sort-vactory-date][path]=field_vactory_date",
-            "sort[sort-vactory-date][direction]=DESC",
-            "fields[node--vactory_news]=drupal_internal__nid,path,title,field_vactory_news_theme,field_vactory_media,field_vactory_excerpt,field_vactory_date,is_flagged,has_flag",
-            "fields[taxonomy_term--vactory_news_theme]=tid,name",
-            "include=field_vactory_publication_theme,field_vactory_news_theme,field_vactory_media,field_vactory_media.thumbnail",
-            "fields[node--vactory_publication]=drupal_internal__nid,path,title,field_vactory_date,field_vactory_media_document,field_vactory_call_to_action,field_vactory_excerpt,field_vactory_media,field_vactory_publication_theme,field_vactory_tags,field_media_file",
-            "fields[taxonomy_term--vactory_publication_theme]=tid,name",
-            "fields[taxonomy_term--tags]=tid,name",
-            "fields[file--document]=filename,uri",
-            "fields[media--file]= field_media_file,uri",
-            "fields[media--image]=name,thumbnail",
-            "fields[file--image]=filename,uri",
-          ],
-          "entity_queue" => "",
-          "entity_queue_field_id" => "",
-          "id" => "vactory_news_cross_bundles",
-          "cache_tags" => "",
-          "cache_contexts" => "",
-          "vocabularies" => [
-            "faq_section" => 0,
-            "locator_category" => 0,
-            "locator_city" => 0,
-            "locator_country" => 0,
-            "mediatheque_theme_albums" => 0,
-            "mediatheque_types" => 0,
-            "medium_year" => 0,
-            "multivers" => 0,
-            "press_kit_theme" => 0,
-            "press_release_theme" => 0,
-            "users_groups" => 0,
-            "vactory_academy_themes" => 0,
-            "vactory_blog_categories" => 0,
-            "vactory_blog_tags" => 0,
-            "vactory_cross_content_taxonomy" => 0,
-            "vactory_event_category" => 0,
-            "vactory_event_citys" => 0,
-            "vactory_forums_thematic" => 0,
-            "vactory_forum_room" => 0,
-            "vactory_glossary" => 0,
-            "vactory_help_center" => 0,
-            "vactory_job_ads_city" => 0,
-            "vactory_job_ads_contract" => 0,
-            "vactory_job_ads_profession" => 0,
-            "vactory_news_theme" => 0,
-            "vactory_publication_theme" => 0,
-            "vactory_testimonials_profils" => 0,
-          ],
-        ],
-        "pending_content" => [],
-      ],
-    ];
+    // Cleanup.
+    $paragraph->delete();
   }
 
   /**
@@ -250,17 +199,65 @@ class VactoryCrossBundlesTest extends ExistingSiteBase {
    * {@inheritdoc}
    */
   protected function tearDown(): void {
-
-    // Supprimer paragraph ajouteé pendant le test.
-    if (isset($this->paragraph) && $this->paragraph) {
-      $this->paragraph->delete();
-    }
     // Désinstaller les modules installés pendant le test.
     if (!empty($this->modulesInstalledDuringTest)) {
       $moduleInstaller = \Drupal::service('module_installer');
       $moduleInstaller->uninstall($this->modulesInstalledDuringTest);
     }
     parent::tearDown();
+  }
+
+  /**
+   * Write DF file and track for cleanup.
+   *
+   * @param array $content
+   *   The content to write.
+   * @param string $name
+   *   The DF name.
+   *
+   * @return bool
+   *   TRUE if file was written successfully.
+   */
+  protected function writeDfFile(array $content, $name): bool {
+    $yaml_config = Yaml::encode($content);
+    $dest_uri = 'private://volatile-df';
+    $dest_df_uri = $dest_uri . '/' . $name;
+
+    if (!file_exists($dest_df_uri)) {
+      mkdir($dest_df_uri, 0777, TRUE);
+    }
+
+    $filepath = \Drupal::service('file_system')->realpath($dest_df_uri . '/settings.yml');
+    $printed = file_put_contents($filepath, $yaml_config);
+
+    // Track the directory for cleanup.
+    $this->createdDfFiles[] = \Drupal::service('file_system')->realpath($dest_df_uri);
+
+    return (bool) $printed;
+  }
+
+  /**
+   * Recursively remove a directory and its contents.
+   *
+   * @param string $dir
+   *   The directory path to remove.
+   */
+  protected function removeDirectory(string $dir): void {
+    if (!is_dir($dir)) {
+      return;
+    }
+
+    $files = array_diff(scandir($dir), ['.', '..']);
+    foreach ($files as $file) {
+      $path = $dir . DIRECTORY_SEPARATOR . $file;
+      if (is_dir($path)) {
+        $this->removeDirectory($path);
+      }
+      else {
+        unlink($path);
+      }
+    }
+    rmdir($dir);
   }
 
 }
