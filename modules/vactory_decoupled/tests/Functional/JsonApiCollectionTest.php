@@ -74,6 +74,20 @@ class JsonApiCollectionTest extends ExistingSiteBase {
 
     // Make sure vactory_page_import is installed.
     $this->ensureModuleInstalled(self::DF_CREATOR_MODULE);
+
+    // Create news nodes.
+    // we should have at least one node.
+    $this->createNode([
+      'type' => 'vactory_news',
+      'title' => 'News test 1',
+      'status' => 1,
+    ]);
+    $this->createNode([
+      'type' => 'vactory_news',
+      'title' => 'News test 2',
+      'status' => 1,
+    ]);
+
   }
 
   /**
@@ -162,6 +176,9 @@ class JsonApiCollectionTest extends ExistingSiteBase {
     // Validate JSON API collection response structure.
     $this->assertArrayHasKey('data', $collection_response, 'Collection response should have data key');
     $this->assertIsArray($collection_response['data'], 'Collection data should be an array');
+
+    // Check if nodes are presents.
+    $this->assertNotEmpty($collection_response['data'], 'Collection data should not be empty');
 
     // Verify we have vactory_news nodes.
     if (!empty($collection_response['data'])) {
