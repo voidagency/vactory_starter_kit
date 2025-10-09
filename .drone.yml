@@ -13,7 +13,7 @@ steps:
       - echo $${DRONE_TARGET_BRANCH}
       - docker build --no-cache -f ./Dockerfile --build-arg SOURCE_BRANCH_ID=$${DRONE_SOURCE_BRANCH} --build-arg TARGET_BRANCH_ID=$${DRONE_TARGET_BRANCH} -t vactory_starter_kit/build .
   - name: code-analysis
-    image: kytay/sonar-node-plugin
+    image: vactory/sonar-node-plugin:latest
     settings:
       sonar_host:
         from_secret: sonar_host

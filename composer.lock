@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "73e66ebbc0861e8f8611695da45a9b97",
+    "content-hash": "0f531665629681c846e19e6224e9ae5b",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -4804,6 +4804,46 @@
             ]
         },
         {
+            "name": "drupal/google_news_sitemap",
+            "version": "dev-1.0.x",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/google_news_sitemap.git",
+                "reference": "1647c3f6aa20e390a5df68fd57c11bac1557c147"
+            },
+            "require": {
+                "drupal/core": "^10 | ^11"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "branch-alias": {
+                    "dev-1.0.x": "1.0.x-dev"
+                },
+                "drupal": {
+                    "version": "1.0.x-dev",
+                    "datestamp": "1741256974",
+                    "security-coverage": {
+                        "status": "not-covered",
+                        "message": "Dev releases are not covered by Drupal security advisories."
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "ajay gadhavana",
+                    "homepage": "https://www.drupal.org/user/2784415"
+                }
+            ],
+            "homepage": "https://www.drupal.org/project/google_news_sitemap",
+            "support": {
+                "source": "https://git.drupalcode.org/project/google_news_sitemap"
+            }
+        },
+        {
             "name": "drupal/google_tag",
             "version": "1.6.0",
             "source": {
@@ -6111,20 +6151,20 @@
         },
         {
             "name": "drupal/linkit",
-            "version": "6.1.2",
+            "version": "7.0.8",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/linkit.git",
-                "reference": "6.1.2"
+                "reference": "7.0.8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/linkit-6.1.2.zip",
-                "reference": "6.1.2",
-                "shasum": "63fb311d2b78df81a9a588330429b640ec7da0e8"
+                "url": "https://ftp.drupal.org/files/projects/linkit-7.0.8.zip",
+                "reference": "7.0.8",
+                "shasum": "3a16053650934b3942cf369ac1ee3ad85c655d45"
             },
             "require": {
-                "drupal/core": "^10.1"
+                "drupal/core": "^10.1 || ^11"
             },
             "require-dev": {
                 "drupal/ckeditor": "*",
@@ -6133,8 +6173,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "6.1.2",
-                    "datestamp": "1696865478",
+                    "version": "7.0.8",
+                    "datestamp": "1754406731",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -11516,6 +11556,56 @@
                 "issues": "https://www.drupal.org/project/issues/webform?version=8.x",
                 "docs": "https://www.drupal.org/docs/8/modules/webform",
                 "forum": "https://drupal.stackexchange.com/questions/tagged/webform"
+            }
+        },
+        {
+            "name": "drupal/webform_import_tab",
+            "version": "dev-1.0.x",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/webform_import_tab.git",
+                "reference": "7a6114ed2a9ea5e02dfb4365a7c1b685e3e0c5ad"
+            },
+            "require": {
+                "drupal/core": "^8.8 || ^9 || ^10",
+                "drupal/webform": "*"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "branch-alias": {
+                    "dev-1.0.x": "1.0.x-dev"
+                },
+                "drupal": {
+                    "version": "1.0.x-dev",
+                    "datestamp": "1706911366",
+                    "security-coverage": {
+                        "status": "not-covered",
+                        "message": "Project has not opted into security advisory coverage!"
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0+"
+            ],
+            "authors": [
+                {
+                    "name": "bryden",
+                    "homepage": "https://www.drupal.org/user/1969084"
+                },
+                {
+                    "name": "ptsimard",
+                    "homepage": "https://www.drupal.org/user/1972814"
+                },
+                {
+                    "name": "spotzero",
+                    "homepage": "https://www.drupal.org/user/657848"
+                }
+            ],
+            "description": "Add an import tab to webforms.",
+            "homepage": "http://drupal.org/project/webform_import_tab",
+            "support": {
+                "source": "https://git.drupalcode.org/project/webform_import_tab"
             }
         },
         {
@@ -20990,6 +21080,7 @@
         "drupal/filefield_paths": 10,
         "drupal/flag": 10,
         "drupal/gin": 5,
+        "drupal/google_news_sitemap": 20,
         "drupal/jsonapi_user_resources": 10,
         "drupal/lang_dropdown": 10,
         "drupal/openai": 10,
@@ -21005,7 +21096,8 @@
         "drupal/ultimate_cron": 15,
         "drupal/viewsreference": 10,
         "drupal/votingapi": 10,
-        "drupal/webform": 10
+        "drupal/webform": 10,
+        "drupal/webform_import_tab": 20
     },
     "prefer-stable": true,
     "prefer-lowest": false,
