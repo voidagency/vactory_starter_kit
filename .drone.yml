@@ -42,6 +42,10 @@ steps:
     image: docker/compose:1.29.2
     depends_on:
       - phpunit
+    when:
+      status:
+      - failure
+      - success
     commands:
       - docker image rm test-vactory:latest
   - name: analyze
@@ -55,6 +59,9 @@ steps:
     environment:
       CURSOR_API_KEY:
         from_secret: cursor_api_key
+    volumes:
+      - name: cache
+        path: /workspace
     commands:
       - cat /workspace/{phpcs,phpunit}.txt > /workspace/report.txt
       - cat /workspace/report.txt
