@@ -8,7 +8,7 @@ steps:
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
-      - name: workspace
+      - name: cache
         path: /workspace
     commands:
       - echo $${DRONE_SOURCE_BRANCH}
@@ -30,7 +30,7 @@ steps:
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
-      - name: workspace
+      - name: cache
         path: /workspace
     commands:
       - echo $${DRONE_SOURCE_BRANCH}
@@ -56,5 +56,5 @@ volumes:
   - name: docker_sock
     host:
       path: /var/run/docker.sock
-  - name: workspace
+  - name: cache
     temp: {}
