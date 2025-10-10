@@ -36,8 +36,8 @@ steps:
       - echo $${DRONE_SOURCE_BRANCH}
       - echo $${DRONE_COMMIT}
       - echo $${BITBUCKET_AUTHTOKEN}
-      - docker build -f .ci/Dockerfile --build-arg DRONE_SOURCE_BRANCH=$${DRONE_SOURCE_BRANCH} --build-arg DRONE_COMMIT=$${DRONE_COMMIT} --build-arg BITBUCKET_AUTHTOKEN=$${BITBUCKET_AUTHTOKEN} -t test-vactory:latest ./.ci # TODO: use commit hash instead of latest
-      - set -o pipefail && docker run --rm test-vactory:latest 2>&1 | tee /workspace/phpunit.txt
+      - docker build -f .ci/Dockerfile --build-arg DRONE_SOURCE_BRANCH=$${DRONE_SOURCE_BRANCH} --build-arg DRONE_COMMIT=$${DRONE_COMMIT} --build-arg BITBUCKET_AUTHTOKEN=$${BITBUCKET_AUTHTOKEN} -t test-vactory:$${DRONE_COMMIT} ./.ci
+      - set -o pipefail && docker run --rm test-vactory:$${DRONE_COMMIT} 2>&1 | tee /workspace/phpunit.txt
   - name: clean-up
     image: docker/compose:1.29.2
     depends_on:
@@ -47,7 +47,7 @@ steps:
       - failure
       - success
     commands:
-      - docker image rm test-vactory:latest
+      - docker container rm -f $(docker ps -a --filter ancestor=test-vactory:$${DRONE_COMMIT} -q) && docker image rm test-vactory:$${DRONE_COMMIT}
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
@@ -66,6 +66,7 @@ steps:
       - name: cache
         path: /workspace
     commands:
+      - ls -la /workspace
       - cat /workspace/{phpcs,phpunit}.txt > /workspace/report.txt
       - cat /workspace/report.txt
 volumes:
