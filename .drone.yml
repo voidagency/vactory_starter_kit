@@ -53,8 +53,8 @@ steps:
       CURSOR_API_KEY:
         from_secret: cursor_api_key
     commands:
-      - cat /workspace/phpcs.txt
-      - cat /workspace/phpunit.txt
+      - cat /workspace/{phpcs,phpunit}.txt > /workspace/report.txt
+      - cat /workspace/report.txt
 volumes:
   - name: docker_sock
     host:
