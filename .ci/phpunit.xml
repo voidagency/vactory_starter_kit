@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         bootstrap="core/tests/bootstrap.php" colors="true"
+         beStrictAboutTestsThatDoNotTestAnything="true"
+         beStrictAboutOutputDuringTests="true"
+         beStrictAboutChangesToGlobalState="true"
+         failOnWarning="true"
+         printerClass="\Drupal\Tests\Listeners\HtmlOutputPrinter"
+         cacheResult="false"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
+  <php>
+    <ini name="error_reporting" value="32767"/>
+    <ini name="memory_limit" value="-1"/>
+    <env name="DTT_BASE_URL" value="http://localhost:8080"/>
+    <env name="DTT_MINK_DRIVER_ARGS" value='["firefox", null, "http://localhost:4444/wd/hub"]'/>
+    <env name="DTT_API_OPTIONS" value='{"socketTimeout": 360, "domWaitTimeout": 3600000}' />
+    <env name="BROWSERTEST_OUTPUT_DIRECTORY" value=""/>
+  </php>
+
+  <testsuites>
+    <testsuite name="unit">
+      <directory>./profiles/contrib/vactory_starter_kit/*/tests/src/Unit</directory>
+    </testsuite>
+    <testsuite name="kernel">
+      <directory>./profiles/contrib/vactory_starter_kit/*/tests/src/Kernel</directory>
+    </testsuite>
+    <testsuite name="existing-site">
+      <directory>./profiles/contrib/vactory_starter_kit/*/tests/src/ExistingSite</directory>
+    </testsuite>
+    <testsuite name="existing-site-javascript">
+      <directory>./profiles/contrib/vactory_starter_kit/*/tests/src/ExistingSiteJavascript</directory>
+    </testsuite>
+  </testsuites>
+</phpunit>

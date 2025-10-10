@@ -20,6 +20,26 @@ steps:
       sonar_token:
         from_secret: sonar_token
       use_node_version: 20.11.1
+  - name: phpunit
+    image: docker/compose:1.29.2
+    environment:
+      BITBUCKET_AUTHTOKEN:
+        from_secret: BITBUCKET_AUTHTOKEN
+    volumes:
+      - name: docker_sock
+        path: /var/run/docker.sock
+    commands:
+      - echo $${DRONE_SOURCE_BRANCH}
+      - echo $${DRONE_COMMIT}
+      - echo $${BITBUCKET_AUTHTOKEN}
+      - docker build -f .ci/Dockerfile --build-arg DRONE_SOURCE_BRANCH=$${DRONE_SOURCE_BRANCH} --build-arg DRONE_COMMIT=$${DRONE_COMMIT} --build-arg BITBUCKET_AUTHTOKEN=$${BITBUCKET_AUTHTOKEN} -t test-vactory:latest ./.ci
+      - docker run --rm test-vactory:latest
+  - name: clean-up
+    image: docker/compose:1.29.2
+    depends_on:
+      - phpunit
+    commands:
+      - docker image rm test-vactory:latest
 volumes:
   - name: docker_sock
     host:
