@@ -32,8 +32,8 @@ steps:
       - echo $${DRONE_SOURCE_BRANCH}
       - echo $${DRONE_COMMIT}
       - echo $${BITBUCKET_AUTHTOKEN}
-      - docker build -f .ci/Dockerfile --build-arg DRONE_SOURCE_BRANCH=$${DRONE_SOURCE_BRANCH} --build-arg DRONE_COMMIT=$${DRONE_COMMIT} --build-arg BITBUCKET_AUTHTOKEN=$${BITBUCKET_AUTHTOKEN} -t test-vactory:latest ./.ci
-      - docker run --rm test-vactory:latest
+      - docker build -f .ci/Dockerfile --build-arg DRONE_SOURCE_BRANCH=$${DRONE_SOURCE_BRANCH} --build-arg DRONE_COMMIT=$${DRONE_COMMIT} --build-arg BITBUCKET_AUTHTOKEN=$${BITBUCKET_AUTHTOKEN} -t test-vactory:latest ./.ci # TODO: use commit hash instead of latest
+      - docker run --rm test-vactory:latest # TODO: use commit hash instead of latest
   - name: clean-up
     image: docker/compose:1.29.2
     depends_on:
