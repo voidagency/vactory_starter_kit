@@ -46,6 +46,9 @@ steps:
       - docker image rm test-vactory:latest
   - name: analyze
     image: ubuntu:latest
+    depends_on:
+      - phpcs
+      - phpunit
     when:
       status:
       - failure
