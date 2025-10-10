@@ -22,6 +22,9 @@ steps:
       use_node_version: 20.11.1
   - name: phpunit
     image: docker/compose:1.29.2
+    environment:
+      BITBUCKET_AUTHTOKEN:
+        from_secret: BITBUCKET_AUTHTOKEN
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
