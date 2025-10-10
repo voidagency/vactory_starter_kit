@@ -12,7 +12,6 @@
   <php>
     <ini name="error_reporting" value="32767"/>
     <ini name="memory_limit" value="-1"/>
-    <env name="SIMPLETEST_DB" value="mysql://fake_value_for_testing_ignore_me:fake_value_for_testing_ignore_me@127.0.0.1/fake_value_for_testing_ignore_me"/>
     <env name="DTT_BASE_URL" value="http://localhost:8080"/>
     <env name="DTT_MINK_DRIVER_ARGS" value='["firefox", null, "http://localhost:4444/wd/hub"]'/>
     <env name="DTT_API_OPTIONS" value='{"socketTimeout": 360, "domWaitTimeout": 3600000}' />

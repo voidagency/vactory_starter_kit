@@ -26,11 +26,17 @@ print_step_complete() {
     echo -e "${color}${emoji} ${step_name} complete! (${elapsed})\033[0m"
 }
 
-# Configuration values
-MYSQL_ROOT_PASSWORD="fake_value_for_testing_ignore_me"
-MYSQL_DATABASE="fake_value_for_testing_ignore_me"
-MYSQL_USER="fake_value_for_testing_ignore_me"
-MYSQL_PASSWORD="fake_value_for_testing_ignore_me"
+# Function to generate secure random strings
+generate_random_string() {
+    local length=${1:-16}
+    openssl rand -base64 $length | tr -d "=+/" | cut -c1-$length
+}
+
+# Generate dynamic MySQL configuration values
+MYSQL_ROOT_PASSWORD=$(generate_random_string 20)
+MYSQL_DATABASE="test_db_$(generate_random_string 8)"
+MYSQL_USER="test_user_$(generate_random_string 8)"
+MYSQL_PASSWORD=$(generate_random_string 20)
 
 # Check required environment variables
 if [ -z "$DRONE_SOURCE_BRANCH" ]; then
@@ -123,7 +129,7 @@ print_step_complete "Web servers setup" "✅" "\033[32m" $WEB_START_TIME
 # Mock frontend server setup
 print_step "Starting mock frontend server" "🎭" "\033[33m"
 export BASE_FRONTEND_URL=http://localhost:8085
-export FRONTEND_CACHE_KEY=fake_value_for_testing_ignore_me
+export FRONTEND_CACHE_KEY="cache_$(generate_random_string 12)"
 
 # Create mock directory and file
 mkdir -p /tmp/mock-frontend
@@ -185,7 +191,7 @@ print_step "Clearing cache" "🧹" "\033[35m"
 /usr/bin/php -d memory_limit=-1 /opt/app-root/src/.config/composer/vendor/bin/drush cr
 
 print_step "Adding languages" "🌍" "\033[35m"
-/usr/bin/php -d memory_limit=-1 /opt/app-root/src/.config/composer/vendor/bin/drush language:add ar,fr --skip-translations --yes 
+/usr/bin/php -d memory_limit=-1 /opt/app-root/src/.config/composer/vendor/bin/drush language:add ar,fr --skip-translations --yes
 drush language:info
 # /usr/bin/php -d memory_limit=-1 /opt/app-root/src/.config/composer/vendor/bin/drush status
 
@@ -204,6 +210,7 @@ print_step_complete "System configuration" "✅" "\033[32m" $CONFIG_START_TIME
 TEST_START_TIME=$(date +%s)
 
 print_step "Running tests" "🧪" "\033[36m"
+export SIMPLETEST_DB="mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@localhost:3306/${MYSQL_DATABASE}"
 /var/www/html/vendor/bin/phpunit --bootstrap=./vendor/weitzman/drupal-test-traits/src/bootstrap.php -c ./phpunit.xml --testdox --verbose --stderr /var/www/html/profiles/contrib/vactory_starter_kit/
 TEST_EXIT_CODE=$?
 
