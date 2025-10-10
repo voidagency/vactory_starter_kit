@@ -13,7 +13,7 @@ steps:
     commands:
       - echo $${DRONE_SOURCE_BRANCH}
       - echo $${DRONE_TARGET_BRANCH}
-      - docker build --no-cache -f ./Dockerfile --build-arg SOURCE_BRANCH_ID=$${DRONE_SOURCE_BRANCH} --build-arg TARGET_BRANCH_ID=$${DRONE_TARGET_BRANCH} -t vactory_starter_kit/build . 2>&1 | tee /workspace/phpcs.txt
+      - set -o pipefail && docker build --no-cache -f ./Dockerfile --build-arg SOURCE_BRANCH_ID=$${DRONE_SOURCE_BRANCH} --build-arg TARGET_BRANCH_ID=$${DRONE_TARGET_BRANCH} -t vactory_starter_kit/build . 2>&1 | tee /workspace/phpcs.txt
   - name: code-analysis
     image: vactory/sonar-node-plugin:latest
     settings:
@@ -37,7 +37,7 @@ steps:
       - echo $${DRONE_COMMIT}
       - echo $${BITBUCKET_AUTHTOKEN}
       - docker build -f .ci/Dockerfile --build-arg DRONE_SOURCE_BRANCH=$${DRONE_SOURCE_BRANCH} --build-arg DRONE_COMMIT=$${DRONE_COMMIT} --build-arg BITBUCKET_AUTHTOKEN=$${BITBUCKET_AUTHTOKEN} -t test-vactory:latest ./.ci # TODO: use commit hash instead of latest
-      - docker run --rm test-vactory:latest 2>&1 | tee /workspace/phpunit.txt
+      - set -o pipefail && docker run --rm test-vactory:latest 2>&1 | tee /workspace/phpunit.txt
   - name: clean-up
     image: docker/compose:1.29.2
     depends_on:
