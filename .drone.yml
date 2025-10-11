@@ -10,8 +10,8 @@ steps:
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
-      - name: cache
-        path: /workspace
+      # - name: cache
+      #   path: /workspace
     commands:
       - echo $${DRONE_SOURCE_BRANCH}
       - echo $${DRONE_TARGET_BRANCH}
@@ -39,14 +39,12 @@ steps:
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
-      - name: cache
-        path: /workspace
     commands:
       - echo $${DRONE_SOURCE_BRANCH}
       - echo $${DRONE_COMMIT}
       - echo $${BITBUCKET_AUTHTOKEN}
       - docker build -f .ci/Dockerfile --build-arg DRONE_SOURCE_BRANCH=$${DRONE_SOURCE_BRANCH} --build-arg DRONE_COMMIT=$${DRONE_COMMIT} --build-arg BITBUCKET_AUTHTOKEN=$${BITBUCKET_AUTHTOKEN} -t test-vactory:$${DRONE_COMMIT} ./.ci
-      - set -o pipefail && docker run --rm test-vactory:$${DRONE_COMMIT} 2>&1 | tee /workspace/phpunit.txt
+      - set -o pipefail && docker run --rm test-vactory:$${DRONE_COMMIT} 2>&1 | tee ./phpunit.txt
   - name: clean-up
     image: docker/compose:1.29.2
     depends_on:
@@ -73,17 +71,14 @@ steps:
     environment:
       CURSOR_API_KEY:
         from_secret: cursor_api_key
-    volumes:
-      - name: cache
-        path: /workspace
     commands:
       - apt-get update && apt-get install -y curl
       - curl https://cursor.com/install -fsS | bash
       - ls -la
-      - ls -la /workspace
-      - cat ./phpcs.txt /workspace/phpunit.txt 2>/dev/null > /workspace/report.txt
-      - cat /workspace/report.txt
-      - /root/.local/bin/cursor-agent -p "Analyze the following report /workspace/report.txt and provide a detailed analysis of any issues, bugs or why it failed"
+      - cat ./phpcs.txt > ./report.txt
+      - cat ./phpunit.txt >> ./report.txt
+      - cat ./report.txt
+      - /root/.local/bin/cursor-agent -p "Analyze the following report ./report.txt and provide a detailed analysis of any issues, bugs or why it failed"
   - name: notify
     image: plugins/slack-blame
     failure: ignore
@@ -92,7 +87,7 @@ steps:
     settings:
       token:
         from_secret: SLACK_TOKEN
-      channel: test-drone-ci
+      # channel: test-drone-ci
       success_template: |
         {{#if ${DRONE_PULL_REQUEST} }}
           ✅ <https://github.com/{{ repo.owner }}/{{ repo.name }}/pull/${DRONE_PULL_REQUEST}|Pull Request #${DRONE_PULL_REQUEST}>
@@ -103,17 +98,18 @@ steps:
         Branch: <${CI_REPO_LINK}/commits/${DRONE_SOURCE_BRANCH}|${DRONE_SOURCE_BRANCH}>
         Author: ${DRONE_COMMIT_AUTHOR}
         <${DRONE_BUILD_LINK}|Visit build page ↗>
-      success_image_attachments:
-        - "http://i.imgur.com/TP4PIxc.jpg"
+      success_icon: ":happy_keanu:"
       failure_template: |
         The build is broken! Blame {{slack.name}}
-      failure_image_attachments:
-        - "https://i.imgur.com/bpNKyvR.png"
+
+        Commit: <${CI_REPO_LINK}/commits/{{ build.commit }}|{{ truncate build.commit 8 }}>
+        Branch: <${CI_REPO_LINK}/commits/${DRONE_SOURCE_BRANCH}|${DRONE_SOURCE_BRANCH}>
+        Author: ${DRONE_COMMIT_AUTHOR}
+        <${DRONE_BUILD_LINK}|Visit build page ↗>
+      failure_icon: ":sad_keanu:"
     when:
       status: [failure]
 volumes:
   - name: docker_sock
     host:
       path: /var/run/docker.sock
-  - name: cache
-    temp: {}
