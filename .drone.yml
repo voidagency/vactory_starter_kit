@@ -47,8 +47,8 @@ steps:
       - failure
       - success
     commands:
-      - docker container rm -f $(docker ps -a --filter ancestor=test-vactory:$${DRONE_COMMIT} -q) 2>&1
-      - docker image rm test-vactory:$${DRONE_COMMIT}
+      - docker container rm -f $(docker ps -a --filter ancestor=test-vactory:$${DRONE_COMMIT} -q) || true
+      - docker image rm test-vactory:$${DRONE_COMMIT} || true
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
