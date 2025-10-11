@@ -14,7 +14,9 @@ steps:
     commands:
       - echo $${DRONE_SOURCE_BRANCH}
       - echo $${DRONE_TARGET_BRANCH}
+      - ls -la /drone/src
       - cp -r /drone/src /var/www/html
+      - ls -la /var/www/html
       - cd /var/www/html
       - composer install
       - vendor/bin/phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer
