@@ -2,6 +2,8 @@ name: default
 kind: pipeline
 type: docker
 
+clone:
+  depth: 1
 
 steps:
   - name: phpcs
