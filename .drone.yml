@@ -69,7 +69,7 @@ steps:
     commands:
       - apt-get update && apt-get install -y curl
       - curl https://cursor.com/install -fsS | bash
-      - echo $PATH
+      - ls -la
       - ls -la /workspace
       - cat /workspace/phpcs.txt /workspace/phpunit.txt 2>/dev/null > /workspace/report.txt
       - cat /workspace/report.txt
