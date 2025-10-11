@@ -16,12 +16,12 @@ steps:
       - echo $${DRONE_SOURCE_BRANCH}
       - echo $${DRONE_TARGET_BRANCH}
       - ls -la /drone/src
-      - rsync -av /drone/src/ /var/www/html/
+      - rsync -a --delete /drone/src/ /var/www/html/
       - ls -la /var/www/html
       - cd /var/www/html
       - composer install
       - vendor/bin/phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer
-      - set -o pipefail && php scripts/githooks/phpCodeSniffer.php $(git diff --name-status ${TARGET_BRANCH_ID}..${SOURCE_BRANCH_ID} | grep -E "\.(php|module|install|profile|test|inc|theme|txt|md)$" | sed -E "s/(A|M|C)[[:space:]]+//g") 2>&1 | tee /workspace/phpcs.txt
+      - set -o pipefail && php scripts/githooks/phpCodeSniffer.php $(git diff --name-status ${DRONE_TARGET_BRANCH}..${DRONE_SOURCE_BRANCH} | grep -E "\.(php|module|install|profile|test|inc|theme|txt|md)$" | sed -E "s/(A|M|C)[[:space:]]+//g") 2>&1 | tee ./phpcs.txt
       # - set -o pipefail && docker build --no-cache -f ./Dockerfile --build-arg SOURCE_BRANCH_ID=$${DRONE_SOURCE_BRANCH} --build-arg TARGET_BRANCH_ID=$${DRONE_TARGET_BRANCH} -t vactory_starter_kit/build . 2>&1 | tee /workspace/phpcs.txt
   - name: code-analysis
     image: vactory/sonar-node-plugin:latest
@@ -63,6 +63,7 @@ steps:
         path: /var/run/docker.sock
   - name: analyze
     image: ubuntu:latest
+    failure: ignore
     depends_on:
       - phpcs
       - phpunit
@@ -85,6 +86,7 @@ steps:
       - /root/.local/bin/cursor-agent -p "Analyze the following report /workspace/report.txt and provide a detailed analysis of any issues, bugs or why it failed"
   - name: notify
     image: plugins/slack-blame
+    failure: ignore
     depends_on:
       - analyze
     settings:
