@@ -81,7 +81,7 @@ steps:
       - curl https://cursor.com/install -fsS | bash
       - ls -la
       - ls -la /workspace
-      - cat /workspace/phpcs.txt /workspace/phpunit.txt 2>/dev/null > /workspace/report.txt
+      - cat ./phpcs.txt /workspace/phpunit.txt 2>/dev/null > /workspace/report.txt
       - cat /workspace/report.txt
       - /root/.local/bin/cursor-agent -p "Analyze the following report /workspace/report.txt and provide a detailed analysis of any issues, bugs or why it failed"
   - name: notify
