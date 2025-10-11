@@ -3,9 +3,15 @@ kind: pipeline
 type: docker
 
 clone:
-  depth: 1
+  disable: true
+  # depth: 1
 
 steps:
+  - name: clone_test
+    image: alpine/git
+    commands:
+    - git clone https://github.com/voidagency/vactory_starter_kit.git .
+    - git checkout $DRONE_COMMIT
   - name: phpcs
     # image: docker/compose:1.29.2
     image: vactory/php-ubi9:8.3.14
