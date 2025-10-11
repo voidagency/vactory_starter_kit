@@ -67,9 +67,47 @@ steps:
       - name: cache
         path: /workspace
     commands:
+      - apt-get update && apt-get install -y curl
+      - curl https://cursor.com/install -fsS | bash
+      - echo $PATH
       - ls -la /workspace
       - cat /workspace/phpcs.txt /workspace/phpunit.txt 2>/dev/null > /workspace/report.txt
       - cat /workspace/report.txt
+      - /root/.local/bin/cursor-agent -p "Analyze the following report /workspace/report.txt and provide a detailed analysis of any issues, bugs or why it failed"
+  - name: notify
+    image: plugins/slack-blame
+    depends_on:
+      - analyze
+    settings:
+      token:
+        from_secret: SLACK_TOKEN
+      channel: test-drone-ci
+      success_template: |
+        {{#if ${DRONE_PULL_REQUEST} }}
+          ✅ <https://github.com/{{ repo.owner }}/{{ repo.name }}/pull/${DRONE_PULL_REQUEST}|Pull Request #${DRONE_PULL_REQUEST}>
+        {{else}}
+          ✅ {{ uppercasefirst build.status }}: Build #{{ build.number }} (type: `{{ build.event }}`)
+        {{/if}}
+        Commit: <${CI_REPO_LINK}/commits/{{ build.commit }}|{{ truncate build.commit 8 }}>
+        Branch: <${CI_REPO_LINK}/commits/${DRONE_SOURCE_BRANCH}|${DRONE_SOURCE_BRANCH}>
+        Author: ${DRONE_COMMIT_AUTHOR}
+        <${DRONE_BUILD_LINK}|Visit build page ↗>
+      success_image_attachments:
+        - "http://i.imgur.com/TP4PIxc.jpg"
+      failure_template: |
+        {{#if ${DRONE_PULL_REQUEST} }}
+          ❌ <https://github.com/{{ repo.owner }}/{{ repo.name }}/pull/${DRONE_PULL_REQUEST}|Pull Request #${DRONE_PULL_REQUEST}>
+        {{else}}
+          ❌ {{ uppercasefirst build.status }}: Build #{{ build.number }} (type: `{{ build.event }}`)
+        {{/if}}
+        Commit: <${CI_REPO_LINK}/commits/{{ build.commit }}|{{ truncate build.commit 8 }}>
+        Branch: <${CI_REPO_LINK}/commits/${DRONE_SOURCE_BRANCH}|${DRONE_SOURCE_BRANCH}>
+        Author: ${DRONE_COMMIT_AUTHOR}
+        <${DRONE_BUILD_LINK}|Visit build page ↗>
+      failure_image_attachments:
+        - "http://cdn.meme.am/instances/51000361.jpg"
+    when:
+      status: [failure]
 volumes:
   - name: docker_sock
     host:
