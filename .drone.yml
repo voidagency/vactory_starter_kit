@@ -2,6 +2,9 @@ name: default
 kind: pipeline
 type: docker
 
+workspace:
+  path: /var/www/html
+
 steps:
   - name: phpcs
     # image: docker/compose:1.29.2
@@ -14,10 +17,10 @@ steps:
     commands:
       - echo $${DRONE_SOURCE_BRANCH}
       - echo $${DRONE_TARGET_BRANCH}
-      - ls -la /drone/src
-      - cp -r /drone/src /var/www/html
+      # - ls -la /drone/src
+      # - cp -r /drone/src /var/www/html
       - ls -la /var/www/html
-      - cd /var/www/html
+      # - cd /var/www/html
       - composer install
       - vendor/bin/phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer
       - set -o pipefail && php scripts/githooks/phpCodeSniffer.php $(git diff --name-status ${TARGET_BRANCH_ID}..${SOURCE_BRANCH_ID} | grep -E "\.(php|module|install|profile|test|inc|theme|txt|md)$" | sed -E "s/(A|M|C)[[:space:]]+//g") 2>&1 | tee /workspace/phpcs.txt
