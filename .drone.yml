@@ -4,7 +4,8 @@ type: docker
 
 steps:
   - name: phpcs
-    image: docker/compose:1.29.2
+    # image: docker/compose:1.29.2
+    image: vactory/php-ubi9:8.3.14
     volumes:
       - name: docker_sock
         path: /var/run/docker.sock
@@ -13,7 +14,10 @@ steps:
     commands:
       - echo $${DRONE_SOURCE_BRANCH}
       - echo $${DRONE_TARGET_BRANCH}
-      - set -o pipefail && docker build --no-cache -f ./Dockerfile --build-arg SOURCE_BRANCH_ID=$${DRONE_SOURCE_BRANCH} --build-arg TARGET_BRANCH_ID=$${DRONE_TARGET_BRANCH} -t vactory_starter_kit/build . 2>&1 | tee /workspace/phpcs.txt
+      - composer install
+      - vendor/bin/phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer
+      - php scripts/githooks/phpCodeSniffer.php $(git diff --name-status ${TARGET_BRANCH_ID}..${SOURCE_BRANCH_ID} | grep -E "\.(php|module|install|profile|test|inc|theme|txt|md)$" | sed -E "s/(A|M|C)[[:space:]]+//g")
+      # - set -o pipefail && docker build --no-cache -f ./Dockerfile --build-arg SOURCE_BRANCH_ID=$${DRONE_SOURCE_BRANCH} --build-arg TARGET_BRANCH_ID=$${DRONE_TARGET_BRANCH} -t vactory_starter_kit/build . 2>&1 | tee /workspace/phpcs.txt
   - name: code-analysis
     image: vactory/sonar-node-plugin:latest
     settings:
