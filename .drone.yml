@@ -68,7 +68,7 @@ steps:
         path: /workspace
     commands:
       - ls -la /workspace
-      - cat /workspace/{phpcs,phpunit}.txt > /workspace/report.txt
+      - cat /workspace/phpcs.txt /workspace/phpunit.txt 2>/dev/null > /workspace/report.txt
       - cat /workspace/report.txt
 volumes:
   - name: docker_sock
