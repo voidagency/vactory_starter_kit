@@ -14,6 +14,7 @@ steps:
     commands:
       - echo $${DRONE_SOURCE_BRANCH}
       - echo $${DRONE_TARGET_BRANCH}
+      - cp -r /drone/src /var/www/html
       - composer install
       - vendor/bin/phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer
       - set -o pipefail && php scripts/githooks/phpCodeSniffer.php $(git diff --name-status ${TARGET_BRANCH_ID}..${SOURCE_BRANCH_ID} | grep -E "\.(php|module|install|profile|test|inc|theme|txt|md)$" | sed -E "s/(A|M|C)[[:space:]]+//g") 2>&1 | tee /workspace/phpcs.txt
@@ -99,17 +100,9 @@ steps:
       success_image_attachments:
         - "http://i.imgur.com/TP4PIxc.jpg"
       failure_template: |
-        {{#if ${DRONE_PULL_REQUEST} }}
-          ❌ <https://github.com/{{ repo.owner }}/{{ repo.name }}/pull/${DRONE_PULL_REQUEST}|Pull Request #${DRONE_PULL_REQUEST}>
-        {{else}}
-          ❌ {{ uppercasefirst build.status }}: Build #{{ build.number }} (type: `{{ build.event }}`)
-        {{/if}}
-        Commit: <${CI_REPO_LINK}/commits/{{ build.commit }}|{{ truncate build.commit 8 }}>
-        Branch: <${CI_REPO_LINK}/commits/${DRONE_SOURCE_BRANCH}|${DRONE_SOURCE_BRANCH}>
-        Author: ${DRONE_COMMIT_AUTHOR}
-        <${DRONE_BUILD_LINK}|Visit build page ↗>
+        The build is broken! Blame {{slack.name}}
       failure_image_attachments:
-        - "http://cdn.meme.am/instances/51000361.jpg"
+        - "https://i.imgur.com/bpNKyvR.png"
     when:
       status: [failure]
 volumes:
