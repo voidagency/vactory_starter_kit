@@ -15,10 +15,9 @@ steps:
     commands:
       - echo $${DRONE_SOURCE_BRANCH}
       - echo $${DRONE_TARGET_BRANCH}
-      - ls -la /drone/src
       - rsync -a --delete /drone/src/ /var/www/html/
-      - ls -la /var/www/html
       - cd /var/www/html
+      - touch phpcs.txt
       - composer install
       - vendor/bin/phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer
       - set -o pipefail && php scripts/githooks/phpCodeSniffer.php $(git diff --name-status ${DRONE_TARGET_BRANCH}..${DRONE_SOURCE_BRANCH} | grep -E "\.(php|module|install|profile|test|inc|theme|txt|md)$" | sed -E "s/(A|M|C)[[:space:]]+//g") 2>&1 | tee ./phpcs.txt
