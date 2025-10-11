@@ -7,7 +7,7 @@ clone:
   # depth: 1
 
 steps:
-  - name: clone_test
+  - name: clone
     image: alpine/git
     commands:
     - git clone --depth=1 --progress --verbose https://github.com/voidagency/vactory_starter_kit.git .
@@ -33,6 +33,8 @@ steps:
       # - set -o pipefail && docker build --no-cache -f ./Dockerfile --build-arg SOURCE_BRANCH_ID=$${DRONE_SOURCE_BRANCH} --build-arg TARGET_BRANCH_ID=$${DRONE_TARGET_BRANCH} -t vactory_starter_kit/build . 2>&1 | tee /workspace/phpcs.txt
   - name: code-analysis
     image: vactory/sonar-node-plugin:latest
+    depends_on:
+      - clone
     settings:
       sonar_host:
         from_secret: sonar_host
@@ -41,6 +43,8 @@ steps:
       use_node_version: 20.11.1
   - name: phpunit
     image: docker/compose:1.29.2
+    depends_on:
+      - clone
     environment:
       BITBUCKET_AUTHTOKEN:
         from_secret: BITBUCKET_AUTHTOKEN
