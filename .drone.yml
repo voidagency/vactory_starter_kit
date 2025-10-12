@@ -15,7 +15,8 @@ steps:
       - rsync -a /drone/src/ /var/www/html/profiles/contrib/vactory_starter_kit/
       - cd /var/www/html
       - |
-        php << 'PHP'
+        cat > update_composer.php << 'EOF'
+        <?php
         $composer = json_decode(file_get_contents('composer.json'), true);
         $composer['repositories'][] = [
             'type' => 'path',
@@ -24,7 +25,9 @@ steps:
         ];
         $composer['require']['voidagency/vactory_starter_kit'] = '@dev';
         file_put_contents('composer.json', json_encode($composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-        PHP
+        EOF
+      - php update_composer.php
+      - rm update_composer.php
       - composer install --no-progress --no-interaction
 
   - name: phpcs
