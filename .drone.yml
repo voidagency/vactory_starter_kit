@@ -13,6 +13,7 @@ steps:
       - git clone -b main --single-branch https://x-token-auth:$${BITBUCKET_AUTHTOKEN}@bitbucket.org/adminvoid/vactory8.git /var/www/html
       - mkdir -p /var/www/html/profiles/contrib/vactory_starter_kit
       - rsync -a /drone/src/ /var/www/html/profiles/contrib/vactory_starter_kit/
+      - cd /var/www/html
       - |
         php << 'PHP'
         $composer = json_decode(file_get_contents('composer.json'), true);
