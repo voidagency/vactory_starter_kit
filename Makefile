@@ -3,10 +3,13 @@
 build-tests:
 	docker build \
 		-f .ci/Dockerfile \
-		--build-arg DRONE_SOURCE_BRANCH=ADD_YOUR_SOURCE_BRANCH_HERE \
-		--build-arg DRONE_COMMIT=ADD_YOUR_COMMIT_HASH_HERE \
-		--build-arg BITBUCKET_AUTHTOKEN=ADD_YOUR_BITBUCKET_AUTHTOKEN_HERE \
+		--build-arg DRONE_SOURCE_BRANCH=$(DRONE_SOURCE_BRANCH) \
+		--build-arg DRONE_COMMIT=$(DRONE_COMMIT) \
+		--build-arg BITBUCKET_AUTHTOKEN=$(BITBUCKET_AUTHTOKEN) \
 		-t test-vactory:latest .ci
 
 run-tests:
 	docker run --rm test-vactory:latest
+
+run-tests-dev:
+	docker run --rm -e DEV_MODE=true test-vactory:latest

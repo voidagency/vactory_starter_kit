@@ -1,5 +1,12 @@
 #!/bin/bash
 
+# Dump environment variables for debugging
+echo -e "\033[36m🔍 Environment Variables:\033[0m"
+echo -e "   • DRONE_SOURCE_BRANCH: ${DRONE_SOURCE_BRANCH:-'NOT SET'}"
+echo -e "   • DRONE_COMMIT: ${DRONE_COMMIT:-'NOT SET'}"
+echo -e "   • BITBUCKET_AUTHTOKEN: ${BITBUCKET_AUTHTOKEN:+'SET (hidden)'}${BITBUCKET_AUTHTOKEN:-'NOT SET'}"
+echo ""
+
 # Function to get elapsed time
 get_elapsed_time() {
     local start_time=$1
@@ -157,18 +164,56 @@ composer install --no-progress --no-interaction --quiet
 composer config --no-plugins allow-plugins true --quiet
 
 print_step "Installing additional packages" "📦" "\033[36m"
-composer require \
+echo -e "\033[33m🔧 Composer command being executed:\033[0m"
+echo "composer require \\"
+echo "    weitzman/drupal-test-traits \\"
+echo "    drupal/core-dev \\"
+echo "    \"voidagency/vactory_starter_kit:dev-${BRANCH}#${COMMIT_HASH}\" \\"
+echo "    --dev \\"
+echo "    --quiet \\"
+echo "    --no-progress \\"
+echo "    --no-interaction \\"
+echo "    --with-all-dependencies \\"
+echo "    --update-with-dependencies"
+echo ""
+
+if ! composer require \
     weitzman/drupal-test-traits \
     drupal/core-dev \
     "voidagency/vactory_starter_kit:dev-${BRANCH}#${COMMIT_HASH}" \
     --dev \
+    --quiet \
     --no-progress \
     --no-interaction \
-    --quiet \
     --with-all-dependencies \
-    --update-with-dependencies
+    --update-with-dependencies; then
+    echo -e "\033[31m❌ Error: Failed to install additional packages\033[0m"
+    echo -e "\033[31m💥 Check the composer output above for details\033[0m"
+    echo -e "\033[33m🔧 To debug manually, run the command above without --no-interaction and --quiet\033[0m"
+    echo -e "\033[33m🔍 Also verify DRONE_SOURCE_BRANCH and DRONE_COMMIT values are correct\033[0m"
+    if [ "$DEV_MODE" = "true" ]; then
+        echo -e "\033[33m🔧 Development mode: keeping container running for debugging\033[0m"
+        tail -f /dev/null
+    else
+        exit 1
+    fi
+fi
 
 print_step_complete "Composer install" "✅" "\033[32m" $COMPOSER_START_TIME
+
+# Check if phpunit is available
+print_step "Verifying phpunit availability" "🔍" "\033[33m"
+if [ ! -f "/var/www/html/vendor/bin/phpunit" ]; then
+    echo -e "\033[31m❌ Error: phpunit not found at /var/www/html/vendor/bin/phpunit\033[0m"
+    echo -e "\033[31m💥 Composer install may have failed or phpunit was not installed\033[0m"
+    if [ "$DEV_MODE" = "true" ]; then
+        echo -e "\033[33m🔧 Development mode: keeping container running for debugging\033[0m"
+        tail -f /dev/null
+    else
+        exit 1
+    fi
+fi
+echo -e "\033[32m✅ phpunit found and ready\033[0m"
 
 # set environment variables
 export IS_DOCKER=true
@@ -242,5 +287,16 @@ echo -e "   • Drupal Setup: $(get_elapsed_time $DRUPAL_START_TIME)"
 echo -e "   • Configuration: $(get_elapsed_time $CONFIG_START_TIME)"
 echo -e "   • Testing: ${TEST_ELAPSED}"
 
-# Exit with the same code as the tests
-exit $TEST_EXIT_CODE
+# Check if DEV_MODE is enabled
+if [ "$DEV_MODE" = "true" ]; then
+    echo ""
+    echo -e "\033[36m🔧 Development mode enabled - keeping container running...\033[0m"
+    echo -e "\033[33m💡 Use 'docker exec -it <container_id> bash' to access the container\033[0m"
+    echo -e "\033[33m📊 Test exit code was: $TEST_EXIT_CODE\033[0m"
+    echo ""
+    # Keep container running
+    tail -f /dev/null
+else
+    # Exit with the same code as the tests
+    exit $TEST_EXIT_CODE
+fi
