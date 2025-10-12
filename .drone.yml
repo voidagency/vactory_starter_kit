@@ -3,6 +3,28 @@ kind: pipeline
 type: docker
 
 steps:
+  - name: setup
+    image: vactory/php-ubi9:8.3.14
+    environment:
+      BITBUCKET_AUTHTOKEN:
+        from_secret: BITBUCKET_AUTHTOKEN
+    commands:
+      - git clone -b main --single-branch https://x-token-auth:${BITBUCKET_AUTHTOKEN}@bitbucket.org/adminvoid/vactory8.git /var/www/html
+      - mkdir -p /var/www/html/profiles/contrib/vactory_starter_kit
+      - rsync -a /drone/src/ /var/www/html/profiles/contrib/vactory_starter_kit/
+      - |
+        php << 'PHP'
+        $composer = json_decode(file_get_contents('composer.json'), true);
+        $composer['repositories'][] = [
+            'type' => 'path',
+            'url' => '/var/www/html/profiles/contrib/vactory_starter_kit',
+            'options' => ['symlink' => true]
+        ];
+        $composer['require']['voidagency/vactory_starter_kit'] = '@dev';
+        file_put_contents('composer.json', json_encode($composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+        PHP
+      - composer install --no-progress --no-interaction
+
   - name: phpcs
     # image: docker/compose:1.29.2
     image: vactory/php-ubi9:8.3.14
