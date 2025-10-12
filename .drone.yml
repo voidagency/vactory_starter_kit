@@ -3,33 +3,33 @@ kind: pipeline
 type: docker
 
 steps:
-  - name: setup
-    image: vactory/php-ubi9:8.3.14
-    environment:
-      BITBUCKET_AUTHTOKEN:
-        from_secret: BITBUCKET_AUTHTOKEN
-    commands:
-      - rm -rf /var/www/html
-      - git clone -b main --single-branch https://x-token-auth:$${BITBUCKET_AUTHTOKEN}@bitbucket.org/adminvoid/vactory8.git /var/www/html
-      - mkdir -p /var/www/html/profiles/contrib/vactory_starter_kit
-      - rsync -a /drone/src/ /var/www/html/profiles/contrib/vactory_starter_kit/
-      - cd /var/www/html
-      - |
-        cat > update_composer.php << 'EOF'
-        <?php
-        $composer = json_decode(file_get_contents('composer.json'), true);
-        $composer['repositories'][] = [
-            'type' => 'path',
-            'url' => '/var/www/html/profiles/contrib/vactory_starter_kit',
-            'options' => ['symlink' => true]
-        ];
-        $composer['require']['voidagency/vactory_starter_kit'] = '@dev';
-        file_put_contents('composer.json', json_encode($composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-        EOF
-      - php update_composer.php
-      - rm update_composer.php
-      - composer install --no-progress --no-interaction
-      - php scripts/githooks/phpCodeSniffer.php $(git diff --name-status ${DRONE_TARGET_BRANCH}..${DRONE_SOURCE_BRANCH} | grep -E "\.(php|module|install|profile|test|inc|theme|txt|md)$" | sed -E "s/(A|M|C)[[:space:]]+//g")
+  # - name: setup
+  #   image: vactory/php-ubi9:8.3.14
+  #   environment:
+  #     BITBUCKET_AUTHTOKEN:
+  #       from_secret: BITBUCKET_AUTHTOKEN
+  #   commands:
+  #     - rm -rf /var/www/html
+  #     - git clone -b main --single-branch https://x-token-auth:$${BITBUCKET_AUTHTOKEN}@bitbucket.org/adminvoid/vactory8.git /var/www/html
+  #     - mkdir -p /var/www/html/profiles/contrib/vactory_starter_kit
+  #     - rsync -a /drone/src/ /var/www/html/profiles/contrib/vactory_starter_kit/
+  #     - cd /var/www/html
+  #     - |
+  #       cat > update_composer.php << 'EOF'
+  #       <?php
+  #       $composer = json_decode(file_get_contents('composer.json'), true);
+  #       $composer['repositories'][] = [
+  #           'type' => 'path',
+  #           'url' => '/var/www/html/profiles/contrib/vactory_starter_kit',
+  #           'options' => ['symlink' => true]
+  #       ];
+  #       $composer['require']['voidagency/vactory_starter_kit'] = '@dev';
+  #       file_put_contents('composer.json', json_encode($composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
+  #       EOF
+  #     - php update_composer.php
+  #     - rm update_composer.php
+  #     - composer install --no-progress --no-interaction
+  #     - php scripts/githooks/phpCodeSniffer.php $(git diff --name-status ${DRONE_TARGET_BRANCH}..${DRONE_SOURCE_BRANCH} | grep -E "\.(php|module|install|profile|test|inc|theme|txt|md)$" | sed -E "s/(A|M|C)[[:space:]]+//g")
 
   - name: phpcs
     # image: docker/compose:1.29.2
