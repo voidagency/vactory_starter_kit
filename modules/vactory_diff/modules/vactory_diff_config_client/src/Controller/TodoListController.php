@@ -3,6 +3,7 @@
 namespace Drupal\vactory_diff_config_client\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Url;
 use Drupal\vactory_diff_config_client\Service\TodoListGeneratorService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
@@ -57,6 +58,22 @@ class TodoListController extends ControllerBase {
     }
 
     $build = [];
+
+    // Add download button at the top.
+    $build['download_button'] = [
+      '#type' => 'container',
+      '#attributes' => ['class' => ['vactory-diff-download-section']],
+    ];
+
+    $build['download_button']['link'] = [
+      '#type' => 'link',
+      '#title' => $this->t('Télécharger la TODO list'),
+      '#url' => Url::fromRoute('vactory_diff_config_client.todo_list_download'),
+      '#attributes' => [
+        'class' => ['button', 'button--primary', 'vactory-diff-download-button'],
+        'target' => '_blank',
+      ],
+    ];
 
     // Summary section.
     $build['summary'] = [
