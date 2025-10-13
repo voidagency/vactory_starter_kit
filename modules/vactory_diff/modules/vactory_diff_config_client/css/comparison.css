@@ -508,3 +508,144 @@
     font-size: 11px;
   }
 }
+
+/* Styles pour la TODO list */
+.vactory-diff-todo-summary {
+  background: #e7f3ff;
+  padding: 20px;
+  border-radius: 6px;
+  margin-bottom: 30px;
+  border-left: 5px solid #007cba;
+}
+
+.vactory-diff-todo-summary h2 {
+  margin-top: 0;
+  color: #0073aa;
+  font-size: 24px;
+}
+
+.vactory-diff-todo-summary ul {
+  margin: 15px 0 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.vactory-diff-todo-summary li {
+  padding: 8px 0;
+  font-size: 15px;
+}
+
+.vactory-diff-todo-summary strong {
+  color: #0073aa;
+  font-size: 18px;
+}
+
+.vactory-diff-todo-features {
+  margin-bottom: 30px;
+}
+
+.vactory-diff-todo-features h2 {
+  font-size: 22px;
+  color: #333;
+  margin-bottom: 15px;
+}
+
+.vactory-diff-todo-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.vactory-diff-todo-table th {
+  background-color: #f8f9fa;
+  padding: 12px;
+  text-align: left;
+  font-weight: 600;
+  color: #495057;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.vactory-diff-todo-table td {
+  padding: 12px;
+  border-bottom: 1px solid #e9ecef;
+  vertical-align: top;
+}
+
+.vactory-diff-todo-table tr:hover {
+  background-color: #f8f9fa;
+}
+
+.vactory-diff-command {
+  background-color: #2d3748;
+  color: #68d391;
+  padding: 6px 12px;
+  border-radius: 4px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 13px;
+  display: inline-block;
+}
+
+.vactory-diff-config-list {
+  margin: 0;
+  padding: 0 0 0 20px;
+  font-size: 13px;
+  color: #666;
+}
+
+.vactory-diff-config-list li {
+  padding: 3px 0;
+}
+
+.vactory-diff-commands-block {
+  background-color: #2d3748;
+  color: #68d391;
+  padding: 15px;
+  border-radius: 6px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 13px;
+  overflow-x: auto;
+  margin: 10px 0;
+}
+
+.vactory-diff-unmatched {
+  margin-top: 30px;
+}
+
+.vactory-diff-unmatched summary {
+  color: #856404;
+  cursor: pointer;
+  background-color: #fff3cd;
+  border-radius: 6px;
+  border: 1px solid #ffc107;
+}
+
+.vactory-diff-unmatched summary:hover {
+  background-color: #ffe69c;
+}
+
+.vactory-diff-unmatched table {
+  margin-top: 15px;
+  width: 100%;
+  border-collapse: collapse;
+  background-color: white;
+}
+
+.vactory-diff-unmatched th {
+  background-color: #fff3cd;
+  color: #856404;
+  padding: 10px;
+  text-align: left;
+  font-weight: 600;
+  border-bottom: 2px solid #ffc107;
+}
+
+.vactory-diff-unmatched td {
+  padding: 10px;
+  border-bottom: 1px solid #e9ecef;
+  color: #666;
+}
+
+.vactory-diff-unmatched tr:hover {
+  background-color: #fffbf0;
+}

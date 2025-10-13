@@ -41,4 +41,21 @@ vactory_diff_config_client.ajax_diff_modal:
   requirements:
     _permission: 'administer vactory diff'
   options:
-    _admin_route: TRUE 
+    _admin_route: TRUE
+
+vactory_diff_config_client.todo_list:
+  path: '/admin/config/development/vactory-diff/todo'
+  defaults:
+    _controller: '\Drupal\vactory_diff_config_client\Controller\TodoListController::view'
+    _title: 'TODO List - Features to Revert'
+  requirements:
+    _permission: 'administer vactory diff'
+  options:
+    _admin_route: TRUE
+
+vactory_diff_config_client.todo_list_download:
+  path: '/admin/config/development/vactory-diff/todo/download'
+  defaults:
+    _controller: '\Drupal\vactory_diff_config_client\Controller\TodoListController::download'
+  requirements:
+    _permission: 'administer vactory diff' 

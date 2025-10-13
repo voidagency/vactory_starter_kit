@@ -107,6 +107,23 @@ class VactoryDiffSettingsForm extends ConfigFormBase {
       '#attributes' => ['id' => 'test-connection-result'],
     ];
 
+    // Configuration TODO List.
+    $form['todo_list'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Configuration TODO List'),
+      '#collapsible' => FALSE,
+    ];
+
+    $form['todo_list']['custom_modules_path'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('Chemins des modules custom'),
+      '#description' => $this->t('Chemins relatifs vers les modules custom à scanner pour la TODO list (un par ligne). Seuls ces modules seront analysés pour détecter les features à réimporter.'),
+      '#default_value' => $config->get('custom_modules_path') ?: 'modules/custom',
+      '#required' => TRUE,
+      '#rows' => 4,
+      '#placeholder' => "modules/custom\nprofiles/vactory_starter_kit/modules",
+    ];
+
     // Afficher les informations de la dernière comparaison si disponible.
     $last_comparison_timestamp = $this->comparisonService->getLastComparisonTimestamp();
     if ($last_comparison_timestamp) {
@@ -205,6 +222,7 @@ class VactoryDiffSettingsForm extends ConfigFormBase {
 
     $config->set('remote_url', $form_state->getValue('remote_url'))
       ->set('connection_timeout', $form_state->getValue('connection_timeout'))
+      ->set('custom_modules_path', $form_state->getValue('custom_modules_path'))
       ->save();
 
     $this->messenger()->addStatus($this->t('La configuration a été sauvegardée.'));
