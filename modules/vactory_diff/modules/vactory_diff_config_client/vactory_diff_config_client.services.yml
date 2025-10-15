@@ -9,4 +9,8 @@ services:
 
   vactory_diff_config_client.todo_list_generator:
     class: Drupal\vactory_diff_config_client\Service\TodoListGeneratorService
-    arguments: ['@vactory_diff_config_client.feature_detection', '@vactory_diff_config_client.comparison', '@logger.factory'] 
+    arguments: ['@vactory_diff_config_client.feature_detection', '@vactory_diff_config_client.comparison', '@logger.factory', '@vactory_diff_config_client.module_installation']
+
+  vactory_diff_config_client.module_installation:
+    class: Drupal\vactory_diff_config_client\Service\ModuleInstallationService
+    arguments: ['@vactory_diff_config_client.comparison', '@logger.factory'] 

@@ -5,6 +5,7 @@ namespace Drupal\vactory_diff_config_client\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Url;
 use Drupal\vactory_diff_config_client\Service\TodoListGeneratorService;
+use Drupal\vactory_diff_config_client\Service\ModuleInstallationService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -21,13 +22,26 @@ class TodoListController extends ControllerBase {
   protected $todoListGenerator;
 
   /**
+   * The module installation service.
+   *
+   * @var \Drupal\vactory_diff_config_client\Service\ModuleInstallationService
+   */
+  protected $moduleInstallation;
+
+  /**
    * Constructs a TodoListController object.
    *
    * @param \Drupal\vactory_diff_config_client\Service\TodoListGeneratorService $todo_list_generator
    *   The TODO list generator service.
+   * @param \Drupal\vactory_diff_config_client\Service\ModuleInstallationService $module_installation
+   *   The module installation service.
    */
-  public function __construct(TodoListGeneratorService $todo_list_generator) {
+  public function __construct(
+    TodoListGeneratorService $todo_list_generator,
+    ModuleInstallationService $module_installation
+  ) {
     $this->todoListGenerator = $todo_list_generator;
+    $this->moduleInstallation = $module_installation;
   }
 
   /**
@@ -35,7 +49,8 @@ class TodoListController extends ControllerBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('vactory_diff_config_client.todo_list_generator')
+      $container->get('vactory_diff_config_client.todo_list_generator'),
+      $container->get('vactory_diff_config_client.module_installation')
     );
   }
 
@@ -47,8 +62,9 @@ class TodoListController extends ControllerBase {
    */
   public function view(): array {
     $todo_list = $this->todoListGenerator->generateTodoList();
+    $module_changes = $this->moduleInstallation->analyzeModuleChanges();
 
-    if (empty($todo_list['features']) && empty($todo_list['unmatched_configs'])) {
+    if (empty($todo_list['features']) && empty($todo_list['unmatched_configs']) && !$module_changes['has_changes']) {
       $this->messenger()->addWarning($this->t('No comparison results found. Please run a comparison first.'));
       return [
         '#markup' => $this->t('No TODO items to display. Please <a href="@url">run a comparison</a> first.', [
@@ -87,20 +103,60 @@ class TodoListController extends ControllerBase {
       '#value' => $this->t('Summary'),
     ];
 
+    $summary_items = [
+      $this->t('Features to revert: <strong>@count</strong>', ['@count' => $todo_list['summary']['total_features']]),
+      $this->t('Configurations processed: <strong>@count</strong>', ['@count' => $todo_list['summary']['total_configs']]),
+      $this->t('Matched configurations: <strong>@count</strong>', ['@count' => $todo_list['summary']['matched_configs']]),
+      $this->t('Unmatched configurations: <strong>@count</strong>', ['@count' => $todo_list['summary']['unmatched_configs']]),
+    ];
+
+    if ($module_changes['has_changes']) {
+      $summary_items[] = $this->t('Modules to install: <strong>@count</strong>', ['@count' => count($module_changes['to_install'])]);
+      $summary_items[] = $this->t('Modules to uninstall: <strong>@count</strong>', ['@count' => count($module_changes['to_uninstall'])]);
+    }
+
     $build['summary']['stats'] = [
       '#theme' => 'item_list',
-      '#items' => [
-        $this->t('Features to revert: <strong>@count</strong>', ['@count' => $todo_list['summary']['total_features']]),
-        $this->t('Configurations processed: <strong>@count</strong>', ['@count' => $todo_list['summary']['total_configs']]),
-        $this->t('Matched configurations: <strong>@count</strong>', ['@count' => $todo_list['summary']['matched_configs']]),
-        $this->t('Unmatched configurations: <strong>@count</strong>', ['@count' => $todo_list['summary']['unmatched_configs']]),
-      ],
+      '#items' => $summary_items,
     ];
 
     if (!empty($todo_list['timestamp'])) {
       $build['summary']['timestamp'] = [
         '#markup' => '<p>' . $this->t('Last comparison: @time', ['@time' => $todo_list['timestamp']]) . '</p>',
       ];
+    }
+
+    // Module Installation/Uninstallation section.
+    if ($module_changes['has_changes']) {
+      $build['modules'] = [
+        '#type' => 'container',
+        '#attributes' => ['class' => ['vactory-diff-modules-section']],
+      ];
+
+      $build['modules']['title'] = [
+        '#type' => 'html_tag',
+        '#tag' => 'h2',
+        '#value' => $this->t('Module Installation/Uninstallation'),
+      ];
+
+      $build['modules']['description'] = [
+        '#markup' => '<p>' . $this->t('The following modules need to be installed or uninstalled based on core.extension changes:') . '</p>',
+      ];
+
+      // Generate commands for copy-paste.
+      $module_commands = [];
+      foreach ($module_changes['commands'] as $cmd) {
+        $module_commands[] = $cmd['command'];
+      }
+
+      if (!empty($module_commands)) {
+        $build['modules']['commands'] = [
+          '#type' => 'html_tag',
+          '#tag' => 'pre',
+          '#value' => implode("\n", $module_commands),
+          '#attributes' => ['class' => ['vactory-diff-commands-block']],
+        ];
+      }
     }
 
     // Features section.

@@ -24,6 +24,13 @@ class TodoListGeneratorService {
   protected $comparisonService;
 
   /**
+   * The module installation service.
+   *
+   * @var \Drupal\vactory_diff_config_client\Service\ModuleInstallationService
+   */
+  protected $moduleInstallation;
+
+  /**
    * Logger channel.
    *
    * @var \Drupal\Core\Logger\LoggerChannelInterface
@@ -39,15 +46,19 @@ class TodoListGeneratorService {
    *   The config comparison service.
    * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger_factory
    *   The logger factory.
+   * @param \Drupal\vactory_diff_config_client\Service\ModuleInstallationService $module_installation
+   *   The module installation service.
    */
   public function __construct(
     FeatureDetectionService $feature_detection,
     ConfigComparisonService $comparison_service,
-    LoggerChannelFactoryInterface $logger_factory
+    LoggerChannelFactoryInterface $logger_factory,
+    ModuleInstallationService $module_installation
   ) {
     $this->featureDetection = $feature_detection;
     $this->comparisonService = $comparison_service;
     $this->logger = $logger_factory->get('vactory_diff_config_client');
+    $this->moduleInstallation = $module_installation;
   }
 
   /**
@@ -246,7 +257,37 @@ class TodoListGeneratorService {
     $output[] = "- Matched configurations: " . $todo_list['summary']['matched_configs'];
     $output[] = "- Unmatched configurations: " . $todo_list['summary']['unmatched_configs'];
     $output[] = "";
-    $output[] = "=== COMMANDS TO EXECUTE ===";
+
+    // Add module installation/uninstallation section.
+    $module_changes = $this->moduleInstallation->analyzeModuleChanges();
+    if ($module_changes['has_changes']) {
+      $output[] = "=== MODULE INSTALLATION/UNINSTALLATION ===";
+      $output[] = "";
+
+      if (!empty($module_changes['to_install'])) {
+        $output[] = "Modules to Install (" . count($module_changes['to_install']) . "):";
+        foreach ($module_changes['to_install'] as $module) {
+          $output[] = "  - $module";
+        }
+        $output[] = "";
+      }
+
+      if (!empty($module_changes['to_uninstall'])) {
+        $output[] = "Modules to Uninstall (" . count($module_changes['to_uninstall']) . "):";
+        foreach ($module_changes['to_uninstall'] as $module) {
+          $output[] = "  - $module";
+        }
+        $output[] = "";
+      }
+
+      $output[] = "Commands:";
+      foreach ($module_changes['commands'] as $cmd) {
+        $output[] = "  " . $cmd['command'];
+      }
+      $output[] = "";
+    }
+
+    $output[] = "=== FEATURE REVERT COMMANDS ===";
     $output[] = "";
 
     $index = 1;
