@@ -92,6 +92,7 @@ run-all:
 	-e DRUSH_VERSION=${DRUSH_VERSION} \
 	-e NODE_VERSION=${NODE_VERSION} \
 	-e SONAR_TOKEN=${SONAR_TOKEN} \
+	-e DEV_MODE=true \
 	-e COMPOSER_CACHE_DIR=/composer-cache \
 	all-vactory:latest
 
