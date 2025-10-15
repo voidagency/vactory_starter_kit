@@ -25,7 +25,7 @@ class NodeNormalizerTest extends EntityKernelTestBase {
    *
    * @var array
    */
-  protected static $modules = ['node', 'language', 'taxonomy', 'system', 'field', 'text', 'entity_reference', 'image', 'vactory_dynamic_field'];
+  protected static $modules = ['node', 'language', 'taxonomy', 'system', 'field', 'text', 'image', 'vactory_dynamic_field'];
   // public static $modules = ['node', 'paragraphs', 'my_module'];
 
 
