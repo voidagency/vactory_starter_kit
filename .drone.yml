@@ -40,6 +40,8 @@ steps:
         -e COMPOSER_CACHE_DIR=/composer-cache \
         -v sonar-cache:/sonar-cache \
         vactory_starter_kit/build:$${DRONE_COMMIT}
+      - docker container rm -f $(docker ps -a --filter ancestor=vactory_starter_kit/build:$${DRONE_COMMIT} -q) || true
+      - docker image rm vactory_starter_kit/build:$${DRONE_COMMIT} || true
   # - name: phpunit
   #   image: vactory/php-ubi9:8.3.14
   #   depends_on:

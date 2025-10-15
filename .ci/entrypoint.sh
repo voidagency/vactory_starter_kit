@@ -270,6 +270,7 @@ COMPOSER_START_TIME=$(date +%s)
 print_step "Configuring composer for local development" "⚙️" "\033[35m"
 php ${UPDATE_COMPOSER_SCRIPT}
 rm ${UPDATE_COMPOSER_SCRIPT}
+rm -f /var/www/html/profiles/contrib/vactory_starter_kit/.ci/scripts/update_composer.php
 
 echo -e "\033[36m📄 Updated composer.json:\033[0m"
 cat composer.json
