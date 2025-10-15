@@ -510,12 +510,36 @@
 }
 
 /* Styles pour la TODO list */
+.vactory-diff-download-section {
+  text-align: right;
+  margin-bottom: 20px;
+}
+
 .vactory-diff-todo-summary {
   background: #e7f3ff;
   padding: 20px;
   border-radius: 6px;
   margin-bottom: 30px;
   border-left: 5px solid #007cba;
+}
+
+.vactory-diff-commands-section {
+  margin-bottom: 30px;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border-left: 5px solid #28a745;
+}
+
+.vactory-diff-commands-section h2 {
+  margin-top: 0;
+  color: #28a745;
+  font-size: 22px;
+}
+
+.vactory-diff-commands-section p {
+  color: #495057;
+  margin-bottom: 15px;
 }
 
 .vactory-diff-todo-summary h2 {
@@ -600,12 +624,46 @@
 .vactory-diff-commands-block {
   background-color: #2d3748;
   color: #68d391;
-  padding: 15px;
+  padding: 20px;
   border-radius: 6px;
   font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-  font-size: 13px;
+  font-size: 14px;
+  line-height: 1.8;
   overflow-x: auto;
-  margin: 10px 0;
+  margin: 0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  user-select: all;
+  cursor: text;
+}
+
+.vactory-diff-commands-block:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.vactory-diff-features-details {
+  margin-top: 30px;
+}
+
+.vactory-diff-features-details summary {
+  font-size: 18px;
+  font-weight: 600;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid #dee2e6;
+  transition: all 0.2s ease;
+}
+
+.vactory-diff-features-details summary:hover {
+  background-color: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.vactory-diff-features-details[open] summary {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-color: transparent;
 }
 
 .vactory-diff-unmatched {

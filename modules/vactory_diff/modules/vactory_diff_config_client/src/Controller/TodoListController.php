@@ -105,29 +105,55 @@ class TodoListController extends ControllerBase {
 
     // Features section.
     if (!empty($todo_list['features'])) {
-      $build['features'] = [
+      // Section 1: Commands to execute (visible by default).
+      $build['commands'] = [
         '#type' => 'container',
-        '#attributes' => ['class' => ['vactory-diff-todo-features']],
+        '#attributes' => ['class' => ['vactory-diff-commands-section']],
       ];
 
-      $build['features']['title'] = [
+      $build['commands']['title'] = [
         '#type' => 'html_tag',
         '#tag' => 'h2',
-        '#value' => $this->t('Features to Revert'),
+        '#value' => $this->t('Commands to Execute'),
       ];
 
-      $build['features']['description'] = [
-        '#markup' => '<p>' . $this->t('Execute the following Drush commands to synchronize your production environment:') . '</p>',
+      $build['commands']['description'] = [
+        '#markup' => '<p>' . $this->t('Copy and paste these commands in your production environment:') . '</p>',
       ];
 
-      $build['features']['list'] = [
+      // Generate all commands.
+      $all_commands = [];
+      foreach ($todo_list['features'] as $feature) {
+        $all_commands[] = $feature['command'];
+      }
+
+      $build['commands']['commands'] = [
+        '#type' => 'html_tag',
+        '#tag' => 'pre',
+        '#value' => implode("\n", $all_commands),
+        '#attributes' => ['class' => ['vactory-diff-commands-block']],
+      ];
+
+      // Section 2: Detailed table (in accordion).
+      $build['features_details'] = [
+        '#type' => 'details',
+        '#title' => $this->t('Detailed Features Information'),
+        '#open' => FALSE,
+        '#attributes' => ['class' => ['vactory-diff-features-details']],
+      ];
+
+      $build['features_details']['description'] = [
+        '#markup' => '<p>' . $this->t('Click to see detailed information about each feature and the configurations affected.') . '</p>',
+      ];
+
+      $build['features_details']['list'] = [
         '#type' => 'table',
         '#header' => [
           $this->t('#'),
           $this->t('Feature Module'),
           $this->t('Command'),
           $this->t('Changes'),
-          $this->t('Details'),
+          $this->t('Configurations'),
         ],
         '#rows' => [],
         '#attributes' => ['class' => ['vactory-diff-todo-table']],
@@ -140,7 +166,7 @@ class TodoListController extends ControllerBase {
           $configs_list[] = "[{$config['change_type']}] {$config['name']} ({$config['type']})";
         }
 
-        $build['features']['list']['#rows'][] = [
+        $build['features_details']['list']['#rows'][] = [
           $index,
           $feature['module'],
           [
@@ -165,25 +191,6 @@ class TodoListController extends ControllerBase {
         ];
         $index++;
       }
-
-      // Add a copy-all-commands section.
-      $all_commands = [];
-      foreach ($todo_list['features'] as $feature) {
-        $all_commands[] = $feature['command'];
-      }
-
-      $build['features']['all_commands'] = [
-        '#type' => 'details',
-        '#title' => $this->t('All Commands (Copy & Paste)'),
-        '#open' => FALSE,
-      ];
-
-      $build['features']['all_commands']['commands'] = [
-        '#type' => 'html_tag',
-        '#tag' => 'pre',
-        '#value' => implode("\n", $all_commands),
-        '#attributes' => ['class' => ['vactory-diff-commands-block']],
-      ];
     }
 
     // Unmatched configurations section.
