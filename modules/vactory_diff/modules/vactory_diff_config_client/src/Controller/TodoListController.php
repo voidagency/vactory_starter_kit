@@ -170,7 +170,7 @@ class TodoListController extends ControllerBase {
       $build['commands']['title'] = [
         '#type' => 'html_tag',
         '#tag' => 'h2',
-        '#value' => $this->t('Commands to Execute'),
+        '#value' => $this->t('Features to revert'),
       ];
 
       $build['commands']['description'] = [
@@ -199,7 +199,7 @@ class TodoListController extends ControllerBase {
       ];
 
       $build['features_details']['description'] = [
-        '#markup' => '<p>' . $this->t('Click to see detailed information about each feature and the configurations affected.') . '</p>',
+        '#markup' => '<p>' . $this->t('Detailed information about each feature and the configurations affected.') . '</p>',
       ];
 
       $build['features_details']['list'] = [
