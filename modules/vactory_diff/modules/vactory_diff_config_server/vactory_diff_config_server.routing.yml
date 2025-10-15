@@ -4,6 +4,7 @@ vactory_diff_config_server.config_export:
     _controller: '\Drupal\vactory_diff_config_server\Controller\ConfigExportController::export'
   methods: [GET]
   requirements:
-    _role: 'anonymous'
+    _permission: 'access vactory diff config export'
   options:
     _format: 'json'
+    _auth: [ 'api_key_auth' ]

@@ -87,6 +87,7 @@ class ConfigComparisonService {
     try {
       $settings = $this->configFactory->get('vactory_diff_config_client.settings');
       $timeout = $settings->get('connection_timeout') ?: 30;
+      $api_key = $settings->get('remote_api_key');
 
       // Construire l'URL complète de l'API.
       $api_url = rtrim($url, '/') . '/api/vactory-diff/config/export';
@@ -94,12 +95,20 @@ class ConfigComparisonService {
       $this->logger->info('Fetching remote configuration from @url', [
         '@url' => $api_url,
       ]);
+
+      // Préparer les headers avec l'API key.
+      $headers = [
+        'Accept' => 'application/json',
+        'Content-Type' => 'application/json',
+      ];
+
+      if (!empty($api_key)) {
+        $headers['apikey'] = $api_key;
+      }
+
       $response = $this->httpClient->request('GET', $api_url, [
         'timeout' => $timeout,
-        'headers' => [
-          'Accept' => 'application/json',
-          'Content-Type' => 'application/json',
-        ],
+        'headers' => $headers,
       ]);
 
       if ($response->getStatusCode() === 200) {

@@ -78,6 +78,22 @@ class VactoryDiffSettingsForm extends ConfigFormBase {
       '#placeholder' => 'https://example.com',
     ];
 
+    $form['connection']['remote_api_key'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Clé API'),
+      '#description' => $this->t('<strong>Comment obtenir votre clé API :</strong><br>
+        1. Connectez-vous à l\'instance serveur (distante)<br>
+        2. Allez à <em>/admin/config/services/api_key</em><br>
+        3. Générez une nouvelle clé API<br>
+        4. Copiez la clé et collez-la ici<br><br>
+        <strong>Important :</strong> L\'utilisateur associé à cette clé doit avoir la permission <em>"Accéder à l\'export de configuration Vactory Diff (access vactory diff config export)"</em> pour pouvoir consommer les configurations.'),
+      '#default_value' => $config->get('remote_api_key'),
+      '#required' => TRUE,
+      '#attributes' => [
+        'placeholder' => 'Votre clé API générée depuis le serveur',
+      ],
+    ];
+
     $form['connection']['connection_timeout'] = [
       '#type' => 'number',
       '#title' => $this->t('Timeout de connexion (secondes)'),
@@ -221,6 +237,7 @@ class VactoryDiffSettingsForm extends ConfigFormBase {
     $config = $this->config('vactory_diff_config_client.settings');
 
     $config->set('remote_url', $form_state->getValue('remote_url'))
+      ->set('remote_api_key', $form_state->getValue('remote_api_key'))
       ->set('connection_timeout', $form_state->getValue('connection_timeout'))
       ->set('custom_modules_path', $form_state->getValue('custom_modules_path'))
       ->save();

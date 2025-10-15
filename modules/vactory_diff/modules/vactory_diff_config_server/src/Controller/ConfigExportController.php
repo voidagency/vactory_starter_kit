@@ -88,11 +88,7 @@ class ConfigExportController extends ControllerBase {
         '@count' => count($configs),
       ]);
 
-      // Ajouter les headers CORS si nécessaire.
       $response = new JsonResponse($response_data);
-      $response->headers->set('Access-Control-Allow-Origin', '*');
-      $response->headers->set('Access-Control-Allow-Methods', 'GET');
-      $response->headers->set('Access-Control-Allow-Headers', 'Content-Type');
 
       return $response;
     }
