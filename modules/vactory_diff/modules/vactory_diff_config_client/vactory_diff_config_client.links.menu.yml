@@ -1,6 +1,7 @@
-vactory_diff.admin:
+vactory_diff_config_client.admin:
   title: 'Vactory Diff'
   description: 'Outils de comparaison de configuration entre instances Drupal.'
   route_name: vactory_diff_config_client.settings
   parent: system.admin_config_development
-  weight: 10 
+  weight: 10
+

@@ -5,4 +5,5 @@ package: 'Vactory'
 version: '1.0.0'
 core_version_requirement: '^9.0 || ^10.0'
 dependencies:
+  - vactory_diff:vactory_diff
   - vactory_api_key_auth
