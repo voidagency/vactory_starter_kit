@@ -1,6 +1,0 @@
-vactory_diff_content.admin_link:
-  title: 'Content diff'
-  description: 'Compare content with a remote Drupal instance.'
-  route_name: vactory_diff_content.form
-  parent: system.admin_content
-  weight: 50 
