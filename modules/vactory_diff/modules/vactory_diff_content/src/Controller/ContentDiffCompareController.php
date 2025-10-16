@@ -12,6 +12,7 @@ use GuzzleHttp\Exception\RequestException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\HttpKernelInterface;
 
 /**
  * Controller for comparing local and remote nodes via JSON API format.
@@ -77,17 +78,10 @@ class ContentDiffCompareController extends ControllerBase {
         ], 400);
       }
 
-      // Get current site base URL for local JSON API call.
-      $local_base_url = \Drupal::service('state')->get('vactory_diff_content.local_url', '');
-      if (!$local_base_url) {
-        return new JsonResponse([
-          'status' => 'error',
-          'message' => 'Local URL not configured.',
-        ], 400);
-      }
+      // Fetch local data via internal subrequest (no HTTP call, no port issue).
+      $local_data = $this->fetchLocalNodeViaInternalRequest($bundle, $uuid);
 
-      // Fetch both nodes via JSON API with includes for paragraphs.
-      $local_data = $this->fetchNodeViaJsonApi($local_base_url, $bundle, $uuid);
+      // Fetch remote data via HTTP.
       $remote_data = $this->fetchNodeViaJsonApi($remote_url, $bundle, $uuid);
       if (!$local_data) {
         return new JsonResponse([
@@ -153,10 +147,63 @@ class ContentDiffCompareController extends ControllerBase {
   }
 
   /**
-   * Fetches node data via JSON API with paragraph includes.
+   * Fetches local node data via internal subrequest (no HTTP call).
+   *
+   * @param string $bundle
+   *   The node bundle.
+   * @param string $uuid
+   *   The node UUID.
+   *
+   * @return array|null
+   *   The JSON API response data or NULL on failure.
+   */
+  protected function fetchLocalNodeViaInternalRequest($bundle, $uuid) {
+    try {
+      // Build JSON API path (internal, no base URL needed).
+      $path = "/api/node/{$bundle}/{$uuid}";
+
+      // Create a subrequest to JSON API.
+      $request = Request::create(
+        $path,
+        'GET',
+        [],
+        [],
+        [],
+        [
+          'HTTP_ACCEPT' => 'application/vnd.api+json',
+          'HTTP_CONTENT_TYPE' => 'application/vnd.api+json',
+        ]
+      );
+
+      // Get the HTTP kernel and handle the subrequest.
+      $kernel = \Drupal::service('http_kernel');
+      $response = $kernel->handle($request, HttpKernelInterface::SUB_REQUEST);
+
+      if ($response->getStatusCode() === 200) {
+        $data = json_decode($response->getContent(), TRUE);
+
+        return [
+          'data' => $data['data'] ?? NULL,
+          'included' => $data['included'] ?? [],
+        ];
+      }
+
+      return NULL;
+    }
+    catch (\Exception $e) {
+      $this->loggerFactory->get('vactory_diff_content')->error('Internal JSON API fetch error for @path: @message', [
+        '@path' => "/api/node/{$bundle}/{$uuid}",
+        '@message' => $e->getMessage(),
+      ]);
+      return NULL;
+    }
+  }
+
+  /**
+   * Fetches node data via JSON API with paragraph includes (for remote).
    *
    * @param string $base_url
-   *   The base URL (local or remote).
+   *   The base URL (remote).
    * @param string $bundle
    *   The node bundle.
    * @param string $uuid

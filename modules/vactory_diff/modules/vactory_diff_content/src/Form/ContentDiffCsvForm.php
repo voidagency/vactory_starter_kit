@@ -106,16 +106,6 @@ class ContentDiffCsvForm extends FormBase {
       '#default_value' => $form_state->getValue('remote_url') ?: $saved_remote_url,
     ];
 
-    $saved_local_url = (string) $this->state->get('vactory_diff_content.local_url', '');
-
-    $form['urls']['local_url'] = [
-      '#type' => 'url',
-      '#title' => $this->t('Local instance base URL'),
-      '#description' => $this->t('Example: https://remote.example.com'),
-      '#required' => TRUE,
-      '#default_value' => $form_state->getValue('local_url') ?: $saved_local_url,
-    ];
-
     $form['urls']['submit'] = [
       '#type' => 'submit',
       '#value' => $this->t('Save'),
@@ -427,11 +417,9 @@ class ContentDiffCsvForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $remote_url = trim((string) $form_state->getValue('remote_url'));
-    $local_url = trim((string) $form_state->getValue('local_url'));
 
     // Persist URL for next time.
     $this->state->set('vactory_diff_content.remote_url', $remote_url);
-    $this->state->set('vactory_diff_content.local_url', $local_url);
   }
 
 }
