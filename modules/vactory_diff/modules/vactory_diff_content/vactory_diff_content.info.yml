@@ -6,3 +6,4 @@ package: 'Vactory'
 version: '1.0.0'
 dependencies:
   - drupal:jsonapi
+  - vactory_diff:vactory_diff_config_client

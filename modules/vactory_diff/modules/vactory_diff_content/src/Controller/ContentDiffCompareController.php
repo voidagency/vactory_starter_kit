@@ -69,12 +69,14 @@ class ContentDiffCompareController extends ControllerBase {
    */
   public function compare($bundle, $uuid, Request $request) {
     try {
-      // Get remote URL from session.
-      $remote_url = \Drupal::service('state')->get('vactory_diff_content.remote_url', '');
-      if (!$remote_url) {
+      // Get remote URL from config client settings.
+      $config_client_settings = \Drupal::config('vactory_diff_config_client.settings');
+      $remote_url = $config_client_settings->get('remote_url');
+
+      if (empty($remote_url)) {
         return new JsonResponse([
           'status' => 'error',
-          'message' => 'Remote URL not configured.',
+          'message' => 'Remote URL not configured. Please configure it in Vactory Diff Settings.',
         ], 400);
       }
 

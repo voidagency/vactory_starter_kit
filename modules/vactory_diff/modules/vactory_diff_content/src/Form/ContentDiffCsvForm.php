@@ -76,40 +76,23 @@ class ContentDiffCsvForm extends FormBase {
     $form['#prefix'] = '<div id="vactory-content-diff-form-wrapper">';
     $form['#suffix'] = '</div>';
 
-    // Build urls.
-    $form['urls'] = [
-      '#type' => 'details',
-      '#title' => $this->t('URLs'),
-      '#open' => TRUE,
+    $instructions = [
+      $this->t("This interface lists the content differences after running the command <strong>drush vactory_diff_content_fetch</strong>"),
+      $this->t("The command uses the remote URL configured in Vactory Diff Settings."),
+      $this->t("If you have changed the remote URL, make sure to rerun the command to fetch the updated differences."),
     ];
 
-    $instructions = [
-      $this->t("This interface lists the content differences after running the command drush vactory_diff_content_fetch."),
-      $this->t("The command drush vactory_diff_content_fetch uses the value of the Remote instance base URL field to determine which instance to compare with."),
-      $this->t("If you have changed the Remote instance base URL, make sure to rerun the command in order to fetch the updated differences."),
+    $form['instruction'] = [
+      '#type' => 'container',
+      '#attributes' => ['class' => 'vactory-diff-content-instruction'],
     ];
 
     foreach ($instructions as $key => $instruction) {
-      $form['urls']['instuction' . $key] = [
+      $form['instruction'][$key] = [
         '#type' => 'markup',
-        '#markup' => '<p class="messages messages--warning">' . $instruction . '</p>',
+        '#markup' => '<p>' . $instruction . '</p>',
       ];
     }
-
-    $saved_remote_url = (string) $this->state->get('vactory_diff_content.remote_url', '');
-
-    $form['urls']['remote_url'] = [
-      '#type' => 'url',
-      '#title' => $this->t('Remote instance base URL'),
-      '#description' => $this->t('Example: https://remote.example.com'),
-      '#required' => TRUE,
-      '#default_value' => $form_state->getValue('remote_url') ?: $saved_remote_url,
-    ];
-
-    $form['urls']['submit'] = [
-      '#type' => 'submit',
-      '#value' => $this->t('Save'),
-    ];
 
     // Check if CSV file exists.
     $csv_path = ContentDiffConst::FILE_PATH . '/' . ContentDiffConst::FILE_NAME;
@@ -416,10 +399,7 @@ class ContentDiffCsvForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $remote_url = trim((string) $form_state->getValue('remote_url'));
-
-    // Persist URL for next time.
-    $this->state->set('vactory_diff_content.remote_url', $remote_url);
+    // No configuration to save - using config client settings.
   }
 
 }
