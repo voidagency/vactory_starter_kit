@@ -1,5 +1,0 @@
-content_diff:
-  version: 1.x
-  css:
-    theme:
-      css/content-diff.css: {} 

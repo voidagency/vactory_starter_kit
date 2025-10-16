@@ -1,4 +1,0 @@
-access content diff:
-  title: 'Access content diff tool'
-  description: 'View and use the Content Diff administration form.'
-  restrict access: true 
