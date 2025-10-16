@@ -1,0 +1,6 @@
+services:
+  vactory_diff_content.service:
+    class: 'Drupal\vactory_diff_content\Service\ContentDiffService'
+    arguments: ['@http_client', '@messenger', '@logger.factory', '@string_translation', '@entity_type.manager']
+    tags:
+      - { name: monolog.logger, channel: vactory_diff_content }

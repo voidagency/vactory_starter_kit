@@ -1,0 +1,8 @@
+name: 'Vactory Diff Content'
+type: module
+description: 'Compare content between two Drupal instances via JSON:API Cross Bundles.'
+core_version_requirement: '^10 || ^11'
+package: 'Vactory'
+version: '1.0.0'
+dependencies:
+  - drupal:jsonapi
