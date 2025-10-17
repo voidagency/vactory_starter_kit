@@ -5,6 +5,7 @@ namespace Drupal\vactory_diff_config_client\Form;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\vactory_diff_config_client\Service\ConfigComparisonService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -21,16 +22,26 @@ class VactoryDiffSettingsForm extends ConfigFormBase {
   protected $comparisonService;
 
   /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
    * Constructs a VactoryDiffSettingsForm object.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
    * @param \Drupal\vactory_diff_config_client\Service\ConfigComparisonService $comparison_service
    *   The comparison service.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, ConfigComparisonService $comparison_service) {
+  public function __construct(ConfigFactoryInterface $config_factory, ConfigComparisonService $comparison_service, EntityTypeManagerInterface $entity_type_manager) {
     parent::__construct($config_factory);
     $this->comparisonService = $comparison_service;
+    $this->entityTypeManager = $entity_type_manager;
   }
 
   /**
@@ -39,7 +50,8 @@ class VactoryDiffSettingsForm extends ConfigFormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('config.factory'),
-      $container->get('vactory_diff_config_client.comparison')
+      $container->get('vactory_diff_config_client.comparison'),
+      $container->get('entity_type.manager')
     );
   }
 
@@ -138,6 +150,24 @@ class VactoryDiffSettingsForm extends ConfigFormBase {
       '#required' => TRUE,
       '#rows' => 4,
       '#placeholder' => "modules/custom\nprofiles/vactory_starter_kit/modules",
+    ];
+
+    // Configuration Content Diff.
+    $form['content_diff'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Configuration Content Diff'),
+      '#collapsible' => FALSE,
+    ];
+
+    // Get all content entity types.
+    $content_entity_types = $this->getContentEntityTypes();
+
+    $form['content_diff']['content_entity_types'] = [
+      '#type' => 'checkboxes',
+      '#title' => $this->t("Types d'entités à comparer"),
+      '#description' => $this->t("Sélectionnez les types d'entités de contenu à inclure dans la comparaison."),
+      '#options' => $content_entity_types,
+      '#default_value' => $config->get('content_entity_types'),
     ];
 
     // Afficher les informations de la dernière comparaison si disponible.
@@ -239,12 +269,44 @@ class VactoryDiffSettingsForm extends ConfigFormBase {
     $config->set('remote_url', $form_state->getValue('remote_url'))
       ->set('remote_api_key', $form_state->getValue('remote_api_key'))
       ->set('connection_timeout', $form_state->getValue('connection_timeout'))
-      ->set('custom_modules_path', $form_state->getValue('custom_modules_path'))
-      ->save();
+      ->set('custom_modules_path', $form_state->getValue('custom_modules_path'));
+
+    // Save content entity types.
+    $content_entity_types = $form_state->getValue('content_entity_types');
+    // Filter out unchecked values (checkboxes return 0 for unchecked).
+    $selected_types = array_filter($content_entity_types);
+    $config->set('content_entity_types', array_values($selected_types));
+
+    $config->save();
 
     $this->messenger()->addStatus($this->t('La configuration a été sauvegardée.'));
 
     parent::submitForm($form, $form_state);
+  }
+
+  /**
+   * Get all content entity types.
+   *
+   * @return array
+   *   Array of content entity type labels keyed by machine name.
+   */
+  protected function getContentEntityTypes() {
+    $entity_types = [];
+
+    // Get all entity type definitions.
+    $definitions = $this->entityTypeManager->getDefinitions();
+
+    foreach ($definitions as $entity_type_id => $definition) {
+      // Only include content entities (not config entities).
+      if ($definition->getGroup() === 'content') {
+        $entity_types[$entity_type_id] = $definition->getLabel() . ' (' . $entity_type_id . ')';
+      }
+    }
+
+    // Sort alphabetically.
+    asort($entity_types);
+
+    return $entity_types;
   }
 
 }

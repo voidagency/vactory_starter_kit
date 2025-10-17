@@ -1,4 +1,7 @@
 remote_url: ''
 api_key: ''
 connection_timeout: 30
-custom_modules_path: 'modules/custom' 
+custom_modules_path: 'modules/custom'
+content_entity_types:
+  - node
+  - taxonomy_term

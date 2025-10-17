@@ -72,7 +72,12 @@ class ContentDiffService {
    * Get content entity types that should be fetched.
    */
   public function getContentEntityTypes(): array {
-    return ContentDiffConst::SUPPORTED_ENTITY_TYPES;
+    // Get configured entity types from settings.
+    $config = \Drupal::config('vactory_diff_config_client.settings');
+    $configured_types = $config->get('content_entity_types');
+
+    // If no configuration, return empty array (user must configure).
+    return !empty($configured_types) ? $configured_types : [];
   }
 
   /**
@@ -256,10 +261,6 @@ class ContentDiffService {
    * Get entity bundle from remote entity data.
    */
   protected function getEntityBundle(array $remote_entity, string $entity_type_id): string {
-    if ($entity_type_id === 'file') {
-      return 'file';
-    }
-
     $type = $remote_entity['type'] ?? '';
     return str_replace($entity_type_id . '--', '', $type);
   }

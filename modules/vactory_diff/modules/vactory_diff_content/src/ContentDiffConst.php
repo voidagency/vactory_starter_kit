@@ -33,9 +33,4 @@ final class ContentDiffConst {
     ],
   ];
 
-  const SUPPORTED_ENTITY_TYPES = [
-    'node',
-    'taxonomy_term',
-  ];
-
 }

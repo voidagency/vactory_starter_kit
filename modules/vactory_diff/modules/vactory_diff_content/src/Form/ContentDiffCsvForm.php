@@ -322,10 +322,17 @@ class ContentDiffCsvForm extends FormBase {
   protected function getTypeOptions(array $csv_data): array {
     $options = ['' => $this->t('- Any -')];
 
-    foreach (ContentDiffConst::SUPPORTED_ENTITY_TYPES as $entity_type) {
+    // Get configured entity types from settings.
+    $config = \Drupal::config('vactory_diff_config_client.settings');
+    $configured_types = $config->get('content_entity_types');
 
-      $options[$entity_type] = $entity_type;
+    // Use configured types if available.
+    if (!empty($configured_types)) {
+      foreach ($configured_types as $entity_type) {
+        $options[$entity_type] = $entity_type;
+      }
     }
+
     return $options;
   }
 
@@ -333,7 +340,7 @@ class ContentDiffCsvForm extends FormBase {
    * Get status options.
    */
   protected function getStatusOptions(): array {
-    $options = ['' => $this->t('- Any -')];
+    $options = [];
     foreach (ContentDiffConst::STATUS as $key => $status) {
       $options[$key] = $status['label'];
     }
