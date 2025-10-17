@@ -33,5 +33,85 @@
 
 .vactory-diff-content-instruction p {
   color: #495057;
-  margin-bottom: 15px;
+  margin-bottom: 10px;
+}
+
+.vactory-diff-content-instruction .instruction-intro {
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid #ffe0b2;
+}
+
+/* Status Legend */
+.vactory-diff-content-instruction .status-legend {
+  margin-top: 20px;
+}
+
+.vactory-diff-content-instruction h3 {
+  margin: 0 0 15px 0;
+  color: #e65100;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.vactory-diff-content-instruction .status-items {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  align-items: flex-start;
+}
+
+.vactory-diff-content-instruction .status-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 15px;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  transition: box-shadow 0.2s ease;
+  flex: 1;
+  min-width: 250px;
+}
+
+.vactory-diff-content-instruction .status-item:hover {
+  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+}
+
+.vactory-diff-content-instruction .status-label {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 12px;
+  font-weight: 600;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  text-align: center;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.vactory-diff-content-instruction .status-item.content-diff-new .status-label {
+  background-color: #e6ffed;
+  color: #044a14;
+  border: 1px solid #90ee90;
+}
+
+.vactory-diff-content-instruction .status-item.content-diff-modified .status-label {
+  background-color: #ffecec;
+  color: #8a1f11;
+  border: 1px solid #ffb3b3;
+}
+
+.vactory-diff-content-instruction .status-item.content-diff-synchronized .status-label {
+  background-color: #f2f2f2;
+  color: #333333;
+  border: 1px solid #cccccc;
+}
+
+.vactory-diff-content-instruction .status-description {
+  font-size: 12px;
+  color: #555;
+  line-height: 1.4;
+  flex: 1;
 }

@@ -76,23 +76,40 @@ class ContentDiffCsvForm extends FormBase {
     $form['#prefix'] = '<div id="vactory-content-diff-form-wrapper">';
     $form['#suffix'] = '</div>';
 
-    $instructions = [
-      $this->t("This interface lists the content differences after running the command <strong>drush vactory_diff_content_fetch</strong>"),
-      $this->t("The command uses the remote URL configured in Vactory Diff Settings."),
-      $this->t("If you have changed the remote URL, make sure to rerun the command to fetch the updated differences."),
-    ];
-
     $form['instruction'] = [
       '#type' => 'container',
       '#attributes' => ['class' => 'vactory-diff-content-instruction'],
     ];
 
-    foreach ($instructions as $key => $instruction) {
-      $form['instruction'][$key] = [
-        '#type' => 'markup',
-        '#markup' => '<p>' . $instruction . '</p>',
-      ];
+    $instructions = '<div class="instruction-intro">';
+    $instructions .= '<h3>' . $this->t('Instructions') . '</h3>';
+    $instructions .= '<p>' . $this->t("This interface lists the content differences after running the command <strong>drush vactory_diff_content_fetch</strong>") . '</p>';
+    $instructions .= '<p>' . $this->t("The command uses the remote URL configured in Vactory Diff Settings.") . '</p>';
+    $instructions .= '<p>' . $this->t("If you have changed the remote URL, make sure to rerun the command to fetch the updated differences.") . '</p>';
+    $instructions .= '</div>';
+
+    $form['instruction']['intro'] = [
+      '#type' => 'markup',
+      '#markup' => $instructions,
+    ];
+
+    // Add status legend in instructions.
+    $status_legend = '<div class="status-legend">';
+    $status_legend .= '<h3>' . $this->t('Status Legend') . '</h3>';
+    $status_legend .= '<div class="status-items">';
+    foreach (ContentDiffConst::STATUS as $key => $status) {
+      $status_legend .= '<div class="status-item ' . $status['class'] . '">';
+      $status_legend .= '<span class="status-label">' . $status['label'] . '</span>';
+      $status_legend .= '<span class="status-description">' . $status['description'] . '</span>';
+      $status_legend .= '</div>';
     }
+    $status_legend .= '</div>';
+    $status_legend .= '</div>';
+
+    $form['instruction']['status_legend'] = [
+      '#type' => 'markup',
+      '#markup' => $status_legend,
+    ];
 
     // Check if CSV file exists.
     $csv_path = ContentDiffConst::FILE_PATH . '/' . ContentDiffConst::FILE_NAME;
@@ -163,7 +180,7 @@ class ContentDiffCsvForm extends FormBase {
     $form['filters']['filter_status'] = [
       '#type' => 'select',
       '#title' => $this->t('Status'),
-      '#description' => $this->t('Select one or more status to filter the results. Hold Ctrl/Cmd to select multiple options.') . '<br><br>' . $this->t('Available statuses:') . '<br>' . $this->getStatusDescriptions(),
+      '#description' => $this->t('Select one or more status to filter the results. Hold Ctrl/Cmd to select multiple options.'),
       '#options' => $this->getStatusOptions(),
       '#multiple' => TRUE,
       '#default_value' => $form_state->getValue('filter_status') ?: [],
