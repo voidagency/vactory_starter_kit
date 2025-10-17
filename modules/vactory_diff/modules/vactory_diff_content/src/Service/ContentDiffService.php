@@ -131,9 +131,18 @@ class ContentDiffService {
     $results = [];
     $storage = $this->entityTypeManager->getStorage($entity_type_id);
 
+    // Build index of remote UUIDs during processing.
+    $remote_uuids = [];
+
+    // 1. Process remote entities (deleted and modified/synchronized).
     foreach ($remote_entities as $item) {
       $uuid = $item['id'] ?? NULL;
       $attributes = $item['attributes'] ?? [];
+
+      // Add to remote UUIDs index.
+      if ($uuid) {
+        $remote_uuids[$uuid] = TRUE;
+      }
 
       // Get title based on entity type.
       $title = $this->getEntityTitle($attributes, $entity_type_id);
@@ -164,7 +173,8 @@ class ContentDiffService {
           ->execute();
 
         if (empty($nids)) {
-          $status = 'new';
+          // Exists on remote but not locally = deleted.
+          $status = 'deleted';
         }
         else {
           $nid = reset($nids);
@@ -186,6 +196,43 @@ class ContentDiffService {
         'uuid' => $uuid,
         'entity_type' => $entity_type_id,
       ];
+    }
+
+    // 2. Find local entities that don't exist on remote (added).
+    // Get base table name.
+    $entity_type_definition = $this->entityTypeManager->getDefinition($entity_type_id);
+    $base_table = $entity_type_definition->getBaseTable();
+    $uuid_key = $entity_type_definition->getKey('uuid');
+    $id_key = $entity_type_definition->getKey('id');
+
+    // Query SQL to get all UUIDs and IDs.
+    $connection = \Drupal::database();
+    $local_uuids_data = $connection->select($base_table, 'e')
+      ->fields('e', [$id_key, $uuid_key])
+      ->execute()
+      ->fetchAllKeyed(1, 0);
+
+    // Find IDs where UUID not in remote.
+    $added_ids = [];
+    foreach ($local_uuids_data as $local_uuid => $entity_id) {
+      if (!isset($remote_uuids[$local_uuid])) {
+        $added_ids[] = $entity_id;
+      }
+    }
+
+    // Load only the added entities.
+    if (!empty($added_ids)) {
+      $added_entities = $storage->loadMultiple($added_ids);
+
+      foreach ($added_entities as $local_entity) {
+        $results[] = [
+          'title' => $local_entity->label(),
+          'bundle' => $local_entity->bundle(),
+          'status' => 'added',
+          'uuid' => $local_entity->uuid(),
+          'entity_type' => $entity_type_id,
+        ];
+      }
     }
 
     return $results;

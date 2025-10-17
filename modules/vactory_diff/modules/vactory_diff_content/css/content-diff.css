@@ -1,13 +1,22 @@
-.content-diff-results td.content-diff-new, .content-diff-results .content-diff-new {
+/* Added - Vert */
+.content-diff-results td.content-diff-added, .content-diff-results .content-diff-added {
   background-color: #e6ffed;
   color: #044a14;
 }
 
-.content-diff-results td.content-diff-modified, .content-diff-results .content-diff-modified {
+/* Deleted - Rouge */
+.content-diff-results td.content-diff-deleted, .content-diff-results .content-diff-deleted {
   background-color: #ffecec;
   color: #8a1f11;
 }
 
+/* Modified - Jaune */
+.content-diff-results td.content-diff-modified, .content-diff-results .content-diff-modified {
+  background-color: #fff9e6;
+  color: #8a6d3b;
+}
+
+/* Synchronized - Gris */
 .content-diff-results td.content-diff-synchronized, .content-diff-results .content-diff-synchronized {
   background-color: #f2f2f2;
   color: #333333;
@@ -91,16 +100,22 @@
   flex-shrink: 0;
 }
 
-.vactory-diff-content-instruction .status-item.content-diff-new .status-label {
+.vactory-diff-content-instruction .status-item.content-diff-added .status-label {
   background-color: #e6ffed;
   color: #044a14;
   border: 1px solid #90ee90;
 }
 
-.vactory-diff-content-instruction .status-item.content-diff-modified .status-label {
+.vactory-diff-content-instruction .status-item.content-diff-deleted .status-label {
   background-color: #ffecec;
   color: #8a1f11;
   border: 1px solid #ffb3b3;
+}
+
+.vactory-diff-content-instruction .status-item.content-diff-modified .status-label {
+  background-color: #fff9e6;
+  color: #8a6d3b;
+  border: 1px solid #ffc107;
 }
 
 .vactory-diff-content-instruction .status-item.content-diff-synchronized .status-label {

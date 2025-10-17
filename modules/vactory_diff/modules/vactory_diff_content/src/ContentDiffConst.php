@@ -11,9 +11,14 @@ final class ContentDiffConst {
   public const FILE_NAME = 'report.csv';
 
   public const STATUS = [
-    'new' => [
-      'label' => 'New entity',
-      'class' => 'content-diff-new',
+    'added' => [
+      'label' => 'Added',
+      'class' => 'content-diff-added',
+      'description' => 'Entity exists locally but not found on remote instance (no matching UUID)',
+    ],
+    'deleted' => [
+      'label' => 'Deleted',
+      'class' => 'content-diff-deleted',
       'description' => 'Entity exists on remote instance but not found locally (no matching UUID)',
     ],
     'modified' => [
