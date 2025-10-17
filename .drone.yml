@@ -3,45 +3,56 @@ kind: pipeline
 type: docker
 
 clone:
-  depth: 1
+  disable: true
 
 workspace:
-  path: /var/www/html
+  path: /opt-cache
 
 steps:
   - name: setup
-    image: docker/compose:1.29.2
-    volumes:
-    - name: docker_sock
-      path: /var/run/docker.sock
-    - name: sonar_cache
-      path: /sonar-cache
-    - name: composer_cache
-      path: /var/cache/composer
+    image: vactory/vactory-ci:latest
     environment:
       BITBUCKET_AUTHTOKEN:
         from_secret: BITBUCKET_AUTHTOKEN
       SONAR_TOKEN:
         from_secret: SONAR_TOKEN
       NODE_VERSION: 22
-    commands:
-      - docker build -f .ci/Dockerfile -t vactory_starter_kit/build:$${DRONE_COMMIT} ./.ci
-      - |
-        docker run --rm \
-        -e BITBUCKET_AUTHTOKEN=$${BITBUCKET_AUTHTOKEN} \
-        -e SONAR_TOKEN=$${SONAR_TOKEN} \
-        -e NODE_VERSION=22 \
-        -e PHP_VERSION=8.3 \
-        -e COMPOSER_VERSION=2.7.1 \
-        -e DRUSH_VERSION=8.4.1 \
-        -e DRONE_SOURCE_BRANCH=$${DRONE_SOURCE_BRANCH} \
-        -e DRONE_TARGET_BRANCH=$${DRONE_TARGET_BRANCH} \
-        -e DRONE_COMMIT=$${DRONE_COMMIT} \
-        -e COMPOSER_CACHE_DIR=/composer-cache \
-        -v sonar-cache:/sonar-cache \
-        vactory_starter_kit/build:$${DRONE_COMMIT}
-      - docker container rm -f $(docker ps -a --filter ancestor=vactory_starter_kit/build:$${DRONE_COMMIT} -q) || true
-      - docker image rm vactory_starter_kit/build:$${DRONE_COMMIT} || true
+      PHP_VERSION: 8.3
+      COMPOSER_VERSION: 2.7.1
+      DRUSH_VERSION: 8.4.1
+  # - name: setup
+  #   image: docker/compose:1.29.2
+  #   volumes:
+  #   - name: docker_sock
+  #     path: /var/run/docker.sock
+  #   - name: sonar_cache
+  #     path: /sonar-cache
+  #   - name: composer_cache
+  #     path: /var/cache/composer
+  #   environment:
+  #     BITBUCKET_AUTHTOKEN:
+  #       from_secret: BITBUCKET_AUTHTOKEN
+  #     SONAR_TOKEN:
+  #       from_secret: SONAR_TOKEN
+  #     NODE_VERSION: 22
+  #   commands:
+  #     - docker build -f .ci/Dockerfile -t vactory_starter_kit/build:$${DRONE_COMMIT} ./.ci
+  #     - |
+  #       docker run --rm \
+  #       -e BITBUCKET_AUTHTOKEN=$${BITBUCKET_AUTHTOKEN} \
+  #       -e SONAR_TOKEN=$${SONAR_TOKEN} \
+  #       -e NODE_VERSION=22 \
+  #       -e PHP_VERSION=8.3 \
+  #       -e COMPOSER_VERSION=2.7.1 \
+  #       -e DRUSH_VERSION=8.4.1 \
+  #       -e DRONE_SOURCE_BRANCH=$${DRONE_SOURCE_BRANCH} \
+  #       -e DRONE_TARGET_BRANCH=$${DRONE_TARGET_BRANCH} \
+  #       -e DRONE_COMMIT=$${DRONE_COMMIT} \
+  #       -e COMPOSER_CACHE_DIR=/composer-cache \
+  #       -v sonar-cache:/sonar-cache \
+  #       vactory_starter_kit/build:$${DRONE_COMMIT}
+  #     - docker container rm -f $(docker ps -a --filter ancestor=vactory_starter_kit/build:$${DRONE_COMMIT} -q) || true
+  #     - docker image rm vactory_starter_kit/build:$${DRONE_COMMIT} || true
   # - name: phpunit
   #   image: vactory/php-ubi9:8.3.14
   #   depends_on:
