@@ -12,6 +12,7 @@ use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\vactory_diff_content\ContentDiffConst;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\TempStore\PrivateTempStoreFactory;
 
 /**
  * Provides the Content Diff CSV display form.
@@ -40,12 +41,20 @@ class ContentDiffCsvForm extends FormBase {
   protected $entityTypeBundleInfo;
 
   /**
+   * The temp store factory.
+   *
+   * @var \Drupal\Core\TempStore\PrivateTempStoreFactory
+   */
+  protected $tempStoreFactory;
+
+  /**
    * Constructs the form object.
    */
-  public function __construct(FileSystemInterface $file_system, StateInterface $state, EntityTypeBundleInfoInterface $entity_type_bundle_info) {
+  public function __construct(FileSystemInterface $file_system, StateInterface $state, EntityTypeBundleInfoInterface $entity_type_bundle_info, PrivateTempStoreFactory $temp_store_factory) {
     $this->fileSystem = $file_system;
     $this->state = $state;
     $this->entityTypeBundleInfo = $entity_type_bundle_info;
+    $this->tempStoreFactory = $temp_store_factory;
   }
 
   /**
@@ -55,7 +64,8 @@ class ContentDiffCsvForm extends FormBase {
     return new static(
       $container->get('file_system'),
       $container->get('state'),
-      $container->get('entity_type.bundle.info')
+      $container->get('entity_type.bundle.info'),
+      $container->get('tempstore.private')
     );
   }
 
@@ -134,6 +144,10 @@ class ContentDiffCsvForm extends FormBase {
       return $form;
     }
 
+    // Get saved filters from temp store.
+    $store = $this->tempStoreFactory->get('vactory_diff_content');
+    $saved_filters = $store->get('filters') ?: [];
+
     // Build filters.
     $form['filters'] = [
       '#type' => 'container',
@@ -143,14 +157,14 @@ class ContentDiffCsvForm extends FormBase {
     $form['filters']['filter_title'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Title'),
-      '#default_value' => (string) $form_state->getValue('filter_title') ?: '',
+      '#default_value' => $form_state->getValue('filter_title') ?: ($saved_filters['title'] ?? ''),
     ];
 
     $form['filters']['filter_type'] = [
       '#type' => 'select',
       '#title' => $this->t('Type'),
       '#options' => $this->getTypeOptions($csv_data),
-      '#default_value' => (string) $form_state->getValue('filter_type') ?: '',
+      '#default_value' => $form_state->getValue('filter_type') ?: ($saved_filters['type'] ?? ''),
       '#ajax' => [
         'callback' => '::ajaxRefreshForm',
         'event' => 'change',
@@ -158,7 +172,7 @@ class ContentDiffCsvForm extends FormBase {
       ],
     ];
 
-    $selected_type = $form_state->getValue('filter_type') ?: '';
+    $selected_type = $form_state->getValue('filter_type') ?: ($saved_filters['type'] ?? '');
 
     // Check if the type has changed and reset bundle if needed.
     $previous_type = $form_state->get('previous_type') ?: '';
@@ -173,7 +187,7 @@ class ContentDiffCsvForm extends FormBase {
         '#type' => 'select',
         '#title' => $this->t('Bundle'),
         '#options' => $this->getBundleOptions($selected_type),
-        '#default_value' => (string) $form_state->getValue('filter_bundle') ?: '',
+        '#default_value' => $form_state->getValue('filter_bundle') ?: ($saved_filters['bundle'] ?? ''),
       ];
     }
 
@@ -182,7 +196,7 @@ class ContentDiffCsvForm extends FormBase {
       '#title' => $this->t('Status'),
       '#options' => $this->getStatusOptions(),
       '#multiple' => TRUE,
-      '#default_value' => $form_state->getValue('filter_status') ?: [],
+      '#default_value' => $form_state->getValue('filter_status') ?: ($saved_filters['status'] ?? []),
     ];
 
     $form['filters']['submit'] = [
@@ -211,23 +225,24 @@ class ContentDiffCsvForm extends FormBase {
       'status' => [],
     ];
 
+    // Get temp store for this user.
+    $store = $this->tempStoreFactory->get('vactory_diff_content');
+    $saved_filters = $store->get('filters') ?: [];
+
     // Check if the form was actually submitted (not just AJAX callback)
     $triggering_element = $form_state->getTriggeringElement();
     if ($triggering_element && isset($triggering_element['#name']) && $triggering_element['#name'] === 'filter') {
-      // Form was submitted via Filter button, apply filters.
+      // Form was submitted via Filter button, apply filters from form values.
       $filters = [
         'title' => (string) $form_state->getValue('filter_title') ?: '',
         'type' => (string) $form_state->getValue('filter_type') ?: '',
         'bundle' => (string) $form_state->getValue('filter_bundle') ?: '',
         'status' => $form_state->getValue('filter_status') ?: [],
       ];
-
-      // Store applied filters so they persist across rebuilds.
-      $form_state->set('applied_filters', $filters);
     }
-    elseif ($form_state->has('applied_filters')) {
-      // Use previously applied filters.
-      $filters = $form_state->get('applied_filters');
+    elseif (!empty($saved_filters)) {
+      // Use saved filters from temp store.
+      $filters = $saved_filters;
     }
 
     $rows = $this->buildFilteredRows($csv_data, $filters);
@@ -266,25 +281,12 @@ class ContentDiffCsvForm extends FormBase {
    * Reset filters handler.
    */
   public function resetFilters(array &$form, FormStateInterface $form_state) {
-    // Clear all filter values.
-    $form_state->setValue('filter_title', '');
-    $form_state->setValue('filter_type', '');
-    $form_state->setValue('filter_bundle', '');
-    $form_state->setValue('filter_status', []);
+    // Clear filters from temp store.
+    $store = $this->tempStoreFactory->get('vactory_diff_content');
+    $store->delete('filters');
 
-    // Clear stored values.
-    $form_state->set('previous_type', '');
-    $form_state->set('applied_filters', []);
-
-    // Clear user input to ensure fields are actually empty.
-    $input = $form_state->getUserInput();
-    $input['filter_title'] = '';
-    $input['filter_type'] = '';
-    $input['filter_bundle'] = '';
-    $input['filter_status'] = [];
-    $form_state->setUserInput($input);
-
-    $form_state->setRebuild();
+    // Redirect to the same page.
+    $form_state->setRedirect('<current>');
   }
 
   /**
@@ -455,8 +457,19 @@ class ContentDiffCsvForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    // Rebuild the form to apply filters.
-    $form_state->setRebuild();
+    // Save filters to temp store.
+    $filters = [
+      'title' => (string) $form_state->getValue('filter_title') ?: '',
+      'type' => (string) $form_state->getValue('filter_type') ?: '',
+      'bundle' => (string) $form_state->getValue('filter_bundle') ?: '',
+      'status' => $form_state->getValue('filter_status') ?: [],
+    ];
+
+    $store = $this->tempStoreFactory->get('vactory_diff_content');
+    $store->set('filters', $filters);
+
+    // Redirect to the same page to avoid form resubmission warning.
+    $form_state->setRedirect('<current>');
   }
 
 }
