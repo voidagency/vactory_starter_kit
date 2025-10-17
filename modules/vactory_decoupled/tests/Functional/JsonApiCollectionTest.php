@@ -74,6 +74,9 @@ class JsonApiCollectionTest extends ExistingSiteBase {
 
     // Make sure vactory_page_import is installed.
     $this->ensureModuleInstalled(self::DF_CREATOR_MODULE);
+    $this->ensureModuleInstalled('vactory_news');
+
+    \Drupal::service("router.builder")->rebuild();
 
     // Create news nodes.
     // we should have at least one node.
@@ -104,7 +107,7 @@ class JsonApiCollectionTest extends ExistingSiteBase {
     // Uninstall module if we installed it during test.
     if ($this->moduleInstalledDuringTest) {
       $moduleInstaller = \Drupal::service('module_installer');
-      $moduleInstaller->uninstall([self::DF_CREATOR_MODULE]);
+      $moduleInstaller->uninstall([self::DF_CREATOR_MODULE, 'vactory_news']);
     }
 
     parent::tearDown();
@@ -141,6 +144,7 @@ class JsonApiCollectionTest extends ExistingSiteBase {
       'type' => 'vactory_page',
       'title' => 'Test JSON API Collection Page',
       'status' => 1,
+      'moderation_state' => 'published',
       'field_vactory_paragraphs' => [
         [
           'target_id' => $paragraph->id(),

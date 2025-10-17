@@ -2,142 +2,23 @@ name: default
 kind: pipeline
 type: docker
 
+clone:
+  disable: true
+
+workspace:
+  path: /opt-cache
+
 steps:
-  # - name: setup
-  #   image: vactory/php-ubi9:8.3.14
-  #   environment:
-  #     BITBUCKET_AUTHTOKEN:
-  #       from_secret: BITBUCKET_AUTHTOKEN
-  #   commands:
-  #     - rm -rf /var/www/html
-  #     - git clone -b main --single-branch https://x-token-auth:$${BITBUCKET_AUTHTOKEN}@bitbucket.org/adminvoid/vactory8.git /var/www/html
-  #     - mkdir -p /var/www/html/profiles/contrib/vactory_starter_kit
-  #     - rsync -a /drone/src/ /var/www/html/profiles/contrib/vactory_starter_kit/
-  #     - cd /var/www/html
-  #     - |
-  #       cat > update_composer.php << 'EOF'
-  #       <?php
-  #       $composer = json_decode(file_get_contents('composer.json'), true);
-  #       $composer['repositories'][] = [
-  #           'type' => 'path',
-  #           'url' => '/var/www/html/profiles/contrib/vactory_starter_kit',
-  #           'options' => ['symlink' => true]
-  #       ];
-  #       $composer['require']['voidagency/vactory_starter_kit'] = '@dev';
-  #       file_put_contents('composer.json', json_encode($composer, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
-  #       EOF
-  #     - php update_composer.php
-  #     - rm update_composer.php
-  #     - composer install --no-progress --no-interaction
-  #     - php scripts/githooks/phpCodeSniffer.php $(git diff --name-status ${DRONE_TARGET_BRANCH}..${DRONE_SOURCE_BRANCH} | grep -E "\.(php|module|install|profile|test|inc|theme|txt|md)$" | sed -E "s/(A|M|C)[[:space:]]+//g")
-
-  - name: phpcs
-    # image: docker/compose:1.29.2
-    image: vactory/php-ubi9:8.3.14
-    volumes:
-      - name: docker_sock
-        path: /var/run/docker.sock
-      # - name: cache
-      #   path: /workspace
-    commands:
-      - echo $${DRONE_SOURCE_BRANCH}
-      - echo $${DRONE_TARGET_BRANCH}
-      - rsync -a --delete /drone/src/ /var/www/html/
-      - cd /var/www/html
-      - touch phpcs.txt
-      - git fetch origin ${DRONE_TARGET_BRANCH} ${DRONE_SOURCE_BRANCH}
-      - composer install
-      - vendor/bin/phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer
-      - set -o pipefail && php scripts/githooks/phpCodeSniffer.php $(git diff --name-status ${DRONE_TARGET_BRANCH}..${DRONE_SOURCE_BRANCH} | grep -E "\.(php|module|install|profile|test|inc|theme|txt|md)$" | sed -E "s/(A|M|C)[[:space:]]+//g") 2>&1 | tee ./phpcs.txt
-      # - set -o pipefail && docker build --no-cache -f ./Dockerfile --build-arg SOURCE_BRANCH_ID=$${DRONE_SOURCE_BRANCH} --build-arg TARGET_BRANCH_ID=$${DRONE_TARGET_BRANCH} -t vactory_starter_kit/build . 2>&1 | tee /workspace/phpcs.txt
-  - name: code-analysis
-    image: vactory/sonar-node-plugin:latest
-
-    settings:
-      sonar_host:
-        from_secret: sonar_host
-      sonar_token:
-        from_secret: sonar_token
-      use_node_version: 20.11.1
-  - name: phpunit
-    image: docker/compose:1.29.2
+  - name: setup
+    image: vactory/vactory-ci:latest
+    pull: always
     environment:
       BITBUCKET_AUTHTOKEN:
         from_secret: BITBUCKET_AUTHTOKEN
-    volumes:
-      - name: docker_sock
-        path: /var/run/docker.sock
-    commands:
-      - echo $${DRONE_SOURCE_BRANCH}
-      - echo $${DRONE_COMMIT}
-      - echo $${BITBUCKET_AUTHTOKEN}
-      - docker build -f .ci/Dockerfile --build-arg DRONE_SOURCE_BRANCH=$${DRONE_SOURCE_BRANCH} --build-arg DRONE_COMMIT=$${DRONE_COMMIT} --build-arg BITBUCKET_AUTHTOKEN=$${BITBUCKET_AUTHTOKEN} -t test-vactory:$${DRONE_COMMIT} ./.ci
-      - set -o pipefail && docker run --rm test-vactory:$${DRONE_COMMIT} 2>&1 | tee ./phpunit.txt
-  - name: clean-up
-    image: docker/compose:1.29.2
-    depends_on:
-      - phpunit
-    when:
-      status:
-      - failure
-      - success
-    commands:
-      - docker container rm -f $(docker ps -a --filter ancestor=test-vactory:$${DRONE_COMMIT} -q) || true
-      - docker image rm test-vactory:$${DRONE_COMMIT} || true
-    volumes:
-      - name: docker_sock
-        path: /var/run/docker.sock
-  - name: analyze
-    image: ubuntu:latest
-    failure: ignore
-    depends_on:
-      - phpcs
-      - phpunit
-    when:
-      status:
-      - failure
-    environment:
-      CURSOR_API_KEY:
-        from_secret: cursor_api_key
-    commands:
-      - apt-get update && apt-get install -y curl
-      - curl https://cursor.com/install -fsS | bash
-      - ls -la
-      - cat ./phpcs.txt > ./report.txt
-      - cat ./phpunit.txt >> ./report.txt
-      - cat ./report.txt
-      - /root/.local/bin/cursor-agent -p "Analyze the following report ./report.txt and provide a detailed analysis of any issues, bugs or why it failed"
-  - name: notify
-    image: plugins/slack-blame
-    failure: ignore
-    depends_on:
-      - analyze
-    settings:
-      token:
+      SONAR_TOKEN:
+        from_secret: SONAR_TOKEN
+      SLACK_TOKEN:
         from_secret: SLACK_TOKEN
-      # channel: test-drone-ci
-      success_template: |
-        {{#if ${DRONE_PULL_REQUEST} }}
-          ✅ <https://github.com/{{ repo.owner }}/{{ repo.name }}/pull/${DRONE_PULL_REQUEST}|Pull Request #${DRONE_PULL_REQUEST}>
-        {{else}}
-          ✅ {{ uppercasefirst build.status }}: Build #{{ build.number }} (type: `{{ build.event }}`)
-        {{/if}}
-        Commit: <${CI_REPO_LINK}/commits/{{ build.commit }}|{{ truncate build.commit 8 }}>
-        Branch: <${CI_REPO_LINK}/commits/${DRONE_SOURCE_BRANCH}|${DRONE_SOURCE_BRANCH}>
-        Author: ${DRONE_COMMIT_AUTHOR}
-        <${DRONE_BUILD_LINK}|Visit build page ↗>
-      success_icon: ":happy_keanu:"
-      failure_template: |
-        The build is broken! Blame {{slack.name}}
-
-        Commit: <${CI_REPO_LINK}/commits/{{ build.commit }}|{{ truncate build.commit 8 }}>
-        Branch: <${CI_REPO_LINK}/commits/${DRONE_SOURCE_BRANCH}|${DRONE_SOURCE_BRANCH}>
-        Author: ${DRONE_COMMIT_AUTHOR}
-        <${DRONE_BUILD_LINK}|Visit build page ↗>
-      failure_icon: ":sad_keanu:"
-    when:
-      status: [failure]
-volumes:
-  - name: docker_sock
-    host:
-      path: /var/run/docker.sock
+      PHP_VERSION: 8.3
+      COMPOSER_VERSION: 2.7.1
+      DRUSH_VERSION: 8.4.1

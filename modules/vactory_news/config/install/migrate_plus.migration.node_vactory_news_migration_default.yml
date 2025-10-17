@@ -1,6 +1,10 @@
 id: node_vactory_news_migration_default
 migration_group: default
 label: 'node vactory_news migration'
+dependencies:
+  enforced:
+    module:
+      - vactory_news
 source:
   plugin: csv
   header_row_count: 1

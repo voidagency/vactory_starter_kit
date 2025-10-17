@@ -3,10 +3,8 @@
 namespace Drupal\Tests\vactory_dynamic_field\Kernel;
 
 use Drupal\KernelTests\Core\Entity\EntityKernelTestBase;
-use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
-use Drupal\user\Entity\User;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\taxonomy\Entity\Vocabulary;
 use Drupal\Core\Language\LanguageInterface;
@@ -25,10 +23,20 @@ class NodeNormalizerTest extends EntityKernelTestBase {
    *
    * @var array
    */
-  protected static $modules = ['node', 'language', 'taxonomy', 'system', 'field', 'text', 'entity_reference', 'image', 'vactory_dynamic_field'];
-  // public static $modules = ['node', 'paragraphs', 'my_module'];
+  protected static $modules = [
+    'node',
+    'language',
+    'taxonomy',
+    'system',
+    'field',
+    'text',
+    'image',
+    'vactory_dynamic_field',
+  ];
 
-
+  /**
+   * {@inheritdoc}
+   */
   protected function setUp(): void {
     parent::setUp();
 
@@ -53,15 +61,15 @@ class NodeNormalizerTest extends EntityKernelTestBase {
     ]);
     $vocabulary->save();
 
-     // Create a field.
-     $handler_settings = [
+    // Create a field.
+    $handler_settings = [
       'target_bundles' => [
         $vocabulary->id() => $vocabulary->id(),
       ],
       'auto_create' => TRUE,
     ];
-     // Add the term field.
-     FieldStorageConfig::create([
+    // Add the term field.
+    FieldStorageConfig::create([
       'field_name' => 'field_term',
       'type' => 'entity_reference',
       'entity_type' => 'node',
@@ -86,11 +94,6 @@ class NodeNormalizerTest extends EntityKernelTestBase {
    * Tests node owner functionality.
    */
   public function testOwner() {
-    // $user = $this->createUser();
-
-    // $container = \Drupal::getContainer();
-    // $container->get('current_user')->setAccount($user);
-
     $term = Term::create([
       'name' => 'Events',
       'description' => $this->randomMachineName(),
@@ -98,8 +101,6 @@ class NodeNormalizerTest extends EntityKernelTestBase {
       'langcode' => LanguageInterface::LANGCODE_NOT_SPECIFIED,
     ]);
     $term->save();
-
-    // echo "Term id :" . $term->id();
 
     // Create a test node.
     $node = Node::create([
@@ -112,16 +113,16 @@ class NodeNormalizerTest extends EntityKernelTestBase {
 
     $result = \Drupal::service('vactory.views.to_api')->normalizeNode($node, [
       "fields" => [
-        "field_term" => "theme"
+        "field_term" => "theme",
       ],
-      "image_styles" => []
+      "image_styles" => [],
     ]);
 
     $this->assertSame($result, [
       "theme" => [
         "id" => 1,
-        "label" => "Events"
-      ]
+        "label" => "Events",
+      ],
     ]);
   }
 
