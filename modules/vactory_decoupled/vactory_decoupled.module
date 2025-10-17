@@ -824,6 +824,10 @@ function vactory_decoupled_entity_delete(EntityInterface $entity) {
  * Clears frontend cache (redis).
  */
 function clear_next_cache($query = []) {
+  if (getenv('APP_SKIP_ON_UPDATE_CACHE_CLEAR') === 'true') {
+    return TRUE;
+  }
+
   $front_end_url = Settings::get('BASE_FRONTEND_URL');
   $cache_secret = Settings::get('FRONTEND_CACHE_KEY');
 
@@ -1095,6 +1099,10 @@ function locale_translate_edit_form_validator(&$form, FormStateInterface $form_s
  * Clears frontend cache (nginx).
  */
 function clear_next_nginx_cache($path = '') {
+  if (getenv('APP_SKIP_ON_UPDATE_CACHE_CLEAR') === 'true') {
+    return TRUE;
+  }
+
   $front_end_url = Settings::get('BASE_FRONTEND_URL');
 
   if (!isset($front_end_url) || $front_end_url == '') {
