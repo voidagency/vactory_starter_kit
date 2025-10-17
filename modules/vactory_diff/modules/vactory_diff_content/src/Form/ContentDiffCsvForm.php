@@ -417,6 +417,7 @@ class ContentDiffCsvForm extends FormBase {
       $diff_cell = ['data' => ['#markup' => '']];
       if ($status_key === 'modified' && $uuid && $bundle) {
         $url = Url::fromRoute('vactory_diff_content.compare', [
+          'type' => $type,
           'bundle' => $bundle,
           'uuid' => $uuid,
         ],

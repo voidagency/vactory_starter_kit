@@ -11,7 +11,7 @@ vactory_diff_content.form:
 
 # Route pour la comparaison détaillée
 vactory_diff_content.compare:
-  path: '/admin/content/diff/compare/{bundle}/{uuid}'
+  path: '/admin/content/diff/compare/{type}/{bundle}/{uuid}'
   defaults:
     _controller: '\Drupal\vactory_diff_content\Controller\ContentDiffCompareController::compare'
   requirements:

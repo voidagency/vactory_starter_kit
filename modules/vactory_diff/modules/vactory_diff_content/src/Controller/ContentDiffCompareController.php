@@ -57,17 +57,19 @@ class ContentDiffCompareController extends ControllerBase {
   /**
    * Compares local and remote nodes using JSON API format for both.
    *
+   * @param string $type
+   *   The entity type.
    * @param string $bundle
-   *   The node bundle.
+   *   The entity bundle.
    * @param string $uuid
-   *   The node UUID.
+   *   The entity UUID.
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The request object.
    *
    * @return \Symfony\Component\HttpFoundation\JsonResponse
    *   JSON response with both normalized node data.
    */
-  public function compare($bundle, $uuid, Request $request) {
+  public function compare($type, $bundle, $uuid, Request $request) {
     try {
       // Get remote URL from config client settings.
       $config_client_settings = \Drupal::config('vactory_diff_config_client.settings');
@@ -81,10 +83,10 @@ class ContentDiffCompareController extends ControllerBase {
       }
 
       // Fetch local data via internal subrequest (no HTTP call, no port issue).
-      $local_data = $this->fetchLocalNodeViaInternalRequest($bundle, $uuid);
+      $local_data = $this->fetchLocalNodeViaInternalRequest($type, $bundle, $uuid);
 
       // Fetch remote data via HTTP.
-      $remote_data = $this->fetchNodeViaJsonApi($remote_url, $bundle, $uuid);
+      $remote_data = $this->fetchNodeViaJsonApi($remote_url, $type, $bundle, $uuid);
       if (!$local_data) {
         return new JsonResponse([
           'status' => 'error',
@@ -151,6 +153,8 @@ class ContentDiffCompareController extends ControllerBase {
   /**
    * Fetches local node data via internal subrequest (no HTTP call).
    *
+   * @param string $type
+   *   The entity type.
    * @param string $bundle
    *   The node bundle.
    * @param string $uuid
@@ -159,10 +163,10 @@ class ContentDiffCompareController extends ControllerBase {
    * @return array|null
    *   The JSON API response data or NULL on failure.
    */
-  protected function fetchLocalNodeViaInternalRequest($bundle, $uuid) {
+  protected function fetchLocalNodeViaInternalRequest($type, $bundle, $uuid) {
     try {
       // Build JSON API path (internal, no base URL needed).
-      $path = "/api/node/{$bundle}/{$uuid}";
+      $path = "/api/{$type}/{$bundle}/{$uuid}";
 
       // Create a subrequest to JSON API.
       $request = Request::create(
@@ -206,6 +210,8 @@ class ContentDiffCompareController extends ControllerBase {
    *
    * @param string $base_url
    *   The base URL (remote).
+   * @param string $type
+   *   The entity type.
    * @param string $bundle
    *   The node bundle.
    * @param string $uuid
@@ -214,10 +220,10 @@ class ContentDiffCompareController extends ControllerBase {
    * @return array|null
    *   The JSON API response data or NULL on failure.
    */
-  protected function fetchNodeViaJsonApi($base_url, $bundle, $uuid) {
+  protected function fetchNodeViaJsonApi($base_url, $type, $bundle, $uuid) {
     try {
       // Build JSON API URL with includes.
-      $url = rtrim($base_url, '/') . "/api/node/{$bundle}/{$uuid}";
+      $url = rtrim($base_url, '/') . "/api/{$type}/{$bundle}/{$uuid}";
 
       // Add includes for common paragraph and reference fields.
       $includes = [];
