@@ -11,40 +11,14 @@ workspace:
 steps:
   - name: setup
     image: vactory/vactory-ci:latest
+    pull: always
     environment:
       BITBUCKET_AUTHTOKEN:
         from_secret: BITBUCKET_AUTHTOKEN
       SONAR_TOKEN:
         from_secret: SONAR_TOKEN
+      SLACK_TOKEN:
+        from_secret: SLACK_TOKEN
       PHP_VERSION: 8.3
       COMPOSER_VERSION: 2.7.1
       DRUSH_VERSION: 8.4.1
-  - name: notify
-    image: plugins/slack-blame
-    failure: ignore
-    depends_on:
-      - setup
-    settings:
-      token:
-        from_secret: SLACK_TOKEN
-      success_template: |
-        {{#if ${DRONE_PULL_REQUEST} }}
-          ✅ <https://github.com/{{ repo.owner }}/{{ repo.name }}/pull/${DRONE_PULL_REQUEST}|Pull Request #${DRONE_PULL_REQUEST}>
-        {{else}}
-          ✅ {{ uppercasefirst build.status }}: Build #{{ build.number }} (type: `{{ build.event }}`)
-        {{/if}}
-        Commit: <${CI_REPO_LINK}/commits/{{ build.commit }}|{{ truncate build.commit 8 }}>
-        Branch: <${CI_REPO_LINK}/commits/${DRONE_SOURCE_BRANCH}|${DRONE_SOURCE_BRANCH}>
-        Author: ${DRONE_COMMIT_AUTHOR}
-        <${DRONE_BUILD_LINK}|Visit build page ↗>
-      success_icon: ":happy_keanu:"
-      failure_template: |
-        The build is broken! Blame {{slack.name}}
-
-        Commit: <${CI_REPO_LINK}/commits/{{ build.commit }}|{{ truncate build.commit 8 }}>
-        Branch: <${CI_REPO_LINK}/commits/${DRONE_SOURCE_BRANCH}|${DRONE_SOURCE_BRANCH}>
-        Author: ${DRONE_COMMIT_AUTHOR}
-        <${DRONE_BUILD_LINK}|Visit build page ↗>
-      failure_icon: ":sad_keanu:"
-    when:
-      status: [failure]
