@@ -83,7 +83,7 @@ function vactory_decoupled_form_alter(&$form, FormStateInterface $form_state, $f
         '#type' => 'submit',
         '#name' => 'delete',
         '#value' => t('Delete translations'),
-        '#submit' => ['delete_translations'],
+        '#submit' => ['vactory_decoupled_delete_translations'],
         '#button_type' => 'danger',
         '#states' => [
           'visible' => [
@@ -93,12 +93,8 @@ function vactory_decoupled_form_alter(&$form, FormStateInterface $form_state, $f
       ];
     }
 
-    $form['#validate'][] = 'locale_translate_edit_form_validator';
+    $form['#validate'][] = 'vactory_decoupled_locale_translate_edit_form_validator';
     $form['#submit'][] = 'clear_next_cache_translation';
-  }
-
-  if ($form_id === 'block_admin_display_form') {
-    $form['#submit'][] = 'block_admin_display_submit';
   }
 
   $form_object = $form_state->getFormObject();
@@ -143,34 +139,27 @@ function vactory_decoupled_form_alter(&$form, FormStateInterface $form_state, $f
       '#weight' => 20,
     ];
 
-    // Add a submit handler to redirect to the Gatsby page.
-    $form['actions']['save_view_gatsby']['#submit'][] = 'gatsby_node_form_submit';
+    // Add a submit handler to redirect to the frontend page.
+    $form['actions']['save_view_gatsby']['#submit'][] = 'vactory_decoupled_gatsby_node_form_submit';
   }
 
-  $form['actions']['submit']['#submit'][] = 'nextjs_node_form_submit';
+  $form['actions']['submit']['#submit'][] = 'vactory_decoupled_nextjs_node_form_submit';
 
 }
 
 /**
  * Submit handler for viewing the nextjs page.
  */
-function nextjs_node_form_submit(&$form, FormStateInterface $form_state) {
+function vactory_decoupled_nextjs_node_form_submit(&$form, FormStateInterface $form_state) {
   // @todo Config form.
   // Redirect to content page after (Add or update or delete the node)
   $form_state->setRedirect('view.content.page_1');
 }
 
 /**
- * Invalidate nodes cache on block admin display submit.
+ * Submit handler for viewing the frontend page.
  */
-function block_admin_display_submit($form, FormStateInterface $form_state) {
-  /* Cache::invalidateTags(['node_list']); */
-}
-
-/**
- * Submit handler for viewing the Gatsby page.
- */
-function gatsby_node_form_submit(&$form, FormStateInterface $form_state) {
+function vactory_decoupled_gatsby_node_form_submit(&$form, FormStateInterface $form_state) {
   $path = $form_state->getValue('path');
   $url = !empty($path[0]['alias']) ? '/' . $path[0]['langcode'] . $path[0]['alias'] : '/' . $path[0]['langcode'] . $path[0]['source'];
   $nid = $form_state->getValue('nid');
@@ -432,6 +421,8 @@ function vactory_decoupled_entity_type_alter(array &$entity_types) {
  *
  * @throws Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
  * @throws Drupal\Component\Plugin\Exception\PluginNotFoundException
+ *
+ * @phpcs:disable Drupal.NamingConventions.ValidFunctionName.InvalidPrefix
  */
 function get_oauth_user_infos(UserInterface $user) {
   $full_name = $user->getDisplayName();
@@ -726,6 +717,7 @@ function vactory_decoupled_cache_flush() {
 
 /**
  * Clear frontend cache.
+ * @phpcs:disable Drupal.NamingConventions.ValidFunctionName.InvalidPrefix
  */
 function clear_next_cache_translation(&$form, FormStateInterface $form_state) {
   $query = [
@@ -822,6 +814,7 @@ function vactory_decoupled_entity_delete(EntityInterface $entity) {
 
 /**
  * Clears frontend cache (redis).
+ * @phpcs:disable Drupal.NamingConventions.ValidFunctionName.InvalidPrefix
  */
 function clear_next_cache($query = []) {
   if (getenv('APP_SKIP_ON_UPDATE_CACHE_CLEAR') === 'true') {
@@ -1069,7 +1062,7 @@ function vactory_decoupled_taxonomy_term_presave(EntityInterface $entity) {
 /**
  * Delete selected translations of _FRONTEND context.
  */
-function delete_translations(array $form, FormStateInterface $form_state) {
+function vactory_decoupled_delete_translations(array $form, FormStateInterface $form_state) {
   $langcode = $form_state->getValue('langcode');
   $delete = [];
   foreach ($form_state->getValue('strings') as $lid => $new_translation) {
@@ -1089,7 +1082,7 @@ function delete_translations(array $form, FormStateInterface $form_state) {
 /**
  * Delete translations from BO validator.
  */
-function locale_translate_edit_form_validator(&$form, FormStateInterface $form_state) {
+function vactory_decoupled_locale_translate_edit_form_validator(&$form, FormStateInterface $form_state) {
   if ($form_state->getTriggeringElement()['#name'] === 'delete') {
     return;
   }
@@ -1097,6 +1090,7 @@ function locale_translate_edit_form_validator(&$form, FormStateInterface $form_s
 
 /**
  * Clears frontend cache (nginx).
+ * @phpcs:disable Drupal.NamingConventions.ValidFunctionName.InvalidPrefix
  */
 function clear_next_nginx_cache($path = '') {
   if (getenv('APP_SKIP_ON_UPDATE_CACHE_CLEAR') === 'true') {
