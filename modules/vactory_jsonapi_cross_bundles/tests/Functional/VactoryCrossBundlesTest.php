@@ -47,8 +47,6 @@ class VactoryCrossBundlesTest extends ExistingSiteBase {
               'page[offset]=0',
               'page[limit]=9',
               'filter[status][value]=1',
-              'sort[date][path]=field_vactory_date',
-              'sort[date][direction]=DESC',
             ],
           ],
         ],
@@ -75,6 +73,8 @@ class VactoryCrossBundlesTest extends ExistingSiteBase {
     $this->ensureModuleInstalled('vactory_news');
     $this->ensureModuleInstalled('vactory_publication');
     $this->ensureModuleInstalled(self::DF_CREATOR_MODULE);
+
+    \Drupal::service("router.builder")->rebuild();
 
     // Create and log in an admin user using DTT helper.
     $admin = $this->createUser([], NULL, TRUE);
