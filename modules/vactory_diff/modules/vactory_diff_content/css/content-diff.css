@@ -115,3 +115,34 @@
   line-height: 1.4;
   flex: 1;
 }
+
+/* Filters */
+.content-diff-filters {
+  display: flex;
+  align-items: flex-end;
+  gap: 15px;
+  flex-wrap: wrap;
+  padding: 20px;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.content-diff-filters .form-item {
+  margin: 0;
+  flex: 1;
+  min-width: 150px;
+}
+
+.content-diff-filters .form-item label {
+  display: block;
+  font-weight: 600;
+  font-size: 13px;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+.content-diff-filters input[type="text"],
+.content-diff-filters select {
+  width: 100%;
+  font-size: 14px;
+}

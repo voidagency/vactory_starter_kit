@@ -180,24 +180,18 @@ class ContentDiffCsvForm extends FormBase {
     $form['filters']['filter_status'] = [
       '#type' => 'select',
       '#title' => $this->t('Status'),
-      '#description' => $this->t('Select one or more status to filter the results. Hold Ctrl/Cmd to select multiple options.'),
       '#options' => $this->getStatusOptions(),
       '#multiple' => TRUE,
       '#default_value' => $form_state->getValue('filter_status') ?: [],
     ];
 
-    $form['filters']['actions'] = [
-      '#type' => 'container',
-      '#attributes' => ['class' => ['filter-actions']],
-    ];
-
-    $form['filters']['actions']['submit'] = [
+    $form['filters']['submit'] = [
       '#type' => 'submit',
       '#value' => $this->t('Filter'),
       '#name' => 'filter',
     ];
 
-    $form['filters']['actions']['reset'] = [
+    $form['filters']['reset'] = [
       '#type' => 'submit',
       '#value' => $this->t('Reset'),
       '#name' => 'reset',
