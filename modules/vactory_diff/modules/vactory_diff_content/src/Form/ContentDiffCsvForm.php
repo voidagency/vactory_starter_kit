@@ -119,9 +119,7 @@ class ContentDiffCsvForm extends FormBase {
 
     // Build filters.
     $form['filters'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Filters'),
-      '#open' => TRUE,
+      '#type' => 'container',
       '#attributes' => ['class' => ['content-diff-filters']],
     ];
 
@@ -129,11 +127,6 @@ class ContentDiffCsvForm extends FormBase {
       '#type' => 'textfield',
       '#title' => $this->t('Title'),
       '#default_value' => (string) $form_state->getValue('filter_title') ?: '',
-      '#ajax' => [
-        'callback' => '::ajaxRefreshForm',
-        'event' => 'change',
-        'wrapper' => 'vactory-content-diff-form-wrapper',
-      ],
     ];
 
     $form['filters']['filter_type'] = [
@@ -164,11 +157,6 @@ class ContentDiffCsvForm extends FormBase {
         '#title' => $this->t('Bundle'),
         '#options' => $this->getBundleOptions($selected_type),
         '#default_value' => (string) $form_state->getValue('filter_bundle') ?: '',
-        '#ajax' => [
-          'callback' => '::ajaxRefreshForm',
-          'event' => 'change',
-          'wrapper' => 'vactory-content-diff-form-wrapper',
-        ],
       ];
     }
 
@@ -179,11 +167,24 @@ class ContentDiffCsvForm extends FormBase {
       '#options' => $this->getStatusOptions(),
       '#multiple' => TRUE,
       '#default_value' => $form_state->getValue('filter_status') ?: [],
-      '#ajax' => [
-        'callback' => '::ajaxRefreshForm',
-        'event' => 'change',
-        'wrapper' => 'vactory-content-diff-form-wrapper',
-      ],
+    ];
+
+    $form['filters']['actions'] = [
+      '#type' => 'container',
+      '#attributes' => ['class' => ['filter-actions']],
+    ];
+
+    $form['filters']['actions']['submit'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Filter'),
+      '#name' => 'filter',
+    ];
+
+    $form['filters']['actions']['reset'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Reset'),
+      '#name' => 'reset',
+      '#submit' => ['::resetFilters'],
     ];
 
     $form['results_wrapper'] = [
@@ -191,13 +192,33 @@ class ContentDiffCsvForm extends FormBase {
       '#attributes' => ['id' => 'content-diff-results-wrapper'],
     ];
 
-    // Build filtered rows.
+    // Build filtered rows - only apply filters if form was submitted (not AJAX)
     $filters = [
-      'title' => (string) $form_state->getValue('filter_title') ?: '',
-      'type' => (string) $form_state->getValue('filter_type') ?: '',
-      'bundle' => (string) $form_state->getValue('filter_bundle') ?: '',
-      'status' => $form_state->getValue('filter_status') ?: [],
+      'title' => '',
+      'type' => '',
+      'bundle' => '',
+      'status' => [],
     ];
+
+    // Check if the form was actually submitted (not just AJAX callback)
+    $triggering_element = $form_state->getTriggeringElement();
+    if ($triggering_element && isset($triggering_element['#name']) && $triggering_element['#name'] === 'filter') {
+      // Form was submitted via Filter button, apply filters.
+      $filters = [
+        'title' => (string) $form_state->getValue('filter_title') ?: '',
+        'type' => (string) $form_state->getValue('filter_type') ?: '',
+        'bundle' => (string) $form_state->getValue('filter_bundle') ?: '',
+        'status' => $form_state->getValue('filter_status') ?: [],
+      ];
+
+      // Store applied filters so they persist across rebuilds.
+      $form_state->set('applied_filters', $filters);
+    }
+    elseif ($form_state->has('applied_filters')) {
+      // Use previously applied filters.
+      $filters = $form_state->get('applied_filters');
+    }
+
     $rows = $this->buildFilteredRows($csv_data, $filters);
 
     if (!empty($rows)) {
@@ -224,11 +245,35 @@ class ContentDiffCsvForm extends FormBase {
   }
 
   /**
-   * AJAX callback to refresh the entire form.
+   * AJAX callback to refresh the form when type changes.
    */
   public function ajaxRefreshForm(array &$form, FormStateInterface $form_state) {
-    $form_state->setRebuild(TRUE);
     return $form;
+  }
+
+  /**
+   * Reset filters handler.
+   */
+  public function resetFilters(array &$form, FormStateInterface $form_state) {
+    // Clear all filter values.
+    $form_state->setValue('filter_title', '');
+    $form_state->setValue('filter_type', '');
+    $form_state->setValue('filter_bundle', '');
+    $form_state->setValue('filter_status', []);
+
+    // Clear stored values.
+    $form_state->set('previous_type', '');
+    $form_state->set('applied_filters', []);
+
+    // Clear user input to ensure fields are actually empty.
+    $input = $form_state->getUserInput();
+    $input['filter_title'] = '';
+    $input['filter_type'] = '';
+    $input['filter_bundle'] = '';
+    $input['filter_status'] = [];
+    $form_state->setUserInput($input);
+
+    $form_state->setRebuild();
   }
 
   /**
@@ -399,7 +444,8 @@ class ContentDiffCsvForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    // No configuration to save - using config client settings.
+    // Rebuild the form to apply filters.
+    $form_state->setRebuild();
   }
 
 }
