@@ -129,6 +129,9 @@ class TodoListGeneratorService {
     // Sort features by name.
     ksort($features_to_revert);
 
+    // Build content sync commands from content diff CSV (added/modified only).
+    $content_sync = $this->buildContentSyncCommands();
+
     return [
       'features' => $features_to_revert,
       'unmatched_configs' => $unmatched_configs,
@@ -138,6 +141,7 @@ class TodoListGeneratorService {
         'matched_configs' => $total_configs_processed - count($unmatched_configs),
         'unmatched_configs' => count($unmatched_configs),
       ],
+      'content_sync' => $content_sync,
       'timestamp' => $comparison_results['timestamp'] ?? NULL,
     ];
   }
@@ -236,6 +240,87 @@ class TodoListGeneratorService {
   }
 
   /**
+   * Build content sync commands from CSV report.
+   *
+   * Scans private://content-diff/report.csv and prepares single_content_sync
+   * export/import commands for entities with status 'added' or 'modified'.
+   *
+   * @return array
+   *   Array with 'exports' (per type), 'instructions', 'imports'.
+   */
+  protected function buildContentSyncCommands(): array {
+    $file_uri = 'private://content-diff/report.csv';
+    $content_sync = [
+      'has_changes' => FALSE,
+      'by_type' => [],
+      'export_commands' => [],
+      'export_dir' => './scs-export',
+    ];
+
+    // Attempt to read the CSV.
+    try {
+      $stream_wrapper_manager = \Drupal::service('stream_wrapper_manager');
+      $real_path = $stream_wrapper_manager->getViaUri($file_uri)->realpath();
+      if (!$real_path || !file_exists($real_path)) {
+        return $content_sync;
+      }
+
+      $handle = fopen($real_path, 'r');
+      if (!$handle) {
+        return $content_sync;
+      }
+
+      // Skip header.
+      fgetcsv($handle);
+
+      // Collect UUIDs by entity type for statuses of interest.
+      $uuids_by_type = [];
+
+      while (($row = fgetcsv($handle)) !== FALSE) {
+        // Expected columns: title, uuid, type, bundle, status.
+        $uuid = $row[1] ?? '';
+        $type = $row[2] ?? '';
+        $status = $row[4] ?? '';
+
+        if ($uuid === '' || $type === '') {
+          continue;
+        }
+
+        // Only export added/modified to optimize sync.
+        if (in_array($status, ['added', 'modified'], TRUE)) {
+          $uuids_by_type[$type][] = $uuid;
+        }
+      }
+      fclose($handle);
+
+      if (empty($uuids_by_type)) {
+        return $content_sync;
+      }
+
+      $content_sync['has_changes'] = TRUE;
+      $content_sync['by_type'] = $uuids_by_type;
+
+      // Build export commands per entity type.
+      foreach ($uuids_by_type as $entity_type => $uuids) {
+        $entities_arg = implode(',', array_unique($uuids));
+        $content_sync['export_commands'][] = sprintf(
+          'drush content:export %s %s --entities="%s" --assets',
+          $entity_type,
+          $content_sync['export_dir'],
+          $entities_arg
+        );
+      }
+
+    }
+    catch (\Throwable $e) {
+      // Be resilient: just return empty commands if something goes wrong.
+      $this->logger->warning('Content sync commands generation failed: @msg', ['@msg' => $e->getMessage()]);
+    }
+
+    return $content_sync;
+  }
+
+  /**
    * Generate a human-readable TODO list text.
    *
    * @param array $todo_list
@@ -317,6 +402,20 @@ class TodoListGeneratorService {
         $output[] = "  Reason: {$unmatched['reason']}";
         $output[] = "";
       }
+    }
+
+    // Add content sync section (single_content_sync).
+    if (!empty($todo_list['content_sync']) && ($todo_list['content_sync']['has_changes'] ?? FALSE)) {
+      $output[] = "=== CONTENT SYNC (single_content_sync) ===";
+      $output[] = "";
+      $output[] = "Export:";
+      foreach ($todo_list['content_sync']['export_commands'] as $cmd) {
+        $output[] = "  " . $cmd;
+      }
+      $output[] = "";
+      $output[] = "Then copy the generated archive to PROD, then run the import commands";
+      $output[] = "drush content:import [archive_path]";
+      $output[] = "";
     }
 
     return implode("\n", $output);

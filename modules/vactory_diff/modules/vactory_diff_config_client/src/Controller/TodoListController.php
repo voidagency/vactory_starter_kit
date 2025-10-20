@@ -283,6 +283,51 @@ class TodoListController extends ControllerBase {
       }
     }
 
+    // Content Sync section (single_content_sync based on content diff CSV).
+    if (!empty($todo_list['content_sync']) && ($todo_list['content_sync']['has_changes'] ?? FALSE)) {
+      $build['content_sync'] = [
+        '#type' => 'container',
+        '#attributes' => ['class' => ['vactory-diff-commands-section']],
+      ];
+
+      $build['content_sync']['title'] = [
+        '#type' => 'html_tag',
+        '#tag' => 'h2',
+        '#value' => $this->t('Content Sync'),
+      ];
+
+      // Small intro/description for spacing and context.
+      $build['content_sync']['intro'] = [
+        '#markup' => '<p>' . $this->t('Run the commands below to export changed content.') . '</p>',
+      ];
+
+      // Export commands.
+      if (!empty($todo_list['content_sync']['export_commands'])) {
+        $build['content_sync']['export_commands'] = [
+          '#type' => 'html_tag',
+          '#tag' => 'pre',
+          '#value' => implode("\n", $todo_list['content_sync']['export_commands']),
+          '#attributes' => ['class' => ['vactory-diff-commands-block']],
+        ];
+        // Copy instruction.
+        $build['content_sync']['instruction'] = [
+          '#type' => 'container',
+          'text' => [
+            '#markup' => '<p>' . $this->t('Then copy the generated archives to PROD, then run the import commands') . '</p>',
+          ],
+        ];
+
+        // Import commands.
+        $build['content_sync']['import_commands'] = [
+          '#type' => 'html_tag',
+          '#tag' => 'pre',
+          '#value' => 'drush content:import [archive_path]',
+          '#attributes' => ['class' => ['vactory-diff-commands-block']],
+        ];
+      }
+
+    }
+
     // Add CSS.
     $build['#attached']['library'][] = 'vactory_diff_config_client/comparison';
 
