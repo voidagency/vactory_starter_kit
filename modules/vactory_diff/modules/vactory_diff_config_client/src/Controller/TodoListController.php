@@ -150,12 +150,14 @@ class TodoListController extends ControllerBase {
       }
 
       if (!empty($module_commands)) {
-        $build['modules']['commands'] = [
-          '#type' => 'html_tag',
-          '#tag' => 'pre',
-          '#value' => implode("\n", $module_commands),
-          '#attributes' => ['class' => ['vactory-diff-commands-block']],
-        ];
+        foreach ($module_commands as $key => $cmd) {
+          $build['modules']['commands'][$key] = [
+            '#type' => 'html_tag',
+            '#tag' => 'pre',
+            '#value' => $cmd,
+            '#attributes' => ['class' => ['vactory-diff-commands-block']],
+          ];
+        }
       }
     }
 
@@ -183,12 +185,14 @@ class TodoListController extends ControllerBase {
         $all_commands[] = $feature['command'];
       }
 
-      $build['commands']['commands'] = [
-        '#type' => 'html_tag',
-        '#tag' => 'pre',
-        '#value' => implode("\n", $all_commands),
-        '#attributes' => ['class' => ['vactory-diff-commands-block']],
-      ];
+      foreach ($all_commands as $key => $command) {
+        $build['commands']['commands'][$key] = [
+          '#type' => 'html_tag',
+          '#tag' => 'pre',
+          '#value' => $command,
+          '#attributes' => ['class' => ['vactory-diff-commands-block']],
+        ];
+      }
 
       // Section 2: Detailed table (in accordion).
       $build['features_details'] = [
@@ -303,12 +307,14 @@ class TodoListController extends ControllerBase {
 
       // Export commands.
       if (!empty($todo_list['content_sync']['export_commands'])) {
-        $build['content_sync']['export_commands'] = [
-          '#type' => 'html_tag',
-          '#tag' => 'pre',
-          '#value' => implode("\n", $todo_list['content_sync']['export_commands']),
-          '#attributes' => ['class' => ['vactory-diff-commands-block']],
-        ];
+        foreach ($todo_list['content_sync']['export_commands'] as $key => $command) {
+          $build['content_sync']['export_commands'][$key] = [
+            '#type' => 'html_tag',
+            '#tag' => 'pre',
+            '#value' => $command,
+            '#attributes' => ['class' => ['vactory-diff-commands-block']],
+          ];
+        }
         // Copy instruction.
         $build['content_sync']['instruction'] = [
           '#type' => 'container',
