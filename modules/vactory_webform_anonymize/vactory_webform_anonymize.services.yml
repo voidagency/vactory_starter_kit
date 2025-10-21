@@ -1,0 +1,5 @@
+services:
+  vactory_webform_anonymize.helper:
+    class: \Drupal\vactory_webform_anonymize\Services\AnonymizedWebformSubmissionService
+    arguments:
+      - '@current_user'
