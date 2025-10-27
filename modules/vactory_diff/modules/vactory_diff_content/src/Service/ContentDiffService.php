@@ -266,6 +266,67 @@ class ContentDiffService {
   }
 
   /**
+   * Generate the complete content diff report.
+   */
+  public function generateDiffReport(): array {
+    $config = \Drupal::config('vactory_diff_config_client.settings');
+    $remote_url = $config->get('remote_url');
+
+    if (empty($remote_url)) {
+      return [
+        'success' => FALSE,
+        'message' => 'Remote URL is required. Please configure it in Vactory Diff Settings (/admin/config/development/vactory-diff/settings).',
+      ];
+    }
+
+    $content_entity_types = $this->getContentEntityTypes();
+
+    if (empty($content_entity_types)) {
+      return [
+        'success' => FALSE,
+        'message' => 'No content entity types configured. Please configure them in Vactory Diff Settings.',
+      ];
+    }
+
+    $all_results = [];
+    $total_entities = 0;
+
+    foreach ($content_entity_types as $content_entity_type) {
+      $this->logger->info('Processing @type entities', ['@type' => $content_entity_type]);
+
+      // Fetch remote entities for this type.
+      $remote_entities = $this->fetchRemoteEntities($remote_url, $content_entity_type);
+
+      if (!empty($remote_entities)) {
+        $this->logger->info('Fetched @count @type entities', [
+          '@count' => count($remote_entities),
+          '@type' => $content_entity_type,
+        ]);
+
+        // Compare with local entities.
+        $compared = $this->compareWithLocal($remote_entities, $content_entity_type);
+        $all_results = array_merge($all_results, $compared);
+        $total_entities += count($remote_entities);
+      }
+      else {
+        $this->logger->info('No @type entities found', ['@type' => $content_entity_type]);
+      }
+    }
+
+    // Generate CSV file.
+    $csv_path = $this->generateCsv($all_results);
+
+    return [
+      'success' => TRUE,
+      'message' => 'Diff report generated successfully',
+      'csv_path' => $csv_path,
+      'total_entities' => $total_entities,
+      'results_count' => count($all_results),
+      'remote_url' => $remote_url,
+    ];
+  }
+
+  /**
    * Generate CSV file with results.
    */
   public function generateCsv(array $results): string {

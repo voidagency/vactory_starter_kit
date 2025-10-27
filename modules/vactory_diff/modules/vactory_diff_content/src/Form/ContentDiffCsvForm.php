@@ -11,6 +11,7 @@ use Drupal\Core\Url;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\vactory_diff_content\ContentDiffConst;
+use Drupal\vactory_diff_content\Service\ContentDiffService;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
 
@@ -48,13 +49,21 @@ class ContentDiffCsvForm extends FormBase {
   protected $tempStoreFactory;
 
   /**
+   * The content diff service.
+   *
+   * @var \Drupal\vactory_diff_content\Service\ContentDiffService
+   */
+  protected $contentDiffService;
+
+  /**
    * Constructs the form object.
    */
-  public function __construct(FileSystemInterface $file_system, StateInterface $state, EntityTypeBundleInfoInterface $entity_type_bundle_info, PrivateTempStoreFactory $temp_store_factory) {
+  public function __construct(FileSystemInterface $file_system, StateInterface $state, EntityTypeBundleInfoInterface $entity_type_bundle_info, PrivateTempStoreFactory $temp_store_factory, ContentDiffService $content_diff_service) {
     $this->fileSystem = $file_system;
     $this->state = $state;
     $this->entityTypeBundleInfo = $entity_type_bundle_info;
     $this->tempStoreFactory = $temp_store_factory;
+    $this->contentDiffService = $content_diff_service;
   }
 
   /**
@@ -65,7 +74,8 @@ class ContentDiffCsvForm extends FormBase {
       $container->get('file_system'),
       $container->get('state'),
       $container->get('entity_type.bundle.info'),
-      $container->get('tempstore.private')
+      $container->get('tempstore.private'),
+      $container->get('vactory_diff_content.service')
     );
   }
 
@@ -82,6 +92,10 @@ class ContentDiffCsvForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form['#attributes']['class'][] = 'vactory-content-diff-csv-form';
 
+    // Attach module CSS and dialog.
+    $form['#attached']['library'][] = 'vactory_diff_content/content_diff';
+    $form['#attached']['library'][] = 'core/drupal.dialog.ajax';
+
     // Add a wrapper for the entire form content.
     $form['#prefix'] = '<div id="vactory-content-diff-form-wrapper">';
     $form['#suffix'] = '</div>';
@@ -93,9 +107,12 @@ class ContentDiffCsvForm extends FormBase {
 
     $instructions = '<div class="instruction-intro">';
     $instructions .= '<h3>' . $this->t('Instructions') . '</h3>';
-    $instructions .= '<p>' . $this->t("This interface lists the content differences after running the command <strong>drush vactory_diff_content_fetch</strong>") . '</p>';
-    $instructions .= '<p>' . $this->t("The command uses the remote URL configured in Vactory Diff Settings.") . '</p>';
-    $instructions .= '<p>' . $this->t("If you have changed the remote URL, make sure to rerun the command to fetch the updated differences.") . '</p>';
+    $instructions .= '<p>' . $this->t("Generate the content diff report using one of the following methods:") . '</p>';
+    $instructions .= '<ul>';
+    $instructions .= '<li><strong>UI:</strong> Click "Generate Diff Report" button below</li>';
+    $instructions .= '<li><strong>Command:</strong> Run <code>drush vactory_diff_content_fetch</code> (or <code>drush vcd-fetch</code>)</li>';
+    $instructions .= '</ul>';
+    $instructions .= '<p>' . $this->t("The report uses the remote URL configured in Vactory Diff Settings.") . '</p>';
     $instructions .= '</div>';
 
     $form['instruction']['intro'] = [
@@ -121,6 +138,13 @@ class ContentDiffCsvForm extends FormBase {
       '#markup' => $status_legend,
     ];
 
+    // Add "Generate Diff Report" button.
+    $form['generate_button'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Generate Diff Report'),
+      '#submit' => ['::generateReport'],
+    ];
+
     // Check if CSV file exists.
     $csv_path = ContentDiffConst::FILE_PATH . '/' . ContentDiffConst::FILE_NAME;
     $real_path = $this->fileSystem->realpath($csv_path);
@@ -128,7 +152,7 @@ class ContentDiffCsvForm extends FormBase {
     if (!$real_path || !file_exists($real_path)) {
       $form['no_file'] = [
         '#type' => 'markup',
-        '#markup' => '<div class="messages messages--warning">' . $this->t('No CSV report found. Please run the drush command first: drush vactory_diff_content_fetch') . '</div>',
+        '#markup' => '<div class="messages messages--warning">' . $this->t('No CSV report found. Please click "Generate Diff Report" button OR run the drush command first: drush vactory_diff_content_fetch') . '</div>',
       ];
       return $form;
     }
@@ -262,10 +286,6 @@ class ContentDiffCsvForm extends FormBase {
         '#attributes' => ['class' => ['content-diff-results']],
       ];
     }
-
-    // Attach module CSS and dialog.
-    $form['#attached']['library'][] = 'vactory_diff_content/content_diff';
-    $form['#attached']['library'][] = 'core/drupal.dialog.ajax';
 
     return $form;
   }
@@ -477,6 +497,31 @@ class ContentDiffCsvForm extends FormBase {
     $store->set('filters', $filters);
 
     // Redirect to the same page to avoid form resubmission warning.
+    $form_state->setRedirect('<current>');
+  }
+
+  /**
+   * Submit handler for Generate Diff Report button.
+   */
+  public function generateReport(array &$form, FormStateInterface $form_state) {
+    // Use the injected service to call the centralized method.
+    $result = $this->contentDiffService->generateDiffReport();
+
+    if ($result['success']) {
+      // Show success message.
+      $this->messenger()->addStatus($this->t('Diff report generated successfully! Total entities: @count, Results: @results', [
+        '@count' => $result['total_entities'],
+        '@results' => $result['results_count'],
+      ]));
+    }
+    else {
+      // Show error message.
+      $this->messenger()->addError($this->t('Error generating diff report: @message', [
+        '@message' => $result['message'],
+      ]));
+    }
+
+    // Reload the page to show the results.
     $form_state->setRedirect('<current>');
   }
 
