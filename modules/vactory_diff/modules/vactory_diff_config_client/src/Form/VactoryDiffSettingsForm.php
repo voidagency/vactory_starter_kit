@@ -98,7 +98,7 @@ class VactoryDiffSettingsForm extends ConfigFormBase {
         2. Allez à <em>/admin/config/services/api_key</em><br>
         3. Générez une nouvelle clé API<br>
         4. Copiez la clé et collez-la ici<br><br>
-        <strong>Important :</strong> L\'utilisateur associé à cette clé doit avoir la permission <em>"Accéder à l\'export de configuration Vactory Diff (access vactory diff config export)"</em> pour pouvoir consommer les configurations.'),
+        <strong>Important :</strong> L\'utilisateur associé à cette clé doit avoir les permissions : "access vactory diff config export" et "view any unpublished content"'),
       '#default_value' => $config->get('remote_api_key'),
       '#required' => TRUE,
       '#attributes' => [

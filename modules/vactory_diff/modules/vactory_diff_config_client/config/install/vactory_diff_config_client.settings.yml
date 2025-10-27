@@ -1,5 +1,5 @@
 remote_url: ''
-api_key: ''
+remote_api_key: ''
 connection_timeout: 30
 custom_modules_path: 'modules/custom'
 content_entity_types:

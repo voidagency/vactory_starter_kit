@@ -87,15 +87,25 @@ class ContentDiffService {
     $base = rtrim($remote_url, '/');
     $api_endpoint = $base . '/api/' . $entity_type_id;
 
+    // Get API key from config.
+    $config = \Drupal::config('vactory_diff_config_client.settings');
+    $api_key = $config->get('remote_api_key');
+
     $all_entities = [];
     $current_url = $api_endpoint;
 
     while ($current_url) {
       try {
+        // Prepare headers with API key.
+        $headers = [
+          'Accept' => 'application/vnd.api+json, application/json',
+        ];
+        if (!empty($api_key)) {
+          $headers['apikey'] = $api_key;
+        }
+
         $response = $this->httpClient->request('GET', $current_url, [
-          'headers' => [
-            'Accept' => 'application/vnd.api+json, application/json',
-          ],
+          'headers' => $headers,
           'timeout' => 30,
         ]);
 

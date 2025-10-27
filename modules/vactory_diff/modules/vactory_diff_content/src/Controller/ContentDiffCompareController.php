@@ -230,12 +230,22 @@ class ContentDiffCompareController extends ControllerBase {
 
       $url .= '?include=' . implode(',', $includes);
 
+      // Get API key from config.
+      $config = \Drupal::config('vactory_diff_config_client.settings');
+      $api_key = $config->get('remote_api_key');
+
+      // Prepare headers with API key.
+      $headers = [
+        'Accept' => 'application/vnd.api+json',
+        'Content-Type' => 'application/vnd.api+json',
+      ];
+      if (!empty($api_key)) {
+        $headers['apikey'] = $api_key;
+      }
+
       $response = $this->httpClient->request('GET', $url, [
         'timeout' => 30,
-        'headers' => [
-          'Accept' => 'application/vnd.api+json',
-          'Content-Type' => 'application/vnd.api+json',
-        ],
+        'headers' => $headers,
       ]);
 
       $data = json_decode($response->getBody(), TRUE);
