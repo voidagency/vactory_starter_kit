@@ -123,17 +123,18 @@ class ConfigCompareController extends ControllerBase {
    */
   public function ajaxCompare(Request $request): JsonResponse {
     try {
-      $config = $this->configFactory->get('vactory_diff_config_client.settings');
-      $remote_url = $config->get('remote_url');
+      // Use the centralized method that orchestrates the entire process.
+      $result = $this->comparisonService->generateDiffReport();
 
-      if (empty($remote_url)) {
+      if (!$result['success']) {
         return new JsonResponse([
           'success' => FALSE,
-          'message' => 'URL distante non configurée.',
+          'message' => $result['message'],
         ], 400);
       }
 
-      $comparison_results = $this->comparisonService->performFullComparison($remote_url);
+      // Load the saved results to display.
+      $comparison_results = $this->comparisonService->loadComparisonResults();
 
       if ($comparison_results === NULL) {
         return new JsonResponse([

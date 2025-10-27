@@ -515,6 +515,55 @@ class ConfigComparisonService {
   }
 
   /**
+   * Generate the complete config comparison report.
+   *
+   * This method orchestrates the entire process:
+   * - Gets remote URL from settings
+   * - Performs full comparison
+   * - Saves results to file.
+   *
+   * @return array
+   *   Array with 'success', 'message', 'summary', etc.
+   */
+  public function generateDiffReport(): array {
+    $config = \Drupal::config('vactory_diff_config_client.settings');
+    $remote_url = $config->get('remote_url');
+
+    if (empty($remote_url)) {
+      return [
+        'success' => FALSE,
+        'message' => 'Remote URL is required. Please configure it in Vactory Diff Settings (/admin/config/development/vactory-diff/settings).',
+      ];
+    }
+
+    $this->logger->info('Starting configuration comparison with remote URL: @url', [
+      '@url' => $remote_url,
+    ]);
+
+    $results = $this->performFullComparison($remote_url);
+
+    if ($results === NULL) {
+      return [
+        'success' => FALSE,
+        'message' => 'Failed to perform comparison. Check logs for details.',
+      ];
+    }
+
+    $summary = $results['summary'] ?? [];
+
+    return [
+      'success' => TRUE,
+      'message' => 'Comparison completed successfully',
+      'remote_url' => $remote_url,
+      'summary' => $summary,
+      'added_count' => $summary['added'] ?? 0,
+      'modified_count' => $summary['modified'] ?? 0,
+      'deleted_count' => $summary['deleted'] ?? 0,
+      'total_differences' => $summary['total_differences'] ?? 0,
+    ];
+  }
+
+  /**
    * Save comparison results to a private file.
    *
    * @param array $results

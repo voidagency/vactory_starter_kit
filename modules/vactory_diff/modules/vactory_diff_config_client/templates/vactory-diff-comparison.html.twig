@@ -19,6 +19,13 @@
     <div class="comparison-header">
       <h2>{{ 'Comparaison des configurations'|t }}</h2>
       <p>{{ 'Comparez les configurations entre cette instance locale et l\'instance distante configurée :'|t }} <strong>{{ remote_url }}</strong></p>
+      <div class="comparison-methods">
+        <p>{{ 'Gérez la comparaison via :'|t }}</p>
+        <ul>
+          <li>{{ 'UI : Utilisez le bouton ci-dessous'|t }}</li>
+          <li>{{ 'CLI : Exécutez <code>drush vactory_diff_config_compare</code> (ou <code>drush vf-compare</code>)'|t }}</li>
+        </ul>
+      </div>
     </div>
 
     {# Compare button #}
