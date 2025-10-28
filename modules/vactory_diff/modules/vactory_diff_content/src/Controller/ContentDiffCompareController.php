@@ -5,6 +5,8 @@ namespace Drupal\vactory_diff_content\Controller;
 use Drupal\Component\Diff\Diff;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Serialization\Yaml;
 use Drupal\vactory_diff_content\Service\JsonApiDeserializer;
 use GuzzleHttp\ClientInterface;
@@ -34,14 +36,39 @@ class ContentDiffCompareController extends ControllerBase {
   protected $loggerFactory;
 
   /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
+   * The entity field manager.
+   *
+   * @var \Drupal\Core\Entity\EntityFieldManagerInterface
+   */
+  protected $entityFieldManager;
+
+  /**
+   * Cache for detected include fields per entity type and bundle.
+   *
+   * @var array
+   */
+  protected static $includeFieldsCache = [];
+
+  /**
    * Constructs a ContentDiffCompareController object.
    */
   public function __construct(
     ClientInterface $http_client,
-    LoggerChannelFactoryInterface $logger_factory
+    LoggerChannelFactoryInterface $logger_factory,
+    EntityTypeManagerInterface $entity_type_manager,
+    EntityFieldManagerInterface $entity_field_manager
   ) {
     $this->httpClient = $http_client;
     $this->loggerFactory = $logger_factory;
+    $this->entityTypeManager = $entity_type_manager;
+    $this->entityFieldManager = $entity_field_manager;
   }
 
   /**
@@ -50,7 +77,9 @@ class ContentDiffCompareController extends ControllerBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('http_client'),
-      $container->get('logger.factory')
+      $container->get('logger.factory'),
+      $container->get('entity_type.manager'),
+      $container->get('entity_field.manager')
     );
   }
 
@@ -168,6 +197,14 @@ class ContentDiffCompareController extends ControllerBase {
       // Build JSON API path (internal, no base URL needed).
       $path = "/api/{$type}/{$bundle}/{$uuid}";
 
+      // Get include fields for this entity type and bundle (cached).
+      $includes = $this->getIncludeFields($type, $bundle);
+
+      // Add includes to the path if any.
+      if (!empty($includes)) {
+        $path .= '?include=' . implode(',', $includes);
+      }
+
       // Create a subrequest to JSON API.
       $request = Request::create(
         $path,
@@ -198,11 +235,89 @@ class ContentDiffCompareController extends ControllerBase {
     }
     catch (\Exception $e) {
       $this->loggerFactory->get('vactory_diff_content')->error('Internal JSON API fetch error for @path: @message', [
-        '@path' => "/api/node/{$bundle}/{$uuid}",
+        '@path' => "/api/{$type}/{$bundle}/{$uuid}",
         '@message' => $e->getMessage(),
       ]);
       return NULL;
     }
+  }
+
+  /**
+   * Detects which fields require includes based on their field type.
+   *
+   * @param string $entity_type
+   *   The entity type ID.
+   * @param string $bundle
+   *   The bundle ID.
+   *
+   * @return array
+   *   Array of field names that should be included in JSON API requests.
+   */
+  protected function getIncludeFields(string $entity_type, string $bundle): array {
+    $cache_key = "{$entity_type}:{$bundle}";
+
+    // Check cache first.
+    if (isset(static::$includeFieldsCache[$cache_key])) {
+      return static::$includeFieldsCache[$cache_key];
+    }
+
+    $includes = [];
+
+    try {
+      // Get all field definitions for this bundle.
+      $field_definitions = $this->entityFieldManager->getFieldDefinitions($entity_type, $bundle);
+
+      // Field types that typically need includes in JSON API.
+      // Note: 'media' and 'taxonomy' are entity types, not field types.
+      // They are referenced via entity_reference fields.
+      $reference_field_types = [
+        'entity_reference',
+        'entity_reference_revisions',
+      ];
+
+      foreach ($field_definitions as $field_name => $field_definition) {
+        // Skip base fields and fields that are not exposed by JSON API.
+        if ($field_definition->isComputed() || $field_definition->isReadOnly()) {
+          continue;
+        }
+
+        $field_type = $field_definition->getType();
+
+        // Check if this field type is in our list of reference types.
+        foreach ($reference_field_types as $ref_type) {
+          if (strpos($field_type, $ref_type) !== FALSE) {
+            $includes[] = $field_name;
+            break;
+          }
+        }
+      }
+
+      // Cache the result.
+      static::$includeFieldsCache[$cache_key] = $includes;
+
+      // Log for debugging.
+      $this->loggerFactory->get('vactory_diff_content')->debug(
+        'Detected include fields for @type/@bundle: @fields',
+        [
+          '@type' => $entity_type,
+          '@bundle' => $bundle,
+          '@fields' => implode(', ', $includes),
+        ]
+      );
+
+    }
+    catch (\Exception $e) {
+      $this->loggerFactory->get('vactory_diff_content')->error(
+        'Error detecting include fields for @type/@bundle: @message',
+        [
+          '@type' => $entity_type,
+          '@bundle' => $bundle,
+          '@message' => $e->getMessage(),
+        ]
+      );
+    }
+
+    return $includes;
   }
 
   /**
@@ -225,10 +340,12 @@ class ContentDiffCompareController extends ControllerBase {
       // Build JSON API URL with includes.
       $url = rtrim($base_url, '/') . "/api/{$type}/{$bundle}/{$uuid}";
 
-      // Add includes for common paragraph and reference fields.
-      $includes = [];
+      // Get include fields for this entity type and bundle (cached).
+      $includes = $this->getIncludeFields($type, $bundle);
 
-      $url .= '?include=' . implode(',', $includes);
+      if (!empty($includes)) {
+        $url .= '?include=' . implode(',', $includes);
+      }
 
       // Get API key from config.
       $config = \Drupal::config('vactory_diff_config_client.settings');
