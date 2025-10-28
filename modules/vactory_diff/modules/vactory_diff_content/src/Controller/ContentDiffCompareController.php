@@ -7,6 +7,8 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\jsonapi\ResourceType\ResourceTypeRepositoryInterface;
 use Drupal\Core\Serialization\Yaml;
 use Drupal\vactory_diff_content\Service\JsonApiDeserializer;
 use GuzzleHttp\ClientInterface;
@@ -50,6 +52,20 @@ class ContentDiffCompareController extends ControllerBase {
   protected $entityFieldManager;
 
   /**
+   * The config factory.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected $configFactory;
+
+  /**
+   * JSON:API resource type repository.
+   *
+   * @var \Drupal\jsonapi\ResourceType\ResourceTypeRepositoryInterface
+   */
+  protected $resourceTypeRepository;
+
+  /**
    * Cache for detected include fields per entity type and bundle.
    *
    * @var array
@@ -63,12 +79,16 @@ class ContentDiffCompareController extends ControllerBase {
     ClientInterface $http_client,
     LoggerChannelFactoryInterface $logger_factory,
     EntityTypeManagerInterface $entity_type_manager,
-    EntityFieldManagerInterface $entity_field_manager
+    EntityFieldManagerInterface $entity_field_manager,
+    ConfigFactoryInterface $config_factory,
+    ResourceTypeRepositoryInterface $resource_type_repository
   ) {
     $this->httpClient = $http_client;
     $this->loggerFactory = $logger_factory;
     $this->entityTypeManager = $entity_type_manager;
     $this->entityFieldManager = $entity_field_manager;
+    $this->configFactory = $config_factory;
+    $this->resourceTypeRepository = $resource_type_repository;
   }
 
   /**
@@ -79,7 +99,9 @@ class ContentDiffCompareController extends ControllerBase {
       $container->get('http_client'),
       $container->get('logger.factory'),
       $container->get('entity_type.manager'),
-      $container->get('entity_field.manager')
+      $container->get('entity_field.manager'),
+      $container->get('config.factory'),
+      $container->get('jsonapi.resource_type.repository')
     );
   }
 
@@ -194,8 +216,8 @@ class ContentDiffCompareController extends ControllerBase {
    */
   protected function fetchLocalNodeViaInternalRequest($type, $bundle, $uuid) {
     try {
-      // Build JSON API path (internal, no base URL needed).
-      $path = "/api/{$type}/{$bundle}/{$uuid}";
+      // Build JSON:API path dynamically using jsonapi_extras config.
+      $path = $this->buildJsonApiItemPath($type, $bundle, $uuid);
 
       // Get include fields for this entity type and bundle (cached).
       $includes = $this->getIncludeFields($type, $bundle);
@@ -337,8 +359,9 @@ class ContentDiffCompareController extends ControllerBase {
    */
   protected function fetchNodeViaJsonApi($base_url, $type, $bundle, $uuid) {
     try {
-      // Build JSON API URL with includes.
-      $url = rtrim($base_url, '/') . "/api/{$type}/{$bundle}/{$uuid}";
+      // Build JSON:API URL with dynamic resource path.
+      $resource_path = $this->buildJsonApiItemPath($type, $bundle, $uuid);
+      $url = rtrim($base_url, '/') . $resource_path;
 
       // Get include fields for this entity type and bundle (cached).
       $includes = $this->getIncludeFields($type, $bundle);
@@ -381,6 +404,44 @@ class ContentDiffCompareController extends ControllerBase {
       ]);
       return NULL;
     }
+  }
+
+  /**
+   * Builds the JSON:API base prefix, e.g. '/api' or '/jsonapi'.
+   */
+  protected function getJsonApiPrefix(): string {
+    $prefix = $this->configFactory->get('jsonapi_extras.settings')->get('path_prefix');
+    if (!is_string($prefix) || $prefix === '') {
+      $prefix = 'api';
+    }
+    return '/' . ltrim($prefix, '/');
+  }
+
+  /**
+   * Builds the resource relative path (e.g., 'node/vactory_page') from config.
+   */
+  protected function getResourceRelativePath(string $entity_type, string $bundle): string {
+    try {
+      $resource_type = $this->resourceTypeRepository->get($entity_type, $bundle);
+      $path = $resource_type->getPath();
+      if (is_string($path) && $path !== '') {
+        return trim($path, '/');
+      }
+    }
+    catch (\Throwable $e) {
+      // Fallback will be used.
+    }
+    // Fallback to core default structure.
+    return trim($entity_type . '/' . $bundle, '/');
+  }
+
+  /**
+   * Builds full item path for JSON:API including base prefix and uuid.
+   */
+  protected function buildJsonApiItemPath(string $entity_type, string $bundle, string $uuid): string {
+    $prefix = $this->getJsonApiPrefix();
+    $relative = $this->getResourceRelativePath($entity_type, $bundle);
+    return $prefix . '/' . $relative . '/' . $uuid;
   }
 
 }
