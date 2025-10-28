@@ -299,7 +299,7 @@ class VactoryLocatorBlock extends BlockBase implements BlockPluginInterface {
     // Vactory locator view url.
     $view_url = '/vactory/locator/list/%';
     $path = str_replace('%', implode(",", $category), $view_url);
-    $url = Url::fromUserInput($path, ['absolute' => TRUE])->toString();
+    $url = Url::fromUserInput($path, ['absolute' => TRUE, 'https' => TRUE])->toString();
     $countries = NULL;
     if (\Drupal::moduleHandler()->moduleExists('vactory_google_places')) {
       $countries = \Drupal::config('vactory_google_places.settings')->get('countries');

@@ -67,7 +67,9 @@ class SettingsForm extends ConfigFormBase {
 
     $default_image = $config->get('locator_default_marker');
     if (isset($default_image) && $default_image != NULL) {
-      $is_it_media_library = Media::load($default_image);
+      // Handle case where $default_image might be an array (from media library widget).
+      $media_id = is_array($default_image) ? $default_image[0] : $default_image;
+      $is_it_media_library = Media::load($media_id);
     }
     else {
       $is_it_media_library = NULL;
@@ -196,7 +198,9 @@ class SettingsForm extends ConfigFormBase {
     $image = $form_state->getValue('locator_default_marker');
 
     /* Load image from the media library */
-    $media = Media::load($image);
+    // Handle case where $image might be an array (from media library widget)
+    $media_id = is_array($image) ? $image[0] : $image;
+    $media = Media::load($media_id);
 
     if (isset($media) && !empty($media)) {
 
