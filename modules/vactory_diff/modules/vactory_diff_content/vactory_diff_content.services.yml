@@ -1,6 +1,9 @@
 services:
   vactory_diff_content.service:
     class: 'Drupal\vactory_diff_content\Service\ContentDiffService'
-    arguments: ['@http_client', '@messenger', '@logger.factory', '@string_translation', '@entity_type.manager']
+    arguments: ['@http_client', '@messenger', '@logger.factory', '@string_translation', '@entity_type.manager', '@vactory_diff_content.jsonapi_path_helper', '@entity_field.manager']
     tags:
       - { name: monolog.logger, channel: vactory_diff_content }
+  vactory_diff_content.jsonapi_path_helper:
+    class: 'Drupal\vactory_diff_content\Service\JsonApiPathHelper'
+    arguments: ['@config.factory', '@jsonapi.resource_type.repository']

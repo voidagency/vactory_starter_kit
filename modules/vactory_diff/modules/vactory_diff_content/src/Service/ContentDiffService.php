@@ -46,6 +46,13 @@ class ContentDiffService {
   protected $entityTypeManager;
 
   /**
+   * JsonApi Path Helper.
+   *
+   * @var \Drupal\vactory_diff_content\Service\JsonApiPathHelper
+   */
+  protected $jsonApiPathHelper;
+
+  /**
    * Constructs the service.
    */
   public function __construct(
@@ -53,7 +60,8 @@ class ContentDiffService {
     MessengerInterface $messenger,
     $logger_factory,
     TranslationInterface $string_translation,
-    EntityTypeManagerInterface $entity_type_manager
+    EntityTypeManagerInterface $entity_type_manager,
+    JsonApiPathHelper $jsonapi_path_helper,
   ) {
     $this->httpClient = $http_client;
     $this->messenger = $messenger;
@@ -66,6 +74,7 @@ class ContentDiffService {
       $this->logger = $logger_factory;
     }
     $this->entityTypeManager = $entity_type_manager;
+    $this->jsonApiPathHelper = $jsonapi_path_helper;
   }
 
   /**
@@ -85,7 +94,8 @@ class ContentDiffService {
    */
   public function fetchRemoteEntities(string $remote_url, string $entity_type_id): array {
     $base = rtrim($remote_url, '/');
-    $api_endpoint = $base . '/api/' . $entity_type_id;
+    $prefix = $this->jsonApiPathHelper->getPrefix();
+    $api_endpoint = $base . $prefix . '/' . $entity_type_id;
 
     // Get API key from config.
     $config = \Drupal::config('vactory_diff_config_client.settings');
