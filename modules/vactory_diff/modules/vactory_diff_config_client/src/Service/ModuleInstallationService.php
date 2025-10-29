@@ -16,6 +16,7 @@ class ModuleInstallationService {
     'vactory_diff',
     'vactory_diff_config_client',
     'vactory_diff_config_server',
+    'vactory_diff_content',
   ];
 
   /**
@@ -73,6 +74,25 @@ class ModuleInstallationService {
     $modules_to_install = [];
     $modules_to_uninstall = [];
 
+    // Merge built-in ignored modules with user-configured ignored modules.
+    $ignored_modules = self::IGNORED_MODULES;
+    try {
+      $config = \Drupal::config('vactory_diff_config_client.settings');
+      $ignored_text = (string) ($config->get('ignored_modules') ?? '');
+      if ($ignored_text !== '') {
+        $extra_ignored = array_filter(array_map('trim', preg_split('/\r\n|\r|\n/', $ignored_text)));
+        if (!empty($extra_ignored)) {
+          $ignored_modules = array_unique(array_merge($ignored_modules, $extra_ignored));
+        }
+      }
+      // Normalize to lowercase for comparisons.
+      $ignored_modules = array_map('strtolower', $ignored_modules);
+    }
+    catch (\Throwable $e) {
+      // Fallback to built-in list on any error.
+      $ignored_modules = array_map('strtolower', self::IGNORED_MODULES);
+    }
+
     // Check for core.extension in modified configs.
     $modified_configs = $comparison_results['differences_by_type']['modified'] ?? [];
     $core_extension = NULL;
@@ -107,7 +127,7 @@ class ModuleInstallationService {
     // Find modules that are in local but not in remote (added).
     foreach ($local_modules as $module_name => $weight) {
       if (!isset($remote_modules[$module_name])) {
-        if (!in_array($module_name, self::IGNORED_MODULES)) {
+        if (!in_array(strtolower($module_name), $ignored_modules, TRUE)) {
           $modules_to_install[] = $module_name;
         }
       }
@@ -116,7 +136,7 @@ class ModuleInstallationService {
     // Find modules that are in remote but not in local (removed).
     foreach ($remote_modules as $module_name => $weight) {
       if (!isset($local_modules[$module_name])) {
-        if (!in_array($module_name, self::IGNORED_MODULES)) {
+        if (!in_array(strtolower($module_name), $ignored_modules, TRUE)) {
           $modules_to_uninstall[] = $module_name;
         }
       }

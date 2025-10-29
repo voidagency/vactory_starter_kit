@@ -5,3 +5,10 @@ custom_modules_path: 'modules/custom'
 content_entity_types:
   - node
   - taxonomy_term
+ignored_modules: |
+  devel
+  devel_generate
+  features_ui
+  views_ui
+  devel_entity_updates
+  field_ui

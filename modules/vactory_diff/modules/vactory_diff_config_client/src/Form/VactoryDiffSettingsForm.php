@@ -152,6 +152,14 @@ class VactoryDiffSettingsForm extends ConfigFormBase {
       '#placeholder' => "modules/custom\nprofiles/vactory_starter_kit/modules",
     ];
 
+    $form['todo_list']['ignored_modules'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('Modules à ignorer'),
+      '#description' => $this->t('Liste des modules à exclure de la TODO list (un par ligne). Utilisez les noms machine des modules.'),
+      '#default_value' => $config->get('ignored_modules') ?: "",
+      '#rows' => 6,
+    ];
+
     // Configuration Content Diff.
     $form['content_diff'] = [
       '#type' => 'fieldset',
@@ -269,7 +277,8 @@ class VactoryDiffSettingsForm extends ConfigFormBase {
     $config->set('remote_url', $form_state->getValue('remote_url'))
       ->set('remote_api_key', $form_state->getValue('remote_api_key'))
       ->set('connection_timeout', $form_state->getValue('connection_timeout'))
-      ->set('custom_modules_path', $form_state->getValue('custom_modules_path'));
+      ->set('custom_modules_path', $form_state->getValue('custom_modules_path'))
+      ->set('ignored_modules', $form_state->getValue('ignored_modules'));
 
     // Save content entity types.
     $content_entity_types = $form_state->getValue('content_entity_types');
