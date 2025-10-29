@@ -1,164 +1,110 @@
 # Vactory Diff
 
-Module Drupal pour la comparaison de configurations entre différentes instances.
+Guide d’utilisation pour comparer et synchroniser la configuration
+(et, en option, le contenu) entre deux instances Drupal.
 
-## Description
+## Modules inclus
+- `vactory_diff` (parent)
+- `vactory_diff_config_server` (à activer sur l’instance « serveur » qui
+  expose l’export de config)
+- `vactory_diff_config_client` (à activer sur l’instance « cliente » qui
+  lance la comparaison)
+- `vactory_diff_content` (optionnel, pour comparer/synchroniser du contenu via
+  JSON:API)
 
-Vactory Diff est un module Drupal qui permet de comparer les configurations
-entre une instance locale et une instance distante.Il se compose d'un module
-principal et de deux sous-modules :
+## Prérequis
+- Drupal 9/10 (client/serveur). Pour `vactory_diff_content`: Drupal 10/11 +
+  module core `jsonapi`.
+- Drush installé sur vos environnements.
+- Optionnel mais recommandé côté serveur: un module d’authentification par
+  clé API et la permission d’accès dédiée.
 
-- **vactory_diff** : Module principal contenant les services communs
-- **vactory_diff_config_server** :
-Expose une API REST pour fournir les configurations
-- **vactory_diff_config_client** :
-Interface pour récupérer et comparer les configurations distantes
+## Installation rapide
+1) Sur l’instance SERVEUR (source des configurations)
+   - Activer: `vactory_diff`, `vactory_diff_config_server`.
+   - Créer une clé API et donner la permission: “access vactory diff config
+     export”.
+   - Noter l’URL de l’endpoint d’export: `/api/vactory-diff/config/export`.
 
-## Fonctionnalités
+2) Sur l’instance CLIENT (là où vous comparez)
+   - Activer: `vactory_diff`, `vactory_diff_config_client`.
+   - Optionnel (contenu): activer aussi `vactory_diff_content` et `jsonapi`.
 
-### Module Serveur (vactory_diff_config_server)
-
-- API REST accessible via `/api/vactory-diff/config/export`
-- Export de toutes les configurations du site au format JSON
-- Métadonnées incluses (nom du site, timestamp, UUID)
-- Headers CORS configurés pour l'accès distant
-
-### Module Client (vactory_diff_config_client)
-
-- Interface d'administration pour configurer l'URL distante
-- Test de connexion au serveur distant
-- Comparaison automatique des configurations
-- Affichage détaillé des différences avec interface à onglets
-- Sauvegarde des résultats de comparaison
-
-## Installation
-
-1. Placez le module dans `profiles/contrib/vactory_starter_kit/modules/`
-2. Activez les modules via Drush ou l'interface d'administration :
-   ```bash
-   drush en vactory_diff vactory_diff_config_server vactory_diff_config_client
-   ```
-
-## Configuration
-
-### Serveur
-
-Aucune configuration requise.
-L'API est immédiatement disponible après activation.
-
-### Client
-
-1. Accédez à **Administration > Configuration > Développement > Vactory Diff**
-2. Configurez l'URL de l'instance distante
-3. Testez la connexion
-4. Lancez la comparaison
-
-## Utilisation
-
-### API REST (Serveur)
-
-**Endpoint :** `GET /api/vactory-diff/config/export`
-
-**Réponse :**
-```json
-{
-  "timestamp": "2025-09-25T10:30:00Z",
-  "site_name": "Mon Site Drupal",
-  "site_uuid": "12345678-1234-1234-1234-123456789012",
-  "configs": {
-    "system.site": {...},
-    "field.storage.node.field_example": {...}
-  },
-  "count": 150
-}
+Exemples Drush:
+```bash
+drush en vactory_diff vactory_diff_config_server -y   # côté serveur
+drush en vactory_diff vactory_diff_config_client -y   # côté client
+drush en vactory_diff_content jsonapi -y              # optionnel (contenu)
 ```
 
-### Interface Client
+## Configuration côté CLIENT
+Menu: Administration → Configuration → Développement → Vactory Diff
 
-1. **Paramètres** (`/admin/config/development/vactory-diff/settings`)
-   - Configuration de l'URL distante
-   - Réglage du timeout de connexion
-   - Test de connexion
+- **URL de l’instance distante**: `https://votre-serveur.exemple`
+- **Clé API**: la clé générée côté serveur (avec la permission d’accès)
+- **Timeout de connexion**: délai de requête (en secondes)
+- **Chemins des modules custom**: chemins où scanner des features (un par ligne)
+- **Modules à ignorer**: modules à exclure de la TODO (un par ligne).
+  Par exemple:
+  - `devel`
+  - `devel_generate`
+  - `features_ui`
+  - `views_ui`
+  - `devel_entity_updates`
+  - `field_ui`
+- **Types d’entités à comparer (contenu)**: cochez les entités à inclure pour
+  le diff de contenu
 
-2. **Comparaison** (`/admin/config/development/vactory-diff/compare`)
-   - Lancement de la comparaison
-   - Affichage des résultats par catégorie :
-     - Configurations ajoutées (locales uniquement)
-     - Configurations modifiées (différentes)
-     - Configurations supprimées (distantes uniquement)
+Bouton “Tester la connexion” disponible pour valider l’URL/clés.
+
+## Comparer les configurations
+1. Aller sur: Administration → Configuration → Développement → Vactory Diff
+   → Comparaison
+   - URL directe: `/admin/config/development/vactory-diff/compare`
+2. Lancer la comparaison (un bouton déclenche l’analyse)
+3. Lire les résultats: éléments ajoutés, modifiés, supprimés; ouvrir les
+   diffs détaillés (modales)
+
+Les derniers résultats restent disponibles pour consultation.
+
+## Générer et utiliser la TODO List
+1. Aller sur: `/admin/config/development/vactory-diff/todo`
+2. Vous y trouverez:
+   - Un résumé (features à revert, configs traitées, correspondances)
+   - Les commandes Drush prêtes à copier pour chaque feature:
+     `drush fr <feature>`
+   - Les modules à installer/désinstaller détectés (avec commandes `drush en`
+     / `drush pmu`)
+   - Les configurations non associées à une feature (à traiter manuellement)
+   - Un bouton pour télécharger la TODO au format texte
+3. Ajustez au besoin la liste “Modules à ignorer” dans les paramètres pour
+   masquer vos modules de dev/outils.
+
+## Travail sur le contenu (optionnel)
+Activer `vactory_diff_content` et `jsonapi`.
+
+Deux usages complémentaires:
+- Dans Paramètres, sélectionnez les types d’entités à inclure.
+- Générez un rapport CSV de diff via Drush côté client:
+  ```bash
+  drush vactory_diff_content_fetch   # alias: drush vcd-fetch
+  ```
+  Le rapport est sauvegardé (ex: `private://content-diff/report.csv`).
+
+Sur la page TODO, une section “Content Sync” propose:
+- Des commandes d’export (par type) à exécuter en PREPROD/INT
+- Copiez ensuite les archives générées vers PROD
+- Puis importez en PROD via:
+  ```bash
+  drush content:import [archive_path]
+  ```
 
 ## Permissions
+- “administer vactory diff” (accès aux pages d’admin)
+- “access vactory diff config export” (accès API côté serveur)
 
-- **Administrer Vactory Diff** : Accès aux interfaces d'administration
-- **Accéder à l'export de configuration** : Accès à l'API REST
-
-## Structure des fichiers
-
-```
-vactory_diff/
-├── vactory_diff.info.yml
-├── vactory_diff.module
-├── vactory_diff.services.yml
-├── vactory_diff.permissions.yml
-├── vactory_diff.links.menu.yml
-├── vactory_diff.links.task.yml
-├── src/Service/ConfigHelperService.php
-├── modules/
-│   ├── vactory_diff_config_server/
-│   │   ├── vactory_diff_config_server.info.yml
-│   │   ├── vactory_diff_config_server.routing.yml
-│   │   ├── vactory_diff_config_server.services.yml
-│   │   └── src/Controller/ConfigExportController.php
-│   └── vactory_diff_config_client/
-│       ├── vactory_diff_config_client.info.yml
-│       ├── vactory_diff_config_client.routing.yml
-│       ├── vactory_diff_config_client.services.yml
-│       ├── vactory_diff_config_client.libraries.yml
-│       ├── config/install/vactory_diff_config_client.settings.yml
-│       ├── css/comparison.css
-│       └── src/
-│           ├── Controller/ConfigCompareController.php
-│           ├── Form/VactoryDiffSettingsForm.php
-│           └── Service/ConfigComparisonService.php
-└── README.md
-```
-
-## Compatibilité
-
-- Drupal 9.x et 10.x
-- PHP 8.0+
-- Dépendances : modules core Drupal (serialization, rest, hal)
-
-## Développement
-
-### Standards de code
-
-Le module respecte les standards Drupal :
-- Drupal Coding Standards (PHPCS)
-- Documentation PHPDoc
-- Architecture Symfony/Drupal
-- Dependency Injection
-
-### Tests
-
-Structure préparée pour l'ajout de tests unitaires et fonctionnels.
-
-## Sécurité
-
-**Important :**
-La version actuelle ne comprend pas de sécurité avancée sur l'API REST.
-Pour un environnement de production, il est recommandé d'ajouter :
-
-- Authentification API (tokens, OAuth)
-- Restriction d'accès par IP
-- Rate limiting
-- Validation des données
-
-## Support
-
-Pour signaler des bugs ou demander des fonctionnalités,
-veuillez utiliser l'issue tracker du projet.
-
-## Licence
-
-Module distribué sous licence GPL-2.0+. 
+## Dépannage
+- Erreur de connexion: vérifiez l’URL distante, la clé API, le timeout et les
+  en-têtes/cors si nécessaire.
+- Résultats vides: lancez d’abord une comparaison côté client.
+- Modules indésirables dans la TODO: ajoutez-les à “Modules à ignorer”.
