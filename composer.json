@@ -153,7 +153,7 @@
     "drupal/classy": "^1.0",
     "drupal/bartik": "^1.0",
     "drupal/quickedit": "^1.0",
-    "drupal/jsonapi_cross_bundles": "^1.1",
+    "drupal/jsonapi_cross_bundles": "^1.2",
     "drupal/gin": "^3.0@RC",
     "drupal/jsonapi_include": "^1.7",
     "drupal/search_api_ai": "^1.0@alpha",
