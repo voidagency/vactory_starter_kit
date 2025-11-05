@@ -2,7 +2,7 @@
 
 namespace Drupal\vactory_decoupled_breadcrumb\Functional;
 
-use weitzman\DrupalTestTraits\ExistingSiteBase;
+use Drupal\Tests\vactory_core\Functional\VactoryExistingSiteBase;
 use Drupal\menu_link_content\Entity\MenuLinkContent;
 
 /**
@@ -10,7 +10,7 @@ use Drupal\menu_link_content\Entity\MenuLinkContent;
  *
  * @group vactory_decoupled
  */
-class BreadcrumbTest extends ExistingSiteBase {
+class BreadcrumbTest extends VactoryExistingSiteBase {
 
   /**
    * {@inheritDoc}
@@ -31,7 +31,7 @@ class BreadcrumbTest extends ExistingSiteBase {
       'status' => 1,
     ]);
     $langcode = $node->language()->getId();
-    $original = $this->setUpBreadcrumbConfig($langcode, TRUE, TRUE, 'Home');
+    $this->setUpBreadcrumbConfig($langcode, TRUE, TRUE, 'Home');
 
     $breadcrumbs = $this->fetchNodeBreadcrumbs($node);
     $this->assertIsArray($breadcrumbs);
@@ -41,8 +41,6 @@ class BreadcrumbTest extends ExistingSiteBase {
 
     $alias = \Drupal::service('path_alias.manager')->getAliasByPath("/node/{$node->id()}", $langcode);
     $this->assertBreadcrumbStructure($breadcrumbs[1], "/$langcode{$alias}", $node->getTitle(), 1);
-
-    $this->restoreBreadcrumbConfig($original, $langcode);
   }
 
   /**
@@ -55,7 +53,7 @@ class BreadcrumbTest extends ExistingSiteBase {
       'status' => 1,
     ]);
     $langcode = $node->language()->getId();
-    $original = $this->setUpBreadcrumbConfig($langcode, TRUE, TRUE, 'Home', ['main']);
+    $this->setUpBreadcrumbConfig($langcode, TRUE, TRUE, 'Home', ['main']);
 
     $parent = MenuLinkContent::create([
       'title' => 'Custom Parent',
@@ -88,7 +86,6 @@ class BreadcrumbTest extends ExistingSiteBase {
 
     $child->delete();
     $parent->delete();
-    $this->restoreBreadcrumbConfig($original, $langcode);
   }
 
   /**
@@ -120,7 +117,7 @@ class BreadcrumbTest extends ExistingSiteBase {
       'langcode' => $langcode,
     ])->save();
 
-    $original = $this->setUpBreadcrumbConfig($langcode, TRUE, TRUE, 'Home');
+    $this->setUpBreadcrumbConfig($langcode, TRUE, TRUE, 'Home');
 
     $breadcrumbs = $this->fetchNodeBreadcrumbs($node2);
     $this->assertCount(3, $breadcrumbs);
@@ -128,8 +125,6 @@ class BreadcrumbTest extends ExistingSiteBase {
     $this->assertBreadcrumbStructure($breadcrumbs[0], "/$langcode", 'Home', 0);
     $this->assertBreadcrumbStructure($breadcrumbs[1], "/$langcode/first-level", 'First level', 1);
     $this->assertBreadcrumbStructure($breadcrumbs[2], "/$langcode/first-level/second-level", 'Second level', 2);
-
-    $this->restoreBreadcrumbConfig($original, $langcode);
   }
 
   /**
@@ -155,7 +150,7 @@ class BreadcrumbTest extends ExistingSiteBase {
     ])->save();
 
     // Applique la configuration requise.
-    $original = $this->setUpBreadcrumbConfig($langcode, TRUE, TRUE, 'Home');
+    $this->setUpBreadcrumbConfig($langcode, TRUE, TRUE, 'Home');
 
     // Récupère les breadcrumbs via JSON:API.
     $breadcrumbs = $this->fetchNodeBreadcrumbs($node);
@@ -171,67 +166,16 @@ class BreadcrumbTest extends ExistingSiteBase {
 
     // Assertion : Second level.
     $this->assertBreadcrumbStructure($breadcrumbs[2], "/$langcode/first-level/second-level", 'Second level', 2);
-
-    // Nettoyage.
-    $this->restoreBreadcrumbConfig($original, $langcode);
   }
 
   /**
    * Configure les paramètres de breadcrumbs pour un test.
    */
-  private function setUpBreadcrumbConfig(string $langcode, bool $showHome, bool $showCurrentPage, string $homeTitle, array $enabledMenus = []): array {
-    $config = \Drupal::configFactory()->getEditable('vactory_decoupled_breadcrumb.settings');
-    $original = [
-      'show_home' => $config->get('show_home'),
-      'show_current_page' => $config->get('show_current_page'),
-      'enabled_menu' => $config->get('enabled_menu'),
-      'home_title' => \Drupal::service('language_manager')
-        ->getLanguageConfigOverride($langcode, 'vactory_decoupled_breadcrumb.settings')
-        ->get('home_title'),
-    ];
-
-    $config->set('show_home', $showHome)
-      ->set('show_current_page', $showCurrentPage)
-      ->set('enabled_menu', $enabledMenus)
-      ->save();
-
-    \Drupal::service('language_manager')
-      ->getLanguageConfigOverride($langcode, 'vactory_decoupled_breadcrumb.settings')
-      ->set('home_title', $homeTitle)
-      ->save();
-
-    return $original;
-  }
-
-  /**
-   * Restaure la configuration originale des breadcrumbs après un test.
-   */
-  private function restoreBreadcrumbConfig(array $originalConfig, string $langcode): void {
-    $config = \Drupal::configFactory()->getEditable('vactory_decoupled_breadcrumb.settings');
-    $config->set('show_home', $originalConfig['show_home'])
-      ->set('show_current_page', $originalConfig['show_current_page'])
-      ->set('enabled_menu', $originalConfig['enabled_menu'] ?? [])
-      ->save();
-
-    $configTranslation = \Drupal::service('language_manager')->getLanguageConfigOverride($langcode, 'vactory_decoupled_breadcrumb.settings');
-
-    if ($originalConfig['home_title'] !== NULL) {
-      $configTranslation->set('home_title', $originalConfig['home_title'])->save();
-    }
-    else {
-      $configTranslation->clear('home_title')->save();
-    }
-  }
-
-  /**
-   * Construit l’URL JSON:API pour un nœud donné et une langue.
-   */
-  private function buildJsonApiUrl($node, string $langcode): string {
-    $parsedUrl = parse_url($this->baseUrl);
-    $scheme = $parsedUrl['scheme'] ?? 'http';
-    $host = $parsedUrl['host'] ?? 'localhost';
-    $port = isset($parsedUrl['port']) ? ':' . $parsedUrl['port'] : '';
-    return "{$scheme}://{$host}{$port}/{$langcode}/api/node/{$node->bundle()}/{$node->uuid()}";
+  private function setUpBreadcrumbConfig(string $langcode, bool $showHome, bool $showCurrentPage, string $homeTitle, array $enabledMenus = []): void {
+    $this->modifyConfigValue('vactory_decoupled_breadcrumb.settings', 'show_home', $showHome, $langcode);
+    $this->modifyConfigValue('vactory_decoupled_breadcrumb.settings', 'show_current_page', $showCurrentPage, $langcode);
+    $this->modifyConfigValue('vactory_decoupled_breadcrumb.settings', 'home_title', $homeTitle, $langcode);
+    $this->modifyConfigValue('vactory_decoupled_breadcrumb.settings', 'enabled_menu', $enabledMenus, $langcode);
   }
 
   /**
@@ -239,10 +183,7 @@ class BreadcrumbTest extends ExistingSiteBase {
    */
   private function fetchNodeBreadcrumbs($node): array {
     $langcode = $node->language()->getId();
-    $url = $this->buildJsonApiUrl($node, $langcode);
-    $this->drupalGet($url);
-    $this->assertSession()->statusCodeEquals(200);
-    $json = json_decode($this->getSession()->getPage()->getContent(), TRUE);
+    $json = $this->fetchNodeJsonApi($node, $langcode);
     $this->assertArrayHasKey('internal_breadcrumb', $json['data']['attributes']);
     return $json['data']['attributes']['internal_breadcrumb'];
   }

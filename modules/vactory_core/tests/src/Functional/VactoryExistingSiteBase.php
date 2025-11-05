@@ -18,11 +18,26 @@ abstract class VactoryExistingSiteBase extends ExistingSiteBase {
   protected $configFactory;
 
   /**
+   * Language manager.
+   *
+   * @var \Drupal\Core\Language\LanguageManagerInterface
+   */
+  protected $languageManager;
+
+  /**
+   * Configs to be restored.
+   *
+   * @var array
+   */
+  private $cleanUpConfigs = [];
+
+  /**
    * {@inheritDoc}
    */
   protected function setUp(): void {
     parent::setUp();
     $this->configFactory = $this->container->get('config.factory');
+    $this->languageManager = $this->container->get('language_manager');
   }
 
   /**
@@ -112,6 +127,75 @@ abstract class VactoryExistingSiteBase extends ExistingSiteBase {
       $prefix = 'api';
     }
     return '/' . ltrim($prefix, '/');
+  }
+
+  /**
+   * Modifies a configuration value and stores the original for cleanup.
+   *
+   * This method updates a configuration value and tracks the original value
+   * so it can be restored during tearDown().
+   *
+   * @param string $config_name
+   *   The configuration object name (e.g., 'system.site').
+   * @param string $key
+   *   The configuration key to modify (e.g., 'page.front').
+   * @param mixed $value
+   *   The new value to set.
+   * @param string|null $langcode
+   *   (optional) The language code. If NULL, uses default language.
+   */
+  protected function modifyConfigValue($config_name, $key, $value, $langcode = NULL) {
+    $default_langcode = $this->languageManager->getDefaultLanguage()->getId();
+
+    // Normaliser le langcode.
+    if (!$langcode) {
+      $langcode = $default_langcode;
+    }
+
+    if ($langcode !== $default_langcode) {
+      // Cas de traductions.
+      $config = $this->languageManager->getLanguageConfigOverride($langcode, $config_name);
+      $storage_key = $langcode;
+    }
+    else {
+      // Cas de langue par défaut.
+      $config = $this->configFactory->getEditable($config_name);
+      $storage_key = 'default';
+    }
+    // Keep original value.
+    $original = $config->get($key);
+    $this->cleanUpConfigs[$storage_key][$config_name][$key] = $original;
+
+    // Set new value.
+    $config->set($key, $value);
+    $config->save();
+  }
+
+  /**
+   * {@inheritdoc}
+   *
+   * Restores all modified configuration values to their original state.
+   */
+  protected function tearDown(): void {
+    parent::tearDown();
+    foreach ($this->cleanUpConfigs as $storage_key => $configs) {
+      foreach ($configs as $config_name => $config_values) {
+
+        // Distinguer langue par défaut vs traductions.
+        if ($storage_key === 'default') {
+          $config = $this->configFactory->getEditable($config_name);
+        }
+        else {
+          $config = $this->languageManager->getLanguageConfigOverride($storage_key, $config_name);
+        }
+
+        foreach ($config_values as $key => $value) {
+          $config->set($key, $value);
+        }
+        $config->save();
+      }
+    }
+    $this->cleanUpConfigs = [];
   }
 
 }
