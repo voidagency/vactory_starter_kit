@@ -91,7 +91,9 @@ function vactory_dynamic_field_preprocess_vactory_dynamic_main(&$variables) {
   $template = $variables['content']['template'];
   if (isset($variables['content']['components'][0]['image'][0])) {
     $media = Media::load($variables['content']['components']['0']['image']['0']);
-    $variables['content']['components'][0]['image']['alt_image'] = $media->thumbnail->alt;
+    if ($media && $media->hasField('thumbnail') && !$media->get('thumbnail')->isEmpty()) {
+      $variables['content']['components'][0]['image']['alt_image'] = $media->thumbnail->alt;
+    }
   }
   if ($template == 40 && isset($variables['content']['components'][0]['link_to_cookie'])) {
     $cookie_usage = $variables['content']['components'][0]['link_to_cookie'];
