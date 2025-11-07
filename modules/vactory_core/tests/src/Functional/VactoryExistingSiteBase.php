@@ -3,6 +3,7 @@
 namespace Drupal\Tests\vactory_core\Functional;
 
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Serialization\Yaml;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
 
 /**
@@ -46,13 +47,20 @@ abstract class VactoryExistingSiteBase extends ExistingSiteBase {
   private $cleanUpConfigs = [];
 
   /**
+   * Track created DF files for cleanup.
+   *
+   * @var array
+   */
+  protected $createdDfFiles = [];
+
+  /**
    * {@inheritDoc}
    */
   protected function setUp(): void {
     parent::setUp();
     $this->configFactory = $this->container->get('config.factory');
     $this->languageManager = $this->container->get('language_manager');
-    $this->installRequiredModule();
+    $this->prepareRequiredModules();
   }
 
   /**
@@ -189,19 +197,90 @@ abstract class VactoryExistingSiteBase extends ExistingSiteBase {
   }
 
   /**
-   * Ensure a module is installed, track if we installed it.
+   * Check if the required module is installed,otherwise we install it.
    */
-  private function installRequiredModule(): void {
+  private function prepareRequiredModules(): void {
     $moduleHandler = $this->container->get('module_handler');
+    $missing_modules = [];
     foreach ($this->modulesToInstall as $module) {
       // Check if the module is already installes, otherwise we install it.
       if (!$moduleHandler->moduleExists($module)) {
-        $this->modulesToCleanup[] = $module;
+        $missing_modules[] = $module;
       }
     }
     // Install modules which are not already installed.
+    if (!empty($missing_modules)) {
+      $this->installModules($missing_modules);
+    }
+  }
+
+  /**
+   * Installs the given modules and tracks them for cleanup.
+   */
+  private function installModules(array $modules) {
+    $this->modulesToCleanup = [...$this->modulesToCleanup, ...$modules];
     $moduleInstaller = $this->container->get('module_installer');
-    $moduleInstaller->install($this->modulesToCleanup);
+    $moduleInstaller->install($modules);
+  }
+
+  /**
+   * Creates a volatile dynamic field (DF) configuration file.
+   *
+   * Installs the required module 'vactory_dynamic_field_volatile',
+   * encodes the settings as YAML, writes them to a private directory,
+   * and tracks the directory for cleanup.
+   *
+   * @param array $settings
+   *   The dynamic field settings to save.
+   * @param string $name
+   *   The name of the dynamic field (used for directory and file naming).
+   *
+   * @return string
+   *   A string combining the module name and the DF name, in the format
+   *   "module_name:df_name".
+   */
+  protected function createVolatileDf(array $settings, string $name) {
+    $df_creator_module = 'vactory_dynamic_field_volatile';
+    $this->installModules([$df_creator_module]);
+    $yaml_config = Yaml::encode($settings);
+    $dest_uri = 'private://volatile-df';
+    $dest_df_uri = $dest_uri . '/' . $name;
+
+    if (!file_exists($dest_df_uri)) {
+      mkdir($dest_df_uri, 0777, TRUE);
+    }
+
+    $filepath = \Drupal::service('file_system')->realpath($dest_df_uri . '/settings.yml');
+    file_put_contents($filepath, $yaml_config);
+
+    // Track the directory for cleanup.
+    $this->createdDfFiles[] = \Drupal::service('file_system')->realpath($dest_df_uri);
+
+    return implode(':', [$df_creator_module, $name]);
+  }
+
+  /**
+   * Recursively removes a directory and all its contents.
+   *
+   * @param string $dir
+   *   The path to the directory to remove.
+   */
+  private function removeDirectory(string $dir): void {
+    if (!is_dir($dir)) {
+      return;
+    }
+
+    $files = array_diff(scandir($dir), ['.', '..']);
+    foreach ($files as $file) {
+      $path = $dir . DIRECTORY_SEPARATOR . $file;
+      if (is_dir($path)) {
+        $this->removeDirectory($path);
+      }
+      else {
+        unlink($path);
+      }
+    }
+    rmdir($dir);
   }
 
   /**
@@ -235,6 +314,13 @@ abstract class VactoryExistingSiteBase extends ExistingSiteBase {
     if (!empty($this->modulesToCleanup)) {
       $moduleInstaller = $this->container->get('module_installer');
       $moduleInstaller->uninstall($this->modulesToCleanup);
+    }
+
+    // Cleanup created DF files.
+    foreach ($this->createdDfFiles as $dfPath) {
+      if (file_exists($dfPath)) {
+        $this->removeDirectory($dfPath);
+      }
     }
 
     // TearDown should be placed at the end because it destroys the kernel.

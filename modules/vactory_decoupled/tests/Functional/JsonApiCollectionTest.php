@@ -2,7 +2,6 @@
 
 namespace Drupal\vactory_decoupled\Functional;
 
-use Drupal\Core\Serialization\Yaml;
 use Drupal\Tests\vactory_core\Functional\VactoryExistingSiteBase;
 
 /**
@@ -15,10 +14,7 @@ class JsonApiCollectionTest extends VactoryExistingSiteBase {
   /**
    * {@inheritDoc}
    */
-  protected array $modulesToInstall = [
-    'vactory_news',
-    'vactory_dynamic_field_volatile',
-  ];
+  protected array $modulesToInstall = ['vactory_news'];
 
   /**
    * Default collection setting (news case).
@@ -53,15 +49,6 @@ class JsonApiCollectionTest extends VactoryExistingSiteBase {
     ],
   ];
 
-  const DF_CREATOR_MODULE = 'vactory_dynamic_field_volatile';
-
-  /**
-   * Track created DF files for cleanup.
-   *
-   * @var array
-   */
-  protected $createdDfFiles = [];
-
   /**
    * {@inheritDoc}
    */
@@ -91,26 +78,12 @@ class JsonApiCollectionTest extends VactoryExistingSiteBase {
   }
 
   /**
-   * {@inheritDoc}
-   */
-  protected function tearDown(): void {
-    // Clean up created DF files.
-    foreach ($this->createdDfFiles as $dfPath) {
-      if (file_exists($dfPath)) {
-        $this->removeDirectory($dfPath);
-      }
-    }
-
-    parent::tearDown();
-  }
-
-  /**
    * Test JSON API Collection paragraph in a vactory_page.
    */
   public function testJsonApiCollectionParagraph(): void {
     // Prepare the DF.
     $df_name = 'test-news-listing';
-    $this->writeDfFile(self::DEFAULT_COLLECTION_SETTING, $df_name);
+    $widget_id = $this->createVolatileDf(self::DEFAULT_COLLECTION_SETTING, $df_name);
 
     // Create a JSON API Collection paragraph.
     $widget_data = [
@@ -118,7 +91,6 @@ class JsonApiCollectionTest extends VactoryExistingSiteBase {
         'collection' => self::DEFAULT_COLLECTION_SETTING['fields']['collection']['options']['#default_value'],
       ],
     ];
-    $widget_id = implode(':', [self::DF_CREATOR_MODULE, $df_name]);
 
     $paragraphStorage = \Drupal::entityTypeManager()->getStorage('paragraph');
     $paragraph = $paragraphStorage->create([
@@ -173,59 +145,6 @@ class JsonApiCollectionTest extends VactoryExistingSiteBase {
 
     // Cleanup.
     $paragraph->delete();
-  }
-
-  /**
-   * Write DF file and track for cleanup.
-   *
-   * @param array $content
-   *   The content to write.
-   * @param string $name
-   *   The DF name.
-   *
-   * @return bool
-   *   TRUE if file was written successfully.
-   */
-  protected function writeDfFile(array $content, $name): bool {
-    $yaml_config = Yaml::encode($content);
-    $dest_uri = 'private://volatile-df';
-    $dest_df_uri = $dest_uri . '/' . $name;
-
-    if (!file_exists($dest_df_uri)) {
-      mkdir($dest_df_uri, 0777, TRUE);
-    }
-
-    $filepath = \Drupal::service('file_system')->realpath($dest_df_uri . '/settings.yml');
-    $printed = file_put_contents($filepath, $yaml_config);
-
-    // Track the directory for cleanup.
-    $this->createdDfFiles[] = \Drupal::service('file_system')->realpath($dest_df_uri);
-
-    return (bool) $printed;
-  }
-
-  /**
-   * Recursively remove a directory and its contents.
-   *
-   * @param string $dir
-   *   The directory path to remove.
-   */
-  protected function removeDirectory(string $dir): void {
-    if (!is_dir($dir)) {
-      return;
-    }
-
-    $files = array_diff(scandir($dir), ['.', '..']);
-    foreach ($files as $file) {
-      $path = $dir . DIRECTORY_SEPARATOR . $file;
-      if (is_dir($path)) {
-        $this->removeDirectory($path);
-      }
-      else {
-        unlink($path);
-      }
-    }
-    rmdir($dir);
   }
 
 }
