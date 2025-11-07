@@ -284,6 +284,27 @@ abstract class VactoryExistingSiteBase extends ExistingSiteBase {
   }
 
   /**
+   * Creates and saves a new paragraph entity from the given values.
+   *
+   * This method creates a "paragraph" entity using the provided values,
+   * saves it to the database, and adds it to the cleanup list to be
+   * deleted later.
+   *
+   * @param array $values
+   *   An associative array of field values for the paragraph.
+   *
+   * @return \Drupal\paragraphs\Entity\Paragraph
+   *   The created and saved paragraph entity.
+   */
+  protected function createParagraph(array $values) {
+    $paragraphStorage = \Drupal::entityTypeManager()->getStorage('paragraph');
+    $paragraph = $paragraphStorage->create($values);
+    $paragraph->save();
+    $this->cleanupEntities[] = $paragraph;
+    return $paragraph;
+  }
+
+  /**
    * {@inheritdoc}
    *
    * Restores all modified configuration values to their original state.

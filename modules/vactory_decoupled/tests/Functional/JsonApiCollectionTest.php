@@ -92,15 +92,13 @@ class JsonApiCollectionTest extends VactoryExistingSiteBase {
       ],
     ];
 
-    $paragraphStorage = \Drupal::entityTypeManager()->getStorage('paragraph');
-    $paragraph = $paragraphStorage->create([
+    $paragraph = $this->createParagraph([
       'type' => 'vactory_component',
       'field_vactory_component' => [
         'widget_id' => $widget_id,
         'widget_data' => json_encode($widget_data),
       ],
     ]);
-    $paragraph->save();
 
     // Create a vactory_page with the paragraph.
     $node = $this->createNode([
@@ -142,9 +140,6 @@ class JsonApiCollectionTest extends VactoryExistingSiteBase {
         $this->assertArrayHasKey('attributes', $item, 'Item should have attributes');
       }
     }
-
-    // Cleanup.
-    $paragraph->delete();
   }
 
 }
