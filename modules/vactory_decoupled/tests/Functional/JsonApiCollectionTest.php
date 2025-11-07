@@ -3,14 +3,22 @@
 namespace Drupal\vactory_decoupled\Functional;
 
 use Drupal\Core\Serialization\Yaml;
-use weitzman\DrupalTestTraits\ExistingSiteBase;
+use Drupal\Tests\vactory_core\Functional\VactoryExistingSiteBase;
 
 /**
  * Validate JSON API Collection paragraphs in decoupled context.
  *
  * @group vactory_decoupled
  */
-class JsonApiCollectionTest extends ExistingSiteBase {
+class JsonApiCollectionTest extends VactoryExistingSiteBase {
+
+  /**
+   * {@inheritDoc}
+   */
+  protected array $modulesToInstall = [
+    'vactory_news',
+    'vactory_dynamic_field_volatile',
+  ];
 
   /**
    * Default collection setting (news case).
@@ -48,13 +56,6 @@ class JsonApiCollectionTest extends ExistingSiteBase {
   const DF_CREATOR_MODULE = 'vactory_dynamic_field_volatile';
 
   /**
-   * Track if we installed the module during test.
-   *
-   * @var bool
-   */
-  protected $moduleInstalledDuringTest = FALSE;
-
-  /**
    * Track created DF files for cleanup.
    *
    * @var array
@@ -71,10 +72,6 @@ class JsonApiCollectionTest extends ExistingSiteBase {
     // Create and log in an admin user using DTT helper.
     $adminUser = $this->createUser([], NULL, TRUE);
     $this->drupalLogin($adminUser);
-
-    // Make sure vactory_page_import is installed.
-    $this->ensureModuleInstalled(self::DF_CREATOR_MODULE);
-    $this->ensureModuleInstalled('vactory_news');
 
     \Drupal::service("router.builder")->rebuild();
 
@@ -102,12 +99,6 @@ class JsonApiCollectionTest extends ExistingSiteBase {
       if (file_exists($dfPath)) {
         $this->removeDirectory($dfPath);
       }
-    }
-
-    // Uninstall module if we installed it during test.
-    if ($this->moduleInstalledDuringTest) {
-      $moduleInstaller = \Drupal::service('module_installer');
-      $moduleInstaller->uninstall([self::DF_CREATOR_MODULE, 'vactory_news']);
     }
 
     parent::tearDown();
@@ -154,22 +145,9 @@ class JsonApiCollectionTest extends ExistingSiteBase {
     ]);
 
     $langcode = $node->language()->getId();
-    $parsedUrl = parse_url($this->baseUrl);
+    $query_params = ['include' => 'field_vactory_paragraphs'];
+    $json = $this->fetchNodeJsonApi($node, $langcode, 200, $query_params);
 
-    // Fallbacks in case parts are missing.
-    $scheme = $parsedUrl['scheme'] ?? 'http';
-    $host = $parsedUrl['host'] ?? 'localhost';
-    $port = isset($parsedUrl['port']) ? ':' . $parsedUrl['port'] : '';
-
-    // Full URL for JSON:API request.
-    $fullUrl = "{$scheme}://{$host}{$port}/{$langcode}/api/node/vactory_page/{$node->uuid()}?include=field_vactory_paragraphs";
-
-    // Fetch the node via JSON:API.
-    $this->drupalGet($fullUrl);
-    $this->assertSession()->statusCodeEquals(200);
-
-    // Decode response.
-    $json = json_decode($this->getSession()->getPage()->getContent(), TRUE);
     $data = $json['included'][0]['attributes']['field_vactory_component']['widget_data'];
     // Decode the widget_data JSON.
     $widget_data_decoded = json_decode($data, TRUE);
@@ -195,22 +173,6 @@ class JsonApiCollectionTest extends ExistingSiteBase {
 
     // Cleanup.
     $paragraph->delete();
-  }
-
-  /**
-   * Ensure a module is installed, track if we installed it.
-   *
-   * @param string $module_name
-   *   The module name to install.
-   */
-  protected function ensureModuleInstalled(string $module_name): void {
-    $moduleHandler = \Drupal::service('module_handler');
-
-    if (!$moduleHandler->moduleExists($module_name)) {
-      $moduleInstaller = \Drupal::service('module_installer');
-      $moduleInstaller->install([$module_name]);
-      $this->moduleInstalledDuringTest = TRUE;
-    }
   }
 
   /**

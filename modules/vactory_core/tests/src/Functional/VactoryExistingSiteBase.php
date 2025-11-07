@@ -11,6 +11,20 @@ use weitzman\DrupalTestTraits\ExistingSiteBase;
 abstract class VactoryExistingSiteBase extends ExistingSiteBase {
 
   /**
+   * List of modules to be installed for the test.
+   *
+   * @var string[]
+   */
+  protected array $modulesToInstall = [];
+
+  /**
+   * List of modules to be uninstalled after the test.
+   *
+   * @var string[]
+   */
+  protected array $modulesToCleanup = [];
+
+  /**
    * Config factory.
    *
    * @var \Drupal\Core\Config\ConfigFactoryInterface
@@ -38,13 +52,13 @@ abstract class VactoryExistingSiteBase extends ExistingSiteBase {
     parent::setUp();
     $this->configFactory = $this->container->get('config.factory');
     $this->languageManager = $this->container->get('language_manager');
+    $this->installRequiredModule();
   }
 
   /**
    * Fetch node jsonapi.
    */
-  protected function fetchNodeJsonApi(EntityInterface $entity, $langcode, $expectedStatusCode = 200) {
-
+  protected function fetchNodeJsonApi(EntityInterface $entity, $langcode, $expectedStatusCode = 200, $queryParams = []) {
     $entity_type = $entity->getEntityTypeId();
     $bundle = $entity->bundle();
     $entity_uuid = $entity->uuid();
@@ -53,6 +67,9 @@ abstract class VactoryExistingSiteBase extends ExistingSiteBase {
 
     // Full URL (for request context).
     $fullUrl = "{$this->baseUrl}/{$langcode}{$path}";
+    if (!empty($queryParams)) {
+      $fullUrl .= '?' . http_build_query($queryParams);
+    }
 
     // Fetch the node via JSON:API.
     $this->drupalGet($fullUrl);
@@ -172,12 +189,28 @@ abstract class VactoryExistingSiteBase extends ExistingSiteBase {
   }
 
   /**
+   * Ensure a module is installed, track if we installed it.
+   */
+  private function installRequiredModule(): void {
+    $moduleHandler = $this->container->get('module_handler');
+    foreach ($this->modulesToInstall as $module) {
+      // Check if the module is already installes, otherwise we install it.
+      if (!$moduleHandler->moduleExists($module)) {
+        $this->modulesToCleanup[] = $module;
+      }
+    }
+    // Install modules which are not already installed.
+    $moduleInstaller = $this->container->get('module_installer');
+    $moduleInstaller->install($this->modulesToCleanup);
+  }
+
+  /**
    * {@inheritdoc}
    *
    * Restores all modified configuration values to their original state.
    */
   protected function tearDown(): void {
-    parent::tearDown();
+    // Cleanup configs.
     foreach ($this->cleanUpConfigs as $storage_key => $configs) {
       foreach ($configs as $config_name => $config_values) {
 
@@ -196,6 +229,16 @@ abstract class VactoryExistingSiteBase extends ExistingSiteBase {
       }
     }
     $this->cleanUpConfigs = [];
+
+    // Cleanup modules.
+    // Uninstall modules installed during the test.
+    if (!empty($this->modulesToCleanup)) {
+      $moduleInstaller = $this->container->get('module_installer');
+      $moduleInstaller->uninstall($this->modulesToCleanup);
+    }
+
+    // TearDown should be placed at the end because it destroys the kernel.
+    parent::tearDown();
   }
 
 }
