@@ -208,9 +208,6 @@
       "drupal/features": {
         "Export config translation": "https://www.drupal.org/files/issues/features_export-config-translation-2869336-2.patch"
       },
-      "drupal/oauth_login_oauth2": {
-        "Store ressourceOwner into a session variable.": "https://gist.githubusercontent.com/voidagency/94489fb9998406959ebefb31a758f39c/raw/6692adac21ef17ea4d66d69584159a6802707404/oauth-login-oauth2-add-resource-owner-to-session.patch"
-      },
       "drupal/social_auth_microsoft": {
         "Fixing call to function on null.": "https://gist.githubusercontent.com/voidagency/33e6445b2b0fe973654304a6ea04d50e/raw/80cd36664fe77ec6196bb310b49e8b7d27c8c96d/microsoft_social_auth.patch",
         "Update to v2 endpoints.": "https://gist.githubusercontent.com/voidagency/e45c99aff42a75a8925e043d4c22b670/raw/127ee70e123dc79d308042e519171c160a0b5ab0/social_auth_microsoft-v2.patch"
@@ -221,9 +218,6 @@
       "drupal/swiftmailer": {
         "Fix undefined index warnings on reset password form": "https://www.drupal.org/files/issues/2020-10-29/3179656-two-undentified-index-notices-2.patch",
         "Swiftmailer fix renderPlan method cli breaks": "https://gist.githubusercontent.com/voidagency/2d6230d4c481d5f80e8e9c8e783a2963/raw/8f7e40b7b90406b96865dde05b57a4ad8d854b68/swiftmailer-prevent-cli-commands-break.patch"
-      },
-      "drupal/advagg": {
-        "Remove version comments from minified files.": "https://gist.githubusercontent.com/voidagency/136f41faf39bcff92e334f364a173afb/raw/421944a391d8ed071ec648cf3ca8311f912372fe/advagg-remove-version-comment-from-minified-js.patch"
       },
       "drupal/colorapi": {
         "Enable colorapi field type by default": "https://gist.githubusercontent.com/voidagency/710e846384b56afe6cdfdc59fbc6e8bc/raw/cb8b1c126e87bd57a2c745f2f29e25c0269ec32f/colorapi-enable-colorapi-field-type-by-default.patch"
@@ -237,11 +231,6 @@
       "drupal/webform": {
         "Invoke alter hook after webform handlers execution": "https://gist.githubusercontent.com/voidagency/6871bd7544b621e2c4221126c5dfec50/raw/7595d19a34e18ab9f719b7f917c02b10a4a40caf/webform-post-handlers-hook.patch"
       },
-      "drupal/simple_oauth": {
-        "Auth revoke on profile update": "https://www.drupal.org/files/issues/2019-04-15/simple_oauth-auth-revoke-2946882-34.patch",
-        "Registered claims error after upgrading from 5.0.5 to 5.2.0": "https://gist.githubusercontent.com/ismail-void/539733588565017233ef8d26907823df/raw/6eeeb0cdc770a3d6a0d4e643b8b0b5d0319c31c2/fix-registered-claims-error.patch",
-        "the /oauth/jwks endpoint should be accessible without authentication": "https://gist.githubusercontent.com/voidagency/fc4c7543f6bcd53d0f12ac4bb499aa77/raw/3a84f6cd17b3b02c42c5ea830d45b06eb3a0c3be/jwks-endpoint-accessible-without-authentication.patch"
-      },
       "drupal/captcha": {
         "Fix captcha error message translation": "https://gist.githubusercontent.com/voidagency/11480147ce444bf3b4b7c5539f213452/raw/5a2d3f39bc5f795bb25b5c91ab050ad8d9ad1837/fix-captcha-error-message-translation.patch"
       },
@@ -251,9 +240,6 @@
       "voidagency/cloudinary": {
         "Cloudinary video media library compatibility fix": "https://gist.githubusercontent.com/voidagency/21729df75ca350faace0f7883960bc37/raw/88e6ce0980cb3e01c95f74e1c79b4baddcdf884e/cloudinary-video-media-library-compatibility-fix.patch",
         "Fix symfony 6 compatibility": "https://gist.githubusercontent.com/voidagency/94489fb9998406959ebefb31a758f39c/raw/6692adac21ef17ea4d66d69584159a6802707404/cloudinary-fix-symfony6-compatibility.patch"
-      },
-      "drupal/flag": {
-        "Fix deprecated php 8.1 str_replace": "https://www.drupal.org/files/issues/2022-02-25/3266574-2.patch"
       },
       "drupal/jsonapi_search_api": {
         "Modifying a facet does not invalidate caches": "https://gist.githubusercontent.com/voidagency/299883e039129c50da852a42c704af91/raw/1812ca417adce536e82cede6da50f8e7952c7479/fix-jsonapi-search-api-facets-cache-3176987.patch"
@@ -266,12 +252,6 @@
       },
       "drupal/file_entity": {
         "Fix missing bundle entity, entity type file_type, entity id undefined": "https://gist.githubusercontent.com/voidagency/b2ec60b41a9ef234ba860c03c05410f4/raw/cea45bcd86a2063d7460a99d1757719035a75314/remove-undefined-bundle-from-entity-type-file-type.patch"
-      },
-      "drupal/media_library_form_element": {
-        "Fix: explode(): Argument #2 ($string) must be of type string, array given": "https://www.drupal.org/files/issues/2023-05-10/check-default-value-not-array-15044301-16.patch"
-      },
-      "drupal/search_api": {
-        "Decode HTML in search API rendered items": "https://gist.githubusercontent.com/voidagency/5396da024459bc289c5ebe04af62fe4f/raw/28569f005d0e5a4e19742526eba8aa34fe3471e5/54411-search-api-rendered-item-decode-html.patch"
       }
     }
   },
