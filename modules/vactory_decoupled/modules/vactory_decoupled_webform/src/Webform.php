@@ -568,7 +568,7 @@ class Webform {
       }
 
       $properties['filePreview'] = isset($item['#file_preview']);
-      $fid = $properties['default_value'];
+      $fid = $properties['default_value'] ?? NULL;
       if (is_numeric($fid)) {
         $properties['default_value'] = $this->preparePreviewInfos($fid);
       }
