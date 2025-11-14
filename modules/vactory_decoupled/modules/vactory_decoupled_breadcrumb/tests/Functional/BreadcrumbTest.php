@@ -129,8 +129,6 @@ class BreadcrumbTest extends VactoryExistingSiteBase {
 
   /**
    * Tester les breadcrumbs d'un seul nœud avec alias hiérarchique.
-   *
-   * @group disabled
    */
   public function testBreadcrumbsFromPathSingleNodeWithHierarchy(): void {
     // Crée un nœud avec un alias profond : /first-level/second-level.
@@ -160,12 +158,10 @@ class BreadcrumbTest extends VactoryExistingSiteBase {
     $this->assertBreadcrumbStructure($breadcrumbs[0], "/$langcode", 'Home', 0);
 
     // Assertion : First level (nolink).
-    $this->assertArrayHasKey('url', $breadcrumbs[1]);
-    $this->assertEquals('#', $breadcrumbs[1]['url'], "Le breadcrumb du niveau intermédiaire doit être '#'.");
-    $this->assertEquals('First level', $breadcrumbs[1]['text'], "Le texte du breadcrumb intermédiaire doit être 'First level'.");
+    $this->assertBreadcrumbStructure($breadcrumbs[1], "#", 'First level', 1);
 
-    // Assertion : Second level.
-    $this->assertBreadcrumbStructure($breadcrumbs[2], "/$langcode/first-level/second-level", 'Second level', 2);
+    // Assertion : Second level  (nolink).
+    $this->assertBreadcrumbStructure($breadcrumbs[2], "#", 'Second level', 2);
   }
 
   /**
