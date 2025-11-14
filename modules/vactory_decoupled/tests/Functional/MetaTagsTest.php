@@ -2,14 +2,14 @@
 
 namespace Drupal\vactory_decoupled\Functional;
 
-use weitzman\DrupalTestTraits\ExistingSiteBase;
+use Drupal\Tests\vactory_core\Functional\VactoryExistingSiteBase;
 
 /**
  * Validate decoupled nodes metatags.
  *
  * @group vactory_decoupled
  */
-class MetaTagsTest extends ExistingSiteBase {
+class MetaTagsTest extends VactoryExistingSiteBase {
 
   /**
    * {@inheritDoc}
@@ -35,26 +35,9 @@ class MetaTagsTest extends ExistingSiteBase {
     ]);
 
     $langcode = $node->language()->getId();
-    $aliasManager = \Drupal::service('path_alias.manager');
-    $alias = $aliasManager->getAliasByPath('/node/' . $node->id(), $langcode);
+    $alias = $this->container->get('path_alias.manager')->getAliasByPath('/node/' . $node->id(), $langcode);
 
-    $parsedUrl = parse_url($this->baseUrl);
-
-    // Fallbacks in case parts are missing.
-    $scheme = $parsedUrl['scheme'] ?? 'http';
-    $host = $parsedUrl['host'] ?? 'localhost';
-    $port = isset($parsedUrl['port']) ? ':' . $parsedUrl['port'] : '';
-
-    // Full URL (for request context).
-    $fullUrl = "{$scheme}://{$host}{$port}/{$langcode}/api/node/vactory_page/{$node->uuid()}";
-
-    // Fetch the node via JSON:API.
-    $this->drupalGet($fullUrl);
-    // Assert response status.
-    $this->assertSession()->statusCodeEquals(200);
-
-    // Decode response.
-    $json = json_decode($this->getSession()->getPage()->getContent(), TRUE);
+    $json = $this->fetchNodeJsonApi($node, $langcode);
 
     // Assert internal_metatag is present.
     $this->assertArrayHasKey('internal_metatag', $json['data']['attributes']);
@@ -72,7 +55,7 @@ class MetaTagsTest extends ExistingSiteBase {
 
         // Vérification spécifique pour canonical_url.
         if ($tag['id'] === 'canonical_url') {
-          $expected = "{$scheme}://{$host}{$port}/{$langcode}{$alias}";
+          $expected = "{$this->baseUrl}/{$langcode}{$alias}";
           $this->assertEquals($expected, $tag['attributes']['href']);
         }
       }
@@ -84,7 +67,7 @@ class MetaTagsTest extends ExistingSiteBase {
    */
   public function testHomepageMetaTags(): void {
     // Get the homepage path.
-    $frontPath = \Drupal::config('system.site')->get('page.front');
+    $frontPath = $this->configFactory->get('system.site')->get('page.front');
 
     if (preg_match('#^/node/(\d+)$#', $frontPath, $matches)) {
       $nid = $matches[1];
@@ -93,23 +76,7 @@ class MetaTagsTest extends ExistingSiteBase {
       $this->assertNotNull($node, 'Homepage node exists.');
       $this->assertEquals('vactory_page', $node->bundle(), 'Homepage is a vactory_page.');
 
-      $parsedUrl = parse_url($this->baseUrl);
-
-      // Fallbacks in case parts are missing.
-      $scheme = $parsedUrl['scheme'] ?? 'http';
-      $host = $parsedUrl['host'] ?? 'localhost';
-      $port = isset($parsedUrl['port']) ? ':' . $parsedUrl['port'] : '';
-
-      // Full URL (for request context).
-      $fullUrl = "{$scheme}://{$host}{$port}/{$langcode}/api/node/vactory_page/{$node->uuid()}";
-
-      // Fetch the node via JSON:API.
-      $this->drupalGet($fullUrl);
-      // Assert response status.
-      $this->assertSession()->statusCodeEquals(200);
-
-      // Decode response.
-      $json = json_decode($this->getSession()->getPage()->getContent(), TRUE);
+      $json = $this->fetchNodeJsonApi($node, $langcode);
 
       $this->assertArrayHasKey('internal_metatag', $json['data']['attributes']);
 
