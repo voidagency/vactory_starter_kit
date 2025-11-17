@@ -4,8 +4,6 @@ dependencies:
   config:
     - image.style.vactory_two_cols_x1
     - image.style.vactory_two_cols_x2
-  theme:
-    - vactory
 id: vactory_two_cols
 label: 'Two Cols'
 image_style_mappings:
