@@ -4,6 +4,7 @@ namespace Drupal\vactory_decoupled_webform\Plugin\rest\resource;
 
 use Drupal\Component\Utility\Bytes;
 use Drupal\Component\Utility\Environment;
+use Drupal\Core\File\FileExists;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\file\Entity\File;
 use Drupal\file\Plugin\rest\resource\FileUploadResource;
@@ -68,7 +69,7 @@ class WebformFileUploadResource extends FileUploadResource {
         'webform_id' => $webform->id(),
       ]);
 
-      // Prepare upload location and validators for the element
+      // Prepare upload location and validators for the element.
       $element_plugin = $this->getElementPlugin($element);
       $element_plugin->prepare($element, $webform_submission);
 
@@ -96,7 +97,7 @@ class WebformFileUploadResource extends FileUploadResource {
 
       // This will take care of altering $file_uri if a file already exists.
       \Drupal::service('file_system')
-        ->getDestinationFilename($temp_file_path, $file_uri);
+        ->getDestinationFilename($temp_file_path, FileExists::Rename);
 
       // Lock based on the prepared file URI.
       $lock_id = $this->generateLockIdFromFileUri($file_uri);
@@ -109,21 +110,21 @@ class WebformFileUploadResource extends FileUploadResource {
       $file = File::create([]);
       $file->setOwnerId($this->currentUser->id());
       $file->setFilename($filename);
-      $file->setMimeType($this->mimeTypeGuesser->guessMimeType($prepared_filename));
+      $file->setMimeType(\Drupal::service("file.mime_type.guesser")->guessMimeType($prepared_filename));
       $file->setFileUri($file_uri);
       // Set the size. This is done in File::preSave() but we validate the file
       // before it is saved.
       $file->setSize(@filesize($temp_file_path));
 
-      // Validate the file entity against entity-level validation and field-level
-      // validators.
+      // Validate the file entity against entity-level validation and
+      // field-level validators.
       $this->validate($file, $validators);
 
       // Move the file to the correct location after validation. Use
-      // FILE_EXISTS_ERROR as the file location has already been determined above
-      // in file_unmanaged_prepare().
+      // FILE_EXISTS_ERROR as the file location has already been
+      // determined above in file_unmanaged_prepare().
       if (!\Drupal::service('file_system')
-        ->move($temp_file_path, $file_uri, FileSystemInterface::EXISTS_ERROR)) {
+        ->move($temp_file_path, $file_uri, FileExists::Error)) {
         throw new HttpException(500, 'Temporary file could not be moved to file location');
       }
 
@@ -141,7 +142,6 @@ class WebformFileUploadResource extends FileUploadResource {
         'file' => $file,
         'preview' => $previewInfos,
       ], 201);
-
 
     }
     else {
@@ -187,12 +187,6 @@ class WebformFileUploadResource extends FileUploadResource {
 
   /**
    * Loads the webform element plugin for the provided element.
-   *
-   * @param array $element
-   *   The element for which to get the plugin.
-   *
-   * @return \Drupal\Core\Render\Element\ElementInterface
-   * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
   protected function getElementPlugin(array $element) {
     /** @var \Drupal\Core\Render\ElementInfoManager $plugin_manager */
@@ -203,4 +197,5 @@ class WebformFileUploadResource extends FileUploadResource {
 
     return $element_plugin;
   }
+
 }
