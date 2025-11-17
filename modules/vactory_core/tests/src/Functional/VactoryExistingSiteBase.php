@@ -385,9 +385,10 @@ abstract class VactoryExistingSiteBase extends ExistingSiteBase {
     $this->restoreConfigs();
     $this->uninstallCleanupModules();
     $this->cleanupDfFiles();
-    $this->cleanupWebformsEntities();
-    $this->cleanupVocabulariesEntities();
-    $this->cleanupFileEntities();
+
+    $this->cleanupEntitiesByType($this->cleanupWebforms);
+    $this->cleanupEntitiesByType($this->cleanupVocabularies);
+    $this->cleanupEntitiesByType($this->cleanupFileEntities);
 
     parent::tearDown();
   }
@@ -435,33 +436,13 @@ abstract class VactoryExistingSiteBase extends ExistingSiteBase {
   }
 
   /**
-   * Deletes all Webform entities created during the test.
+   * Deletes entities from a list.
    */
-  private function cleanupWebformsEntities(): void {
-    foreach ($this->cleanupWebforms as $webform) {
-      $webform->delete();
+  private function cleanupEntitiesByType(array &$entities): void {
+    foreach ($entities as $e) {
+      $e->delete();
     }
-    $this->cleanupWebforms = [];
-  }
-
-  /**
-   * Deletes vocabulary entities created during the test.
-   */
-  private function cleanupVocabulariesEntities(): void {
-    foreach ($this->cleanupVocabularies as $vocabulary) {
-      $vocabulary->delete();
-    }
-    $this->cleanupVocabularies = [];
-  }
-
-  /**
-   * Deletes file entities created during the test.
-   */
-  private function cleanupFileEntities(): void {
-    foreach ($this->cleanupFileEntities as $file) {
-      $file->delete();
-    }
-    $this->cleanupFileEntities = [];
+    $entities = [];
   }
 
 }
