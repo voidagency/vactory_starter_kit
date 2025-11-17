@@ -38,18 +38,12 @@ class AnonymizedWebformSubmissionService {
     }
 
     $settings = $webform->getThirdPartySetting('vactory_webform_anonymize', 'settings', []);
-
-    if (empty($settings['enabled'])) {
-      return FALSE;
-    }
-
     $anonymized_roles = $settings['roles'] ?? [];
-    if (empty($anonymized_roles)) {
-      return FALSE;
-    }
-
     $user_roles = $this->currentUser->getRoles();
-    return !empty(array_intersect($user_roles, $anonymized_roles));
+
+    return !empty($settings['enabled'])
+      && !empty($anonymized_roles)
+      && !empty(array_intersect($user_roles, $anonymized_roles));
   }
 
   /**
@@ -57,73 +51,126 @@ class AnonymizedWebformSubmissionService {
    */
   public function anonymizeRecursive($value, array $settings = [], $view_mode = 'html') {
     if (is_array($value)) {
-      if ($view_mode === 'table' && in_array('header', $value)) {
-        return $value;
-      }
+      return $this->anonymizeArray($value, $settings, $view_mode);
+    }
 
-      if (isset($value['#file'])) {
-        return $this->anonymizeValue($value['#file']->getFilename() ?? "", $settings);
-      }
+    return $this->anonymizeScalarValue($value, $settings);
+  }
 
-      if (isset($value['#markup'])) {
-        $value['#markup'] = $this->anonymizeValue($value['#markup'], $settings);
-        return $value;
-      }
-
-      if (isset($value['#url']) && $value['#url'] instanceof Url) {
-        return $this->anonymizeValue($value['#title'], $settings);
-      }
-
-      // Handle #children array (for multi-page webforms).
-      if (isset($value['#children']) && is_array($value['#children'])) {
-        foreach ($value['#children'] as &$child_value) {
-          $child_value = $this->anonymizeRecursive($child_value, $settings, $view_mode);
-        }
-      }
-
-      foreach ($value as $key => &$item) {
-        if (is_string($key) && strpos($key, '#') === 0) {
-          if (in_array($key, [
-            '#text',
-            '#children',
-            '#theme',
-            '#type',
-            '#weight',
-            '#prefix',
-            '#suffix',
-            '#attributes',
-            '#webform_submission',
-            '#options',
-            '#element',
-            '#id',
-            '#open',
-            '#title',
-          ])) {
-            continue;
-          }
-        }
-        $item = $this->anonymizeRecursive($item, $settings, $view_mode);
-      }
+  /**
+   * Anonymize array values.
+   */
+  protected function anonymizeArray(array $value, array $settings, $view_mode) {
+    // Early return for table headers.
+    if ($view_mode === 'table' && in_array('header', $value)) {
       return $value;
     }
 
-    if (is_string($value)) {
-      return $this->anonymizeValue($value, $settings);
+    // Handle special array keys.
+    $special_key_result = $this->handleSpecialArrayKeys($value, $settings);
+    if ($special_key_result !== NULL) {
+      return $special_key_result;
     }
 
-    if (is_object($value) && method_exists($value, '__toString')) {
-      return $this->anonymizeValue((string) $value, $settings);
+    // Handle #children array (for multi-page webforms).
+    if (isset($value['#children']) && is_array($value['#children'])) {
+      foreach ($value['#children'] as &$child_value) {
+        $child_value = $this->anonymizeRecursive($child_value, $settings, $view_mode);
+      }
     }
 
-    if ($value instanceof Link) {
-      return $this->anonymizeValue((string) $value->toString(), $settings);
-    }
-
-    if ($value instanceof Url) {
-      return $this->anonymizeValue((string) $value->toString(), $settings);
+    // Process array items.
+    foreach ($value as $key => &$item) {
+      if ($this->shouldSkipKey($key)) {
+        continue;
+      }
+      $item = $this->anonymizeRecursive($item, $settings, $view_mode);
     }
 
     return $value;
+  }
+
+  /**
+   * Handle special array keys that need special processing.
+   */
+  protected function handleSpecialArrayKeys(array $value, array $settings) {
+    $result = NULL;
+
+    if (isset($value['#file'])) {
+      $result = $this->anonymizeValue($value['#file']->getFilename() ?? "", $settings);
+    }
+    elseif (isset($value['#markup'])) {
+      $value['#markup'] = $this->anonymizeValue($value['#markup'], $settings);
+      $result = $value;
+    }
+    elseif (isset($value['#url']) && $value['#url'] instanceof Url && isset($value['#title'])) {
+      $result = $this->anonymizeValue($value['#title'], $settings);
+    }
+
+    return $result;
+  }
+
+  /**
+   * Check if a key should be skipped during anonymization.
+   */
+  protected function shouldSkipKey($key) {
+    if (!is_string($key) || strpos($key, '#') !== 0) {
+      return FALSE;
+    }
+
+    $skip_keys = [
+      '#text',
+      '#children',
+      '#theme',
+      '#type',
+      '#weight',
+      '#prefix',
+      '#suffix',
+      '#attributes',
+      '#webform_submission',
+      '#options',
+      '#element',
+      '#id',
+      '#open',
+      '#title',
+    ];
+
+    return in_array($key, $skip_keys);
+  }
+
+  /**
+   * Anonymize scalar values (strings, objects, etc.).
+   */
+  protected function anonymizeScalarValue($value, array $settings) {
+    $string_value = $this->convertToAnonymizableString($value);
+    if ($string_value !== NULL) {
+      return $this->anonymizeValue($string_value, $settings);
+    }
+
+    return $value;
+  }
+
+  /**
+   * Convert value to string if it can be anonymized.
+   */
+  protected function convertToAnonymizableString($value) {
+    if (is_string($value)) {
+      return $value;
+    }
+
+    if (!is_object($value)) {
+      return NULL;
+    }
+
+    $result = NULL;
+    if ($value instanceof Link || $value instanceof Url) {
+      $result = (string) $value->toString();
+    }
+    elseif (method_exists($value, '__toString')) {
+      $result = (string) $value;
+    }
+
+    return $result;
   }
 
   /**
@@ -149,36 +196,50 @@ class AnonymizedWebformSubmissionService {
       return $value;
     }
 
+    return $this->applyAnonymizationMode($trimmed, $length, $mode, $custom_chars, $mask_char);
+  }
+
+  /**
+   * Apply anonymization based on the selected mode.
+   */
+  protected function applyAnonymizationMode($trimmed, $length, $mode, $custom_chars, $mask_char) {
+    $visible_length = $this->getVisibleLength($length, $mode, $custom_chars);
+
+    if ($visible_length >= $length) {
+      return str_repeat($mask_char, $length);
+    }
+
+    $visible_part = mb_substr($trimmed, 0, $visible_length);
+    $masked_part = str_repeat($mask_char, $length - $visible_length);
+    return $visible_part . $masked_part;
+  }
+
+  /**
+   * Get the visible length based on anonymization mode.
+   */
+  protected function getVisibleLength($length, $mode, $custom_chars) {
+    $visible_length = 0;
+
     switch ($mode) {
       case 'full':
-        return str_repeat($mask_char, $length);
+        $visible_length = 0;
+        break;
 
       case 'partial':
-        if ($length <= 2) {
-          return str_repeat($mask_char, $length);
-        }
-        $visible_part = mb_substr($trimmed, 0, 2);
-        $masked_part = str_repeat($mask_char, $length - 2);
-        return $visible_part . $masked_part;
+        $visible_length = min(2, $length);
+        break;
 
       case 'custom':
-        if ($length <= $custom_chars) {
-          return str_repeat($mask_char, $length);
-        }
-        $visible_part = mb_substr($trimmed, 0, $custom_chars);
-        $masked_part = str_repeat($mask_char, $length - $custom_chars);
-        return $visible_part . $masked_part;
+        $visible_length = min($custom_chars, $length);
+        break;
 
       case 'half':
       default:
-        if ($length <= 2) {
-          return str_repeat($mask_char, $length);
-        }
-        $half = ceil($length / 2);
-        $visible_part = mb_substr($trimmed, 0, $half);
-        $masked_part = str_repeat($mask_char, $length - $half);
-        return $visible_part . $masked_part;
+        $visible_length = ceil($length / 2);
+        break;
     }
+
+    return $visible_length;
   }
 
 }
