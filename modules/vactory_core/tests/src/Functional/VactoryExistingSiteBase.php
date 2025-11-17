@@ -4,6 +4,8 @@ namespace Drupal\Tests\vactory_core\Functional;
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Serialization\Yaml;
+use Drupal\file\Entity\File;
+use Drupal\taxonomy\Entity\Vocabulary;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
 
 /**
@@ -52,6 +54,27 @@ abstract class VactoryExistingSiteBase extends ExistingSiteBase {
    * @var array
    */
   protected $createdDfFiles = [];
+
+  /**
+   * Track created webforms for cleanup.
+   *
+   * @var array
+   */
+  protected $cleanupWebforms = [];
+
+  /**
+   * Track created vocabularies for cleanup.
+   *
+   * @var array
+   */
+  protected $cleanupVocabularies = [];
+
+  /**
+   * Track created file entities for cleanup.
+   *
+   * @var array
+   */
+  protected $cleanupFileEntities = [];
 
   /**
    * {@inheritDoc}
@@ -305,6 +328,55 @@ abstract class VactoryExistingSiteBase extends ExistingSiteBase {
   }
 
   /**
+   * Creates a webform entity.
+   *
+   * @param array $values
+   *   An array of values to set, keyed by property name.
+   *
+   * @return \Drupal\webform\Entity\Webform
+   *   The created webform entity.
+   */
+  protected function createWebform(array $values) {
+    $storage = \Drupal::entityTypeManager()->getStorage('webform');
+    $webform = $storage->create($values);
+    $webform->save();
+    $this->cleanupWebforms[] = $webform;
+    return $webform;
+  }
+
+  /**
+   * Creates a vocabulary entity.
+   *
+   * @param array $values
+   *   An array of values to set, keyed by property name.
+   *
+   * @return \Drupal\taxonomy\Entity\Vocabulary
+   *   The created vocabulary entity.
+   */
+  protected function createVocabularyType(array $values): Vocabulary {
+    $vocabulary = Vocabulary::create($values);
+    $vocabulary->save();
+    $this->cleanupVocabularies[] = $vocabulary;
+    return $vocabulary;
+  }
+
+  /**
+   * Creates a file entity.
+   *
+   * @param array $values
+   *   An array of values to set, keyed by property name.
+   *
+   * @return \Drupal\file\Entity\File
+   *   The created file entity.
+   */
+  protected function createFile(array $values) {
+    $file = File::create($values);
+    $file->save();
+    $this->cleanupFileEntities[] = $file;
+    return $file;
+  }
+
+  /**
    * {@inheritdoc}
    *
    * Restores all modified configuration values to their original state.
@@ -342,6 +414,18 @@ abstract class VactoryExistingSiteBase extends ExistingSiteBase {
       if (file_exists($dfPath)) {
         $this->removeDirectory($dfPath);
       }
+    }
+
+    foreach ($this->cleanupWebforms as $webform) {
+      $webform->delete();
+    }
+
+    foreach ($this->cleanupVocabularies as $vocabulary) {
+      $vocabulary->delete();
+    }
+
+    foreach ($this->cleanupFileEntities as $file) {
+      $file->delete();
     }
 
     // TearDown should be placed at the end because it destroys the kernel.
