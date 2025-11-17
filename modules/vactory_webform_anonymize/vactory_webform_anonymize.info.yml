@@ -1,0 +1,7 @@
+name: 'Vactory Webform Anonymize'
+type: module
+description: 'Anonymizes webform submissions based on user roles.'
+package: Vactory
+core_version_requirement: ^9 || ^10
+dependencies:
+  - webform:webform
