@@ -382,17 +382,25 @@ abstract class VactoryExistingSiteBase extends ExistingSiteBase {
    * Restores all modified configuration values to their original state.
    */
   protected function tearDown(): void {
-    // Cleanup configs.
+    $this->restoreConfigs();
+    $this->uninstallCleanupModules();
+    $this->cleanupDfFiles();
+    $this->cleanupWebformsEntities();
+    $this->cleanupVocabulariesEntities();
+    $this->cleanupFileEntities();
+
+    parent::tearDown();
+  }
+
+  /**
+   * Restores configuration values changed during the test.
+   */
+  private function restoreConfigs(): void {
     foreach ($this->cleanUpConfigs as $storage_key => $configs) {
       foreach ($configs as $config_name => $config_values) {
-
-        // Distinguer langue par défaut vs traductions.
-        if ($storage_key === 'default') {
-          $config = $this->configFactory->getEditable($config_name);
-        }
-        else {
-          $config = $this->languageManager->getLanguageConfigOverride($storage_key, $config_name);
-        }
+        $config = $storage_key === 'default'
+          ? $this->configFactory->getEditable($config_name)
+          : $this->languageManager->getLanguageConfigOverride($storage_key, $config_name);
 
         foreach ($config_values as $key => $value) {
           $config->set($key, $value);
@@ -401,35 +409,59 @@ abstract class VactoryExistingSiteBase extends ExistingSiteBase {
       }
     }
     $this->cleanUpConfigs = [];
+  }
 
-    // Cleanup modules.
-    // Uninstall modules installed during the test.
+  /**
+   * Uninstalls modules that were installed the test execution.
+   */
+  private function uninstallCleanupModules(): void {
     if (!empty($this->modulesToCleanup)) {
       $moduleInstaller = $this->container->get('module_installer');
       $moduleInstaller->uninstall($this->modulesToCleanup);
     }
+    $this->modulesToCleanup = [];
+  }
 
-    // Cleanup created DF files.
+  /**
+   * Removes temporary DF directories.
+   */
+  private function cleanupDfFiles(): void {
     foreach ($this->createdDfFiles as $dfPath) {
       if (file_exists($dfPath)) {
         $this->removeDirectory($dfPath);
       }
     }
+    $this->createdDfFiles = [];
+  }
 
+  /**
+   * Deletes all Webform entities created during the test.
+   */
+  private function cleanupWebformsEntities(): void {
     foreach ($this->cleanupWebforms as $webform) {
       $webform->delete();
     }
+    $this->cleanupWebforms = [];
+  }
 
+  /**
+   * Deletes vocabulary entities created during the test.
+   */
+  private function cleanupVocabulariesEntities(): void {
     foreach ($this->cleanupVocabularies as $vocabulary) {
       $vocabulary->delete();
     }
+    $this->cleanupVocabularies = [];
+  }
 
+  /**
+   * Deletes file entities created during the test.
+   */
+  private function cleanupFileEntities(): void {
     foreach ($this->cleanupFileEntities as $file) {
       $file->delete();
     }
-
-    // TearDown should be placed at the end because it destroys the kernel.
-    parent::tearDown();
+    $this->cleanupFileEntities = [];
   }
 
 }
