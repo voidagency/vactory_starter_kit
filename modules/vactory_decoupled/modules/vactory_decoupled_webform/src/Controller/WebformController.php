@@ -140,7 +140,7 @@ class WebformController extends ControllerBase {
         'remote_addr'  => $webform->hasRemoteAddr() ? $request->getClientIp() : '',
         'webform_id'   => $webform_data['webform_id'],
       ];
-      $values['data'] = $webform_data;
+      $values['data'] = $this->sanitizeArray($webform_data);
 
       // Don't submit webform ID.
       unset($values['data']['webform_id']);
@@ -255,6 +255,25 @@ class WebformController extends ControllerBase {
       }
     }
     return FALSE;
+  }
+
+  /**
+   * Nettoie récursivement un tableau de données utilisateur.
+   *
+   * @param array $data
+   *   Le tableau à nettoyer.
+   *
+   * @return array
+   *   Le tableau nettoyé.
+   */
+  private function sanitizeArray(array $data): array {
+    array_walk_recursive($data, function (&$value) {
+      if (is_string($value)) {
+        $value = strip_tags($value);
+      }
+    });
+
+    return $data;
   }
 
 }

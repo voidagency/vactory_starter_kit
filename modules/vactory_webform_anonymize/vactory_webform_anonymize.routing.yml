@@ -1,0 +1,7 @@
+entity.webform.anonymize_settings:
+  path: '/admin/structure/webform/manage/{webform}/anonymize'
+  defaults:
+    _form: '\Drupal\vactory_webform_anonymize\Form\WebformAnonymizeSettingsForm'
+    _title: 'Anonymize Settings'
+  requirements:
+    _permission: 'administer webform'
