@@ -322,12 +322,6 @@ class TodoListGeneratorService {
 
   /**
    * Generate a human-readable to-do list text.
-   *
-   * @param array $todo_list
-   *   The to-do list.
-   *
-   * @return string
-   *   Human-readable to-do list.
    */
   public function generateReadableText(array $todo_list): string {
     $output = [];
