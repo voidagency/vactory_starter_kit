@@ -124,7 +124,7 @@ class ContentDiffCsvForm extends FormBase {
     $status_legend = '<div class="status-legend">';
     $status_legend .= '<h3>' . $this->t('Status Legend') . '</h3>';
     $status_legend .= '<div class="status-items">';
-    foreach (ContentDiffConst::STATUS as $key => $status) {
+    foreach (ContentDiffConst::STATUS as $status) {
       $status_legend .= '<div class="status-item ' . $status['class'] . '">';
       $status_legend .= '<span class="status-label">' . $status['label'] . '</span>';
       $status_legend .= '<span class="status-description">' . $status['description'] . '</span>';

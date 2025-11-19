@@ -135,7 +135,7 @@ class VactoryDiffSettingsForm extends ConfigFormBase {
       '#attributes' => ['id' => 'test-connection-result'],
     ];
 
-    // Configuration TODO List.
+    // Configuration to-do List.
     $form['todo_list'] = [
       '#type' => 'fieldset',
       '#title' => $this->t('Configuration TODO List'),

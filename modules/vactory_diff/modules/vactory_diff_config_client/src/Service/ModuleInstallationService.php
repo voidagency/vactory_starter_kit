@@ -10,7 +10,7 @@ use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 class ModuleInstallationService {
 
   /**
-   * Modules to ignore in the TODO list.
+   * Modules to ignore in the to-do list.
    */
   const IGNORED_MODULES = [
     'vactory_diff',
@@ -97,7 +97,7 @@ class ModuleInstallationService {
     $modified_configs = $comparison_results['differences_by_type']['modified'] ?? [];
     $core_extension = NULL;
 
-    foreach ($modified_configs as $type => $configs) {
+    foreach ($modified_configs as $configs) {
       foreach ($configs as $config) {
         if ($config['name'] === 'core.extension') {
           $core_extension = $config;

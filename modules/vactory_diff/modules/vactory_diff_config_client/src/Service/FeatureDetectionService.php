@@ -199,13 +199,11 @@ class FeatureDetectionService {
    *   The changed configuration data.
    * @param array $module_config
    *   The module's configuration data.
-   * @param string $change_type
-   *   The change type: 'added' or 'modified' (currently not used).
    *
    * @return bool
    *   TRUE if the change matches the module config.
    */
-  public function configMatchesModule(array $changed_config, array $module_config, string $change_type): bool {
+  public function configMatchesModule(array $changed_config, array $module_config): bool {
     // Both 'added' and 'modified' configs need to match the module's config
     // to be considered part of a revertable feature.
     return $this->arraysMatch($changed_config, $module_config);

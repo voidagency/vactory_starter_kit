@@ -5,7 +5,7 @@ namespace Drupal\vactory_diff_config_client\Service;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 
 /**
- * Service for generating TODO list from configuration differences.
+ * Service for generating to-do list from configuration differences.
  */
 class TodoListGeneratorService {
 
@@ -321,13 +321,13 @@ class TodoListGeneratorService {
   }
 
   /**
-   * Generate a human-readable TODO list text.
+   * Generate a human-readable to-do list text.
    *
    * @param array $todo_list
-   *   The TODO list.
+   *   The to-do list.
    *
    * @return string
-   *   Human-readable TODO list.
+   *   Human-readable to-do list.
    */
   public function generateReadableText(array $todo_list): string {
     $output = [];
