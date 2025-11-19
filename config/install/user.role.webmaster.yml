@@ -4,6 +4,10 @@ dependencies:
   config:
     - filter.format.basic_html
     - filter.format.full_html
+    - workflows.workflow.editorial
+  module:
+    - workflows
+    - content_moderation
 id: webmaster
 label: Webmaster
 weight: 5
