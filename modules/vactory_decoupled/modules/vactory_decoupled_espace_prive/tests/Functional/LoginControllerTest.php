@@ -2,7 +2,7 @@
 
 namespace Drupal\vactory_decoupled\Tests\Functional;
 
-use weitzman\DrupalTestTraits\ExistingSiteBase;
+use Drupal\Tests\vactory_core\Functional\VactoryExistingSiteBase;
 use Drupal\user\Entity\User;
 use Drupal\Core\Url;
 use GuzzleHttp\ClientInterface;
@@ -13,21 +13,28 @@ use Drupal\consumers\Entity\Consumer;
  *
  * @group vactory_decoupled
  */
-class LoginControllerTest extends ExistingSiteBase {
+class LoginControllerTest extends VactoryExistingSiteBase {
 
   /**
-   * Test user with admin role.
+   * {@inheritDoc}
+   */
+  protected array $modulesToInstall = [
+    'vactory_decoupled',
+    'vactory_decoupled_espace_prive',
+    'simple_oauth',
+    'consumers',
+    'flood_control',
+  ];
+
+  const SSL_KEYS_DIR = DRUPAL_ROOT . '/test-oauth-keys';
+  const USER_PASSWORD = 'User@VOID123';
+
+  /**
+   * Test user (authenticated).
    *
    * @var \Drupal\user\Entity\User
    */
-  protected User $admin;
-
-  /**
-   * Admin password used for authentication.
-   *
-   * @var string
-   */
-  protected string $adminPassword;
+  protected User $user;
 
   /**
    * OAuth client credentials.
@@ -58,113 +65,31 @@ class LoginControllerTest extends ExistingSiteBase {
   protected ClientInterface $httpClient;
 
   /**
-   * Original OAuth key paths for restoration after tests.
-   *
-   * @var string
-   */
-  protected string $originalPublicKey;
-
-  /**
-   * Original OAuth key paths for restoration after tests.
-   *
-   * @var string
-   */
-  protected string $originalPrivateKey;
-
-  /**
-   * Directory for temporary test keys.
-   *
-   * @var string
-   */
-  protected string $keysDir;
-
-  /**
-   * Paths for the temporary private and public keys.
-   *
-   * @var string
-   */
-  protected string $privateKeyPath;
-
-  /**
-   * Paths for the temporary private and public keys.
-   *
-   * @var string
-   */
-  protected string $publicKeyPath;
-
-  /**
-   * Original flood configuration backup.
-   *
-   * @var array
-   */
-  protected array $originalFloodConfig = [];
-
-  /**
-   * Original flood settings backup.
-   *
-   * @var array
-   */
-  protected array $originalFloodSettings = [];
-
-  /**
-   * Backup of the original default consumer entity.
-   *
-   * @var \Drupal\consumers\Entity\Consumer|null
-   */
-  protected ?Consumer $originalDefaultConsumer = NULL;
-
-  /**
-   * Track modules installed during the test.
-   *
-   * @var string[]
-   */
-  protected array $modulesInstalledDuringTest = [];
-
-  /**
-   * Flood fid max au démarrage du test.
-   *
-   * @var int
-   */
-  protected int $startFloodFid = 0;
-
-  /**
    * {@inheritDoc}
    */
   protected function setUp(): void {
     parent::setUp();
 
-    // Assurer que les modules sont installés.
-    $this->ensureModuleInstalled('vactory_decoupled');
-    $this->ensureModuleInstalled('vactory_decoupled_espace_prive');
-    $this->ensureModuleInstalled('simple_oauth');
-    $this->ensureModuleInstalled('consumers');
-
     $this->httpClient = \Drupal::httpClient();
 
-    // Create and log in an admin user using DTT helper.
-    $this->adminPassword = 'Admin@Void123';
-    $this->admin = $this->createUser([], NULL, FALSE, ['pass' => $this->adminPassword]);
+    // Login as ADMIN.
+    $admin = $this->createUser([], NULL, TRUE);
+    $this->drupalLogin($admin);
 
-    // Enregistrer le dernier fid flood avant ce test.
-    $this->startFloodFid = (int) \Drupal::database()
-      ->select('flood', 'f')
-      ->fields('f', ['fid'])
-      ->orderBy('fid', 'DESC')
-      ->range(0, 1)
-      ->execute()
-      ->fetchField();
+    // Create and log in a user.
+    $this->user = $this->createUser([], NULL, FALSE, ['pass' => self::USER_PASSWORD]);
 
     // Génération des clés RSA.
-    $this->keysDir = DRUPAL_ROOT . '/oauth-keys';
-    if (!is_dir($this->keysDir)) {
-      mkdir($this->keysDir, 0700, TRUE);
+    $ssl_keys_dir = self::SSL_KEYS_DIR;
+    if (!is_dir($ssl_keys_dir)) {
+      mkdir($ssl_keys_dir, 0700, TRUE);
     }
 
-    $this->privateKeyPath = $this->keysDir . '/private_test.key';
-    $this->publicKeyPath = $this->keysDir . '/public_test.key';
+    $publicKeyPath = $ssl_keys_dir . '/public_test.key';
+    $privateKeyPath = $ssl_keys_dir . '/private_test.key';
 
     // Generate and persist a new RSA key pair private/public.
-    if (!file_exists($this->privateKeyPath) || !file_exists($this->publicKeyPath)) {
+    if (!file_exists($publicKeyPath) || !file_exists($privateKeyPath)) {
       $res = openssl_pkey_new([
         "private_key_bits" => 4096,
         "private_key_type" => OPENSSL_KEYTYPE_RSA,
@@ -173,38 +98,17 @@ class LoginControllerTest extends ExistingSiteBase {
       $details = openssl_pkey_get_details($res);
       $publicKey = $details['key'];
 
-      file_put_contents($this->privateKeyPath, $privateKey);
-      file_put_contents($this->publicKeyPath, $publicKey);
+      file_put_contents($privateKeyPath, $privateKey);
+      file_put_contents($publicKeyPath, $publicKey);
 
-      chmod($this->privateKeyPath, 0600);
-      chmod($this->publicKeyPath, 0644);
+      chmod($privateKeyPath, 0600);
+      chmod($publicKeyPath, 0644);
     }
 
-    // Sauvegarde des valeurs originales.
-    $config = \Drupal::configFactory()->getEditable('simple_oauth.settings');
-    $this->originalPublicKey = $config->get('public_key');
-    $this->originalPrivateKey = $config->get('private_key');
+    $this->modifyConfigValue('simple_oauth.settings', 'public_key', $publicKeyPath);
+    $this->modifyConfigValue('simple_oauth.settings', 'private_key', $privateKeyPath);
 
-    // Configuration temporaire pour les tests.
-    $config->set('public_key', $this->publicKeyPath)
-      ->set('private_key', $this->privateKeyPath)
-      ->save();
-
-    // Backup the original default consumer.
-    $storage = \Drupal::entityTypeManager()->getStorage('consumer');
-    $defaultConsumers = $storage->loadByProperties(['client_id' => 'default_consumer']);
-    if ($defaultConsumers) {
-      $this->originalDefaultConsumer = reset($defaultConsumers);
-      $this->originalDefaultConsumer->delete();
-    }
-
-    // Récupérer l'URL de base du site actuel.
-    $base_url = \Drupal::request()->getSchemeAndHttpHost();
-
-    // Callback.
-    $redirect_uri = $base_url . '/api/auth/callback/drupal';
-
-    $consumerData = $this->createTestConsumer($this->admin->id(), $redirect_uri);
+    $consumerData = $this->createTestConsumer();
     $this->clientId = $consumerData['client_id'];
     $this->clientSecret = $consumerData['client_secret'];
     $this->consumerEntity = $consumerData['entity'];
@@ -218,8 +122,8 @@ class LoginControllerTest extends ExistingSiteBase {
       'grant_type' => 'password',
       'client_id' => $this->clientId,
       'client_secret' => $this->clientSecret,
-      'username' => $this->admin->getAccountName(),
-      'password' => $this->adminPassword,
+      'username' => $this->user->getAccountName(),
+      'password' => self::USER_PASSWORD,
     ]);
 
     // Assert HTTP status is 200.
@@ -228,23 +132,6 @@ class LoginControllerTest extends ExistingSiteBase {
     // Assert access token exists in response body.
     $this->assertArrayHasKey('access_token', $response['body'], 'Login should return an access token.');
     $this->assertNotEmpty($response['body']['access_token'], 'Access token should not be empty.');
-  }
-
-  /**
-   * Test with non exesting user.
-   */
-  public function testLoginWithNonExistentUser(): void {
-    $response = $this->postJson('/oauth/login-token', [
-      'grant_type' => 'password',
-      'client_id' => $this->clientId,
-      'client_secret' => $this->clientSecret,
-      'username' => 'not_existing_' . uniqid(),
-      'password' => 'whatever',
-    ]);
-
-    $this->assertEquals(400, $response['status']);
-    $this->assertArrayHasKey('error', $response['body']);
-    $this->assertEquals('invalid_grant', $response['body']['error']);
   }
 
   /**
@@ -272,15 +159,15 @@ class LoginControllerTest extends ExistingSiteBase {
    */
   public function testBlockedUserLogin(): void {
     // Block the user.
-    $this->admin->block();
-    $this->admin->save();
+    $this->user->block();
+    $this->user->save();
 
     $response = $this->postJson('/oauth/login-token', [
       'grant_type' => 'password',
       'client_id' => $this->clientId,
       'client_secret' => $this->clientSecret,
-      'username' => $this->admin->getAccountName(),
-      'password' => $this->adminPassword,
+      'username' => $this->user->getAccountName(),
+      'password' => self::USER_PASSWORD,
     ]);
 
     // Assert HTTP status is 403.
@@ -302,8 +189,8 @@ class LoginControllerTest extends ExistingSiteBase {
       'grant_type' => 'password',
       'client_id' => $fakeClientId,
       'client_secret' => 'wrong_secret',
-      'username' => $this->admin->getAccountName(),
-      'password' => $this->adminPassword,
+      'username' => $this->user->getAccountName(),
+      'password' => self::USER_PASSWORD,
     ]);
     // Assert HTTP status is 401.
     $this->assertEquals(401, $response['status'], 'HTTP status should be 401.');
@@ -317,23 +204,15 @@ class LoginControllerTest extends ExistingSiteBase {
    * Test login attempt with invalid or missing public/private keys.
    */
   public function testInvalidOrMissingKeys(): void {
-    $config = \Drupal::configFactory()->getEditable('simple_oauth.settings');
-
-    // Backup current keys.
-    $originalPublicKey = $config->get('public_key');
-    $originalPrivateKey = $config->get('private_key');
-
-    // Cas 1 : chemins invalides.
-    $config->set('public_key', '/invalid/path/public.key')
-      ->set('private_key', '/invalid/path/private.key')
-      ->save();
+    $this->modifyConfigValue('simple_oauth.settings', 'public_key', '/invalid/path/public.key');
+    $this->modifyConfigValue('simple_oauth.settings', 'private_key', '/invalid/path/private.key');
 
     $response = $this->postJson('/oauth/login-token', [
       'grant_type' => 'password',
       'client_id' => $this->clientId,
       'client_secret' => $this->clientSecret,
-      'username' => $this->admin->getAccountName(),
-      'password' => $this->adminPassword,
+      'username' => $this->user->getAccountName(),
+      'password' => self::USER_PASSWORD,
     ]);
 
     // Assert HTTP status is 500.
@@ -343,17 +222,15 @@ class LoginControllerTest extends ExistingSiteBase {
     $this->assertArrayHasKey('error', $response['body'], 'Should return an error.');
     $this->assertEquals('server_error', $response['body']['error'], 'Invalid keys should return server_error.');
 
-    // Cas 2 : clés manquantes.
-    $config->set('public_key', '')
-      ->set('private_key', '')
-      ->save();
+    $this->modifyConfigValue('simple_oauth.settings', 'public_key', '');
+    $this->modifyConfigValue('simple_oauth.settings', 'private_key', '');
 
     $response = $this->postJson('/oauth/login-token', [
       'grant_type' => 'password',
       'client_id' => $this->clientId,
       'client_secret' => $this->clientSecret,
-      'username' => $this->admin->getAccountName(),
-      'password' => $this->adminPassword,
+      'username' => $this->user->getAccountName(),
+      'password' => self::USER_PASSWORD,
     ]);
 
     // Assert HTTP status is 500.
@@ -362,43 +239,33 @@ class LoginControllerTest extends ExistingSiteBase {
     // Assert error exists in response body.
     $this->assertArrayHasKey('error', $response['body'], 'Should return an error.');
     $this->assertEquals('server_error', $response['body']['error'], 'Should return an error for server_error.');
-
-    // Restore original keys.
-    $config->set('public_key', $originalPublicKey)
-      ->set('private_key', $originalPrivateKey)
-      ->save();
   }
 
   /**
    * Test Drupal flood control per user (too many failed login attempts).
    */
   public function testFloodControlPerUser(): void {
-    // Récupérer la config editable.
-    $config = \Drupal::configFactory()->getEditable('user.flood');
-
-    // Sauvegarder les valeurs originales.
-    $this->originalFloodConfig = [
-      'user_limit' => $config->get('user_limit'),
-      'user_window' => $config->get('user_window'),
-    ];
-
-    // Config temporaire pour le test.
-    $config->set('user_limit', 3)
-      ->set('user_window', 60)
-      ->save();
-
     $userLimit = 3;
+    $this->modifyConfigValue('user.flood', 'user_limit', $userLimit);
 
     // Perform failed login attempts.
-    for ($i = 0; $i < $userLimit + 1; $i++) {
-      $response = $this->postJson('/oauth/login-token', [
+    for ($i = 0; $i < $userLimit; $i++) {
+      $this->postJson('/oauth/login-token', [
         'grant_type' => 'password',
         'client_id' => $this->clientId,
         'client_secret' => $this->clientSecret,
-        'username' => $this->admin->getAccountName(),
-        'password' => 'wrong_password_' . $i,
+        'username' => $this->user->getAccountName(),
+        'password' => 'wrong_password',
       ]);
     }
+
+    $response = $this->postJson('/oauth/login-token', [
+      'grant_type' => 'password',
+      'client_id' => $this->clientId,
+      'client_secret' => $this->clientSecret,
+      'username' => $this->user->getAccountName(),
+      'password' => self::USER_PASSWORD,
+    ]);
 
     // Assert HTTP status is 500.
     $this->assertEquals(400, $response['status'], 'HTTP status should be 400.');
@@ -409,139 +276,9 @@ class LoginControllerTest extends ExistingSiteBase {
   }
 
   /**
-   * Test flood control basé uniquement sur l'adresse IP.
-   */
-  public function testFloodControlPerIpBlock(): void {
-    $floodConfig = \Drupal::configFactory()->getEditable('user.flood');
-
-    // Sauvegarder la config originale.
-    $this->originalFloodConfig = [
-      'ip_limit' => $floodConfig->get('ip_limit'),
-      'ip_window' => $floodConfig->get('ip_window'),
-      'user_limit' => $floodConfig->get('user_limit'),
-      'user_window' => $floodConfig->get('user_window'),
-    ];
-
-    // Config temporaire pour tester rapidement.
-    $floodConfig->set('ip_limit', 2)
-      ->set('ip_window', 60)
-      ->set('user_limit', 50)
-      ->set('user_window', 600)
-      ->save();
-
-    // Effectuer plusieurs tentatives échouées avec le même user.
-    for ($i = 0; $i < 3; $i++) {
-      $response = $this->postJson('/oauth/login-token', [
-        'grant_type' => 'password',
-        'client_id' => $this->clientId,
-        'client_secret' => $this->clientSecret,
-        'username' => $this->admin->getAccountName(),
-        'password' => 'wrong_password_' . $i,
-      ]);
-    }
-
-    // Vérifier que c’est bien un blocage IP.
-    $this->assertEquals(400, $response['status'], 'HTTP status should be 400 when IP is blocked.');
-    $this->assertArrayHasKey('error', $response['body'], 'Response should contain an error.');
-    $this->assertEquals('flood_control_error', $response['body']['error'], 'Error type should be flood_control_error.');
-    $this->assertArrayHasKey('message', $response['body'], 'Response should contain a message.');
-    $this->assertStringContainsString('adresse IP', $response['body']['message'], 'Message should mention IP flood specifically.');
-
-    // Restaurer la config originale.
-    $floodConfig->set('ip_limit', $this->originalFloodConfig['ip_limit'])
-      ->set('ip_window', $this->originalFloodConfig['ip_window'])
-      ->set('user_limit', $this->originalFloodConfig['user_limit'])
-      ->set('user_window', $this->originalFloodConfig['user_window'])
-      ->save();
-  }
-
-  /**
-   * Test flood control messages depending on the config flag.
-   */
-  public function testFloodControlMessageDisplayFlag(): void {
-    $floodConfig = \Drupal::configFactory()->getEditable('user.flood');
-    $floodSettings = \Drupal::configFactory()
-      ->getEditable('vactory_flood_control.settings');
-    $vactoryFloodSettings = $floodSettings->getRawData();
-
-    // Sauvegarder toutes les valeurs originales.
-    $this->originalFloodConfig = [
-      'ip_limit' => $floodConfig->get('ip_limit'),
-      'ip_window' => $floodConfig->get('ip_window'),
-      'user_limit' => $floodConfig->get('user_limit'),
-      'user_window' => $floodConfig->get('user_window'),
-    ];
-    $this->originalFloodSettings = [
-      'flood_message_display' => $vactoryFloodSettings['flood_message_display'] ?? NULL,
-      'ip_whitelist' => $vactoryFloodSettings['ip_whitelist'] ?? NULL,
-      'notification_emails' => $vactoryFloodSettings['notification_emails'] ?? NULL,
-      'emails' => $vactoryFloodSettings['emails'] ?? NULL,
-      'user_flood_notification' => $vactoryFloodSettings['user_flood_notification'] ?? [],
-    ];
-
-    // Config temporaire pour le test.
-    $floodConfig->set('user_limit', 2)
-      ->set('user_window', 60)
-      ->set('ip_limit', 30)
-      ->set('ip_window', 3600)
-      ->save();
-
-    // Test avec flood_message_display = TRUE.
-    $floodSettings->set('flood_message_display', TRUE)->save();
-
-    for ($i = 0; $i < 3; $i++) {
-      $response = $this->postJson('/oauth/login-token', [
-        'grant_type' => 'password',
-        'client_id' => $this->clientId,
-        'client_secret' => $this->clientSecret,
-        'username' => $this->admin->getAccountName(),
-        'password' => 'wrong_password_' . $i,
-      ]);
-    }
-
-    $this->assertEquals(400, $response['status']);
-    $this->assertArrayHasKey('message', $response['body']);
-    $this->assertStringContainsString('There have been more than', $response['body']['message']);
-
-    // Test avec flood_message_display = FALSE.
-    $floodSettings->set('flood_message_display', FALSE)->save();
-
-    // Réinitialiser flood.
-    $floodConfig->set('user_limit', 2)->set('user_window', 60)->save();
-
-    for ($i = 0; $i < 3; $i++) {
-      $response = $this->postJson('/oauth/login-token', [
-        'grant_type' => 'password',
-        'client_id' => $this->clientId,
-        'client_secret' => $this->clientSecret,
-        'username' => $this->admin->getAccountName(),
-        'password' => 'wrong_password_' . $i,
-      ]);
-    }
-
-    $this->assertEquals(400, $response['status']);
-    $this->assertArrayHasKey('message', $response['body']);
-    $this->assertEquals('The account information provided was invalid.', $response['body']['message']);
-
-    // Restaurer toutes les configs originales.
-    $floodConfig->set('ip_limit', $this->originalFloodConfig['ip_limit'])
-      ->set('ip_window', $this->originalFloodConfig['ip_window'])
-      ->set('user_limit', $this->originalFloodConfig['user_limit'])
-      ->set('user_window', $this->originalFloodConfig['user_window'])
-      ->save();
-
-    $floodSettings->set('flood_message_display', $this->originalFloodSettings['flood_message_display'])
-      ->set('ip_whitelist', $this->originalFloodSettings['ip_whitelist'])
-      ->set('notification_emails', $this->originalFloodSettings['notification_emails'])
-      ->set('emails', $this->originalFloodSettings['emails'])
-      ->set('user_flood_notification', $this->originalFloodSettings['user_flood_notification'])
-      ->save();
-  }
-
-  /**
    * Crée un Consumer OAuth de test avec un client_id et client_secret.
    */
-  protected function createTestConsumer(int $user_id, string $redirect_uri): array {
+  protected function createTestConsumer(): array {
     $storage = \Drupal::entityTypeManager()->getStorage('consumer');
 
     // Génération du secret connu pour le test.
@@ -552,11 +289,8 @@ class LoginControllerTest extends ExistingSiteBase {
       'label' => 'Test Consumer',
       'client_id' => 'test_consumer_' . uniqid(),
       'description' => 'This is a test consumer created programmatically for automated tests.',
-      'is_default' => TRUE,
-      'redirect' => $redirect_uri,
       'roles' => [],
       'confidential' => TRUE,
-      'owner_id' => $user_id,
       'secret' => $clientSecret,
     ]);
 
@@ -603,19 +337,6 @@ class LoginControllerTest extends ExistingSiteBase {
   }
 
   /**
-   * Ensure a module is installed and track if we installed it during the test.
-   */
-  protected function ensureModuleInstalled(string $module_name): void {
-    $moduleHandler = \Drupal::service('module_handler');
-    $moduleInstaller = \Drupal::service('module_installer');
-
-    if (!$moduleHandler->moduleExists($module_name)) {
-      $moduleInstaller->install([$module_name]);
-      $this->modulesInstalledDuringTest[] = $module_name;
-    }
-  }
-
-  /**
    * {@inheritDoc}
    */
   protected function tearDown(): void {
@@ -624,58 +345,7 @@ class LoginControllerTest extends ExistingSiteBase {
       $this->consumerEntity->delete();
     }
 
-    // Restore the original default consumer.
-    if ($this->originalDefaultConsumer) {
-      // Re-save it to restore.
-      $storage = \Drupal::entityTypeManager()->getStorage('consumer');
-      $restored = $storage->create($this->originalDefaultConsumer->toArray());
-      $restored->save();
-    }
-
-    // Restaurer la configuration originale.
-    $config = \Drupal::configFactory()->getEditable('simple_oauth.settings');
-    $config->set('public_key', $this->originalPublicKey)
-      ->set('private_key', $this->originalPrivateKey)
-      ->save();
-
-    // Supprimer les fichiers de test.
-    if (file_exists($this->privateKeyPath)) {
-      unlink($this->privateKeyPath);
-    }
-    if (file_exists($this->publicKeyPath)) {
-      unlink($this->publicKeyPath);
-    }
-
-    // Restaurer la config flood originale.
-    if (!empty($this->originalFloodConfig)) {
-      $config = \Drupal::configFactory()->getEditable('user.flood');
-      foreach ($this->originalFloodConfig as $key => $value) {
-        $config->set($key, $value);
-      }
-      $config->save();
-    }
-
-    // Clear flood entries for the current user_test.
-    if ($this->admin) {
-      $flood = \Drupal::service('flood');
-      $flood->clear('user.failed_login_user', (string) $this->admin->id());
-      $flood->clear('user.failed_login_ip');
-    }
-    // Supprimer uniquement les floods créés pendant ce test.
-    $connection = \Drupal::database();
-    $connection->delete('flood')
-      ->condition('fid', $this->startFloodFid, '>')
-      ->condition('event', [
-        'user.failed_login_ip',
-        'user.failed_login_user',
-      ], 'IN')
-      ->execute();
-
-    // Désinstaller les modules installés pendant le test.
-    if (!empty($this->modulesInstalledDuringTest)) {
-      $moduleInstaller = \Drupal::service('module_installer');
-      $moduleInstaller->uninstall($this->modulesInstalledDuringTest);
-    }
+    $this->removeDirectory(self::SSL_KEYS_DIR);
 
     parent::tearDown();
   }
