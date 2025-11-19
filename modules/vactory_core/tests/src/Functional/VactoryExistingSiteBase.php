@@ -288,7 +288,7 @@ abstract class VactoryExistingSiteBase extends ExistingSiteBase {
    * @param string $dir
    *   The path to the directory to remove.
    */
-  private function removeDirectory(string $dir): void {
+  protected function removeDirectory(string $dir): void {
     if (!is_dir($dir)) {
       return;
     }
