@@ -1,0 +1,18 @@
+<?php
+
+/**
+ * @file
+ * Module principal pour la gestion des comparaisons de configuration.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function vactory_diff_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.vactory_diff':
+      return '<p>' . t('Ce module fournit des outils pour comparer les configurations entre différentes instances Drupal.') . '</p>';
+  }
+}

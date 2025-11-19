@@ -1,0 +1,36 @@
+<?php
+
+/**
+ * @file
+ * Module client pour la comparaison de configurations.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_diff_config_client_theme() {
+  return [
+    'vactory_diff_comparison' => [
+      'variables' => [
+        'remote_url' => '',
+        'results' => [],
+        'error_message' => '',
+      ],
+      'template' => 'vactory-diff-comparison',
+    ],
+    'vactory_diff_results' => [
+      'variables' => [
+        'results' => [],
+      ],
+      'template' => 'vactory-diff-results',
+    ],
+    'vactory_diff_modal' => [
+      'variables' => [
+        'config_name' => '',
+        'config_type' => '',
+        'diff_data' => [],
+      ],
+      'template' => 'vactory-diff-modal',
+    ],
+  ];
+}

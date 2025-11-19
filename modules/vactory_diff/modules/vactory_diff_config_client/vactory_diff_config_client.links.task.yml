@@ -1,0 +1,18 @@
+vactory_diff_config_client.settings:
+  title: 'Paramètres'
+  route_name: vactory_diff_config_client.settings
+  base_route: vactory_diff_config_client.settings
+  weight: 0
+
+vactory_diff_config_client.compare:
+  title: 'Config Comparaison'
+  route_name: vactory_diff_config_client.compare
+  base_route: vactory_diff_config_client.settings
+  weight: 10
+
+vactory_diff_config_client.todo_list:
+  title: 'TODO List'
+  route_name: vactory_diff_config_client.todo_list
+  base_route: vactory_diff_config_client.settings
+  weight: 30
+

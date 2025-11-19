@@ -1,0 +1,4 @@
+services:
+  vactory_diff.config_helper:
+    class: Drupal\vactory_diff\Service\ConfigHelperService
+    arguments: ['@config.storage', '@config.factory', '@logger.factory', '@entity_type.manager']
