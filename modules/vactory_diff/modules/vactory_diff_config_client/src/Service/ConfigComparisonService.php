@@ -573,6 +573,8 @@ class ConfigComparisonService {
    *   TRUE if saved successfully, FALSE otherwise.
    */
   protected function saveComparisonResults(array $results): bool {
+    $success = FALSE;
+
     try {
       // Créer le répertoire si nécessaire.
       $directory = 'private://config-diff';
@@ -590,23 +592,23 @@ class ConfigComparisonService {
       $json_data = json_encode($results, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
       if ($json_data === FALSE) {
         $this->logger->error('Unable to encode comparison results to JSON');
-        return FALSE;
       }
+      else {
+        // Écrire le fichier.
+        $file_uri = $this->fileSystem->saveData($json_data, $file_path, FileSystemInterface::EXISTS_REPLACE);
 
-      // Écrire le fichier.
-      $file_uri = $this->fileSystem->saveData($json_data, $file_path, FileSystemInterface::EXISTS_REPLACE);
-      if ($file_uri === FALSE) {
-        $this->logger->error('Unable to save comparison results to @file', [
-          '@file' => $file_path,
-        ]);
-        return FALSE;
+        if ($file_uri === FALSE) {
+          $this->logger->error('Unable to save comparison results to @file', [
+            '@file' => $file_path,
+          ]);
+        }
+        else {
+          $this->logger->info('Comparison results saved to @file', [
+            '@file' => $file_uri,
+          ]);
+          $success = TRUE;
+        }
       }
-
-      $this->logger->info('Comparison results saved to @file', [
-        '@file' => $file_uri,
-      ]);
-
-      return TRUE;
     }
     catch (\Exception $e) {
       $this->logger->error('Error saving comparison results: @message', [
@@ -614,6 +616,8 @@ class ConfigComparisonService {
       ]);
       return FALSE;
     }
+
+    return $success;
   }
 
   /**
@@ -623,6 +627,8 @@ class ConfigComparisonService {
    *   The comparison results or NULL if not found or error.
    */
   public function loadComparisonResults(): ?array {
+    $results = NULL;
+
     try {
       $file_path = 'private://config-diff/report.json';
 
@@ -640,23 +646,22 @@ class ConfigComparisonService {
         $this->logger->error('Unable to read comparison results from @file', [
           '@file' => $file_path,
         ]);
-        return NULL;
       }
-
-      // Décoder le JSON.
-      $results = json_decode($json_data, TRUE);
-      if ($results === NULL) {
-        $this->logger->error('Invalid JSON in comparison results file @file', [
-          '@file' => $file_path,
-        ]);
-        return NULL;
+      else {
+        // Décoder le JSON.
+        $decoded = json_decode($json_data, TRUE);
+        if ($decoded === NULL) {
+          $this->logger->error('Invalid JSON in comparison results file @file', [
+            '@file' => $file_path,
+          ]);
+        }
+        else {
+          $this->logger->info('Comparison results loaded from @file', [
+            '@file' => $file_path,
+          ]);
+          $results = $decoded;
+        }
       }
-
-      $this->logger->info('Comparison results loaded from @file', [
-        '@file' => $file_path,
-      ]);
-
-      return $results;
     }
     catch (\Exception $e) {
       $this->logger->error('Error loading comparison results: @message', [
@@ -664,6 +669,8 @@ class ConfigComparisonService {
       ]);
       return NULL;
     }
+
+    return $results;
   }
 
   /**

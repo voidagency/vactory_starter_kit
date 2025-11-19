@@ -88,9 +88,7 @@ class ConfigExportController extends ControllerBase {
         '@count' => count($configs),
       ]);
 
-      $response = new JsonResponse($response_data);
-
-      return $response;
+      return new JsonResponse($response_data);
     }
     catch (\Exception $e) {
       $this->logger->error('Error during configuration export: @message', [
