@@ -10,12 +10,12 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Controller for displaying the TODO list.
+ * Controller for displaying the to-do list.
  */
 class TodoListController extends ControllerBase {
 
   /**
-   * The TODO list generator service.
+   * The to-do list generator service.
    *
    * @var \Drupal\vactory_diff_config_client\Service\TodoListGeneratorService
    */
@@ -32,7 +32,7 @@ class TodoListController extends ControllerBase {
    * Constructs a TodoListController object.
    *
    * @param \Drupal\vactory_diff_config_client\Service\TodoListGeneratorService $todo_list_generator
-   *   The TODO list generator service.
+   *   The to-do list generator service.
    * @param \Drupal\vactory_diff_config_client\Service\ModuleInstallationService $module_installation
    *   The module installation service.
    */
@@ -55,7 +55,7 @@ class TodoListController extends ControllerBase {
   }
 
   /**
-   * Display the TODO list page.
+   * Display the to-do list page.
    *
    * @return array
    *   Render array.
@@ -341,7 +341,7 @@ class TodoListController extends ControllerBase {
   }
 
   /**
-   * Download TODO list as text file.
+   * Download to-do list as text file.
    *
    * @return \Symfony\Component\HttpFoundation\Response
    *   The response with text file.
