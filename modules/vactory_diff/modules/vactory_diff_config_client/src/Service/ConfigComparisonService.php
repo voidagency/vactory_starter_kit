@@ -631,10 +631,7 @@ class ConfigComparisonService {
 
     try {
       $config = \Drupal::config('vactory_diff_config_client.settings');
-      $file_path = $config->get('config_report_path');
-      if (!$file_path) {
-        $file_path = 'private://config-diff/report.json';
-      }
+      $file_path = $config->get('config_report_path') ?? $this->getDefaultReportPath();
 
       // Vérifier si le fichier existe.
       if (!file_exists($file_path)) {
@@ -795,6 +792,13 @@ class ConfigComparisonService {
         'summary' => ['added' => 0, 'removed' => 0, 'modified' => 0],
       ];
     }
+  }
+
+  /**
+   * Default report path.
+   */
+  private function getDefaultReportPath(): string {
+    return 'private://config-diff/report.json';
   }
 
 }
