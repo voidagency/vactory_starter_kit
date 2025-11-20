@@ -17,6 +17,8 @@ use SebastianBergmann\Diff\Output\UnifiedDiffOutputBuilder;
  */
 class ConfigComparisonService {
 
+  const REPORT_PATH = 'private://config-diff/report.json';
+
   /**
    * The HTTP client.
    *
@@ -630,7 +632,7 @@ class ConfigComparisonService {
     $results = NULL;
 
     try {
-      $file_path = 'private://config-diff/report.json';
+      $file_path = self::REPORT_PATH;
 
       // Vérifier si le fichier existe.
       if (!file_exists($file_path)) {
