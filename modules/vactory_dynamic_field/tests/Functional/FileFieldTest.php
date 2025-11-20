@@ -297,13 +297,13 @@ class FileFieldTest extends ExistingSiteBase {
     $yaml_config = Yaml::encode($content);
     $dest_uri = 'private://volatile-df';
     $dest_df_uri = $dest_uri . '/' . $name;
-    
+
     if (!file_exists($dest_df_uri)) {
       mkdir($dest_df_uri, 0777, TRUE);
     }
 
     $filepath = \Drupal::service('file_system')->realpath($dest_df_uri . '/settings.yml');
-    $printed = file_put_contents($filepath,
+    $printed = file_put_contents($filepath, $yaml_config);
     $this->createdDfFiles[] = \Drupal::service('file_system')->realpath($dest_df_uri);
 
     return (bool) $printed;
