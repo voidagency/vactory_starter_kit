@@ -126,19 +126,15 @@ class ModuleInstallationService {
 
     // Find modules that are in local but not in remote (added).
     foreach ($local_modules as $module_name => $weight) {
-      if (!isset($remote_modules[$module_name])) {
-        if (!in_array(strtolower($module_name), $ignored_modules, TRUE)) {
-          $modules_to_install[] = $module_name;
-        }
+      if (!isset($remote_modules[$module_name]) && !in_array(strtolower($module_name), $ignored_modules, TRUE)) {
+        $modules_to_install[] = $module_name;
       }
     }
 
     // Find modules that are in remote but not in local (removed).
     foreach ($remote_modules as $module_name => $weight) {
-      if (!isset($local_modules[$module_name])) {
-        if (!in_array(strtolower($module_name), $ignored_modules, TRUE)) {
-          $modules_to_uninstall[] = $module_name;
-        }
+      if (!isset($local_modules[$module_name]) && !in_array(strtolower($module_name), $ignored_modules, TRUE)) {
+        $modules_to_uninstall[] = $module_name;
       }
     }
 
