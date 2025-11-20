@@ -17,8 +17,6 @@ use SebastianBergmann\Diff\Output\UnifiedDiffOutputBuilder;
  */
 class ConfigComparisonService {
 
-  const REPORT_PATH = 'private://config-diff/report.json';
-
   /**
    * The HTTP client.
    *
@@ -632,7 +630,11 @@ class ConfigComparisonService {
     $results = NULL;
 
     try {
-      $file_path = self::REPORT_PATH;
+      $config = \Drupal::config('vactory_diff_config_client.settings');
+      $file_path = $config->get('config_report_path');
+      if (!$file_path) {
+        $file_path = 'private://config-diff/report.json';
+      }
 
       // Vérifier si le fichier existe.
       if (!file_exists($file_path)) {

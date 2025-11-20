@@ -100,14 +100,6 @@ class TodoListController extends ControllerBase {
 
   /**
    * Check if the to-do list is empty.
-   *
-   * @param array $todo_list
-   *   The to-do list array.
-   * @param array $module_changes
-   *   The module changes array.
-   *
-   * @return bool
-   *   TRUE if empty, FALSE otherwise.
    */
   protected function isEmptyTodoList(array $todo_list, array $module_changes): bool {
     return empty($todo_list['features'])
@@ -143,14 +135,6 @@ class TodoListController extends ControllerBase {
 
   /**
    * Build the summary section.
-   *
-   * @param array $todo_list
-   *   The to-do list array.
-   * @param array $module_changes
-   *   The module changes array.
-   *
-   * @return array
-   *   Render array for summary section.
    */
   protected function buildSummarySection(array $todo_list, array $module_changes): array {
     $summary = [
@@ -233,12 +217,6 @@ class TodoListController extends ControllerBase {
 
   /**
    * Build the features section (commands and details).
-   *
-   * @param array $todo_list
-   *   The to-do list array.
-   *
-   * @return array
-   *   Render array for features section.
    */
   protected function buildFeaturesSection(array $todo_list): array {
     $build = [];
@@ -347,12 +325,6 @@ class TodoListController extends ControllerBase {
 
   /**
    * Build the unmatched configurations section.
-   *
-   * @param array $todo_list
-   *   The to-do list array.
-   *
-   * @return array
-   *   Render array for unmatched section.
    */
   protected function buildUnmatchedSection(array $todo_list): array {
     $unmatched = [
@@ -389,12 +361,6 @@ class TodoListController extends ControllerBase {
 
   /**
    * Build the content sync section.
-   *
-   * @param array $todo_list
-   *   The to-do list array.
-   *
-   * @return array
-   *   Render array for content sync section.
    */
   protected function buildContentSyncSection(array $todo_list): array {
     $content_sync = [
