@@ -5,6 +5,10 @@ namespace Drupal\vactory_page_import\Services;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\file\FileInterface;
+use Drupal\Core\File\FileExists;
+use Drupal\Core\FileTransfer\FileTransferException;
+use Drupal\Core\File\Exception\FileException;
+use Drupal\Core\File\Exception\InvalidStreamWrapperException;
 use Drupal\vactory_page_import\PageImportConstants;
 use PhpOffice\PhpSpreadsheet\IOFactory;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
@@ -567,7 +571,19 @@ class PageImportService {
         $filename = $filename['filename'];
         $filename = preg_replace("/-[^-]*$/", "", $filename);
         $filename = ucfirst(strtolower(str_replace('-', ' ', $filename)));
-        $file = system_retrieve_file($url, 'public://page-import-media', TRUE, FileSystemInterface::EXISTS_RENAME);
+        try {
+          $data = (string) \Drupal::httpClient()->get($url)->getBody();
+          // For managed files, use file.repository service
+          $file = \Drupal::service('file.repository')->writeData($data, 'public://page-import-media/' . basename($url), FileExists::Rename);
+        }
+        catch (FileTransferException $e) {
+          $this->logger->get('vactory_page_import')->error('Failed to fetch file due to error "%error"', ['%error' => $e->getMessage()]);
+          $file = FALSE;
+        }
+        catch (FileException | InvalidStreamWrapperException $e) {
+          $this->logger->get('vactory_page_import')->error('Failed to save file due to error "%error"', ['%error' => $e->getMessage()]);
+          $file = FALSE;
+        }
         if ($file instanceof FileInterface) {
           $file->save();
           $media_data = [

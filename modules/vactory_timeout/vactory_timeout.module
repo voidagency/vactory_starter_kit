@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Url;
+use Drupal\user\Entity\Role;
 
 /**
  * Implements hook_page_attachements().
@@ -51,7 +52,13 @@ function vactory_timeout_page_attachments(array &$page) {
     $landing_page = Url::fromUserInput('/' . $language->getId() . $landing_page)->toString();
     $user = \Drupal::currentUser();
     $user_roles = $user->getRoles();
-    $roles_permissions = user_role_permissions($user_roles);
+    $roles_permissions = [];
+    foreach ($user_roles as $role_id) {
+      $role = Role::load($role_id);
+      if ($role) {
+        $roles_permissions[$role_id] = $role->getPermissions();
+      }
+    }
 
     // We attach the library to the page.
     $page['#attached']['library'][] = 'vactory_timeout/timeout';

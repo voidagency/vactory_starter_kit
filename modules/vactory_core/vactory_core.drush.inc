@@ -5,6 +5,8 @@
  * Main Drush file for Vactory core.
  */
 
+use Drupal\Core\Site\SettingsEditor;
+
 /**
  * Implements hook_drush_command().
  */
@@ -68,8 +70,9 @@ function _vactory_core_switch_environment($environment = '') {
   $settings['vactory_environment'] = (object) [
     'value' => $environment,
     'required' => TRUE,
-  ];;
-  drupal_rewrite_settings($settings);
+  ];
+  $settings_file = \Drupal::root() . '/sites/default/settings.php';
+  SettingsEditor::rewrite($settings_file, $settings);
 
   // Run a complete cache flush.
   drupal_flush_all_caches();
