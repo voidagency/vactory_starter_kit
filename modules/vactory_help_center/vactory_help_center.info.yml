@@ -1,7 +1,7 @@
 name: 'Vactory Help Center'
 type: module
 description: 'Handled Help Center nodes based on taxonomy hierarchy.'
-core_version_requirement: '^9.4 || ^10'
+core_version_requirement: '^9.4 || ^10 || ^11'
 package: Vactory
 dependencies:
   - 'drupal:content_moderation'

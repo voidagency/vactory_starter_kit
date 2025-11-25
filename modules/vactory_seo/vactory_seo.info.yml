@@ -1,7 +1,7 @@
 name: 'Vactory SEO'
 description: 'Provide SEO contant type'
 type: module
-core_version_requirement: '^9.4 || ^10'
+core_version_requirement: '^9.4 || ^10 || ^11'
 package: Vactory
 dependencies:
   - 'drupal:field'
