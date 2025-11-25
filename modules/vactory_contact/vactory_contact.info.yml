@@ -1,7 +1,7 @@
 name: 'Vactory Contact'
 description: 'Provide page with contact form.'
 type: module
-core_version_requirement: ^9 || ^10
+core_version_requirement: ^9 || ^10 || ^11
 dependencies:
   - vactory_decoupled_webform
 package: Vactory

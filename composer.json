@@ -7,7 +7,8 @@
   "minimum-stability": "dev",
   "prefer-stable": true,
   "require": {
-    "php": ">=7.3",
+    "php": ">=8.1",
+    "drupal/core": "^10.0 || ^11.0",
     "webflo/drupal-finder": "^1.0.0",
     "symfony/finder": "~4.0|~5.0|~6.0",
     "webmozart/path-util": "^2.3",
@@ -166,7 +167,7 @@
     "drupal/yaml_editor": "^1.2",
     "drupal/menu_manipulator": "^4.0",
     "drupal/log_stdout": "^3.0",
-    "drupal/image_effects": "^3.6",
+    "drupal/image_effects": "^4.0",
     "drupal/imagemagick": "^4.0",
     "drupal/views_url_alias": "^3.1",
     "drupal/simple_oauth_revoke": "^3.0",

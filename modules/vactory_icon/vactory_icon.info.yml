@@ -1,7 +1,7 @@
 name: 'Vactory Icon'
 description: 'un module de gestion des icônes IcoMoon.'
 type: module
-core_version_requirement: ^9 || ^10
+core_version_requirement: ^9 || ^10 || ^11
 package: Vactory
 dependencies:
   - field

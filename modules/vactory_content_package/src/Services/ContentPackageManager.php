@@ -142,7 +142,9 @@ class ContentPackageManager implements ContentPackageManagerInterface {
         }
 
         if (in_array($field_type, ContentPackageManagerInterface::DATE_TIME_TYPES)) {
-          $field_value = !$is_multiple ? date('d/m/Y H:i', $field_value[0]['value']) : array_map(function ($value) { return date('d/m/Y H:i', $value['value']); }, $field_value);
+          $field_value = !$is_multiple ? date('d/m/Y H:i', $field_value[0]['value']) : array_map(function ($value) {
+            return date('d/m/Y H:i', $value['value']);
+          }, $field_value);
         }
 
         if ($field_type === 'entity_reference') {
@@ -522,7 +524,9 @@ class ContentPackageManager implements ContentPackageManagerInterface {
               ->condition('name', $field_value, 'IN')
               ->execute();
             if (!empty($users_ids)) {
-              $users_ids = array_map(function ($id) { return ['target_id' => $id]; }, $users_ids);
+              $users_ids = array_map(function ($id) {
+                return ['target_id' => $id];
+              }, $users_ids);
               $values[$field_name] = $users_ids;
             }
           }
@@ -557,7 +561,9 @@ class ContentPackageManager implements ContentPackageManagerInterface {
               ->condition('term_id', $field_value, 'IN')
               ->execute();
             if (!empty($terms_ids)) {
-              $terms_ids = array_map(function ($id) { return ['target_id' => $id]; }, $terms_ids);
+              $terms_ids = array_map(function ($id) {
+                return ['target_id' => $id];
+              }, $terms_ids);
               $values[$field_name] = $terms_ids;
             }
           }
@@ -565,12 +571,16 @@ class ContentPackageManager implements ContentPackageManagerInterface {
           // Entity type reference field.
           if ($field_name === 'type' && isset($field_settings['target_type']) && in_array($field_settings['target_type'], ContentPackageManagerInterface::ENTITY_TYPES_KEYS) && !empty($field_value)) {
             $field_value = is_array($field_value) ? $field_value : [$field_value];
-            $values[$field_name] = array_map(function ($id) { return ['target_id' => $id]; }, $field_value);
+            $values[$field_name] = array_map(function ($id) {
+              return ['target_id' => $id];
+            }, $field_value);
           }
         }
         if ($field_type === 'colorapi_color_field' && !empty($field_value)) {
           $field_value = is_array($field_value) ? $field_value : [$field_value];
-          $field_value = array_map(function ($el) { return ['color' => $el]; }, $field_value);
+          $field_value = array_map(function ($el) {
+            return ['color' => $el];
+          }, $field_value);
           $values[$field_name] = $field_value;
         }
         if ($field_type === 'path' && !empty($field_value)) {
@@ -676,7 +686,9 @@ class ContentPackageManager implements ContentPackageManagerInterface {
    * Get field value depending on its cardinality.
    */
   protected function getFieldValue($fieldValue, $isMultiple = FALSE, $arrayFormat = FALSE, $key = 'value') {
-    $value = !$isMultiple ? $fieldValue[0][$key] : array_map(function ($value) use ($key) { return $value[$key]; }, $fieldValue);
+    $value = !$isMultiple ? $fieldValue[0][$key] : array_map(function ($value) use ($key) {
+      return $value[$key];
+    }, $fieldValue);
     return $arrayFormat && !is_array($value) ? [$value] : $value;
   }
 
@@ -780,7 +792,7 @@ class ContentPackageManager implements ContentPackageManagerInterface {
         $filename = ucfirst(strtolower(str_replace('-', ' ', $filename)));
         try {
           $data = (string) \Drupal::httpClient()->get($url)->getBody();
-          // For managed files, use file.repository service
+          // For managed files, use file.repository service.
           $file = \Drupal::service('file.repository')->writeData($data, 'public://content_package_manager/' . basename($url), FileExists::Rename);
         }
         catch (FileTransferException $e) {

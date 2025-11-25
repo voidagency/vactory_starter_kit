@@ -1,7 +1,7 @@
 name: 'Social Auth'
 description: 'Default configuration for Drupal Social Initiative.'
 type: module
-core_version_requirement: ^9 || ^10
+core_version_requirement: ^9 || ^10 || ^11
 dependencies:
   - social_api
   - social_auth

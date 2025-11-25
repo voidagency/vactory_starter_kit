@@ -1,5 +1,5 @@
 name: 'Vactory Checklist'
 type: module
 description: 'Système de vérification modulaire avec plugins'
-core_version_requirement: ^9 || ^10
+core_version_requirement: ^9 || ^10 || ^11
 package: Vactory

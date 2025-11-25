@@ -98,7 +98,7 @@ class SondageForm extends FormBase {
           '#theme'  => 'vactory_sondage_radio_option',
           '#option' => $option,
         ];
-        return $this->renderer->renderPlain($option);
+        return $this->renderer->render($option);
       }, $extra_data['sondage_options']);
       $type = $extra_data['sondage_options']['option_1']['type'];
       $form['sondage_options_' . $entity_id] = [

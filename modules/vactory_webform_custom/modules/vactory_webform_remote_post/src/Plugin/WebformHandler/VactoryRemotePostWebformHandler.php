@@ -1019,7 +1019,7 @@ class VactoryRemotePostWebformHandler extends WebformHandlerBase {
       '#markup' => $message,
     ];
 
-    $this->messenger()->addMessage(\Drupal::service('renderer')->renderPlain($build), $type);
+    $this->messenger()->addMessage(\Drupal::service('renderer')->render($build), $type);
   }
 
   /**
@@ -1076,7 +1076,7 @@ class VactoryRemotePostWebformHandler extends WebformHandlerBase {
       $build_message = [
         '#markup' => $this->replaceTokens($custom_response_message, $this->getWebform(), $token_data),
       ];
-      $this->messenger()->addError(\Drupal::service('renderer')->renderPlain($build_message));
+      $this->messenger()->addError(\Drupal::service('renderer')->render($build_message));
     }
     else {
       $this->messageManager->display(WebformMessageManagerInterface::SUBMISSION_EXCEPTION_MESSAGE, 'error');

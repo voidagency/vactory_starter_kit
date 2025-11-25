@@ -125,7 +125,7 @@ class DataLayerWebformHandler extends WebformHandlerBase {
         '#children' => '<script>dataLayer = [' . json_encode($layerDataAttributes) . ']; document.querySelector(".messages > script").parentNode.style.display = \'none\';</script>',
       ];
 
-      $this->messenger()->addMessage(\Drupal::service('renderer')->renderPlain($build), 'success');
+      $this->messenger()->addMessage(\Drupal::service('renderer')->render($build), 'success');
     }
   }
 

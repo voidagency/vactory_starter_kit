@@ -2,7 +2,7 @@ name: 'Views'
 type: module
 description: Holds views styles plugins and related configurations.
 package: Vactory Core
-core_version_requirement: ^9 || ^10
+core_version_requirement: ^9 || ^10 || ^11
 dependencies:
   - views
   - better_exposed_filters

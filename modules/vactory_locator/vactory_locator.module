@@ -316,7 +316,7 @@ function _rendered_pin(array $data, $theme) {
   $result = array_merge($localisation_theme, $data);
 
   // Render the template to HTML.
-  $marker = \Drupal::service('renderer')->renderPlain($result);
+  $marker = \Drupal::service('renderer')->render($result);
 
   return $marker;
 }

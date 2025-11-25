@@ -2,7 +2,6 @@
 
 namespace Drupal\vactory_page_import\Services;
 
-use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\file\FileInterface;
 use Drupal\Core\File\FileExists;
@@ -573,7 +572,7 @@ class PageImportService {
         $filename = ucfirst(strtolower(str_replace('-', ' ', $filename)));
         try {
           $data = (string) \Drupal::httpClient()->get($url)->getBody();
-          // For managed files, use file.repository service
+          // For managed files, use file.repository service.
           $file = \Drupal::service('file.repository')->writeData($data, 'public://page-import-media/' . basename($url), FileExists::Rename);
         }
         catch (FileTransferException $e) {

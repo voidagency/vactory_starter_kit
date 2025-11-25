@@ -105,7 +105,7 @@ class ReportContentSubmitForm extends FormBase {
       return $this->renderer->render($render);
     }, $reasons);
     $status_messages = ['#type' => 'status_messages'];
-    $form['#prefix'] .= $this->renderer->renderRoot($status_messages);
+    $form['#prefix'] .= $this->renderer->render($status_messages);
     $form['reason'] = [
       '#type' => 'radios',
       '#title' => $this->t('Why do you report this content ?'),
@@ -167,7 +167,7 @@ class ReportContentSubmitForm extends FormBase {
     if (!empty($errors)) {
       $status_messages = ['#type' => 'status_messages'];
       $form['#prefix'] = '<div id="js-form-report-content">';
-      $form['#prefix'] .= $this->renderer->renderRoot($status_messages);
+      $form['#prefix'] .= $this->renderer->render($status_messages);
       $form['#suffix'] = '</div>';
       return $form;
     }

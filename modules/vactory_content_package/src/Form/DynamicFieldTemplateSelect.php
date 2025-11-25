@@ -72,7 +72,7 @@ class DynamicFieldTemplateSelect extends ModalForm {
     $template = $values['template'] ?? '';
     $form['actions']['send']['#url'] = Url::fromRoute('vactory_content_package.df_json_generator', ['widget_id' => $template]);
     $element = $form['actions']['send'];
-    $link = \Drupal::service('renderer')->renderPlain($element);
+    $link = \Drupal::service('renderer')->render($element);
     $response = new AjaxResponse();
     $response->addCommand(new InvokeCommand("div > .df-console-modal-opener", 'replaceWith', [$link]));
     if (isset($form['#attached'])) {

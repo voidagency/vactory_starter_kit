@@ -1,7 +1,7 @@
 name: Vactory Decoupled Search AI
 description: 'Add search ai functionnality.'
 type: module
-core_version_requirement: ^9 || ^10
+core_version_requirement: ^9 || ^10 || ^11
 dependencies:
   - vactory_decoupled_search
   - search_api_ai

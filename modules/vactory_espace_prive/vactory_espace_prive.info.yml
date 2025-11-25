@@ -1,7 +1,7 @@
 name: Vactory Espace Privé
 description: Customize drupal default user pages (Login, register, profile...)
 type: module
-core_version_requirement: ^9 || ^10
+core_version_requirement: ^9 || ^10 || ^11
 configure: vactory_espace_prive.settings_form
 dependencies:
   - vactory_user

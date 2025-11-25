@@ -870,7 +870,7 @@ class ModalForm extends FormBase {
                   'name' => $widget['name'],
                 ],
               ];
-              $options[$widget['uuid']] = $renderer->renderPlain($widget_preview);
+              $options[$widget['uuid']] = $renderer->render($widget_preview);
             }
           }
           $classes = 'select-template-wrapper';

@@ -2,7 +2,7 @@ name: Splash Screen
 type: module
 description: 'Fournis un bloc pour afficher un interstitiel au chargement de la page.'
 package: Vactory
-core_version_requirement: ^9 || ^10
+core_version_requirement: ^9 || ^10 || ^11
 dependencies:
   - field
   - block

@@ -4,6 +4,6 @@ type: module
 dependencies:
   - search_api
 package: Vactory
-core_version_requirement: ^9 || ^10
+core_version_requirement: ^9 || ^10 || ^11
 categorie: Vactory
 configure: vactory_frequent_searches.frequent_searches_admin_form

@@ -104,7 +104,7 @@ class GeneratePageForm extends FormBase {
 
           $row['selected_widget'][$widget_id] = [
             '#type' => 'checkbox',
-            '#title' => $renderer->renderPlain($widget_preview),
+            '#title' => $renderer->render($widget_preview),
             '#return_value' => $widget['uuid'],
           ];
 

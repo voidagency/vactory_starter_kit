@@ -226,7 +226,7 @@ class ViewsToApi {
           ];
 
           $result[$output_field_name] = (string) \Drupal::service('renderer')
-            ->renderPlain($build);
+            ->render($build);
         }
         continue;
       }
