@@ -90,16 +90,43 @@ class ContentDiffCsvForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $form['#attributes']['class'][] = 'vactory-content-diff-csv-form';
+    $this->buildFormBase($form);
+    $this->buildInstructions($form);
+    $this->buildGenerateButton($form);
 
-    // Attach module CSS and dialog.
+    $csv_data = $this->loadCsvData($form);
+    if ($csv_data === NULL) {
+      return $form;
+    }
+
+    $saved_filters = $this->getSavedFilters();
+    $this->buildFilters($form, $form_state, $csv_data, $saved_filters);
+    $this->buildResultsTable($form, $csv_data, $form_state, $saved_filters);
+
+    return $form;
+  }
+
+  /**
+   * Build base form structure.
+   *
+   * @param array &$form
+   *   Form array (passed by reference).
+   */
+  protected function buildFormBase(array &$form): void {
+    $form['#attributes']['class'][] = 'vactory-content-diff-csv-form';
     $form['#attached']['library'][] = 'vactory_diff_content/content_diff';
     $form['#attached']['library'][] = 'core/drupal.dialog.ajax';
-
-    // Add a wrapper for the entire form content.
     $form['#prefix'] = '<div id="vactory-content-diff-form-wrapper">';
     $form['#suffix'] = '</div>';
+  }
 
+  /**
+   * Build instructions section.
+   *
+   * @param array &$form
+   *   Form array (passed by reference).
+   */
+  protected function buildInstructions(array &$form): void {
     $form['instruction'] = [
       '#type' => 'container',
       '#attributes' => ['class' => 'vactory-diff-content-instruction'],
@@ -120,7 +147,6 @@ class ContentDiffCsvForm extends FormBase {
       '#markup' => $instructions,
     ];
 
-    // Add status legend in instructions.
     $status_legend = '<div class="status-legend">';
     $status_legend .= '<h3>' . $this->t('Status Legend') . '</h3>';
     $status_legend .= '<div class="status-items">';
@@ -137,15 +163,32 @@ class ContentDiffCsvForm extends FormBase {
       '#type' => 'markup',
       '#markup' => $status_legend,
     ];
+  }
 
-    // Add "Generate Diff Report" button.
+  /**
+   * Build generate button.
+   *
+   * @param array &$form
+   *   Form array (passed by reference).
+   */
+  protected function buildGenerateButton(array &$form): void {
     $form['generate_button'] = [
       '#type' => 'submit',
       '#value' => $this->t('Generate Diff Report'),
       '#submit' => ['::generateReport'],
     ];
+  }
 
-    // Check if CSV file exists.
+  /**
+   * Load CSV data and handle errors.
+   *
+   * @param array &$form
+   *   Form array (passed by reference).
+   *
+   * @return array|null
+   *   CSV data array or NULL if file doesn't exist or is empty.
+   */
+  protected function loadCsvData(array &$form): ?array {
     $csv_path = ContentDiffConst::FILE_PATH . '/' . ContentDiffConst::FILE_NAME;
     $real_path = $this->fileSystem->realpath($csv_path);
 
@@ -154,25 +197,45 @@ class ContentDiffCsvForm extends FormBase {
         '#type' => 'markup',
         '#markup' => '<div class="messages messages--warning">' . $this->t('No CSV report found. Please click "Generate Diff Report" button OR run the drush command first: drush vactory_diff_content_fetch') . '</div>',
       ];
-      return $form;
+      return NULL;
     }
 
-    // Read CSV file.
     $csv_data = $this->readCsvFile($real_path);
-
     if (empty($csv_data)) {
       $form['no_data'] = [
         '#type' => 'markup',
         '#markup' => '<div class="messages messages--warning">' . $this->t('CSV file is empty or could not be read. Please run the drush command first: drush vactory_diff_content_fetch') . '</div>',
       ];
-      return $form;
+      return NULL;
     }
 
-    // Get saved filters from temp store.
-    $store = $this->tempStoreFactory->get('vactory_diff_content');
-    $saved_filters = $store->get('filters') ?: [];
+    return $csv_data;
+  }
 
-    // Build filters.
+  /**
+   * Get saved filters from temp store.
+   *
+   * @return array
+   *   Saved filters array.
+   */
+  protected function getSavedFilters(): array {
+    $store = $this->tempStoreFactory->get('vactory_diff_content');
+    return $store->get('filters') ?: [];
+  }
+
+  /**
+   * Build filters section.
+   *
+   * @param array &$form
+   *   Form array (passed by reference).
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   Form state.
+   * @param array $csv_data
+   *   CSV data.
+   * @param array $saved_filters
+   *   Saved filters.
+   */
+  protected function buildFilters(array &$form, FormStateInterface $form_state, array $csv_data, array $saved_filters): void {
     $form['filters'] = [
       '#type' => 'container',
       '#attributes' => ['class' => ['content-diff-filters']],
@@ -197,14 +260,7 @@ class ContentDiffCsvForm extends FormBase {
     ];
 
     $selected_type = $form_state->getValue('filter_type') ?: ($saved_filters['type'] ?? '');
-
-    // Check if the type has changed and reset bundle if needed.
-    $previous_type = $form_state->get('previous_type') ?: '';
-    if ($selected_type !== $previous_type) {
-      // Type has changed, reset the bundle value.
-      $form_state->setValue('filter_bundle', '');
-      $form_state->set('previous_type', $selected_type);
-    }
+    $this->handleTypeChange($form_state, $selected_type);
 
     if ($selected_type) {
       $form['filters']['filter_bundle'] = [
@@ -235,40 +291,43 @@ class ContentDiffCsvForm extends FormBase {
       '#name' => 'reset',
       '#submit' => ['::resetFilters'],
     ];
+  }
 
+  /**
+   * Handle type change and reset bundle if needed.
+   *
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   Form state.
+   * @param string $selected_type
+   *   Selected type.
+   */
+  protected function handleTypeChange(FormStateInterface $form_state, string $selected_type): void {
+    $previous_type = $form_state->get('previous_type') ?: '';
+    if ($selected_type !== $previous_type) {
+      $form_state->setValue('filter_bundle', '');
+      $form_state->set('previous_type', $selected_type);
+    }
+  }
+
+  /**
+   * Build results table.
+   *
+   * @param array &$form
+   *   Form array (passed by reference).
+   * @param array $csv_data
+   *   CSV data.
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   Form state.
+   * @param array $saved_filters
+   *   Saved filters.
+   */
+  protected function buildResultsTable(array &$form, array $csv_data, FormStateInterface $form_state, array $saved_filters): void {
     $form['results_wrapper'] = [
       '#type' => 'container',
       '#attributes' => ['id' => 'content-diff-results-wrapper'],
     ];
 
-    // Build filtered rows - only apply filters if form was submitted (not AJAX)
-    $filters = [
-      'title' => '',
-      'type' => '',
-      'bundle' => '',
-      'status' => [],
-    ];
-
-    // Get temp store for this user.
-    $store = $this->tempStoreFactory->get('vactory_diff_content');
-    $saved_filters = $store->get('filters') ?: [];
-
-    // Check if the form was actually submitted (not just AJAX callback)
-    $triggering_element = $form_state->getTriggeringElement();
-    if ($triggering_element && isset($triggering_element['#name']) && $triggering_element['#name'] === 'filter') {
-      // Form was submitted via Filter button, apply filters from form values.
-      $filters = [
-        'title' => (string) $form_state->getValue('filter_title') ?: '',
-        'type' => (string) $form_state->getValue('filter_type') ?: '',
-        'bundle' => (string) $form_state->getValue('filter_bundle') ?: '',
-        'status' => $form_state->getValue('filter_status') ?: [],
-      ];
-    }
-    elseif (!empty($saved_filters)) {
-      // Use saved filters from temp store.
-      $filters = $saved_filters;
-    }
-
+    $filters = $this->getActiveFilters($form_state, $saved_filters);
     $rows = $this->buildFilteredRows($csv_data, $filters);
 
     if (!empty($rows)) {
@@ -286,8 +345,40 @@ class ContentDiffCsvForm extends FormBase {
         '#attributes' => ['class' => ['content-diff-results']],
       ];
     }
+  }
 
-    return $form;
+  /**
+   * Get active filters from form state or saved filters.
+   *
+   * @param \Drupal\Core\Form\FormStateInterface $form_state
+   *   Form state.
+   * @param array $saved_filters
+   *   Saved filters.
+   *
+   * @return array
+   *   Active filters array.
+   */
+  protected function getActiveFilters(FormStateInterface $form_state, array $saved_filters): array {
+    $triggering_element = $form_state->getTriggeringElement();
+    if ($triggering_element && isset($triggering_element['#name']) && $triggering_element['#name'] === 'filter') {
+      return [
+        'title' => (string) $form_state->getValue('filter_title') ?: '',
+        'type' => (string) $form_state->getValue('filter_type') ?: '',
+        'bundle' => (string) $form_state->getValue('filter_bundle') ?: '',
+        'status' => $form_state->getValue('filter_status') ?: [],
+      ];
+    }
+
+    if (!empty($saved_filters)) {
+      return $saved_filters;
+    }
+
+    return [
+      'title' => '',
+      'type' => '',
+      'bundle' => '',
+      'status' => [],
+    ];
   }
 
   /**

@@ -2,6 +2,7 @@
 
 namespace Drupal\vactory_diff_content\Service;
 
+use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Messenger\MessengerInterface;
@@ -155,89 +156,146 @@ class ContentDiffService {
   public function compareWithLocal(array $remote_entities, string $entity_type_id): array {
     $results = [];
     $storage = $this->entityTypeManager->getStorage($entity_type_id);
-
-    // Build index of remote UUIDs during processing.
     $remote_uuids = [];
 
-    // 1. Process remote entities (deleted and modified/synchronized).
+    // Process remote entities (deleted and modified/synchronized).
     foreach ($remote_entities as $item) {
-      $uuid = $item['id'] ?? NULL;
-      $attributes = $item['attributes'] ?? [];
-
-      // Add to remote UUIDs index.
-      if ($uuid) {
-        $remote_uuids[$uuid] = TRUE;
+      $result = $this->processRemoteEntity($item, $entity_type_id, $storage);
+      $results[] = $result;
+      if ($result['uuid']) {
+        $remote_uuids[$result['uuid']] = TRUE;
       }
-
-      // Get title based on entity type.
-      $title = $this->getEntityTitle($attributes, $entity_type_id);
-
-      // Get bundle.
-      $bundle = $this->getEntityBundle($item, $entity_type_id);
-
-      // Determine remote changed timestamp.
-      $remote_changed_raw = $attributes['changed'] ?? NULL;
-      $remote_changed = NULL;
-      if ($remote_changed_raw !== NULL) {
-        if (is_numeric($remote_changed_raw)) {
-          $remote_changed = (int) $remote_changed_raw;
-        }
-        else {
-          $remote_changed = strtotime((string) $remote_changed_raw) ?: NULL;
-        }
-      }
-
-      // Default status: synchronized.
-      $status = 'synchronized';
-
-      if ($uuid) {
-        $nids = \Drupal::entityQuery($entity_type_id)
-          ->condition('uuid', $uuid)
-          ->accessCheck(TRUE)
-          ->range(0, 1)
-          ->execute();
-
-        if (empty($nids)) {
-          // Exists on remote but not locally = deleted.
-          $status = 'deleted';
-        }
-        else {
-          $nid = reset($nids);
-          $local_entity = $storage->load($nid);
-
-          if ($local_entity) {
-            $local_changed = (int) $local_entity->getChangedTime();
-            if ($remote_changed !== NULL && $remote_changed !== $local_changed) {
-              $status = 'modified';
-            }
-          }
-        }
-      }
-
-      $results[] = [
-        'title' => $title,
-        'bundle' => $bundle,
-        'status' => $status,
-        'uuid' => $uuid,
-        'entity_type' => $entity_type_id,
-      ];
     }
 
-    // 2. Find local entities that don't exist on remote (added).
-    // Get base table name.
+    // Find local entities that don't exist on remote (added).
+    $added_results = $this->findAddedEntities($entity_type_id, $remote_uuids, $storage);
+    $results = array_merge($results, $added_results);
+
+    return $results;
+  }
+
+  /**
+   * Process a single remote entity and determine its status.
+   *
+   * @param array $item
+   *   Remote entity item from JSON API.
+   * @param string $entity_type_id
+   *   Entity type ID.
+   * @param \Drupal\Core\Entity\EntityStorageInterface $storage
+   *   Entity storage.
+   *
+   * @return array
+   *   Result array with title, bundle, status, uuid, entity_type.
+   */
+  protected function processRemoteEntity(array $item, string $entity_type_id, EntityStorageInterface $storage): array {
+    $uuid = $item['id'] ?? NULL;
+    $attributes = $item['attributes'] ?? [];
+
+    $title = $this->getEntityTitle($attributes, $entity_type_id);
+    $bundle = $this->getEntityBundle($item, $entity_type_id);
+    $remote_changed = $this->parseChangedTimestamp($attributes['changed'] ?? NULL);
+    $status = $this->determineEntityStatus($uuid, $entity_type_id, $remote_changed, $storage);
+
+    return [
+      'title' => $title,
+      'bundle' => $bundle,
+      'status' => $status,
+      'uuid' => $uuid,
+      'entity_type' => $entity_type_id,
+    ];
+  }
+
+  /**
+   * Parse changed timestamp from remote attributes.
+   *
+   * @param mixed $changed_raw
+   *   Raw changed value.
+   *
+   * @return int|null
+   *   Parsed timestamp or NULL.
+   */
+  protected function parseChangedTimestamp($changed_raw): ?int {
+    if ($changed_raw === NULL) {
+      return NULL;
+    }
+
+    if (is_numeric($changed_raw)) {
+      return (int) $changed_raw;
+    }
+
+    return strtotime((string) $changed_raw) ?: NULL;
+  }
+
+  /**
+   * Determine entity status (deleted, modified, or synchronized).
+   *
+   * @param string|null $uuid
+   *   Entity UUID.
+   * @param string $entity_type_id
+   *   Entity type ID.
+   * @param int|null $remote_changed
+   *   Remote changed timestamp.
+   * @param \Drupal\Core\Entity\EntityStorageInterface $storage
+   *   Entity storage.
+   *
+   * @return string
+   *   Status: 'deleted', 'modified', or 'synchronized'.
+   */
+  protected function determineEntityStatus(?string $uuid, string $entity_type_id, ?int $remote_changed, EntityStorageInterface $storage): string {
+    if (!$uuid) {
+      return 'synchronized';
+    }
+
+    $nids = \Drupal::entityQuery($entity_type_id)
+      ->condition('uuid', $uuid)
+      ->accessCheck(TRUE)
+      ->range(0, 1)
+      ->execute();
+
+    if (empty($nids)) {
+      return 'deleted';
+    }
+
+    $nid = reset($nids);
+    $local_entity = $storage->load($nid);
+
+    if (!$local_entity) {
+      return 'deleted';
+    }
+
+    $local_changed = (int) $local_entity->getChangedTime();
+    if ($remote_changed !== NULL && $remote_changed !== $local_changed) {
+      return 'modified';
+    }
+
+    return 'synchronized';
+  }
+
+  /**
+   * Find local entities that don't exist on remote (added).
+   *
+   * @param string $entity_type_id
+   *   Entity type ID.
+   * @param array $remote_uuids
+   *   Index of remote UUIDs.
+   * @param \Drupal\Core\Entity\EntityStorageInterface $storage
+   *   Entity storage.
+   *
+   * @return array
+   *   Array of result arrays for added entities.
+   */
+  protected function findAddedEntities(string $entity_type_id, array $remote_uuids, EntityStorageInterface $storage): array {
     $entity_type_definition = $this->entityTypeManager->getDefinition($entity_type_id);
     $base_table = $entity_type_definition->getBaseTable();
     $uuid_key = $entity_type_definition->getKey('uuid');
     $id_key = $entity_type_definition->getKey('id');
 
-    // Query SQL to get all UUIDs and IDs.
     $connection = \Drupal::database();
     $local_uuids_data = $connection->select($base_table, 'e')
       ->fields('e', [$id_key, $uuid_key])
       ->execute()
       ->fetchAllKeyed(1, 0);
 
-    // Find IDs where UUID not in remote.
     $added_ids = [];
     foreach ($local_uuids_data as $local_uuid => $entity_id) {
       if (!isset($remote_uuids[$local_uuid])) {
@@ -245,19 +303,21 @@ class ContentDiffService {
       }
     }
 
-    // Load only the added entities.
-    if (!empty($added_ids)) {
-      $added_entities = $storage->loadMultiple($added_ids);
+    if (empty($added_ids)) {
+      return [];
+    }
 
-      foreach ($added_entities as $local_entity) {
-        $results[] = [
-          'title' => $local_entity->label(),
-          'bundle' => $local_entity->bundle(),
-          'status' => 'added',
-          'uuid' => $local_entity->uuid(),
-          'entity_type' => $entity_type_id,
-        ];
-      }
+    $added_entities = $storage->loadMultiple($added_ids);
+    $results = [];
+
+    foreach ($added_entities as $local_entity) {
+      $results[] = [
+        'title' => $local_entity->label(),
+        'bundle' => $local_entity->bundle(),
+        'status' => 'added',
+        'uuid' => $local_entity->uuid(),
+        'entity_type' => $entity_type_id,
+      ];
     }
 
     return $results;

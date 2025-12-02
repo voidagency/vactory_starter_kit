@@ -106,77 +106,17 @@ class ContentDiffCompareController extends ControllerBase {
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The request object.
    *
-   * @return \Symfony\Component\HttpFoundation\JsonResponse
-   *   JSON response with both normalized node data.
+   * @return \Symfony\Component\HttpFoundation\JsonResponse|array
+   *   JSON response with error or render array for diff display.
    */
   public function compare($type, $bundle, $uuid, Request $request) {
     try {
-      // Get remote URL from config client settings.
-      $config_client_settings = \Drupal::config('vactory_diff_config_client.settings');
-      $remote_url = $config_client_settings->get('remote_url');
-
-      if (empty($remote_url)) {
-        return new JsonResponse([
-          'status' => 'error',
-          'message' => 'Remote URL not configured. Please configure it in Vactory Diff Settings.',
-        ], 400);
+      $result = $this->validateAndFetchData($type, $bundle, $uuid);
+      if (isset($result['error'])) {
+        return $result['error'];
       }
 
-      // Fetch local data via internal subrequest (no HTTP call, no port issue).
-      $local_data = $this->fetchLocalNodeViaInternalRequest($type, $bundle, $uuid);
-
-      // Fetch remote data via HTTP.
-      $remote_data = $this->fetchNodeViaJsonApi($remote_url, $type, $bundle, $uuid);
-      if (!$local_data) {
-        return new JsonResponse([
-          'status' => 'error',
-          'message' => 'Local node not found via JSON API.',
-        ], 404);
-      }
-
-      if (!$remote_data) {
-        return new JsonResponse([
-          'status' => 'error',
-          'message' => 'Remote node not found via JSON API.',
-        ], 404);
-      }
-
-      $deserializer = new JsonApiDeserializer();
-      $local_data_deserialized = $deserializer->deserialize($local_data);
-      $remote_data_deserialized = $deserializer->deserialize($remote_data);
-
-      $local_yaml = explode("\n", Yaml::encode($local_data_deserialized));
-      $remote_yaml = explode("\n", Yaml::encode($remote_data_deserialized));
-
-      $diff = new Diff($local_yaml, $remote_yaml);
-
-      $diff_formatter = \Drupal::service('diff.formatter');
-
-      $diff_formatter->show_header = FALSE;
-      $diff_formatter->htmlOutput = TRUE;
-      $output = $diff_formatter->format($diff);
-
-      $build = [
-        '#type' => 'container',
-        '#attributes' => ['class' => ['content-diff-modal']],
-        'table' => [
-          '#type' => 'table',
-          '#header' => [
-            ['data' => 'Local', 'colspan' => '2'],
-            ['data' => 'remote', 'colspan' => '2'],
-          ],
-          '#rows' => $output,
-          '#attributes' => ['class' => ['content-diff-table', 'diff']],
-        ],
-        '#attached' => [
-          'library' => [
-            'system/diff',
-          ],
-        ],
-      ];
-
-      return $build;
-
+      return $this->buildDiffResponse($result['local_data'], $result['remote_data']);
     }
     catch (\Exception $e) {
       $this->loggerFactory->get('vactory_diff_content')->error('Compare error: @message', [
@@ -188,6 +128,107 @@ class ContentDiffCompareController extends ControllerBase {
         'message' => 'Comparison failed: ' . $e->getMessage(),
       ], 500);
     }
+  }
+
+  /**
+   * Validate request and fetch local/remote data.
+   *
+   * @param string $type
+   *   The entity type.
+   * @param string $bundle
+   *   The entity bundle.
+   * @param string $uuid
+   *   The entity UUID.
+   *
+   * @return array
+   *   Array with 'error' (JsonResponse) or 'local_data' and 'remote_data'.
+   */
+  protected function validateAndFetchData(string $type, string $bundle, string $uuid): array {
+    // Get remote URL from config client settings.
+    $config_client_settings = \Drupal::config('vactory_diff_config_client.settings');
+    $remote_url = $config_client_settings->get('remote_url');
+
+    if (empty($remote_url)) {
+      return [
+        'error' => new JsonResponse([
+          'status' => 'error',
+          'message' => 'Remote URL not configured. Please configure it in Vactory Diff Settings.',
+        ], 400),
+      ];
+    }
+
+    // Fetch local data via internal subrequest (no HTTP call, no port issue).
+    $local_data = $this->fetchLocalNodeViaInternalRequest($type, $bundle, $uuid);
+    if (!$local_data) {
+      return [
+        'error' => new JsonResponse([
+          'status' => 'error',
+          'message' => 'Local node not found via JSON API.',
+        ], 404),
+      ];
+    }
+
+    // Fetch remote data via HTTP.
+    $remote_data = $this->fetchNodeViaJsonApi($remote_url, $type, $bundle, $uuid);
+    if (!$remote_data) {
+      return [
+        'error' => new JsonResponse([
+          'status' => 'error',
+          'message' => 'Remote node not found via JSON API.',
+        ], 404),
+      ];
+    }
+
+    return [
+      'local_data' => $local_data,
+      'remote_data' => $remote_data,
+    ];
+  }
+
+  /**
+   * Build diff response from local and remote data.
+   *
+   * @param array $local_data
+   *   Local entity data.
+   * @param array $remote_data
+   *   Remote entity data.
+   *
+   * @return array
+   *   Render array for diff display.
+   */
+  protected function buildDiffResponse(array $local_data, array $remote_data): array {
+    $deserializer = new JsonApiDeserializer();
+    $local_data_deserialized = $deserializer->deserialize($local_data);
+    $remote_data_deserialized = $deserializer->deserialize($remote_data);
+
+    $local_yaml = explode("\n", Yaml::encode($local_data_deserialized));
+    $remote_yaml = explode("\n", Yaml::encode($remote_data_deserialized));
+
+    $diff = new Diff($local_yaml, $remote_yaml);
+
+    $diff_formatter = \Drupal::service('diff.formatter');
+    $diff_formatter->show_header = FALSE;
+    $diff_formatter->htmlOutput = TRUE;
+    $output = $diff_formatter->format($diff);
+
+    return [
+      '#type' => 'container',
+      '#attributes' => ['class' => ['content-diff-modal']],
+      'table' => [
+        '#type' => 'table',
+        '#header' => [
+          ['data' => 'Local', 'colspan' => '2'],
+          ['data' => 'remote', 'colspan' => '2'],
+        ],
+        '#rows' => $output,
+        '#attributes' => ['class' => ['content-diff-table', 'diff']],
+      ],
+      '#attached' => [
+        'library' => [
+          'system/diff',
+        ],
+      ],
+    ];
   }
 
   /**

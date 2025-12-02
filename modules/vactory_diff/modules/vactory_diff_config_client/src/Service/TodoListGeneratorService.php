@@ -84,47 +84,19 @@ class TodoListGeneratorService {
     $unmatched_configs = [];
     $total_configs_processed = 0;
 
-    // Process added configurations.
-    $added_configs = $comparison_results['differences_by_type']['added'] ?? [];
-    foreach ($added_configs as $type => $configs) {
-      foreach ($configs as $config) {
-        $total_configs_processed++;
-        $result = $this->processConfig($config['name'], $config['local_data'], 'added');
+    $total_configs_processed += $this->processConfigsByType(
+      $comparison_results['differences_by_type']['added'] ?? [],
+      'added',
+      $features_to_revert,
+      $unmatched_configs
+    );
 
-        if ($result['matched']) {
-          $this->addFeatureToList($features_to_revert, $result['module'], $config['name'], 'added', $type);
-        }
-        else {
-          $unmatched_configs[] = [
-            'config_name' => $config['name'],
-            'type' => $type,
-            'change_type' => 'added',
-            'reason' => $result['reason'] ?? 'Module not found',
-          ];
-        }
-      }
-    }
-
-    // Process modified configurations.
-    $modified_configs = $comparison_results['differences_by_type']['modified'] ?? [];
-    foreach ($modified_configs as $type => $configs) {
-      foreach ($configs as $config) {
-        $total_configs_processed++;
-        $result = $this->processConfig($config['name'], $config['local_data'], 'modified');
-
-        if ($result['matched']) {
-          $this->addFeatureToList($features_to_revert, $result['module'], $config['name'], 'modified', $type);
-        }
-        else {
-          $unmatched_configs[] = [
-            'config_name' => $config['name'],
-            'type' => $type,
-            'change_type' => 'modified',
-            'reason' => $result['reason'] ?? 'Module not found or config does not match',
-          ];
-        }
-      }
-    }
+    $total_configs_processed += $this->processConfigsByType(
+      $comparison_results['differences_by_type']['modified'] ?? [],
+      'modified',
+      $features_to_revert,
+      $unmatched_configs
+    );
 
     // Sort features by name.
     ksort($features_to_revert);
@@ -144,6 +116,44 @@ class TodoListGeneratorService {
       'content_sync' => $content_sync,
       'timestamp' => $comparison_results['timestamp'] ?? NULL,
     ];
+  }
+
+  /**
+   * Process configurations by type (added or modified).
+   *
+   * @param array $configs_by_type
+   *   Configurations grouped by type.
+   * @param string $change_type
+   *   The change type: 'added' or 'modified'.
+   * @param array &$features_to_revert
+   *   Features list (passed by reference).
+   * @param array &$unmatched_configs
+   *   Unmatched configs list (passed by reference).
+   *
+   * @return int
+   *   Number of configs processed.
+   */
+  protected function processConfigsByType(array $configs_by_type, string $change_type, array &$features_to_revert, array &$unmatched_configs): int {
+    $count = 0;
+    foreach ($configs_by_type as $type => $configs) {
+      foreach ($configs as $config) {
+        $count++;
+        $result = $this->processConfig($config['name'], $config['local_data'], $change_type);
+
+        if ($result['matched']) {
+          $this->addFeatureToList($features_to_revert, $result['module'], $config['name'], $change_type, $type);
+        }
+        else {
+          $unmatched_configs[] = [
+            'config_name' => $config['name'],
+            'type' => $type,
+            'change_type' => $change_type,
+            'reason' => $result['reason'] ?? ($change_type === 'added' ? 'Module not found' : 'Module not found or config does not match'),
+          ];
+        }
+      }
+    }
+    return $count;
   }
 
   /**
@@ -189,18 +199,16 @@ class TodoListGeneratorService {
       $change_type
     );
 
-    if (!$matches) {
-      return [
-        'matched' => FALSE,
-        'module' => $module_name,
-        'reason' => 'Configuration does not match module config',
-      ];
-    }
-
-    return [
-      'matched' => TRUE,
+    $result = [
+      'matched' => $matches,
       'module' => $module_name,
     ];
+
+    if (!$matches) {
+      $result['reason'] = 'Configuration does not match module config';
+    }
+
+    return $result;
   }
 
   /**
@@ -259,40 +267,7 @@ class TodoListGeneratorService {
 
     // Attempt to read the CSV.
     try {
-      $stream_wrapper_manager = \Drupal::service('stream_wrapper_manager');
-      $real_path = $stream_wrapper_manager->getViaUri($file_uri)->realpath();
-      if (!$real_path || !file_exists($real_path)) {
-        return $content_sync;
-      }
-
-      $handle = fopen($real_path, 'r');
-      if (!$handle) {
-        return $content_sync;
-      }
-
-      // Skip header.
-      fgetcsv($handle);
-
-      // Collect UUIDs by entity type for statuses of interest.
-      $uuids_by_type = [];
-
-      while (($row = fgetcsv($handle)) !== FALSE) {
-        // Expected columns: title, uuid, type, bundle, status.
-        $uuid = $row[1] ?? '';
-        $type = $row[2] ?? '';
-        $status = $row[4] ?? '';
-
-        if ($uuid === '' || $type === '') {
-          continue;
-        }
-
-        // Only export added/modified to optimize sync.
-        if (in_array($status, ['added', 'modified'], TRUE)) {
-          $uuids_by_type[$type][] = $uuid;
-        }
-      }
-      fclose($handle);
-
+      $uuids_by_type = $this->readCsvForContentSync($file_uri);
       if (empty($uuids_by_type)) {
         return $content_sync;
       }
@@ -321,11 +296,76 @@ class TodoListGeneratorService {
   }
 
   /**
+   * Read CSV file and extract UUIDs by entity type for added/modified entities.
+   *
+   * @param string $file_uri
+   *   The file URI.
+   *
+   * @return array
+   *   Array of UUIDs grouped by entity type.
+   */
+  protected function readCsvForContentSync(string $file_uri): array {
+    $stream_wrapper_manager = \Drupal::service('stream_wrapper_manager');
+    $real_path = $stream_wrapper_manager->getViaUri($file_uri)->realpath();
+    if (!$real_path || !file_exists($real_path)) {
+      return [];
+    }
+
+    $handle = fopen($real_path, 'r');
+    if (!$handle) {
+      return [];
+    }
+
+    // Skip header.
+    fgetcsv($handle);
+
+    // Collect UUIDs by entity type for statuses of interest.
+    $uuids_by_type = [];
+
+    while (($row = fgetcsv($handle)) !== FALSE) {
+      // Expected columns: title, uuid, type, bundle, status.
+      $uuid = $row[1] ?? '';
+      $type = $row[2] ?? '';
+      $status = $row[4] ?? '';
+
+      if ($uuid === '' || $type === '') {
+        continue;
+      }
+
+      // Only export added/modified to optimize sync.
+      if (in_array($status, ['added', 'modified'], TRUE)) {
+        $uuids_by_type[$type][] = $uuid;
+      }
+    }
+    fclose($handle);
+
+    return $uuids_by_type;
+  }
+
+  /**
    * Generate a human-readable to-do list text.
    */
   public function generateReadableText(array $todo_list): string {
     $output = [];
 
+    $this->addHeaderSection($output, $todo_list);
+    $this->addModuleChangesSection($output);
+    $this->addFeatureRevertSection($output, $todo_list);
+    $this->addUnmatchedConfigsSection($output, $todo_list);
+    $this->addContentSyncSection($output, $todo_list);
+
+    return implode("\n", $output);
+  }
+
+  /**
+   * Add header section to output.
+   *
+   * @param array &$output
+   *   Output array (passed by reference).
+   * @param array $todo_list
+   *   The todo list data.
+   */
+  protected function addHeaderSection(array &$output, array $todo_list): void {
     $output[] = "=== VACTORY DIFF - TODO LIST ===";
     $output[] = "";
     $output[] = "Generated: " . ($todo_list['timestamp'] ?? date('c'));
@@ -336,36 +376,55 @@ class TodoListGeneratorService {
     $output[] = "- Matched configurations: " . $todo_list['summary']['matched_configs'];
     $output[] = "- Unmatched configurations: " . $todo_list['summary']['unmatched_configs'];
     $output[] = "";
+  }
 
-    // Add module installation/uninstallation section.
+  /**
+   * Add module changes section to output.
+   *
+   * @param array &$output
+   *   Output array (passed by reference).
+   */
+  protected function addModuleChangesSection(array &$output): void {
     $module_changes = $this->moduleInstallation->analyzeModuleChanges();
-    if ($module_changes['has_changes']) {
-      $output[] = "=== MODULE INSTALLATION/UNINSTALLATION ===";
-      $output[] = "";
+    if (!$module_changes['has_changes']) {
+      return;
+    }
 
-      if (!empty($module_changes['to_install'])) {
-        $output[] = "Modules to Install (" . count($module_changes['to_install']) . "):";
-        foreach ($module_changes['to_install'] as $module) {
-          $output[] = "  - $module";
-        }
-        $output[] = "";
-      }
+    $output[] = "=== MODULE INSTALLATION/UNINSTALLATION ===";
+    $output[] = "";
 
-      if (!empty($module_changes['to_uninstall'])) {
-        $output[] = "Modules to Uninstall (" . count($module_changes['to_uninstall']) . "):";
-        foreach ($module_changes['to_uninstall'] as $module) {
-          $output[] = "  - $module";
-        }
-        $output[] = "";
-      }
-
-      $output[] = "Commands:";
-      foreach ($module_changes['commands'] as $cmd) {
-        $output[] = "  " . $cmd['command'];
+    if (!empty($module_changes['to_install'])) {
+      $output[] = "Modules to Install (" . count($module_changes['to_install']) . "):";
+      foreach ($module_changes['to_install'] as $module) {
+        $output[] = "  - $module";
       }
       $output[] = "";
     }
 
+    if (!empty($module_changes['to_uninstall'])) {
+      $output[] = "Modules to Uninstall (" . count($module_changes['to_uninstall']) . "):";
+      foreach ($module_changes['to_uninstall'] as $module) {
+        $output[] = "  - $module";
+      }
+      $output[] = "";
+    }
+
+    $output[] = "Commands:";
+    foreach ($module_changes['commands'] as $cmd) {
+      $output[] = "  " . $cmd['command'];
+    }
+    $output[] = "";
+  }
+
+  /**
+   * Add feature revert section to output.
+   *
+   * @param array &$output
+   *   Output array (passed by reference).
+   * @param array $todo_list
+   *   The todo list data.
+   */
+  protected function addFeatureRevertSection(array &$output, array $todo_list): void {
     $output[] = "=== FEATURE REVERT COMMANDS ===";
     $output[] = "";
 
@@ -383,36 +442,57 @@ class TodoListGeneratorService {
       $output[] = "";
       $index++;
     }
+  }
 
-    if (!empty($todo_list['unmatched_configs'])) {
-      $output[] = "=== UNMATCHED CONFIGURATIONS ===";
-      $output[] = "";
-      $output[] = "The following configurations could not be matched to a feature:";
-      $output[] = "";
-
-      foreach ($todo_list['unmatched_configs'] as $unmatched) {
-        $output[] = "- {$unmatched['config_name']} ({$unmatched['type']})";
-        $output[] = "  Change type: {$unmatched['change_type']}";
-        $output[] = "  Reason: {$unmatched['reason']}";
-        $output[] = "";
-      }
+  /**
+   * Add unmatched configs section to output.
+   *
+   * @param array &$output
+   *   Output array (passed by reference).
+   * @param array $todo_list
+   *   The todo list data.
+   */
+  protected function addUnmatchedConfigsSection(array &$output, array $todo_list): void {
+    if (empty($todo_list['unmatched_configs'])) {
+      return;
     }
 
-    // Add content sync section (single_content_sync).
-    if (!empty($todo_list['content_sync']) && ($todo_list['content_sync']['has_changes'] ?? FALSE)) {
-      $output[] = "=== CONTENT SYNC (single_content_sync) ===";
-      $output[] = "";
-      $output[] = "Export:";
-      foreach ($todo_list['content_sync']['export_commands'] as $cmd) {
-        $output[] = "  " . $cmd;
-      }
-      $output[] = "";
-      $output[] = "Then copy the generated archive to PROD, then run the import commands";
-      $output[] = "drush content:import [archive_path]";
+    $output[] = "=== UNMATCHED CONFIGURATIONS ===";
+    $output[] = "";
+    $output[] = "The following configurations could not be matched to a feature:";
+    $output[] = "";
+
+    foreach ($todo_list['unmatched_configs'] as $unmatched) {
+      $output[] = "- {$unmatched['config_name']} ({$unmatched['type']})";
+      $output[] = "  Change type: {$unmatched['change_type']}";
+      $output[] = "  Reason: {$unmatched['reason']}";
       $output[] = "";
     }
+  }
 
-    return implode("\n", $output);
+  /**
+   * Add content sync section to output.
+   *
+   * @param array &$output
+   *   Output array (passed by reference).
+   * @param array $todo_list
+   *   The todo list data.
+   */
+  protected function addContentSyncSection(array &$output, array $todo_list): void {
+    if (empty($todo_list['content_sync']) || !($todo_list['content_sync']['has_changes'] ?? FALSE)) {
+      return;
+    }
+
+    $output[] = "=== CONTENT SYNC (single_content_sync) ===";
+    $output[] = "";
+    $output[] = "Export:";
+    foreach ($todo_list['content_sync']['export_commands'] as $cmd) {
+      $output[] = "  " . $cmd;
+    }
+    $output[] = "";
+    $output[] = "Then copy the generated archive to PROD, then run the import commands";
+    $output[] = "drush content:import [archive_path]";
+    $output[] = "";
   }
 
 }
