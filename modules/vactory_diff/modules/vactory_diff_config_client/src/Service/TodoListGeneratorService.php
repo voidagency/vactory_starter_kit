@@ -359,11 +359,6 @@ class TodoListGeneratorService {
 
   /**
    * Add header section to output.
-   *
-   * @param array &$output
-   *   Output array (passed by reference).
-   * @param array $todo_list
-   *   The todo list data.
    */
   protected function addHeaderSection(array &$output, array $todo_list): void {
     $output[] = "=== VACTORY DIFF - TODO LIST ===";
@@ -418,11 +413,6 @@ class TodoListGeneratorService {
 
   /**
    * Add feature revert section to output.
-   *
-   * @param array &$output
-   *   Output array (passed by reference).
-   * @param array $todo_list
-   *   The todo list data.
    */
   protected function addFeatureRevertSection(array &$output, array $todo_list): void {
     $output[] = "=== FEATURE REVERT COMMANDS ===";
@@ -446,11 +436,6 @@ class TodoListGeneratorService {
 
   /**
    * Add unmatched configs section to output.
-   *
-   * @param array &$output
-   *   Output array (passed by reference).
-   * @param array $todo_list
-   *   The todo list data.
    */
   protected function addUnmatchedConfigsSection(array &$output, array $todo_list): void {
     if (empty($todo_list['unmatched_configs'])) {
@@ -472,11 +457,6 @@ class TodoListGeneratorService {
 
   /**
    * Add content sync section to output.
-   *
-   * @param array &$output
-   *   Output array (passed by reference).
-   * @param array $todo_list
-   *   The todo list data.
    */
   protected function addContentSyncSection(array &$output, array $todo_list): void {
     if (empty($todo_list['content_sync']) || !($todo_list['content_sync']['has_changes'] ?? FALSE)) {
