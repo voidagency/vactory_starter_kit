@@ -144,45 +144,52 @@ class ContentDiffCompareController extends ControllerBase {
    *   Array with 'error' (JsonResponse) or 'local_data' and 'remote_data'.
    */
   protected function validateAndFetchData(string $type, string $bundle, string $uuid): array {
+    $result = [];
+    $error = NULL;
+
     // Get remote URL from config client settings.
     $config_client_settings = \Drupal::config('vactory_diff_config_client.settings');
     $remote_url = $config_client_settings->get('remote_url');
 
     if (empty($remote_url)) {
-      return [
-        'error' => new JsonResponse([
-          'status' => 'error',
-          'message' => 'Remote URL not configured. Please configure it in Vactory Diff Settings.',
-        ], 400),
-      ];
+      $error = new JsonResponse([
+        'status' => 'error',
+        'message' => 'Remote URL not configured. Please configure it in Vactory Diff Settings.',
+      ], 400);
     }
 
-    // Fetch local data via internal subrequest (no HTTP call, no port issue).
-    $local_data = $this->fetchLocalNodeViaInternalRequest($type, $bundle, $uuid);
-    if (!$local_data) {
-      return [
-        'error' => new JsonResponse([
+    // Fetch local data (only if no error yet).
+    if (!$error) {
+      $local_data = $this->fetchLocalNodeViaInternalRequest($type, $bundle, $uuid);
+
+      if (!$local_data) {
+        $error = new JsonResponse([
           'status' => 'error',
           'message' => 'Local node not found via JSON API.',
-        ], 404),
-      ];
+        ], 404);
+      }
+      else {
+        $result['local_data'] = $local_data;
+      }
     }
 
-    // Fetch remote data via HTTP.
-    $remote_data = $this->fetchNodeViaJsonApi($remote_url, $type, $bundle, $uuid);
-    if (!$remote_data) {
-      return [
-        'error' => new JsonResponse([
+    // Fetch remote data (only if no error yet).
+    if (!$error) {
+      $remote_data = $this->fetchNodeViaJsonApi($remote_url, $type, $bundle, $uuid);
+
+      if (!$remote_data) {
+        $error = new JsonResponse([
           'status' => 'error',
           'message' => 'Remote node not found via JSON API.',
-        ], 404),
-      ];
+        ], 404);
+      }
+      else {
+        $result['remote_data'] = $remote_data;
+      }
     }
 
-    return [
-      'local_data' => $local_data,
-      'remote_data' => $remote_data,
-    ];
+    // Final return: either an error or the collected result.
+    return $error ? ['error' => $error] : $result;
   }
 
   /**

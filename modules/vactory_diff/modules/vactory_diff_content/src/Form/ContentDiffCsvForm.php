@@ -90,34 +90,34 @@ class ContentDiffCsvForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $this->buildFormBase($form);
+    // Build Form Base.
+    $form['#attributes']['class'][] = 'vactory-content-diff-csv-form';
+    $form['#attached']['library'][] = 'vactory_diff_content/content_diff';
+    $form['#attached']['library'][] = 'core/drupal.dialog.ajax';
+    $form['#prefix'] = '<div id="vactory-content-diff-form-wrapper">';
+    $form['#suffix'] = '</div>';
+
     $this->buildInstructions($form);
-    $this->buildGenerateButton($form);
+
+    // Build Generate Button.
+    $form['generate_button'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Generate Diff Report'),
+      '#submit' => ['::generateReport'],
+    ];
 
     $csv_data = $this->loadCsvData($form);
     if ($csv_data === NULL) {
       return $form;
     }
 
-    $saved_filters = $this->getSavedFilters();
+    $store = $this->tempStoreFactory->get('vactory_diff_content');
+    $saved_filters = $store->get('filters') ?: [];
+
     $this->buildFilters($form, $form_state, $csv_data, $saved_filters);
     $this->buildResultsTable($form, $csv_data, $form_state, $saved_filters);
 
     return $form;
-  }
-
-  /**
-   * Build base form structure.
-   *
-   * @param array &$form
-   *   Form array (passed by reference).
-   */
-  protected function buildFormBase(array &$form): void {
-    $form['#attributes']['class'][] = 'vactory-content-diff-csv-form';
-    $form['#attached']['library'][] = 'vactory_diff_content/content_diff';
-    $form['#attached']['library'][] = 'core/drupal.dialog.ajax';
-    $form['#prefix'] = '<div id="vactory-content-diff-form-wrapper">';
-    $form['#suffix'] = '</div>';
   }
 
   /**
@@ -166,20 +166,6 @@ class ContentDiffCsvForm extends FormBase {
   }
 
   /**
-   * Build generate button.
-   *
-   * @param array &$form
-   *   Form array (passed by reference).
-   */
-  protected function buildGenerateButton(array &$form): void {
-    $form['generate_button'] = [
-      '#type' => 'submit',
-      '#value' => $this->t('Generate Diff Report'),
-      '#submit' => ['::generateReport'],
-    ];
-  }
-
-  /**
    * Load CSV data and handle errors.
    *
    * @param array &$form
@@ -210,17 +196,6 @@ class ContentDiffCsvForm extends FormBase {
     }
 
     return $csv_data;
-  }
-
-  /**
-   * Get saved filters from temp store.
-   *
-   * @return array
-   *   Saved filters array.
-   */
-  protected function getSavedFilters(): array {
-    $store = $this->tempStoreFactory->get('vactory_diff_content');
-    return $store->get('filters') ?: [];
   }
 
   /**

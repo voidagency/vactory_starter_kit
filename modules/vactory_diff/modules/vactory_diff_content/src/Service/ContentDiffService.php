@@ -242,8 +242,10 @@ class ContentDiffService {
    *   Status: 'deleted', 'modified', or 'synchronized'.
    */
   protected function determineEntityStatus(?string $uuid, string $entity_type_id, ?int $remote_changed, EntityStorageInterface $storage): string {
+    $status = 'synchronized';
+
     if (!$uuid) {
-      return 'synchronized';
+      return $status;
     }
 
     $nids = \Drupal::entityQuery($entity_type_id)
@@ -253,22 +255,24 @@ class ContentDiffService {
       ->execute();
 
     if (empty($nids)) {
-      return 'deleted';
+      $status = 'deleted';
+    }
+    else {
+      $nid = reset($nids);
+      $local_entity = $storage->load($nid);
+
+      if (!$local_entity) {
+        $status = 'deleted';
+      }
+      else {
+        $local_changed = (int) $local_entity->getChangedTime();
+        if ($remote_changed !== NULL && $remote_changed !== $local_changed) {
+          $status = 'modified';
+        }
+      }
     }
 
-    $nid = reset($nids);
-    $local_entity = $storage->load($nid);
-
-    if (!$local_entity) {
-      return 'deleted';
-    }
-
-    $local_changed = (int) $local_entity->getChangedTime();
-    if ($remote_changed !== NULL && $remote_changed !== $local_changed) {
-      return 'modified';
-    }
-
-    return 'synchronized';
+    return $status;
   }
 
   /**
