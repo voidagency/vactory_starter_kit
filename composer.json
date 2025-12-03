@@ -94,7 +94,7 @@
     "drupal/tinypng": "^2.0",
     "drupal/field_group": "^3.1",
     "drupal/csv_serialization": "^4.0",
-    "drupal/votingapi": "^3.0@beta",
+    "drupal/votingapi": "4.0.x-dev",
     "drupal/amp": "^3.9",
     "drupal/crop": "^2.1",
     "drupal/devel": "^5.0",
