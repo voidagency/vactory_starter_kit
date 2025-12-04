@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "bf65837acbcd93e1c2a17dbf48b31fd8",
+    "content-hash": "e6a3e5e7009c6d32c6087dacd79d5d43",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -61,6 +61,53 @@
                 "source": "https://github.com/asm89/stack-cors/tree/v2.3.0"
             },
             "time": "2025-03-13T08:50:04+00:00"
+        },
+        {
+            "name": "chx/drupal-issue-fork",
+            "version": "1.0.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/chx/drupal-issue-fork.git",
+                "reference": "e2b09d91efb2a6bea310e334da425a91a4999fdd"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/chx/drupal-issue-fork/zipball/e2b09d91efb2a6bea310e334da425a91a4999fdd",
+                "reference": "e2b09d91efb2a6bea310e334da425a91a4999fdd",
+                "shasum": ""
+            },
+            "require": {
+                "composer-plugin-api": "^2.0",
+                "php": ">=8.1.0"
+            },
+            "require-dev": {
+                "composer/composer": "^2.6"
+            },
+            "type": "composer-plugin",
+            "extra": {
+                "class": "chx\\Composer\\Plugin\\DrupalIssueFork"
+            },
+            "autoload": {
+                "psr-4": {
+                    "chx\\Composer\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Karoly Negyesi",
+                    "email": "chx1975@gmail.com"
+                }
+            ],
+            "description": "Sets up a project to use an issue fork",
+            "support": {
+                "issues": "https://github.com/chx/drupal-issue-fork/issues",
+                "source": "https://github.com/chx/drupal-issue-fork/tree/1.0.0"
+            },
+            "time": "2025-05-09T13:21:37+00:00"
         },
         {
             "name": "cloudinary/cloudinary_php",
@@ -7177,10 +7224,10 @@
         },
         {
             "name": "drupal/onesignal",
-            "version": "dev-3.x",
+            "version": "dev-3433682-automated-drupal-11",
             "source": {
                 "type": "git",
-                "url": "https://git.drupalcode.org/project/onesignal.git",
+                "url": "https://git.drupalcode.org/issue/onesignal-3433682.git",
                 "reference": "134a2e55afe691197888e30779f2de9fdbefb734"
             },
             "require": {
@@ -7190,20 +7237,6 @@
                 "symfony/http-client": "^5.4"
             },
             "type": "drupal-module",
-            "extra": {
-                "branch-alias": {
-                    "dev-3.x": "3.x-dev"
-                },
-                "drupal": {
-                    "version": "3.0.1+2-dev",
-                    "datestamp": "1667235263",
-                    "security-coverage": {
-                        "status": "not-covered",
-                        "message": "Dev releases are not covered by Drupal security advisories."
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
             "license": [
                 "GPL-2.0+"
             ],
@@ -7212,18 +7245,6 @@
                     "name": "George Anderson (geoanders)",
                     "homepage": "https://www.drupal.org/u/geoanders",
                     "role": "Maintainer"
-                },
-                {
-                    "name": "jcmartinez",
-                    "homepage": "https://www.drupal.org/user/275152"
-                },
-                {
-                    "name": "Robert Ngo",
-                    "homepage": "https://www.drupal.org/user/610230"
-                },
-                {
-                    "name": "tregismoreira",
-                    "homepage": "https://www.drupal.org/user/277221"
                 }
             ],
             "description": "Integrates OneSignal, a push notification service.",
@@ -7235,9 +7256,10 @@
                 "Push Notifications"
             ],
             "support": {
-                "source": "https://git.drupalcode.org/project/onesignal",
-                "issues": "https://www.drupal.org/project/issues/onesignal"
-            }
+                "issues": "https://www.drupal.org/project/issues/onesignal",
+                "source": "https://git.drupalcode.org/project/onesignal"
+            },
+            "time": "2022-10-31T16:54:03+00:00"
         },
         {
             "name": "drupal/openai",
