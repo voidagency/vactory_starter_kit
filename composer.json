@@ -317,7 +317,7 @@
         "source": {
           "type": "git",
           "url": "https://git.drupalcode.org/issue/amptheme-3486194.git",
-          "reference": "3495776-additional-d11-update"
+          "reference": "3486194-d11_ready"
         }
       }
     },
@@ -337,7 +337,7 @@
     {
       "type": "package",
       "package": {
-        "name": "voidagency/views_url_alias",
+        "name": "drupal/views_url_alias",
         "version": "dev-3435552-automated-drupal-11",
         "type": "drupal-module",
         "source": {
