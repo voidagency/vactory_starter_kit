@@ -146,7 +146,7 @@
     "drupal/theme_switcher": "^2.0",
     "drupal/migrate_file": "^3.0@alpha",
     "drupal/rdf": "3.0.x-dev",
-    "drupal/quickedit": "^1.0",
+    "drupal/quickedit": "^2.0",
     "drupal/jsonapi_cross_bundles": "^1.2",
     "drupal/gin": "^4.1",
     "drupal/jsonapi_include": "^1.7",
@@ -331,6 +331,19 @@
           "type": "git",
           "url": "https://git.drupalcode.org/issue/improved_multi_select-3451141.git",
           "reference": "3451141-automated-drupal-11"
+        }
+      }
+    },
+    {
+      "type": "package",
+      "package": {
+        "name": "voidagency/views_url_alias",
+        "version": "dev-3435552-automated-drupal-11",
+        "type": "drupal-module",
+        "source": {
+          "type": "git",
+          "url": "https://git.drupalcode.org/issue/views_url_alias-3435552.git",
+          "reference": "3435552-automated-drupal-11"
         }
       }
     }
