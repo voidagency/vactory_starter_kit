@@ -116,7 +116,7 @@
     "drupal/smart_trim": "^2.0",
     "drupal/twig_field_value": "^2.0",
     "drupal/twig_vardumper": "^3.1",
-    "drupal/jquery_ui_checkboxradio": "^2.0",
+    "drupal/jquery_ui_checkboxradio": "^2.1",
     "drupal/social_api": "^4.1",
     "drupal/social_auth": "^4.1",
     "drupal/social_auth_facebook": "^4.0",
@@ -154,13 +154,8 @@
     "drupal/onesignal": "dev-project-update-bot-only",
     "stevenmaguire/oauth2-keycloak": "^5.0",
     "drupal/openai": "^1.0@beta",
-    "voidagency/merge_translations": "^2.0",
-    "voidagency/shortcode": "^2.1",
-    "voidagency/yaml_editor": "^2.0",
     "voidagency/mobile_native_share": "^2.0",
-    "voidagency/amptheme": "^3.0",
     "voidagency/cloudinary": "^3.0",
-    "voidagency/block_list_override": "^2.0",
     "drupal/amptheme": "^3.1",
     "drupal/yaml_editor": "^1.2",
     "drupal/menu_manipulator": "^4.0",
@@ -310,6 +305,32 @@
           "type": "git",
           "url": "https://git.drupalcode.org/issue/easy_install-3495637.git",
           "reference": "3495637-d11_ready"
+        }
+      }
+    },
+    {
+      "type": "package",
+      "package": {
+        "name": "drupal/amptheme",
+        "version": "dev-3486194-d11_ready",
+        "type": "drupal-module",
+        "source": {
+          "type": "git",
+          "url": "https://git.drupalcode.org/issue/amptheme-3486194.git",
+          "reference": "3495776-additional-d11-update"
+        }
+      }
+    },
+    {
+      "type": "package",
+      "package": {
+        "name": "drupal/improved_multi_select",
+        "version": "dev-3451141-automated-drupal-11",
+        "type": "drupal-module",
+        "source": {
+          "type": "git",
+          "url": "https://git.drupalcode.org/issue/improved_multi_select-3451141.git",
+          "reference": "3451141-automated-drupal-11"
         }
       }
     }
