@@ -273,4 +273,51 @@ class WebformNormalizerTest extends VactoryExistingSiteBase {
     $this->assertNotEmpty($default_single['previewUrl']);
   }
 
+  /**
+   * Test captcha elements.
+   */
+  public function testWebformCaptchaElements(): void {
+    // Créer un webform avec différents types de captcha.
+    $webform_settings = [
+      'id' => 'test_webform_captcha',
+      'title' => 'Test webform captcha',
+      'elements' => [
+        'captcha_math' => [
+          '#type' => 'captcha',
+          '#title' => 'Math Captcha',
+          '#captcha_type' => 'captcha/Math',
+        ],
+        'captcha_recaptcha' => [
+          '#type' => 'captcha',
+          '#title' => 'reCAPTCHA',
+          '#captcha_type' => 'recaptcha/reCAPTCHA',
+        ],
+      ],
+    ];
+
+    $webform = $this->createWebform($webform_settings);
+    $elements = $this->normalizer->normalize($webform->id());
+
+    // Vérifier l'existence des champs captcha.
+    foreach (['captcha_math', 'captcha_recaptcha'] as $field) {
+      $this->assertArrayHasKey($field, $elements, "Le champ \"$field\" doit exister dans le webform normalisé.");
+
+      // Vérifier que le type est 'captcha'.
+      $this->assertEquals('captcha', $elements[$field]['type'], "Le champ \"$field\" doit être de type \"captcha\".");
+
+      // Vérifier que la validation required est TRUE.
+      $this->assertArrayHasKey('validation', $elements[$field], "Le champ \"$field\" doit avoir une propriété \"validation\".");
+      $this->assertTrue($elements[$field]['validation']['required'], "Le champ \"$field\" doit avoir validation.required = TRUE.");
+
+      // Vérifier que captcha_type existe.
+      $this->assertArrayHasKey('captcha_type', $elements[$field], "Le champ \"$field\" doit avoir une propriété \"captcha_type\".");
+    }
+
+    // Vérifier captcha_type pour le captcha Math.
+    $this->assertEquals('captcha/Math', $elements['captcha_math']['captcha_type'], "Le champ \"captcha_math\" doit avoir captcha_type = 'captcha/Math'.");
+
+    // Vérifier captcha_type pour le recaptcha.
+    $this->assertEquals('recaptcha/reCAPTCHA', $elements['captcha_recaptcha']['captcha_type'], "Le champ \"captcha_recaptcha\" doit avoir captcha_type = 'recaptcha/reCAPTCHA'.");
+  }
+
 }
