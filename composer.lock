@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e6a3e5e7009c6d32c6087dacd79d5d43",
+    "content-hash": "2f7eab72cb1e50258e0289e6e97485da",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -7224,14 +7224,14 @@
         },
         {
             "name": "drupal/onesignal",
-            "version": "dev-3433682-automated-drupal-11",
+            "version": "dev-project-update-bot-only",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/issue/onesignal-3433682.git",
-                "reference": "134a2e55afe691197888e30779f2de9fdbefb734"
+                "reference": "d3cd3b8d0c3b9faa3f2343b3ad438f9275ca585f"
             },
             "require": {
-                "drupal/core": "^9 || ^10",
+                "drupal/core": "^9 || ^10 || ^11",
                 "norkunas/onesignal-php-api": "^2.9",
                 "nyholm/psr7": "^1.5",
                 "symfony/http-client": "^5.4"
@@ -7259,7 +7259,7 @@
                 "issues": "https://www.drupal.org/project/issues/onesignal",
                 "source": "https://git.drupalcode.org/project/onesignal"
             },
-            "time": "2022-10-31T16:54:03+00:00"
+            "time": "2024-03-24T19:59:37+00:00"
         },
         {
             "name": "drupal/openai",
