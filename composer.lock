@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8111c9a9d6f5ef0d5d78aac1ed13236c",
+    "content-hash": "e2d7b30e07cdb21d548d0090bbdd30bd",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -3275,6 +3275,16 @@
                 "issues": "https://www.drupal.org/project/issues/dropzonejs",
                 "#media": "http://drupal.slack.com"
             }
+        },
+        {
+            "name": "drupal/easy_install",
+            "version": "dev-3495637-d11_ready",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/issue/easy_install-3495637.git",
+                "reference": "3495637-d11_ready"
+            },
+            "type": "drupal-module"
         },
         {
             "name": "drupal/editor_advanced_link",
@@ -20307,32 +20317,6 @@
             "time": "2024-01-15T08:48:15+00:00"
         },
         {
-            "name": "voidagency/easy_install",
-            "version": "10.6.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/voidagency/easy_install.git",
-                "reference": "10dd930a1cfbea88357f7adab73246c2edb2a81a"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/voidagency/easy_install/zipball/10dd930a1cfbea88357f7adab73246c2edb2a81a",
-                "reference": "10dd930a1cfbea88357f7adab73246c2edb2a81a",
-                "shasum": ""
-            },
-            "require": {
-                "drupal/core": "^9 || ^10"
-            },
-            "type": "drupal-module",
-            "notification-url": "https://packagist.org/downloads/",
-            "description": "Provides UI to delete configuration while uninstalling or reinstalling the modules",
-            "homepage": "https://www.drupal.org/project/easy_install",
-            "support": {
-                "source": "https://github.com/voidagency/easy_install/tree/10.6.0"
-            },
-            "time": "2024-01-15T08:41:44+00:00"
-        },
-        {
             "name": "voidagency/merge_translations",
             "version": "2.0.0",
             "source": {
@@ -20851,6 +20835,7 @@
         "drupal/config_update": 15,
         "drupal/default_content": 15,
         "drupal/domain": 10,
+        "drupal/easy_install": 20,
         "drupal/email_registration": 5,
         "drupal/filefield_paths": 10,
         "drupal/inline_entity_form": 5,

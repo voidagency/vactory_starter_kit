@@ -155,7 +155,6 @@
     "stevenmaguire/oauth2-keycloak": "^5.0",
     "drupal/openai": "^1.0@beta",
     "voidagency/merge_translations": "^2.0",
-    "voidagency/easy_install": "^10.6",
     "voidagency/shortcode": "^2.1",
     "voidagency/yaml_editor": "^2.0",
     "voidagency/mobile_native_share": "^2.0",
@@ -176,7 +175,8 @@
     "drupal/merge_translations": "^2.0",
     "drupal/shortcode": "^2.0",
     "chx/drupal-issue-fork": "^1.0",
-    "drupal/jquery_colorpicker": "dev-3495776-additional-d11-update"
+    "drupal/jquery_colorpicker": "dev-3495776-additional-d11-update",
+    "drupal/easy_install": "dev-3495637-d11_ready"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.3",
@@ -257,7 +257,8 @@
       "url": "https://packages.drupal.org/8",
       "exclude": [
         "drupal/onesignal",
-        "drupal/jquery_colorpicker"
+        "drupal/jquery_colorpicker",
+        "drupal/easy_install"
       ]
     },
     {
@@ -296,6 +297,19 @@
           "type": "git",
           "url": "https://git.drupalcode.org/issue/jquery_colorpicker-3495776.git",
           "reference": "3495776-additional-d11-update"
+        }
+      }
+    },
+    {
+      "type": "package",
+      "package": {
+        "name": "drupal/easy_install",
+        "version": "dev-3495637-d11_ready",
+        "type": "drupal-module",
+        "source": {
+          "type": "git",
+          "url": "https://git.drupalcode.org/issue/easy_install-3495637.git",
+          "reference": "3495637-d11_ready"
         }
       }
     }
