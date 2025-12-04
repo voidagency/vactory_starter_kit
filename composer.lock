@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "e6a3e5e7009c6d32c6087dacd79d5d43",
+    "content-hash": "8111c9a9d6f5ef0d5d78aac1ed13236c",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -2278,26 +2278,26 @@
         },
         {
             "name": "drupal/colorapi",
-            "version": "1.2.0",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/colorapi.git",
-                "reference": "8.x-1.2"
+                "reference": "2.1.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/colorapi-8.x-1.2.zip",
-                "reference": "8.x-1.2",
-                "shasum": "f656c764edaabe5d71a9486e04d7a9b45eef6d11"
+                "url": "https://ftp.drupal.org/files/projects/colorapi-2.1.0.zip",
+                "reference": "2.1.0",
+                "shasum": "b9d0d6ee26ba2ee0806fc8311fdb225b378ba744"
             },
             "require": {
-                "drupal/core": "^8 || ^9 || ^10"
+                "drupal/core": "^10 || ^11"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-1.2",
-                    "datestamp": "1656581402",
+                    "version": "2.1.0",
+                    "datestamp": "1751286553",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -2478,16 +2478,16 @@
         },
         {
             "name": "drupal/core",
-            "version": "10.5.6",
+            "version": "10.5.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/drupal/core.git",
-                "reference": "b685b04acbae19cb4fda0a63822ff21e1f743f44"
+                "reference": "6f1320aba17a410ed1c90720e2facbe81f4d23c4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/drupal/core/zipball/b685b04acbae19cb4fda0a63822ff21e1f743f44",
-                "reference": "b685b04acbae19cb4fda0a63822ff21e1f743f44",
+                "url": "https://api.github.com/repos/drupal/core/zipball/6f1320aba17a410ed1c90720e2facbe81f4d23c4",
+                "reference": "6f1320aba17a410ed1c90720e2facbe81f4d23c4",
                 "shasum": ""
             },
             "require": {
@@ -2637,9 +2637,9 @@
             ],
             "description": "Drupal is an open source content management platform powering millions of websites and applications.",
             "support": {
-                "source": "https://github.com/drupal/core/tree/10.5.6"
+                "source": "https://github.com/drupal/core/tree/10.5.7"
             },
-            "time": "2025-11-12T21:53:53+00:00"
+            "time": "2025-12-04T08:22:44+00:00"
         },
         {
             "name": "drupal/crop",
@@ -5166,6 +5166,39 @@
             "support": {
                 "source": "https://git.drupalcode.org/project/inline_entity_form"
             }
+        },
+        {
+            "name": "drupal/jquery_colorpicker",
+            "version": "dev-3495776-additional-d11-update",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/issue/jquery_colorpicker-3495776.git",
+                "reference": "2015e03954b9fccec193a8da27e9ad853560b752"
+            },
+            "require": {
+                "drupal/colorapi": "^2.1",
+                "drupal/core": "^10 || ^11",
+                "drupal/vendor_stream_wrapper": "^2.0.2",
+                "jaypan/jquery-colorpicker": "~1.0.1"
+            },
+            "type": "drupal-module",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "Jay Friendly (Jaypan)",
+                    "homepage": "https://www.jaypan.com",
+                    "role": "Maintainer"
+                }
+            ],
+            "description": "A Drupal integration with the jQuery Colorpicker (https://www.eyecon.ro/colorpicker) module",
+            "homepage": "https://drupal.org/project/jquery_colorpicker",
+            "support": {
+                "issues": "https://drupal.org/project/issues/jquery_colorpicker",
+                "source": "https://git.drupalcode.org/project/jquery_colorpicker"
+            },
+            "time": "2025-11-13T15:36:09+00:00"
         },
         {
             "name": "drupal/jquery_ui",
@@ -7714,17 +7747,17 @@
         },
         {
             "name": "drupal/quickedit",
-            "version": "1.0.3",
+            "version": "1.0.4",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/quickedit.git",
-                "reference": "1.0.3"
+                "reference": "1.0.4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/quickedit-1.0.3.zip",
-                "reference": "1.0.3",
-                "shasum": "2fb9eb812010743949dd7ec1a9fc0cff4c1fb4ce"
+                "url": "https://ftp.drupal.org/files/projects/quickedit-1.0.4.zip",
+                "reference": "1.0.4",
+                "shasum": "332a72acc15481105730a6dc063fd53ef2e3b88e"
             },
             "require": {
                 "drupal/core": "^9.4 || ^10"
@@ -7735,8 +7768,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "1.0.3",
-                    "datestamp": "1663069901",
+                    "version": "1.0.4",
+                    "datestamp": "1764684200",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -7771,6 +7804,10 @@
                 {
                     "name": "tkoleary",
                     "homepage": "https://www.drupal.org/user/627430"
+                },
+                {
+                    "name": "vladimiraus",
+                    "homepage": "https://www.drupal.org/user/673120"
                 },
                 {
                     "name": "webchick",
@@ -10528,29 +10565,29 @@
         },
         {
             "name": "drupal/vendor_stream_wrapper",
-            "version": "2.0.2",
+            "version": "2.0.5",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/vendor_stream_wrapper.git",
-                "reference": "2.0.2"
+                "reference": "2.0.5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/vendor_stream_wrapper-2.0.2.zip",
-                "reference": "2.0.2",
-                "shasum": "4740cb8d50c7ecf1461fbaaf37834c243fca70a5"
+                "url": "https://ftp.drupal.org/files/projects/vendor_stream_wrapper-2.0.5.zip",
+                "reference": "2.0.5",
+                "shasum": "4c1cdeaa11a418384f325e6840512cfa095ea53a"
             },
             "require": {
-                "drupal/core": "^9.1 || ^10"
+                "drupal/core": "^9.1 || ^10 || ^11"
             },
             "require-dev": {
-                "jaypan/jquery-colorpicker": "~1.0.1"
+                "jaypan/jquery-colorpicker": "~1.0.1 | ^2"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "2.0.2",
-                    "datestamp": "1663708616",
+                    "version": "2.0.5",
+                    "datestamp": "1717967197",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -14770,21 +14807,21 @@
         },
         {
             "name": "norkunas/onesignal-php-api",
-            "version": "v2.14.0",
+            "version": "v2.15.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/norkunas/onesignal-php-api.git",
-                "reference": "a26825ead9603133a5aa2fa38303d3096aa5d8a1"
+                "reference": "1f6db112bb535d451c9cb78020725a18f826b364"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/norkunas/onesignal-php-api/zipball/a26825ead9603133a5aa2fa38303d3096aa5d8a1",
-                "reference": "a26825ead9603133a5aa2fa38303d3096aa5d8a1",
+                "url": "https://api.github.com/repos/norkunas/onesignal-php-api/zipball/1f6db112bb535d451c9cb78020725a18f826b364",
+                "reference": "1f6db112bb535d451c9cb78020725a18f826b364",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
-                "php": ">=7.3",
+                "php": ">=7.4",
                 "psr/http-client": "^1.0",
                 "psr/http-client-implementation": "^1.0",
                 "psr/http-factory": "^1.0",
@@ -14794,9 +14831,9 @@
             },
             "require-dev": {
                 "nyholm/psr7": "^1.8.1",
-                "php-cs-fixer/shim": "^v3.40.0",
-                "phpstan/phpstan": "^1.10.46",
-                "phpstan/phpstan-phpunit": "^1.3.15",
+                "php-cs-fixer/shim": "^v3.64.0",
+                "phpstan/phpstan": "^1.12.0",
+                "phpstan/phpstan-phpunit": "^1.4.0",
                 "symfony/http-client": "^5.0|^6.2|^7.0",
                 "symfony/phpunit-bridge": "^5.3|^6.2|^7.0"
             },
@@ -14832,22 +14869,22 @@
             ],
             "support": {
                 "issues": "https://github.com/norkunas/onesignal-php-api/issues",
-                "source": "https://github.com/norkunas/onesignal-php-api/tree/v2.14.0"
+                "source": "https://github.com/norkunas/onesignal-php-api/tree/v2.15.0"
             },
-            "time": "2023-11-30T04:38:36+00:00"
+            "time": "2024-09-01T15:54:00+00:00"
         },
         {
             "name": "nyholm/psr7",
-            "version": "1.8.1",
+            "version": "1.8.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Nyholm/psr7.git",
-                "reference": "aa5fc277a4f5508013d571341ade0c3886d4d00e"
+                "reference": "a71f2b11690f4b24d099d6b16690a90ae14fc6f3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Nyholm/psr7/zipball/aa5fc277a4f5508013d571341ade0c3886d4d00e",
-                "reference": "aa5fc277a4f5508013d571341ade0c3886d4d00e",
+                "url": "https://api.github.com/repos/Nyholm/psr7/zipball/a71f2b11690f4b24d099d6b16690a90ae14fc6f3",
+                "reference": "a71f2b11690f4b24d099d6b16690a90ae14fc6f3",
                 "shasum": ""
             },
             "require": {
@@ -14900,7 +14937,7 @@
             ],
             "support": {
                 "issues": "https://github.com/Nyholm/psr7/issues",
-                "source": "https://github.com/Nyholm/psr7/tree/1.8.1"
+                "source": "https://github.com/Nyholm/psr7/tree/1.8.2"
             },
             "funding": [
                 {
@@ -14912,7 +14949,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2023-11-13T09:31:12+00:00"
+            "time": "2024-09-09T07:06:30+00:00"
         },
         {
             "name": "openai-php/client",
@@ -17102,32 +17139,33 @@
         },
         {
             "name": "symfony/error-handler",
-            "version": "v7.3.6",
+            "version": "v7.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/error-handler.git",
-                "reference": "bbe40bfab84323d99dab491b716ff142410a92a8"
+                "reference": "48be2b0653594eea32dcef130cca1c811dcf25c2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/error-handler/zipball/bbe40bfab84323d99dab491b716ff142410a92a8",
-                "reference": "bbe40bfab84323d99dab491b716ff142410a92a8",
+                "url": "https://api.github.com/repos/symfony/error-handler/zipball/48be2b0653594eea32dcef130cca1c811dcf25c2",
+                "reference": "48be2b0653594eea32dcef130cca1c811dcf25c2",
                 "shasum": ""
             },
             "require": {
                 "php": ">=8.2",
                 "psr/log": "^1|^2|^3",
-                "symfony/var-dumper": "^6.4|^7.0"
+                "symfony/polyfill-php85": "^1.32",
+                "symfony/var-dumper": "^6.4|^7.0|^8.0"
             },
             "conflict": {
                 "symfony/deprecation-contracts": "<2.5",
                 "symfony/http-kernel": "<6.4"
             },
             "require-dev": {
-                "symfony/console": "^6.4|^7.0",
+                "symfony/console": "^6.4|^7.0|^8.0",
                 "symfony/deprecation-contracts": "^2.5|^3",
-                "symfony/http-kernel": "^6.4|^7.0",
-                "symfony/serializer": "^6.4|^7.0",
+                "symfony/http-kernel": "^6.4|^7.0|^8.0",
+                "symfony/serializer": "^6.4|^7.0|^8.0",
                 "symfony/webpack-encore-bundle": "^1.0|^2.0"
             },
             "bin": [
@@ -17159,7 +17197,7 @@
             "description": "Provides tools to manage errors and ease debugging PHP code",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/error-handler/tree/v7.3.6"
+                "source": "https://github.com/symfony/error-handler/tree/v7.4.0"
             },
             "funding": [
                 {
@@ -17179,7 +17217,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-10-31T19:12:50+00:00"
+            "time": "2025-11-05T14:29:59+00:00"
         },
         {
             "name": "symfony/event-dispatcher",
@@ -18022,20 +18060,20 @@
         },
         {
             "name": "symfony/options-resolver",
-            "version": "v6.4.0",
+            "version": "v7.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/options-resolver.git",
-                "reference": "22301f0e7fdeaacc14318928612dee79be99860e"
+                "reference": "b38026df55197f9e39a44f3215788edf83187b80"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/options-resolver/zipball/22301f0e7fdeaacc14318928612dee79be99860e",
-                "reference": "22301f0e7fdeaacc14318928612dee79be99860e",
+                "url": "https://api.github.com/repos/symfony/options-resolver/zipball/b38026df55197f9e39a44f3215788edf83187b80",
+                "reference": "b38026df55197f9e39a44f3215788edf83187b80",
                 "shasum": ""
             },
             "require": {
-                "php": ">=8.1",
+                "php": ">=8.2",
                 "symfony/deprecation-contracts": "^2.5|^3"
             },
             "type": "library",
@@ -18069,7 +18107,7 @@
                 "options"
             ],
             "support": {
-                "source": "https://github.com/symfony/options-resolver/tree/v6.4.0"
+                "source": "https://github.com/symfony/options-resolver/tree/v7.4.0"
             },
             "funding": [
                 {
@@ -18081,11 +18119,15 @@
                     "type": "github"
                 },
                 {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
                     "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
                     "type": "tidelift"
                 }
             ],
-            "time": "2023-08-08T10:16:24+00:00"
+            "time": "2025-11-12T15:39:26+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
@@ -18918,6 +18960,86 @@
             "time": "2025-06-24T13:30:11+00:00"
         },
         {
+            "name": "symfony/polyfill-php85",
+            "version": "v1.33.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/polyfill-php85.git",
+                "reference": "d4e5fcd4ab3d998ab16c0db48e6cbb9a01993f91"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/polyfill-php85/zipball/d4e5fcd4ab3d998ab16c0db48e6cbb9a01993f91",
+                "reference": "d4e5fcd4ab3d998ab16c0db48e6cbb9a01993f91",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.2"
+            },
+            "type": "library",
+            "extra": {
+                "thanks": {
+                    "url": "https://github.com/symfony/polyfill",
+                    "name": "symfony/polyfill"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "bootstrap.php"
+                ],
+                "psr-4": {
+                    "Symfony\\Polyfill\\Php85\\": ""
+                },
+                "classmap": [
+                    "Resources/stubs"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nicolas Grekas",
+                    "email": "p@tchwork.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony polyfill backporting some PHP 8.5+ features to lower PHP versions",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "compatibility",
+                "polyfill",
+                "portable",
+                "shim"
+            ],
+            "support": {
+                "source": "https://github.com/symfony/polyfill-php85/tree/v1.33.0"
+            },
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://github.com/nicolas-grekas",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2025-06-23T16:12:55+00:00"
+        },
+        {
             "name": "symfony/process",
             "version": "v6.4.26",
             "source": {
@@ -19347,22 +19469,23 @@
         },
         {
             "name": "symfony/string",
-            "version": "v7.3.4",
+            "version": "v7.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/string.git",
-                "reference": "f96476035142921000338bad71e5247fbc138872"
+                "reference": "d50e862cb0a0e0886f73ca1f31b865efbb795003"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/string/zipball/f96476035142921000338bad71e5247fbc138872",
-                "reference": "f96476035142921000338bad71e5247fbc138872",
+                "url": "https://api.github.com/repos/symfony/string/zipball/d50e862cb0a0e0886f73ca1f31b865efbb795003",
+                "reference": "d50e862cb0a0e0886f73ca1f31b865efbb795003",
                 "shasum": ""
             },
             "require": {
                 "php": ">=8.2",
+                "symfony/deprecation-contracts": "^2.5|^3.0",
                 "symfony/polyfill-ctype": "~1.8",
-                "symfony/polyfill-intl-grapheme": "~1.0",
+                "symfony/polyfill-intl-grapheme": "~1.33",
                 "symfony/polyfill-intl-normalizer": "~1.0",
                 "symfony/polyfill-mbstring": "~1.0"
             },
@@ -19370,11 +19493,11 @@
                 "symfony/translation-contracts": "<2.5"
             },
             "require-dev": {
-                "symfony/emoji": "^7.1",
-                "symfony/http-client": "^6.4|^7.0",
-                "symfony/intl": "^6.4|^7.0",
+                "symfony/emoji": "^7.1|^8.0",
+                "symfony/http-client": "^6.4|^7.0|^8.0",
+                "symfony/intl": "^6.4|^7.0|^8.0",
                 "symfony/translation-contracts": "^2.5|^3.0",
-                "symfony/var-exporter": "^6.4|^7.0"
+                "symfony/var-exporter": "^6.4|^7.0|^8.0"
             },
             "type": "library",
             "autoload": {
@@ -19413,7 +19536,7 @@
                 "utf8"
             ],
             "support": {
-                "source": "https://github.com/symfony/string/tree/v7.3.4"
+                "source": "https://github.com/symfony/string/tree/v7.4.0"
             },
             "funding": [
                 {
@@ -19433,7 +19556,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-09-11T14:36:48+00:00"
+            "time": "2025-11-27T13:27:24+00:00"
         },
         {
             "name": "symfony/translation-contracts",
@@ -19708,16 +19831,16 @@
         },
         {
             "name": "symfony/var-exporter",
-            "version": "v7.3.4",
+            "version": "v7.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/var-exporter.git",
-                "reference": "0f020b544a30a7fe8ba972e53ee48a74c0bc87f4"
+                "reference": "03a60f169c79a28513a78c967316fbc8bf17816f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/var-exporter/zipball/0f020b544a30a7fe8ba972e53ee48a74c0bc87f4",
-                "reference": "0f020b544a30a7fe8ba972e53ee48a74c0bc87f4",
+                "url": "https://api.github.com/repos/symfony/var-exporter/zipball/03a60f169c79a28513a78c967316fbc8bf17816f",
+                "reference": "03a60f169c79a28513a78c967316fbc8bf17816f",
                 "shasum": ""
             },
             "require": {
@@ -19725,9 +19848,9 @@
                 "symfony/deprecation-contracts": "^2.5|^3"
             },
             "require-dev": {
-                "symfony/property-access": "^6.4|^7.0",
-                "symfony/serializer": "^6.4|^7.0",
-                "symfony/var-dumper": "^6.4|^7.0"
+                "symfony/property-access": "^6.4|^7.0|^8.0",
+                "symfony/serializer": "^6.4|^7.0|^8.0",
+                "symfony/var-dumper": "^6.4|^7.0|^8.0"
             },
             "type": "library",
             "autoload": {
@@ -19765,7 +19888,7 @@
                 "serialize"
             ],
             "support": {
-                "source": "https://github.com/symfony/var-exporter/tree/v7.3.4"
+                "source": "https://github.com/symfony/var-exporter/tree/v7.4.0"
             },
             "funding": [
                 {
@@ -19785,7 +19908,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-09-11T10:12:26+00:00"
+            "time": "2025-09-11T10:15:23+00:00"
         },
         {
             "name": "symfony/yaml",
@@ -20022,16 +20145,16 @@
         },
         {
             "name": "twig/twig",
-            "version": "v3.22.0",
+            "version": "v3.22.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "4509984193026de413baf4ba80f68590a7f2c51d"
+                "reference": "1de2ec1fc43ab58a4b7e80b214b96bfc895750f3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/4509984193026de413baf4ba80f68590a7f2c51d",
-                "reference": "4509984193026de413baf4ba80f68590a7f2c51d",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/1de2ec1fc43ab58a4b7e80b214b96bfc895750f3",
+                "reference": "1de2ec1fc43ab58a4b7e80b214b96bfc895750f3",
                 "shasum": ""
             },
             "require": {
@@ -20085,7 +20208,7 @@
             ],
             "support": {
                 "issues": "https://github.com/twigphp/Twig/issues",
-                "source": "https://github.com/twigphp/Twig/tree/v3.22.0"
+                "source": "https://github.com/twigphp/Twig/tree/v3.22.1"
             },
             "funding": [
                 {
@@ -20097,7 +20220,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-10-29T15:56:47+00:00"
+            "time": "2025-11-16T16:01:12+00:00"
         },
         {
             "name": "voidagency/amptheme",
@@ -20208,39 +20331,6 @@
                 "source": "https://github.com/voidagency/easy_install/tree/10.6.0"
             },
             "time": "2024-01-15T08:41:44+00:00"
-        },
-        {
-            "name": "voidagency/jquery_colorpicker",
-            "version": "4.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/voidagency/jquery_colorpicker.git",
-                "reference": "dfbfcf261d6aa3d0cf857d2613187afe92ab93f5"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/voidagency/jquery_colorpicker/zipball/dfbfcf261d6aa3d0cf857d2613187afe92ab93f5",
-                "reference": "dfbfcf261d6aa3d0cf857d2613187afe92ab93f5",
-                "shasum": ""
-            },
-            "require": {
-                "drupal/colorapi": "^1.1",
-                "drupal/core": "^9.3 || ^10",
-                "drupal/vendor_stream_wrapper": "^2.0.2",
-                "jaypan/jquery-colorpicker": "~1.0.1"
-            },
-            "type": "drupal-module",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "description": "A Drupal integration with the jQuery Colorpicker (https://www.eyecon.ro/colorpicker) module",
-            "homepage": "https://drupal.org/project/jquery_colorpicker",
-            "support": {
-                "issues": "https://drupal.org/project/issues/jquery_colorpicker",
-                "source": "https://git.drupalcode.org/project/jquery_colorpicker"
-            },
-            "time": "2024-01-15T08:38:03+00:00"
         },
         {
             "name": "voidagency/merge_translations",
@@ -20764,6 +20854,7 @@
         "drupal/email_registration": 5,
         "drupal/filefield_paths": 10,
         "drupal/inline_entity_form": 5,
+        "drupal/jquery_colorpicker": 20,
         "drupal/jsonapi_search_api": 5,
         "drupal/jsonapi_user_resources": 10,
         "drupal/lang_dropdown": 10,

@@ -34,7 +34,7 @@
     "drupal/focal_point": "^2.0",
     "drupal/improved_multi_select": "^1.7",
     "drupal/inline_entity_form": "^3.0@RC",
-    "drupal/colorapi": "^1.1",
+    "drupal/colorapi": "^2.1",
     "drupal/lang_dropdown": "^2.0@beta",
     "drupal/menu_link_attributes": "^1.1.0",
     "drupal/metatag": "^2.1",
@@ -154,7 +154,6 @@
     "drupal/onesignal": "dev-3433682-automated-drupal-11",
     "stevenmaguire/oauth2-keycloak": "^5.0",
     "drupal/openai": "^1.0@beta",
-    "voidagency/jquery_colorpicker": "^4.0",
     "voidagency/merge_translations": "^2.0",
     "voidagency/easy_install": "^10.6",
     "voidagency/shortcode": "^2.1",
@@ -176,7 +175,8 @@
     "drupal/block_list_override": "^1.0",
     "drupal/merge_translations": "^2.0",
     "drupal/shortcode": "^2.0",
-    "chx/drupal-issue-fork": "^1.0"
+    "chx/drupal-issue-fork": "^1.0",
+    "drupal/jquery_colorpicker": "dev-3495776-additional-d11-update"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.3",
@@ -259,7 +259,8 @@
       "type": "composer",
       "url": "https://packages.drupal.org/8",
       "exclude": [
-        "drupal/onesignal"
+        "drupal/onesignal",
+        "drupal/jquery_colorpicker"
       ]
     },
     {
@@ -278,6 +279,10 @@
     {
       "type": "git",
       "url": "https://git.drupalcode.org/issue/onesignal-3433682.git"
+    },
+    {
+      "type": "git",
+      "url": "https://git.drupalcode.org/issue/jquery_colorpicker-3495776.git"
     }
   ],
   "scripts": {
