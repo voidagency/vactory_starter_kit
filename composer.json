@@ -274,12 +274,30 @@
       }
     },
     {
-      "type": "git",
-      "url": "https://git.drupalcode.org/issue/onesignal-3433682.git"
+      "type": "package",
+      "package": {
+        "name": "drupal/onesignal",
+        "type": "drupal-module",
+        "version": "dev-3433682-automated-drupal-11",
+        "source": {
+          "type": "git",
+          "url": "https://git.drupalcode.org/issue/onesignal.git",
+          "reference": "3433682-automated-drupal-11"
+        }
+      }
     },
     {
-      "type": "git",
-      "url": "https://git.drupalcode.org/issue/jquery_colorpicker-3495776.git"
+      "type": "package",
+      "package": {
+        "name": "drupal/jquery_colorpicker",
+        "type": "drupal-module",
+        "version": "dev-3495776-additional-d11-update",
+        "source": {
+          "type": "git",
+          "url": "https://git.drupalcode.org/issue/jquery_colorpicker-3495776.git",
+          "reference": "3495776-additional-d11-update"
+        }
+      }
     }
   ],
   "scripts": {
