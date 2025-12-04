@@ -278,11 +278,11 @@
       "package": {
         "name": "drupal/onesignal",
         "type": "drupal-module",
-        "version": "dev-3433682-automated-drupal-11",
+        "version": "dev-project-update-bot-only",
         "source": {
           "type": "git",
-          "url": "https://git.drupalcode.org/issue/onesignal.git",
-          "reference": "3433682-automated-drupal-11"
+          "url": "https://git.drupalcode.org/issue/onesignal-3433682.git",
+          "reference": "project-update-bot-only"
         }
       }
     },
