@@ -324,7 +324,7 @@ class WebformNormalizerTest extends VactoryExistingSiteBase {
    * Test layout elements.
    */
   public function testWebformLayoutElements(): void {
-    // Définir les layouts à tester avec leurs configurations et propriétés attendues.
+    // Définir les layouts.
     $layouts_config = [
       'flexbox_container' => [
         'type' => 'webform_flexbox',
