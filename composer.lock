@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "95799a54b0c74a12b6013e902de2c959",
+    "content-hash": "23f52bac6be08ef4f6c4247c076d03ce",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -7053,6 +7053,51 @@
             "support": {
                 "source": "https://git.drupalcode.org/project/minifyhtml",
                 "issues": "https://www.drupal.org/project/issues/minifyhtml"
+            }
+        },
+        {
+            "name": "drupal/mobile_native_share",
+            "version": "dev-1.1.x",
+            "source": {
+                "type": "git",
+                "url": "https://git.drupalcode.org/project/mobile_native_share.git",
+                "reference": "5cc8be08f9ae4f115b6ab16d9f132c49e3a1be1d"
+            },
+            "require": {
+                "drupal/core": "^10 || ^11"
+            },
+            "type": "drupal-module",
+            "extra": {
+                "branch-alias": {
+                    "dev-1.1.x": "1.1.x-dev"
+                },
+                "drupal": {
+                    "version": "1.1.x-dev",
+                    "datestamp": "1764746553",
+                    "security-coverage": {
+                        "status": "not-covered",
+                        "message": "Dev releases are not covered by Drupal security advisories."
+                    }
+                }
+            },
+            "notification-url": "https://packages.drupal.org/8/downloads",
+            "license": [
+                "GPL-2.0-or-later"
+            ],
+            "authors": [
+                {
+                    "name": "fromme",
+                    "homepage": "https://www.drupal.org/user/3654823"
+                },
+                {
+                    "name": "phthlaap",
+                    "homepage": "https://www.drupal.org/user/3579545"
+                }
+            ],
+            "description": "This module support to share content as mobile native share dialog. <a href=\"\">Settings</a>",
+            "homepage": "https://www.drupal.org/project/mobile_native_share",
+            "support": {
+                "source": "https://git.drupalcode.org/project/mobile_native_share"
             }
         },
         {
@@ -19769,30 +19814,6 @@
             "time": "2024-01-15T08:48:15+00:00"
         },
         {
-            "name": "voidagency/mobile_native_share",
-            "version": "2.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/voidagency/mobile_native_share.git",
-                "reference": "d5ef132b7f2eca2a4ed1dd923e5217a65793d9c9"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/voidagency/mobile_native_share/zipball/d5ef132b7f2eca2a4ed1dd923e5217a65793d9c9",
-                "reference": "d5ef132b7f2eca2a4ed1dd923e5217a65793d9c9",
-                "shasum": ""
-            },
-            "type": "drupal-module",
-            "notification-url": "https://packagist.org/downloads/",
-            "description": "This module support to share content as mobile native share dialog",
-            "homepage": "https://www.drupal.org/project/mobile_native_share",
-            "support": {
-                "issues": "https://www.drupal.org/project/issues/mobile_native_share",
-                "source": "https://cgit.drupalcode.org/mobile_native_share"
-            },
-            "time": "2024-01-15T08:45:46+00:00"
-        },
-        {
             "name": "webflo/drupal-finder",
             "version": "1.2.2",
             "source": {
@@ -20224,6 +20245,7 @@
         "drupal/jsonapi_user_resources": 10,
         "drupal/lang_dropdown": 10,
         "drupal/migrate_file": 15,
+        "drupal/mobile_native_share": 20,
         "drupal/onesignal": 20,
         "drupal/openai": 10,
         "drupal/rate": 5,

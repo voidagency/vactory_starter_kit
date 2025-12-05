@@ -154,7 +154,7 @@
     "drupal/onesignal": "dev-project-update-bot-only",
     "stevenmaguire/oauth2-keycloak": "^5.0",
     "drupal/openai": "^1.0@beta",
-    "voidagency/mobile_native_share": "^2.0",
+    "drupal/mobile_native_share": "1.1.x-dev@dev",
     "voidagency/cloudinary": "^3.0",
     "drupal/amptheme": "^3.1",
     "drupal/yaml_editor": "^1.2",
