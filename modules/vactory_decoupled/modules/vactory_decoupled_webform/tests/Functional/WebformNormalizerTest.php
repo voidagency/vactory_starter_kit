@@ -320,4 +320,127 @@ class WebformNormalizerTest extends VactoryExistingSiteBase {
     $this->assertEquals('recaptcha/reCAPTCHA', $elements['captcha_recaptcha']['captcha_type'], "Le champ \"captcha_recaptcha\" doit avoir captcha_type = 'recaptcha/reCAPTCHA'.");
   }
 
+  /**
+   * Test layout elements.
+   */
+  public function testWebformLayoutElements(): void {
+    // Définir les layouts à tester avec leurs configurations et propriétés attendues.
+    $layouts_config = [
+      'flexbox_container' => [
+        'type' => 'webform_flexbox',
+        'title' => 'Flexbox Container',
+        'description' => 'This is a flexbox container',
+        'properties' => [
+          'align_items' => 'center',
+          'title_display' => 'inline',
+        ],
+        'children' => [
+          'field1' => ['flex' => 2],
+          'field2' => ['flex' => 3],
+        ],
+        'flexTotal' => 5,
+      ],
+      'container_layout' => [
+        'type' => 'container',
+        'title' => 'Container Layout',
+        'description' => 'This is a container',
+        'properties' => [],
+        'children' => ['field3' => []],
+      ],
+      'fieldset_container' => [
+        'type' => 'fieldset',
+        'title' => 'Fieldset Container',
+        'description' => 'This is a fieldset',
+        'properties' => [
+          'description_display' => 'before',
+        ],
+        'children' => ['field4' => []],
+      ],
+      'details_container' => [
+        'type' => 'details',
+        'title' => 'Details Container',
+        'properties' => [],
+        'children' => ['field5' => []],
+      ],
+      'section_container' => [
+        'type' => 'webform_section',
+        'title' => 'Section Container',
+        'properties' => [],
+        'children' => ['field6' => []],
+      ],
+    ];
+
+    // Construire la configuration du webform.
+    $elements_config = [];
+    $field_counter = 1;
+    foreach ($layouts_config as $layout_key => $layout_config) {
+      $element = [
+        '#type' => $layout_config['type'],
+        '#title' => $layout_config['title'],
+      ];
+      if (isset($layout_config['description'])) {
+        $element['#description'] = $layout_config['description'];
+      }
+      foreach ($layout_config['properties'] as $prop_key => $prop_value) {
+        $element['#' . $prop_key] = $prop_value;
+      }
+      foreach ($layout_config['children'] as $child_key => $child_props) {
+        $element[$child_key] = [
+          '#type' => 'textfield',
+          '#title' => ucfirst(str_replace('field', 'Field ', $child_key)),
+        ];
+        foreach ($child_props as $child_prop_key => $child_prop_value) {
+          $element[$child_key]['#' . $child_prop_key] = $child_prop_value;
+        }
+      }
+      $elements_config[$layout_key] = $element;
+    }
+
+    $webform = $this->createWebform([
+      'id' => 'test_webform_layout',
+      'title' => 'Test webform layout',
+      'elements' => $elements_config,
+    ]);
+
+    $elements = $this->normalizer->normalize($webform->id());
+
+    // Vérifier chaque layout.
+    foreach ($layouts_config as $layout_key => $layout_config) {
+      $this->assertArrayHasKey($layout_key, $elements, "Le layout \"$layout_key\" doit exister.");
+      $layout = $elements[$layout_key];
+
+      // Vérifier le type.
+      $this->assertEquals($layout_config['type'], $layout['type'], "Le type du layout \"$layout_key\" doit être correct.");
+
+      // Vérifier le titre.
+      $this->assertEquals($layout_config['title'], $layout['title'], "Le titre du layout \"$layout_key\" doit être correct.");
+
+      // Vérifier la description si elle existe.
+      if (isset($layout_config['description'])) {
+        $this->assertEquals($layout_config['description'], $layout['description'], "La description du layout \"$layout_key\" doit être correcte.");
+      }
+
+      // Vérifier les propriétés spécifiques.
+      foreach ($layout_config['properties'] as $prop_key => $prop_value) {
+        $this->assertEquals($prop_value, $layout[$prop_key], "La propriété \"$prop_key\" du layout \"$layout_key\" doit être correcte.");
+      }
+
+      // Vérifier les enfants.
+      $this->assertArrayHasKey('childs', $layout, "Le layout \"$layout_key\" doit avoir des enfants.");
+      foreach ($layout_config['children'] as $child_key => $child_props) {
+        $this->assertArrayHasKey($child_key, $layout['childs'], "Le champ \"$child_key\" doit exister dans les enfants du layout \"$layout_key\".");
+        $this->assertEquals('text', $layout['childs'][$child_key]['type'], "Le type du champ \"$child_key\" doit être 'text'.");
+        foreach ($child_props as $child_prop_key => $child_prop_value) {
+          $this->assertEquals($child_prop_value, $layout['childs'][$child_key][$child_prop_key], "La propriété \"$child_prop_key\" du champ \"$child_key\" doit être correcte.");
+        }
+      }
+
+      // Vérifier flexTotal pour les flexbox.
+      if (isset($layout_config['flexTotal'])) {
+        $this->assertArrayHasKey('flexTotal', $layout['childs'], "Le flexTotal doit exister pour le layout \"$layout_key\".");
+        $this->assertEquals($layout_config['flexTotal'], $layout['childs']['flexTotal'], "Le flexTotal du layout \"$layout_key\" doit être correct.");
+      }
+    }
+  }
+
 }
