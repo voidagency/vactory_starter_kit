@@ -253,7 +253,10 @@
       "exclude": [
         "drupal/onesignal",
         "drupal/jquery_colorpicker",
-        "drupal/easy_install"
+        "drupal/easy_install",
+        "drupal/amptheme",
+        "drupal/improved_multi_select",
+        "drupal/views_url_alias"
       ]
     },
     {
