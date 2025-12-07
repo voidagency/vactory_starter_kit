@@ -257,7 +257,8 @@
         "drupal/easy_install",
         "drupal/amptheme",
         "drupal/improved_multi_select",
-        "drupal/views_url_alias"
+        "drupal/views_url_alias",
+        "drupal/amp"
       ]
     },
     {
@@ -348,6 +349,19 @@
           "type": "git",
           "url": "https://git.drupalcode.org/issue/views_url_alias-3435552.git",
           "reference": "3435552-automated-drupal-11"
+        }
+      }
+    },
+    {
+      "type": "package",
+      "package": {
+        "name": "drupal/amp",
+        "version": "dev-amp-3428159-3428159-d11_ready",
+        "type": "drupal-module",
+        "source": {
+          "type": "git",
+          "url": "https://git.drupalcode.org/issue/amp-3428159.git",
+          "reference": "amp-3428159-3428159-d11_ready"
         }
       }
     }
