@@ -17,9 +17,11 @@ function vactory_dynamic_field_schema() {
  * Implements hook_update_N().
  */
 function vactory_dynamic_field_update_9500(&$sandbox) {
-  Drupal::database()
-    ->schema()
-    ->createTable('content_progress', vactory_df_get_table_schema());
+  $schema = Drupal::database()->schema();
+  // Only create the table if it doesn't already exist.
+  if (!$schema->tableExists('content_progress')) {
+    $schema->createTable('content_progress', vactory_df_get_table_schema());
+  }
 
   // Enable paragraph_edit module when necessary.
   if (Drupal::moduleHandler()->moduleExists('paragraphs_edit')) {
