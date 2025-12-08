@@ -183,11 +183,11 @@ function vactory_locator_migration_plugins_alter(array &$migrations) {
  */
 function vactory_locator_views_post_render(ViewExecutable $view, &$output, CachePluginBase $cache) {
   if ($view->id() === 'vactory_locator' && ($view->current_display === 'vactory_locator_listing' || $view->current_display === 'vactory_locator_listing_agence')) {
-    // Check if output markup exists and is not null
-    if (empty($output['#markup']) || $output['#markup'] === null) {
+    // Check if output markup exists and is not null.
+    if (empty($output['#markup']) || $output['#markup'] === NULL) {
       return;
     }
-    
+
     $stream_wrapper_manager = \Drupal::service('stream_wrapper_manager');
     $entity_manager = \Drupal::service('entity_type.manager');
     $file_storage = $entity_manager->getStorage('file');

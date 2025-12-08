@@ -6,7 +6,6 @@ use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\file\Entity\File;
 use Drupal\media\Entity\Media;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Configure Locator Settings.
@@ -67,7 +66,7 @@ class SettingsForm extends ConfigFormBase {
 
     $default_image = $config->get('locator_default_marker');
     if (isset($default_image) && $default_image != NULL) {
-      // Handle case where $default_image might be an array (from media library widget).
+      // Case: $default_image may be an array (from media library widget).
       $media_id = is_array($default_image) ? $default_image[0] : $default_image;
       $is_it_media_library = Media::load($media_id);
     }
