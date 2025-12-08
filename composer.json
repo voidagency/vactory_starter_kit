@@ -277,9 +277,6 @@
       },
       "drupal/file_entity": {
         "Fix missing bundle entity, entity type file_type, entity id undefined": "https://gist.githubusercontent.com/voidagency/b2ec60b41a9ef234ba860c03c05410f4/raw/cea45bcd86a2063d7460a99d1757719035a75314/remove-undefined-bundle-from-entity-type-file-type.patch"
-      },
-      "drupal/search_api": {
-        "Decode HTML in search API rendered items": "https://gist.githubusercontent.com/voidagency/5396da024459bc289c5ebe04af62fe4f/raw/28569f005d0e5a4e19742526eba8aa34fe3471e5/54411-search-api-rendered-item-decode-html.patch"
       }
     }
   },
