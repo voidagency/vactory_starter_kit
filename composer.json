@@ -322,7 +322,7 @@
         "source": {
           "type": "git",
           "url": "https://git.drupalcode.org/issue/improved_multi_select-3451141.git",
-          "reference": "3451141-automated-drupal-11"
+          "reference": "3451141-d11_ready"
         }
       }
     },
