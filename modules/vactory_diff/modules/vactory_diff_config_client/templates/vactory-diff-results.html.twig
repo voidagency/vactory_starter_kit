@@ -1,0 +1,115 @@
+{#
+/**
+ * @file
+ * Template for Vactory Diff comparison results.
+ *
+ * Available variables:
+ * - results: Comparison results array with summary and differences grouped by type
+ */
+#}
+
+{% if results.summary %}
+  {# Summary section #}
+  <div class="comparison-summary">
+    <h3>{{ 'Résumé de la comparaison'|t }}</h3>
+    <p>{{ 'Comparaison effectuée le @date'|t({'@date': results.timestamp|date('d/m/Y H:i:s')}) }}</p>
+    <div class="summary-stats">
+      <span class="stat added">{{ '@count ajoutées'|t({'@count': results.summary.added}) }}</span> |
+      <span class="stat modified">{{ '@count modifiées'|t({'@count': results.summary.modified}) }}</span> |
+      <span class="stat deleted">{{ '@count supprimées'|t({'@count': results.summary.deleted}) }}</span>
+    </div>
+  </div>
+
+  {# Differences section #}
+  {% if results.summary.total_differences > 0 %}
+    <div class="config-diff-results">
+
+      {# Added configurations by type #}
+      {% if results.differences_by_type.added %}
+        <div class="config-section config-section--added">
+          <h3 class="config-section-title">
+            {{ 'Configurations ajoutées (@count)'|t({'@count': results.summary.added}) }}
+          </h3>
+          <p class="config-section-description">
+            {{ 'Ces configurations existent localement mais pas sur le serveur distant.'|t }}
+          </p>
+          <div class="config-list config-list--added">
+            {% for type, configs in results.differences_by_type.added %}
+              <div class="config-type-group">
+                <h4 class="config-type-title">{{ type }}</h4>
+                {% for config in configs %}
+                  <div class="config-item">
+                    <span class="config-name">{{ config.name }}</span>
+                  </div>
+                {% endfor %}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
+      {# Modified configurations by type #}
+      {% if results.differences_by_type.modified %}
+        <div class="config-section config-section--modified">
+          <h3 class="config-section-title">
+            {{ 'Configurations modifiées (@count)'|t({'@count': results.summary.modified}) }}
+          </h3>
+          <p class="config-section-description">
+            {{ 'Ces configurations ont des valeurs différentes entre local et distant.'|t }}
+          </p>
+          <div class="config-list config-list--modified">
+            {% for type, configs in results.differences_by_type.modified %}
+              <div class="config-type-group">
+                <h4 class="config-type-title">{{ type }}</h4>
+                {% for config in configs %}
+                  <div class="config-item">
+                    <div class="config-header">
+                      <span class="config-name">{{ config.name }}</span>
+                      {% if config.diff and config.diff.changes %}
+                        <a href="/admin/config/development/vactory-diff/ajax/diff-modal/{{ config.name|url_encode }}" 
+                           class="btn btn-primary btn-sm view-changes-btn use-ajax" 
+                           data-dialog-type="modal"
+                           data-dialog-options='{"width":"90%"}'>
+                          {{ 'Voir les changements'|t }}
+                        </a>
+                      {% endif %}
+                    </div>
+                  </div>
+                {% endfor %}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
+      {# Deleted configurations by type #}
+      {% if results.differences_by_type.deleted %}
+        <div class="config-section config-section--deleted">
+          <h3 class="config-section-title">
+            {{ 'Configurations supprimées (@count)'|t({'@count': results.summary.deleted}) }}
+          </h3>
+          <p class="config-section-description">
+            {{ 'Ces configurations existent sur le serveur distant mais pas localement.'|t }}
+          </p>
+          <div class="config-list config-list--deleted">
+            {% for type, configs in results.differences_by_type.deleted %}
+              <div class="config-type-group">
+                <h4 class="config-type-title">{{ type }}</h4>
+                {% for config in configs %}
+                  <div class="config-item">
+                    <span class="config-name">{{ config.name }}</span>
+                  </div>
+                {% endfor %}
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      {% endif %}
+
+    </div>
+  {% else %}
+    <div class="messages messages--status">
+      {{ 'Aucune différence trouvée. Les configurations sont identiques.'|t }}
+    </div>
+  {% endif %}
+{% endif %}

@@ -1,0 +1,9 @@
+administer vactory diff:
+  title: 'Administrer Vactory Diff'
+  description: "Permet d'accéder aux interfaces d'administration de Vactory Diff."
+  restrict access: true
+
+access vactory diff config export:
+  title: "Accéder à l'export de configuration Vactory Diff"
+  description: "Permet d'accéder à l'API d'export de configuration."
+  restrict access: true 

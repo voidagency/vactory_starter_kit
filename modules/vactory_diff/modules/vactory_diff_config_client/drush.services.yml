@@ -1,0 +1,6 @@
+services:
+  vactory_diff_config_client.compare_command:
+    class: 'Drupal\vactory_diff_config_client\Commands\ConfigCompareCommands'
+    arguments: [ '@vactory_diff_config_client.comparison' ]
+    tags:
+      - { name: drush.command }

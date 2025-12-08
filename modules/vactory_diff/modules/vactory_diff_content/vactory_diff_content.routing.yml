@@ -1,0 +1,24 @@
+# Route pour afficher le rapport CSV
+vactory_diff_content.form:
+  path: '/admin/config/development/vactory-diff/content'
+  defaults:
+    _form: '\Drupal\vactory_diff_content\Form\ContentDiffCsvForm'
+    _title: 'Content diff'
+  requirements:
+    _permission: 'access content diff'
+  options:
+    _admin_route: true
+
+# Route pour la comparaison détaillée
+vactory_diff_content.compare:
+  path: '/admin/content/diff/compare/{type}/{bundle}/{uuid}'
+  defaults:
+    _controller: '\Drupal\vactory_diff_content\Controller\ContentDiffCompareController::compare'
+  requirements:
+    _permission: 'administer content'
+  options:
+    parameters:
+      bundle:
+        type: string
+      uuid:
+        type: string
