@@ -216,7 +216,7 @@
         "Fix undefined index warnings on reset password form": "https://www.drupal.org/files/issues/2020-10-29/3179656-two-undentified-index-notices-2.patch",
         "Swiftmailer fix renderPlan method cli breaks": "https://gist.githubusercontent.com/voidagency/2d6230d4c481d5f80e8e9c8e783a2963/raw/8f7e40b7b90406b96865dde05b57a4ad8d854b68/swiftmailer-prevent-cli-commands-break.patch"
       },
-      "voidagency/jquery_colorpicker": {
+      "drupal/jquery_colorpicker": {
         "jQuery color picker resolve vendor path": "https://gist.githubusercontent.com/voidagency/606f9343e9c7e9b99858088d7db111f1/raw/5216cc90d89e68916b4a17b60e07466286a18397/jquery-color-picker-resolve-vendor-path.patch",
         "jQuery color picker remove vendor dependencies": "https://gist.githubusercontent.com/voidagency/17af206778d4ea598b93dd10769556a0/raw/538e683f77b15945a41b99548a6b0d1ca2315225/jquery-colorpicker-remove-vendor-dependencies.patch",
         "jQuery color picker update background (drupalSettings variable)": "https://gist.githubusercontent.com/voidagency/94489fb9998406959ebefb31a758f39c/raw/6692adac21ef17ea4d66d69584159a6802707404/jquery-colorpicker-update-background.patch",
@@ -264,19 +264,6 @@
     {
       "type": "package",
       "package": {
-        "name": "ckeditor/templates",
-        "type": "drupal-library",
-        "version": "4.11.1",
-        "dist": {
-          "type": "zip",
-          "url": "https://void-factory.s3.amazonaws.com/Drupal8/Composer/templates_4.11.1.zip",
-          "reference": "master"
-        }
-      }
-    },
-    {
-      "type": "package",
-      "package": {
         "name": "drupal/onesignal",
         "type": "drupal-module",
         "version": "dev-project-update-bot-only",
@@ -317,7 +304,7 @@
       "type": "package",
       "package": {
         "name": "drupal/amptheme",
-        "version": "dev-3486194-d11_ready",
+        "version": "3.1.0",
         "type": "drupal-module",
         "source": {
           "type": "git",
@@ -330,7 +317,7 @@
       "type": "package",
       "package": {
         "name": "drupal/improved_multi_select",
-        "version": "dev-3451141-automated-drupal-11",
+        "version": "1.8.0",
         "type": "drupal-module",
         "source": {
           "type": "git",
@@ -343,7 +330,7 @@
       "type": "package",
       "package": {
         "name": "drupal/views_url_alias",
-        "version": "dev-3435552-automated-drupal-11",
+        "version": "3.1.0",
         "type": "drupal-module",
         "source": {
           "type": "git",
@@ -356,12 +343,25 @@
       "type": "package",
       "package": {
         "name": "drupal/amp",
-        "version": "dev-amp-3428159-3428159-d11_ready",
+        "version": "3.9.0",
         "type": "drupal-module",
         "source": {
           "type": "git",
           "url": "https://git.drupalcode.org/issue/amp-3428159.git",
           "reference": "amp-3428159-3428159-d11_ready"
+        }
+      }
+    },
+    {
+      "type": "package",
+      "package": {
+        "name": "ckeditor/templates",
+        "type": "drupal-library",
+        "version": "4.11.1",
+        "dist": {
+          "type": "zip",
+          "url": "https://void-factory.s3.amazonaws.com/Drupal8/Composer/templates_4.11.1.zip",
+          "reference": "master"
         }
       }
     }
