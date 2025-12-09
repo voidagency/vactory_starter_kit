@@ -46,6 +46,8 @@ class VactoryCrossBundlesTest extends VactoryExistingSiteBase {
               'page[offset]=0',
               'page[limit]=9',
               'filter[status][value]=1',
+              'sort[date][path]=field_vactory_date',
+              'sort[date][direction]=DESC',
             ],
           ],
         ],
