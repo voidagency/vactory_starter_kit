@@ -213,7 +213,10 @@ function vactory_cross_content_views_post_execute(ViewExecutable $view) {
       $items_to_add = $vcc_number - $result_count;
 
       // Get node terms.
-      $term_ids = $view->filter['tid']->value;
+      $term_ids = [];
+      if (isset($view->filter['tid']) && !empty($view->filter['tid']) && isset($view->filter['tid']->value)) {
+        $term_ids = $view->filter['tid']->value;
+      }
 
       // Load additional items to add.
       $additional_items = _get_additional_items($items_to_add, $content_type, $term_ids, $taxonomy_field);

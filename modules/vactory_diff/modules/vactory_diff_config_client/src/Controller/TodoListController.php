@@ -64,7 +64,7 @@ class TodoListController extends ControllerBase {
     $todo_list = $this->todoListGenerator->generateTodoList();
     $module_changes = $this->moduleInstallation->analyzeModuleChanges();
 
-    if (empty($todo_list['features']) && empty($todo_list['unmatched_configs']) && !$module_changes['has_changes']) {
+    if ($this->isEmptyTodoList($todo_list, $module_changes)) {
       $this->messenger()->addWarning($this->t('No comparison results found. Please run a comparison first.'));
       return [
         '#markup' => $this->t('No TODO items to display. Please <a href="@url">run a comparison</a> first.', [
@@ -74,33 +74,77 @@ class TodoListController extends ControllerBase {
     }
 
     $build = [];
+    $build['download_button'] = $this->buildDownloadButton();
+    $build['summary'] = $this->buildSummarySection($todo_list, $module_changes);
 
-    // Add download button at the top.
-    $build['download_button'] = [
+    if ($module_changes['has_changes']) {
+      $build['modules'] = $this->buildModuleSection($module_changes);
+    }
+
+    if (!empty($todo_list['features'])) {
+      $build += $this->buildFeaturesSection($todo_list);
+    }
+
+    if (!empty($todo_list['unmatched_configs'])) {
+      $build['unmatched'] = $this->buildUnmatchedSection($todo_list);
+    }
+
+    if (!empty($todo_list['content_sync']) && ($todo_list['content_sync']['has_changes'] ?? FALSE)) {
+      $build['content_sync'] = $this->buildContentSyncSection($todo_list);
+    }
+
+    $build['#attached']['library'][] = 'vactory_diff_config_client/comparison';
+
+    return $build;
+  }
+
+  /**
+   * Check if the to-do list is empty.
+   */
+  protected function isEmptyTodoList(array $todo_list, array $module_changes): bool {
+    return empty($todo_list['features'])
+      && empty($todo_list['unmatched_configs'])
+      && !$module_changes['has_changes'];
+  }
+
+  /**
+   * Build the download button section.
+   *
+   * @return array
+   *   Render array for download button.
+   */
+  protected function buildDownloadButton(): array {
+    return [
       '#type' => 'container',
       '#attributes' => ['class' => ['vactory-diff-download-section']],
-    ];
-
-    $build['download_button']['link'] = [
-      '#type' => 'link',
-      '#title' => $this->t('Télécharger la TODO list'),
-      '#url' => Url::fromRoute('vactory_diff_config_client.todo_list_download'),
-      '#attributes' => [
-        'class' => ['button', 'button--primary', 'vactory-diff-download-button'],
-        'target' => '_blank',
+      'link' => [
+        '#type' => 'link',
+        '#title' => $this->t('Télécharger la TODO list'),
+        '#url' => Url::fromRoute('vactory_diff_config_client.todo_list_download'),
+        '#attributes' => [
+          'class' => [
+            'button',
+            'button--primary',
+            'vactory-diff-download-button',
+          ],
+          'target' => '_blank',
+        ],
       ],
     ];
+  }
 
-    // Summary section.
-    $build['summary'] = [
+  /**
+   * Build the summary section.
+   */
+  protected function buildSummarySection(array $todo_list, array $module_changes): array {
+    $summary = [
       '#type' => 'container',
       '#attributes' => ['class' => ['vactory-diff-todo-summary']],
-    ];
-
-    $build['summary']['title'] = [
-      '#type' => 'html_tag',
-      '#tag' => 'h2',
-      '#value' => $this->t('Summary'),
+      'title' => [
+        '#type' => 'html_tag',
+        '#tag' => 'h2',
+        '#value' => $this->t('Summary'),
+      ],
     ];
 
     $summary_items = [
@@ -115,98 +159,121 @@ class TodoListController extends ControllerBase {
       $summary_items[] = $this->t('Modules to uninstall: <strong>@count</strong>', ['@count' => count($module_changes['to_uninstall'])]);
     }
 
-    $build['summary']['stats'] = [
+    $summary['stats'] = [
       '#theme' => 'item_list',
       '#items' => $summary_items,
     ];
 
     if (!empty($todo_list['timestamp'])) {
-      $build['summary']['timestamp'] = [
+      $summary['timestamp'] = [
         '#markup' => '<p>' . $this->t('Last comparison: @time', ['@time' => $todo_list['timestamp']]) . '</p>',
       ];
     }
 
-    // Module Installation/Uninstallation section.
-    if ($module_changes['has_changes']) {
-      $build['modules'] = [
-        '#type' => 'container',
-        '#attributes' => ['class' => ['vactory-diff-modules-section']],
-      ];
+    return $summary;
+  }
 
-      $build['modules']['title'] = [
+  /**
+   * Build the module installation/uninstallation section.
+   *
+   * @param array $module_changes
+   *   The module changes array.
+   *
+   * @return array
+   *   Render array for module section.
+   */
+  protected function buildModuleSection(array $module_changes): array {
+    $modules = [
+      '#type' => 'container',
+      '#attributes' => ['class' => ['vactory-diff-modules-section']],
+      'title' => [
         '#type' => 'html_tag',
         '#tag' => 'h2',
         '#value' => $this->t('Module Installation/Uninstallation'),
-      ];
-
-      $build['modules']['description'] = [
+      ],
+      'description' => [
         '#markup' => '<p>' . $this->t('The following modules need to be installed or uninstalled based on core.extension changes:') . '</p>',
-      ];
+      ],
+    ];
 
-      // Generate commands for copy-paste.
-      $module_commands = [];
-      foreach ($module_changes['commands'] as $cmd) {
-        $module_commands[] = $cmd['command'];
-      }
-
-      if (!empty($module_commands)) {
-        foreach ($module_commands as $key => $cmd) {
-          $build['modules']['commands'][$key] = [
-            '#type' => 'html_tag',
-            '#tag' => 'pre',
-            '#value' => $cmd,
-            '#attributes' => ['class' => ['vactory-diff-commands-block']],
-          ];
-        }
-      }
+    $module_commands = [];
+    foreach ($module_changes['commands'] as $cmd) {
+      $module_commands[] = $cmd['command'];
     }
 
-    // Features section.
-    if (!empty($todo_list['features'])) {
-      // Section 1: Commands to execute (visible by default).
-      $build['commands'] = [
-        '#type' => 'container',
-        '#attributes' => ['class' => ['vactory-diff-commands-section']],
-      ];
-
-      $build['commands']['title'] = [
-        '#type' => 'html_tag',
-        '#tag' => 'h2',
-        '#value' => $this->t('Features to revert'),
-      ];
-
-      $build['commands']['description'] = [
-        '#markup' => '<p>' . $this->t('Copy and paste these commands in your production environment:') . '</p>',
-      ];
-
-      // Generate all commands.
-      $all_commands = [];
-      foreach ($todo_list['features'] as $feature) {
-        $all_commands[] = $feature['command'];
-      }
-
-      foreach ($all_commands as $key => $command) {
-        $build['commands']['commands'][$key] = [
+    if (!empty($module_commands)) {
+      foreach ($module_commands as $key => $cmd) {
+        $modules['commands'][$key] = [
           '#type' => 'html_tag',
           '#tag' => 'pre',
-          '#value' => $command,
+          '#value' => $cmd,
           '#attributes' => ['class' => ['vactory-diff-commands-block']],
         ];
       }
+    }
 
-      // Section 2: Detailed table (in accordion).
-      $build['features_details'] = [
-        '#type' => 'details',
-        '#title' => $this->t('Detailed Features Information'),
-        '#open' => FALSE,
-        '#attributes' => ['class' => ['vactory-diff-features-details']],
+    return $modules;
+  }
+
+  /**
+   * Build the features section (commands and details).
+   */
+  protected function buildFeaturesSection(array $todo_list): array {
+    $build = [];
+
+    // Commands section.
+    $build['commands'] = [
+      '#type' => 'container',
+      '#attributes' => ['class' => ['vactory-diff-commands-section']],
+      'title' => [
+        '#type' => 'html_tag',
+        '#tag' => 'h2',
+        '#value' => $this->t('Features to revert'),
+      ],
+      'description' => [
+        '#markup' => '<p>' . $this->t('Copy and paste these commands in your production environment:') . '</p>',
+      ],
+    ];
+
+    $all_commands = [];
+    foreach ($todo_list['features'] as $feature) {
+      $all_commands[] = $feature['command'];
+    }
+
+    foreach ($all_commands as $key => $command) {
+      $build['commands']['commands'][$key] = [
+        '#type' => 'html_tag',
+        '#tag' => 'pre',
+        '#value' => $command,
+        '#attributes' => ['class' => ['vactory-diff-commands-block']],
       ];
+    }
 
-      $build['features_details']['description'] = [
+    // Detailed features table.
+    $build['features_details'] = $this->buildFeaturesDetailsTable($todo_list['features']);
+
+    return $build;
+  }
+
+  /**
+   * Build the detailed features table.
+   *
+   * @param array $features
+   *   The features array.
+   *
+   * @return array
+   *   Render array for features details table.
+   */
+  protected function buildFeaturesDetailsTable(array $features): array {
+    $details = [
+      '#type' => 'details',
+      '#title' => $this->t('Detailed Features Information'),
+      '#open' => FALSE,
+      '#attributes' => ['class' => ['vactory-diff-features-details']],
+      'description' => [
         '#markup' => '<p>' . $this->t('Detailed information about each feature and the configurations affected.') . '</p>',
-      ];
-
-      $build['features_details']['list'] = [
+      ],
+      'list' => [
         '#type' => 'table',
         '#header' => [
           $this->t('#'),
@@ -217,56 +284,58 @@ class TodoListController extends ControllerBase {
         ],
         '#rows' => [],
         '#attributes' => ['class' => ['vactory-diff-todo-table']],
-      ];
+      ],
+    ];
 
-      $index = 1;
-      foreach ($todo_list['features'] as $feature) {
-        $configs_list = [];
-        foreach ($feature['configs'] as $config) {
-          $configs_list[] = "[{$config['change_type']}] {$config['name']} ({$config['type']})";
-        }
-
-        $build['features_details']['list']['#rows'][] = [
-          $index,
-          $feature['module'],
-          [
-            'data' => [
-              '#type' => 'html_tag',
-              '#tag' => 'code',
-              '#value' => $feature['command'],
-              '#attributes' => ['class' => ['vactory-diff-command']],
-            ],
-          ],
-          $this->t('@added added, @modified modified', [
-            '@added' => $feature['stats']['added'],
-            '@modified' => $feature['stats']['modified'],
-          ]),
-          [
-            'data' => [
-              '#theme' => 'item_list',
-              '#items' => $configs_list,
-              '#attributes' => ['class' => ['vactory-diff-config-list']],
-            ],
-          ],
-        ];
-        $index++;
+    $index = 1;
+    foreach ($features as $feature) {
+      $configs_list = [];
+      foreach ($feature['configs'] as $config) {
+        $configs_list[] = "[{$config['change_type']}] {$config['name']} ({$config['type']})";
       }
+
+      $details['list']['#rows'][] = [
+        $index,
+        $feature['module'],
+        [
+          'data' => [
+            '#type' => 'html_tag',
+            '#tag' => 'code',
+            '#value' => $feature['command'],
+            '#attributes' => ['class' => ['vactory-diff-command']],
+          ],
+        ],
+        $this->t('@added added, @modified modified', [
+          '@added' => $feature['stats']['added'],
+          '@modified' => $feature['stats']['modified'],
+        ]),
+        [
+          'data' => [
+            '#theme' => 'item_list',
+            '#items' => $configs_list,
+            '#attributes' => ['class' => ['vactory-diff-config-list']],
+          ],
+        ],
+      ];
+      $index++;
     }
 
-    // Unmatched configurations section.
-    if (!empty($todo_list['unmatched_configs'])) {
-      $build['unmatched'] = [
-        '#type' => 'details',
-        '#title' => $this->t('Unmatched Configurations (@count)', ['@count' => count($todo_list['unmatched_configs'])]),
-        '#open' => FALSE,
-        '#attributes' => ['class' => ['vactory-diff-unmatched']],
-      ];
+    return $details;
+  }
 
-      $build['unmatched']['description'] = [
+  /**
+   * Build the unmatched configurations section.
+   */
+  protected function buildUnmatchedSection(array $todo_list): array {
+    $unmatched = [
+      '#type' => 'details',
+      '#title' => $this->t('Unmatched Configurations (@count)', ['@count' => count($todo_list['unmatched_configs'])]),
+      '#open' => FALSE,
+      '#attributes' => ['class' => ['vactory-diff-unmatched']],
+      'description' => [
         '#markup' => '<p>' . $this->t('The following configurations could not be matched to a feature module. Manual intervention may be required.') . '</p>',
-      ];
-
-      $build['unmatched']['list'] = [
+      ],
+      'list' => [
         '#type' => 'table',
         '#header' => [
           $this->t('Configuration'),
@@ -275,69 +344,64 @@ class TodoListController extends ControllerBase {
           $this->t('Reason'),
         ],
         '#rows' => [],
-      ];
+      ],
+    ];
 
-      foreach ($todo_list['unmatched_configs'] as $unmatched) {
-        $build['unmatched']['list']['#rows'][] = [
-          $unmatched['config_name'],
-          $unmatched['type'],
-          $unmatched['change_type'],
-          $unmatched['reason'],
-        ];
-      }
+    foreach ($todo_list['unmatched_configs'] as $unmatched_config) {
+      $unmatched['list']['#rows'][] = [
+        $unmatched_config['config_name'],
+        $unmatched_config['type'],
+        $unmatched_config['change_type'],
+        $unmatched_config['reason'],
+      ];
     }
 
-    // Content Sync section (single_content_sync based on content diff CSV).
-    if (!empty($todo_list['content_sync']) && ($todo_list['content_sync']['has_changes'] ?? FALSE)) {
-      $build['content_sync'] = [
-        '#type' => 'container',
-        '#attributes' => ['class' => ['vactory-diff-commands-section']],
-      ];
+    return $unmatched;
+  }
 
-      $build['content_sync']['title'] = [
+  /**
+   * Build the content sync section.
+   */
+  protected function buildContentSyncSection(array $todo_list): array {
+    $content_sync = [
+      '#type' => 'container',
+      '#attributes' => ['class' => ['vactory-diff-commands-section']],
+      'title' => [
         '#type' => 'html_tag',
         '#tag' => 'h2',
         '#value' => $this->t('Content Sync'),
-      ];
-
-      // Small intro/description for spacing and context.
-      $build['content_sync']['intro'] = [
+      ],
+      'intro' => [
         '#markup' => '<p>' . $this->t('Run the commands below to export changed content.') . '</p>',
-      ];
+      ],
+    ];
 
-      // Export commands.
-      if (!empty($todo_list['content_sync']['export_commands'])) {
-        foreach ($todo_list['content_sync']['export_commands'] as $key => $command) {
-          $build['content_sync']['export_commands'][$key] = [
-            '#type' => 'html_tag',
-            '#tag' => 'pre',
-            '#value' => $command,
-            '#attributes' => ['class' => ['vactory-diff-commands-block']],
-          ];
-        }
-        // Copy instruction.
-        $build['content_sync']['instruction'] = [
-          '#type' => 'container',
-          'text' => [
-            '#markup' => '<p>' . $this->t('Then copy the generated archives to PROD, then run the import commands') . '</p>',
-          ],
-        ];
-
-        // Import commands.
-        $build['content_sync']['import_commands'] = [
+    if (!empty($todo_list['content_sync']['export_commands'])) {
+      foreach ($todo_list['content_sync']['export_commands'] as $key => $command) {
+        $content_sync['export_commands'][$key] = [
           '#type' => 'html_tag',
           '#tag' => 'pre',
-          '#value' => 'drush content:import [archive_path]',
+          '#value' => $command,
           '#attributes' => ['class' => ['vactory-diff-commands-block']],
         ];
       }
 
+      $content_sync['instruction'] = [
+        '#type' => 'container',
+        'text' => [
+          '#markup' => '<p>' . $this->t('Then copy the generated archives to PROD, then run the import commands') . '</p>',
+        ],
+      ];
+
+      $content_sync['import_commands'] = [
+        '#type' => 'html_tag',
+        '#tag' => 'pre',
+        '#value' => 'drush content:import [archive_path]',
+        '#attributes' => ['class' => ['vactory-diff-commands-block']],
+      ];
     }
 
-    // Add CSS.
-    $build['#attached']['library'][] = 'vactory_diff_config_client/comparison';
-
-    return $build;
+    return $content_sync;
   }
 
   /**
