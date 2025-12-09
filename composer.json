@@ -233,7 +233,6 @@
       },
       "voidagency/cloudinary": {
         "Cloudinary video media library compatibility fix": "https://gist.githubusercontent.com/voidagency/21729df75ca350faace0f7883960bc37/raw/88e6ce0980cb3e01c95f74e1c79b4baddcdf884e/cloudinary-video-media-library-compatibility-fix.patch",
-        "Fix symfony 6 compatibility": "https://gist.githubusercontent.com/voidagency/94489fb9998406959ebefb31a758f39c/raw/6692adac21ef17ea4d66d69584159a6802707404/cloudinary-fix-symfony6-compatibility.patch",
         "Cloudindary Drupal 11 compatibility": "https://patch-diff.githubusercontent.com/raw/voidagency/cloudinary/pull/1.patch"
       },
       "drupal/jsonapi_cross_bundles": {
