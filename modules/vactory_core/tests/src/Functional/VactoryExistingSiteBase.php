@@ -5,6 +5,7 @@ namespace Drupal\Tests\vactory_core\Functional;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Serialization\Yaml;
 use Drupal\file\Entity\File;
+use Drupal\media\Entity\Media;
 use Drupal\taxonomy\Entity\Vocabulary;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
 
@@ -75,6 +76,13 @@ abstract class VactoryExistingSiteBase extends ExistingSiteBase {
    * @var array
    */
   protected $cleanupFileEntities = [];
+
+  /**
+   * Track created media entities for cleanup.
+   *
+   * @var array
+   */
+  protected $cleanupMediaEntities = [];
 
   /**
    * {@inheritDoc}
@@ -365,15 +373,43 @@ abstract class VactoryExistingSiteBase extends ExistingSiteBase {
    *
    * @param array $values
    *   An array of values to set, keyed by property name.
+   * @param int $width
+   *   Width of the generated test image in pixels.
+   * @param int $height
+   *   Height of the generated test image in pixels.
    *
    * @return \Drupal\file\Entity\File
    *   The created file entity.
    */
-  protected function createFile(array $values) {
+  protected function createFile(array $values, $width = 10, $height = 10): File {
+    if ($uri = $values['uri']) {
+      $img = imagecreatetruecolor($width, $height);
+      $bg = imagecolorallocate($img, 255, 0, 0);
+      imagefill($img, 0, 0, $bg);
+      imagejpeg($img, \Drupal::service('file_system')->realpath($uri));
+      imagedestroy($img);
+    }
+
     $file = File::create($values);
     $file->save();
     $this->cleanupFileEntities[] = $file;
     return $file;
+  }
+
+  /**
+   * Creates a media entity.
+   *
+   * @param array $values
+   *   An array of values to set, keyed by property name.
+   *
+   * @return \Drupal\media\Entity\Media
+   *   The created media entity.
+   */
+  protected function createMedia(array $values) {
+    $media = Media::create($values);
+    $media->save();
+    $this->cleanupMediaEntities[] = $media;
+    return $media;
   }
 
   /**
@@ -389,6 +425,7 @@ abstract class VactoryExistingSiteBase extends ExistingSiteBase {
     $this->cleanupEntitiesByType($this->cleanupWebforms);
     $this->cleanupEntitiesByType($this->cleanupVocabularies);
     $this->cleanupEntitiesByType($this->cleanupFileEntities);
+    $this->cleanupEntitiesByType($this->cleanupMediaEntities);
 
     parent::tearDown();
   }
