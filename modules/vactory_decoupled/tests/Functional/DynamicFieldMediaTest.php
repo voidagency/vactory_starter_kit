@@ -36,6 +36,10 @@ class DynamicFieldMediaTest extends VactoryExistingSiteBase {
         'type' => 'file',
         'label' => 'File',
       ],
+      'remote_video' => [
+        'type' => 'remote_video',
+        'label' => 'Remote Video',
+      ],
     ],
   ];
 
@@ -225,7 +229,6 @@ class DynamicFieldMediaTest extends VactoryExistingSiteBase {
     $this->assertJson($component_data['widget_data'], 'widget_data should be a valid JSON string.');
 
     $widget_data_decoded = json_decode($component_data['widget_data'], TRUE);
-    dump($widget_data_decoded);
 
     $this->assertArrayHasKey('components', $widget_data_decoded, 'widget_data should contain a "components" key.');
     $this->assertNotEmpty($widget_data_decoded['components'], '"components" array should not be empty.');
@@ -246,6 +249,106 @@ class DynamicFieldMediaTest extends VactoryExistingSiteBase {
       $file['_default'],
       'File URL should end with "test_file.txt".'
     );
+  }
+
+  /**
+   * Test remote_video field in dynamic field widget via JSON:API.
+   */
+  public function testRemoteVideoFieldWidget(): void {
+
+    // Prepare the DF.
+    $df_name = 'test-remote-video-widget';
+    $widget_id = $this->createVolatileDf(self::WIDGET_SETTINGS, $df_name);
+
+    $video_url = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
+
+    $remote_video_media = $this->createMedia([
+      'name' => "Test Remote Video",
+      'bundle' => 'remote_video',
+      'field_media_oembed_video' => [
+        'value' => $video_url,
+      ],
+    ]);
+
+    $widget_data = [
+      [
+        'remote_video' => [
+          uniqid() => [
+            'selection' => [
+              [
+                'target_id' => (string) $remote_video_media->id(),
+              ],
+            ],
+          ],
+        ],
+      ],
+    ];
+
+    $paragraph = $this->createParagraph([
+      'type' => 'vactory_component',
+      'field_vactory_component' => [
+        'widget_id' => $widget_id,
+        'widget_data' => json_encode($widget_data),
+      ],
+    ]);
+
+    $node = $this->createNode([
+      'type' => 'vactory_page',
+      'title' => 'Test Remote Video Widget Page',
+      'status' => 1,
+      'moderation_state' => 'published',
+      'field_vactory_paragraphs' => [
+        [
+          'target_id' => $paragraph->id(),
+          'target_revision_id' => $paragraph->getRevisionId(),
+        ],
+      ],
+    ]);
+
+    $langcode = $node->language()->getId();
+    $query_params = ['include' => 'field_vactory_paragraphs'];
+    $json = $this->fetchNodeJsonApi($node, $langcode, 200, $query_params);
+
+    $this->assertNotNull($json, 'JSON:API response should be valid JSON.');
+    $this->assertArrayHasKey('data', $json, 'Response should contain the "data" key.');
+    $this->assertArrayHasKey('included', $json, 'Response should contain the "included" key with related entities.');
+
+    $component_data = $json['included'][0]['attributes']['field_vactory_component'];
+
+    $this->assertEquals(
+      $widget_id,
+      $component_data['widget_id'],
+      "Returned widget_id should match {$widget_id}."
+    );
+
+    $this->assertJson($component_data['widget_data'], 'widget_data should be a valid JSON string.');
+
+    $widget_data_decoded = json_decode($component_data['widget_data'], TRUE);
+
+    $this->assertArrayHasKey('components', $widget_data_decoded, 'widget_data should contain a "components" key.');
+    $this->assertNotEmpty($widget_data_decoded['components'], '"components" array should not be empty.');
+
+    $component = $widget_data_decoded['components'][0] ?? [];
+    $this->assertNotEmpty($component, 'Component data should not be empty.');
+
+    $this->assertArrayHasKey('remote_video', $component, 'Component should contain a "remote_video" field.');
+    $this->assertIsArray($component['remote_video'], '"remote_video" field should be an array.');
+    $this->assertNotEmpty($component['remote_video'], '"remote_video" field should not be empty.');
+
+    $remote_video = $component['remote_video'];
+
+    $this->assertArrayHasKey('url', $remote_video, '"remote_video" entry should contain a "url" field.');
+    $this->assertNotEmpty($remote_video['url'], 'Remote video URL should not be empty.');
+
+    $this->assertStringContainsString(
+      $video_url,
+      $remote_video['url'],
+      'Remote video URL should contain the expected video URL.'
+    );
+
+    $this->assertArrayHasKey('thumbnail', $remote_video, 'Remote video should contain a "thumbnail" field.');
+    $this->assertIsArray($remote_video['thumbnail'], '"thumbnail" field should be an array.');
+    $this->assertArrayHasKey('uri', $remote_video['thumbnail'], '"thumbnail" entry should contain a "uri" field.');
   }
 
 }
