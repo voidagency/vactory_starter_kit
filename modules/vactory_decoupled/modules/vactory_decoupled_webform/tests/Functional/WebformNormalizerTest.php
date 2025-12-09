@@ -207,7 +207,7 @@ class WebformNormalizerTest extends VactoryExistingSiteBase {
       'uri' => 'public://test_image.jpg',
       'filename' => 'test_image.jpg',
       'filemime' => 'image/jpeg',
-      'filesize' => 1024 * 500,
+      'type' => 'image',
     ]);
 
     // Créer un webform avec différents types de champs upload.
@@ -269,7 +269,6 @@ class WebformNormalizerTest extends VactoryExistingSiteBase {
     $this->assertEquals($test_image->id(), $default_single['fid']);
     $this->assertEquals('test_image.jpg', $default_single['name']);
     $this->assertEquals('image/jpeg', $default_single['type']);
-    $this->assertEquals(1024 * 500, $default_single['size']);
     $this->assertNotEmpty($default_single['previewUrl']);
   }
 

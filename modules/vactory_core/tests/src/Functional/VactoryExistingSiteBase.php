@@ -373,21 +373,28 @@ abstract class VactoryExistingSiteBase extends ExistingSiteBase {
    *
    * @param array $values
    *   An array of values to set, keyed by property name.
-   * @param int $width
-   *   Width of the generated test image in pixels.
-   * @param int $height
-   *   Height of the generated test image in pixels.
    *
    * @return \Drupal\file\Entity\File
    *   The created file entity.
    */
-  protected function createFile(array $values, $width = 10, $height = 10): File {
-    if ($uri = $values['uri']) {
+  protected function createFile(array $values): ?File {
+    $type = $values['type'] ?? NULL;
+    $uri = $values['uri'];
+
+    if (empty($uri)) {
+      return NULL;
+    }
+
+    if ($type == 'image') {
+      $width = $values['width'] ?? 10;
+      $height = $values['height'] ?? 10;
       $img = imagecreatetruecolor($width, $height);
       $bg = imagecolorallocate($img, 255, 0, 0);
       imagefill($img, 0, 0, $bg);
       imagejpeg($img, \Drupal::service('file_system')->realpath($uri));
       imagedestroy($img);
+      unset($values['height']);
+      unset($values['width']);
     }
 
     $file = File::create($values);
