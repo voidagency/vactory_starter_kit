@@ -64,6 +64,8 @@ class DecoupledCrossContentTest extends VactoryExistingSiteBase {
     // Create and log in an admin user using DTT helper.
     $admin = $this->createUser([], NULL, TRUE);
     $this->drupalLogin($admin);
+
+    \Drupal::service('vactory')->createVccField('vactory_news', 'field_contenu_lie');
   }
 
   /**
