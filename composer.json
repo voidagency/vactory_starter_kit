@@ -171,7 +171,8 @@
     "drupal/shortcode": "^2.0",
     "chx/drupal-issue-fork": "^1.0",
     "drupal/jquery_colorpicker": "dev-3495776-additional-d11-update",
-    "drupal/easy_install": "dev-3495637-d11_ready"
+    "drupal/easy_install": "dev-3495637-d11_ready",
+    "drupal/seven": "^1.0"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.3",
@@ -257,7 +258,8 @@
         "drupal/amptheme",
         "drupal/improved_multi_select",
         "drupal/views_url_alias",
-        "drupal/amp"
+        "drupal/amp",
+        "drupal/seven"
       ]
     },
     {
@@ -348,6 +350,19 @@
           "type": "git",
           "url": "https://git.drupalcode.org/issue/amp-3428159.git",
           "reference": "amp-3428159-3428159-d11_ready"
+        }
+      }
+    },
+    {
+      "type": "package",
+      "package": {
+        "name": "drupal/seven",
+        "version": "1.0.0",
+        "type": "drupal-module",
+        "source": {
+          "type": "git",
+          "url": "https://git.drupalcode.org/issue/seven-3527682.git",
+          "reference": "3527682-automated-drupal-11"
         }
       }
     },
