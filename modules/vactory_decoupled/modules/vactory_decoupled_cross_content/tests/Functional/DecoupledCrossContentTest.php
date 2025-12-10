@@ -42,6 +42,7 @@ class DecoupledCrossContentTest extends VactoryExistingSiteBase {
    * {@inheritdoc}
    */
   protected array $modulesToInstall = [
+    'vactory_news',
     'vactory_decoupled',
     'vactory_decoupled_cross_content',
     'vactory_cross_content',
