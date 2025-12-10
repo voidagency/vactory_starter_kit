@@ -232,8 +232,7 @@
         "Default field enhancer for fields": "https://gist.githubusercontent.com/voidagency/4861a0f0343a45cf0582553fc80c6b59/raw/2342d707c2b6708f2c18a69b870fcad1d5242df3/jsonapi_default_field_enhancer_for_fields.patch"
       },
       "voidagency/cloudinary": {
-        "Cloudinary video media library compatibility fix": "https://gist.githubusercontent.com/voidagency/21729df75ca350faace0f7883960bc37/raw/88e6ce0980cb3e01c95f74e1c79b4baddcdf884e/cloudinary-video-media-library-compatibility-fix.patch",
-        "Cloudindary Drupal 11 compatibility": "https://patch-diff.githubusercontent.com/raw/voidagency/cloudinary/pull/1.patch"
+        "Cloudinary video media library compatibility fix": "https://gist.githubusercontent.com/voidagency/21729df75ca350faace0f7883960bc37/raw/88e6ce0980cb3e01c95f74e1c79b4baddcdf884e/cloudinary-video-media-library-compatibility-fix.patch"
       },
       "drupal/jsonapi_cross_bundles": {
         "Fix jsonapi cross bundles": "https://gist.githubusercontent.com/ismail-void/7e56262e60c81fbbd43874d37f145a6d/raw/95b5db1a582cdfe5c9ff987443b5ebc7f76e7766/fix-jsonapi-cross-bundles.patch"
