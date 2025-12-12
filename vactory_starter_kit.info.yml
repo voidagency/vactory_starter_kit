@@ -167,8 +167,8 @@ install:
   # - vactory_google_places
   - vactory_dynamic_field
   # Vactory Custom
-  - vactory_dynamic_field_bootstrap
-  - vactory_dynamic_field_sliders
+#  - vactory_dynamic_field_bootstrap
+#  - vactory_dynamic_field_sliders
   # - vactory_dynamic_field_wysiwyg_templates
   - vactory_cross_content
   - vactory_espace_prive
