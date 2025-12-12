@@ -69,6 +69,19 @@ class PathTranslator extends ControllerBase {
   protected $entityRepository;
 
   /**
+   * The logger service.
+   *
+   * @var \Psr\Log\LoggerInterface
+   */
+  protected $logger;
+  /**
+   * The router service.
+   *
+   * @var \Symfony\Component\Routing\Matcher\UrlMatcherInterface
+   */
+  protected $router;
+
+  /**
    * EventInfoController constructor.
    */
   public function __construct(
