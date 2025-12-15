@@ -80,27 +80,27 @@ class PathTranslatorTest extends VactoryExistingSiteBase {
     $response = json_decode($this->getSession()->getPage()->getContent(), TRUE);
 
     // Verify response structure.
-    $this->assertArrayHasKey('status', $response);
-    $this->assertEquals(200, $response['status']);
+    $this->assertArrayHasKey('status', $response, 'The response array should contain a "status" key.');
+    $this->assertEquals(200, $response['status'], 'The response status should be 200.');
 
     // Verify entity information.
-    $this->assertArrayHasKey('entity', $response);
-    $this->assertArrayHasKey('type', $response['entity']);
-    $this->assertArrayHasKey('bundle', $response['entity']);
-    $this->assertArrayHasKey('label', $response['entity']);
-    $this->assertArrayHasKey('uuid', $response['entity']);
-    $this->assertArrayHasKey('id', $response['entity']);
+    $this->assertArrayHasKey('entity', $response, 'The response array should contain an "entity" key.');
+    $this->assertArrayHasKey('type', $response['entity'], 'The entity array should contain a "type" key.');
+    $this->assertArrayHasKey('bundle', $response['entity'], 'The entity array should contain a "bundle" key.');
+    $this->assertArrayHasKey('label', $response['entity'], 'The entity array should contain a "label" key.');
+    $this->assertArrayHasKey('uuid', $response['entity'], 'The entity array should contain a "uuid" key.');
+    $this->assertArrayHasKey('id', $response['entity'], 'The entity array should contain an "id" key.');
 
-    $this->assertEquals('node', $response['entity']['type']);
-    $this->assertEquals('vactory_page', $response['entity']['bundle']);
-    $this->assertEquals('Test Page with Alias', $response['entity']['label']);
-    $this->assertEquals($node->uuid(), $response['entity']['uuid']);
-    $this->assertEquals($node->id(), $response['entity']['id']);
+    $this->assertEquals('node', $response['entity']['type'], 'The entity type should be "node".');
+    $this->assertEquals('vactory_page', $response['entity']['bundle'], 'The entity bundle should be "vactory_page".');
+    $this->assertEquals('Test Page with Alias', $response['entity']['label'], 'The entity label should match the node title.');
+    $this->assertEquals($node->uuid(), $response['entity']['uuid'], 'The entity UUID should match the node UUID.');
+    $this->assertEquals($node->id(), $response['entity']['id'], 'The entity ID should match the node ID.');
 
     // Verify JSON:API information.
-    $this->assertArrayHasKey('jsonapi', $response);
-    $this->assertArrayHasKey('individual', $response['jsonapi']);
-    $this->assertStringContainsString("/node/vactory_page/{$node->uuid()}", $response['jsonapi']['individual']);
+    $this->assertArrayHasKey('jsonapi', $response, 'The response array should contain a "jsonapi" key.');
+    $this->assertArrayHasKey('individual', $response['jsonapi'], 'The jsonapi array should contain an "individual" key.');
+    $this->assertStringContainsString("/node/vactory_page/{$node->uuid()}", $response['jsonapi']['individual'], 'The JSON:API individual URL should contain the node UUID.');
   }
 
   /**
@@ -153,35 +153,35 @@ class PathTranslatorTest extends VactoryExistingSiteBase {
     $response = json_decode($this->getSession()->getPage()->getContent(), TRUE);
 
     // Verify response structure.
-    $this->assertArrayHasKey('status', $response);
-    $this->assertEquals(200, $response['status']);
+    $this->assertArrayHasKey('status', $response, 'The response array should contain a "status" key.');
+    $this->assertEquals(200, $response['status'], 'The response status should be 200.');
 
     // Verify entity information.
-    $this->assertArrayHasKey('entity', $response);
-    $this->assertArrayHasKey('type', $response['entity']);
-    $this->assertArrayHasKey('bundle', $response['entity']);
-    $this->assertArrayHasKey('label', $response['entity']);
-    $this->assertArrayHasKey('uuid', $response['entity']);
-    $this->assertArrayHasKey('id', $response['entity']);
+    $this->assertArrayHasKey('entity', $response, 'The response array should contain an "entity" key.');
+    $this->assertArrayHasKey('type', $response['entity'], 'The entity array should contain a "type" key.');
+    $this->assertArrayHasKey('bundle', $response['entity'], 'The entity array should contain a "bundle" key.');
+    $this->assertArrayHasKey('label', $response['entity'], 'The entity array should contain a "label" key.');
+    $this->assertArrayHasKey('uuid', $response['entity'], 'The entity array should contain a "uuid" key.');
+    $this->assertArrayHasKey('id', $response['entity'], 'The entity array should contain an "id" key.');
 
-    $this->assertEquals('node', $response['entity']['type']);
-    $this->assertEquals('vactory_page', $response['entity']['bundle']);
-    $this->assertEquals('Test Page with Vactory Route', $response['entity']['label']);
-    $this->assertEquals($node->uuid(), $response['entity']['uuid']);
-    $this->assertEquals($node->id(), $response['entity']['id']);
+    $this->assertEquals('node', $response['entity']['type'], 'The entity type should be "node".');
+    $this->assertEquals('vactory_page', $response['entity']['bundle'], 'The entity bundle should be "vactory_page".');
+    $this->assertEquals('Test Page with Vactory Route', $response['entity']['label'], 'The entity label should match the node title.');
+    $this->assertEquals($node->uuid(), $response['entity']['uuid'], 'The entity UUID should match the node UUID.');
+    $this->assertEquals($node->id(), $response['entity']['id'], 'The entity ID should match the node ID.');
 
     // Verify JSON:API information.
-    $this->assertArrayHasKey('jsonapi', $response);
-    $this->assertArrayHasKey('individual', $response['jsonapi']);
-    $this->assertStringContainsString("/node/vactory_page/{$node->uuid()}", $response['jsonapi']['individual']);
+    $this->assertArrayHasKey('jsonapi', $response, 'The response array should contain a "jsonapi" key.');
+    $this->assertArrayHasKey('individual', $response['jsonapi'], 'The jsonapi array should contain an "individual" key.');
+    $this->assertStringContainsString("/node/vactory_page/{$node->uuid()}", $response['jsonapi']['individual'], 'The JSON:API individual URL should contain the node UUID.');
 
     // Verify system route information is present.
-    $this->assertArrayHasKey('system', $response);
-    $this->assertArrayHasKey('_route', $response['system']);
-    $this->assertArrayHasKey('path', $response['system']);
+    $this->assertArrayHasKey('system', $response, 'The response array should contain a "system" key when using vactory_route.');
+    $this->assertArrayHasKey('_route', $response['system'], 'The system array should contain a "_route" key.');
+    $this->assertArrayHasKey('path', $response['system'], 'The system array should contain a "path" key.');
 
-    $this->assertEquals('test_vactory_route', $response['system']['_route']);
-    $this->assertEquals('/node/' . $node->id(), $response['system']['path']);
+    $this->assertEquals('test_vactory_route', $response['system']['_route'], 'The system route should match the vactory_route ID.');
+    $this->assertEquals('/node/' . $node->id(), $response['system']['path'], 'The system path should match the node path.');
   }
 
   /**
@@ -205,13 +205,13 @@ class PathTranslatorTest extends VactoryExistingSiteBase {
     $response = json_decode($this->getSession()->getPage()->getContent(), TRUE);
 
     // Verify 404 status in response.
-    $this->assertArrayHasKey('status', $response);
-    $this->assertEquals(404, $response['status']);
+    $this->assertArrayHasKey('status', $response, 'The response array should contain a "status" key.');
+    $this->assertEquals(404, $response['status'], 'The response status should be 404 for non-existent paths.');
 
     // Verify error_page route is used.
-    $this->assertArrayHasKey('system', $response);
-    $this->assertArrayHasKey('_route', $response['system']);
-    $this->assertEquals('error_page', $response['system']['_route']);
+    $this->assertArrayHasKey('system', $response, 'The response array should contain a "system" key for error pages.');
+    $this->assertArrayHasKey('_route', $response['system'], 'The system array should contain a "_route" key.');
+    $this->assertEquals('error_page', $response['system']['_route'], 'The system route should be "error_page" for 404 errors.');
   }
 
   /**
@@ -250,13 +250,13 @@ class PathTranslatorTest extends VactoryExistingSiteBase {
     $response = json_decode($this->getSession()->getPage()->getContent(), TRUE);
 
     // Verify 404 status (unpublished nodes should not be found).
-    $this->assertArrayHasKey('status', $response);
-    $this->assertEquals(404, $response['status']);
+    $this->assertArrayHasKey('status', $response, 'The response array should contain a "status" key.');
+    $this->assertEquals(404, $response['status'], 'The response status should be 404 for unpublished nodes.');
 
     // Verify error_page route is used.
-    $this->assertArrayHasKey('system', $response);
-    $this->assertArrayHasKey('_route', $response['system']);
-    $this->assertEquals('error_page', $response['system']['_route']);
+    $this->assertArrayHasKey('system', $response, 'The response array should contain a "system" key for error pages.');
+    $this->assertArrayHasKey('_route', $response['system'], 'The system array should contain a "_route" key.');
+    $this->assertEquals('error_page', $response['system']['_route'], 'The system route should be "error_page" for unpublished nodes.');
   }
 
   /**
@@ -299,20 +299,20 @@ class PathTranslatorTest extends VactoryExistingSiteBase {
     $response = json_decode($this->getSession()->getPage()->getContent(), TRUE);
 
     // Verify redirect information is present.
-    $this->assertArrayHasKey('redirect', $response);
-    $this->assertIsArray($response['redirect']);
-    $this->assertCount(1, $response['redirect']);
+    $this->assertArrayHasKey('redirect', $response, 'The response array should contain a "redirect" key when node path pattern is used.');
+    $this->assertIsArray($response['redirect'], 'The redirect value should be an array.');
+    $this->assertCount(1, $response['redirect'], 'The redirect array should contain exactly one redirect entry.');
 
     $redirect = reset($response['redirect']);
 
-    $this->assertArrayHasKey('to', $redirect);
-    $this->assertStringContainsString($alias, $redirect['to']);
+    $this->assertArrayHasKey('to', $redirect, 'The redirect array should contain a "to" key.');
+    $this->assertStringContainsString($alias, $redirect['to'], 'The redirect "to" value should contain the node alias.');
 
-    $this->assertArrayHasKey('status', $redirect);
-    $this->assertEquals(301, $redirect['status']);
+    $this->assertArrayHasKey('status', $redirect, 'The redirect array should contain a "status" key.');
+    $this->assertEquals(301, $redirect['status'], 'The redirect status should be 301 (Moved Permanently).');
 
-    $this->assertArrayHasKey('from', $redirect);
-    $this->assertEquals($node_path, $redirect['from']);
+    $this->assertArrayHasKey('from', $redirect, 'The redirect array should contain a "from" key.');
+    $this->assertEquals($node_path, $redirect['from'], 'The redirect "from" value should match the node path pattern.');
   }
 
   /**
