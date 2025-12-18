@@ -185,7 +185,7 @@ install:
   - vactory_dynamic_import
   - menu_manipulator
   - content_moderation
-  - views_url_alias
+#  - views_url_alias
   - webform_import_tab
   - workflows
 themes:
