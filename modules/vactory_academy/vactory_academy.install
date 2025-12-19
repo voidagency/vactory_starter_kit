@@ -12,6 +12,7 @@ use Drupal\menu_link_content\Entity\MenuLinkContent;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\user\Entity\Role;
+use Drupal\file\Entity\File;
 
 /**
  * Implements hook_install().
@@ -127,11 +128,15 @@ function vactory_academy_install() {
     ];
     $paragraph = Paragraph::create($paragraph);
     $paragraph->save();
-    $homepage = \Drupal::entityTypeManager()->getStorage('node')->loadByProperties([
-      'type'     => 'vactory_page',
-      'title'    => 'Homepage',
-    ]);
-    $homepage = reset($homepage);
+    // Get homepage from system configuration.
+    $front_page_path = \Drupal::config('system.site')->get('page.front');
+    if ($front_page_path && preg_match('/^\/node\/(\d+)$/', $front_page_path, $matches)) {
+      $homepage = \Drupal::entityTypeManager()->getStorage('node')->load($matches[1]);
+    }
+    if (empty($homepage)) {
+      \Drupal::logger('vactory_academy')->warning('Homepage not found in system configuration.');
+      return;
+    }
     $homepage->field_vactory_paragraphs[] = [
       'target_id' => $paragraph->id(),
       'target_revision_id' => \Drupal::entityTypeManager()
@@ -178,10 +183,10 @@ function vactory_academy_uninstall() {
 }
 
 /**
- * Create a new academy media field to store existing field_vactory_file values in.
+ * Create new academy media field to store existing field_vactory_file values.
  */
 function vactory_academy_update_9500(&$sandbox) {
-  // Create a new academy media field to store existing field_vactory_file values in.
+  // Create new academy media field to store existing field_vactory_file values.
   $entity_type = 'node';
   $bundle = 'vactory_academy';
   $field = FieldConfig::loadByName($entity_type, $bundle, 'field_vactory_media_document');
@@ -264,7 +269,7 @@ function vactory_academy_update_9501(&$sandbox) {
         $media_id = $node->get('field_vactory_media_document')->target_id;
         if (!$media_id) {
           $support_fid = $node->get('field_vactory_file')->target_id;
-          $file = \Drupal\file\Entity\File::load($support_fid);
+          $file = File::load($support_fid);
           if ($file) {
             // Create related media entity.
             $media = Media::create([
