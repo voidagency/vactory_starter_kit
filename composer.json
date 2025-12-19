@@ -277,9 +277,6 @@
       },
       "drupal/search_api": {
         "Decode HTML in search API rendered items": "https://gist.githubusercontent.com/ismail-void/73938a4084d2981578ccef6ca4c563ff/raw/04336c5d33a885ac3937d8fbee46fa2c1756ac9f/search-api-rendered-item-decode-html.patch"
-      },
-      "drupal/views_url_alias": {
-        "Some path alias crash the creation of the views_url_alias table": "https://gist.githubusercontent.com/ismail-void/eaa7dcd382989e5f042f43aa885fc505/raw/48e678b5bbee9f45b1c88147c611b49dbd678f5b/views_url_alias.patch"
       }
     }
   },
