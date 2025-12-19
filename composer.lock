@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "9d6227571b37a78dc1b41b738ec4faf7",
+    "content-hash": "774970fedfde7d60be4dba038747266d",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -11340,26 +11340,26 @@
         },
         {
             "name": "drupal/views_url_alias",
-            "version": "3.1.0",
+            "version": "3.1.2",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/views_url_alias.git",
-                "reference": "3.1.0"
+                "reference": "3.1.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/views_url_alias-3.1.0.zip",
-                "reference": "3.1.0",
-                "shasum": "c06cca3df9525a37304881686e1224d87288b525"
+                "url": "https://ftp.drupal.org/files/projects/views_url_alias-3.1.2.zip",
+                "reference": "3.1.2",
+                "shasum": "b4c50d656dbb2fca902184b73b6a63ac75a2a307"
             },
             "require": {
-                "drupal/core": "^8.8 || ^9 || ^10"
+                "drupal/core": "^8.8 || ^9 || ^10 || ^11"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "3.1.0",
-                    "datestamp": "1711071321",
+                    "version": "3.1.2",
+                    "datestamp": "1766073117",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -11388,15 +11388,19 @@
                     "homepage": "https://www.drupal.org/user/357826"
                 },
                 {
+                    "name": "rachel_norfolk",
+                    "homepage": "https://www.drupal.org/user/66273"
+                },
+                {
                     "name": "venugopp",
                     "homepage": "https://www.drupal.org/user/2628911"
                 },
                 {
-                    "name": "_shY",
+                    "name": "_shy",
                     "homepage": "https://www.drupal.org/user/3672933"
                 }
             ],
-            "description": "Allows content related Views be filtered by path aliases.",
+            "description": "Allows content related Views be filtered by path aliases",
             "homepage": "https://www.drupal.org/project/views_url_alias",
             "support": {
                 "source": "https://git.drupalcode.org/project/views_url_alias"
