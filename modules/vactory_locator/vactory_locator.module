@@ -183,6 +183,11 @@ function vactory_locator_migration_plugins_alter(array &$migrations) {
  */
 function vactory_locator_views_post_render(ViewExecutable $view, &$output, CachePluginBase $cache) {
   if ($view->id() === 'vactory_locator' && ($view->current_display === 'vactory_locator_listing' || $view->current_display === 'vactory_locator_listing_agence')) {
+    // Check if output markup exists and is not null.
+    if (empty($output['#markup']) || $output['#markup'] === NULL) {
+      return;
+    }
+
     $stream_wrapper_manager = \Drupal::service('stream_wrapper_manager');
     $entity_manager = \Drupal::service('entity_type.manager');
     $file_storage = $entity_manager->getStorage('file');
@@ -212,7 +217,7 @@ function vactory_locator_views_post_render(ViewExecutable $view, &$output, Cache
         }
 
         // Add Category Marker, rendered item.
-        $category_id = $decode_data[$key]['field_locator_category_1'];
+        $category_id = isset($decode_data[$key]['field_locator_category_1']) ? $decode_data[$key]['field_locator_category_1'] : NULL;
         $decode_data[$key]['field_locator_category_infos']['id_category'] = $category_id;
         $decode_data[$key]['field_locator_category_infos']['label_category'] = $decode_data[$key]['field_locator_category'];
 
@@ -227,7 +232,8 @@ function vactory_locator_views_post_render(ViewExecutable $view, &$output, Cache
             $translated_term = \Drupal::service('entity.repository')
               ->getTranslationFromContext($category_term, $current_lang_code);
             $url = '';
-            if (isset($translated_term->get('field_locator_map_marker')->getValue()[0]['target_id'])) {
+            // Check if the field exists before trying to access it.
+            if ($translated_term->hasField('field_locator_map_marker') && isset($translated_term->get('field_locator_map_marker')->getValue()[0]['target_id'])) {
               $media_id = $translated_term->get('field_locator_map_marker')->getValue()[0]['target_id'];
               $media = Media::load($media_id);
               $fid = $media->get('field_media_image')[0]->get('target_id')->getValue();
@@ -236,8 +242,8 @@ function vactory_locator_views_post_render(ViewExecutable $view, &$output, Cache
                 $url = \Drupal::service('file_url_generator')->transformRelative(\Drupal::service('stream_wrapper_manager')->getViaUri($file->getFileUri())->getExternalUrl());
               }
             }
-            $width = (isset($translated_term->get('field_locator_marker_height')->getValue()[0]['value'])) ? $translated_term->get('field_locator_marker_height')->getValue()[0]['value'] : '';
-            $height = (isset($translated_term->get('field_locator_marker_width')->getValue()[0]['value'])) ? $translated_term->get('field_locator_marker_width')->getValue()[0]['value'] : '';
+            $width = ($translated_term->hasField('field_locator_marker_height') && isset($translated_term->get('field_locator_marker_height')->getValue()[0]['value'])) ? $translated_term->get('field_locator_marker_height')->getValue()[0]['value'] : '';
+            $height = ($translated_term->hasField('field_locator_marker_width') && isset($translated_term->get('field_locator_marker_width')->getValue()[0]['value'])) ? $translated_term->get('field_locator_marker_width')->getValue()[0]['value'] : '';
             $decode_data[$key]['field_locator_category_infos']['marker']['marker_url'] = $url;
             $decode_data[$key]['field_locator_category_infos']['marker']['marker_height'] = $height;
             $decode_data[$key]['field_locator_category_infos']['marker']['marker_width'] = $width;

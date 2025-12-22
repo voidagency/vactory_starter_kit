@@ -1,0 +1,6 @@
+services:
+  vactory_diff_content.fetch_command:
+    class: 'Drupal\vactory_diff_content\Commands\ContentDiffFetchCommands'
+    arguments: [ '@vactory_diff_content.service' ]
+    tags:
+      - { name: drush.command }

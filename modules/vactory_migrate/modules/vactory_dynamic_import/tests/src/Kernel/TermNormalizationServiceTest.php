@@ -58,7 +58,6 @@ class TermNormalizationServiceTest extends KernelTestBase {
     $header = $getCsvHeaderMethod->invoke($object, $file_path, $delimiter);
 
     $response = $this->termNormalization->validateTerms($file_path, $header, $delimiter);
-    dump($response);
 
     $this->assertEquals([
       "status" => TRUE,
@@ -81,8 +80,6 @@ class TermNormalizationServiceTest extends KernelTestBase {
 
     // Invoke the protected method.
     $differences = $method->invoke($this->termNormalization, $term1, $term2);
-
-    dump('testAccentsDifference : ', $differences);
     $this->assertNotContains('accents', $differences, 'Accents difference is detected.');
   }
 
@@ -100,8 +97,6 @@ class TermNormalizationServiceTest extends KernelTestBase {
 
     // Invoke the protected method.
     $differences = $method->invoke($this->termNormalization, $term1, $term2);
-
-    dump('testWordBoundariesDifference value : ', $differences);
     $this->assertFalse($differences, 'Word boundaries difference is detected.');
   }
 
@@ -119,8 +114,6 @@ class TermNormalizationServiceTest extends KernelTestBase {
 
     // Invoke the protected method.
     $differences = $method->invoke($this->termNormalization, $term1, $term2);
-
-    dump('testMissingCharactersDifference value : ', $differences);
     // Assert the result is false.
     $this->assertFalse($differences, 'Missing Character difference is detected.');
   }
@@ -139,8 +132,6 @@ class TermNormalizationServiceTest extends KernelTestBase {
 
     // Invoke the protected method.
     $differences = $method->invoke($this->termNormalization, $term1, $term2);
-
-    dump('testCaseDifference : ', $differences);
     $this->assertNotContains('case', $differences, 'Case difference is detected.');
   }
 

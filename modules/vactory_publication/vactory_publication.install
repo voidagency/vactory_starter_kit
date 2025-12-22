@@ -14,6 +14,7 @@ use Drupal\media\Entity\Media;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\menu_link_content\Entity\MenuLinkContent;
+use Drupal\file\Entity\File;
 
 /**
  * Implements hook_install().
@@ -125,11 +126,15 @@ function vactory_publication_install() {
     ];
     $paragraph = Paragraph::create($paragraph);
     $paragraph->save();
-    $homepage = \Drupal::entityTypeManager()->getStorage('node')->loadByProperties([
-      'type'     => 'vactory_page',
-      'title'    => 'Homepage',
-    ]);
-    $homepage = reset($homepage);
+    // Get homepage from system configuration.
+    $front_page_path = \Drupal::config('system.site')->get('page.front');
+    if ($front_page_path && preg_match('/^\/node\/(\d+)$/', $front_page_path, $matches)) {
+      $homepage = \Drupal::entityTypeManager()->getStorage('node')->load($matches[1]);
+    }
+    if (empty($homepage)) {
+      \Drupal::logger('vactory_publication')->warning('Homepage not found in system configuration.');
+      return;
+    }
     $homepage->field_vactory_paragraphs[] = [
       'target_id' => $paragraph->id(),
       'target_revision_id' => \Drupal::entityTypeManager()
@@ -267,7 +272,7 @@ function vactory_publication_update_9501(&$sandbox) {
         $media_id = $node->get('field_vactory_media_document')->target_id;
         if (!$media_id) {
           $document_fid = $node->get('field_vactory_document')->target_id;
-          $file = \Drupal\file\Entity\File::load($document_fid);
+          $file = File::load($document_fid);
           if ($file) {
             // Create related media entity.
             $media = Media::create([

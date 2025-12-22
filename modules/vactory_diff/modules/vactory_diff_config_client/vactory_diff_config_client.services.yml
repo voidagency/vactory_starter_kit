@@ -1,0 +1,16 @@
+services:
+  vactory_diff_config_client.comparison:
+    class: Drupal\vactory_diff_config_client\Service\ConfigComparisonService
+    arguments: ['@http_client', '@vactory_diff.config_helper', '@config.factory', '@file_system', '@logger.factory']
+
+  vactory_diff_config_client.feature_detection:
+    class: Drupal\vactory_diff_config_client\Service\FeatureDetectionService
+    arguments: ['@module_handler', '@extension.list.module', '@file_system', '@logger.factory', '@config.factory']
+
+  vactory_diff_config_client.todo_list_generator:
+    class: Drupal\vactory_diff_config_client\Service\TodoListGeneratorService
+    arguments: ['@vactory_diff_config_client.feature_detection', '@vactory_diff_config_client.comparison', '@logger.factory', '@vactory_diff_config_client.module_installation']
+
+  vactory_diff_config_client.module_installation:
+    class: Drupal\vactory_diff_config_client\Service\ModuleInstallationService
+    arguments: ['@vactory_diff_config_client.comparison', '@logger.factory'] 

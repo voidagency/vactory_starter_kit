@@ -146,7 +146,7 @@ class InternalNodeMetatagsFieldItemList extends FieldItemList {
           $value = str_replace($front_page, '', $value);
           $value = str_replace($front_page_alias, '', $value);
         }
-        if ($key == 'canonical_url' && !empty($query)) {
+        if ($key == 'canonical_url' && !empty($query) && $attribute == 'href') {
           $value = $value . '?' . http_build_query($query);
         }
       }

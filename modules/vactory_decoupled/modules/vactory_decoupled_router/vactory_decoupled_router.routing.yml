@@ -3,6 +3,7 @@ vactory_decoupled_router.path_translation:
   defaults:
     _title: 'Translates an incoming path into a formatted response.'
     _controller: '\Drupal\vactory_decoupled_router\Controller\PathTranslator::translate'
+    _disable_route_normalizer: 'TRUE'
   methods: [GET]
   # options:
   #   _auth: ['basic_auth', 'cookie', 'oauth2']

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * @file.
+ * @file
  * Frequent searches hooks.
  */
 
@@ -47,7 +47,7 @@ function vactory_frequent_searches_views_pre_render(ViewExecutable $view) {
         return;
       }
       $originalKeys = $query->getOriginalKeys();
-      $lowerOriginalKeys = mb_strtolower($originalKeys);
+      $lowerOriginalKeys = !empty($originalKeys) ? mb_strtolower($originalKeys) : '';
       // Delete white spaces.
       $keywords = trim($lowerOriginalKeys);
       // Delete double with spaces.
@@ -83,7 +83,7 @@ function vactory_frequent_searches_views_pre_render(ViewExecutable $view) {
  * Implements hook_cron().
  */
 function vactory_frequent_searches_cron() {
-  $service =\Drupal::service('vactory_frequent_searches.frequent_searches_controller');
+  $service = \Drupal::service('vactory_frequent_searches.frequent_searches_controller');
   $keywords_with_results = $service->fetchKeywordsWithResultsFromDatabase();
   $keywords_with_no_results = $service->fetchKeywordsWithNoResultsFromDatabase();
 
@@ -91,14 +91,16 @@ function vactory_frequent_searches_cron() {
     $service->exportToCsv($keywords_with_results, "with-results");
     $service->deleteUsedKeywords();
   }
-  else
+  else {
     \Drupal::messenger()->addWarning('There are no keywords with results to export.');
+  }
 
   if (!empty($keywords_with_no_results)) {
     $service->exportToCsv($keywords_with_no_results, "with-no-results");
     $service->deleteAllUnuselessKeywords();
   }
-  else
+  else {
     \Drupal::messenger()->addWarning('There are no keywords without results to export.');
+  }
 
 }

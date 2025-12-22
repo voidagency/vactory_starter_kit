@@ -4,8 +4,6 @@ dependencies:
   config:
     - image.style.vactory_three_cols_x2
     - image.style.vactory_three_cols_x1
-  theme:
-    - vactory
 id: vactory_three_cols
 label: 'Three Cols'
 image_style_mappings:

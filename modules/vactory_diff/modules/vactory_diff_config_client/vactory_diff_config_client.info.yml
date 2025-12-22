@@ -1,0 +1,10 @@
+name: 'Vactory Diff Config Client'
+type: module
+description: 'Récupère et compare la configuration distante avec la configuration locale.'
+package: 'Vactory'
+version: '1.0.0'
+core_version_requirement: '^9.0 || ^10.0'
+dependencies:
+  - vactory_diff:vactory_diff
+
+configure: vactory_diff_config_client.settings 

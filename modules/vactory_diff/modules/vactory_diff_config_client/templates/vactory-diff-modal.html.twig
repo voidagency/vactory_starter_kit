@@ -1,0 +1,70 @@
+{#
+/**
+ * @file
+ * Template for Vactory Diff modal content.
+ *
+ * Available variables:
+ * - config_name: The configuration name
+ * - config_type: The configuration type
+ * - diff_data: The diff data array
+ */
+#}
+
+<div class="diff-modal-content">
+  <div class="modal-info">
+    <div class="config-type-badge">{{ config_type }}</div>
+  </div>
+
+  {% if diff_data.changes %}
+    {# Section 2: Voir les détails des changements #}
+    <div class="detailed-diff-section">
+      <h3>{{ 'Détails des changements'|t }}</h3>
+      <div class="detailed-diff">
+        <div class="diff-view">
+          <table class="diff-table">
+            <thead>
+            <tr>
+              <th>{{ 'Clé'|t }}</th>
+              <th>{{ 'Local'|t }}</th>
+              <th>{{ 'Distant'|t }}</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for key, change in diff_data.changes %}
+              <tr class="diff-row diff-row--{{ change.change_type }}">
+                <td class="diff-key">{{ change.key }}</td>
+                <td class="diff-local"><pre>{{ change.local_value|json_encode(constant('JSON_PRETTY_PRINT')) }}</pre></td>
+                <td class="diff-remote"><pre>{{ change.remote_value|json_encode(constant('JSON_PRETTY_PRINT')) }}</pre></td>
+              </tr>
+            {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+  {% if diff_data.visual_diff %}
+    {# Section 1: Diff visuelle #}
+    <div class="visual-diff-section">
+      <h3>{{ 'Diff visuelle'|t }}</h3>
+      <div class="visual-diff">
+        <div class="diff-header">
+          <div class="diff-summary">
+            <span class="diff-summary-item diff-added">+{{ diff_data.visual_diff.summary.added }} {{ 'ajoutées'|t }}</span>
+            <span class="diff-summary-item diff-removed">-{{ diff_data.visual_diff.summary.removed }} {{ 'supprimées'|t }}</span>
+          </div>
+        </div>
+        <div class="diff-content">
+          <pre class="diff-output">
+            <code>
+              {% for line in diff_data.visual_diff.lines %}
+                <span class="diff-line diff-line--{{ line.type }}">{{ line.content }}</span>
+              {% endfor %}
+            </code>
+          </pre>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+</div>
