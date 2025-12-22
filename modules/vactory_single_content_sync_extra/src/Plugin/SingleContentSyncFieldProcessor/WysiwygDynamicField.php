@@ -409,8 +409,16 @@ class WysiwygDynamicField extends SingleContentSyncFieldProcessorPluginBase impl
     if (array_key_exists('single_content_sync_media', $element)) {
       return TRUE;
     }
-    $element = reset($element);
-    return is_array($element) && array_key_exists('media_library_update_widget', $element);
+
+    // Cas widget Media Library.
+    $first = reset($element);
+    if (is_array($first) && isset($first['media_library_update_widget'])) {
+      return TRUE;
+    }
+
+    // Cas structure media sans widget (selection -> target_id).
+    return is_array($first) && isset($first['selection'][0]['target_id']);
+
   }
 
 }
