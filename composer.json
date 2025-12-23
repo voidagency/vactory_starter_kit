@@ -60,7 +60,6 @@
     "drupal/xmlsitemap": "^1.2",
     "drupal/security_review": "^2.0",
     "drupal/mailsystem": "^4.3",
-    "drupal/swiftmailer": "^2.0",
     "drupal/menu_item_extras": "^2.13",
     "drupal/mailchimp": "^2.0",
     "drupal/user_registrationpassword": "^2.0",
