@@ -28,13 +28,6 @@ class SearchControllerTest extends VactoryExistingSiteBase {
   protected $searchIndex;
 
   /**
-   * Original index configuration to restore.
-   *
-   * @var array
-   */
-  protected $originalIndexConfig = [];
-
-  /**
    * Created nodes for testing.
    *
    * @var array
@@ -81,11 +74,8 @@ class SearchControllerTest extends VactoryExistingSiteBase {
       $this->markTestSkipped('The default_content_index does not have entity:node datasource configured.');
     }
 
-    // Save original configuration using get() method.
+    // Get current datasource settings.
     $datasource_settings = $this->searchIndex->get('datasource_settings');
-    $this->originalIndexConfig = [
-      'datasource_settings' => $datasource_settings,
-    ];
 
     // Configure the index to include vactory_page.
     if (isset($datasource_settings['entity:node'])) {
@@ -97,9 +87,7 @@ class SearchControllerTest extends VactoryExistingSiteBase {
       ));
       $datasource_settings['entity:node'] = $node_settings;
 
-      // Set the updated datasource settings.
-      $this->searchIndex->set('datasource_settings', $datasource_settings);
-      $this->searchIndex->save();
+      $this->modifyConfigValue('search_api.index.default_content_index', 'datasource_settings', $datasource_settings);
 
       // Reindex to apply changes.
       $this->searchIndex->clear();
@@ -341,20 +329,6 @@ class SearchControllerTest extends VactoryExistingSiteBase {
     // Unpublished nodes should not appear in search results.
     $titles = array_column($response['resources'], 'title');
     $this->assertNotContains('Unpublished Drupal Page', $titles, 'Unpublished nodes should not appear in search results.');
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function tearDown(): void {
-    // Restore original index configuration.
-    if ($this->searchIndex && !empty($this->originalIndexConfig)) {
-      $datasource_settings = $this->originalIndexConfig['datasource_settings'];
-      $this->searchIndex->set('datasource_settings', $datasource_settings);
-      $this->searchIndex->save();
-    }
-
-    parent::tearDown();
   }
 
 }
