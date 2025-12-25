@@ -18,6 +18,7 @@ class SearchControllerTest extends VactoryExistingSiteBase {
   protected array $modulesToInstall = [
     'vactory_decoupled_search',
     'search_api',
+    'vactory_news',
   ];
 
   /**
@@ -33,6 +34,13 @@ class SearchControllerTest extends VactoryExistingSiteBase {
    * @var array
    */
   protected $testNodes = [];
+
+  /**
+   * Entity type manager service.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
 
   /**
    * {@inheritdoc}

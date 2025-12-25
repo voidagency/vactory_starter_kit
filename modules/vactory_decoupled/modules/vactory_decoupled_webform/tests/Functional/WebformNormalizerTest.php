@@ -27,8 +27,8 @@ class WebformNormalizerTest extends VactoryExistingSiteBase {
     parent::setUp();
 
     // Create and log in an admin user using DTT helper.
-    $this->admin = $this->createUser([], NULL, TRUE);
-    $this->drupalLogin($this->admin);
+    $admin = $this->createUser([], NULL, TRUE);
+    $this->drupalLogin($admin);
 
     $this->normalizer = $this->container->get('vactory.webform.normalizer');
   }
