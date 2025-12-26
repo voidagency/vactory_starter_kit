@@ -1,0 +1,56 @@
+<?php
+
+/**
+ * @file
+ * Contains vactory_dynamic_block module hooks.
+ */
+
+use Drupal\Core\Cache\Cache;
+
+/**
+ * Implements hook_decoupled_df_format_alter().
+ */
+function vactory_dynamic_block_decoupled_df_format_alter(&$value, &$info, &$cacheability) {
+  if ($info['type'] === 'vactory_dynamic_block_select' && !empty($value)) {
+    // Get block ID from the element value.
+    $block_id = is_array($value) ? ($value['block_id'] ?? NULL) : $value;
+
+    if (empty($block_id)) {
+      $value = NULL;
+      return;
+    }
+
+    // Load the dynamic block entity.
+    $storage = \Drupal::entityTypeManager()->getStorage('vactory_dynamic_block');
+    $block = $storage->load($block_id);
+
+    if (!$block) {
+      $value = NULL;
+      return;
+    }
+
+    // Get translation if available.
+    $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
+    $block = \Drupal::service('entity.repository')->getTranslationFromContext($block, $langcode);
+
+    // Add cache tags.
+    $cacheTags = Cache::mergeTags($cacheability->getCacheTags(), $block->getCacheTags());
+    $cacheability->setCacheTags($cacheTags);
+
+    // Build the block data.
+    $value = [
+      'id' => $block->id(),
+      'label' => $block->label(),
+      'type' => $block->get('type')->value,
+      'blockId' => $block->get('block_id')->value,
+      'content' => $block->get('content')->value,
+      'css' => $block->get('css')->value,
+    ];
+
+    // Add js_structure for JSX type.
+    if ($block->get('type')->value === 'JSX') {
+      $js_structure = $block->get('js_structure')->value;
+      $value['structure'] = !empty($js_structure) ? json_decode($js_structure, TRUE) : NULL;
+    }
+  }
+}

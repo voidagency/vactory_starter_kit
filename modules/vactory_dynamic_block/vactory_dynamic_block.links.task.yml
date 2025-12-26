@@ -1,0 +1,9 @@
+entity.vactory_dynamic_block.settings:
+  title: 'Settings'
+  route_name: entity.vactory_dynamic_block.settings
+  base_route: entity.vactory_dynamic_block.settings
+entity.vactory_dynamic_block.collection:
+  title: 'Dynamic Blocks'
+  route_name: entity.vactory_dynamic_block.collection
+  base_route: system.admin_content
+  weight: 10

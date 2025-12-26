@@ -1,0 +1,8 @@
+name: 'Dynamic Block'
+multiple: FALSE
+category: 'Content'
+enabled: TRUE
+fields:
+  block:
+    type: vactory_dynamic_block_select
+    label: "Block"

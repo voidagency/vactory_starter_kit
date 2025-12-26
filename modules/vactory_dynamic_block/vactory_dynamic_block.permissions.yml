@@ -1,0 +1,3 @@
+administer vactory_dynamic_block:
+  title: 'Administer dynamic blocks'
+  restrict access: true

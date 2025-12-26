@@ -1,0 +1,8 @@
+vactory_dynamic_block.settings:
+  type: config_object
+  label: 'Dynamic Block settings'
+  mapping:
+    custom_theme_css:
+      type: string
+      label: 'Custom Tailwind Theme CSS'
+
