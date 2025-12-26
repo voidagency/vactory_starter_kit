@@ -1,0 +1,17 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - content_translation
+    - vactory_dynamic_block
+third_party_settings:
+  content_translation:
+    enabled: true
+    bundle_settings:
+      untranslatable_fields_hide: '0'
+id: vactory_dynamic_block.vactory_dynamic_block
+target_entity_type_id: vactory_dynamic_block
+target_bundle: vactory_dynamic_block
+default_langcode: site_default
+language_alterable: true
+

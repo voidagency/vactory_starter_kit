@@ -1,0 +1,10 @@
+langcode: en
+status: true
+dependencies:
+  module:
+    - vactory_dynamic_block
+id: vactory_dynamic_block_delete_action
+label: 'Delete dynamic blocks'
+type: vactory_dynamic_block
+plugin: entity:delete_action:vactory_dynamic_block
+configuration: {  }

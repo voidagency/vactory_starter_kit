@@ -1,0 +1,5 @@
+vactory_dynamic_block.add_form:
+  title: 'Add dynamic block'
+  route_name: entity.vactory_dynamic_block.add_form
+  appears_on:
+    - entity.vactory_dynamic_block.collection
