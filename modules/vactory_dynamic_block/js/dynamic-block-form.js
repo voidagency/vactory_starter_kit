@@ -273,9 +273,6 @@
 
   // Store CodeMirror instance
   let contentEditor = null;
-  
-  // Debounce timer for live preview
-  let previewDebounceTimer = null;
 
   // Get CodeMirror mode based on block type
   function getCodeMirrorMode(type) {
