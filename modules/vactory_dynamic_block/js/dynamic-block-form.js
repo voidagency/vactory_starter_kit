@@ -150,8 +150,226 @@
     return trimmed;
   }
 
+  // Find opening brace position (linear search, no backtracking)
+  function findOpeningBrace(code, maxLength) {
+    for (let i = 0; i < code.length && i < maxLength; i++) {
+      if (code[i] === '{') {
+        return i;
+      }
+    }
+    return -1;
+  }
+
+  // Find matching closing brace (handle nesting)
+  function findClosingBrace(code, startIndex, maxLength) {
+    let depth = 1;
+    for (let i = startIndex + 1; i < code.length && i < maxLength; i++) {
+      if (code[i] === '{') {
+        depth++;
+      } else if (code[i] === '}') {
+        depth--;
+        if (depth === 0) {
+          return i;
+        }
+      }
+    }
+    return -1;
+  }
+
+  // Check if character is a quote character
+  function isQuoteChar(char) {
+    return char === '"' || char === "'" || char === '`';
+  }
+
+  // Handle quote state transitions
+  function handleQuoteState(char, inQuotes, quoteChar, current) {
+    const prev = current.length > 0 ? current.at(-1) : '';
+    
+    if (!inQuotes && isQuoteChar(char)) {
+      return { inQuotes: true, quoteChar: char, addChar: true };
+    }
+    
+    if (inQuotes && char === quoteChar && prev !== '\\') {
+      return { inQuotes: false, quoteChar: '', addChar: true };
+    }
+    
+    if (inQuotes) {
+      return { inQuotes: true, quoteChar: quoteChar, addChar: true };
+    }
+    
+    return { inQuotes: false, quoteChar: quoteChar, addChar: false };
+  }
+
+  // Update nesting depth based on character
+  function updateNestingDepth(char, depths) {
+    const newDepths = { ...depths };
+    
+    if (char === '[') newDepths.bracketDepth++;
+    else if (char === ']') newDepths.bracketDepth--;
+    else if (char === '{') newDepths.braceDepth++;
+    else if (char === '}') newDepths.braceDepth--;
+    else if (char === '(') newDepths.parenDepth++;
+    else if (char === ')') newDepths.parenDepth--;
+    
+    return newDepths;
+  }
+
+  // Check if comma is a valid separator (not in nested structure)
+  function isCommaSeparator(char, depths) {
+    return char === ',' && 
+           depths.bracketDepth === 0 && 
+           depths.braceDepth === 0 && 
+           depths.parenDepth === 0;
+  }
+
+  // Split props string into parts, handling commas in nested structures
+  function splitPropsString(propsContent, maxLength) {
+    const parts = [];
+    let current = '';
+    let inQuotes = false;
+    let quoteChar = '';
+    let depths = { bracketDepth: 0, braceDepth: 0, parenDepth: 0 };
+    
+    for (const char of propsContent) {
+      if (parts.length >= 100) break;
+      
+      // Handle quoted strings
+      const quoteState = handleQuoteState(char, inQuotes, quoteChar, current);
+      inQuotes = quoteState.inQuotes;
+      quoteChar = quoteState.quoteChar;
+      
+      if (quoteState.addChar) {
+        current += char;
+        continue;
+      }
+      
+      // Track brackets/braces/parens
+      depths = updateNestingDepth(char, depths);
+      
+      // Comma is separator only if not in nested structure
+      if (isCommaSeparator(char, depths)) {
+        const trimmed = current.trim();
+        if (trimmed) {
+          parts.push(trimmed);
+        }
+        current = '';
+      } else {
+        current += char;
+      }
+    }
+    
+    // Add last part
+    const lastTrimmed = current.trim();
+    if (lastTrimmed) {
+      parts.push(lastTrimmed);
+    }
+    
+    return parts;
+  }
+
+  // Find equals sign position in prop part (not in quotes)
+  function findEqualsSign(part) {
+    let inQuotes = false;
+    let quoteChar = '';
+    let prev = '';
+    
+    for (let i = 0; i < part.length; i++) {
+      const char = part[i];
+      
+      if (!inQuotes && (char === '"' || char === "'" || char === '`')) {
+        inQuotes = true;
+        quoteChar = char;
+      } else if (inQuotes && char === quoteChar && prev !== '\\') {
+        inQuotes = false;
+        quoteChar = '';
+      } else if (!inQuotes && char === '=') {
+        return i;
+      }
+      
+      prev = char;
+    }
+    
+    return -1;
+  }
+
+  // Validate prop name (alphanumeric + underscore only)
+  function isValidPropName(name) {
+    if (name.length === 0 || name.length > 100) {
+      return false;
+    }
+    
+    for (const char of name) {
+      if (!((char >= 'a' && char <= 'z') || (char >= 'A' && char <= 'Z') || 
+            (char >= '0' && char <= '9') || char === '_')) {
+        return false;
+      }
+    }
+    
+    return true;
+  }
+
+  // Extract prop name and value from part string
+  function extractPropNameValue(part, eqPos) {
+    const propName = part.slice(0, eqPos).trim();
+    const propValue = part.slice(eqPos + 1).trim();
+    return { propName, propValue };
+  }
+
+  // Extract props from code safely without regex backtracking (prevents ReDoS)
+  function extractPropsSafely(code) {
+    const defaultProps = {};
+    const MAX_LENGTH = 2000;
+    
+    // Limit input length to prevent DoS
+    if (code.length > MAX_LENGTH) {
+      return defaultProps;
+    }
+    
+    // Find braces
+    const braceStart = findOpeningBrace(code, MAX_LENGTH);
+    if (braceStart === -1) {
+      return defaultProps;
+    }
+    
+    const braceEnd = findClosingBrace(code, braceStart, MAX_LENGTH);
+    if (braceEnd === -1) {
+      return defaultProps;
+    }
+    
+    // Extract content between braces
+    const propsContent = code.slice(braceStart + 1, braceEnd).trim();
+    if (!propsContent || propsContent.length > MAX_LENGTH) {
+      return defaultProps;
+    }
+    
+    // Split into prop parts
+    const parts = splitPropsString(propsContent, MAX_LENGTH);
+    
+    // Process each prop part
+    for (const part of parts) {
+      if (!part) continue;
+      
+      const eqPos = findEqualsSign(part);
+      if (eqPos === -1) continue;
+      
+      const { propName, propValue } = extractPropNameValue(part, eqPos);
+      
+      // Validate and add prop
+      if (isValidPropName(propName) && propValue.length <= MAX_LENGTH) {
+        defaultProps[propName] = parsePropValue(propValue);
+      }
+    }
+    
+    return defaultProps;
+  }
+
   // Extract component info (name and default props)
   function extractComponentInfo(code) {
+    // Limit code length to prevent DoS
+    if (code.length > 5000) {
+      return { componentName: 'Component', defaultProps: {} };
+    }
+    
     let componentName = 'Component';
     const functionMatch = code.match(/function\s+(\w+)/);
     const constMatch = code.match(/const\s+(\w+)\s*=/);
@@ -162,19 +380,8 @@
       componentName = constMatch[1];
     }
 
-    // Extract props with defaults
-    // Limit regex match length to prevent ReDoS (max 1000 chars)
-    const propsMatch = code.match(/\{\s*([^}]{0,1000})\s*\}/);
-    const defaultProps = {};
-
-    if (propsMatch) {
-      const propsStr = propsMatch[1];
-      // Limit regex match length to prevent ReDoS (max 1000 chars per prop value)
-      const propMatches = propsStr.matchAll(/(\w+)\s*=\s*([^,}]{0,1000})/g);
-      for (const match of propMatches) {
-        defaultProps[match[1]] = parsePropValue(match[2]);
-      }
-    }
+    // Extract props safely without regex backtracking
+    const defaultProps = extractPropsSafely(code);
 
     return { componentName: componentName, defaultProps: defaultProps };
   }
