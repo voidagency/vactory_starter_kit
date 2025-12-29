@@ -163,12 +163,14 @@
     }
 
     // Extract props with defaults
-    const propsMatch = code.match(/\{\s*([^}]+)\s*\}/);
+    // Limit regex match length to prevent ReDoS (max 1000 chars)
+    const propsMatch = code.match(/\{\s*([^}]{0,1000})\s*\}/);
     const defaultProps = {};
 
     if (propsMatch) {
       const propsStr = propsMatch[1];
-      const propMatches = propsStr.matchAll(/(\w+)\s*=\s*([^,}]+)/g);
+      // Limit regex match length to prevent ReDoS (max 1000 chars per prop value)
+      const propMatches = propsStr.matchAll(/(\w+)\s*=\s*([^,}]{0,1000})/g);
       for (const match of propMatches) {
         defaultProps[match[1]] = parsePropValue(match[2]);
       }
@@ -234,7 +236,7 @@
 
     // Execute transformed code using a script element approach
     // This method avoids new Function() and uses DOM script execution
-    const tempGlobalKey = '__jsx_result_' + Date.now() + '_' + Math.random().toString(36).slice(2, 11);
+    const tempGlobalKey = generateTempKey('__jsx_result');
     let result = null;
     
     try {
@@ -274,6 +276,15 @@
   // Store CodeMirror instance
   let contentEditor = null;
 
+  // Counter for generating unique temporary keys (safer than Math.random())
+  let tempKeyCounter = 0;
+
+  // Generate a unique temporary key for script execution
+  function generateTempKey(prefix) {
+    tempKeyCounter += 1;
+    return prefix + '_' + Date.now() + '_' + tempKeyCounter + '_' + performance.now();
+  }
+
   // Get CodeMirror mode based on block type
   function getCodeMirrorMode(type) {
     return type === 'JSX' ? 'jsx' : 'htmlmixed';
@@ -300,7 +311,7 @@
   function createHydratedComponent(hydrateData) {
     try {
       // Create component using script element approach to avoid new Function/eval
-      const tempGlobalKey = '__react_component_' + Date.now() + '_' + Math.random().toString(36).slice(2, 11);
+      const tempGlobalKey = generateTempKey('__react_component');
       let Component = null;
       
       // Prepare component code with React hooks available
