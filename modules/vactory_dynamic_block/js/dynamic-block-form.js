@@ -163,12 +163,14 @@
     }
 
     // Extract props with defaults
-    const propsMatch = code.match(/\{\s*([^}]+)\s*\}/);
+    // Limit regex match length to prevent ReDoS (max 1000 chars)
+    const propsMatch = code.match(/\{\s*([^}]{0,1000})\s*\}/);
     const defaultProps = {};
 
     if (propsMatch) {
       const propsStr = propsMatch[1];
-      const propMatches = propsStr.matchAll(/(\w+)\s*=\s*([^,}]+)/g);
+      // Limit regex match length to prevent ReDoS (max 1000 chars per prop value)
+      const propMatches = propsStr.matchAll(/(\w+)\s*=\s*([^,}]{0,1000})/g);
       for (const match of propMatches) {
         defaultProps[match[1]] = parsePropValue(match[2]);
       }
@@ -273,7 +275,6 @@
 
   // Store CodeMirror instance
   let contentEditor = null;
-
   // Counter for generating unique identifiers (safer alternative to Math.random())
   let uniqueIdCounter = 0;
 
