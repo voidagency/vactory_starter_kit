@@ -49,7 +49,7 @@
   // Prefix Tailwind CSS custom properties to avoid conflicts
   function prefixTailwindProperties(css, blockId) {
     const shortId = blockId.slice(0, 12).replace(/-+$/, '');
-    return css.replace(/--tw-/g, '--jsx-' + shortId + '-');
+    return css.replaceAll('--tw-', '--jsx-' + shortId + '-');
   }
 
   // Generate CSS from content using tailwindcss-iso
@@ -234,7 +234,7 @@
 
     // Execute transformed code using a script element approach
     // This method avoids new Function() and uses DOM script execution
-    const tempGlobalKey = '__jsx_result_' + Date.now() + '_' + Math.random().toString(36).slice(2, 11);
+    const tempGlobalKey = '__jsx_result_' + Date.now() + '_' + generateUniqueId();
     let result = null;
     
     try {
@@ -274,6 +274,24 @@
   // Store CodeMirror instance
   let contentEditor = null;
 
+  // Counter for generating unique identifiers (safer alternative to Math.random())
+  let uniqueIdCounter = 0;
+
+  // Generate a unique alphanumeric identifier (base36, 9 chars) without using Math.random()
+  // This maintains the same format as Math.random().toString(36).slice(2, 11) for compatibility
+  function generateUniqueId() {
+    uniqueIdCounter += 1;
+    // Combine Date.now(), performance.now(), and counter to ensure uniqueness
+    // Convert to base36 and extract 9 characters to match original format
+    const timePart = Date.now().toString(36);
+    const perfPart = Math.floor(performance.now() * 1000).toString(36);
+    const counterPart = uniqueIdCounter.toString(36);
+    // Combine parts and take first 9 characters (matching slice(2, 11) behavior)
+    const combined = (timePart + perfPart + counterPart).replaceAll('.', '').slice(0, 9);
+    // Pad if needed to ensure 9 characters
+    return combined.padEnd(9, '0');
+  }
+
   // Get CodeMirror mode based on block type
   function getCodeMirrorMode(type) {
     return type === 'JSX' ? 'jsx' : 'htmlmixed';
@@ -300,7 +318,7 @@
   function createHydratedComponent(hydrateData) {
     try {
       // Create component using script element approach to avoid new Function/eval
-      const tempGlobalKey = '__react_component_' + Date.now() + '_' + Math.random().toString(36).slice(2, 11);
+      const tempGlobalKey = '__react_component_' + Date.now() + '_' + generateUniqueId();
       let Component = null;
       
       // Prepare component code with React hooks available
