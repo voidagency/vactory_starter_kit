@@ -1,0 +1,25 @@
+routes: |
+  /oauth/login-token
+  /oauth/one-time-token
+  /oauth/one-time-token-check
+  /_webform
+  /api/user/user
+  /en/oauth/login-token
+  /en/oauth/one-time-token
+  /en/oauth/one-time-token-check
+  /en/_webform
+  /en/api/user/user
+  /fr/oauth/login-token
+  /fr/oauth/one-time-token
+  /fr/oauth/one-time-token-check
+  /fr/_webform
+  /fr/api/user/user
+  /ar/oauth/login-token
+  /ar/oauth/one-time-token
+  /ar/oauth/one-time-token-check
+  /ar/_webform
+  /ar/api/user/user
+cache_excluded_types: []
+auth_roles_excluded: []
+iframe_excluded_paths: ''
+

@@ -108,6 +108,9 @@ class LoginControllerTest extends VactoryExistingSiteBase {
     $this->modifyConfigValue('simple_oauth.settings', 'public_key', $publicKeyPath);
     $this->modifyConfigValue('simple_oauth.settings', 'private_key', $privateKeyPath);
 
+    // Disable reCAPTCHA protection for tests by clearing protected routes.
+    $this->modifyConfigValue('vactory_decoupled.settings', 'routes', '');
+
     $consumerData = $this->createTestConsumer();
     $this->clientId = $consumerData['client_id'];
     $this->clientSecret = $consumerData['client_secret'];

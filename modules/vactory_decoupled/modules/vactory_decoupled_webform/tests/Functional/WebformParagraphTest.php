@@ -72,6 +72,9 @@ class WebformParagraphTest extends VactoryExistingSiteBase {
     $admin = $this->createUser([], NULL, TRUE);
     $this->drupalLogin($admin);
 
+    // Disable reCAPTCHA protection for tests by clearing protected routes.
+    $this->modifyConfigValue('vactory_decoupled.settings', 'routes', '');
+
     // Create test webform.
     $this->webform = Webform::create([
       'id' => 'test_formulaire_' . time(),

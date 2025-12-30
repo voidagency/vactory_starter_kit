@@ -21,6 +21,13 @@ class WebformNormalizerTest extends VactoryExistingSiteBase {
   ];
 
   /**
+   * Webform normalizer.
+   *
+   * @var \Drupal\vactory_decoupled_webform\Webform
+   */
+  private $normalizer;
+
+  /**
    * {@inheritdoc}
    */
   protected function setUp(): void {
