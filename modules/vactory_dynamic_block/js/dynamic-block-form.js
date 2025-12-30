@@ -1,11 +1,20 @@
 (function (Drupal, drupalSettings, once) {
   'use strict';
 
-  // Generate short UUID (12 chars)
+  // Counter for generating unique block IDs (safer alternative to Math.random())
+  let blockIdCounter = 0;
+
+  // Generate short UUID (12 chars) without using Math.random()
   function generateBlockId() {
-    return 'xxxxxxxxxxxx'.replace(/x/g, function() {
-      return Math.floor(Math.random() * 16).toString(16);
-    });
+    blockIdCounter += 1;
+    // Use counter + timestamp + performance.now() to generate unique hex string
+    const timestamp = Date.now().toString(16);
+    const perf = Math.floor(performance.now() * 1000).toString(16);
+    const counter = blockIdCounter.toString(16);
+    // Combine and take first 12 characters
+    const combined = (timestamp + perf + counter).replaceAll('.', '').slice(0, 12);
+    // Pad if needed to ensure 12 characters
+    return combined.padEnd(12, '0');
   }
 
   // Load tailwindcss-iso from local module file
@@ -17,7 +26,7 @@
 
         const generateTailwindCSS = 
           tailwindcssIsoModule.generateTailwindCSS ||
-          (tailwindcssIsoModule.default && tailwindcssIsoModule.default.generateTailwindCSS) ||
+          tailwindcssIsoModule.default?.generateTailwindCSS ||
           tailwindcssIsoModule.default ||
           tailwindcssIsoModule;
 
@@ -46,9 +55,22 @@
     return globalThis.tailwindcssIso;
   }
 
+  // Remove trailing dashes from string (avoids regex backtracking)
+  function removeTrailingDashes(str) {
+    let endIndex = str.length;
+    // Find last non-dash character from the end
+    for (let i = str.length - 1; i >= 0; i--) {
+      if (str[i] !== '-') {
+        endIndex = i + 1;
+        break;
+      }
+    }
+    return str.slice(0, endIndex);
+  }
+
   // Prefix Tailwind CSS custom properties to avoid conflicts
   function prefixTailwindProperties(css, blockId) {
-    const shortId = blockId.slice(0, 12).replace(/-+$/, '');
+    const shortId = removeTrailingDashes(blockId.slice(0, 12));
     return css.replaceAll('--tw-', '--jsx-' + shortId + '-');
   }
 
@@ -94,7 +116,12 @@
     try {
       return JSON.parse(str);
     } catch (e) {
-      // Invalid JSON, return original string
+      // Invalid JSON - log error for debugging and return original string
+      if (e instanceof SyntaxError) {
+        console.debug('Failed to parse JSON, returning original string:', e.message);
+      } else {
+        console.debug('Unexpected error parsing JSON:', e);
+      }
       return str;
     }
   }
@@ -505,6 +532,24 @@
     return type === 'JSX' ? 'jsx' : 'htmlmixed';
   }
 
+  // Generate a unique key for React element based on its content
+  function generateReactKey(child, index) {
+    if (typeof child === 'string') {
+      return 'str_' + index + '_' + child.slice(0, 20).replaceAll(/[^a-zA-Z0-9]/g, '_');
+    }
+    if (child && typeof child === 'object') {
+      const type = child.type || 'unknown';
+      const key = child.props?.key || child.props?.id || child.props?.className;
+      if (key) {
+        return type + '_' + key;
+      }
+      // Generate key from type and props
+      const propsStr = JSON.stringify(child.props || {}).slice(0, 50);
+      return type + '_' + index + '_' + propsStr.replaceAll(/[^a-zA-Z0-9]/g, '_');
+    }
+    return 'child_' + index;
+  }
+
   // Render structure tree using React.createElement
   function renderStructure(structure) {
     if (!structure) return null;
@@ -516,7 +561,8 @@
     
     const renderedChildren = children.map(function(child, index) {
       if (typeof child === 'string') return child;
-      return React.createElement(React.Fragment, { key: index }, renderStructure(child));
+      const key = generateReactKey(child, index);
+      return React.createElement(React.Fragment, { key: key }, renderStructure(child));
     });
     
     return React.createElement(type, props, renderedChildren.length > 0 ? renderedChildren : null);
@@ -535,7 +581,7 @@
                          'var useRef = window.__react_hooks.useRef; ' +
                          'var useMemo = window.__react_hooks.useMemo; ' +
                          'var useCallback = window.__react_hooks.useCallback; ' +
-                         hydrateData.code + '\n' +
+        hydrateData.code + '\n' +
                          'window.' + tempGlobalKey + ' = ' + hydrateData.componentName + ';';
       
       // Store React hooks in globalThis temporarily
@@ -581,62 +627,176 @@
     }
   }
 
-  // Render live preview using React
-  function renderLivePreview(structure, css, blockId, container) {
-    if (!container) return;
-    
-    // Clear previous content
+  // Get or create React root for container
+  function getReactRoot(container) {
     let root = container._reactRoot;
     if (!root && ReactDOM.createRoot) {
       root = ReactDOM.createRoot(container);
       container._reactRoot = root;
     }
+    return root;
+  }
+
+  // Render empty state message
+  function renderEmptyState(root, container) {
+    const message = 'Enter content and click Preview to see the result';
+    const emptyElement = React.createElement('div', { 
+      style: { color: '#666', textAlign: 'center', padding: '2rem' } 
+    }, message);
+    
+    if (root) {
+      root.render(emptyElement);
+    } else {
+      container.innerHTML = '<div style="color:#666;text-align:center;padding:2rem;">' + message + '</div>';
+    }
+  }
+
+  // Create preview wrapper element with CSS
+  function createPreviewWrapper(element, css, blockId) {
+    return React.createElement('div', { className: 'jsx-block-' + (blockId || 'preview') }, [
+      css ? React.createElement('style', { key: 'css', dangerouslySetInnerHTML: { __html: css } }) : null,
+      React.createElement('div', { key: 'content' }, element)
+    ]);
+  }
+
+  // Render error element
+  function renderErrorElement(err, root, container) {
+    const errorMessage = err.message || 'Unknown error';
+    const errorElement = React.createElement('div', {
+      style: { padding: '1rem', background: '#fee2e2', borderRadius: '0.5rem', color: '#991b1b' }
+    }, 'Preview Error: ' + errorMessage);
+    
+    if (root) {
+      root.render(errorElement);
+    } else {
+      container.innerHTML = '<div style="padding:1rem;background:#fee2e2;border-radius:0.5rem;color:#991b1b;">Preview Error: ' + Drupal.checkPlain(errorMessage) + '</div>';
+    }
+  }
+
+  // Render live preview using React
+  function renderLivePreview(structure, css, blockId, container) {
+    if (!container) return;
+    
+    const root = getReactRoot(container);
     
     if (!structure) {
-      if (root) {
-        root.render(React.createElement('div', { 
-          style: { color: '#666', textAlign: 'center', padding: '2rem' } 
-        }, 'Enter content and click Preview to see the result'));
-      } else {
-        container.innerHTML = '<div style="color:#666;text-align:center;padding:2rem;">Enter content and click Preview to see the result</div>';
-      }
+      renderEmptyState(root, container);
       return;
     }
 
     try {
-      let element;
+      const element = structure.type === 'HYDRATE' 
+        ? createHydratedComponent(structure)
+        : renderStructure(structure);
       
-      // Check if this is a HYDRATE component
-      if (structure.type === 'HYDRATE') {
-        element = createHydratedComponent(structure);
-      } else {
-        element = renderStructure(structure);
-      }
-      
-      // Wrap with CSS and block class
-      const wrapper = React.createElement('div', { className: 'jsx-block-' + (blockId || 'preview') }, [
-        css ? React.createElement('style', { key: 'css', dangerouslySetInnerHTML: { __html: css } }) : null,
-        React.createElement('div', { key: 'content' }, element)
-      ]);
+      const wrapper = createPreviewWrapper(element, css, blockId);
       
       if (root) {
         root.render(wrapper);
       } else {
-        // Fallback for older ReactDOM
         ReactDOM.render(wrapper, container);
       }
       
       console.log('Live preview rendered');
     } catch (err) {
       console.error('Error rendering live preview:', err);
-      const errorElement = React.createElement('div', {
-        style: { padding: '1rem', background: '#fee2e2', borderRadius: '0.5rem', color: '#991b1b' }
-      }, 'Preview Error: ' + (err.message || 'Unknown error'));
+      renderErrorElement(err, root, container);
+    }
+  }
+
+  // Get form field values
+  function getFormFields(form) {
+    const typeField = form.querySelector('select[name="type"]') || 
+                    form.querySelector('select[name="type[0][value]"]') ||
+                    form.querySelector('[data-drupal-selector="edit-type"]');
+    return {
+      typeField: typeField,
+      cssField: form.querySelector('[name="css"]'),
+      jsStructureField: form.querySelector('[name="js_structure"]'),
+      type: typeField ? typeField.value : 'HTML'
+    };
+  }
+
+  // Get content from editor or textarea
+  function getContent(form) {
+    if (contentEditor) {
+      contentEditor.save();
+      return contentEditor.getValue();
+    }
+    const contentField = form.querySelector('[name="content[0][value]"]');
+    return contentField ? contentField.value : '';
+  }
+
+  // Transform JSX content to structure
+  function transformJSXContent(content) {
+    let jsStructure = '';
+    let jsxError = '';
+    
+    try {
+      console.log('Transforming JSX...');
+      let structure;
       
-      if (root) {
-        root.render(errorElement);
+      if (isComponentFunction(content)) {
+        const info = extractComponentInfo(content);
+        const transpiled = transpileToCode(content);
+        console.log('Detected component function:', info.componentName);
+        
+        structure = {
+          type: 'HYDRATE',
+          componentName: info.componentName,
+          props: info.defaultProps,
+          static: createStaticFallback(info.componentName),
+          code: transpiled
+        };
       } else {
-        container.innerHTML = '<div style="padding:1rem;background:#fee2e2;border-radius:0.5rem;color:#991b1b;">Preview Error: ' + Drupal.checkPlain(err.message || 'Unknown error') + '</div>';
+        structure = transformJSXToStructure(content);
+      }
+      
+      jsStructure = JSON.stringify(structure, null, 2);
+      console.log('JSX transformed successfully');
+    } catch (err) {
+      console.error('JSX transform error:', err);
+      jsxError = err.message || 'Unknown error';
+    }
+    
+    return { jsStructure, jsxError };
+  }
+
+  // Build preview HTML content
+  function buildPreviewHTML(generatedCSS, type, jsStructure, jsxError) {
+    const cssDetails = '<details open><summary>Generated CSS (' + generatedCSS.length + ' bytes)</summary><pre style="max-height:300px;overflow:auto;background:#1e1e1e;color:#d4d4d4;padding:1rem;border-radius:4px;font-size:12px;">' + 
+      Drupal.checkPlain(generatedCSS) + '</pre></details>';
+    
+    if (type !== 'JSX') {
+      return cssDetails;
+    }
+    
+    if (jsStructure) {
+      return cssDetails + '<details open><summary>JSX Structure</summary><pre style="max-height:300px;overflow:auto;background:#1e1e1e;color:#d4d4d4;padding:1rem;border-radius:4px;font-size:12px;">' + 
+        Drupal.checkPlain(jsStructure) + '</pre></details>';
+    }
+    
+    if (jsxError) {
+      return cssDetails + '<details open><summary>JSX Error</summary><pre style="max-height:300px;overflow:auto;background:#4a1515;color:#ff6b6b;padding:1rem;border-radius:4px;font-size:12px;">' + 
+        Drupal.checkPlain(jsxError) + '</pre></details>';
+    }
+    
+    return cssDetails;
+  }
+
+  // Render live preview content
+  function renderLivePreviewContent(livePreviewContainer, type, content, jsStructure, jsxError, generatedCSS, blockId) {
+    if (type === 'HTML' && content) {
+      livePreviewContainer.innerHTML = '<style>' + generatedCSS + '</style><div class="jsx-block-' + blockId + '">' + content + '</div>';
+      return;
+    }
+    
+    if (type === 'JSX' && jsStructure && !jsxError) {
+      try {
+        const structureToRender = JSON.parse(jsStructure);
+        renderLivePreview(structureToRender, generatedCSS, blockId, livePreviewContainer);
+      } catch (e) {
+        console.error('Failed to parse JSX structure:', e);
       }
     }
   }
@@ -699,101 +859,35 @@
         previewBtn.addEventListener('click', async function(e) {
           e.preventDefault();
           
-          // Try multiple selectors for the type field (select element)
-          const typeField = form.querySelector('select[name="type"]') || 
-                          form.querySelector('select[name="type[0][value]"]') ||
-                          form.querySelector('[data-drupal-selector="edit-type"]');
-          const cssField = form.querySelector('[name="css"]');
-          const jsStructureField = form.querySelector('[name="js_structure"]');
-          const previewContainer = document.getElementById('dynamic-block-preview');
-
-          const type = typeField ? typeField.value : 'HTML';
+          const fields = getFormFields(form);
+          const content = getContent(form);
           
-          // Get content from CodeMirror if available, otherwise from textarea
-          let content = '';
-          if (contentEditor) {
-            contentEditor.save(); // Sync to textarea
-            content = contentEditor.getValue();
-          } else {
-            const contentField = form.querySelector('[name="content[0][value]"]');
-            content = contentField ? contentField.value : '';
-          }
-          
-          console.log('Block type:', type, 'Content length:', content.length);
+          console.log('Block type:', fields.type, 'Content length:', content.length);
 
           // Generate CSS
           const generatedCSS = await generateCSS(content, blockId, config.customThemeCSS || '', config.tailwindIsoPath);
-          if (cssField) cssField.value = generatedCSS;
+          if (fields.cssField) fields.cssField.value = generatedCSS;
 
           // Transform JSX if needed
           let jsStructure = '';
           let jsxError = '';
-          if (type === 'JSX' && content) {
-            try {
-              console.log('Transforming JSX...');
-              let structure;
-              
-              // Check if content is a component function
-              if (isComponentFunction(content)) {
-                // Component function - create HYDRATE structure
-                const info = extractComponentInfo(content);
-                const transpiled = transpileToCode(content);
-                
-                console.log('Detected component function:', info.componentName);
-                
-                structure = {
-                  type: 'HYDRATE',
-                  componentName: info.componentName,
-                  props: info.defaultProps,
-                  static: createStaticFallback(info.componentName),
-                  code: transpiled
-                };
-              } else {
-                // Pure JSX expression - transform directly
-                structure = transformJSXToStructure(content);
-              }
-              
-              jsStructure = JSON.stringify(structure, null, 2);
-              if (jsStructureField) jsStructureField.value = jsStructure;
-              console.log('JSX transformed successfully');
-            } catch (err) {
-              console.error('JSX transform error:', err);
-              jsxError = err.message || 'Unknown error';
+          if (fields.type === 'JSX' && content) {
+            const transformResult = transformJSXContent(content);
+            jsStructure = transformResult.jsStructure;
+            jsxError = transformResult.jsxError;
+            if (fields.jsStructureField && jsStructure) {
+              fields.jsStructureField.value = jsStructure;
             }
           }
 
           // Display code preview
-          let previewHTML = '<details open><summary>Generated CSS (' + generatedCSS.length + ' bytes)</summary><pre style="max-height:300px;overflow:auto;background:#1e1e1e;color:#d4d4d4;padding:1rem;border-radius:4px;font-size:12px;">' + 
-            Drupal.checkPlain(generatedCSS) + '</pre></details>';
-          
-          if (type === 'JSX') {
-            if (jsStructure) {
-              previewHTML += '<details open><summary>JSX Structure</summary><pre style="max-height:300px;overflow:auto;background:#1e1e1e;color:#d4d4d4;padding:1rem;border-radius:4px;font-size:12px;">' + 
-                Drupal.checkPlain(jsStructure) + '</pre></details>';
-            } else if (jsxError) {
-              previewHTML += '<details open><summary>JSX Error</summary><pre style="max-height:300px;overflow:auto;background:#4a1515;color:#ff6b6b;padding:1rem;border-radius:4px;font-size:12px;">' + 
-                Drupal.checkPlain(jsxError) + '</pre></details>';
-            }
-          }
-          
-          previewContainer.innerHTML = previewHTML;
+          const previewContainer = document.getElementById('dynamic-block-preview');
+          previewContainer.innerHTML = buildPreviewHTML(generatedCSS, fields.type, jsStructure, jsxError);
           
           // Render live preview
           const livePreviewContainer = document.getElementById('dynamic-block-live-preview');
           if (livePreviewContainer) {
-            let structureToRender = null;
-            if (type === 'JSX' && jsStructure && !jsxError) {
-              try {
-                structureToRender = JSON.parse(jsStructure);
-              } catch (e) {
-                console.error('Failed to parse JSX structure:', e);
-              }
-            } else if (type === 'HTML' && content) {
-              // For HTML, just render the content directly
-              livePreviewContainer.innerHTML = '<style>' + generatedCSS + '</style><div class="jsx-block-' + blockId + '">' + content + '</div>';
-              return;
-            }
-            renderLivePreview(structureToRender, generatedCSS, blockId, livePreviewContainer);
+            renderLivePreviewContent(livePreviewContainer, fields.type, content, jsStructure, jsxError, generatedCSS, blockId);
           }
         });
       });
