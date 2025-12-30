@@ -117,7 +117,7 @@ class VactoryCrossContentManager {
       $related_nids = explode(" ", trim($related_nodes));
       $ids = array_map('intval', $related_nids);
       $view->query->addWhere(1, $id_table . '.' . $id_field, $ids, 'IN');
-
+      $view->query->addOrderBy(NULL, 'FIELD(' . $id_table . '.' . $id_field . ', ' . implode(',', $ids) . ')', 'ASC', 'related_nodes_order');
     }
     // Otherwise we'll use the view's filter.
     elseif (!$ignore) {
@@ -153,7 +153,7 @@ class VactoryCrossContentManager {
     }
 
     $fields = \Drupal::service('entity_field.manager')->getFieldDefinitions('node', $node->bundle());
-    if (isset($fields['field_vactory_date'])) {
+    if (isset($fields['field_vactory_date']) && !$ignore) {
       $view->query->orderby = [];
       $view->query->addOrderBy('node__field_vactory_date', 'field_vactory_date_value', 'DESC');
     }

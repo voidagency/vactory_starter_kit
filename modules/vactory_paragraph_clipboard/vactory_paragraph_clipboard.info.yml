@@ -1,0 +1,7 @@
+name: 'Vactory Paragraph Clipboard'
+type: module
+description: 'Adds copy and paste functionality for paragraphs'
+core_version_requirement: ^9 || ^10
+package: Vactory
+dependencies:
+  - drupal:paragraphs 

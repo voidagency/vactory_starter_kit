@@ -1,0 +1,28 @@
+name: 'Discover'
+multiple: TRUE
+category: 'Grouping'
+enabled: TRUE
+extra_fields:
+  title:
+    type: text
+    label: 'Title'
+  description:
+    type: textarea
+    label: 'Description'
+fields:
+  title:
+    type: text
+    label: 'Card Title'
+  description:
+    type: textarea
+    label: 'Card Description'
+  link:
+    type: url_extended
+    label: 'Card Link'
+  image:
+    type: image
+    label: 'Card Image'
+  icon:
+    type: vactory_icon_picker
+    label: "Icon"
+

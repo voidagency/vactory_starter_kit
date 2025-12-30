@@ -12,8 +12,7 @@ use Drupal\user\Entity\Role;
  *
  * @package Drupal\vactory_decoupled\Form
  */
-class DecoupledSettingsForm extends ConfigFormBase
-{
+class DecoupledSettingsForm extends ConfigFormBase {
 
   /**
    * Gets the configuration names that will be editable.
@@ -22,8 +21,7 @@ class DecoupledSettingsForm extends ConfigFormBase
    *   An array of configuration object names that are editable if called in
    *   conjunction with the trait's config() method.
    */
-  protected function getEditableConfigNames()
-  {
+  protected function getEditableConfigNames() {
     return ['vactory_decoupled.settings'];
   }
 
@@ -37,16 +35,14 @@ class DecoupledSettingsForm extends ConfigFormBase
    * @return string
    *   The unique string identifying the form.
    */
-  public function getFormId()
-  {
+  public function getFormId() {
     return 'vactory_decoupled_secure_routes_form';
   }
 
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state)
-  {
+  public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('vactory_decoupled.settings');
     $form = parent::buildForm($form, $form_state);
 
@@ -69,6 +65,12 @@ class DecoupledSettingsForm extends ConfigFormBase
     $form['auth_limit_access'] = [
       '#type' => 'details',
       '#title' => $this->t('Authentication limit access'),
+      '#group' => 'settings_tab',
+    ];
+
+    $form['iframe_excluded_paths'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Iframe excluded paths'),
       '#group' => 'settings_tab',
     ];
 
@@ -99,6 +101,13 @@ class DecoupledSettingsForm extends ConfigFormBase
       '#description' => $this->t("Roles will be excluded from front authentication"),
     ];
 
+    $form['iframe_excluded_paths']['iframe_paths'] = [
+      '#type' => 'textarea',
+      '#title' => t('Paths'),
+      '#default_value' => $config->get('iframe_excluded_paths'),
+      '#description' => t("Enter one value per line. <b>E.g</b>: /en/news, /node/5"),
+    ];
+
     return $form;
   }
 
@@ -110,8 +119,9 @@ class DecoupledSettingsForm extends ConfigFormBase
       ->set('routes', $form_state->getValue('routes'))
       ->set('cache_excluded_types', array_filter($form_state->getValue('cache_excluded_types')))
       ->set('auth_roles_excluded', array_filter($form_state->getValue('auth_roles_excluded')))
+      ->set('iframe_excluded_paths', $form_state->getValue('iframe_paths'))
       ->save();
-
+    drupal_flush_all_caches();
     parent::submitForm($form, $form_state);
   }
 

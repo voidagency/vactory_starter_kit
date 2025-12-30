@@ -2,6 +2,13 @@ name: 'Header - Variant 2'
 multiple: TRUE
 category: 'Headers'
 enabled: TRUE
+fields:
+  cta:
+    type: url_extended
+    label: 'Add extra button'
+  icon:
+    type: vactory_icon_picker
+    label: "Icon"
 extra_fields:
   header_logo:
       type: image
@@ -9,11 +16,18 @@ extra_fields:
   show_language_dropdown:
       type: checkbox
       label: "Display language dropdown"
-  show_account:
+  show_search:
       type: checkbox
-      label: "Enable account button"
+      label: "Enable search input"
+  show_color_scheme:
+      type: checkbox
+      label: "Enable color scheme"
+  show_switch_language:
+      type: checkbox
+      label: "Enable switch language"
   use_menu:
       type: text
-      label: "Menu Main ID"
+      label: "Menu ID"
       options:
         '#description': 'Menu machine name. Default to main'
+        '#live_mode_ignore': TRUE

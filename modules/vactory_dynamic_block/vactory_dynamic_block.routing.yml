@@ -1,0 +1,7 @@
+entity.vactory_dynamic_block.settings:
+  path: 'admin/structure/vactory-dynamic-block'
+  defaults:
+    _form: '\Drupal\vactory_dynamic_block\Form\DynamicBlockSettingsForm'
+    _title: 'Dynamic Block'
+  requirements:
+    _permission: 'administer vactory_dynamic_block'

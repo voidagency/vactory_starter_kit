@@ -5,6 +5,7 @@
  * Vactory notifications custom module logic here.
  */
 
+use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Component\Serialization\Json;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Cache\Cache;
@@ -73,13 +74,22 @@ function vactory_notifications_node_presave(EntityInterface $entity) {
  */
 function vactory_notification_generate($entity) {
   $notification_manager = \Drupal::service('vactory_notifications.manager');
-  $notification_config = Drupal::config('vactory_notifications.settings');
-  $token = Drupal::token();
-  $default_langcode = Drupal::languageManager()->getDefaultLanguage()->getId();
-  $source_translated_node = Drupal::service('entity.repository')
+  $notification_config = \Drupal::config('vactory_notifications.settings');
+  $token = \Drupal::token();
+  $default_langcode = \Drupal::languageManager()->getDefaultLanguage()->getId();
+  // Create queue if it doesn't exist.
+  $queue = \Drupal::queue('vactory_notification_mail_queue');
+  $queue->createQueue();
+
+  $source_translated_node = \Drupal::service('entity.repository')
     ->getTranslationFromContext($entity, $default_langcode);
-  $node_notification_title = !empty($source_translated_node->get('notification_title')->value) ? $source_translated_node->get('notification_title')->value : $notification_config->get('notifications_default_title');
-  $node_notification_message = !empty($source_translated_node->get('notification_message')->value) ? $source_translated_node->get('notification_message')->value : $notification_config->get('notifications_default_message');
+  $node_notification_title = !empty($source_translated_node->get('notification_title')->value) ?
+    $source_translated_node->get('notification_title')->value :
+    $notification_config->get('notifications_default_title');
+
+  $node_notification_message = !empty($source_translated_node->get('notification_message')->value) ?
+    $source_translated_node->get('notification_message')->value :
+    $notification_config->get('notifications_default_message');
   $notification_users_ids = $notification_manager->getNotificationsUsersIds($entity->bundle());
   // Generate a notification.
   $user_id = $entity->getOwnerId();
@@ -93,7 +103,7 @@ function vactory_notification_generate($entity) {
     'notification_concerned_users' => Json::encode($notification_users_ids),
     'notification_viewers' => Json::encode([]),
   ];
-  $notification = Drupal::entityTypeManager()
+  $notification = \Drupal::entityTypeManager()
     ->getStorage('notifications_entity')
     ->create($notification_data);
   $notification->save();
@@ -106,11 +116,11 @@ function vactory_notification_generate($entity) {
   if ($is_auto_translated) {
     $notification_manager->notificationsAutoTranslate($notification);
   }
+  $mail_content_types = $notification_config->get('mail_content_types');
   // Notification by Mail.
   if ($entity instanceof NodeInterface) {
     $node_type = $entity->getType();
     // Get the mail_content_types data.
-    $mail_content_types = $notification_config->get('mail_content_types');
     if (isset($mail_content_types[$node_type])) {
       // Check if mail_subject and mail_message are empty.
       // And set default values.
@@ -138,46 +148,53 @@ function vactory_notification_generate($entity) {
   }
   // Send a mail notification.
   $is_mail_active = $notification_config->get('mail_active');
-  if ($is_mail_active === 1) {
-    $existing_roles = Role::loadMultiple();
-    $target_roles = [];
-    foreach ($existing_roles as $key => $role) {
-      $mail_roles = $notification_config->get($key . '_content_types_mail');
-      if (isset($mail_roles) && !empty($mail_roles) && in_array($entity->bundle(), $mail_roles)) {
-        array_push($target_roles, $key);
-      }
-    }
-    if (!empty($target_roles) && isset($node_mail_subject) && isset($node_mail_message)) {
+  $send_on_publish = $mail_content_types[$entity->getType()]['mail_send_on_publish'] && $entity->status->value;
+  $send_on_unpublish = $mail_content_types[$entity->getType()]['mail_send_on_unpublish'] && !$entity->status->value;
+  if ($is_mail_active === 1 && ($send_on_publish || $send_on_unpublish) && can_send_notifications_based_user_roles($entity->getType())) {
+    if (isset($node_mail_subject) && isset($node_mail_message)) {
       $subject = $token->replace($node_mail_subject, ['entity' => $entity]);
       $message = $token->replace($node_mail_message, ['entity' => $entity]);
-      $users = User::loadMultiple();
-      foreach ($users as $user) {
-        if (count(array_intersect($user->getRoles(), $target_roles)) > 0 && !empty($user->getEmail())) {
-          $notification_manager->sendNotificationByMail($subject, $user->getEmail(), $message);
+
+      $use_broadcast_list = $entity->hasField('use_broadcast_list') && $entity->get('use_broadcast_list')->value;
+      if ($use_broadcast_list) {
+        // Get emails from broadcast_list_emails field.
+        $broadcast_list_emails = $entity->hasField('broadcast_list_emails') ? $entity->get('broadcast_list_emails')
+          ->getValue() : [];
+        $broadcast_list_emails = array_column($broadcast_list_emails, 'value');
+        // Queue emails for broadcast list.
+        foreach ($broadcast_list_emails as $email) {
+          $queue->createItem([
+            'subject' => $subject,
+            'email' => $email,
+            'message' => new FormattableMarkup($message, []),
+          ]);
+        }
+      }
+      else {
+        $existing_roles = Role::loadMultiple();
+        $target_roles = [];
+        foreach ($existing_roles as $key => $role) {
+          $mail_roles = $notification_config->get($key . '_content_types_mail');
+          if (isset($mail_roles) && !empty($mail_roles) && in_array($entity->bundle(), $mail_roles)) {
+            array_push($target_roles, $key);
+          }
+        }
+        if (!empty($target_roles)) {
+          $users = User::loadMultiple();
+          foreach ($users as $user) {
+            if (count(array_intersect($user->getRoles(), $target_roles)) > 0 && !empty($user->getEmail())) {
+              $queue->createItem([
+                'subject' => $subject,
+                'email' => $user->getEmail(),
+                'message' => new FormattableMarkup($message, []),
+              ]);
+            }
+          }
         }
       }
     }
-    // Generate a mail notification.
-    $mail_notification_data = [
-      'type' => 'notification_entity',
-      'mail_subject' => $token->replace($node_mail_subject, ['entity' => $entity]),
-      'user_id' => $user_id,
-      'notification_related_content' => $entity->id(),
-      'mail_message' => $token->replace($node_mail_message, ['entity' => $entity]),
-      'status' => TRUE,
-      'notification_concerned_users' => Json::encode($notification_users_ids),
-      'notification_viewers' => Json::encode([]),
-    ];
-
-    $mail_notification = Drupal::entityTypeManager()
-      ->getStorage('notifications_entity')
-      ->create($mail_notification_data);
-    $notification->save();
-    // Notifications auto translation feature.
-    $is_auto_translated = (boolean) $notification_config->get('auto_translation');
-    if ($is_auto_translated) {
-      $notification_manager->notificationsAutoTranslate($mail_notification);
-    }
+    // Process the queue immediately after queueing all mail notifications.
+    drupal_register_shutdown_function('process_notification_mail_queue');
   }
 }
 
@@ -186,9 +203,9 @@ function vactory_notification_generate($entity) {
  */
 function vactory_notifications_notifications_entity_insert(EntityInterface $entity) {
   $notification_manager = \Drupal::service('vactory_notifications.manager');
-  $token = Drupal::token();
+  $token = \Drupal::token();
   $notification_config = Drupal::config('vactory_notifications.settings');
-  $current_route_name = Drupal::routeMatch()->getRouteName();
+  $current_route_name = \Drupal::routeMatch()->getRouteName();
   // Manually created notifications case.
   if ($current_route_name === 'entity.notifications_entity.add_page') {
     $related_content_id = $entity->getRelatedContent();
@@ -313,7 +330,7 @@ function vactory_notifications_form_alter(&$form, FormStateInterface $form_state
  * Implements hook_form_FORM_ID_alter().
  */
 function vactory_notifications_form_node_form_alter(&$form, FormStateInterface $form_state) {
-  $notifications_config = Drupal::config('vactory_notifications.settings');
+  $notifications_config = \Drupal::config('vactory_notifications.settings');
   $form['node_notifications'] = [
     '#type' => 'details',
     '#title' => t('Notifications settings'),
@@ -327,13 +344,13 @@ function vactory_notifications_form_node_form_alter(&$form, FormStateInterface $
   $form['notification_title']['#group'] = 'node_notifications';
   $form['notification_message']['#group'] = 'node_notifications';
   $form['generate_notification']['#group'] = 'node_notifications';
-  $route_name = Drupal::routeMatch()->getRouteName();
-  $langcode = Drupal::languageManager()->getCurrentLanguage()->getId();
-  $default_langcode = Drupal::languageManager()->getDefaultLanguage()->getId();
-  $notification_config_translation = Drupal::configFactory()
+  $route_name = \Drupal::routeMatch()->getRouteName();
+  $langcode = \Drupal::languageManager()->getCurrentLanguage()->getId();
+  $default_langcode = \Drupal::languageManager()->getDefaultLanguage()->getId();
+  $notification_config_translation = \Drupal::configFactory()
     ->getEditable('vactory_notifications.settings');
   if ($langcode !== $default_langcode) {
-    $notification_config_translation = Drupal::languageManager()
+    $notification_config_translation = \Drupal::languageManager()
       ->getLanguageConfigOverride($langcode, 'vactory_notifications.settings');
   }
   if (!isset($form['notification_title']['widget'][0]['value']['#default_value']) || $route_name === 'entity.node.content_translation_add') {
@@ -385,8 +402,8 @@ function vactory_notifications_form_node_form_alter(&$form, FormStateInterface $
   // Check if notification are enabled for the current node bundle.
   $notification_manager = \Drupal::service('vactory_notifications.manager');
   $bundle = '';
-  $node = Drupal::routeMatch()->getParameter('node');
-  $content_type = Drupal::routeMatch()->getParameter('node_type');
+  $node = \Drupal::routeMatch()->getParameter('node');
+  $content_type = \Drupal::routeMatch()->getParameter('node_type');
   if ($node instanceof NodeInterface) {
     $bundle = $node->bundle();
   }
@@ -396,6 +413,15 @@ function vactory_notifications_form_node_form_alter(&$form, FormStateInterface $
   if (!empty($bundle) && $notification_manager->isNotificationsEnabledForBundle($bundle)) {
     $form['#attached']['library'][] = 'vactory_notifications/scripts';
     $form['#attached']['library'][] = 'vactory_notifications/styles';
+  }
+  if (!can_send_notifications_based_user_roles($bundle)) {
+    $form['node_mail']['#access'] = FALSE;
+    $form['mail_subject']['#access'] = FALSE;
+    $form['mail_message']['#access'] = FALSE;
+    if (\Drupal::moduleHandler()->moduleExists('vactory_notifications_list_notify')) {
+      $form['use_broadcast_list']['#access'] = FALSE;
+      $form['broadcast_list_emails']['#access'] = FALSE;
+    }
   }
 }
 
@@ -407,7 +433,7 @@ function vactory_notifications_views_pre_render(ViewExecutable $view) {
     $filters = $view->filter;
     if (isset($filters['notification_concerned_users'])) {
       $filter_value = $filters['notification_concerned_users']->value;
-      $uid = $filter_value['concerned_user'] === 'current_user' ? Drupal::currentUser()
+      $uid = $filter_value['concerned_user'] === 'current_user' ? \Drupal::currentUser()
         ->id() : $filter_value['user'];
       if (!empty($uid)) {
         // Get not viewed yet notifications list.
@@ -418,7 +444,7 @@ function vactory_notifications_views_pre_render(ViewExecutable $view) {
           ->accessCheck(TRUE);
         $notification_ids = $query->execute();
         if (!empty($notification_ids)) {
-          $notifications = Drupal::entityTypeManager()
+          $notifications = \Drupal::entityTypeManager()
             ->getStorage('notifications_entity')
             ->loadMultiple($notification_ids);
           foreach ($notifications as $notification) {
@@ -470,7 +496,8 @@ function get_token_tree() {
  */
 function vactory_notifications_batch_delete($ids, &$context) {
   if (!empty($ids)) {
-    $notifications_storage = Drupal::entityTypeManager()->getStorage('notifications_entity');
+    $notifications_storage = \Drupal::entityTypeManager()
+      ->getStorage('notifications_entity');
     $entities = $notifications_storage->loadMultiple($ids);
     $notifications_storage->delete($entities);
   }
@@ -525,4 +552,78 @@ function vactory_notifications_entity_access(EntityInterface $entity, $operation
     }
     return AccessResult::forbidden();
   }
+}
+
+/**
+ * Can send notification based on user roles.
+ */
+function can_send_notifications_based_user_roles($bundle) {
+  if (\Drupal::moduleHandler()
+    ->moduleExists('vactory_notifications_role_based')) {
+    return \Drupal::service('vactory_notifications_role_based.manager')
+      ->canCurrentUserSendNotifications($bundle);
+  }
+  return TRUE;
+}
+
+/**
+ * Process mail queue items with batch API.
+ */
+function process_notification_mail_queue() {
+  $queue = \Drupal::queue('vactory_notification_mail_queue');
+  $queue_worker = \Drupal::service('plugin.manager.queue_worker')
+    ->createInstance('vactory_notification_mail_queue');
+  $count = $queue->numberOfItems();
+  $processed = 0;
+  $failed = 0;
+
+  while ($item = $queue->claimItem()) {
+    try {
+      // Log attempt to send email.
+      \Drupal::logger('vactory_notifications')->info('Attempting to send email to @email', [
+        '@email' => $item->data['email'],
+      ]);
+
+      $queue_worker->processItem($item->data);
+      $queue->deleteItem($item);
+      $processed++;
+
+      // Log successful email.
+      \Drupal::logger('vactory_notifications')->info('Successfully sent email to @email', [
+        '@email' => $item->data['email'],
+      ]);
+
+      // Log progress every 100 emails.
+      if ($processed % 100 === 0) {
+        \Drupal::logger('vactory_notifications')->notice('Processed @count of @total emails', [
+          '@count' => $processed,
+          '@total' => $count,
+        ]);
+      }
+    }
+    catch (\Exception $e) {
+      $failed++;
+      // Enhanced error logging.
+      \Drupal::logger('vactory_notifications')->error(
+        'Failed to send email to @email. Error: @error. Stack trace: @trace. Subject: @subject', [
+          '@email' => $item->data['email'],
+          '@error' => $e->getMessage(),
+          '@trace' => $e->getTraceAsString(),
+          '@subject' => $item->data['subject'],
+        ]
+      );
+
+      // Release item back to queue for retry.
+      $queue->releaseItem($item);
+    }
+  }
+
+  // Final summary log.
+  \Drupal::logger('vactory_notifications')->notice(
+    'Email sending completed. Total: @total, Successful: @success, Failed: @failed', [
+      '@total' => $count,
+      '@success' => $processed,
+      '@failed' => $failed,
+    ]
+  );
 }

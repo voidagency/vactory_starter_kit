@@ -101,7 +101,7 @@ class SimpleOauthAuthenticationProvider extends BaseSimpleOauthAuthenticationPro
     $id = $payload["sub"];
     $name = $payload["name"];
     $first_name = $payload["given_name"];
-    $last_name = $payload["family_name"];
+    $last_name = $payload["family_name"] ?? "";
     $email = $payload["email"];
     $picture_url = $payload["picture"];
     $username = (!empty($email)) ? $email : "{$id}@google.com";

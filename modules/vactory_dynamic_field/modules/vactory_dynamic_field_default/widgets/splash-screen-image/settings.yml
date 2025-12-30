@@ -1,0 +1,25 @@
+name: "Splash Screen Image"
+multiple: FALSE
+category: "Splash Screen"
+enabled: TRUE
+extra_fields:
+  group_params:
+    g_title: "Splash screen settings"
+    duration:
+      type: number
+      label: "Durée d'affichage"
+      options:
+        "#description": "How many seconds should the splash screen be displayed? Leave empty to keep it open until you close it manually"
+
+    display_number:
+      type: number
+      label: "Nombre d'affichage"
+      options:
+        "#description": "How many times you want the splash screen to be displayed to each user"
+
+fields:
+  image:
+    type: image
+    label: "Image"
+    options:
+      "#required": true

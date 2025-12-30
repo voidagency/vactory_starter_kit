@@ -6,7 +6,6 @@
  */
 
 use Drupal\Component\Render\FormattableMarkup;
-use Drupal\Component\Render\MarkupInterface;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Field\Plugin\Field\FieldWidget\StringTextareaWidget;
@@ -47,6 +46,9 @@ function vactory_core_theme() {
     // Add Factory Version.
     'status_report_general_info_vactory' => [
       'template' => 'status-report-page-vactory',
+      'variables' => [
+        'profile_version' => [],
+      ],
     ],
     'vactory_responsive_image'           => [
       'variables' => [
@@ -88,7 +90,9 @@ function vactory_core_entity_type_build(array &$entity_types) {
 /**
  * Implements hook_mail_alter().
  *
- * @deprecated To be remove once swiftmailer contrib module has been removed.
+ * @deprecated in drupal:8.1.0 and is removed from drupal:9.1.0. To be removed
+ *   once the SwiftMailer contrib module has been removed.
+ * @see https://www.drupal.org/project/swiftmailer/issues/111
  */
 function vactory_core_mail_alter(&$message) {
   switch ($message['key']) {
@@ -113,12 +117,19 @@ function vactory_core_mail_alter(&$message) {
   // Redirect all site mails (except reset password mail),
   // When vactory_mail_redirect is defined.
   $route_name = Drupal::routeMatch()->getRouteName();
-  $mail_redirect = Settings::get('vactory_mail_redirect', FALSE);
+  $mail_redirect = Settings::get('vactory_mail_redirect', []);
   if ($mail_redirect && !empty($mail_redirect) && $route_name !== 'user.pass') {
-    $mail_dist = str_replace(',', ' ', $message['to']);
+    if (!is_array($mail_redirect)) {
+      $mail_redirect = array_map('trim', explode(',', $mail_redirect));
+    }
+    $mail_dist = is_array($message['to']) ? implode(', ', $message['to']) : $message['to'];
     $prefix = t('Destination addresse(s)');
-    $to = $prefix . ': ' . $mail_dist;
-    $message['to'] = $to . '<' . $mail_redirect . '>';
+    $formatted_addresses = [];
+    foreach ($mail_redirect as $address) {
+      $formatted_addresses[] = '<' . $address . '>';
+    }
+    $message['to'] = $prefix . ': ' . implode(', ', $formatted_addresses);
+    $message['subject'] .= " (To: {$mail_dist})";
   }
 }
 
@@ -129,19 +140,19 @@ function vactory_core_mailer_build(EmailInterface $email) {
   // Redirect all site mails (except reset password mail),
   // When vactory_mail_redirect is defined.
   $route_name = Drupal::routeMatch()->getRouteName();
-  $mail_redirect = Settings::get('vactory_mail_redirect', FALSE);
+  $mail_redirect = Settings::get('vactory_mail_redirect', '');
   if ($mail_redirect && !empty($mail_redirect) && $route_name !== 'user.pass') {
-    $subject = $email->getSubject();
-    $to = $email->getTo();
-    $subject = $subject instanceof MarkupInterface ? $subject->__toString() : $subject;
+    if (!is_array($mail_redirect)) {
+      $mail_redirect = array_map('trim', explode(',', $mail_redirect));
+    }
     $to = array_map(function ($address) {
       return $address->getEmail();
-    }, $to);
-    $to = implode(' ', $to);
-    $subject .= " (To: {$to})";
-    $address = new Address($mail_redirect, 'Mail Redirect');
-    $email->setTo($address);
+    }, $email->getTo());
+    $to = implode(', ', $to);
+    $subject = $email->getSubject() . " (To: {$to})";
     $email->setSubject($subject);
+    $addresses = array_map(fn($email) => new Address($email), $mail_redirect);
+    $email->setTo($addresses);
   }
 }
 
@@ -191,6 +202,13 @@ function vactory_core_tokens($type, $tokens, array $data, array $options, Bubble
             ->getActiveTheme()
             ->getName();
           $replacements[$original] = \Drupal::service('file_url_generator')->generateAbsoluteString(substr(theme_get_setting('logo.url', $theme_name), 1));
+          $moduleHandler = \Drupal::service('module_handler');
+          if ($moduleHandler->moduleExists('vactory_logo_per_language')) {
+            $logo_per_language = _get_logo_per_language($theme_name);
+            if ($logo_per_language) {
+              $replacements[$original] = $logo_per_language;
+            }
+          }
           break;
 
         case 'node_summary':
@@ -255,9 +273,10 @@ function vactory_core_form_alter(&$form, FormStateInterface &$form_state, $form_
       ->get('vactory_core.opengraph_default_image.settings')
       ->get('default_content_opengraph_images');
     if (isset($form['field_vactory_meta_tags']) && isset($opengraph_default_images[$node_type])) {
-      $form['field_vactory_meta_tags']['widget'][0]['open_graph']['og_image']['#default_value'] = $opengraph_default_images[$node_type]['default_opengraph_image'];
-      $form['field_vactory_meta_tags']['widget'][0]['open_graph']['og_image_url']['#default_value'] = $opengraph_default_images[$node_type]['default_opengraph_image'];
-      $form['field_vactory_meta_tags']['widget'][0]['open_graph']['og_image_secure_url']['#default_value'] = $opengraph_default_images[$node_type]['default_opengraph_image'];
+      $node_metatags = !empty($route_params->get('node')) && !empty($route_params->get('node')->get('field_vactory_meta_tags')->value) ? unserialize($route_params->get('node')->get('field_vactory_meta_tags')->value) : NULL;
+      $form['field_vactory_meta_tags']['widget'][0]['open_graph']['og_image']['#default_value'] = !empty($node_metatags["og_image"]) ? $node_metatags["og_image"] : $opengraph_default_images[$node_type]['default_opengraph_image'];
+      $form['field_vactory_meta_tags']['widget'][0]['open_graph']['og_image_url']['#default_value'] = !empty($node_metatags["og_image_url"]) ? $node_metatags["og_image_url"] : $opengraph_default_images[$node_type]['default_opengraph_image'];
+      $form['field_vactory_meta_tags']['widget'][0]['open_graph']['og_image_secure_url']['#default_value'] = !empty($node_metatags["og_image_secure_url"]) ? $node_metatags["og_image_secure_url"] : $opengraph_default_images[$node_type]['default_opengraph_image'];
     }
   }
 
@@ -655,4 +674,44 @@ function vactory_core_media_presave(MediaInterface $media) {
       'target_id' => $file->id(),
     ];
   }
+}
+
+/**
+ * Implements hook_preprocess_hook().
+ */
+function vactory_core_preprocess_status_report_general_info_vactory(&$variables) {
+  $profile_name = 'voidagency/vactory_starter_kit';
+  $res = _get_profile__composer_version($profile_name);
+  if ($res) {
+    $variables['profile_version'] = $res;
+  }
+}
+
+/**
+ * Get the profile version from composer.lock.
+ */
+function _get_profile__composer_version($profile_name) {
+  $composer_lock_path = DRUPAL_ROOT . '/composer.lock';
+  if (!file_exists($composer_lock_path)) {
+    return NULL;
+  }
+
+  $lock_content = file_get_contents($composer_lock_path);
+  $lock_data = json_decode($lock_content, TRUE);
+
+  if (json_last_error() !== JSON_ERROR_NONE) {
+    return NULL;
+  }
+
+  foreach ($lock_data['packages'] as $package) {
+    if ($package['name'] === $profile_name) {
+      return [
+        'version' => $package['version'] ?? '',
+        'commit' => $package['source']['reference'] ?? '',
+        'time' => $package['time'] ?? '',
+      ];
+    }
+  }
+
+  return NULL;
 }

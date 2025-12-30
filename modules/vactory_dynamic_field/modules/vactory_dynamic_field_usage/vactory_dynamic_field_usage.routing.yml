@@ -1,0 +1,7 @@
+vactory_dynamic_field_usage.dynamic_field_usage:
+  path: '/admin/reports/dynamic-field-report'
+  defaults:
+    _title: 'Paragraphs Dynamic Field Report'
+    _form: 'Drupal\vactory_dynamic_field_usage\Form\DynamicFieldUsageForm'
+  requirements:
+    _permission: 'access dynamic field report'

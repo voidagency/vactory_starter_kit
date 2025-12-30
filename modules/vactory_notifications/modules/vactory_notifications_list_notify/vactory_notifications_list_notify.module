@@ -1,0 +1,83 @@
+<?php
+
+/**
+ * @file
+ * This is the Notifications List Notify module hooks.
+ */
+
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Field\FieldStorageDefinitionInterface;
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function vactory_notifications_list_notify_entity_base_field_info(EntityTypeInterface $entity_type) {
+  $fields = [];
+  if ($entity_type->id() === 'node') {
+    $fields['use_broadcast_list'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Use Broadcast List'))
+      ->setDescription(t('Whether to use the broadcast list for this node'))
+      ->setDefaultValue(FALSE)
+      ->setDisplayOptions('form', [
+        'type' => 'boolean_checkbox',
+        'weight' => 4,
+        'settings' => [
+          'display_label' => TRUE,
+        ],
+      ])
+      ->setDisplayConfigurable('form', TRUE);
+
+    $fields['broadcast_list_emails'] = BaseFieldDefinition::create('list_string')
+      ->setLabel(t('Broadcast list emails'))
+      ->setDescription(t('Selected emails for broadcast list'))
+      ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
+      ->setDisplayOptions('form', [
+        'type' => 'options_select',
+        'weight' => 5,
+      ])
+      ->setDisplayConfigurable('form', TRUE)
+      ->setDisplayConfigurable('view', TRUE)
+      ->setSetting('allowed_values_function', 'notify_broadcast_list_allowed_values');
+  }
+  return $fields;
+}
+
+/**
+ * Implements hook_form_node_form_alter().
+ */
+function vactory_notifications_list_notify_form_node_form_alter(&$form, FormStateInterface $form_state) {
+  $notifications_config = Drupal::config('vactory_notifications.settings');
+  $mail_active = $notifications_config->get('mail_active');
+  $list_notify_config = Drupal::config('vactory_notifications_list_notify.settings');
+  $list_notify_active = $list_notify_config->get('active_list_notify');
+  if ($mail_active && $list_notify_active) {
+    $form['use_broadcast_list']['#access'] = \Drupal::currentUser()
+      ->hasPermission('administer notify list');
+    $form['broadcast_list_emails']['#access'] = \Drupal::currentUser()
+      ->hasPermission('administer notify list');
+    $form['use_broadcast_list']['#group'] = 'node_mail';
+    $form['broadcast_list_emails']['#group'] = 'node_mail';
+    if (isset($form['broadcast_list_emails'])) {
+      $form['broadcast_list_emails']['#states'] = [
+        'visible' => [
+          ':input[name="use_broadcast_list[value]"]' => ['checked' => TRUE],
+        ],
+      ];
+    }
+  }
+  else {
+    $form['broadcast_list_emails']['#access'] = FALSE;
+    $form['use_broadcast_list']['#access'] = FALSE;
+  }
+}
+
+/**
+ * Allowed values function for the broadcast_list_emails field.
+ */
+function notify_broadcast_list_allowed_values() {
+  $config = \Drupal::config('vactory_notifications_list_notify.settings');
+  $email_list = $config->get('listes_de_diffusion.email_list') ?: [];
+  return array_combine($email_list, $email_list);
+}

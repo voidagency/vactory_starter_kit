@@ -139,6 +139,7 @@ class JsonApiGenerator {
     $original_filters = $filters;
 
     // Add a filter for entity queue.
+    $limit = NULL;
     if (!empty($entity_queue)) {
       $subqueue = EntitySubqueue::load($entity_queue);
       $subqueue_items = $subqueue->get('items')->getValue();
@@ -147,6 +148,7 @@ class JsonApiGenerator {
       }, $subqueue_items);
 
       if (count($subqueue_items_ids) > 0) {
+        $limit = $this->getLimitValueFromFilters($filters);
         $filters[] = "filter[_subqueue][condition][path]=" . $entity_queue_field_id;
         $filters[] = "filter[_subqueue][condition][operator]=IN";
 
@@ -155,6 +157,9 @@ class JsonApiGenerator {
           $filters[] = 'filter[_subqueue][condition][value][' . $i . ']=' . $id;
           $i++;
         }
+        $filters = array_filter($filters, function ($value) {
+          return strpos($value, 'page[limit]=') !== 0;
+        });
       }
     }
 
@@ -229,12 +234,15 @@ class JsonApiGenerator {
       $items = $client_data->data ?? [];
       $result = array_map(static fn($entity_queue_id) => current(array_values(
         array_filter($items, static fn($entity) => intval($entity->attributes->{$entity_queue_field_id}) === intval($entity_queue_id))
-        )), $subqueue_items_ids);
+      )), $subqueue_items_ids);
       $result = array_filter($result, function ($e) {
         // When this value is false the element is removed.
         return $e;
       });
       $client_data->data = array_values($result);
+      if (isset($limit) && $limit > 0) {
+        $client_data->data = array_slice($client_data->data, 0, (int) $limit);
+      }
     }
 
     return [
@@ -337,6 +345,20 @@ class JsonApiGenerator {
         }
       }
     }
+  }
+
+  /**
+   * Get limit value from filters.
+   */
+  protected function getLimitValueFromFilters($filters) {
+    $limit_value = NULL;
+    foreach ($filters as $item) {
+      if (strpos($item, 'page[limit]=') === 0) {
+        $limit_value = substr($item, strlen('page[limit]='));
+        break;
+      }
+    }
+    return $limit_value;
   }
 
 }

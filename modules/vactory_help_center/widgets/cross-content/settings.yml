@@ -1,0 +1,24 @@
+name: 'Cross content'
+multiple: FALSE
+category: 'Help center'
+enabled: TRUE
+fields:
+  title:
+    type: text
+    label: 'title'
+  description:
+    type: textarea
+    label: 'description'
+  collection:
+    type: json_api_cross_content
+    label: 'JSON:API'
+    options:
+      '#required': TRUE
+      '#default_value':
+        resource: node--vactory_help_center
+        filters:
+          - fields[node--vactory_help_center]=drupal_internal__nid,path,title,body,field_section
+          - fields[taxonomy_term--vactory_help_center]=tid,name
+          - include=field_section
+          - page[offset]=0
+          - page[limit]=3

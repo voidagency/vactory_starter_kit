@@ -32,8 +32,8 @@ class QuizAnswersModalForm extends FormBase {
       $form_state->set('questionAnswersFieldName', $query->get('question_answers_field_name'));
     }
     // Get question answers default values from query.
-    if (!empty($query->get('default_answers'))) {
-      $form_state->set('defaultAnswers', $query->get('default_answers'));
+    if (!empty($query->all()['default_answers'])) {
+      $form_state->set('defaultAnswers', $query->all()['default_answers']);
     }
     // Get answers cardinality from query.
     if (!empty($query->get('answers_cardinality'))) {

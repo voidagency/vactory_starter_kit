@@ -1,0 +1,7 @@
+vactory_notifications_role_based.notifications_settings:
+  path: '/admin/config/system/notifications-roles'
+  defaults:
+    _title: 'Notifications roles based'
+    _form: '\Drupal\vactory_notifications_role_based\Form\NotificationsRolesSettingsForm'
+  requirements:
+    _permission: 'administer notifications'

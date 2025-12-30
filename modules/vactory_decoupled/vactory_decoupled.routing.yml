@@ -198,3 +198,47 @@ vactory_decoupled.edit_live_mode:
   methods: [POST]
   requirements:
     _access: 'TRUE'
+
+vactory_decoupled.edit_live_mode_image:
+  path: /api/edit_live_mode_image
+  defaults:
+    _controller: '\Drupal\vactory_decoupled\Controller\EditLiveMode::editImage'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+
+vactory_decoupled.duplicate_paragraph:
+  path: /api/paragraph/duplicate
+  defaults:
+    _controller: '\Drupal\vactory_decoupled\Controller\DuplicateParagraphController::duplicate'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+vactory_decoupled.delete_paragraph:
+  path: /api/paragraph/delete
+  defaults:
+    _controller: '\Drupal\vactory_decoupled\Controller\DuplicateParagraphController::delete'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+vactory_decoupled.widgets_list:
+  path: /api/paragraph/list
+  defaults:
+    _controller: '\Drupal\vactory_decoupled\Controller\DuplicateParagraphController::list'
+  methods: [GET]
+  requirements:
+    _access: 'TRUE'
+vactory_decoupled.insert_widget:
+  path: /api/paragraph/new
+  defaults:
+    _controller: '\Drupal\vactory_decoupled\Controller\DuplicateParagraphController::new'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'
+vactory_decoupled.reorder_paragraph:
+  path: /api/paragraph/reorder
+  defaults:
+    _controller: '\Drupal\vactory_decoupled\Controller\DuplicateParagraphController::reorder'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'

@@ -5,7 +5,7 @@ guideScripts:
   dependencies:
     - core/jquery
     - core/drupalSettings
-    - core/jquery.cookie
+    - core/js-cookie
 guideStyleLtr:
   version: VERSION
   css:

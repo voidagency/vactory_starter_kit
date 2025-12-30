@@ -1,0 +1,46 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for notifications_list_notify.
+ */
+
+use Drupal\Core\Field\BaseFieldDefinition;
+
+/**
+ * Install Mail notifications list_emails and use_broadcast_list fields.
+ */
+function vactory_notifications_list_notify_update_9203(&$sandbox) {
+  $entity_definition_update_manager = \Drupal::entityDefinitionUpdateManager();
+
+  // Add broadcast_list_emails field.
+  $broadcast_list_emails = BaseFieldDefinition::create('string')
+    ->setLabel(t('Broadcast list emails'))
+    ->setDescription(t('Selected emails for broadcast list'))
+    ->setCardinality(BaseFieldDefinition::CARDINALITY_UNLIMITED)
+    ->setDisplayOptions('form', [
+      'type' => 'email',
+      'weight' => 5,
+      'settings' => [
+        'multiple' => TRUE,
+      ],
+    ])
+    ->setDisplayConfigurable('form', TRUE)
+    ->setDisplayConfigurable('view', TRUE);
+
+  $entity_definition_update_manager->installFieldStorageDefinition('broadcast_list_emails', 'node', 'vactory_notifications_list_notify', $broadcast_list_emails);
+
+  // Add use_broadcast_list field.
+  $use_broadcast_list = BaseFieldDefinition::create('boolean')
+    ->setLabel(t('Use Broadcast List'))
+    ->setDescription(t('Whether to use the broadcast list for this node'))
+    ->setDefaultValue(FALSE)
+    ->setDisplayOptions('form', [
+      'type' => 'boolean_checkbox',
+      'weight' => 5,
+    ])
+    ->setDisplayConfigurable('form', TRUE)
+    ->setDisplayConfigurable('view', TRUE);
+
+  $entity_definition_update_manager->installFieldStorageDefinition('use_broadcast_list', 'node', 'vactory_notifications_list_notify', $use_broadcast_list);
+}

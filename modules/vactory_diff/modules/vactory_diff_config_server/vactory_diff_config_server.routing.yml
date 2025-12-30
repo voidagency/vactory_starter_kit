@@ -1,0 +1,10 @@
+vactory_diff_config_server.config_export:
+  path: '/api/vactory-diff/config/export'
+  defaults:
+    _controller: '\Drupal\vactory_diff_config_server\Controller\ConfigExportController::export'
+  methods: [GET]
+  requirements:
+    _permission: 'access vactory diff config export'
+  options:
+    _format: 'json'
+    _auth: [ 'api_key_auth' ]

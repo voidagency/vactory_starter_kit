@@ -1,0 +1,4 @@
+widgets:
+  css:
+    theme:
+      assets/css/widgets.css: {}

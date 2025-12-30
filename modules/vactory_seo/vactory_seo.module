@@ -7,6 +7,7 @@
 
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\node\NodeInterface;
 
 /**
  * Implements hook_entity_bundle_field_info().
@@ -28,4 +29,21 @@ function vactory_seo_entity_bundle_field_info(EntityTypeInterface $entity_type, 
       ->setDisplayConfigurable('view', FALSE);
   }
   return $fields;
+}
+
+/**
+ * Implements hook_decoupled_df_format_alter().
+ */
+function vactory_seo_decoupled_df_format_alter(&$value, &$info, &$cacheability) {
+  if ($info['type'] === 'vactory_seo_search') {
+    $keyword = $value['keyword'];
+    $node = \Drupal::routeMatch()->getParameter('entity');
+    $options = [];
+    if ($node instanceof NodeInterface) {
+      $options['node'] = $node;
+    }
+    $keyword = \Drupal::token()->replace($keyword, $options);
+    $search_results_service = \Drupal::service('vactory_seo.search_results');
+    $value = $search_results_service->getIndexResults($keyword);
+  }
 }

@@ -1,0 +1,6 @@
+name: 'Vactory Role Based Node Notifications'
+type: module
+description: This module allows sending notifications when content (node) is created based on the role of the user who created it.
+package: Vactory
+core_version_requirement: ^9 || ^10
+dependencies: vactory_notifications

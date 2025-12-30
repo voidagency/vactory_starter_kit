@@ -79,7 +79,9 @@ class InternalNodeEntityExtraFieldItemList extends FieldItemList {
       'entity' => $entity,
     ];
     \Drupal::moduleHandler()->alter('decoupled_extra_field_value', $value, $context, $this->cacheMetadata);
-    $this->cacheMetadata->addCacheTags(['config:vactory_decoupled.settings']);
+    $this->cacheMetadata->addCacheTags([
+      'config:vactory_decoupled.settings',
+    ]);
     $this->list[0] = $this->createItem(0, $value);
   }
 
@@ -120,6 +122,15 @@ class InternalNodeEntityExtraFieldItemList extends FieldItemList {
 
     $langcodes = $this->languageManager->getLanguages();
     $langcodesList = array_keys($langcodes);
+
+    $langcodesList = array_filter($langcodesList, function ($langcode) use ($entity) {
+      $translated = $entity->hasTranslation($langcode);
+      if (!$translated) {
+        return FALSE;
+      }
+      return $entity->getTranslation($langcode)->isPublished();
+    });
+
     $data = [];
 
     // Frontpage special case.

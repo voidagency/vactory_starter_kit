@@ -1,0 +1,12 @@
+clipboard:
+  version: 1.x
+  css:
+    theme:
+      css/clipboard.css: {}
+  js:
+    js/clipboard.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal
+    - core/drupalSettings
+    - core/drupal.ajax 

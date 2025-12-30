@@ -1,0 +1,77 @@
+{#
+/**
+ * @file
+ * Template for Discover widget.
+ *
+ * Available variables:
+ * - title: Main title text
+ * - description: Main description text
+ * - link: Main link
+ * - extra_fields: Array of card data with title, description, link, image, icon
+ */
+#}
+
+<div class="discover-widget">
+  {% if title or description %}
+    <div class="discover-header">
+      {% if title %}
+        <h2 class="discover-title">{{ title }}</h2>
+      {% endif %}
+      {% if description %}
+        <div class="discover-description">{{ description }}</div>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  {% if extra_fields %}
+    <div class="discover-cards">
+      {% for card in extra_fields %}
+        <div class="discover-card">
+          {% if card.image %}
+            <div class="discover-card-image">
+              {{ card.image }}
+            </div>
+          {% endif %}
+
+          <div class="discover-card-content">
+            {% if card.icon %}
+              <div class="discover-card-icon">
+                {{ card.icon }}
+              </div>
+            {% endif %}
+
+            {% if card.title %}
+              <h3 class="discover-card-title">{{ card.title }}</h3>
+            {% endif %}
+
+            {% if card.description %}
+              <div class="discover-card-description">{{ card.description }}</div>
+            {% endif %}
+
+            {% if card.link %}
+              <div class="discover-card-link">
+                {% if card.link.url %}
+                  <a href="{{ card.link.url }}" class="discover-card-link-button"
+                     {% if card.link.options.attributes.target %}target="{{ card.link.options.attributes.target }}"{% endif %}>
+                    {{ card.link.title|default('Learn More') }}
+                  </a>
+                {% endif %}
+              </div>
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if link %}
+    <div class="discover-footer">
+      {% if link.url %}
+        <a href="{{ link.url }}" class="discover-main-link"
+           {% if link.options.attributes.target %}target="{{ link.options.attributes.target }}"{% endif %}>
+          {{ link.title|default('View All') }}
+        </a>
+      {% endif %}
+    </div>
+  {% endif %}
+</div>

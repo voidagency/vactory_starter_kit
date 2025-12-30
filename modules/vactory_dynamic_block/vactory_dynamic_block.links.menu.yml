@@ -1,0 +1,11 @@
+entity.vactory_dynamic_block.settings:
+  title: 'Dynamic Block'
+  description: 'Configure a Dynamic Block entity type.'
+  route_name:  entity.vactory_dynamic_block.settings
+  parent: system.admin_structure
+
+entity.vactory_dynamic_block.collection:
+  title: 'Dynamic Blocks'
+  description: 'List of dynamic blocks.'
+  route_name: entity.vactory_dynamic_block.collection
+  parent: system.admin_content

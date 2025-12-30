@@ -24,3 +24,4 @@ extra_fields:
       label: "Menu ID"
       options:
         '#description': 'Menu machine name. Default to main'
+        '#live_mode_ignore': TRUE

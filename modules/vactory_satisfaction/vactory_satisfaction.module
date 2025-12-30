@@ -1,0 +1,50 @@
+<?php
+
+/**
+ * @file
+ * Module file.
+ */
+
+use Drupal\media\Entity\Media;
+use Drupal\file\Entity\File;
+
+/**
+ * Implements hook_decoupled_df_format_alter().
+ */
+function vactory_satisfaction_decoupled_df_format_alter(&$value, &$info, &$cacheability) {
+  if ($info['type'] === 'vactory_satisfaction') {
+    if (!isset($value['options']) || !is_array($value['options'])) {
+      $value = [];
+    }
+    else {
+      $media_file_manager = Drupal::service('vacory_decoupled.media_file_manager');
+      $value = array_map(function ($option) use ($media_file_manager) {
+        // Handle media.
+        $mid = $option['container']['image'];
+        if (is_numeric($mid)) {
+          $media = Media::load($mid);
+          if ($media instanceof Media) {
+            $fid = $media->get('field_media_image')->target_id;
+            if (is_numeric($fid)) {
+              $file = File::load($fid);
+              if ($file instanceof File) {
+                $uri = $file->getFileUri();
+                $url = $media_file_manager->getMediaAbsoluteUrl($uri);
+                $option['container']['image'] = [
+                  'src' => $url,
+                  'width' => $media->get('field_media_image')->width,
+                  'height' => $media->get('field_media_image')->height,
+                ];
+              }
+            }
+          }
+        }
+        // Flat array.
+        $sub_container = $option['container']['sub_container'];
+        unset($option['container']['sub_container']);
+        $option['container'] = [...$option['container'], ...$sub_container];
+        return $option['container'];
+      }, $value['options']);
+    }
+  }
+}

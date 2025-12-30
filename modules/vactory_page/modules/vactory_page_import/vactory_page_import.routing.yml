@@ -13,3 +13,11 @@ vactory_page_import.export:
     _title: 'Vactory Page Export'
   requirements:
     _role: 'administrator'
+
+vactory_page_import.download_form:
+  path: '/admin/structure/vactory_page/download'
+  defaults:
+    _form: '\Drupal\vactory_page_import\Form\DownloadForm'
+    _title: 'Download Exported Content'
+  requirements:
+    _permission: 'access content'

@@ -397,7 +397,7 @@ class Webform {
 
     if (isset($item['#default_file'])) {
       $properties['default_value'] = $this->defaultValueTokensReplace($item, $field_name, '#default_file');
-      if (!empty($properties['default_value'])) {
+      if (!empty($properties['default_value']) && is_string($properties['default_value'])) {
         $decoded = json_decode($properties['default_value']);
         $properties['default_value'] = json_last_error() === JSON_ERROR_NONE ? $decoded : $properties['default_value'];
       }
@@ -453,7 +453,7 @@ class Webform {
     (isset($item['#other__title']) && !is_null($item['#other__title'])) ? $properties['otherTitle'] = $item['#other__title'] : NULL;
     (array_key_exists('#webform_parent_flexbox', $item) && $item['#webform_parent_flexbox']) ? $properties['flex'] = (array_key_exists('#flex', $item) ? $item['#flex'] : 1) : 1;
     (isset($item['#placeholder']) && !is_null($item['#placeholder'])) ? $properties['placeholder'] = (string) t($item['#placeholder']) : NULL;
-    (isset($item['#description']) && !is_null($item['#description'])) ? $properties['helperText'] = (string) t($item['#description']) : NULL;
+    if (isset($item['#description'])) {$properties['helperText'] = (string) t($item['#description']);if (isset($item['#description_display'])) {$properties['description_display'] = $item['#description_display'];}}
     (isset($item['#readonly']) && !is_null($item['#readonly'])) ? $properties['readOnly'] = $item['#readonly'] : NULL;
     (isset($htmlInputTypes[$type]) && !is_null($htmlInputTypes[$type])) ? $properties['htmlInputType'] = $htmlInputTypes[$type] : NULL;
     (isset($item['#options']) && !is_null($item['#options'])) ? $properties['options'] = $this->formatOptions($item['#options'] ?? []) : NULL;
@@ -568,7 +568,7 @@ class Webform {
       }
 
       $properties['filePreview'] = isset($item['#file_preview']);
-      $fid = $properties['default_value'];
+      $fid = $properties['default_value'] ?? NULL;
       if (is_numeric($fid)) {
         $properties['default_value'] = $this->preparePreviewInfos($fid);
       }
@@ -595,6 +595,14 @@ class Webform {
 
     if ($ui_type === 'range') {
       (isset($item['#output'])) ? $properties['output'] = $item['#output'] : NULL;
+    }
+
+    if ($type === 'tel') {
+      $properties['attributes']['international'] = isset($item['#international']) && $item['#international'];
+      if ($properties['attributes']['international']) {
+        $properties['attributes']['international_initial_country'] = $item['#international_initial_country'] ?? "";
+        $properties['attributes']['international_preferred_countries'] = $item['#international_preferred_countries'] ?? [];
+      }
     }
 
     if (isset($item['#states'])) {
@@ -718,9 +726,10 @@ class Webform {
           continue;
         }
         $element_key = WebformSubmissionConditionsValidator::getInputNameAsArray($input_name, 0);
+        $value = WebformSubmissionConditionsValidator::getInputNameAsArray($input_name, 1) ?? NULL;
         $item['element'] = $element_key;
         $item['operator'] = $operator_exists ? array_keys($condition[$selector])[0] : array_keys($condition)[0];
-        $item['value'] = $operator_exists ? $condition[$selector][$item['operator']] : $condition[$item['operator']];
+        $item['value'] = isset($value) ? $value : ($operator_exists ? $condition[$selector][$item['operator']] : $condition[$item['operator']]);
         array_push($conditions_to_append, $item);
       }
       $states[$state]['operator'] = $operator;

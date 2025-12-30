@@ -6,7 +6,6 @@ use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\file\Entity\File;
 use Drupal\media\Entity\Media;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Configure Locator Settings.
@@ -31,121 +30,101 @@ class SettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $zooms = [];
-    $zooms['nothing'] = '--Nothing--';
-    // Get site default stream wrapper.
-    $default_stream_wrapper = $this->configFactory
-      ->get('system.file')
-      ->get('default_scheme');
+    $zooms = ['nothing' => '--Nothing--'];
     foreach (range(1, 20) as $i) {
       $zooms[$i] = $i;
     }
 
-    // Get the form configuration object to set default value for each field.
     $config = $this->config('vactory_locator.settings');
+    $default_stream_wrapper = $this->configFactory
+      ->get('system.file')
+      ->get('default_scheme');
 
     $form['api_keys'] = [
-      '#type'  => 'details',
+      '#type' => 'details',
       '#title' => t('API keys'),
       '#group' => 'tabs',
-
     ];
-
     $form['api_keys']['map_api_key'] = [
-      '#type'          => 'textfield',
-      '#title'         => t('Google Maps API key'),
-      '#default_value' => !empty($config->get('map_api_key')) ? $config->get('map_api_key') : '',
+      '#type' => 'textfield',
+      '#title' => t('Google Maps API key'),
+      '#default_value' => $config->get('map_api_key') ?: '',
     ];
 
     $form['marker'] = [
-      '#type'  => 'details',
+      '#type' => 'details',
       '#title' => t('Default marker'),
       '#group' => 'tabs',
       '#required' => TRUE,
-
     ];
 
-    $default_image = $config->get('locator_default_marker');
-    if (isset($default_image) && $default_image != NULL) {
-      $is_it_media_library = Media::load($default_image);
-    }
-    else {
-      $is_it_media_library = NULL;
-    }
-
     $form['marker']['locator_default_marker'] = [
-      '#type'                => 'media_library',
-      '#title'               => t('Default Map marker'),
+      '#type' => 'media_library',
+      '#title' => t('Default Map marker'),
       '#allowed_bundles' => ['image'],
-      '#upload_validators'   => [
+      '#upload_validators' => [
         'file_validate_extensions' => ['png svg'],
-        'file_validate_size'       => [25600000],
+        'file_validate_size' => [25600000],
       ],
-      '#upload_location'     => $default_stream_wrapper . '://locator/marker',
-      '#required'            => TRUE,
-      '#default_value'       => $is_it_media_library ? $config->get('locator_default_marker') : '',
+      '#upload_location' => $default_stream_wrapper . '://locator/marker',
+      '#required' => TRUE,
+      '#default_value' => $this->getDefaultMarkerValue($config),
     ];
 
     $form['marker']['use_geolocation'] = [
       '#type' => 'checkbox',
       '#title' => t("Afficher l'itinéraire"),
       '#description' => t("Si cochée le bouton d'itinéraire va être ajouté à la map."),
-      '#default_value' => !empty($config->get('use_geolocation')) ? $config->get('use_geolocation') : 0,
+      '#default_value' => $config->get('use_geolocation') ?: 0,
     ];
 
     $form['marker']['current_postion_container'] = [
       '#type' => 'container',
       '#states' => [
         'visible' => [
-          [
-            ':input[name="use_geolocation"]' => [
-              'checked' => TRUE,
-            ],
-          ],
+          [':input[name="use_geolocation"]' => ['checked' => TRUE]],
         ],
       ],
     ];
 
     $form['marker']['current_postion_container']['geolocation_marker'] = [
-      '#type'                => 'managed_file',
-      '#title'               => t('Current position marker'),
-      '#upload_validators'   => [
+      '#type' => 'managed_file',
+      '#title' => t('Current position marker'),
+      '#upload_validators' => [
         'file_validate_extensions' => ['png svg'],
-        'file_validate_size'       => [25600000],
+        'file_validate_size' => [25600000],
       ],
-      '#theme'               => 'image_widget',
+      '#theme' => 'image_widget',
       '#preview_image_style' => 'medium',
-      '#upload_location'     => $default_stream_wrapper . '://locator/marker',
-      '#default_value'       => !empty($config->get('geolocation_marker')) ? $config->get('geolocation_marker') : '',
+      '#upload_location' => $default_stream_wrapper . '://locator/marker',
+      '#default_value' => $config->get('geolocation_marker') ?: '',
     ];
 
     $form['filter'] = [
-      '#type'  => 'details',
+      '#type' => 'details',
       '#title' => t('Filters settings'),
       '#group' => 'tabs',
     ];
-
     $form['filter']['enable_filter'] = [
       '#type' => 'checkbox',
       '#title' => t("Activer le filtre par catégories"),
       '#description' => t("Si cochée l'utilisateur final peut effectuer des filtres par catégories sur la map."),
-      '#default_value' => !empty($config->get('enable_filter')) ? $config->get('enable_filter') : 0,
+      '#default_value' => $config->get('enable_filter') ?: 0,
     ];
 
     $form['style'] = [
-      '#type'  => 'details',
+      '#type' => 'details',
       '#title' => t('Map Json Style'),
       '#group' => 'tabs',
     ];
-
     $form['style']['map_style'] = [
-      '#type'          => 'textarea',
-      '#title'         => t('Custom Google Maps Style'),
-      '#default_value' => !empty($config->get('map_style')) ? $config->get('map_style') : '',
+      '#type' => 'textarea',
+      '#title' => t('Custom Google Maps Style'),
+      '#default_value' => $config->get('map_style') ?: '',
     ];
 
     $form['place'] = [
-      '#type'  => 'details',
+      '#type' => 'details',
       '#title' => t('Maps Position Setting'),
       '#group' => 'tabs',
     ];
@@ -154,25 +133,25 @@ class SettingsForm extends ConfigFormBase {
       '#title' => $this->t('Latitude'),
       '#type' => 'textfield',
       '#size' => 18,
-      '#default_value' => !empty($config->get('lat')) ? $config->get('lat') : '',
+      '#default_value' => $config->get('lat') ?: '',
     ];
 
     $form['place']['lon'] = [
       '#title' => $this->t('Longitude'),
       '#type' => 'textfield',
       '#size' => 18,
-      '#default_value' => !empty($config->get('lon')) ? $config->get('lon') : '',
+      '#default_value' => $config->get('lon') ?: '',
     ];
 
     $form['place']['zoom'] = [
       '#type' => 'select',
       '#title' => $this->t('Zoom'),
       '#options' => $zooms,
-      '#default_value' => !empty($config->get('zoom')) ? $config->get('zoom') : $zooms['nothing'],
+      '#default_value' => $config->get('zoom') ?: $zooms['nothing'],
     ];
 
     $form['page_path'] = [
-      '#type'  => 'details',
+      '#type' => 'details',
       '#title' => t('Path Setting'),
       '#group' => 'tabs',
     ];
@@ -181,10 +160,26 @@ class SettingsForm extends ConfigFormBase {
       '#type' => 'textfield',
       '#title' => t('Path Locator Full Page'),
       '#description' => t('si rempli, le lien vers la page détaille va être /ur-custom-path/{agency-name}'),
-      '#default_value' => !empty($config->get('path_url')) ? $config->get('path_url') : '',
+      '#default_value' => $config->get('path_url') ?: '',
     ];
 
     return parent::buildForm($form, $form_state);
+  }
+
+  /**
+   * Get Default Marker Value.
+   */
+  private function getDefaultMarkerValue($config) {
+    $default_image = $config->get('locator_default_marker');
+
+    if (!isset($default_image) || $default_image === NULL) {
+      return '';
+    }
+
+    $media_id = is_array($default_image) ? $default_image[0] : $default_image;
+    $is_it_media_library = Media::load($media_id);
+
+    return $is_it_media_library ? $config->get('locator_default_marker') : '';
   }
 
   /**
@@ -196,7 +191,9 @@ class SettingsForm extends ConfigFormBase {
     $image = $form_state->getValue('locator_default_marker');
 
     /* Load image from the media library */
-    $media = Media::load($image);
+    // Handle case where $image might be an array (from media library widget)
+    $media_id = is_array($image) ? $image[0] : $image;
+    $media = Media::load($media_id);
 
     if (isset($media) && !empty($media)) {
 

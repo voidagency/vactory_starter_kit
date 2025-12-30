@@ -1,0 +1,7 @@
+name: 'Vactory Single Content Sync Extra'
+type: module
+description: 'Provides support for dynamic field.'
+package: Vactory
+core_version_requirement: ^9 || ^10 || ^11
+dependencies:
+  - single_content_sync:single_content_sync

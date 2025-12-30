@@ -90,6 +90,7 @@ function vactory_starter_kit_install() {
     'title'    => 'Homepage',
     'langcode' => 'en',
     'uid'      => 1,
+    'moderation_state' => 'published',
   ]);
   $node->save();
 
@@ -98,9 +99,6 @@ function vactory_starter_kit_install() {
     ->getEditable('system.site')
     ->set('page.front', '/node/' . $node->id())
     ->save(TRUE);
-
-  // Run cron.
-  // \Drupal::service('cron')->run();
 
   // Run a complete cache flush.
   drupal_flush_all_caches();

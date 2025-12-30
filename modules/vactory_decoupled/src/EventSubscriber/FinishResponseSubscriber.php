@@ -2,16 +2,11 @@
 
 namespace Drupal\vactory_decoupled\EventSubscriber;
 
-use Drupal\Component\Datetime\DateTimePlus;
-use Drupal\Core\Cache\CacheableResponseInterface;
 use Drupal\Core\Cache\Context\CacheContextsManager;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\PageCache\RequestPolicyInterface;
 use Drupal\Core\PageCache\ResponsePolicyInterface;
-use Drupal\Core\Site\Settings;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -62,6 +57,13 @@ class FinishResponseSubscriber implements EventSubscriberInterface {
    * @var bool
    */
   protected $debugCacheabilityHeaders = FALSE;
+
+  /**
+   * Cache context manager.
+   *
+   * @var \Drupal\Core\Cache\Context\CacheContextsManager
+   */
+  protected $cacheContextsManager;
 
   /**
    * Constructs a FinishResponseSubscriber object.

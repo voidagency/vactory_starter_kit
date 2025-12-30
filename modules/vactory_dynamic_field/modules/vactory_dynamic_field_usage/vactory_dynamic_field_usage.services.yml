@@ -1,0 +1,7 @@
+services:
+  vactory_dynamic_field_usage.report:
+    class: \Drupal\vactory_dynamic_field_usage\VactoryDynamicFieldUsageService
+    arguments:
+      - '@pager.manager'
+      - '@path_alias.manager'
+      - '@language_manager'

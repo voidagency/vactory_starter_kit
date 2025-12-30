@@ -93,24 +93,65 @@ class Import extends FormBase {
     $file_path = \Drupal::service('file_system')
       ->realpath($file->getFileUri());
     $data = $this->pageImportService->readExcelToArray($file_path);
+
+    $operations = [];
     foreach ($data as $key => $page) {
-      // Check if page alrady exists (by node_id).
-      $nid = (int) ($page['original']['id'] ?? -1);
-      $query = \Drupal::entityTypeManager()->getStorage('node')->getQuery();
-      $query->accessCheck(FALSE);
-      $query->condition('type', 'vactory_page');
-      $query->condition('nid', $nid);
-      $ids = $query->execute();
-      $df_settings = $this->pageImportService->prepareDfSettings($page['original']);
-      if (empty($ids)) {
-        $this->createNode($key, $page, $df_settings);
-      }
-      elseif (count($ids) == 1) {
-        // Load the page (node) and update it.
-        $nid = reset($ids);
-        $node = Node::load($nid);
-        $this->updatePage($node, $page, $df_settings);
-      }
+      $operations[] = [
+        [$this, 'processPage'],
+        [$key, $page],
+      ];
+    }
+
+    $batch = [
+      'title' => $this->t('Importing pages...'),
+      'operations' => $operations,
+      'finished' => [$this, 'batchFinished'],
+      'progress_message' => $this->t('Processed @current out of @total pages.'),
+    ];
+
+    batch_set($batch);
+  }
+
+  /**
+   * Batch operation callback to process a single page.
+   */
+  public function processPage($key, $page, &$context) {
+    // Check if page already exists (by node_id).
+    $nid = (int) ($page['original']['id'] ?? -1);
+    $query = \Drupal::entityTypeManager()->getStorage('node')->getQuery();
+    $query->accessCheck(FALSE);
+    $query->condition('type', 'vactory_page');
+    $query->condition('nid', $nid);
+    $ids = $query->execute();
+    $df_settings = $this->pageImportService->prepareDfSettings($page['original']);
+
+    if (empty($ids)) {
+      $this->createNode($key, $page, $df_settings);
+      $context['results'][] = $this->t('Created new page with key @key', ['@key' => $key]);
+    }
+    elseif (count($ids) == 1) {
+      $nid = reset($ids);
+      $node = Node::load($nid);
+      $this->updatePage($node, $page, $df_settings);
+      $context['results'][] = $this->t('Updated page with ID @nid', ['@nid' => $nid]);
+    }
+
+    $context['message'] = $this->t('Processing page @key', ['@key' => $key]);
+  }
+
+  /**
+   * Batch finished callback.
+   */
+  public function batchFinished($success, $results, $operations) {
+    if ($success) {
+      $message = $this->t('Successfully processed @count pages.', [
+        '@count' => count($results),
+      ]);
+      \Drupal::messenger()->addMessage($message);
+    }
+    else {
+      $message = $this->t('Finished with an error.');
+      \Drupal::messenger()->addError($message);
     }
   }
 

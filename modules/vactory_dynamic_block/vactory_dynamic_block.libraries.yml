@@ -1,0 +1,41 @@
+tailwindcss-iso:
+  version: 1.0.6
+  js:
+    js/tailwindcss-iso.js: { minified: true, preprocess: false, attributes: { type: module } }
+
+babel:
+  version: 7.28.5
+  js:
+    js/babel.min.js: { minified: true, preprocess: false }
+
+codemirror:
+  version: 5.x
+  css:
+    component:
+      /libraries/codemirror/lib/codemirror.css: {}
+      /libraries/codemirror/theme/material-darker.css: {}
+  js:
+    /libraries/codemirror/lib/codemirror.js: {}
+    /libraries/codemirror/mode/xml/xml.js: {}
+    /libraries/codemirror/mode/javascript/javascript.js: {}
+    /libraries/codemirror/mode/jsx/jsx.js: {}
+    /libraries/codemirror/mode/css/css.js: {}
+    /libraries/codemirror/mode/htmlmixed/htmlmixed.js: {}
+
+react:
+  version: 18.3.1
+  js:
+    js/react.production.min.js: { minified: true, preprocess: false }
+    js/react-dom.production.min.js: { minified: true, preprocess: false }
+
+dynamic-block-form:
+  version: 1.x
+  js:
+    js/dynamic-block-form.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupalSettings
+    - core/once
+    - vactory_dynamic_block/babel
+    - vactory_dynamic_block/codemirror
+    - vactory_dynamic_block/react

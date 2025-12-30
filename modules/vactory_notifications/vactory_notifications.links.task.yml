@@ -12,3 +12,23 @@ entity.notifications_entity.delete_form:
   route_name:  entity.notifications_entity.delete_form
   base_route:  entity.notifications_entity.canonical
   title: Delete
+
+vactory_notifications.tab:
+  route_name: vactory_notifications.notifications_settings
+  title: 'Notification Settings'
+  base_route: vactory_notifications.notifications_settings
+  weight: 10
+
+vactory_notifications_list_notify.tab:
+  route_name: vactory_notifications_list_notify.notifications_settings
+  title: 'La liste de diffusion'
+  base_route: vactory_notifications.notifications_settings
+  weight: 20
+  class: '\Drupal\vactory_notifications\Plugin\Menu\LocalTask\ConditionalLocalTask'
+
+vactory_notifications_role_based.tab:
+  route_name: vactory_notifications_role_based.notifications_settings
+  title: 'Roles Based Notifications'
+  base_route: vactory_notifications.notifications_settings
+  weight: 30
+  class: '\Drupal\vactory_notifications\Plugin\Menu\LocalTask\ConditionalLocalTask'

@@ -1,0 +1,34 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Vactory Checklist module.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function vactory_checklist_theme() {
+  return [
+    'checklist_dashboard' => [
+      'variables' => [
+        'results' => [],
+      ],
+    ],
+  ];
+}
+
+/**
+ * Implements hook_library_info_build().
+ */
+function vactory_checklist_library_info_build() {
+  $libraries = [];
+  $libraries['dashboard'] = [
+    'css' => [
+      'theme' => [
+        'css/checklist.css' => [],
+      ],
+    ],
+  ];
+  return $libraries;
+}

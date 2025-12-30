@@ -146,6 +146,13 @@ class DecoupledOauth2Token extends Oauth2Token {
         ->getStorage('user')
         ->loadByProperties([$property => $body['username']]);
       if ($account = reset($account_search)) {
+        // Blocked account.
+        if ($account->isBlocked()) {
+          return new JsonResponse([
+            'error' => 'account_blocked',
+            'message' => 'This account is blocked. Please contact the administrator.',
+          ], 403);
+        }
         $isAllowed = $this->flood->isAllowed('user.failed_login_user', $this->userLimit, $this->userWindow, $account->id());
         $isAllowedIp = $this->flood->isAllowed('user.failed_login_ip', $this->userIpLimit, $this->userIpWindow);
         if (!$isAllowed || !$isAllowedIp) {

@@ -5,6 +5,11 @@ enabled: TRUE
 extra_fields:
   group_tours_options:
     g_title: 'Tour Options'
+    isGlobal:
+      type: checkbox
+      label: 'Global tour'
+      options:
+        '#description': 'If selected, the tour will be displayed globally across the site.'
     showNTimes:
       type: number
       label: Number of times the tour should be shown

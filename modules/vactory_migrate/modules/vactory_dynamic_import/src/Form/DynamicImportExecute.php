@@ -7,6 +7,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\file\Entity\File;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Render\Markup;
 
 /**
  * Migration import form.
@@ -56,12 +57,20 @@ class DynamicImportExecute extends ConfirmFormBase {
   protected $entityInfo;
 
   /**
+   * The term normalization service.
+   *
+   * @var \Drupal\vactory_dynamic_import\Service\TermNormalizationService
+   */
+  protected $termNormalization;
+
+  /**
    * {@inheritDoc}
    */
   public static function create(ContainerInterface $container) {
     $instance = parent::create($container);
     $instance->rollbackService = $container->get('vactory_migrate.rollback');
     $instance->entityInfo = $container->get('vactory_migrate.entity_info');
+    $instance->termNormalization = $container->get('vactory_dynamic_import.term_normalization');
     return $instance;
   }
 
@@ -164,37 +173,73 @@ class DynamicImportExecute extends ConfirmFormBase {
     if ($triggeringElement['#name'] == 'csv_remove_button') {
       return;
     }
+
     $delimiter = \Drupal::config('vactory_migrate.settings')->get('delimiter');
-    // Check if header is correct.
     $migration_id = $form_state->getValue('migration');
     $csv = $form_state->getValue('csv');
+
+    // Validate that a file was uploaded.
+    if (empty($csv)) {
+      $form_state->setErrorByName('csv', $this->t('Please upload a CSV file.'));
+      return;
+    }
+
     $this->migrationId = $migration_id;
     $this->csv = $csv;
-    // Validation de header.
-    if (isset($csv)) {
-      $fid = (int) reset($csv);
-      $file = File::load($fid);
-      $file_path = NULL;
-      if ($file) {
-        $file_path = \Drupal::service('file_system')
-          ->realpath($file->getFileUri());
-      }
-      $header = $this->getCsvHeader($file_path, $delimiter);
 
-      $check_content = $this->isValidCsvContent($file_path, $delimiter, count($header));
-      if (!$check_content['status']) {
-        $form_state->setErrorByName('csv', $this->t('Invalid CSV content format at line') . ' ' . $check_content['line']);
+    // Validate file exists and is readable.
+    $fid = (int) reset($csv);
+    $file = File::load($fid);
+    if (!$file) {
+      $form_state->setErrorByName('csv', $this->t('Unable to load the uploaded file.'));
+      return;
+    }
+
+    $file_path = \Drupal::service('file_system')->realpath($file->getFileUri());
+    if (!$file_path || !file_exists($file_path) || !is_readable($file_path)) {
+      $form_state->setErrorByName('csv', $this->t('Unable to read the uploaded file.'));
+      return;
+    }
+
+    // Now proceed with CSV validation.
+    $this->trimCsvHeader($file_path, $delimiter);
+    $header = $this->getCsvHeader($file_path, $delimiter);
+
+    if (empty($header)) {
+      $form_state->setErrorByName('csv', $this->t('The CSV file appears to be empty or malformed.'));
+      return;
+    }
+
+    // Add term normalization validation.
+    $term_validation = $this->termNormalization->validateTerms($file_path, $header, $delimiter);
+    if (!$term_validation['status']) {
+      $error_message = $this->t('Term normalization issues found:') . '<br/><br/>';
+      foreach ($term_validation['errors'] as $error) {
+        $error_message .= $error . '<br/><br/>';
       }
-      $id = $this->getMigrationId($migration_id);
-      if (count($id) != 1) {
-        $form_state->setErrorByName('csv', $this->t('Migration should have only one id field'));
-      }
-      else {
-        $check_duplicated_id = $this->isColumnDuplicated($file_path, $delimiter, reset($id));
-        if (!$check_duplicated_id['status']) {
-          $form_state->setErrorByName('csv', $this->t('CSV contains duplicated ID :') . ' ' . $check_duplicated_id['value']);
-        }
-      }
+      $form_state->setErrorByName('csv', Markup::create($error_message));
+      return;
+    }
+    elseif (!empty($term_validation['term_fields'])) {
+      \Drupal::messenger()->addStatus($this->t('Term validation passed successfully.'));
+    }
+
+    $check_content = $this->isValidCsvContent($file_path, $delimiter, count($header));
+    if (!$check_content['status']) {
+      $form_state->setErrorByName('csv', $this->t('Invalid CSV content format at line') . ' ' . $check_content['line']);
+      return;
+    }
+
+    $id = $this->getMigrationId($migration_id);
+    if (count($id) != 1) {
+      $form_state->setErrorByName('csv', $this->t('Migration should have only one id field'));
+      return;
+    }
+
+    $check_duplicated_id = $this->isColumnDuplicated($file_path, $delimiter, reset($id));
+    if (!$check_duplicated_id['status']) {
+      $form_state->setErrorByName('csv', $this->t('CSV contains duplicated ID :') . ' ' . $check_duplicated_id['value']);
+      return;
     }
 
     parent::validateForm($form, $form_state);
@@ -205,6 +250,7 @@ class DynamicImportExecute extends ConfirmFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $delimiter = \Drupal::config('vactory_migrate.settings')->get('delimiter');
+    $batch_size = \Drupal::config('vactory_migrate.settings')->get('batch_size');
     if ($this->step === 1) {
       $type = $form_state->getValue('type');
       $migration_id = $form_state->getValue('migration');
@@ -235,29 +281,44 @@ class DynamicImportExecute extends ConfirmFormBase {
     $pieces = explode('.', $migration_id);
     $id = end($pieces);
 
-    $this->rollbackService->rollback($id);
-
-    if ($type == 'full') {
+    if ($type == 'rollback') {
+      $this->rollbackService->rollback($id);
+    }
+    elseif ($type == 'full') {
       $destination = $this->entityInfo->getDestinationByMigrationId($migration_id);
-      $langcode = $destination['langcode'];
-      $default_laguage = \Drupal::languageManager()->getDefaultLanguage()->getId();
-      $entity_type_definition = \Drupal::entityTypeManager()->getDefinition($destination['entity']);
+      $entity_type = $destination['entity'];
+      $bundle = $destination['bundle'];
+
+      // Create batch for deleting all nodes of the bundle.
+      $entity_storage = \Drupal::entityTypeManager()->getStorage($entity_type);
+      $entity_type_definition = \Drupal::entityTypeManager()->getDefinition($entity_type);
       $bundle_field = $entity_type_definition->getKey('bundle');
-      $entity_storage = \Drupal::entityTypeManager()->getStorage($destination['entity']);
-      $entity_ids = $entity_storage->getQuery()
+
+      // For full replacement, we delete all entities of this bundle.
+      $query = $entity_storage->getQuery()
         ->accessCheck(FALSE)
-        ->condition($bundle_field, $destination['bundle'])
-        ->condition('langcode', $langcode)
-        ->execute();
-      foreach ($entity_ids as $entity_id) {
-        $entity = $entity_storage->load($entity_id);
-        if ($langcode === $default_laguage) {
-          $entity->delete();
+        ->condition($bundle_field, $bundle);
+
+      $entity_ids = $query->execute();
+
+      if (!empty($entity_ids)) {
+        $chunks = array_chunk($entity_ids, $batch_size);
+        $operations = [];
+
+        foreach ($chunks as $chunk) {
+          $operations[] = [
+            [$this, 'deleteEntitiesBatch'],
+            [$chunk, $entity_type, NULL],
+          ];
         }
-        elseif ($entity->hasTranslation($langcode)) {
-          $entity->removeTranslation($langcode);
-          $entity->save();
-        }
+
+        $batch = [
+          'title' => t('Deleting all existing content of this type...'),
+          'operations' => $operations,
+          'finished' => [$this, 'deleteEntitiesBatchFinished'],
+        ];
+
+        batch_set($batch);
       }
     }
 
@@ -265,6 +326,55 @@ class DynamicImportExecute extends ConfirmFormBase {
       ->setRouteParameters(['migration' => $id]);
 
     $form_state->setRedirectUrl($url);
+  }
+
+  /**
+   * Batch operation to delete entities.
+   */
+  public function deleteEntitiesBatch($ids, $entity_type, $langcode, &$context) {
+    $entity_storage = \Drupal::entityTypeManager()->getStorage($entity_type);
+
+    foreach ($ids as $id) {
+      $entity = $entity_storage->load($id);
+      if ($entity) {
+        // If langcode is NULL or it's the default language, delete entity.
+        if ($langcode === NULL || $langcode === \Drupal::languageManager()->getDefaultLanguage()->getId()) {
+          $entity->delete();
+        }
+        // Otherwise, try to remove just the translation.
+        elseif ($entity->hasTranslation($langcode)) {
+          // Only try to remove the translation if:
+          // 1. It's not the default language translation.
+          // 2. The entity has more than one translation.
+          if ($langcode !== $entity->getUntranslated()->language()->getId() && count($entity->getTranslationLanguages()) > 1) {
+            $entity->removeTranslation($langcode);
+            $entity->save();
+          }
+          else {
+            // If this is the only translation, delete entity.
+            $entity->delete();
+          }
+        }
+      }
+    }
+
+    if (!isset($context['results']['count'])) {
+      $context['results']['count'] = 0;
+    }
+    $context['results']['count'] += count($ids);
+  }
+
+  /**
+   * Batch finished callback for entity deletion.
+   */
+  public function deleteEntitiesBatchFinished($success, $results, $operations) {
+    if ($success) {
+      $count = $results['count'] ?? 0;
+      \Drupal::messenger()->addStatus(t('Deleted @count entities.', ['@count' => $count]));
+    }
+    else {
+      \Drupal::messenger()->addError(t('An error occurred while deleting entities.'));
+    }
   }
 
   /**
@@ -382,6 +492,35 @@ class DynamicImportExecute extends ConfirmFormBase {
    */
   public function getCancelUrl() {
     return new Url('vactory_migrate_ui.import');
+  }
+
+  /**
+   * Helper function to trim the header of the CSV file.
+   */
+  protected function trimCsvHeader($file_uri, $delimiter = ',') {
+    $trimmed_data = [];
+    if (($handle = fopen($file_uri, 'r+')) !== FALSE) {
+      $header = fgetcsv($handle, NULL, $delimiter);
+      if ($header) {
+        // Trim each header field.
+        $trimmed_header = array_map('trim', $header);
+        $trimmed_data[] = $trimmed_header;
+
+        // Get the rest of the file content.
+        while (($data = fgetcsv($handle, NULL, $delimiter)) !== FALSE) {
+          $trimmed_data[] = $data;
+        }
+
+        // Rewrite the trimmed data back to the file.
+        rewind($handle);
+        foreach ($trimmed_data as $row) {
+          fputcsv($handle, $row);
+        }
+        // Truncate the file to remove any extra content from the original.
+        ftruncate($handle, ftell($handle));
+      }
+      fclose($handle);
+    }
   }
 
 }

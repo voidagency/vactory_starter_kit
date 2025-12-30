@@ -1,0 +1,23 @@
+vactory_decoupled.settings:
+  type: config_object
+  label: 'Vactory Decoupled Settings'
+  mapping:
+    routes:
+      type: text
+      label: 'Secure routes'
+    cache_excluded_types:
+      type: sequence
+      label: 'Cache excluded content types'
+      sequence:
+        type: string
+        label: 'Content type'
+    auth_roles_excluded:
+      type: sequence
+      label: 'Authentication excluded roles'
+      sequence:
+        type: string
+        label: 'Role'
+    iframe_excluded_paths:
+      type: text
+      label: 'Iframe excluded paths'
+

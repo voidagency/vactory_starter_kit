@@ -1,0 +1,32 @@
+name: 'Splach Screen'
+multiple: FALSE
+category: 'Satisfaction'
+enabled: TRUE
+extra_fields:
+  group_params:
+    g_title: "Splash screen settings"
+    duration:
+      type: number
+      label: "Durée"
+    display_number:
+      type: number
+      label: "Nombre d'affichage"
+    date_start:
+      type: date
+      label: "date début"
+    date_end:
+      type: date
+      label: "date fin"
+fields:
+  logo:
+    type: image
+    label: 'Logo'
+  title:
+    type: text
+    label: 'Title'
+  subtitle:
+    type: textarea
+    label: 'Subtitle'
+  button:
+    type: url_extended
+    label: 'Button'

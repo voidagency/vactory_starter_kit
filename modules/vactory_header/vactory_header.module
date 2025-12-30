@@ -161,3 +161,15 @@ function vactory_header_preprocess(&$variables, $hook) {
     $variables['is_espace_prive_enabled'] = \Drupal::moduleHandler()->moduleExists('vactory_espace_prive');
   }
 }
+
+/**
+ * Implements hook_menu_api_alter().
+ */
+function vactory_dynamic_field_default_menu_api_alter(&$returnArray, $link, $menu_name) {
+  if ($menu_name == 'mega-menu') {
+    $data = $link->getEntity()->get('field_injected_template')->getValue();
+    $data = reset($data);
+    $res = \Drupal::service('vactory_decoupled.dynamic_field_manager')->process($data);
+    $returnArray['injectedTemplate'] = $res['data'];
+  }
+}

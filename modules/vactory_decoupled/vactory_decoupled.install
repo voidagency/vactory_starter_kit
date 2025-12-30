@@ -153,3 +153,23 @@ function vactory_decoupled_update_9008() {
   \Drupal::entityDefinitionUpdateManager()
     ->installFieldStorageDefinition('decoupled_link', 'menu_link_content', 'vactory_decoupled', $storage_definition);
 }
+
+/**
+ * Add translatable Hide menu item field.
+ */
+function vactory_decoupled_update_10201() {
+  $storage_definition = BaseFieldDefinition::create('boolean')
+    ->setLabel(t('Hide menu item'))
+    ->setRevisionable(TRUE)
+    ->setTranslatable(TRUE)
+    ->setDisplayOptions('form', [
+      'type' => 'boolean_checkbox',
+      'settings' => [
+        'display_label' => TRUE,
+      ],
+    ])
+    ->setDisplayConfigurable('form', TRUE);
+
+  \Drupal::entityDefinitionUpdateManager()
+    ->installFieldStorageDefinition('hide_menu_item', 'menu_link_content', 'vactory_decoupled', $storage_definition);
+}

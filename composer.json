@@ -10,7 +10,6 @@
     "php": ">=7.3",
     "webflo/drupal-finder": "^1.0.0",
     "symfony/finder": "~4.0|~5.0|~6.0",
-    "webmozart/path-util": "^2.3",
     "google/apiclient": "~2.0",
     "commerceguys/addressing": "~1.0",
     "commerceguys/intl": "^0.7.5",
@@ -20,7 +19,7 @@
     "drupal/advagg": "^6.0@alpha",
     "drupal/backup_migrate": "^5.1",
     "drupal/better_exposed_filters": "^6.0",
-    "drupal/block_class": "^2.0",
+    "drupal/block_class": "3.0.0",
     "drupal/block_field": "^1.0.0-rc1",
     "drupal/captcha": "^2.0",
     "drupal/coffee": "1.x-dev@dev",
@@ -44,7 +43,7 @@
     "drupal/nocurrent_pass": "^1.2.0",
     "drupal/paragraphs": "^1.16",
     "drupal/facets": "^2.0",
-    "drupal/jsonapi_search_api": "^1.0@RC",
+    "drupal/jsonapi_search_api": "1.0.0-rc3",
     "drupal/pathauto": "^1.10",
     "drupal/persistent_login": "^1.3",
     "drupal/responsive_preview": "^2.1",
@@ -60,7 +59,6 @@
     "drupal/xmlsitemap": "^1.2",
     "drupal/security_review": "^2.0",
     "drupal/mailsystem": "^4.3",
-    "drupal/swiftmailer": "^2.0",
     "drupal/menu_item_extras": "^2.13",
     "drupal/mailchimp": "^2.0",
     "drupal/user_registrationpassword": "^2.0",
@@ -72,7 +70,7 @@
     "drupal/migrate_tools": "^6.0",
     "drupal/migrate_source_csv": "^3.1.0",
     "drupal/link_target": "^1.2.0",
-    "drupal/linkit": "^6.1",
+    "drupal/linkit": "^7.0",
     "drupal/stage_file_proxy": "^2.0",
     "drupal/editor_advanced_link": "^2.2",
     "drupal/media_responsive_thumbnail": "^1.5",
@@ -83,10 +81,10 @@
     "drupal/search_api_exclude_entity": "^1.3.0",
     "drupal/responsive_favicons": "1.x-dev@dev",
     "drupal/minifyhtml": "^2.0",
-    "drupal/flag": "^4.0@beta",
+    "drupal/flag": "^5.0",
     "drupal/rate": "3.1.0",
     "masterminds/html5": "^2.3",
-    "drupal/link_attributes": "^1.9",
+    "drupal/link_attributes": "2.1.1",
     "drupal/entity_embed": "^1.0",
     "drupal/search_api_autocomplete": "^1.4",
     "drupal/chosen": "^3.0",
@@ -96,7 +94,7 @@
     "drupal/dropzonejs": "^2.3",
     "drupal/tinypng": "^1.0@RC",
     "drupal/field_group": "^3.1",
-    "drupal/csv_serialization": "^3.0",
+    "drupal/csv_serialization": "4.0.1",
     "drupal/votingapi": "^3.0@beta",
     "drupal/amp": "^3.8",
     "drupal/crop": "^2.1",
@@ -115,7 +113,7 @@
     "drupal/recaptcha": "^3.0",
     "drupal/scheduler": "^2.0",
     "drupal/seckit": "^2.0",
-    "drupal/simplify_menu": "^3.0@beta",
+    "drupal/simplify_menu": "^3.2",
     "drupal/smart_trim": "^2.0",
     "drupal/twig_field_value": "^2.0",
     "drupal/twig_vardumper": "^3.1",
@@ -153,7 +151,7 @@
     "drupal/classy": "^1.0",
     "drupal/bartik": "^1.0",
     "drupal/quickedit": "^1.0",
-    "drupal/jsonapi_cross_bundles": "^1.1",
+    "drupal/jsonapi_cross_bundles": "^1.2",
     "drupal/gin": "^3.0@RC",
     "drupal/jsonapi_include": "^1.7",
     "drupal/search_api_ai": "^1.0@alpha",
@@ -176,7 +174,13 @@
     "drupal/image_effects": "^3.6",
     "drupal/imagemagick": "^3.7",
     "drupal/views_url_alias": "^3.1",
-    "drupal/simple_oauth_revoke": "^2.0"
+    "drupal/simple_oauth_revoke": "^2.0",
+    "drupal/health_check": "^3.1",
+    "league/csv": "9.16.0",
+    "drupal/google_news_sitemap": "1.0.x-dev@dev",
+    "drupal/webform_import_tab": "1.0.x-dev@dev",
+    "drupal/single_content_sync": "^1.4",
+    "drupal/consumers": "1.20.0"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.3",
@@ -205,7 +209,6 @@
     "enable-patching": true,
     "patches": {
       "drupal/simplify_menu": {
-        "Add support for options.": "https://gist.githubusercontent.com/voidagency/0c4efddd8f379229c7416e66a1d44de3/raw/825d324ae399de35f47d2a99aca7baae509abdbc/simplify_menu-support-options.patch",
         "Add callable : filterLanguage": "https://gist.githubusercontent.com/ismail-void/73d5a8497bc09443ae5a6e7467609dd3/raw/adb696894af3b6fcbf5adab7c199432e839f8403/add-filterLanguage-callable.patch"
       },
       "drupal/features": {
@@ -255,9 +258,6 @@
         "Cloudinary video media library compatibility fix": "https://gist.githubusercontent.com/voidagency/21729df75ca350faace0f7883960bc37/raw/88e6ce0980cb3e01c95f74e1c79b4baddcdf884e/cloudinary-video-media-library-compatibility-fix.patch",
         "Fix symfony 6 compatibility": "https://gist.githubusercontent.com/voidagency/94489fb9998406959ebefb31a758f39c/raw/6692adac21ef17ea4d66d69584159a6802707404/cloudinary-fix-symfony6-compatibility.patch"
       },
-      "drupal/flag": {
-        "Fix deprecated php 8.1 str_replace": "https://www.drupal.org/files/issues/2022-02-25/3266574-2.patch"
-      },
       "drupal/jsonapi_search_api": {
         "Modifying a facet does not invalidate caches": "https://gist.githubusercontent.com/voidagency/299883e039129c50da852a42c704af91/raw/1812ca417adce536e82cede6da50f8e7952c7479/fix-jsonapi-search-api-facets-cache-3176987.patch"
       },
@@ -272,6 +272,9 @@
       },
       "drupal/file_entity": {
         "Fix missing bundle entity, entity type file_type, entity id undefined": "https://gist.githubusercontent.com/voidagency/b2ec60b41a9ef234ba860c03c05410f4/raw/cea45bcd86a2063d7460a99d1757719035a75314/remove-undefined-bundle-from-entity-type-file-type.patch"
+      },
+      "drupal/search_api": {
+        "Decode HTML in search API rendered items": "https://gist.githubusercontent.com/ismail-void/73938a4084d2981578ccef6ca4c563ff/raw/04336c5d33a885ac3937d8fbee46fa2c1756ac9f/search-api-rendered-item-decode-html.patch"
       }
     }
   },
