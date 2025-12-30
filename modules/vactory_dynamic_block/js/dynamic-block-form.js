@@ -1,11 +1,20 @@
 (function (Drupal, drupalSettings, once) {
   'use strict';
 
-  // Generate short UUID (12 chars)
+  // Counter for generating unique block IDs (safer alternative to Math.random())
+  let blockIdCounter = 0;
+
+  // Generate short UUID (12 chars) without using Math.random()
   function generateBlockId() {
-    return 'xxxxxxxxxxxx'.replace(/x/g, function() {
-      return Math.floor(Math.random() * 16).toString(16);
-    });
+    blockIdCounter += 1;
+    // Use counter + timestamp + performance.now() to generate unique hex string
+    const timestamp = Date.now().toString(16);
+    const perf = Math.floor(performance.now() * 1000).toString(16);
+    const counter = blockIdCounter.toString(16);
+    // Combine and take first 12 characters
+    const combined = (timestamp + perf + counter).replaceAll('.', '').slice(0, 12);
+    // Pad if needed to ensure 12 characters
+    return combined.padEnd(12, '0');
   }
 
   // Load tailwindcss-iso from local module file
@@ -46,9 +55,22 @@
     return globalThis.tailwindcssIso;
   }
 
+  // Remove trailing dashes from string (avoids regex backtracking)
+  function removeTrailingDashes(str) {
+    let endIndex = str.length;
+    // Find last non-dash character from the end
+    for (let i = str.length - 1; i >= 0; i--) {
+      if (str[i] !== '-') {
+        endIndex = i + 1;
+        break;
+      }
+    }
+    return str.slice(0, endIndex);
+  }
+
   // Prefix Tailwind CSS custom properties to avoid conflicts
   function prefixTailwindProperties(css, blockId) {
-    const shortId = blockId.slice(0, 12).replace(/-+$/, '');
+    const shortId = removeTrailingDashes(blockId.slice(0, 12));
     return css.replaceAll('--tw-', '--jsx-' + shortId + '-');
   }
 
@@ -559,7 +581,7 @@
                          'var useRef = window.__react_hooks.useRef; ' +
                          'var useMemo = window.__react_hooks.useMemo; ' +
                          'var useCallback = window.__react_hooks.useCallback; ' +
-                         hydrateData.code + '\n' +
+        hydrateData.code + '\n' +
                          'window.' + tempGlobalKey + ' = ' + hydrateData.componentName + ';';
       
       // Store React hooks in globalThis temporarily
