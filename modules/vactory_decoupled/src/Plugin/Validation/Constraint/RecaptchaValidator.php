@@ -2,6 +2,7 @@
 
 namespace Drupal\vactory_decoupled\Plugin\Validation\Constraint;
 
+use Drupal\Component\Serialization\Json;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Routing\AdminContext;
 use Drupal\Core\Session\AccountInterface;
@@ -26,19 +27,16 @@ class RecaptchaValidator extends ConstraintValidator implements ContainerInjecti
   /**
    * The admin context.
    *
-   * @var
+   * @var \Drupal\Core\Routing\AdminContext
    */
-  protected $admin_context;
+  protected $adminContext;
 
   /**
    * Creates a new RecaptchaValidator instance.
-   *
-   * @param \Drupal\Core\Session\AccountInterface $current_user
-   *   The current user.
    */
   public function __construct(AccountInterface $current_user, AdminContext $admin_context) {
     $this->currentUser = $current_user;
-    $this->admin_context = $admin_context;
+    $this->adminContext = $admin_context;
   }
 
   /**
@@ -60,16 +58,16 @@ class RecaptchaValidator extends ConstraintValidator implements ContainerInjecti
     $is_admin = $this->currentUser->hasPermission('skip CAPTCHA');
 
     if (in_array($method, [
-        'GET',
-        'HEAD',
-        'CONNECT',
-        'TRACE',
-        'OPTIONS',
-      ], TRUE) || $is_admin || $this->admin_context->isAdminRoute()) {
+      'GET',
+      'HEAD',
+      'CONNECT',
+      'TRACE',
+      'OPTIONS',
+    ], TRUE) || $is_admin || $this->adminContext->isAdminRoute()) {
       return;
     }
     $raw_data = $request->getContent();
-    $data = \Drupal\Component\Serialization\Json::decode($raw_data);
+    $data = Json::decode($raw_data);
     $value = $data['data']['attributes']['g-recaptcha-response'] ?? '';
 
     if (empty($value)) {
@@ -77,27 +75,23 @@ class RecaptchaValidator extends ConstraintValidator implements ContainerInjecti
         ->atPath('g_recaptcha_response')
         ->setCode('factory-7a99-4df7-8ce9-46e416a1e60b')
         ->addViolation();
-      //      $this->context->addViolation($constraint->required, ['%value' => $value]);
     }
     else {
       if (!$this->isValid($value)) {
         $this->context->buildViolation($constraint->notValid)
           ->atPath('g-recaptcha-response')
           ->addViolation();
-        //        $this->context->addViolation($constraint->notValid, ['%value' => $value]);
       }
     }
   }
 
   /**
    * Is valid?
-   *
-   * @param string $value
    */
   private function isValid($value) {
     $config = \Drupal::config('recaptcha.settings');
     $recaptcha_secret_key = $config->get('secret_key');
-    // Use Drupal::httpClient() to circumvent all issues with the Google library.
+    // Use httpClient() to circumvent all issues with the Google library.
     $recaptcha = new ReCaptcha($recaptcha_secret_key, new Drupal8Post(\Drupal::httpClient()));
 
     // Ensures the hostname matches. Required if "Domain Name Validation" is
