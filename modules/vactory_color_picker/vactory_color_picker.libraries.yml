@@ -1,0 +1,8 @@
+widget:
+  js:
+    js/widget.js: {}
+  dependencies:
+    - core/drupal
+    - core/jquery
+    - core/drupal.ajax
+

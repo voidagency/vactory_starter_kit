@@ -1,0 +1,9 @@
+name: 'Vactory Color Picker'
+description: 'Provides an HTML5 color picker widget for Color API fields'
+type: module
+core_version_requirement: ^9 || ^10
+package: Vactory
+
+dependencies:
+  - colorapi:colorapi
+
