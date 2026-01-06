@@ -20,11 +20,6 @@ use Drupal\colorapi\Plugin\Field\FieldWidget\ColorapiWidgetBase;
 class VactoryColorPickerWidget extends ColorapiWidgetBase {
 
   /**
-   * Default display color value for the HTML5 color input.
-   */
-  const DEFAULT_DISPLAY_COLOR = '#FF0000';
-
-  /**
    * {@inheritdoc}
    */
   public function settingsSummary() {
@@ -52,61 +47,14 @@ class VactoryColorPickerWidget extends ColorapiWidgetBase {
       $actual_value = '';
     }
 
-    // Display value for color input (use default color when no value is set).
-    $display_value = !empty($actual_value) ? $actual_value : self::DEFAULT_DISPLAY_COLOR;
-
-    // Generate unique IDs.
-    $unique_id = md5(serialize($element['#field_parents'] ?? []) . $delta);
-    $hidden_input_id = 'color-picker-hidden-' . $unique_id;
-    $color_input_id = 'color-picker-input-' . $unique_id;
-
-    // Hidden input to store the actual value (this is what gets submitted).
     $element['color'] = [
-      '#type' => 'hidden',
+      '#type' => 'vactory_color_picker',
+      '#title' => $this->t('Test Color Picker'),
+      '#description' => $this->t('Select a color using the HTML5 color picker.'),
       '#default_value' => $actual_value,
-      '#attributes' => [
-        'id' => $hidden_input_id,
-        'class' => ['vactory-color-picker-hidden'],
-      ],
+      '#clear_button' => TRUE,
+      '#clear_button_text' => 'Clear',
     ];
-
-    // Container for display elements.
-    $element['color_wrapper'] = [
-      '#type' => 'container',
-      '#attributes' => [
-        'class' => ['vactory-color-picker-wrapper'],
-        'style' => 'display: flex; align-items: center; gap: 5px;',
-      ],
-    ];
-
-    // HTML5 color input for display.
-    $element['color_wrapper']['color_display'] = [
-      '#type' => 'color',
-      '#default_value' => $display_value,
-      '#attributes' => [
-        'id' => $color_input_id,
-        'class' => ['vactory-color-picker-input'],
-        'data-hidden-input-id' => $hidden_input_id,
-        'data-default-color' => self::DEFAULT_DISPLAY_COLOR,
-      ],
-    ];
-
-    // Clear link (using span element to avoid form submission).
-    $element['color_wrapper']['clear'] = [
-      '#type' => 'html_tag',
-      '#tag' => 'span',
-      '#value' => $this->t('Clear'),
-      '#attributes' => [
-        'class' => ['vactory-color-picker-clear'],
-        'data-color-input-id' => $color_input_id,
-        'data-hidden-input-id' => $hidden_input_id,
-        'data-default-color' => self::DEFAULT_DISPLAY_COLOR,
-        'style' => 'padding: 2px 8px; font-size: 12px; cursor: pointer; border: 1px solid #ccc; border-radius: 3px; background: #f5f5f5; display: inline-block;',
-      ],
-    ];
-
-    // Attach JavaScript library.
-    $element['#attached']['library'][] = 'vactory_color_picker/widget';
 
     return $element;
   }
