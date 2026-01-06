@@ -4,8 +4,6 @@ namespace Drupal\vactory_color_picker\Plugin\Field\FieldWidget;
 
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Ajax\AjaxResponse;
-use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\colorapi\Plugin\Field\FieldWidget\ColorapiWidgetBase;
 
 /**
@@ -23,9 +21,6 @@ class VactoryColorPickerWidget extends ColorapiWidgetBase {
 
   /**
    * Default display color value for the HTML5 color input.
-   *
-   * This is the color shown in the color picker when no value is set.
-   * Changing this constant will update the default color everywhere.
    */
   const DEFAULT_DISPLAY_COLOR = '#FF0000';
 
@@ -47,12 +42,12 @@ class VactoryColorPickerWidget extends ColorapiWidgetBase {
     // Hide the name field.
     unset($element['name']);
 
-    // Get the actual value from the field item, or empty if not set.
+    // Get the actual value from the field item.
     $actual_value = isset($items[$delta]) && $items[$delta]->getHexadecimal()
       ? $items[$delta]->getHexadecimal()
       : '';
 
-    // Ensure the value is a valid hex color if it exists.
+    // Ensure the value is a valid hex color.
     if (!empty($actual_value) && !preg_match('/^#[0-9A-Fa-f]{6}$/', $actual_value)) {
       $actual_value = '';
     }
@@ -60,56 +55,57 @@ class VactoryColorPickerWidget extends ColorapiWidgetBase {
     // Display value for color input (use default color when no value is set).
     $display_value = !empty($actual_value) ? $actual_value : self::DEFAULT_DISPLAY_COLOR;
 
-    // Container for color input and clear button.
-    $wrapper_id = 'color-picker-wrapper-' . $delta . '-' . md5(serialize($element['#field_parents'] ?? []));
-    $element['color_wrapper'] = [
-      '#type' => 'container',
-      '#attributes' => [
-        'style' => 'display: flex; align-items: center; gap: 5px;',
-        'id' => $wrapper_id,
-      ],
-    ];
+    // Generate unique IDs.
+    $unique_id = md5(serialize($element['#field_parents'] ?? []) . $delta);
+    $hidden_input_id = 'color-picker-hidden-' . $unique_id;
+    $color_input_id = 'color-picker-input-' . $unique_id;
 
-    // Hidden input to store the actual value.
-    $hidden_input_id = 'color-picker-hidden-' . $delta . '-' . md5(serialize($element['#field_parents'] ?? []));
-    $element['color_wrapper']['color'] = [
+    // Hidden input to store the actual value (this is what gets submitted).
+    $element['color'] = [
       '#type' => 'hidden',
       '#default_value' => $actual_value,
       '#attributes' => [
         'id' => $hidden_input_id,
+        'class' => ['vactory-color-picker-hidden'],
       ],
     ];
 
-    // HTML5 color input for display only.
-    $color_input_id = 'color-picker-input-' . $delta . '-' . md5(serialize($element['#field_parents'] ?? []));
+    // Container for display elements.
+    $element['color_wrapper'] = [
+      '#type' => 'container',
+      '#attributes' => [
+        'class' => ['vactory-color-picker-wrapper'],
+        'style' => 'display: flex; align-items: center; gap: 5px;',
+      ],
+    ];
+
+    // HTML5 color input for display.
     $element['color_wrapper']['color_display'] = [
       '#type' => 'color',
       '#default_value' => $display_value,
       '#attributes' => [
         'id' => $color_input_id,
+        'class' => ['vactory-color-picker-input'],
         'data-hidden-input-id' => $hidden_input_id,
+        'data-default-color' => self::DEFAULT_DISPLAY_COLOR,
       ],
     ];
 
-    // Clear button.
+    // Clear link (using span element to avoid form submission).
     $element['color_wrapper']['clear'] = [
-      '#type' => 'button',
+      '#type' => 'html_tag',
+      '#tag' => 'span',
       '#value' => $this->t('Clear'),
-      '#ajax' => [
-        'callback' => [static::class, 'clearColorAjax'],
-        'event' => 'click',
-      ],
       '#attributes' => [
-        'style' => 'padding: 2px 8px; font-size: 12px;',
+        'class' => ['vactory-color-picker-clear'],
         'data-color-input-id' => $color_input_id,
         'data-hidden-input-id' => $hidden_input_id,
+        'data-default-color' => self::DEFAULT_DISPLAY_COLOR,
+        'style' => 'padding: 2px 8px; font-size: 12px; cursor: pointer; border: 1px solid #ccc; border-radius: 3px; background: #f5f5f5; display: inline-block;',
       ],
     ];
 
-    // Keep color at root level for parent class compatibility.
-    $element['color'] = &$element['color_wrapper']['color'];
-
-    // Attach JavaScript library to sync color_display with hidden color input.
+    // Attach JavaScript library.
     $element['#attached']['library'][] = 'vactory_color_picker/widget';
 
     return $element;
@@ -120,46 +116,27 @@ class VactoryColorPickerWidget extends ColorapiWidgetBase {
    */
   public function massageFormValues(array $values, array $form, FormStateInterface $form_state) {
     foreach ($values as $delta => $value) {
-      // If color value is empty, set it to NULL to delete the field item.
-      if (isset($value['color']) && empty(trim($value['color']))) {
-        $values[$delta]['color'] = NULL;
-      }
-      // Validate and normalize the color value if it exists.
-      elseif (isset($value['color']) && !empty(trim($value['color']))) {
-        $color_service = \Drupal::service('colorapi.service');
-        if ($color_service->isValidHexadecimalColorString($value['color'])) {
-          $values[$delta]['color'] = strtoupper($value['color']);
+      if (isset($value['color'])) {
+        $color_value = trim($value['color']);
+        // If color value is empty, set it to NULL to delete the field item.
+        if (empty($color_value)) {
+          $values[$delta]['color'] = NULL;
         }
         else {
-          // Invalid color, set to NULL to delete.
-          $values[$delta]['color'] = NULL;
+          // Validate and normalize the color value.
+          $color_service = \Drupal::service('colorapi.service');
+          if ($color_service->isValidHexadecimalColorString($color_value)) {
+            $values[$delta]['color'] = strtoupper($color_value);
+          }
+          else {
+            // Invalid color, set to NULL.
+            $values[$delta]['color'] = NULL;
+          }
         }
       }
     }
 
     return parent::massageFormValues($values, $form, $form_state);
-  }
-
-  /**
-   * AJAX callback to clear the color value.
-   */
-  public static function clearColorAjax(array &$form, FormStateInterface $form_state) {
-    $triggering_element = $form_state->getTriggeringElement();
-    $color_input_id = $triggering_element['#attributes']['data-color-input-id'] ?? '';
-    $hidden_input_id = $triggering_element['#attributes']['data-hidden-input-id'] ?? '';
-
-    $response = new AjaxResponse();
-
-    if ($color_input_id && $hidden_input_id) {
-      // Clear the hidden input (empty value = NULL = delete from database).
-      $response->addCommand(new InvokeCommand('#' . $hidden_input_id, 'val', ['']));
-      // Reset the display color input to default color for visual feedback.
-      $response->addCommand(new InvokeCommand('#' . $color_input_id, 'val', [self::DEFAULT_DISPLAY_COLOR]));
-      // Trigger change event to ensure form state is updated.
-      $response->addCommand(new InvokeCommand('#' . $hidden_input_id, 'trigger', ['change']));
-    }
-
-    return $response;
   }
 
 }
