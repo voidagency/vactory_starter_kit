@@ -30,7 +30,7 @@ fields:
     type: image
     label: 'Background image'
   background_color:
-    type: jquery_colorpicker
+    type: vactory_color_picker
     label: 'Color de fond'
   col:
     type: select

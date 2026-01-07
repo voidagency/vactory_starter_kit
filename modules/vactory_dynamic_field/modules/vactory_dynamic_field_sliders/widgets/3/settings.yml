@@ -32,5 +32,5 @@ fields:
     type: url_extended
     label: 'Read More Link'
   slider_bg:
-    type: jquery_colorpicker
+    type: vactory_color_picker
     label: 'Background color'
