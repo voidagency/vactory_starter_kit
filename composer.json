@@ -230,9 +230,6 @@
       "drupal/advagg": {
         "Remove version comments from minified files.": "https://gist.githubusercontent.com/voidagency/136f41faf39bcff92e334f364a173afb/raw/421944a391d8ed071ec648cf3ca8311f912372fe/advagg-remove-version-comment-from-minified-js.patch"
       },
-      "drupal/colorapi": {
-        "Enable colorapi field type by default": "https://gist.githubusercontent.com/voidagency/710e846384b56afe6cdfdc59fbc6e8bc/raw/cb8b1c126e87bd57a2c745f2f29e25c0269ec32f/colorapi-enable-colorapi-field-type-by-default.patch"
-      },
       "drupal/webform": {
         "Invoke alter hook after webform handlers execution": "https://gist.githubusercontent.com/voidagency/6871bd7544b621e2c4221126c5dfec50/raw/7595d19a34e18ab9f719b7f917c02b10a4a40caf/webform-post-handlers-hook.patch"
       },
