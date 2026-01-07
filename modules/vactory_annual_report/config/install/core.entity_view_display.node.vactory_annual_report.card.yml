@@ -19,7 +19,7 @@ dependencies:
     - field.field.node.vactory_annual_report.field_vactory_tags
     - node.type.vactory_annual_report
   module:
-    - jquery_colorpicker
+    - vactory_color_picker
     - options
     - text
     - user
@@ -40,7 +40,7 @@ content:
     weight: 12
     region: content
   field_ar_background_color:
-    type: jquery_colorpicker_color_display
+    type: colorapi_color_display
     label: hidden
     settings: {  }
     third_party_settings: {  }
@@ -84,7 +84,7 @@ content:
     weight: 1
     region: content
   field_border_color:
-    type: jquery_colorpicker_color_display
+    type: colorapi_color_display
     label: hidden
     settings: {  }
     third_party_settings: {  }

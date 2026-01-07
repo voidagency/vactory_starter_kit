@@ -8,7 +8,7 @@ dependencies:
     - field.field.taxonomy_term.vactory_ar_thematic.field_color
     - taxonomy.vocabulary.vactory_ar_thematic
   module:
-    - jquery_colorpicker
+    - vactory_color_picker
     - path
     - text
 id: taxonomy_term.vactory_ar_thematic.default
@@ -25,7 +25,7 @@ content:
       rows: 5
     third_party_settings: {  }
   field_color:
-    type: jquery_colorpicker
+    type: vactory_color_picker
     weight: 5
     region: content
     settings:

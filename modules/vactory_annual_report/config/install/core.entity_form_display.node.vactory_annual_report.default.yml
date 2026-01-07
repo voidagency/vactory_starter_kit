@@ -19,7 +19,7 @@ dependencies:
     - node.type.vactory_annual_report
   module:
     - field_group
-    - jquery_colorpicker
+    - vactory_color_picker
     - media_library
     - paragraphs
     - path
@@ -70,7 +70,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   field_ar_background_color:
-    type: jquery_colorpicker
+    type: vactory_color_picker
     weight: 37
     region: content
     settings:
@@ -101,7 +101,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   field_border_color:
-    type: jquery_colorpicker
+    type: vactory_color_picker
     weight: 38
     region: content
     settings:
