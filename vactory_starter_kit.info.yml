@@ -79,7 +79,6 @@ install:
   - user_registrationpassword
   - block_field
   - faqfield
-  - vendor_stream_wrapper
   - vactory_color_picker
   - field_group
   - address
@@ -172,7 +171,6 @@ install:
   # - vactory_dynamic_field_wysiwyg_templates
   - vactory_cross_content
   - vactory_espace_prive
-  - vactory_jquerycolorpicker_css_fix
   - log_stdout
   - vactory_decoupled
   - vactory_decoupled_router

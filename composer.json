@@ -265,6 +265,9 @@
       },
       "drupal/search_api": {
         "Decode HTML in search API rendered items": "https://gist.githubusercontent.com/ismail-void/73938a4084d2981578ccef6ca4c563ff/raw/04336c5d33a885ac3937d8fbee46fa2c1756ac9f/search-api-rendered-item-decode-html.patch"
+      },
+      "drupal/colorapi" : {
+        "Colorapi deprecation fixes" : "https://gist.githubusercontent.com/ismail-void/e4ba570057c58e33fb293de9d15ac5d8/raw/f59146223b1d42d34466314f77fb1fde17c3729f/colorapi-deprecation-fixes.patch"
       }
     }
   },
