@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "663f2bf40deee4b6357a63fc8b130694",
+    "content-hash": "b2115a1ac0929aeec48e228c8c0f04e1",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -10773,64 +10773,6 @@
             }
         },
         {
-            "name": "drupal/vendor_stream_wrapper",
-            "version": "2.0.2",
-            "source": {
-                "type": "git",
-                "url": "https://git.drupalcode.org/project/vendor_stream_wrapper.git",
-                "reference": "2.0.2"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/vendor_stream_wrapper-2.0.2.zip",
-                "reference": "2.0.2",
-                "shasum": "4740cb8d50c7ecf1461fbaaf37834c243fca70a5"
-            },
-            "require": {
-                "drupal/core": "^9.1 || ^10"
-            },
-            "require-dev": {
-                "jaypan/jquery-colorpicker": "~1.0.1"
-            },
-            "type": "drupal-module",
-            "extra": {
-                "drupal": {
-                    "version": "2.0.2",
-                    "datestamp": "1663708616",
-                    "security-coverage": {
-                        "status": "covered",
-                        "message": "Covered by Drupal's security advisory policy"
-                    }
-                }
-            },
-            "notification-url": "https://packages.drupal.org/8/downloads",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "authors": [
-                {
-                    "name": "Jay Friendly (Jaypan)",
-                    "homepage": "https://www.jaypan.com",
-                    "role": "Maintainer"
-                },
-                {
-                    "name": "Neslee Canil Pinto",
-                    "homepage": "https://www.drupal.org/u/neslee-canil-pinto",
-                    "role": "Maintainer"
-                },
-                {
-                    "name": "Watergate",
-                    "homepage": "https://www.drupal.org/user/1096864"
-                }
-            ],
-            "description": "Creates the vendor:// stream wrapper, allowing for linking/embedding of CSS and JS files in the vendor directory.",
-            "homepage": "https://drupal.org/project/vendor_stream_wrapper",
-            "support": {
-                "source": "https://git.drupalcode.org/project/vendor_stream_wrapper",
-                "issues": "https://drupal.org/project/issues/vendor_stream_wrapper"
-            }
-        },
-        {
             "name": "drupal/video_embed_field",
             "version": "2.5.0",
             "source": {
@@ -13099,33 +13041,6 @@
                 "source": "https://github.com/itamair/geoPHP/tree/1.6"
             },
             "time": "2023-12-23T23:28:59+00:00"
-        },
-        {
-            "name": "jaypan/jquery-colorpicker",
-            "version": "1.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/jaypan/jquery_colorpicker.git",
-                "reference": "1c1c4cf081387f53470c591505cbba7928164066"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/jaypan/jquery_colorpicker/zipball/1c1c4cf081387f53470c591505cbba7928164066",
-                "reference": "1c1c4cf081387f53470c591505cbba7928164066",
-                "shasum": ""
-            },
-            "type": "library",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "(MIT or GPL-1.0)"
-            ],
-            "description": "The jQuery Colorpicker JS/CSS library",
-            "homepage": "https://www.eyecon.ro/colorpicker/",
-            "support": {
-                "issues": "https://github.com/jaypan/jquery_colorpicker/issues",
-                "source": "https://github.com/jaypan/jquery_colorpicker/tree/1.0.1"
-            },
-            "time": "2018-09-27T02:07:08+00:00"
         },
         {
             "name": "justinrainbow/json-schema",
@@ -20686,39 +20601,6 @@
                 "source": "https://github.com/voidagency/easy_install/tree/10.6.0"
             },
             "time": "2024-01-15T08:41:44+00:00"
-        },
-        {
-            "name": "voidagency/jquery_colorpicker",
-            "version": "4.0.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/voidagency/jquery_colorpicker.git",
-                "reference": "dfbfcf261d6aa3d0cf857d2613187afe92ab93f5"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/voidagency/jquery_colorpicker/zipball/dfbfcf261d6aa3d0cf857d2613187afe92ab93f5",
-                "reference": "dfbfcf261d6aa3d0cf857d2613187afe92ab93f5",
-                "shasum": ""
-            },
-            "require": {
-                "drupal/colorapi": "^1.1",
-                "drupal/core": "^9.3 || ^10",
-                "drupal/vendor_stream_wrapper": "^2.0.2",
-                "jaypan/jquery-colorpicker": "~1.0.1"
-            },
-            "type": "drupal-module",
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "GPL-2.0-or-later"
-            ],
-            "description": "A Drupal integration with the jQuery Colorpicker (https://www.eyecon.ro/colorpicker) module",
-            "homepage": "https://drupal.org/project/jquery_colorpicker",
-            "support": {
-                "issues": "https://drupal.org/project/issues/jquery_colorpicker",
-                "source": "https://git.drupalcode.org/project/jquery_colorpicker"
-            },
-            "time": "2024-01-15T08:38:03+00:00"
         },
         {
             "name": "voidagency/merge_translations",
