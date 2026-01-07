@@ -8,7 +8,7 @@ dependencies:
   - text
   - paragraphs
   - vactory_field
-  - jquery_colorpicker
+  - vactory_color_picker
   - field_group
   - content_translation
   - vactory_dynamic_field

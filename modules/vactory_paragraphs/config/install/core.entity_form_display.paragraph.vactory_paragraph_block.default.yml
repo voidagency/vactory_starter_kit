@@ -18,7 +18,7 @@ dependencies:
   module:
     - block_field
     - field_group
-    - jquery_colorpicker
+    - vactory_color_picker
     - media_library
     - text
 third_party_settings:
@@ -101,7 +101,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   field_background_color:
-    type: jquery_colorpicker
+    type: vactory_color_picker
     weight: 0
     region: content
     settings: {  }
@@ -186,7 +186,7 @@ content:
       placeholder: ''
     third_party_settings: {  }
   paragraph_background_color:
-    type: jquery_colorpicker
+    type: vactory_color_picker
     weight: 4
     region: content
     settings:

@@ -21,7 +21,7 @@ dependencies:
     - paragraphs.paragraphs_type.vactory_paragraph_multi_template
   module:
     - field_group
-    - jquery_colorpicker
+    - vactory_color_picker
     - media_library
     - paragraphs
 third_party_settings:
@@ -120,7 +120,7 @@ content:
     settings: {  }
     third_party_settings: {  }
   field_background_color:
-    type: jquery_colorpicker
+    type: vactory_color_picker
     weight: 9
     region: content
     settings: {  }
@@ -227,7 +227,7 @@ content:
       placeholder: ''
     third_party_settings: {  }
   paragraph_background_color:
-    type: jquery_colorpicker
+    type: vactory_color_picker
     weight: 6
     region: content
     settings:

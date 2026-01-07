@@ -80,7 +80,7 @@ install:
   - block_field
   - faqfield
   - vendor_stream_wrapper
-  - jquery_colorpicker
+  - vactory_color_picker
   - field_group
   - address
   - entity_reference_revisions

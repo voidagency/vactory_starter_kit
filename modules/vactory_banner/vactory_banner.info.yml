@@ -12,7 +12,7 @@ dependencies:
   - field
   - focal_point
   - image
-  - jquery_colorpicker
+  - vactory_color_picker
   - language
   - media
   - media_library

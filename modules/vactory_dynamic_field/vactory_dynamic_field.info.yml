@@ -6,7 +6,7 @@ core_version_requirement: ^9 || ^10
 configure: vactory_dynamic_field.settings_form
 dependencies:
   - twig_tweak
-  - jquery_colorpicker
+  - vactory_color_picker
   - field_group
   - media_library_form_element
   - textfield_counter

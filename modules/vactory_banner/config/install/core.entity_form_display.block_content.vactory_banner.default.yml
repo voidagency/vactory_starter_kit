@@ -13,7 +13,7 @@ dependencies:
   module:
     - block_field
     - field_group
-    - jquery_colorpicker
+    - vactory_color_picker
     - media_library
     - text
   enforced:
@@ -61,7 +61,7 @@ content:
     third_party_settings: {  }
     region: content
   field_background_color:
-    type: jquery_colorpicker
+    type: vactory_color_picker
     weight: 8
     region: content
     settings:
