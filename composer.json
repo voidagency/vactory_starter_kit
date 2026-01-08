@@ -35,7 +35,7 @@
     "drupal/focal_point": "^2.0",
     "drupal/improved_multi_select": "^1.7",
     "drupal/inline_entity_form": "^1.0.0-rc2",
-    "drupal/colorapi": "^1.1",
+    "drupal/colorapi": "^2.1",
     "drupal/lang_dropdown": "^2.0@beta",
     "drupal/menu_link_attributes": "^1.1.0",
     "drupal/metatag": "^1.14",
@@ -158,7 +158,7 @@
     "drupal/onesignal": "^3.0",
     "stevenmaguire/oauth2-keycloak": "^5.0",
     "drupal/openai": "^1.0@beta",
-    "voidagency/jquery_colorpicker": "^4.0",
+    "voidagency/jquery_colorpicker": "5.0.0",
     "voidagency/merge_translations": "^2.0",
     "voidagency/easy_install": "^10.6",
     "voidagency/shortcode": "^2.1",
@@ -232,13 +232,7 @@
         "Remove version comments from minified files.": "https://gist.githubusercontent.com/voidagency/136f41faf39bcff92e334f364a173afb/raw/421944a391d8ed071ec648cf3ca8311f912372fe/advagg-remove-version-comment-from-minified-js.patch"
       },
       "drupal/colorapi": {
-        "Enable colorapi field type by default": "https://gist.githubusercontent.com/voidagency/710e846384b56afe6cdfdc59fbc6e8bc/raw/cb8b1c126e87bd57a2c745f2f29e25c0269ec32f/colorapi-enable-colorapi-field-type-by-default.patch"
-      },
-      "voidagency/jquery_colorpicker": {
-        "jQuery color picker resolve vendor path": "https://gist.githubusercontent.com/voidagency/606f9343e9c7e9b99858088d7db111f1/raw/5216cc90d89e68916b4a17b60e07466286a18397/jquery-color-picker-resolve-vendor-path.patch",
-        "jQuery color picker remove vendor dependencies": "https://gist.githubusercontent.com/voidagency/17af206778d4ea598b93dd10769556a0/raw/538e683f77b15945a41b99548a6b0d1ca2315225/jquery-colorpicker-remove-vendor-dependencies.patch",
-        "jQuery color picker update background (drupalSettings variable)": "https://gist.githubusercontent.com/voidagency/94489fb9998406959ebefb31a758f39c/raw/6692adac21ef17ea4d66d69584159a6802707404/jquery-colorpicker-update-background.patch",
-        "jQuery color picker default color": "https://gist.githubusercontent.com/voidagency/35c94c16af59f3eea64aa4d05805db15/raw/6dc9b83bbf9e0fa2df18ab2b3b0b6e460546cbe6/jquery_color_picker_default_color.patch"
+        "Colorapi deprecation fixes" : "https://gist.githubusercontent.com/ismail-void/e4ba570057c58e33fb293de9d15ac5d8/raw/f59146223b1d42d34466314f77fb1fde17c3729f/colorapi-deprecation-fixes.patch"
       },
       "drupal/webform": {
         "Invoke alter hook after webform handlers execution": "https://gist.githubusercontent.com/voidagency/6871bd7544b621e2c4221126c5dfec50/raw/7595d19a34e18ab9f719b7f917c02b10a4a40caf/webform-post-handlers-hook.patch"
