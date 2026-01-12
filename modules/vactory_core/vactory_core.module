@@ -723,4 +723,3 @@ function _get_profile__composer_version($profile_name) {
 
   return NULL;
 }
-
