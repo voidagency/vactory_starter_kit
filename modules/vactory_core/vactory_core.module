@@ -48,6 +48,7 @@ function vactory_core_theme() {
       'template' => 'status-report-page-vactory',
       'variables' => [
         'profile_version' => [],
+        'dashboard_version' => NULL,
       ],
     ],
     'vactory_responsive_image'           => [
@@ -685,6 +686,13 @@ function vactory_core_preprocess_status_report_general_info_vactory(&$variables)
   if ($res) {
     $variables['profile_version'] = $res;
   }
+
+  // Get vactory_dashboard version from composer.lock.
+  $dashboard_name = 'voidagency/vactory_dashboard';
+  $dashboard_version = _get_profile__composer_version($dashboard_name);
+  if ($dashboard_version) {
+    $variables['dashboard_version'] = $dashboard_version;
+  }
 }
 
 /**
@@ -715,3 +723,4 @@ function _get_profile__composer_version($profile_name) {
 
   return NULL;
 }
+
