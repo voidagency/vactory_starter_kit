@@ -18,7 +18,7 @@ class SspaProtectedUserFieldConstraintValidator extends ProtectedUserFieldConstr
    *
    * @var bool
    */
-  protected $restrictedPasswordManagement = TRUE; // @todo: setting for this
+  protected $restrictedPasswordManagement = TRUE;
 
   /**
    * Constructs the object.
@@ -27,7 +27,6 @@ class SspaProtectedUserFieldConstraintValidator extends ProtectedUserFieldConstr
    *   The user storage handler.
    * @param \Drupal\Core\Session\AccountProxyInterface $current_user
    *   The current user.
-   * @param \Drupal\externalauth\AuthmapInterface $authmap
    */
   public function __construct(UserStorageInterface $user_storage, AccountProxyInterface $current_user) {
     parent::__construct($user_storage, $current_user);
@@ -46,7 +45,7 @@ class SspaProtectedUserFieldConstraintValidator extends ProtectedUserFieldConstr
   /**
    * {@inheritdoc}
    */
-  public function validate($items, Constraint $constraint) {
+  public function validate($items, Constraint $constraint): void {
     if (!isset($items)) {
       return;
     }
