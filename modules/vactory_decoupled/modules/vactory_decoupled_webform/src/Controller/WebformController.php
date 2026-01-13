@@ -115,17 +115,11 @@ class WebformController extends ControllerBase {
       return new JsonResponse($error_message, $error_message['code'] ?? 400);
     }
     if (isset($webform_data['sid']) && !empty($webform_data['sid'])) {
-      $webform_submission = WebformSubmission::load($webform_data['sid']);
-      $webform_submission->setCurrentPage($webform_data['current_page'] ?? NULL);
-      $webform_submission->set('in_draft', $webform_data['in_draft'] == 'true');
-
-      foreach ($webform_data as $element => $data) {
-        if (!in_array($element, self::ELEMENT_TO_SKIP)) {
-          if (isset($data) && !empty($data)) {
-            $webform_submission->setElementData($element, $data);
-          }
-        }
+      $validation_result = $this->loadAndValidateSubmission($webform_data, $webform);
+      if ($validation_result instanceof JsonResponse) {
+        return $validation_result;
       }
+      $webform_submission = $validation_result;
     }
     else {
       // Convert to webform values format.
@@ -173,6 +167,62 @@ class WebformController extends ControllerBase {
         'error' => $webform_submission,
       ], 400);
     }
+  }
+
+  /**
+   * Loads and validates an existing webform submission.
+   */
+  private function loadAndValidateSubmission(array $webform_data, WebformInterface $webform) {
+    $webform_submission = WebformSubmission::load($webform_data['sid']);
+
+    // Verify that the submission exists.
+    if (!$webform_submission) {
+      return new JsonResponse([
+        'error' => [
+          'code'    => '404',
+          'message' => 'Submission not found.',
+        ],
+      ], 404);
+    }
+
+    // Verify that the submission belongs to the correct webform.
+    if ($webform_submission->getWebform()->id() !== $webform_data['webform_id']) {
+      return new JsonResponse([
+        'error' => [
+          'code'    => '403',
+          'message' => 'Access denied: Submission does not belong to this webform.',
+        ],
+      ], 403);
+    }
+
+    // Verify that the user is the owner.
+    $submission_owner_id = $webform_submission->getOwnerId();
+    $current_user_id = $this->currentUser->id();
+    $is_owner = $submission_owner_id == $current_user_id;
+    $is_anonymous = $this->currentUser->isAnonymous();
+
+    if (!$is_owner || $is_anonymous) {
+      return new JsonResponse([
+        'error' => [
+          'code'    => '403',
+          'message' => 'Access denied: You do not have permission to modify this submission.',
+        ],
+      ], 403);
+    }
+
+    // Update submission data.
+    $webform_submission->setCurrentPage($webform_data['current_page'] ?? NULL);
+    $webform_submission->set('in_draft', $webform_data['in_draft'] == 'true');
+
+    foreach ($webform_data as $element => $data) {
+      if (!in_array($element, self::ELEMENT_TO_SKIP)) {
+        if (isset($data) && !empty($data)) {
+          $webform_submission->setElementData($element, $data);
+        }
+      }
+    }
+
+    return $webform_submission;
   }
 
   /**
