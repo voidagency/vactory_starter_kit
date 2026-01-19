@@ -534,7 +534,7 @@ class ModalForm extends FormBase {
             $element_options = isset($field_info['options']) ? $field_info['options'] : [];
 
             $ds_field_name = '';
-            if ($element_type == 'image' || $element_type == 'file') {
+            if ($element_type == 'image' || $element_type == 'file' || $element_type == 'remote_video') {
               // Save a copy of current parent.
               $form_parents = $form['#parents'] ?? [];
               $form['#parents'] = ['components', $i, $field_id, $field_key];
