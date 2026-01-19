@@ -154,12 +154,17 @@ class WebformController extends ControllerBase {
         $submission = WebformSubmission::load($webform_submission->id());
         $datalayer = $submission->get('datalayer')->value;
       }
-      return new JsonResponse([
-        'sid' => $webform_submission->id(),
-        'crypted_sid' => $this->vactoryDevTools->encrypt('vactory_tender' . $webform_submission->id()),
+
+      $response = [
         'settings' => self::getWhitelistedSettings($webform),
         'datalayer' => isset($datalayer) ? json_decode($datalayer, TRUE) : [],
-      ]);
+      ];
+
+      if ($this->currentUser->isAuthenticated()) {
+        $response['sid'] = $webform_submission->id();
+        $response['crypted_sid'] = $this->vactoryDevTools->encrypt('vactory_tender' . $webform_submission->id());
+      }
+      return new JsonResponse($response);
     }
     else {
       // Return validation errors.
