@@ -177,12 +177,14 @@ class WebformController extends ControllerBase {
   /**
    * Loads and validates an existing webform submission.
    */
-  private function loadAndValidateSubmission(array $webform_data, WebformInterface $webform) {
+  private function loadAndValidateSubmission(array $webform_data) {
+    $errorResponse = NULL;
+
     $webform_submission = WebformSubmission::load($webform_data['sid']);
 
     // Verify that the submission exists.
     if (!$webform_submission) {
-      return new JsonResponse([
+      $errorResponse = new JsonResponse([
         'error' => [
           'code'    => '404',
           'message' => 'Submission not found.',
@@ -191,8 +193,9 @@ class WebformController extends ControllerBase {
     }
 
     // Verify that the submission belongs to the correct webform.
-    if ($webform_submission->getWebform()->id() !== $webform_data['webform_id']) {
-      return new JsonResponse([
+    if (!$errorResponse &&
+      $webform_submission->getWebform()->id() !== $webform_data['webform_id']) {
+      $errorResponse = new JsonResponse([
         'error' => [
           'code'    => '403',
           'message' => 'Access denied: Submission does not belong to this webform.',
@@ -201,18 +204,24 @@ class WebformController extends ControllerBase {
     }
 
     // Verify that the user is the owner.
-    $submission_owner_id = $webform_submission->getOwnerId();
-    $current_user_id = $this->currentUser->id();
-    $is_owner = $submission_owner_id == $current_user_id;
-    $is_anonymous = $this->currentUser->isAnonymous();
+    if (!$errorResponse) {
+      $submission_owner_id = $webform_submission->getOwnerId();
+      $current_user_id = $this->currentUser->id();
 
-    if (!$is_owner || $is_anonymous) {
-      return new JsonResponse([
-        'error' => [
-          'code'    => '403',
-          'message' => 'Access denied: You do not have permission to modify this submission.',
-        ],
-      ], 403);
+      if ($this->currentUser->isAnonymous() ||
+        $submission_owner_id != $current_user_id) {
+        $errorResponse = new JsonResponse([
+          'error' => [
+            'code'    => '403',
+            'message' => 'Access denied: You do not have permission to modify this submission.',
+          ],
+        ], 403);
+      }
+    }
+
+    // Return error if any.
+    if ($errorResponse) {
+      return $errorResponse;
     }
 
     // Update submission data.
