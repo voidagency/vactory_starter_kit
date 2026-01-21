@@ -23,7 +23,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
  * @RestResource(
  *   id = "vactory_decoupled_webform_rest_file_upload",
  *   label = @Translation("Vactory Webform File Upload"),
- *   serialization_class = "Drupal\file\Entity\File",
+ *   serialization_class = "",
  *   uri_paths = {
  *     "create" = "/webform_rest/{webform_id}/upload/{field_name}"
  *   }
@@ -43,7 +43,7 @@ class WebformFileUploadResource extends FileUploadResource {
    * @param string $placeholder
    *   An unused placeholder to maintain compatibility with the parent method.
    *
-   * @return \Drupal\rest\ResourceResponse
+   * @return \Drupal\rest\ModifiedResourceResponse
    *   The HTTP response object.
    *
    * @throws \Symfony\Component\HttpKernel\Exception\HttpException
@@ -135,12 +135,30 @@ class WebformFileUploadResource extends FileUploadResource {
 
       $this->lock->release($lock_id);
 
+      // Build optimized response with only required fields.
+      // This maintains compatibility with frontend while reducing payload size.
+      $optimizedFileData = [
+        'fid' => [['value' => (int) $file->id()]],
+        'filename' => [['value' => $file->getFilename()]],
+        'filemime' => [['value' => $file->getMimeType()]],
+        'filesize' => [['value' => (int) $file->getSize()]],
+      ];
+
+      // Extract only _default from preview if available.
+      $optimizedPreview = [];
+      if (isset($previewInfos['_default'])) {
+        $optimizedPreview['_default'] = $previewInfos['_default'];
+      }
+
+      $preview_enabled = isset($element['#file_preview']);
+
       // 201 Created responses return the newly created entity in the response
       // body. These responses are not cacheable, so we add no cacheability
       // metadata here.
       return new ModifiedResourceResponse([
-        'file' => $file,
-        'preview' => $previewInfos,
+        'fid' => $optimizedFileData['fid'],
+        'file' => $optimizedFileData,
+        'preview' => $preview_enabled ? $optimizedPreview : '',
       ], 201);
 
     }
