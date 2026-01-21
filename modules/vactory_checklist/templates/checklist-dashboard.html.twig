@@ -26,9 +26,15 @@
           {% for check in checks %}
             <tr>
               <td class="checklist-status">
-                <span class="checklist-icon {{ check.result.status ? 'success' : 'error' }}">
-                  {{ check.result.status ? '✓' : '✗' }}
-                </span>
+                {% if check.result.is_warning %}
+                  <span class="checklist-icon warning">
+                    ⚠
+                  </span>
+                {% else %}
+                  <span class="checklist-icon {{ check.result.status ? 'success' : 'error' }}">
+                    {{ check.result.status ? '✓' : '✗' }}
+                  </span>
+                {% endif %}
               </td>
               <td>{{ check.label }}</td>
               <td>{{ check.description }}</td>
@@ -52,7 +58,7 @@
                         {% for detail in check.result.details %}
                           <tr>
                             {% for value in detail %}
-                              <td>{{ value }}</td>
+                              <td>{{ value|raw }}</td>
                             {% endfor %}
                           </tr>
                         {% endfor %}
