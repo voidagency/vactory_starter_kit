@@ -59,14 +59,14 @@ class DocumentsEnMasseForm extends FormBase {
     $values = $form_state->getValues();
     $failure = [];
     $upload_success_counter = 0;
-    $time = (new \DateTime('now'))->format('d-m-Y');
-    if (!file_exists($default_stream_wrapper . '://documents-en-masse/' . $time)) {
-      mkdir($default_stream_wrapper . '://documents-en-masse/' . $time, 0777, TRUE);
+    $time = (new \DateTime('now'))->format('Y-m');
+    if (!file_exists($default_stream_wrapper . '://' . $time)) {
+      mkdir($default_stream_wrapper . '://' . $time, 0777, TRUE);
     }
     foreach ($values['documents']['uploaded_files'] as $file) {
       $file_data = file_get_contents($file['path']);
       if ($file_data !== FALSE) {
-        $file = \Drupal::service('file.repository')->writeData($file_data, $default_stream_wrapper . '://documents-en-masse/' . $time . '/' . $file['filename']);
+        $file = \Drupal::service('file.repository')->writeData($file_data, $default_stream_wrapper . '://' . $time . '/' . $file['filename']);
         if ($file) {
           $file->setPermanent();
           $type = $file->get('type')->target_id;
