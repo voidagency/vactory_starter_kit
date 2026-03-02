@@ -53,7 +53,7 @@ class DocumentsEnMasseForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     // Get site default stream wrapper.
-    $default_stream_wrapper = $this->configFactory
+    $default_stream_wrapper = $this->configFactory()
       ->get('system.file')
       ->get('default_scheme');
     $values = $form_state->getValues();
@@ -64,10 +64,9 @@ class DocumentsEnMasseForm extends FormBase {
       mkdir($default_stream_wrapper . '://documents-en-masse/' . $time, 0777, TRUE);
     }
     foreach ($values['documents']['uploaded_files'] as $file) {
-      $handle = fopen($file['path'], 'r');
-      if ($handle) {
-        $file = \Drupal::service('file.repository')->writeData($handle, $default_stream_wrapper . '://documents-en-masse/' . $time . '/' . $file['filename']);
-        fclose($handle);
+      $file_data = file_get_contents($file['path']);
+      if ($file_data !== FALSE) {
+        $file = \Drupal::service('file.repository')->writeData($file_data, $default_stream_wrapper . '://documents-en-masse/' . $time . '/' . $file['filename']);
         if ($file) {
           $file->setPermanent();
           $type = $file->get('type')->target_id;
