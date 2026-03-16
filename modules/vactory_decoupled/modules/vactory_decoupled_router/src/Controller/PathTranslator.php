@@ -348,6 +348,8 @@ class PathTranslator extends ControllerBase {
    *
    * @param array $match_info
    *   The router match info.
+   * @param bool $preview
+   *   Is preview mode.
    *
    * @return array
    *   The pair of \Drupal\Core\Entity\EntityInterface and bool with the
