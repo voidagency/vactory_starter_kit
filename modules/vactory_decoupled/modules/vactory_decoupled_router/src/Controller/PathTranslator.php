@@ -158,7 +158,8 @@ class PathTranslator extends ControllerBase {
       }
     }
     /** @var \Drupal\Core\Entity\EntityInterface $entity */
-    $entity = $this->findEntity($match_info);
+    $preview = $request->query->get('preview') ?? FALSE;
+    $entity = $this->findEntity($match_info, $preview);
     if (!$entity) {
       $this->logger->notice('A route has been found but it has no entity information.');
       /** @var \Drupal\Core\Entity\EntityInterface $entity */
@@ -354,7 +355,7 @@ class PathTranslator extends ControllerBase {
    *   enhancement. It also returns the name of the parameter under which the
    *   entity lives in the route ('node' vs 'entity').
    */
-  protected function findEntity(array $match_info) {
+  protected function findEntity(array $match_info, $preview = FALSE) {
     $entity = NULL;
     /** @var \Symfony\Component\Routing\Route $route */
     $route = $match_info[RouteObjectInterface::ROUTE_OBJECT];
@@ -380,14 +381,19 @@ class PathTranslator extends ControllerBase {
     }
 
     // Do not return unpublished entity.
-    if (isset($entity)) {
+    if ($entity) {
       $entity_type_id = $this->findEntityTypeFromRoute($route);
       $entity_type_definition = $this->entityTypeManager->getDefinition($entity_type_id);
       $status = $entity_type_definition->getKey('status');
       $status = !$status ? $entity_type_definition->getKey('published') : $status;
       $entity_status = $entity->get($status)->value;
       if (!$entity_status) {
-        $entity = NULL;
+        // Entity is unpublished.
+        $account = \Drupal::currentUser();
+        // If not preview OR user cannot edit → return NULL.
+        if (!$preview || !$entity->access('update', $account)) {
+          $entity = NULL;
+        }
       }
     }
 
