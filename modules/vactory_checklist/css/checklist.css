@@ -32,6 +32,10 @@
   color: #dc3545;
 }
 
+.checklist-icon.warning {
+  color: #ffc107;
+}
+
 .checklist-details {
   margin-top: 0.5em;
 }
