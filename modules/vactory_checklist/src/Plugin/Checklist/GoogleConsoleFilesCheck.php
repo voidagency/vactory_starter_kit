@@ -82,6 +82,7 @@ class GoogleConsoleFilesCheck extends ChecklistBase implements ContainerFactoryP
     $frontend_url = rtrim($frontend_url, '/');
     $api_url = $frontend_url . '/api/google-console-files';
 
+    $result = [];
     try {
       $response = $this->httpClient->get($api_url, [
         'timeout' => 10,
@@ -90,7 +91,7 @@ class GoogleConsoleFilesCheck extends ChecklistBase implements ContainerFactoryP
       $data = json_decode($body, TRUE);
 
       if (json_last_error() !== JSON_ERROR_NONE) {
-        return [
+        $result = [
           'status' => FALSE,
           'message' => $this->t('Erreur lors du parsing de la réponse JSON : @error', [
             '@error' => json_last_error_msg(),
@@ -98,64 +99,65 @@ class GoogleConsoleFilesCheck extends ChecklistBase implements ContainerFactoryP
           'details' => [],
         ];
       }
-
-      // Extraire les noms de fichiers depuis la réponse.
-      $files = [];
-      if (is_array($data)) {
-        foreach ($data as $item) {
-          if (isset($item['file']) && !empty($item['file'])) {
-            $files[] = $item['file'];
+      else {
+        // Extraire les noms de fichiers depuis la réponse.
+        $files = [];
+        if (is_array($data)) {
+          foreach ($data as $item) {
+            if (isset($item['file']) && !empty($item['file'])) {
+              $files[] = $item['file'];
+            }
           }
         }
-      }
 
-      $file_count = count($files);
+        $file_count = count($files);
 
-      // Déterminer le statut et le message selon le nombre de fichiers.
-      if ($file_count === 0) {
-        return [
-          'status' => FALSE,
-          'message' => $this->t('Aucun fichier HTML de Google Search Console trouvé'),
-          'details' => [],
-        ];
-      }
-      elseif ($file_count === 1) {
-        $file_url = $frontend_url . '/' . $files[0];
-        $url_markup = Markup::create('<a href="' . htmlspecialchars($file_url, ENT_QUOTES, 'UTF-8') . '" target="_blank" rel="noopener noreferrer">' . htmlspecialchars($file_url, ENT_QUOTES, 'UTF-8') . '</a>');
-        return [
-          'status' => TRUE,
-          'message' => $this->t('Un fichier HTML de Google Search Console est présent'),
-          'details' => [
-            [
-              'file' => $files[0],
-              'url' => $url_markup,
-            ],
-          ],
-        ];
-      }
-      else {
-        // Plusieurs fichiers : warning.
-        $details = [];
-        foreach ($files as $file) {
-          $file_url = $frontend_url . '/' . $file;
-          $url_markup = Markup::create('<a href="' . htmlspecialchars($file_url, ENT_QUOTES, 'UTF-8') . '" target="_blank" rel="noopener noreferrer">' . htmlspecialchars($file_url, ENT_QUOTES, 'UTF-8') . '</a>');
-          $details[] = [
-            'file' => $file,
-            'url' => $url_markup,
+        // Déterminer le statut et le message selon le nombre de fichiers.
+        if ($file_count === 0) {
+          $result = [
+            'status' => FALSE,
+            'message' => $this->t('Aucun fichier HTML de Google Search Console trouvé'),
+            'details' => [],
           ];
         }
-        return [
-          'status' => FALSE,
-          'is_warning' => TRUE,
-          'message' => $this->t('@count fichiers HTML de Google Search Console trouvés (un seul est attendu)', [
-            '@count' => $file_count,
-          ]),
-          'details' => $details,
-        ];
+        elseif ($file_count === 1) {
+          $file_url = $frontend_url . '/' . $files[0];
+          $url_markup = Markup::create('<a href="' . htmlspecialchars($file_url, ENT_QUOTES, 'UTF-8') . '" target="_blank" rel="noopener noreferrer">' . htmlspecialchars($file_url, ENT_QUOTES, 'UTF-8') . '</a>');
+          $result = [
+            'status' => TRUE,
+            'message' => $this->t('Un fichier HTML de Google Search Console est présent'),
+            'details' => [
+              [
+                'file' => $files[0],
+                'url' => $url_markup,
+              ],
+            ],
+          ];
+        }
+        else {
+          // Plusieurs fichiers : warning.
+          $details = [];
+          foreach ($files as $file) {
+            $file_url = $frontend_url . '/' . $file;
+            $url_markup = Markup::create('<a href="' . htmlspecialchars($file_url, ENT_QUOTES, 'UTF-8') . '" target="_blank" rel="noopener noreferrer">' . htmlspecialchars($file_url, ENT_QUOTES, 'UTF-8') . '</a>');
+            $details[] = [
+              'file' => $file,
+              'url' => $url_markup,
+            ];
+          }
+          $result = [
+            'status' => FALSE,
+            'is_warning' => TRUE,
+            'message' => $this->t('@count fichiers HTML de Google Search Console trouvés (un seul est attendu)', [
+              '@count' => $file_count,
+            ]),
+            'details' => $details,
+          ];
+        }
       }
     }
     catch (RequestException $e) {
-      return [
+      $result = [
         'status' => FALSE,
         'message' => $this->t('Impossible de récupérer les fichiers depuis le frontend : @error', [
           '@error' => $e->getMessage(),
@@ -165,6 +167,8 @@ class GoogleConsoleFilesCheck extends ChecklistBase implements ContainerFactoryP
         ],
       ];
     }
+
+    return $result;
   }
 
 }
