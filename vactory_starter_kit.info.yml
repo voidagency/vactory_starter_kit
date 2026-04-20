@@ -133,7 +133,7 @@ install:
   - redirect
   - entityqueue
   - auto_entityqueue
-  - login_security
+#  - login_security
   - flood_control
   - linkit
   - link_target
