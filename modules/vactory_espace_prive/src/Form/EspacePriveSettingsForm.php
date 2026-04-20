@@ -44,7 +44,6 @@ class EspacePriveSettingsForm extends ConfigFormBase {
     $form = parent::buildForm($form, $form_state);
     $config = $this->config('vactory_espace_prive.settings');
 
-    // Use isset/not identical checks: empty(0) is TRUE in PHP, so 0 must show as disabled.
     $lifetime_config = $config->get('password_lifetime');
     $form['password_lifetime'] = [
       '#type' => 'number',
