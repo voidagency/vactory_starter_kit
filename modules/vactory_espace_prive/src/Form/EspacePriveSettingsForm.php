@@ -44,12 +44,14 @@ class EspacePriveSettingsForm extends ConfigFormBase {
     $form = parent::buildForm($form, $form_state);
     $config = $this->config('vactory_espace_prive.settings');
 
+    // Use isset/not identical checks: empty(0) is TRUE in PHP, so 0 must show as disabled.
+    $lifetime_config = $config->get('password_lifetime');
     $form['password_lifetime'] = [
       '#type' => 'number',
       '#title' => $this->t("Webmaster's password lifetime (in days)"),
       '#min' => 0,
       '#description' => $this->t('Set the webmaster users password lifetime in days (by default 15 days), to disable password expiration set lifetime to 0'),
-      '#default_value' => !empty($config->get('password_lifetime')) ? $config->get('password_lifetime') : 15,
+      '#default_value' => $lifetime_config !== NULL && $lifetime_config !== '' ? (int) $lifetime_config : 15,
     ];
     $form['espace_prive_paths'] = [
       '#type' => 'fieldset',
@@ -155,7 +157,7 @@ class EspacePriveSettingsForm extends ConfigFormBase {
       ->set('metatag_register_description', $form_state->getValue('metatag_register_description'))
       ->set('metatag_login_title', $form_state->getValue('metatag_login_title'))
       ->set('metatag_login_description', $form_state->getValue('metatag_login_description'))
-      ->set('password_lifetime', $form_state->getValue('password_lifetime'))
+      ->set('password_lifetime', (int) $form_state->getValue('password_lifetime'))
       ->set('enable_password_suggestion', $form_state->getValue('enable_password_suggestion'))
       ->set('domain_black_list', $domains)
       ->save();
