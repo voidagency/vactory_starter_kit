@@ -8,3 +8,4 @@ services:
     arguments:
       - '@entity_type.manager'
       - '@config.factory'
+      - '@datetime.time'
