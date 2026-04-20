@@ -180,7 +180,8 @@
     "drupal/google_news_sitemap": "1.0.x-dev@dev",
     "drupal/webform_import_tab": "1.0.x-dev@dev",
     "drupal/single_content_sync": "^1.4",
-    "drupal/consumers": "1.20.0"
+    "drupal/consumers": "1.20.0",
+    "drupal/advban": "^1.9"
   },
   "require-dev": {
     "squizlabs/php_codesniffer": "^3.3",
