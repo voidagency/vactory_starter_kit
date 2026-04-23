@@ -65,28 +65,67 @@ class ChecklistSlackCron {
 
     $webhook = trim((string) $slack_config->get('webhook_url'));
     $rows = $this->runner->runAll();
-    $lines = [];
+    $sections = [
+      'SUCCESS' => [],
+      'WARNING' => [],
+      'ERROR' => [],
+    ];
 
     foreach ($rows as $row) {
       $level = $this->classifyResult($row['result']);
       $message = isset($row['result']['message']) ? (string) $row['result']['message'] : '';
-      $lines[] = sprintf('[%s] %s: %s', $level, $row['label'], $message);
+      $sections[$level][] = [
+        'label' => $row['label'],
+        'message' => $message,
+      ];
     }
 
-    if ($lines === []) {
+    $total = count($sections['SUCCESS']) + count($sections['WARNING']) + count($sections['ERROR']);
+    if ($total === 0) {
       return;
     }
 
     if ($webhook === '') {
       $this->logger->notice('Checklist cron has @count Slack line(s) to send but Slack is disabled: configure the Incoming Webhook URL in the Slack notification settings.', [
-        '@count' => (string) count($lines),
+        '@count' => (string) $total,
       ]);
       return;
     }
 
     $site_name = (string) $this->configFactory->get('system.site')->get('name');
-    $text = '*' . $site_name . "* — Vactory checklist (cron)\n\n" . implode("\n", $lines);
+    $text = $this->formatSlackReport($site_name, $sections);
     $this->slackNotifier->send($webhook, $text);
+  }
+
+  /**
+   * Builds the Slack body: Succès / Avertissements / Erreurs with emojis.
+   */
+  protected function formatSlackReport(string $site_name, array $sections): string {
+    $lines = [];
+    $lines[] = '*' . $site_name . "* — Vactory checklist (cron)";
+    $headers = [
+      'SUCCESS' => '✅ *Succès*',
+      'WARNING' => '⚠️ *Avertissements*',
+      'ERROR' => '❌ *Erreurs*',
+    ];
+    foreach (['SUCCESS', 'WARNING', 'ERROR'] as $key) {
+      if (empty($sections[$key])) {
+        continue;
+      }
+      $lines[] = '';
+      $lines[] = $headers[$key];
+      foreach ($sections[$key] as $item) {
+        $lines[] = '• *' . $this->escapeSlackMrkdwn($item['label']) . '*: ' . $this->escapeSlackMrkdwn($item['message']);
+      }
+    }
+    return implode("\n", $lines);
+  }
+
+  /**
+   * Escapes characters that break Slack mrkdwn in plain text payloads.
+   */
+  protected function escapeSlackMrkdwn(string $text): string {
+    return str_replace(['&', '<'], ['&amp;', '&lt;'], $text);
   }
 
   /**
