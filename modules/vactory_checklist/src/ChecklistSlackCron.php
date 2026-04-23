@@ -77,6 +77,9 @@ class ChecklistSlackCron {
       $sections[$level][] = [
         'label' => $row['label'],
         'message' => $message,
+        'details' => isset($row['result']['details']) && is_array($row['result']['details'])
+        ? $row['result']['details']
+        : [],
       ];
     }
 
@@ -116,9 +119,53 @@ class ChecklistSlackCron {
       $lines[] = $headers[$key];
       foreach ($sections[$key] as $item) {
         $lines[] = '• *' . $this->escapeSlackMrkdwn($item['label']) . '*: ' . $this->escapeSlackMrkdwn($item['message']);
+        if (!empty($item['details'])) {
+          $lines = array_merge($lines, $this->formatDetailsLines($item['details']));
+        }
       }
     }
     return implode("\n", $lines);
+  }
+
+  /**
+   * Formats plugin "details" (list of associative rows) as extra Slack lines.
+   */
+  protected function formatDetailsLines(array $details): array {
+    $lines = [];
+    $lines[] = '  Détails :';
+    foreach ($details as $row) {
+      if (!is_array($row)) {
+        $lines[] = '    – ' . $this->escapeSlackMrkdwn($this->stringifyDetailValue($row));
+        continue;
+      }
+      $fragments = [];
+      foreach ($row as $col_key => $col_val) {
+        $fragments[] = (string) $col_key . ': ' . $this->stringifyDetailValue($col_val);
+      }
+      $lines[] = '    – ' . $this->escapeSlackMrkdwn(implode(' · ', $fragments));
+    }
+    return $lines;
+  }
+
+  /**
+   * Turns a detail cell value into plain text for Slack.
+   */
+  protected function stringifyDetailValue(mixed $value): string {
+    if ($value === NULL) {
+      return '';
+    }
+    if (is_scalar($value)) {
+      $s = (string) $value;
+    }
+    elseif (is_array($value)) {
+      $encoded = json_encode($value, JSON_UNESCAPED_UNICODE);
+      return trim($encoded !== FALSE ? $encoded : '[]');
+    }
+    else {
+      $s = (string) $value;
+    }
+    $s = html_entity_decode(strip_tags($s), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+    return trim(preg_replace('/\s+/u', ' ', $s));
   }
 
   /**
