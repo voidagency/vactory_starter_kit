@@ -95,15 +95,17 @@ class ChecklistSlackCron {
       return;
     }
 
+    $include_details = (bool) ($slack_config->get('include_details') ?? TRUE);
+
     $site_name = (string) $this->configFactory->get('system.site')->get('name');
-    $text = $this->formatSlackReport($site_name, $sections);
+    $text = $this->formatSlackReport($site_name, $sections, $include_details);
     $this->slackNotifier->send($webhook, $text);
   }
 
   /**
    * Builds the Slack body: Succès / Avertissements / Erreurs with emojis.
    */
-  protected function formatSlackReport(string $site_name, array $sections): string {
+  protected function formatSlackReport(string $site_name, array $sections, bool $include_details): string {
     $lines = [];
     $lines[] = '*' . $site_name . "* — Vactory checklist (cron)";
     $headers = [
@@ -119,7 +121,7 @@ class ChecklistSlackCron {
       $lines[] = $headers[$key];
       foreach ($sections[$key] as $item) {
         $lines[] = '• *' . $this->escapeSlackMrkdwn($item['label']) . '*: ' . $this->escapeSlackMrkdwn($item['message']);
-        if (!empty($item['details'])) {
+        if ($include_details && !empty($item['details'])) {
           $lines = array_merge($lines, $this->formatDetailsLines($item['details']));
         }
       }

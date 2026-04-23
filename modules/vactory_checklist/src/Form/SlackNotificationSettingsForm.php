@@ -50,6 +50,13 @@ class SlackNotificationSettingsForm extends ConfigFormBase {
       '#default_value' => $config->get('notify_levels'),
     ];
 
+    $form['include_details'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Inclure les détails des vérifications dans Slack'),
+      '#description' => $this->t('Si décoché, seuls le libellé et le message principal de chaque vérification sont envoyés (sans tableau de détails).'),
+      '#default_value' => (bool) ($config->get('include_details') ?? TRUE),
+    ];
+
     return parent::buildForm($form, $form_state);
   }
 
@@ -78,6 +85,7 @@ class SlackNotificationSettingsForm extends ConfigFormBase {
     $this->config('vactory_checklist.slack_notification')
       ->set('webhook_url', trim((string) $form_state->getValue('webhook_url')))
       ->set('notify_levels', $form_state->getValue('notify_levels'))
+      ->set('include_details', (bool) $form_state->getValue('include_details'))
       ->save();
 
     parent::submitForm($form, $form_state);

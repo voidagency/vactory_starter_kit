@@ -11,3 +11,6 @@ vactory_checklist.slack_notification:
       sequence:
         type: string
         label: 'Level'
+    include_details:
+      type: boolean
+      label: 'Include check details in Slack messages'
