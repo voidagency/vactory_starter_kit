@@ -3,7 +3,17 @@
 /**
  * @file
  * Primary module hooks for Vactory Checklist module.
+ *
+ * Slack cron: set $settings['vactory_checklist_slack_webhook'] to your Slack
+ * Incoming Webhook URL (https://api.slack.com/messaging/webhooks).
  */
+
+/**
+ * Implements hook_cron().
+ */
+function vactory_checklist_cron() {
+  \Drupal::service('vactory_checklist.slack_cron')->execute();
+}
 
 /**
  * Implements hook_theme().
