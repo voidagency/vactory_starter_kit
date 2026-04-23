@@ -38,6 +38,18 @@ class SlackNotificationSettingsForm extends ConfigFormBase {
       '#description' => $this->t('URL du type Incoming Webhook Slack (voir https://api.slack.com/messaging/webhooks). Laisser vide pour désactiver l’envoi depuis le cron.'),
     ];
 
+    $form['notify_levels'] = [
+      '#type' => 'checkboxes',
+      '#title' => $this->t('Niveaux à inclure dans la notification'),
+      '#description' => $this->t('Seuls les résultats des vérifications correspondant aux niveaux cochés seront envoyés sur Slack lors du cron.'),
+      '#options' => [
+        'success' => $this->t('Succès'),
+        'warning' => $this->t('Avertissement'),
+        'error' => $this->t('Erreur'),
+      ],
+      '#default_value' => $config->get('notify_levels'),
+    ];
+
     return parent::buildForm($form, $form_state);
   }
 
@@ -46,15 +58,16 @@ class SlackNotificationSettingsForm extends ConfigFormBase {
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
     $url = trim((string) $form_state->getValue('webhook_url'));
-    if ($url === '') {
-      return;
-    }
     if (!filter_var($url, FILTER_VALIDATE_URL)) {
       $form_state->setErrorByName('webhook_url', $this->t('Indiquez une URL valide.'));
-      return;
     }
-    if (stripos($url, 'https://hooks.slack.com/') !== 0) {
+    elseif (stripos($url, 'https://hooks.slack.com/') !== 0) {
       $form_state->setErrorByName('webhook_url', $this->t('Les webhooks Slack entrants doivent commencer par https://hooks.slack.com/'));
+    }
+
+    $levels = $form_state->getValue('notify_levels') ?? [];
+    if (!array_filter($levels)) {
+      $form_state->setErrorByName('notify_levels', $this->t('Cochez au moins un niveau à inclure dans la notification.'));
     }
   }
 
@@ -64,6 +77,7 @@ class SlackNotificationSettingsForm extends ConfigFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $this->config('vactory_checklist.slack_notification')
       ->set('webhook_url', trim((string) $form_state->getValue('webhook_url')))
+      ->set('notify_levels', $form_state->getValue('notify_levels'))
       ->save();
 
     parent::submitForm($form, $form_state);

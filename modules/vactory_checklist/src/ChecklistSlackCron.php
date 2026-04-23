@@ -6,7 +6,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Psr\Log\LoggerInterface;
 
 /**
- * Runs checklist plugins during cron and notifies Slack when checks fail.
+ * Runs checklist plugins during cron and notifies Slack according to settings.
  */
 class ChecklistSlackCron {
 
@@ -58,20 +58,18 @@ class ChecklistSlackCron {
   }
 
   /**
-   * Executes checks and posts to Slack when there are failures or warnings.
+   * Executes checks and posts to Slack for enabled severity levels.
    */
   public function execute(): void {
-    $webhook = trim((string) $this->configFactory->get('vactory_checklist.slack_notification')->get('webhook_url'));
+    $slack_config = $this->configFactory->get('vactory_checklist.slack_notification');
+
+    $webhook = trim((string) $slack_config->get('webhook_url'));
     $rows = $this->runner->runAll();
     $lines = [];
 
     foreach ($rows as $row) {
-      $result = $row['result'];
-      if (!empty($result['status'])) {
-        continue;
-      }
-      $level = !empty($result['is_warning']) ? 'WARNING' : 'FAILURE';
-      $message = isset($result['message']) ? (string) $result['message'] : '';
+      $level = $this->classifyResult($row['result']);
+      $message = isset($row['result']['message']) ? (string) $row['result']['message'] : '';
       $lines[] = sprintf('[%s] %s: %s', $level, $row['label'], $message);
     }
 
@@ -80,7 +78,7 @@ class ChecklistSlackCron {
     }
 
     if ($webhook === '') {
-      $this->logger->notice('Checklist cron found @count issue(s) but Slack is disabled: configure the Incoming Webhook URL in the Slack notification settings.', [
+      $this->logger->notice('Checklist cron has @count Slack line(s) to send but Slack is disabled: configure the Incoming Webhook URL in the Slack notification settings.', [
         '@count' => (string) count($lines),
       ]);
       return;
@@ -89,6 +87,19 @@ class ChecklistSlackCron {
     $site_name = (string) $this->configFactory->get('system.site')->get('name');
     $text = '*' . $site_name . "* — Vactory checklist (cron)\n\n" . implode("\n", $lines);
     $this->slackNotifier->send($webhook, $text);
+  }
+
+  /**
+   * Maps a plugin result to success | warning | error.
+   */
+  protected function classifyResult(array $result): string {
+    if ($result['status']) {
+      return 'SUCCESS';
+    }
+    elseif (!empty($result['is_warning'])) {
+      return 'WARNING';
+    }
+    return 'ERROR';
   }
 
 }

@@ -5,3 +5,9 @@ vactory_checklist.slack_notification:
     webhook_url:
       type: string
       label: 'Incoming Webhook URL'
+    notify_levels:
+      type: sequence
+      label: 'Levels included in Slack notifications'
+      sequence:
+        type: string
+        label: 'Level'
