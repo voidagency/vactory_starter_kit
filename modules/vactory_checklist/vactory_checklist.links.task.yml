@@ -1,0 +1,11 @@
+vactory_checklist.dashboard_tab:
+  route_name: vactory_checklist.dashboard
+  title: 'Dashboard'
+  base_route: vactory_checklist.dashboard
+  weight: 0
+
+vactory_checklist.slack_notification_tab:
+  route_name: vactory_checklist.slack_notification
+  title: 'Slack notification'
+  base_route: vactory_checklist.dashboard
+  weight: 10

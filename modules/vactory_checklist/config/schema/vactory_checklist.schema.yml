@@ -1,0 +1,7 @@
+vactory_checklist.slack_notification:
+  type: config_object
+  label: 'Slack notification'
+  mapping:
+    webhook_url:
+      type: string
+      label: 'Incoming Webhook URL'

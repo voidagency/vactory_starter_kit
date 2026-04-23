@@ -3,5 +3,17 @@ vactory_checklist.dashboard:
   defaults:
     _controller: '\Drupal\vactory_checklist\Controller\DashboardController::dashboard'
     _title: 'Tableau de bord des vérifications'
+  options:
+    _admin_route: TRUE
   requirements:
-    _permission: 'access vactory checklist dashboard' 
+    _permission: 'access vactory checklist dashboard'
+
+vactory_checklist.slack_notification:
+  path: '/admin/reports/vactory-checklist/slack'
+  defaults:
+    _form: '\Drupal\vactory_checklist\Form\SlackNotificationSettingsForm'
+    _title: 'Slack notification'
+  options:
+    _admin_route: TRUE
+  requirements:
+    _permission: 'access vactory checklist dashboard'

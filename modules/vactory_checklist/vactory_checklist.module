@@ -3,9 +3,6 @@
 /**
  * @file
  * Primary module hooks for Vactory Checklist module.
- *
- * Slack cron: set $settings['vactory_checklist_slack_webhook'] to your Slack
- * Incoming Webhook URL (https://api.slack.com/messaging/webhooks).
  */
 
 /**

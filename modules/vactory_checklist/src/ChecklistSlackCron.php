@@ -3,7 +3,6 @@
 namespace Drupal\vactory_checklist;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Site\Settings;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -62,7 +61,7 @@ class ChecklistSlackCron {
    * Executes checks and posts to Slack when there are failures or warnings.
    */
   public function execute(): void {
-    $webhook = (string) Settings::get('vactory_checklist_slack_webhook', '');
+    $webhook = trim((string) $this->configFactory->get('vactory_checklist.slack_notification')->get('webhook_url'));
     $rows = $this->runner->runAll();
     $lines = [];
 
@@ -81,7 +80,7 @@ class ChecklistSlackCron {
     }
 
     if ($webhook === '') {
-      $this->logger->notice('Checklist cron found @count issue(s) but Slack is disabled: set $settings[\'vactory_checklist_slack_webhook\'] to an Incoming Webhook URL.', [
+      $this->logger->notice('Checklist cron found @count issue(s) but Slack is disabled: configure the Incoming Webhook URL in the Slack notification settings.', [
         '@count' => (string) count($lines),
       ]);
       return;
