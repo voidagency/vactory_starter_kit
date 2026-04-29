@@ -17,3 +17,15 @@ vactory_checklist.slack_notification:
     _admin_route: TRUE
   requirements:
     _permission: 'access vactory checklist dashboard'
+
+vactory_checklist.api.plugin_run:
+  path: '/api/controller/{plugin_id}'
+  defaults:
+    _controller: '\Drupal\vactory_checklist\Controller\ChecklistApiController::run'
+  methods: [GET]
+  requirements:
+    _permission: 'access vactory checklist dashboard'
+    plugin_id: '[a-z0-9_]+'
+  options:
+    _auth:
+      - api_key_auth
