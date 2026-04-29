@@ -63,6 +63,10 @@ class ChecklistSlackCron {
   public function execute(): void {
     $slack_config = $this->configFactory->get('vactory_checklist.slack_notification');
 
+    if (!(bool) $slack_config->get('slack_enabled')) {
+      return;
+    }
+
     $webhook = trim((string) $slack_config->get('webhook_url'));
     $rows = $this->runner->runAll();
     $sections = [

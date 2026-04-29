@@ -30,6 +30,12 @@ class SlackNotificationSettingsForm extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config('vactory_checklist.slack_notification');
 
+    $form['slack_enabled'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Activer l’envoi des vérifications vers Slack (cron)'),
+      '#default_value' => (bool) ($config->get('slack_enabled') ?? FALSE),
+    ];
+
     $form['webhook_url'] = [
       '#type' => 'textfield',
       '#title' => $this->t('URL du webhook Slack'),
@@ -83,6 +89,7 @@ class SlackNotificationSettingsForm extends ConfigFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $this->config('vactory_checklist.slack_notification')
+      ->set('slack_enabled', (bool) $form_state->getValue('slack_enabled'))
       ->set('webhook_url', trim((string) $form_state->getValue('webhook_url')))
       ->set('notify_levels', $form_state->getValue('notify_levels'))
       ->set('include_details', (bool) $form_state->getValue('include_details'))

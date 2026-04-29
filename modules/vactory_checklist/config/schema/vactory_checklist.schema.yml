@@ -2,6 +2,9 @@ vactory_checklist.slack_notification:
   type: config_object
   label: 'Slack notification'
   mapping:
+    slack_enabled:
+      type: boolean
+      label: 'Enable Slack notifications from cron'
     webhook_url:
       type: string
       label: 'Incoming Webhook URL'
