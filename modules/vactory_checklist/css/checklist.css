@@ -36,6 +36,12 @@
   color: #ffc107;
 }
 
+.checklist-plugin-id code {
+  font-size: 0.9em;
+  word-break: break-all;
+  white-space: pre-wrap;
+}
+
 .checklist-details {
   margin-top: 0.5em;
 }
