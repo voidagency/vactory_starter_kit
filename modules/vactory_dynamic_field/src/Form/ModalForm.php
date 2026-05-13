@@ -572,7 +572,7 @@ class ModalForm extends FormBase {
               ];
             }
 
-            if ($element_type == 'image') {
+            if ($element_type == 'image' || $element_type == 'file' || $element_type == 'remote_video') {
               // Restore parent for other fields.
               $form['#parents'] = $form_parents;
             }
