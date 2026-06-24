@@ -17,6 +17,7 @@
         <thead>
           <tr>
             <th>{{ 'Status'|t }}</th>
+            <th>{{ 'Identifiant (API)'|t }}</th>
             <th>{{ 'Vérification'|t }}</th>
             <th>{{ 'Description'|t }}</th>
             <th>{{ 'Résultat'|t }}</th>
@@ -35,6 +36,9 @@
                     {{ check.result.status ? '✓' : '✗' }}
                   </span>
                 {% endif %}
+              </td>
+              <td class="checklist-plugin-id">
+                <code>{{ check.plugin_id }}</code>
               </td>
               <td>{{ check.label }}</td>
               <td>{{ check.description }}</td>

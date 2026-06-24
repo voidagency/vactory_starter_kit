@@ -1,0 +1,19 @@
+vactory_checklist.slack_notification:
+  type: config_object
+  label: 'Slack notification'
+  mapping:
+    slack_enabled:
+      type: boolean
+      label: 'Enable Slack notifications from cron'
+    webhook_url:
+      type: string
+      label: 'Incoming Webhook URL'
+    notify_levels:
+      type: sequence
+      label: 'Levels included in Slack notifications'
+      sequence:
+        type: string
+        label: 'Level'
+    include_details:
+      type: boolean
+      label: 'Include check details in Slack messages'

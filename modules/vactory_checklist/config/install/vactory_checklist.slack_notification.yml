@@ -1,0 +1,6 @@
+slack_enabled: false
+webhook_url: ''
+notify_levels:
+  - warning
+  - error
+include_details: true

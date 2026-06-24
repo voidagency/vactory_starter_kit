@@ -52,6 +52,7 @@ class DashboardController extends ControllerBase {
       $check_result = $plugin->runCheck();
 
       $results[$definition['category']][] = [
+        'plugin_id' => $plugin_id,
         'label' => $plugin->getLabel(),
         'description' => $plugin->getDescription(),
         'result' => $check_result,

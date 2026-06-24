@@ -1,4 +1,24 @@
 services:
   plugin.manager.vactory_checklist:
     class: Drupal\vactory_checklist\ChecklistPluginManager
-    parent: default_plugin_manager 
+    parent: default_plugin_manager
+
+  vactory_checklist.runner:
+    class: Drupal\vactory_checklist\ChecklistRunner
+    arguments: ['@plugin.manager.vactory_checklist']
+
+  vactory_checklist.slack_notifier:
+    class: Drupal\vactory_checklist\SlackNotifier
+    arguments: ['@http_client', '@logger.channel.vactory_checklist']
+
+  vactory_checklist.slack_cron:
+    class: Drupal\vactory_checklist\ChecklistSlackCron
+    arguments:
+      - '@vactory_checklist.runner'
+      - '@vactory_checklist.slack_notifier'
+      - '@config.factory'
+      - '@logger.channel.vactory_checklist'
+
+  logger.channel.vactory_checklist:
+    parent: logger.channel_base
+    arguments: ['vactory_checklist']

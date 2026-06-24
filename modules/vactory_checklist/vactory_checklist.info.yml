@@ -3,3 +3,7 @@ type: module
 description: 'Système de vérification modulaire avec plugins'
 core_version_requirement: ^9 || ^10
 package: Vactory
+
+dependencies:
+  - drupal:user
+  - vactory_api_key_auth:vactory_api_key_auth

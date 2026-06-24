@@ -6,6 +6,13 @@
  */
 
 /**
+ * Implements hook_cron().
+ */
+function vactory_checklist_cron() {
+  \Drupal::service('vactory_checklist.slack_cron')->execute();
+}
+
+/**
  * Implements hook_theme().
  */
 function vactory_checklist_theme() {
