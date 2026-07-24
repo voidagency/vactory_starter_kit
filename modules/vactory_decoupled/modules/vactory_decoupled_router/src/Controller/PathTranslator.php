@@ -20,6 +20,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
 use Drupal\jsonapi\ResourceType\ResourceTypeRepository;
 use Symfony\Component\Routing\RouteCollection;
+use Drupal\redirect\RedirectRepository;
 
 /**
  * Controller that receives the path to inspect.
@@ -82,6 +83,13 @@ class PathTranslator extends ControllerBase {
   protected $router;
 
   /**
+   * The redirect repository service.
+   *
+   * @var \Drupal\redirect\RedirectRepository
+   */
+  protected $redirectRepository;
+
+  /**
    * EventInfoController constructor.
    */
   public function __construct(
@@ -90,6 +98,7 @@ class PathTranslator extends ControllerBase {
     ResourceTypeRepository $jsonapiResourceTypeRepository,
     EntityTypeManagerInterface $entityTypeManager,
     EntityRepositoryInterface $entityRepository,
+    RedirectRepository $redirectRepository,
   ) {
     $this->logger = $logger;
     $this->router = $router;
@@ -101,6 +110,7 @@ class PathTranslator extends ControllerBase {
       ->getCurrentLanguage()
       ->getId();
     $this->entityRepository = $entityRepository;
+    $this->redirectRepository = $redirectRepository;
   }
 
   /**
@@ -113,6 +123,7 @@ class PathTranslator extends ControllerBase {
       $container->get('jsonapi.resource_type.repository'),
       $container->get('entity_type.manager'),
       $container->get('entity.repository'),
+      $container->get('redirect.repository'),
     );
   }
 
@@ -137,6 +148,29 @@ class PathTranslator extends ControllerBase {
     $output = [];
     $output['status'] = 200;
     $info = NULL;
+
+    // Honor redirects created via the core Redirect module BEFORE any route
+    // matching. The redirect source (e.g. an old URL) usually has no Drupal
+    // route, so $this->router->match() would throw and fall through to the 404
+    // error_page. Resolving the redirect first lets editor-managed 301s win.
+    $redirect = $this->redirectRepository->findMatchingRedirect(
+      $path,
+      [],
+      $this->currentLangcode
+    );
+    if ($redirect) {
+      $status_code = $redirect->getStatusCode();
+      $output['status'] = $status_code;
+      $output['redirect'][] = [
+        'from' => $path,
+        'to' => $redirect->getRedirectUrl()->toString(),
+        'status' => $status_code,
+      ];
+      $this->response->headers->add(['Content-Type' => 'application/json']);
+      $this->response->setData($output);
+      return $this->response;
+    }
+
     try {
       // Drupal routes.
       $match_info = $this->router->match($path);
