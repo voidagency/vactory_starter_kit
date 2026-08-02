@@ -1,0 +1,8 @@
+name: Vactory Remote Media Transcription
+description: 'Adds transcription field to remote video media type.'
+type: module
+core_version_requirement: ^9 || ^10
+package: Vactory
+dependencies:
+  - drupal:media
+  - drupal:media_library 

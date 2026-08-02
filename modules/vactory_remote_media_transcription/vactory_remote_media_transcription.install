@@ -1,0 +1,83 @@
+<?php
+
+/**
+ * @file
+ * Vactory Remote Media Transcription module.
+ */
+
+use Drupal\field\Entity\FieldConfig;
+use Drupal\field\Entity\FieldStorageConfig;
+
+/**
+ * Implements hook_install().
+ */
+function vactory_remote_media_transcription_install() {
+  // Add transcription field to remote_video media type.
+  _vactory_remote_media_transcription_create_transcription_field();
+}
+
+/**
+ * Creates the transcription field for remote video media type.
+ */
+function _vactory_remote_media_transcription_create_transcription_field() {
+  $field_storage = FieldStorageConfig::loadByName('media', 'field_transcription');
+  if (!$field_storage) {
+    $field_storage = FieldStorageConfig::create([
+      'field_name' => 'field_transcription',
+      'entity_type' => 'media',
+      'type' => 'text_long',
+      'cardinality' => 1,
+      'translatable' => TRUE,
+      'settings' => [],
+    ]);
+    $field_storage->save();
+  }
+  $field = FieldConfig::loadByName('media', 'remote_video', 'field_transcription');
+  if (!$field) {
+    $field = FieldConfig::create([
+      'field_storage' => $field_storage,
+      'bundle' => 'remote_video',
+      'label' => 'Transcription',
+      'description' => 'Video transcription text',
+      'required' => FALSE,
+      'translatable' => TRUE,
+      'settings' => [],
+    ]);
+    $field->save();
+
+    // Set form display settings.
+    $entity_form_display = \Drupal::service('entity_display.repository')
+      ->getFormDisplay('media', 'remote_video', 'default');
+    $entity_form_display->setComponent('field_transcription', [
+      'type' => 'text_textarea',
+      'weight' => 2,
+      'settings' => [
+        'rows' => 4,
+      ],
+    ])->save();
+
+    // Set view display settings.
+    $entity_view_display = \Drupal::service('entity_display.repository')
+      ->getViewDisplay('media', 'remote_video', 'default');
+    $entity_view_display->setComponent('field_transcription', [
+      'type' => 'truncated_text',
+      'weight' => 2,
+      'label' => 'above',
+    ])->save();
+  }
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function vactory_remote_media_transcription_uninstall() {
+  // Remove the field when uninstalling the module.
+  $field = FieldConfig::loadByName('media', 'remote_video', 'field_transcription');
+  if ($field) {
+    $field->delete();
+  }
+  $field_storage = FieldStorageConfig::loadByName('media', 'field_transcription');
+  if ($field_storage) {
+    $field_storage->delete();
+  }
+}
