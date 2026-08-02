@@ -4,3 +4,9 @@ services:
     arguments:
       - "@database"
       - "@logger.factory"
+      - "@vactory_dynamic_field.vactory_provider_manager"
+  vactory_content_sheets.commands:
+    class: \Drupal\vactory_content_sheets\Commands\Commands
+    tags:
+      - { name: drush.command }
+    arguments: ['@entity_type.manager']
