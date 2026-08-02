@@ -514,7 +514,7 @@ class DynamicImportExecute extends ConfirmFormBase {
         // Rewrite the trimmed data back to the file.
         rewind($handle);
         foreach ($trimmed_data as $row) {
-          fputcsv($handle, $row);
+          fputcsv($handle, $row, $delimiter);
         }
         // Truncate the file to remove any extra content from the original.
         ftruncate($handle, ftell($handle));
