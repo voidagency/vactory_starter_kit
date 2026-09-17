@@ -5,7 +5,7 @@ namespace Drupal\vactory_locator\PathProcessor;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Database\Schema;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Language\LanguageManager;
+use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Path\CurrentPathStack;
 use Drupal\Core\PathProcessor\InboundPathProcessorInterface;
 use Drupal\Core\PathProcessor\OutboundPathProcessorInterface;
@@ -42,11 +42,11 @@ class LocatorPathProcessor implements InboundPathProcessorInterface, OutboundPat
   protected $routeMatch;
 
   /**
-   * Current language code.
+   * Language manager service.
    *
-   * @var string
+   * @var \Drupal\Core\Language\LanguageManagerInterface
    */
-  protected $langcode;
+  protected $languageManager;
 
   /**
    * Current path stack.
@@ -58,12 +58,25 @@ class LocatorPathProcessor implements InboundPathProcessorInterface, OutboundPat
   /**
    * VactoryViewsPrettyPathProcessor constructor.
    */
-  public function __construct(Connection $connection, EntityTypeManagerInterface $entityTypeManager, CurrentRouteMatch $routeMatch, LanguageManager $languageManager, CurrentPathStack $currentPathStack) {
+  public function __construct(Connection $connection, EntityTypeManagerInterface $entityTypeManager, CurrentRouteMatch $routeMatch, LanguageManagerInterface $languageManager, CurrentPathStack $currentPathStack) {
     $this->connection = $connection;
     $this->entityTypeManager = $entityTypeManager;
     $this->routeMatch = $routeMatch;
-    $this->langcode = $languageManager->getCurrentLanguage()->getId();
+    $this->languageManager = $languageManager;
     $this->currentPathStack = $currentPathStack;
+  }
+
+  /**
+   * Resolves the current language after service construction.
+   *
+   * Language negotiation can require the router, so it must not run in the
+   * constructor while the route provider is being built.
+   *
+   * @return string
+   *   The current language ID.
+   */
+  protected function getLangcode() {
+    return $this->languageManager->getCurrentLanguage()->getId();
   }
 
   /**
@@ -88,7 +101,7 @@ class LocatorPathProcessor implements InboundPathProcessorInterface, OutboundPat
     $current_path = $this->currentPathStack->getPath();
     if ($this->isLocatorPath($path) && !\Drupal::service('router.admin_context')->isAdminRoute()) {
       $pieces = explode('/', $current_path);
-      $index = $pieces[1] === $this->langcode ? 3 : 2;
+      $index = $pieces[1] === $this->getLangcode() ? 3 : 2;
       if (isset($pieces[$index])) {
         $path_alias = urldecode($pieces[$index]);
         $locator = \Drupal::entityQuery('locator_entity')
@@ -140,7 +153,7 @@ class LocatorPathProcessor implements InboundPathProcessorInterface, OutboundPat
    * @return string
    *   The processed path.
    */
-  public function processOutbound($path, &$options = [], Request $request = NULL, BubbleableMetadata $bubbleable_metadata = NULL) {
+  public function processOutbound($path, &$options = [], ?Request $request = NULL, ?BubbleableMetadata $bubbleable_metadata = NULL) {
     if ($this->isLocatorPath($path) && !\Drupal::service('router.admin_context')->isAdminRoute()) {
       $locator = $this->routeMatch->getParameter('locator_entity');
       if ($locator) {
@@ -169,7 +182,7 @@ class LocatorPathProcessor implements InboundPathProcessorInterface, OutboundPat
             field_locator_path_alias_value= :path_alias", [':path_alias' => $path_alias])->fetchField();
     }
     return strpos($current_path, '/locator_entity/') === 0 ||
-      strpos($current_path, '/' . $this->langcode . '/locator_entity/') === 0 || $count > 0;
+      strpos($current_path, '/' . $this->getLangcode() . '/locator_entity/') === 0 || $count > 0;
   }
 
 }
