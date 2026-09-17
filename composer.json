@@ -72,7 +72,7 @@
     "drupal/link_target": "^1.2.0",
     "drupal/linkit": "7.0.12",
     "drupal/stage_file_proxy": "^2.0",
-    "drupal/editor_advanced_link": "^2.2",
+    "drupal/editor_advanced_link": "2.3.4",
     "drupal/media_responsive_thumbnail": "^1.5",
     "drupal/password_policy": "^4.0",
     "drupal/views_bulk_operations": "^4.1",
