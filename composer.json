@@ -166,7 +166,7 @@
     "voidagency/mobile_native_share": "^2.0",
     "voidagency/amptheme": "^3.0",
     "voidagency/cloudinary": "^3.0",
-    "voidagency/block_list_override": "^2.0",
+    "drupal/block_list_override": "1.0.3",
     "drupal/amptheme": "^3.1",
     "drupal/yaml_editor": "^1.2",
     "drupal/menu_manipulator": "^3.0",
