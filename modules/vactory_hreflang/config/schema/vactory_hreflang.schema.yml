@@ -1,0 +1,10 @@
+vactory_hreflang.settings:
+  type: config_object
+  label: 'Vactory Hreflang settings'
+  mapping:
+    mappings:
+      type: sequence
+      label: 'Language code mappings'
+      sequence:
+        type: string
+        label: 'Hreflang value'

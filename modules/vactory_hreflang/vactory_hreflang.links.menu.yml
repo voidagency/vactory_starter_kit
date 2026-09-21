@@ -1,0 +1,6 @@
+vactory_hreflang.settings:
+  title: 'Vactory Hreflang'
+  description: 'Map enabled Drupal languages to hreflang values.'
+  route_name: vactory_hreflang.settings
+  parent: system.admin_config_regional
+  weight: 20

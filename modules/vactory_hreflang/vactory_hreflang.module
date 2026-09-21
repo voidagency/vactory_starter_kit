@@ -1,0 +1,63 @@
+<?php
+
+/**
+ * @file
+ * Maps Drupal language codes to configurable hreflang values.
+ */
+
+use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\vactory_hreflang\Plugin\Field\InternalNodeHreflangFieldItemList;
+
+/**
+ * Implements hook_entity_base_field_info().
+ */
+function vactory_hreflang_entity_base_field_info(EntityTypeInterface $entity_type): array {
+  $fields = [];
+
+  if ($entity_type->id() === 'node') {
+    $fields['internal_hreflang'] = BaseFieldDefinition::create('map')
+      ->setLabel(t('Node hreflang links'))
+      ->setDescription(t('Computed alternate-language links for the node.'))
+      ->setTranslatable(FALSE)
+      ->setClass(InternalNodeHreflangFieldItemList::class)
+      ->setComputed(TRUE)
+      ->setReadOnly(TRUE)
+      ->setTargetEntityTypeId($entity_type->id())
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE);
+  }
+
+  return $fields;
+}
+
+/**
+ * Implements hook_page_attachments_alter().
+ */
+function vactory_hreflang_page_attachments_alter(array &$attachments): void {
+  $config = \Drupal::config('vactory_hreflang.settings');
+  $mappings = array_filter($config->get('mappings') ?? []);
+
+  if (!empty($attachments['#attached']['html_head_link'])) {
+    foreach ($attachments['#attached']['html_head_link'] as &$element) {
+      if (!empty($element[0]['hreflang']) && isset($mappings[$element[0]['hreflang']])) {
+        $element[0]['hreflang'] = $mappings[$element[0]['hreflang']];
+      }
+    }
+    unset($element);
+  }
+
+  // Also support hreflang tags attached as direct HTML head elements.
+  if (!empty($attachments['#attached']['html_head'])) {
+    foreach ($attachments['#attached']['html_head'] as &$element) {
+      $current = $element[0]['#attributes']['hreflang'] ?? NULL;
+      if ($current && isset($mappings[$current])) {
+        $element[0]['#attributes']['hreflang'] = $mappings[$current];
+      }
+    }
+    unset($element);
+  }
+
+  CacheableMetadata::createFromObject($config)->applyTo($attachments);
+}

@@ -93,6 +93,7 @@ install:
   - media_responsive_thumbnail
   - menu_item_extras
   - lang_dropdown
+  - hreflang
   - addtoany
   - editor_advanced_link
   - backup_migrate
@@ -180,6 +181,7 @@ install:
   - vactory_decoupled_webform
   - vactory_decoupled_search
   - vactory_decoupled_espace_prive
+  - vactory_hreflang
   - shield
   - vactory_jsonapi_extras
   - vactory_dynamic_import

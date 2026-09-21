@@ -1,0 +1,9 @@
+name: Vactory Hreflang
+type: module
+description: 'Maps Drupal language codes to custom hreflang values.'
+package: Vactory
+core_version_requirement: ^9 || ^10 || ^11
+configure: vactory_hreflang.settings
+dependencies:
+  - drupal:language
+  - hreflang:hreflang

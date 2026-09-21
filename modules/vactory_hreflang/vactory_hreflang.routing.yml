@@ -1,0 +1,7 @@
+vactory_hreflang.settings:
+  path: '/admin/config/regional/vactory-hreflang'
+  defaults:
+    _form: '\Drupal\vactory_hreflang\Form\VactoryHreflangSettingsForm'
+    _title: 'Vactory Hreflang'
+  requirements:
+    _permission: 'administer site configuration'
