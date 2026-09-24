@@ -3,28 +3,18 @@
 namespace Drupal\vactory_decoupled;
 
 use Drupal\simple_oauth\Authentication\Provider\SimpleOauthAuthenticationProvider as BaseSimpleOauthAuthenticationProvider;
-use Lcobucci\JWT\Validation\RequiredConstraintsViolated;
-use League\OAuth2\Server\Exception\OAuthServerException;
+use Firebase\JWT\JWK;
+use Firebase\JWT\JWT;
+use Lcobucci\JWT\Token\DataSet;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Drupal\user\Entity\User;
-use Lcobucci\JWT\Signer\Rsa\Sha256;
-use Lcobucci\JWT\Signer\Key\InMemory;
-use Lcobucci\JWT\Configuration;
-use Lcobucci\JWT\Validation\Constraint\IssuedBy;
 use Drupal\Core\Site\Settings;
-use Lcobucci\JWT\Exception;
 
 /**
  * Simple oauth authentication provider class.
  */
 class SimpleOauthAuthenticationProvider extends BaseSimpleOauthAuthenticationProvider {
-
-  /**
-   * Jwt configuration.
-   *
-   * @var array
-   */
-  private $jwtConfiguration;
 
   /**
    * The Social Auth user manager.
@@ -53,7 +43,7 @@ class SimpleOauthAuthenticationProvider extends BaseSimpleOauthAuthenticationPro
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    * @throws \Drupal\Core\Entity\EntityStorageException
-   * @throws \League\OAuth2\Server\Exception\OAuthServerException
+   * @throws \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
    */
   public function authenticate(Request $request) {
     if ($request->headers->has("X-Auth-Provider")) {
@@ -191,42 +181,62 @@ class SimpleOauthAuthenticationProvider extends BaseSimpleOauthAuthenticationPro
 
   /**
    * Authenticate keycloak.
+   *
+   * The token must be signed by one of the realm keys (JWKS), issued by the
+   * configured realm and currently valid (exp/nbf/iat). Required settings:
+   * - KEYCLOAK_ISSUER: realm issuer, e.g. https://sso.example.com/realms/foo.
+   * Optional settings:
+   * - KEYCLOAK_JWKS_URI: defaults to {issuer}/protocol/openid-connect/certs.
+   * - KEYCLOAK_AUDIENCE: client id expected in "aud" or "azp".
    */
   private function authenticateKeycloak(string $jwt) {
-    $this->jwtConfiguration = Configuration::forSymmetricSigner(
-      new Sha256(),
-      InMemory::plainText('0eylDkJplsBm22Meby8EKIeBMckMKMyO')
-    );
-
-    $keycloak_issuer = Settings::get('KEYCLOAK_ISSUER', "https://keycloak.lecontenaire.com/auth/realms/dev");
-
-    $this->jwtConfiguration->setValidationConstraints(
-      new IssuedBy($keycloak_issuer));
-
-    try {
-      // Attempt to parse the JWT.
-      $token = $this->jwtConfiguration->parser()->parse($jwt);
-    }
-    catch (Exception $exception) {
-      throw OAuthServerException::accessDenied($exception->getMessage(), NULL, $exception);
+    $keycloak_issuer = rtrim((string) Settings::get('KEYCLOAK_ISSUER', ''), '/');
+    if (empty($keycloak_issuer)) {
+      // Keycloak authentication is disabled unless explicitly configured.
+      throw new UnauthorizedHttpException('Bearer realm="keycloak"', 'Keycloak authentication is not configured');
     }
 
     try {
-      // Attempt to validate the JWT.
-      $constraints = $this->jwtConfiguration->validationConstraints();
-      $this->jwtConfiguration->validator()->assert($token, ...$constraints);
+      $claims = $this->decodeKeycloakToken($jwt, $keycloak_issuer, FALSE);
     }
-    catch (RequiredConstraintsViolated $exception) {
-      throw OAuthServerException::accessDenied('Access token could not be verified');
+    catch (\UnexpectedValueException $exception) {
+      // Unknown "kid": keys may have been rotated, refresh JWKS once.
+      if (strpos($exception->getMessage(), '"kid"') === FALSE) {
+        throw new UnauthorizedHttpException('Bearer realm="keycloak"', 'Access token could not be verified');
+      }
+      try {
+        $claims = $this->decodeKeycloakToken($jwt, $keycloak_issuer, TRUE);
+      }
+      catch (\Exception $e) {
+        throw new UnauthorizedHttpException('Bearer realm="keycloak"', 'Access token could not be verified');
+      }
+    }
+    catch (\Exception $exception) {
+      throw new UnauthorizedHttpException('Bearer realm="keycloak"', 'Access token could not be verified');
     }
 
-    $claims = $token->claims();
-    $username = $claims->get("preferred_username");
-    $mail = $claims->get("email", $username . "@keycloak.com");
+    if (($claims['iss'] ?? NULL) !== $keycloak_issuer) {
+      throw new UnauthorizedHttpException('Bearer realm="keycloak"', 'Access token could not be verified');
+    }
+
+    $audience = Settings::get('KEYCLOAK_AUDIENCE', '');
+    if (!empty($audience)) {
+      $aud = (array) ($claims['aud'] ?? []);
+      if (!in_array($audience, $aud, TRUE) && ($claims['azp'] ?? NULL) !== $audience) {
+        throw new UnauthorizedHttpException('Bearer realm="keycloak"', 'Access token could not be verified');
+      }
+    }
+
+    $username = $claims['preferred_username'] ?? NULL;
+    if (!is_string($username) || $username === '') {
+      throw new UnauthorizedHttpException('Bearer realm="keycloak"', 'Access token could not be verified');
+    }
+    $email_verified = !empty($claims['email_verified']);
+    $mail = !empty($claims['email']) ? $claims['email'] : $username . "@keycloak.com";
 
     $user = user_load_by_name($username);
-    if (empty($user)) {
-      // Try loading user by mail.
+    if (empty($user) && $email_verified && !empty($claims['email'])) {
+      // Only trust the email for account linking when Keycloak verified it.
       $user = user_load_by_mail($mail);
     }
     if (!$user) {
@@ -239,8 +249,58 @@ class SimpleOauthAuthenticationProvider extends BaseSimpleOauthAuthenticationPro
       $user = User::create($values);
       $user->save();
     }
-    $this->moduleHandler->alter('simple_oauth_authentication_keycloak', $user, $claims, $jwt);
+
+    // Never allow the super admin account or blocked users through Keycloak.
+    if ((int) $user->id() === 1 || $user->isBlocked()) {
+      throw new UnauthorizedHttpException('Bearer realm="keycloak"', 'Access denied');
+    }
+
+    // Keep passing a lcobucci DataSet for backward compatibility with
+    // hook_simple_oauth_authentication_keycloak_alter() implementations.
+    $claims_set = new DataSet($claims, $jwt);
+    $this->moduleHandler->alter('simple_oauth_authentication_keycloak', $user, $claims_set, $jwt);
     return $user;
+  }
+
+  /**
+   * Verifies a Keycloak JWT against the realm JWKS and returns its claims.
+   *
+   * @throws \Exception
+   *   When the token signature, algorithm or time claims are invalid.
+   */
+  private function decodeKeycloakToken(string $jwt, string $issuer, bool $refresh): array {
+    $jwks_uri = Settings::get('KEYCLOAK_JWKS_URI', $issuer . '/protocol/openid-connect/certs');
+    $cache_key = 'keycloak_jwks:' . $jwks_uri;
+
+    $jwks = NULL;
+    if ($refresh) {
+      // Throttle forced refreshes so bogus "kid" values can't hammer Keycloak.
+      if ($this->cache->get($cache_key . ':refreshed')) {
+        throw new \UnexpectedValueException('JWKS refresh throttled');
+      }
+      $this->cache->set($cache_key . ':refreshed', TRUE, $this->getRequestTime() + 60);
+    }
+    elseif ($cache = $this->cache->get($cache_key)) {
+      $jwks = $cache->data;
+    }
+    if (empty($jwks)) {
+      $response = \Drupal::httpClient()->get($jwks_uri, ['timeout' => 5]);
+      $jwks = json_decode((string) $response->getBody(), TRUE);
+      if (empty($jwks['keys']) || !is_array($jwks['keys'])) {
+        throw new \UnexpectedValueException('Invalid JWKS');
+      }
+      // Only keep signing keys, Keycloak also publishes encryption keys.
+      $jwks['keys'] = array_values(array_filter($jwks['keys'], function ($key) {
+        return ($key['use'] ?? 'sig') === 'sig';
+      }));
+      $this->cache->set($cache_key, $jwks, $this->getRequestTime() + 3600);
+    }
+
+    // Asymmetric keys only: parseKeySet binds each key to its algorithm, so
+    // "alg: none" and HS256 key confusion are rejected by JWT::decode().
+    $keys = JWK::parseKeySet($jwks, 'RS256');
+    JWT::$leeway = 30;
+    return (array) json_decode(json_encode(JWT::decode($jwt, $keys)), TRUE);
   }
 
   /**
