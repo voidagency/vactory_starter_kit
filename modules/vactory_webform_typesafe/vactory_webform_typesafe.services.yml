@@ -1,0 +1,12 @@
+services:
+  vactory_webform_typesafe.input:
+    class: Drupal\vactory_webform_typesafe\Service\SubmissionInputBuilder
+  vactory_webform_typesafe.classifier:
+    class: Drupal\vactory_webform_typesafe\Service\TypeSafeClassifier
+    arguments: ['@http_client', '@vactory_webform_typesafe.api_key', '@config.factory']
+  vactory_webform_typesafe.manager:
+    class: Drupal\vactory_webform_typesafe\Service\AnalysisManager
+    arguments: ['@entity_type.manager', '@queue', '@config.factory', '@lock', '@vactory_webform_typesafe.input', '@vactory_webform_typesafe.classifier', '@datetime.time']
+  vactory_webform_typesafe.api_key:
+    class: Drupal\vactory_webform_typesafe\Service\ApiKeyStore
+    arguments: ['@state']

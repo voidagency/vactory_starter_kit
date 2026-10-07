@@ -1,0 +1,19 @@
+<?php
+
+/**
+ * @file
+ * Submission analysis lifecycle integration.
+ */
+
+use Drupal\webform\WebformSubmissionInterface;
+
+/**
+ * Implements hook_webform_submission_delete().
+ */
+function vactory_webform_typesafe_webform_submission_delete(WebformSubmissionInterface $submission) {
+  // Works even when the handler has been removed or disabled.
+  $record = \Drupal::entityTypeManager()->getStorage('vactory_webform_analysis')->load($submission->id());
+  if ($record) {
+    $record->delete();
+  }
+}

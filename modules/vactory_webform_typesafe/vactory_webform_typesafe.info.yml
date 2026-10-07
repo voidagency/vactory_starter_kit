@@ -1,0 +1,8 @@
+name: Vactory Webform TypeSafe
+type: module
+description: 'Classify Webform submissions with TypeSafe and review structured results.'
+package: Vactory
+core_version_requirement: ^10.3 || ^11
+dependencies:
+  - webform:webform
+configure: vactory_webform_typesafe.settings

@@ -1,0 +1,115 @@
+<?php
+
+/**
+ * @file
+ * Upgrade and uninstall hooks for the direct Jev API integration.
+ */
+
+/**
+ * Adds direct-client defaults and migrates an existing provider credential.
+ */
+function vactory_webform_typesafe_update_10001() {
+  $config = \Drupal::configFactory()->getEditable('vactory_webform_typesafe.settings');
+  if ($config->get('request_timeout') === NULL) {
+    $config->set('request_timeout', 60)->save();
+  }
+  $store = \Drupal::service('vactory_webform_typesafe.api_key');
+  // This conditional migration is the only reference to the former provider.
+  if ($store->source() === 'none' && \Drupal::moduleHandler()->moduleExists('ai_provider_typesafe') && \Drupal::hasService('key.repository')) {
+    $key_id = \Drupal::config('ai_provider_typesafe.settings')->get('api_key');
+    if ($key_id) {
+      $key = \Drupal::service('key.repository')->getKey($key_id);
+      if (!$key) {
+        throw new \RuntimeException('The previous TypeSafe key could not be found. Configure a direct Jev API key before removing the provider.');
+      }
+      $store->save($key->getKeyValue());
+    }
+  }
+  return t('Direct Jev API settings are ready. Existing Webform handlers and results are preserved.');
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function vactory_webform_typesafe_uninstall() {
+  \Drupal::state()->delete('vactory_webform_typesafe.api_key');
+}
+
+/**
+ * Translates unchanged starter question text in existing Webform handlers.
+ */
+function vactory_webform_typesafe_update_10002() {
+  $translations = [
+    'Main intent' => 'Objet principal de la demande',
+    'Identify the primary request. Choose unclear when there is insufficient evidence.' => 'Identifiez la demande principale. Choisissez la catégorie unclear si les informations sont insuffisantes.',
+    'Requests information' => 'Demande de renseignements',
+    'Reports dissatisfaction' => 'Réclamation',
+    'Requests a price or quote' => 'Demande de devis',
+    'Needs help resolving a problem' => 'Demande d’assistance',
+    'Requests money back' => 'Demande de remboursement',
+    'Another intent' => 'Autre demande',
+    'Insufficient information' => 'Informations insuffisantes',
+    'Expressed sentiment' => 'Sentiment exprimé',
+    'Classify the sentiment explicitly expressed in the message.' => 'Identifiez le sentiment explicitement exprimé dans le message.',
+    'Expresses satisfaction' => 'Satisfaction',
+    'No clear positive or negative sentiment' => 'Neutre',
+    'Expresses frustration' => 'Frustration',
+    'Expresses anger' => 'Colère',
+    'Cannot determine' => 'Indéterminé',
+    'Urgency' => 'Degré d’urgence',
+    'Assess urgency from explicit deadlines and consequences, not anger alone.' => 'Évaluez l’urgence à partir des délais et des conséquences explicitement mentionnés, sans vous baser uniquement sur la colère.',
+    'Low: no deadline or immediate impact' => 'Faible : aucun délai ni impact immédiat',
+    'Normal: routine request' => 'Normal : demande courante',
+    'High: explicit near deadline or significant current disruption' => 'Élevé : échéance proche explicitement mentionnée ou perturbation importante en cours',
+    'Callback requested' => 'Rappel téléphonique demandé',
+    'The submitter explicitly requests a phone call.' => 'La personne demande explicitement à être rappelée par téléphone.',
+  ];
+  $storage = \Drupal::entityTypeManager()->getStorage('webform');
+  foreach ($storage->loadMultiple() as $webform) {
+    $changed = FALSE;
+    foreach ($webform->getHandlers() as $handler) {
+      if ($handler->getPluginId() !== 'vactory_typesafe') {
+        continue;
+      }
+      $configuration = $handler->getConfiguration();
+      $questions = json_decode($configuration['settings']['questions'] ?? '', TRUE);
+      if (!is_array($questions)) {
+        continue;
+      }
+      $original = $questions;
+      foreach ($questions as &$question) {
+        foreach (['label', 'instructions'] as $field) {
+          if (isset($question[$field], $translations[$question[$field]])) {
+            $question[$field] = $translations[$question[$field]];
+          }
+        }
+        foreach ($question['criteria'] ?? [] as $key => $description) {
+          if (is_string($description) && isset($translations[$description])) {
+            $question['criteria'][$key] = $translations[$description];
+          }
+        }
+      }
+      unset($question);
+      if ($questions !== $original) {
+        $configuration['settings']['questions'] = json_encode($questions, JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR);
+        $handler->setConfiguration($configuration);
+        $handler->setWebform($webform);
+        $webform->updateWebformHandler($handler);
+        $changed = TRUE;
+      }
+    }
+    if ($changed) {
+      $webform->save();
+      // Refresh pending fingerprints after translating the provider questions.
+      // Completed results retain the exact questions used for their analysis.
+      $entities = \Drupal::entityTypeManager();
+      $ids = $entities->getStorage('vactory_webform_analysis')->getQuery()
+        ->accessCheck(FALSE)->condition('webform', $webform->id())
+        ->condition('status', 'pending')->execute();
+      foreach ($entities->getStorage('webform_submission')->loadMultiple($ids) as $submission) {
+        \Drupal::service('vactory_webform_typesafe.manager')->enqueue($submission, TRUE);
+      }
+    }
+  }
+  return t('Les consignes et catégories par défaut sont désormais en français. Les textes personnalisés sont conservés.');
+}
