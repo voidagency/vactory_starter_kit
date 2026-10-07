@@ -1,0 +1,73 @@
+.vwt-results {
+  width: 100%;
+}
+.vwt-results td {
+  vertical-align: top;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
+.vwt-submission {
+  min-width: 200px;
+  max-width: 360px;
+  overflow-wrap: anywhere;
+}
+.vwt-submission > a {
+  display: inline-block;
+  margin-bottom: 12px;
+  font-weight: 600;
+}
+.vwt-submission p {
+  margin: 4px 0 12px;
+  line-height: 1.5;
+}
+.vwt-label {
+  display: block;
+  color: #505a69;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  margin-bottom: 5px;
+}
+.vwt-classifications {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(150px, 1fr));
+  gap: 10px;
+  min-width: 300px;
+  max-width: 640px;
+}
+.vwt-classification {
+  border: 1px solid #dce2e9;
+  border-radius: 8px;
+  background: #f8fafc;
+  padding: 10px 12px;
+  overflow-wrap: anywhere;
+}
+.vwt-classification strong {
+  display: block;
+  color: #172b4d;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+}
+.vwt-classification small {
+  display: block;
+  margin-top: 5px;
+  color: #505a69;
+}
+.vwt-badge {
+  display: inline-block;
+  padding: 4px 9px;
+  border-radius: 5px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.vwt-badge--success { color: #17603a; background: #e6f4eb; }
+.vwt-badge--warning { color: #754900; background: #fff1cc; }
+.vwt-badge--error { color: #a12622; background: #fce8e6; }
+.vwt-badge--neutral { color: #394960; background: #eaf0f7; }
+@media (max-width: 900px) {
+  .vwt-classifications {
+    grid-template-columns: minmax(150px, 1fr);
+    min-width: 150px;
+  }
+  .vwt-submission { min-width: 140px; }
+}

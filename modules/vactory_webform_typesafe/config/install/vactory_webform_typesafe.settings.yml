@@ -1,0 +1,4 @@
+model: jev-latest
+max_attempts: 3
+max_input_bytes: 20000
+request_timeout: 60

@@ -1,0 +1,9 @@
+administer vactory webform typesafe:
+  title: 'Administer Webform TypeSafe settings'
+  restrict access: true
+view vactory webform typesafe:
+  title: 'View Webform classifications'
+run vactory webform typesafe:
+  title: 'Run Webform classifications'
+review vactory webform typesafe:
+  title: 'Review and correct Webform classifications'

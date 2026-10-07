@@ -1,0 +1,10 @@
+vactory_webform_typesafe.results:
+  title: 'Classification'
+  route_name: vactory_webform_typesafe.results
+  parent_id: entity.webform.results
+  weight: 15
+vactory_webform_typesafe.analysis:
+  title: 'Classification'
+  route_name: vactory_webform_typesafe.analysis
+  base_route: entity.webform_submission.canonical
+  weight: 15
