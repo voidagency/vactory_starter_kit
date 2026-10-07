@@ -11,7 +11,7 @@ workspace:
 steps:
   - name: setup
     image: vactory/vactory-ci:latest
-    pull: always
+    pull: if-not-exists
     environment:
       BITBUCKET_AUTHTOKEN:
         from_secret: BITBUCKET_AUTHTOKEN
