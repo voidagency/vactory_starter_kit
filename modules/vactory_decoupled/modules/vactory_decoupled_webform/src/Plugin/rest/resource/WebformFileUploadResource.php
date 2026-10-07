@@ -2,6 +2,7 @@
 
 namespace Drupal\vactory_decoupled_webform\Plugin\rest\resource;
 
+use Drupal\Component\Render\PlainTextOutput;
 use Drupal\Component\Utility\Bytes;
 use Drupal\Component\Utility\Environment;
 use Drupal\Core\File\FileExists;
@@ -16,6 +17,7 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Drupal\rest\ModifiedResourceResponse;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\HttpKernel\Exception\UnprocessableEntityHttpException;
 
 /**
  * Creates a resource for webform file uploads.
@@ -122,7 +124,22 @@ class WebformFileUploadResource extends FileUploadResource {
 
     // Validate the file entity against entity-level validation and
     // field-level validators.
-    $this->validate($file, $validators);
+    try {
+      $this->resourceValidate($file);
+    }
+    catch (UnprocessableEntityHttpException $e) {
+      $this->lock->release($lock_id);
+      throw $e;
+    }
+    $violations = $this->fileValidator->validate($file, $validators);
+    if ($violations->count() > 0) {
+      $this->lock->release($lock_id);
+      $errors = [];
+      foreach ($violations as $violation) {
+        $errors[] = PlainTextOutput::renderFromHtml($violation->getMessage());
+      }
+      throw new UnprocessableEntityHttpException("Unprocessable Entity: file validation failed.\n" . implode("\n", $errors));
+    }
 
     // Move the file to the correct location after validation. Use
     // FILE_EXISTS_ERROR as the file location has already been
@@ -177,13 +194,13 @@ class WebformFileUploadResource extends FileUploadResource {
    *   The element for which to get validators.
    *
    * @return array
-   *   An array suitable for passing to file_save_upload() or the file field
-   *   element's '#upload_validators' property.
+   *   An array of file validation constraints suitable for passing to the
+   *   'file.validator' service.
    */
   protected function getElementValidators(array $element) {
     $validators = [
       // Add in our check of the file name length.
-      'file_validate_name_length' => [],
+      'FileNameLength' => [],
     ];
 
     // Cap the upload size according to the PHP limit.
@@ -193,11 +210,11 @@ class WebformFileUploadResource extends FileUploadResource {
     }
 
     // There is always a file size limit due to the PHP server limit.
-    $validators['file_validate_size'] = [$max_filesize];
+    $validators['FileSizeLimit'] = ['fileLimit' => $max_filesize];
 
     // Add the extension check if necessary.
     if (!empty($element['#file_extensions'])) {
-      $validators['file_validate_extensions'] = [$element['#file_extensions']];
+      $validators['FileExtension'] = ['extensions' => $element['#file_extensions']];
     }
 
     return $validators;
