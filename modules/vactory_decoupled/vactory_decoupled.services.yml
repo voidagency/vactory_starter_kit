@@ -55,6 +55,11 @@ services:
     tags:
       - { name: event_subscriber }
 
+  vactory_decoupled.user_registration_roles_subscriber:
+    class: Drupal\vactory_decoupled\EventSubscriber\UserRegistrationRolesSubscriber
+    tags:
+      - { name: event_subscriber }
+
   vactory_decoupled.user_manager:
     class: Drupal\vactory_decoupled\UserManager
     arguments:
