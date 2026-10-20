@@ -1045,16 +1045,22 @@ function vactory_decoupled_module_implements_alter(&$implementations, $hook) {
 
 /**
  * Implements hook_ENTITY_TYPE_presave().
+ *
+ * Normalizes term_2_slug on every translation: built from the name when empty,
+ * then reduced to lowercase ASCII words joined by "-". Replacing only spaces
+ * and apostrophes kept "/", ",", accents...
  */
 function vactory_decoupled_taxonomy_term_presave(EntityInterface $entity) {
   if ($entity->hasField('term_2_slug')) {
-    $term_slug = $entity->get('term_2_slug')->value;
-    if (empty($term_slug)) {
-      $name = $entity->getName();
-      $slug = \Drupal::service('transliteration')->transliterate($name);
-      $slug = !empty($slug) ? strtolower($slug) : $slug;
-      $slug = !empty($slug) ? str_replace([' ', "'"], '-', $slug) : $slug;
-      $entity->set('term_2_slug', $slug);
+    foreach (array_keys($entity->getTranslationLanguages()) as $langcode) {
+      $translation = $entity->getTranslation($langcode);
+      $term_slug = (string) $translation->get('term_2_slug')->value;
+      $source = $term_slug !== '' ? $term_slug : (string) $translation->getName();
+      $slug = \Drupal::service('transliteration')->transliterate($source, $langcode);
+      $slug = trim(preg_replace('/[^a-z0-9]+/', '-', strtolower($slug)), '-');
+      if ($slug !== '' && $slug !== $term_slug) {
+        $translation->set('term_2_slug', $slug);
+      }
     }
   }
 }
