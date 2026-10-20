@@ -16,6 +16,8 @@ use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\Theme\ThemeManagerInterface;
 use Drupal\Core\Cache\Cache;
 use Drupal\node\Entity\Node;
+use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * {@inheritdoc}
@@ -23,6 +25,20 @@ use Drupal\node\Entity\Node;
 class BlocksManager {
 
   use ConditionAccessResolverTrait;
+
+  /**
+   * Query parameter carrying the router response status to JSON:API.
+   */
+  const RESPONSE_STATUS_QUERY_PARAMETER = 'routerStatus';
+
+  /**
+   * Response statuses supported by the "response_status" condition.
+   */
+  const RESPONSE_STATUSES = [
+    Response::HTTP_OK,
+    Response::HTTP_FORBIDDEN,
+    Response::HTTP_NOT_FOUND,
+  ];
 
   /**
    * Drupal\Core\Block\BlockManagerInterface definition.
@@ -88,6 +104,13 @@ class BlocksManager {
   protected $accountProxy;
 
   /**
+   * The request stack.
+   *
+   * @var \Symfony\Component\HttpFoundation\RequestStack
+   */
+  protected $requestStack;
+
+  /**
    * {@inheritdoc}
    */
   public function __construct(
@@ -98,7 +121,8 @@ class BlocksManager {
     JsonApiClient $json_api_client,
     ModuleHandlerInterface $moduleHandler,
     LoggerChannelFactory $logger,
-    AccountProxyInterface $accountProxy
+    AccountProxyInterface $accountProxy,
+    ?RequestStack $requestStack = NULL
   ) {
     $this->pluginManagerBlock = $block_manager;
     $this->themeManager = $theme_manager;
@@ -109,6 +133,7 @@ class BlocksManager {
     $this->moduleHandler = $moduleHandler;
     $this->logger = $logger;
     $this->accountProxy = $accountProxy;
+    $this->requestStack = $requestStack ?? \Drupal::requestStack();
   }
 
   /**
@@ -162,12 +187,22 @@ class BlocksManager {
   protected function getVisibleBlocks($blocks, $nid) {
     $node = Node::load($nid);
     $path = '/node/' . $nid;
+    $status = $this->getResponseStatus();
     $visible_blocks = [];
     foreach ($blocks as $block) {
       $conditions = [];
       foreach ($block['visibilityConditions'] as $condition_id => $condition) {
         if ($condition_id === 'decoupled_request_path') {
           $condition->setContextValue('path', $path);
+        }
+        elseif ($condition_id === 'response_status') {
+          // Core evaluates the current (JSON:API) request status, which is
+          // always 200 here, so evaluate against the router status instead.
+          $status_codes = array_map('intval', $condition->getConfiguration()['status_codes'] ?? []);
+          if (!empty($status_codes) && !in_array($status, $status_codes, TRUE)) {
+            continue 2;
+          }
+          continue;
         }
         else {
           if (in_array($condition_id, ['entity_bundle:node', 'node_type'])) {
@@ -189,6 +224,17 @@ class BlocksManager {
       }
     }
     return $visible_blocks;
+  }
+
+  /**
+   * Response status resolved by the decoupled router.
+   *
+   * @see \Drupal\vactory_decoupled_router\Controller\PathTranslator::getEntityOutput()
+   */
+  protected function getResponseStatus() {
+    $request = $this->requestStack->getCurrentRequest();
+    $status = (int) ($request?->query->get(static::RESPONSE_STATUS_QUERY_PARAMETER) ?? Response::HTTP_OK);
+    return in_array($status, static::RESPONSE_STATUSES, TRUE) ? $status : Response::HTTP_OK;
   }
 
   /**
