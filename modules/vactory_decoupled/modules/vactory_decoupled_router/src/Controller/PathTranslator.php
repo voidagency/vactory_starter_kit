@@ -21,6 +21,7 @@ use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
 use Drupal\jsonapi\ResourceType\ResourceTypeRepository;
 use Symfony\Component\Routing\RouteCollection;
 use Drupal\redirect\RedirectRepository;
+use Drupal\vactory_decoupled\BlocksManager;
 
 /**
  * Controller that receives the path to inspect.
@@ -237,7 +238,7 @@ class PathTranslator extends ControllerBase {
       }
     }
 
-    $output = array_merge($this->getEntityOutput($entity), $output);
+    $output = array_merge($this->getEntityOutput($entity, $output['status']), $output);
 
     if ($info) {
       $output['system'] = $info;
@@ -291,18 +292,29 @@ class PathTranslator extends ControllerBase {
 
   /**
    * Return information about the entity.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity.
+   * @param int $status
+   *   The resolved response status. A 403/404 status is passed to the JSON:API
+   *   individual URL so the blocks "Response status" visibility condition can
+   *   be evaluated against it.
    */
-  protected function getEntityOutput($entity) {
+  protected function getEntityOutput($entity, $status = 200) {
     $entity_type_id = $entity->getEntityTypeId();
     $rt = $this->jsonapiResourceTypeRepository->get($entity_type_id, $entity->bundle());
     $type_name = $rt->getTypeName();
     $route_name = sprintf('jsonapi.%s.individual', $type_name);
+    $options = ['absolute' => TRUE];
+    if (in_array($status, [403, 404], TRUE)) {
+      $options['query'][BlocksManager::RESPONSE_STATUS_QUERY_PARAMETER] = $status;
+    }
     $individual = Url::fromRoute(
       $route_name,
       [
         static::getEntityRouteParameterName($route_name, $entity_type_id) => $entity->uuid(),
       ],
-      ['absolute' => TRUE]
+      $options
     )->toString(TRUE);
 
     $output = [

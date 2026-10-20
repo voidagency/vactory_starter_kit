@@ -11,6 +11,7 @@ use Drupal\Core\TypedData\ComputedItemListTrait;
 use Drupal\Core\TypedData\TraversableTypedDataInterface;
 use Drupal\node\Entity\NodeType;
 use Drupal\node\NodeInterface;
+use Drupal\vactory_decoupled\BlocksManager;
 
 /**
  * Defines a vcc list class for better normalization targeting.
@@ -104,6 +105,8 @@ class InternalVCCFieldItemList extends FieldItemList {
         'plugins' => ['vactory_cross_content'],
       ];
       $blocks = $this->blockManager->getBlocksByNode($entity->id(), $banner_plugin_filter);
+      // Blocks visibility may depend on the response status of the router.
+      $this->cacheMetadata->addCacheContexts(['url.query_args:' . BlocksManager::RESPONSE_STATUS_QUERY_PARAMETER]);
       $block_info = reset($blocks);
       if (!empty($block_info)) {
         $block = Block::load($block_info['id']);
