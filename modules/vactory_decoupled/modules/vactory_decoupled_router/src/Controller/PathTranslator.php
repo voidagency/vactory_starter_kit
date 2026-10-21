@@ -6,6 +6,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Routing\RouteObjectInterface;
+use Drupal\Core\Site\Settings;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -207,7 +208,31 @@ class PathTranslator extends ControllerBase {
       // $this->response->setStatusCode(500);
     }
 
-    if ($entity->getEntityType() instanceof ContentEntityType) {
+    // Only allowlisted entity types are valid decoupled page targets.
+    // Default: node. Override via settings.php:
+    //   $settings['vactory_decoupled_router_page_entity_types'] = ['node', 'my_entity'];
+    // or hook_vactory_decoupled_router_page_entity_types_alter().
+    // Blocks taxonomy/term, user, etc. (SEO 404) without locking out future
+    // custom entities that a project explicitly allowlists.
+    if ($entity) {
+      $allowed_entity_types = Settings::get('vactory_decoupled_router_page_entity_types', ['node']);
+      $this->moduleHandler()->alter('vactory_decoupled_router_page_entity_types', $allowed_entity_types);
+      if (!in_array($entity->getEntityTypeId(), $allowed_entity_types, TRUE)) {
+        $this->logger->notice('Entity type @type:@bundle is not allowlisted for decoupled pages (@path); returning 404.', [
+          '@type' => $entity->getEntityTypeId(),
+          '@bundle' => $entity->bundle(),
+          '@path' => $path,
+        ]);
+        $entity = $this->findEntity($error_match_info);
+        $info = [
+          '_route' => 'error_page',
+        ];
+        $output['status'] = 404;
+        $output['message'] = "No decoupled page for $path";
+      }
+    }
+
+    if ($entity && $entity->getEntityType() instanceof ContentEntityType) {
       $can_view = $entity->access('view', NULL, TRUE);
       if (!$can_view->isAllowed()) {
         if ($this->currentUser()->isAnonymous()) {
@@ -244,7 +269,12 @@ class PathTranslator extends ControllerBase {
       $output['system'] = $info;
     }
 
-    if ($this->isFollowNodePathPattern($path) && $entity->hasTranslation($this->currentLangcode)) {
+    if (
+      $entity
+      && $this->isFollowNodePathPattern($path)
+      && $entity->getEntityTypeId() === 'node'
+      && $entity->hasTranslation($this->currentLangcode)
+    ) {
       // Get the translated entity.
       $trans_entity = $this->entityRepository->getTranslationFromContext($entity);
 
@@ -258,6 +288,46 @@ class PathTranslator extends ControllerBase {
           'from' => $path,
         ];
         $output['redirect'] = $redirects_trace;
+      }
+    }
+
+    // path_alias lookups are case-insensitive: /Rond-A-Beton resolves the
+    // node. Emit a 301 to the stored alias casing so fronts can redirect.
+    // Skip vactory system routes ($info set) — facet URLs share the mother node.
+    if (
+      ($output['status'] ?? 200) === 200
+      && empty($output['redirect'])
+      && $info === NULL
+      && $entity
+      && $entity->getEntityTypeId() === 'node'
+      && $entity->hasTranslation($this->currentLangcode)
+      && !$this->isFollowNodePathPattern($path)
+    ) {
+      $trans_entity = $this->entityRepository->getTranslationFromContext($entity);
+      $alias = $trans_entity->toUrl()->toString();
+      $alias_path = parse_url($alias, PHP_URL_PATH);
+      if (!is_string($alias_path) || $alias_path === '') {
+        $alias_path = $alias;
+      }
+      $lang_prefix = '/' . $this->currentLangcode;
+      if ($alias_path === $lang_prefix || str_starts_with($alias_path, $lang_prefix . '/')) {
+        $alias_path = substr($alias_path, strlen($lang_prefix));
+        if ($alias_path === '' || $alias_path[0] !== '/') {
+          $alias_path = '/' . ltrim($alias_path, '/');
+        }
+      }
+      if (
+        $alias_path
+        && !$this->isFollowNodePathPattern($alias_path)
+        && $path !== $alias_path
+        && strcasecmp(rtrim($path, '/'), rtrim($alias_path, '/')) === 0
+      ) {
+        $output['status'] = 301;
+        $output['redirect'][] = [
+          'to' => $alias,
+          'status' => 301,
+          'from' => $path,
+        ];
       }
     }
 
