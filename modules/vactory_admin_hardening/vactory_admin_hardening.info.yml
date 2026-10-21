@@ -1,0 +1,5 @@
+name: 'Vactory Admin Hardening'
+type: module
+description: 'Denies web access to sensitive administration surfaces (migrate UI and core configuration import/export/sync UI). These operations must go through the command line (Drush) or Features, which do not use the blocked HTTP routes.'
+package: Vactory
+core_version_requirement: ^10 || ^11

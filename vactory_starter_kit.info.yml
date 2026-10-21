@@ -190,6 +190,7 @@ install:
   - views_url_alias
   - webform_import_tab
   - workflows
+  - vactory_admin_hardening
 themes:
   - vactory
   - claro

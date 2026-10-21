@@ -12,6 +12,7 @@ use Drupal\vactory_security_review\Checks\FrontendContentSecurityPolicyHeader;
 use Drupal\vactory_security_review\Checks\FrontendHttpStrictTransportSecurityHeader;
 use Drupal\vactory_security_review\Checks\FrontendSslCertValidation;
 use Drupal\vactory_security_review\Checks\LoginFailureLog;
+use Drupal\vactory_security_review\Checks\MigrateAdminSurface;
 use Drupal\vactory_security_review\Checks\UserPrivilegesChangesLog;
 
 /**
@@ -20,6 +21,7 @@ use Drupal\vactory_security_review\Checks\UserPrivilegesChangesLog;
 function vactory_security_review_security_review_checks() {
   return [
     new LoginFailureLog(),
+    new MigrateAdminSurface(),
     new UserPrivilegesChangesLog(),
     new FrontendSslCertValidation(),
     new BackendSslCertValidation(),
