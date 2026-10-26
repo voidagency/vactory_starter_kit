@@ -1,0 +1,189 @@
+diff --git a/modules/jsonapi_search_api_facets/src/EventSubscriber/SearchApiQueryPreExecute.php b/modules/jsonapi_search_api_facets/src/EventSubscriber/SearchApiQueryPreExecute.php
+index 18420fa..7abcfcb 100644
+--- a/modules/jsonapi_search_api_facets/src/EventSubscriber/SearchApiQueryPreExecute.php
++++ b/modules/jsonapi_search_api_facets/src/EventSubscriber/SearchApiQueryPreExecute.php
+@@ -2,6 +2,8 @@
+ 
+ namespace Drupal\jsonapi_search_api_facets\EventSubscriber;
+ 
++use Drupal\Core\Cache\CacheableMetadata;
++use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
+ use Drupal\facets\FacetManager\DefaultFacetManager;
+ use Drupal\search_api\Event\QueryPreExecuteEvent;
+ use Drupal\search_api\Event\SearchApiEvents;
+@@ -54,9 +56,12 @@ class SearchApiQueryPreExecute implements EventSubscriberInterface {
+       $this->facetManager->alterQuery($query, $facet_source_id);
+ 
+       $facets = $this->facetManager->getFacetsByFacetSourceId($facet_source_id);
++
+       $facet_tags = [];
+       $aliased_facets = [];
++      $cacheable_metadata = new CacheableMetadata();
+       foreach ($facets as $facet) {
++        $cacheable_metadata->addCacheableDependency($facet);
+         if ($facet->getUrlAlias() !== $facet->getFieldIdentifier()) {
+           $aliased_facets[] = $facet->getUrlAlias();
+         }
+@@ -66,6 +71,13 @@ class SearchApiQueryPreExecute implements EventSubscriberInterface {
+           $facet_tags[$facet_field] = $facet_tag;
+         }
+       }
++      // Search API's query implements RefinableCacheableDependencyInterface,
++      // but its QueryInterface does not. We need to capture the cacheable
++      // metadata from facets, so their changes invalidate the query's cache.
++      if ($query instanceof RefinableCacheableDependencyInterface) {
++        $query->addCacheableDependency($cacheable_metadata);
++      }
++
+       // When using the OR operator for facets a filter is created to
+       // support tagging and excluding filters. The base JSON:API search will
+       // add the initial filter from the URL parameters which will stomp over
+diff --git a/modules/jsonapi_search_api_facets/tests/src/Functional/IndexFacetsTest.php b/modules/jsonapi_search_api_facets/tests/src/Functional/IndexFacetsTest.php
+index b865680..a4c115e 100644
+--- a/modules/jsonapi_search_api_facets/tests/src/Functional/IndexFacetsTest.php
++++ b/modules/jsonapi_search_api_facets/tests/src/Functional/IndexFacetsTest.php
+@@ -3,16 +3,19 @@
+ namespace Drupal\Tests\jsonapi_search_api_facets\Functional;
+ 
+ use Drupal\Component\Serialization\Json;
++use Drupal\Core\Cache\Cache;
+ use Drupal\Core\Url;
+ use Drupal\Tests\BrowserTestBase;
+ use Drupal\Tests\jsonapi\Functional\JsonApiRequestTestTrait;
+ use Drupal\Tests\search_api\Functional\ExampleContentTrait;
+ use Drupal\facets\Entity\Facet;
+ use Drupal\facets\Entity\FacetSource;
++use Drupal\facets\FacetInterface;
+ use Drupal\search_api\Entity\Index;
+ use Drupal\search_api\IndexInterface;
+ use Drupal\user\Entity\Role;
+ use GuzzleHttp\RequestOptions;
++use Psr\Http\Message\ResponseInterface;
+ 
+ /**
+  * Tests searching with facets.
+@@ -90,9 +93,9 @@ final class IndexFacetsTest extends BrowserTestBase {
+    *
+    * @throws \Drupal\Core\Entity\EntityStorageException
+    */
+-  private function createFacet(string $field_name, string $name, string $url_alias, string $query_operator, bool $show_numbers): void {
++  private function createFacet(string $field_name, string $name, string $url_alias, string $query_operator, bool $show_numbers): FacetInterface {
+     assert($query_operator === 'and' || $query_operator === 'or', '$query_operator must be `or` or `and`');
+-    Facet::create([
++    $facet = Facet::create([
+       'id' => $field_name,
+       'name' => $name,
+       'url_alias' => $url_alias,
+@@ -113,7 +116,10 @@ final class IndexFacetsTest extends BrowserTestBase {
+           'settings' => [],
+         ],
+       ],
+-    ])->save();
++    ]);
++    assert($facet instanceof FacetInterface);
++    $facet->save();
++    return $facet;
+   }
+ 
+   /**
+@@ -290,6 +296,29 @@ final class IndexFacetsTest extends BrowserTestBase {
+     $this->assertEquals($filter, $first_term_url_query['filter']);
+   }
+ 
++  /**
++   * Tests that existing filters are preserved in facet term URLs.
++   */
++  public function testCacheability() {
++    $facet = $this->createFacet('keywords', 'Keywords', 'keywords', 'or', FALSE);
++    $expected_cache_tag = 'config:facets.facet.' . $facet->id();
++    $url = Url::fromRoute('jsonapi_search_api.index_database_search_index');
++    $request_options = [];
++    $request_options[RequestOptions::HEADERS]['Accept'] = 'application/vnd.api+json';
++
++    $response = $this->request('GET', $url, $request_options);
++    $this->assertCacheHeaders($response, [$expected_cache_tag], 'MISS', 'MISS');
++
++    $response = $this->request('GET', $url, $request_options);
++    $this->assertCacheHeaders($response, [$expected_cache_tag], 'MISS', 'HIT');
++
++    $facet->setUrlAlias('fooBar');
++    $facet->save();
++
++    $response = $this->request('GET', $url, $request_options);
++    $this->assertCacheHeaders($response, [$expected_cache_tag], 'MISS', 'MISS');
++  }
++
+   /**
+    * Daa provider for the test.
+    *
+@@ -465,4 +494,43 @@ final class IndexFacetsTest extends BrowserTestBase {
+     return Json::decode((string) $response->getBody());
+   }
+ 
++  /**
++   * Asserts cache headers.
++   *
++   * The JsonApiRequestTestTrait calls Guzzle directly, so any assertSession
++   * methods are not available, as the driver session does not contain the
++   * request.
++   *
++   * @param \Psr\Http\Message\ResponseInterface $response
++   *   The response.
++   * @param array $expected_cache_tags
++   *   The expected cache tags.
++   * @param string $expected_dynamic_cache
++   *   Expected dynamic page cache status (HIT or MISS).
++   * @param string $expected_page_cache
++   *   Expected page cache status (HIT or MISS).
++   */
++  private function assertCacheHeaders(ResponseInterface $response, array $expected_cache_tags, string $expected_dynamic_cache, string $expected_page_cache): void {
++    assert($expected_dynamic_cache === 'HIT' || $expected_dynamic_cache === 'MISS');
++    assert($expected_page_cache === 'HIT' || $expected_page_cache === 'MISS');
++    $header_cache_tags = $response->getHeader('X-Drupal-Cache-Tags');
++    if (is_array($header_cache_tags)) {
++      $header_cache_tags = $header_cache_tags[0];
++    }
++    foreach ($expected_cache_tags as $cache_tag) {
++      $this->assertStringContainsString($cache_tag, $header_cache_tags);
++    }
++
++    $header_dynamic_cache = $response->getHeader('X-Drupal-Dynamic-Cache');
++    if (is_array($header_dynamic_cache)) {
++      $header_dynamic_cache = $header_dynamic_cache[0];
++    }
++    $this->assertEquals($expected_dynamic_cache, $header_dynamic_cache, var_export($response->getHeaders(), TRUE));
++    $header_page_cache = $response->getHeader('X-Drupal-Cache');
++    if (is_array($header_page_cache)) {
++      $header_page_cache = $header_page_cache[0];
++    }
++    $this->assertEquals($expected_page_cache, $header_page_cache, var_export($response->getHeaders(), TRUE));
++  }
++
+ }
+diff --git a/src/Resource/IndexResource.php b/src/Resource/IndexResource.php
+index a8e4f2c..8bd1949 100644
+--- a/src/Resource/IndexResource.php
++++ b/src/Resource/IndexResource.php
+@@ -4,6 +4,7 @@ declare(strict_types=1);
+ 
+ namespace Drupal\jsonapi_search_api\Resource;
+ 
++use Drupal\Core\Cache\CacheableDependencyInterface;
+ use Drupal\Core\Cache\CacheableMetadata;
+ use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+ use Drupal\Core\Http\Exception\CacheableBadRequestHttpException;
+@@ -128,6 +129,14 @@ final class IndexResource extends EntityResourceBase implements ContainerInjecti
+     catch (\Throwable $t) {
+       throw new CacheableBadRequestHttpException($cacheability, 'An error occurred while searching.');
+     }
++
++    // If the query is cacheable, capture its cache metadata after execution.
++    // This is leveraged by the Facets integration to invalidate cached
++    // responses if a Facet has been modified.
++    if ($query instanceof CacheableDependencyInterface) {
++      $cacheability->addCacheableDependency($query);
++    }
++
+     // Load all entities at once, for better performance.
+     $results->preLoadResultItems();
+     $result_entities = array_map(static function (ItemInterface $item) {
