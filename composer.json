@@ -103,7 +103,7 @@
     "drupal/auto_entityqueue": "^2.0",
     "drupal/entity": "^1.2",
     "drupal/faqfield": "^7.0",
-    "drupal/flood_control": "^2.3",
+    "drupal/flood_control": "^3.0",
     "drupal/search_api": "^1.18",
     "drupal/upgrade_status": "^4.0",
     "drupal/google_tag": "^2.0",
