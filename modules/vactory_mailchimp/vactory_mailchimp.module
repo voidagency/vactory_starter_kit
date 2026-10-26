@@ -1,5 +1,7 @@
 <?php
 
+use Drupal\Core\Form\FormStateInterface;
+
 /**
  * @file
  * Primary hooks for vactory mailchimp.
@@ -21,7 +23,7 @@ function vactory_mailchimp_theme($existing, $type, $theme, $path) {
 /**
  * Implements hook_form_FORM_ID_alter().
  */
-function vactory_mailchimp_form_mailchimp_signup_subscribe_block_vactory_mailchimp_newsletter_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id) {
+function vactory_mailchimp_form_mailchimp_signup_subscribe_block_vactory_mailchimp_newsletter_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   $mailchimpSignup = mailchimp_signup_load("vactory_mailchimp_newsletter");
   $form['form_title'] = ['#markup' => $mailchimpSignup->title];
 }

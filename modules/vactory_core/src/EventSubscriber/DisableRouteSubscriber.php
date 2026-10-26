@@ -15,7 +15,7 @@ class DisableRouteSubscriber implements EventSubscriberInterface {
   /**
    * {@inheritdoc}
    */
-  static public function getSubscribedEvents() {
+  static public function getSubscribedEvents(): array {
     $events['kernel.request'] = ['onRequest', 28];
     $events['kernel.response'] = ['onResponse'];
     return $events;

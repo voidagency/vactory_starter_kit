@@ -73,7 +73,7 @@ function _vactory_decoupled_espace_prive_filter_user_data(array $webform_data, s
  */
 function vactory_decoupled_espace_prive_decoupled_webform_data_presubmit_alter(array &$webform_data, &$error_message) {
   if (isset($webform_data['webform_id']) && $webform_data['webform_id'] === 'vactory_espace_prive_register') {
-    $existing_user = user_load_by_mail($webform_data['mail']);
+    $existing_user = array_values(\Drupal::entityTypeManager()->getStorage('user')->loadByProperties(['mail' => $webform_data['mail']]))[0] ?? FALSE;
 
     if ($existing_user instanceof UserInterface) {
       $error_message = [

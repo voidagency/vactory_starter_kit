@@ -46,7 +46,7 @@ class SspaProtectedUserFieldConstraintValidator extends ProtectedUserFieldConstr
   /**
    * {@inheritdoc}
    */
-  public function validate($items, Constraint $constraint) {
+  public function validate(mixed $items, Constraint $constraint): void {
     if (!isset($items)) {
       return;
     }

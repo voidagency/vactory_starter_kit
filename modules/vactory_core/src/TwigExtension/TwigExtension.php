@@ -204,7 +204,7 @@ class TwigExtension extends AbstractExtension {
         ->view($block);
 
       if ($variables) {
-        return \Drupal::service('renderer')->renderPlain($variables);
+        return \Drupal::service('renderer')->renderInIsolation($variables);
       }
     }
     return FALSE;

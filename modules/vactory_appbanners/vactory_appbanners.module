@@ -1,5 +1,7 @@
 <?php
 
+use Drupal\file\Entity\File;
+
 /**
  * @file
  * Primary hooks.
@@ -32,7 +34,7 @@ function vactory_appbanners_page_attachments(array &$attachments) {
   $attachments['#attached']['drupalSettings']['appbanners'] = $js_settings;
 
   if ($icon) {
-    $file = \Drupal\file\Entity\File::load($icon);
+    $file = File::load($icon);
     $icon_url = \Drupal::service('file_url_generator')->generateAbsoluteString($file->getFileUri());
 
     $element = [

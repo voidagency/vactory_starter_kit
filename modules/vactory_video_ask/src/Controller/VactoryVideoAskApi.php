@@ -6,6 +6,7 @@
 
 namespace Drupal\vactory_video_ask\Controller;
 
+use Drupal\user\Entity\User;
 use Drupal\Core\Controller\ControllerBase;
 
 use Symfony\Component\HttpFoundation\Request;
@@ -20,7 +21,7 @@ class VactoryVideoAskApi extends ControllerBase {
   public function postResult( Request $request ) {
     
     $account = \Drupal::currentUser();
-    $user = \Drupal\user\Entity\User::load($account->id());
+    $user = User::load($account->id());
 
     // allow overriding
     if (FALSE && isset($user->field_video_ask) && !empty($user->field_video_ask->value) ) {

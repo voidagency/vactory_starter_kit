@@ -30,7 +30,7 @@ class VactoryDecoupledRevalidatorSubscriber implements EventSubscriberInterface 
   /**
    * {@inheritdoc}
    */
-  public static function getSubscribedEvents() {
+  public static function getSubscribedEvents(): array {
     return [
       EntityRevalidateEvent::ENTITY_REVALIDATED_ACTION => ['onAction'],
     ];

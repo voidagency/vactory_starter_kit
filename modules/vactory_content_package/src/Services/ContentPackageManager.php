@@ -2,6 +2,7 @@
 
 namespace Drupal\vactory_content_package\Services;
 
+use Drupal\Core\File\FileExists;
 use Drupal\Component\Serialization\Json;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -776,7 +777,7 @@ class ContentPackageManager implements ContentPackageManagerInterface {
         $filename = $filename['filename'];
         $filename = preg_replace("/-[^-]*$/", "", $filename);
         $filename = ucfirst(strtolower(str_replace('-', ' ', $filename)));
-        $file = system_retrieve_file($url, 'public://content_package_manager', TRUE, FileSystemInterface::EXISTS_RENAME);
+        $file = system_retrieve_file($url, 'public://content_package_manager', TRUE, FileExists::Rename);
         if ($file instanceof FileInterface) {
           $file->save();
           $media_data = [

@@ -2,6 +2,7 @@
 
 namespace Drupal\vactory_image_sitemap\Services;
 
+use Drupal\Core\File\FileExists;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Url;
 
@@ -166,7 +167,7 @@ class ImageSitemapGenerator {
       }
       $time = time();
       $filename = $langcode . '_image_sitemap.xml';
-      if ($file = \Drupal::service('file_system')->saveData($output, $path . '/' . $filename, \Drupal\Core\File\FileSystemInterface::EXISTS_REPLACE)) {
+      if ($file = \Drupal::service('file_system')->saveData($output, $path . '/' . $filename, FileExists::Replace)) {
         \Drupal::configFactory()->getEditable('vactory_image_sitemap.settings')
           ->set('created', $time)
           ->set($langcode . '_number_of_urls', $total_urls)

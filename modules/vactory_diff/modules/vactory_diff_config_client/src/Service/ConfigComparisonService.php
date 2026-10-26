@@ -2,6 +2,7 @@
 
 namespace Drupal\vactory_diff_config_client\Service;
 
+use Drupal\Core\File\FileExists;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
@@ -595,7 +596,7 @@ class ConfigComparisonService {
       }
       else {
         // Écrire le fichier.
-        $file_uri = $this->fileSystem->saveData($json_data, $file_path, FileSystemInterface::EXISTS_REPLACE);
+        $file_uri = $this->fileSystem->saveData($json_data, $file_path, FileExists::Replace);
 
         if ($file_uri === FALSE) {
           $this->logger->error('Unable to save comparison results to @file', [

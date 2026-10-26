@@ -2,6 +2,7 @@
 
 namespace Drupal\vactory_content_package\Services;
 
+use Drupal\Core\File\FileExists;
 use Drupal\Core\Archiver\ArchiverManager;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\File\FileSystemInterface;
@@ -624,7 +625,7 @@ class ContentPackageArchiverManager implements ContentPackageArchiverManagerInte
       $existing_array = json_decode($existing_json_data, TRUE);
       $existing_array[$type][$directory_name] = $context['results']['data'][$type][$directory_name];
       $updated_json_data = json_encode($existing_array, JSON_PRETTY_PRINT);
-      $fileSystem->saveData($updated_json_data, $context['results']['export_data_file'], FileSystemInterface::EXISTS_REPLACE);
+      $fileSystem->saveData($updated_json_data, $context['results']['export_data_file'], FileExists::Replace);
     }
 
     if (!isset($context['results']['count'])) {

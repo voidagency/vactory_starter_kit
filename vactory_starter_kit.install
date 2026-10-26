@@ -81,7 +81,7 @@ function vactory_starter_kit_install() {
     ->save();
 
   \Drupal::service('theme_handler')->reset();
-  \Drupal::service('theme_handler')->rebuildThemeData();
+  \Drupal::service('extension.list.theme')->reset()->getList();
   \Drupal::service('theme_handler')->refreshInfo();
 
   // Create Homepage node.

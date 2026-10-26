@@ -2,6 +2,7 @@
 
 namespace Drupal\vactory_webform_mailchimp_handler\Plugin\WebformHandler;
 
+use MailchimpMarketing\ApiClient;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\webform\Plugin\WebformHandlerBase;
@@ -163,7 +164,7 @@ class MailchimpWebformHandler extends WebformHandlerBase {
    * Get interests.
    */
   public function getInterests() {
-    $client = new MailchimpMarketing\ApiClient();
+    $client = new ApiClient();
     $client->setConfig([
       'apiKey' => $this->configuration['api_key'],
       'server' => $this->configuration['server_prefix'],
@@ -230,7 +231,7 @@ class MailchimpWebformHandler extends WebformHandlerBase {
     $values = $webform_submission->getData();
 
     // Post to Mailchimp.
-    $client = new MailchimpMarketing\ApiClient();
+    $client = new ApiClient();
     $client->setConfig([
       'apiKey' => $this->configuration['api_key'],
       'server' => $this->configuration['server_prefix'],
@@ -281,7 +282,7 @@ class MailchimpWebformHandler extends WebformHandlerBase {
 
     if (isset($this->configuration['api_key']) && isset($this->configuration['server_prefix']) 
       && !empty($this->configuration['api_key']) && !empty($this->configuration['server_prefix'])) {
-      $client = new MailchimpMarketing\ApiClient();
+      $client = new ApiClient();
       $client->setConfig([
         'apiKey' => $this->configuration['api_key'],
         'server' => $this->configuration['server_prefix']
@@ -312,7 +313,7 @@ class MailchimpWebformHandler extends WebformHandlerBase {
   protected function getMergeFields($list_id) {
     $merge_fields = [];
 
-    $client = new MailchimpMarketing\ApiClient();
+    $client = new ApiClient();
     $client->setConfig([
       'apiKey' => $this->configuration['api_key'],
       'server' => $this->configuration['server_prefix']

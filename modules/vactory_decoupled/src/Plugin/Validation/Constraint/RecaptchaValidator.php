@@ -52,7 +52,7 @@ class RecaptchaValidator extends ConstraintValidator implements ContainerInjecti
   /**
    * {@inheritdoc}
    */
-  public function validate($items, Constraint $constraint) {
+  public function validate(mixed $items, Constraint $constraint): void {
     $request = \Drupal::request();
     $method = strtoupper($request->getMethod());
     $is_admin = $this->currentUser->hasPermission('skip CAPTCHA');

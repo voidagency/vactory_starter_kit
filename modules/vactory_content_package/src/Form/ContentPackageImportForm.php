@@ -2,6 +2,7 @@
 
 namespace Drupal\vactory_content_package\Form;
 
+use Drupal\Core\File\FileExists;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -70,7 +71,7 @@ class ContentPackageImportForm extends FormBase {
     $local_cache = NULL;
     if (!empty($_FILES['files']['name']['upload'])) {
       $validators = ['file_validate_extensions' => ['zip']];
-      if (!($finfo = file_save_upload('upload', $validators, NULL, 0, FileSystemInterface::EXISTS_REPLACE))) {
+      if (!($finfo = file_save_upload('upload', $validators, NULL, 0, FileExists::Replace))) {
         // Failed to upload the file. file_save_upload() calls
         // \Drupal\Core\Messenger\MessengerInterface::addError() on failure.
         return;

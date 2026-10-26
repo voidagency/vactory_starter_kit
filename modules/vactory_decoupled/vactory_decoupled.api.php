@@ -4,7 +4,7 @@
  * @file
  * Hooks specific to the Vactory decoupled module.
  */
-
+use Drupal\node\NodeInterface;
 use Drupal\Core\Cache\CacheableMetadata;
 
 /**
@@ -73,7 +73,7 @@ function hook_decoupled_entity_reference_options_alter(array &$entities, array &
  *   Array of internal blocks infos.
  */
 function hook_internal_blocks_cacheability_alter(CacheableMetadata $cacheability, $entity, $value) {
-  if ($entity instanceof \Drupal\node\NodeInterface && $entity->bundle() === 'vactory_page') {
+  if ($entity instanceof NodeInterface && $entity->bundle() === 'vactory_page') {
     $cacheability->addCacheTags(['locator_entity_list']);
   }
 }

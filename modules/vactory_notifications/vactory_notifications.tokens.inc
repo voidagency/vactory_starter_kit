@@ -1,5 +1,6 @@
 <?php
 
+use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\user\Entity\User;
 use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
@@ -37,7 +38,7 @@ function vactory_notifications_token_info() {
 /**
  * Implements hook_tokens().
  */
-function vactory_notifications_tokens($type, $tokens, array $data, array $options, \Drupal\Core\Render\BubbleableMetadata $bubbleable_metadata) {
+function vactory_notifications_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
   $replacements = [];
 
   if ($type == 'notification') {

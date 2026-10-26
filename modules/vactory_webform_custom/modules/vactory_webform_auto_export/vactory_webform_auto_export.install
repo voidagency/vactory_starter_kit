@@ -1,5 +1,7 @@
 <?php
 
+use Drupal\Core\Database\Database;
+
 /**
  * @file
  * Contains install and update functions.
@@ -99,7 +101,7 @@ function vactory_webform_auto_export_schema()
  * Implements hook_uninstall().
  */
 function vactory_webform_auto_export_uninstall() {
-    $connection = \Drupal\Core\Database\Database::getConnection();
+    $connection = Database::getConnection();
     $query = $connection->select('webform_auto_exports','wex');
     $query->fields('wex', ['name']);
     $results = $query->execute()->fetchAll();

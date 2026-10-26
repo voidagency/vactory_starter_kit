@@ -97,10 +97,10 @@ class SimpleOauthAuthenticationProvider extends BaseSimpleOauthAuthenticationPro
     $username = (!empty($email)) ? $email : "{$id}@google.com";
     $mail = (!empty($email)) ? $email : "{$id}@google.com";
 
-    $user = user_load_by_name($username);
+    $user = array_values(\Drupal::entityTypeManager()->getStorage('user')->loadByProperties(['name' => $username]))[0] ?? FALSE;
     if (empty($user)) {
       // Try loading user by mail.
-      $user = user_load_by_mail($mail);
+      $user = array_values(\Drupal::entityTypeManager()->getStorage('user')->loadByProperties(['mail' => $mail]))[0] ?? FALSE;
     }
     if (!$user) {
       $values = [
@@ -152,10 +152,10 @@ class SimpleOauthAuthenticationProvider extends BaseSimpleOauthAuthenticationPro
     $username = (!empty($email)) ? $email : "{$id}@facebook.com";
     $mail = (!empty($email)) ? $email : "{$id}@facebook.com";
 
-    $user = user_load_by_name($username);
+    $user = array_values(\Drupal::entityTypeManager()->getStorage('user')->loadByProperties(['name' => $username]))[0] ?? FALSE;
     if (empty($user)) {
       // Try loading user by mail.
-      $user = user_load_by_mail($mail);
+      $user = array_values(\Drupal::entityTypeManager()->getStorage('user')->loadByProperties(['mail' => $mail]))[0] ?? FALSE;
     }
     if (!$user) {
       $values = [
@@ -234,10 +234,10 @@ class SimpleOauthAuthenticationProvider extends BaseSimpleOauthAuthenticationPro
     $email_verified = !empty($claims['email_verified']);
     $mail = !empty($claims['email']) ? $claims['email'] : $username . "@keycloak.com";
 
-    $user = user_load_by_name($username);
+    $user = array_values(\Drupal::entityTypeManager()->getStorage('user')->loadByProperties(['name' => $username]))[0] ?? FALSE;
     if (empty($user) && $email_verified && !empty($claims['email'])) {
       // Only trust the email for account linking when Keycloak verified it.
-      $user = user_load_by_mail($mail);
+      $user = array_values(\Drupal::entityTypeManager()->getStorage('user')->loadByProperties(['mail' => $mail]))[0] ?? FALSE;
     }
     if (!$user) {
       $values = [

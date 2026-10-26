@@ -1,5 +1,7 @@
 <?php
 
+use Drupal\Core\Form\FormStateInterface;
+
 /**
  * @file
  * Primary module hooks for Vactory Report Content module.
@@ -40,7 +42,7 @@ function vactory_report_content_theme($existing, $type, $theme, $path) {
 /**
  * Implements hook_form_FORM_ID_alter().
  */
-function vactory_report_content_form_views_exposed_form_alter(&$form, \Drupal\Core\Form\FormStateInterface $form_state, $form_id)
+function vactory_report_content_form_views_exposed_form_alter(&$form, FormStateInterface $form_state, $form_id)
 {
   if ($form['#id'] === 'views-exposed-form-reported-content-admin-listing') {
     // Load reasons terms.

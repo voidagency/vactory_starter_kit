@@ -2,6 +2,7 @@
 
 namespace Drupal\vactory_dynamic_field_dummy\Services;
 
+use Drupal\Core\File\FileExists;
 use Drupal\Component\Utility\Random;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\file\Entity\File;
@@ -168,7 +169,7 @@ class GenerateDummyPageService {
       }
       $image_data = file_get_contents($url);
       $file_repository = \Drupal::service('file.repository');
-      $image = $file_repository->writeData($image_data, $filePath, FileSystemInterface::EXISTS_REPLACE);
+      $image = $file_repository->writeData($image_data, $filePath, FileExists::Replace);
       $image_file = File::load($image->id());
       $image_info = getimagesize($image_file->getFileUri());
       $image_file->save();
@@ -219,7 +220,7 @@ class GenerateDummyPageService {
       $directory = 'public://';
       $file_system = \Drupal::service('file_system');
       $file_system->prepareDirectory($directory, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS);
-      $file_system->copy($filepath, $directory . '/' . basename($filepath), FileSystemInterface::EXISTS_REPLACE);
+      $file_system->copy($filepath, $directory . '/' . basename($filepath), FileExists::Replace);
       $file = File::create([
         'filename' => basename($filepath),
         'uri' => 'public://' . basename($filepath),

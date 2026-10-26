@@ -2,6 +2,7 @@
 
 namespace Drupal\vactory_menu_breadcrumb;
 
+use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Component\Render\MarkupInterface;
 use Drupal\Component\Utility\SortArray;
 use Drupal\Core\Breadcrumb\Breadcrumb;
@@ -48,7 +49,7 @@ use Drupal\menu_link_content\Plugin\Menu\MenuLinkContent;
  * {@inheritdoc}
  */
 class MenuBasedBreadcrumbBuilder implements BreadcrumbBuilderInterface {
-  use \Drupal\Core\StringTranslation\StringTranslationTrait;
+  use StringTranslationTrait;
 
   /**
    * The router request context.

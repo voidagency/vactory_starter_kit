@@ -2,6 +2,7 @@
 
 namespace Drupal\vactory_cloudinary\Services;
 
+use Drupal\Core\File\FileExists;
 use Cloudinary\Api\ApiResponse;
 use Cloudinary\Api\Exception\NotFound;
 use Cloudinary\Api\Upload\UploadApi;
@@ -145,7 +146,7 @@ class VactoryCloudinaryManager {
   /**
    * Move given source to destination without unlink source.
    */
-  public function moveFileWithoutUnlink($source, $destination, $replace = FileSystemInterface::EXISTS_RENAME) {
+  public function moveFileWithoutUnlink($source, $destination, $replace = FileExists::Rename) {
     // Rename destination file if already exist.
     $destination = $this->fileSystem->getDestinationFilename($destination, $replace);
 

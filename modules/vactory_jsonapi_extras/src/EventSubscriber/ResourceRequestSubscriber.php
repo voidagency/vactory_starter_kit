@@ -53,7 +53,7 @@ class ResourceRequestSubscriber implements EventSubscriberInterface {
    * @see \Drupal\rest\EventSubscriber\ResourceResponseSubscriber::getSubscribedEvents()
    * @see \Drupal\dynamic_page_cache\EventSubscriber\DynamicPageCacheSubscriber
    */
-  public static function getSubscribedEvents() {
+  public static function getSubscribedEvents(): array {
     // Run before the dynamic page cache subscriber (priority 100), so that
     // Dynamic Page Cache can cache flattened responses.
     $events[KernelEvents::REQUEST][] = ['onRequest', 1];

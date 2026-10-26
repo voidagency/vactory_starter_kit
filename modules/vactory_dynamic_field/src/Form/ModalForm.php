@@ -2,6 +2,7 @@
 
 namespace Drupal\vactory_dynamic_field\Form;
 
+use Drupal\vactory_dynamic_field_dummy\Services\GenerateDummyPageService;
 use Drupal\Component\Render\FormattableMarkup;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Ajax\CloseDialogCommand;
@@ -870,7 +871,7 @@ class ModalForm extends FormBase {
                   'name' => $widget['name'],
                 ],
               ];
-              $options[$widget['uuid']] = $renderer->renderPlain($widget_preview);
+              $options[$widget['uuid']] = $renderer->renderInIsolation($widget_preview);
             }
           }
           $classes = 'select-template-wrapper';
@@ -983,7 +984,7 @@ class ModalForm extends FormBase {
       if (\Drupal::service('module_handler')->moduleExists('vactory_dynamic_field_dummy')) {
         $widget = $this->widgetsManager->loadSettings($widget_id);
         // phpcs:disable
-        $df_generated_data = \Drupal\vactory_dynamic_field_dummy\Services\GenerateDummyPageService::prepareContent($widget) ?? [];
+        $df_generated_data = GenerateDummyPageService::prepareContent($widget) ?? [];
         // phpcs:enable
       }
       $isDummy = json_encode(['auto-populate' => TRUE, ...$df_generated_data]);

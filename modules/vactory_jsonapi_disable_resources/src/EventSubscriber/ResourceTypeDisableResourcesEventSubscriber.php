@@ -55,7 +55,7 @@ class ResourceTypeDisableResourcesEventSubscriber implements EventSubscriberInte
   /**
    * {@inheritdoc}
    */
-  public static function getSubscribedEvents() {
+  public static function getSubscribedEvents(): array {
     return [
       ResourceTypeBuildEvents::BUILD => [
         ['disableResourceType'],

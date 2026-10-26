@@ -40,7 +40,7 @@ class VactoryPasswordPolicyConstraintValidator extends ConstraintValidator imple
   /**
    * {@inheritdoc}
    */
-  public function validate($value, Constraint $constraint) {
+  public function validate(mixed $value, Constraint $constraint): void {
     if (!isset($value)) {
       return;
     }

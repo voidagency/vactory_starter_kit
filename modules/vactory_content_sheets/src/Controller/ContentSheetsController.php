@@ -2,6 +2,7 @@
 
 namespace Drupal\vactory_content_sheets\Controller;
 
+use Drupal\Core\File\FileExists;
 use Drupal\Core\Controller\ControllerBase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -116,7 +117,7 @@ class ContentSheetsController extends ControllerBase {
 
       try {
         $file_repository = \Drupal::service('file.repository');
-        $file = $file_repository->writeData($source_file_content, "public://content-media/" . $file_name, FileSystemInterface::EXISTS_REPLACE);
+        $file = $file_repository->writeData($source_file_content, "public://content-media/" . $file_name, FileExists::Replace);
         return $file->id();
       } catch (\Exception $e) {
         throw new FileWriteException($e->getMessage());

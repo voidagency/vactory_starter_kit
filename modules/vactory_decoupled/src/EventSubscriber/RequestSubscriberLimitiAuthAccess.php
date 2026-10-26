@@ -43,7 +43,7 @@ class RequestSubscriberLimitiAuthAccess implements EventSubscriberInterface {
   /**
    * {@inheritdoc}
    */
-  static function getSubscribedEvents() {
+  static function getSubscribedEvents(): array {
     $events[KernelEvents::REQUEST] = ['onRequest'];
 
     return $events;

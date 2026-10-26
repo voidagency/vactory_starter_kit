@@ -2,6 +2,7 @@
 
 namespace Drupal\vactory_page_import\Services;
 
+use Drupal\Core\File\FileExists;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\file\FileInterface;
@@ -567,7 +568,7 @@ class PageImportService {
         $filename = $filename['filename'];
         $filename = preg_replace("/-[^-]*$/", "", $filename);
         $filename = ucfirst(strtolower(str_replace('-', ' ', $filename)));
-        $file = system_retrieve_file($url, 'public://page-import-media', TRUE, FileSystemInterface::EXISTS_RENAME);
+        $file = system_retrieve_file($url, 'public://page-import-media', TRUE, FileExists::Rename);
         if ($file instanceof FileInterface) {
           $file->save();
           $media_data = [

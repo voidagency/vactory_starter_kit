@@ -13,7 +13,7 @@ class SondageVoteEventsSubscriber implements EventSubscriberInterface {
   /**
    * {@inheritDoc}
    */
-  public static function getSubscribedEvents() {
+  public static function getSubscribedEvents(): array {
     $events = [];
     $events[VactorySondageVoteEvent::EVENT_NAME] = 'onVote';
     return $events;

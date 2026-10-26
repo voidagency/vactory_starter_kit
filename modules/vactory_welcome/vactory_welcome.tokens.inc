@@ -1,5 +1,6 @@
 <?php
 
+use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\taxonomy\Entity\Term;
 
@@ -24,7 +25,7 @@ function vactory_welcome_token_info() {
 /**
  * Implements hook_tokens().
  */
-function vactory_welcome_tokens($type, $tokens, array $data, array $options, \Drupal\Core\Render\BubbleableMetadata $bubbleable_metadata) {
+function vactory_welcome_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
   $replacements = [];
 
   if ($type == 'vactory_welcome') {

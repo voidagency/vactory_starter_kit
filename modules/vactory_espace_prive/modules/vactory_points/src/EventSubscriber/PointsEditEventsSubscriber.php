@@ -105,7 +105,7 @@ class PointsEditEventsSubscriber implements EventSubscriberInterface {
   /**
    * {@inheritDoc}
    */
-  public static function getSubscribedEvents() {
+  public static function getSubscribedEvents(): array {
     return [
       VactoryPointsEditEvent::EVENT_NAME => 'editUserPoints',
     ];

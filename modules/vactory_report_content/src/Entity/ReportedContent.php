@@ -2,6 +2,7 @@
 
 namespace Drupal\vactory_report_content\Entity;
 
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
@@ -43,7 +44,7 @@ class ReportedContent extends ContentEntityBase implements ContentEntityInterfac
   /**
    * {@inheritDoc}
    */
-  public static function baseFieldDefinitions(\Drupal\Core\Entity\EntityTypeInterface $entity_type) {
+  public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     $fields['id'] = BaseFieldDefinition::create('integer')
       ->setLabel(t('ID'))
       ->setDescription(t('The ID of the Advertiser entity.'))

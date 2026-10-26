@@ -2,6 +2,7 @@
 
 namespace Drupal\vactory_reminder\Commands;
 
+use Drupal\Core\Utility\Error;
 use Drupal\Component\Utility\Environment;
 use Drupal\Core\Database\Database;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
@@ -160,7 +161,7 @@ class VactoryRunReminderQueueCommand extends DrushCommands {
         // release the item and skip to the next queue.
         $queue->releaseItem($item);
 
-        watchdog_exception('vactory_reminder', $e);
+        Error::logException(\Drupal::logger('vactory_reminder'), $e);
         $output->writeln('<error>Suspend: </error>' . json_encode($item));
         $output->writeln('<error>Suspend (Reason): </error>' . $e->getMessage());
 
@@ -178,7 +179,7 @@ class VactoryRunReminderQueueCommand extends DrushCommands {
         $output->writeln('<error>Failed (Reason): </error>' . $e->getMessage());
         // In case of any other kind of exception, log it and leave the item.
         // In the queue to be processed again later.
-        watchdog_exception('vactory_reminder', $e);
+        Error::logException(\Drupal::logger('vactory_reminder'), $e);
         $failed++;
       }
     }

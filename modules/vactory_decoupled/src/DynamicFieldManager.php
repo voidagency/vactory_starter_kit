@@ -398,12 +398,12 @@ class DynamicFieldManager {
             $format = $info['options']['#format'] ?? 'full_html';
             $build = [
               // '#type'   => 'processed_text',
-              '#text' => (string) check_markup($text, $format),
+              '#text' => (string) ['#type' => 'processed_text', '#text' => $text, '#format' => $format],
               '#format' => $format,
             ];
             $path = $this->handleEditLiveModeFormat($parent_keys, $settings, $component, $field_key);
             if (!is_null($path)) {
-              $val = (string) check_markup($text, $format);
+              $val = (string) ['#type' => 'processed_text', '#text' => $text, '#format' => $format];
               $build = [
                 // '#type'   => 'processed_text',
                 '#text' => "<p>{LiveMode id=\"{$path}\"}</p>{$val}<p>{/LiveMode}</p>",

@@ -6,7 +6,7 @@
  *
  * Creates synthetic fixtures and deletes them in finally. Never calls TypeSafe.
  */
-
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Drupal\Core\Queue\DelayedRequeueException;
 use Drupal\vactory_webform_typesafe\Batch\ProcessPendingBatch;
 use Drupal\vactory_webform_typesafe\Service\JevResponseValidator;
@@ -149,7 +149,7 @@ try {
       ProcessPendingBatch::process($fixture, $sid, $context);
       $denied = FALSE;
     }
-    catch (\Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException) {
+    catch (AccessDeniedHttpException) {
       $denied = TRUE;
     }
     finally {

@@ -1,10 +1,11 @@
 <?php
 
+use Drupal\node\NodeInterface;
+
 /**
  * @file
  * Describes hooks and plugins provided by the Views module.
  */
-
 /**
  * A custom hook to alter the node access.
  *
@@ -15,7 +16,7 @@
  * @param \Drupal\node\NodeInterface $node
  *   Concerned node object.
  */
-function hook_vactory_content_access_alter(&$is_accessible, $key, \Drupal\node\NodeInterface $node) {
+function hook_vactory_content_access_alter(&$is_accessible, $key, NodeInterface $node) {
   if ($key === 'custom_access_for_news') {
     if ($node->bundle() === 'vactory_news' && !$node->isPublished()) {
       $is_accessible = FALSE;

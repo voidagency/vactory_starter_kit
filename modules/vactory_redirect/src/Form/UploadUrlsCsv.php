@@ -2,6 +2,7 @@
 
 namespace Drupal\vactory_redirect\Form;
 
+use Drupal\Core\File\FileExists;
 use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -75,7 +76,7 @@ class UploadUrlsCsv extends ConfigFormBase {
     $new_filename = "redirections/urls.csv";
     $stream_wrapper = \Drupal::service('stream_wrapper_manager')->getScheme($file->getFileUri());
     $new_filename_uri = "{$stream_wrapper}://{$new_filename}";
-    $file = \Drupal::service('file.repository')->move($file, $new_filename_uri, FileSystemInterface::EXISTS_REPLACE);
+    $file = \Drupal::service('file.repository')->move($file, $new_filename_uri, FileExists::Replace);
     // Save configuration settings.
 
     $this->config('vactory_redirect.settings')

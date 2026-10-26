@@ -43,7 +43,7 @@ class AdminFeedbackEventSubscriber implements EventSubscriberInterface {
   /**
    * {@inheritDoc}
    */
-  public static function getSubscribedEvents() {
+  public static function getSubscribedEvents(): array {
     $events = [];
     $events[VoteEvent::VOTE_EVENT] = 'onFeedback';
     return $events;

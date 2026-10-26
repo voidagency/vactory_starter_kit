@@ -1,5 +1,8 @@
 <?php
 
+use Drupal\Core\Render\BubbleableMetadata;
+use Drupal\file\Entity\File;
+
 /**
  * Implements hook_token_info().
  */
@@ -27,7 +30,7 @@ function vactory_decoupled_webform_token_info() {
 /**
  * Implements hook_tokens().
  */
-function vactory_decoupled_webform_tokens($type, $tokens, array $data, array $options, \Drupal\Core\Render\BubbleableMetadata $bubbleable_metadata) {
+function vactory_decoupled_webform_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
   $replacements = [];
   $token_service = Drupal::token();
   if ($type === 'decoupled_webform_submission') {
@@ -39,7 +42,7 @@ function vactory_decoupled_webform_tokens($type, $tokens, array $data, array $op
           $fid = $webform_submission->getElementData($value_token);
           $value = NULL;
           if (is_numeric($fid)) {
-            $file = \Drupal\file\Entity\File::load($fid);
+            $file = File::load($fid);
             if ($file) {
               $uri = $file->getFileUri();
               $value = Drupal::service('vacory_decoupled.media_file_manager')->getMediaAbsoluteUrl($uri);

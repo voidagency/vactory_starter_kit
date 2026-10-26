@@ -4,7 +4,7 @@
  * @file
  * Module install hooks.
  */
-
+use Drupal\Core\File\FileExists;
 use Drupal\Core\File\FileSystemInterface;
 
 /**
@@ -23,6 +23,6 @@ function vactory_image_sitemap_install($is_syncing) {
   }
   foreach ($languages as $langcode => $language) {
     $filename = $langcode . '_image_sitemap.xml';
-    $file = \Drupal::service('file_system')->saveData($output, $path . '/' . $filename, FileSystemInterface::EXISTS_REPLACE);
+    $file = \Drupal::service('file_system')->saveData($output, $path . '/' . $filename, FileExists::Replace);
   }
 }

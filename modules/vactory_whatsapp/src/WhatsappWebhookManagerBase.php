@@ -7,7 +7,7 @@ use Drupal\Core\Plugin\PluginBase;
 /**
  * Whatsapp Webhook Manager Base.
  */
-abstract class WhatsappWebhookManagerBase extends PluginBase implements \Drupal\vactory_whatsapp\WhatsappWebhookCallbackInterface {
+abstract class WhatsappWebhookManagerBase extends PluginBase implements WhatsappWebhookCallbackInterface {
 
   /**
    * {@inheritDoc}
