@@ -59,7 +59,7 @@
     "drupal/xmlsitemap": "^1.2",
     "drupal/security_review": "^3.1",
     "drupal/mailsystem": "^4.3",
-    "drupal/menu_item_extras": "^2.13",
+    "drupal/menu_item_extras": "^3.1",
     "drupal/mailchimp": "^3.1",
     "drupal/user_registrationpassword": "^2.0",
     "drupal/views_data_export": "^1.0.0",
