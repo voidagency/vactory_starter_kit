@@ -1,0 +1,12 @@
+diff --git a/src/Controller/miniorange_oauth_clientController.php b/src/Controller/miniorange_oauth_clientController.php
+index d25e9a3..c449848 100644
+--- a/src/Controller/miniorange_oauth_clientController.php
++++ b/src/Controller/miniorange_oauth_clientController.php
+@@ -124,6 +124,7 @@ class miniorange_oauth_clientController extends ControllerBase {
+       $userinfo_endpoint .= $accessToken;
+     }
+     $resourceOwner = UserResource::getResourceOwner($userinfo_endpoint, $accessToken);
++    $_SESSION['resource_owner'] = $resourceOwner;
+     $resourceOwner = is_array($resourceOwner) ? self::flattenArray($resourceOwner) : [];
+     /*
+      *  Test Configuration
