@@ -3,4 +3,4 @@ type: module
 description: Provides page content type content import/export in json format
 package: Vactory
 configure: vactory_content_package.import
-core_version_requirement: ^9 || ^10
+core_version_requirement: ^9 || ^10 || ^11

@@ -1,7 +1,7 @@
 name: Vactory Two Factors Authentication
 type: module
 description: Authentification en deux facteurs via un code OTP transmit à l'utilisateur via SMS ou Mail.
-core_version_requirement: ^9 || ^10
+core_version_requirement: ^9 || ^10 || ^11
 package: Vactory
 dependencies:
   - vactory_espace_prive

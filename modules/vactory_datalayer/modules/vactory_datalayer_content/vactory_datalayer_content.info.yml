@@ -1,7 +1,7 @@
 name: Vactory DataLayer Content
 description: Custom module Allows you to generate dataLayer for news with custom properties.
 type: module
-core_version_requirement: ^9 || ^10
+core_version_requirement: ^9 || ^10 || ^11
 dependencies:
   - token
   - vactory_datalayer

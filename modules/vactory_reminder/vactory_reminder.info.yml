@@ -1,7 +1,7 @@
 name: Vactory Reminder
 type: module
 description: Trigger Custom event based on Queue API.
-core_version_requirement: ^9 || ^10
+core_version_requirement: ^9 || ^10 || ^11
 package: Vactory
 configure: vactory_reminder.settings
 dependencies:

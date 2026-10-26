@@ -1,7 +1,7 @@
 name: 'Vactory OTP'
 description: 'Provides an otp service.'
 type: module
-core_version_requirement: ^9 || ^10
+core_version_requirement: ^9 || ^10 || ^11
 package: Vactory
 dependencies:
   - vactory_sms_sender

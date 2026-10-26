@@ -1,6 +1,6 @@
 name: Decoupled breadcrumb
 description: Provides simple console to configure decoupled breadcrumb
 type: module
-core_version_requirement: ^9 || ^10
+core_version_requirement: ^9 || ^10 || ^11
 configure: vactory_decoupled_breadcrumb.settings
 

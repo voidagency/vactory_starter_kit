@@ -2,7 +2,7 @@ name: 'Dev Tools'
 type: module
 description: 'Dev tools for geeks.'
 package: Vactory
-core_version_requirement: ^9 || ^10
+core_version_requirement: ^9 || ^10 || ^11
 dependencies: []
 install:
   - devel

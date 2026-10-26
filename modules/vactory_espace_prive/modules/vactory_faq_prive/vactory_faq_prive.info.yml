@@ -1,7 +1,7 @@
 name: 'FAQ Privé'
 description: 'Provide FAQ content type and views listing for private space.'
 type: module
-core_version_requirement: ^9 || ^10
+core_version_requirement: ^9 || ^10 || ^11
 dependencies:
   - faqfield
   - vactory_core

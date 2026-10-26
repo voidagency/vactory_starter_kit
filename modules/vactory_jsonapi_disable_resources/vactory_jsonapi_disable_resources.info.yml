@@ -1,7 +1,7 @@
 name: 'Vactory Jsonapi Disable Resources'
 type: module
 description: 'Disables unwanted JSON:API resources and their fields for security purpose.'
-core_version_requirement: ^9 || ^10
+core_version_requirement: ^9 || ^10 || ^11
 package: Vactory
 dependencies:
   - jsonapi

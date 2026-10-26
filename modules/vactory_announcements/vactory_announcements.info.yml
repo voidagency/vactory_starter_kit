@@ -2,7 +2,7 @@ name: Announcements
 type: module
 description: 'Provide Announcement content type and views listing.'
 package: Vactory
-core_version_requirement: ^9 || ^10
+core_version_requirement: ^9 || ^10 || ^11
 configure: vactory_announcements.admin_settings
 dependencies:
   - media_library

@@ -1,5 +1,5 @@
 name: 'Vactory Skeleton'
 description: 'Provides Skeleton field for nodes'
 type: module
-core_version_requirement: ^9 || ^10
+core_version_requirement: ^9 || ^10 || ^11
 package: Vactory
