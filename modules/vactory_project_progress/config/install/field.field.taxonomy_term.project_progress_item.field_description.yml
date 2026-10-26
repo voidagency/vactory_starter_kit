@@ -5,15 +5,10 @@ dependencies:
     - field.storage.taxonomy_term.field_description
     - taxonomy.vocabulary.project_progress_item
   module:
-    - allowed_formats
     - text
   enforced:
     module:
       - vactory_project_progress
-third_party_settings:
-  allowed_formats:
-    allowed_formats:
-      - full_html
 id: taxonomy_term.project_progress_item.field_description
 field_name: field_description
 entity_type: taxonomy_term
@@ -24,5 +19,7 @@ required: true
 translatable: true
 default_value: {  }
 default_value_callback: ''
-settings: {  }
+settings:
+  allowed_formats:
+    - full_html
 field_type: text_long
