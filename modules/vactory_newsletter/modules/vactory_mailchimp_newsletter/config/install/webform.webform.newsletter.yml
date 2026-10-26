@@ -237,7 +237,7 @@ handlers:
     conditions: {  }
     weight: 0
     settings:
-      api_key: ab834741ff9e3fc1d4eeb1e405869ad1-us16
+      api_key: ''
       server_prefix: us16
       list_id: d9a01d1fa2
       email: mail

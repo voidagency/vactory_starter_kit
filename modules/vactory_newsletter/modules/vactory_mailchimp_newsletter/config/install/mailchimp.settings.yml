@@ -1,5 +1,5 @@
 langcode: fr
-api_key: ab834741ff9e3fc1d4eeb1e405869ad1-us16
+api_key: ''
 api_timeout: 10
 cron: false
 batch_limit: 100
