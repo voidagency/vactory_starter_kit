@@ -13,7 +13,7 @@ class SettingsForm extends SecurityReviewSettings {
   /**
    * {@inheritdoc}
    */
-  public function buildForm(array $form, FormStateInterface $form_state) {
+  public function buildForm(array $form, FormStateInterface $form_state): array {
     $check_settings = $this->config('security_review.checks');
     $form['logger'] = [
       '#type' => 'details',
@@ -35,7 +35,7 @@ class SettingsForm extends SecurityReviewSettings {
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, FormStateInterface $form_state) {
+  public function submitForm(array &$form, FormStateInterface $form_state): void {
     $this->config('security_review.checks')
       ->set('log_failed_auth', $form_state->getValue('log_failed_auth'))
       ->set('log_user_privileges_change', $form_state->getValue('log_user_privileges_change'))
