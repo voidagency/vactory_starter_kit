@@ -106,7 +106,7 @@
     "drupal/flood_control": "^2.3",
     "drupal/search_api": "^1.18",
     "drupal/upgrade_status": "^4.0",
-    "drupal/google_tag": "^1.4",
+    "drupal/google_tag": "^2.0",
     "drupal/hreflang": "^1.16",
     "drupal/login_security": "^2.0",
     "drupal/memcache": "^2.2",
