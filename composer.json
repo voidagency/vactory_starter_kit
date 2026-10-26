@@ -34,7 +34,7 @@
     "drupal/file_entity": "^2.0-beta8",
     "drupal/focal_point": "^2.0",
     "drupal/improved_multi_select": "^1.7",
-    "drupal/inline_entity_form": "^1.0.0-rc2",
+    "drupal/inline_entity_form": "^3.0",
     "drupal/colorapi": "^2.1",
     "drupal/lang_dropdown": "^2.0@beta",
     "drupal/menu_link_attributes": "^1.1.0",
