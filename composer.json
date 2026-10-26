@@ -40,7 +40,7 @@
     "drupal/menu_link_attributes": "^1.1.0",
     "drupal/metatag": "^2.2",
     "drupal/yoast_seo": "^2.0.0-alpha4",
-    "drupal/nocurrent_pass": "^1.2.0",
+    "drupal/nocurrent_pass": "^2.0",
     "drupal/paragraphs": "^1.16",
     "drupal/facets": "^2.0",
     "drupal/jsonapi_search_api": "1.0.0-rc5",
