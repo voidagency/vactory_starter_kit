@@ -82,7 +82,7 @@
     "drupal/responsive_favicons": "1.x-dev@dev",
     "drupal/minifyhtml": "^2.0",
     "drupal/flag": "^5.0",
-    "drupal/rate": "3.1.0",
+    "drupal/rate": "^3.3",
     "masterminds/html5": "^2.3",
     "drupal/link_attributes": "2.1.1",
     "drupal/entity_embed": "^1.0",
@@ -268,6 +268,12 @@
       },
       "drupal/search_api": {
         "Decode HTML in search API rendered items": "https://gist.githubusercontent.com/ismail-void/73938a4084d2981578ccef6ca4c563ff/raw/04336c5d33a885ac3937d8fbee46fa2c1756ac9f/search-api-rendered-item-decode-html.patch"
+      },
+      "drupal/improved_multi_select": {
+        "Drupal 11 compatibility": "https://www.drupal.org/files/issues/2026-03-26/improved_multi_select-3451141-8.x-1.8.patch"
+      },
+      "drupal/onesignal": {
+        "Drupal 11 compatibility": "https://www.drupal.org/files/issues/2024-03-24/onesignal.3.0.2.rector.patch"
       }
     }
   },
