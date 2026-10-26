@@ -22,7 +22,7 @@
     "drupal/block_class": "3.0.0",
     "drupal/block_field": "^1.0.0-rc1",
     "drupal/captcha": "^2.0",
-    "drupal/coffee": "1.x-dev@dev",
+    "drupal/coffee": "^2.0",
     "drupal/components": "^3.0@beta",
     "drupal/config_update": "^2.0@alpha",
     "drupal/ctools": "^4.1.1",
