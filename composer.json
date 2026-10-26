@@ -76,7 +76,7 @@
     "drupal/media_responsive_thumbnail": "^1.5",
     "drupal/password_policy": "^4.0",
     "drupal/views_bulk_operations": "^4.1",
-    "drupal/views_bulk_edit": "^2.5",
+    "drupal/views_bulk_edit": "^3.0",
     "drupal/styleguide": "^2.0@beta",
     "drupal/search_api_exclude_entity": "^3.0.1",
     "drupal/responsive_favicons": "^4.0",
