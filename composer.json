@@ -18,7 +18,7 @@
     "drupal/addtoany": "^2.0",
     "drupal/advagg": "^6.0@alpha",
     "drupal/backup_migrate": "^5.1",
-    "drupal/better_exposed_filters": "^6.0",
+    "drupal/better_exposed_filters": "^7.1",
     "drupal/block_class": "3.0.0",
     "drupal/block_field": "^1.0.0-rc1",
     "drupal/captcha": "^2.0",
