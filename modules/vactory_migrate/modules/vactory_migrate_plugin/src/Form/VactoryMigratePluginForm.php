@@ -9,6 +9,7 @@ use Drupal\Core\Url;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\file\Entity\File;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\File\FileExists;
 use Drupal\Core\File\FileSystem;
 
 /**
@@ -886,7 +887,7 @@ class VactoryMigratePluginForm extends FormBase {
       mkdir($destination, 0777);
     }
 
-    $copied_file = $this->fileSystemService->copy($path, $destination, FileSystem::EXISTS_RENAME);
+    $copied_file = $this->fileSystemService->copy($path, $destination, FileExists::Rename);
     $filename = explode('/',$path);
     $file = File::create([
       'uid'      => 1,

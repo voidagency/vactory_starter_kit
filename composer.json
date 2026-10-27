@@ -146,7 +146,7 @@
     "drupal/video_embed_field": "^3.1",
     "drupal/allowed_formats": "^3.0",
     "drupal/theme_switcher": "^2.0",
-    "drupal/migrate_file": "^2.1",
+    "drupal/migrate_file": "^3.0@alpha",
     "drupal/rdf": "^3.0@beta || ^4.0",
     "drupal/seven": "^2.0@beta",
     "drupal/classy": "^2.0",
