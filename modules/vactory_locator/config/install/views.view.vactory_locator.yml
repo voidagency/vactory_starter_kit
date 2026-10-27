@@ -42,7 +42,6 @@ dependencies:
     - vactory_google_places
     - vactory_locator
     - vactory_views
-    - views_autocomplete_filters
     - views_bulk_operations
   enforced:
     module:
@@ -1767,7 +1766,7 @@ display:
           admin_label: ''
           entity_type: locator_entity
           entity_field: name
-          plugin_id: views_autocomplete_filters_string
+          plugin_id: string
           operator: contains
           value: ''
           group: 1

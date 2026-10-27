@@ -17,7 +17,6 @@ dependencies:
     - text
     - user
     - vactory_views
-    - views_autocomplete_filters
 id: vactory_faq_prive
 label: 'FAQ Privés'
 module: views
@@ -392,7 +391,7 @@ display:
           fields:
             title: title
             body: body
-          plugin_id: views_autocomplete_filters_combine
+          plugin_id: combine
         field_faq_prive_thematique_target_id:
           id: field_faq_prive_thematique_target_id
           table: node__field_faq_prive_thematique
