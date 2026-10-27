@@ -56,7 +56,7 @@
     "drupal/ultimate_cron": "^2.0@alpha",
     "drupal/viewsreference": "^2.0@beta",
     "drupal/webform": "^6.2@beta",
-    "drupal/xmlsitemap": "^1.2",
+    "drupal/xmlsitemap": "^2.0",
     "drupal/security_review": "^3.1",
     "drupal/mailsystem": "^4.3",
     "drupal/menu_item_extras": "^3.1",
