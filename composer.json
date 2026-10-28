@@ -160,7 +160,7 @@
     "drupal/onesignal": "^3.0",
     "stevenmaguire/oauth2-keycloak": "^6.0",
     "drupal/openai": "^1.0@beta",
-    "voidagency/jquery_colorpicker": "5.0.0",
+    "voidagency/jquery_colorpicker": "^6.0",
     "drupal/merge_translations": "^2.0.1",
     "voidagency/easy_install": "^10.6",
     "voidagency/shortcode": "^2.1",
