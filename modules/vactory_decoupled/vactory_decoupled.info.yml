@@ -10,6 +10,7 @@ dependencies:
   - jsonapi_defaults
   - jsonapi_user_resources
   - simple_oauth
+  - simple_oauth_password_grant
   - vactory_api_key_auth
   - media
   - vactory_page

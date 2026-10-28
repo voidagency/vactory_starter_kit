@@ -7,3 +7,4 @@ dependencies:
   - vactory_decoupled
   - vactory_user
   - simple_oauth
+  - simple_oauth_password_grant

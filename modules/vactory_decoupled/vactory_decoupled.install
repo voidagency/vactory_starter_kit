@@ -6,7 +6,47 @@
  */
 
 use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\link\LinkItemInterface;
+use Drupal\simple_oauth\Plugin\Oauth2GrantManager;
+
+/**
+ * Implements hook_install().
+ */
+function vactory_decoupled_install() {
+  _vactory_decoupled_enable_oauth_password_grant();
+}
+
+/**
+ * Enables the password grant (and kit custom grants) on oauth consumers.
+ *
+ * Since simple_oauth 6.x grant types are enabled per consumer and per scope.
+ */
+function _vactory_decoupled_enable_oauth_password_grant() {
+  $available_grants = array_keys(Oauth2GrantManager::getAvailablePluginsAsOptions());
+  $grants = array_intersect(['password', 'refresh_token', 'faceid', 'apikey'], $available_grants);
+
+  /** @var \Drupal\consumers\Entity\ConsumerInterface $consumer */
+  foreach (\Drupal::entityTypeManager()->getStorage('consumer')->loadMultiple() as $consumer) {
+    $consumer_grants = array_column($consumer->get('grant_types')->getValue(), 'value');
+    $missing = array_diff($grants, $consumer_grants);
+    if (!empty($missing)) {
+      $consumer->set('grant_types', array_values(array_merge($consumer_grants, $missing)));
+      $consumer->save();
+    }
+  }
+
+  // Allow requesting role scopes with the password grant.
+  /** @var \Drupal\simple_oauth\Entity\Oauth2ScopeEntityInterface $scope */
+  foreach (\Drupal::entityTypeManager()->getStorage('oauth2_scope')->loadMultiple() as $scope) {
+    $grant_types = $scope->get('grant_types') ?? [];
+    if (in_array('password', $available_grants) && empty($grant_types['password']['status'])) {
+      $grant_types['password'] = ['status' => TRUE];
+      $scope->set('grant_types', $grant_types);
+      $scope->save();
+    }
+  }
+}
 
 /**
  * Add node_settings field.
@@ -172,4 +212,44 @@ function vactory_decoupled_update_10201() {
 
   \Drupal::entityDefinitionUpdateManager()
     ->installFieldStorageDefinition('hide_menu_item', 'menu_link_content', 'vactory_decoupled', $storage_definition);
+}
+
+/**
+ * Implements hook_update_dependencies().
+ */
+function vactory_decoupled_update_dependencies() {
+  // Legacy token scopes must be replaced before simple_oauth migrates them.
+  $dependencies['simple_oauth'][8605] = [
+    'vactory_decoupled' => 10202,
+  ];
+  return $dependencies;
+}
+
+/**
+ * Replace simple_oauth 5.x token scopes field before simple_oauth 6.x update.
+ *
+ * simple_oauth_update_8605() renames the legacy column before uninstalling
+ * the legacy field, which fails on sites having tokens. Existing tokens are
+ * deleted by simple_oauth_update_8605() anyway.
+ */
+function vactory_decoupled_update_10202() {
+  $manager = \Drupal::entityDefinitionUpdateManager();
+  $definition = $manager->getFieldStorageDefinition('scopes', 'oauth2_token');
+  if (!$definition || $definition->getType() !== 'entity_reference') {
+    return;
+  }
+
+  $database = \Drupal::database();
+  if ($database->schema()->tableExists('oauth2_token__scopes')) {
+    $database->truncate('oauth2_token__scopes')->execute();
+  }
+  $manager->uninstallFieldStorageDefinition($definition);
+
+  $definition = BaseFieldDefinition::create('oauth2_scope_reference')
+    ->setLabel(t('Scopes'))
+    ->setDescription(t('The scopes for this Access Token.'))
+    ->setRevisionable(TRUE)
+    ->setCardinality(FieldStorageDefinitionInterface::CARDINALITY_UNLIMITED)
+    ->setTranslatable(FALSE);
+  $manager->installFieldStorageDefinition('scopes', 'oauth2_token', 'simple_oauth', $definition);
 }

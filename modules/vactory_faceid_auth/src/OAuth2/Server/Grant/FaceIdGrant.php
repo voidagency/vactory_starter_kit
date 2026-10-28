@@ -50,7 +50,7 @@ class FaceIdGrant extends PasswordGrant {
   /**
    * {@inheritDoc}
    */
-  protected function validateUser(ServerRequestInterface $request, ClientEntityInterface $client) {
+  protected function validateUser(ServerRequestInterface $request, ClientEntityInterface $client): UserEntityInterface {
     $user_uuid = $this->getRequestParameter('user_uuid', $request);
     if (!\is_string($user_uuid)) {
       throw OAuthServerException::invalidRequest('user_uuid');
@@ -96,7 +96,7 @@ class FaceIdGrant extends PasswordGrant {
   /**
    * {@inheritdoc}
    */
-  public function getIdentifier() {
+  public function getIdentifier(): string {
     return 'faceid';
   }
 

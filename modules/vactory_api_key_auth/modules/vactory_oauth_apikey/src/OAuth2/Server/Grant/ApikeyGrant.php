@@ -51,7 +51,7 @@ class ApikeyGrant extends PasswordGrant {
   /**
    * {@inheritDoc}
    */
-  protected function validateUser(ServerRequestInterface $request, ClientEntityInterface $client) {
+  protected function validateUser(ServerRequestInterface $request, ClientEntityInterface $client): UserEntityInterface {
     $apikey = $this->getRequestParameter('apikey', $request);
     if (!\is_string($apikey)) {
       throw OAuthServerException::invalidRequest('apikey');
@@ -112,7 +112,7 @@ class ApikeyGrant extends PasswordGrant {
   /**
    * {@inheritdoc}
    */
-  public function getIdentifier() {
+  public function getIdentifier(): string {
     return 'apikey';
   }
 

@@ -2,52 +2,29 @@
 
 namespace Drupal\vactory_phone_auth_decoupled\Repositories;
 
-use Drupal\user\UserAuthInterface;
-use League\OAuth2\Server\Entities\ClientEntityInterface;
-use League\OAuth2\Server\Repositories\UserRepositoryInterface;
-use Drupal\simple_oauth\Entities\UserEntity;
+use Drupal\Core\Session\AccountInterface;
+use Drupal\simple_oauth_password_grant\Repository\UserRepository as PasswordGrantUserRepository;
 
 /**
  * User repository class.
+ *
+ * Allows the password grant to authenticate users by phone number.
  */
-class UserRepository implements UserRepositoryInterface {
-
-  /**
-   * @var \Drupal\user\UserAuthInterface
-   */
-  protected $userAuth;
-
-  /**
-   * UserRepository constructor.
-   *
-   * @param \Drupal\user\UserAuthInterface $user_auth
-   *   The service to check the user authentication.
-   */
-  public function __construct(UserAuthInterface $user_auth) {
-    $this->userAuth = $user_auth;
-  }
+class UserRepository extends PasswordGrantUserRepository {
 
   /**
    * {@inheritdoc}
    */
-  public function getUserEntityByUserCredentials($username, $password, $grantType, ClientEntityInterface $clientEntity) {
+  protected function getAccount(string $usernameOrEmail): ?AccountInterface {
     // Login using phone number.
-    if (is_numeric($username)) {
-      $user_entity = \Drupal::entityTypeManager()->getStorage('user')->loadByProperties(['field_telephone' => $username]);
-      if ($user_entity != []) {
-        $user_entity = reset($user_entity);
-        $username = $user_entity->getEmail();
+    if (is_numeric($usernameOrEmail)) {
+      $account = $this->getAccountByProperty('field_telephone', $usernameOrEmail);
+      if ($account) {
+        return $account;
       }
     }
 
-    if ($uid = $this->userAuth->authenticate($username, $password)) {
-      $user = new UserEntity();
-      $user->setIdentifier($uid);
-
-      return $user;
-    }
-
-    return NULL;
+    return parent::getAccount($usernameOrEmail);
   }
 
 }

@@ -4,7 +4,10 @@ namespace Drupal\vactory_oauth_apikey\Plugin\Oauth2Grant;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\consumers\Entity\Consumer;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\simple_oauth\Plugin\Oauth2GrantBase;
+use League\OAuth2\Server\Grant\GrantTypeInterface;
 use Drupal\user\UserAuthInterface;
 use Drupal\vactory_oauth_apikey\OAuth2\Server\Grant\ApikeyGrant;
 use League\OAuth2\Server\Repositories\RefreshTokenRepositoryInterface;
@@ -19,7 +22,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   label = @Translation("Api Key Grant")
  * )
  */
-class Apikey extends Oauth2GrantBase {
+class Apikey extends Oauth2GrantBase implements ContainerFactoryPluginInterface {
 
   /**
    * User repository service.
@@ -85,7 +88,7 @@ class Apikey extends Oauth2GrantBase {
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('simple_oauth.repositories.user'),
+      $container->get('simple_oauth_password_grant.repositories.user'),
       $container->get('simple_oauth.repositories.refresh_token'),
       $container->get('config.factory'),
       $container->get('user.auth'),
@@ -96,15 +99,15 @@ class Apikey extends Oauth2GrantBase {
   /**
    * {@inheritdoc}
    */
-  public function getGrantType() {
+  public function getGrantType(Consumer $client): GrantTypeInterface {
     $grant = new ApikeyGrant(
       $this->userRepository,
       $this->refreshTokenRepository,
       $this->userAuth,
       $this->entityTypeManager
     );
-    $settings = $this->configFactory->get('simple_oauth.settings');
-    $grant->setRefreshTokenTTL(new \DateInterval(sprintf('PT%dS', $settings->get('refresh_token_expiration'))));
+    $refresh_token_ttl = !$client->get('refresh_token_expiration')->isEmpty() ? $client->get('refresh_token_expiration')->value : 1209600;
+    $grant->setRefreshTokenTTL(new \DateInterval(sprintf('PT%dS', $refresh_token_ttl)));
     return $grant;
   }
 

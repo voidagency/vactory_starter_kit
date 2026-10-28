@@ -22,6 +22,7 @@ class LoginControllerTest extends VactoryExistingSiteBase {
     'vactory_decoupled',
     'vactory_decoupled_espace_prive',
     'simple_oauth',
+    'simple_oauth_password_grant',
     'consumers',
     'flood_control',
   ];

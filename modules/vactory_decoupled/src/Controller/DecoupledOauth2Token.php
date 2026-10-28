@@ -2,13 +2,17 @@
 
 namespace Drupal\vactory_decoupled\Controller;
 
+use Drupal\Component\Serialization\Json;
+use Drupal\Core\Lock\LockBackendInterface;
 use Drupal\simple_oauth\Controller\Oauth2Token;
-use Drupal\simple_oauth\Plugin\Oauth2GrantManagerInterface;
+use Drupal\simple_oauth\Server\AuthorizationServerFactoryInterface;
 use Drupal\user\UserFloodControl;
 use League\OAuth2\Server\Repositories\ClientRepositoryInterface;
-use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
+use Symfony\Bridge\PsrHttpMessage\HttpMessageFactoryInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
@@ -80,14 +84,17 @@ class DecoupledOauth2Token extends Oauth2Token {
    * DecoupledOauth2Token constructor.
    */
   public function __construct(
-    Oauth2GrantManagerInterface $grant_manager,
+    AuthorizationServerFactoryInterface $authorization_server_factory,
+    HttpMessageFactoryInterface $http_message_factory,
     ClientRepositoryInterface $client_repository,
+    LockBackendInterface $lock,
+    LoggerInterface $logger,
     UserFloodControl $flood,
     ConfigFactoryInterface $configFactory,
     EntityTypeManagerInterface $entityTypeManager,
     ModuleHandlerInterface $moduleHandler
   ) {
-    parent::__construct($grant_manager, $client_repository);
+    parent::__construct($authorization_server_factory, $http_message_factory, $client_repository, $lock, $logger);
     $this->flood = $flood;
     $this->configFactory = $configFactory;
     $this->entityTypeManager = $entityTypeManager;
@@ -114,8 +121,11 @@ class DecoupledOauth2Token extends Oauth2Token {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('plugin.manager.oauth2_grant.processor'),
+      $container->get('simple_oauth.server.authorization_server.factory'),
+      $container->get('psr7.http_message_factory'),
       $container->get('simple_oauth.repositories.client'),
+      $container->get('lock'),
+      $container->get('logger.channel.simple_oauth'),
       $container->get('user.flood_control'),
       $container->get('config.factory'),
       $container->get('entity_type.manager'),
@@ -124,10 +134,26 @@ class DecoupledOauth2Token extends Oauth2Token {
   }
 
   /**
-   * Processes POST requests to /oauth/token.
+   * Processes POST requests to /oauth/login-token.
    */
-  public function token(ServerRequestInterface $request) {
-    $response = parent::token($request);
+  public function loginToken(Request $request) {
+    // simple_oauth 6.x only accepts form encoded token requests, keep
+    // supporting JSON payloads sent by the frontend.
+    if ($request->getContentTypeFormat() === 'json') {
+      $request->request->replace(Json::decode($request->getContent()) ?? []);
+      $request->headers->set('Content-Type', 'application/x-www-form-urlencoded');
+    }
+    $response = $this->token($request);
+    // league/oauth2-server 9.x dropped the "message" key from errors, keep
+    // it for the frontend.
+    if ($response->getStatusCode() !== 200) {
+      $error = Json::decode((string) $response->getBody());
+      if (is_array($error) && !isset($error['message']) && isset($error['error_description'])) {
+        $error['message'] = $error['error_description'];
+        $headers = $response->hasHeader('WWW-Authenticate') ? ['WWW-Authenticate' => $response->getHeaderLine('WWW-Authenticate')] : [];
+        $response = new JsonResponse($error, $response->getStatusCode(), $headers);
+      }
+    }
 
     $flood_message_display = $this->configFactory->get('vactory_flood_control.settings')->get('flood_message_display') ?? FALSE;
     $flood_user_message = 'There have been more than %s failed login attempts for this account. It is temporarily blocked. Try again later or request a new password.';
@@ -137,7 +163,7 @@ class DecoupledOauth2Token extends Oauth2Token {
       $flood_ip_message = 'The account information provided was invalid.';
     }
 
-    $body = $request->getParsedBody();
+    $body = $request->request->all();
     if (!empty($body['username']) && !empty($body['password'])) {
       $isEmail = strpos($body['username'], '@') !== FALSE;
 

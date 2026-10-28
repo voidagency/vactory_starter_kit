@@ -107,7 +107,7 @@ class OneTimeToken extends ControllerBase {
   public static function create(ContainerInterface $container)
   {
     return new static(
-      $container->get('simple_oauth.repositories.user'),
+      $container->get('simple_oauth_password_grant.repositories.user'),
       $container->get('simple_oauth.repositories.access_token'),
       $container->get('simple_oauth.repositories.refresh_token'),
       $container->get('simple_oauth.repositories.client'),

@@ -434,8 +434,10 @@ function get_oauth_user_infos(UserInterface $user) {
 
   $avatar = NULL;
 
-  if (user_picture_enabled() && !$user->get('user_picture')->isEmpty()) {
-    $pictureUri = $user->get('user_picture')->entity->getFileUri();
+  // Picture file may be missing (deleted file or target_id 0).
+  $picture = user_picture_enabled() ? $user->get('user_picture')->entity : NULL;
+  if ($picture) {
+    $pictureUri = $picture->getFileUri();
     $style = \Drupal::entityTypeManager()
       ->getStorage('image_style')
       ->load('avatar');

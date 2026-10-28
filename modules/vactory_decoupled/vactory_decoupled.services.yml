@@ -1,4 +1,12 @@
 services:
+  vactory_decoupled.token_expiry_trigger_handler:
+    class: Drupal\vactory_decoupled\TokenExpiryTriggerHandler
+    decorates: Drupal\simple_oauth\TokenExpiryTriggerHandlerInterface
+    arguments: ['@.inner', '@simple_oauth.expired_collector']
+  vactory_decoupled.scope_repository:
+    class: Drupal\vactory_decoupled\ScopeRepository
+    decorates: simple_oauth.repositories.scope
+    arguments: ['@.inner']
   vactory_decoupled.breadcrumb.default:
     class: Drupal\vactory_decoupled\MenuBasedBreadcrumbBuilder
     arguments: ['@string_translation','@plugin.manager.menu.link','@language_manager','@entity_type.manager', '@config.factory', '@cache.discovery', '@lock', '@entity.repository', '@path_processor_manager', '@router.no_access_checks', '@title_resolver', '@current_route_match']
