@@ -11,23 +11,6 @@ use Drupal\Core\Url;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
- * Implements hook_preprocess_HOOK().
- */
-function vactory_user_preprocess_login_with(&$variables) {
-  $moduleHandler = \Drupal::service('module_handler');
-
-  if ($moduleHandler->moduleExists('social_api')) {
-    $social_networks = $variables['social_networks'];
-    $social_networks_definitions = Drupal::service('plugin.network.manager')
-      ->getDefinitions();
-
-    foreach ($social_networks as $network_id => $data) {
-      $variables['social_networks'][$network_id]['name'] = $social_networks_definitions[$network_id]['social_network'];
-    }
-  }
-}
-
-/**
  * Login Form.
  *
  * Implements hook_form_FORM_ID_alter().

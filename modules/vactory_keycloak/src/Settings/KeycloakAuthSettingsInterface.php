@@ -2,42 +2,35 @@
 
 namespace Drupal\vactory_keycloak\Settings;
 
+use Drupal\social_auth\Settings\SettingsInterface;
+
 /**
  * Defines the settings interface.
  */
-interface KeycloakAuthSettingsInterface {
+interface KeycloakAuthSettingsInterface extends SettingsInterface {
 
   /**
    * Gets the application server URL.
    *
-   * @return mixed
+   * @return string|null
    *   The server URL.
    */
-  public function getAppServerUrl();
+  public function getAppServerUrl(): ?string;
 
   /**
    * Gets the application realm.
    *
-   * @return string
+   * @return string|null
    *   The application realm.
    */
-  public function getAppRealm();
+  public function getAppRealm(): ?string;
 
   /**
-   * Gets the application client id.
+   * Whether the server certificate verification is disabled.
    *
-   * @return string
-   *   The application client id.
+   * @return bool
+   *   TRUE to skip the certificate verification.
    */
-  public function getAppClientId();
-
-  /**
-   * Gets the application client secret.
-   *
-   * @return string
-   *   The application client secret.
-   */
-  public function getAppClientSecret();
-
+  public function noCertVerification(): bool;
 
 }

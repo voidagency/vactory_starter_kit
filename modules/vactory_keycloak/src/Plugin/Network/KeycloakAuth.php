@@ -4,10 +4,10 @@ namespace Drupal\vactory_keycloak\Plugin\Network;
 
 use Drupal\Core\Url;
 use Drupal\social_api\SocialApiException;
+use Drupal\social_auth\Settings\SettingsInterface;
 use Drupal\social_auth\Plugin\Network\NetworkBase;
-use Drupal\vactory_keycloak\Settings\KeycloakAuthSettings;
-use Stevenmaguire\OAuth2\Client\Provider\Keycloak;
 use GuzzleHttp\Client as HttpClient;
+use Stevenmaguire\OAuth2\Client\Provider\Keycloak;
 
 /**
  * Defines a Network Plugin for Social Auth Keycloak.
@@ -16,8 +16,17 @@ use GuzzleHttp\Client as HttpClient;
  *
  * @Network(
  *   id = "vactory_keycloak",
+ *   short_name = "keycloak",
  *   social_network = "Keycloak",
+ *   img_path = "img/keycloak_logo.svg",
  *   type = "social_auth",
+ *   class_name = "\Stevenmaguire\OAuth2\Client\Provider\Keycloak",
+ *   auth_manager = "\Drupal\vactory_keycloak\KeycloakAuthManager",
+ *   routes = {
+ *     "redirect": "vactory_keycloak.redirect_to_kc",
+ *     "callback": "vactory_keycloak.callback",
+ *     "settings_form": "vactory_keycloak.settings_form",
+ *   },
  *   handlers = {
  *     "settings": {
  *       "class": "\Drupal\vactory_keycloak\Settings\KeycloakAuthSettings",
@@ -29,20 +38,11 @@ use GuzzleHttp\Client as HttpClient;
 class KeycloakAuth extends NetworkBase implements KeycloakAuthInterface {
 
   /**
-   * Sets the underlying SDK library.
-   *
-   * @return \Stevenmaguire\OAuth2\Client\Provider\Keycloak|false
-   *   The initialized 3rd party library instance.
-   *   False if library could not be initialized.
-   *
-   * @throws \Drupal\social_api\SocialApiException
-   *   If the SDK library does not exist.
+   * {@inheritdoc}
    */
-  protected function initSdk() {
-
-    $class_name = '\Stevenmaguire\OAuth2\Client\Provider\Keycloak';
-    if (!class_exists($class_name)) {
-      throw new SocialApiException(sprintf('The PHP League OAuth2 library for Keycloak not found. Class: %s.', $class_name));
+  protected function initSdk(): mixed {
+    if (!class_exists(Keycloak::class)) {
+      throw new SocialApiException(sprintf('The PHP League OAuth2 library for Keycloak not found. Class: %s.', Keycloak::class));
     }
 
     /** @var \Drupal\vactory_keycloak\Settings\KeycloakAuthSettings $settings */
@@ -53,9 +53,9 @@ class KeycloakAuth extends NetworkBase implements KeycloakAuthInterface {
       $league_settings = [
         'authServerUrl' => $settings->getAppServerUrl(),
         'realm' => $settings->getAppRealm(),
-        'clientId' => $settings->getAppClientId(),
-        'clientSecret' => $settings->getAppClientSecret(),
-        'redirectUri' => Url::fromRoute('vactory_keycloak.callback')->setAbsolute()->toString(),
+        'clientId' => $settings->getClientId(),
+        'clientSecret' => $settings->getClientSecret(),
+        'redirectUri' => $this->getCallbackUrl()->setAbsolute()->toString(),
       ];
 
       if ($settings->noCertVerification()) {
@@ -74,21 +74,11 @@ class KeycloakAuth extends NetworkBase implements KeycloakAuthInterface {
   }
 
   /**
-   * Checks that module is configured.
-   *
-   * @param \Drupal\vactory_keycloak\Settings\KeycloakAuthSettings $settings
-   *   The Social Auth Keycloak settings.
-   *
-   * @return bool
-   *   True if module is configured.
-   *   False otherwise.
+   * {@inheritdoc}
    */
-  protected function validateConfig(KeycloakAuthSettings $settings) {
-    $app_server_url = $settings->getAppServerUrl();
-    $app_realm = $settings->getAppRealm();
-    $app_client_id = $settings->getAppClientId();
-
-    if (!$app_server_url || !$app_realm || !$app_client_id) {
+  protected function validateConfig(SettingsInterface $settings): bool {
+    /** @var \Drupal\vactory_keycloak\Settings\KeycloakAuthSettings $settings */
+    if (!$settings->getAppServerUrl() || !$settings->getAppRealm() || !$settings->getClientId()) {
       $this->loggerFactory
         ->get('vactory_keycloak')
         ->error('Define App Client ID, App Server URL and App Realm on module settings.');
@@ -97,6 +87,29 @@ class KeycloakAuth extends NetworkBase implements KeycloakAuthInterface {
     }
 
     return TRUE;
+  }
+
+  /**
+   * {@inheritdoc}
+   *
+   * Keycloak routes have no {network} parameter.
+   */
+  public function getRedirectUrl(array $route_options = []): Url {
+    return Url::fromRoute('vactory_keycloak.redirect_to_kc', [], $route_options);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getCallbackUrl(array $route_options = []): Url {
+    return Url::fromRoute('vactory_keycloak.callback', [], $route_options);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getSettingsFormUrl(array $route_options = []): Url {
+    return Url::fromRoute('vactory_keycloak.settings_form', [], $route_options);
   }
 
 }

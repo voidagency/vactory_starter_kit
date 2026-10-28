@@ -10,16 +10,17 @@ use Drupal\social_auth\User\UserManager as SocialAuthUserManager;
 class UserManager extends SocialAuthUserManager
 {
 
-    public function generateUniqueUsername($name) {
+    /**
+     * Default plugin id, used by downloadProfilePic() for file names and logs.
+     */
+    protected string $pluginId = 'vactory_decoupled';
+
+    public function generateUniqueUsername(string $name): string {
         return parent::generateUniqueUsername($name);
     }
 
-    public function userPictureEnabled() {
+    public function userPictureEnabled(): bool {
         return parent::userPictureEnabled();
-    }
-
-    public function downloadProfilePic($picture_url, $id) {
-        return parent::downloadProfilePic($picture_url, $id);
     }
 
 }

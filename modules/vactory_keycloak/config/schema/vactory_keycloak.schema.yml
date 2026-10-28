@@ -8,15 +8,18 @@ vactory_keycloak.settings:
     app_realm:
       type: string
       label: 'App Realm'
-    app_client_id:
+    client_id:
       type: string
       label: 'Client ID'
-    app_client_secret:
+    client_secret:
       type: string
       label: 'Client Secret'
     scopes:
       type: string
       label: 'Scopes to be requested'
-    redirect_uri:
+    endpoints:
       type: string
-      label: 'Redirect URI'
+      label: 'API calls to be made to collect data'
+    no_verify:
+      type: boolean
+      label: 'No cert verification'

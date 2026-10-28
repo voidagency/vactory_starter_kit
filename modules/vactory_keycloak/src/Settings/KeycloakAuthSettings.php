@@ -2,7 +2,7 @@
 
 namespace Drupal\vactory_keycloak\Settings;
 
-use Drupal\social_api\Settings\SettingsBase;
+use Drupal\social_auth\Settings\SettingsBase;
 
 /**
  * Defines methods to get Social Auth Keycloak app settings.
@@ -12,54 +12,21 @@ class KeycloakAuthSettings extends SettingsBase implements KeycloakAuthSettingsI
   /**
    * Application Server URL.
    *
-   * @var string
+   * @var string|null
    */
   protected $appServerUrl;
 
   /**
    * Application client realm.
    *
-   * @var string
+   * @var string|null
    */
   protected $appRealm;
 
   /**
-   * Application client id.
-   *
-   * @var string
-   */
-  protected $appClientId;
-
-  /**
-   * Application client secret.
-   *
-   * @var string
-   */
-  protected $appClientSecret;
-
-  /**
-   * The default access token.
-   *
-   * @var string
-   */
-  protected $defaultToken;
-
-  /**
-   * The redirect URL for social_auth implmeneter.
-   *
-   * @var string
-   */
-  protected $oauthRedirectUrl;
-
-  /**
-   * No verify option.
-   */
-  protected $noVerify;
-
-  /**
    * {@inheritdoc}
    */
-  public function getAppServerUrl() {
+  public function getAppServerUrl(): ?string {
     if (!$this->appServerUrl) {
       $this->appServerUrl = $this->config->get('app_server_url');
     }
@@ -69,7 +36,7 @@ class KeycloakAuthSettings extends SettingsBase implements KeycloakAuthSettingsI
   /**
    * {@inheritdoc}
    */
-  public function getAppRealm() {
+  public function getAppRealm(): ?string {
     if (!$this->appRealm) {
       $this->appRealm = $this->config->get('app_realm');
     }
@@ -79,31 +46,8 @@ class KeycloakAuthSettings extends SettingsBase implements KeycloakAuthSettingsI
   /**
    * {@inheritdoc}
    */
-  public function getAppClientId() {
-    if (!$this->appClientId) {
-      $this->appClientId = $this->config->get('app_client_id');
-    }
-    return $this->appClientId;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getAppClientSecret() {
-    if (!$this->appClientSecret) {
-      $this->appClientSecret = $this->config->get('app_client_secret');
-    }
-    return $this->appClientSecret;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function noCertVerification() {
-    if (!$this->noVerify) {
-      $this->noVerify = $this->config->get('no_verify');
-    }
-    return $this->noVerify;
+  public function noCertVerification(): bool {
+    return (bool) $this->config->get('no_verify');
   }
 
 }

@@ -5,18 +5,30 @@
  * Install, update, and uninstall functions for the Social Auth Keycloak module.
  */
 
-use Drupal\social_auth\Controller\SocialAuthController;
-
 /**
- * Implements hook_install().
+ * Rename Keycloak client settings to the Social Auth 4.x keys.
  */
-function vactory_keycloak_install() {
-  SocialAuthController::setLoginButtonSettings('vactory_keycloak', 'vactory_keycloak.redirect_to_kc', 'img/keycloak_logo.svg');
-}
-
-/**
- * Implements hook_uninstall().
- */
-function vactory_keycloak_uninstall() {
-  SocialAuthController::deleteLoginButtonSettings('vactory_keycloak');
+function vactory_keycloak_update_10001() {
+  $config = \Drupal::configFactory()->getEditable('vactory_keycloak.settings');
+  if ($config->isNew()) {
+    return;
+  }
+  $renamed = [
+    'app_client_id' => 'client_id',
+    'app_client_secret' => 'client_secret',
+  ];
+  foreach ($renamed as $old => $new) {
+    if ($config->get($old) !== NULL) {
+      $config->set($new, $config->get($old))->clear($old);
+    }
+  }
+  // Social Auth 4.x expects strings.
+  foreach (['scopes', 'endpoints'] as $key) {
+    if ($config->get($key) === NULL) {
+      $config->set($key, '');
+    }
+  }
+  $config->clear('oauth_redirect_url')
+    ->clear('redirect_uri')
+    ->save();
 }

@@ -1,7 +1,7 @@
 vactory_keycloak.redirect_to_kc:
   path: 'user/login/keycloak'
   defaults:
-    _controller: '\Drupal\vactory_keycloak\Controller\KeycloakAuthController::redirectToProvider'
+    _controller: '\Drupal\vactory_keycloak\Controller\KeycloakAuthController::redirectToKeycloak'
   requirements:
     # Anonymous users can log in, but authenticated users can also associate a new provider.
     _access: 'TRUE'
@@ -11,7 +11,7 @@ vactory_keycloak.redirect_to_kc:
 vactory_keycloak.callback:
   path: 'user/login/keycloak/callback'
   defaults:
-    _controller: '\Drupal\vactory_keycloak\Controller\KeycloakAuthController::callback'
+    _controller: '\Drupal\vactory_keycloak\Controller\KeycloakAuthController::keycloakCallback'
   requirements:
     # Anonymous users can log in, but authenticated users can also associate a new provider.
     _access: 'TRUE'

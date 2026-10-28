@@ -76,6 +76,7 @@ services:
       - '@event_dispatcher'
       - '@token'
       - '@file_system'
+      - '@password_generator'
 
   cache.vactory_decoupled_oauth:
     class: Drupal\Core\Cache\CacheBackendInterface
