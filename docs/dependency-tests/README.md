@@ -16,7 +16,7 @@ Audit du 2026-11-17, branche `3.x` (HEAD `808840c7`). Ticket Redmine : #71097.
 | [drupal/content-media-search-seo/](drupal/content-media-search-seo/) | Paragraphs, médias, search_api, SEO (43 fiches) |
 | [drupal/forms-admin-ui/](drupal/forms-admin-ui/) | Webform, mail, migrate, views, admin, Twig/UI (58 fiches) |
 | [unused.md](unused.md) | Paquets déclarés sans usage dans le profil |
-| [bugs.md](bugs.md) | Bugs trouvés pendant l'audit (17 tickets Redmine) et constats à vérifier |
+| [bugs.md](bugs.md) | Bugs trouvés pendant l'audit (18 tickets Redmine) et constats à vérifier |
 | [_verify/](_verify/) | Affirmations soumises à vérification + rapports Fable |
 | [_recon/](_recon/) | Recon mi-aveugle, tours 1 et 2 |
 | [NEXT.md](NEXT.md) | Passes suivantes |
@@ -66,8 +66,8 @@ Deux chercheurs indépendants, chacun avec la liste de ce qui était déjà conn
 
 Deux constats changent la stratégie de test :
 
-1. **Le `composer.lock` du profil n'est pas utilisé** (F03) : la CI et les projets installent le profil par `composer require`, donc avec les **dernières versions permises par `composer.json`**. Une PR Dependabot qui ne touche que le lock ne change rien au build ; `3.x` peut casser sans aucun commit (scénario linkit 7.0.13). → Il faut tester les **contraintes** (job CI planifié « latest permis », et un job « lowest » `--prefer-lowest` pour attraper les contraintes trop basses comme phpspreadsheet/php-jwt), pas le lock.
-2. **Les patches du profil ne s'appliquent pas d'eux-mêmes** (G12) : `cweagans/composer-patches` n'est ni requis ni autorisé dans `allow-plugins`. Ils ne s'appliquent que si le projet racine l'installe et accepte les patches des dépendances. B12/B13 et #71101 en dépendent.
+1. **Le `composer.lock` du profil n'est pas utilisé** (F03). Les projets installent le profil par `composer require`, donc avec les dernières versions permises par `composer.json` : une PR Dependabot qui ne touche que le lock ne change rien, et `3.x` peut casser sans commit (scénario linkit 7.0.13). La CI, elle, installe le profil dans un projet racine `vactory8` qui épingle `drupal/core 10.4.7` et `linkit 7.0.12` : la résolution échoue (editor_advanced_link 2.3.4 exige core ^10.5), l'échec est ignoré, et **les tests tournent sur le lock du projet racine**, pas sur les contraintes du profil (build #705, #71156). → Faire échouer le build sur erreur composer, puis tester les **contraintes** (job planifié « latest permis » et job `--prefer-lowest`).
+2. **Patches** (G12) : le profil ne requiert pas `cweagans/composer-patches`. Ils ne s'appliquent que si le projet racine l'installe avec `patches-file` ou `enable-patching`. C'est le cas du projet racine de la CI (« Gathering patches for dependencies », build #705) ; à vérifier projet par projet. B12/B13 et #71101 en dépendent.
 
 Autres constats utiles pour les tests : 22 modules livrent de la config sans schéma (F13) → les tests Kernel stricts échoueront à l'install, à traiter d'abord ; ~80 dépendances de config non déclarées (F12) ; API core supprimées en D11 encore utilisées (G03, G07) → ajouter `phpstan-drupal` / `drupal-check` en CI.
 

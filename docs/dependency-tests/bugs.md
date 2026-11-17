@@ -22,6 +22,7 @@ Vérification indépendante (Fable, lecture seule) : [_verify/fable-bugs.md](_ve
 | #71146 | G01 | `entityQuery` sans `accessCheck` : commande d'envoi newsletters Mailchimp et lien flag `liked_content` en erreur | Majeur |
 | #71147 | G02 | `vactory_user_migrate` : plugin `hash_password` typé `PhpassHashedPassword` → `TypeError` depuis D10.1, import utilisateurs cassé | Majeur |
 | #71148 | G03 | `WebformFileUploadResource` : `sprintf` sans argument (500), 3 API core supprimées en D11, extensions non contrôlées par défaut | Majeur |
+| #71156 | H01 | **CI (High)** — résolution composer du profil en échec (core 10.4.7 épinglé par le projet racine vs editor_advanced_link 2.3.4) ignorée : tests sur le lock du projet racine, build vert. Constat sur le log du build #705 | Majeur |
 | #71139 | B08, B11, B14 | Log OAuth2 **succès** inactif (l'échec fonctionne) ; branche morte `seven` dans appointment ; identifiants Shield par défaut | Mineur |
 
 Constats non-bug de la recon : tour 1 (F03, F05-F07, F09-F17) [_recon/round1.md](_recon/round1.md) ; tour 2 (G05-G13) [_recon/round2.md](_recon/round2.md).
