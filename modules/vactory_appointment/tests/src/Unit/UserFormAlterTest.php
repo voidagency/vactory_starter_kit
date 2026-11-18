@@ -18,7 +18,7 @@ class UserFormAlterTest extends UnitTestCase {
   /**
    * Alters a user form rendered with the given active theme.
    */
-  protected function alterUserForm(string $active_theme): array {
+  protected function alterUserForm(string $active_theme, ?string $admin_theme = 'claro'): array {
     require_once dirname(__DIR__, 3) . '/vactory_appointment.module';
     $theme = $this->createMock(ActiveTheme::class);
     $theme->method('getName')->willReturn($active_theme);
@@ -27,7 +27,7 @@ class UserFormAlterTest extends UnitTestCase {
     $container = new ContainerBuilder();
     $container->set('theme.manager', $theme_manager);
     $container->set('config.factory', $this->getConfigFactoryStub([
-      'system.theme' => ['admin' => 'claro', 'default' => 'vactory'],
+      'system.theme' => ['admin' => $admin_theme, 'default' => 'vactory'],
     ]));
     \Drupal::setContainer($container);
 
@@ -54,6 +54,15 @@ class UserFormAlterTest extends UnitTestCase {
   public function testKeptInFrontTheme(): void {
     $form = $this->alterUserForm('vactory');
     $this->assertArrayNotHasKey('#access', $form['field_adviser_holiday']);
+    $this->assertArrayNotHasKey('#access', $form['field_adviser_appointments']);
+  }
+
+  /**
+   * Without a distinct admin theme the fields are kept.
+   */
+  public function testKeptWithoutDistinctAdminTheme(): void {
+    $this->assertArrayNotHasKey('#access', $this->alterUserForm('vactory', NULL)['field_adviser_holiday']);
+    $this->assertArrayNotHasKey('#access', $this->alterUserForm('vactory', 'vactory')['field_adviser_holiday']);
   }
 
 }

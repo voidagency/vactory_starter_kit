@@ -23,6 +23,22 @@ class OauthTokenAuthLogTest extends UnitTestCase {
     $logger = $this->createMock(LoggerInterface::class);
     $logger->expects($this->once())->method('info')
       ->with($this->stringContains('Session opened for jane'));
+    $this->logSuccess($logger, TRUE);
+  }
+
+  /**
+   * Nothing is logged when the option is disabled.
+   */
+  public function testNothingLoggedWhenDisabled(): void {
+    $logger = $this->createMock(LoggerInterface::class);
+    $logger->expects($this->never())->method('info');
+    $this->logSuccess($logger, FALSE);
+  }
+
+  /**
+   * Calls logAuthSuccess() with the given logger and option value.
+   */
+  protected function logSuccess(LoggerInterface $logger, bool $enabled): void {
     $logger_factory = $this->createMock(LoggerChannelFactoryInterface::class);
     $logger_factory->method('get')->willReturn($logger);
     $module_handler = $this->createMock(ModuleHandlerInterface::class);
@@ -32,7 +48,7 @@ class OauthTokenAuthLogTest extends UnitTestCase {
     $container->set('module_handler', $module_handler);
     // Key saved by vactory_security_review's settings form.
     $container->set('config.factory', $this->getConfigFactoryStub([
-      'security_review.checks' => ['log_failed_auth' => TRUE],
+      'security_review.checks' => ['log_failed_auth' => $enabled],
     ]));
     \Drupal::setContainer($container);
 

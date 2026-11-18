@@ -723,3 +723,31 @@ function _get_profile__composer_version($profile_name) {
 
   return NULL;
 }
+
+/**
+ * Implements hook_form_FORM_ID_alter() for shield_admin_settings.
+ */
+function vactory_core_form_shield_admin_settings_alter(array &$form, FormStateInterface $form_state) {
+  $form['#validate'][] = 'vactory_core_shield_settings_validate';
+}
+
+/**
+ * Refuses to enable Shield with empty Basic Auth credentials.
+ *
+ * Shield accepts an empty user and password when they are not set: the site
+ * would look protected while anyone can log in.
+ */
+function vactory_core_shield_settings_validate(array &$form, FormStateInterface $form_state) {
+  if (!$form_state->getValue(['general', 'shield_enable'])) {
+    return;
+  }
+  if ($form_state->getValue(['credentials', 'credential_provider']) !== 'shield') {
+    return;
+  }
+  foreach (['user', 'pass'] as $key) {
+    $value = $form_state->getValue(['credentials', 'providers', 'shield', $key]);
+    if (trim((string) $value) === '') {
+      $form_state->setErrorByName('credentials][providers][shield][' . $key, t('Shield cannot be enabled without a user and a password.'));
+    }
+  }
+}

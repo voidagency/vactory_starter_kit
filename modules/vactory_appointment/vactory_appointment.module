@@ -316,8 +316,12 @@ function vactory_appointment_form_alter(&$form, FormStateInterface $form_state, 
   }
   // Hide adviser fields in the back office (admin theme) user forms.
   $theme_name = \Drupal::service('theme.manager')->getActiveTheme()->getName();
-  $admin_theme = \Drupal::config('system.theme')->get('admin');
-  if (in_array($form_id, ['user_form', 'user_register_form']) && $theme_name === $admin_theme) {
+  $theme_config = \Drupal::config('system.theme');
+  $admin_theme = $theme_config->get('admin');
+  // When the admin theme is empty or is the front theme, the back office
+  // cannot be told apart: keep the fields (advisers edit them in the front).
+  $is_back_office = $admin_theme && $admin_theme !== $theme_config->get('default') && $theme_name === $admin_theme;
+  if (in_array($form_id, ['user_form', 'user_register_form']) && $is_back_office) {
     $form['field_adviser_holiday']['#access'] = FALSE;
     $form['field_adviser_appointments']['#access'] = FALSE;
   }
