@@ -1,7 +1,8 @@
 <?php
 
 namespace Drupal\vactory_user_migrate\Plugin\migrate\process;
-use Drupal\Core\Password\PhpassHashedPassword;
+
+use Drupal\Core\Password\PasswordInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\migrate\MigrateExecutableInterface;
 use Drupal\migrate\MigrateSkipRowException;
@@ -16,15 +17,14 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   id = "hash_password"
  * )
  */
-
 class HashPassword extends ProcessPluginBase implements ContainerFactoryPluginInterface {
 
   /**
    * Password manager service.
    *
-   * @var \Drupal\Core\Password\PhpassHashedPassword
+   * @var \Drupal\Core\Password\PasswordInterface
    */
-  protected $password_manager;
+  protected $passwordManager;
 
   /**
    * {@inheritDoc}
@@ -33,10 +33,10 @@ class HashPassword extends ProcessPluginBase implements ContainerFactoryPluginIn
     array $configuration,
     $plugin_id,
     $plugin_definition,
-    PhpassHashedPassword $password_manager
+    PasswordInterface $password_manager
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->password_manager = $password_manager;
+    $this->passwordManager = $password_manager;
   }
 
   /**
@@ -53,13 +53,14 @@ class HashPassword extends ProcessPluginBase implements ContainerFactoryPluginIn
 
   /**
    * {@inheritdoc}
-   * @throws MigrateSkipRowException
+   *
+   * @throws \Drupal\migrate\MigrateSkipRowException
    */
   public function transform($value, MigrateExecutableInterface $migrate_executable, Row $row, $destination_property) {
     if (empty($value)) {
       throw new MigrateSkipRowException('User (' . $row->get('Email') . '): Missing password property value');
     }
-    return $this->password_manager->hash($value);
+    return $this->passwordManager->hash($value);
   }
 
 }
