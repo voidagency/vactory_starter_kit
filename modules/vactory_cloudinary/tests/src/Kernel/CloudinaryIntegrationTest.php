@@ -2,8 +2,10 @@
 
 namespace Drupal\Tests\vactory_cloudinary\Kernel;
 
+use Cloudinary\Api\Upload\UploadApi;
 use Drupal\Component\Serialization\Yaml;
 use Drupal\KernelTests\KernelTestBase;
+use Drupal\cloudinary_stream_wrapper\StreamWrapper\CloudinaryStreamWrapper;
 use Drupal\file\Entity\File;
 use Drupal\file_entity\Form\FileEditForm as FileEntityEditForm;
 use Drupal\vactory_cloudinary\Form\FileEditForm;
@@ -34,6 +36,9 @@ class CloudinaryIntegrationTest extends KernelTestBase {
 
   /**
    * {@inheritdoc}
+   *
+   * Intentionally minimal: a Kernel test does not resolve info.yml
+   * dependencies, testDependencies() checks them.
    */
   protected static $modules = [
     'system',
@@ -78,6 +83,24 @@ class CloudinaryIntegrationTest extends KernelTestBase {
     $this->assertInstanceOf(CloudinaryStreamWrapperOverride::class, $wrapper);
     $this->assertSame(self::URL, $wrapper->getExternalUrl());
     $this->assertSame(self::URL, $this->container->get('file_url_generator')->generateAbsoluteString($uri));
+    // URIs without a fixed version go through loadResource() (API call, not
+    // run here): the parent methods we call must keep their signature.
+    foreach (['getTarget' => 0, 'loadResource' => 1] as $method => $required) {
+      $reflection = new \ReflectionMethod(CloudinaryStreamWrapper::class, $method);
+      $this->assertSame($required, $reflection->getNumberOfRequiredParameters(), $method);
+    }
+  }
+
+  /**
+   * The modules declared as dependencies exist.
+   */
+  public function testDependencies(): void {
+    $info = $this->container->get('extension.list.module')->getExtensionInfo('vactory_cloudinary');
+    $list = $this->container->get('extension.list.module');
+    foreach ($info['dependencies'] as $dependency) {
+      $module = explode(':', $dependency)[1] ?? $dependency;
+      $this->assertTrue($list->exists($module), $dependency);
+    }
   }
 
   /**
@@ -89,6 +112,15 @@ class CloudinaryIntegrationTest extends KernelTestBase {
     $this->assertSame('folder/image', $manager->getPublicId('cloudinary://folder/image.JPG'));
     $this->assertSame('folder/doc.pdf', $manager->getPublicId('cloudinary:///folder/doc.pdf'));
     $this->assertSame(['public_id' => 'folder/image'], $manager->getBasicOptions('cloudinary://folder/image.png'));
+    // The SDK accepts our flat credentials array.
+    $upload_api = (new \ReflectionProperty($manager, 'uploadApi'))->getValue($manager);
+    $this->assertInstanceOf(UploadApi::class, $upload_api);
+    $cloud = (new \ReflectionProperty($upload_api, 'apiClient'))->getValue($upload_api)->getCloud();
+    $this->assertSame('vactory-test', $cloud->cloudName);
+    $this->assertSame('123456789012345', $cloud->apiKey);
+    // Calls made by the manager.
+    $this->assertTrue(method_exists($upload_api, 'explicit'));
+    $this->assertTrue(method_exists($upload_api, 'upload'));
     // Every service declared by the module can be built.
     foreach (array_keys(Yaml::decode(file_get_contents(__DIR__ . '/../../../vactory_cloudinary.services.yml'))['services']) as $id) {
       if ($id !== 'cloudinary_stream_wrapper.override') {
