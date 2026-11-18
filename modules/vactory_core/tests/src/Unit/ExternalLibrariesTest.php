@@ -15,7 +15,7 @@ class ExternalLibrariesTest extends UnitTestCase {
   /**
    * Hosts that no longer serve files.
    */
-  const DEAD_HOSTS = ['rawgit.com', 'cdn.rawgit.com'];
+  const DEAD_HOSTS = ['rawgit.com'];
 
   /**
    * Returns every external JS/CSS URL, keyed by "file: library".
@@ -53,11 +53,15 @@ class ExternalLibrariesTest extends UnitTestCase {
    * No library loads a file from a CDN that is shut down.
    */
   public function testNoDeadCdn(): void {
+    $assets = $this->externalAssets();
+    $this->assertNotEmpty($assets, 'External assets were found.');
     $dead = [];
-    foreach ($this->externalAssets() as [$library, $url]) {
-      $host = parse_url(str_starts_with($url, '//') ? 'https:' . $url : $url, PHP_URL_HOST);
-      if (in_array($host, self::DEAD_HOSTS, TRUE)) {
-        $dead[] = "$library ($url)";
+    foreach ($assets as [$library, $url]) {
+      $host = strtolower(parse_url(str_starts_with($url, '//') ? 'https:' . $url : $url, PHP_URL_HOST));
+      foreach (self::DEAD_HOSTS as $dead_host) {
+        if ($host === $dead_host || str_ends_with($host, '.' . $dead_host)) {
+          $dead[] = "$library ($url)";
+        }
       }
     }
     $this->assertSame([], $dead);
