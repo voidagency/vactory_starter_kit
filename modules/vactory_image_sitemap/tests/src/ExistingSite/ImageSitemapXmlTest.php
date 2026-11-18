@@ -18,11 +18,18 @@ class ImageSitemapXmlTest extends VactoryExistingSiteBase {
   protected array $modulesToInstall = ['vactory_image_sitemap'];
 
   /**
-   * Generated sitemap file used by the test.
+   * Generated sitemap file used by the test (default language).
    *
    * @var string
    */
-  protected string $file = 'public://image_sitemap/fr_image_sitemap.xml';
+  protected string $file;
+
+  /**
+   * Default language of the site.
+   *
+   * @var string
+   */
+  protected string $langcode;
 
   /**
    * Whether the test created the file.
@@ -36,6 +43,8 @@ class ImageSitemapXmlTest extends VactoryExistingSiteBase {
    */
   protected function setUp(): void {
     parent::setUp();
+    $this->langcode = \Drupal::languageManager()->getDefaultLanguage()->getId();
+    $this->file = 'public://image_sitemap/' . $this->langcode . '_image_sitemap.xml';
     if (!file_exists($this->file)) {
       $dir = 'public://image_sitemap';
       \Drupal::service('file_system')->prepareDirectory($dir, FileSystemInterface::CREATE_DIRECTORY);
@@ -58,7 +67,8 @@ class ImageSitemapXmlTest extends VactoryExistingSiteBase {
    * The generated sitemap is served as XML.
    */
   public function testSitemapIsServed(): void {
-    $response = \Drupal::httpClient()->get(getenv('DTT_BASE_URL') . '/fr/image-sitemap.xml', [
+    $url = $this->baseUrl . '/' . $this->langcode . '/image-sitemap.xml';
+    $response = \Drupal::httpClient()->get($url, [
       'http_errors' => FALSE,
       'allow_redirects' => FALSE,
     ]);
