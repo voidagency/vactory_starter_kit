@@ -12,9 +12,9 @@ use weitzman\DrupalTestTraits\ExistingSiteBase;
  * Our use of drupal/simplify_menu (and the menu tree manipulators).
  *
  * VactoryCoreServiceProvider replaces simplify_menu.menu_items and
- * menu.default_tree_manipulators with our classes, appending constructor
- * arguments after the parent's: a new constructor argument upstream breaks
- * the container. The header/footer templates call simplify_menu() in Twig.
+ * menu.default_tree_manipulators with our classes; our dependencies are
+ * injected through method calls so that upstream constructor changes do not
+ * break the container. The header/footer templates call simplify_menu().
  *
  * @group vactory_core
  * @group dependencies
@@ -39,15 +39,16 @@ class SimplifyMenuIntegrationTest extends ExistingSiteBase {
       'label' => 'Simplify menu test',
     ]);
     $menu->save();
-    $this->markEntityForCleanup($menu);
     $parent = MenuLinkContent::create([
       'title' => 'Parent item',
-      'link' => ['uri' => 'internal:/'],
+      'link' => [
+        'uri' => 'internal:/',
+        'options' => ['attributes' => ['class' => ['header-link']]],
+      ],
       'menu_name' => $this->menuId,
       'weight' => 0,
     ]);
     $parent->save();
-    $this->markEntityForCleanup($parent);
     $child = MenuLinkContent::create([
       'title' => 'Child item',
       'link' => ['uri' => 'internal:/user/login'],
@@ -55,7 +56,20 @@ class SimplifyMenuIntegrationTest extends ExistingSiteBase {
       'parent' => $parent->getPluginId(),
     ]);
     $child->save();
-    $this->markEntityForCleanup($child);
+    // Shown to administrators only (menu_role_show_role, checked by our
+    // tree manipulator and our MenuItems).
+    $restricted = MenuLinkContent::create([
+      'title' => 'Admins only',
+      'link' => ['uri' => 'internal:/'],
+      'menu_name' => $this->menuId,
+      'weight' => 5,
+      'menu_role_show_role' => ['administrator'],
+    ]);
+    $restricted->save();
+    // Children first: deleting the menu deletes its links.
+    foreach ([$child, $restricted, $parent, $menu] as $entity) {
+      $this->markEntityForCleanup($entity);
+    }
   }
 
   /**
@@ -72,13 +86,24 @@ class SimplifyMenuIntegrationTest extends ExistingSiteBase {
   public function testMenuTree(): void {
     $tree = \Drupal::service('simplify_menu.menu_items')->getMenuTree($this->menuId);
     $this->assertArrayHasKey('menu_tree', $tree);
-    $this->assertCount(1, $tree['menu_tree']);
     $parent = $tree['menu_tree'][0];
     $this->assertSame('Parent item', $parent['text']);
     foreach (['url', 'active', 'active_trail'] as $key) {
       $this->assertArrayHasKey($key, $parent);
     }
     $this->assertSame('Child item', $parent['submenu'][0]['text'] ?? NULL);
+    // Keys read by the vactory_header templates.
+    $this->assertSame(['header-link'], $parent['options']['attributes']['class'] ?? NULL);
+    $this->assertArrayHasKey('menu_role_show_role', $parent['fields']);
+  }
+
+  /**
+   * A link restricted to a role is hidden from other users (anonymous here).
+   */
+  public function testRoleRestrictedLinkIsHidden(): void {
+    $this->assertTrue(\Drupal::currentUser()->isAnonymous());
+    $tree = \Drupal::service('simplify_menu.menu_items')->getMenuTree($this->menuId);
+    $this->assertNotContains('Admins only', array_column($tree['menu_tree'], 'text'));
   }
 
   /**

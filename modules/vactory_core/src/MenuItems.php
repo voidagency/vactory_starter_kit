@@ -69,7 +69,7 @@ class MenuItems extends MenuItemsBase {
     EntityRepositoryInterface $entityRepository,
     EntityFieldManagerInterface $entityFieldManager,
     EntityTypeManagerInterface $entityTypeManager,
-    AccountProxyInterface $currentUser,
+    AccountProxyInterface $currentUser
   ): void {
     $this->entityRepository = $entityRepository;
     $this->entityFieldManager = $entityFieldManager;

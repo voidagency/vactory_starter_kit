@@ -5,7 +5,6 @@ namespace Drupal\vactory_core;
 use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\DependencyInjection\ServiceProviderBase;
 
-// @note: You only need Reference, if you want to change service arguments.
 use Symfony\Component\DependencyInjection\Reference;
 
 /**
