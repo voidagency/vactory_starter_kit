@@ -2,14 +2,10 @@
 
 namespace Drupal\vactory_core;
 
-use Drupal\Core\Access\AccessManagerInterface;
 use Drupal\Core\Access\AccessResult;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Menu\DefaultMenuLinkTreeManipulators;
 use Drupal\Core\Menu\MenuLinkInterface;
 use Drupal\Core\Routing\AdminContext;
-use Drupal\Core\Session\AccountInterface;
 use Drupal\menu_link_content\Plugin\Menu\MenuLinkContent;
 
 /**
@@ -27,16 +23,12 @@ class MenuRoleLinkTreeManipulator extends DefaultMenuLinkTreeManipulators {
   protected $adminContext;
 
   /**
-   * {@inheritDoc}
+   * Injects the admin context service.
+   *
+   * Setter injection (see VactoryCoreServiceProvider): the core constructor
+   * arguments are left untouched.
    */
-  public function __construct(
-    AccessManagerInterface $access_manager,
-    AccountInterface $account,
-    EntityTypeManagerInterface $entity_type_manager,
-    ModuleHandlerInterface $moduleHandler,
-    AdminContext $adminContext
-  ) {
-    parent::__construct($access_manager, $account, $entity_type_manager, $moduleHandler);
+  public function setAdminContext(AdminContext $adminContext): void {
     $this->adminContext = $adminContext;
   }
 

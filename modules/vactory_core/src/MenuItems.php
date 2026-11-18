@@ -5,7 +5,6 @@ namespace Drupal\vactory_core;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Menu\MenuLinkTreeInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\menu_link_content\Entity\MenuLinkContent;
 use Drupal\simplify_menu\MenuItems as MenuItemsBase;
@@ -60,16 +59,18 @@ class MenuItems extends MenuItemsBase {
   protected $currentUser;
 
   /**
-   * {@inheritDoc}
+   * Injects our dependencies.
+   *
+   * Setter injection (see VactoryCoreServiceProvider): the parent constructor
+   * arguments are left untouched, so simplify_menu can change them without
+   * breaking the container.
    */
-  public function __construct(
-    MenuLinkTreeInterface $menu_link_tree,
+  public function setVactoryServices(
     EntityRepositoryInterface $entityRepository,
     EntityFieldManagerInterface $entityFieldManager,
     EntityTypeManagerInterface $entityTypeManager,
-    AccountProxyInterface $currentUser
-  ) {
-    parent::__construct($menu_link_tree);
+    AccountProxyInterface $currentUser,
+  ): void {
     $this->entityRepository = $entityRepository;
     $this->entityFieldManager = $entityFieldManager;
     $this->entityTypeManager = $entityTypeManager;
