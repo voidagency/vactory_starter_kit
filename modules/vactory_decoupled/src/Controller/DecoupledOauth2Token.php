@@ -7,6 +7,7 @@ use Drupal\simple_oauth\Plugin\Oauth2GrantManagerInterface;
 use Drupal\user\UserFloodControl;
 use League\OAuth2\Server\Repositories\ClientRepositoryInterface;
 use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Drupal\Core\Config\ConfigFactoryInterface;
@@ -85,9 +86,12 @@ class DecoupledOauth2Token extends Oauth2Token {
     UserFloodControl $flood,
     ConfigFactoryInterface $configFactory,
     EntityTypeManagerInterface $entityTypeManager,
-    ModuleHandlerInterface $moduleHandler
+    ModuleHandlerInterface $moduleHandler,
+    ?LoggerInterface $logger = NULL
   ) {
-    parent::__construct($grant_manager, $client_repository);
+    // simple_oauth >= 5.2.6 requires a logger as third argument; PHP ignores
+    // it on 5.2.5, whose constructor only takes two.
+    parent::__construct($grant_manager, $client_repository, $logger ?? \Drupal::logger('simple_oauth'));
     $this->flood = $flood;
     $this->configFactory = $configFactory;
     $this->entityTypeManager = $entityTypeManager;
@@ -119,7 +123,8 @@ class DecoupledOauth2Token extends Oauth2Token {
       $container->get('user.flood_control'),
       $container->get('config.factory'),
       $container->get('entity_type.manager'),
-      $container->get('module_handler')
+      $container->get('module_handler'),
+      $container->get('logger.factory')->get('simple_oauth')
     );
   }
 
