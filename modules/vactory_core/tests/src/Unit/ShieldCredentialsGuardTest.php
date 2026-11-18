@@ -21,9 +21,9 @@ class ShieldCredentialsGuardTest extends UnitTestCase {
     parent::setUp();
     require_once dirname(__DIR__, 3) . '/vactory_core.module';
     require_once dirname(__DIR__, 3) . '/vactory_core.install';
-    if (!defined('REQUIREMENT_ERROR')) {
-      define('REQUIREMENT_ERROR', 2);
-    }
+    // Load the REQUIREMENT_* constants the way core does. Defining them here
+    // would break core's later include of install.inc in the same process.
+    include_once $this->root . '/core/includes/install.inc';
     $container = new ContainerBuilder();
     $container->set('string_translation', $this->getStringTranslationStub());
     \Drupal::setContainer($container);
