@@ -60,7 +60,7 @@ class VactoryGooglePlacesString extends ViewsAutocompleteFiltersString {
   /**
    * {@inheritDoc}
    */
-  public function buildOptionsForm(&$form, FormStateInterface $form_state) {
+  public function buildOptionsForm(&$form, FormStateInterface $form_state): void {
     parent::buildOptionsForm($form, $form_state);
     $form['vactory_google_places'] = [
       '#type' => 'checkbox',
@@ -72,7 +72,7 @@ class VactoryGooglePlacesString extends ViewsAutocompleteFiltersString {
   /**
    * {@inheritDoc}
    */
-  public function valueForm(&$form, FormStateInterface $form_state) {
+  public function valueForm(&$form, FormStateInterface $form_state): void {
     parent::valueForm($form, $form_state);
     $exposed = $form_state->get('exposed');
     if (!$exposed || empty($this->options['vactory_google_places'])) {

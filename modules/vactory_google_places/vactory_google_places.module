@@ -97,11 +97,26 @@ function vactory_google_places_views_query_alter(\Drupal\views\ViewExecutable $v
  * Implements hook_module_implements_alter().
  */
 function vactory_google_places_module_implements_alter(&$implementations, $hook) {
-  if ($hook === 'views_data_alter') {
+  if ($hook === 'views_plugins_filter_alter') {
     $implementation = isset($implementations['vactory_google_places']) ? $implementations['vactory_google_places'] : NULL;
     if ($implementation) {
       unset($implementations['vactory_google_places']);
       $implementations += ['vactory_google_places' => $implementation];
     }
+  }
+}
+
+/**
+ * Implements hook_config_schema_info_alter().
+ *
+ * Declares our option on the string filter (see
+ * vactory_google_places_views_plugins_filter_alter()).
+ */
+function vactory_google_places_config_schema_info_alter(&$definitions) {
+  if (isset($definitions['views.filter.string'])) {
+    $definitions['views.filter.string']['mapping']['vactory_google_places'] = [
+      'type' => 'integer',
+      'label' => 'Vactory google places instance',
+    ];
   }
 }
