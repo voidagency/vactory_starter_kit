@@ -3,6 +3,7 @@
 namespace Drupal\Tests\vactory_amp\ExistingSite;
 
 use Drupal\Core\Entity\Entity\EntityViewDisplay;
+use Drupal\amp\Routing\AmpContext;
 use Drupal\Core\Routing\RouteMatch;
 use Drupal\Tests\vactory_core\Functional\VactoryExistingSiteBase;
 use Drupal\vactory_amp\Services\VactoryAmpContextDecorator;
@@ -27,18 +28,25 @@ class AmpIntegrationTest extends VactoryExistingSiteBase {
   protected array $modulesToInstall = ['amp', 'vactory_amp'];
 
   /**
-   * AMP display created by the test.
+   * AMP display state to restore: NULL (created by the test) or its status.
    *
-   * @var \Drupal\Core\Entity\Display\EntityViewDisplayInterface|null
+   * @var bool|null
    */
-  protected $ampDisplay;
+  protected $displayStatus;
 
   /**
-   * Original amp.settings:amp_everywhere value.
+   * Original amp.settings data, or NULL when the config did not exist.
    *
-   * @var mixed
+   * @var array|null
    */
-  protected $everywhere;
+  protected $ampSettings;
+
+  /**
+   * Whether setUp() changed the site (tearDown() restores only then).
+   *
+   * @var bool
+   */
+  protected $prepared = FALSE;
 
   /**
    * {@inheritdoc}
@@ -46,32 +54,49 @@ class AmpIntegrationTest extends VactoryExistingSiteBase {
   protected function setUp(): void {
     parent::setUp();
     // AMP is enabled for a content type by enabling its "amp" view display.
-    if (!EntityViewDisplay::load('node.vactory_page.amp')) {
-      $this->ampDisplay = EntityViewDisplay::create([
-        'targetEntityType' => 'node',
-        'bundle' => 'vactory_page',
-        'mode' => 'amp',
-        'status' => TRUE,
-      ]);
-      $this->ampDisplay->save();
-    }
+    $display = EntityViewDisplay::load('node.vactory_page.amp');
+    $this->displayStatus = $display?->status();
+    $display ??= EntityViewDisplay::create([
+      'targetEntityType' => 'node',
+      'bundle' => 'vactory_page',
+      'mode' => 'amp',
+    ]);
+    $display->setStatus(TRUE)->save();
+    // The amp module ships no amp.settings: tearDown() deletes it.
     $config = \Drupal::configFactory()->getEditable('amp.settings');
-    $this->everywhere = $config->get('amp_everywhere');
+    $this->ampSettings = $config->isNew() ? NULL : $config->getRawData();
     $config->set('amp_everywhere', TRUE)->save();
+    $this->prepared = TRUE;
   }
 
   /**
    * {@inheritdoc}
    */
   protected function tearDown(): void {
-    $this->ampDisplay?->delete();
-    \Drupal::configFactory()->getEditable('amp.settings')
-      ->set('amp_everywhere', $this->everywhere)
-      ->save();
+    $purge = in_array('vactory_amp', $this->modulesToCleanup, TRUE);
+    if ($this->prepared) {
+      $display = EntityViewDisplay::load('node.vactory_page.amp');
+      if ($this->displayStatus === NULL) {
+        $display?->delete();
+      }
+      else {
+        $display?->setStatus($this->displayStatus)->save();
+      }
+      $config = \Drupal::configFactory()->getEditable('amp.settings');
+      if ($this->ampSettings === NULL) {
+        $config->delete();
+      }
+      else {
+        $config->setData($this->ampSettings)->save();
+      }
+    }
     parent::tearDown();
-    // vactory_amp's base field is purged on cron after uninstall; until then
-    // the module cannot be installed and uninstalled again.
-    field_purge_batch(1000);
+    // Once vactory_amp is uninstalled, its base field waits for cron to be
+    // purged; until then the module cannot be installed and uninstalled
+    // again.
+    if ($purge) {
+      field_purge_batch(1000, 'node-exclude_from_amp');
+    }
   }
 
   /**
@@ -93,6 +118,19 @@ class AmpIntegrationTest extends VactoryExistingSiteBase {
   public function testAmpContextDecorator(): void {
     $context = \Drupal::service('router.amp_context');
     $this->assertInstanceOf(VactoryAmpContextDecorator::class, $context);
+    // vactory_amp.services.yml passes amp's five constructor arguments: a new
+    // argument, even optional, must be added there too.
+    $parameters = (new \ReflectionMethod(AmpContext::class, '__construct'))->getParameters();
+    $this->assertSame(
+      [
+        'configFactory',
+        'themeManager',
+        'entityTypeInfo',
+        'routeMatch',
+        'adminContext',
+      ],
+      array_map(fn($parameter) => $parameter->getName(), $parameters)
+    );
 
     $route = new Route('/node/{node}');
     foreach ([FALSE => TRUE, TRUE => FALSE] as $excluded => $expected) {
@@ -107,9 +145,9 @@ class AmpIntegrationTest extends VactoryExistingSiteBase {
    * The "amphtml" link added by amp is removed for excluded nodes.
    */
   public function testAmphtmlLink(): void {
-    $display = EntityViewDisplay::collectRenderDisplay($this->createPage(FALSE), 'full');
     foreach ([FALSE => TRUE, TRUE => FALSE] as $excluded => $expected) {
       $node = $this->createPage((bool) $excluded);
+      $display = EntityViewDisplay::collectRenderDisplay($node, 'full');
       $canonical = $node->toUrl('canonical', ['absolute' => TRUE])->toString();
       $build = [
         '#view_mode' => 'full',
@@ -127,11 +165,12 @@ class AmpIntegrationTest extends VactoryExistingSiteBase {
       $this->assertContains('canonical', $rels);
     }
 
-    // A node rendered without head links must not raise a warning.
+    // An excluded node rendered without head links (in a view, as a
+    // referenced entity...) must not raise an error.
     $build = ['#view_mode' => 'full', '#attached' => []];
     $node = $this->createPage(TRUE);
     \Drupal::moduleHandler()->alter('entity_view', $build, $node, $display);
-    $this->assertEmpty($build['#attached']['html_head_link'] ?? []);
+    $this->assertArrayNotHasKey('html_head_link', $build['#attached']);
   }
 
 }
