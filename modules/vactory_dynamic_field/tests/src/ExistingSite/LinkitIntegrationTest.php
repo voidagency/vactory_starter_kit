@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\vactory_dynamic_field\ExistingSite;
 
+use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Form\FormStateInterface;
@@ -126,6 +127,105 @@ class LinkitIntegrationTest extends ExistingSiteBase {
     $this->assertStringEndsWith('-uri', $url_selector);
     // Selectors stay paired: "<base>-uri" / "<base>-title".
     $this->assertSame(substr($url_selector, 0, -4) . '-title', $title_selector);
+  }
+
+  /**
+   * Linkit selectors in every Dynamic Fields structure (#64112).
+   *
+   * Reproduces the manual test of PR #912: with linkit >= 7.0.13 and without
+   * the "-uri" selector, only the first link of a form got an autocomplete
+   * and the others none. The form mimics the #parents the Dynamic Fields
+   * modal form gives (components[extra_field|delta][group][field]).
+   */
+  public function testLinkitSelectorsInDynamicFieldStructures(): void {
+    $structure = [
+      ['components', 'extra_field', 'cta'],
+      ['components', 'extra_field', 'group_extra', 'link'],
+      ['components', 0, 'link'],
+      ['components', 0, 'cta_social'],
+      ['components', 0, 'group_item', 'link'],
+      ['components', 1, 'link'],
+    ];
+    $form_object = new class($structure) extends FormBase {
+
+      /**
+       * Parents of the url_extended elements.
+       *
+       * @var array
+       */
+      protected $structure;
+
+      /**
+       * Constructs the test form.
+       */
+      public function __construct(array $structure) {
+        $this->structure = $structure;
+      }
+
+      /**
+       * {@inheritdoc}
+       */
+      public function getFormId() {
+        return 'vactory_dynamic_field_linkit_structures_test';
+      }
+
+      /**
+       * {@inheritdoc}
+       */
+      public function buildForm(array $form, FormStateInterface $form_state) {
+        $form['#tree'] = TRUE;
+        foreach ($this->structure as $parents) {
+          NestedArray::setValue($form, $parents, [
+            '#type' => 'url_extended',
+            '#title' => 'Link',
+            '#default_value' => ['url' => '', 'title' => ''],
+          ]);
+        }
+        return $form;
+      }
+
+      /**
+       * {@inheritdoc}
+       */
+      public function submitForm(array &$form, FormStateInterface $form_state) {
+      }
+
+    };
+    $editor = $this->createUser();
+    $editor->addRole('webmaster');
+    $editor->save();
+    $switcher = \Drupal::service('account_switcher');
+    $switcher->switchTo($editor);
+    try {
+      // Build twice: the second build stands for an AJAX rebuild ("Add one
+      // more"), which must not change the selectors.
+      $builds = [
+        \Drupal::formBuilder()->getForm($form_object),
+        \Drupal::formBuilder()->getForm($form_object),
+      ];
+    }
+    finally {
+      $switcher->switchBack();
+    }
+    $selectors = [];
+    foreach ($builds as $build_index => $form) {
+      foreach ($structure as $parents) {
+        $element = NestedArray::getValue($form, $parents);
+        $label = implode('.', $parents);
+        $url = $element['url'];
+        $expected = 'edit-' . str_replace('_', '-', implode('-', $parents)) . '-uri';
+        $this->assertSame($expected, $url['#attributes']['data-drupal-selector'], $label);
+        $this->assertSame(substr($expected, 0, -4) . '-title', $element['title']['#attributes']['data-drupal-selector'], $label);
+        // Every input gets linkit's autocomplete, not only the first one.
+        $this->assertContains('form-linkit-autocomplete', $url['#attributes']['class'] ?? [], $label);
+        $this->assertNotEmpty($url['#attributes']['data-autocomplete-path'] ?? NULL, $label);
+        // The submitted value key is unchanged.
+        $this->assertStringEndsWith('[url]', $url['#name'], $label);
+        $selectors[$build_index][] = $expected;
+      }
+      $this->assertSame($selectors[$build_index], array_unique($selectors[$build_index]), 'Selectors are unique.');
+    }
+    $this->assertSame($selectors[0], $selectors[1], 'Selectors are stable across rebuilds.');
   }
 
   /**
