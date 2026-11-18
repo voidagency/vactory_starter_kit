@@ -12,10 +12,10 @@ use Symfony\Component\Routing\Route;
 /**
  * Our use of drupal/amp through vactory_amp.
  *
- * The vactory_amp module extends amp's AmpContext (same constructor, decorated service
- * router.amp_context) and removes the "amphtml" link that amp adds in
- * hook_entity_view_alter() for nodes excluded from AMP. Run this test on a
- * candidate version of amp before upgrading it.
+ * The vactory_amp module extends amp's AmpContext (same constructor,
+ * decorated service router.amp_context) and removes the "amphtml" link that
+ * amp adds in hook_entity_view_alter() for nodes excluded from AMP. Run
+ * this test on a candidate version of amp before upgrading it.
  *
  * @group vactory_amp
  * @group dependencies
