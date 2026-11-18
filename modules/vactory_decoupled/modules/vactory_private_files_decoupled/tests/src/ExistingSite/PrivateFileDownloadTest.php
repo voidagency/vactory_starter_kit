@@ -38,17 +38,28 @@ class PrivateFileDownloadTest extends ExistingSiteBase {
   protected function setUp(): void {
     parent::setUp();
     $directory = 'private://vactory-private-test';
-    \Drupal::service('file_system')->prepareDirectory($directory, FileSystemInterface::CREATE_DIRECTORY);
+    $this->assertTrue(
+      \Drupal::service('file_system')->prepareDirectory($directory, FileSystemInterface::CREATE_DIRECTORY),
+      'The private file system is configured.'
+    );
     $uri = $directory . '/' . strtolower($this->randomMachineName(8)) . '.txt';
     file_put_contents($uri, self::CONTENT);
     $this->file = File::create([
       'uri' => $uri,
       'filename' => basename($uri),
       'status' => 1,
-      'uid' => 1,
     ]);
     $this->file->save();
     $this->markEntityForCleanup($this->file);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function tearDown(): void {
+    parent::tearDown();
+    // The file itself is deleted with its entity; remove the directory.
+    \Drupal::service('file_system')->deleteRecursive('private://vactory-private-test');
   }
 
   /**
@@ -69,6 +80,7 @@ class PrivateFileDownloadTest extends ExistingSiteBase {
    */
   public function testFileEntityClass(): void {
     $this->assertInstanceOf(FileEntity::class, $this->file);
+    $this->assertSame('document', $this->file->bundle());
     $this->assertSame('file_entity.file_download', $this->file->downloadUrl()->getRouteName());
   }
 
@@ -88,6 +100,22 @@ class PrivateFileDownloadTest extends ExistingSiteBase {
 
     $tampered = $this->fetch(preg_replace('/sessionId=[^&]+/', 'sessionId=invalid', $urls['_default']));
     $this->assertSame(403, $tampered->getStatusCode());
+
+    // The timestamp is part of the signature.
+    $shifted = preg_replace_callback('/timestamp=(\d+)/', fn ($m) => 'timestamp=' . ($m[1] + 1), $urls['_default']);
+    $this->assertSame(403, $this->fetch($shifted)->getStatusCode());
+  }
+
+  /**
+   * An expired token is refused.
+   */
+  public function testExpiredToken(): void {
+    $old = \Drupal::time()->getRequestTime() - 3600;
+    $base = $this->file->downloadUrl()->toString();
+    $token = \Drupal::service('vactory_private_files_decoupled.access')->get($base, $old);
+    $separator = str_contains($base, '?') ? '&' : '?';
+    $response = $this->fetch($base . $separator . 'sessionId=' . $token . '&timestamp=' . $old);
+    $this->assertSame(403, $response->getStatusCode());
   }
 
 }
