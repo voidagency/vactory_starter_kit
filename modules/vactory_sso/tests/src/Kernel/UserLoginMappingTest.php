@@ -34,7 +34,7 @@ class UserLoginMappingTest extends KernelTestBase {
    * oauth_login_oauth2.settings:oauth_login_oauth2_free_users, a key the
    * contrib module does not declare in its schema.
    */
-  protected $strictConfigSchema = FALSE; // phpcs:ignore
+  protected static $configSchemaCheckerExclusions = ['oauth_login_oauth2.settings'];
 
   /**
    * {@inheritdoc}
@@ -66,12 +66,27 @@ class UserLoginMappingTest extends KernelTestBase {
       'email' => 'jane@example.com',
       'attributes' => ['timezone' => ['Africa/Casablanca']],
     ];
-    vactory_sso_user_login($account);
-    unset($_SESSION['resource_owner']);
+    try {
+      vactory_sso_user_login($account);
+    }
+    finally {
+      unset($_SESSION['resource_owner']);
+    }
 
     $user = User::load($account->id());
     $this->assertSame('Africa/Casablanca', $user->getTimeZone());
     $this->assertSame('jane@example.com', $user->getInitialEmail());
+  }
+
+  /**
+   * Without resource owner in session the user is left untouched.
+   */
+  public function testLoginWithoutResourceOwner(): void {
+    $account = $this->createUser();
+    $account->set('init', 'before@example.com')->save();
+    unset($_SESSION['resource_owner']);
+    vactory_sso_user_login($account);
+    $this->assertSame('before@example.com', User::load($account->id())->getInitialEmail());
   }
 
   /**
@@ -85,6 +100,10 @@ class UserLoginMappingTest extends KernelTestBase {
     $this->assertSame('x', NestedAttribute::get($resource, 'a.b'));
     $this->assertSame('first', NestedAttribute::get($resource, 'a.list'));
     $this->assertSame(0, NestedAttribute::get($resource, 'zero'));
+    $this->assertNull(NestedAttribute::get($resource, 'a'), 'Associative value.');
+    $this->assertNull(NestedAttribute::get(['empty' => []], 'empty'));
+    $this->assertFalse(NestedAttribute::get(['flag' => FALSE], 'flag'));
+    $this->assertSame('', NestedAttribute::get(['blank' => ''], 'blank'));
     $this->assertNull(NestedAttribute::get($resource, 'a.missing'));
     $this->assertNull(NestedAttribute::get($resource, ''));
   }

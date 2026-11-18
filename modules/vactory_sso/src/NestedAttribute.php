@@ -10,8 +10,10 @@ final class NestedAttribute {
   /**
    * Returns the value of an attribute, given as a dotted path.
    *
-   * Same rules as the miniOrange module: "a.b.c" walks nested arrays, and a
-   * list value returns its first item.
+   * Close to the miniOrange getnestedattribute(): "a.b.c" walks nested
+   * arrays and a list value returns its first item. Unlike miniOrange, an
+   * associative array (object) value returns NULL instead of a warning, and
+   * paths are split strictly on dots (no string offsets).
    *
    * @param array $resource
    *   Resource owner data.
@@ -33,7 +35,7 @@ final class NestedAttribute {
       $value = $value[$key];
     }
     if (is_array($value)) {
-      return $value === [] ? NULL : reset($value);
+      return array_is_list($value) ? ($value[0] ?? NULL) : NULL;
     }
     return $value;
   }

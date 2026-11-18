@@ -1,3 +1,5 @@
+# Mapping keys are numbered up to max_attr_count (5 by default): keys above
+# 5 are not covered by this schema.
 vactory_sso.settings:
   type: config_object
   label: 'Vactory SSO settings'
