@@ -61,7 +61,11 @@ class ViewsAutocompleteFiltersIntegrationTest extends KernelTestBase {
     // Autocomplete options our views configs use.
     $filter = $manager->createInstance('string', []);
     $options = (new \ReflectionMethod($filter, 'defineOptions'))->invoke($filter);
-    $keys = ['autocomplete_filter', 'autocomplete_field', 'autocomplete_dependent'];
+    $keys = [
+      'autocomplete_filter',
+      'autocomplete_field',
+      'autocomplete_dependent',
+    ];
     foreach ($keys as $key) {
       $this->assertArrayHasKey($key, $options['expose']['contains'], "Option expose.$key");
     }

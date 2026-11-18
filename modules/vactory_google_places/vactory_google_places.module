@@ -9,6 +9,8 @@
  * @see https://www.drupal.org/node/2217931
  */
 
+use Drupal\views\Plugin\views\query\QueryPluginBase;
+use Drupal\views\ViewExecutable;
 use Drupal\views\Plugin\views\filter\StringFilter;
 
 /**
@@ -28,10 +30,10 @@ function vactory_google_places_theme($existing, $type, $theme, $path) {
 /**
  * Implements hook_views_query_alter().
  */
-function vactory_google_places_views_query_alter(\Drupal\views\ViewExecutable $view, \Drupal\views\Plugin\views\query\QueryPluginBase $query) {
+function vactory_google_places_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
   $params = Drupal::request()->query->all();
   $filters = $view->filter;
-  $google_places_filters= [];
+  $google_places_filters = [];
   if (!empty($filters)) {
     // We are interested only in string filters.
     $string_filters = array_filter($filters, function ($filter) {
@@ -50,11 +52,11 @@ function vactory_google_places_views_query_alter(\Drupal\views\ViewExecutable $v
     }
   }
   if (!empty($google_places_filters)) {
-    // A google places filter exist
+    // A google places filter exist.
     foreach ($google_places_filters as $filter_id => $filter) {
       $field_pieces = $field_longitude_pieces = $field_latitude_pieces = explode('_', $filter_id);
       if (is_numeric($field_pieces[count($field_pieces) - 1])) {
-        // In case of more than one google places filter, we omit the num suffix.
+        // With several google places filters, omit the num suffix.
         unset($field_pieces[count($field_pieces) - 1]);
         $field_longitude_pieces = $field_latitude_pieces = $field_pieces;
       }
