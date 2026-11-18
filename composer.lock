@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8d1dde4ec122e3e1539595d0f5ff1d28",
+    "content-hash": "327db2fb5e4797024dd81dfdccdb9817",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -2056,26 +2056,29 @@
         },
         {
             "name": "drupal/captcha",
-            "version": "2.0.5",
+            "version": "2.0.11",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/captcha.git",
-                "reference": "2.0.5"
+                "reference": "2.0.11"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/captcha-2.0.5.zip",
-                "reference": "2.0.5",
-                "shasum": "0c39d27a99b53f6517ef25ceef1ac5e333964547"
+                "url": "https://ftp.drupal.org/files/projects/captcha-2.0.11.zip",
+                "reference": "2.0.11",
+                "shasum": "566bd0d80ceb667e2df56f2442840c85378df39c"
             },
             "require": {
-                "drupal/core": ">=9.4 <11"
+                "drupal/core": "^9.5 || ^10 || ^11"
+            },
+            "require-dev": {
+                "drupal/crowdsec": "^1"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "2.0.5",
-                    "datestamp": "1691598525",
+                    "version": "2.0.11",
+                    "datestamp": "1793215346",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -2091,7 +2094,7 @@
             ],
             "authors": [
                 {
-                    "name": "Anybody",
+                    "name": "anybody",
                     "homepage": "https://www.drupal.org/user/291091"
                 },
                 {
@@ -2099,7 +2102,7 @@
                     "homepage": "https://www.drupal.org/user/1021502"
                 },
                 {
-                    "name": "Grevil",
+                    "name": "grevil",
                     "homepage": "https://www.drupal.org/user/3668491"
                 },
                 {
@@ -2115,7 +2118,7 @@
                     "homepage": "https://www.drupal.org/user/116002"
                 },
                 {
-                    "name": "RobLoach",
+                    "name": "robloach",
                     "homepage": "https://www.drupal.org/user/61114"
                 },
                 {
@@ -2132,7 +2135,8 @@
             "support": {
                 "source": "https://git.drupalcode.org/project/captcha",
                 "issues": "https://www.drupal.org/project/issues/captcha"
-            }
+            },
+            "published-time": "2026-10-28T16:05:06+00:00"
         },
         {
             "name": "drupal/chosen",
@@ -21351,5 +21355,5 @@
         "php": ">=7.3"
     },
     "platform-dev": {},
-    "plugin-api-version": "2.9.0"
+    "plugin-api-version": "2.11.0"
 }
