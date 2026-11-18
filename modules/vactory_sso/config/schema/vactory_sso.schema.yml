@@ -1,0 +1,37 @@
+vactory_sso.settings:
+  type: config_object
+  label: 'Vactory SSO settings'
+  mapping:
+    max_attr_count:
+      type: integer
+      label: 'Number of mapped attributes'
+    vactory_sso_drupal_user_attr_1:
+      type: string
+      label: 'Drupal user field 1'
+    vactory_sso_keycloak_user_attr_1:
+      type: string
+      label: 'Keycloak attribute 1'
+    vactory_sso_drupal_user_attr_2:
+      type: string
+      label: 'Drupal user field 2'
+    vactory_sso_keycloak_user_attr_2:
+      type: string
+      label: 'Keycloak attribute 2'
+    vactory_sso_drupal_user_attr_3:
+      type: string
+      label: 'Drupal user field 3'
+    vactory_sso_keycloak_user_attr_3:
+      type: string
+      label: 'Keycloak attribute 3'
+    vactory_sso_drupal_user_attr_4:
+      type: string
+      label: 'Drupal user field 4'
+    vactory_sso_keycloak_user_attr_4:
+      type: string
+      label: 'Keycloak attribute 4'
+    vactory_sso_drupal_user_attr_5:
+      type: string
+      label: 'Drupal user field 5'
+    vactory_sso_keycloak_user_attr_5:
+      type: string
+      label: 'Keycloak attribute 5'
