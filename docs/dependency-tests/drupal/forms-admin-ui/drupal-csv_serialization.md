@@ -36,3 +36,6 @@ Source : `composer.json` sur `3.x` (commits non-merge, `git log` ; hash = commit
 - 2023-07-12 `ec1ae4e6` patch ajouté « Drupal 10 compatibility » — « Fix: #44188 - Drupal 10 compatibility: Update components, config_update, ctools, focal_point a… »
 - 2023-07-18 `e1d90707` patch retiré « Drupal 10 compatibility » — « Fix: #44188 - Drupal 10 compatibility: Remove unused csv_serialization contib module patch »
 - 2025-05-26 `9cbd99aa` épinglage exact `^3.0` → `4.0.1` — « feat: upgraded drupal/block_class to 3.0.0, drupal/link_attributes to 2.1.1, drupal/csv_serial… »
+
+## Suivi (2026-11-19)
+- Contrat vérifié par `ProfileDependencyContractsTest` (PR #918, mergée). La version figée `4.0.1` est la dernière : contrainte à relâcher (#71222).

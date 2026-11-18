@@ -4,24 +4,20 @@ Audit du 2026-11-17, branche `3.x` (HEAD `808840c7`). Ticket Redmine : #71097.
 
 **Problème** : chaque montée de version (manuelle ou PR Dependabot quotidienne) casse des choses découvertes tard, parce que presque rien ne teste **notre usage** des dépendances.
 
-**Méthode** : 4 recon en lecture seule (grep du code, `.info.yml`, `services.yml`, config, Twig ; `composer.lock` ; `vendor/` local). Rien n'a été exécuté. Méthode et gabarit des fiches : [_BRIEF.md](_BRIEF.md).
+**Méthode** : 4 recon en lecture seule (grep du code, `.info.yml`, `services.yml`, config, Twig ; `composer.lock` ; `vendor/` local). Rien n'a été exécuté. 
 
 ## Contenu
 
 | Fichier | Rôle |
 |---|---|
-| [_matrix.md](_matrix.md) | Les 175 paquets : statut, usages, couverture, risque, priorité, lien vers la fiche |
+| [matrix.md](matrix.md) | Les 175 paquets : statut, usages, couverture, risque, priorité, lien vers la fiche |
 | [libs/](libs/) | Librairies PHP + paquets `voidagency/*` (12 fiches) |
 | [drupal/api-auth/](drupal/api-auth/) | JSON:API, OAuth, auth, sécurité (31 fiches) |
 | [drupal/content-media-search-seo/](drupal/content-media-search-seo/) | Paragraphs, médias, search_api, SEO (43 fiches) |
 | [drupal/forms-admin-ui/](drupal/forms-admin-ui/) | Webform, mail, migrate, views, admin, Twig/UI (58 fiches) |
 | [unused.md](unused.md) | Paquets déclarés sans usage dans le profil |
-| [bugs.md](bugs.md) | Bugs trouvés pendant l'audit (18 tickets Redmine) et constats à vérifier |
-| [_verify/](_verify/) | Affirmations soumises à vérification + rapports Fable |
-| [_recon/](_recon/) | Recon mi-aveugle, tours 1 et 2 |
-| [NEXT.md](NEXT.md) | Passes suivantes |
+| [bugs.md](bugs.md) | Bugs trouvés pendant l'audit et après (29 tickets Redmine), avec leur état |
 | [ci.md](ci.md) | CI Drone, patches, état du `vendor/` local |
-| `_partials/` | Matrices brutes par lot |
 
 ## Chiffres
 
@@ -33,7 +29,7 @@ Audit du 2026-11-17, branche `3.x` (HEAD `808840c7`). Ticket Redmine : #71097.
 | **P1** | **47** (27 code critique non testé + 20 promus par l'historique : downgrade, épinglage après incident, fork, patch correctif) |
 | P2 | 40 (dont 8 paquets indirects à incidents, ramenés de P1) |
 | P3 | 54 |
-| Avec incidents historiques | 67 (colonne « Incidents historiques » de `_matrix.md`, section « Historique » des fiches) |
+| Avec incidents historiques | 67 (colonne « Incidents historiques » de `matrix.md`, section « Historique » des fiches) |
 
 Tests existants : 15 fichiers (13 ExistingSite DTT dans `vactory_decoupled/**`, 2 Kernel). Ils couvrent partiellement 11 des 27 P1, aucun complètement.
 
@@ -58,11 +54,11 @@ Tests existants : 15 fichiers (13 ExistingSite DTT dans `vactory_decoupled/**`, 
 
 ## Vérification indépendante (passe B)
 
-24 affirmations soumises à Fable sans nos conclusions ([_verify/](_verify/)) : aucune infirmée totalement, plusieurs nuancées (impacts de #71101 et #71099 surestimés, jsonapi_user_resources finalement utilisé, doute `SIMPLETEST_DB` levé). Bugs et tickets : [bugs.md](bugs.md).
+24 affirmations soumises à une revue indépendante, sans nos conclusions : aucune infirmée totalement, plusieurs nuancées (impacts de #71101 et #71099 surestimés, jsonapi_user_resources finalement utilisé, doute `SIMPLETEST_DB` levé). Bugs et tickets : [bugs.md](bugs.md).
 
 ## Recon mi-aveugle (passe C, 2 tours)
 
-Deux chercheurs indépendants, chacun avec la liste de ce qui était déjà connu : 17 findings au tour 1 ([_recon/round1.md](_recon/round1.md)), 13 au tour 2 ([_recon/round2.md](_recon/round2.md)). 8 bugs confirmés → tickets (dont 2 sécurité en High : #71142 TLS désactivé par défaut, #71149 config webform lisible par les anonymes).
+Deux chercheurs indépendants, chacun avec la liste de ce qui était déjà connu : 17 findings au tour 1, 13 au tour 2. 8 bugs confirmés → tickets (dont 2 sécurité en High : #71142 TLS désactivé par défaut, #71149 config webform lisible par les anonymes).
 
 Deux constats changent la stratégie de test :
 
@@ -82,9 +78,11 @@ Autres constats utiles pour les tests : 22 modules livrent de la config sans sch
 7. **Dépendances non déclarées** dans les `.info.yml` (`vactory_decoupled_flag` → flag, `vactory_decoupled_search_ai` → search_api_pinecone, scheduler dans plusieurs modules contenu).
 8. **Sécurité** : identifiants Basic Auth en clair dans `config/install/shield.settings.yml`.
 
-## Suite proposée
+## Suite proposée, et ce qui a été fait (2026-11-19)
 
-1. **Socle** : vérifier que Drone tourne sur chaque PR Dependabot et bloque la fusion ([ci.md](ci.md)).
-2. **Tests P1** par chantier (tableau ci-dessus), un ticket par chantier, sous-tâches de #71097. Les fiches donnent pour chaque paquet le scénario, le type (Unit / Kernel / ExistingSite) et le chemin du test.
-3. **Hygiène composer** : relever les contraintes (point 1), corriger la clé de patch, rapatrier les patches des gists dans `patches/`, traiter [unused.md](unused.md).
-4. Un test « smoke » ExistingSite par module activé par le profil (route principale → 200, pas d'erreur PHP en log) attrape à lui seul une bonne partie des P2/P3.
+1. **Socle CI** : ✅ la CI teste désormais le vrai code des PR et s'arrête si composer échoue ; Sonar est borné ; Dependabot est limité à la sécurité ([ci.md](ci.md), #71156). Reste : rendre le statut Drone requis sur 3.x.
+2. **Tests P1** : chantier #71160. Tests mergés : rate, file_entity, jsonapi_search_api, contrats profil / dépendances. En revue : linkit (#912, cause de #64112 trouvée), views_autocomplete_filters (#913), simplify_menu (#914), amp (#919), cloudinary (#920). Chaque fiche concernée a une section « Suivi ».
+3. **Bugs** : 16 corrigés et mergés, 3 PR en revue, 2 décisions attendues ; 11 bugs trouvés depuis ([bugs.md](bugs.md)).
+4. **Hygiène composer** : ✅ clé de patch corrigée (#909). À faire : relâcher les 11 versions figées (#71222, dont block_class en priorité), rapatrier les patches des gists dans `patches/` (cf. #71167), traiter [unused.md](unused.md).
+5. **Release** : changelog et guide des points d'attention pour l'équipe (#71221), puis campagne Dispatch sur les projets.
+6. Un test « smoke » ExistingSite par module activé par le profil (route principale → 200, pas d'erreur PHP en log) attraperait encore une bonne partie des P2/P3.

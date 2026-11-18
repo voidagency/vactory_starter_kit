@@ -49,3 +49,6 @@ Source : `composer.json` sur `3.x` (commits non-merge, `git log` ; hash = commit
 - 2024-02-29 `af2c26e6` patch modifié (URL) « Add callable : filterLanguage » — « fix: update patch »
 - 2024-08-27 `69891a70` montée `^3.0@beta` → `^3.2` — « fix: #53344 - Simplify menu / isssue Patch vs version »
 - 2024-08-27 `69891a70` patch retiré « Add support for options. » — « fix: #53344 - Simplify menu / isssue Patch vs version »
+
+## Suivi (2026-11-19)
+- Fragilité B16 corrigée : injection par setters (`addMethodCall`) au lieu des surcharges de constructeur, avec un test (PR #914). `drush cr` obligatoire au déploiement.

@@ -52,3 +52,6 @@ Les champs stockés sont de type `colorapi_color_field` (`drupal/colorapi`), ex.
 - Redmine #48957 « Colorpicker / D10 » (2024-01, fermé).
 
 Branches non fusionnées dans `3.x` : `origin/upgrade/d11`, `origin/update/d11`, `origin/feat/62381` (marquées *hors 3.x*).
+
+## Suivi (2026-11-19)
+- Contrat vérifié par `ProfileDependencyContractsTest` (PR #918, mergée). Notre fork est en 6.0.0, le profil reste en 5.0.0 : à évaluer (#71222).

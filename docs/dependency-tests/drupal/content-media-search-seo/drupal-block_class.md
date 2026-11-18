@@ -32,3 +32,6 @@ Source : `composer.json` sur `3.x` (commits non-merge, `git log` ; hash = commit
 - 2021-01-31 `1be86d53` montée `^1.2` → `^1.3.0` — « Update: Add v2.1.0 Factory release changes. »
 - 2023-07-13 `ab59b8f6` montée `^1.3.0` → `^2.0` — « Fix: #44188 - Drupal 10 compatibility: Update addtoany, advagg, better_exposed_filters, block_… »
 - 2025-05-26 `9cbd99aa` épinglage exact `^2.0` → `3.0.0` — « feat: upgraded drupal/block_class to 3.0.0, drupal/link_attributes to 2.1.1, drupal/csv_serial… »
+
+## Suivi (2026-11-19)
+- ⚠️ Figé en `3.0.0`, alors que la **4.0.1 est une release de sécurité** (passage 3 → 4). À traiter en priorité (#71222).

@@ -62,3 +62,6 @@
 - *hors 3.x* 2025-11-10/11 `bf4234f9`, `f69b1030` → ^6.0, 3 patches retirés (#61846) ; 2026-10-28 `f6dd51bf` → ^6.1 + `simple_oauth_password_grant` — `origin/update/d11`, `origin/upgrade/d11`
 
 Branches non fusionnées dans `3.x` : `origin/upgrade/d11`, `origin/update/d11`, `origin/feat/62381` (marquées *hors 3.x*).
+
+## Suivi (2026-11-19)
+- simple_oauth 5.2.6 ajoute un logger obligatoire au constructeur de `Oauth2Token` : `/oauth/login-token` renvoyait 500. Corrigé dans `DecoupledOauth2Token`, compatible 5.2.5 et 5.2.6 (PR #928, mergée, #71168). `LoginControllerTest` sert de test de non-régression en CI.

@@ -40,3 +40,6 @@ Source : `composer.json` sur `3.x` (commits non-merge, `git log` ; hash = commit
 - 2023-05-12 `285c7df4` patch retiré « Fix deprecated php 8.1 issue rtrim » — « Update: Remove drupal/amp unused patch & fix module min version to 3.6 »
 - 2023-09-04 `f3896911` fix compat lib (hors 3.x) « Fix lullabot/amp 2.0.4 compatibility error » — seulement sur `origin/2.x`/`origin/3.x-beta`
 - 2023-11-23 `5f05bf03` montée `^3.6` → `^3.8` — « Update: update drupal/amp contrib module »
+
+## Suivi (2026-11-19)
+- Test `AmpIntegrationTest` (PR #919) : décorateur `router.amp_context`, exclusion d'un nœud, lien `amphtml`. Correctif d'une `TypeError` sur les nœuds exclus. OK sur 3.8 et 3.9 ; aucune version ne supporte D11.

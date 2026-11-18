@@ -31,3 +31,6 @@
 Source : `composer.json` sur `3.x` (commits non-merge, `git log` ; hash = commit auteur), + branches non fusionnées signalées.
 
 - 2022-04-18 `deba9550` ajout `^2.0` — « Add: #32290 - Add textfield counter contrib module & text fields counter DF support. »
+
+## Suivi (2026-11-19)
+- Le compteur ne fonctionne sur aucun champ texte des Dynamic Fields : `FormWidgetTrait` encode `key` en objet JSON au lieu d'une liste, d'où une `TypeError` en JS (#71223).

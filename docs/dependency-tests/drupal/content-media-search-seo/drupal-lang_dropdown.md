@@ -32,3 +32,6 @@ Source : `composer.json` sur `3.x` (commits non-merge, `git log` ; hash = commit
 - 2021-01-31 `1be86d53` réécriture contrainte `^2.0.0-beta3` → `^2.0@beta` — « Update: Add v2.1.0 Factory release changes. »
 - 2023-04-25 `4733f4b0` patch ajouté « Fix TypeError: array_keys(): Argument #1 ($array) must be of type array » — « Fix: Language dropdown errors on V8 »
 - 2023-07-10 `bfdc43c2` patch retiré « Fix TypeError: array_keys(): Argument #1 ($array) must be of type array » — « Update: Remove lang_dropdown unused patch »
+
+## Suivi (2026-11-19)
+- Contrat vérifié par `ProfileDependencyContractsTest` (PR #918, mergée).

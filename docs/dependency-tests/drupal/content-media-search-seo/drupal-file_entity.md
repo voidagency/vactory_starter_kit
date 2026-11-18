@@ -44,3 +44,7 @@ Source : `composer.json` sur `3.x` (commits non-merge, `git log` ; hash = commit
 - 2026-09-17 `27d8f3c5` patch retiré « Fix missing bundle entity, entity type file_type, entity id undefined » — « chore: remove deprecated entry for drupal/file_entity from composer.json »
 
 Note : seul cas du lot où un **patch correctif a lui-même causé une régression** : MR !15 (#53096) ajouté le 2024-08-07, cause du bug urgent #53706 (post Webform Jobs), retiré le 2024-10-10.
+
+## Suivi (2026-11-19)
+- Test `PrivateFileDownloadTest` (PR #917, mergée) : URL signée → 200 ; URL nue, modifiée ou expirée → 403. OK sur 2.9 et 2.0-rc5.
+- Bug trouvé : #71162 (`/api/*/private-files` en 500 ; une correction naïve exposerait les fichiers privés).

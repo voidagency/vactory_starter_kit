@@ -32,3 +32,6 @@ Source : `composer.json` sur `3.x` (commits non-merge, `git log` ; hash = commit
 - 2021-11-11 `ae0e3a00` passage branche dev `^1.0` → `1.x-dev@dev` — « Update: Update composer json. » + `620c057c` « Fix composer json file typo » (JSON invalide entre les deux)
 - 2021-11-11 `ae0e3a00` patch retiré « Fix Coffee : Could not load data, please refresh the page. » — « Update: Update composer json. » + `620c057c` « Fix composer json file typo » (JSON invalide entre les deux)
 - 2026-07-31 alerte sécurité #67434 (Nouveau) : scan OSV signale `drupal/coffee` vulnérable ; contrainte toujours `1.x-dev@dev`
+
+## Suivi (2026-11-19)
+- Contrat vérifié par `ProfileDependencyContractsTest` (PR #918, mergée).

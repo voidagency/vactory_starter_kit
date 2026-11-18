@@ -1,6 +1,6 @@
 # Matrice — dépendances composer.json → usage → tests
 
-Généré depuis `_partials/*.md` (audit du 2026-11-17, branche `3.x`, ticket Redmine #71097). Une ligne par paquet de `require` (hors `php`).
+Audit du 2026-11-17, branche `3.x`, ticket Redmine #71097. Une ligne par paquet de `require` (hors `php`).
 
 Légende — **Statut** : Utilisé (code PHP/Twig/JS du profil) · Indirect (config, dépendance `.info.yml`, transitif) · Non utilisé. **Priorité** : P1 code critique non/peu testé · P2 impact moyen · P3 cosmétique/admin · — rien à tester.
 

@@ -48,3 +48,7 @@
 - *hors 3.x* 2025-11-26 `b947f5bb` retrait / 2025-12-03 `144f53aa` réajout ; 2025-12-08 `1b4dcfe4` patch D11 (PR voidagency/cloudinary#1) ; 2025-12-10 `9f6b9b7d`/`130564f5` patchs symfony 6 et D11 retirés — `origin/update/d11`
 
 Branches non fusionnées dans `3.x` : `origin/upgrade/d11`, `origin/update/d11`, `origin/feat/62381` (marquées *hors 3.x*).
+
+## Suivi (2026-11-19)
+- Test Kernel `CloudinaryIntegrationTest` (PR #920) : stream wrapper, SDK, formulaire file_entity, filtre. Aucun appel à l'API.
+- Notre fork passe ; l'amont drupal/cloudinary 3.0.0-rc5 casse notre décorateur et notre manager (signature `getExternalUrl()`, `getTarget()` et constante supprimés).

@@ -50,3 +50,8 @@ Source : `composer.json` sur `3.x` (commits non-merge, `git log` ; hash = commit
 - Toujours ouvert après le downgrade : #70121 (Bug, Nouveau, 2026-10-22) « Wysiwyg & linkit / erreur lors de la modification d'un numéro de téléphone » (capture seule).
 - Antécédents : #52782 (2024) « Issue Linkit vs ckeditor » (linkit ne remonte pas, `/node/ID` non converti en alias), rouvert une fois après « fix non poussé ».
 - Conséquence test : le test `LinkitAutocompleteTest` (ci-dessus) doit passer sur 7.0.16+ avant tout dé-épinglage ; ajouter le cas `/node/ID` → alias (#52782).
+
+## Suivi (2026-11-19)
+- **Cause de #64112 trouvée** : linkit ≥ 7.0.13 exige un `data-drupal-selector` finissant par `-uri`. Sans ça, dès que le formulaire contient au moins deux liens, seul le premier reçoit l'autocomplete (et sa sélection ne remplit pas le champ), et les suivants n'ont aucune suggestion.
+- Correctif et tests : PR #912 (`UrlExtendedElement::afterBuildLinkitSelector()`, `LinkitIntegrationTest`, `DynamicFieldLinksNormalizerTest`). Vérifié à la main dans Chrome sur 7.0.12 et 7.0.16, avec et sans le correctif (Dynamic Fields multiples, groupes, CKEditor, JSON:API).
+- Suite : relâcher la contrainte à `^7.0.16` après le merge de #912 (#71222).

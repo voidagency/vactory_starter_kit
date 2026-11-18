@@ -31,3 +31,6 @@ Source : `composer.json` sur `3.x` (commits non-merge, `git log` ; hash = commit
 - 2020-06-28 `1af659f7` ajout initial `^1.8`
 - 2023-07-13 `ab59b8f6` montée `^1.8` → `^2.2` — « Fix: #44188 - Drupal 10 compatibility: Update addtoany, advagg, better_exposed_filters, block_… »
 - 2026-09-17 `63d2b3f6` épinglage exact `^2.2` → `2.3.4` — « refactor: update editor advanced link version to 2.3.4 »
+
+## Suivi (2026-11-19)
+- La version figée `2.3.4` est la dernière, mais elle impose core `^10.5`, ce qui était à l'origine de l'échec composer de la CI (#71156). Contrainte à relâcher en `^2.3` (#71222).

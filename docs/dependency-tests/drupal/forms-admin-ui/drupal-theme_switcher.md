@@ -37,3 +37,6 @@ Source : `composer.json` sur `3.x` (commits non-merge, `git log` ; hash = commit
 - 2023-05-15 `c112e3dc` ajout `^2.0` — « feat(multi-theme): add theme_switcher to composer.json »
 - 2023-05-24 `7b6c83eb` patch ajouté « Use AND instead of OR for theme switcher conditions logic » — « Update: #44209 - Make extra fields computed field cacheable & use AND operator instead of OR f… »
 - 2023-07-10 `6918e1b8` patch retiré « Use AND instead of OR for theme switcher conditions logic » — « Update: Remove decoupled theme switcher patch after contrib module update 2.0.1 & Set theme sw… »
+
+## Suivi (2026-11-19)
+- Contrat vérifié par `ProfileDependencyContractsTest` (PR #918, mergée) : le service redéfini est réellement construit.

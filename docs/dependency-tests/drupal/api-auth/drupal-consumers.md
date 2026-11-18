@@ -29,3 +29,6 @@
 ## Historique
 - 2025-12-03 `332e0cad` ajout **épinglé** `1.20.0` « fix: fix consumers version »
 - 2026-09-17 `f337dbc2` épinglage 1.20.0 → `1.24.0` (même commit qui a monté linkit 7.0.16, rétrogradé ensuite par `776f9ae0` #69237)
+
+## Suivi (2026-11-19)
+- Contrat vérifié par `ProfileDependencyContractsTest` (PR #918, mergée). La version figée `1.24.0` est la dernière : contrainte à relâcher (#71222).

@@ -30,3 +30,6 @@
 ## Historique
 - 2025-05-26 `9cbd99aa` ajout **épinglé** `9.16.0` (avec csv_serialization 4.0.1) — épinglage à l'ajout, pas après incident
 - Aucun incident.
+
+## Suivi (2026-11-19)
+- Figé en `9.16.0` (dernière : 9.29.0). Raison du blocage à retrouver (#71222).

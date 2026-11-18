@@ -1,6 +1,6 @@
 # Paquets sans usage dans le profil
 
-31 paquets de `require` n'ont **aucune** trace dans le code ni la config du profil (preuve « 0 occurrence » dans [_matrix.md](_matrix.md)).
+31 paquets de `require` n'ont **aucune** trace dans le code ni la config du profil (preuve « 0 occurrence » dans [matrix.md](matrix.md)).
 
 > Le profil est une distribution : un projet client peut activer l'un de ces modules via sa propre config (ex. `gin`, `google_tag`). **Avant de retirer un paquet, vérifier les projets** (config/sync des sites, référentiel Dispatch). Le retirer du profil = le déplacer dans le `composer.json` du projet qui en a besoin.
 

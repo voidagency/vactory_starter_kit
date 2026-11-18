@@ -42,3 +42,6 @@
 - Redmine #37867 « Webform / Problème de captcha » (soumission bloquée avec recaptcha, PP et chaabi, 2022).
 
 Branches non fusionnées dans `3.x` : `origin/upgrade/d11`, `origin/update/d11`, `origin/feat/62381` (marquées *hors 3.x*).
+
+## Suivi (2026-11-19)
+- Le patch « error message translation » (gist tronqué) ne s'applique plus sur 2.0.12 : `composer update` échouait sur tout projet. Captcha est fixé à `2.0.11` (PR #922, mergée). Le patch est à refaire (#71167).

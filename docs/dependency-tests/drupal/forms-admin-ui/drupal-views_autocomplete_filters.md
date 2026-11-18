@@ -35,3 +35,7 @@ Source : `composer.json` sur `3.x` (commits non-merge, `git log` ; hash = commit
 
 - 2021-01-31 `1be86d53` ajout `^1.3` — « Update: Add v2.1.0 Factory release changes. »
 - 2023-07-19 `614b9330` patch ajouté « D10: jquery once is removed » — « Fix: #44188 - Drupal 10 compatibility: Patch views_autocomplete_filters contrib module (remove… »
+
+## Suivi (2026-11-19)
+- Notre filtre Google Places n'était jamais utilisé par Views : corrigé via `hook_views_plugins_filter_alter`, avec un test Kernel (PR #913). OK sur 1.7 patchée et 2.0.4.
+- B13 (`.once()` en 1.7) : la 2.x n'en dépend plus.

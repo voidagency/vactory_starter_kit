@@ -35,3 +35,6 @@ Source : `composer.json` sur `3.x` (commits non-merge, `git log` ; hash = commit
 - 2024-01-29 `f1c27559` fork / remplacement `b-khouy/` → `voidagency/block_list_override ^2.0` « use voidagency packages and correct patches »
 - 2026-09-17 `7759f845` réajout `1.0.3` — « chore: update block_list_override dependency from voidagency to drupal and adjust version to 1… »
 - 2026-09-17 `7759f845` remplacement + épinglage `voidagency/block_list_override ^2.0` → `drupal/block_list_override 1.0.3` (#62859, PR #880)
+
+## Suivi (2026-11-19)
+- Figé en `1.0.3` (dernière : 1.0.4). Raison du blocage à retrouver (#71222).

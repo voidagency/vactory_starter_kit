@@ -41,3 +41,6 @@ Source : `composer.json` sur `3.x` (commits non-merge, `git log` ; hash = commit
 - 2026-01-08 `39fc2b27` patch ajouté « Colorapi deprecation fixes » — « fix: update jquery_colorpicker & colorapi & update patches »
 - 2026-01-08 `39fc2b27` patch retiré « Enable colorapi field type by default » — « fix: update jquery_colorpicker & colorapi & update patches »
 - 2026-01-08 `39fc2b27` montée couplée à jquery_colorpicker `^1.1` → `^2.1` en même temps que le passage de `jquery_colorpicker` à `voidagency/jquery_colorpicker 5.0.0` (#62381 « on maintient jquery_colorpicker »)
+
+## Suivi (2026-11-19)
+- Contrat vérifié par `ProfileDependencyContractsTest` (PR #918, mergée) : un renommage simulé du type de champ est bien détecté.

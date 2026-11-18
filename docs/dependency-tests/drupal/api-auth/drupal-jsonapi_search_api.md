@@ -39,3 +39,7 @@
 - *hors 3.x* 2025-11-10 `bf4234f9` désépinglé ^1.0@RC (#61846) ; 2026-10-26 `a7b2d703` → `1.0.0-rc5`, patch rebasé en local — `origin/upgrade/d11`
 
 Branches non fusionnées dans `3.x` : `origin/upgrade/d11`, `origin/update/d11`, `origin/feat/62381` (marquées *hors 3.x*).
+
+## Suivi (2026-11-19)
+- Test `ExposedSearchIndexApiTest` (PR #915, mergée).
+- Le patch facets ne s'applique plus sur rc4 et rc5 : à refaire avant de monter.

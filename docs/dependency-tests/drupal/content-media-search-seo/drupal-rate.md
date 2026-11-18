@@ -52,3 +52,8 @@ Source : `composer.json` sur `3.x` (commits non-merge, `git log` ; hash = commit
 - 2023-07-20 `26bcbc6f` patch ajouté « Entity queries must explicitly set whether the query should be access checked or not » — « Fix: #44188 - Drupal 10 compatibility: Patch rate contrib module to explicitly set entity quer… »
 - 2024-01-04 `c176cf9d` épinglage exact `^3.0` → `3.1.0` — « refactor: rate contrib module version to 3.1.0 »
 - 2024-01-04 `c176cf9d` patch retiré « Entity queries must explicitly set whether the query should be access checked or not » — « refactor: rate contrib module version to 3.1.0 »
+
+## Suivi (2026-11-19)
+- Test `vactory_rate/tests/src/ExistingSite/RateVoteApiTest.php` (PR #916, mergée) : vote, résultats, annulation, refus du double vote. OK sur 3.1.0 et 3.3.1.
+- Le widget de vote d'academy reste à valider à la main avant de relâcher la contrainte (#71222).
+- Bug trouvé : #71161 (formulaire d'admin de `vactory_rate` ouvert aux anonymes, vote en GET sans CSRF).
