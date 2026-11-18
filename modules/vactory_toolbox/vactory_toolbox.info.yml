@@ -8,4 +8,11 @@ dependencies:
   - block
   - vactory_field
   - vactory_dynamic_field
+  - drupal:block_content
+  - drupal:content_translation
+  - drupal:image
+  - drupal:link
+  - drupal:menu_link_content
+  - drupal:options
+  - menu_item_extras:menu_item_extras
 version: 8.x-1.0
