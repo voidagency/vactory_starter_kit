@@ -9,7 +9,7 @@ use Drupal\Core\Routing\AdminContext;
 use Drupal\menu_link_content\Plugin\Menu\MenuLinkContent;
 
 /**
- * MenuRoleLinkTreeManipulator service.
+ * Menu link tree manipulator that hides links restricted to other roles.
  *
  * @package Drupal\vactory_core
  */
