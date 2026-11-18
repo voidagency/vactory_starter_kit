@@ -8,13 +8,14 @@ clone:
 workspace:
   path: /opt-cache
 
-# One build per change: pushes to 3.x and pull requests. A push to a PR
-# branch also sends a pull_request event; building both ran two identical
-# builds at the same time, and one of them regularly hung in SonarQube.
+# One build per commit: push events only. A push to a PR branch also sent a
+# pull_request event, and the two identical builds running at the same time
+# regularly hung in SonarQube. pull_request events are not reliably delivered
+# (no build on new commits of most PRs), push events always are.
 trigger:
-  ref:
-    - refs/heads/3.x
-    - refs/pull/**
+  event:
+    exclude:
+      - pull_request
 
 steps:
   - name: setup
