@@ -4,5 +4,6 @@ description: 'Vactory Decoupled Flag'
 package: Vactory
 core_version_requirement: ^9 || ^10
 dependencies:
+  - flag:flag
   - vactory_decoupled
   - vactory_decoupled_revalidator
