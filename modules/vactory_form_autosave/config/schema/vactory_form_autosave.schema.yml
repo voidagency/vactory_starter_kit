@@ -1,0 +1,28 @@
+vactory_form_autosave.settings:
+  type: config_object
+  label: 'Vactory Form Autosave settings'
+  mapping:
+    policy:
+      type: string
+      label: 'Policy'
+    form_ids_string:
+      type: string
+      label: 'Form IDs (raw)'
+    form_ids:
+      type: sequence
+      label: 'Form IDs'
+      sequence:
+        type: string
+        label: 'Form ID'
+    roles:
+      type: sequence
+      label: 'Roles'
+      sequence:
+        type: ignore
+        label: 'Role (checkbox value)'
+    lifetime:
+      type: string
+      label: 'Draft lifetime'
+    dependencies:
+      type: config_dependencies
+      label: 'Dependencies'
