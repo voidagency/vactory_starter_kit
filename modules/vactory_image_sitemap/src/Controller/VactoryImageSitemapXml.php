@@ -3,7 +3,7 @@
 namespace Drupal\vactory_image_sitemap\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-use Laminas\Diactoros\Response\XmlResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -19,7 +19,7 @@ class VactoryImageSitemapXml extends ControllerBase {
     $file = 'public://image_sitemap/' . $langcode . '_image_sitemap.xml';
     if (file_exists($file)) {
       $xml = file_get_contents($file);
-      return new XmlResponse($xml);
+      return new Response($xml, 200, ['Content-Type' => 'application/xml; charset=utf-8']);
     }
     throw new NotFoundHttpException();
   }
