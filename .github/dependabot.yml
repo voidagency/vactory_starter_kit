@@ -1,13 +1,19 @@
 version: 2
 updates:
+  # Version updates are disabled: they only bump the profile's own
+  # composer.lock, which projects and the CI never install (they resolve the
+  # profile's composer.json constraints in their own root lock). Security
+  # updates keep coming as long as "Dependabot security updates" is enabled
+  # in the repository settings (Code security > Dependabot).
   - package-ecosystem: "composer"
     directory: "/"
-    commit-message: 
-      prefix: "Composer" 
-      include: "scope" 
+    commit-message:
+      prefix: "Composer"
+      include: "scope"
     schedule:
       interval: "daily"
-    target-branch: "3.x" 
-    reviewers: 
+    target-branch: "3.x"
+    open-pull-requests-limit: 0
+    reviewers:
       - Bahlaouane-Hamza
       - voidagency
