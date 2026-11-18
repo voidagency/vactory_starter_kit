@@ -8,6 +8,14 @@ clone:
 workspace:
   path: /opt-cache
 
+# One build per change: pushes to 3.x and pull requests. A push to a PR
+# branch also sends a pull_request event; building both ran two identical
+# builds at the same time, and one of them regularly hung in SonarQube.
+trigger:
+  ref:
+    - refs/heads/3.x
+    - refs/pull/**
+
 steps:
   - name: setup
     image: vactory/vactory-ci:latest
