@@ -50,8 +50,13 @@ class LinkitIntegrationTest extends ExistingSiteBase {
    * logged-in user on this route).
    */
   public function testAutocomplete(): void {
+    $editor = $this->createUser();
+    $editor->addRole('webmaster');
+    $editor->save();
+    // The route stays reachable for back office editors.
+    $this->assertTrue(\Drupal::service('access_manager')->checkNamedRoute('linkit.autocomplete', ['linkit_profile_id' => 'default'], $editor));
     $switcher = \Drupal::service('account_switcher');
-    $switcher->switchTo($this->createUser(['access content']));
+    $switcher->switchTo($editor);
     try {
       $request = Request::create('/linkit/autocomplete/default', 'GET', ['q' => $this->target->getTitle()]);
       $controller = \Drupal::classResolver(AutocompleteController::class);
@@ -101,11 +106,25 @@ class LinkitIntegrationTest extends ExistingSiteBase {
       }
 
     };
-    $form = \Drupal::formBuilder()->getForm($form_object);
+    $editor = $this->createUser();
+    $editor->addRole('webmaster');
+    $editor->save();
+    $switcher = \Drupal::service('account_switcher');
+    $switcher->switchTo($editor);
+    try {
+      $form = \Drupal::formBuilder()->getForm($form_object);
+    }
+    finally {
+      $switcher->switchBack();
+    }
+    // Linkit enabled its autocomplete on the input.
+    $this->assertContains('form-linkit-autocomplete', $form['link']['url']['#attributes']['class'] ?? []);
+    $this->assertNotEmpty($form['link']['url']['#attributes']['data-autocomplete-path'] ?? NULL);
+    $this->assertContains('linkit/linkit.autocomplete', $form['link']['url']['#attached']['library'] ?? []);
     $url_selector = $form['link']['url']['#attributes']['data-drupal-selector'];
     $title_selector = $form['link']['title']['#attributes']['data-drupal-selector'];
     $this->assertStringEndsWith('-uri', $url_selector);
-    // linkit.autocomplete.js looks up the title as "<base>-title".
+    // Selectors stay paired: "<base>-uri" / "<base>-title".
     $this->assertSame(substr($url_selector, 0, -4) . '-title', $title_selector);
   }
 
