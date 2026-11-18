@@ -24,22 +24,30 @@ class Html2PdfManagerTest extends KernelTestBase {
     parent::setUp();
     $this->setInstallProfile('vactory_starter_kit');
     $this->installConfig(['vactory_html2pdf']);
+    // See tearDown(): never write in the real working directory.
+    $this->previousCwd = getcwd();
+    $dir = sys_get_temp_dir() . '/html2pdf-test-' . getmypid();
+    mkdir($dir);
+    chdir($dir);
   }
+
+  /**
+   * Working directory before the test.
+   *
+   * @var string
+   */
+  protected string $previousCwd;
 
   /**
    * {@inheritdoc}
    */
   protected function tearDown(): void {
     // Until #71157 is fixed the PDF lands in "public/" relative to the
-    // current directory, with odd permissions: clean it up.
-    $dir = 'public/html2pdf-test';
-    if (is_dir($dir)) {
-      chmod('public', 0755);
-      chmod($dir, 0755);
-      array_map('unlink', glob($dir . '/*'));
-      rmdir($dir);
-      @rmdir('public');
-    }
+    // current directory, with odd permissions: it was written in a temporary
+    // working directory, removed here.
+    $dir = getcwd();
+    chdir($this->previousCwd);
+    exec('chmod -R u+rwx ' . escapeshellarg($dir) . ' && rm -rf ' . escapeshellarg($dir));
     parent::tearDown();
   }
 

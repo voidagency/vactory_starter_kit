@@ -3,7 +3,7 @@ vactory_html2pdf.settings:
   label: 'Vactory HTML to PDF settings'
   mapping:
     font_directories:
-      type: string
+      type: text
       label: 'Font directories (one per line, relative to the Drupal root)'
     vactory_html2pdf_font_dirs:
       type: sequence
