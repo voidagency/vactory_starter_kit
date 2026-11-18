@@ -314,8 +314,10 @@ function vactory_appointment_form_alter(&$form, FormStateInterface $form_state, 
   if (in_array($form_id, $form_ids)) {
     $form['#validate'][] = 'edit_or_add_appointment_from_bo_validator';
   }
+  // Hide adviser fields in the back office (admin theme) user forms.
   $theme_name = \Drupal::service('theme.manager')->getActiveTheme()->getName();
-  if (in_array($form_id, ['user_form', 'user_register_form']) && $theme_name == 'seven') {
+  $admin_theme = \Drupal::config('system.theme')->get('admin');
+  if (in_array($form_id, ['user_form', 'user_register_form']) && $theme_name === $admin_theme) {
     $form['field_adviser_holiday']['#access'] = FALSE;
     $form['field_adviser_appointments']['#access'] = FALSE;
   }
