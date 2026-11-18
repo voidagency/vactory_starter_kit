@@ -219,17 +219,6 @@
       "drupal/oauth_login_oauth2": {
         "Store ressourceOwner into a session variable.": "https://gist.githubusercontent.com/voidagency/94489fb9998406959ebefb31a758f39c/raw/6692adac21ef17ea4d66d69584159a6802707404/oauth-login-oauth2-add-resource-owner-to-session.patch"
       },
-      "drupal/social_auth_microsoft": {
-        "Fixing call to function on null.": "https://gist.githubusercontent.com/voidagency/33e6445b2b0fe973654304a6ea04d50e/raw/80cd36664fe77ec6196bb310b49e8b7d27c8c96d/microsoft_social_auth.patch",
-        "Update to v2 endpoints.": "https://gist.githubusercontent.com/voidagency/e45c99aff42a75a8925e043d4c22b670/raw/127ee70e123dc79d308042e519171c160a0b5ab0/social_auth_microsoft-v2.patch"
-      },
-      "stevenmaguire/oauth2-microsoft": {
-        "Fix Bearer Authorization - Update ResourceOwner": "https://gist.githubusercontent.com/voidagency/b3b3508f2edb982b4f60a12517184e19/raw/08835c48e75e7f19f7396013988d934be30526ce/oauth2-microsoft-authorization-ressource-owner.patch"
-      },
-      "drupal/swiftmailer": {
-        "Fix undefined index warnings on reset password form": "https://www.drupal.org/files/issues/2020-10-29/3179656-two-undentified-index-notices-2.patch",
-        "Swiftmailer fix renderPlan method cli breaks": "https://gist.githubusercontent.com/voidagency/2d6230d4c481d5f80e8e9c8e783a2963/raw/8f7e40b7b90406b96865dde05b57a4ad8d854b68/swiftmailer-prevent-cli-commands-break.patch"
-      },
       "drupal/advagg": {
         "Remove version comments from minified files.": "https://gist.githubusercontent.com/voidagency/136f41faf39bcff92e334f364a173afb/raw/421944a391d8ed071ec648cf3ca8311f912372fe/advagg-remove-version-comment-from-minified-js.patch"
       },
@@ -246,9 +235,6 @@
       },
       "drupal/captcha": {
         "Fix captcha error message translation": "https://gist.githubusercontent.com/voidagency/11480147ce444bf3b4b7c5539f213452/raw/5a2d3f39bc5f795bb25b5c91ab050ad8d9ad1837/fix-captcha-error-message-translation.patch"
-      },
-      "drupal/jsonapi_extra": {
-        "Default field enhancer for fields": "https://gist.githubusercontent.com/voidagency/4861a0f0343a45cf0582553fc80c6b59/raw/2342d707c2b6708f2c18a69b870fcad1d5242df3/jsonapi_default_field_enhancer_for_fields.patch"
       },
       "voidagency/cloudinary": {
         "Cloudinary video media library compatibility fix": "https://gist.githubusercontent.com/voidagency/21729df75ca350faace0f7883960bc37/raw/88e6ce0980cb3e01c95f74e1c79b4baddcdf884e/cloudinary-video-media-library-compatibility-fix.patch",
