@@ -7,4 +7,5 @@ dependencies:
   - node
   - block
   - vactory_field
+  - vactory_dynamic_field
 version: 8.x-1.0
