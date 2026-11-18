@@ -35,7 +35,6 @@ class WebformFileUploadValidatorsTest extends ExistingSiteBase {
     $element_plugin->prepare($element, $submission);
 
     $method = new \ReflectionMethod($resource, 'getElementValidators');
-    $method->setAccessible(TRUE);
     return $method->invoke($resource, $element);
   }
 
@@ -49,9 +48,23 @@ class WebformFileUploadValidatorsTest extends ExistingSiteBase {
     ]);
     $this->assertArrayHasKey('FileExtension', $validators);
     $extensions = explode(' ', $validators['FileExtension']['extensions']);
-    $this->assertContains('pdf', $extensions);
+    $defaults = \Drupal::config('webform.settings')->get('file.default_managed_file_extensions');
+    $this->assertSame(explode(' ', str_replace(',', ' ', $defaults)), $extensions);
     $this->assertNotContains('php', $extensions);
     $this->assertNotContains('exe', $extensions);
+  }
+
+  /**
+   * Other webform file element types get their own default extensions.
+   */
+  public function testImageFileDefaults(): void {
+    $validators = $this->validatorsFor([
+      '#type' => 'webform_image_file',
+      '#title' => 'Picture',
+    ]);
+    $extensions = explode(' ', $validators['FileExtension']['extensions']);
+    $this->assertContains('jpg', $extensions);
+    $this->assertNotContains('php', $extensions);
   }
 
   /**

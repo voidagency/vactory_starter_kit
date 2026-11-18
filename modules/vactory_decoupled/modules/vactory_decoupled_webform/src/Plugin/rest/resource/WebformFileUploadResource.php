@@ -11,6 +11,7 @@ use Drupal\file\Entity\File;
 use Drupal\file\Plugin\rest\resource\FileUploadResource;
 use Drupal\webform\Entity\Webform;
 use Drupal\webform\Entity\WebformSubmission;
+use Drupal\webform\Plugin\WebformElement\WebformManagedFileBase;
 use Drupal\webform\WebformSubmissionForm;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -70,6 +71,9 @@ class WebformFileUploadResource extends FileUploadResource {
     $filename = $this->validateAndParseContentDispositionHeader($request);
 
     $element = $webform->getElement($field_name);
+    if (!$element || !$this->getElementPlugin($element) instanceof WebformManagedFileBase) {
+      throw new BadRequestHttpException('Invalid field_name value: not a file element.');
+    }
 
     $webform_submission = WebformSubmission::create([
       'webform_id' => $webform->id(),
