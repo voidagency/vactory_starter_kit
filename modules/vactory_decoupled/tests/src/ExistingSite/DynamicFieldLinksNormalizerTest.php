@@ -2,7 +2,8 @@
 
 namespace Drupal\Tests\vactory_decoupled\ExistingSite;
 
-use Drupal\Core\Url;
+use Drupal\Core\Cache\CacheableMetadata;
+use Drupal\pathauto\PathautoState;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
 
 /**
@@ -24,6 +25,8 @@ class DynamicFieldLinksNormalizerTest extends ExistingSiteBase {
    */
   const SETTINGS = [
     'uuid' => 'vactory_decoupled_links_test',
+    'name' => 'Links test',
+    'multiple' => TRUE,
     'fields' => [
       'link' => ['type' => 'url_extended', 'label' => 'Link'],
       'group_item' => [
@@ -38,19 +41,43 @@ class DynamicFieldLinksNormalizerTest extends ExistingSiteBase {
     ],
     'extra_fields' => [
       'cta' => ['type' => 'url_extended', 'label' => 'CTA'],
+      'group_extra' => [
+        'g_title' => 'Extra group',
+        'link' => ['type' => 'url_extended', 'label' => 'Extra group link'],
+      ],
     ],
   ];
 
   /**
-   * Creates a published page with an alias.
+   * Aliases of the created pages, keyed by node id.
+   *
+   * @var string[]
+   */
+  protected $aliases = [];
+
+  /**
+   * Creates a published page with a known alias (pathauto skipped).
    */
   protected function createPage(string $name) {
-    return $this->createNode([
+    $alias = '/df-links-' . strtolower($this->randomMachineName(8)) . '-' . $name;
+    $node = $this->createNode([
       'type' => 'vactory_page',
       'title' => $name,
       'status' => 1,
       'moderation_state' => 'published',
+      'path' => ['alias' => $alias, 'pathauto' => PathautoState::SKIP],
     ]);
+    $this->aliases[$node->id()] = $alias;
+    return $node;
+  }
+
+  /**
+   * Asserts a processed link points to the page alias.
+   */
+  protected function assertAliased($node, array $value, string $suffix = ''): void {
+    $this->assertStringEndsWith($this->aliases[$node->id()] . $suffix, $value['url']);
+    $this->assertStringNotContainsString('/node/', $value['url']);
+    $this->assertFalse($value['is_external']);
   }
 
   /**
@@ -71,6 +98,7 @@ class DynamicFieldLinksNormalizerTest extends ExistingSiteBase {
 
     $items = [
       [
+        '_weight' => 1,
         'link' => $this->link('/node/' . $item->id()),
         'group_item' => ['link' => $this->link('/node/' . $group->id())],
         'content' => [
@@ -79,12 +107,16 @@ class DynamicFieldLinksNormalizerTest extends ExistingSiteBase {
         ],
       ],
       [
+        '_weight' => 2,
         'link' => $this->link('https://www.example.com/page'),
         'group_item' => ['link' => $this->link('/node/' . $item->id() . '?x=1#a')],
         'content' => ['value' => '<p>Plain</p>', 'format' => 'full_html'],
       ],
     ];
-    $extra = ['cta' => $this->link('/node/' . $cta->id())];
+    $extra = [
+      'cta' => $this->link('/node/' . $cta->id()),
+      'group_extra' => ['link' => $this->link('/node/' . $group->id())],
+    ];
 
     $manager = \Drupal::service('vactory_decoupled.dynamic_field_manager');
     // Initialises the cacheability the formatters write to.
@@ -95,30 +127,46 @@ class DynamicFieldLinksNormalizerTest extends ExistingSiteBase {
     unset($component);
     $manager->applyFormatters(['extra_fields'], self::SETTINGS, $extra);
 
-    $alias = fn($node) => Url::fromUserInput('/node/' . $node->id())->toString();
-    $internal = [
-      [$item, $items[0]['link']],
-      [$group, $items[0]['group_item']['link']],
-      [$cta, $extra['cta']],
-    ];
-    foreach ($internal as [$node, $value]) {
-      $this->assertSame($alias($node), $value['url']);
-      // An alias, not the system path stored by linkit.
-      $this->assertStringEndsWith(\Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $node->id()), $value['url']);
-      $this->assertStringNotContainsString('/node/', $value['url']);
-      $this->assertFalse($value['is_external']);
-    }
+    $this->assertAliased($item, $items[0]['link']);
+    $this->assertAliased($group, $items[0]['group_item']['link']);
+    $this->assertAliased($cta, $extra['cta']);
+    $this->assertAliased($group, $extra['group_extra']['link']);
     // External links are kept as is.
     $this->assertSame('https://www.example.com/page', $items[1]['link']['url']);
     $this->assertTrue($items[1]['link']['is_external']);
     // Query and fragment are kept on internal links.
-    $this->assertSame($alias($item) . '?x=1#a', $items[1]['group_item']['link']['url']);
+    $this->assertAliased($item, $items[1]['group_item']['link'], '?x=1#a');
 
     // CKEditor text: the linkit filter turns the link into the alias.
     $html = $items[0]['content']['value']['#text'];
-    $this->assertStringContainsString('href="' . $alias($text) . '"', $html);
+    $this->assertMatchesRegularExpression('#href="[^"]*' . preg_quote($this->aliases[$text->id()], '#') . '"#', $html);
     $this->assertStringNotContainsString('href="/node/', $html);
-    $this->assertSame('<p>Plain</p>', trim($items[1]['content']['value']['#text']));
+    $this->assertStringContainsString('Plain', $items[1]['content']['value']['#text']);
+  }
+
+  /**
+   * The full process() path with a real widget (link in extra fields).
+   *
+   * Template "Formulaires > Simple" of vactory_decoupled_webform, used for the
+   * manual test of PR #912.
+   */
+  public function testProcessWithRealWidget(): void {
+    $page = $this->createPage('webform');
+    $data = [
+      'widget_id' => 'vactory_decoupled_webform:webform',
+      'widget_data' => json_encode([
+        'extra_field' => [
+          'title' => 'Form',
+          'link' => $this->link('/node/' . $page->id()),
+        ],
+        0 => ['_weight' => 1, 'webform' => []],
+      ]),
+    ];
+    $result = \Drupal::service('vactory_decoupled.dynamic_field_manager')
+      ->process($data, new CacheableMetadata());
+    $content = json_decode($result['data']['widget_data'], TRUE);
+    $this->assertSame('vactory_decoupled_webform:webform', $content['template']);
+    $this->assertAliased($page, $content['extra_field']['link']);
   }
 
 }

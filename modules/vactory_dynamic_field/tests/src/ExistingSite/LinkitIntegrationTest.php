@@ -3,11 +3,13 @@
 namespace Drupal\Tests\vactory_dynamic_field\ExistingSite;
 
 use Drupal\Component\Utility\NestedArray;
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\linkit\Controller\AutocompleteController;
 use Drupal\linkit\Entity\Profile;
+use Drupal\Tests\vactory_dynamic_field\Form\LinkitStructuresTestForm;
 use Drupal\vactory_dynamic_field\Element\UrlExtendedElement;
 use Symfony\Component\HttpFoundation\Request;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
@@ -134,98 +136,58 @@ class LinkitIntegrationTest extends ExistingSiteBase {
    *
    * Reproduces the manual test of PR #912: with linkit >= 7.0.13 and without
    * the "-uri" selector, only the first link of a form got an autocomplete
-   * and the others none. The form mimics the #parents the Dynamic Fields
-   * modal form gives (components[extra_field|delta][group][field]).
+   * and the others none. The elements are built by the Dynamic Fields
+   * FormWidgetTrait::getFormElement(), with the #parents the modal form gives
+   * (components[extra_field|delta][group][field]); "Add one more" is a real
+   * AJAX rebuild adding components[2].
    */
   public function testLinkitSelectorsInDynamicFieldStructures(): void {
-    $structure = [
-      ['components', 'extra_field', 'cta'],
-      ['components', 'extra_field', 'group_extra', 'link'],
-      ['components', 0, 'link'],
-      ['components', 0, 'cta_social'],
-      ['components', 0, 'group_item', 'link'],
-      ['components', 1, 'link'],
-    ];
-    $form_object = new class($structure) extends FormBase {
-
-      /**
-       * Parents of the url_extended elements.
-       *
-       * @var array
-       */
-      protected $structure;
-
-      /**
-       * Constructs the test form.
-       */
-      public function __construct(array $structure) {
-        $this->structure = $structure;
-      }
-
-      /**
-       * {@inheritdoc}
-       */
-      public function getFormId() {
-        return 'vactory_dynamic_field_linkit_structures_test';
-      }
-
-      /**
-       * {@inheritdoc}
-       */
-      public function buildForm(array $form, FormStateInterface $form_state) {
-        $form['#tree'] = TRUE;
-        foreach ($this->structure as $parents) {
-          NestedArray::setValue($form, $parents, [
-            '#type' => 'url_extended',
-            '#title' => 'Link',
-            '#default_value' => ['url' => '', 'title' => ''],
-          ]);
-        }
-        return $form;
-      }
-
-      /**
-       * {@inheritdoc}
-       */
-      public function submitForm(array &$form, FormStateInterface $form_state) {
-      }
-
-    };
+    $form_object = new LinkitStructuresTestForm();
     $editor = $this->createUser();
     $editor->addRole('webmaster');
     $editor->save();
     $switcher = \Drupal::service('account_switcher');
     $switcher->switchTo($editor);
     try {
-      // Build twice: the second build stands for an AJAX rebuild ("Add one
-      // more"), which must not change the selectors.
-      $builds = [
-        \Drupal::formBuilder()->getForm($form_object),
-        \Drupal::formBuilder()->getForm($form_object),
-      ];
+      $form_state = new FormState();
+      $form = \Drupal::formBuilder()->buildForm($form_object, $form_state);
+      // "Add one more": AJAX rebuild with one more item.
+      $form_state->set('items', 3);
+      $form_state->setRequestMethod('POST');
+      $form_state->setRebuild();
+      Html::setIsAjax(TRUE);
+      $rebuilt = \Drupal::formBuilder()->rebuildForm($form_object->getFormId(), $form_state, $form);
     }
     finally {
+      Html::setIsAjax(FALSE);
       $switcher->switchBack();
     }
+    $builds = [
+      'initial' => [$form, LinkitStructuresTestForm::structure(2)],
+      'rebuild' => [$rebuilt, LinkitStructuresTestForm::structure(3)],
+    ];
     $selectors = [];
-    foreach ($builds as $build_index => $form) {
+    foreach ($builds as $build => [$built_form, $structure]) {
       foreach ($structure as $parents) {
-        $element = NestedArray::getValue($form, $parents);
-        $label = implode('.', $parents);
+        $element = NestedArray::getValue($built_form, $parents);
+        $label = $build . ': ' . implode('.', $parents);
         $url = $element['url'];
+        $selector = $url['#attributes']['data-drupal-selector'];
         $expected = 'edit-' . str_replace('_', '-', implode('-', $parents)) . '-uri';
-        $this->assertSame($expected, $url['#attributes']['data-drupal-selector'], $label);
+        $this->assertSame($expected, $selector, $label);
         $this->assertSame(substr($expected, 0, -4) . '-title', $element['title']['#attributes']['data-drupal-selector'], $label);
         // Every input gets linkit's autocomplete, not only the first one.
         $this->assertContains('form-linkit-autocomplete', $url['#attributes']['class'] ?? [], $label);
         $this->assertNotEmpty($url['#attributes']['data-autocomplete-path'] ?? NULL, $label);
         // The submitted value key is unchanged.
         $this->assertStringEndsWith('[url]', $url['#name'], $label);
-        $selectors[$build_index][] = $expected;
+        $selectors[$build][implode('.', $parents)] = $selector;
       }
-      $this->assertSame($selectors[$build_index], array_unique($selectors[$build_index]), 'Selectors are unique.');
+      $this->assertSame(array_values(array_unique($selectors[$build])), array_values($selectors[$build]), $build . ': selectors are unique.');
     }
-    $this->assertSame($selectors[0], $selectors[1], 'Selectors are stable across rebuilds.');
+    // The AJAX rebuild keeps the existing selectors and adds the new item's.
+    $this->assertSame($selectors['initial'], array_intersect_key($selectors['rebuild'], $selectors['initial']));
+    $this->assertSame('edit-components-2-link-uri', $selectors['rebuild']['components.2.link']);
   }
 
   /**
