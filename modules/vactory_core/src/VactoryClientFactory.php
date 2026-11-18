@@ -46,8 +46,13 @@ class VactoryClientFactory extends ClientFactory {
    *   The HTTP client.
    */
   public function fromOptions(array $config = []) {
-    $http_client_ssl_verification = $this->configFactory->get('vactory_core.global_config')->get('http_client_ssl_verification');
-    return $this->clientFactory->fromOptions(['verify' => (bool) $http_client_ssl_verification ?? TRUE]);
+    // SSL verification stays on unless it has been explicitly disabled in
+    // the Vactory settings. A "verify" option passed by the caller wins.
+    $ssl_verification = $this->configFactory->get('vactory_core.global_config')->get('http_client_ssl_verification');
+    if ($ssl_verification !== NULL && !$ssl_verification && !array_key_exists('verify', $config)) {
+      $config['verify'] = FALSE;
+    }
+    return $this->clientFactory->fromOptions($config);
   }
 
 }
