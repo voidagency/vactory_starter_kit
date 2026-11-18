@@ -176,7 +176,8 @@ function vactory_social_network_preprocess_flag__liked_content(&$variables) {
   $node = $variables['flaggable'];
   if (isset($node) && $node instanceof NodeInterface) {
     $nid = $node->id();
-    $query = Drupal::entityQuery('flagging');
+    // Count every like, not only the flaggings the viewer may access.
+    $query = Drupal::entityQuery('flagging')->accessCheck(FALSE);
     $query->condition('flag_id', 'liked_content', '=')
       ->condition('entity_type', 'node', '=')
       ->condition('entity_id', $nid, '=');
