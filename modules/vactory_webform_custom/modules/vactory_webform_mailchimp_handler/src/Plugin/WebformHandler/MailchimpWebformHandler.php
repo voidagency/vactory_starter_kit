@@ -101,13 +101,13 @@ class MailchimpWebformHandler extends WebformHandlerBase {
       if (isset($this->configuration['list_id'])) {
         // Get webform elements as base for mapping.
         $elements = $this->webform->getElementsDecodedAndFlattened();
-        foreach($elements as $key => $element) {
-          if(!isset($element['#title']) || in_array($element['#type'], ['webform_actions'])) {
+        foreach ($elements as $key => $element) {
+          if (!isset($element['#title']) || in_array($element['#type'], ['webform_actions'])) {
             unset($elements[$key]);
           }
         }
         $options = [];
-        foreach($elements as $key => $element) {
+        foreach ($elements as $key => $element) {
           $options[$key] = $element['#title'];
         }
 
@@ -174,8 +174,9 @@ class MailchimpWebformHandler extends WebformHandlerBase {
     try {
       $interests_categories = $client->lists->getListInterestCategories($this->configuration['list_id']);
       if (!empty($interests_categories->categories)) {
-        foreach ($interests_categories->categories as $index => $category)
-        $interests = $client->lists->listInterestCategoryInterests($this->configuration['list_id'], $category->id);
+        foreach ($interests_categories->categories as $index => $category) {
+          $interests = $client->lists->listInterestCategoryInterests($this->configuration['list_id'], $category->id);
+        }
         $interests = $interests->interests;
         if (!empty($interests)) {
           $results[$index]['category'] = $category->title;
@@ -218,7 +219,7 @@ class MailchimpWebformHandler extends WebformHandlerBase {
         $cid = $interest['category_id'];
         foreach ($interest['interests'] as $interest_group) {
           $iid = $interest_group['id'];
-          $this->configuration[$iid] = $form_state->getValues()['api_settings']['interests'][$cid][$iid];;
+          $this->configuration[$iid] = $form_state->getValues()['api_settings']['interests'][$cid][$iid];
         }
       }
     }
@@ -228,7 +229,7 @@ class MailchimpWebformHandler extends WebformHandlerBase {
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, FormStateInterface $form_state,  WebformSubmissionInterface $webform_submission) {
+  public function submitForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
     // Get the submission data.
     $values = $webform_submission->getData();
 
@@ -284,7 +285,7 @@ class MailchimpWebformHandler extends WebformHandlerBase {
   protected function getLists() {
     $lists = [];
 
-    if (isset($this->configuration['api_key']) && isset($this->configuration['server_prefix']) 
+    if (isset($this->configuration['api_key']) && isset($this->configuration['server_prefix'])
       && !empty($this->configuration['api_key']) && !empty($this->configuration['server_prefix'])) {
       $client = $this->getClient();
 
@@ -309,7 +310,8 @@ class MailchimpWebformHandler extends WebformHandlerBase {
   /**
    * Get the merge fields for a specific list.
    *
-   * @param $list_id
+   * @param string $list_id
+   *   The Mailchimp list ID.
    */
   protected function getMergeFields($list_id) {
     $merge_fields = [];
