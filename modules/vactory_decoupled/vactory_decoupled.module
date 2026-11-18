@@ -881,18 +881,6 @@ function clear_next_cache($query = []) {
 }
 
 /**
- * Implements hook_jsonapi_default_enhancers_info().
- */
-function vactory_decoupled_jsonapi_default_enhancers_info() {
-  return [
-    'internal_blocks' => [
-      'enhancer' => 'vactory_blocks',
-    ],
-    /* 'field_vactory_meta_tags' => ['enhancer' => 'vactory_metatag',],*/
-  ];
-}
-
-/**
  * Implements hook_form_FORM_ID_alter().
  */
 function vactory_decoupled_form_jsonapi_resource_config_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
