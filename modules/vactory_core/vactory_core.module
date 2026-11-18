@@ -425,7 +425,7 @@ function vactory_core_xmlsitemap_link_alter(array &$link, array $context) {
   $front_page = Drupal::config('system.site')->get('page')['front'];
   if ($link['loc'] === $front_page) {
     $link['status'] = 0;
-    $link['acccess'] = FALSE;
+    $link['access'] = FALSE;
   }
 }
 
