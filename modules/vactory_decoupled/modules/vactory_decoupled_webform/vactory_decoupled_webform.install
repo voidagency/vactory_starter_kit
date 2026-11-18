@@ -13,10 +13,9 @@ use Drupal\user\RoleInterface;
  * Implements hook_install().
  */
 function vactory_decoupled_webform_install() {
-  // Grant permission to all users by default.
+  // Webform configuration (handlers, settings) is reserved to trusted roles:
+  // never grant 'access any webform configuration' to anonymous/authenticated.
   if (\Drupal::moduleHandler()->moduleExists('user')) {
-    user_role_grant_permissions(RoleInterface::ANONYMOUS_ID, ['access any webform configuration']);
-    user_role_grant_permissions(RoleInterface::AUTHENTICATED_ID, ['access any webform configuration']);
     user_role_grant_permissions('master', ['administer webform_decoupled props']);
     user_role_grant_permissions('webmaster', ['administer webform_decoupled props']);
   }
@@ -214,4 +213,13 @@ function vactory_decoupled_webform_update_10101() {
 
   \Drupal::entityDefinitionUpdateManager()
     ->installFieldStorageDefinition('datalayer', 'webform_submission', 'vactory_decoupled_webform', $storage_definition);
+}
+
+/**
+ * Revoke 'access any webform configuration' from anonymous/authenticated.
+ */
+function vactory_decoupled_webform_update_10102() {
+  foreach ([RoleInterface::ANONYMOUS_ID, RoleInterface::AUTHENTICATED_ID] as $rid) {
+    user_role_revoke_permissions($rid, ['access any webform configuration']);
+  }
 }
