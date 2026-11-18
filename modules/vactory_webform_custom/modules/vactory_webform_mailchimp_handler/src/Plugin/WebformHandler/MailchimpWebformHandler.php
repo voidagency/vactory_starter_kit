@@ -6,7 +6,6 @@ use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\webform\Plugin\WebformHandlerBase;
 use Drupal\webform\WebformSubmissionInterface;
-use GuzzleHttp\Exception\GuzzleException;
 use MailchimpMarketing\ApiClient;
 
 /**
@@ -23,6 +22,13 @@ use MailchimpMarketing\ApiClient;
  * )
  */
 class MailchimpWebformHandler extends WebformHandlerBase {
+
+  /**
+   * Whether a Mailchimp call failed during the current submission.
+   *
+   * @var bool
+   */
+  protected $mailchimpFailed = FALSE;
 
   /**
    * {@inheritdoc}
@@ -183,7 +189,7 @@ class MailchimpWebformHandler extends WebformHandlerBase {
         }
       }
     }
-    catch (GuzzleException $exception) {
+    catch (\Throwable $exception) {
       $this->logMailchimpError($exception);
     }
     return $results;
@@ -235,7 +241,13 @@ class MailchimpWebformHandler extends WebformHandlerBase {
     ];
 
     // Add the extra fields.
+    $this->mailchimpFailed = FALSE;
     $merge_fields = $this->getMergeFields($this->configuration['list_id']);
+    if ($this->mailchimpFailed) {
+      // Mailchimp is unreachable or rejects the request: do not chain more
+      // calls (each one waits for the timeout), the error is logged.
+      return;
+    }
     foreach ($merge_fields as $mailchimp_key => $mailchimp_name) {
       if (isset($this->configuration[$mailchimp_key])
           && isset($values[$this->configuration[$mailchimp_key]])
@@ -260,7 +272,7 @@ class MailchimpWebformHandler extends WebformHandlerBase {
     try {
       $client->lists->addListMember($this->configuration['list_id'], $data);
     }
-    catch (GuzzleException $exception) {
+    catch (\Throwable $exception) {
       $this->logMailchimpError($exception);
     }
 
@@ -280,7 +292,7 @@ class MailchimpWebformHandler extends WebformHandlerBase {
         // By default it fetchs 10 lists, now we set the count to 900.
         $response = $client->lists->getAllLists(NULL, NULL, 900);
       }
-      catch (GuzzleException $exception) {
+      catch (\Throwable $exception) {
         $this->logMailchimpError($exception);
       }
 
@@ -308,7 +320,7 @@ class MailchimpWebformHandler extends WebformHandlerBase {
     try {
       $response = $client->lists->getListMergeFields($list_id);
     }
-    catch (GuzzleException $exception) {
+    catch (\Throwable $exception) {
       $this->logMailchimpError($exception);
     }
 
@@ -330,6 +342,8 @@ class MailchimpWebformHandler extends WebformHandlerBase {
     $client->setConfig([
       'apiKey' => $this->configuration['api_key'],
       'server' => $this->configuration['server_prefix'],
+      // The SDK default (120 s) would hold the webform submission.
+      'timeout' => 10,
     ]);
     return $client;
   }
@@ -337,10 +351,14 @@ class MailchimpWebformHandler extends WebformHandlerBase {
   /**
    * Logs a Mailchimp API error without breaking the webform submission.
    *
+   * The SDK throws Guzzle exceptions on network/HTTP errors, and may throw
+   * other errors (ApiException body, invalid arguments): all are caught.
+   *
    * @param \Throwable $exception
    *   The exception thrown by the Mailchimp client.
    */
   protected function logMailchimpError(\Throwable $exception) {
+    $this->mailchimpFailed = TRUE;
     \Drupal::logger('vactory_webform_mailchimp')->error('Mailchimp API error: @message', [
       '@message' => $exception->getMessage(),
     ]);
