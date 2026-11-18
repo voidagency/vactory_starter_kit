@@ -11,8 +11,8 @@ use Drupal\vactory_rate\Controller\VoteController;
  *
  * The vactory_rate module injects rate's bot detector service and stores
  * votes through votingapi; rate was pinned to 3.1.0 after two reverted
- * upgrades. The vote widget (vactory_academy) is not covered. Run this test on a candidate
- * version before upgrading it.
+ * upgrades. The vote widget (vactory_academy) is not covered. Run this test
+ * on a candidate version before upgrading it.
  *
  * @group vactory_rate
  * @group dependencies
