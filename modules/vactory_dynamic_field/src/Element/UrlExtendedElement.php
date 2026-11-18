@@ -39,6 +39,24 @@ class UrlExtendedElement extends FormElement {
   }
 
   /**
+   * Gives the linkit input the selector linkit's JavaScript expects.
+   *
+   * Since linkit 7.0.13, linkit.autocomplete.js throws when the input's
+   * data-drupal-selector does not end with "-uri" (#64112), which breaks the
+   * autocomplete. Our sub-element is named "url": rewrite "...-url" into
+   * "...-uri". Any other selector just gets "-uri" appended (the JS no longer
+   * throws). Title autofill stays off: linkit only fills titles marked with
+   * data-linkit-widget-title-autofill-enabled.
+   */
+  public static function afterBuildLinkitSelector(array $element, FormStateInterface $form_state) {
+    $selector = $element['#attributes']['data-drupal-selector'] ?? '';
+    if ($selector !== '' && !str_ends_with($selector, '-uri')) {
+      $element['#attributes']['data-drupal-selector'] = preg_replace('/-url$/', '', $selector) . '-uri';
+    }
+    return $element;
+  }
+
+  /**
    * Url extended form element process callback.
    */
   public static function processUrlExtended(&$element, FormStateInterface $form_state, &$form) {
@@ -72,6 +90,7 @@ class UrlExtendedElement extends FormElement {
       '#autocomplete_route_parameters' => [
         'linkit_profile_id' => 'default',
       ],
+      '#after_build' => [[static::class, 'afterBuildLinkitSelector']],
     ];
 
     if (isset($retrievedContent)) {
