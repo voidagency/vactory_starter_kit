@@ -67,6 +67,13 @@ class VactoryCloudinaryManager {
   protected $uploadApi;
 
   /**
+   * Resource type of the last public id computed by getPublicId().
+   *
+   * @var string|null
+   */
+  protected $resourceType;
+
+  /**
    * Cloudinary cloud name.
    */
   protected $cloudName;
