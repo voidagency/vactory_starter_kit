@@ -44,6 +44,15 @@ class UpdateParagraphsEditTest extends KernelTestBase {
   }
 
   /**
+   * Nothing is installed when paragraphs_edit is already enabled.
+   */
+  public function testUpdate9501WhenAlreadyEnabled(): void {
+    $this->enableModules(['paragraphs_edit']);
+    $this->installer->expects($this->never())->method('install');
+    $this->assertNull(vactory_dynamic_field_update_9501());
+  }
+
+  /**
    * Update 9500 enables paragraphs_edit when it is not installed.
    */
   public function testUpdate9500InstallsMissingModule(): void {

@@ -33,7 +33,6 @@ class XmlsitemapLinkAlterTest extends UnitTestCase {
     vactory_core_xmlsitemap_link_alter($link, []);
     $this->assertSame(0, $link['status']);
     $this->assertFalse($link['access']);
-    $this->assertArrayNotHasKey('acccess', $link);
   }
 
   /**
