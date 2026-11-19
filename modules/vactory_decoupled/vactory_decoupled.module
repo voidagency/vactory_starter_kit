@@ -31,6 +31,7 @@ use Drupal\Component\Utility\UrlHelper;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\GuzzleException;
 use Drupal\menu_item_extras\Entity\MenuItemExtrasMenuLinkContent;
 
 /**
@@ -1105,11 +1106,9 @@ function clear_next_nginx_cache($path = '') {
     $request = $client->requestAsync('PURGE', $front_end_url . '/' . $path);
     \Drupal::logger('clear_next_nginx_cache')->info('Next nginx cache cleared for ' . $path);
   }
-  catch (ServerException $e) {
-    \Drupal::logger('clear_next_nginx_cache')
-      ->warning("Next nginx cache cleared for {$path} (no cache found)");
-  }
-  catch (RequestException $e) {
+  catch (GuzzleException $e) {
+    // HTTP errors (4xx/5xx) and network errors (DNS, connection refused,
+    // timeout) must not break the save that triggered the purge.
     \Drupal::logger('clear_next_nginx_cache')
       ->warning("Next nginx cache cleared for {$path} (no cache found)");
   }

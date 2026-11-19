@@ -11,10 +11,8 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Url;
 use Drupal\views\ViewExecutable;
-use GuzzleHttp\Exception\RequestException;
 use MailchimpMarketing\ApiClient;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Implements hook_theme().
@@ -198,7 +196,9 @@ function get_lists($mc_infos) {
     try {
       $response = $client->lists->getAllLists(NULL, NULL, 50, 0);
     }
-    catch (RequestException $request_exception) {
+    catch (\Throwable $request_exception) {
+      // The Mailchimp client lets Guzzle network errors (ConnectException)
+      // escape and may throw non-Guzzle errors: never break the form.
       $response['message'] = t("An exception occurred while getting Mailchimp lists: @message", ['@message' => $request_exception->getMessage()]);
       \Drupal::logger('vactory_mailchimp')->error($response['message']);
     }
@@ -324,15 +324,15 @@ function vactory_mailchimp_newsletter_form_alter(&$form, &$form_state, $form_id)
       'visible' => [
         ':input[name="field_envoi_planifie[value]"]' => [
           'checked' => TRUE,
-        ]
-      ]
+        ],
+      ],
     ];
     $form['field_recurrence']['#states'] = [
       'visible' => [
         ':input[name="field_envoi_planifie[value]"]' => [
           'checked' => TRUE,
-        ]
-      ]
+        ],
+      ],
     ];
   }
 }

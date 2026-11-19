@@ -18,6 +18,7 @@ use Drupal\webform\Plugin\WebformHandlerBase;
 use Drupal\webform\WebformInterface;
 use Drupal\webform\WebformMessageManagerInterface;
 use Drupal\webform\WebformSubmissionInterface;
+use GuzzleHttp\Exception\GuzzleException;
 use GuzzleHttp\Exception\RequestException;
 use Psr\Http\Message\ResponseInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -547,8 +548,9 @@ class VactoryRemotePostWebformHandler extends WebformHandlerBase {
         $response = $this->httpClient->$method($request_url, $request_options);
       }
     }
-    catch (RequestException $request_exception) {
-      $response = $request_exception->getResponse();
+    catch (GuzzleException $request_exception) {
+      // Network errors (ConnectException) carry no response.
+      $response = $request_exception instanceof RequestException ? $request_exception->getResponse() : NULL;
       // Encode HTML entities to prevent broken markup from breaking the page.
       $message = $request_exception->getMessage();
       $message = nl2br(htmlentities($message));
@@ -1070,7 +1072,7 @@ class VactoryRemotePostWebformHandler extends WebformHandlerBase {
     if ($custom_response_message = $this->getCustomResponseMessage($response)) {
       $token_data = [
         'webform_handler' => [
-          $this->getHandlerId() => $this->getResponseData($response),
+          $this->getHandlerId() => $response instanceof ResponseInterface ? $this->getResponseData($response) : [],
         ],
       ];
       $build_message = [
