@@ -107,6 +107,7 @@ class MigrateAdminSurfaceTest extends KernelTestBase {
   public function testDangerousPermissionsOnNonAdminRole(): void {
     $this->createRoleWith('importer', ['import configuration']);
     $this->createRoleWith('migrator', ['administer migrations']);
+    $this->createRoleWith('syncer', ['synchronize configuration']);
     $this->createRoleWith('both', [
       'import configuration',
       'administer migrations',
@@ -118,6 +119,7 @@ class MigrateAdminSurfaceTest extends KernelTestBase {
       'Role "both" holds the "administer migrations" permission.',
       'Role "importer" holds the "import configuration" permission.',
       'Role "migrator" holds the "administer migrations" permission.',
+      'Role "syncer" holds the "synchronize configuration" permission.',
     ];
     $findings = $result->findings();
     sort($expected);

@@ -49,7 +49,11 @@ class MigrateAdminSurface extends Check {
 
     // No non-admin role should be able to import configuration or manage
     // migrations. The admin role (uid 1 / "is_admin") is expected to have them.
-    $dangerous = ['import configuration', 'administer migrations'];
+    $dangerous = [
+      'import configuration',
+      'synchronize configuration',
+      'administer migrations',
+    ];
     foreach (Role::loadMultiple() as $role) {
       if ($role->isAdmin()) {
         continue;
@@ -70,7 +74,7 @@ class MigrateAdminSurface extends Check {
    */
   public function help() {
     $paragraphs = [];
-    $paragraphs[] = $this->t('Migrations run arbitrary process plugins and configuration import can create them, so both grant code execution to whoever can reach them. The migrate UI must be denied over HTTP (use Drush), and only the administrator role should hold "import configuration" or "administer migrations".');
+    $paragraphs[] = $this->t('Migrations run arbitrary process plugins and configuration import can create them, so both grant code execution to whoever can reach them. The migrate UI must be denied over HTTP (use Drush), and only the administrator role should hold "import configuration", "synchronize configuration" or "administer migrations".');
     return [
       '#theme' => 'check_help',
       '#title' => $this->t('Migrate administration surface'),
