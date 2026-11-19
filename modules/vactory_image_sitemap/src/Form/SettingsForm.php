@@ -43,9 +43,11 @@ class SettingsForm extends ConfigFormBase {
     $total_urls = '<ul>';
     foreach ($languages as $language) {
       $links .= '<li><em>[' . strtoupper($language->getId()) . '] : </em>';
-      $link = Url::fromRoute('vactory_image_sitemap.xml', [], ['absolute' => TRUE, 'language' => $language])
-        ->toString();
-      $links .= '<a href="'. $link . '">' . $link . '</a></li>';
+      $link = Url::fromRoute('vactory_image_sitemap.xml', [], [
+        'absolute' => TRUE,
+        'language' => $language,
+      ])->toString();
+      $links .= '<a href="' . $link . '">' . $link . '</a></li>';
 
       // Total links.
       $num_url = !empty($config->get($language->getId() . '_number_of_urls')) ? $config->get($language->getId() . '_number_of_urls') : 0;
@@ -107,4 +109,5 @@ class SettingsForm extends ConfigFormBase {
   public function generateImageSitemap(array &$form, FormStateInterface $form_state) {
     \Drupal::service('vactory_image_sitemap.generator')->process();
   }
+
 }
