@@ -1103,7 +1103,12 @@ function clear_next_nginx_cache($path = '') {
   $client = \Drupal::httpClient();
 
   try {
-    $request = $client->requestAsync('PURGE', $front_end_url . '/' . $path);
+    // Synchronous on purpose: an async request that is never waited on is
+    // never sent. Short timeouts keep a slow frontend from blocking the save.
+    $client->request('PURGE', $front_end_url . '/' . $path, [
+      'connect_timeout' => 2,
+      'timeout' => 5,
+    ]);
     \Drupal::logger('clear_next_nginx_cache')->info('Next nginx cache cleared for ' . $path);
   }
   catch (GuzzleException $e) {
