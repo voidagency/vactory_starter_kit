@@ -7,8 +7,9 @@ use Drupal\views_autocomplete_filters\Plugin\views\filter\ViewsAutocompleteFilte
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Autocomplete for basic textfield filter to handle string filtering commands
- * including equality, like, not like, etc.
+ * String filter with autocomplete and Google Places support.
+ *
+ * Handles string filtering commands including equality, like, not like, etc.
  *
  * @ingroup views_filter_handlers
  *
@@ -60,7 +61,7 @@ class VactoryGooglePlacesString extends ViewsAutocompleteFiltersString {
   /**
    * {@inheritDoc}
    */
-  public function buildOptionsForm(&$form, FormStateInterface $form_state) {
+  public function buildOptionsForm(&$form, FormStateInterface $form_state): void {
     parent::buildOptionsForm($form, $form_state);
     $form['vactory_google_places'] = [
       '#type' => 'checkbox',
@@ -72,7 +73,7 @@ class VactoryGooglePlacesString extends ViewsAutocompleteFiltersString {
   /**
    * {@inheritDoc}
    */
-  public function valueForm(&$form, FormStateInterface $form_state) {
+  public function valueForm(&$form, FormStateInterface $form_state): void {
     parent::valueForm($form, $form_state);
     $exposed = $form_state->get('exposed');
     if (!$exposed || empty($this->options['vactory_google_places'])) {
@@ -91,7 +92,7 @@ class VactoryGooglePlacesString extends ViewsAutocompleteFiltersString {
     // Get google places API key from module settings.
     $api_key = $this->state->get('google_places_api_key') ?? '';
     // Get allowed countries from module settings.
-    $countries =  $this->configFactory->get('vactory_google_places.settings')
+    $countries = $this->configFactory->get('vactory_google_places.settings')
       ->get('countries');
     $countries = array_values(array_map('strtolower', $countries ?? []));
     $form['value']['#attributes']['class'][] = 'vactory-google-places';

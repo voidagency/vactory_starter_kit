@@ -3,5 +3,5 @@ description: This module customize miniOrange OAuth Login contrib module.
 type: module
 core_version_requirement: ^9 || ^10
 configure: vactory_sso.settings
-
-
+dependencies:
+  - oauth_login_oauth2:oauth_login_oauth2

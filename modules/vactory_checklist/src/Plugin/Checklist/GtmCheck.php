@@ -5,7 +5,7 @@ namespace Drupal\vactory_checklist\Plugin\Checklist;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Site\Settings;
 use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\GuzzleException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -93,7 +93,7 @@ class GtmCheck extends ChecklistBase implements ContainerFactoryPluginInterface 
         'Either the GTM script is missing or the GTM ID format is invalid.'
       );
     }
-    catch (RequestException $e) {
+    catch (GuzzleException $e) {
       return $this->buildResult(
         FALSE,
         "Failed to fetch frontend page: {$e->getMessage()}"
