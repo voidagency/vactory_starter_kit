@@ -1,0 +1,5 @@
+services:
+  vactory_admin_hardening.route_subscriber:
+    class: Drupal\vactory_admin_hardening\Routing\SensitiveAdminRouteSubscriber
+    tags:
+      - { name: event_subscriber }
