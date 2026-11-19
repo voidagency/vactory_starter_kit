@@ -3,8 +3,10 @@
 namespace Drupal\Tests\vactory_decoupled_router\ExistingSite;
 
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Session\AnonymousUserSession;
 use Drupal\pathauto\PathautoState;
 use Drupal\redirect\Entity\Redirect;
+use Drupal\user\Entity\Role;
 use Drupal\vactory_decoupled_router\Controller\PathTranslator;
 use Drupal\vactory_decoupled_router\Entity\Route;
 use Symfony\Component\HttpFoundation\Request;
@@ -289,6 +291,58 @@ class PathTranslatorTest extends ExistingSiteBase {
     $data = $this->translateAs($admin, $alias);
     $this->assertSame(404, $data['status']);
     $this->assertSame(['_route' => 'error_page'], $data['system']);
+  }
+
+  /**
+   * A published node the user cannot view: login redirect or 403.
+   *
+   * "access content" is revoked from the anonymous and authenticated roles
+   * for the duration of the test, then restored.
+   *
+   * @covers ::translate
+   */
+  public function testNodeWithoutViewAccess(): void {
+    $node = $this->createPage();
+    $alias = $node->get('path')->alias;
+    $login = Route::load('account_login');
+    $this->assertNotNull($login);
+    $viewer = $this->createUser();
+
+    $roles = [];
+    foreach (['anonymous', 'authenticated'] as $rid) {
+      $role = Role::load($rid);
+      if ($role->hasPermission('access content')) {
+        $role->revokePermission('access content')->save();
+        $roles[] = $role;
+      }
+    }
+    try {
+      // Anonymous: the node is returned with a redirect to the login page.
+      // Called in-process: the /api/router route itself needs the revoked
+      // permission.
+      $data = $this->translateAs(new AnonymousUserSession(), $alias);
+      $this->assertSame(200, $data['status']);
+      $this->assertSame([
+        [
+          'to' => '/en' . $login->getAlias(),
+          'status' => 301,
+          'from' => $alias,
+        ],
+      ], $data['redirect']);
+      $this->assertSame($node->uuid(), $data['entity']['uuid']);
+
+      // A logged-in user without access: the error page with a 403.
+      $data = $this->translateAs($viewer, $alias);
+      $this->assertSame(403, $data['status']);
+      $this->assertSame("User is not allowed to view $alias", $data['message']);
+      $this->assertSame(['_route' => 'error_page'], $data['system']);
+      $this->assertArrayNotHasKey('redirect', $data);
+    }
+    finally {
+      foreach ($roles as $role) {
+        $role->grantPermission('access content')->save();
+      }
+    }
   }
 
   /**
