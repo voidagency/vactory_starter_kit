@@ -5,3 +5,6 @@ core_version_requirement: ^9 || ^10
 dependencies:
   - cloudinary
   - cloudinary:cloudinary_video
+  - cloudinary:cloudinary_sdk
+  - cloudinary:cloudinary_stream_wrapper
+  - file_entity:file_entity
