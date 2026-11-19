@@ -52,7 +52,10 @@ class ClearNextNginxCacheTest extends UnitTestCase {
     $logger = $this->createMock(LoggerInterface::class);
     $logger->expects($this->once())
       ->method('warning')
-      ->with('Next nginx cache cleared for fr/page (no cache found)');
+      ->with('Next nginx purge failed for @path: @message', [
+        '@path' => 'fr/page',
+        '@message' => $exception->getMessage(),
+      ]);
     $logger_factory = $this->createMock(LoggerChannelFactoryInterface::class);
     $logger_factory->method('get')->willReturn($logger);
 

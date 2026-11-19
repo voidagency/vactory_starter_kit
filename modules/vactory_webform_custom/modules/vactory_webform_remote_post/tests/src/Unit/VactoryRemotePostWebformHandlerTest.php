@@ -134,14 +134,34 @@ class VactoryRemotePostWebformHandlerTest extends UnitTestCase {
   }
 
   /**
+   * An invalid URL on a GET handler shows the error instead of crashing.
+   *
+   * @covers ::postSave
+   */
+  public function testInvalidGetUrlShowsDefaultMessage(): void {
+    $this->logger->expects($this->once())->method('error');
+    $this->messageManager->expects($this->once())
+      ->method('display')
+      ->with(WebformMessageManagerInterface::SUBMISSION_EXCEPTION_MESSAGE, 'error');
+
+    $handler = $this->createHandler(new Response(200), '', [
+      'method' => 'GET',
+      'completed_url' => 'crm.example/api',
+    ]);
+    $handler->postSave($this->createSubmission());
+  }
+
+  /**
    * Builds the handler around an HTTP client returning the given failure.
    *
    * @param \Throwable|\Psr\Http\Message\ResponseInterface $failure
    *   What the remote server returns.
    * @param string $message
    *   The custom error message configured on the handler.
+   * @param array $overrides
+   *   Handler configuration overrides.
    */
-  protected function createHandler($failure, string $message): VactoryRemotePostWebformHandler {
+  protected function createHandler($failure, string $message, array $overrides = []): VactoryRemotePostWebformHandler {
     $http_client = new Client(['handler' => HandlerStack::create(new MockHandler([$failure]))]);
 
     $token_manager = $this->createMock(WebformTokenManagerInterface::class);
@@ -182,6 +202,7 @@ class VactoryRemotePostWebformHandlerTest extends UnitTestCase {
       'messages' => [],
       'error_url' => '',
     ]);
+    $configuration->setValue($handler, $overrides + $configuration->getValue($handler));
     return $handler;
   }
 

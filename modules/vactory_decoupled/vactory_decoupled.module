@@ -1110,7 +1110,10 @@ function clear_next_nginx_cache($path = '') {
     // HTTP errors (4xx/5xx) and network errors (DNS, connection refused,
     // timeout) must not break the save that triggered the purge.
     \Drupal::logger('clear_next_nginx_cache')
-      ->warning("Next nginx cache cleared for {$path} (no cache found)");
+      ->warning('Next nginx purge failed for @path: @message', [
+        '@path' => $path,
+        '@message' => $e->getMessage(),
+      ]);
   }
 }
 

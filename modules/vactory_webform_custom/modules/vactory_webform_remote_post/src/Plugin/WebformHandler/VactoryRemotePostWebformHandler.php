@@ -548,8 +548,9 @@ class VactoryRemotePostWebformHandler extends WebformHandlerBase {
         $response = $this->httpClient->$method($request_url, $request_options);
       }
     }
-    catch (GuzzleException $request_exception) {
-      // Network errors (ConnectException) carry no response.
+    catch (GuzzleException | \InvalidArgumentException $request_exception) {
+      // Network errors (ConnectException) and an invalid URL
+      // (Url::fromUri() on a GET) carry no response.
       $response = $request_exception instanceof RequestException ? $request_exception->getResponse() : NULL;
       // Encode HTML entities to prevent broken markup from breaking the page.
       $message = $request_exception->getMessage();
