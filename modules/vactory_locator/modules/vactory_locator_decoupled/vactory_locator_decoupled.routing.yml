@@ -15,6 +15,13 @@ vactory_locator_decoupled.cities_api:
   requirements:
     _access: 'TRUE'
 
+vactory_locator_decoupled.cities_info_api:
+  path: 'api/store-locator/city-name'
+  defaults: { _controller: '\Drupal\vactory_locator_decoupled\Controller\StoreLocator::citiesName' }
+  methods:  [GET]
+  requirements:
+    _access: 'TRUE'
+
 
 vactory_locator_decoupled.grouping_api:
   path: 'api/store-locator/grouping'
