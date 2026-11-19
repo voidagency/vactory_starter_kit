@@ -14,6 +14,10 @@ use Drupal\vactory_dynamic_field\Element\UrlExtendedElement;
 use Symfony\Component\HttpFoundation\Request;
 use weitzman\DrupalTestTraits\ExistingSiteBase;
 
+// The CI bootstrap does not register module test namespaces: load the test
+// form explicitly.
+require_once __DIR__ . '/../Form/LinkitStructuresTestForm.php';
+
 /**
  * Our use of drupal/linkit.
  *
