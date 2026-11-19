@@ -1,0 +1,9 @@
+services:
+  vactory_dynamic_field_generator.commands:
+    class: \Drupal\vactory_dynamic_field_generator\Drush\Commands\DynamicFieldGeneratorCommands
+    arguments:
+      - '@vactory_dynamic_field.vactory_provider_manager'
+      - '@vactory_dynamic_field_generator.utils'
+      - '@vactory_dynamic_field_generator.factory.generate'
+    tags:
+      - { name: drush.command }
