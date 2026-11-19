@@ -2,6 +2,14 @@
 
 Branche `3.x`, tags `3.x.y`. Les projets consomment le profil par composer (`voidagency/vactory_starter_kit`). Le dépôt est public.
 
+## Contexte des projets
+Ce que suppose toute note de mise à jour :
+- **Version figée.** Les projets exigent une version figée du profil (`voidagency/vactory_starter_kit:<version>`), jamais `3.x-dev` ni une autre branche de dev.
+- **Features.** Les projets gèrent leur config avec Features, pas avec la config sync du core : raisonner sur ce qu'un `drush fr` (features:import) réimporterait. La config sync est un cas rare, à mentionner comme tel.
+- **Pas de réimport par défaut.** Réimporter une feature du profil remplace la config active et efface les valeurs propres au site (clés API, identifiants, réglages). On ne demande un `drush fr` que pour une liste précise de modules, en disant ce qui sera écrasé.
+- **Déploiement.** Il se fait par capistrano ou Docker. `drush updb` et `drush cr` sont lancés **à la main** après le déploiement.
+- **Points hors périmètre.** Un point « hors périmètre » relevé dans une PR ou un ticket est corrigé, ou suivi dans un ticket cité. Il ne reste jamais sans suite.
+
 ## Changelog
 - L'auteur de chaque PR ajoute sa ligne dans `[Non publié]` de `CHANGELOG.md` ; le relecteur la vérifie.
 - Une ligne par PR et par sujet, préfixée par le module : `` `vactory_x` : ce qui change (#PR) ``. `#n` est un numéro de PR ; un ticket est noté « Redmine #n », sans URL.
