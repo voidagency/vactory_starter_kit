@@ -208,8 +208,10 @@ class DecoupledOauth2Token extends Oauth2Token {
    */
   protected function logAuthSuccess($body) {
     if (\Drupal::moduleHandler()->moduleExists('vactory_security_review')) {
-      $is_failed_login_log_enabled = \Drupal::config('security_review.checks')->get('failed_auth_log');
-      if ($is_failed_login_log_enabled) {
+      // Same setting as logAuthFailure(): "log_failed_auth" in
+      // vactory_security_review settings.
+      $is_auth_log_enabled = \Drupal::config('security_review.checks')->get('log_failed_auth');
+      if ($is_auth_log_enabled) {
         \Drupal::logger('user')->info("Session opened for {$body['username']} via Oauth2");
       }
     }

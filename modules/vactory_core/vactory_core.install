@@ -1,0 +1,30 @@
+<?php
+
+/**
+ * @file
+ * Install, update and requirements functions for vactory_core.
+ */
+
+/**
+ * Implements hook_requirements().
+ */
+function vactory_core_requirements($phase) {
+  $requirements = [];
+  if ($phase !== 'runtime' || !\Drupal::moduleHandler()->moduleExists('shield')) {
+    return $requirements;
+  }
+  $shield = \Drupal::config('shield.settings');
+  if ($shield->get('shield_enable') && $shield->get('credential_provider') === 'shield') {
+    $user = (string) $shield->get('credentials.shield.user');
+    $pass = (string) $shield->get('credentials.shield.pass');
+    if (trim($user) === '' || trim($pass) === '') {
+      $requirements['vactory_core_shield_credentials'] = [
+        'title' => t('Shield credentials'),
+        'value' => t('Empty user or password'),
+        'description' => t('Shield is enabled without Basic Auth credentials: anyone can log in with an empty user and password. Set them in the Shield settings.'),
+        'severity' => REQUIREMENT_ERROR,
+      ];
+    }
+  }
+  return $requirements;
+}

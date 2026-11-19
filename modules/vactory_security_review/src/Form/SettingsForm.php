@@ -21,7 +21,7 @@ class SettingsForm extends SecurityReviewSettings {
     ];
     $form['logger']['log_failed_auth'] = [
       '#type' => 'checkbox',
-      '#title' => $this->t('Log failed authentication attempts'),
+      '#title' => $this->t('Log authentication attempts (failed and successful OAuth2 logins)'),
       '#default_value' => $check_settings->get('log_failed_auth'),
     ];
     $form['logger']['log_user_privileges_change'] = [

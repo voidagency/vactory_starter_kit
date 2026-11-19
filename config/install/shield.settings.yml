@@ -2,8 +2,8 @@ shield_enable: false
 credential_provider: shield
 credentials:
   shield:
-    user: vactory
-    pass: void_vactory
+    user: ''
+    pass: ''
 allow_cli: true
 debug_header: false
 unset_basic_auth_headers: true
