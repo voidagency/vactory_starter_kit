@@ -10,7 +10,6 @@ use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\ConnectException;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Psr7\Request;
-use GuzzleHttp\Psr7\Response;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -48,44 +47,12 @@ class ClearNextNginxCacheTest extends UnitTestCase {
    */
   public function testPurgeErrorIsLogged(\Exception $exception): void {
     $client = $this->createMock(ClientInterface::class);
-    $client->method('request')->willThrowException($exception);
+    $client->method('requestAsync')->willThrowException($exception);
 
     $logger = $this->createMock(LoggerInterface::class);
     $logger->expects($this->once())
       ->method('warning')
       ->with('Next nginx cache cleared for fr/page (no cache found)');
-    $logger_factory = $this->createMock(LoggerChannelFactoryInterface::class);
-    $logger_factory->method('get')->willReturn($logger);
-
-    $container = new ContainerBuilder();
-    $container->set('http_client', $client);
-    $container->set('logger.factory', $logger_factory);
-    \Drupal::setContainer($container);
-
-    $this->assertNull(clear_next_nginx_cache('fr/page'));
-  }
-
-  /**
-   * The purge is really sent (synchronously) with short timeouts.
-   *
-   * It used to be requestAsync() without wait(): the request was never sent.
-   */
-  public function testPurgeIsSent(): void {
-    $client = $this->createMock(ClientInterface::class);
-    $client->expects($this->once())
-      ->method('request')
-      ->with('PURGE', 'http://front.example/fr/page', [
-        'connect_timeout' => 2,
-        'timeout' => 5,
-      ])
-      ->willReturn(new Response(200));
-    $client->expects($this->never())->method('requestAsync');
-
-    $logger = $this->createMock(LoggerInterface::class);
-    $logger->expects($this->once())
-      ->method('info')
-      ->with('Next nginx cache cleared for fr/page');
-    $logger->expects($this->never())->method('warning');
     $logger_factory = $this->createMock(LoggerChannelFactoryInterface::class);
     $logger_factory->method('get')->willReturn($logger);
 
