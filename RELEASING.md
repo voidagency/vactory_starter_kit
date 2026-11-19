@@ -10,7 +10,15 @@ Branche `3.x`, tags `3.x.y`. Les projets consomment le profil par composer (`voi
 - Le responsable de la release ajoute les lignes des PR Dependabot (une seule ligne pour les montées du seul `composer.lock`), dédoublonne et ordonne.
 - Une PR qui modifie une contrainte de `composer.json`, Dependabot compris, a sa ligne dans « Dépendances » et, si besoin, dans « Mise à jour des projets ». Une montée de version majeure se discute avant le merge (voir « Numéro de version »).
 - Une PR qui modifie la config d'un module (`config/install`, `config/optional`, feature) indique si les sites existants doivent la réimporter (`drush features:import`) et quelles valeurs propres aux sites un revert effacerait (clés API, identifiants…). Par défaut, aucun revert : la config livrée ne sert qu'à l'installation.
-- Le risque principal d'une version (celui qui peut casser un site en production) est placé en tête de « Mise à jour des projets », en gras.
+- « Mise à jour des projets » suit toujours le même gabarit, chaque partie présente même vide (« aucun ») :
+  1. **Risques et points d'attention**, en premier : le risque principal (ce qui peut casser un site en production) en tête et en gras.
+  2. **Procédure**, avec le bloc de commandes puis une étape par commande :
+     1. code et composer : `composer require voidagency/vactory_starter_kit:<version> -W`, version figée, conflits, code projet à adapter ;
+     2. `drush updb -y`, lancé à la main après le déploiement : liste des updates et de leur effet ;
+     3. `drush fr -y <module>` : liste exacte des features à réimporter, ou « aucune », avec les valeurs propres aux sites qu'un réimport effacerait ;
+     4. back-office : réglages à faire ou à vérifier, avec le chemin ;
+     5. `drush cr` ;
+     6. vérifications : ce qu'on teste sur le site mis à jour pour le valider.
 - La CI rappelle d'ajouter une ligne quand une PR modifie `modules/` sans toucher à `CHANGELOG.md`. Ce rappel n'est pas bloquant ; il est dans l'image CI (dépôt droneci), pas dans ce dépôt.
 
 ## Texte public des correctifs de sécurité
