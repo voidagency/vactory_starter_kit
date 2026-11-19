@@ -6,7 +6,7 @@ Branche `3.x`, tags `3.x.y`. Les projets consomment le profil par composer (`voi
 - L'auteur de chaque PR ajoute sa ligne dans `[Non publié]` de `CHANGELOG.md` ; le relecteur la vérifie.
 - Une ligne par PR et par sujet, préfixée par le module : `` `vactory_x` : ce qui change (#PR) ``. `#n` est un numéro de PR ; un ticket est noté « Redmine #n », sans URL.
 - Rubriques, dans cet ordre, sans rubrique vide : Mise à jour des projets, Sécurité, Changements de comportement, Ajouts, Correctifs, Dépréciations, Retraits, Dépendances, Interne.
-- Une action à faire sur les projets va aussi dans « Mise à jour des projets », préfixée par sa portée : « Tous les sites », « Sites en config sync » ou « Si… ».
+- Une action à faire sur les projets va aussi dans « Mise à jour des projets », préfixée par sa portée : « Tous les sites » ou « Si… » (par exemple « Si une feature du projet exporte… », « Sites en config sync (rare) »). Les projets gèrent leur config par Features : penser à ce qu'un `drush features:import` réimporterait.
 - Le responsable de la release ajoute les lignes des PR Dependabot (une seule ligne pour les montées du seul `composer.lock`), dédoublonne et ordonne.
 - Une PR qui modifie une contrainte de `composer.json`, Dependabot compris, a sa ligne dans « Dépendances » et, si besoin, dans « Mise à jour des projets ». Une montée de version majeure se discute avant le merge (voir « Numéro de version »).
 - La CI rappelle d'ajouter une ligne quand une PR modifie `modules/` sans toucher à `CHANGELOG.md`. Ce rappel n'est pas bloquant ; il est dans l'image CI (dépôt droneci), pas dans ce dépôt.
@@ -34,7 +34,7 @@ Décrire le comportement corrigé et l'action à faire. Pas de chemin d'endpoint
 ## Publier une release
 1. **Complétude.** Comparer `git log --merges --first-parent --format=%s <dernier tag>..origin/3.x` aux numéros de PR de `[Non publié]`.
 2. **PR de release.** `[Non publié]` devient `[3.x.y] - AAAA-MM-JJ`, avec une nouvelle section `[Non publié]` vide et les liens de bas de fichier mis à jour.
-3. **Version candidate (mineures et majeures).** Tagger `3.x.y-rc1`, puis dérouler « Mise à jour des projets » telle qu'elle est écrite sur vactory8 et sur un projet en config sync (canaris Autogit, Redmine #71368). On teste le guide autant que le code.
+3. **Version candidate (mineures et majeures).** Tagger `3.x.y-rc1`, puis dérouler « Mise à jour des projets » telle qu'elle est écrite sur vactory8 et sur un ou deux projets clients à Features (canaris Autogit, Redmine #71368). On teste le guide autant que le code.
 4. **Tag et release GitHub.** La section du changelog en tête, les notes générées par GitHub à la suite :
    ```
    awk '/^## \[3\.x\.y\]/{f=1;next} /^## \[/{f=0} f' CHANGELOG.md > notes.md

@@ -10,20 +10,19 @@
 ```
 composer update voidagency/vactory_starter_kit -W
 drush updb -y
-drush cex -y   # sites en config sync : puis commiter la config
 drush cr
+# Features : ne pas réimporter une feature de projet qui annule les updates (voir 2.)
 ```
 
 **1. Composer**
 - **Tous les sites :** lancer le `composer update` ci-dessus. Le `composer.lock` du profil n'est pas utilisé par les projets : c'est ce `composer update` qui apporte les correctifs de sécurité des dépendances.
-- **Si le projet utilise `google_tag` :** il garde sa version, la contrainte accepte 1.x et 2.x (#931, #942). Passer en 2.x est un choix du projet : `drush updb`, vérifier les conteneurs GTM, puis `drush cex`.
+- **Si le projet utilise `google_tag` :** il garde sa version, la contrainte accepte 1.x et 2.x (#931, #942). Passer en 2.x est un choix du projet : `drush updb`, vérifier les conteneurs GTM, puis réexporter la feature qui porte leur config, le cas échéant.
 - **Si le projet exige `drupal/captcha` 2.0.12 ou plus :** conflit composer, le profil fige 2.0.11 (#922). Rester en 2.0.11.
 - **Si le projet requiert `drupal/swiftmailer`, `drupal/social_auth_microsoft` ou `stevenmaguire/oauth2-microsoft` :** reprendre leurs patches dans le projet, le profil ne les déclare plus (#909).
 
 **2. Avant le déploiement**
-- **Sites en config sync :** en local, `drush updb`, puis `drush cex`, puis commiter (`core.extension.yml`, `user.role.anonymous.yml`, `user.role.authenticated.yml`). Sinon, le `drush cim` de `drush deploy` annule les updates :
-  - il remet la permission retirée aux rôles anonyme et authentifié (#897) ;
-  - il tente de désinstaller `paragraphs_edit`, ce qui fait échouer le déploiement (#910).
+- **Si une feature du projet exporte les rôles `anonymous` ou `authenticated`** (`user.role.anonymous.yml`, `user.role.authenticated.yml`) : retirer la permission `access any webform configuration` de ces fichiers, ou réexporter la feature après `drush updb`. Sinon, un `drush features:import` (revert) la redonne (#897). Les features du profil ne l'exportent pas.
+- **Sites en config sync (rare) :** en local, `drush updb`, puis `drush cex`, puis commiter (`core.extension.yml`, rôles `anonymous` et `authenticated`). Sinon, le `drush cim` de `drush deploy` annule les updates : il remet la permission (#897) et tente de désinstaller `paragraphs_edit`, ce qui fait échouer le déploiement (#910).
 - **Si du code projet appelle les services `console.output` ou `vactory_cloudinary.move_file_batch` :** ils sont retirés (#920), supprimer ces appels.
 - **Si le projet étend `Drupal\vactory_core\MenuItems` ou `MenuRoleLinkTreeManipulator`** en appelant leur ancien constructeur : passer aux setters `setVactoryServices()` et `setAdminContext()` (#914).
 - **Si le projet surcharge lui-même le contrôleur `Oauth2Token` de simple_oauth :** passer le logger en troisième argument du constructeur parent, obligatoire à partir de simple_oauth 5.2.6 (#928).

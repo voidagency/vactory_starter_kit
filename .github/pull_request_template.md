@@ -16,7 +16,7 @@ Redmine #
 <!-- Cocher ce que les projets doivent faire, puis préciser. « Aucun » si rien. -->
 - [ ] composer (contrainte, patch)
 - [ ] `drush updb`
-- [ ] `drush cex` (sites en config sync)
+- [ ] Features : une feature (profil ou projet) doit être réexportée, ou risque d'annuler la mise à jour à l'import
 - [ ] `drush cr`
 - [ ] Front ou config du projet à adapter
 
