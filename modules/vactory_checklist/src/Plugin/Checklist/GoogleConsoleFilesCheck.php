@@ -6,7 +6,7 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Render\Markup;
 use Drupal\Core\Site\Settings;
 use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\GuzzleException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -88,7 +88,7 @@ class GoogleConsoleFilesCheck extends ChecklistBase implements ContainerFactoryP
         ? $this->buildJsonParseErrorResult()
         : $this->buildResultFromFiles($frontend_url, $this->extractFileNamesFromResponse($data));
     }
-    catch (RequestException $e) {
+    catch (GuzzleException $e) {
       $result = $this->buildRequestExceptionResult($e);
     }
 
@@ -130,13 +130,13 @@ class GoogleConsoleFilesCheck extends ChecklistBase implements ContainerFactoryP
   /**
    * Builds the checklist result when the HTTP request fails.
    *
-   * @param \GuzzleHttp\Exception\RequestException $e
-   *   The request exception.
+   * @param \GuzzleHttp\Exception\GuzzleException $e
+   *   The HTTP error (4xx/5xx) or network error (DNS, connection, timeout).
    *
    * @return array
    *   Result array for the checklist plugin.
    */
-  private function buildRequestExceptionResult(RequestException $e): array {
+  private function buildRequestExceptionResult(GuzzleException $e): array {
     return [
       'status' => FALSE,
       'message' => $this->t('Impossible de récupérer les fichiers depuis le frontend : @error', [
