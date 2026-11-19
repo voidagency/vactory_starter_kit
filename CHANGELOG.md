@@ -8,39 +8,40 @@
 ### Mise à jour des projets
 
 ```
-composer update voidagency/vactory_starter_kit -W
+composer require voidagency/vactory_starter_kit:<version> -W   # projet en 3.x-dev : composer update voidagency/vactory_starter_kit -W
 drush updb -y
 drush cr
-# Features : ne pas réimporter une feature de projet qui annule les updates (voir 2.)
+# Ne pas lancer drush features:import sur une feature qui exporte les rôles anonyme / authentifié (voir 2.)
 ```
 
 **1. Composer**
-- **Tous les sites :** lancer le `composer update` ci-dessus. Le `composer.lock` du profil n'est pas utilisé par les projets : c'est ce `composer update` qui apporte les correctifs de sécurité des dépendances.
-- **Si le projet utilise `google_tag` :** il garde sa version, la contrainte accepte 1.x et 2.x (#931, #942). Passer en 2.x est un choix du projet : `drush updb`, vérifier les conteneurs GTM, puis réexporter la feature qui porte leur config, le cas échéant.
-- **Si le projet exige `drupal/captcha` 2.0.12 ou plus :** conflit composer, le profil fige 2.0.11 (#922). Rester en 2.0.11.
+- **Tous les sites :** la plupart des projets figent une version exacte du profil : passer par `composer require voidagency/vactory_starter_kit:<version> -W`. Un projet en `3.x-dev` reçoit ces changements dès son prochain `composer update`, avant le tag. Le `composer.lock` du profil n'est pas utilisé par les projets : c'est cette commande qui apporte les correctifs de sécurité des dépendances.
+- **Projets en 3.1.x :** lire aussi les notes des releases 3.2.x (par exemple, linkit est figé en 7.0.12 depuis 3.1.7).
+- **`google_tag` :** la contrainte accepte 1.x et 2.x (#931, #942). Si le `composer.json` du projet n'exige pas google_tag, `-W` le fait passer en 2.x. Pour rester en 1.x : `composer require drupal/google_tag:^1.8` avant la mise à jour. Si le module est activé et passe en 2.x : `drush updb`, vérifier les conteneurs GTM, puis réexporter la feature qui porte leur config, le cas échéant.
+- **Si le projet exige `drupal/captcha` 2.0.12 ou plus :** conflit composer, le profil fige 2.0.11 (#922). Rester en 2.0.11. Un projet verrouillé en 2.0.12 redescend en 2.0.11 : retirer un patch projet prévu pour 2.0.12.
 - **Si le projet requiert `drupal/swiftmailer`, `drupal/social_auth_microsoft` ou `stevenmaguire/oauth2-microsoft` :** reprendre leurs patches dans le projet, le profil ne les déclare plus (#909).
 
 **2. Avant le déploiement**
-- **Si une feature du projet exporte les rôles `anonymous` ou `authenticated`** (`user.role.anonymous.yml`, `user.role.authenticated.yml`) : retirer la permission `access any webform configuration` de ces fichiers, ou réexporter la feature après `drush updb`. Sinon, un `drush features:import` (revert) la redonne (#897). Les features du profil ne l'exportent pas.
-- **Sites en config sync (rare) :** en local, `drush updb`, puis `drush cex`, puis commiter (`core.extension.yml`, rôles `anonymous` et `authenticated`). Sinon, le `drush cim` de `drush deploy` annule les updates : il remet la permission (#897) et tente de désinstaller `paragraphs_edit`, ce qui fait échouer le déploiement (#910).
+- **Si une feature du projet exporte les rôles `anonymous` ou `authenticated`** (`user.role.anonymous.yml`, `user.role.authenticated.yml`) : retirer la permission `access any webform configuration` de ces fichiers, ou réexporter la feature après `drush updb`. Sinon, un `drush features:import` (revert) la redonne (#897). Les features du profil ne l'exportent pas. Même chose pour un dossier de config du projet (`config/sync`, `config/staging`…) importé à la main par `drush cim`.
+- **Sites en config sync (rare) :** en local, `drush updb`, puis `drush cex`, puis commiter (`core.extension.yml`, rôles `anonymous` et `authenticated`). Sinon, un `drush cim` (ou `drush deploy`) annule les updates : il remet la permission (#897) et tente de désinstaller `paragraphs_edit`, ce qui fait échouer le déploiement (#910).
 - **Si du code projet appelle les services `console.output` ou `vactory_cloudinary.move_file_batch` :** ils sont retirés (#920), supprimer ces appels.
 - **Si le projet étend `Drupal\vactory_core\MenuItems` ou `MenuRoleLinkTreeManipulator`** en appelant leur ancien constructeur : passer aux setters `setVactoryServices()` et `setAdminContext()` (#914).
 - **Si le projet surcharge lui-même le contrôleur `Oauth2Token` de simple_oauth :** passer le logger en troisième argument du constructeur parent, obligatoire à partir de simple_oauth 5.2.6 (#928).
 
 **3. Au déploiement**
-- **Tous les sites :** `drush updb` puis `drush cr`, obligatoires (c'est ce que fait `drush deploy`).
-  - Deux updates du profil s'exécutent : `vactory_decoupled_webform` 10102 (#897) et `vactory_dynamic_field` 9501 (#910). Ce dernier active `paragraphs_edit`, avec `paragraphs` et `contextual`, sur les sites qui ne l'ont pas. L'update 9500, corrigé, s'exécute aussi sur les sites qui ne l'avaient jamais joué.
+- **Tous les sites :** `drush updb` puis `drush cr`, obligatoires (c'est ce que fait le déploiement capistrano : `updatedb -y` puis `cr`).
+  - Deux updates du profil s'exécutent : `vactory_decoupled_webform` 10102 (#897) et `vactory_dynamic_field` 9501 (#910). Ce dernier active `paragraphs_edit`, avec `paragraphs` et `contextual`, sur les sites qui ne l'ont pas.
   - Sans `drush cr`, les pages avec un menu plantent tant que l'ancien conteneur reste en cache (#914).
 
 **4. Vérifications après déploiement**
-- **Tous les sites, client HTTP Vactory (#896) :** la vérification TLS est active par défaut, y compris quand le réglage n'a jamais été enregistré. Un appel vers un service au certificat invalide ou auto-signé échoue (`cURL error 60`). Pour la désactiver sur un environnement :
+- **Tous les sites, client HTTP de Drupal (#896) :** la vérification TLS est active par défaut pour tous les appels faits par `\Drupal::httpClient()` ou le service `http_client` (profil, contrib, code projet), y compris quand le réglage n'a jamais été enregistré. Un appel vers un service au certificat invalide ou auto-signé échoue (`cURL error 60`). Pour la désactiver sur un environnement :
   - en back-office, `/admin/config/vactory-core-config` ;
   - ou dans `settings.php` : `$config['vactory_core.global_config']['http_client_ssl_verification'] = FALSE;` ;
   - ou en passant `verify` à l'appel, qui reste prioritaire sur le réglage.
 - **Tous les sites, sitemap (#910) :** les liens déjà stockés ne changent qu'au prochain enregistrement de la page d'accueil ou à un rebuild du sitemap.
-- **Si Shield est actif :** vérifier les identifiants de chaque site (#911, détail dans le ticket Dispatch). Le rapport d'état ne signale que le cas des identifiants vides.
+- **Si Shield est actif :** vérifier les identifiants de chaque site (#911, détail dans le ticket Dispatch).
 - **Si un front projet lit la configuration des webforms** sans rôle de confiance : l'adapter, la permission `access any webform configuration` est retirée aux rôles anonyme et authentifié (#897). Le front par défaut ne l'utilise pas.
-- **Si le site a des webforms découplés avec upload de fichier (#906) :** un webform qui acceptait un type de fichier hors de sa liste d'extensions le refuse maintenant (422). Renseigner `#file_extensions` sur l'élément.
+- **Si le site a des webforms découplés avec upload de fichier (#906) :** vérifier que chaque élément fichier déclare `#file_extensions` ; un fichier hors liste est refusé (422). Un élément sans `#file_extensions` applique la liste par défaut de webform.
 - **Si le front s'appuie sur `term_2_slug` (#884) :** vérifier les URL et filtres qui utilisent un slug avec majuscules, accents, `_` ou `/`.
 - **Si `vactory_google_places` est actif (#913) :** vérifier les vues où l'option « Vactory google places instance » est cochée, l'autocomplete Google Places y est de nouveau chargé.
 - **Si `vactory_appointment` est actif (#911) :** les champs conseiller ne sont plus éditables en back-office. Ils le restent en front.
@@ -48,13 +49,13 @@ drush cr
 - **Sites existants, module optionnel `vactory_admin_hardening` (#886) :** il n'est installé d'office que sur les nouveaux sites. Il bloque en web, pour tous les comptes, l'interface de migration et l'import, l'export et la synchronisation de config (pages `config_update_ui` comprises). L'activer (`drush en vactory_admin_hardening`) quand l'équipe passe par Drush et Features. Le check Security Review signale son absence.
 
 ### Sécurité
-- `vactory_core` : vérification TLS active par défaut dans le client HTTP Vactory (#896).
+- `vactory_core` : vérification TLS active par défaut dans le client HTTP de Drupal (#896).
 - `vactory_decoupled_webform` : permission `access any webform configuration` retirée aux rôles anonyme et authentifié (#897).
 - `vactory_decoupled_webform` : l'upload de fichiers applique les validateurs du webform, comme le formulaire Drupal : extensions, taille, longueur du nom (#906).
 - `vactory_core` : Shield ne peut plus être activé sans identifiants, et le rapport d'état signale une erreur dans ce cas (#911).
 
 ### Changements de comportement
-- `vactory_core` : les options passées au client HTTP Vactory par l'appelant (timeout…) sont maintenant transmises (#896).
+- `vactory_core` : les options passées au client HTTP de Drupal par l'appelant (timeout…) sont maintenant transmises (#896).
 - `vactory_decoupled` : à chaque enregistrement d'un terme, le slug `term_2_slug` de chaque traduction est normalisé (minuscules ASCII, mots joints par `-`), y compris un slug saisi à la main (#884).
 - `vactory_decoupled_webform` : upload limité à 150 caractères pour le nom de fichier (au lieu de 240), et `file.default_max_filesize` appliqué (#906).
 - `vactory_google_places` : l'option « Vactory google places instance » des filtres de vues, ignorée jusque-là, est réellement appliquée (#913).
