@@ -8,6 +8,7 @@ Branche `3.x`, tags `3.x.y`. Les projets consomment le profil par composer (`voi
 - Rubriques, dans cet ordre, sans rubrique vide : Mise à jour des projets, Sécurité, Changements de comportement, Ajouts, Correctifs, Dépréciations, Retraits, Dépendances, Interne.
 - Une action à faire sur les projets va aussi dans « Mise à jour des projets », préfixée par sa portée : « Tous les sites », « Sites en config sync » ou « Si… ».
 - Le responsable de la release ajoute les lignes des PR Dependabot (une seule ligne pour les montées du seul `composer.lock`), dédoublonne et ordonne.
+- Une PR qui modifie une contrainte de `composer.json`, Dependabot compris, a sa ligne dans « Dépendances » et, si besoin, dans « Mise à jour des projets ». Une montée de version majeure se discute avant le merge (voir « Numéro de version »).
 - La CI rappelle d'ajouter une ligne quand une PR modifie `modules/` sans toucher à `CHANGELOG.md`. Ce rappel n'est pas bloquant ; il est dans l'image CI (dépôt droneci), pas dans ce dépôt.
 
 ## Texte public des correctifs de sécurité
