@@ -1,7 +1,7 @@
 Redmine #
 
 ## Contenu
-<!-- Ce que change la PR, en quelques lignes. -->
+<!-- Ce que change la PR, en quelques lignes. Dépôt public : pas de détail d'exploitation pour un correctif de sécurité, renvoyer au ticket Redmine. -->
 
 ## Tests
 <!-- Tests ajoutés ou modifiés, et comment ils ont été vérifiés (échouent sans le correctif ?). -->
