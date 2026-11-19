@@ -142,6 +142,19 @@ function vactory_core_mailer_build(EmailInterface $email) {
   // When vactory_mail_redirect is defined.
   $route_name = Drupal::routeMatch()->getRouteName();
   $mail_redirect = Settings::get('vactory_mail_redirect', '');
+  // Check if the site is in production.
+  $is_production = file_exists('/etc/machine-id');
+  if (!$is_production && empty($mail_redirect)) {
+    $email->setTo([]);
+    $email->setCc([]);
+    $email->setBcc([]);
+    if (!$is_production) {
+      \Drupal::logger('vactory_mail_security')->info('Production environment detected, the mail was not sent');
+    }
+    if (empty($mail_redirect)) {
+      \Drupal::logger('vactory_mail_security')->info('No mail redirect defined, you need to define it in the settings.php file');
+    }
+  }
   if ($mail_redirect && !empty($mail_redirect) && $route_name !== 'user.pass') {
     if (!is_array($mail_redirect)) {
       $mail_redirect = array_map('trim', explode(',', $mail_redirect));

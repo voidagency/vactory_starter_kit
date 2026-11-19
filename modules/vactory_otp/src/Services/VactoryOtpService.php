@@ -11,6 +11,7 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\Core\TempStore\PrivateTempStoreFactory;
 use Drupal\Core\Utility\Token;
 use Drupal\vactory_sms_sender\Services\VactorySmsSenderService;
+use Drupal\Core\Site\Settings;
 
 /**
  * Contains otp senders (sms, mail).
@@ -203,6 +204,15 @@ class VactoryOtpService {
     $api_key = $config->get('api_key');
     $url = $config->get('url');
     $client = \Drupal::httpClient();
+    
+    // Get the vactory_enable_sms setting from settings.php.
+    $vactory_sms_enabled = Settings::get('vactory_enable_sms', '');
+    // Check if the machine is in production.
+    $is_production = file_exists('/etc/machine-id');
+    // If not production and vactory_sms_enabled is false, do not send SMS.
+    if (!$is_production && empty($vactory_sms_enabled)) {
+      return FALSE;
+    }
 
     if ($last = $this->store->get('last_sms_otp_sent')) {
       $cd = $config->get('cooldown');
