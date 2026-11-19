@@ -31,185 +31,16 @@ final class ClassificationResultsForm extends AnalysisFormBase {
     $form['#cache']['max-age'] = 0;
     $form['#attached']['library'][] = 'vactory_webform_typesafe/results';
     $request = $this->getRequest()->query;
-    $form['filters'] = [
-      '#type' => 'details',
-      '#title' => $this->t('Filters'),
-      '#open' => TRUE,
-    ];
-    $form['filters']['status'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Processing status'),
-      '#options' => [
-        '' => $this->t('All'),
-        'pending' => $this->t('Pending'),
-        'processing' => $this->t('Processing'),
-        'completed' => $this->t('Completed'),
-        'failed' => $this->t('Failed'),
-        'stale' => $this->t('Outdated'),
-      ],
-      '#default_value' => $request->get('status', ''),
-    ];
-    $form['filters']['review'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Review status'),
-      '#options' => [
-        '' => $this->t('All'),
-        'needs_review' => $this->t('Needs review'),
-        'unreviewed' => $this->t('Unreviewed'),
-        'reviewed' => $this->t('Reviewed'),
-      ],
-      '#default_value' => $request->get('review', ''),
-    ];
     $settings = $this->manager->settings($webform);
-    $questions = [];
-    if ($settings) {
-      try {
-        $questions = QuestionDefinition::parse($settings['questions']);
-      }
-      catch (\Throwable) {
-      }
-    }
-    $options = ['' => $this->t('Any question')];
-    foreach ($questions as $id => $q) {
-      $options[$id] = $q['label'];
-    }
-    $form['filters']['question'] = [
-      '#type' => 'select',
-      '#title' => $this->t('Classification question'),
-      '#options' => $options,
-      '#default_value' => $request->get('question', ''),
-    ];
-    $form['filters']['value'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Classification value'),
-      '#description' => $this->t('Exact category key, numeric score, or yes/no. Filters use staff corrections where present.'),
-      '#default_value' => $request->get('value', ''),
-    ];
-    $form['filters']['apply'] = [
-      '#type' => 'submit',
-      '#value' => $this->t('Apply filters'),
-      '#submit' => ['::filterResults'],
-      '#limit_validation_errors' => [
-    ['status'],
-    ['review'],
-    ['question'],
-    [
-      'value',
-    ],
-      ],
-    ];
-    if ($this->currentUser()->hasPermission('run vactory webform typesafe')) {
-      $form['process_pending'] = [
-        '#type' => 'submit',
-        '#value' => $this->t('Traiter les soumissions en attente'),
-        '#submit' => ['::processPending'],
-        '#limit_validation_errors' => [],
-      ];
-      $form['pending_help'] = [
-        '#markup' => '<p>' . $this->t('Traitez immédiatement toutes les soumissions en attente de ce formulaire, quels que soient les filtres ou les lignes sélectionnées. Gardez la page de progression ouverte jusqu’à la fin du traitement.') . '</p>',
-      ];
-    }
-    $storage = $this->entities->getStorage('vactory_webform_analysis');
-    // Check submission access for each row in addition to route access.
-    $query = $storage->getQuery()->accessCheck(FALSE)->condition('webform', $webform->id())->sort('id', 'DESC');
-    foreach (['status' => 'status', 'review' => 'review_status'] as $filter => $field) {
-      if (in_array($request->get($filter), array_keys($form['filters'][$filter]['#options']), TRUE) && $request->get($filter) !== '') {
-        $query->condition($field, $request->get($filter));
-      }
-    }
-    if (isset($questions[$request->get('question', '')]) && trim($request->get('value', '')) !== '') {
-      $query->condition('labels', $request->get('question') . ':' . trim($request->get('value')));
-    }
-    $records = $storage->loadMultiple($query->pager(25)->execute());
+    $questions = $this->configuredQuestions($settings);
+    $form['filters'] = $this->buildFilters($request, $questions);
+    $this->addPendingAction($form);
     $rows = [];
-    foreach ($records as $sid => $record) {
+    foreach ($this->loadRecords($webform, $request, $form['filters'], $questions) as $sid => $record) {
       $submission = $record->get('submission')->entity;
-      if (!$submission || !$submission->access('view')) {
-        continue;
+      if ($submission && $submission->access('view')) {
+        $rows[$sid] = $this->buildRow($record, $submission, $sid, $webform, $settings);
       }
-      $summary = ['#type' => 'container', '#attributes' => ['class' => ['vwt-classifications']]];
-      $stored_questions = $record->decoded('questions');
-      $overrides = $record->decoded('overrides');
-      if ($record->get('status')->value === 'completed') {
-        foreach ($record->decoded('results')['answers'] ?? [] as $id => $answer) {
-          if (isset($stored_questions[$id])) {
-            $value = $overrides[$id] ?? QuestionDefinition::value($stored_questions[$id], $answer);
-            $question = $stored_questions[$id];
-            $display = QuestionDefinition::displayValue($question, $value);
-            if ($question['type'] === 'score') {
-              $display = str_replace('.', ',', $value) . ' / ' . (count($question['criteria']) - 1);
-            }
-            $score_detail = NULL;
-            // Only label the built-in urgency scale; custom scales keep their
-            // own numeric representation rather than inheriting its meaning.
-            $urgency_scales = [
-              QuestionDefinition::defaults()['urgency']['criteria'],
-              [
-                'Low: no deadline or immediate impact',
-                'Normal: routine request',
-                'High: explicit near deadline or significant current disruption',
-              ],
-            ];
-            if ($id === 'urgency' && $question['type'] === 'score' && in_array($question['criteria'], $urgency_scales, TRUE)) {
-              $score_detail = $this->t('Score : @score', ['@score' => $display]);
-              $score = (float) $value;
-              $display = match (TRUE) {
-                $score <= 0 => $this->t('Urgence faible'),
-                $score < 1 => $this->t('Urgence faible à normale'),
-                $score == 1 => $this->t('Urgence normale'),
-                $score < 2 => $this->t('Urgence normale à élevée'),
-                default => $this->t('Urgence élevée'),
-              };
-            }
-            $summary[] = [
-              '#type' => 'container',
-              '#attributes' => ['class' => ['vwt-classification']],
-              'label' => ['#type' => 'html_tag', '#tag' => 'span', '#attributes' => ['class' => ['vwt-label']], 'text' => ['#plain_text' => $question['label']]],
-              'value' => ['#type' => 'html_tag', '#tag' => 'strong', 'text' => ['#plain_text' => $display]],
-            ];
-            if ($score_detail !== NULL) {
-              $key = array_key_last($summary);
-              $summary[$key]['score'] = ['#type' => 'html_tag', '#tag' => 'small', 'text' => ['#plain_text' => $score_detail]];
-            }
-            if (isset($overrides[$id])) {
-              $key = array_key_last($summary);
-              $summary[$key]['correction'] = ['#type' => 'html_tag', '#tag' => 'small', 'text' => ['#plain_text' => $this->t('Corrigé manuellement')]];
-            }
-          }
-        }
-      }
-      if ($record->get('status')->value !== 'completed') {
-        $summary['empty'] = ['#plain_text' => $this->t('Classification indisponible pour le moment.')];
-      }
-      $preview = [
-        '#type' => 'container',
-        '#attributes' => ['class' => ['vwt-submission']],
-        'link' => Link::fromTextAndUrl($this->t('Soumission #@id', ['@id' => $sid]), Url::fromRoute('vactory_webform_typesafe.analysis', [
-          'webform' => $webform->id(),
-          'webform_submission' => $sid,
-        ]))->toRenderable(),
-      ];
-      $input = \Drupal::service('vactory_webform_typesafe.input')->build($submission, $settings['fields'] ?? [], PHP_INT_MAX);
-      foreach ($input as $field) {
-        $text = is_array($field['value']) ? implode(', ', $field['value']) : (string) $field['value'];
-        $text = preg_replace('/\s+/u', ' ', $text) ?? $text;
-        $preview[] = [
-          '#type' => 'container',
-          'label' => ['#type' => 'html_tag', '#tag' => 'span', '#attributes' => ['class' => ['vwt-label']], 'text' => ['#plain_text' => $field['label']]],
-          'excerpt' => ['#type' => 'html_tag', '#tag' => 'p', 'text' => ['#plain_text' => Unicode::truncate(trim($text), 180, TRUE, TRUE)]],
-        ];
-      }
-      if (!$input) {
-        $preview['empty'] = ['#plain_text' => $this->t('Aucun contenu à afficher dans les champs sélectionnés.')];
-      }
-      $status = $record->get('status')->value;
-      $review = $record->get('review_status')->value;
-      $rows[$sid] = [
-        'id' => ['data' => $preview],
-        'status' => ['data' => $this->statusBadge($status, FALSE)],
-        'review' => ['data' => $this->statusBadge($review, TRUE)],
-        'summary' => ['data' => $summary],
-      ];
     }
     $form['records'] = [
       '#type' => 'tableselect',
@@ -234,6 +65,255 @@ final class ClassificationResultsForm extends AnalysisFormBase {
       '#markup' => $this->t('Une nouvelle analyse remplace les résultats et corrections uniquement après sa réussite. Cliquez sur « Traiter les soumissions en attente » pour lancer les analyses immédiatement, ou laissez cron les traiter automatiquement.'),
     ];
     return $form;
+  }
+
+  /**
+   * The questions configured on the webform, or none if invalid.
+   */
+  protected function configuredQuestions(?array $settings): array {
+    if (!$settings) {
+      return [];
+    }
+    try {
+      return QuestionDefinition::parse($settings['questions']);
+    }
+    catch (\Throwable) {
+      // Invalid settings: the question filter only offers "Any question".
+      return [];
+    }
+  }
+
+  /**
+   * Builds the filters fieldset.
+   */
+  protected function buildFilters($request, array $questions): array {
+    $filters = [
+      '#type' => 'details',
+      '#title' => $this->t('Filters'),
+      '#open' => TRUE,
+    ];
+    $filters['status'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Processing status'),
+      '#options' => [
+        '' => $this->t('All'),
+        'pending' => $this->t('Pending'),
+        'processing' => $this->t('Processing'),
+        'completed' => $this->t('Completed'),
+        'failed' => $this->t('Failed'),
+        'stale' => $this->t('Outdated'),
+      ],
+      '#default_value' => $request->get('status', ''),
+    ];
+    $filters['review'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Review status'),
+      '#options' => [
+        '' => $this->t('All'),
+        'needs_review' => $this->t('Needs review'),
+        'unreviewed' => $this->t('Unreviewed'),
+        'reviewed' => $this->t('Reviewed'),
+      ],
+      '#default_value' => $request->get('review', ''),
+    ];
+    $options = ['' => $this->t('Any question')];
+    foreach ($questions as $id => $q) {
+      $options[$id] = $q['label'];
+    }
+    $filters['question'] = [
+      '#type' => 'select',
+      '#title' => $this->t('Classification question'),
+      '#options' => $options,
+      '#default_value' => $request->get('question', ''),
+    ];
+    $filters['value'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Classification value'),
+      '#description' => $this->t('Exact category key, numeric score, or yes/no. Filters use staff corrections where present.'),
+      '#default_value' => $request->get('value', ''),
+    ];
+    $filters['apply'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Apply filters'),
+      '#submit' => ['::filterResults'],
+      '#limit_validation_errors' => [
+        ['status'],
+        ['review'],
+        ['question'],
+        ['value'],
+      ],
+    ];
+    return $filters;
+  }
+
+  /**
+   * Adds the "process pending submissions" action for allowed users.
+   */
+  protected function addPendingAction(array &$form): void {
+    if (!$this->currentUser()->hasPermission('run vactory webform typesafe')) {
+      return;
+    }
+    $form['process_pending'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Traiter les soumissions en attente'),
+      '#submit' => ['::processPending'],
+      '#limit_validation_errors' => [],
+    ];
+    $form['pending_help'] = [
+      '#markup' => '<p>' . $this->t('Traitez immédiatement toutes les soumissions en attente de ce formulaire, quels que soient les filtres ou les lignes sélectionnées. Gardez la page de progression ouverte jusqu’à la fin du traitement.') . '</p>',
+    ];
+  }
+
+  /**
+   * Loads the analyses of the current page, with the request filters.
+   */
+  protected function loadRecords(WebformInterface $webform, $request, array $filters, array $questions): array {
+    $storage = $this->entities->getStorage('vactory_webform_analysis');
+    // Check submission access for each row in addition to route access.
+    $query = $storage->getQuery()->accessCheck(FALSE)->condition('webform', $webform->id())->sort('id', 'DESC');
+    foreach (['status' => 'status', 'review' => 'review_status'] as $filter => $field) {
+      if (in_array($request->get($filter), array_keys($filters[$filter]['#options']), TRUE) && $request->get($filter) !== '') {
+        $query->condition($field, $request->get($filter));
+      }
+    }
+    if (isset($questions[$request->get('question', '')]) && trim($request->get('value', '')) !== '') {
+      $query->condition('labels', $request->get('question') . ':' . trim($request->get('value')));
+    }
+    return $storage->loadMultiple($query->pager(25)->execute());
+  }
+
+  /**
+   * Builds the table row of an analysis.
+   */
+  protected function buildRow($record, $submission, $sid, WebformInterface $webform, ?array $settings): array {
+    return [
+      'id' => ['data' => $this->buildPreview($submission, $sid, $webform, $settings)],
+      'status' => ['data' => $this->statusBadge($record->get('status')->value, FALSE)],
+      'review' => ['data' => $this->statusBadge($record->get('review_status')->value, TRUE)],
+      'summary' => ['data' => $this->buildSummary($record)],
+    ];
+  }
+
+  /**
+   * Builds the classification summary of an analysis.
+   */
+  protected function buildSummary($record): array {
+    $summary = [
+      '#type' => 'container',
+      '#attributes' => ['class' => ['vwt-classifications']],
+    ];
+    if ($record->get('status')->value !== 'completed') {
+      $summary['empty'] = ['#plain_text' => $this->t('Classification indisponible pour le moment.')];
+      return $summary;
+    }
+    $stored_questions = $record->decoded('questions');
+    $overrides = $record->decoded('overrides');
+    foreach ($record->decoded('results')['answers'] ?? [] as $id => $answer) {
+      if (isset($stored_questions[$id])) {
+        $value = $overrides[$id] ?? QuestionDefinition::value($stored_questions[$id], $answer);
+        $summary[] = $this->buildClassification($id, $stored_questions[$id], $value, isset($overrides[$id]));
+      }
+    }
+    return $summary;
+  }
+
+  /**
+   * Builds the display of one classification.
+   */
+  protected function buildClassification(string $id, array $question, $value, bool $overridden): array {
+    $display = QuestionDefinition::displayValue($question, $value);
+    if ($question['type'] === 'score') {
+      $display = str_replace('.', ',', $value) . ' / ' . (count($question['criteria']) - 1);
+    }
+    $score_detail = NULL;
+    if ($id === 'urgency' && $this->isBuiltinUrgencyScale($question)) {
+      $score_detail = $this->t('Score : @score', ['@score' => $display]);
+      $display = $this->urgencyLabel((float) $value);
+    }
+    $item = [
+      '#type' => 'container',
+      '#attributes' => ['class' => ['vwt-classification']],
+      'label' => $this->htmlTag('span', $question['label'], 'vwt-label'),
+      'value' => $this->htmlTag('strong', $display),
+    ];
+    if ($score_detail !== NULL) {
+      $item['score'] = $this->htmlTag('small', $score_detail);
+    }
+    if ($overridden) {
+      $item['correction'] = $this->htmlTag('small', $this->t('Corrigé manuellement'));
+    }
+    return $item;
+  }
+
+  /**
+   * Whether a question uses the built-in urgency scale.
+   *
+   * Only the built-in urgency scale is labelled; custom scales keep their own
+   * numeric representation rather than inheriting its meaning.
+   */
+  protected function isBuiltinUrgencyScale(array $question): bool {
+    $urgency_scales = [
+      QuestionDefinition::defaults()['urgency']['criteria'],
+      [
+        'Low: no deadline or immediate impact',
+        'Normal: routine request',
+        'High: explicit near deadline or significant current disruption',
+      ],
+    ];
+    return $question['type'] === 'score' && in_array($question['criteria'], $urgency_scales, TRUE);
+  }
+
+  /**
+   * Label of an urgency score.
+   */
+  protected function urgencyLabel(float $score) {
+    return match (TRUE) {
+      $score <= 0 => $this->t('Urgence faible'),
+      $score < 1 => $this->t('Urgence faible à normale'),
+      $score == 1 => $this->t('Urgence normale'),
+      $score < 2 => $this->t('Urgence normale à élevée'),
+      default => $this->t('Urgence élevée'),
+    };
+  }
+
+  /**
+   * Builds an html_tag element with plain text.
+   */
+  protected function htmlTag(string $tag, $text, ?string $class = NULL): array {
+    $element = ['#type' => 'html_tag', '#tag' => $tag];
+    if ($class !== NULL) {
+      $element['#attributes'] = ['class' => [$class]];
+    }
+    $element['text'] = ['#plain_text' => $text];
+    return $element;
+  }
+
+  /**
+   * Builds the submission link and an excerpt of its analyzed fields.
+   */
+  protected function buildPreview($submission, $sid, WebformInterface $webform, ?array $settings): array {
+    $preview = [
+      '#type' => 'container',
+      '#attributes' => ['class' => ['vwt-submission']],
+      'link' => Link::fromTextAndUrl($this->t('Soumission #@id', ['@id' => $sid]), Url::fromRoute('vactory_webform_typesafe.analysis', [
+        'webform' => $webform->id(),
+        'webform_submission' => $sid,
+      ]))->toRenderable(),
+    ];
+    $input = \Drupal::service('vactory_webform_typesafe.input')->build($submission, $settings['fields'] ?? [], PHP_INT_MAX);
+    foreach ($input as $field) {
+      $text = is_array($field['value']) ? implode(', ', $field['value']) : (string) $field['value'];
+      $text = preg_replace('/\s+/u', ' ', $text) ?? $text;
+      $preview[] = [
+        '#type' => 'container',
+        'label' => $this->htmlTag('span', $field['label'], 'vwt-label'),
+        'excerpt' => $this->htmlTag('p', Unicode::truncate(trim($text), 180, TRUE, TRUE)),
+      ];
+    }
+    if (!$input) {
+      $preview['empty'] = ['#plain_text' => $this->t('Aucun contenu à afficher dans les champs sélectionnés.')];
+    }
+    return $preview;
   }
 
   /**

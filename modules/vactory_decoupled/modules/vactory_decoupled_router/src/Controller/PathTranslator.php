@@ -148,7 +148,6 @@ class PathTranslator extends ControllerBase {
 
     $output = [];
     $output['status'] = 200;
-    $info = NULL;
 
     // Honor redirects created via the core Redirect module BEFORE any route
     // matching. The redirect source (e.g. an old URL) usually has no Drupal
@@ -159,19 +158,41 @@ class PathTranslator extends ControllerBase {
       [],
       $this->currentLangcode
     );
-    if ($redirect) {
-      $status_code = $redirect->getStatusCode();
-      $output['status'] = $status_code;
-      $output['redirect'][] = [
-        'from' => $path,
-        'to' => $redirect->getRedirectUrl()->toString(),
-        'status' => $status_code,
-      ];
-      $this->response->headers->add(['Content-Type' => 'application/json']);
-      $this->response->setData($output);
-      return $this->response;
+    $output = $redirect
+      ? $this->redirectOutput($redirect, $path, $output)
+      : $this->resolveOutput($request, $path, $output, $error_match_info);
+    if ($output === NULL) {
+      return;
     }
 
+    $this->response->headers->add(['Content-Type' => 'application/json']);
+    $this->response->setData($output);
+
+    return $this->response;
+  }
+
+  /**
+   * Output of a path handled by a Redirect entity.
+   */
+  private function redirectOutput($redirect, string $path, array $output): array {
+    $status_code = $redirect->getStatusCode();
+    $output['status'] = $status_code;
+    $output['redirect'][] = [
+      'from' => $path,
+      'to' => $redirect->getRedirectUrl()->toString(),
+      'status' => $status_code,
+    ];
+    return $output;
+  }
+
+  /**
+   * Output of a path resolved to an entity, an error page or a login redirect.
+   *
+   * @return array|null
+   *   The output, or NULL when the account_login system route is missing.
+   */
+  private function resolveOutput(Request $request, string $path, array $output, array $error_match_info): ?array {
+    $info = NULL;
     try {
       // Drupal routes.
       $match_info = $this->router->match($path);
@@ -216,7 +237,7 @@ class PathTranslator extends ControllerBase {
           $login_route = $this->systemRoutes['account_login'];
           if (!isset($login_route)) {
             $this->logger->error('System route account_login is not found. Create one at /admin/config/system/vactory_router');
-            return;
+            return NULL;
           }
           $redirects_trace[] = [
             'to' => '/' . $this->currentLangcode . $login_route->getAlias(),
@@ -261,10 +282,7 @@ class PathTranslator extends ControllerBase {
       }
     }
 
-    $this->response->headers->add(['Content-Type' => 'application/json']);
-    $this->response->setData($output);
-
-    return $this->response;
+    return $output;
   }
 
   /**
@@ -300,7 +318,7 @@ class PathTranslator extends ControllerBase {
    *   individual URL so the blocks "Response status" visibility condition can
    *   be evaluated against it.
    */
-  protected function getEntityOutput($entity, $status = 200) {
+  protected function getEntityOutput(EntityInterface $entity, $status = 200) {
     $entity_type_id = $entity->getEntityTypeId();
     $rt = $this->jsonapiResourceTypeRepository->get($entity_type_id, $entity->bundle());
     $type_name = $rt->getTypeName();
