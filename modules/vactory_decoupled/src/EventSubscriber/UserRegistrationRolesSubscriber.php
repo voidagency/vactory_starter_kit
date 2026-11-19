@@ -40,7 +40,10 @@ class UserRegistrationRolesSubscriber implements EventSubscriberInterface {
     // Run early (high priority) so roles are dropped before any other
     // subscriber acts on the account.
     return [
-      UserResourcesEvents::REGISTRATION_VALIDATE => ['onRegistrationValidate', 1000],
+      UserResourcesEvents::REGISTRATION_VALIDATE => [
+        'onRegistrationValidate',
+        1000,
+      ],
     ];
   }
 
