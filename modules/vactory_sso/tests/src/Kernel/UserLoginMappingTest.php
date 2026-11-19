@@ -106,6 +106,7 @@ class UserLoginMappingTest extends KernelTestBase {
     $this->assertSame('', NestedAttribute::get(['blank' => ''], 'blank'));
     $this->assertNull(NestedAttribute::get($resource, 'a.missing'));
     $this->assertNull(NestedAttribute::get($resource, ''));
+    $this->assertNull(NestedAttribute::get($resource, 'a.b.c'), 'Walks through a scalar.');
   }
 
 }

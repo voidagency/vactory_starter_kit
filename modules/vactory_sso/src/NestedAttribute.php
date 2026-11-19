@@ -24,18 +24,16 @@ final class NestedAttribute {
    *   The value, or NULL when the attribute does not exist.
    */
   public static function get(array $resource, string $path) {
-    if ($path === '') {
-      return NULL;
-    }
-    $value = $resource;
-    foreach (explode('.', $path) as $key) {
+    $value = $path === '' ? NULL : $resource;
+    foreach ($path === '' ? [] : explode('.', $path) as $key) {
       if (!is_array($value) || !array_key_exists($key, $value)) {
-        return NULL;
+        $value = NULL;
+        break;
       }
       $value = $value[$key];
     }
     if (is_array($value)) {
-      return array_is_list($value) ? ($value[0] ?? NULL) : NULL;
+      $value = array_is_list($value) ? ($value[0] ?? NULL) : NULL;
     }
     return $value;
   }
