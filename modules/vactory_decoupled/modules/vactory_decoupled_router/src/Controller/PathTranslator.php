@@ -193,26 +193,7 @@ class PathTranslator extends ControllerBase {
    */
   private function resolveOutput(Request $request, string $path, array $output, array $error_match_info): ?array {
     $info = NULL;
-    try {
-      // Drupal routes.
-      $match_info = $this->router->match($path);
-    }
-    catch (\Exception $exception) {
-      try {
-        // System routes.
-        $info = $this->getRouteFromRequest($request);
-        $match_info = $this->router->match($info['path']);
-      }
-      catch (\Exception $e) {
-        // $this->response->setStatusCode(404);
-        $info = [
-          '_route' => 'error_page',
-        ];
-        $output['status'] = 404;
-        $output['message'] = "No route found for $path";
-        $match_info = $error_match_info;
-      }
-    }
+    $match_info = $this->matchPath($request, $path, $output, $error_match_info, $info);
     /** @var \Drupal\Core\Entity\EntityInterface $entity */
     $preview = $request->query->get('preview') ?? FALSE;
     $entity = $this->findEntity($match_info, $preview);
@@ -228,35 +209,9 @@ class PathTranslator extends ControllerBase {
       // $this->response->setStatusCode(500);
     }
 
-    if ($entity->getEntityType() instanceof ContentEntityType) {
-      $can_view = $entity->access('view', NULL, TRUE);
-      if (!$can_view->isAllowed()) {
-        if ($this->currentUser()->isAnonymous()) {
-          // Redirect the anonymous user to the login page in case.
-          // they do not have access to the current page.
-          $login_route = $this->systemRoutes['account_login'];
-          if (!isset($login_route)) {
-            $this->logger->error('System route account_login is not found. Create one at /admin/config/system/vactory_router');
-            return NULL;
-          }
-          $redirects_trace[] = [
-            'to' => '/' . $this->currentLangcode . $login_route->getAlias(),
-            'status' => 301,
-            'from' => $path,
-          ];
-          $output['redirect'] = $redirects_trace;
-        }
-        else {
-          /** @var \Drupal\Core\Entity\EntityInterface $entity */
-          $entity = $this->findEntity($error_match_info);
-          $info = [
-            '_route' => 'error_page',
-          ];
-          $output['status'] = 403;
-          // $this->response->setStatusCode(403);
-          $output['message'] = "User is not allowed to view $path";
-        }
-      }
+    $redirects_trace = [];
+    if (!$this->applyViewAccess($entity, $path, $output, $error_match_info, $info, $redirects_trace)) {
+      return NULL;
     }
 
     $output = array_merge($this->getEntityOutput($entity, $output['status']), $output);
@@ -283,6 +238,73 @@ class PathTranslator extends ControllerBase {
     }
 
     return $output;
+  }
+
+  /**
+   * Matches the path as a Drupal route, then as a system route.
+   *
+   * When nothing matches, the error page route is used and $output and $info
+   * describe the 404.
+   */
+  private function matchPath(Request $request, string $path, array &$output, array $error_match_info, &$info): array {
+    try {
+      // Drupal routes.
+      return $this->router->match($path);
+    }
+    catch (\Exception $exception) {
+      try {
+        // System routes.
+        $info = $this->getRouteFromRequest($request);
+        return $this->router->match($info['path']);
+      }
+      catch (\Exception $e) {
+        $info = [
+          '_route' => 'error_page',
+        ];
+        $output['status'] = 404;
+        $output['message'] = "No route found for $path";
+        return $error_match_info;
+      }
+    }
+  }
+
+  /**
+   * Applies the view access of a content entity to the output.
+   *
+   * An anonymous user is redirected to the login page; another user gets the
+   * error page with a 403.
+   *
+   * @return bool
+   *   FALSE when the account_login system route is missing.
+   */
+  private function applyViewAccess(EntityInterface &$entity, string $path, array &$output, array $error_match_info, &$info, array &$redirects_trace): bool {
+    if (!$entity->getEntityType() instanceof ContentEntityType || $entity->access('view', NULL, TRUE)->isAllowed()) {
+      return TRUE;
+    }
+    if (!$this->currentUser()->isAnonymous()) {
+      $entity = $this->findEntity($error_match_info);
+      $info = [
+        '_route' => 'error_page',
+      ];
+      $output['status'] = 403;
+      $output['message'] = "User is not allowed to view $path";
+      return TRUE;
+    }
+    // Redirect the anonymous user to the login page in case.
+    // they do not have access to the current page.
+    $login_route = $this->systemRoutes['account_login'];
+    if (!isset($login_route)) {
+      $this->logger->error('System route account_login is not found. Create one at /admin/config/system/vactory_router');
+    }
+    else {
+      $redirects_trace[] = [
+        'to' => '/' . $this->currentLangcode . $login_route->getAlias(),
+        'status' => 301,
+        'from' => $path,
+      ];
+      $output['redirect'] = $redirects_trace;
+    }
+    return isset($login_route);
   }
 
   /**
