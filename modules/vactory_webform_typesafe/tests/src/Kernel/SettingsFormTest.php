@@ -165,8 +165,6 @@ class SettingsFormTest extends TypeSafeKernelTestBase {
    * submitForm() passes it back to setUserInput(array).
    */
   public function testDirectSubmitWithoutUserInput(): void {
-    // Currently throws a TypeError from FormState::setUserInput(NULL).
-    $this->markTestSkipped('Fixed by #71220');
     $form_object = SettingsForm::create($this->container);
     $form_state = new FormState();
     $form = $form_object->buildForm([], $form_state);
