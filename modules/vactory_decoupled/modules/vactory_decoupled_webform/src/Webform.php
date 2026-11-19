@@ -573,8 +573,12 @@ class Webform {
         $properties['default_value'] = $this->preparePreviewInfos($fid);
       }
 
-      if (isset($element['#upload_validators']) && isset($element['#upload_validators']['file_validate_extensions'][0])) {
-        $field_extensions = $element['#upload_validators']['file_validate_extensions'][0];
+      // Webform >= 6.3 uses the "FileExtension" constraint, older versions
+      // the legacy "file_validate_extensions" callback.
+      $field_extensions = $element['#upload_validators']['FileExtension']['extensions']
+        ?? $element['#upload_validators']['file_validate_extensions'][0]
+        ?? NULL;
+      if ($field_extensions) {
         $extensions = explode(" ", $field_extensions);
         $doted_extensions = [];
         foreach ($extensions as $ext) {

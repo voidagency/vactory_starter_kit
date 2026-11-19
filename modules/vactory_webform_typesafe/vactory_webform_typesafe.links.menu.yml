@@ -1,0 +1,5 @@
+vactory_webform_typesafe.settings:
+  title: 'Webform TypeSafe'
+  description: 'Configure submission classification defaults.'
+  route_name: vactory_webform_typesafe.settings
+  parent: system.admin_config_services

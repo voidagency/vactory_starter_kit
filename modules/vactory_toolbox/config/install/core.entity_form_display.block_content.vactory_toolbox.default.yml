@@ -10,7 +10,6 @@ dependencies:
     - field.field.block_content.vactory_toolbox.field_links_source
   module:
     - vactory_dynamic_field
-    - workbench_moderation
 id: block_content.vactory_toolbox.default
 targetEntityType: block_content
 bundle: vactory_toolbox

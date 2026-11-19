@@ -7,22 +7,32 @@
 
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\locale\SourceString;
+use Drupal\user\Entity\Role;
 use Drupal\user\RoleInterface;
 
 /**
  * Implements hook_install().
  */
 function vactory_decoupled_webform_install() {
-  // Grant permission to all users by default.
-  if (\Drupal::moduleHandler()->moduleExists('user')) {
-    user_role_grant_permissions(RoleInterface::ANONYMOUS_ID, ['access any webform configuration']);
-    user_role_grant_permissions(RoleInterface::AUTHENTICATED_ID, ['access any webform configuration']);
-    user_role_grant_permissions('master', ['administer webform_decoupled props']);
-    user_role_grant_permissions('webmaster', ['administer webform_decoupled props']);
-  }
+  _vactory_decoupled_webform_grant_permissions();
 
   // Import Translations.
   _vactory_decoupled_webform_import_translation();
+}
+
+/**
+ * Grants the module permissions to the Vactory roles.
+ *
+ * Webform configuration (handlers, settings) is reserved to trusted roles:
+ * 'access any webform configuration' is never granted to anonymous or
+ * authenticated users.
+ */
+function _vactory_decoupled_webform_grant_permissions() {
+  foreach (['master', 'webmaster'] as $rid) {
+    if (Role::load($rid)) {
+      user_role_grant_permissions($rid, ['administer webform_decoupled props']);
+    }
+  }
 }
 
 /**
@@ -214,4 +224,13 @@ function vactory_decoupled_webform_update_10101() {
 
   \Drupal::entityDefinitionUpdateManager()
     ->installFieldStorageDefinition('datalayer', 'webform_submission', 'vactory_decoupled_webform', $storage_definition);
+}
+
+/**
+ * Revoke 'access any webform configuration' from anonymous/authenticated.
+ */
+function vactory_decoupled_webform_update_10102() {
+  foreach ([RoleInterface::ANONYMOUS_ID, RoleInterface::AUTHENTICATED_ID] as $rid) {
+    user_role_revoke_permissions($rid, ['access any webform configuration']);
+  }
 }

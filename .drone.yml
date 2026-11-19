@@ -8,10 +8,18 @@ clone:
 workspace:
   path: /opt-cache
 
+# One build per change: pushes to 3.x and pull requests. A push to a PR
+# branch also sends a pull_request event; building both ran two identical
+# builds at the same time, and one of them regularly hung in SonarQube.
+trigger:
+  ref:
+    - refs/heads/3.x
+    - refs/pull/**
+
 steps:
   - name: setup
     image: vactory/vactory-ci:latest
-    pull: always
+    pull: if-not-exists
     environment:
       BITBUCKET_AUTHTOKEN:
         from_secret: BITBUCKET_AUTHTOKEN
@@ -19,6 +27,9 @@ steps:
         from_secret: SONAR_TOKEN
       SLACK_TOKEN:
         from_secret: SLACK_TOKEN
+      # Read-only GitHub token: composer downloads without it get HTTP 429.
+      GITHUB_TOKEN:
+        from_secret: GITHUB_TOKEN
       PHP_VERSION: 8.3
       COMPOSER_VERSION: 2.7.1
       DRUSH_VERSION: 8.4.1

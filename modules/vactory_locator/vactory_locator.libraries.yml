@@ -13,7 +13,9 @@ vactory_locator.locator:
     theme:
       ./assets/css/agencies.css: {}
   js:
-    https://cdn.rawgit.com/googlemaps/js-marker-clusterer/gh-pages/src/markerclusterer.js: {type: external }
+    # Original googlemaps/js-marker-clusterer (archived), pinned to its last
+    # commit: rawgit is shut down and only redirects to the moving gh-pages.
+    https://cdn.jsdelivr.net/gh/googlemaps/js-marker-clusterer@8c2be07696e0c8789a4e314e12fc698622bf8323/src/markerclusterer.js: { type: external, attributes: { integrity: 'sha384-e0ciqReeUBPmeeMfoTND8UKtafk8/uCJP+6G/cBsU7SqehhyVJoD4YrAJ/vCgCp9', crossorigin: anonymous } }
     ./assets/js/locator.js: {}
   dependencies:
     - core/jquery

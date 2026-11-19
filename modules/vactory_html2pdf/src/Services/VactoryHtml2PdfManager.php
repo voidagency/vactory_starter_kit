@@ -10,7 +10,6 @@ use Drupal\Core\Utility\Token;
 use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use Mpdf\Mpdf;
-use Mpdf\MpdfException;
 
 /**
  * Vactory Html to PDF service.
@@ -88,7 +87,8 @@ class VactoryHtml2PdfManager {
   /**
    * Html to pdf generator.
    *
-   * @throws MpdfException|VactoryHtml2PdfException
+   * @throws \Mpdf\MpdfException
+   * @throws \Drupal\vactory_html2pdf\Services\Exceptions\VactoryHtml2PdfException
    */
   public function html2Pdf($htmlContent, string $outputFilename, array $mpdfOptions = []) {
     // Params check.
@@ -119,8 +119,11 @@ class VactoryHtml2PdfManager {
     // Get module settings object.
     $config = $this->configFactory->get('vactory_html2pdf.settings');
     // Get fonts from module settings.
-    $custom_fonts_directories = $config->get('vactory_html2pdf_font_dirs');
-    $custom_fonts_data = $config->get('fonts_data');
+    // "vactory_html2pdf_font_dirs" is only written by the settings form:
+    // fall back on the install value of "font_directories".
+    $custom_fonts_directories = $config->get('vactory_html2pdf_font_dirs')
+      ?? $this->resolveFontDirectories((string) $config->get('font_directories'));
+    $custom_fonts_data = $config->get('fonts_data') ?? [];
     // Get mpdf fonts dirs and data.
     $fontDirs = $this->mpdfDefaultConfig['fontDir'];
     $fontData = $this->mpdfDefaultFontConfig['fontdata'];
@@ -139,6 +142,30 @@ class VactoryHtml2PdfManager {
       'url' => $url,
       'uri' => $file,
     ];
+  }
+
+  /**
+   * Resolves the font directories setting into existing absolute paths.
+   *
+   * @param string $font_directories
+   *   One directory per line, relative to the Drupal root.
+   *
+   * @return string[]
+   *   Absolute paths of the existing directories.
+   */
+  protected function resolveFontDirectories(string $font_directories): array {
+    $directories = [];
+    foreach (preg_split('/\R/', $font_directories) as $directory) {
+      $directory = trim($directory);
+      if ($directory === '') {
+        continue;
+      }
+      $path = DRUPAL_ROOT . '/' . ltrim($directory, '/');
+      if (is_dir($path)) {
+        $directories[] = $path;
+      }
+    }
+    return $directories;
   }
 
 }
