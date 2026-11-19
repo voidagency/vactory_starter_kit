@@ -57,6 +57,7 @@ services:
 
   vactory_decoupled.user_registration_roles_subscriber:
     class: Drupal\vactory_decoupled\EventSubscriber\UserRegistrationRolesSubscriber
+    arguments: ['@config.factory', '@entity_type.manager']
     tags:
       - { name: event_subscriber }
 

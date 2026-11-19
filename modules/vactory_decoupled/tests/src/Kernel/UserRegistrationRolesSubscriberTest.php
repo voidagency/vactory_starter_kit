@@ -15,6 +15,7 @@ use Drupal\user\Entity\Role;
 use Drupal\user\Entity\User;
 use Drupal\user\UserInterface;
 use Drupal\vactory_decoupled\EventSubscriber\UserRegistrationRolesSubscriber;
+use Symfony\Component\DependencyInjection\Reference;
 
 /**
  * Tests the subscriber that drops roles from JSON:API registrations.
@@ -40,13 +41,26 @@ class UserRegistrationRolesSubscriberTest extends KernelTestBase {
 
   /**
    * {@inheritdoc}
+   *
+   * The module is not installed, so its config schema is not loaded; the
+   * schema is covered by DecoupledSettingsRegistrationTest (ExistingSite).
+   */
+  protected $strictConfigSchema = FALSE;
+
+  /**
+   * {@inheritdoc}
    */
   public function register(ContainerBuilder $container) {
     parent::register($container);
     $services = Yaml::decode(file_get_contents(dirname(__DIR__, 3) . '/vactory_decoupled.services.yml'));
     if (isset($services['services'][self::SERVICE])) {
       $definition = $services['services'][self::SERVICE];
+      $arguments = array_map(
+        static fn(string $id) => new Reference(ltrim($id, '@')),
+        $definition['arguments'] ?? []
+      );
       $container->register(self::SERVICE, $definition['class'])
+        ->setArguments($arguments)
         ->addTag('event_subscriber');
     }
   }
@@ -57,9 +71,10 @@ class UserRegistrationRolesSubscriberTest extends KernelTestBase {
   protected function setUp(): void {
     parent::setUp();
     $this->installEntitySchema('user');
-    foreach (['editor', 'administrator'] as $id) {
+    foreach (['editor', 'member', 'administrator'] as $id) {
       Role::create(['id' => $id, 'label' => $id])->save();
     }
+    Role::load('administrator')->setIsAdmin(TRUE)->save();
   }
 
   /**
@@ -122,6 +137,49 @@ class UserRegistrationRolesSubscriberTest extends KernelTestBase {
     // The account saves without any role.
     $account->save();
     $this->assertSame([], User::load($account->id())->getRoles(TRUE));
+  }
+
+  /**
+   * Sets the default roles chosen in the back office.
+   */
+  protected function setDefaultRoles(array $roles): void {
+    $this->config('vactory_decoupled.settings')
+      ->set('registration_default_roles', $roles)
+      ->save(TRUE);
+  }
+
+  /**
+   * Configured default roles replace the roles sent in the request.
+   *
+   * @covers ::onRegistrationValidate
+   * @covers ::defaultRoles
+   */
+  public function testDefaultRolesAdded(): void {
+    $this->setDefaultRoles(['member']);
+    $account = $this->createAccount();
+    $this->dispatch($account, UserResourcesEvents::REGISTRATION_VALIDATE);
+    $this->assertSame(['member'], $account->getRoles(TRUE));
+    $account->save();
+    $this->assertSame(['member'], User::load($account->id())->getRoles(TRUE));
+  }
+
+  /**
+   * Admin, locked and unknown roles are never granted, even if configured.
+   *
+   * @covers ::defaultRoles
+   * @covers ::isGrantable
+   */
+  public function testUngrantableRolesIgnored(): void {
+    $this->setDefaultRoles([
+      'administrator',
+      'authenticated',
+      'anonymous',
+      'missing',
+      'member',
+    ]);
+    $account = $this->createAccount();
+    $this->dispatch($account, UserResourcesEvents::REGISTRATION_VALIDATE);
+    $this->assertSame(['member'], $account->getRoles(TRUE));
   }
 
   /**
