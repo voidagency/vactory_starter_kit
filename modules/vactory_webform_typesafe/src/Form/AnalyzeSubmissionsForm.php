@@ -102,14 +102,7 @@ final class AnalyzeSubmissionsForm extends AnalysisFormBase {
     }
     $manager = \Drupal::service('vactory_webform_typesafe.manager');
     $storage = \Drupal::entityTypeManager()->getStorage('webform_submission');
-    $query = $storage->getQuery()->accessCheck(FALSE)->condition('webform_id', $wid)->condition('in_draft', 0)->condition('sid', $context['sandbox']['cursor'], '>')->condition('sid', $max, '<=')->sort('sid')->range(0, 50);
-    if ($from) {
-      $query->condition('created', strtotime($from . ' 00:00:00 UTC'), '>=');
-    }
-    if ($to) {
-      $query->condition('created', strtotime($to . ' 23:59:59 UTC'), '<=');
-    }
-    $ids = $query->execute();
+    $ids = self::nextSubmissionIds($wid, $from, $to, (int) $context['sandbox']['cursor'], $max);
     foreach ($storage->loadMultiple($ids) as $sid => $submission) {
       $context['sandbox']['cursor'] = (int) $sid;
       if (!$submission->access('view')) {
@@ -118,14 +111,7 @@ final class AnalyzeSubmissionsForm extends AnalysisFormBase {
       }
       try {
         $record = $manager->load((int) $sid);
-        $match = match ($mode) {
-          'missing' => !$record,
-          'failed' => $record && $record->get('status')->value === 'failed',
-          'outdated' => $record && (($manager->snapshot($submission)['fingerprint'] ?? '') !== $record->get('fingerprint')->value || $record->get('status')->value === 'stale'),
-          'all' => TRUE,
-          default => FALSE,
-        };
-        $queued = $match && $manager->enqueue($submission, $mode !== 'missing');
+        $queued = self::matchesMode($mode, $record, $submission) && $manager->enqueue($submission, $mode !== 'missing');
         $context['results'][$queued ? 'queued' : 'skipped']++;
       }
       catch (\Throwable) {
@@ -141,9 +127,51 @@ final class AnalyzeSubmissionsForm extends AnalysisFormBase {
   }
 
   /**
+   * IDs of the next fifty completed submissions in the selected range.
+   */
+  private static function nextSubmissionIds(string $wid, string $from, string $to, int $cursor, int $max): array {
+    $query = \Drupal::entityTypeManager()->getStorage('webform_submission')->getQuery()
+      ->accessCheck(FALSE)
+      ->condition('webform_id', $wid)
+      ->condition('in_draft', 0)
+      ->condition('sid', $cursor, '>')
+      ->condition('sid', $max, '<=')
+      ->sort('sid')
+      ->range(0, 50);
+    if ($from) {
+      $query->condition('created', strtotime($from . ' 00:00:00 UTC'), '>=');
+    }
+    if ($to) {
+      $query->condition('created', strtotime($to . ' 23:59:59 UTC'), '<=');
+    }
+    return $query->execute();
+  }
+
+  /**
+   * Whether a submission matches the selected queueing mode.
+   */
+  private static function matchesMode(string $mode, $record, $submission): bool {
+    return match ($mode) {
+      'missing' => !$record,
+      'failed' => $record && $record->get('status')->value === 'failed',
+      'outdated' => $record && self::isOutdated($record, $submission),
+      'all' => TRUE,
+      default => FALSE,
+    };
+  }
+
+  /**
+   * Whether an analysis no longer matches the submission or is stale.
+   */
+  private static function isOutdated($record, $submission): bool {
+    $fingerprint = \Drupal::service('vactory_webform_typesafe.manager')->snapshot($submission)['fingerprint'] ?? '';
+    return $fingerprint !== $record->get('fingerprint')->value || $record->get('status')->value === 'stale';
+  }
+
+  /**
    * Reports batch totals without exposing submitted content.
    */
-  public static function finished($success, $results, $operations): void {
+  public static function finished($success, $results): void {
     if ($success) {
       \Drupal::messenger()->addStatus(t('Queued @queued submissions. Skipped @skipped; failed @failed. Run cron to process queued analyses.', [
         '@queued' => $results['queued'] ?? 0,
