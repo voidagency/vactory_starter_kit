@@ -181,49 +181,7 @@ final class TypeSafeClassificationHandler extends WebformHandlerBase {
   public function validateConfigurationForm(array &$form, FormStateInterface $form_state) {
     parent::validateConfigurationForm($form, $form_state);
     try {
-      $questions = [];
-      foreach ($form_state->getValue('question_rows', []) as $row) {
-        if (!empty($row['remove'])) {
-          continue;
-        }
-        $id = trim($row['id']);
-        if ($id === '' && trim($row['label']) === '' && trim($row['instructions']) === '') {
-          continue;
-        }
-        if (isset($questions[$id])) {
-          throw new \InvalidArgumentException('Duplicate question ID.');
-        }
-        $question = [
-          'label' => trim($row['label']),
-          'type' => $row['type'],
-          'instructions' => trim($row['instructions']),
-        ];
-        if ($row['type'] !== 'noul') {
-          $question['criteria'] = [];
-          foreach (preg_split('/\R/', trim($row['criteria'])) as $line) {
-            if (trim($line) === '') {
-              continue;
-            }
-            if ($row['type'] === 'choice') {
-              $parts = array_map('trim', explode('|', $line, 2));
-              if (count($parts) !== 2 || isset($question['criteria'][$parts[0]])) {
-                throw new \InvalidArgumentException('Invalid or duplicate category.');
-              }
-              $question['criteria'][$parts[0]] = $parts[1];
-            }
-            else {
-              $question['criteria'][] = trim($line);
-            }
-          }
-          $question['confidence_threshold'] = (float) $row['confidence_threshold'];
-        }
-        else {
-          foreach (['threshold', 'review_min', 'review_max'] as $key) {
-            $question[$key] = (float) $row[$key];
-          }
-        }
-        $questions[$id] = $question;
-      }
+      $questions = self::questionsFromRows($form_state->getValue('question_rows', []));
       $json = json_encode($questions, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE);
       QuestionDefinition::parse($json);
       $form_state->setValue('questions', $json);
@@ -234,6 +192,69 @@ final class TypeSafeClassificationHandler extends WebformHandlerBase {
     if (!array_filter($form_state->getValue('fields', []))) {
       $form_state->setErrorByName('fields', $this->t('Select at least one eligible text field.'));
     }
+  }
+
+  /**
+   * Builds the question definitions from the settings form rows.
+   */
+  private static function questionsFromRows(array $rows): array {
+    $questions = [];
+    foreach ($rows as $row) {
+      if (!empty($row['remove'])) {
+        continue;
+      }
+      $id = trim($row['id']);
+      if ($id === '' && trim($row['label']) === '' && trim($row['instructions']) === '') {
+        continue;
+      }
+      if (isset($questions[$id])) {
+        throw new \InvalidArgumentException('Duplicate question ID.');
+      }
+      $questions[$id] = self::questionFromRow($row);
+    }
+    return $questions;
+  }
+
+  /**
+   * Builds one question definition from a settings form row.
+   */
+  private static function questionFromRow(array $row): array {
+    $question = [
+      'label' => trim($row['label']),
+      'type' => $row['type'],
+      'instructions' => trim($row['instructions']),
+    ];
+    if ($row['type'] === 'noul') {
+      foreach (['threshold', 'review_min', 'review_max'] as $key) {
+        $question[$key] = (float) $row[$key];
+      }
+      return $question;
+    }
+    $question['criteria'] = self::criteriaFromText($row['type'], $row['criteria']);
+    $question['confidence_threshold'] = (float) $row['confidence_threshold'];
+    return $question;
+  }
+
+  /**
+   * Parses the criteria textarea: "key|description" lines or score levels.
+   */
+  private static function criteriaFromText(string $type, string $text): array {
+    $criteria = [];
+    foreach (preg_split('/\R/', trim($text)) as $line) {
+      if (trim($line) === '') {
+        continue;
+      }
+      if ($type !== 'choice') {
+        $criteria[] = trim($line);
+        continue;
+      }
+      $parts = array_map('trim', explode('|', $line, 2));
+      if (count($parts) !== 2 || isset($criteria[$parts[0]])) {
+        throw new \InvalidArgumentException('Invalid or duplicate category.');
+      }
+      $criteria[$parts[0]] = $parts[1];
+    }
+    return $criteria;
   }
 
   /**

@@ -126,7 +126,10 @@ final class SettingsForm extends ConfigFormBase {
       if ($form_state->getValue('remove_api_key')) {
         $this->keys->delete();
       }
-      elseif (trim((string) $form_state->getValue('api_key')) !== '' && !in_array($this->keys->source(), ['settings.php', 'environment'], TRUE)) {
+      elseif (trim((string) $form_state->getValue('api_key')) !== '' && !in_array($this->keys->source(), [
+        'settings.php',
+        'environment',
+      ], TRUE)) {
         $this->keys->save($form_state->getValue('api_key'));
       }
     }
@@ -138,7 +141,8 @@ final class SettingsForm extends ConfigFormBase {
     finally {
       // Remove the submitted secret before any form-state caching or rebuild.
       $form_state->unsetValue('api_key');
-      $input = $form_state->getUserInput();
+      // Programmatic submissions have no user input.
+      $input = $form_state->getUserInput() ?? [];
       unset($input['api_key']);
       $form_state->setUserInput($input);
     }
@@ -149,7 +153,6 @@ final class SettingsForm extends ConfigFormBase {
       ->set('max_input_bytes', (int) $form_state->getValue('max_input_bytes'))->save();
     parent::submitForm($form, $form_state);
   }
-
 
   /**
    * {@inheritdoc}

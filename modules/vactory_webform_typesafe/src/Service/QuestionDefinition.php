@@ -69,62 +69,111 @@ final class QuestionDefinition {
     if (!is_array($questions) || !$questions || count($questions) > 20) {
       throw new \InvalidArgumentException('Configure between 1 and 20 questions.');
     }
+    // Same order as before: identity and thresholds of every question
+    // first, then type and criteria of every question.
     foreach ($questions as $id => $q) {
-      if (!preg_match('/^[a-z][a-z0-9_]{0,63}$/', (string) $id) || !is_array($q) || empty($q['label']) || !is_string($q['label'])) {
-        throw new \InvalidArgumentException('Questions need unique machine-name keys and labels.');
-      }
-      foreach ([
-        'confidence_threshold',
-        'threshold',
-        'review_min',
-        'review_max',
-      ] as $key) {
-        if (isset($q[$key]) && (!is_numeric($q[$key]) || $q[$key] < 0 || $q[$key] > 1)) {
-          throw new \InvalidArgumentException('Thresholds must be between 0 and 1.');
-        }
-      }
-      if (($q['type'] ?? '') === 'noul' && (($q['review_min'] ?? 0.35) > ($q['threshold'] ?? 0.5) || ($q['threshold'] ?? 0.5) > ($q['review_max'] ?? 0.65))) {
-        throw new \InvalidArgumentException('The Noul threshold must lie within its review interval.');
-      }
+      self::assertIdentity($id, $q);
+      self::assertThresholds($q);
     }
     foreach ($questions as $question) {
-      $type = $question['type'] ?? '';
-      if (!in_array($type, ['choice', 'score', 'noul'], TRUE) || !is_string($question['instructions'] ?? NULL) || trim($question['instructions']) === '') {
-        throw new \InvalidArgumentException('Each question needs a supported type and nonempty instructions.');
-      }
-      $criteria = $question['criteria'] ?? NULL;
-      if ($type === 'choice') {
-        if (!is_array($criteria) || count($criteria) < 2 || count($criteria) > 255) {
-          throw new \InvalidArgumentException('Choice needs between 2 and 255 categories.');
-        }
-        foreach ($criteria as $label => $description) {
-          if (trim((string) $label) === '' || strlen((string) $label) > 128 || ($description !== NULL && (!is_string($description) || trim($description) === ''))) {
-            throw new \InvalidArgumentException('Choice categories need nonempty keys and text descriptions.');
-          }
-        }
-      }
-      elseif ($type === 'score') {
-        if (!is_array($criteria) || !array_is_list($criteria) || count($criteria) < 2 || count($criteria) > 10) {
-          throw new \InvalidArgumentException('Score needs 2 to 10 ordered levels.');
-        }
-        foreach ($criteria as $description) {
-          if (!is_string($description) || trim($description) === '') {
-            throw new \InvalidArgumentException('Each scoring level needs a description.');
-          }
-        }
-      }
-      elseif (isset($criteria)) {
-        if (!is_array($criteria) || array_diff(array_keys($criteria), ['true', 'false'])) {
-          throw new \InvalidArgumentException('Noul criteria can describe only true and false.');
-        }
-        foreach ($criteria as $description) {
-          if (!is_string($description) || trim($description) === '') {
-            throw new \InvalidArgumentException('Noul descriptions must be nonempty text.');
-          }
-        }
-      }
+      self::assertTypeAndCriteria($question);
     }
     return $questions;
+  }
+
+  /**
+   * Checks the machine name and label of a question.
+   */
+  private static function assertIdentity($id, $q): void {
+    if (!preg_match('/^[a-z][a-z0-9_]{0,63}$/', (string) $id) || !is_array($q) || empty($q['label']) || !is_string($q['label'])) {
+      throw new \InvalidArgumentException('Questions need unique machine-name keys and labels.');
+    }
+  }
+
+  /**
+   * Checks the review thresholds of a question.
+   */
+  private static function assertThresholds(array $q): void {
+    foreach (['confidence_threshold', 'threshold', 'review_min', 'review_max'] as $key) {
+      if (isset($q[$key]) && (!is_numeric($q[$key]) || $q[$key] < 0 || $q[$key] > 1)) {
+        throw new \InvalidArgumentException('Thresholds must be between 0 and 1.');
+      }
+    }
+    if (($q['type'] ?? '') !== 'noul') {
+      return;
+    }
+    $threshold = $q['threshold'] ?? 0.5;
+    if (($q['review_min'] ?? 0.35) > $threshold || $threshold > ($q['review_max'] ?? 0.65)) {
+      throw new \InvalidArgumentException('The Noul threshold must lie within its review interval.');
+    }
+  }
+
+  /**
+   * Checks the type, instructions and criteria of a question.
+   */
+  private static function assertTypeAndCriteria(array $question): void {
+    $type = $question['type'] ?? '';
+    if (!in_array($type, ['choice', 'score', 'noul'], TRUE) || !is_string($question['instructions'] ?? NULL) || trim($question['instructions']) === '') {
+      throw new \InvalidArgumentException('Each question needs a supported type and nonempty instructions.');
+    }
+    $criteria = $question['criteria'] ?? NULL;
+    if ($type === 'choice') {
+      self::assertChoiceCriteria($criteria);
+    }
+    elseif ($type === 'score') {
+      self::assertScoreCriteria($criteria);
+    }
+    elseif (isset($criteria)) {
+      self::assertNoulCriteria($criteria);
+    }
+  }
+
+  /**
+   * Checks the categories of a choice question.
+   */
+  private static function assertChoiceCriteria($criteria): void {
+    if (!is_array($criteria) || count($criteria) < 2 || count($criteria) > 255) {
+      throw new \InvalidArgumentException('Choice needs between 2 and 255 categories.');
+    }
+    foreach ($criteria as $label => $description) {
+      $bad_label = trim((string) $label) === '' || strlen((string) $label) > 128;
+      $bad_description = $description !== NULL && (!is_string($description) || trim($description) === '');
+      if ($bad_label || $bad_description) {
+        throw new \InvalidArgumentException('Choice categories need nonempty keys and text descriptions.');
+      }
+    }
+  }
+
+  /**
+   * Checks the ordered levels of a score question.
+   */
+  private static function assertScoreCriteria($criteria): void {
+    if (!is_array($criteria) || !array_is_list($criteria) || count($criteria) < 2 || count($criteria) > 10) {
+      throw new \InvalidArgumentException('Score needs 2 to 10 ordered levels.');
+    }
+    self::assertDescriptions($criteria, 'Each scoring level needs a description.');
+  }
+
+  /**
+   * Checks the optional true/false descriptions of a Noul question.
+   */
+  private static function assertNoulCriteria($criteria): void {
+    $allowed = ['true', 'false'];
+    if (!is_array($criteria) || array_diff(array_keys($criteria), $allowed)) {
+      throw new \InvalidArgumentException('Noul criteria can describe only true and false.');
+    }
+    self::assertDescriptions($criteria, 'Noul descriptions must be nonempty text.');
+  }
+
+  /**
+   * Checks that every description is nonempty text.
+   */
+  private static function assertDescriptions(array $descriptions, string $message): void {
+    foreach ($descriptions as $description) {
+      if (!is_string($description) || trim($description) === '') {
+        throw new \InvalidArgumentException($message);
+      }
+    }
   }
 
   /**

@@ -80,52 +80,72 @@ final class AnalysisManager {
       return FALSE;
     }
     try {
-      $snapshot = $this->snapshot($submission);
-      if (!$snapshot) {
-        return FALSE;
-      }
-      $record = $this->load($sid);
-      if (!$force && $record && $record->get('fingerprint')->value === $snapshot['fingerprint'] && in_array($record->get('status')->value, [
-        'pending',
-        'processing',
-        'completed',
-      ], TRUE)) {
-        return FALSE;
-      }
-      $record ??= $this->entities->getStorage('vactory_webform_analysis')->create([
-        'id' => $sid,
-        'submission' => $sid,
-        'webform' => $submission->getWebform()->id(),
-      ]);
-      $generation = bin2hex(random_bytes(16));
-      foreach ([
-        'fingerprint' => $snapshot['fingerprint'],
-        'generation' => $generation,
-        'model' => $snapshot['model'],
-        'questions' => json_encode($snapshot['questions'], JSON_THROW_ON_ERROR),
-        'status' => 'pending',
-        'review_status' => 'unreviewed',
-        'attempts' => 0,
-        'error' => '',
-        'changed' => $this->time->getCurrentTime(),
-      ] as $field => $value) {
-        $record->set($field, $value);
-      }
-      // Retain previous results and corrections until a successful replacement.
-      $record->set('labels', []);
-      $record->save();
-      if (!$this->queues->get(self::QUEUE)->createItem([
-        'sid' => $sid,
-        'generation' => $generation,
-      ])) {
-        $record->set('status', 'failed')->set('error', 'Could not create a queue item.')->save();
-        return FALSE;
-      }
-      return TRUE;
+      return $this->enqueueLocked($submission, $sid, $force);
     }
     finally {
       $this->lock->release($key);
     }
+  }
+
+  /**
+   * Queues a submission; the caller holds the save lock.
+   */
+  private function enqueueLocked(WebformSubmissionInterface $submission, int $sid, bool $force): bool {
+    $snapshot = $this->snapshot($submission);
+    $record = $snapshot ? $this->load($sid) : NULL;
+    if (!$snapshot || (!$force && $this->isAlreadyQueued($record, $snapshot))) {
+      return FALSE;
+    }
+    $record ??= $this->entities->getStorage('vactory_webform_analysis')->create([
+      'id' => $sid,
+      'submission' => $sid,
+      'webform' => $submission->getWebform()->id(),
+    ]);
+    $generation = bin2hex(random_bytes(16));
+    foreach ([
+      'fingerprint' => $snapshot['fingerprint'],
+      'generation' => $generation,
+      'model' => $snapshot['model'],
+      'questions' => json_encode($snapshot['questions'], JSON_THROW_ON_ERROR),
+      'status' => 'pending',
+      'review_status' => 'unreviewed',
+      'attempts' => 0,
+      'error' => '',
+      'changed' => $this->time->getCurrentTime(),
+    ] as $field => $value) {
+      $record->set($field, $value);
+    }
+    // Retain previous results and corrections until a successful replacement.
+    $record->set('labels', []);
+    $record->save();
+    return $this->queueGeneration($record, $sid, $generation);
+  }
+
+  /**
+   * Whether the same input is already pending, processing or analyzed.
+   */
+  private function isAlreadyQueued($record, array $snapshot): bool {
+    return $record
+      && $record->get('fingerprint')->value === $snapshot['fingerprint']
+      && in_array($record->get('status')->value, [
+        'pending',
+        'processing',
+        'completed',
+      ], TRUE);
+  }
+
+  /**
+   * Creates the queue item of a generation, or marks the record failed.
+   */
+  private function queueGeneration($record, int $sid, string $generation): bool {
+    $queued = $this->queues->get(self::QUEUE)->createItem([
+      'sid' => $sid,
+      'generation' => $generation,
+    ]);
+    if (!$queued) {
+      $record->set('status', 'failed')->set('error', 'Could not create a queue item.')->save();
+    }
+    return (bool) $queued;
   }
 
   /**
@@ -138,62 +158,96 @@ final class AnalysisManager {
       throw new DelayedRequeueException(60);
     }
     try {
-      try {
-        $snapshot = $this->prepare($item);
-        if (!$snapshot) {
-          return;
-        }
-        $result = $this->classifier->classify($snapshot['state'], $snapshot['questions'], $snapshot['model']);
-      }
-      catch (DelayedRequeueException $e) {
-        throw $e;
-      }
-      catch (\Throwable $e) {
-        $this->recordFailure($item, $e instanceof JevApiException ? $e : NULL);
-        return;
-      }
-      $save_key = self::QUEUE . ':save:' . $sid;
-      if (!$this->lock->acquire($save_key, 30)) {
-        throw new DelayedRequeueException(60);
-      }
-      try {
-        $current = $this->load($sid);
-        if (!$current || $current->get('generation')->value !== $item['generation']) {
-          return;
-        }
-        $submission = $this->freshSubmission($sid);
-        if (!$submission) {
-          $current->delete();
-          return;
-        }
-        try {
-          $latest = $this->snapshot($submission);
-        }
-        catch (\Throwable) {
-          $latest = NULL;
-        }
-        if (!$latest || $latest['fingerprint'] !== $snapshot['fingerprint']) {
-          $current->set('status', 'stale')->set('error', 'Input changed during analysis. Reanalyze this submission.')->save();
-          return;
-        }
-        $labels = [];
-        foreach ($result['answers'] as $id => $answer) {
-          $labels[] = $id . ':' . QuestionDefinition::value($snapshot['questions'][$id], $answer);
-        }
-        $current->set('labels', $labels)
-          ->set('results', json_encode($result, JSON_THROW_ON_ERROR))
-          ->set('model', $result['model'])->set('status', 'completed')
-          ->set('review_status', QuestionDefinition::needsReview($snapshot['questions'], $result['answers']) ? 'needs_review' : 'unreviewed')
-          ->set('overrides', '{}')->set('reviewer', 0)->set('reviewed', 0)
-          ->set('error', '')->set('changed', $this->time->getCurrentTime())->save();
-      }
-      finally {
-        $this->lock->release($save_key);
+      $classified = $this->classifyItem($item);
+      if ($classified) {
+        $this->saveResult($item, $sid, ...$classified);
       }
     }
     finally {
       $this->lock->release($work_key);
     }
+  }
+
+  /**
+   * Classifies a claimed generation.
+   *
+   * @return array|null
+   *   [snapshot, result], or NULL when there is nothing to save.
+   */
+  private function classifyItem(array $item): ?array {
+    try {
+      $snapshot = $this->prepare($item);
+      if (!$snapshot) {
+        return NULL;
+      }
+      $result = $this->classifier->classify($snapshot['state'], $snapshot['questions'], $snapshot['model']);
+    }
+    catch (DelayedRequeueException $e) {
+      throw $e;
+    }
+    catch (\Throwable $e) {
+      $this->recordFailure($item, $e instanceof JevApiException ? $e : NULL);
+      return NULL;
+    }
+    return [$snapshot, $result];
+  }
+
+  /**
+   * Stores a classification under the save lock.
+   */
+  private function saveResult(array $item, int $sid, array $snapshot, array $result): void {
+    $save_key = self::QUEUE . ':save:' . $sid;
+    if (!$this->lock->acquire($save_key, 30)) {
+      throw new DelayedRequeueException(60);
+    }
+    try {
+      $this->storeResult($item, $sid, $snapshot, $result);
+    }
+    finally {
+      $this->lock->release($save_key);
+    }
+  }
+
+  /**
+   * Stores a classification unless the generation or the input changed.
+   */
+  private function storeResult(array $item, int $sid, array $snapshot, array $result): void {
+    $current = $this->load($sid);
+    if (!$current || $current->get('generation')->value !== $item['generation']) {
+      return;
+    }
+    $submission = $this->freshSubmission($sid);
+    if (!$submission) {
+      $current->delete();
+      return;
+    }
+    if ($this->latestFingerprint($submission) !== $snapshot['fingerprint']) {
+      $current->set('status', 'stale')->set('error', 'Input changed during analysis. Reanalyze this submission.')->save();
+      return;
+    }
+    $labels = [];
+    foreach ($result['answers'] as $id => $answer) {
+      $labels[] = $id . ':' . QuestionDefinition::value($snapshot['questions'][$id], $answer);
+    }
+    $current->set('labels', $labels)
+      ->set('results', json_encode($result, JSON_THROW_ON_ERROR))
+      ->set('model', $result['model'])->set('status', 'completed')
+      ->set('review_status', QuestionDefinition::needsReview($snapshot['questions'], $result['answers']) ? 'needs_review' : 'unreviewed')
+      ->set('overrides', '{}')->set('reviewer', 0)->set('reviewed', 0)
+      ->set('error', '')->set('changed', $this->time->getCurrentTime())->save();
+  }
+
+  /**
+   * Fingerprint of the current input, or NULL when it cannot be computed.
+   */
+  private function latestFingerprint(WebformSubmissionInterface $submission): ?string {
+    try {
+      $latest = $this->snapshot($submission);
+    }
+    catch (\Throwable) {
+      $latest = NULL;
+    }
+    return $latest['fingerprint'] ?? NULL;
   }
 
   /**
@@ -206,35 +260,59 @@ final class AnalysisManager {
       throw new DelayedRequeueException(60);
     }
     try {
-      $record = $this->load($sid);
-      if (!$record || $record->get('generation')->value !== ($item['generation'] ?? '') || !in_array($record->get('status')->value, [
-        'pending',
-        'processing',
-      ], TRUE)) {
-        return NULL;
-      }
-      $submission = $this->freshSubmission($sid);
-      if (!$submission) {
-        $record->delete();
-        return NULL;
-      }
-      $attempts = (int) $record->get('attempts')->value;
-      if ($attempts >= (int) $this->config->get('vactory_webform_typesafe.settings')->get('max_attempts')) {
-        $record->set('status', 'failed')->set('error', 'Maximum processing attempts reached.')->save();
-        return NULL;
-      }
-      // Count input failures toward the attempt limit too.
-      $record->set('status', 'processing')->set('attempts', $attempts + 1)->save();
-      $snapshot = $this->snapshot($submission);
-      if (!$snapshot || $snapshot['fingerprint'] !== $record->get('fingerprint')->value) {
-        $record->set('status', 'stale')->set('error', 'Submission or configuration changed. Reanalyze to use current settings.')->save();
-        return NULL;
-      }
-      return $snapshot;
+      return $this->claim($item, $sid);
     }
     finally {
       $this->lock->release($key);
     }
+  }
+
+  /**
+   * Claims a generation; the caller holds the save lock.
+   */
+  private function claim(array $item, int $sid): ?array {
+    $record = $this->load($sid);
+    $submission = $this->claimableSubmission($record, $item, $sid);
+    if (!$submission || !$this->countAttempt($record)) {
+      return NULL;
+    }
+    $snapshot = $this->snapshot($submission);
+    if (!$snapshot || $snapshot['fingerprint'] !== $record->get('fingerprint')->value) {
+      $record->set('status', 'stale')->set('error', 'Submission or configuration changed. Reanalyze to use current settings.')->save();
+      return NULL;
+    }
+    return $snapshot;
+  }
+
+  /**
+   * The submission of a current pending generation; deletes orphan records.
+   */
+  private function claimableSubmission($record, array $item, int $sid): ?WebformSubmissionInterface {
+    $claimable = $record
+      && $record->get('generation')->value === ($item['generation'] ?? '')
+      && in_array($record->get('status')->value, ['pending', 'processing'], TRUE);
+    if (!$claimable) {
+      return NULL;
+    }
+    $submission = $this->freshSubmission($sid);
+    if (!$submission) {
+      $record->delete();
+    }
+    return $submission;
+  }
+
+  /**
+   * Counts an attempt; marks the record failed once the limit is reached.
+   */
+  private function countAttempt($record): bool {
+    $attempts = (int) $record->get('attempts')->value;
+    if ($attempts >= (int) $this->config->get('vactory_webform_typesafe.settings')->get('max_attempts')) {
+      $record->set('status', 'failed')->set('error', 'Maximum processing attempts reached.')->save();
+      return FALSE;
+    }
+    // Count input failures toward the attempt limit too.
+    $record->set('status', 'processing')->set('attempts', $attempts + 1)->save();
+    return TRUE;
   }
 
   /**
