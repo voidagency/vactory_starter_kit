@@ -5,13 +5,13 @@ namespace Drupal\vactory_core;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Menu\MenuLinkTreeInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\menu_link_content\Entity\MenuLinkContent;
 use Drupal\simplify_menu\MenuItems as MenuItemsBase;
+use Drupal\menu_link_content\Plugin\Menu\MenuLinkContent as MenuLinkContentPlugin;
 
 /**
- * Class MenuItems.
+ * Simplify Menu items, extended with role access and language filtering.
  *
  * @package \Drupal\simplify_menu
  */
@@ -60,16 +60,18 @@ class MenuItems extends MenuItemsBase {
   protected $currentUser;
 
   /**
-   * {@inheritDoc}
+   * Injects our dependencies.
+   *
+   * Setter injection (see VactoryCoreServiceProvider): the parent constructor
+   * arguments are left untouched, so simplify_menu can change them without
+   * breaking the container.
    */
-  public function __construct(
-    MenuLinkTreeInterface $menu_link_tree,
+  public function setVactoryServices(
     EntityRepositoryInterface $entityRepository,
     EntityFieldManagerInterface $entityFieldManager,
     EntityTypeManagerInterface $entityTypeManager,
     AccountProxyInterface $currentUser
-  ) {
-    parent::__construct($menu_link_tree);
+  ): void {
     $this->entityRepository = $entityRepository;
     $this->entityFieldManager = $entityFieldManager;
     $this->entityTypeManager = $entityTypeManager;
@@ -99,7 +101,7 @@ class MenuItems extends MenuItemsBase {
       // Pull the path from the menu link content.
       if (strpos($menu_plugin_id, 'menu_link_content') === 0) {
         /** @var \Drupal\menu_link_content\Entity\MenuLinkContent $entity */
-        if ($item->link instanceof \Drupal\menu_link_content\Plugin\Menu\MenuLinkContent) {
+        if ($item->link instanceof MenuLinkContentPlugin) {
           $entity = $item->link->getEntity();
         }
         else {
@@ -116,7 +118,7 @@ class MenuItems extends MenuItemsBase {
       $simplifiedLink = [
         'text'         => (isset($entity) && !empty($entity->get('title'))) ? $entity->get('title')->first()->getValue()['value'] : $item->link->getTitle(),
         'url'          => (isset($entity) && !empty($entity->getUrlObject()
-            ->toString())) ? $entity->getUrlObject()
+          ->toString())) ? $entity->getUrlObject()
           ->toString() : $item->link->getUrlObject()->toString(),
         'options'      => [],
         'fields'       => [],

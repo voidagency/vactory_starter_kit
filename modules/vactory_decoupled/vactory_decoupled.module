@@ -31,6 +31,7 @@ use Drupal\Component\Utility\UrlHelper;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Exception\ConnectException;
+use GuzzleHttp\Exception\GuzzleException;
 use Drupal\menu_item_extras\Entity\MenuItemExtrasMenuLinkContent;
 
 /**
@@ -881,18 +882,6 @@ function clear_next_cache($query = []) {
 }
 
 /**
- * Implements hook_jsonapi_default_enhancers_info().
- */
-function vactory_decoupled_jsonapi_default_enhancers_info() {
-  return [
-    'internal_blocks' => [
-      'enhancer' => 'vactory_blocks',
-    ],
-    /* 'field_vactory_meta_tags' => ['enhancer' => 'vactory_metatag',],*/
-  ];
-}
-
-/**
  * Implements hook_form_FORM_ID_alter().
  */
 function vactory_decoupled_form_jsonapi_resource_config_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
@@ -1045,16 +1034,22 @@ function vactory_decoupled_module_implements_alter(&$implementations, $hook) {
 
 /**
  * Implements hook_ENTITY_TYPE_presave().
+ *
+ * Normalizes term_2_slug on every translation: built from the name when empty,
+ * then reduced to lowercase ASCII words joined by "-". Replacing only spaces
+ * and apostrophes kept "/", ",", accents...
  */
 function vactory_decoupled_taxonomy_term_presave(EntityInterface $entity) {
   if ($entity->hasField('term_2_slug')) {
-    $term_slug = $entity->get('term_2_slug')->value;
-    if (empty($term_slug)) {
-      $name = $entity->getName();
-      $slug = \Drupal::service('transliteration')->transliterate($name);
-      $slug = !empty($slug) ? strtolower($slug) : $slug;
-      $slug = !empty($slug) ? str_replace([' ', "'"], '-', $slug) : $slug;
-      $entity->set('term_2_slug', $slug);
+    foreach (array_keys($entity->getTranslationLanguages()) as $langcode) {
+      $translation = $entity->getTranslation($langcode);
+      $term_slug = (string) $translation->get('term_2_slug')->value;
+      $source = $term_slug !== '' ? $term_slug : (string) $translation->getName();
+      $slug = \Drupal::service('transliteration')->transliterate($source, $langcode);
+      $slug = trim(preg_replace('/[^a-z0-9]+/', '-', strtolower($slug)), '-');
+      if ($slug !== '' && $slug !== $term_slug) {
+        $translation->set('term_2_slug', $slug);
+      }
     }
   }
 }
@@ -1111,13 +1106,14 @@ function clear_next_nginx_cache($path = '') {
     $request = $client->requestAsync('PURGE', $front_end_url . '/' . $path);
     \Drupal::logger('clear_next_nginx_cache')->info('Next nginx cache cleared for ' . $path);
   }
-  catch (ServerException $e) {
+  catch (GuzzleException $e) {
+    // HTTP errors (4xx/5xx) and network errors (DNS, connection refused,
+    // timeout) must not break the save that triggered the purge.
     \Drupal::logger('clear_next_nginx_cache')
-      ->warning("Next nginx cache cleared for {$path} (no cache found)");
-  }
-  catch (RequestException $e) {
-    \Drupal::logger('clear_next_nginx_cache')
-      ->warning("Next nginx cache cleared for {$path} (no cache found)");
+      ->warning('Next nginx purge failed for @path: @message', [
+        '@path' => $path,
+        '@message' => $e->getMessage(),
+      ]);
   }
 }
 

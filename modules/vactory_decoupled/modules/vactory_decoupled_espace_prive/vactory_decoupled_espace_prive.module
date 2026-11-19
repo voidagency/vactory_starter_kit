@@ -10,6 +10,63 @@ use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\user\Entity\User;
 use Drupal\user\UserInterface;
 use Drupal\user_registrationpassword\UserRegistrationPassword;
+use Drupal\webform\Entity\Webform;
+
+/**
+ * Account fields that must never be set from webform input.
+ *
+ * These are privilege / identity fields. Accepting them from the request body
+ * enables mass-assignment: privilege escalation (roles[]=administrator,
+ * status=1) and account takeover (uid, init, ...). This denylist is the
+ * security boundary; it always wins, even if a site adds an element with one
+ * of these keys to a webform.
+ */
+const VACTORY_ESPACE_PRIVE_FORBIDDEN_USER_FIELDS = [
+  'uid',
+  'roles',
+  'status',
+  'access',
+  'login',
+  'init',
+  'created',
+  'changed',
+  'uuid',
+  'langcode',
+  'preferred_langcode',
+  'preferred_admin_langcode',
+  'default_langcode',
+];
+
+/**
+ * Restricts submitted data to the fields the given webform actually declares.
+ *
+ * Prevents mass-assignment while still supporting per-project custom fields:
+ * the allowlist is built from the webform's own elements (so any field a site
+ * adds to the form flows through automatically), plus any explicit extra keys,
+ * minus the forbidden account fields which are stripped unconditionally.
+ *
+ * @param array $webform_data
+ *   The raw submitted data (request body).
+ * @param string $webform_id
+ *   The webform whose elements define the allowed keys.
+ * @param array $extra
+ *   Extra account keys to allow that are not webform element keys (e.g. the
+ *   registration form keys its auth elements "email"/"password" but submits
+ *   them as the user entity "mail"/"pass").
+ *
+ * @return array
+ *   The filtered data, safe to pass to a user entity.
+ */
+function _vactory_decoupled_espace_prive_filter_user_data(array $webform_data, string $webform_id, array $extra = []) {
+  $webform = Webform::load($webform_id);
+  $allowed = $webform instanceof Webform
+    ? array_keys($webform->getElementsInitializedFlattenedAndHasValue())
+    : [];
+  $allowed = array_merge($allowed, $extra);
+  // The denylist always wins over the webform-derived allowlist.
+  $allowed = array_diff($allowed, VACTORY_ESPACE_PRIVE_FORBIDDEN_USER_FIELDS);
+  return array_intersect_key($webform_data, array_flip($allowed));
+}
 
 /**
  * Implements hook_decoupled_webform_data_presubmit_alters().
@@ -27,11 +84,14 @@ function vactory_decoupled_espace_prive_decoupled_webform_data_presubmit_alter(a
       return;
     }
 
-    $user_data = $webform_data;
-    // Unset unused data.
-    unset($user_data['webform_id']);
-    unset($user_data['in_draft']);
-    unset($user_data['g-recaptcha-response']);
+    // Only accept fields declared on the registration webform. This blocks
+    // mass-assignment of privilege/identity fields such as roles[], status,
+    // uid, etc. from the request body.
+    $user_data = _vactory_decoupled_espace_prive_filter_user_data($webform_data, 'vactory_espace_prive_register', ['mail', 'pass']);
+
+    // New accounts are always blocked until the approval logic below decides
+    // otherwise; never trust a submitted status.
+    $user_data['status'] = 0;
 
     // Get username by mail.
     $new_name = preg_replace('/@.*$/', '', $user_data['mail']);
@@ -98,14 +158,10 @@ function vactory_decoupled_espace_prive_decoupled_webform_data_presubmit_alter(a
       return;
     }
 
-    $user_data = $webform_data;
-    // Unset unused data.
-    unset($user_data['webform_id']);
-    unset($user_data['in_draft']);
-    // Ensure csrfToken field exists before attempting to unset it.
-    if (isset($user_data['csrf_token'])) {
-      unset($user_data['csrf_token']);
-    }
+    // Only accept fields declared on the edit webform. This blocks a logged-in
+    // user from escalating their own account (e.g. roles[]=administrator,
+    // status=1) or overwriting identity fields via the request body.
+    $user_data = _vactory_decoupled_espace_prive_filter_user_data($webform_data, 'vactory_espace_prive_edit');
 
     foreach ($user_data as $field => $value) {
       $user->set($field, $value);

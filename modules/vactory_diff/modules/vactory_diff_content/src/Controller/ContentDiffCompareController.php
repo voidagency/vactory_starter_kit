@@ -10,7 +10,7 @@ use Drupal\Core\Serialization\Yaml;
 use Drupal\vactory_diff_content\Service\JsonApiPathHelper;
 use Drupal\vactory_diff_content\Service\JsonApiDeserializer;
 use GuzzleHttp\ClientInterface;
-use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\GuzzleException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -434,7 +434,7 @@ class ContentDiffCompareController extends ControllerBase {
       ];
 
     }
-    catch (RequestException $e) {
+    catch (GuzzleException $e) {
       $this->loggerFactory->get('vactory_diff_content')->error('JSON API fetch error for @url: @message', [
         '@url' => $url ?? 'unknown',
         '@message' => $e->getMessage(),

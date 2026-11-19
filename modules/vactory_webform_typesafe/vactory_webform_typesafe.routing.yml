@@ -1,0 +1,44 @@
+vactory_webform_typesafe.settings:
+  path: '/admin/config/ai/webform-typesafe'
+  defaults:
+    _form: '\Drupal\vactory_webform_typesafe\Form\SettingsForm'
+    _title: 'Webform TypeSafe'
+  requirements:
+    _permission: 'administer vactory webform typesafe'
+vactory_webform_typesafe.results:
+  path: '/admin/structure/webform/manage/{webform}/results/classification'
+  defaults:
+    _form: '\Drupal\vactory_webform_typesafe\Form\ClassificationResultsForm'
+    _title: 'Classification'
+  requirements:
+    _permission: 'view vactory webform typesafe'
+    _entity_access: 'webform.submission_view_any'
+  options:
+    parameters:
+      webform:
+        type: entity:webform
+vactory_webform_typesafe.backfill:
+  path: '/admin/structure/webform/manage/{webform}/results/classification/analyze'
+  defaults:
+    _form: '\Drupal\vactory_webform_typesafe\Form\AnalyzeSubmissionsForm'
+    _title: 'Analyze existing submissions'
+  requirements:
+    _permission: 'run vactory webform typesafe'
+    _entity_access: 'webform.submission_view_any'
+  options:
+    parameters:
+      webform:
+        type: entity:webform
+vactory_webform_typesafe.analysis:
+  path: '/admin/structure/webform/manage/{webform}/submission/{webform_submission}/classification'
+  defaults:
+    _form: '\Drupal\vactory_webform_typesafe\Form\ReviewAnalysisForm'
+    _title: 'Classification'
+  requirements:
+    _custom_access: '\Drupal\vactory_webform_typesafe\Access\AnalysisAccess::access'
+  options:
+    parameters:
+      webform:
+        type: entity:webform
+      webform_submission:
+        type: entity:webform_submission

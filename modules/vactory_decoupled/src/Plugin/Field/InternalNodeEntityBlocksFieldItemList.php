@@ -7,6 +7,7 @@ use Drupal\Core\Field\FieldItemList;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\TypedData\ComputedItemListTrait;
 use Drupal\Core\TypedData\TraversableTypedDataInterface;
+use Drupal\vactory_decoupled\BlocksManager;
 
 /**
  * Blocks per node.
@@ -87,6 +88,8 @@ class InternalNodeEntityBlocksFieldItemList extends FieldItemList {
       'block_content_list',
     ];
     $this->cacheMetadata->addCacheTags($tags);
+    // Blocks visibility may depend on the response status of the router.
+    $this->cacheMetadata->addCacheContexts(['url.query_args:' . BlocksManager::RESPONSE_STATUS_QUERY_PARAMETER]);
     $this->moduleHandler->alter('internal_blocks_cacheability', $this->cacheMetadata, $entity, $value);
     $this->moduleHandler->alter('node_internal_blocks', $value, $entity);
     $this->list[0] = $this->createItem(0, $value);

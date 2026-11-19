@@ -1,0 +1,37 @@
+vactory_webform_typesafe.settings:
+  type: config_object
+  label: 'Webform TypeSafe defaults'
+  mapping:
+    model:
+      type: string
+      label: 'Default model'
+    request_timeout:
+      type: integer
+      label: 'API timeout in seconds'
+    max_attempts:
+      type: integer
+      label: 'Maximum attempts'
+    max_input_bytes:
+      type: integer
+      label: 'Maximum input bytes'
+webform.handler.vactory_typesafe:
+  type: mapping
+  label: 'TypeSafe classification handler'
+  mapping:
+    fields:
+      type: sequence
+      label: 'Selected text fields'
+      sequence:
+        type: string
+    automatic:
+      type: boolean
+      label: 'Classify new submissions'
+    on_update:
+      type: boolean
+      label: 'Reclassify changed submissions'
+    model:
+      type: string
+      label: 'Model override'
+    questions:
+      type: string
+      label: 'Question definitions (JSON)'

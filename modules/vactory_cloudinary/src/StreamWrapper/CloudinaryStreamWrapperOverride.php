@@ -10,6 +10,11 @@ use Drupal\cloudinary_stream_wrapper\StreamWrapper\CloudinaryStreamWrapper;
  */
 class CloudinaryStreamWrapperOverride extends CloudinaryStreamWrapper {
 
+  /**
+   * The decorated stream wrapper.
+   *
+   * @var \Drupal\cloudinary_stream_wrapper\StreamWrapper\CloudinaryStreamWrapper
+   */
   protected $cloudinaryStreamWrapper;
 
   /**
@@ -38,7 +43,7 @@ class CloudinaryStreamWrapperOverride extends CloudinaryStreamWrapper {
       $options['raw_transformation'] = $matches[1];
       $source = "{$matches[2]}.{$matches[3]}";
 
-      return Media::fromParams($source, $options)->toUrl();
+      return (string) Media::fromParams($source, $options)->toUrl();
     }
 
     $resource = $this->loadResource($this->uri);
@@ -48,10 +53,11 @@ class CloudinaryStreamWrapperOverride extends CloudinaryStreamWrapper {
       $uri = $this->getTarget($this->uri);
       // Handle video resource type case.
       $params = [];
-      if (in_array(pathinfo($uri, PATHINFO_EXTENSION), ['mp4', 'avi', 'flv', 'wmv', 'mov'])) {
+      $video_extensions = ['mp4', 'avi', 'flv', 'wmv', 'mov'];
+      if (in_array(pathinfo($uri, PATHINFO_EXTENSION), $video_extensions)) {
         $params = ['resource_type' => 'video'];
       }
-      return Media::fromParams($uri, $params)->toUrl();
+      return (string) Media::fromParams($uri, $params)->toUrl();
     }
 
     return $resource['secure_url'];

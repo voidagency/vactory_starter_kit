@@ -6,8 +6,7 @@ use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\webform\Plugin\WebformHandlerBase;
 use Drupal\webform\WebformSubmissionInterface;
-use GuzzleHttp\Exception\RequestException;
-use MailchimpMarketing;
+use MailchimpMarketing\ApiClient;
 
 /**
  * MailChimp Webform handler.
@@ -23,6 +22,13 @@ use MailchimpMarketing;
  * )
  */
 class MailchimpWebformHandler extends WebformHandlerBase {
+
+  /**
+   * Whether a Mailchimp call failed during the current submission.
+   *
+   * @var bool
+   */
+  protected $mailchimpFailed = FALSE;
 
   /**
    * {@inheritdoc}
@@ -95,13 +101,13 @@ class MailchimpWebformHandler extends WebformHandlerBase {
       if (isset($this->configuration['list_id'])) {
         // Get webform elements as base for mapping.
         $elements = $this->webform->getElementsDecodedAndFlattened();
-        foreach($elements as $key => $element) {
-          if(!isset($element['#title']) || in_array($element['#type'], ['webform_actions'])) {
+        foreach ($elements as $key => $element) {
+          if (!isset($element['#title']) || in_array($element['#type'], ['webform_actions'])) {
             unset($elements[$key]);
           }
         }
         $options = [];
-        foreach($elements as $key => $element) {
+        foreach ($elements as $key => $element) {
           $options[$key] = $element['#title'];
         }
 
@@ -163,17 +169,14 @@ class MailchimpWebformHandler extends WebformHandlerBase {
    * Get interests.
    */
   public function getInterests() {
-    $client = new MailchimpMarketing\ApiClient();
-    $client->setConfig([
-      'apiKey' => $this->configuration['api_key'],
-      'server' => $this->configuration['server_prefix'],
-    ]);
+    $client = $this->getClient();
     $results = [];
     try {
       $interests_categories = $client->lists->getListInterestCategories($this->configuration['list_id']);
       if (!empty($interests_categories->categories)) {
-        foreach ($interests_categories->categories as $index => $category)
-        $interests = $client->lists->listInterestCategoryInterests($this->configuration['list_id'], $category->id);
+        foreach ($interests_categories->categories as $index => $category) {
+          $interests = $client->lists->listInterestCategoryInterests($this->configuration['list_id'], $category->id);
+        }
         $interests = $interests->interests;
         if (!empty($interests)) {
           $results[$index]['category'] = $category->title;
@@ -187,7 +190,8 @@ class MailchimpWebformHandler extends WebformHandlerBase {
         }
       }
     }
-    catch (RequestException $request_exception) {
+    catch (\Throwable $exception) {
+      $this->logMailchimpError($exception);
     }
     return $results;
   }
@@ -215,7 +219,7 @@ class MailchimpWebformHandler extends WebformHandlerBase {
         $cid = $interest['category_id'];
         foreach ($interest['interests'] as $interest_group) {
           $iid = $interest_group['id'];
-          $this->configuration[$iid] = $form_state->getValues()['api_settings']['interests'][$cid][$iid];;
+          $this->configuration[$iid] = $form_state->getValues()['api_settings']['interests'][$cid][$iid];
         }
       }
     }
@@ -225,16 +229,12 @@ class MailchimpWebformHandler extends WebformHandlerBase {
   /**
    * {@inheritdoc}
    */
-  public function submitForm(array &$form, FormStateInterface $form_state,  WebformSubmissionInterface $webform_submission) {
+  public function submitForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
     // Get the submission data.
     $values = $webform_submission->getData();
 
     // Post to Mailchimp.
-    $client = new MailchimpMarketing\ApiClient();
-    $client->setConfig([
-      'apiKey' => $this->configuration['api_key'],
-      'server' => $this->configuration['server_prefix'],
-    ]);
+    $client = $this->getClient();
 
     $data = [
       'email_address' => $values[$this->configuration['email']],
@@ -242,7 +242,13 @@ class MailchimpWebformHandler extends WebformHandlerBase {
     ];
 
     // Add the extra fields.
+    $this->mailchimpFailed = FALSE;
     $merge_fields = $this->getMergeFields($this->configuration['list_id']);
+    if ($this->mailchimpFailed) {
+      // Mailchimp is unreachable or rejects the request: do not chain more
+      // calls (each one waits for the timeout), the error is logged.
+      return;
+    }
     foreach ($merge_fields as $mailchimp_key => $mailchimp_name) {
       if (isset($this->configuration[$mailchimp_key])
           && isset($values[$this->configuration[$mailchimp_key]])
@@ -265,10 +271,10 @@ class MailchimpWebformHandler extends WebformHandlerBase {
     }
 
     try {
-      $response = $client->lists->addListMember($this->configuration['list_id'], $data);
+      $client->lists->addListMember($this->configuration['list_id'], $data);
     }
-    catch (RequestException $request_exception) {
-      \Drupal::logger('vactory_webform_mailchimp')->error($request_exception->getMessage());
+    catch (\Throwable $exception) {
+      $this->logMailchimpError($exception);
     }
 
   }
@@ -279,19 +285,16 @@ class MailchimpWebformHandler extends WebformHandlerBase {
   protected function getLists() {
     $lists = [];
 
-    if (isset($this->configuration['api_key']) && isset($this->configuration['server_prefix']) 
+    if (isset($this->configuration['api_key']) && isset($this->configuration['server_prefix'])
       && !empty($this->configuration['api_key']) && !empty($this->configuration['server_prefix'])) {
-      $client = new MailchimpMarketing\ApiClient();
-      $client->setConfig([
-        'apiKey' => $this->configuration['api_key'],
-        'server' => $this->configuration['server_prefix']
-      ]);
+      $client = $this->getClient();
 
       try {
         // By default it fetchs 10 lists, now we set the count to 900.
         $response = $client->lists->getAllLists(NULL, NULL, 900);
       }
-      catch (RequestException $request_exception) {
+      catch (\Throwable $exception) {
+        $this->logMailchimpError($exception);
       }
 
       if (isset($response->total_items) && $response->total_items > 0) {
@@ -307,28 +310,60 @@ class MailchimpWebformHandler extends WebformHandlerBase {
   /**
    * Get the merge fields for a specific list.
    *
-   * @param $list_id
+   * @param string $list_id
+   *   The Mailchimp list ID.
    */
   protected function getMergeFields($list_id) {
     $merge_fields = [];
 
-    $client = new MailchimpMarketing\ApiClient();
-    $client->setConfig([
-      'apiKey' => $this->configuration['api_key'],
-      'server' => $this->configuration['server_prefix']
-    ]);
+    $client = $this->getClient();
 
+    $response = NULL;
     try {
       $response = $client->lists->getListMergeFields($list_id);
     }
-    catch (RequestException $request_exception) {
+    catch (\Throwable $exception) {
+      $this->logMailchimpError($exception);
     }
 
-    foreach ($response->merge_fields as $merge_field) {
+    foreach ($response->merge_fields ?? [] as $merge_field) {
       $merge_fields[$merge_field->tag] = $merge_field->name;
     }
 
     return $merge_fields;
+  }
+
+  /**
+   * Returns a Mailchimp API client configured for this handler.
+   *
+   * @return \MailchimpMarketing\ApiClient
+   *   The API client.
+   */
+  protected function getClient() {
+    $client = new ApiClient();
+    $client->setConfig([
+      'apiKey' => $this->configuration['api_key'],
+      'server' => $this->configuration['server_prefix'],
+      // The SDK default (120 s) would hold the webform submission.
+      'timeout' => 10,
+    ]);
+    return $client;
+  }
+
+  /**
+   * Logs a Mailchimp API error without breaking the webform submission.
+   *
+   * The SDK throws Guzzle exceptions on network/HTTP errors, and may throw
+   * other errors (ApiException body, invalid arguments): all are caught.
+   *
+   * @param \Throwable $exception
+   *   The exception thrown by the Mailchimp client.
+   */
+  protected function logMailchimpError(\Throwable $exception) {
+    $this->mailchimpFailed = TRUE;
+    \Drupal::logger('vactory_webform_mailchimp')->error('Mailchimp API error: @message', [
+      '@message' => $exception->getMessage(),
+    ]);
   }
 
   /**
