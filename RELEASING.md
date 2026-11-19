@@ -9,6 +9,8 @@ Branche `3.x`, tags `3.x.y`. Les projets consomment le profil par composer (`voi
 - Une action à faire sur les projets va aussi dans « Mise à jour des projets », préfixée par sa portée : « Tous les sites » ou « Si… » (par exemple « Si une feature du projet exporte… », « Sites en config sync (rare) »). Les projets gèrent leur config par Features : penser à ce qu'un `drush features:import` réimporterait.
 - Le responsable de la release ajoute les lignes des PR Dependabot (une seule ligne pour les montées du seul `composer.lock`), dédoublonne et ordonne.
 - Une PR qui modifie une contrainte de `composer.json`, Dependabot compris, a sa ligne dans « Dépendances » et, si besoin, dans « Mise à jour des projets ». Une montée de version majeure se discute avant le merge (voir « Numéro de version »).
+- Une PR qui modifie la config d'un module (`config/install`, `config/optional`, feature) indique si les sites existants doivent la réimporter (`drush features:import`) et quelles valeurs propres aux sites un revert effacerait (clés API, identifiants…). Par défaut, aucun revert : la config livrée ne sert qu'à l'installation.
+- Le risque principal d'une version (celui qui peut casser un site en production) est placé en tête de « Mise à jour des projets », en gras.
 - La CI rappelle d'ajouter une ligne quand une PR modifie `modules/` sans toucher à `CHANGELOG.md`. Ce rappel n'est pas bloquant ; il est dans l'image CI (dépôt droneci), pas dans ce dépôt.
 
 ## Texte public des correctifs de sécurité
@@ -33,7 +35,7 @@ Décrire le comportement corrigé et l'action à faire. Pas de chemin d'endpoint
 
 ## Publier une release
 1. **Complétude.** Comparer `git log --merges --first-parent --format=%s <dernier tag>..origin/3.x` aux numéros de PR de `[Non publié]`.
-2. **Version candidate (mineures et majeures).** Tagger le dernier commit de `3.x` : `git tag 3.x.y-rc1 origin/3.x && git push origin 3.x.y-rc1`. Un projet teste avec `composer require voidagency/vactory_starter_kit:3.x.y-rc1 -W`. Dérouler « Mise à jour des projets » telle qu'elle est écrite sur vactory8 et sur un ou deux projets clients à Features (canaries Autogit, Redmine #71368). On teste le guide autant que le code.
+2. **Version candidate (mineures et majeures).** Tagger le dernier commit de `3.x` : `git tag 3.x.y-rc1 origin/3.x && git push origin 3.x.y-rc1`. Un projet teste avec `composer require voidagency/vactory_starter_kit:3.x.y-rc1 -W`. Les projets utilisent toujours une version figée, jamais `3.x-dev`. Dérouler « Mise à jour des projets » telle qu'elle est écrite sur vactory8 et sur un ou deux projets clients à Features (canaries Autogit, Redmine #71368). On teste le guide autant que le code.
 3. **PR de release.** `[Non publié]` devient `[3.x.y] - AAAA-MM-JJ` (date du tag final), avec une nouvelle section `[Non publié]` vide et les liens de bas de fichier mis à jour.
 4. **Tag et release GitHub.** La section du changelog en tête, les notes générées par GitHub à la suite :
    ```
