@@ -46,6 +46,7 @@ drush cr
 - **Si `vactory_google_places` est actif (#913) :** vérifier les vues où l'option « Vactory google places instance » est cochée, l'autocomplete Google Places y est de nouveau chargé.
 - **Si `vactory_appointment` est actif (#911) :** les champs conseiller ne sont plus éditables en back-office. Ils le restent en front.
 - **Si `vactory_decoupled_flag`, `vactory_decoupled_search_ai` ou `vactory_toolbox` est actif (#904, #905) :** Drupal n'active pas sur un site existant les dépendances nouvellement déclarées. Vérifier qu'elles sont actives (`drush pm:list`).
+- **Sites existants, module optionnel `vactory_admin_hardening` (#886) :** il n'est installé d'office que sur les nouveaux sites. Il bloque en web, pour tous les comptes, l'interface de migration et l'import, l'export et la synchronisation de config (pages `config_update_ui` comprises). L'activer (`drush en vactory_admin_hardening`) quand l'équipe passe par Drush et Features. Le check Security Review signale son absence.
 
 ### Sécurité
 - `vactory_core` : vérification TLS active par défaut dans le client HTTP Vactory (#896).
@@ -62,6 +63,8 @@ drush cr
 - `vactory_webform_mailchimp_handler` : une panne Mailchimp ne bloque plus la soumission, et le timeout passe de 120 s à 10 s (#903).
 
 ### Ajouts
+- `vactory_admin_hardening` : nouveau module optionnel qui bloque en web l'interface de migration et l'interface de config du core, même pour uid 1 ; installé d'office sur les nouveaux sites uniquement (#886).
+- `vactory_security_review` : check « Migrate administration surface », qui signale l'absence de `vactory_admin_hardening` et les rôles non administrateurs ayant `import configuration`, `synchronize configuration` ou `administer migrations` (#886).
 - `vactory_decoupled` : condition de visibilité des blocs selon le statut de la réponse (200, 403, 404), évaluée sur le statut renvoyé par le routeur découplé (#890).
 
 ### Correctifs
