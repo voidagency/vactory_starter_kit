@@ -69,8 +69,8 @@ final class QuestionDefinition {
     if (!is_array($questions) || !$questions || count($questions) > 20) {
       throw new \InvalidArgumentException('Configure between 1 and 20 questions.');
     }
-    // Same order as before: identity and thresholds of every question
-    // first, then type and criteria of every question.
+    // Identity and thresholds of every question first, then type and
+    // criteria of every question.
     foreach ($questions as $id => $q) {
       self::assertIdentity($id, $q);
       self::assertThresholds($q);

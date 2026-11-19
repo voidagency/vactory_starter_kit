@@ -87,7 +87,6 @@ final class TypeSafeClassifier implements TypeSafeClassifierInterface {
    * Builds the Guzzle options of a request.
    */
   private function requestOptions(?array $body, ?int $timeout): array {
-    $configured = (int) ($this->configFactory->get('vactory_webform_typesafe.settings')->get('request_timeout') ?? 60);
     $options = [
       'headers' => [
         'Authorization' => 'Bearer ' . $this->keys->get(),
@@ -96,13 +95,21 @@ final class TypeSafeClassifier implements TypeSafeClassifierInterface {
       'allow_redirects' => FALSE,
       'http_errors' => FALSE,
       'connect_timeout' => 10,
-      'timeout' => $timeout ?? max(1, min(180, $configured)),
     ];
+    $options['timeout'] = $timeout ?? $this->configuredTimeout();
     if ($body !== NULL) {
       $options['headers']['Content-Type'] = 'application/json';
       $options['body'] = json_encode($body, JSON_THROW_ON_ERROR);
     }
     return $options;
+  }
+
+  /**
+   * Returns the configured request timeout, between 1 and 180 seconds.
+   */
+  private function configuredTimeout(): int {
+    $configured = (int) ($this->configFactory->get('vactory_webform_typesafe.settings')->get('request_timeout') ?? 60);
+    return max(1, min(180, $configured));
   }
 
   /**
