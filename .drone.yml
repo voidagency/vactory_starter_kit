@@ -27,6 +27,9 @@ steps:
         from_secret: SONAR_TOKEN
       SLACK_TOKEN:
         from_secret: SLACK_TOKEN
+      # Read-only GitHub token: composer downloads without it get HTTP 429.
+      GITHUB_TOKEN:
+        from_secret: GITHUB_TOKEN
       PHP_VERSION: 8.3
       COMPOSER_VERSION: 2.7.1
       DRUSH_VERSION: 8.4.1
