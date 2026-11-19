@@ -2,11 +2,12 @@
 
 namespace Drupal\vactory_image_sitemap\Services;
 
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Language\LanguageInterface;
 use Drupal\Core\Url;
 
 /**
- * Class ImageSitemapGenerator.
+ * Generates the image XML sitemap of each language in a batch.
  *
  * @package Drupal\vactory_image_sitemap\Services
  */
@@ -65,13 +66,16 @@ class ImageSitemapGenerator {
           ];
         }
         if (!empty($operations)) {
-          $operations[] = [static::class . '::imageSitemapGenerateBatchProcess', []];
+          $operations[] = [
+            static::class . '::imageSitemapGenerateBatchProcess',
+            [],
+          ];
           $batch = [
             'title' => 'Generate Image XML Sitemap...',
             'operations' => $operations,
             'finished' => static::class . '::imageSitemapGenerateBatchFinish',
           ];
-          // process batch.
+          // Process batch.
           batch_set($batch);
           if (php_sapi_name() === 'cli') {
             // Running from drush context case.
@@ -85,7 +89,7 @@ class ImageSitemapGenerator {
   /**
    * Normalize existing media image operation process.
    */
-  public static function  imageSitemapNormalizerBatchProcess(
+  public static function imageSitemapNormalizerBatchProcess(
     LanguageInterface $language,
     $image_fields,
     $used_images,
@@ -121,7 +125,10 @@ class ImageSitemapGenerator {
               return $value['target_id'];
             }, $node_image_ids);
             if (in_array($mid, $node_image_ids)) {
-              $node_url = Url::fromRoute('entity.node.canonical', ['node' => $node->id()], ['language' => $language, 'absolute' => TRUE])->toString();
+              $node_url = Url::fromRoute('entity.node.canonical', ['node' => $node->id()], [
+                'language' => $language,
+                'absolute' => TRUE,
+              ])->toString();
               $image_sitemap[$langcode][$nid]['node'] = $node_url;
               $image_sitemap[$langcode][$nid]['images'][] = [
                 'image_loc' => $file_url_generator->generateAbsoluteString($used_image->uri),
@@ -142,7 +149,7 @@ class ImageSitemapGenerator {
   /**
    * Generate image sitemap xml file operation process.
    */
-  public static function  imageSitemapGenerateBatchProcess(&$context) {
+  public static function imageSitemapGenerateBatchProcess(&$context) {
     $image_sitemap = isset($context['results']['image_sitemap']) ? $context['results']['image_sitemap'] : [];
     $file_url_generator = \Drupal::service('file_url_generator');
     foreach ($image_sitemap as $langcode => $sitemap_infos) {
@@ -166,7 +173,7 @@ class ImageSitemapGenerator {
       }
       $time = time();
       $filename = $langcode . '_image_sitemap.xml';
-      if ($file = \Drupal::service('file_system')->saveData($output, $path . '/' . $filename, \Drupal\Core\File\FileSystemInterface::EXISTS_REPLACE)) {
+      if ($file = \Drupal::service('file_system')->saveData($output, $path . '/' . $filename, FileSystemInterface::EXISTS_REPLACE)) {
         \Drupal::configFactory()->getEditable('vactory_image_sitemap.settings')
           ->set('created', $time)
           ->set($langcode . '_number_of_urls', $total_urls)
