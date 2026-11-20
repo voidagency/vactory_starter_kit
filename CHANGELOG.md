@@ -14,6 +14,7 @@
 - **`term_2_slug` (#884) :** le slug de chaque traduction est normalisé à l'enregistrement du terme (minuscules ASCII, mots joints par `-`). Les URL et filtres front qui s'appuient sur un slug avec majuscules, accents, `_` ou `/` changent.
 - **`vactory_appointment` (#911) :** les champs conseiller ne sont plus éditables en back-office ; ils le restent en front.
 - **Sitemap (#910) :** les liens déjà stockés ne changent qu'au prochain enregistrement de la page d'accueil ou à un rebuild du sitemap.
+- **Menus rendus par `simplify_menu()` (en-têtes, pieds de page, menu de l'espace privé, #957) :** un lien dont la cible n'est pas accessible à l'utilisateur courant n'est plus affiché, comme dans les menus du core. Un lien laissé visible à dessein vers une page réservée (par exemple une page de l'espace privé montrée aux visiteurs anonymes pour les amener à se connecter) disparaît pour ceux qui n'y ont pas accès : le faire pointer vers une page accessible (page de connexion, page de présentation).
 
 **Procédure, dans cet ordre**
 
@@ -73,6 +74,7 @@ drush cr
 - Un envoi de webform avec fichier aboutit, côté front.
 - Connexion au back-office, et connexion front (OAuth, SSO s'il est utilisé) (#908, #928).
 - En back-office, l'autocomplete des liens d'un Dynamic Field propose des contenus et enregistre le lien choisi (linkit, #947).
+- Menus du thème (en-tête, pied de page) en anonyme puis connecté : les liens attendus sont présents ; un lien vers une page non publiée ou réservée n'apparaît que pour les utilisateurs qui y ont accès (#957). Une page servie depuis un cache garde l'ancien menu jusqu'à son renouvellement.
 
 ### Sécurité
 - `vactory_core` : vérification TLS active par défaut dans le client HTTP de Drupal (#896).
@@ -80,6 +82,7 @@ drush cr
 - `vactory_decoupled_webform` : l'upload de fichiers applique les validateurs du webform, comme le formulaire Drupal : extensions, taille, longueur du nom (#906).
 - `vactory_core` : Shield ne peut plus être activé sans identifiants, et le rapport d'état signale une erreur dans ce cas (#911).
 - `vactory_decoupled` : inscription JSON:API : les rôles du compte sont décidés côté serveur (#885).
+- `vactory_core` : les menus rendus par `simplify_menu()` n'affichent plus les liens dont la cible n'est pas accessible à l'utilisateur courant, à tous les niveaux, comme le fait simplify_menu 3.3 (#957, Redmine #71363).
 
 ### Changements de comportement
 - `vactory_core` : les options passées au client HTTP de Drupal par l'appelant (timeout…) sont maintenant transmises (#896).
