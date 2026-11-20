@@ -189,7 +189,12 @@ class SimplifyMenuIntegrationTest extends ExistingSiteBase {
     $links = $this->flatten($tree['menu_tree']);
 
     $this->assertArrayHasKey('Accessible parent', $links);
-    foreach (['Unpublished top link', 'Unpublished child', 'Administration link'] as $title) {
+    $hidden = [
+      'Unpublished top link',
+      'Unpublished child',
+      'Administration link',
+    ];
+    foreach ($hidden as $title) {
       $this->assertArrayNotHasKey($title, $links);
     }
     // Neither under another label.
