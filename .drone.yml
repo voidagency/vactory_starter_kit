@@ -33,3 +33,26 @@ steps:
       PHP_VERSION: 8.3
       COMPOSER_VERSION: 2.7.1
       DRUSH_VERSION: 8.4.1
+
+---
+# TEST (Redmine #71371): the same Sonar analysis in its own step, on a native
+# arm64 image, to check whether the scanner still hangs outside Rosetta.
+# Not to be merged as is.
+name: sonar-arm64
+kind: pipeline
+type: docker
+
+trigger:
+  ref:
+    - refs/pull/**
+
+steps:
+  - name: code-analysis
+    image: vactory/sonar-node-plugin:arm64-test
+    pull: never
+    settings:
+      sonar_host:
+        from_secret: sonar_host
+      sonar_token:
+        from_secret: sonar_token
+      use_node_version: 22.23.4
