@@ -48,6 +48,7 @@ drush cr
 - Si google_tag passe en 2.x et que le module est activé : ses propres updates s'exécutent aussi.
 - **Sites en config sync (rare) :** ensuite, `drush cex` et commiter (`core.extension.yml`, rôles `anonymous` et `authenticated`). Sinon, le prochain `drush cim` annule ces updates.
 - Si `drupal/consumers` passe de moins de 1.23 à 1.23 ou plus : ses updates 8110 à 8112 s'exécutent (champ `status`) (#944).
+- Update `vactory_dynamic_field` 9502 : rend permanents les fichiers insérés dans les éditeurs CKEditor des Dynamic Fields (images envoyées depuis l'éditeur) et enregistre leur usage, pour le contenu existant. Elle lit les tables des champs Dynamic Field sans charger les entités, par lots de 50 ; sa durée dépend du volume de contenu. Aucun fichier n'est supprimé (#955).
 
 **3. `drush fr -y <module>`** (features à réimporter)
 - **Aucune pour cette version.** Les configs modifiées dans le profil (`shield.settings`, `vactory_toolbox`, `vactory_form_autosave`) ne servent qu'à l'installation : les sites existants gardent les leurs.
@@ -73,6 +74,7 @@ drush cr
 - Un envoi de webform avec fichier aboutit, côté front.
 - Connexion au back-office, et connexion front (OAuth, SSO s'il est utilisé) (#908, #928).
 - En back-office, l'autocomplete des liens d'un Dynamic Field propose des contenus et enregistre le lien choisi (linkit, #947).
+- Dans `/admin/content/files`, une image envoyée depuis un éditeur CKEditor d'un Dynamic Field est « Permanent » et compte un usage (#955).
 
 ### Sécurité
 - `vactory_core` : vérification TLS active par défaut dans le client HTTP de Drupal (#896).
@@ -117,6 +119,7 @@ drush cr
 - `vactory_dynamic_field` : élément URL compatible linkit 7.0.13+ (#912).
 - `vactory_amp` : plus d'erreur fatale au rendu d'un nœud exclu d'AMP sans liens d'en-tête (#919).
 - `vactory_cloudinary` : `getExternalUrl()` renvoie une chaîne, propriété dynamique déclarée (PHP 8.2), dépendances déclarées (#920).
+- `vactory_dynamic_field` : un fichier inséré dans un éditeur CKEditor d'un Dynamic Field (champ simple, groupe, élément multiple, extra field) devient permanent et son usage est enregistré à l'enregistrement de l'entité, puis libéré à la suppression de la révision ou de l'entité. Il restait temporaire, donc supprimable par le cron sur un site où `temporary_maximum_age` n'est pas 0 (#955, Redmine #71224).
 
 ### Retraits
 - `vactory_cloudinary` : services `console.output` et `vactory_cloudinary.move_file_batch`, inutilisés (la classe du second n'existe pas) (#920).
