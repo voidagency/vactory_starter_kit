@@ -30,6 +30,34 @@ steps:
       # Read-only GitHub token: composer downloads without it get HTTP 429.
       GITHUB_TOKEN:
         from_secret: GITHUB_TOKEN
+      # Sonar runs in the "sonar" pipeline below, not in this step.
+      SKIP_SONAR: "true"
       PHP_VERSION: 8.3
       COMPOSER_VERSION: 2.7.1
       DRUSH_VERSION: 8.4.1
+
+---
+# SonarQube analysis, in its own pipeline on a native arm64 image.
+# The build image above is amd64 and runs under Rosetta on the CI Mac, where
+# the scanner's JVM sometimes froze (Redmine #71371). The analysis only reads
+# the sources, so it does not need the build image.
+name: sonar
+kind: pipeline
+type: docker
+
+trigger:
+  ref:
+    - refs/heads/3.x
+    - refs/pull/**
+
+steps:
+  - name: code-analysis
+    # Built for arm64 from droneci/sonar-node-plugin; kept on the CI machine.
+    image: vactory/sonar-node-plugin:arm64
+    pull: never
+    settings:
+      sonar_host:
+        from_secret: sonar_host
+      sonar_token:
+        from_secret: sonar_token
+      use_node_version: 22.23.4
