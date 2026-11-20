@@ -3,6 +3,7 @@
 namespace Drupal\vactory_html2pdf\Services;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
 use Drupal\Core\State\StateInterface;
 use Drupal\Core\StreamWrapper\StreamWrapperManagerInterface;
@@ -85,10 +86,19 @@ class VactoryHtml2PdfManager {
   }
 
   /**
+   * Returns the file system service.
+   *
+   * Not injected by the constructor: projects may extend this class.
+   */
+  protected function getFileSystem(): FileSystemInterface {
+    return \Drupal::service('file_system');
+  }
+
+  /**
    * Html to pdf generator.
    *
    * @throws \Mpdf\MpdfException
-   * @throws \Drupal\vactory_html2pdf\Services\Exceptions\VactoryHtml2PdfException
+   * @throws \Drupal\vactory_html2pdf\Services\VactoryHtml2PdfException
    */
   public function html2Pdf($htmlContent, string $outputFilename, array $mpdfOptions = []) {
     // Params check.
@@ -102,18 +112,22 @@ class VactoryHtml2PdfManager {
     $file_target_pieces = explode('/', $file_target);
     $file_name = array_pop($file_target_pieces);
     $file_parents = implode('/', $file_target_pieces);
-    if (empty($file_scheme) || !$file_scheme) {
+    if (empty($file_scheme)) {
       // Set default file scheme to public.
       $current_time = new \DateTime('now');
       $date = $current_time->format('Y-m');
-      $file_scheme = 'public://html2pdf/' . $date;
+      $base = 'public://html2pdf/' . $date . '/';
     }
-    $dirname = $file_scheme;
-    if (!empty($file_parents)) {
-      $dirname = $file_scheme . '/' . $file_parents;
+    elseif (!$this->streamWrapperManager->isValidScheme($file_scheme)) {
+      throw new VactoryHtml2PdfException(sprintf('The file scheme "%s" is not available on this site.', $file_scheme));
     }
-    if (!file_exists($dirname)) {
-      mkdir($dirname, 755, TRUE);
+    else {
+      $base = $file_scheme . '://';
+    }
+    $dirname = $base . $file_parents;
+    $file_system = $this->getFileSystem();
+    if (!$file_system->prepareDirectory($dirname, FileSystemInterface::CREATE_DIRECTORY | FileSystemInterface::MODIFY_PERMISSIONS)) {
+      throw new VactoryHtml2PdfException(sprintf('The directory "%s" does not exist and could not be created, or is not writable.', $dirname));
     }
 
     // Get module settings object.
@@ -128,14 +142,14 @@ class VactoryHtml2PdfManager {
     $fontDirs = $this->mpdfDefaultConfig['fontDir'];
     $fontData = $this->mpdfDefaultFontConfig['fontdata'];
     // Set MPDF mandatory options.
-    $mpdfOptions['tempDir'] = '/tmp';
+    $mpdfOptions['tempDir'] = $file_system->getTempDirectory();
     $mpdfOptions['mode'] = 'utf-8';
     $mpdfOptions['fontDir'] = array_merge($fontDirs, $custom_fonts_directories);
     $mpdfOptions['fontdata'] = array_merge($fontData, $custom_fonts_data);
     // Create MPDF object.
     $mpdf = new Mpdf($mpdfOptions);
     $mpdf->WriteHTML($htmlContent);
-    $file = $dirname . '/' . $file_name;
+    $file = (empty($file_parents) ? $base : $dirname . '/') . $file_name;
     $mpdf->Output($file, 'F');
     $url = \Drupal::service('file_url_generator')->generateAbsoluteString($file);
     return [

@@ -14,6 +14,7 @@
 - **`term_2_slug` (#884) :** le slug de chaque traduction est normalisé à l'enregistrement du terme (minuscules ASCII, mots joints par `-`). Les URL et filtres front qui s'appuient sur un slug avec majuscules, accents, `_` ou `/` changent.
 - **`vactory_appointment` (#911) :** les champs conseiller ne sont plus éditables en back-office ; ils le restent en front.
 - **Sitemap (#910) :** les liens déjà stockés ne changent qu'au prochain enregistrement de la page d'accueil ou à un rebuild du sitemap.
+- **`vactory_html2pdf`, `vactory_quiz_certificat` (#953) :** les PDF sont écrits à l'URI demandée (`public://…`, `private://…`), et non plus dans un dossier `public/` ou `private/` relatif au dossier courant (la racine web, ou le dossier d'où tourne Drush). Les certificats de quiz vont donc dans le dossier privé du site : sans `$settings['file_private_path']`, la génération échoue (élément de file suspendu, message dans les logs). Les PDF déjà générés ne sont pas déplacés ; leurs liens enregistrés restent valides.
 
 **Procédure, dans cet ordre**
 
@@ -42,6 +43,7 @@ drush cr
 - **Si une feature du projet exporte les rôles `anonymous` ou `authenticated`** (`user.role.anonymous.yml`, `user.role.authenticated.yml`) : retirer la permission `access any webform configuration` de ces fichiers. Sinon, un `drush fr` de cette feature la redonne (#897). Même chose pour un dossier de config importé à la main par `drush cim` (`config/sync`, `config/staging`…).
 - **Versions relâchées (#944) :** consumers, csv_serialization, editor_advanced_link, jquery_colorpicker, link_attributes et block_list_override montent à la dernière version compatible avec le core du projet. Vérifier le diff du `composer.lock` avant de commiter.
 - **`linkit` (#947) :** la contrainte passe de 7.0.12 à `^7.0.16` ; le projet monte en 7.0.18 ou plus. Un projet qui fige linkit en dessous de 7.0.16 (6.x, 7.0.12) aura un conflit composer : lever ce blocage. Un projet qui a son propre contournement de la régression linkit 7.0.13 (élément `uri` ajouté à `url_extended`, patch local) le retire : le profil la gère depuis #912.
+- **Si du code projet appelle `vactory_html2pdf.manager::html2Pdf()` (#953) :** l'`uri` renvoyée est un URI de flux (`public://dossier/fichier.pdf`) et le fichier est dans le dossier du schéma. Adapter le code, ou la règle du serveur web, qui lisait le PDF dans `public/…` à la racine web. Un schéma indisponible sur le site lève `VactoryHtml2PdfException`.
 
 **2. `drush updb -y`** (à la main, après le déploiement)
 - Deux updates du profil : `vactory_decoupled_webform` 10102, qui retire la permission `access any webform configuration` aux rôles anonyme et authentifié (#897) ; `vactory_dynamic_field` 9501, qui active `paragraphs_edit`, avec `paragraphs` et `contextual`, sur les sites qui ne l'ont pas (#910).
@@ -61,6 +63,7 @@ drush cr
 - **Si `vactory_google_places` est actif :** revoir les vues où l'option « Vactory google places instance » est cochée ; l'autocomplete Google Places y est de nouveau chargé (#913).
 - **Module optionnel `vactory_admin_hardening` (#886) :** sur un site existant, l'activer (`drush en vactory_admin_hardening`) quand l'équipe passe par Drush et Features. Il bloque en web, pour tous les comptes, l'interface de migration et l'import, l'export et la synchronisation de config (pages `config_update_ui` comprises). Le check Security Review signale son absence.
 - **Si le projet attribue un rôle aux comptes créés par l'inscription JSON:API :** le régler dans `/admin/config/system/decoupled-settings`, onglet *Registration*. Les rôles envoyés par le front ne sont plus pris en compte (#885).
+- **Si `vactory_quiz_certificat` est actif avec la méthode html2pdf (#953) :** vérifier que `$settings['file_private_path']` est défini dans `settings.php` et que le dossier est accessible en écriture. Un certificat se télécharge maintenant par Drupal (`/system/files/…`), par son titulaire connecté : le lien envoyé par e-mail demande une connexion.
 
 **5. `drush cr`**
 - Obligatoire : sans lui, les pages avec un menu plantent tant que l'ancien conteneur reste en cache (#914).
@@ -73,6 +76,7 @@ drush cr
 - Un envoi de webform avec fichier aboutit, côté front.
 - Connexion au back-office, et connexion front (OAuth, SSO s'il est utilisé) (#908, #928).
 - En back-office, l'autocomplete des liens d'un Dynamic Field propose des contenus et enregistre le lien choisi (linkit, #947).
+- **Si `vactory_quiz_certificat` est actif (méthode html2pdf) :** réussir un quiz avec certificat, lancer le cron, puis télécharger le certificat avec le compte qui l'a obtenu (#953).
 
 ### Sécurité
 - `vactory_core` : vérification TLS active par défaut dans le client HTTP de Drupal (#896).
@@ -88,6 +92,7 @@ drush cr
 - `vactory_google_places` : l'option « Vactory google places instance » des filtres de vues, ignorée jusque-là, est réellement appliquée (#913).
 - `vactory_appointment` : champs conseiller masqués en back-office dès qu'un thème d'administration distinct du thème par défaut est configuré (seul `seven` était pris en compte) (#911).
 - `vactory_webform_mailchimp_handler` : une panne Mailchimp ne bloque plus la soumission, et le timeout passe de 120 s à 10 s (#903).
+- `vactory_quiz_certificat` : un certificat généré par html2pdf est enregistré dans le dossier privé du site ; seul son titulaire connecté le télécharge (#953).
 
 ### Ajouts
 - `vactory_admin_hardening` : nouveau module optionnel qui bloque en web l'interface de migration et l'interface de config du core, même pour uid 1 ; installé d'office sur les nouveaux sites uniquement (#886).
@@ -117,6 +122,7 @@ drush cr
 - `vactory_dynamic_field` : élément URL compatible linkit 7.0.13+ (#912).
 - `vactory_amp` : plus d'erreur fatale au rendu d'un nœud exclu d'AMP sans liens d'en-tête (#919).
 - `vactory_cloudinary` : `getExternalUrl()` renvoie une chaîne, propriété dynamique déclarée (PHP 8.2), dépendances déclarées (#920).
+- `vactory_html2pdf` : le PDF est écrit à l'URI demandée et l'`uri` renvoyée est un URI de flux valide ; dossier créé par Drupal (permissions correctes), dossier temporaire de Drupal au lieu de `/tmp`, exception `VactoryHtml2PdfException` de nouveau chargeable (#953, Redmine #71157).
 
 ### Retraits
 - `vactory_cloudinary` : services `console.output` et `vactory_cloudinary.move_file_batch`, inutilisés (la classe du second n'existe pas) (#920).
