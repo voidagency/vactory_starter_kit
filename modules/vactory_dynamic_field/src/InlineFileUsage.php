@@ -233,7 +233,7 @@ class InlineFileUsage {
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The entity using the files.
    * @param int $count
-   *   1 for a single revision, 0 to remove every usage by the entity.
+   *   Use 1 for a single revision, 0 to remove every usage by the entity.
    */
   protected function delete(array $uuids, EntityInterface $entity, int $count): void {
     foreach ($uuids as $uuid) {
@@ -342,7 +342,8 @@ class InlineFileUsage {
     if (!$this->database->schema()->tableExists($table)) {
       return NULL;
     }
-    return [$table, $table_mapping->getFieldColumnName($definition, 'widget_data')];
+    $column = $table_mapping->getFieldColumnName($definition, 'widget_data');
+    return [$table, $column];
   }
 
   /**

@@ -139,7 +139,7 @@ class InlineFileUsageTest extends ExistingSiteBase {
   /**
    * Saving the same revision adds the new files and frees the removed ones.
    */
-  public function testUpdateOfARevision(): void {
+  public function testRevisionUpdate(): void {
     $kept = $this->createInlineFile();
     $removed = $this->createInlineFile();
     $added = $this->createInlineFile();
