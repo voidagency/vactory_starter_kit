@@ -32,7 +32,7 @@ drush cr
 **1. Code et composer** (en local, avant le déploiement)
 - **Tous les sites :** figer la version du profil : `composer require voidagency/vactory_starter_kit:<version> -W`. Le `composer.lock` du profil n'est pas utilisé par les projets : c'est cette commande qui apporte les correctifs de sécurité des dépendances.
 - **Si le projet suit `3.x-dev` (ou une autre branche de dev) :** passer sur la version figée `voidagency/vactory_starter_kit:<version>`. Une branche de dev livre des changements non publiés, sans changelog ni tests de release.
-- **Si le projet est en 3.1.x :** appliquer aussi les notes des releases 3.2.x (par exemple, linkit est figé en 7.0.12 depuis 3.1.7).
+- **Si le projet est en 3.1.x :** appliquer aussi les notes des releases 3.2.x (changements de dépendances compris).
 - **`google_tag` (#931, #942) :** la contrainte accepte 1.x et 2.x. Si le `composer.json` du projet n'exige pas google_tag, `-W` le fait passer en 2.x. Pour rester en 1.x : `composer require drupal/google_tag:^1.8` avant la mise à jour.
 - **Si le projet exige `drupal/captcha` 2.0.12 ou plus :** conflit composer, le profil fige 2.0.11 (#922). Un projet verrouillé en 2.0.12 redescend en 2.0.11 : retirer un patch projet prévu pour 2.0.12.
 - **Si le projet requiert `drupal/swiftmailer`, `drupal/social_auth_microsoft` ou `stevenmaguire/oauth2-microsoft` :** reprendre leurs patches dans le projet, le profil ne les déclare plus (#909).
@@ -41,6 +41,7 @@ drush cr
 - **Si le projet surcharge le contrôleur `Oauth2Token` de simple_oauth :** passer le logger en troisième argument du constructeur parent (simple_oauth 5.2.6, #928).
 - **Si une feature du projet exporte les rôles `anonymous` ou `authenticated`** (`user.role.anonymous.yml`, `user.role.authenticated.yml`) : retirer la permission `access any webform configuration` de ces fichiers. Sinon, un `drush fr` de cette feature la redonne (#897). Même chose pour un dossier de config importé à la main par `drush cim` (`config/sync`, `config/staging`…).
 - **Versions relâchées (#944) :** consumers, csv_serialization, editor_advanced_link, jquery_colorpicker, link_attributes et block_list_override montent à la dernière version compatible avec le core du projet. Vérifier le diff du `composer.lock` avant de commiter.
+- **`linkit` (#947) :** la contrainte passe de 7.0.12 à `^7.0.16` ; le projet monte en 7.0.18 ou plus. Un projet qui fige linkit en dessous de 7.0.16 (6.x, 7.0.12) aura un conflit composer : lever ce blocage. Un projet qui a son propre contournement de la régression linkit 7.0.13 (élément `uri` ajouté à `url_extended`, patch local) le retire : le profil la gère depuis #912.
 
 **2. `drush updb -y`** (à la main, après le déploiement)
 - Deux updates du profil : `vactory_decoupled_webform` 10102, qui retire la permission `access any webform configuration` aux rôles anonyme et authentifié (#897) ; `vactory_dynamic_field` 9501, qui active `paragraphs_edit`, avec `paragraphs` et `contextual`, sur les sites qui ne l'ont pas (#910).
@@ -72,6 +73,7 @@ drush cr
 - Une page avec menu s'affiche ; `/sitemap.xml` et `/image-sitemap.xml` répondent.
 - Un envoi de webform avec fichier aboutit, côté front.
 - Connexion au back-office, et connexion front (OAuth, SSO s'il est utilisé) (#908, #928).
+- En back-office, l'autocomplete des liens d'un Dynamic Field propose des contenus et enregistre le lien choisi (linkit, #947).
 - **Si des rôles sont cochés dans l'onglet *Registration* :** un compte créé par le formulaire d'inscription du front les reçoit (#950).
 
 ### Sécurité
@@ -129,6 +131,7 @@ drush cr
 - Patches composer retirés : un jamais appliqué (clé `drupal/jsonapi_extra` erronée) et trois pour des paquets sortis du profil, `drupal/swiftmailer`, `drupal/social_auth_microsoft`, `stevenmaguire/oauth2-microsoft` (#909).
 - `composer.lock` du profil mis à jour, sans effet sur les projets, qui résolvent leurs propres versions (#893, #924 à #927, #931, #932).
 - Contraintes relâchées, plus de version figée sans raison (#944, Redmine #71222) : `drupal/consumers` ^1.24, `drupal/csv_serialization` ^4.0, `drupal/editor_advanced_link` ^2.2.8 (lève l'exigence core ^10.5), `voidagency/jquery_colorpicker` ^5.0 \|\| ^6.0 (6.0 compatible Drupal 11), `drupal/link_attributes` ^2.1, `drupal/block_list_override` ^1.0.3 ; `league/csv` retiré (dépendance de csv_serialization).
+- `drupal/linkit` : 7.0.12 → `^7.0.16` (#947). La régression de linkit 7.0.13 sur les champs `url_extended` est gérée dans le profil depuis #912 (Redmine #71222).
 
 ### Interne
 - Tests d'intégration des dépendances à historique d'incidents et contrats entre le profil et ses dépendances (Redmine #71160 ; #912 à #920, #934).
