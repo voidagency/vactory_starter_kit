@@ -119,6 +119,79 @@ class QuizViewDependenciesTest extends KernelTestBase {
   }
 
   /**
+   * Tells whether a module ships a config object in its config/install.
+   */
+  protected function moduleShipsConfig(string $module, string $name): bool {
+    $directories = [
+      // Modules of the profile.
+      dirname($this->modulePath()) . '/' . $module,
+      $this->root . '/core/modules/' . $module,
+    ];
+    foreach ($directories as $directory) {
+      if (file_exists("$directory/config/install/$name.yml")) {
+        return TRUE;
+      }
+    }
+    return FALSE;
+  }
+
+  /**
+   * Config dependencies of config/install come from declared modules.
+   *
+   * Drupal refuses to install a module whose config/install has an unmet
+   * dependency: config that needs something else is in config/optional
+   * (Redmine #71388).
+   */
+  public function testConfigDependenciesComeFromDeclaredModules(): void {
+    $declared = $this->declaredModules();
+    $files = glob($this->modulePath() . '/config/install/*.yml');
+    $own = array_map(fn ($file) => basename($file, '.yml'), $files);
+    $checked = [];
+    foreach ($files as $file) {
+      $config = Yaml::decode(file_get_contents($file));
+      // The module of the config object itself, "core" being always there.
+      $names = array_merge([basename($file, '.yml')], $config['dependencies']['config'] ?? []);
+      foreach ($names as $name) {
+        $provider = strstr($name, '.', TRUE);
+        if (!in_array($provider, ['core', 'vactory_quiz'], TRUE)) {
+          // The view: vactory_views requires views.
+          $provider = $provider === 'views' ? 'vactory_views' : $provider;
+          $this->assertContains($provider, $declared, basename($file) . " needs the module of $name.");
+        }
+        if (in_array($name, $own, TRUE)) {
+          continue;
+        }
+        $providers = array_filter($declared, fn ($module) => $this->moduleShipsConfig($module, $name));
+        $this->assertNotEmpty($providers, basename($file) . " depends on $name, which no declared module provides.");
+        $checked[$name] = reset($providers);
+      }
+    }
+    $this->assertSame([
+      'core.entity_view_mode.node.teaser' => 'node',
+      'field.storage.node.body' => 'node',
+      'field.storage.node.field_vactory_tags' => 'vactory_field',
+      'taxonomy.vocabulary.tags' => 'vactory_field',
+    ], array_intersect_key($checked, array_flip([
+      'core.entity_view_mode.node.teaser',
+      'field.storage.node.body',
+      'field.storage.node.field_vactory_tags',
+      'taxonomy.vocabulary.tags',
+    ])));
+    $this->assertCount(4, $checked);
+  }
+
+  /**
+   * The module of the selection handler of the tags field is declared.
+   */
+  public function testSelectionHandlerModuleIsDeclared(): void {
+    $field = Yaml::decode(file_get_contents($this->modulePath() . '/config/install/field.field.node.vactory_quiz.field_vactory_tags.yml'));
+    $this->assertSame('default:vactory_term', $field['settings']['handler']);
+    $plugin = file_get_contents(dirname($this->modulePath()) . '/vactory_core/src/Plugin/EntityReferenceSelection/VactoryTermSelection.php');
+    $this->assertStringContainsString('id = "default:vactory_term"', $plugin);
+    $this->assertContains('vactory_core', $this->declaredModules());
+  }
+
+  /**
    * Modules whose options the shipped view uses are declared.
    */
   public function testViewOptionsComeFromDeclaredModules(): void {
