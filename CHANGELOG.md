@@ -57,6 +57,7 @@ drush cr
 - **Si google_tag est passé en 2.x :** vérifier les conteneurs GTM dans la config de Google Tag.
 - **Si `vactory_google_places` est actif :** revoir les vues où l'option « Vactory google places instance » est cochée ; l'autocomplete Google Places y est de nouveau chargé (#913).
 - **Module optionnel `vactory_admin_hardening` (#886) :** sur un site existant, l'activer (`drush en vactory_admin_hardening`) quand l'équipe passe par Drush et Features. Il bloque en web, pour tous les comptes, l'interface de migration et l'import, l'export et la synchronisation de config (pages `config_update_ui` comprises). Le check Security Review signale son absence.
+- **Si le projet attribue un rôle aux comptes créés par l'inscription JSON:API :** le régler dans `/admin/config/system/decoupled-settings`, onglet *Registration*. Les rôles envoyés par le front ne sont plus pris en compte (#885).
 
 **5. `drush cr`**
 - Obligatoire : sans lui, les pages avec un menu plantent tant que l'ancien conteneur reste en cache (#914).
@@ -74,6 +75,7 @@ drush cr
 - `vactory_decoupled_webform` : permission `access any webform configuration` retirée aux rôles anonyme et authentifié (#897).
 - `vactory_decoupled_webform` : l'upload de fichiers applique les validateurs du webform, comme le formulaire Drupal : extensions, taille, longueur du nom (#906).
 - `vactory_core` : Shield ne peut plus être activé sans identifiants, et le rapport d'état signale une erreur dans ce cas (#911).
+- `vactory_decoupled` : inscription JSON:API : les rôles du compte sont décidés côté serveur (#885).
 
 ### Changements de comportement
 - `vactory_core` : les options passées au client HTTP de Drupal par l'appelant (timeout…) sont maintenant transmises (#896).
@@ -87,6 +89,7 @@ drush cr
 - `vactory_admin_hardening` : nouveau module optionnel qui bloque en web l'interface de migration et l'interface de config du core, même pour uid 1 ; installé d'office sur les nouveaux sites uniquement (#886).
 - `vactory_security_review` : check « Migrate administration surface », qui signale l'absence de `vactory_admin_hardening` et les rôles non administrateurs ayant `import configuration`, `synchronize configuration` ou `administer migrations` (#886).
 - `vactory_decoupled` : condition de visibilité des blocs selon le statut de la réponse (200, 403, 404), évaluée sur le statut renvoyé par le routeur découplé (#890).
+- `vactory_decoupled` : rôles attribués à l'inscription JSON:API, réglables dans le back-office (onglet *Registration* des réglages découplés, permission « administer permissions » ; jamais administrateur, anonyme ni authentifié) (#885).
 
 ### Correctifs
 - `vactory_sso` : la connexion SSO n'appelle plus une classe disparue ; dépendance `oauth_login_oauth2` déclarée ; sans `resource_owner` en session, les champs mappés ne sont plus remis à NULL (#908).
