@@ -9,6 +9,7 @@ define("VACTORY_DYNAMIC_FIELD_V_IMAGE_PLACEHOLDER", "data:image/gif;base64,R0lGO
 
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\FieldableEntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Field\WidgetBase;
 use Drupal\Component\Utility\NestedArray;
@@ -352,4 +353,40 @@ function vactory_dynamic_field_paragraph_access(EntityInterface $entity, $operat
     }
   }
   return AccessResult::neutral();
+}
+
+/**
+ * Implements hook_entity_insert().
+ */
+function vactory_dynamic_field_entity_insert(EntityInterface $entity) {
+  if ($entity instanceof FieldableEntityInterface) {
+    \Drupal::service('vactory_dynamic_field.inline_file_usage')->entityInsert($entity);
+  }
+}
+
+/**
+ * Implements hook_entity_update().
+ */
+function vactory_dynamic_field_entity_update(EntityInterface $entity) {
+  if ($entity instanceof FieldableEntityInterface) {
+    \Drupal::service('vactory_dynamic_field.inline_file_usage')->entityUpdate($entity);
+  }
+}
+
+/**
+ * Implements hook_entity_delete().
+ */
+function vactory_dynamic_field_entity_delete(EntityInterface $entity) {
+  if ($entity instanceof FieldableEntityInterface) {
+    \Drupal::service('vactory_dynamic_field.inline_file_usage')->entityDelete($entity);
+  }
+}
+
+/**
+ * Implements hook_entity_revision_delete().
+ */
+function vactory_dynamic_field_entity_revision_delete(EntityInterface $entity) {
+  if ($entity instanceof FieldableEntityInterface) {
+    \Drupal::service('vactory_dynamic_field.inline_file_usage')->entityRevisionDelete($entity);
+  }
 }
