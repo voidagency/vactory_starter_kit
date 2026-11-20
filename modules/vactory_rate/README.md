@@ -21,6 +21,15 @@ follow these steps:
     for by checking the corresponding checkboxes.
     3.Save the configuration settings to apply the changes.
 
+This form requires the "Administer site configuration" permission.
+
+Voting API
+
+The vote and undo vote routes only accept POST requests. A request
+authenticated by a Drupal session cookie must also send the
+"X-CSRF-Token" header (token from "/session/token"); a request
+authenticated by an OAuth bearer token does not need it.
+
 JSONAPI Integration
 
 After completing the installation and configuration steps,
