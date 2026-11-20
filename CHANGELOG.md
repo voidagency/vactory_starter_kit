@@ -127,6 +127,7 @@ drush cr
 - CI Drone : un build par commit, sans build pour les branches sans PR ni pour les tags (#921) ; jeton GitHub pour composer (#940) ; exclusions Sonar appliquées et règle `php:S1781` ignorée (#929).
 - Dependabot limité aux mises à jour de sécurité (#930).
 - `vactory_image_sitemap` : phpcs propre, sans changement de comportement (#937).
+- `vactory_image_sitemap` : variable inutilisée retirée (Sonar S1481, #945).
 
 ## [3.2.3] - 2026-10-07
 Voir la [release 3.2.3](https://github.com/voidagency/vactory_starter_kit/releases/tag/3.2.3).

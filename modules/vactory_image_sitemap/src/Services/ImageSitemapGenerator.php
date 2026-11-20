@@ -173,7 +173,7 @@ class ImageSitemapGenerator {
       }
       $time = time();
       $filename = $langcode . '_image_sitemap.xml';
-      if ($file = \Drupal::service('file_system')->saveData($output, $path . '/' . $filename, FileSystemInterface::EXISTS_REPLACE)) {
+      if (\Drupal::service('file_system')->saveData($output, $path . '/' . $filename, FileSystemInterface::EXISTS_REPLACE)) {
         \Drupal::configFactory()->getEditable('vactory_image_sitemap.settings')
           ->set('created', $time)
           ->set($langcode . '_number_of_urls', $total_urls)
