@@ -73,6 +73,7 @@ drush cr
 - Un envoi de webform avec fichier aboutit, côté front.
 - Connexion au back-office, et connexion front (OAuth, SSO s'il est utilisé) (#908, #928).
 - En back-office, l'autocomplete des liens d'un Dynamic Field propose des contenus et enregistre le lien choisi (linkit, #947).
+- **Si `vactory_quiz` est actif :** `views_autocomplete_filters` est actif (`drush pm:list`) ; sinon l'activer (`drush en views_autocomplete_filters`), car Drupal n'active pas une dépendance nouvellement déclarée sur un site existant. Sans lui, la vue « Mes quiz passés » fonctionne, mais son filtre Titre n'a pas d'autocomplete (#956).
 
 ### Sécurité
 - `vactory_core` : vérification TLS active par défaut dans le client HTTP de Drupal (#896).
@@ -117,6 +118,7 @@ drush cr
 - `vactory_dynamic_field` : élément URL compatible linkit 7.0.13+ (#912).
 - `vactory_amp` : plus d'erreur fatale au rendu d'un nœud exclu d'AMP sans liens d'en-tête (#919).
 - `vactory_cloudinary` : `getExternalUrl()` renvoie une chaîne, propriété dynamique déclarée (PHP 8.2), dépendances déclarées (#920).
+- `vactory_quiz` : dépendances `views_autocomplete_filters` (autocomplete du filtre Titre de la vue) et `vactory_views` déclarées ; la vue livrée ne référence plus `vactory_google_places`, qu'elle n'utilisait pas (#956, Redmine #71362).
 
 ### Retraits
 - `vactory_cloudinary` : services `console.output` et `vactory_cloudinary.move_file_batch`, inutilisés (la classe du second n'existe pas) (#920).

@@ -252,10 +252,9 @@ display:
             default_group: All
             default_group_multiple: {  }
             group_items: {  }
-          vactory_google_places: 0
           entity_type: node
           entity_field: title
-          plugin_id: vactory_google_places
+          plugin_id: string
       sorts:
         created:
           id: created
