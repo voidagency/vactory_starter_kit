@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c2119ae19b571e262a263737f07acd82",
+    "content-hash": "de3470874ce413907c524625b7067d62",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -2004,26 +2004,26 @@
         },
         {
             "name": "drupal/block_list_override",
-            "version": "1.0.3",
+            "version": "1.0.4",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/block_list_override.git",
-                "reference": "1.0.3"
+                "reference": "1.0.4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/block_list_override-1.0.3.zip",
-                "reference": "1.0.3",
-                "shasum": "3c9d86a5d34b2653398dab2970b532a17382ef7d"
+                "url": "https://ftp.drupal.org/files/projects/block_list_override-1.0.4.zip",
+                "reference": "1.0.4",
+                "shasum": "24f59b3fa110bb6f0cd9587f8b8b61434ad833f8"
             },
             "require": {
-                "drupal/core": "^10.1 || ^11"
+                "drupal/core": "^10.4 || ^11 || ^12"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "1.0.3",
-                    "datestamp": "1732143197",
+                    "version": "1.0.4",
+                    "datestamp": "1793716261",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -2046,6 +2046,10 @@
             ],
             "description": "Remove unnecessary blocks from the block list for better system performance.",
             "homepage": "https://www.drupal.org/project/block_list_override",
+            "keywords": [
+                "Actively maintained",
+                "Content display"
+            ],
             "support": {
                 "source": "https://git.drupalcode.org/project/block_list_override"
             }
@@ -6233,20 +6237,20 @@
         },
         {
             "name": "drupal/link_attributes",
-            "version": "2.1.1",
+            "version": "2.1.3",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/link_attributes.git",
-                "reference": "2.1.1"
+                "reference": "2.1.3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/link_attributes-2.1.1.zip",
-                "reference": "2.1.1",
-                "shasum": "fc71571fc41adeda6b39ccefd3c8e21955c0d96f"
+                "url": "https://ftp.drupal.org/files/projects/link_attributes-2.1.3.zip",
+                "reference": "2.1.3",
+                "shasum": "d204aead6d840ec697f1202e3a7886b9614e1f99"
             },
             "require": {
-                "drupal/core": "^9 || ^10 || ^11",
+                "drupal/core": "^9 || ^10 || ^11 || ^12",
                 "php": ">=8.0"
             },
             "require-dev": {
@@ -6255,8 +6259,8 @@
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "2.1.1",
-                    "datestamp": "1721366572",
+                    "version": "2.1.3",
+                    "datestamp": "1781918574",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -13819,39 +13823,43 @@
         },
         {
             "name": "league/csv",
-            "version": "9.16.0",
+            "version": "9.29.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/thephpleague/csv.git",
-                "reference": "998280c6c34bd67d8125fdc8b45bae28d761b440"
+                "reference": "13d5600d2c935c8785707e7d1d44ca1f2a22d6f4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/thephpleague/csv/zipball/998280c6c34bd67d8125fdc8b45bae28d761b440",
-                "reference": "998280c6c34bd67d8125fdc8b45bae28d761b440",
+                "url": "https://api.github.com/repos/thephpleague/csv/zipball/13d5600d2c935c8785707e7d1d44ca1f2a22d6f4",
+                "reference": "13d5600d2c935c8785707e7d1d44ca1f2a22d6f4",
                 "shasum": ""
             },
             "require": {
                 "ext-filter": "*",
-                "php": "^8.1.2"
+                "php": "^8.2.0"
             },
             "require-dev": {
-                "doctrine/collections": "^2.2.2",
                 "ext-dom": "*",
                 "ext-xdebug": "*",
-                "friendsofphp/php-cs-fixer": "^3.57.1",
-                "phpbench/phpbench": "^1.2.15",
-                "phpstan/phpstan": "^1.11.1",
-                "phpstan/phpstan-deprecation-rules": "^1.2.0",
-                "phpstan/phpstan-phpunit": "^1.4.0",
-                "phpstan/phpstan-strict-rules": "^1.6.0",
-                "phpunit/phpunit": "^10.5.16 || ^11.1.3",
-                "symfony/var-dumper": "^6.4.6 || ^7.0.7"
+                "friendsofphp/php-cs-fixer": "^3.92.3",
+                "phpbench/phpbench": "^1.4.3",
+                "phpstan/phpstan": "^2.2.8",
+                "phpstan/phpstan-deprecation-rules": "^2.0.5",
+                "phpstan/phpstan-phpunit": "^2.0.18",
+                "phpstan/phpstan-strict-rules": "^2.0.12",
+                "phpunit/phpunit": "^11.5.22 || ^12.5.4 || ^13.3.1",
+                "rector/rector": "^2.6.3",
+                "symfony/var-dumper": "^6.4.8 || ^7.4.0 || ^8.0"
             },
             "suggest": {
                 "ext-dom": "Required to use the XMLConverter and the HTMLConverter classes",
                 "ext-iconv": "Needed to ease transcoding CSV using iconv stream filters",
-                "ext-mbstring": "Needed to ease transcoding CSV using mb stream filters"
+                "ext-mbstring": "Needed to ease transcoding CSV using mb stream filters",
+                "ext-mysqli": "Requiered to use the package with the MySQLi extension",
+                "ext-pdo": "Required to use the package with the PDO extension",
+                "ext-pgsql": "Requiered to use the package with the PgSQL extension",
+                "ext-sqlite3": "Required to use the package with the SQLite3 extension"
             },
             "type": "library",
             "extra": {
@@ -13865,7 +13873,10 @@
                 ],
                 "psr-4": {
                     "League\\Csv\\": "src"
-                }
+                },
+                "classmap": [
+                    "polyfill"
+                ]
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -13903,7 +13914,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2024-05-24T11:04:54+00:00"
+            "time": "2026-10-28T08:56:24+00:00"
         },
         {
             "name": "league/event",
@@ -20943,21 +20954,21 @@
         },
         {
             "name": "voidagency/jquery_colorpicker",
-            "version": "5.0.0",
+            "version": "6.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/voidagency/jquery_colorpicker.git",
-                "reference": "6244ea7b7ce8893086acf34fef25f676514d04b3"
+                "reference": "c6b9fbc23928b9ffebfd083ac66d06cf7d30a4e4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/voidagency/jquery_colorpicker/zipball/6244ea7b7ce8893086acf34fef25f676514d04b3",
-                "reference": "6244ea7b7ce8893086acf34fef25f676514d04b3",
+                "url": "https://api.github.com/repos/voidagency/jquery_colorpicker/zipball/c6b9fbc23928b9ffebfd083ac66d06cf7d30a4e4",
+                "reference": "c6b9fbc23928b9ffebfd083ac66d06cf7d30a4e4",
                 "shasum": ""
             },
             "require": {
                 "drupal/colorapi": "^2.1",
-                "drupal/core": "^9.3 || ^10",
+                "drupal/core": "^10.3 || ^11",
                 "drupal/vendor_stream_wrapper": "^2.0.2",
                 "jaypan/jquery-colorpicker": "~1.0.1"
             },
@@ -20972,7 +20983,7 @@
                 "issues": "https://drupal.org/project/issues/jquery_colorpicker",
                 "source": "https://git.drupalcode.org/project/jquery_colorpicker"
             },
-            "time": "2026-01-08T13:47:30+00:00"
+            "time": "2026-10-28T15:03:35+00:00"
         },
         {
             "name": "voidagency/mobile_native_share",
