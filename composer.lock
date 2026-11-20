@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0e26903831476cc74768fcb5a01f44bb",
+    "content-hash": "c2119ae19b571e262a263737f07acd82",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -21359,27 +21359,27 @@
         "drupal/coffee": 20,
         "drupal/components": 10,
         "drupal/config_update": 15,
-        "drupal/default_content": 15,
-        "drupal/domain": 10,
-        "drupal/filefield_paths": 10,
-        "drupal/gin": 5,
-        "drupal/google_news_sitemap": 20,
-        "drupal/jsonapi_user_resources": 10,
         "drupal/lang_dropdown": 10,
-        "drupal/openai": 10,
-        "drupal/responsive_favicons": 20,
-        "drupal/search_api_ai": 15,
         "drupal/sitemap": 10,
-        "drupal/social_auth_facebook": 5,
-        "drupal/social_auth_google": 5,
-        "drupal/styleguide": 10,
-        "drupal/symfony_mailer": 15,
         "drupal/taxonomy_import": 15,
-        "drupal/tinypng": 5,
         "drupal/ultimate_cron": 15,
         "drupal/viewsreference": 10,
-        "drupal/votingapi": 10,
         "drupal/webform": 10,
+        "drupal/styleguide": 10,
+        "drupal/responsive_favicons": 20,
+        "drupal/tinypng": 5,
+        "drupal/votingapi": 10,
+        "drupal/social_auth_facebook": 5,
+        "drupal/social_auth_google": 5,
+        "drupal/domain": 10,
+        "drupal/filefield_paths": 10,
+        "drupal/jsonapi_user_resources": 10,
+        "drupal/symfony_mailer": 15,
+        "drupal/default_content": 15,
+        "drupal/gin": 5,
+        "drupal/search_api_ai": 15,
+        "drupal/openai": 10,
+        "drupal/google_news_sitemap": 20,
         "drupal/webform_import_tab": 20
     },
     "prefer-stable": true,
@@ -21387,6 +21387,6 @@
     "platform": {
         "php": ">=7.3"
     },
-    "platform-dev": {},
-    "plugin-api-version": "2.9.0"
+    "platform-dev": [],
+    "plugin-api-version": "2.6.0"
 }
