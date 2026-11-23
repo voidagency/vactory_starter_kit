@@ -19,3 +19,10 @@ services:
       - '@module_handler'
     tags:
       - { name: event_subscriber }
+  vactory_quiz_certificat.not_found_subscriber:
+    class: Drupal\vactory_quiz_certificat\EventSubscriber\CertificatNotFoundSubscriber
+    arguments:
+      - '@stream_wrapper_manager'
+      - '@file_system'
+    tags:
+      - { name: event_subscriber }

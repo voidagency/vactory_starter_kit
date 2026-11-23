@@ -15,7 +15,8 @@ Certificates are written in `private://quiz_certificat/<year>-<month>/`:
 certificate is generated and the status report shows an error.
 
 A certificate is downloaded by its owner, logged in on the Drupal site, or by
-a user with the `administer site configuration` permission.
+a user with the `administer site configuration` permission. Any other request
+for a file of this folder gets a "page not found" answer.
 
 The link sent by mail is this download URL. Opened logged out, it leads to
 the login page of Drupal, then to the certificate once logged in.
