@@ -102,18 +102,38 @@ class CertificatNotFoundSubscriber implements EventSubscriberInterface {
    *   or a file stored in it.
    */
   protected function isCertificatRequest(Request $request): bool {
-    if (!in_array($request->attributes->get(RouteObjectInterface::ROUTE_NAME), static::ROUTES, TRUE)) {
-      return FALSE;
-    }
     $target = $request->query->all()['file'] ?? NULL;
-    if ($request->attributes->get('scheme', 'private') !== 'private' || !is_string($target)) {
-      return FALSE;
-    }
-    // The path as it is asked: the folder comes first.
+    $is_private_download = in_array($request->attributes->get(RouteObjectInterface::ROUTE_NAME), static::ROUTES, TRUE)
+      && $request->attributes->get('scheme', 'private') === 'private'
+      && is_string($target);
+    return $is_private_download
+      && ($this->namesTheFolder($target) || $this->leadsToTheFolder($target));
+  }
+
+  /**
+   * Tells whether a path, as it is asked, starts with the folder.
+   *
+   * @param string $target
+   *   The path asked, relative to the private directory.
+   *
+   * @return bool
+   *   TRUE when the first segment of the path is the folder of certificates.
+   */
+  protected function namesTheFolder(string $target): bool {
     $segments = array_diff(preg_split('@[/\\\\]@', $target), ['', '.']);
-    if (reset($segments) === static::FOLDER) {
-      return TRUE;
-    }
+    return reset($segments) === static::FOLDER;
+  }
+
+  /**
+   * Tells whether a path leads to the folder once resolved.
+   *
+   * @param string $target
+   *   The path asked, relative to the private directory.
+   *
+   * @return bool
+   *   TRUE when the URI core checks, or the file itself, is in the folder.
+   */
+  protected function leadsToTheFolder(string $target): bool {
     if (!$this->streamWrapperManager->isValidScheme('private')) {
       return FALSE;
     }
