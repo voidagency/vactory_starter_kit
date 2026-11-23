@@ -19,7 +19,8 @@ a user with the `administer site configuration` permission. Any other request
 for a file of this folder gets a "page not found" answer.
 
 The link sent by mail is this download URL. Opened logged out, it leads to
-the login page of Drupal, then to the certificate once logged in.
+the login page of Drupal (instead of the "page not found" answer), then to the
+certificate once logged in.
 
 ### Module Loom Demo
 Please check the module demo video on:

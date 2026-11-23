@@ -24,7 +24,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
  *
  * A certificate is downloaded by its owner, logged in on the Drupal site (see
  * vactory_quiz_certificat_file_download()). The link sent by mail is often
- * opened logged out: instead of the "access denied" page, the user gets the
+ * opened logged out: instead of the "not found" page, the user gets the
  * login page and comes back to the certificate once logged in.
  *
  * Only an anonymous request for a file of "private://quiz_certificat" is
@@ -110,9 +110,9 @@ class CertificatLoginRedirectSubscriber implements EventSubscriberInterface {
    * {@inheritdoc}
    */
   public static function getSubscribedEvents(): array {
-    // After the subscribers of core that log the exception (50) or answer an
-    // authentication challenge (75, 80); before the ones that build the 403
-    // and 404 pages (0 and below).
+    // After CertificatNotFoundSubscriber (250) and the subscribers of core
+    // that log the exception (50) or answer an authentication challenge (75,
+    // 80); before the ones that build the 403 and 404 pages (0 and below).
     $events[KernelEvents::EXCEPTION][] = ['onException', 25];
     return $events;
   }
@@ -174,7 +174,8 @@ class CertificatLoginRedirectSubscriber implements EventSubscriberInterface {
     if ($request->attributes->get('scheme', 'private') !== 'private' || !is_string($target)) {
       return NULL;
     }
-    // A path with a ".." segment is left to core.
+    // A path with a ".." segment is not redirected: it gets the "not found"
+    // answer of CertificatNotFoundSubscriber.
     if (in_array('..', preg_split('@[/\\\\]@', $target), TRUE)) {
       return NULL;
     }

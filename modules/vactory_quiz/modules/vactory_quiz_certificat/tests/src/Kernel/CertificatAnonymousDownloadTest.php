@@ -194,15 +194,18 @@ class CertificatAnonymousDownloadTest extends KernelTestBase {
   }
 
   /**
-   * The owner downloads the certificate, another user is refused.
+   * The owner downloads the certificate, another user gets "not found".
    */
   public function testLoggedInUsersAreNotRedirected(): void {
     $this->setCurrentUser($this->owner);
     $this->assertSame(200, $this->get(self::PATH)->getStatusCode());
 
     $this->setCurrentUser($this->createUser(['access content']));
-    $this->assertSame(403, $this->get(self::PATH)->getStatusCode());
-    $this->assertSame(404, $this->get(self::MISSING)->getStatusCode());
+    $existing = $this->get(self::PATH);
+    $missing = $this->get(self::MISSING);
+    $this->assertSame(404, $existing->getStatusCode());
+    $this->assertSame(404, $missing->getStatusCode());
+    $this->assertSame(get_class($missing), get_class($existing));
   }
 
   /**
@@ -213,9 +216,20 @@ class CertificatAnonymousDownloadTest extends KernelTestBase {
     $this->assertSame(404, $this->get('/system/files/other/missing.pdf')->getStatusCode());
     // A folder whose name only starts like the one of the certificates.
     $this->assertSame(404, $this->get('/system/files/quiz_certificat_2/file.pdf')->getStatusCode());
-    // A path with a ".." segment is left to core.
-    $response = $this->get('/system/files?file=other/../quiz_certificat/2026-11/Jane-Doe-Certif-1.pdf');
-    $this->assertNotSame(302, $response->getStatusCode());
+    // A path with a ".." segment: no redirect, and the same answer whether
+    // the file exists or not.
+    $targets = [
+      'other/../quiz_certificat/2026-11/Jane-Doe-Certif-1.pdf',
+      'other/../quiz_certificat/2026-11/Missing-Certif-2.pdf',
+      'quiz_certificat/2026-11/../2026-11/Jane-Doe-Certif-1.pdf',
+      'quiz_certificat/2026-11/../2026-11/Missing-Certif-2.pdf',
+      'quiz_certificat/../other/file.pdf',
+      'quiz_certificat/../other/missing.pdf',
+    ];
+    foreach ($targets as $target) {
+      $response = $this->get('/system/files?file=' . $target);
+      $this->assertSame(404, $response->getStatusCode(), $target);
+    }
   }
 
   /**
