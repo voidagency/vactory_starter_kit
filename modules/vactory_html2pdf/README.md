@@ -16,7 +16,7 @@ When clicking save you will get your custom fonts on the detected fonts list.
 From any other module you could use the module service to generate pdf from
 html output using the following method of service `vactory_html2pdf.manager`:
 
-    \Drupal::service('vactory_html2pdf')
+    \Drupal::service('vactory_html2pdf.manager')
        ->html2Pdf($htmlContent, $outputFilename, $mpdfOptions);
 
 With:

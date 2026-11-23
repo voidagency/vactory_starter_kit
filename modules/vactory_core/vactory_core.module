@@ -755,3 +755,47 @@ function vactory_core_shield_settings_validate(array &$form, FormStateInterface 
     }
   }
 }
+
+/**
+ * Default captcha wrong answer message, in English and every site language.
+ *
+ * The captcha module only translates this message when the setting
+ * "wrong_captcha_response_message" is empty. A stored value equal to one of
+ * these strings is the default message, not a customised one.
+ *
+ * @return string[]
+ *   The default message and its interface translations.
+ */
+function _vactory_core_captcha_default_error_messages() {
+  // The source string must be the one used by _captcha_get_error_message().
+  $default = 'The answer you entered for the CAPTCHA was not correct.';
+  $messages = [$default];
+  foreach (array_keys(\Drupal::languageManager()->getLanguages()) as $langcode) {
+    // phpcs:ignore Drupal.Semantics.FunctionT.NotLiteralString
+    $messages[] = trim((string) t($default, [], ['langcode' => $langcode]));
+  }
+  return array_values(array_unique($messages));
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for captcha_settings.
+ *
+ * The captcha settings form prefills the wrong answer message with the
+ * default one and requires it: saving the form would store the message in the
+ * language of the administrator, and it would no longer be translated. Let it
+ * be empty instead, which makes captcha use its translated default message.
+ */
+function vactory_core_form_captcha_settings_alter(array &$form, FormStateInterface $form_state) {
+  if (!isset($form['wrong_captcha_response_message'])) {
+    return;
+  }
+  $message = trim((string) \Drupal::configFactory()->getEditable('captcha.settings')->get('wrong_captcha_response_message'));
+  if (in_array($message, _vactory_core_captcha_default_error_messages(), TRUE)) {
+    $message = '';
+  }
+  $element = &$form['wrong_captcha_response_message'];
+  $element['#required'] = FALSE;
+  $element['#default_value'] = $message;
+  $element['#attributes']['placeholder'] = t('The answer you entered for the CAPTCHA was not correct.');
+  $element['#description'] = t('Leave empty to use the default message, translated in every language by the interface translation. A message typed here is displayed as is, and is translated with the configuration translation.');
+}
