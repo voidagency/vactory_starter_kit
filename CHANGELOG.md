@@ -145,6 +145,7 @@ drush cr
 - `vactory_decoupled_flag`, `vactory_decoupled_search_ai` : dépendances déclarées (#905).
 - `vactory_locator` : MarkerClusterer figé sur un commit jsdelivr, plus de dépendance à rawgit (#907).
 - `vactory_core` : services de menu (simplify_menu, manipulateur de menu) injectés par méthode. Le site ne tombe plus si simplify_menu ou le core ajoute un argument à un constructeur (#914).
+- `vactory_core` : le compteur de caractères (textfield_counter) des champs texte des formulaires d'entité fonctionne sur les champs multi-valeurs, sans `TypeError` dans la console ; chaque champ garde sa propre longueur maximale, au lieu de celle du dernier champ du formulaire (#964, Redmine #71387).
 - `vactory_dynamic_field` : élément URL compatible linkit 7.0.13+ (#912).
 - `vactory_amp` : plus d'erreur fatale au rendu d'un nœud exclu d'AMP sans liens d'en-tête (#919).
 - `vactory_cloudinary` : `getExternalUrl()` renvoie une chaîne, propriété dynamique déclarée (PHP 8.2), dépendances déclarées (#920).
