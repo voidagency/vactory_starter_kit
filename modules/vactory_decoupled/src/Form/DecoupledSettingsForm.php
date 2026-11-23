@@ -103,7 +103,8 @@ class DecoupledSettingsForm extends ConfigFormBase {
     ];
 
     // Default roles of accounts created through the JSON:API registration
-    // resource. Granting roles requires "administer permissions".
+    // resource or the "espace privé" registration webform. Granting roles
+    // requires "administer permissions".
     $form['registration'] = [
       '#type' => 'details',
       '#title' => $this->t('Registration'),
@@ -119,7 +120,7 @@ class DecoupledSettingsForm extends ConfigFormBase {
       '#title' => $this->t('Roles granted on registration'),
       '#options' => array_map(fn($role) => $role->label(), $grantable),
       '#default_value' => $config->get('registration_default_roles') ?? [],
-      '#description' => $this->t('Roles added to accounts created through the JSON:API registration resource (/api/user/register). Roles sent in the registration request are always ignored. Administrator roles cannot be selected.'),
+      '#description' => $this->t('Roles added to accounts created through the JSON:API registration resource (/api/user/register) and through the "espace privé" registration webform (vactory_espace_prive_register). Roles sent in the registration request are always ignored. Administrator roles cannot be selected.'),
     ];
 
     $form['iframe_excluded_paths']['iframe_paths'] = [
