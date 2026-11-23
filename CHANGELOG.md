@@ -58,11 +58,13 @@ drush cr
 - Si google_tag passe en 2.x et que le module est activé : ses propres updates s'exécutent aussi.
 - **Sites en config sync (rare) :** ensuite, `drush cex` et commiter (`core.extension.yml`, rôles `anonymous` et `authenticated`). Sinon, le prochain `drush cim` annule ces updates.
 - Si `drupal/consumers` passe de moins de 1.23 à 1.23 ou plus : ses updates 8110 à 8112 s'exécutent (champ `status`) (#944).
+- `vactory_quiz_history` 10001 (#963) : ajoute un index sur la colonne `uid` de la table `vactory_quiz_history`. Rien n'est fait si l'index existe déjà ; les lignes de la table ne sont pas modifiées.
 
 **3. `drush fr -y <module>`** (features à réimporter)
 - **Aucune pour cette version.** Les configs modifiées dans le profil (`shield.settings`, `captcha.settings`, `vactory_toolbox`, `vactory_form_autosave`) ne servent qu'à l'installation : les sites existants gardent les leurs.
 - **Ne pas réimporter les autres features du profil :** un `drush fr` remplace la config active par celle du module et efface les valeurs propres au site (clés API, identifiants, réglages).
 - **Si google_tag est passé en 2.x :** réexporter (et non réimporter) la feature du projet qui porte la config GTM, après vérification des conteneurs.
+- **Si `vactory_quiz_certificat` est actif (#963) :** rien à réimporter. Le corps de mail par défaut est corrigé pour les nouvelles installations ; le corps de mail enregistré sur un site existant n'est pas modifié, et son jeton `[quiz:certificat_url]` est maintenant remplacé par le lien du certificat.
 
 **4. Back-office**
 - **Si un service appelé en HTTPS a un certificat invalide ou auto-signé (#896) :** désactiver la vérification TLS pour cet environnement dans `/admin/config/vactory-core-config`, ou dans `settings.php` : `$config['vactory_core.global_config']['http_client_ssl_verification'] = FALSE;`. Un appel qui passe `verify` reste prioritaire.
@@ -93,6 +95,9 @@ drush cr
 - **Si `vactory_quiz` est actif :** `views_autocomplete_filters` est actif (`drush pm:list`) ; sinon l'activer (`drush en views_autocomplete_filters`), car Drupal n'active pas une dépendance nouvellement déclarée sur un site existant. Sans lui, la vue « Mes quiz passés » fonctionne, mais son filtre Titre n'a pas d'autocomplete (#956).
 - **Si des rôles sont cochés dans l'onglet *Registration* :** un compte créé par le formulaire d'inscription du front les reçoit (#950).
 - Menus du thème (en-tête, pied de page) en anonyme puis connecté : les liens attendus sont présents ; un lien vers une page non publiée ou réservée n'apparaît que pour les utilisateurs qui y ont accès (#957). Une page servie depuis un cache garde l'ancien menu jusqu'à son renouvellement.
+- **Si `vactory_quiz_certificat` est actif (méthode html2pdf) :** le rapport d'état n'affiche pas l'erreur « Quiz certificates ». Réussir un quiz avec certificat, lancer le cron, puis télécharger le certificat avec le compte qui l'a obtenu ; avec un autre compte, le même lien répond « page introuvable » ; hors connexion, il ne donne pas le fichier (#953).
+- **Si `vactory_quiz_certificat` envoie le mail de notification (#963) :** le mail reçu après le cron contient le lien du certificat, et non le texte `[quiz:certificat_url]`. Avec un certificat qui ne peut pas être généré (par exemple sans `file_private_path`), le cron se termine normalement et l'erreur est dans les logs, canal `vactory_quiz_certificat`.
+- **Si `vactory_quiz_certificat` envoie le mail de notification (#963) :** ouvrir le lien du mail hors connexion : la page de connexion de Drupal s'affiche ; après connexion avec le compte qui a obtenu le certificat, le PDF se télécharge. Avec un autre compte, le lien répond « page introuvable ». Sur un site découplé, depuis un domaine `api.…` (où `vactory_decoupled` renvoie les pages de Drupal vers le front), la page de connexion n'est pas servie : pas de redirection, la réponse est celle d'un fichier introuvable.
 - **Si `vactory_quiz_certificat` est actif (méthode html2pdf) :** le rapport d'état n'affiche pas l'erreur « Quiz certificates ». Réussir un quiz avec certificat, lancer le cron, puis télécharger le certificat avec le compte qui l'a obtenu ; hors connexion ou avec un autre compte, le même lien répond « page introuvable » (#953).
 - **Si le front du projet a modifié l'appel de l'API des menus :** les menus du front, en anonyme puis connecté, contiennent les liens attendus ; un lien vers une page non publiée ou réservée n'y figure que pour les utilisateurs qui y ont accès (#966).
 
@@ -116,6 +121,7 @@ drush cr
 - `vactory_webform_mailchimp_handler` : une panne Mailchimp ne bloque plus la soumission, et le timeout passe de 120 s à 10 s (#903).
 - `vactory_core` : dans les réglages de CAPTCHA, le message d'erreur peut rester vide (message par défaut traduit) et n'est plus prérempli ; un message saisi est de nouveau pris en compte (#949).
 - `vactory_quiz_certificat` : un certificat généré par html2pdf se télécharge connecté sur le site Drupal, et la méthode html2pdf exige `$settings['file_private_path']` ; le rapport d'état signale une erreur s'il manque (#953).
+- `vactory_quiz_certificat` : hors connexion, le lien d'un certificat (celui du mail de notification) mène à la page de connexion de Drupal, puis au certificat une fois connecté, au lieu d'une page d'erreur. Rien ne change pour un utilisateur connecté, ni pour les autres fichiers privés (#963, Redmine #71440).
 
 ### Ajouts
 - `vactory_admin_hardening` : nouveau module optionnel qui bloque en web l'interface de migration et l'interface de config du core, même pour uid 1 ; installé d'office sur les nouveaux sites uniquement (#886).
@@ -149,6 +155,8 @@ drush cr
 - `vactory_dynamic_field` : le compteur de caractères (textfield_counter) fonctionne de nouveau dans la fenêtre Dynamic Fields, y compris sur les champs d'un groupe ; plus de `TypeError` dans la console (#954, Redmine #71223).
 - `vactory_quiz` : dépendances `views_autocomplete_filters` (autocomplete du filtre Titre de la vue) et `vactory_views` déclarées ; la vue livrée ne référence plus `vactory_google_places`, qu'elle n'utilisait pas (#956, Redmine #71362).
 - `vactory_html2pdf` : le PDF est écrit à l'URI demandée et l'`uri` renvoyée est un URI de flux valide ; dossier créé par Drupal (permissions correctes), dossier temporaire de Drupal au lieu de `/tmp`, exception `VactoryHtml2PdfException` de nouveau chargeable (#953, Redmine #71157).
+- `vactory_quiz_certificat` : le mail de notification contient de nouveau le lien du certificat. Le corps de mail par défaut utilisait le jeton `[quiz:certificat_url]`, que le module ne remplaçait pas : il est remplacé comme `[quiz:certificate_url]`, et le corps par défaut utilise le jeton déclaré (#963, Redmine #71440).
+- `vactory_quiz_certificat` : la génération des certificats par le cron ne dépend plus de `vactory_reminder`, qui n'était pas déclaré. Sans ce module, une demande en échec interrompait le cron ; elle reste maintenant dans la file, est reprise à un cron suivant, et l'erreur est journalisée dans le canal `vactory_quiz_certificat` (#963).
 
 ### Retraits
 - `vactory_cloudinary` : services `console.output` et `vactory_cloudinary.move_file_batch`, inutilisés (la classe du second n'existe pas) (#920).
@@ -175,6 +183,7 @@ drush cr
 - `vactory_decoupled` : test du contrat avec block_class (classes dans le HTML du bloc et dans la sortie découplée) (#948).
 - `vactory_decoupled` : test de l'endpoint de menus lu par le front (liens inaccessibles ou désactivés absents pour un anonyme) (#957).
 - Décisions d'architecture consignées dans `docs/adr/` : fichiers temporaires, version figée du profil, Features, clé `url` des liens, block_class 3.x (#960). Les ADR couvrent le profil, pas la CI (#962).
+- `vactory_quiz_history` : index sur la colonne `uid`, utilisée par le contrôle d'accès au téléchargement des certificats ; `vactory_html2pdf` : test du cas « chemin sans schéma » de `html2Pdf()` (#963).
 
 ## [3.2.3] - 2026-10-07
 Voir la [release 3.2.3](https://github.com/voidagency/vactory_starter_kit/releases/tag/3.2.3).
