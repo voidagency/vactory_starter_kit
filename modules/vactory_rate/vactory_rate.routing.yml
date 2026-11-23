@@ -22,4 +22,4 @@ vactory_rate.entity:
     _form: '\Drupal\vactory_rate\Form\AddEntityForm'
     _title: 'Ajouter une entité'
   requirements:
-    _permission: 'access content'
+    _permission: 'administer site configuration'
