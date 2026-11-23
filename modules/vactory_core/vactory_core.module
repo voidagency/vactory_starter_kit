@@ -413,8 +413,8 @@ function vactory_core_page_attachments_alter(array &$attachments) {
     }
   }
   // AddToAny attaches its external script to every page. Remove it here: it is
-  // attached only where share buttons are rendered, see
-  // vactory_core_preprocess_addtoany_standard().
+  // attached only where AddToAny buttons are rendered, see
+  // _vactory_core_addtoany_attach().
   $addtoany_lib = array_search('addtoany/addtoany.front', $attachments['#attached']['library']);
   if ($addtoany_lib !== FALSE) {
     unset($attachments['#attached']['library'][$addtoany_lib]);
@@ -436,28 +436,58 @@ function vactory_core_xmlsitemap_link_alter(array &$link, array $context) {
 /**
  * Implements hook_preprocess_HOOK() for addtoany_standard.
  *
- * Attaches the AddToAny script only where share buttons are rendered. The
- * addtoany_standard template is used by the AddToAny block and by the
- * AddToAny field of entity displays.
+ * The addtoany_standard template is used by the AddToAny share block, by the
+ * AddToAny field of entity displays and by the AddToAny views field.
  */
 function vactory_core_preprocess_addtoany_standard(&$variables) {
+  _vactory_core_addtoany_attach($variables);
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for addtoany_follow.
+ *
+ * The addtoany_follow template is used by the AddToAny follow block. Its
+ * icons are drawn by the AddToAny script, like the share buttons.
+ */
+function vactory_core_preprocess_addtoany_follow(&$variables) {
+  _vactory_core_addtoany_attach($variables);
+}
+
+/**
+ * Attaches the AddToAny script and its configuration to rendered buttons.
+ *
+ * Same attachments as addtoany_page_attachments(), which are removed from
+ * the page in vactory_core_page_attachments_alter(): the external script is
+ * loaded only where AddToAny buttons are rendered.
+ *
+ * @param array $variables
+ *   The variables of an AddToAny template. ThemeManager::render() bubbles
+ *   their "#attached" and "#cache" keys to the rendered element.
+ */
+function _vactory_core_addtoany_attach(array &$variables) {
   $config = \Drupal::config('addtoany.settings');
-  // Initial JavaScript.
-  $additional_js = $config->get('additional_js');
-  if (\Drupal::moduleHandler()->moduleExists('token')) {
+  $additional_js = (string) $config->get('additional_js');
+  // A change of the AddToAny settings rebuilds the cached buttons.
+  $variables['#cache']['tags'][] = 'config:addtoany.settings';
+  if (\Drupal::moduleHandler()->moduleExists('token') && \Drupal::token()->scan($additional_js)) {
+    // The tokens are replaced with the node of the current route, as AddToAny
+    // does at page level. Here the result is cached with the buttons (entity,
+    // field, block): it has to vary by route. Nothing changes for the sites
+    // without tokens in the "Additional JavaScript" setting.
+    $variables['#cache']['contexts'][] = 'route';
     $node = \Drupal::routeMatch()->getParameter('node');
-    $data = [];
+    if (is_numeric($node)) {
+      $node = \Drupal::entityTypeManager()->getStorage('node')->load($node);
+    }
     if ($node) {
-      if (is_numeric($node)) {
-        $node = Drupal::service('entity_type.manager')->getStorage('node')
-          ->load($node);
-      }
-      $data = ['node' => $node];
-      $additional_js = \Drupal::token()->replace($additional_js, $data);
+      $additional_js = \Drupal::token()->replace($additional_js, ['node' => $node]);
     }
   }
+  // "no_3p" is a setting of AddToAny 1.x, absent from the 2.x schema and
+  // form: no update removes it, so a site upgraded from 1.x may still have it
+  // in its active configuration, and the AddToAny script still honors it.
   $javascript_header = 'window.a2a_config=window.a2a_config||{};a2a_config.callbacks=[];a2a_config.overlays=[];a2a_config.templates={};'
-    . (($config->get('no_3p')) ? 'a2a_config.no_3p=1;' : '')
+    . ($config->get('no_3p') ? 'a2a_config.no_3p=1;' : '')
     . $additional_js;
   $variables['#attached']['html_head'][] = [
     // The data.
