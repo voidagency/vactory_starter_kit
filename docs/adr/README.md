@@ -1,6 +1,8 @@
 # Décisions d'architecture (ADR)
 
-Un fichier par décision, numéroté dans l'ordre : `0001-sujet.md`, `0002-sujet.md`… Pour en ajouter un, prendre le plus grand numéro du dossier et ajouter un.
+Ce dossier couvre le profil : son code, sa config livrée, ses dépendances et sa façon d'être consommé par les projets. La CI n'en fait pas partie : ses décisions sont suivies dans Redmine et dans le dépôt de l'image CI.
+
+Un fichier par décision, numéroté dans l'ordre : `0001-sujet.md`, `0002-sujet.md`… Pour en ajouter un, prendre le plus grand numéro du dossier et ajouter un. Un numéro retiré n'est pas réutilisé : le 0006, qui portait sur la CI, a été retiré, le prochain ADR est donc le 0007.
 
 ## Quand en écrire un
 Seulement si les trois conditions sont réunies :

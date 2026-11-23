@@ -163,7 +163,7 @@ drush cr
 - CI Drone : l'analyse Sonar tourne dans son propre pipeline, sur une image arm64 native ; le scanner se figeait par moments sous émulation (Redmine #71371).
 - `vactory_decoupled` : test du contrat avec block_class (classes dans le HTML du bloc et dans la sortie découplée) (#948).
 - `vactory_decoupled` : test de l'endpoint de menus lu par le front (liens inaccessibles ou désactivés absents pour un anonyme) (#957).
-- Décisions d'architecture consignées dans `docs/adr/` : fichiers temporaires, version figée du profil, Features, clé `url` des liens, block_class 3.x, pipeline Sonar (#960).
+- Décisions d'architecture consignées dans `docs/adr/` : fichiers temporaires, version figée du profil, Features, clé `url` des liens, block_class 3.x (#960). Les ADR couvrent le profil, pas la CI (#962).
 
 ## [3.2.3] - 2026-10-07
 Voir la [release 3.2.3](https://github.com/voidagency/vactory_starter_kit/releases/tag/3.2.3).
