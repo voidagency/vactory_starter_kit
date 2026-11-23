@@ -138,7 +138,7 @@ drush cr
 - `vactory_form_autosave` : module installable (#898).
 - `vactory_toolbox` : module installable sans workbench_moderation (#904).
 - `vactory_decoupled_flag`, `vactory_decoupled_search_ai` : dépendances déclarées (#905).
-- `vactory_quiz` : dépendances `taxonomy`, `vactory_core` et `vactory_field` déclarées (champ Tags, vocabulaire `tags`) ; l'affichage « card » et la ressource JSON:API du type Quiz passent dans `config/optional` : ils ne bloquent plus l'installation du module sans le mode d'affichage `card` du profil ou sans `jsonapi_extras` et `vactory_decoupled`. Rien à faire sur les sites existants, aucune feature à réimporter (Redmine #71388).
+- `vactory_quiz` : dépendances `taxonomy`, `vactory_core` et `vactory_field` déclarées (champ Tags, vocabulaire `tags`) ; l'affichage « card » et la ressource JSON:API du type Quiz passent dans `config/optional` : ils ne bloquent plus l'installation du module sans le mode d'affichage `card` du profil ou sans `jsonapi_extras` et `vactory_decoupled`. Rien à faire sur les sites existants, aucune feature à réimporter (#965, Redmine #71388).
 - `vactory_locator` : MarkerClusterer figé sur un commit jsdelivr, plus de dépendance à rawgit (#907).
 - `vactory_core` : services de menu (simplify_menu, manipulateur de menu) injectés par méthode. Le site ne tombe plus si simplify_menu ou le core ajoute un argument à un constructeur (#914).
 - `vactory_dynamic_field` : élément URL compatible linkit 7.0.13+ (#912).
