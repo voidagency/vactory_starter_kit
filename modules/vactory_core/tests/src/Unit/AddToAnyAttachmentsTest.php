@@ -10,8 +10,8 @@ use Drupal\Tests\UnitTestCase;
 /**
  * AddToAny script loaded only where share buttons are rendered.
  *
- * Tests vactory_core_page_attachments_alter() and
- * vactory_core_preprocess_addtoany_standard().
+ * Tests vactory_core_page_attachments_alter() and the preprocess hooks of the
+ * AddToAny templates (addtoany_standard, addtoany_follow).
  *
  * @group vactory_core
  */
@@ -65,6 +65,32 @@ class AddToAnyAttachmentsTest extends UnitTestCase {
     vactory_core_preprocess_addtoany_standard($variables);
     $this->assertContains(self::LIBRARY, $variables['#attached']['library']);
     $this->assertSame(['addtoany-js'], array_column($variables['#attached']['html_head'], 1));
+  }
+
+  /**
+   * The follow buttons attach the same script as the share buttons.
+   */
+  public function testFollowButtonsAttachLibrary(): void {
+    $variables = [];
+    vactory_core_preprocess_addtoany_follow($variables);
+    $this->assertContains(self::LIBRARY, $variables['#attached']['library']);
+    $this->assertSame(['addtoany-js'], array_column($variables['#attached']['html_head'], 1));
+  }
+
+  /**
+   * A "no_3p" setting kept from AddToAny 1.x is still passed to the script.
+   */
+  public function testLegacyNoThirdPartySetting(): void {
+    $variables = [];
+    vactory_core_preprocess_addtoany_standard($variables);
+    $this->assertStringNotContainsString('no_3p', (string) $variables['#attached']['html_head'][0][0]['#value']);
+
+    \Drupal::getContainer()->set('config.factory', $this->getConfigFactoryStub([
+      'addtoany.settings' => ['additional_js' => '', 'no_3p' => TRUE],
+    ]));
+    $variables = [];
+    vactory_core_preprocess_addtoany_standard($variables);
+    $this->assertStringContainsString('a2a_config.no_3p=1;', (string) $variables['#attached']['html_head'][0][0]['#value']);
   }
 
   /**
