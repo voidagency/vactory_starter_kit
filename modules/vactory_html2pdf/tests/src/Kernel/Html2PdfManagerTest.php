@@ -101,6 +101,35 @@ class Html2PdfManagerTest extends KernelTestBase {
   }
 
   /**
+   * A path with a leading slash and no scheme lands in the default directory.
+   *
+   * Redmine #71440: the "no scheme" case of html2Pdf() is reached by such a
+   * path, core gives it a target but no scheme. A path without scheme and
+   * without leading or trailing slash is rejected.
+   *
+   * @covers ::html2Pdf
+   */
+  public function testPathWithoutSchemeUsesTheDefaultDirectory(): void {
+    $manager = $this->container->get('vactory_html2pdf.manager');
+    $month = (new \DateTime('now'))->format('Y-m');
+    $result = $manager->html2Pdf('<h1>Certificat</h1>', '/html2pdf-test/certificat.pdf');
+    // The month may change between the two lines above.
+    $months = [$month, (new \DateTime('now'))->format('Y-m')];
+    $this->assertContains($result['uri'], array_map(function ($month) {
+      return 'public://html2pdf/' . $month . '/html2pdf-test/certificat.pdf';
+    }, $months));
+    $this->assertStringStartsWith('%PDF', file_get_contents($result['uri']));
+    $this->assertDirectoryDoesNotExist(getcwd() . '/public');
+
+    $result = $manager->html2Pdf('<h1>Certificat</h1>', '/certificat.pdf');
+    $this->assertMatchesRegularExpression('#^public://html2pdf/\d{4}-\d{2}/certificat\.pdf$#', $result['uri']);
+    $this->assertFileExists($result['uri']);
+
+    $this->expectException(VactoryHtml2PdfException::class);
+    $manager->html2Pdf('<h1>Certificat</h1>', 'html2pdf-test/certificat.pdf');
+  }
+
+  /**
    * A scheme the site does not provide is reported, nothing is written.
    *
    * The private file path is not set in this test: "private://" is unknown.
