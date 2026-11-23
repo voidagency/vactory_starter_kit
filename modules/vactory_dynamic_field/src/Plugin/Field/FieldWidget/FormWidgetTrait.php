@@ -3,6 +3,7 @@
 namespace Drupal\vactory_dynamic_field\Plugin\Field\FieldWidget;
 
 use Drupal\Component\Render\MarkupInterface;
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Component\Utility\NestedArray;
@@ -159,13 +160,28 @@ trait FormWidgetTrait {
 
       if (isset($options['#maxlength'])) {
         // Attach textfield counter library.
+        // textfield_counter iterates "key" as a list and uses each value as
+        // a CSS class selector.
         $delta = !empty($index) ? $index : 1;
-        $key = $field_id . '-' . $delta;
+        if ($field_id === '') {
+          // Fields of a group have no id here: one class per maximum length,
+          // the only setting that varies.
+          $key = 'df-maxlength-' . (int) $options['#maxlength'];
+        }
+        else {
+          // Same class name as before for a valid id (underscores are kept).
+          $key = Html::cleanCssIdentifier($field_id . '-' . $delta, [
+            ' ' => '-',
+            '/' => '-',
+            '[' => '-',
+            ']' => '',
+          ]);
+        }
         $element['#attributes']['class'][] = $key;
         $element['#attributes']['class'][] = 'textfield-counter-element';
         $element['#attributes']['data-field-definition-id'] = $key;
         $form['#attached']['library'][] = 'textfield_counter/counter';
-        $form['#attached']['drupalSettings']['textfieldCounter'][$key]['key'][$delta] = $key;
+        $form['#attached']['drupalSettings']['textfieldCounter'][$key]['key'] = [$key];
         $form['#attached']['drupalSettings']['textfieldCounter'][$key]['maxlength'] = (int) $options['#maxlength'];
         $form['#attached']['drupalSettings']['textfieldCounter'][$key]['counterPosition'] = 'after';
         $form['#attached']['drupalSettings']['textfieldCounter'][$key]['textCountStatusMessage'] = '<span class="current_count">@current_length</span>/<span class="maxlength_count">@maxlength</span>';

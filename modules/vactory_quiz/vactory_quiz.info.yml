@@ -14,3 +14,5 @@ dependencies:
   - 'drupal:user'
   - 'multiple_fields_remove_button:multiple_fields_remove_button'
   - 'scheduler:scheduler'
+  - 'vactory_views:vactory_views'
+  - 'views_autocomplete_filters:views_autocomplete_filters'
