@@ -17,6 +17,8 @@
 - **`block_class` 3.1 (#948) :** le formulaire d'un bloc refuse une classe qui n'est pas un identifiant CSS (caractères `:`, `/`, `[`, `.`, `@`… ou début par un chiffre), par exemple une variante Tailwind `md:hidden`. Les classes déjà enregistrées ne sont pas modifiées et restent envoyées telles quelles au front découplé, mais un tel bloc ne peut plus être enregistré en back-office sans corriger le champ. Dans le HTML rendu par Drupal, ces caractères étaient déjà retirés.
 - **Sitemap (#910) :** les liens déjà stockés ne changent qu'au prochain enregistrement de la page d'accueil ou à un rebuild du sitemap.
 - **Menus rendus par `simplify_menu()` (en-têtes, pieds de page, menu de l'espace privé, #957) :** un lien dont la cible n'est pas accessible à l'utilisateur courant n'est plus affiché, comme dans les menus du core. Un lien laissé visible à dessein vers une page réservée (par exemple une page de l'espace privé montrée aux visiteurs anonymes pour les amener à se connecter) disparaît pour ceux qui n'y ont pas accès : le faire pointer vers une page accessible (page de connexion, page de présentation).
+- **Sites avec `vactory_quiz_certificat`, méthode html2pdf (#953) :** `$settings['file_private_path']` est requis. Sans lui, les certificats ne sont pas générés et le rapport d'état affiche une erreur. Un certificat se télécharge connecté sur le site Drupal, par son titulaire ou par un compte qui a la permission `administer site configuration` : le lien envoyé par e-mail demande de se connecter d'abord.
+- **Certificats déjà générés :** les migrer vers le dossier privé, procédure dans le ticket Dispatch.
 
 **Procédure, dans cet ordre**
 
@@ -47,6 +49,7 @@ drush cr
 - **Versions relâchées (#944) :** consumers, csv_serialization, editor_advanced_link, jquery_colorpicker, link_attributes et block_list_override montent à la dernière version compatible avec le core du projet. Vérifier le diff du `composer.lock` avant de commiter.
 - **`linkit` (#947) :** la contrainte passe de 7.0.12 à `^7.0.16` ; le projet monte en 7.0.18 ou plus. Un projet qui fige linkit en dessous de 7.0.16 (6.x, 7.0.12) aura un conflit composer : lever ce blocage. Un projet qui a son propre contournement de la régression linkit 7.0.13 (élément `uri` ajouté à `url_extended`, patch local) le retire : le profil la gère depuis #912.
 - **`drupal/block_class` (#948) :** la contrainte passe de 3.0.0 à `^3.0` : 3.1.0 sur un core 10.3 ou plus, 3.0.0 en dessous. Pour rester en 3.0.0 (classes de bloc avec `:` ou `/` saisies en back-office) : `composer require drupal/block_class:3.0.0` avant la mise à jour. Ne pas passer en 4.x (branche expérimentale).
+- **Si du code projet appelle `vactory_html2pdf.manager::html2Pdf()` (#953) :** le PDF est écrit à l'URI demandée et l'`uri` renvoyée est un URI de flux (`public://dossier/fichier.pdf`). Adapter le code qui utilise cette `uri` ou le chemin du fichier. Un schéma indisponible sur le site lève `VactoryHtml2PdfException`.
 
 **2. `drush updb -y`** (à la main, après le déploiement)
 - Deux updates du profil : `vactory_decoupled_webform` 10102, qui retire la permission `access any webform configuration` aux rôles anonyme et authentifié (#897) ; `vactory_dynamic_field` 9501, qui active `paragraphs_edit`, avec `paragraphs` et `contextual`, sur les sites qui ne l'ont pas (#910).
@@ -70,6 +73,7 @@ drush cr
 - **Si le projet attribue un rôle aux comptes créés par l'inscription JSON:API :** le régler dans `/admin/config/system/decoupled-settings`, onglet *Registration*. Les rôles envoyés par le front ne sont plus pris en compte (#885).
 - **Si le projet attribue un rôle aux comptes créés par le webform d'inscription de l'espace privé** (`vactory_espace_prive_register`, utilisé par le front) : ce même réglage s'y applique (#950). Sans rôle coché, rien ne change : le compte est créé sans rôle. Un rôle ajouté par du code projet reste en place ; éviter de le régler aux deux endroits.
 - **Si `vactory_rate` est actif :** le formulaire des types de contenu ouverts au vote demande la permission `administer site configuration` (#961). La donner aux rôles non administrateurs qui utilisent ce formulaire.
+- **Si `vactory_quiz_certificat` est actif avec la méthode html2pdf (#953) :** définir `$settings['file_private_path']` dans `settings.php` (dossier accessible en écriture par le serveur web), puis vérifier que le rapport d'état (`/admin/reports/status`) n'affiche pas l'erreur « Quiz certificates ». Tant que le réglage manque, aucun certificat n'est généré : à chaque cron, l'erreur est journalisée et la demande reste dans la file, reprise aux crons suivants. Pour le support : un compte qui a la permission `administer site configuration` télécharge tous les certificats ; les autres comptes, seulement les leurs.
 
 **5. `drush cr`**
 - Obligatoire : sans lui, les pages avec un menu plantent tant que l'ancien conteneur reste en cache (#914).
@@ -88,6 +92,7 @@ drush cr
 - **Si `vactory_quiz` est actif :** `views_autocomplete_filters` est actif (`drush pm:list`) ; sinon l'activer (`drush en views_autocomplete_filters`), car Drupal n'active pas une dépendance nouvellement déclarée sur un site existant. Sans lui, la vue « Mes quiz passés » fonctionne, mais son filtre Titre n'a pas d'autocomplete (#956).
 - **Si des rôles sont cochés dans l'onglet *Registration* :** un compte créé par le formulaire d'inscription du front les reçoit (#950).
 - Menus du thème (en-tête, pied de page) en anonyme puis connecté : les liens attendus sont présents ; un lien vers une page non publiée ou réservée n'apparaît que pour les utilisateurs qui y ont accès (#957). Une page servie depuis un cache garde l'ancien menu jusqu'à son renouvellement.
+- **Si `vactory_quiz_certificat` est actif (méthode html2pdf) :** le rapport d'état n'affiche pas l'erreur « Quiz certificates ». Réussir un quiz avec certificat, lancer le cron, puis télécharger le certificat avec le compte qui l'a obtenu ; hors connexion ou avec un autre compte, le même lien répond « page introuvable » (#953).
 
 ### Sécurité
 - `vactory_core` : vérification TLS active par défaut dans le client HTTP de Drupal (#896).
@@ -97,6 +102,7 @@ drush cr
 - `vactory_decoupled` : inscription JSON:API : les rôles du compte sont décidés côté serveur (#885).
 - `vactory_core` : les menus rendus par `simplify_menu()` n'affichent plus les liens dont la cible n'est pas accessible à l'utilisateur courant, à tous les niveaux, comme le fait simplify_menu 3.3 (#957, Redmine #71363).
 - `vactory_rate` : le formulaire de réglages demande la permission `administer site configuration` (#961).
+- `vactory_quiz_certificat` : les certificats générés par html2pdf sont enregistrés dans le dossier privé du site, sous un nom de fichier non devinable ; téléchargement réservé au titulaire connecté et aux comptes qui ont la permission `administer site configuration`, les autres demandes reçoivent la réponse « page introuvable » (#953, Redmine #71157).
 
 ### Changements de comportement
 - `vactory_core` : les options passées au client HTTP de Drupal par l'appelant (timeout…) sont maintenant transmises (#896).
@@ -106,6 +112,7 @@ drush cr
 - `vactory_appointment` : champs conseiller masqués en back-office dès qu'un thème d'administration distinct du thème par défaut est configuré (seul `seven` était pris en compte) (#911).
 - `vactory_webform_mailchimp_handler` : une panne Mailchimp ne bloque plus la soumission, et le timeout passe de 120 s à 10 s (#903).
 - `vactory_core` : dans les réglages de CAPTCHA, le message d'erreur peut rester vide (message par défaut traduit) et n'est plus prérempli ; un message saisi est de nouveau pris en compte (#949).
+- `vactory_quiz_certificat` : un certificat généré par html2pdf se télécharge connecté sur le site Drupal, et la méthode html2pdf exige `$settings['file_private_path']` ; le rapport d'état signale une erreur s'il manque (#953).
 
 ### Ajouts
 - `vactory_admin_hardening` : nouveau module optionnel qui bloque en web l'interface de migration et l'interface de config du core, même pour uid 1 ; installé d'office sur les nouveaux sites uniquement (#886).
@@ -138,6 +145,7 @@ drush cr
 - `vactory_cloudinary` : `getExternalUrl()` renvoie une chaîne, propriété dynamique déclarée (PHP 8.2), dépendances déclarées (#920).
 - `vactory_dynamic_field` : le compteur de caractères (textfield_counter) fonctionne de nouveau dans la fenêtre Dynamic Fields, y compris sur les champs d'un groupe ; plus de `TypeError` dans la console (#954, Redmine #71223).
 - `vactory_quiz` : dépendances `views_autocomplete_filters` (autocomplete du filtre Titre de la vue) et `vactory_views` déclarées ; la vue livrée ne référence plus `vactory_google_places`, qu'elle n'utilisait pas (#956, Redmine #71362).
+- `vactory_html2pdf` : le PDF est écrit à l'URI demandée et l'`uri` renvoyée est un URI de flux valide ; dossier créé par Drupal (permissions correctes), dossier temporaire de Drupal au lieu de `/tmp`, exception `VactoryHtml2PdfException` de nouveau chargeable (#953, Redmine #71157).
 
 ### Retraits
 - `vactory_cloudinary` : services `console.output` et `vactory_cloudinary.move_file_batch`, inutilisés (la classe du second n'existe pas) (#920).

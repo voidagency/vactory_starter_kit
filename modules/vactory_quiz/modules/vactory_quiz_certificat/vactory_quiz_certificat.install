@@ -6,6 +6,31 @@
  */
 
 /**
+ * Implements hook_requirements().
+ */
+function vactory_quiz_certificat_requirements($phase) {
+  $requirements = [];
+  if ($phase !== 'runtime') {
+    return $requirements;
+  }
+  $method = \Drupal::config('vactory_quiz_certificat.settings')->get('method');
+  if ($method !== 'html2pdf') {
+    return $requirements;
+  }
+  if (!\Drupal::service('stream_wrapper_manager')->isValidScheme('private')) {
+    $requirements['vactory_quiz_certificat_private_path'] = [
+      'title' => t('Quiz certificates'),
+      'value' => t('Private file path not set'),
+      'description' => t('Quiz certificates are generated as PDF files in the private file directory, which is not configured: no certificate is generated. Set @setting in settings.php, to a directory the web server can write to, then rebuild the caches.', [
+        '@setting' => "\$settings['file_private_path']",
+      ]),
+      'severity' => REQUIREMENT_ERROR,
+    ];
+  }
+  return $requirements;
+}
+
+/**
  * Implements hook_install().
  */
 function vactory_quiz_certificat_install($is_syncing) {
@@ -51,7 +76,7 @@ function vactory_quiz_certificat_install($is_syncing) {
     'weight' => 20,
     'region' => 'content',
     'settings' => [
-      'display_label' => true,
+      'display_label' => TRUE,
     ],
   ];
   \Drupal::entityTypeManager()
