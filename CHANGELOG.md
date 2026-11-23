@@ -19,7 +19,7 @@
 - **Menus rendus par `simplify_menu()` (en-têtes, pieds de page, menu de l'espace privé, #957) :** un lien dont la cible n'est pas accessible à l'utilisateur courant n'est plus affiché, comme dans les menus du core. Un lien laissé visible à dessein vers une page réservée (par exemple une page de l'espace privé montrée aux visiteurs anonymes pour les amener à se connecter) disparaît pour ceux qui n'y ont pas accès : le faire pointer vers une page accessible (page de connexion, page de présentation).
 - **Sites avec `vactory_quiz_certificat`, méthode html2pdf (#953) :** `$settings['file_private_path']` est requis. Sans lui, les certificats ne sont pas générés et le rapport d'état affiche une erreur. Un certificat se télécharge connecté sur le site Drupal, par son titulaire ou par un compte qui a la permission `administer site configuration` : le lien envoyé par e-mail demande de se connecter d'abord.
 - **Certificats déjà générés :** les migrer vers le dossier privé, procédure dans le ticket Dispatch.
-- **Front qui envoie `ac=0` à `/_menus` (#966) :** le paramètre `ac` est ignoré ; le front reçoit seulement les liens auxquels son utilisateur a accès. Le front par défaut n'envoie pas ce paramètre. Vérifier les menus du front après la mise à jour (étape 6).
+- **Front de projet qui a modifié l'appel de l'API des menus (#966) :** les menus reçus contiennent seulement les liens auxquels l'utilisateur a accès. Le front par défaut n'est pas concerné. Vérifier les menus du front après la mise à jour (étape 6) ; détail dans Redmine #71439.
 
 **Procédure, dans cet ordre**
 
@@ -94,7 +94,7 @@ drush cr
 - **Si des rôles sont cochés dans l'onglet *Registration* :** un compte créé par le formulaire d'inscription du front les reçoit (#950).
 - Menus du thème (en-tête, pied de page) en anonyme puis connecté : les liens attendus sont présents ; un lien vers une page non publiée ou réservée n'apparaît que pour les utilisateurs qui y ont accès (#957). Une page servie depuis un cache garde l'ancien menu jusqu'à son renouvellement.
 - **Si `vactory_quiz_certificat` est actif (méthode html2pdf) :** le rapport d'état n'affiche pas l'erreur « Quiz certificates ». Réussir un quiz avec certificat, lancer le cron, puis télécharger le certificat avec le compte qui l'a obtenu ; hors connexion ou avec un autre compte, le même lien répond « page introuvable » (#953).
-- **Si le front du projet envoie `ac=0` à `/_menus` :** les menus du front, en anonyme puis connecté, contiennent les liens attendus ; un lien vers une page non publiée ou réservée n'y figure que pour les utilisateurs qui y ont accès (#966).
+- **Si le front du projet a modifié l'appel de l'API des menus :** les menus du front, en anonyme puis connecté, contiennent les liens attendus ; un lien vers une page non publiée ou réservée n'y figure que pour les utilisateurs qui y ont accès (#966).
 
 ### Sécurité
 - `vactory_core` : vérification TLS active par défaut dans le client HTTP de Drupal (#896).
@@ -105,7 +105,7 @@ drush cr
 - `vactory_core` : les menus rendus par `simplify_menu()` n'affichent plus les liens dont la cible n'est pas accessible à l'utilisateur courant, à tous les niveaux, comme le fait simplify_menu 3.3 (#957, Redmine #71363).
 - `vactory_rate` : le formulaire de réglages demande la permission `administer site configuration` (#961).
 - `vactory_quiz_certificat` : les certificats générés par html2pdf sont enregistrés dans le dossier privé du site, sous un nom de fichier non devinable ; téléchargement réservé au titulaire connecté et aux comptes qui ont la permission `administer site configuration`, les autres demandes reçoivent la réponse « page introuvable » (#953, Redmine #71157).
-- `vactory_decoupled` : le point d'accès `/_menus` applique toujours le contrôle d'accès aux liens ; le paramètre `ac` est ignoré (#966, Redmine #71439).
+- `vactory_decoupled` : l'API des menus applique toujours le contrôle d'accès aux liens (#966, Redmine #71439).
 
 ### Changements de comportement
 - `vactory_core` : les options passées au client HTTP de Drupal par l'appelant (timeout…) sont maintenant transmises (#896).
