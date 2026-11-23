@@ -19,6 +19,10 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
  * settings, config vactory_decoupled.settings:registration_default_roles).
  * Administrator, anonymous and authenticated roles are never added.
  *
+ * The "espace privé" registration webform applies the same default roles
+ * through defaultRoles().
+ *
+ * @see vactory_decoupled_espace_prive_decoupled_webform_data_presubmit_alter()
  * @see \Drupal\jsonapi_user_resources\Resource\Registration
  * @see \Drupal\vactory_decoupled\Form\DecoupledSettingsForm
  */

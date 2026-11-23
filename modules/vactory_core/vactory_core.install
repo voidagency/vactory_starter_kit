@@ -28,3 +28,22 @@ function vactory_core_requirements($phase) {
   }
   return $requirements;
 }
+
+/**
+ * Captcha: empty the default wrong answer message so that it is translated.
+ */
+function vactory_core_update_10001() {
+  if (!\Drupal::moduleHandler()->moduleExists('captcha')) {
+    return t('Captcha is not installed: nothing to do.');
+  }
+  $config = \Drupal::configFactory()->getEditable('captcha.settings');
+  $message = trim((string) $config->get('wrong_captcha_response_message'));
+  if ($config->isNew() || $message === '') {
+    return t('Captcha wrong answer message already empty: nothing to do.');
+  }
+  if (!in_array($message, _vactory_core_captcha_default_error_messages(), TRUE)) {
+    return t('Captcha wrong answer message is customised and was kept: "@message". It is now displayed as is; translate it with the configuration translation, or empty it to use the translated default message.', ['@message' => $message]);
+  }
+  $config->set('wrong_captcha_response_message', '')->save();
+  return t('Captcha wrong answer message emptied: the default message is used, translated by the interface translation.');
+}
