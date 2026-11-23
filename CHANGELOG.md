@@ -14,6 +14,7 @@
 - **`term_2_slug` (#884) :** le slug de chaque traduction est normalisé à l'enregistrement du terme (minuscules ASCII, mots joints par `-`). Les URL et filtres front qui s'appuient sur un slug avec majuscules, accents, `_` ou `/` changent.
 - **`vactory_appointment` (#911) :** les champs conseiller ne sont plus éditables en back-office ; ils le restent en front.
 - **Message d'erreur du CAPTCHA (#949) :** le patch du profil qui imposait le message par défaut traduit est retiré. Un message personnalisé dans les réglages de CAPTCHA, ignoré jusque-là, s'affiche de nouveau, tel quel dans toutes les langues tant qu'il n'est pas traduit (traduction de configuration). `drush updb` l'indique dans sa sortie (étape 2).
+- **`block_class` 3.1 (#948) :** le formulaire d'un bloc refuse une classe qui n'est pas un identifiant CSS (caractères `:`, `/`, `[`, `.`, `@`… ou début par un chiffre), par exemple une variante Tailwind `md:hidden`. Les classes déjà enregistrées ne sont pas modifiées et restent envoyées telles quelles au front découplé, mais un tel bloc ne peut plus être enregistré en back-office sans corriger le champ. Dans le HTML rendu par Drupal, ces caractères étaient déjà retirés.
 - **Sitemap (#910) :** les liens déjà stockés ne changent qu'au prochain enregistrement de la page d'accueil ou à un rebuild du sitemap.
 
 **Procédure, dans cet ordre**
@@ -44,6 +45,7 @@ drush cr
 - **Si une feature du projet exporte les rôles `anonymous` ou `authenticated`** (`user.role.anonymous.yml`, `user.role.authenticated.yml`) : retirer la permission `access any webform configuration` de ces fichiers. Sinon, un `drush fr` de cette feature la redonne (#897). Même chose pour un dossier de config importé à la main par `drush cim` (`config/sync`, `config/staging`…).
 - **Versions relâchées (#944) :** consumers, csv_serialization, editor_advanced_link, jquery_colorpicker, link_attributes et block_list_override montent à la dernière version compatible avec le core du projet. Vérifier le diff du `composer.lock` avant de commiter.
 - **`linkit` (#947) :** la contrainte passe de 7.0.12 à `^7.0.16` ; le projet monte en 7.0.18 ou plus. Un projet qui fige linkit en dessous de 7.0.16 (6.x, 7.0.12) aura un conflit composer : lever ce blocage. Un projet qui a son propre contournement de la régression linkit 7.0.13 (élément `uri` ajouté à `url_extended`, patch local) le retire : le profil la gère depuis #912.
+- **`drupal/block_class` (#948) :** la contrainte passe de 3.0.0 à `^3.0` : 3.1.0 sur un core 10.3 ou plus, 3.0.0 en dessous. Pour rester en 3.0.0 (classes de bloc avec `:` ou `/` saisies en back-office) : `composer require drupal/block_class:3.0.0` avant la mise à jour. Ne pas passer en 4.x (branche expérimentale).
 
 **2. `drush updb -y`** (à la main, après le déploiement)
 - Deux updates du profil : `vactory_decoupled_webform` 10102, qui retire la permission `access any webform configuration` aux rôles anonyme et authentifié (#897) ; `vactory_dynamic_field` 9501, qui active `paragraphs_edit`, avec `paragraphs` et `contextual`, sur les sites qui ne l'ont pas (#910).
@@ -69,12 +71,14 @@ drush cr
 
 **5. `drush cr`**
 - Obligatoire : sans lui, les pages avec un menu plantent tant que l'ancien conteneur reste en cache (#914).
+- block_class 3.1 déclare un nouveau service pour ses hooks : sans `drush cr`, le rendu des blocs plante (#948).
 
 **6. Vérifications**
 - `drush updb` n'a plus rien en attente, et `drush status` est correct.
 - Chaque appel HTTPS du projet (API métier, SSO, CRM, envoi de formulaire distant…) répond, sans `cURL error 60` dans les logs.
 - **Si `vactory_decoupled_flag`, `vactory_decoupled_search_ai` ou `vactory_toolbox` est actif :** leurs dépendances nouvellement déclarées sont actives (`drush pm:list`), car Drupal ne les active pas sur un site existant (#904, #905).
 - Une page avec menu s'affiche ; `/sitemap.xml` et `/image-sitemap.xml` répondent.
+- **Si block_class est passé en 3.1 :** un bloc qui a une classe CSS l'affiche toujours (HTML Drupal, et propriété `classes` du bloc côté front) ; le formulaire d'un bloc avec classes s'enregistre (#948).
 - Un envoi de webform avec fichier aboutit, côté front.
 - Une mauvaise réponse à un CAPTCHA affiche le message d'erreur traduit, en français et en arabe (#949).
 - Connexion au back-office, et connexion front (OAuth, SSO s'il est utilisé) (#908, #928).
@@ -142,6 +146,7 @@ drush cr
 - `composer.lock` du profil mis à jour, sans effet sur les projets, qui résolvent leurs propres versions (#893, #924 à #927, #931, #932).
 - Contraintes relâchées, plus de version figée sans raison (#944, Redmine #71222) : `drupal/consumers` ^1.24, `drupal/csv_serialization` ^4.0, `drupal/editor_advanced_link` ^2.2.8 (lève l'exigence core ^10.5), `voidagency/jquery_colorpicker` ^5.0 \|\| ^6.0 (6.0 compatible Drupal 11), `drupal/link_attributes` ^2.1, `drupal/block_list_override` ^1.0.3 ; `league/csv` retiré (dépendance de csv_serialization).
 - `drupal/linkit` : 7.0.12 → `^7.0.16` (#947). La régression de linkit 7.0.13 sur les champs `url_extended` est gérée dans le profil depuis #912 (Redmine #71222).
+- `drupal/block_class` : `^3.0` au lieu de 3.0.0, figé sans raison (#948, Redmine #71222). La 3.1.0 exige un core 10.3 ou plus, pose les classes par `hook_block_view_alter` et valide le champ « CSS class(es) » ; aucun update. Pas de 4.x.
 
 ### Interne
 - Tests d'intégration des dépendances à historique d'incidents et contrats entre le profil et ses dépendances (Redmine #71160 ; #912 à #920, #934).
@@ -151,6 +156,7 @@ drush cr
 - `vactory_image_sitemap` : phpcs propre, sans changement de comportement (#937).
 - `vactory_image_sitemap` : variable inutilisée retirée (Sonar S1481, #945).
 - CI Drone : l'analyse Sonar tourne dans son propre pipeline, sur une image arm64 native ; le scanner se figeait par moments sous émulation (Redmine #71371).
+- `vactory_decoupled` : test du contrat avec block_class (classes dans le HTML du bloc et dans la sortie découplée) (#948).
 
 ## [3.2.3] - 2026-10-07
 Voir la [release 3.2.3](https://github.com/voidagency/vactory_starter_kit/releases/tag/3.2.3).
