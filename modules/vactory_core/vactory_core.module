@@ -411,7 +411,10 @@ function vactory_core_page_attachments_alter(array &$attachments) {
       unset($attachments['#attached']['html_head'][$key]);
     }
   }
-  $addtoany_lib = array_search('addtoany/addtoany', $attachments['#attached']['library']);
+  // AddToAny attaches its external script to every page. Remove it here: it is
+  // attached only where share buttons are rendered, see
+  // vactory_core_preprocess_addtoany_standard().
+  $addtoany_lib = array_search('addtoany/addtoany.front', $attachments['#attached']['library']);
   if ($addtoany_lib !== FALSE) {
     unset($attachments['#attached']['library'][$addtoany_lib]);
   }
@@ -430,43 +433,45 @@ function vactory_core_xmlsitemap_link_alter(array &$link, array $context) {
 }
 
 /**
- * Implements hook_preprocess_HOOK().
+ * Implements hook_preprocess_HOOK() for addtoany_standard.
+ *
+ * Attaches the AddToAny script only where share buttons are rendered. The
+ * addtoany_standard template is used by the AddToAny block and by the
+ * AddToAny field of entity displays.
  */
-function vactory_core_preprocess_block(&$variables) {
-  if (isset($variables['plugin_id']) && $variables['plugin_id'] === 'addtoany_block') {
-    $config = \Drupal::config('addtoany.settings');
-    // Initial JavaScript.
-    $additional_js = $config->get('additional_js');
-    if (\Drupal::moduleHandler()->moduleExists('token')) {
-      $node = \Drupal::routeMatch()->getParameter('node');
-      $data = [];
-      if ($node) {
-        if (is_numeric($node)) {
-          $node = Drupal::service('entity_type.manager')->getStorage('node')
-            ->load($node);
-        }
-        $data = ['node' => $node];
-        $additional_js = \Drupal::token()->replace($additional_js, $data);
+function vactory_core_preprocess_addtoany_standard(&$variables) {
+  $config = \Drupal::config('addtoany.settings');
+  // Initial JavaScript.
+  $additional_js = $config->get('additional_js');
+  if (\Drupal::moduleHandler()->moduleExists('token')) {
+    $node = \Drupal::routeMatch()->getParameter('node');
+    $data = [];
+    if ($node) {
+      if (is_numeric($node)) {
+        $node = Drupal::service('entity_type.manager')->getStorage('node')
+          ->load($node);
       }
+      $data = ['node' => $node];
+      $additional_js = \Drupal::token()->replace($additional_js, $data);
     }
-    $javascript_header = 'window.a2a_config=window.a2a_config||{};a2a_config.callbacks=[];a2a_config.overlays=[];a2a_config.templates={};'
-      . (($config->get('no_3p')) ? 'a2a_config.no_3p=1;' : '')
-      . $additional_js;
-    $variables['#attached']['html_head'][] = [
-      // The data.
-      [
-        // Add a <script> tag.
-        '#tag' => 'script',
-        // Add JavaScript to the <script> tag.
-        '#value' => Markup::create($javascript_header),
-        // Give weight so it appears after meta tags, etc.
-        '#weight' => 10,
-      ],
-      // Assign a key to reference this HTML <HEAD> element when altering.
-      'addtoany-js',
-    ];
-    $variables['#attached']['library'][] = 'addtoany/addtoany';
   }
+  $javascript_header = 'window.a2a_config=window.a2a_config||{};a2a_config.callbacks=[];a2a_config.overlays=[];a2a_config.templates={};'
+    . (($config->get('no_3p')) ? 'a2a_config.no_3p=1;' : '')
+    . $additional_js;
+  $variables['#attached']['html_head'][] = [
+    // The data.
+    [
+      // Add a <script> tag.
+      '#tag' => 'script',
+      // Add JavaScript to the <script> tag.
+      '#value' => Markup::create($javascript_header),
+      // Give weight so it appears after meta tags, etc.
+      '#weight' => 10,
+    ],
+    // Assign a key to reference this HTML <HEAD> element when altering.
+    'addtoany-js',
+  ];
+  $variables['#attached']['library'][] = 'addtoany/addtoany.front';
 }
 
 /**
