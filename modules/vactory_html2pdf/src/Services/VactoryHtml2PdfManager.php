@@ -113,7 +113,9 @@ class VactoryHtml2PdfManager {
     $file_name = array_pop($file_target_pieces);
     $file_parents = implode('/', $file_target_pieces);
     if (empty($file_scheme)) {
-      // Set default file scheme to public.
+      // Set default file scheme to public. Reached by a path without
+      // scheme that starts or ends with a slash ("/dir/file.pdf"): core
+      // gives it a target. Any other path without scheme is rejected above.
       $current_time = new \DateTime('now');
       $date = $current_time->format('Y-m');
       $base = 'public://html2pdf/' . $date . '/';

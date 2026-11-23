@@ -17,9 +17,10 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * Requests go through the HTTP kernel. The owner and the users with the
  * "administer site configuration" permission download the file. Any other
- * request in the folder of the certificates gets the same "not found" answer,
- * whether the file exists or not. Other private files keep the answer of
- * core.
+ * request in the folder of the certificates gets the same answer whether the
+ * file exists or not: "not found", or the login page for an anonymous user
+ * (see CertificatAnonymousDownloadTest). Other private files keep the answer
+ * of core.
  *
  * @group vactory_quiz_certificat
  */
@@ -192,14 +193,15 @@ class CertificatDownloadResponseTest extends KernelTestBase {
   }
 
   /**
-   * An anonymous user gets "not found", as for a missing certificate.
+   * An anonymous user gets the same answer as for a missing certificate.
    */
-  public function testAnonymousGetsNotFound(): void {
+  public function testAnonymousGetsTheSameAnswer(): void {
     $this->setCurrentUser(new AnonymousUserSession());
     $existing = $this->get(self::PATH);
     $missing = $this->get(self::MISSING);
-    $this->assertSame(404, $existing->getStatusCode());
-    $this->assertSame(404, $missing->getStatusCode());
+    // The login page (Redmine #71440), never the file.
+    $this->assertSame(302, $existing->getStatusCode());
+    $this->assertSame(302, $missing->getStatusCode());
     $this->assertSameAnswer($missing, $existing);
   }
 

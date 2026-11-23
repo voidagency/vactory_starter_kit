@@ -18,6 +18,10 @@ A certificate is downloaded by its owner, logged in on the Drupal site, or by
 a user with the `administer site configuration` permission. Any other request
 for a file of this folder gets a "page not found" answer.
 
+The link sent by mail is this download URL. Opened logged out, it leads to
+the login page of Drupal (instead of the "page not found" answer), then to the
+certificate once logged in.
+
 ### Module Loom Demo
 Please check the module demo video on:
 https://www.loom.com/share/2a132fa25ee9497f974e88cb2a9ab41d

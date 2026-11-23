@@ -8,6 +8,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Mail\MailManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Queue\DelayedRequeueException;
 use Drupal\Core\Queue\QueueWorkerBase;
 use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
@@ -15,7 +16,6 @@ use Drupal\user\UserInterface;
 use Drupal\vactory_html2pdf\Services\VactoryHtml2PdfException;
 use Drupal\vactory_html2pdf\Services\VactoryHtml2PdfManager;
 use Drupal\vactory_quiz\Services\VactoryQuizManager;
-use Drupal\vactory_reminder\SuspendCurrentItemException;
 use Mpdf\MpdfException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -139,7 +139,39 @@ class GenerateCertificatQueueProcessor extends QueueWorkerBase implements Contai
   }
 
   /**
-   * @inheritDoc
+   * Seconds before an item that could not be processed is claimed again.
+   *
+   * Same value as the "cron" time of the worker, which was the lease of a
+   * failed item: such an item is retried by a following cron run.
+   */
+  protected const RETRY_DELAY = 60;
+
+  /**
+   * Logs why an item is not processed and builds the exception to throw.
+   *
+   * The item stays in the queue and is claimed again after the delay, the
+   * other items of the queue are still processed. Core does not log this
+   * exception: the reason is logged here.
+   *
+   * @param string $reason
+   *   Why the certificate could not be generated.
+   *
+   * @return \Drupal\Core\Queue\DelayedRequeueException
+   *   The exception to throw from processItem().
+   */
+  protected function retryLater(string $reason): DelayedRequeueException {
+    $message = 'Certificate not generated, item kept in the queue and retried later: ' . $reason;
+    \Drupal::logger('vactory_quiz_certificat')->error('Certificate not generated, item kept in the queue and retried later: @reason', [
+      '@reason' => $reason,
+    ]);
+    return new DelayedRequeueException(static::RETRY_DELAY, $message);
+  }
+
+  /**
+   * {@inheritdoc}
+   *
+   * @throws \Drupal\Core\Queue\DelayedRequeueException
+   *   When the certificate could not be generated: the item is retried later.
    */
   public function processItem($data) {
     if (
@@ -150,23 +182,23 @@ class GenerateCertificatQueueProcessor extends QueueWorkerBase implements Contai
       !isset($data['user_mark']) ||
       !isset($data['user_answers'])
     ) {
-      throw new SuspendCurrentItemException('Item suspended: Insufficient item data missing one of html_output|output_file|quiz_id|user_id|user_answers|user_mark');
+      throw $this->retryLater('Insufficient item data missing one of html_output|output_file|quiz_id|user_id|user_answers|user_mark');
     }
     if (
       !is_numeric($data['quiz_id']) ||
       !is_numeric($data['user_id'])
     ) {
-      throw new SuspendCurrentItemException('Item suspended: Invalid type for user_id|quiz_id data, needs to be numeric');
+      throw $this->retryLater('Invalid type for user_id|quiz_id data, needs to be numeric');
     }
     $user = $this->entityTypeManager->getStorage('user')
       ->load($data['user_id']);
     if (!$user instanceof UserInterface) {
-      throw new SuspendCurrentItemException('Item suspended: No user has been found for user_id=' . $data['user_id']);
+      throw $this->retryLater('No user has been found for user_id=' . $data['user_id']);
     }
     $quiz = $this->entityTypeManager->getStorage('node')
       ->load($data['quiz_id']);
     if (!$quiz instanceof NodeInterface) {
-      throw new SuspendCurrentItemException('Item suspended: No quiz node has been found for quiz_id=' . $data['quiz_id']);
+      throw $this->retryLater('No quiz node has been found for quiz_id=' . $data['quiz_id']);
     }
     $html_output = $data['html_output'];
     $output_file = $data['output_file'];
@@ -210,10 +242,11 @@ class GenerateCertificatQueueProcessor extends QueueWorkerBase implements Contai
       }
     }
     catch (MpdfException $e) {
-      throw new SuspendCurrentItemException('Item suspended: ' . $e->getMessage());
+      throw $this->retryLater($e->getMessage());
     }
     catch (VactoryHtml2PdfException $e) {
-      throw new SuspendCurrentItemException('Item suspended: ' . $e->getMessage());
+      throw $this->retryLater($e->getMessage());
     }
   }
+
 }
