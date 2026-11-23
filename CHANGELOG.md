@@ -92,7 +92,7 @@ drush cr
 - **Si `vactory_quiz` est actif :** `views_autocomplete_filters` est actif (`drush pm:list`) ; sinon l'activer (`drush en views_autocomplete_filters`), car Drupal n'active pas une dépendance nouvellement déclarée sur un site existant. Sans lui, la vue « Mes quiz passés » fonctionne, mais son filtre Titre n'a pas d'autocomplete (#956).
 - **Si des rôles sont cochés dans l'onglet *Registration* :** un compte créé par le formulaire d'inscription du front les reçoit (#950).
 - Menus du thème (en-tête, pied de page) en anonyme puis connecté : les liens attendus sont présents ; un lien vers une page non publiée ou réservée n'apparaît que pour les utilisateurs qui y ont accès (#957). Une page servie depuis un cache garde l'ancien menu jusqu'à son renouvellement.
-- **Si `vactory_quiz_certificat` est actif (méthode html2pdf) :** le rapport d'état n'affiche pas l'erreur « Quiz certificates ». Réussir un quiz avec certificat, lancer le cron, puis télécharger le certificat avec le compte qui l'a obtenu ; le même lien est refusé hors connexion (#953).
+- **Si `vactory_quiz_certificat` est actif (méthode html2pdf) :** le rapport d'état n'affiche pas l'erreur « Quiz certificates ». Réussir un quiz avec certificat, lancer le cron, puis télécharger le certificat avec le compte qui l'a obtenu ; hors connexion ou avec un autre compte, le même lien répond « page introuvable » (#953).
 
 ### Sécurité
 - `vactory_core` : vérification TLS active par défaut dans le client HTTP de Drupal (#896).
@@ -102,7 +102,7 @@ drush cr
 - `vactory_decoupled` : inscription JSON:API : les rôles du compte sont décidés côté serveur (#885).
 - `vactory_core` : les menus rendus par `simplify_menu()` n'affichent plus les liens dont la cible n'est pas accessible à l'utilisateur courant, à tous les niveaux, comme le fait simplify_menu 3.3 (#957, Redmine #71363).
 - `vactory_rate` : le formulaire de réglages demande la permission `administer site configuration` (#961).
-- `vactory_quiz_certificat` : les certificats générés par html2pdf sont enregistrés dans le dossier privé du site, sous un nom de fichier non devinable ; téléchargement réservé au titulaire connecté et aux comptes qui ont la permission `administer site configuration` (#953, Redmine #71157).
+- `vactory_quiz_certificat` : les certificats générés par html2pdf sont enregistrés dans le dossier privé du site, sous un nom de fichier non devinable ; téléchargement réservé au titulaire connecté et aux comptes qui ont la permission `administer site configuration`, les autres demandes reçoivent la réponse « page introuvable » (#953, Redmine #71157).
 
 ### Changements de comportement
 - `vactory_core` : les options passées au client HTTP de Drupal par l'appelant (timeout…) sont maintenant transmises (#896).

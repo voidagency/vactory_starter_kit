@@ -15,7 +15,8 @@ Certificates are written in `private://quiz_certificat/<year>-<month>/`:
 certificate is generated and the status report shows an error.
 
 A certificate is downloaded by its owner, logged in on the Drupal site, or by
-a user with the `administer site configuration` permission.
+a user with the `administer site configuration` permission. Any other request
+for a file of this folder gets a "page not found" answer.
 
 ### Module Loom Demo
 Please check the module demo video on:

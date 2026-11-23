@@ -30,12 +30,20 @@ function vactory_quiz_certificat_theme($existing, $type, $theme, $path) {
  * the "administer site configuration" permission, the one of the settings
  * forms of the quiz modules, downloads any of them (support).
  *
- * Returns NULL, never -1, when this module has nothing to say: another module
- * may still grant the access.
+ * Returns NULL when this module has nothing to say: another module may still
+ * grant the access. When nobody does, the download request is answered "not
+ * found", as for a file that does not exist (see
+ * \Drupal\vactory_quiz_certificat\EventSubscriber\CertificatNotFoundSubscriber).
+ *
+ * A URI with a ".." segment is refused (-1) for everybody: the link to a
+ * certificate has none.
  */
 function vactory_quiz_certificat_file_download($uri) {
   if (!str_starts_with($uri, 'private://quiz_certificat/')) {
     return NULL;
+  }
+  if (in_array('..', preg_split('@[/\\\\]@', $uri), TRUE)) {
+    return -1;
   }
   $account = \Drupal::currentUser();
   if ($account->isAnonymous()) {

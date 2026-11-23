@@ -9,3 +9,10 @@ services:
       - '@state'
       - '@language_manager'
       - '@entity.repository'
+  vactory_quiz_certificat.not_found_subscriber:
+    class: Drupal\vactory_quiz_certificat\EventSubscriber\CertificatNotFoundSubscriber
+    arguments:
+      - '@stream_wrapper_manager'
+      - '@file_system'
+    tags:
+      - { name: event_subscriber }

@@ -125,6 +125,37 @@ class CertificatFileDownloadTest extends KernelTestBase {
   }
 
   /**
+   * A URI with a ".." segment is refused for everybody.
+   */
+  public function testParentSegmentIsRefused(): void {
+    $in_folder = 'private://quiz_certificat/2026-11/../2026-11/Jane-Doe-Certif-1.pdf';
+    $this->container->get('database')->update('vactory_quiz_history')
+      ->fields(['certificat' => $in_folder])
+      ->execute();
+    $uris = [
+      $in_folder,
+      'private://quiz_certificat/../other/file.pdf',
+      'private://quiz_certificat/2026-11\\..\\..\\file.pdf',
+    ];
+    $accounts = [
+      $this->owner,
+      $this->createUser(['administer site configuration']),
+      $this->createUser(['access content']),
+      new AnonymousUserSession(),
+    ];
+    foreach ($accounts as $account) {
+      $this->setCurrentUser($account);
+      foreach ($uris as $uri) {
+        $this->assertSame([-1], $this->fileDownloadHeaders($uri), $uri);
+      }
+    }
+    // A name that only contains dots is not a ".." segment.
+    $this->setCurrentUser($accounts[1]);
+    $headers = $this->fileDownloadHeaders('private://quiz_certificat/2026-11/A..B.pdf');
+    $this->assertSame('application/pdf', $headers['Content-Type'] ?? NULL);
+  }
+
+  /**
    * The owner gets no access to other files from this module.
    */
   public function testNoAccessToOtherFiles(): void {
