@@ -240,6 +240,49 @@ class MenusEndpointTest extends ExistingSiteBase {
   }
 
   /**
+   * The "ac" parameter is ignored: the answer is the same as without it.
+   *
+   * @dataProvider providerIgnoredParameter
+   */
+  public function testAccessParameterIsIgnored(string $value): void {
+    [, $unpublished] = $this->addMixedLinks();
+    $expected = $this->menuData();
+
+    $this->assertSame($expected, $this->menuData(['ac' => $value]));
+    $content = $this->getSession()->getPage()->getContent();
+    $this->assertStringNotContainsString($unpublished->label(), $content);
+    $this->assertStringNotContainsString('Administration link', $content);
+  }
+
+  /**
+   * The "ac" parameter is ignored for a logged-in user too.
+   *
+   * @dataProvider providerIgnoredParameter
+   */
+  public function testAccessParameterIsIgnoredForUser(string $value): void {
+    $this->addMixedLinks();
+    $this->loginAs($this->createUser(['access content']));
+    $expected = $this->menuData();
+
+    $this->assertSame(
+      ['Accessible parent', 'Accessible child'],
+      $this->flatten($expected['items'])
+    );
+    $this->assertSame($expected, $this->menuData(['ac' => $value]));
+  }
+
+  /**
+   * Values of the "ac" parameter.
+   */
+  public static function providerIgnoredParameter(): array {
+    return [
+      'zero' => ['0'],
+      'empty' => [''],
+      'one' => ['1'],
+    ];
+  }
+
+  /**
    * An empty or unknown menu answers an empty list.
    */
   public function testEmptyMenu(): void {
