@@ -19,6 +19,7 @@
 - **Menus rendus par `simplify_menu()` (en-têtes, pieds de page, menu de l'espace privé, #957) :** un lien dont la cible n'est pas accessible à l'utilisateur courant n'est plus affiché, comme dans les menus du core. Un lien laissé visible à dessein vers une page réservée (par exemple une page de l'espace privé montrée aux visiteurs anonymes pour les amener à se connecter) disparaît pour ceux qui n'y ont pas accès : le faire pointer vers une page accessible (page de connexion, page de présentation).
 - **Sites avec `vactory_quiz_certificat`, méthode html2pdf (#953) :** `$settings['file_private_path']` est requis. Sans lui, les certificats ne sont pas générés et le rapport d'état affiche une erreur. Un certificat se télécharge connecté sur le site Drupal, par son titulaire ou par un compte qui a la permission `administer site configuration` : le lien envoyé par e-mail demande de se connecter d'abord.
 - **Certificats déjà générés :** les migrer vers le dossier privé, procédure dans le ticket Dispatch.
+- **Boutons AddToAny (#959) :** le script AddToAny n'est plus chargé que là où le bloc de partage, le bloc « follow », le champ AddToAny d'un affichage d'entité ou le champ de vue AddToAny est affiché. Un template projet qui écrit lui-même le HTML des boutons (`a2a_kit`), sans ce bloc ni ce champ, doit attacher la librairie `addtoany/addtoany.front` (`{{ attach_library('addtoany/addtoany.front') }}`), sinon ses boutons ne s'affichent plus. Un module projet qui porte déjà son propre contournement (retrait du script AddToAny des pages sans boutons) peut le retirer après la mise à jour.
 
 **Procédure, dans cet ordre**
 
@@ -80,6 +81,7 @@ drush cr
 **5. `drush cr`**
 - Obligatoire : sans lui, les pages avec un menu plantent tant que l'ancien conteneur reste en cache (#914).
 - block_class 3.1 déclare un nouveau service pour ses hooks : sans `drush cr`, le rendu des blocs plante (#948).
+- Boutons AddToAny (#959) : sans `drush cr`, les boutons de partage ne s'affichent plus, tant que le nouveau hook qui leur attache le script n'est pas pris en compte.
 
 **6. Vérifications**
 - `drush updb` n'a plus rien en attente, et `drush status` est correct.
@@ -97,6 +99,7 @@ drush cr
 - **Si `vactory_quiz_certificat` est actif (méthode html2pdf) :** le rapport d'état n'affiche pas l'erreur « Quiz certificates ». Réussir un quiz avec certificat, lancer le cron, puis télécharger le certificat avec le compte qui l'a obtenu ; avec un autre compte, le même lien répond « page introuvable » ; hors connexion, il ne donne pas le fichier (#953).
 - **Si `vactory_quiz_certificat` envoie le mail de notification (#963) :** le mail reçu après le cron contient le lien du certificat, et non le texte `[quiz:certificat_url]`. Avec un certificat qui ne peut pas être généré (par exemple sans `file_private_path`), le cron se termine normalement et l'erreur est dans les logs, canal `vactory_quiz_certificat`.
 - **Si `vactory_quiz_certificat` envoie le mail de notification (#963) :** ouvrir le lien du mail hors connexion : la page de connexion de Drupal s'affiche ; après connexion avec le compte qui a obtenu le certificat, le PDF se télécharge. Avec un autre compte, le lien répond « page introuvable ». Sur un site découplé, depuis un domaine `api.…` (où `vactory_decoupled` renvoie les pages de Drupal vers le front), la page de connexion n'est pas servie : pas de redirection, la réponse est celle d'un fichier introuvable.
+- **Si le site affiche des boutons AddToAny (#959) :** sur une page sans boutons, le code source ne contient plus le script `static.addtoany.com` ; sur une page avec boutons (partage ou « follow »), il le contient, les boutons s'affichent et un partage s'ouvre au clic.
 
 ### Sécurité
 - `vactory_core` : vérification TLS active par défaut dans le client HTTP de Drupal (#896).
@@ -118,6 +121,7 @@ drush cr
 - `vactory_core` : dans les réglages de CAPTCHA, le message d'erreur peut rester vide (message par défaut traduit) et n'est plus prérempli ; un message saisi est de nouveau pris en compte (#949).
 - `vactory_quiz_certificat` : un certificat généré par html2pdf se télécharge connecté sur le site Drupal, et la méthode html2pdf exige `$settings['file_private_path']` ; le rapport d'état signale une erreur s'il manque (#953).
 - `vactory_quiz_certificat` : hors connexion, le lien d'un certificat (celui du mail de notification) mène à la page de connexion de Drupal, puis au certificat une fois connecté, au lieu d'une page d'erreur. Rien ne change pour un utilisateur connecté, ni pour les autres fichiers privés (#963, Redmine #71440).
+- `vactory_core` : le script externe AddToAny n'est chargé que sur les pages qui affichent des boutons de partage ou « follow » (bloc, champ ou champ de vue AddToAny), et plus sur toutes les pages (#959, Redmine #66851).
 
 ### Ajouts
 - `vactory_admin_hardening` : nouveau module optionnel qui bloque en web l'interface de migration et l'interface de config du core, même pour uid 1 ; installé d'office sur les nouveaux sites uniquement (#886).
