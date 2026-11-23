@@ -125,13 +125,12 @@ class CertificatLoginRedirectSubscriber implements EventSubscriberInterface {
    */
   public function onException(ExceptionEvent $event): void {
     $exception = $event->getThrowable();
-    if (!$exception instanceof AccessDeniedHttpException && !$exception instanceof NotFoundHttpException) {
+    $is_refusal = $exception instanceof AccessDeniedHttpException
+      || $exception instanceof NotFoundHttpException;
+    if (!$is_refusal || !$event->isMainRequest() || !$this->currentUser->isAnonymous()) {
       return;
     }
     $request = $event->getRequest();
-    if (!$event->isMainRequest() || !$this->currentUser->isAnonymous()) {
-      return;
-    }
     $uri = $this->certificatUri($request);
     if ($uri === NULL || $this->loginPageIsNotServed($request)) {
       return;
@@ -167,19 +166,14 @@ class CertificatLoginRedirectSubscriber implements EventSubscriberInterface {
    *   not the download of a certificate.
    */
   protected function certificatUri(Request $request): ?string {
-    if (!in_array($request->attributes->get(RouteObjectInterface::ROUTE_NAME), static::ROUTES, TRUE)) {
-      return NULL;
-    }
     $target = $request->query->get('file');
-    if ($request->attributes->get('scheme', 'private') !== 'private' || !is_string($target)) {
-      return NULL;
-    }
+    $is_private_download = in_array($request->attributes->get(RouteObjectInterface::ROUTE_NAME), static::ROUTES, TRUE)
+      && $request->attributes->get('scheme', 'private') === 'private'
+      && is_string($target)
+      && $this->streamWrapperManager->isValidScheme('private');
     // A path with a ".." segment is not redirected: it gets the "not found"
     // answer of CertificatNotFoundSubscriber.
-    if (in_array('..', preg_split('@[/\\\\]@', $target), TRUE)) {
-      return NULL;
-    }
-    if (!$this->streamWrapperManager->isValidScheme('private')) {
+    if (!$is_private_download || in_array('..', preg_split('@[/\\\\]@', $target), TRUE)) {
       return NULL;
     }
     // Same URI as the one core checks and serves.
