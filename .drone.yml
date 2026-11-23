@@ -52,9 +52,10 @@ trigger:
 
 steps:
   - name: code-analysis
-    # Built for arm64 from droneci/sonar-node-plugin; kept on the CI machine.
+    # Built for arm64 from droneci/sonar-node-plugin and pushed by hand to
+    # Docker Hub (the Hub autobuild only produces the amd64 "latest" tag).
     image: vactory/sonar-node-plugin:arm64
-    pull: never
+    pull: if-not-exists
     settings:
       sonar_host:
         from_secret: sonar_host
