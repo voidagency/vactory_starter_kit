@@ -59,6 +59,37 @@ function vactory_quiz_history_schema() {
       ],
     ],
     'primary key' => ['id'],
+    'indexes' => [
+      'uid' => ['uid'],
+    ],
   ];
   return $schema;
+}
+
+/**
+ * Add an index on the "uid" column of the quiz history table.
+ */
+function vactory_quiz_history_update_10001() {
+  $schema = \Drupal::database()->schema();
+  if (!$schema->tableExists('vactory_quiz_history')) {
+    return (string) t('Table vactory_quiz_history not found: nothing to do.');
+  }
+  if ($schema->indexExists('vactory_quiz_history', 'uid')) {
+    return (string) t('Index "uid" already exists on vactory_quiz_history: nothing to do.');
+  }
+  // The index only needs the definition of its own column.
+  $spec = [
+    'fields' => [
+      'uid' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'uid of user.',
+      ],
+    ],
+    'indexes' => [
+      'uid' => ['uid'],
+    ],
+  ];
+  $schema->addIndex('vactory_quiz_history', 'uid', ['uid'], $spec);
+  return (string) t('Index "uid" added on vactory_quiz_history.');
 }

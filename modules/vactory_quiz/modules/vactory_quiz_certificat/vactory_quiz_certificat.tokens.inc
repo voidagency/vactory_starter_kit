@@ -6,7 +6,6 @@
  */
 
 use Drupal\Core\Render\BubbleableMetadata;
-use Drupal\node\NodeInterface;
 
 /**
  * Implements hook_token_info().
@@ -57,15 +56,23 @@ function vactory_quiz_certificat_tokens($type, $tokens, array $data, array $opti
         case 'title':
           $replacements[$original] = isset($data['quiz_title']) && !empty($data['quiz_title']) ? $data['quiz_title'] : '';
           break;
+
         case 'certificate_url':
+          // "certificat_url" is not declared: the default mail body shipped
+          // it by mistake, and sites have it saved in their settings. It is
+          // answered like "certificate_url" so those mails get their link.
+        case 'certificat_url':
           $replacements[$original] = isset($data['quiz_certificat_url']) && !empty($data['quiz_certificat_url']) ? $data['quiz_certificat_url'] : '';
           break;
+
         case 'node_url':
           $replacements[$original] = isset($data['quiz_node_url']) && !empty($data['quiz_node_url']) ? $data['quiz_node_url'] : '';
           break;
+
         case 'user_first_name':
           $replacements[$original] = isset($data['quiz_user_first_name']) && !empty($data['quiz_user_first_name']) ? $data['quiz_user_first_name'] : '';
           break;
+
         case 'user_last_name':
           $replacements[$original] = isset($data['quiz_user_last_name']) && !empty($data['quiz_user_last_name']) ? $data['quiz_user_last_name'] : '';
           break;
