@@ -2,14 +2,18 @@
 
 namespace Drupal\Tests\vactory_quiz_certificat\Kernel;
 
+use Drupal\Core\Session\AnonymousUserSession;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\Tests\user\Traits\UserCreationTrait;
+use Drupal\user\Entity\Role;
+use Drupal\user\RoleInterface;
 
 /**
  * Tests the download access of generated certificates (Redmine #71157).
  *
  * Certificates are written in "private://quiz_certificat": without a
- * hook_file_download() implementation nobody could download them.
+ * hook_file_download() implementation nobody could download them. The owner
+ * and the users with the "administer site configuration" permission can.
  *
  * @group vactory_quiz_certificat
  */
@@ -79,15 +83,51 @@ class CertificatFileDownloadTest extends KernelTestBase {
   }
 
   /**
-   * Other users and other files get no access from this module.
+   * A user with the administration permission downloads any certificate.
    */
-  public function testNoAccessForOthers(): void {
-    $this->setCurrentUser($this->createUser());
-    $this->assertSame([], $this->fileDownloadHeaders(self::URI));
+  public function testAdministratorCanDownload(): void {
+    $administrator = $this->createUser(['administer site configuration']);
+    $this->setCurrentUser($administrator);
+    $headers = $this->fileDownloadHeaders(self::URI);
+    $this->assertSame('application/pdf', $headers['Content-Type'] ?? NULL);
+    // Files of other modules are not concerned.
+    $this->assertSame([], $this->fileDownloadHeaders('private://other/file.pdf'));
+  }
 
-    $this->setUpCurrentUser(['uid' => 0]);
+  /**
+   * Another user, without the administration permission, gets no access.
+   */
+  public function testOtherUserCannotDownload(): void {
+    $this->setCurrentUser($this->createUser(['access content']));
     $this->assertSame([], $this->fileDownloadHeaders(self::URI));
+  }
 
+  /**
+   * An anonymous user never gets access.
+   */
+  public function testAnonymousCannotDownload(): void {
+    $this->setCurrentUser(new AnonymousUserSession());
+    $this->assertSame([], $this->fileDownloadHeaders(self::URI));
+  }
+
+  /**
+   * Not even when the anonymous role holds the administration permission.
+   */
+  public function testAnonymousWithPermissionCannotDownload(): void {
+    $this->installConfig(['user']);
+    Role::load(RoleInterface::ANONYMOUS_ID)
+      ->grantPermission('administer site configuration')
+      ->save();
+    $anonymous = new AnonymousUserSession();
+    $this->setCurrentUser($anonymous);
+    $this->assertTrue($anonymous->hasPermission('administer site configuration'));
+    $this->assertSame([], $this->fileDownloadHeaders(self::URI));
+  }
+
+  /**
+   * The owner gets no access to other files from this module.
+   */
+  public function testNoAccessToOtherFiles(): void {
     $this->setCurrentUser($this->owner);
     $this->assertSame([], $this->fileDownloadHeaders('private://quiz_certificat/2026-11/Other-Certif-2.pdf'));
     $this->assertSame([], $this->fileDownloadHeaders('private://other/file.pdf'));
