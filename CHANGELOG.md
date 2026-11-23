@@ -14,6 +14,7 @@
 - **`term_2_slug` (#884) :** le slug de chaque traduction est normalisé à l'enregistrement du terme (minuscules ASCII, mots joints par `-`). Les URL et filtres front qui s'appuient sur un slug avec majuscules, accents, `_` ou `/` changent.
 - **`vactory_appointment` (#911) :** les champs conseiller ne sont plus éditables en back-office ; ils le restent en front.
 - **Sitemap (#910) :** les liens déjà stockés ne changent qu'au prochain enregistrement de la page d'accueil ou à un rebuild du sitemap.
+- **`vactory_rate` (#952) :** le vote et son annulation ne répondent plus qu'aux requêtes POST. Un front ou un script du projet qui les appelle en GET reçoit une erreur 405 : l'adapter. Le front par défaut envoie déjà un POST. Un appel fait avec un cookie de session Drupal doit aussi envoyer l'en-tête `X-CSRF-Token` ; un appel par jeton OAuth n'en a pas besoin.
 
 **Procédure, dans cet ordre**
 
@@ -61,9 +62,11 @@ drush cr
 - **Si `vactory_google_places` est actif :** revoir les vues où l'option « Vactory google places instance » est cochée ; l'autocomplete Google Places y est de nouveau chargé (#913).
 - **Module optionnel `vactory_admin_hardening` (#886) :** sur un site existant, l'activer (`drush en vactory_admin_hardening`) quand l'équipe passe par Drush et Features. Il bloque en web, pour tous les comptes, l'interface de migration et l'import, l'export et la synchronisation de config (pages `config_update_ui` comprises). Le check Security Review signale son absence.
 - **Si le projet attribue un rôle aux comptes créés par l'inscription JSON:API :** le régler dans `/admin/config/system/decoupled-settings`, onglet *Registration*. Les rôles envoyés par le front ne sont plus pris en compte (#885).
+- **Si `vactory_rate` est actif :** le formulaire des types de contenu ouverts au vote demande la permission `administer site configuration` (#952). La donner aux rôles non administrateurs qui utilisent ce formulaire.
 
 **5. `drush cr`**
 - Obligatoire : sans lui, les pages avec un menu plantent tant que l'ancien conteneur reste en cache (#914).
+- Il applique aussi les nouvelles règles d'accès des routes de `vactory_rate` (#952).
 
 **6. Vérifications**
 - `drush updb` n'a plus rien en attente, et `drush status` est correct.
@@ -73,6 +76,7 @@ drush cr
 - Un envoi de webform avec fichier aboutit, côté front.
 - Connexion au back-office, et connexion front (OAuth, SSO s'il est utilisé) (#908, #928).
 - En back-office, l'autocomplete des liens d'un Dynamic Field propose des contenus et enregistre le lien choisi (linkit, #947).
+- **Si `vactory_rate` est actif :** un vote depuis le front aboutit (#952).
 
 ### Sécurité
 - `vactory_core` : vérification TLS active par défaut dans le client HTTP de Drupal (#896).
@@ -80,6 +84,7 @@ drush cr
 - `vactory_decoupled_webform` : l'upload de fichiers applique les validateurs du webform, comme le formulaire Drupal : extensions, taille, longueur du nom (#906).
 - `vactory_core` : Shield ne peut plus être activé sans identifiants, et le rapport d'état signale une erreur dans ce cas (#911).
 - `vactory_decoupled` : inscription JSON:API : les rôles du compte sont décidés côté serveur (#885).
+- `vactory_rate` : le formulaire de réglages demande la permission `administer site configuration` ; le vote et son annulation n'acceptent que POST, avec l'en-tête `X-CSRF-Token` pour une session par cookie (#952).
 
 ### Changements de comportement
 - `vactory_core` : les options passées au client HTTP de Drupal par l'appelant (timeout…) sont maintenant transmises (#896).
