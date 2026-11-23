@@ -118,6 +118,7 @@ drush cr
 - `vactory_dynamic_field` : élément URL compatible linkit 7.0.13+ (#912).
 - `vactory_amp` : plus d'erreur fatale au rendu d'un nœud exclu d'AMP sans liens d'en-tête (#919).
 - `vactory_cloudinary` : `getExternalUrl()` renvoie une chaîne, propriété dynamique déclarée (PHP 8.2), dépendances déclarées (#920).
+- `vactory_dynamic_field` : le compteur de caractères (textfield_counter) fonctionne de nouveau dans la fenêtre Dynamic Fields, y compris sur les champs d'un groupe ; plus de `TypeError` dans la console (#954, Redmine #71223).
 - `vactory_quiz` : dépendances `views_autocomplete_filters` (autocomplete du filtre Titre de la vue) et `vactory_views` déclarées ; la vue livrée ne référence plus `vactory_google_places`, qu'elle n'utilisait pas (#956, Redmine #71362).
 
 ### Retraits
