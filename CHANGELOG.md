@@ -141,7 +141,7 @@ drush cr
 - `vactory_image_sitemap` : phpcs propre, sans changement de comportement (#937).
 - `vactory_image_sitemap` : variable inutilisée retirée (Sonar S1481, #945).
 - CI Drone : l'analyse Sonar tourne dans son propre pipeline, sur une image arm64 native ; le scanner se figeait par moments sous émulation (Redmine #71371).
-- Décisions d'architecture consignées dans `docs/adr/` : fichiers temporaires, version figée du profil, Features, clé `url` des liens, block_class 3.x, pipeline Sonar (#PRNUM).
+- Décisions d'architecture consignées dans `docs/adr/` : fichiers temporaires, version figée du profil, Features, clé `url` des liens, block_class 3.x, pipeline Sonar (#960).
 
 ## [3.2.3] - 2026-10-07
 Voir la [release 3.2.3](https://github.com/voidagency/vactory_starter_kit/releases/tag/3.2.3).
