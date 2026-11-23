@@ -23,6 +23,50 @@ function vactory_quiz_certificat_theme($existing, $type, $theme, $path) {
 }
 
 /**
+ * Implements hook_file_download().
+ *
+ * Certificates are generated in "private://quiz_certificat": a user downloads
+ * the certificates recorded for that user in the quiz history. A user with
+ * the "administer site configuration" permission, the one of the settings
+ * forms of the quiz modules, downloads any of them (support).
+ *
+ * Returns NULL when this module has nothing to say: another module may still
+ * grant the access. When nobody does, the download request is answered "not
+ * found", as for a file that does not exist (see
+ * \Drupal\vactory_quiz_certificat\EventSubscriber\CertificatNotFoundSubscriber).
+ *
+ * A URI with a ".." segment is refused (-1) for everybody: the link to a
+ * certificate has none.
+ */
+function vactory_quiz_certificat_file_download($uri) {
+  if (!str_starts_with($uri, 'private://quiz_certificat/')) {
+    return NULL;
+  }
+  if (in_array('..', preg_split('@[/\\\\]@', $uri), TRUE)) {
+    return -1;
+  }
+  $account = \Drupal::currentUser();
+  if ($account->isAnonymous()) {
+    return NULL;
+  }
+  if (!$account->hasPermission('administer site configuration')) {
+    $owned = \Drupal::database()->select('vactory_quiz_history', 'h')
+      ->condition('h.uid', $account->id())
+      ->condition('h.certificat', $uri)
+      ->countQuery()
+      ->execute()
+      ->fetchField();
+    if (!$owned) {
+      return NULL;
+    }
+  }
+  return [
+    'Content-Type' => 'application/pdf',
+    'Cache-Control' => 'private',
+  ];
+}
+
+/**
  * Implements hook_form_FORM_ID_alter().
  */
 function vactory_quiz_certificat_form_node_vactory_quiz_edit_form_alter(&$form, FormStateInterface $form_state, $form_id) {
@@ -64,7 +108,7 @@ function vactory_quiz_certificat_mail($key, &$message, $params) {
         $body = Drupal::token()->replace($body, $params['tokens']);
         if (strpos($body, '://default/') !== FALSE) {
           $site_domain = Settings::get('site_domain');
-          $body = str_replace('://default/', '://' . $site_domain . '/' , $body);
+          $body = str_replace('://default/', '://' . $site_domain . '/', $body);
         }
         $message['subject'] = $subject;
         $message['body'][] = $body;

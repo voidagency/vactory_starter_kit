@@ -124,13 +124,7 @@ class VactoryQuizCertificatManager {
       // Rpelace token in certificat body.
       $html_output = $this->token->replace($certificat_body, ['quiz_title' => $title]);
       // Generate file name.
-      $current_time = new \DateTime('now');
-      $file_name = !empty($first_name) ? $first_name . '-' : '';
-      $file_name .= !empty($last_name) ? $last_name . '-' : '';
-      $file_name .= 'Certif-' . $current_time->format('U') . '.pdf';
-      $date = $current_time->format('Y-m');
-      $dirname = 'private://quiz_certificat/' . $date;
-      $output_file = $dirname . '/' . $file_name;
+      $output_file = $this->buildOutputFile($first_name, $last_name, $user->id(), new \DateTime('now'));
       return [
         'html_output' => $html_output,
         'output_file' => $output_file,
@@ -140,6 +134,33 @@ class VactoryQuizCertificatManager {
     else {
       throw new InvalidArgumentException('Invalid quiz ID argument "' . $quiz_nid . '"');
     }
+  }
+
+  /**
+   * Builds the URI of a new certificate file.
+   *
+   * The name carries the account ID and a random part: two users with the
+   * same name who pass a quiz in the same second get distinct files, and a
+   * name cannot be deduced from another one. Only new files are concerned:
+   * the values already recorded in the quiz history are never rewritten.
+   *
+   * @param string|null $first_name
+   *   First name of the user, if any.
+   * @param string|null $last_name
+   *   Last name of the user, if any.
+   * @param int|string $uid
+   *   ID of the user who gets the certificate.
+   * @param \DateTimeInterface $time
+   *   Generation time.
+   *
+   * @return string
+   *   The URI, in "private://quiz_certificat/<year>-<month>".
+   */
+  public function buildOutputFile($first_name, $last_name, $uid, \DateTimeInterface $time): string {
+    $file_name = !empty($first_name) ? $first_name . '-' : '';
+    $file_name .= !empty($last_name) ? $last_name . '-' : '';
+    $file_name .= 'Certif-' . $time->format('U') . '-' . (int) $uid . '-' . bin2hex(random_bytes(8)) . '.pdf';
+    return 'private://quiz_certificat/' . $time->format('Y-m') . '/' . $file_name;
   }
 
 }
