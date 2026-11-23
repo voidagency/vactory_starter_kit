@@ -17,6 +17,9 @@ certificate is generated and the status report shows an error.
 A certificate is downloaded by its owner, logged in on the Drupal site, or by
 a user with the `administer site configuration` permission.
 
+The link sent by mail is this download URL. Opened logged out, it leads to
+the login page of Drupal, then to the certificate once logged in.
+
 ### Module Loom Demo
 Please check the module demo video on:
 https://www.loom.com/share/2a132fa25ee9497f974e88cb2a9ab41d

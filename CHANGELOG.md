@@ -94,8 +94,9 @@ drush cr
 - **Si `vactory_quiz` est actif :** `views_autocomplete_filters` est actif (`drush pm:list`) ; sinon l'activer (`drush en views_autocomplete_filters`), car Drupal n'active pas une dépendance nouvellement déclarée sur un site existant. Sans lui, la vue « Mes quiz passés » fonctionne, mais son filtre Titre n'a pas d'autocomplete (#956).
 - **Si des rôles sont cochés dans l'onglet *Registration* :** un compte créé par le formulaire d'inscription du front les reçoit (#950).
 - Menus du thème (en-tête, pied de page) en anonyme puis connecté : les liens attendus sont présents ; un lien vers une page non publiée ou réservée n'apparaît que pour les utilisateurs qui y ont accès (#957). Une page servie depuis un cache garde l'ancien menu jusqu'à son renouvellement.
-- **Si `vactory_quiz_certificat` est actif (méthode html2pdf) :** le rapport d'état n'affiche pas l'erreur « Quiz certificates ». Réussir un quiz avec certificat, lancer le cron, puis télécharger le certificat avec le compte qui l'a obtenu ; le même lien est refusé hors connexion (#953).
+- **Si `vactory_quiz_certificat` est actif (méthode html2pdf) :** le rapport d'état n'affiche pas l'erreur « Quiz certificates ». Réussir un quiz avec certificat, lancer le cron, puis télécharger le certificat avec le compte qui l'a obtenu ; hors connexion, le même lien ne donne pas le fichier (#953).
 - **Si `vactory_quiz_certificat` envoie le mail de notification (#963) :** le mail reçu après le cron contient le lien du certificat, et non le texte `[quiz:certificat_url]`. Avec un certificat qui ne peut pas être généré (par exemple sans `file_private_path`), le cron se termine normalement et l'erreur est dans les logs, canal `vactory_quiz_certificat`.
+- **Si `vactory_quiz_certificat` envoie le mail de notification (#963) :** ouvrir le lien du mail hors connexion : la page de connexion de Drupal s'affiche ; après connexion avec le compte qui a obtenu le certificat, le PDF se télécharge. Avec un autre compte, le lien reste refusé. Sur un site découplé, depuis un domaine `api.…` (où `vactory_decoupled` renvoie les pages de Drupal vers le front), la page de connexion n'est pas servie : la réponse reste celle d'avant.
 
 ### Sécurité
 - `vactory_core` : vérification TLS active par défaut dans le client HTTP de Drupal (#896).
@@ -116,6 +117,7 @@ drush cr
 - `vactory_webform_mailchimp_handler` : une panne Mailchimp ne bloque plus la soumission, et le timeout passe de 120 s à 10 s (#903).
 - `vactory_core` : dans les réglages de CAPTCHA, le message d'erreur peut rester vide (message par défaut traduit) et n'est plus prérempli ; un message saisi est de nouveau pris en compte (#949).
 - `vactory_quiz_certificat` : un certificat généré par html2pdf se télécharge connecté sur le site Drupal, et la méthode html2pdf exige `$settings['file_private_path']` ; le rapport d'état signale une erreur s'il manque (#953).
+- `vactory_quiz_certificat` : hors connexion, le lien d'un certificat (celui du mail de notification) mène à la page de connexion de Drupal, puis au certificat une fois connecté, au lieu d'une page d'erreur. Rien ne change pour un utilisateur connecté, ni pour les autres fichiers privés (#963, Redmine #71440).
 
 ### Ajouts
 - `vactory_admin_hardening` : nouveau module optionnel qui bloque en web l'interface de migration et l'interface de config du core, même pour uid 1 ; installé d'office sur les nouveaux sites uniquement (#886).
