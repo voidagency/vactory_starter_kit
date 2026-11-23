@@ -10,6 +10,9 @@ Ce que suppose toute note de mise à jour :
 - **Déploiement.** Il se fait par capistrano ou Docker. `drush updb` et `drush cr` sont lancés **à la main** après le déploiement.
 - **Points hors périmètre.** Un point « hors périmètre » relevé dans une PR ou un ticket est corrigé, ou suivi dans un ticket cité. Il ne reste jamais sans suite.
 
+## Décisions d'architecture
+Une décision difficile à défaire, surprenante sans son contexte et issue d'un vrai arbitrage est écrite dans [`docs/adr/`](docs/adr/README.md), dans la PR qui l'applique. Avant de revenir sur un choix du profil, lire l'ADR correspondant.
+
 ## Changelog
 - L'auteur de chaque PR ajoute sa ligne dans `[Non publié]` de `CHANGELOG.md` ; le relecteur la vérifie.
 - Une ligne par PR et par sujet, préfixée par le module : `` `vactory_x` : ce qui change (#PR) ``. `#n` est un numéro de PR ; un ticket est noté « Redmine #n », sans URL.
