@@ -110,6 +110,19 @@ load_config() {
   BASELINE_DIR="$STACKS_DIR/_baseline"
 }
 
+# Vide si $1 est un front Next utilisable (dossier du dépôt du front, avec
+# package.json et l'application VACTORY_FRONT_APP) ; sinon la raison. Une
+# source vide ou « / » copierait tout le disque (rsync --delete).
+front_src_error() {
+  local src="$1" real
+  [ -n "$src" ] || { printf 'pas de front configuré (VACTORY_FRONT_SRC vide : stack init)'; return; }
+  [ -d "$src" ] || { printf 'VACTORY_FRONT_SRC=%s : dossier introuvable' "$src"; return; }
+  real="$(stack_resolve "$src")"
+  case "$real" in /|"$(stack_resolve "$HOME")") printf 'VACTORY_FRONT_SRC=%s : pas un dépôt de front' "$src"; return ;; esac
+  [ -f "$src/package.json" ] && [ -f "$src/apps/$FRONT_APP/package.json" ] \
+    || printf 'VACTORY_FRONT_SRC=%s : ni package.json ni apps/%s/package.json, pas le front Next' "$src" "$FRONT_APP"
+}
+
 need_config() {
   [ -f "$STACK_CONFIG" ] || [ -n "${VACTORY_DRUPAL_SRC:-}" ] || die "pas de configuration ($STACK_CONFIG) : lancer « stack init »."
   [ -d "${DRUPAL_SRC:-/nonexistent}" ] || die "site Drupal source introuvable (VACTORY_DRUPAL_SRC=$DRUPAL_SRC)."
@@ -535,7 +548,16 @@ cmd_baseline() {
   done
   need_config
   [ "$mode" != dump ] || [ -f "$dump" ] || die "dump introuvable : $dump"
-  [ -n "$FRONT_SRC" ] || do_front=0
+  # Front vérifié avant toute étape qui supprime ou copie.
+  local front_err; front_err="$(front_src_error "$FRONT_SRC")"
+  if [ "$front_only" = 1 ]; then
+    [ "$do_front" = 1 ] || die "--no-front et --front-only s'excluent."
+    [ -z "$front_err" ] || die "--front-only refusé : $front_err."
+  elif [ -z "$FRONT_SRC" ]; then
+    do_front=0
+  elif [ "$do_front" = 1 ] && [ -n "$front_err" ]; then
+    die "front de référence impossible : $front_err. Corriger VACTORY_FRONT_SRC ou lancer avec --no-front."
+  fi
   lock_take baseline 30
   local t0 build new log
   t0="$(now)"; build="$STACKS_DIR/_build"; new="$STACKS_DIR/_baseline.new"
@@ -654,7 +676,10 @@ PY
 # Front de référence : sources sans node_modules ni builds, et node_modules
 # Linux dans un volume Docker partagé (lecture seule) par les instances.
 baseline_front() {
-  local dest="$1" log="$2" t0; t0="$(now)"
+  local dest="$1" log="$2" t0 err; t0="$(now)"
+  # Défense en profondeur : jamais de rsync --delete depuis une source vide ou « / ».
+  err="$(front_src_error "$FRONT_SRC")"; [ -z "$err" ] || die "front de référence refusé : $err."
+  { [ -n "$dest" ] && [ -d "$dest" ]; } || die "front de référence : dossier de destination invalide « $dest »."
   step "front de référence (yarn install Linux, une fois), journal : $log"
   if docker ps -q --filter "volume=$FRONT_VOLUME" | grep -q .; then
     die "des instances avec front tournent : « stack stop » ou « stack rm » d'abord."
@@ -812,7 +837,8 @@ cmd_up() {
   need_config
   [ -f "$BASELINE_DIR/manifest.json" ] || die "pas de base de référence : lancer « stack baseline »."
   if [ "$front" = 1 ]; then
-    [ -n "$FRONT_SRC" ] || die "--front : pas de front configuré (stack init)."
+    local front_err; front_err="$(front_src_error "$FRONT_SRC")"
+    [ -z "$front_err" ] || die "--front : $front_err."
     if [ ! -d "$BASELINE_DIR/front" ] || ! docker volume inspect "$FRONT_VOLUME" >/dev/null 2>&1; then
       die "--front : front de référence absent (stack baseline --front-only)."
     fi

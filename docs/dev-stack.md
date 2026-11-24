@@ -26,6 +26,7 @@ stack baseline    # base de référence (une fois, puis à chaque changement imp
 
 - `--from-dump <fichier.sql.gz>` : part d'un dump au lieu d'une installation (puis `drush updb`). Le dump doit venir d'un site propre, pas d'un site en cours de test.
 - `--no-front` : base seulement. `--front-only` : refait seulement le front (après un `yarn.lock` modifié).
+- Le front n'est construit que depuis un vrai dépôt du front : `VACTORY_FRONT_SRC` doit être un dossier avec `package.json` et `apps/<VACTORY_FRONT_APP>/package.json` (ni vide, ni `/`, ni le dossier personnel). Sinon `--front-only` et `up --front` sont refusés avant toute copie ou suppression, et `stack baseline` aussi tant que `VACTORY_FRONT_SRC` est renseigné mais invalide (le corriger ou lancer avec `--no-front`). Sans `VACTORY_FRONT_SRC`, `stack baseline` fait la base seule.
 
 Le fichier `_baseline/manifest.json` dit d'où vient la base (date, mode, commit du profil, commit du front).
 
