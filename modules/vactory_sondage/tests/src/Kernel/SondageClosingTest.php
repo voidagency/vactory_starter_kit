@@ -25,6 +25,7 @@ class SondageClosingTest extends SondageKernelTestBase {
     'text',
     'options',
     'datetime',
+    'block',
     'block_content',
     'vactory_reminder',
     'vactory_sondage',
@@ -92,6 +93,58 @@ class SondageClosingTest extends SondageKernelTestBase {
 
     $sondage->set('field_sondage_close_date', $this->closeDate(7200))->save();
     $this->assertCount(2, $this->queuedItems());
+  }
+
+  /**
+   * A closing whose sondage was deleted or lost its date is dropped.
+   *
+   * The reminder queue loaded the sondage to read its date: without it, the
+   * item failed at every run, with an error logged each time.
+   */
+  public function testClosingOfGoneSondageOrDateIsDropped(): void {
+    $deleted = $this->createSondage(-3600);
+    $cleared = $this->createSondage(-3600);
+    $deleted->delete();
+    $cleared->set('field_sondage_close_date', NULL)->save();
+
+    $this->processReminderQueue();
+
+    $this->assertSame([], $this->logged);
+    $this->assertCount(0, $this->queuedItems());
+    $this->assertSame('1', BlockContent::load($cleared->id())->get('field_sondage_status')->value);
+  }
+
+  /**
+   * A closing queued for a close date that was changed since is dropped.
+   */
+  public function testClosingOfChangedDateIsDropped(): void {
+    $sondage = $this->createSondage(-3600);
+    $sondage->set('field_sondage_close_date', $this->closeDate(3600))->save();
+
+    $this->processReminderQueue();
+
+    $this->assertSame('1', BlockContent::load($sondage->id())->get('field_sondage_status')->value);
+    // Only the closing at the new date is left.
+    $items = $this->queuedItems();
+    $this->assertCount(1, $items);
+    $this->assertSame($this->closeDate(3600), $items[0]['extra']['close_date']);
+  }
+
+  /**
+   * On a site behind UTC, a sondage is closed once its close date passed.
+   *
+   * The reminder queue read the stored UTC date in the timezone of the site:
+   * on a site at UTC-5, the closing came five hours late.
+   */
+  public function testSondageIsClosedOnTimeOnSiteBehindUtc(): void {
+    $this->config('system.date')->set('timezone.default', 'America/New_York')->save();
+    date_default_timezone_set('America/New_York');
+    $sondage = $this->createSondage(-600);
+
+    $this->processReminderQueue();
+
+    $this->assertSame([], $this->logged);
+    $this->assertSame('0', BlockContent::load($sondage->id())->get('field_sondage_status')->value);
   }
 
   /**
