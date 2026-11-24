@@ -37,7 +37,16 @@ say() { printf '%s\n' "$*"; }
 step() { printf '%s==>%s %s\n' "$C_B" "$C_0" "$*"; }
 ok() { printf '%s ok %s %s\n' "$C_G" "$C_0" "$*"; }
 warn() { printf '%sattention :%s %s\n' "$C_Y" "$C_0" "$*" >&2; }
-die() { printf '%serreur :%s %s\n' "$C_R" "$C_0" "$*" >&2; exit 1; }
+# Sortie d'erreur du terminal, gardée sur le descripteur 9 : dans run_logged,
+# la sortie d'erreur va au journal, mais une erreur fatale doit aussi
+# s'afficher (sinon : arrêt sans message, constaté au bout d'un verrou).
+exec 9>&2
+STACK_IN_LOG=""
+die() {
+  printf '%serreur :%s %s\n' "$C_R" "$C_0" "$*" >&2
+  [ -z "$STACK_IN_LOG" ] || printf '%serreur :%s %s\n' "$C_R" "$C_0" "$*" >&9
+  exit 1
+}
 have() { command -v "$1" >/dev/null 2>&1; }
 now() { date +%s; }
 since() { echo $(( $(now) - $1 ))s; }
@@ -47,7 +56,11 @@ run_logged() {
   local log="$1"; shift
   mkdir -p "$(dirname "$log")"
   printf '\n$ %s\n' "$*" >>"$log"
-  if ! "$@" >>"$log" 2>&1; then
+  local prev="$STACK_IN_LOG" code=0
+  STACK_IN_LOG=1
+  "$@" >>"$log" 2>&1 || code=$?
+  STACK_IN_LOG="$prev"
+  if [ "$code" != 0 ]; then
     say "--- fin de $log ---" >&2
     tail -n 30 "$log" >&2 || true
     return 1
