@@ -950,16 +950,49 @@ cmd_uli() {
 PROFILE_IN_CONTAINER="profiles/contrib/vactory_starter_kit"
 
 # Chemin donné (relatif au profil, absolu dans l'arbre du profil, ou déjà
-# relatif à la racine Drupal) -> chemin relatif au profil.
+# relatif à la racine Drupal) -> chemin relatif au profil, normalisé (« . »,
+# « .. » et « // » résolus) ; « . » pour la racine du profil. Refus de tout
+# chemin qui sort du profil, y compris par un lien symbolique.
 profile_rel() {
-  local name="$1" p="$2" prof; prof="$(meta_get "$(inst_dir "$name")" PROFILE_PATH)"
+  local name="$1" p="$2" prof rel; prof="$(meta_get "$(inst_dir "$name")" PROFILE_PATH)"
   case "$p" in
-    "$prof"/*) p="${p#"$prof"/}" ;;
-    /var/www/html/$PROFILE_IN_CONTAINER/*) p="${p#/var/www/html/"$PROFILE_IN_CONTAINER"/}" ;;
-    $PROFILE_IN_CONTAINER/*) p="${p#"$PROFILE_IN_CONTAINER"/}" ;;
-    ./*) p="${p#./}" ;;
+    "/var/www/html/$PROFILE_IN_CONTAINER"|"/var/www/html/$PROFILE_IN_CONTAINER"/*) p="${p#/var/www/html/"$PROFILE_IN_CONTAINER"}"; p="${p#/}" ;;
+    "$PROFILE_IN_CONTAINER"|"$PROFILE_IN_CONTAINER"/*) p="${p#"$PROFILE_IN_CONTAINER"}"; p="${p#/}" ;;
   esac
-  printf '%s' "${p%/}"
+  rel="$(python3 - "$prof" "${p:-.}" <<'PY'
+import os, sys
+prof, p = sys.argv[1], sys.argv[2]
+def inside(path, base):
+    return path == base or path.startswith(base.rstrip('/') + '/')
+base = os.path.normpath(prof)
+full = os.path.normpath(p if os.path.isabs(p) else os.path.join(base, p))
+if not inside(full, base):
+    # Chemin absolu écrit sous une autre forme (/tmp et /private/tmp…).
+    if not os.path.isabs(p):
+        sys.exit(1)
+    full, base = os.path.realpath(full), os.path.realpath(prof)
+    if not inside(full, base):
+        sys.exit(1)
+if os.path.exists(full) and not inside(os.path.realpath(full), os.path.realpath(prof)):
+    sys.exit(1)
+print(os.path.relpath(full, base))
+PY
+)" || die "chemin refusé ($2) : hors du profil de l'instance."
+  printf '%s' "$rel"
+}
+
+# Chemin relatif au profil -> chemin vu depuis la racine Drupal du conteneur.
+container_path() {
+  if [ "$1" = . ]; then printf '%s' "$PROFILE_IN_CONTAINER"; else printf '%s/%s' "$PROFILE_IN_CONTAINER" "$1"; fi
+}
+
+# Un dossier de tests Functional (les deux dispositions du profil), sans
+# tenir compte de la casse (disque du Mac insensible à la casse).
+is_functional_path() {
+  case "$(printf '/%s/' "$1" | tr '[:upper:]' '[:lower:]')" in
+    */tests/functional/*|*/tests/src/functional/*) return 0 ;;
+  esac
+  return 1
 }
 
 cmd_test() {
@@ -985,12 +1018,14 @@ cmd_test() {
       *)
         rel="$(profile_rel "$name" "$a")"
         # Deux dispositions dans le profil : tests/Functional et tests/src/Functional.
-        case "/$rel/" in */tests/Functional/*|*/tests/src/Functional/*) die "chemin refusé ($rel) : les tests Functional installent et désinstallent des modules sur le site." ;; esac
+        if is_functional_path "$rel"; then
+          die "chemin refusé ($rel) : les tests Functional installent et désinstallent des modules sur le site."
+        fi
         [ -e "$prof/$rel" ] || die "introuvable dans le profil de l'instance : $rel"
-        if [ -d "$prof/$rel" ] && [ -n "$(find "$prof/$rel" -type d \( -path '*/tests/Functional' -o -path '*/tests/src/Functional' \) -print -quit 2>/dev/null)" ]; then
+        if [ -d "$prof/$rel" ] && [ -n "$(find -L "$prof/$rel" -type d \( -ipath '*/tests/functional' -o -ipath '*/tests/src/functional' \) -print -quit 2>/dev/null)" ]; then
           die "dossier refusé ($rel) : il contient des tests Functional ; viser un fichier ou un sous-dossier tests/src/..."
         fi
-        args+=("$PROFILE_IN_CONTAINER/$rel"); has_target=1 ;;
+        args+=("$(container_path "$rel")"); has_target=1 ;;
     esac
   done
   [ "$has_target" = 1 ] || die "test <nom> <chemin>... ou --testsuite unit|kernel|existing-site"
@@ -1000,14 +1035,15 @@ cmd_test() {
 cmd_phpcs() {
   local name="${1:-}"; need_instance "$name"; shift
   [ $# -gt 0 ] || die "phpcs <nom> <chemins>"
-  local prof d files=() p rel f
+  local prof d files=() p rel f start
   prof="$(meta_get "$(inst_dir "$name")" PROFILE_PATH)"; d="$(inst_dir "$name")/drupal"
   for p in "$@"; do
     rel="$(profile_rel "$name" "$p")"
     [ -e "$prof/$rel" ] || die "introuvable dans le profil : $rel"
     if [ -d "$prof/$rel" ]; then
+      [ "$rel" = . ] && start="$prof" || start="$prof/$rel"
       while IFS= read -r f; do files+=("$PROFILE_IN_CONTAINER/${f#"$prof"/}"); done <<EOF
-$(find "$prof/$rel" -type f \( -name '*.php' -o -name '*.module' -o -name '*.install' -o -name '*.inc' -o -name '*.profile' -o -name '*.theme' -o -name '*.test' \) -not -path '*/vendor/*' -not -path '*/node_modules/*')
+$(find "$start" -type f \( -name '*.php' -o -name '*.module' -o -name '*.install' -o -name '*.inc' -o -name '*.profile' -o -name '*.theme' -o -name '*.test' \) -not -path '*/vendor/*' -not -path '*/node_modules/*')
 EOF
     else
       files+=("$PROFILE_IN_CONTAINER/$rel")
