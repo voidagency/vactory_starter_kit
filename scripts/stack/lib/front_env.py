@@ -8,7 +8,6 @@ Reprend les clés de <src>/.env et <src>/.env.local, remplace celles propres
 """
 import os
 import re
-import shutil
 import sys
 
 LINE = re.compile(r'^\s*(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=')
@@ -38,6 +37,15 @@ def read_secrets(path):
     return values
 
 
+def write_if_changed(path, text):
+    if os.path.isfile(path):
+        with open(path, encoding='utf-8') as handle:
+            if handle.read() == text:
+                return
+    with open(path, 'w', encoding='utf-8') as handle:
+        handle.write(text)
+
+
 def main():
     src, dest, secrets_path = sys.argv[1:4]
     overrides = {}
@@ -52,8 +60,11 @@ def main():
     os.makedirs(dest, exist_ok=True)
     old_umask = os.umask(0o077)
     try:
+        # N'écrit que si le contenu change : une réécriture fait recharger
+        # l'environnement au serveur Next en cours, qui perd alors son
+        # dossier .next/dev (constaté avec « stack up » relancé).
         if os.path.isfile(os.path.join(src, '.env')):
-            shutil.copyfile(os.path.join(src, '.env'), os.path.join(dest, '.env'))
+            write_if_changed(os.path.join(dest, '.env'), open(os.path.join(src, '.env'), encoding='utf-8').read())
         out, seen = [], set()
         for line in read_lines(os.path.join(src, '.env.local')):
             match = LINE.match(line)
@@ -70,8 +81,7 @@ def main():
             out.append('')
             out.append('# Instance stack')
             out.extend('%s=%s' % (k, overrides[k]) for k in added)
-        with open(os.path.join(dest, '.env.local'), 'w', encoding='utf-8') as handle:
-            handle.write('\n'.join(out) + '\n')
+        write_if_changed(os.path.join(dest, '.env.local'), '\n'.join(out) + '\n')
     finally:
         os.umask(old_umask)
     print('front env: %d clés remplacées ou ajoutées' % len(overrides))
