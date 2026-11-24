@@ -32,6 +32,8 @@ steps:
         from_secret: GITHUB_TOKEN
       # Sonar runs in the "sonar" pipeline below, not in this step.
       SKIP_SONAR: "true"
+      # Unit and kernel suites run during the site install, on their own database.
+      PARALLEL_TESTS: "true"
       PHP_VERSION: 8.3
       COMPOSER_VERSION: 2.7.1
       DRUSH_VERSION: 8.4.1
