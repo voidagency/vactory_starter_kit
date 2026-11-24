@@ -1,0 +1,6 @@
+name: 'Vactory Quiz Certificat grant test'
+description: 'Test module: grants the download of every private file.'
+type: module
+package: Testing
+hidden: true
+core_version_requirement: ^9 || ^10

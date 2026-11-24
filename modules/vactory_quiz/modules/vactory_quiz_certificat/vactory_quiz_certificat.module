@@ -5,8 +5,11 @@
  * Module related hooks.
  */
 
+use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Site\Settings;
+use Drupal\file\FileInterface;
 
 /**
  * Implements hook_theme().
@@ -30,40 +33,62 @@ function vactory_quiz_certificat_theme($existing, $type, $theme, $path) {
  * the "administer site configuration" permission, the one of the settings
  * forms of the quiz modules, downloads any of them (support).
  *
- * Returns NULL when this module has nothing to say: another module may still
- * grant the access. When nobody does, the download request is answered "not
- * found", as for a file that does not exist (see
+ * Any other request for a file of the folder is refused (-1): the folder
+ * belongs to this module, and no other implementation of the hook can grant
+ * the download. The request is then answered "not found", as for a file that
+ * does not exist (see
  * \Drupal\vactory_quiz_certificat\EventSubscriber\CertificatNotFoundSubscriber).
  *
- * A URI with a ".." segment is refused (-1) for everybody: the link to a
- * certificate has none.
+ * A URI with a ".." segment, or another path to a file of the folder (a
+ * link), is refused for everybody: the link to a certificate has none.
+ *
+ * Returns NULL for the other private files: this module has nothing to say.
+ *
+ * @see \Drupal\vactory_quiz_certificat\Services\CertificatAccess
+ * @see vactory_quiz_certificat_file_access()
  */
 function vactory_quiz_certificat_file_download($uri) {
-  if (!str_starts_with($uri, 'private://quiz_certificat/')) {
+  /** @var \Drupal\vactory_quiz_certificat\Services\CertificatAccess $access */
+  $access = \Drupal::service('vactory_quiz_certificat.access');
+  if (!$access->concerns($uri)) {
     return NULL;
   }
-  if (in_array('..', preg_split('@[/\\\\]@', $uri), TRUE)) {
+  if (!$access->isGranted($uri, \Drupal::currentUser())) {
     return -1;
-  }
-  $account = \Drupal::currentUser();
-  if ($account->isAnonymous()) {
-    return NULL;
-  }
-  if (!$account->hasPermission('administer site configuration')) {
-    $owned = \Drupal::database()->select('vactory_quiz_history', 'h')
-      ->condition('h.uid', $account->id())
-      ->condition('h.certificat', $uri)
-      ->countQuery()
-      ->execute()
-      ->fetchField();
-    if (!$owned) {
-      return NULL;
-    }
   }
   return [
     'Content-Type' => 'application/pdf',
     'Cache-Control' => 'private',
   ];
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_access() for file entities.
+ *
+ * A module that manages files decides the download of a private file by the
+ * access to its file entity, stored or built for the request (File Entity
+ * does both, with its own file permissions). For a file of the folder of the
+ * certificates, the decision is the one of this module: allowed for the owner
+ * of the certificate and for the "administer site configuration" permission,
+ * forbidden for any other account, whatever its file permissions.
+ *
+ * Only viewing and downloading are decided here. Other files are not
+ * concerned.
+ *
+ * @see \Drupal\vactory_quiz_certificat\Services\CertificatAccess
+ * @see vactory_quiz_certificat_file_download()
+ */
+function vactory_quiz_certificat_file_access(FileInterface $file, $operation, AccountInterface $account) {
+  /** @var \Drupal\vactory_quiz_certificat\Services\CertificatAccess $access */
+  $access = \Drupal::service('vactory_quiz_certificat.access');
+  $uri = (string) $file->getFileUri();
+  $operations = ['view', 'download'];
+  if (!in_array($operation, $operations, TRUE) || !$access->concerns($uri)) {
+    return AccessResult::neutral();
+  }
+  // Depends on the account and on its quiz history, which has no cache tag.
+  $result = $access->isGranted($uri, $account) ? AccessResult::allowed() : AccessResult::forbidden();
+  return $result->cachePerUser()->setCacheMaxAge(0);
 }
 
 /**

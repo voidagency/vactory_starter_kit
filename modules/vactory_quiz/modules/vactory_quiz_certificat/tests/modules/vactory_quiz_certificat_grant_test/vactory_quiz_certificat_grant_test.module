@@ -1,0 +1,24 @@
+<?php
+
+/**
+ * @file
+ * Test module: another module that grants the download of private files.
+ */
+
+/**
+ * Implements hook_file_download().
+ *
+ * Once the "vactory_quiz_certificat_grant_test.grant" state is set, grants
+ * every private file to everybody, as a module that manages private files
+ * with its own rules could do for the files it knows.
+ */
+function vactory_quiz_certificat_grant_test_file_download($uri) {
+  $grant = \Drupal::state()->get('vactory_quiz_certificat_grant_test.grant', FALSE);
+  if (!$grant || !str_starts_with($uri, 'private://')) {
+    return NULL;
+  }
+  return [
+    'Content-Type' => 'application/octet-stream',
+    'X-Granted-By' => 'vactory_quiz_certificat_grant_test',
+  ];
+}

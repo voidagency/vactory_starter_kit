@@ -2,9 +2,8 @@
 
 namespace Drupal\vactory_quiz_certificat\EventSubscriber;
 
-use Drupal\Core\File\FileSystemInterface;
 use Drupal\Core\Routing\RouteObjectInterface;
-use Drupal\Core\StreamWrapper\StreamWrapperManagerInterface;
+use Drupal\vactory_quiz_certificat\Services\CertificatAccess;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
@@ -39,30 +38,20 @@ class CertificatNotFoundSubscriber implements EventSubscriberInterface {
   protected const ROUTES = ['system.files', 'system.private_file_download'];
 
   /**
-   * The stream wrapper manager.
+   * The access to the folder of the certificates.
    *
-   * @var \Drupal\Core\StreamWrapper\StreamWrapperManagerInterface
+   * @var \Drupal\vactory_quiz_certificat\Services\CertificatAccess
    */
-  protected $streamWrapperManager;
-
-  /**
-   * The file system.
-   *
-   * @var \Drupal\Core\File\FileSystemInterface
-   */
-  protected $fileSystem;
+  protected $access;
 
   /**
    * Constructs the subscriber.
    *
-   * @param \Drupal\Core\StreamWrapper\StreamWrapperManagerInterface $stream_wrapper_manager
-   *   The stream wrapper manager.
-   * @param \Drupal\Core\File\FileSystemInterface $file_system
-   *   The file system.
+   * @param \Drupal\vactory_quiz_certificat\Services\CertificatAccess $access
+   *   The access to the folder of the certificates.
    */
-  public function __construct(StreamWrapperManagerInterface $stream_wrapper_manager, FileSystemInterface $file_system) {
-    $this->streamWrapperManager = $stream_wrapper_manager;
-    $this->fileSystem = $file_system;
+  public function __construct(CertificatAccess $access) {
+    $this->access = $access;
   }
 
   /**
@@ -134,18 +123,9 @@ class CertificatNotFoundSubscriber implements EventSubscriberInterface {
    *   TRUE when the URI core checks, or the file itself, is in the folder.
    */
   protected function leadsToTheFolder(string $target): bool {
-    if (!$this->streamWrapperManager->isValidScheme('private')) {
-      return FALSE;
-    }
-    // The URI core checks, the one given to hook_file_download().
-    $uri = $this->streamWrapperManager->normalizeUri('private://' . $target);
-    if (str_starts_with($uri, 'private://' . static::FOLDER . '/')) {
-      return TRUE;
-    }
-    // The file itself, when another path leads to it.
-    $folder = $this->fileSystem->realpath('private://' . static::FOLDER);
-    $file = $this->fileSystem->realpath($uri);
-    return $folder && $file && str_starts_with($file, $folder . DIRECTORY_SEPARATOR);
+    // The URI core checks, the one given to hook_file_download(), or the
+    // file itself when another path leads to it.
+    return $this->access->concerns('private://' . $target);
   }
 
 }
