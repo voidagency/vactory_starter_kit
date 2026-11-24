@@ -134,6 +134,7 @@ drush cr
 - `vactory_decoupled_espace_prive` : l'inscription par le webform de l'espace privé attribue les rôles de ce même réglage, avec le même filtre (jamais administrateur, anonyme ni authentifié) ; les rôles envoyés dans la soumission restent ignorés (#950, Redmine #71369).
 
 ### Correctifs
+- `vactory_dynamic_field_generator` : description de la commande `drush templates-generator` corrigée (elle reprenait celle d'un autre module) ; le README précise que la commande n'existe que si le module est activé et qu'aucun `drush.services.yml` n'est nécessaire (#968, Redmine #66249).
 - `vactory_sso` : la connexion SSO n'appelle plus une classe disparue ; dépendance `oauth_login_oauth2` déclarée ; sans `resource_owner` en session, les champs mappés ne sont plus remis à NULL (#908).
 - `vactory_decoupled` : `/oauth/login-token` compatible simple_oauth 5.2.6, au lieu d'une erreur 500 (#928).
 - `vactory_decoupled` : connexion OAuth2 réussie de nouveau journalisée quand l'option de `vactory_security_review` est cochée (#911).

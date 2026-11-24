@@ -16,5 +16,14 @@ for your custom dynamic fields.
 
 alias : `drush tg`
 
+Only widgets under `modules/custom` are handled. A template that already
+exists and is not empty is left untouched.
+
+### Troubleshooting
+
+`Command "templates-generator" is not defined.`: the module is not enabled
+(see Installation). The command is discovered by Drush itself (Drush 12 or
+later, class in `src/Drush/Commands`): no `drush.services.yml` is needed.
+
 ### Maintainers
 Khalid BOUHOUCH <k.bouhouch@void.fr>
