@@ -183,6 +183,7 @@ drush cr
 - Tests de caractérisation, puis découpage des méthodes signalées par Sonar, sans changement de comportement (#935, #938, #939).
 - CI Drone : un build par commit, sans build pour les branches sans PR ni pour les tags (#921) ; jeton GitHub pour composer (#940) ; exclusions Sonar appliquées et règle `php:S1781` ignorée (#929).
 - Dependabot limité aux mises à jour de sécurité (#930).
+- Hook git `pre-commit` : phpcs ne vérifie plus les fichiers `.md` et `.txt`, comme la CI (#971).
 - `vactory_image_sitemap` : phpcs propre, sans changement de comportement (#937).
 - `vactory_image_sitemap` : variable inutilisée retirée (Sonar S1481, #945).
 - CI Drone : l'analyse Sonar tourne dans son propre pipeline, sur une image arm64 native ; le scanner se figeait par moments sous émulation (Redmine #71371).
