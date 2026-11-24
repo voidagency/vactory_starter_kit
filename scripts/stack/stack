@@ -1053,14 +1053,19 @@ cmd_phpcs() {
     [ -e "$prof/$rel" ] || die "introuvable dans le profil : $rel"
     if [ -d "$prof/$rel" ]; then
       [ "$rel" = . ] && start="$prof" || start="$prof/$rel"
-      while IFS= read -r f; do files+=("$PROFILE_IN_CONTAINER/${f#"$prof"/}"); done <<EOF
+      # Sortie vide de find : une ligne vide, à ne pas prendre pour un fichier
+      # (le hook recevrait la racine du profil et sortirait 0 : faux vert).
+      while IFS= read -r f; do
+        if [ -z "$f" ] || [ ! -f "$f" ]; then continue; fi
+        files+=("$PROFILE_IN_CONTAINER/${f#"$prof"/}")
+      done <<EOF
 $(find "$start" -type f \( -name '*.php' -o -name '*.module' -o -name '*.install' -o -name '*.inc' -o -name '*.profile' -o -name '*.theme' -o -name '*.test' \) -not -path '*/vendor/*' -not -path '*/node_modules/*')
 EOF
     else
       files+=("$PROFILE_IN_CONTAINER/$rel")
     fi
   done
-  [ ${#files[@]} -gt 0 ] || { ok "aucun fichier PHP"; return; }
+  [ ${#files[@]} -gt 0 ] || { warn "aucun fichier PHP dans : $* ; rien de vérifié."; return 0; }
   # Le script du hook charge ../../vendor depuis son dossier : copié sous la
   # racine Drupal, il y trouve le vendor du site (celui du profil est masqué).
   rm -rf "$d/.stack-phpcs"; mkdir -p "$d/.stack-phpcs"
