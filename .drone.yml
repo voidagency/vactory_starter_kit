@@ -34,6 +34,8 @@ steps:
       SKIP_SONAR: "true"
       # Unit and kernel suites run during the site install, on their own database.
       PARALLEL_TESTS: "true"
+      # Test only: MySQL settings for a throwaway CI database.
+      MYSQL_CI_TUNING: "true"
       PHP_VERSION: 8.3
       COMPOSER_VERSION: 2.7.1
       DRUSH_VERSION: 8.4.1
