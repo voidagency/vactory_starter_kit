@@ -1193,6 +1193,7 @@ EOF
 main() {
   local cmd="${1:-help}"; [ $# -gt 0 ] && shift
   case "$cmd" in help|-h|--help) usage; return ;; esac
+  case " $* " in *" -h "*|*" --help "*) usage; return ;; esac
   load_config
   case "$cmd" in
     init) cmd_init "$@" ;;
