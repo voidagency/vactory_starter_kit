@@ -382,29 +382,40 @@ write_stack_json() {
     commit="$(git -C "$(meta_get "$inst" PROFILE_PATH)" rev-parse HEAD 2>/dev/null || true)"
     branch="$(git -C "$(meta_get "$inst" PROFILE_PATH)" symbolic-ref --short -q HEAD 2>/dev/null || true)"
   fi
-  python3 - "$inst/stack.json" <<PY
-import json, sys
-front = "$(meta_get "$inst" FRONT)" == "1"
-port = "$(meta_get "$inst" FRONT_PORT)"
+  # Valeurs passées par l'environnement, jamais écrites dans le code Python
+  # (une branche git peut contenir des guillemets).
+  S_NAME="$name" S_CREATED="$(meta_get "$inst" CREATED)" S_UPDATED="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+  S_PROFILE_PATH="$(meta_get "$inst" PROFILE_PATH)" S_BRANCH="${branch:-}" S_COMMIT="${commit:-}" \
+  S_PROFILE_MODE="$(meta_get "$inst" PROFILE_MODE)" S_INST="$inst" \
+  S_DRUPAL_HOST="$(drupal_host "$name")" S_FRONT_HOST="$(front_host "$name")" \
+  S_FRONT="$(meta_get "$inst" FRONT)" S_PORT="$(meta_get "$inst" FRONT_PORT)" \
+  S_PROJECT="$(project_of "$name")" S_OAUTH="$(meta_get "$inst" OAUTH)" S_BASELINE="$(meta_get "$inst" BASELINE)" \
+  python3 - "$inst/stack.json" <<'PY'
+import json, os, sys
+e = os.environ
+front = e["S_FRONT"] == "1"
+port = e["S_PORT"]
+oauth = e["S_OAUTH"] == "1"
 d = {
-  "name": "$name",
-  "created": "$(meta_get "$inst" CREATED)",
-  "updated": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-  "profile": {"path": "$(meta_get "$inst" PROFILE_PATH)", "branch": "${branch:-}", "commit": "${commit:-}",
-              "external": "$(meta_get "$inst" PROFILE_MODE)" == "external"},
-  "drupal": {"path": "$inst/drupal", "url": "https://$(drupal_host "$name")",
+  "name": e["S_NAME"],
+  "created": e["S_CREATED"],
+  "updated": e["S_UPDATED"],
+  "profile": {"path": e["S_PROFILE_PATH"], "branch": e["S_BRANCH"], "commit": e["S_COMMIT"],
+              "external": e["S_PROFILE_MODE"] == "external"},
+  "drupal": {"path": e["S_INST"] + "/drupal", "url": "https://" + e["S_DRUPAL_HOST"],
              "profile_in_container": "/var/www/html/profiles/contrib/vactory_starter_kit"},
-  "front": {"enabled": front, "url": ("http://$(front_host "$name"):" + port) if front else None,
-            "port": int(port) if front and port else None, "path": "$inst/front" if front else None},
-  "mailpit": "https://$(drupal_host "$name"):8026",
-  "ddev_project": "$(project_of "$name")",
-  "oauth": "$(meta_get "$inst" OAUTH)" == "1",
-  "users": ["stack_user", "stack_editor"] if "$(meta_get "$inst" OAUTH)" == "1" else [],
-  "secrets": "$inst/secrets.env",
-  "baseline": "$(meta_get "$inst" BASELINE)",
+  "front": {"enabled": front, "url": ("http://%s:%s" % (e["S_FRONT_HOST"], port)) if front else None,
+            "port": int(port) if front and port else None, "path": e["S_INST"] + "/front" if front else None},
+  "mailpit": "https://%s:8026" % e["S_DRUPAL_HOST"],
+  "ddev_project": e["S_PROJECT"],
+  "oauth": oauth,
+  "users": ["stack_user", "stack_editor"] if oauth else [],
+  "secrets": e["S_INST"] + "/secrets.env",
+  "baseline": e["S_BASELINE"],
 }
-json.dump(d, open(sys.argv[1], "w"), indent=2, ensure_ascii=False)
-open(sys.argv[1], "a").write("\n")
+with open(sys.argv[1], "w") as f:
+    json.dump(d, f, indent=2, ensure_ascii=False)
+    f.write("\n")
 PY
 }
 
