@@ -182,6 +182,7 @@ drush cr
 - Tests d'intégration des dépendances à historique d'incidents et contrats entre le profil et ses dépendances (Redmine #71160 ; #912 à #920, #934).
 - Tests de caractérisation, puis découpage des méthodes signalées par Sonar, sans changement de comportement (#935, #938, #939).
 - CI Drone : un build par commit, sans build pour les branches sans PR ni pour les tags (#921) ; jeton GitHub pour composer (#940) ; exclusions Sonar appliquées et règle `php:S1781` ignorée (#929).
+- CI Drone : suites `unit` et `kernel` lancées pendant l'installation du site, sur une base à part ; build plus court d'environ 7 minutes, mêmes tests (#970).
 - Dependabot limité aux mises à jour de sécurité (#930).
 - Hook git `pre-commit` : phpcs ne vérifie plus les fichiers `.md` et `.txt`, comme la CI (#971).
 - `vactory_image_sitemap` : phpcs propre, sans changement de comportement (#937).
@@ -191,6 +192,7 @@ drush cr
 - `vactory_decoupled` : test de l'endpoint de menus lu par le front (liens inaccessibles ou désactivés absents pour un anonyme) (#957).
 - Décisions d'architecture consignées dans `docs/adr/` : fichiers temporaires, version figée du profil, Features, clé `url` des liens, block_class 3.x (#960). Les ADR couvrent le profil, pas la CI (#962).
 - `vactory_quiz_history` : index sur la colonne `uid`, utilisée par le contrôle d'accès au téléchargement des certificats ; `vactory_html2pdf` : test du cas « chemin sans schéma » de `html2Pdf()` (#963).
+- `vactory_decoupled_router` : tests de caractérisation de l'endpoint de routage lu par le front (casse et variantes d'un alias, langues, redirections, types d'entité autres que les nœuds, paramètre `path`, en-têtes de cache), sans changement de comportement (Redmine #69443, #969).
 
 ## [3.2.3] - 2026-10-07
 Voir la [release 3.2.3](https://github.com/voidagency/vactory_starter_kit/releases/tag/3.2.3).
