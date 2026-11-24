@@ -961,10 +961,11 @@ cmd_test() {
       -*) args+=("$a") ;;
       *)
         rel="$(profile_rel "$name" "$a")"
-        case "/$rel/" in */tests/Functional/*) die "chemin refusé ($rel) : les tests tests/Functional installent et désinstallent des modules sur le site." ;; esac
+        # Deux dispositions dans le profil : tests/Functional et tests/src/Functional.
+        case "/$rel/" in */tests/Functional/*|*/tests/src/Functional/*) die "chemin refusé ($rel) : les tests Functional installent et désinstallent des modules sur le site." ;; esac
         [ -e "$prof/$rel" ] || die "introuvable dans le profil de l'instance : $rel"
-        if [ -d "$prof/$rel" ] && [ -n "$(find "$prof/$rel" -type d -path '*/tests/Functional' -print -quit 2>/dev/null)" ]; then
-          die "dossier refusé ($rel) : il contient des tests tests/Functional ; viser un fichier ou un sous-dossier tests/src/..."
+        if [ -d "$prof/$rel" ] && [ -n "$(find "$prof/$rel" -type d \( -path '*/tests/Functional' -o -path '*/tests/src/Functional' \) -print -quit 2>/dev/null)" ]; then
+          die "dossier refusé ($rel) : il contient des tests Functional ; viser un fichier ou un sous-dossier tests/src/..."
         fi
         args+=("$PROFILE_IN_CONTAINER/$rel"); has_target=1 ;;
     esac
