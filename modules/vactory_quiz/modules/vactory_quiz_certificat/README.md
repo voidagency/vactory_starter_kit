@@ -16,7 +16,10 @@ certificate is generated and the status report shows an error.
 
 A certificate is downloaded by its owner, logged in on the Drupal site, or by
 a user with the `administer site configuration` permission. Any other request
-for a file of this folder gets a "page not found" answer.
+for a file of this folder gets a "page not found" answer, whatever the file
+permissions of the account (File Entity: `view private files`,
+`view own private files`, `bypass file access`) and the other modules that
+grant private files.
 
 The link sent by mail is this download URL. Opened logged out, it leads to
 the login page of Drupal (instead of the "page not found" answer), then to the
