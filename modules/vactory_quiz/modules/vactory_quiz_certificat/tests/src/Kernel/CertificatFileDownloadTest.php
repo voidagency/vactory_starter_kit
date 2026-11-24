@@ -95,19 +95,22 @@ class CertificatFileDownloadTest extends KernelTestBase {
   }
 
   /**
-   * Another user, without the administration permission, gets no access.
+   * Another user, without the administration permission, is refused.
+   *
+   * Refused (-1), not left to the other modules: none of them can grant the
+   * download (Redmine #71471).
    */
   public function testOtherUserCannotDownload(): void {
     $this->setCurrentUser($this->createUser(['access content']));
-    $this->assertSame([], $this->fileDownloadHeaders(self::URI));
+    $this->assertSame([-1], $this->fileDownloadHeaders(self::URI));
   }
 
   /**
-   * An anonymous user never gets access.
+   * An anonymous user is always refused.
    */
   public function testAnonymousCannotDownload(): void {
     $this->setCurrentUser(new AnonymousUserSession());
-    $this->assertSame([], $this->fileDownloadHeaders(self::URI));
+    $this->assertSame([-1], $this->fileDownloadHeaders(self::URI));
   }
 
   /**
@@ -121,7 +124,7 @@ class CertificatFileDownloadTest extends KernelTestBase {
     $anonymous = new AnonymousUserSession();
     $this->setCurrentUser($anonymous);
     $this->assertTrue($anonymous->hasPermission('administer site configuration'));
-    $this->assertSame([], $this->fileDownloadHeaders(self::URI));
+    $this->assertSame([-1], $this->fileDownloadHeaders(self::URI));
   }
 
   /**
@@ -157,10 +160,14 @@ class CertificatFileDownloadTest extends KernelTestBase {
 
   /**
    * The owner gets no access to other files from this module.
+   *
+   * The certificate of another user is refused; the files of other modules
+   * are left to them.
    */
   public function testNoAccessToOtherFiles(): void {
     $this->setCurrentUser($this->owner);
-    $this->assertSame([], $this->fileDownloadHeaders('private://quiz_certificat/2026-11/Other-Certif-2.pdf'));
+    $other = 'private://quiz_certificat/2026-11/Other-Certif-2.pdf';
+    $this->assertSame([-1], $this->fileDownloadHeaders($other));
     $this->assertSame([], $this->fileDownloadHeaders('private://other/file.pdf'));
   }
 
