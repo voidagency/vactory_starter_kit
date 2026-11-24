@@ -88,7 +88,15 @@ function stack_setup_mail(): void {
  */
 function stack_setup_oauth(): void {
   $secrets = stack_secrets();
-  foreach (['STACK_FRONT_CLIENT_ID', 'STACK_FRONT_CLIENT_SECRET', 'STACK_ADMIN_CLIENT_ID', 'STACK_ADMIN_CLIENT_SECRET', 'STACK_USER_PASSWORD', 'STACK_EDITOR_PASSWORD'] as $key) {
+  $required = [
+    'STACK_FRONT_CLIENT_ID',
+    'STACK_FRONT_CLIENT_SECRET',
+    'STACK_ADMIN_CLIENT_ID',
+    'STACK_ADMIN_CLIENT_SECRET',
+    'STACK_USER_PASSWORD',
+    'STACK_EDITOR_PASSWORD',
+  ];
+  foreach ($required as $key) {
     if (empty($secrets[$key])) {
       throw new \RuntimeException("Valeur manquante dans secrets.env : $key");
     }
@@ -124,8 +132,18 @@ function stack_setup_oauth(): void {
   // Clients OAuth. Avec simple_oauth, les rôles d'un client sont donnés à
   // tous les jetons qu'il émet : le client du front n'en a aucun.
   $clients = [
-    'front' => [$secrets['STACK_FRONT_CLIENT_ID'], $secrets['STACK_FRONT_CLIENT_SECRET'], [], 'Front (stack)'],
-    'admin' => [$secrets['STACK_ADMIN_CLIENT_ID'], $secrets['STACK_ADMIN_CLIENT_SECRET'], ['administrator'], 'Administration (stack)'],
+    'front' => [
+      $secrets['STACK_FRONT_CLIENT_ID'],
+      $secrets['STACK_FRONT_CLIENT_SECRET'],
+      [],
+      'Front (stack)',
+    ],
+    'admin' => [
+      $secrets['STACK_ADMIN_CLIENT_ID'],
+      $secrets['STACK_ADMIN_CLIENT_SECRET'],
+      ['administrator'],
+      'Administration (stack)',
+    ],
   ];
   $storage = \Drupal::entityTypeManager()->getStorage('consumer');
   foreach ($clients as [$client_id, $secret, $roles, $label]) {
