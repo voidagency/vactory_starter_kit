@@ -818,6 +818,38 @@ drupal_setup() {
   ok "updb, cr, mail$([ "$(meta_get "$inst" OAUTH)" = 1 ] && echo ', OAuth et comptes') en $(since "$t0")"
 }
 
+# Instance existante : --ref et --profile doivent désigner le code avec
+# lequel elle a été créée (sinon « up » relancerait un autre code que celui
+# demandé, sans prévenir).
+created_from() {
+  local inst="$1"
+  if [ "$(meta_get "$inst" PROFILE_MODE)" = external ]; then printf 'avec --profile %s' "$(meta_get "$inst" PROFILE_PATH)"
+  elif [ -n "$(meta_get "$inst" BRANCH)" ]; then printf 'sur la branche %s' "$(meta_get "$inst" BRANCH)"
+  elif [ -n "$(meta_get "$inst" REF)" ]; then printf 'avec --ref %s' "$(meta_get "$inst" REF)"
+  else printf 'sur un commit détaché'
+  fi
+}
+check_same_code() {
+  local name="$1" ref="$2" ext="$3" inst pmode ppath want have
+  inst="$(inst_dir "$name")"; pmode="$(meta_get "$inst" PROFILE_MODE)"; ppath="$(meta_get "$inst" PROFILE_PATH)"
+  if [ -n "$ext" ]; then
+    { [ "$pmode" = external ] && [ -d "$ext" ] && [ "$(stack_resolve "$ext")" = "$ppath" ]; } \
+      || die "« $name » a été créée $(created_from "$inst"), pas avec --profile $ext : recréer l'instance (« stack rm $name » puis « stack up $name --profile … »)."
+  fi
+  if [ -n "$ref" ]; then
+    [ "$ref" = "$(meta_get "$inst" REF)" ] && return 0
+    want="$(git -C "$PROFILE_REPO" rev-parse -q --verify "$ref^{commit}" 2>/dev/null || true)"
+    have=""
+    if [ "$pmode" = worktree ] && [ -z "$(meta_get "$inst" BRANCH)" ]; then
+      have="$(meta_get "$inst" REF_COMMIT)"
+      # Instance créée avant REF_COMMIT : commit de son arbre détaché.
+      [ -n "$have" ] || have="$(git -C "$ppath" rev-parse -q --verify HEAD 2>/dev/null || true)"
+    fi
+    { [ -n "$want" ] && [ "$want" = "$have" ]; } \
+      || die "« $name » a été créée $(created_from "$inst"), pas avec --ref $ref : recréer l'instance (« stack rm $name » puis « stack up $name --ref $ref »)."
+  fi
+}
+
 cmd_up() {
   local name="${1:-}"; [ -n "$name" ] || die "usage : stack up <nom> [options]"; shift
   valid_name "$name"
@@ -854,6 +886,7 @@ cmd_up() {
       [ "$(git -C "$(meta_get "$inst" PROFILE_PATH)" symbolic-ref --short -q HEAD || true)" = "$branch" ] \
         || die "« $name » existe sur une autre branche : changer de branche dans $(meta_get "$inst" PROFILE_PATH) ou recréer l'instance."
     fi
+    check_same_code "$name" "$ref" "$ext"
     step "« $name » existe : démarrage et remise à niveau"
     mkdir -p "$inst/logs"
     write_ddev_config "$name"
@@ -894,7 +927,9 @@ cmd_up() {
     lock_take git 300
     fetch_base "$log"
     if [ -n "$ref" ]; then
+      meta_set "$inst" REF "$ref"
       run_logged "$log" git -C "$PROFILE_REPO" worktree add --detach "$inst/profile" "$ref"
+      meta_set "$inst" REF_COMMIT "$(git -C "$inst/profile" rev-parse HEAD)"
     else
       [ -n "$branch" ] || branch="stack/$name"
       git check-ref-format --branch "$branch" >/dev/null 2>&1 || die "nom de branche invalide : $branch"

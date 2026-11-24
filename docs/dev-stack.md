@@ -60,7 +60,7 @@ stack rm a [--keep-branch] [--force] [--yes]
 stack rm --all --yes               # toutes les instances (dossiers internes _baseline, _build ignorés) ; une instance en échec n'arrête pas les autres, bilan et code de sortie non nul à la fin
 ```
 
-Un nom fait de 1 à 20 caractères parmi `a-z`, `0-9` et `-`, sans `-` au début ni à la fin. Noms réservés aux ressources partagées, refusés : `baseline`, `front`, `yarn-cache`, `base`, `build`, `locks`. `stack up` sur une instance existante la redémarre et remet à niveau sa config (idempotent) ; il ne change pas sa branche.
+Un nom fait de 1 à 20 caractères parmi `a-z`, `0-9` et `-`, sans `-` au début ni à la fin. Noms réservés aux ressources partagées, refusés : `baseline`, `front`, `yarn-cache`, `base`, `build`, `locks`. `stack up` sur une instance existante la redémarre et remet à niveau sa config (idempotent) ; il ne change pas son code : `--branch`, `--ref` ou `--profile` différents de ceux de la création sont refusés (recréer l'instance), les mêmes sont acceptés.
 
 Le code du profil est celui de l'arbre `<instance>/profile`, monté dans le site : une modification y est visible tout de suite (`stack drush a cr` si besoin). On y commit et on y pousse comme dans tout arbre git. Le hook `pre-commit` du dépôt cherche le `vendor/` du profil, absent d'un arbre d'instance : y committer avec `--no-verify` et vérifier le style par `stack phpcs`.
 
