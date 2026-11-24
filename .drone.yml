@@ -47,12 +47,28 @@ name: sonar
 kind: pipeline
 type: docker
 
+# The default clone merges the pull request into 3.x and fails on a
+# conflict, before any analysis. Clone the commit of the build as it is.
+clone:
+  disable: true
+
 trigger:
   ref:
     - refs/heads/3.x
     - refs/pull/**
 
 steps:
+  - name: clone
+    image: drone/git
+    pull: if-not-exists
+    commands:
+      - git init -q .
+      - git remote add origin "$DRONE_GIT_HTTP_URL"
+      - git fetch -q origin "+refs/heads/$DRONE_TARGET_BRANCH:refs/remotes/origin/$DRONE_TARGET_BRANCH"
+      - git fetch -q origin "$DRONE_COMMIT_REF"
+      - git checkout -q "$DRONE_COMMIT"
+      - git log --oneline -1
+
   - name: code-analysis
     # Built for arm64 from droneci/sonar-node-plugin and pushed by hand to
     # Docker Hub (the Hub autobuild only produces the amd64 "latest" tag).
