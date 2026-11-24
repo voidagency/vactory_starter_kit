@@ -139,6 +139,12 @@ fetch_base() {
 }
 
 # --- Verrous (mkdir est atomique) ----------------------------------------------
+# Ordre de prise (un verrou n'est jamais demandé en tenant un verrou placé
+# après lui : pas d'interblocage) : inst-<nom> → baseline → git → ports →
+# ddev-start. « baseline » tient baseline puis prend git et ddev-start ;
+# « up » tient inst-<nom> et prend les autres l'un après l'autre (baseline
+# seulement pour copier la base et le front de référence, relâché avant ddev
+# start).
 
 lock_take() {
   local name="$1" wait="${2:-900}" dir pid i=0
@@ -252,11 +258,17 @@ print("" if d is None else d)' "$1" "$2"
 clone_tree() {
   local src="$1" dest="$2"; shift 2
   local e skip x
+  [ -d "$src" ] || die "copie impossible : $src absent."
   mkdir -p "$dest"
   if [ "$(uname -s)" = "Darwin" ] && cp -c "$STACK_SELF" "$dest/.clone-test" 2>/dev/null; then
     rm -f "$dest/.clone-test"
     for e in "$src"/* "$src"/.[!.]* "$src"/..?*; do
-      [ -e "$e" ] || [ -L "$e" ] || continue
+      if [ ! -e "$e" ] && [ ! -L "$e" ]; then
+        # Motif sans correspondance : rien à copier. Entrée listée puis
+        # disparue : la source change pendant la copie, copie incomplète.
+        case "$e" in "$src/*"|"$src/.[!.]*"|"$src/..?*") continue ;; esac
+        die "copie de $src : « $e » a disparu pendant la copie."
+      fi
       skip=0
       for x in "$@"; do [ "$(basename "$e")" = "$x" ] && skip=1; done
       [ "$skip" = 1 ] || cp -cRp "$e" "$dest/"
@@ -955,22 +967,25 @@ cmd_up() {
   prepare_drupal "$name" "$project" "$inst/drupal" "$(meta_get "$inst" PROFILE_PATH)" "$inst" ""
   write_ddev_config "$name"
   gen_secrets "$inst" "$name"
-  if [ "$front" = 1 ]; then
-    clone_tree "$BASELINE_DIR/front" "$inst/front"
-    write_front_env "$name"
-  fi
-  ok "copies du site$([ "$front" = 1 ] && echo ' et du front') en $(since "$t")"
+  ok "copie du site en $(since "$t")"
 
-  # 4. Base : copie du volume de référence, avant le démarrage de ddev.
+  # 4. Base (copie du volume de référence, avant le démarrage de ddev) et
+  # front de référence, sous le verrou baseline : « stack baseline » remplace
+  # _baseline (et --front-only refait _baseline/front) sous ce même verrou.
   t="$(now)"
   local dbvol; dbvol="$project-$(ddev_value db_type mariadb)"
   lock_take baseline 300
   docker volume inspect "$DB_VOLUME" >/dev/null 2>&1 || die "volume $DB_VOLUME absent : relancer « stack baseline »."
+  if [ "$front" = 1 ]; then
+    [ -f "$BASELINE_DIR/front/package.json" ] || die "--front : front de référence absent (stack baseline --front-only)."
+    clone_tree "$BASELINE_DIR/front" "$inst/front"
+  fi
   run_logged "$log" docker volume create --label "com.vactory.stack.instance=$name" "$dbvol"
   run_logged "$log" copy_volume "$DB_VOLUME" "$dbvol"
   if [ -f "$BASELINE_DIR/files.tar.gz" ]; then tar -C "$inst/drupal/sites/default/files" -xzf "$BASELINE_DIR/files.tar.gz"; fi
   lock_release baseline
-  ok "base copiée en $(since "$t")"
+  if [ "$front" = 1 ]; then write_front_env "$name"; fi
+  ok "$([ "$front" = 1 ] && echo 'base et front copiés' || echo 'base copiée') en $(since "$t")"
 
   t="$(now)"
   step "démarrage de $project (ddev)"
