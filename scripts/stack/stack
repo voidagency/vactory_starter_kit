@@ -910,7 +910,12 @@ cmd_url() {
 
 quote_args() { local a out=""; for a in "$@"; do out="$out $(printf '%q' "$a")"; done; printf '%s' "$out"; }
 
-cmd_drush() { local name="${1:-}"; need_instance "$name"; shift; in_drupal "$name" ddev drush "$@"; }
+cmd_drush() {
+  local name="${1:-}"; need_instance "$name"; shift
+  # Lignes longues gardées entières (messages d'erreur de drush, sorties lues
+  # par un script) : drush coupe sinon à la largeur du terminal.
+  in_drupal "$name" ddev exec "COLUMNS=${STACK_DRUSH_COLUMNS:-1000} drush$(quote_args "$@")"
+}
 cmd_exec() {
   local name="${1:-}"; need_instance "$name"; shift
   [ $# -gt 0 ] || die "exec <nom> <commande>"
