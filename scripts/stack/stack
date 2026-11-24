@@ -1033,11 +1033,32 @@ snap_volumes() {
   done | sort -r
 }
 
+# Fichiers du site (publics et privés) avec la base : <instance>/snapshots/<étiquette>.
+snap_files() {
+  local mode="$1" name="$2" label="$3" d dir
+  d="$(inst_dir "$name")/drupal/sites/default"; dir="$(inst_dir "$name")/snapshots/$label"
+  if [ "$mode" = save ]; then
+    rm -rf "$dir"; mkdir -p "$dir/files" "$dir/private"
+    rsync -a "$d/files/" "$dir/files/"; rsync -a "$d/private/" "$dir/private/"
+  elif [ -d "$dir/files" ]; then
+    rsync -a --delete "$dir/files/" "$d/files/"; rsync -a --delete "$dir/private/" "$d/private/"
+  else
+    warn "snapshot « $label » sans copie des fichiers (créé avant cette version) : base seule restaurée."
+  fi
+}
+
 cmd_snapshot() {
   local name="${1:-}"; need_instance "$name"
   local project; project="$(project_of "$name")"
   if [ "${2:-}" = "--list" ]; then
     snap_volumes "$name" | awk '{print $3"\t"$1}'; return
+  fi
+  if [ "${2:-}" = "--rm" ]; then
+    [ -n "${3:-}" ] || die "snapshot <nom> --rm <étiquette>"
+    docker volume inspect "$project-snap-$3" >/dev/null 2>&1 || die "snapshot « $3 » introuvable (stack snapshot $name --list)."
+    docker volume rm "$project-snap-$3" >/dev/null
+    rm -rf "${STACKS_DIR:?}/$name/snapshots/$3"
+    ok "snapshot « $3 » de $name supprimé"; return
   fi
   local label="${2:-snap-$(date +%Y%m%d-%H%M%S)}"
   printf '%s' "$label" | grep -Eq '^[a-z0-9][a-z0-9_.-]{0,39}$' || die "nom de snapshot invalide (a-z, 0-9, _ . -, 40 caractères au plus)."
@@ -1050,6 +1071,7 @@ cmd_snapshot() {
   docker stop "$db" >/dev/null
   copy_volume "$src" "$vol" || { docker start "$db" >/dev/null; die "copie impossible"; }
   docker start "$db" >/dev/null
+  snap_files save "$name" "$label"
   db_wait_healthy "$db"
   ok "snapshot « $label » de $name en $(since "$t0")"
 }
@@ -1070,6 +1092,7 @@ cmd_restore() {
     sh -c 'find /to -mindepth 1 -maxdepth 1 -exec rm -rf {} + && cp -a /from/. /to/' \
     || { docker start "$db" >/dev/null; die "restauration impossible"; }
   docker start "$db" >/dev/null
+  snap_files load "$name" "$label"
   db_wait_healthy "$db"
   in_drupal "$name" ddev drush cr >/dev/null 2>&1 || warn "drush cr a échoué après la restauration."
   ok "« $label » restauré dans $name en $(since "$t0")"
@@ -1189,7 +1212,7 @@ stack : pile locale complète et isolée par instance (docs/dev-stack.md).
   stack drush <nom> <args>         stack exec <nom> <commande>
   stack uli <nom> [utilisateur]    stack test <nom> <chemin>... | --testsuite <suite>
   stack phpcs <nom> <chemins>      stack logs <nom> [web|db|front|redis]
-  stack snapshot <nom> [étiquette | --list]   stack restore <nom> [étiquette]
+  stack snapshot <nom> [étiquette | --list | --rm <étiquette>]   stack restore <nom> [étiquette]
   stack stop <nom>                 stack start <nom>
   stack rm <nom> [--keep-branch] [--force] [--yes]   stack rm --all --yes
 EOF
