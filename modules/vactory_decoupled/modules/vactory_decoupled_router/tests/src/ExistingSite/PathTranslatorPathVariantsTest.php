@@ -15,8 +15,8 @@ use weitzman\DrupalTestTraits\ExistingSiteBase;
  * languages, redirect entities, entity types other than node, shapes of the
  * "path" parameter, HTTP methods and response headers.
  *
- * These tests describe the behaviour as it is. Some of it is questionable
- * (see the "@todo" notes); update the test with the behaviour.
+ * These tests describe the behaviour as it is; update the test with the
+ * behaviour.
  *
  * @coversDefaultClass \Drupal\vactory_decoupled_router\Controller\PathTranslator
  * @group vactory_decoupled_router
@@ -120,7 +120,8 @@ class PathTranslatorPathVariantsTest extends ExistingSiteBase {
    *
    * @param string $template
    *   A path with "{alias}" (the alias without its leading slash), "{ALIAS}"
-   *   (the same in upper case) or "{nid}".
+   *   (the same in upper case), "{nid}", "{uuid}" or "{jsonapi}" (the base
+   *   path of JSON:API, without its leading slash).
    * @param object $node
    *   The node.
    */
@@ -131,6 +132,8 @@ class PathTranslatorPathVariantsTest extends ExistingSiteBase {
       '{ALIAS}' => strtoupper($alias),
       '{Alias}' => ucfirst($alias),
       '{nid}' => $node->id(),
+      '{uuid}' => $node->uuid(),
+      '{jsonapi}' => ltrim(\Drupal::getContainer()->getParameter('jsonapi.base_path'), '/'),
     ]);
   }
 
@@ -138,7 +141,8 @@ class PathTranslatorPathVariantsTest extends ExistingSiteBase {
    * Variants of an alias that resolve to the node, without any redirect.
    *
    * The stored alias keeps answering without its leading slash, with a
-   * language prefix, a query string or a fragment, or inside a URL. The
+   * language prefix, a query string or a fragment, or inside a URL with a
+   * scheme. The
    * variants by letter case, accents or trailing slash are redirected to the
    * stored alias (see PathTranslatorPageTypesAndAliasCaseTest).
    *
@@ -162,12 +166,15 @@ class PathTranslatorPathVariantsTest extends ExistingSiteBase {
       'query string' => ['/{alias}?page=2'],
       'fragment' => ['/{alias}#top'],
       'absolute URL' => ['https://example.com/{alias}'],
-      'protocol relative URL' => ['//example.com/{alias}'],
     ];
   }
 
   /**
    * Variants of an alias or of /node/N that are not resolved.
+   *
+   * A path starting with two slashes is not a path of the site: it is not
+   * read as a URL whose first segment would be a host name ("//segment" was
+   * the front page).
    *
    * @covers ::translate
    * @dataProvider providerUnresolvedVariants
@@ -192,26 +199,14 @@ class PathTranslatorPathVariantsTest extends ExistingSiteBase {
       'segment before the alias' => ['/pv-other/{alias}'],
       'segment after the alias' => ['/{alias}/pv-other'],
       'two slashes only' => ['//'],
+      'two slashes and a segment' => ['//pv-other'],
+      'two slashes and a segment, trailing slash' => ['//pv-other/'],
+      'two slashes and the alias' => ['//{alias}'],
+      'two slashes, language prefix and alias' => ['//en/{alias}'],
+      'two slashes and a node path' => ['//node/{nid}'],
+      'protocol relative URL' => ['//example.com/{alias}'],
       'control characters' => ["/{alias}\r\nX-Pv: 1"],
     ];
-  }
-
-  /**
-   * A path starting with two slashes and one segment gives the front page.
-   *
-   * The path is read as a URL: the first segment is taken as a host name.
-   *
-   * @todo The front page answers for any "//segment" path.
-   *
-   * @covers ::translate
-   */
-  public function testTwoLeadingSlashesGiveTheFrontPage(): void {
-    $front = \Drupal::config('system.site')->get('page.front');
-    $this->assertMatchesRegularExpression('#^/node/\d+$#', $front);
-    $data = $this->translate('//' . $this->randomSegment());
-    $this->assertSame(200, $data['status']);
-    $this->assertSame(substr($front, strlen('/node/')), $data['entity']['id']);
-    $this->assertArrayNotHasKey('redirect', $data);
   }
 
   /**
@@ -262,72 +257,78 @@ class PathTranslatorPathVariantsTest extends ExistingSiteBase {
   }
 
   /**
-   * Paths under /node/N that resolve to the node, without redirect.
+   * Only the canonical address of a node is resolved.
    *
-   * Only the exact "/node/N" form is redirected to the alias (see
+   * The other routes of a node (forms, revisions, latest version,
+   * translations, JSON:API) and the other spellings of /node/N give the error
+   * page with a 404, without redirect and without any data of the node. The
+   * exact "/node/N" form is redirected to the alias (see
    * PathTranslatorTest::testNodeByInternalPath()).
-   *
-   * @todo The administrative paths of a node answer like the node itself.
    *
    * @covers ::translate
    * @dataProvider providerNodePathVariants
    */
-  public function testNodePathVariantResolvesToTheNode(string $template): void {
+  public function testNodePathVariantGivesTheErrorPage(string $template): void {
     $node = $this->createPage('/' . $this->randomSegment());
     $path = $this->buildPath($template, $node);
-    $this->assertNode($node, $this->translate($path), $path);
+    $data = $this->translate($path);
+    $this->assertNotFound($data, "No decoupled page for $path");
+    $this->assertArrayNotHasKey('redirect', $data);
+    // The message repeats the requested path, which can hold the UUID.
+    $json = json_encode(array_diff_key($data, ['message' => TRUE]));
+    $this->assertStringNotContainsString($node->uuid(), $json);
+    $this->assertStringNotContainsString($node->label(), $json);
+
+    // The canonical address and the alias of the same node keep answering.
+    $this->assertNode($node, $this->translate($node->get('path')->alias));
+    $canonical = $this->translate('/node/' . $node->id());
+    $this->assertSame(200, $canonical['status']);
+    $this->assertSame($node->uuid(), $canonical['entity']['uuid']);
   }
 
   /**
-   * Data provider for testNodePathVariantResolvesToTheNode().
+   * Data provider for testNodePathVariantGivesTheErrorPage().
    */
   public static function providerNodePathVariants(): array {
     return [
       'upper case' => ['/NODE/{nid}'],
+      'leading zero' => ['/node/0{nid}'],
       'trailing slash' => ['/node/{nid}/'],
+      'language prefix and trailing slash' => ['/en/node/{nid}/'],
       'edit form' => ['/node/{nid}/edit'],
+      'edit form with language prefix' => ['/en/node/{nid}/edit'],
+      'edit form in a URL' => ['https://example.com/node/{nid}/edit'],
       'delete form' => ['/node/{nid}/delete'],
       'revisions' => ['/node/{nid}/revisions'],
+      'latest version' => ['/node/{nid}/latest'],
+      'translations' => ['/node/{nid}/translations'],
+      'JSON:API resource' => ['/{jsonapi}/node/vactory_page/{uuid}'],
     ];
   }
 
   /**
    * A path ending with /node/N that matches no node.
    *
-   * The error page is returned with a 404, and with a redirect to the alias
-   * of the error page itself.
-   *
-   * @todo A front that follows "redirect" first sends the visitor to the
-   *   error page address instead of answering 404.
+   * The error page is returned with a 404 and without redirect, as for any
+   * unknown path: the front answers 404 instead of following a redirect to
+   * the address of the error page.
    *
    * @covers ::translate
    * @dataProvider providerUnknownNodePaths
    */
-  public function testUnknownNodePathRedirectsToTheErrorPage(string $path): void {
-    $error = Route::load('error_page');
-    $this->assertNotNull($error);
-    $error_node = \Drupal::entityTypeManager()->getStorage('node')
-      ->load(substr($error->getPath(), strlen('/node/')));
-    if (!$error_node->hasTranslation('en') || !$error_node->getTranslation('en')->get('path')->alias) {
-      $this->markTestSkipped('The error page has no English alias on this site.');
-    }
+  public function testUnknownNodePathGivesTheErrorPage(string $path): void {
     $data = $this->translate($path);
     $this->assertNotFound($data, "No route found for $path");
-    $this->assertSame([
-      [
-        'to' => '/en' . $error_node->getTranslation('en')->get('path')->alias,
-        'status' => 301,
-        'from' => $path,
-      ],
-    ], $data['redirect']);
+    $this->assertArrayNotHasKey('redirect', $data);
   }
 
   /**
-   * Data provider for testUnknownNodePathRedirectsToTheErrorPage().
+   * Data provider for testUnknownNodePathGivesTheErrorPage().
    */
   public static function providerUnknownNodePaths(): array {
     return [
       'unknown node id' => ['/node/987654321'],
+      'unknown node id with language prefix' => ['/en/node/987654321'],
       'unknown path ending like a node path' => ['/pv-unknown/node/1'],
     ];
   }

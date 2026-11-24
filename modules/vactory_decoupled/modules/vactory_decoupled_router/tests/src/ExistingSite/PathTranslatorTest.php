@@ -88,6 +88,26 @@ class PathTranslatorTest extends ExistingSiteBase {
   }
 
   /**
+   * Creates a system route removed at the end of the test.
+   *
+   * @param string $path
+   *   The stored Drupal path.
+   * @param string $alias
+   *   The alias of the route, with its parameters.
+   */
+  protected function createSystemRoute(string $path, string $alias): Route {
+    $route = Route::create([
+      'id' => 'pt_test_' . strtolower($this->randomMachineName(8)),
+      'label' => 'Path translator test route',
+      'path' => $path,
+      'alias' => $alias,
+    ]);
+    $route->save();
+    $this->markEntityForCleanup($route);
+    return $route;
+  }
+
+  /**
    * Asserts the "entity" and "jsonapi" keys describe the node.
    */
   protected function assertNodeOutput($node, array $data, string $individual_suffix = '', string $langcode = 'en', ?string $label = NULL): void {
@@ -294,6 +314,48 @@ class PathTranslatorTest extends ExistingSiteBase {
   }
 
   /**
+   * Unpublished node requested by /node/N: error page, without redirect.
+   *
+   * The preview of the back-office sends the alias of the node, or /node/N
+   * when it has none, with the "preview" parameter: both keep answering. The
+   * other routes of the node are refused, in preview too.
+   *
+   * @covers ::translate
+   */
+  public function testUnpublishedNodeByInternalPath(): void {
+    $node = $this->createPage(['status' => 0, 'moderation_state' => 'draft']);
+    $path = '/node/' . $node->id();
+    $message = "A route has been found for $path , but it has no entity information!";
+    $admin = $this->createUser([], NULL, TRUE);
+
+    // No "redirect" key: assertErrorPage() checks the exact list of keys.
+    $this->assertErrorPage($this->translate($path), 404, $message);
+    $data = $this->translate($path, 'en', ['preview' => 1]);
+    $this->assertErrorPage($data, 404, $message);
+    $prefixed = "A route has been found for /en$path , but it has no entity information!";
+    $this->assertErrorPage($this->translate("/en$path"), 404, $prefixed);
+    $this->assertErrorPage($this->translateAs($admin, $path), 404, $message);
+
+    // Preview as a user who can edit the node: by /node/N and by alias.
+    foreach ([$path, "/en$path", $node->get('path')->alias] as $requested) {
+      $data = $this->translateAs($admin, $requested, ['preview' => 'true']);
+      $this->assertSame(200, $data['status'], $requested);
+      $this->assertNodeOutput($node, $data);
+      $this->assertArrayNotHasKey('system', $data, $requested);
+    }
+
+    // The other routes of the node: error page, whoever asks.
+    foreach (['/edit', '/latest', '/revisions'] as $suffix) {
+      $other = $path . $suffix;
+      foreach ([[], ['preview' => 'true']] as $query) {
+        $data = $this->translateAs($admin, $other, $query);
+        $this->assertErrorPage($data, 404, "No decoupled page for $other");
+        $this->assertStringNotContainsString($node->uuid(), json_encode($data));
+      }
+    }
+  }
+
+  /**
    * A published node the user cannot view: login redirect or 403.
    *
    * "access content" is revoked from the anonymous and authenticated roles
@@ -337,6 +399,10 @@ class PathTranslatorTest extends ExistingSiteBase {
       $this->assertSame("User is not allowed to view $alias", $data['message']);
       $this->assertSame(['_route' => 'error_page'], $data['system']);
       $this->assertArrayNotHasKey('redirect', $data);
+
+      // The same by /node/N: no redirect to the alias of the error page.
+      $path = '/node/' . $node->id();
+      $this->assertErrorPage($this->translateAs($viewer, $path), 403, "User is not allowed to view $path");
     }
     finally {
       foreach ($roles as $role) {
@@ -418,15 +484,7 @@ class PathTranslatorTest extends ExistingSiteBase {
   public function testSystemRouteWithParameter(): void {
     $node = $this->createPage();
     $base = '/pt-sys-' . strtolower($this->randomMachineName(10));
-    $id = 'pt_test_' . strtolower($this->randomMachineName(8));
-    $route = Route::create([
-      'id' => $id,
-      'label' => 'Path translator test route',
-      'path' => '/node/' . $node->id(),
-      'alias' => $base . '/{param1}',
-    ]);
-    $route->save();
-    $this->markEntityForCleanup($route);
+    $id = $this->createSystemRoute('/node/' . $node->id(), $base . '/{param1}')->id();
 
     $data = $this->translate($base . '/stuff');
     $this->assertSession()->statusCodeEquals(200);
@@ -440,6 +498,93 @@ class PathTranslatorTest extends ExistingSiteBase {
       'alias' => $base . '/{param1}',
       'request_path' => $base . '/stuff',
     ], $data['system']);
+  }
+
+  /**
+   * System routes: the stored path does not have to be a canonical address.
+   *
+   * The canonical rule is for the requested path. The path stored in a system
+   * route is set by an administrator and is resolved as before, whatever its
+   * form.
+   *
+   * @covers ::translate
+   * @dataProvider providerSystemRoutePaths
+   */
+  public function testSystemRouteStoredPath(string $template): void {
+    $node = $this->createPage();
+    $stored = strtr($template, [
+      '{nid}' => $node->id(),
+      '{alias}' => $node->get('path')->alias,
+    ]);
+    $alias = '/pt-sys-' . strtolower($this->randomMachineName(10));
+    $id = $this->createSystemRoute($stored, $alias)->id();
+
+    $data = $this->translate($alias);
+    $this->assertSame(['entity', 'jsonapi', 'status', 'system'], array_keys($data));
+    $this->assertNodeOutput($node, $data);
+    $this->assertSame(200, $data['status']);
+    $this->assertSame([
+      '_query' => [],
+      '_route' => $id,
+      'path' => $stored,
+      'alias' => $alias,
+      'request_path' => $alias,
+    ], $data['system']);
+  }
+
+  /**
+   * Data provider for testSystemRouteStoredPath().
+   */
+  public static function providerSystemRoutePaths(): array {
+    return [
+      'canonical path' => ['/node/{nid}'],
+      'alias' => ['{alias}'],
+      'language prefix' => ['/fr/node/{nid}'],
+      'upper case' => ['/NODE/{nid}'],
+      'trailing slash' => ['/node/{nid}/'],
+      'another route of the node' => ['/node/{nid}/revisions'],
+    ];
+  }
+
+  /**
+   * The error page and the login page, by alias and by stored path.
+   *
+   * @covers ::translate
+   */
+  public function testErrorAndLoginSystemRoutes(): void {
+    foreach (['error_page', 'account_login'] as $id) {
+      $route = Route::load($id);
+      $this->assertNotNull($route, $id);
+      $node = $this->systemRouteNode($id);
+      $alias = $route->getAlias();
+      foreach ([$alias, '/en' . $alias, $route->getPath()] as $path) {
+        $data = $this->translate($path);
+        $this->assertSame(200, $data['status'], $path);
+        $this->assertSame($node->uuid(), $data['entity']['uuid'], $path);
+        $this->assertArrayNotHasKey('message', $data, $path);
+      }
+    }
+  }
+
+  /**
+   * A system route whose alias ends like a node path: no redirect.
+   *
+   * The node of a system route is not redirected to its own alias: the
+   * "system" key would be lost.
+   *
+   * @covers ::translate
+   */
+  public function testSystemRouteAliasEndingLikeNodePath(): void {
+    $node = $this->createPage();
+    $base = '/pt-sys-' . strtolower($this->randomMachineName(10));
+    $id = $this->createSystemRoute('/node/' . $node->id(), $base . '/node/{param1}')->id();
+
+    $data = $this->translate($base . '/node/12');
+    $this->assertSame(['entity', 'jsonapi', 'status', 'system'], array_keys($data));
+    $this->assertNodeOutput($node, $data);
+    $this->assertSame(200, $data['status']);
+    $this->assertSame($id, $data['system']['_route']);
+    $this->assertSame(['param1' => '12'], $data['system']['_query']);
   }
 
   /**
