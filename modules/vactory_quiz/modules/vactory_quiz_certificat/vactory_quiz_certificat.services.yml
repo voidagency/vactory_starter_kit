@@ -9,6 +9,12 @@ services:
       - '@state'
       - '@language_manager'
       - '@entity.repository'
+  vactory_quiz_certificat.access:
+    class: Drupal\vactory_quiz_certificat\Services\CertificatAccess
+    arguments:
+      - '@database'
+      - '@stream_wrapper_manager'
+      - '@file_system'
   vactory_quiz_certificat.login_redirect_subscriber:
     class: Drupal\vactory_quiz_certificat\EventSubscriber\CertificatLoginRedirectSubscriber
     arguments:
@@ -22,7 +28,6 @@ services:
   vactory_quiz_certificat.not_found_subscriber:
     class: Drupal\vactory_quiz_certificat\EventSubscriber\CertificatNotFoundSubscriber
     arguments:
-      - '@stream_wrapper_manager'
-      - '@file_system'
+      - '@vactory_quiz_certificat.access'
     tags:
       - { name: event_subscriber }
