@@ -682,12 +682,19 @@ PY
 }
 
 wait_front() {
-  local name="$1" inst url code="" i=0 t0; inst="$(inst_dir "$name")"; t0="$(now)"
+  local name="$1" inst url code="" i=0 t0 err5=""; inst="$(inst_dir "$name")"; t0="$(now)"
   url="http://$(front_host "$name"):$(meta_get "$inst" FRONT_PORT)"
   step "front : première compilation de la page d'accueil ($url)"
   while [ "$i" -lt 600 ]; do
     code="$(curl -s -o /dev/null -m 120 -w '%{http_code}' "$url/" 2>/dev/null || true)"
-    case "$code" in 2*|3*) ok "front prêt en $(since "$t0") (HTTP $code)"; return 0 ;; esac
+    case "$code" in
+      2*|3*) ok "front prêt en $(since "$t0") (HTTP $code)"; return 0 ;;
+      5*) [ -n "${err5:-}" ] || err5="$(now)"
+          if [ $(( $(now) - err5 )) -ge 120 ]; then
+            warn "le front répond $code depuis 2 min : stack logs $name front"; return 0
+          fi ;;
+      *) err5="" ;;
+    esac
     if ! docker ps -q --filter "name=^ddev-$(project_of "$name")-front$" | grep -q .; then
       docker logs --tail 30 "ddev-$(project_of "$name")-front" >&2 2>&1 || true
       die "le conteneur du front s'est arrêté (stack logs $name front)."

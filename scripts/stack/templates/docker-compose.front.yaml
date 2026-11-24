@@ -16,6 +16,10 @@ services:
     environment:
       - APP_NAME=@@FRONT_APP@@
       - PORT=@@FRONT_PORT@@
+      # next-auth lit son adresse avant le chargement des .env : sans elle,
+      # il appelle http://localhost:3000 (le front d'un autre).
+      - NEXTAUTH_URL=http://@@FRONT_HOST@@:@@FRONT_PORT@@
+      - NEXTAUTH_URL_INTERNAL=http://localhost:@@FRONT_PORT@@
       - HOSTNAME=0.0.0.0
       - NODE_TLS_REJECT_UNAUTHORIZED=0
       - NEXT_TELEMETRY_DISABLED=1
