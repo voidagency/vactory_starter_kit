@@ -686,6 +686,21 @@ ddev_start_locked() {
   return "$code"
 }
 
+# Mémoire disponible de la VM Docker (MemAvailable, lue dans un conteneur
+# jetable de l'image Redis, déjà présente : jamais téléchargée ici). Refus
+# sous le seuil : deux suites lourdes en parallèle ont fait planter la VM.
+check_docker_memory() {
+  local what="$1" need="${VACTORY_STACK_MIN_FREE_MB:-3072}" kb mb
+  [ -z "${VACTORY_STACK_SKIP_MEMORY_CHECK:-}" ] || return 0
+  case "$need" in ''|*[!0-9]*) die "VACTORY_STACK_MIN_FREE_MB : un nombre de Mo." ;; esac
+  kb="$(docker run --rm --pull never --network none "$REDIS_IMAGE" cat /proc/meminfo 2>/dev/null | awk '/^MemAvailable:/{print $2}')" || kb=""
+  case "$kb" in
+    ''|*[!0-9]*) warn "mémoire libre de la VM Docker illisible : vérification sautée."; return 0 ;;
+  esac
+  mb=$((kb / 1024))
+  [ "$mb" -ge "$need" ] || die "$what refusé : $mb Mo libres dans la VM Docker, seuil $need Mo. Libérer de la mémoire (docker stats, « stack stop » sur les instances inutilisées, une seule suite lourde à la fois) ; forcer avec VACTORY_STACK_SKIP_MEMORY_CHECK=1, seuil réglable par VACTORY_STACK_MIN_FREE_MB."
+}
+
 copy_volume() {
   # Copie un volume Docker dans un autre (image déjà utilisée par la pile).
   docker run --rm -v "$1:/from:ro" -v "$2:/to" "$REDIS_IMAGE" sh -c 'cp -a /from/. /to/'
@@ -802,6 +817,7 @@ cmd_up() {
       die "--front : front de référence absent (stack baseline --front-only)."
     fi
   fi
+  check_docker_memory "stack up"
   local inst t0 project; inst="$(inst_dir "$name")"; t0="$(now)"; project="$(project_of "$name")"
   lock_take "inst-$name" 5
 
@@ -1064,6 +1080,7 @@ cmd_test() {
     esac
   done
   [ "$has_target" = 1 ] || die "test <nom> <chemin>... ou --testsuite unit|kernel|existing-site"
+  check_docker_memory "stack test"
   in_drupal "$name" ddev exec "cd /var/www/html && vendor/bin/phpunit --bootstrap=./vendor/weitzman/drupal-test-traits/src/bootstrap.php -c phpunit.stack.xml --stderr$(quote_args "${args[@]}")"
 }
 
