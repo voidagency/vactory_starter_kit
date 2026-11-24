@@ -522,7 +522,7 @@ PY
   step "copie du site et démarrage de $BASE_PROJECT"
   prepare_drupal baseline "$BASE_PROJECT" "$build/drupal" "$build/profile" "$build" ""
   gen_secrets "$build" baseline
-  run_logged "$log" in_drupal_path "$build/drupal" ddev start -y
+  run_logged "$log" ddev_start_locked in_drupal_path "$build/drupal"
 
   if [ "$mode" = fresh ]; then
     step "installation du profil (drush site-install), quelques minutes"
@@ -624,6 +624,18 @@ baseline_front() {
     -v vsk-yarn-cache:/usr/local/share/.cache/yarn -w /app "$NODE_IMAGE" \
     yarn install --frozen-lockfile --non-interactive --network-timeout 600000
   ok "front de référence en $(since "$t0")"
+}
+
+# Un « ddev start » à la fois : deux démarrages simultanés recréent le
+# routeur ddev en même temps et l'un échoue (constaté). Le routeur est aussi
+# recréé au premier démarrage d'un nom jamais vu (nouveau certificat) :
+# ~3 s de coupure pour tous les sites ddev (mesuré).
+ddev_start_locked() {
+  local code=0
+  lock_take ddev-start 900
+  "$@" ddev start -y || code=$?
+  lock_release ddev-start
+  return "$code"
 }
 
 copy_volume() {
@@ -756,7 +768,7 @@ cmd_up() {
     mkdir -p "$inst/logs"
     write_ddev_config "$name"
     [ "$(meta_get "$inst" FRONT)" = 1 ] && write_front_env "$name"
-    run_logged "$inst/logs/up.log" in_drupal "$name" ddev start -y
+    run_logged "$inst/logs/up.log" ddev_start_locked in_drupal "$name"
     if [ "$(meta_get "$inst" OAUTH)" = 1 ]; then
       run_logged "$inst/logs/up.log" in_drupal "$name" ddev drush php:script /var/www/stack/tool/setup.php -- mail oauth
     fi
@@ -837,7 +849,7 @@ cmd_up() {
 
   t="$(now)"
   step "démarrage de $project (ddev)"
-  run_logged "$log" in_drupal "$name" ddev start -y
+  run_logged "$log" ddev_start_locked in_drupal "$name"
   ok "ddev démarré en $(since "$t")"
 
   # 5-6. Mises à jour, mail, OAuth.
@@ -1062,7 +1074,7 @@ cmd_logs() {
 cmd_stop() { local name="${1:-}"; need_instance "$name"; in_drupal "$name" ddev stop; }
 cmd_start() {
   local name="${1:-}"; need_instance "$name"
-  in_drupal "$name" ddev start -y
+  ddev_start_locked in_drupal "$name"
   [ "$(meta_get "$(inst_dir "$name")" FRONT)" = 1 ] && wait_front "$name"
   return 0
 }
