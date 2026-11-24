@@ -198,6 +198,7 @@ drush cr
 - `drupal/block_class` : `^3.0` au lieu de 3.0.0, figé sans raison (#948, Redmine #71222). La 3.1.0 exige un core 10.3 ou plus, pose les classes par `hook_block_view_alter` et valide le champ « CSS class(es) » ; aucun update. Pas de 4.x.
 
 ### Interne
+- `RELEASING.md` : la liste « Une PR est terminée quand » demande de tester ce qu'un point d'accès accepte encore (accès, valeurs, entité inexistante) et de rejouer une mise à jour de données sur des données d'avant la PR (#979, Redmine #71160).
 - Tests d'intégration des dépendances à historique d'incidents et contrats entre le profil et ses dépendances (Redmine #71160 ; #912 à #920, #934).
 - Tests de caractérisation, puis découpage des méthodes signalées par Sonar, sans changement de comportement (#935, #938, #939).
 - CI Drone : un build par commit, sans build pour les branches sans PR ni pour les tags (#921) ; jeton GitHub pour composer (#940) ; exclusions Sonar appliquées et règle `php:S1781` ignorée (#929).
