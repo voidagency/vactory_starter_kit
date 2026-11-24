@@ -98,8 +98,8 @@ load_config() {
 
 need_config() {
   [ -f "$STACK_CONFIG" ] || [ -n "${VACTORY_DRUPAL_SRC:-}" ] || die "pas de configuration ($STACK_CONFIG) : lancer « stack init »."
-  [ -n "$DRUPAL_SRC" ] && [ -d "$DRUPAL_SRC" ] || die "site Drupal source introuvable (VACTORY_DRUPAL_SRC=$DRUPAL_SRC)."
-  [ -n "$PROFILE_REPO" ] && [ -d "$PROFILE_REPO" ] || die "dépôt du profil introuvable (VACTORY_PROFILE_REPO)."
+  [ -d "${DRUPAL_SRC:-/nonexistent}" ] || die "site Drupal source introuvable (VACTORY_DRUPAL_SRC=$DRUPAL_SRC)."
+  [ -d "${PROFILE_REPO:-/nonexistent}" ] || die "dépôt du profil introuvable (VACTORY_PROFILE_REPO)."
 }
 
 # --- Verrous (mkdir est atomique) ----------------------------------------------
@@ -426,7 +426,7 @@ cmd_init() {
   fi
   drupal="$(expand_home "${drupal:-$DRUPAL_SRC}")"; front="$(expand_home "${front:-$FRONT_SRC}")"
   stacks="$(expand_home "${stacks:-$STACKS_DIR}")"
-  [ -n "$drupal" ] && [ -f "$drupal/composer.json" ] || die "init : projet Drupal invalide « $drupal » (composer.json absent)."
+  [ -f "${drupal:-/nonexistent}/composer.json" ] || die "init : projet Drupal invalide « $drupal » (composer.json absent)."
   [ -d "$drupal/vendor" ] || die "init : « $drupal » sans vendor/ : lancer composer install dans le projet."
   if [ -n "$front" ]; then [ -f "$front/package.json" ] || die "init : front invalide « $front »."; fi
   mkdir -p "$(dirname "$STACK_CONFIG")" "$stacks"
