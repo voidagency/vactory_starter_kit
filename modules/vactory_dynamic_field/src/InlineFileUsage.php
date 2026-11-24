@@ -246,9 +246,12 @@ class InlineFileUsage {
   /**
    * Records the files of the content saved before this service existed.
    *
-   * Reads the current values of the Dynamic Fields in their SQL tables,
-   * without loading the entities. A file already recorded for an entity is
-   * left untouched: the method can run several times.
+   * Reads the Dynamic Fields in their SQL tables, without loading the
+   * entities. Every revision is read, in every language: as core does for
+   * formatted text fields, a file counts one usage per revision of the entity
+   * that references it, so that deleting a revision later removes the usage
+   * of that revision only. A usage already recorded for the entity is
+   * deducted: the method can run several times without counting a file twice.
    *
    * @param array $sandbox
    *   The sandbox of the update hook, "#finished" is set.
@@ -298,20 +301,9 @@ class InlineFileUsage {
       $sandbox['last_id'] = NULL;
     }
     else {
-      $rows = $this->database->select($table, 't')
-        ->fields('t', ['entity_id', $column])
-        ->condition('t.entity_id', $ids, 'IN')
-        ->condition('t.' . $column, '%data-entity-uuid%', 'LIKE')
-        ->execute();
-      $uuids_by_entity = [];
-      foreach ($rows as $row) {
-        foreach ($this->parseWidgetData($row->{$column}) as $uuid) {
-          $uuids_by_entity[$row->entity_id][$uuid] = TRUE;
-        }
-      }
-      foreach ($uuids_by_entity as $entity_id => $uuids) {
-        foreach (array_keys($uuids) as $uuid) {
-          $sandbox['recorded'] += (int) $this->recordOnce($uuid, $entity_type_id, $entity_id);
+      foreach ($this->countRevisionsByFile($location, $ids) as $entity_id => $counts) {
+        foreach ($counts as $uuid => $count) {
+          $sandbox['recorded'] += $this->recordMissing($uuid, $entity_type_id, $entity_id, $count);
         }
       }
       $sandbox['last_id'] = end($ids);
@@ -321,11 +313,43 @@ class InlineFileUsage {
   }
 
   /**
-   * Returns the data table and the "widget_data" column of a field.
+   * Counts the revisions of entities that reference each file.
+   *
+   * @param string[] $location
+   *   The table, the "widget_data" column and the revision column, as
+   *   returned by getFieldTable().
+   * @param array $ids
+   *   The entity IDs.
+   *
+   * @return array
+   *   Numbers of revisions, keyed by entity ID and file UUID. The languages of
+   *   a revision count once.
+   */
+  protected function countRevisionsByFile(array $location, array $ids): array {
+    [$table, $column, $revision_column] = $location;
+    $rows = $this->database->select($table, 't')
+      ->fields('t', array_unique(['entity_id', $revision_column, $column]))
+      ->condition('t.entity_id', $ids, 'IN')
+      ->condition('t.' . $column, '%data-entity-uuid%', 'LIKE')
+      ->execute();
+    $revisions = [];
+    foreach ($rows as $row) {
+      foreach ($this->parseWidgetData($row->{$column}) as $uuid) {
+        $revisions[$row->entity_id][$uuid][$row->{$revision_column}] = TRUE;
+      }
+    }
+    return array_map(fn(array $by_uuid) => array_map('count', $by_uuid), $revisions);
+  }
+
+  /**
+   * Returns the table, the "widget_data" column and the revision column.
+   *
+   * The revision table when the field has one, so that every revision is
+   * read; otherwise the data table, where an entity has a single revision.
    *
    * @return string[]|null
-   *   [table, column], or NULL when the field is not stored in a dedicated
-   *   SQL table.
+   *   [table, widget data column, revision column], or NULL when the field is
+   *   not stored in a dedicated SQL table.
    */
   protected function getFieldTable(string $entity_type_id, string $field_name): ?array {
     $storage = $this->entityTypeManager->getStorage($entity_type_id);
@@ -335,39 +359,52 @@ class InlineFileUsage {
     }
     /** @var \Drupal\Core\Entity\Sql\DefaultTableMapping $table_mapping */
     $table_mapping = $storage->getTableMapping();
-    if (!$table_mapping->requiresDedicatedTableStorage($definition)) {
-      return NULL;
-    }
-    $table = $table_mapping->getDedicatedDataTableName($definition);
-    if (!$this->database->schema()->tableExists($table)) {
-      return NULL;
-    }
     $column = $table_mapping->getFieldColumnName($definition, 'widget_data');
-    return [$table, $column];
+    $tables = [];
+    if ($table_mapping->requiresDedicatedTableStorage($definition)) {
+      if ($storage->getEntityType()->isRevisionable() && $definition->isRevisionable()) {
+        $tables[$table_mapping->getDedicatedRevisionTableName($definition)] = 'revision_id';
+      }
+      $tables[$table_mapping->getDedicatedDataTableName($definition)] = 'entity_id';
+    }
+    foreach ($tables as $table => $revision_column) {
+      if ($this->database->schema()->tableExists($table)) {
+        return [$table, $column, $revision_column];
+      }
+    }
+    return NULL;
   }
 
   /**
-   * Records a file for an entity unless it is already recorded.
+   * Records the usages of a file by an entity that are not recorded yet.
    *
-   * @return bool
-   *   TRUE when a usage has been added.
+   * @param string $uuid
+   *   The file UUID.
+   * @param string $entity_type_id
+   *   The entity type ID.
+   * @param int|string $entity_id
+   *   The entity ID.
+   * @param int $expected
+   *   The number of usages the entity must have: its revisions that reference
+   *   the file.
+   *
+   * @return int
+   *   The number of usages added.
    */
-  protected function recordOnce(string $uuid, string $entity_type_id, $entity_id): bool {
+  protected function recordMissing(string $uuid, string $entity_type_id, $entity_id, int $expected): int {
     /** @var \Drupal\file\FileInterface|null $file */
     $file = $this->entityRepository->loadEntityByUuid('file', $uuid);
-    if (!$file) {
-      return FALSE;
-    }
-    $usage = $this->fileUsage->listUsage($file);
-    if (!empty($usage[self::USAGE_MODULE][$entity_type_id][$entity_id])) {
-      return FALSE;
+    $usage = $file ? $this->fileUsage->listUsage($file) : [];
+    $missing = $file ? $expected - (int) ($usage[self::USAGE_MODULE][$entity_type_id][$entity_id] ?? 0) : 0;
+    if ($missing < 1) {
+      return 0;
     }
     if ($file->isTemporary()) {
       $file->setPermanent();
       $file->save();
     }
-    $this->fileUsage->add($file, self::USAGE_MODULE, $entity_type_id, $entity_id);
-    return TRUE;
+    $this->fileUsage->add($file, self::USAGE_MODULE, $entity_type_id, $entity_id, $missing);
+    return $missing;
   }
 
 }

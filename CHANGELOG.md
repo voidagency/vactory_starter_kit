@@ -65,7 +65,7 @@ drush cr
 - Si `drupal/consumers` passe de moins de 1.23 à 1.23 ou plus : ses updates 8110 à 8112 s'exécutent (champ `status`) (#944).
 - `vactory_quiz_history` 10001 (#963) : ajoute un index sur la colonne `uid` de la table `vactory_quiz_history`. Rien n'est fait si l'index existe déjà ; les lignes de la table ne sont pas modifiées.
 - `vactory_decoupled_router` 10001 (#891) : crée la config `vactory_decoupled_router.settings` avec la liste des types d'entité servis comme pages par le routeur (`node`). Rien n'est fait si la liste existe déjà. **Sites en config sync (rare) :** ensuite, `drush cex` et commiter ce fichier.
-- Update `vactory_dynamic_field` 9502 : rend permanents les fichiers insérés dans les éditeurs CKEditor des Dynamic Fields (images envoyées depuis l'éditeur) et enregistre leur usage, pour le contenu existant. Elle lit les tables des champs Dynamic Field sans charger les entités, par lots de 50 ; sa durée dépend du volume de contenu. Aucun fichier n'est supprimé (#955).
+- Update `vactory_dynamic_field` 9502 : rend permanents les fichiers insérés dans les éditeurs CKEditor des Dynamic Fields (images envoyées depuis l'éditeur) et enregistre leur usage, pour le contenu existant : un usage par révision qui référence le fichier, toutes langues confondues, comme le fait le core pour les champs texte formaté. Elle lit les tables de révisions des champs Dynamic Field sans charger les entités, par lots de 50 entités ; sa durée dépend du nombre de révisions (mesure locale : 200 entités × 3 révisions en 0,5 s). Aucun fichier n'est supprimé (#955).
 
 **3. `drush fr -y <module>`** (features à réimporter)
 - **Aucune pour cette version.** Les configs modifiées dans le profil (`shield.settings`, `captcha.settings`, `vactory_toolbox`, `vactory_form_autosave`) ne servent qu'à l'installation : les sites existants gardent les leurs.
@@ -115,7 +115,7 @@ drush cr
 - **Si le site affiche des boutons AddToAny (#959) :** sur une page sans boutons, le code source ne contient plus le script `static.addtoany.com` ; sur une page avec boutons (partage ou « follow »), il le contient, les boutons s'affichent et un partage s'ouvre au clic.
 - **Sites découplés (#891) :** une page du front s'affiche à son adresse habituelle ; la même adresse écrite avec des majuscules redirige vers l'adresse de l'alias (redirection permanente) ; `/taxonomy/term/<id>` répond 404, ou affiche le terme si le type a été ajouté à la liste des types de page.
 - **Sites découplés (#972) :** sur le front, une adresse inconnue et `/node/<id inconnu>` répondent 404 (statut 404, sans redirection vers la page d'erreur) ; l'adresse de modification d'une page (`/node/<id>/edit`) répond 404 ; `/node/<id>` d'une page publiée redirige toujours vers son alias ; les pages système (connexion, recherche, page d'erreur) s'affichent.
-- Dans `/admin/content/files`, une image envoyée depuis un éditeur CKEditor d'un Dynamic Field est « Permanent » et compte un usage (#955).
+- Dans `/admin/content/files`, une image envoyée depuis un éditeur CKEditor d'un Dynamic Field est « Permanent » et compte un usage par révision du contenu qui la contient (#955).
 
 ### Sécurité
 - `vactory_core` : vérification TLS active par défaut dans le client HTTP de Drupal (#896).
@@ -185,6 +185,7 @@ drush cr
 - `vactory_quiz_certificat` : le mail de notification contient de nouveau le lien du certificat. Le corps de mail par défaut utilisait le jeton `[quiz:certificat_url]`, que le module ne remplaçait pas : il est remplacé comme `[quiz:certificate_url]`, et le corps par défaut utilise le jeton déclaré (#963, Redmine #71440).
 - `vactory_quiz_certificat` : la génération des certificats par le cron ne dépend plus de `vactory_reminder`, qui n'était pas déclaré. Sans ce module, une demande en échec interrompait le cron ; elle reste maintenant dans la file, est reprise à un cron suivant, et l'erreur est journalisée dans le canal `vactory_quiz_certificat` (#963).
 - `vactory_dynamic_field` : un fichier inséré dans un éditeur CKEditor d'un Dynamic Field (champ simple, groupe, élément multiple, extra field) devient permanent et son usage est enregistré à l'enregistrement de l'entité, puis libéré à la suppression de la révision ou de l'entité. Il restait temporaire, donc supprimable par le cron sur un site où `temporary_maximum_age` n'est pas 0 (#955, Redmine #71224).
+- `vactory_dynamic_field` : schéma de config du réglage `allowed_providers` des champs Dynamic Field ; l'enregistrement d'un tel champ n'échoue plus quand le schéma est vérifié strictement (tests) (#955).
 
 ### Retraits
 - `vactory_cloudinary` : services `console.output` et `vactory_cloudinary.move_file_batch`, inutilisés (la classe du second n'existe pas) (#920).
