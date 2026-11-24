@@ -59,7 +59,7 @@ stack rm a [--keep-branch] [--force] [--yes]
 stack rm --all --yes
 ```
 
-Un nom fait de 1 à 20 caractères parmi `a-z`, `0-9` et `-`. `stack up` sur une instance existante la redémarre et remet à niveau sa config (idempotent) ; il ne change pas sa branche.
+Un nom fait de 1 à 20 caractères parmi `a-z`, `0-9` et `-`, sans `-` au début ni à la fin. Noms réservés aux ressources partagées, refusés : `baseline`, `front`, `yarn-cache`, `base`, `build`, `locks`. `stack up` sur une instance existante la redémarre et remet à niveau sa config (idempotent) ; il ne change pas sa branche.
 
 Le code du profil est celui de l'arbre `<instance>/profile`, monté dans le site : une modification y est visible tout de suite (`stack drush a cr` si besoin). On y commit et on y pousse comme dans tout arbre git. Le hook `pre-commit` du dépôt cherche le `vendor/` du profil, absent d'un arbre d'instance : y committer avec `--no-verify` et vérifier le style par `stack phpcs`.
 
@@ -94,7 +94,7 @@ Le code du profil est celui de l'arbre `<instance>/profile`, monté dans le site
     logs/up.log                    journal de création
 ```
 
-Volumes Docker : `vsk-baseline-db` et `vsk-front-node-modules` (référence), `vsk-<nom>-mariadb` (base de l'instance), `vsk-<nom>-snap-<étiquette>` (snapshots ; les fichiers du site, `files` et `private`, sont copiés dans `<instance>/snapshots/<étiquette>/`) ; `stack rm` supprime ceux de l'instance. Un snapshot pris avant cette version n'a pas de copie des fichiers : `restore` le dit et ne remet que la base.
+Volumes Docker : `vsk-baseline-db` et `vsk-front-node-modules` (référence), `vsk-<nom>-mariadb` (base de l'instance), `vsk-<nom>-snap-<étiquette>` (snapshots ; les fichiers du site, `files` et `private`, sont copiés dans `<instance>/snapshots/<étiquette>/`) ; `stack rm` supprime ceux de l'instance : ses volumes portent l'étiquette `com.vactory.stack.instance=<nom>` (les volumes partagés portent `com.vactory.stack=baseline` ou `front`, jamais supprimés par `rm`). Un snapshot pris avant cette version n'a pas de copie des fichiers : `restore` le dit et ne remet que la base.
 
 Les secrets ne sont jamais affichés. Pour un mot de passe : l'ouvrir dans `secrets.env`, ou préférer `stack uli`.
 
@@ -117,7 +117,7 @@ Les secrets ne sont jamais affichés. Pour un mot de passe : l'ouvrir dans `secr
 
 Consigne à donner à un agent :
 
-> Monte ta propre instance : `scripts/stack/stack up <nom> --branch <branche> [--front]` (nom : 1 à 20 caractères a-z, 0-9, -). Lis `~/dev/.vactory-stacks/<nom>/stack.json` pour les adresses et les chemins. Travaille et committe dans le dossier `profile` de ton instance. Lance tes tests avec `stack test <nom> <chemin>` (pas de tests `tests/Functional`), ton phpcs avec `stack phpcs <nom> <chemins>`, tes vérifications avec `stack drush <nom> …` et les adresses de ton instance. N'utilise jamais une autre instance ni le site local habituel. N'affiche jamais le contenu de `secrets.env`, des `.env*`, d'une clé ou d'un cookie. À la fin, pousse ta branche puis `stack rm <nom> --yes`.
+> Monte ta propre instance : `scripts/stack/stack up <nom> --branch <branche> [--front]` (nom : 1 à 20 caractères a-z, 0-9, -, ni `baseline` ni `front`). Lis `~/dev/.vactory-stacks/<nom>/stack.json` pour les adresses et les chemins. Travaille et committe dans le dossier `profile` de ton instance. Lance tes tests avec `stack test <nom> <chemin>` (pas de tests `tests/Functional`), ton phpcs avec `stack phpcs <nom> <chemins>`, tes vérifications avec `stack drush <nom> …` et les adresses de ton instance. N'utilise jamais une autre instance ni le site local habituel. N'affiche jamais le contenu de `secrets.env`, des `.env*`, d'une clé ou d'un cookie. À la fin, pousse ta branche puis `stack rm <nom> --yes`.
 
 ## Dépannage
 

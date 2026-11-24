@@ -149,9 +149,21 @@ trap 'exit 143' TERM
 
 # --- Instances -----------------------------------------------------------------
 
+# Noms réservés : étiquettes et noms des ressources partagées (volumes
+# vsk-baseline-db, vsk-front-node-modules, vsk-yarn-cache, projet vskbase).
+# Les dossiers internes (_baseline, _build, .locks) sont déjà exclus par le
+# motif du nom.
+RESERVED_NAMES="baseline front yarn-cache base build locks"
+
+name_error() {
+  # Vide si le nom est valide ; sinon la raison.
+  printf '%s' "$1" | grep -Eq '^[a-z0-9-]{1,20}$' || { printf '1 à 20 caractères parmi a-z, 0-9 et « - »'; return; }
+  case "$1" in -*|*-) printf 'ne commence ni ne finit par « - »'; return ;; esac
+  case " $RESERVED_NAMES " in *" $1 "*) printf 'nom réservé (ressources partagées : %s)' "$RESERVED_NAMES"; return ;; esac
+}
 valid_name() {
-  printf '%s' "$1" | grep -Eq '^[a-z0-9-]{1,20}$' || die "nom invalide « $1 » : 1 à 20 caractères parmi a-z, 0-9 et « - »."
-  case "$1" in -*|*-) die "nom invalide « $1 » : ne commence ni ne finit par « - »." ;; esac
+  local e; e="$(name_error "$1")"
+  [ -z "$e" ] || die "nom invalide « $1 » : $e."
 }
 inst_dir() { printf '%s/%s' "$STACKS_DIR" "$1"; }
 project_of() { printf 'vsk-%s' "$1"; }
@@ -842,7 +854,7 @@ cmd_up() {
   local dbvol; dbvol="$project-$(ddev_value db_type mariadb)"
   lock_take baseline 300
   docker volume inspect "$DB_VOLUME" >/dev/null 2>&1 || die "volume $DB_VOLUME absent : relancer « stack baseline »."
-  run_logged "$log" docker volume create --label "com.vactory.stack=$name" "$dbvol"
+  run_logged "$log" docker volume create --label "com.vactory.stack.instance=$name" "$dbvol"
   run_logged "$log" copy_volume "$DB_VOLUME" "$dbvol"
   if [ -f "$BASELINE_DIR/files.tar.gz" ]; then tar -C "$inst/drupal/sites/default/files" -xzf "$BASELINE_DIR/files.tar.gz"; fi
   lock_release baseline
@@ -1066,7 +1078,7 @@ cmd_snapshot() {
   src="$project-$(ddev_value db_type mariadb)"
   docker inspect "$db" >/dev/null 2>&1 || die "« $name » n'est pas démarrée (stack start $name)."
   docker volume rm -f "$vol" >/dev/null 2>&1 || true
-  docker volume create --label "com.vactory.stack=$name" --label "com.vactory.stack.snapshot-of=$name" \
+  docker volume create --label "com.vactory.stack.instance=$name" --label "com.vactory.stack.snapshot-of=$name" \
     --label "com.vactory.stack.snapshot=$label" "$vol" >/dev/null
   docker stop "$db" >/dev/null
   copy_volume "$src" "$vol" || { docker start "$db" >/dev/null; die "copie impossible"; }
@@ -1121,6 +1133,7 @@ RM_FORCE=0
 
 remove_instance() {
   local name="$1" mode="${2:-}" inst project prof pmode br
+  valid_name "$name"
   inst="$(inst_dir "$name")"; project="$(project_of "$name")"
   case "$inst" in "$STACKS_DIR"/[a-z0-9]*) ;; *) die "chemin inattendu : $inst" ;; esac
   pmode="$(meta_get "$inst" PROFILE_MODE)"; prof="$inst/profile"
@@ -1139,8 +1152,16 @@ remove_instance() {
   for c in "$project-mariadb" "$project-mysql" "$project-postgres" "ddev-$project-snapshots"; do
     docker volume rm "$c" >/dev/null 2>&1 || true
   done
-  for c in $(docker volume ls -q --filter "label=com.vactory.stack=$name" 2>/dev/null); do
-    docker volume rm -f "$c" >/dev/null 2>&1 || true
+  # Volumes de l'instance : étiquette propre aux instances, ou snapshot de
+  # l'instance (versions précédentes). Jamais l'étiquette com.vactory.stack,
+  # que portent aussi les volumes partagés.
+  for c in $(docker volume ls -q --filter "label=com.vactory.stack.instance=$name" 2>/dev/null) \
+           $(docker volume ls -q --filter "label=com.vactory.stack.snapshot-of=$name" 2>/dev/null); do
+    case "$c" in
+      "$DB_VOLUME"|"$DB_VOLUME.new"|"$FRONT_VOLUME"|vsk-yarn-cache) warn "volume partagé $c ignoré." ;;
+      "$project"-*) docker volume rm -f "$c" >/dev/null 2>&1 || true ;;
+      *) warn "volume $c ignoré : hors des noms de l'instance ($project-…)." ;;
+    esac
   done
   if [ "$pmode" = worktree ] || git -C "$PROFILE_REPO" worktree list --porcelain 2>/dev/null | grep -qx "worktree $prof"; then
     git -C "$PROFILE_REPO" worktree remove --force "$prof" >/dev/null 2>&1 || true
