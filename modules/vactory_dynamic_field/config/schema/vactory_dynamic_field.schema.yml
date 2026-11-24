@@ -1,0 +1,10 @@
+field.field_settings.field_wysiwyg_dynamic:
+  type: mapping
+  label: 'Dynamic Field settings'
+  mapping:
+    allowed_providers:
+      type: sequence
+      label: 'Allowed providers'
+      sequence:
+        type: string
+        label: 'Provider'
