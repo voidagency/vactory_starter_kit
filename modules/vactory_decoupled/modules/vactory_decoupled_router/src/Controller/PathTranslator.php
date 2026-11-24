@@ -12,6 +12,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Url;
+use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use Symfony\Component\Routing\Route;
 use Drupal\Core\Entity\ContentEntityType;
 use Symfony\Component\Routing\RequestContext;
@@ -207,7 +208,8 @@ class PathTranslator extends ControllerBase {
     $match_info = $this->matchPath($request, $path, $output, $error_match_info, $info);
     $preview = $request->query->get('preview') ?? FALSE;
     /** @var \Drupal\Core\Entity\EntityInterface $entity */
-    $entity = $this->findPageEntity($match_info, $preview, $path, $output);
+    // $info is set when the path is the alias of a Vactory system route.
+    $entity = $this->findPageEntity($match_info, $preview, $path, $output, $info !== NULL);
     if (!$entity) {
       /** @var \Drupal\Core\Entity\EntityInterface $entity */
       $entity = $this->findEntity($error_match_info);
@@ -228,8 +230,11 @@ class PathTranslator extends ControllerBase {
       $output['system'] = $info;
     }
 
+    // Only for the node of the path itself ($info not set): the error page
+    // and the node of a system route are not redirected to their alias.
     if (
-      $this->isFollowNodePathPattern($path)
+      $info === NULL
+      && $this->isFollowNodePathPattern($path)
       && $entity->getEntityTypeId() === 'node'
       && $entity->hasTranslation($this->currentLangcode)
     ) {
@@ -261,8 +266,10 @@ class PathTranslator extends ControllerBase {
   /**
    * The published entity of the matched route, when it is a page.
    *
-   * The entity type is checked before the entity itself is inspected: a type
-   * out of the list of page entity types is never loaded further.
+   * The entity type and the path are checked before the entity itself is
+   * inspected: a type out of the list of page entity types, or a path that is
+   * not the canonical address of the entity (edit form, revisions...), is
+   * never loaded further and gives the same answer whatever the entity.
    *
    * @param array $match_info
    *   The router match info.
@@ -272,16 +279,21 @@ class PathTranslator extends ControllerBase {
    *   The requested path.
    * @param array $output
    *   The output; receives the message when there is no page.
+   * @param bool $is_system_route
+   *   TRUE when the route comes from the path of a Vactory system route, set
+   *   by an administrator: only the requested paths have to be canonical.
    *
    * @return \Drupal\Core\Entity\EntityInterface|null
    *   The entity, or NULL when the error page has to be returned.
    */
-  private function findPageEntity(array $match_info, $preview, string $path, array &$output): ?EntityInterface {
+  private function findPageEntity(array $match_info, $preview, string $path, array &$output, bool $is_system_route = FALSE): ?EntityInterface {
     $candidate = $this->getRouteEntity($match_info);
+    $rules = $this->getPageRules();
+    $is_page = $candidate
+      && $rules->isPageEntityType($candidate->getEntityTypeId())
+      && ($is_system_route || $rules->isCanonicalPath($candidate, $path));
     // A path that already gave the error page keeps its own message.
-    $refused = $output['status'] === 200
-      && $candidate
-      && !$this->getPageRules()->isPageEntityType($candidate->getEntityTypeId());
+    $refused = $output['status'] === 200 && $candidate && !$is_page;
     if ($refused) {
       // Not logged: such paths are requested in number by crawlers.
       $output['message'] = "No decoupled page for $path";
@@ -350,6 +362,9 @@ class PathTranslator extends ControllerBase {
    */
   private function matchPath(Request $request, string $path, array &$output, array $error_match_info, &$info): array {
     try {
+      if (!$this->getPageRules()->isSitePath($path)) {
+        throw new ResourceNotFoundException("Not a path of the site: $path");
+      }
       // Drupal routes.
       return $this->router->match($path);
     }

@@ -290,6 +290,47 @@ class PathTranslatorPageTypesAndAliasCaseTest extends ExistingSiteBase {
   }
 
   /**
+   * Only the canonical address of an entity of an added type is resolved.
+   *
+   * The rule is the one of the nodes: the other routes of the entity give the
+   * error page, without redirect and without its data.
+   *
+   * @covers ::translate
+   */
+  public function testOnlyCanonicalPathOfAddedType(): void {
+    $alias = '/' . $this->randomSegment();
+    $term = $this->createTermWithAlias($alias);
+    $canonical = '/taxonomy/term/' . $term->id();
+    $this->setConfiguredTypes(['node', 'taxonomy_term']);
+
+    foreach ([$canonical, "/en$canonical", $alias, "/en$alias"] as $path) {
+      $this->assertTerm($term, $this->translate($path), $path);
+    }
+
+    $paths = [
+      "$canonical/edit",
+      "/en$canonical/edit",
+      "$canonical/delete",
+      "$canonical/",
+      '/TAXONOMY/TERM/' . $term->id(),
+      '/taxonomy/term/0' . $term->id(),
+    ];
+    foreach ($paths as $path) {
+      $data = $this->translate($path);
+      $this->assertNoPage($data, $path);
+      $this->assertArrayNotHasKey('redirect', $data, $path);
+      $json = json_encode($data);
+      $this->assertStringNotContainsString($term->uuid(), $json, $path);
+      $this->assertStringNotContainsString($term->label(), $json, $path);
+    }
+
+    // The same answer for an unpublished term: the path is refused before
+    // the entity is inspected.
+    $term->setUnpublished()->save();
+    $this->assertNoPage($this->translate("$canonical/edit"), "$canonical/edit");
+  }
+
+  /**
    * The setting of settings.php, when defined, replaces the config.
    *
    * @covers ::translate
@@ -507,12 +548,17 @@ class PathTranslatorPageTypesAndAliasCaseTest extends ExistingSiteBase {
       ['to' => '/en' . $alias, 'status' => 301, 'from' => $from],
     ], $data['redirect']);
 
-    // A node without alias, and the other paths of a node.
+    // A node without alias. The other paths of a node are not its address:
+    // the error page, without redirect.
     $bare = $this->createPage(NULL);
-    $this->assertNoRedirect($bare, $this->translate('/NODE/' . $bare->id()));
-    foreach (['/NODE/', '/node/'] as $prefix) {
-      $path = $prefix . $node->id() . ($prefix === '/node/' ? '/edit' : '');
-      $this->assertNoRedirect($node, $this->translate($path), $path);
+    $this->assertNoRedirect($bare, $this->translate('/node/' . $bare->id()));
+    $paths = [
+      '/NODE/' . $bare->id(),
+      '/NODE/' . $node->id(),
+      '/node/' . $node->id() . '/edit',
+    ];
+    foreach ($paths as $path) {
+      $this->assertNoPage($this->translate($path), $path);
     }
 
     // An unpublished node: the error page, without redirect.

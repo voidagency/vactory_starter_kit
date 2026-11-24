@@ -4,4 +4,4 @@ services:
       arguments: ['vactory_decoupled_router']
   vactory_decoupled_router.page_rules:
     class: Drupal\vactory_decoupled_router\PageRules
-    arguments: ['@config.factory', '@module_handler', '@path_alias.manager', '@transliteration', '@language_manager']
+    arguments: ['@config.factory', '@module_handler', '@path_alias.manager', '@transliteration', '@language_manager', '@path_processor_manager']
