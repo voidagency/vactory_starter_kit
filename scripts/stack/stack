@@ -116,6 +116,15 @@ need_config() {
   [ -d "${PROFILE_REPO:-/nonexistent}" ] || die "dépôt du profil introuvable (VACTORY_PROFILE_REPO)."
 }
 
+# Met à jour origin/3.x (sous le verrou git) ; s'arrête s'il n'existe pas.
+fetch_base() {
+  local log="$1" fetched=1
+  git -C "$PROFILE_REPO" fetch -q origin 3.x >>"$log" 2>&1 || fetched=0
+  git -C "$PROFILE_REPO" rev-parse -q --verify "origin/3.x^{commit}" >/dev/null 2>&1 \
+    || die "origin/3.x introuvable dans $PROFILE_REPO$([ "$fetched" = 1 ] || printf ' (git fetch impossible : réseau, remote origin ?)')."
+  [ "$fetched" = 1 ] || warn "git fetch impossible : origin/3.x local utilisé."
+}
+
 # --- Verrous (mkdir est atomique) ----------------------------------------------
 
 lock_take() {
@@ -531,11 +540,9 @@ cmd_baseline() {
   local t0 build new log
   t0="$(now)"; build="$STACKS_DIR/_build"; new="$STACKS_DIR/_baseline.new"
   log="$STACKS_DIR/_baseline.log"; : >"$log"
-  rm -rf "$new"; mkdir -p "$new"
 
   if [ "$front_only" = 1 ]; then
     [ -f "$BASELINE_DIR/manifest.json" ] || die "pas de base de référence : lancer stack baseline."
-    rm -rf "$new"
     baseline_front "$BASELINE_DIR" "$log"
     python3 - "$BASELINE_DIR/manifest.json" "$FRONT_SRC" "$(git -C "$FRONT_SRC" rev-parse HEAD 2>/dev/null || echo inconnu)" <<'PY'
 import json, sys, datetime
@@ -547,12 +554,16 @@ PY
   fi
 
   step "base de référence ($mode), journal : $log"
+  # Référence vérifiée avant de créer quoi que ce soit.
+  lock_take git 300
+  fetch_base "$log"
+  local commit; commit="$(git -C "$PROFILE_REPO" rev-parse origin/3.x)"
+  lock_release git
+  rm -rf "$new"; mkdir -p "$new"
   if ddev describe "$BASE_PROJECT" >/dev/null 2>&1; then ddev delete -O -y "$BASE_PROJECT" >>"$log" 2>&1 || true; fi
   if [ -d "$build/profile" ]; then git -C "$PROFILE_REPO" worktree remove --force "$build/profile" >>"$log" 2>&1 || true; fi
   rm -rf "$build"; mkdir -p "$build"
   lock_take git 300
-  git -C "$PROFILE_REPO" fetch -q origin 3.x >>"$log" 2>&1 || warn "git fetch impossible : origin/3.x local utilisé."
-  local commit; commit="$(git -C "$PROFILE_REPO" rev-parse origin/3.x)"
   run_logged "$log" git -C "$PROFILE_REPO" worktree add --detach "$build/profile" "$commit"
   lock_release git
 
@@ -839,7 +850,7 @@ cmd_up() {
     meta_set "$inst" PROFILE_MODE worktree
     meta_set "$inst" PROFILE_PATH "$inst/profile"
     lock_take git 300
-    git -C "$PROFILE_REPO" fetch -q origin 3.x >>"$log" 2>&1 || warn "git fetch impossible : origin/3.x local utilisé."
+    fetch_base "$log"
     if [ -n "$ref" ]; then
       run_logged "$log" git -C "$PROFILE_REPO" worktree add --detach "$inst/profile" "$ref"
     else
