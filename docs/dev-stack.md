@@ -127,6 +127,7 @@ Consigne à donner à un agent :
 - **Base trop ancienne** (3.x a beaucoup avancé) : `stack baseline`. Les instances existantes gardent leur base.
 - **Mémoire de Docker pleine :** `stack stop` sur les instances inutilisées, ou plus de mémoire pour la VM Docker.
 - **Routeur ddev :** le premier démarrage d'une instance sous un nom nouveau recrée le routeur ddev partagé : tous les sites ddev de la machine sont coupés environ 4 s (mesuré). Les `ddev start` des instances passent un par un (verrou) : deux démarrages simultanés recréent le routeur en même temps et l'un échoue. Réutiliser les mêmes noms limite ces coupures.
+- **`stack drush`, `exec` ou `test` dans une boucle `while read` :** ces commandes passent l'entrée standard au conteneur (`ddev exec`) et vident le reste de la boucle ; ajouter `< /dev/null` (constaté avec une file d'essais qui s'arrêtait après le premier).
 - **Projet ddev à la main :** `cd ~/dev/.vactory-stacks/<nom>/drupal && ddev …`.
 
 ## Limites
