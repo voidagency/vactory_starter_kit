@@ -16,7 +16,11 @@ class PageEntityTypesUpdateTest extends KernelTestBase {
   /**
    * {@inheritdoc}
    */
-  protected static $modules = ['system', 'vactory_decoupled_router'];
+  protected static $modules = [
+    'system',
+    'path_alias',
+    'vactory_decoupled_router',
+  ];
 
   /**
    * {@inheritdoc}

@@ -2,10 +2,13 @@
 
 namespace Drupal\Tests\vactory_decoupled_router\Unit;
 
+use Drupal\Component\Transliteration\TransliterationInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
+use Drupal\Core\Language\LanguageManagerInterface;
 use Drupal\Core\Site\Settings;
+use Drupal\path_alias\AliasManagerInterface;
 use Drupal\Tests\UnitTestCase;
-use Drupal\vactory_decoupled_router\Controller\PathTranslator;
+use Drupal\vactory_decoupled_router\PageRules;
 
 /**
  * Where the list of page entity types of the router comes from.
@@ -13,10 +16,10 @@ use Drupal\vactory_decoupled_router\Controller\PathTranslator;
  * Config, replaced by the setting of settings.php when it is defined, then
  * altered by hook_vactory_decoupled_router_page_entity_types_alter().
  *
- * @coversDefaultClass \Drupal\vactory_decoupled_router\Controller\PathTranslator
+ * @coversDefaultClass \Drupal\vactory_decoupled_router\PageRules
  * @group vactory_decoupled_router
  */
-class PathTranslatorPageEntityTypesTest extends UnitTestCase {
+class PageRulesTest extends UnitTestCase {
 
   /**
    * Computes the list with the given config, setting and hook.
@@ -44,20 +47,14 @@ class PathTranslatorPageEntityTypesTest extends UnitTestCase {
       'vactory_decoupled_router.settings' => array_filter(['page_entity_types' => $config], 'is_array'),
     ]);
 
-    $class = new \ReflectionClass(PathTranslator::class);
-    $controller = $class->newInstanceWithoutConstructor();
-    $services = [
-      'configFactory' => $config_factory,
-      'moduleHandler' => $module_handler,
-    ];
-    foreach ($services as $property => $service) {
-      $reflection = $class->getProperty($property);
-      $reflection->setAccessible(TRUE);
-      $reflection->setValue($controller, $service);
-    }
-    $method = $class->getMethod('getPageEntityTypes');
-    $method->setAccessible(TRUE);
-    return $method->invoke($controller);
+    $rules = new PageRules(
+      $config_factory,
+      $module_handler,
+      $this->createMock(AliasManagerInterface::class),
+      $this->createMock(TransliterationInterface::class),
+      $this->createMock(LanguageManagerInterface::class)
+    );
+    return $rules->getPageEntityTypes();
   }
 
   /**

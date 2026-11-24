@@ -53,15 +53,34 @@ class PageEntityTypesFormTest extends ExistingSiteBase {
   }
 
   /**
-   * Submits the form with the given checked types.
+   * Builds the form, without the form builder.
+   *
+   * The handlers of the form are called directly: nothing depends on the
+   * route of the current request.
+   */
+  protected function buildForm(): array {
+    $form_object = \Drupal::classResolver(PageEntityTypesForm::class);
+    return $form_object->buildForm([], new FormState());
+  }
+
+  /**
+   * Validates then submits the form with the given checked types.
    *
    * @return \Drupal\Core\Form\FormState
    *   The form state after the submission.
    */
   protected function submit(array $checked): FormState {
+    $form_object = \Drupal::classResolver(PageEntityTypesForm::class);
+    $form = $form_object->buildForm([], new FormState());
+    $options = array_fill_keys(array_keys($form['page_entity_types']['#options']), 0);
     $form_state = new FormState();
-    $form_state->setValues(['page_entity_types' => array_combine($checked, $checked)]);
-    \Drupal::formBuilder()->submitForm(PageEntityTypesForm::class, $form_state);
+    $form_state->setValues([
+      'page_entity_types' => array_combine($checked, $checked) + $options,
+    ]);
+    $form_object->validateForm($form, $form_state);
+    if (!$form_state->getErrors()) {
+      $form_object->submitForm($form, $form_state);
+    }
     return $form_state;
   }
 
@@ -86,7 +105,7 @@ class PageEntityTypesFormTest extends ExistingSiteBase {
    */
   public function testOptionsAndDefaultValue(): void {
     \Drupal::configFactory()->getEditable(self::CONFIG)->delete();
-    $form = \Drupal::formBuilder()->getForm(PageEntityTypesForm::class);
+    $form = $this->buildForm();
     $element = $form['page_entity_types'];
     $this->assertSame('checkboxes', $element['#type']);
     $this->assertTrue($element['#required']);
@@ -103,7 +122,7 @@ class PageEntityTypesFormTest extends ExistingSiteBase {
     \Drupal::configFactory()->getEditable(self::CONFIG)
       ->set('page_entity_types', ['node', 'taxonomy_term', 'removed_type'])
       ->save();
-    $form = \Drupal::formBuilder()->getForm(PageEntityTypesForm::class);
+    $form = $this->buildForm();
     $this->assertSame(['node', 'taxonomy_term'], array_values($form['page_entity_types']['#default_value']));
   }
 
@@ -116,12 +135,12 @@ class PageEntityTypesFormTest extends ExistingSiteBase {
     $original = Settings::getAll();
     $messenger = \Drupal::messenger();
     $messenger->deleteAll();
-    \Drupal::formBuilder()->getForm(PageEntityTypesForm::class);
+    $this->buildForm();
     $this->assertSame([], $messenger->deleteAll());
 
     new Settings(['vactory_decoupled_router_page_entity_types' => ['node']] + $original);
     try {
-      \Drupal::formBuilder()->getForm(PageEntityTypesForm::class);
+      $this->buildForm();
     }
     finally {
       new Settings($original);
@@ -134,6 +153,7 @@ class PageEntityTypesFormTest extends ExistingSiteBase {
   /**
    * The checked types are saved as a list.
    *
+   * @covers ::validateForm
    * @covers ::submitForm
    */
   public function testSubmit(): void {
