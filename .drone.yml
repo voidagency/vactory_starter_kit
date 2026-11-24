@@ -18,7 +18,10 @@ trigger:
 
 steps:
   - name: setup
-    image: vactory/vactory-ci:latest
+    # Native arm64 build of vactory-ci (built and published on demand by the
+    # Drone pipeline of droneci): no Rosetta on the Apple Silicon CI machine,
+    # about 25-35% faster, no git/JVM freezes (Redmine #71371).
+    image: vactory/vactory-ci:arm64
     pull: if-not-exists
     environment:
       BITBUCKET_AUTHTOKEN:
