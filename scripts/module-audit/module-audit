@@ -1,0 +1,354 @@
+#!/usr/bin/env bash
+# module-audit : audit d'installation / désinstallation / dépendances des modules
+# du profil, mesuré sur des instances jetables de « stack » (scripts/stack).
+# Documentation : docs/module-audit.md. Aide : module-audit help.
+#
+# Compatible bash 3.2 (macOS) et Linux.
+
+set -uo pipefail
+
+MA_HOME="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT="$(cd "$MA_HOME/../.." && pwd -P)"
+STACK="${VACTORY_STACK_BIN:-$REPO_ROOT/scripts/stack/stack}"
+AUDIT_HOME="${MODULE_AUDIT_HOME:-$HOME/dev/.vactory-module-audit}"
+MAX_INSTANCES="${MODULE_AUDIT_MAX_INSTANCES:-2}"
+OUT=""
+
+# shellcheck source=lib/common.sh
+. "$MA_HOME/lib/common.sh"
+# shellcheck source=lib/measure.sh
+. "$MA_HOME/lib/measure.sh"
+
+usage() {
+  cat <<'EOF'
+module-audit : audit des modules du profil sur des instances « stack » (docs/module-audit.md).
+
+  module-audit run [--instances N] [--modules all|m1,m2,...] [--ref <commit|branche>]
+                   [--prefix <nom>] [--no-deps] [--out <dossier>]
+      crée les instances, mesure chaque module (installation seule, santé,
+      désinstallation, restes, réinstallation), puis les dépendances, puis RESULT.md.
+  module-audit deps [--only M:X,...] [--out <dossier>]
+      preuves de dépendances (sonde Kernel), pour les modules de l'audit.
+  module-audit report [--out <dossier>]     écrit RESULT.md
+  module-audit resume [--out <dossier>]     reprend un audit interrompu (le fait est passé)
+  module-audit status [--out <dossier>]     avancement
+  module-audit clean [--out <dossier>]      supprime les instances de l'audit (les résultats restent)
+
+Résultats : $MODULE_AUDIT_HOME/<date>/ (défaut ~/dev/.vactory-module-audit), jamais dans le dépôt.
+Sans --out : « run » crée un nouveau dossier, les autres commandes prennent le dernier.
+Variables : VACTORY_STACK_BIN (commande stack, défaut scripts/stack/stack de ce dépôt),
+MODULE_AUDIT_HOME, MODULE_AUDIT_MAX_INSTANCES (2 par défaut : mémoire de la VM Docker).
+EOF
+}
+
+# --- Dossier de résultats et réglages --------------------------------------------
+
+new_out() {
+  local base n=1
+  base="$AUDIT_HOME/$(date +%Y-%m-%d)"
+  OUT="$base"
+  while [ -e "$OUT" ]; do
+    n=$((n + 1))
+    OUT="$base-$n"
+  done
+}
+
+use_out() {
+  if [ -z "$OUT" ]; then
+    [ -L "$AUDIT_HOME/latest" ] || [ -d "$AUDIT_HOME/latest" ] || die "aucun audit dans $AUDIT_HOME (module-audit run)."
+    OUT="$(cd "$AUDIT_HOME/latest" && pwd -P)"
+  fi
+  [ -f "$OUT/audit.env" ] || die "$OUT n'est pas un dossier d'audit (audit.env absent)."
+  load_env
+}
+
+case_in_repo() {
+  case "$1/" in "$REPO_ROOT"/*) die "les résultats ne vont pas dans le dépôt : $1" ;; esac
+}
+
+load_env() {
+  local k v
+  while IFS='=' read -r k v; do
+    case "$k" in
+      REF) REF="$v" ;;
+      PREFIX) PREFIX="$v" ;;
+      INSTANCES) INSTANCES="$v" ;;
+      MODULES) MODULES="$v" ;;
+      DEPS) DEPS="$v" ;;
+      *) ;;
+    esac
+  done <"$OUT/audit.env"
+}
+
+save_env() {
+  mkdir -p "$OUT"
+  {
+    echo "REF=$REF"
+    echo "PREFIX=$PREFIX"
+    echo "INSTANCES=$INSTANCES"
+    echo "MODULES=$MODULES"
+    echo "DEPS=$DEPS"
+    echo "CREATED=$(date -u +%FT%TZ)"
+  } >"$OUT/audit.env"
+  mkdir -p "$AUDIT_HOME"
+  ln -sfn "$OUT" "$AUDIT_HOME/latest"
+}
+
+instance_names() {
+  local i=1
+  while [ "$i" -le "$INSTANCES" ]; do
+    printf '%s-%s\n' "$PREFIX" "$i"
+    i=$((i + 1))
+  done
+}
+
+lock_out() {
+  local pid
+  pid="$(cat "$OUT/.lock" 2>/dev/null || true)"
+  if [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null; then die "audit déjà en cours dans $OUT (pid $pid)."; fi
+  echo $$ >"$OUT/.lock"
+}
+
+# --- Étapes -------------------------------------------------------------------------
+
+check_stack() {
+  [ -x "$STACK" ] || die "commande stack introuvable : $STACK (PR #976 ; VACTORY_STACK_BIN pour un autre chemin)."
+}
+
+instances_up() {
+  local inst
+  mkdir -p "$OUT/instances" "$OUT/logs"
+  for inst in $(instance_names); do
+    log "instance $inst : stack up (journal logs/up-$inst.log)"
+    st up "$inst" --ref "$REF" >"$OUT/logs/up-$inst.log" 2>&1 || { tail -20 "$OUT/logs/up-$inst.log"; die "stack up $inst a échoué."; }
+    st info "$inst" --json >"$OUT/instances/$inst.json" || die "stack info $inst a échoué."
+    [ "$(inst_field "$inst" profile.external)" = False ] \
+      || die "$inst utilise un profil externe : la sonde modifie le .info.yml de l'arbre de l'instance, il doit être propre à l'instance."
+  done
+}
+
+static_pass() {
+  local first
+  first="$(instance_names | head -1)"
+  if [ ! -s "$OUT/all-modules.txt" ]; then
+    st drush "$first" pm:list --type=module --format=list 2>/dev/null | sort >"$OUT/all-modules.txt"
+  fi
+  if [ ! -f "$OUT/static.json" ]; then
+    run_py_yaml "$MA_HOME/lib/static.py" inventory "$(inst_profile "$first")" "$(inst_drupal "$first")" "$OUT/static.json" \
+      || die "static.py a échoué."
+  fi
+}
+
+# static.py lit les .info.yml (PyYAML) : python3 s'il l'a, sinon uv.
+run_py_yaml() {
+  if "$PY" -c 'import yaml' 2>/dev/null; then
+    "$PY" "$@"
+  elif command -v uv >/dev/null 2>&1; then
+    uv run -q --with pyyaml python3 "$@"
+  else
+    die "PyYAML manque (pip install pyyaml, ou installer uv)."
+  fi
+}
+
+modules_list() {
+  "$PY" - "$OUT/static.json" "$MODULES" >"$OUT/modules.txt" <<'EOF' || die "--modules : $MODULES"
+import json, sys
+mods = json.load(open(sys.argv[1]))['modules']
+spec = sys.argv[2]
+want = sorted(mods) if spec == 'all' else [m for m in spec.split(',') if m]
+bad = [m for m in want if m not in mods]
+if bad:
+    sys.exit('modules inconnus ou exclus (modules de test) : ' + ', '.join(bad))
+print('\n'.join(want))
+EOF
+}
+
+# Un ouvrier par instance : prend le premier module libre (dossier de verrou).
+worker() {
+  local inst="$1" m
+  prepare "$inst" || { log "$inst : préparation impossible"; return 1; }
+  while read -r m; do
+    [ -n "$m" ] || continue
+    mkdir "$OUT/.claims/$m" 2>/dev/null || continue
+    measure_module "$inst" "$m" </dev/null
+  done <"$OUT/modules.txt"
+  log "$inst : plus de module à mesurer"
+}
+
+WORKERS=""
+stop_workers() {
+  local p
+  trap - INT TERM
+  for p in $WORKERS; do kill_tree "$p"; done
+  log "interrompu : « module-audit resume » reprend où l'audit s'est arrêté."
+  exit 130
+}
+
+modules_pass() {
+  local inst p
+  rm -rf "$OUT/.claims"
+  mkdir -p "$OUT/.claims" "$OUT/raw"
+  WORKERS=""
+  trap stop_workers INT TERM
+  for inst in $(instance_names); do
+    worker "$inst" >>"$OUT/logs/worker-$inst.log" 2>&1 &
+    WORKERS="$WORKERS $!"
+    log "ouvrier $inst lancé (logs/worker-$inst.log)"
+  done
+  for p in $WORKERS; do wait "$p"; done
+  trap - INT TERM
+}
+
+deps_pass() {
+  local only="${1:-}" first inst
+  first="$(instance_names | head -1)"
+  for inst in $(instance_names); do prepare "$inst" >>"$OUT/logs/worker-$inst.log" 2>&1 || die "préparation de $inst impossible."; done
+  run_py_yaml "$MA_HOME/lib/static.py" pairs "$OUT/static.json" "$(inst_profile "$first")" \
+    "$OUT/raw/_control/$first/base-modules.txt" "$OUT" || die "static.py pairs a échoué."
+  mkdir -p "$OUT/work"
+  "$PY" - "$OUT" "$only" <<'EOF' || die "--only : paires inconnues"
+import os, sys
+out, only = sys.argv[1:3]
+mods = set(open(f'{out}/modules.txt').read().split())
+want = {tuple(p.split(':', 1)) for p in only.split(',') if p} if only else None
+seen = set()
+# pairs-undeclared.tsv : X, M, sortes ; pairs-unused.tsv : M, D.
+for kind, mcol in (('undeclared', 1), ('unused', 0)):
+    rows = []
+    for line in open(f'{out}/pairs-{kind}.tsv'):
+        f = line.rstrip('\n').split('\t')
+        m, x = f[mcol], f[1 - mcol]
+        # --only: the pairs given, whatever the modules of the audit.
+        if (want is None and m not in mods) or (want is not None and (m, x) not in want):
+            continue
+        seen.add((m, x))
+        rows.append(line)
+    open(f'{out}/work/run-{kind}.tsv', 'w').write(''.join(rows))
+if want and want - seen:
+    sys.exit('paires absentes des candidats (pairs-*.tsv) : ' + ', '.join(f'{m}:{x}' for m, x in sorted(want - seen)))
+EOF
+  # shellcheck disable=SC2046 # noms d'instances.
+  STACK="$STACK" "$PY" "$MA_HOME/lib/kprobe.py" "$OUT" unused "$OUT/work/run-unused.tsv" $(instance_names) </dev/null \
+    | tee -a "$OUT/logs/kprobe.log"
+  # shellcheck disable=SC2046
+  STACK="$STACK" "$PY" "$MA_HOME/lib/kprobe.py" "$OUT" undeclared "$OUT/work/run-undeclared.tsv" $(instance_names) </dev/null \
+    | tee -a "$OUT/logs/kprobe.log"
+}
+
+report_pass() {
+  "$PY" "$MA_HOME/lib/report.py" "$OUT" || die "report.py a échoué."
+  log "rapport : $OUT/RESULT.md"
+}
+
+audit_all() {
+  check_stack
+  lock_out
+  instances_up
+  static_pass
+  modules_list
+  log "$(wc -l <"$OUT/modules.txt" | tr -d ' ') modules, instances : $(instance_names | tr '\n' ' ')"
+  modules_pass
+  if [ "$DEPS" = 1 ]; then deps_pass; fi
+  report_pass
+  rm -f "$OUT/.lock"
+}
+
+# --- Commandes -------------------------------------------------------------------
+
+cmd_run() {
+  REF=origin/3.x PREFIX=audit INSTANCES=1 MODULES=all DEPS=1
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --instances) INSTANCES="${2:-}"; shift 2 ;;
+      --modules) MODULES="${2:-}"; shift 2 ;;
+      --ref) REF="${2:-}"; shift 2 ;;
+      --prefix) PREFIX="${2:-}"; shift 2 ;;
+      --no-deps) DEPS=0; shift ;;
+      --out) OUT="${2:-}"; shift 2 ;;
+      *) die "run : option inconnue $1" ;;
+    esac
+  done
+  case "$INSTANCES" in ''|*[!0-9]*|0) die "--instances N (1 à $MAX_INSTANCES)" ;; esac
+  [ "$INSTANCES" -le "$MAX_INSTANCES" ] || die "--instances $INSTANCES : $MAX_INSTANCES au plus (la VM Docker a déjà lâché au-delà ; MODULE_AUDIT_MAX_INSTANCES pour changer)."
+  if [ -z "$MODULES" ] || [ -z "$REF" ] || [ -z "$PREFIX" ]; then die "run : valeur vide"; fi
+  if [ -z "$OUT" ]; then new_out; fi
+  OUT="$("$PY" -c 'import os, sys; print(os.path.realpath(sys.argv[1]))' "$OUT")"
+  case_in_repo "$OUT"
+  mkdir -p "$OUT" || die "impossible de créer $OUT"
+  [ ! -f "$OUT/audit.env" ] || die "$OUT contient déjà un audit : module-audit resume --out $OUT"
+  save_env
+  log "audit dans $OUT"
+  audit_all
+}
+
+cmd_resume() {
+  [ "${1:-}" != --out ] || OUT="${2:-}"
+  use_out
+  log "reprise de $OUT"
+  audit_all
+}
+
+cmd_deps() {
+  local only=""
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --only) only="${2:-}"; shift 2 ;;
+      --out) OUT="${2:-}"; shift 2 ;;
+      *) die "deps : option inconnue $1" ;;
+    esac
+  done
+  use_out
+  check_stack
+  lock_out
+  instances_up
+  static_pass
+  [ -s "$OUT/modules.txt" ] || modules_list
+  deps_pass "$only"
+  report_pass
+  rm -f "$OUT/.lock"
+}
+
+cmd_report() {
+  [ "${1:-}" != --out ] || OUT="${2:-}"
+  use_out
+  report_pass
+}
+
+cmd_status() {
+  local total measured
+  [ "${1:-}" != --out ] || OUT="${2:-}"
+  use_out
+  total=$(wc -l <"$OUT/modules.txt" 2>/dev/null | tr -d ' ')
+  measured=$(find "$OUT/raw" -mindepth 2 -maxdepth 2 -name result.json 2>/dev/null | wc -l | tr -d ' ')
+  say "audit     : $OUT (ref $REF, $INSTANCES instance(s) $PREFIX-N)"
+  say "modules   : $measured / ${total:-?} mesurés"
+  say "dépendances : $(find "$OUT/deps/undeclared" "$OUT/deps/unused" -name '*__*.json' 2>/dev/null | wc -l | tr -d ' ') paires jugées"
+  if [ -f "$OUT/.lock" ] && kill -0 "$(cat "$OUT/.lock")" 2>/dev/null; then say "en cours  : pid $(cat "$OUT/.lock")"; fi
+}
+
+cmd_clean() {
+  local inst names=""
+  [ "${1:-}" != --out ] || OUT="${2:-}"
+  use_out
+  check_stack
+  for inst in $(instance_names); do
+    if st info "$inst" >/dev/null 2>&1; then names="$names $inst"; fi
+  done
+  if [ -z "$names" ]; then log "aucune instance à supprimer"; return 0; fi
+  log "suppression de$names"
+  # shellcheck disable=SC2086 # noms d'instances.
+  st rm $names --yes || die "stack rm a échoué."
+  rm -f "$OUT/.lock"
+  log "instances supprimées ; résultats gardés dans $OUT"
+}
+
+case "${1:-help}" in
+  run) shift; cmd_run "$@" ;;
+  resume) shift; cmd_resume "$@" ;;
+  deps) shift; cmd_deps "$@" ;;
+  report) shift; cmd_report "$@" ;;
+  status) shift; cmd_status "$@" ;;
+  clean) shift; cmd_clean "$@" ;;
+  help|-h|--help) usage ;;
+  *) usage; exit 1 ;;
+esac
