@@ -7,12 +7,13 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
+use Drupal\Core\PathProcessor\InboundPathProcessorInterface;
 use Drupal\Core\Site\Settings;
 use Drupal\path_alias\AliasManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Rules of the router: page entity types and variants of a node alias.
+ * Rules of the router: page entity types, canonical paths, alias variants.
  */
 class PageRules {
 
@@ -52,6 +53,13 @@ class PageRules {
   protected $languageManager;
 
   /**
+   * The inbound path processor of the router.
+   *
+   * @var \Drupal\Core\PathProcessor\InboundPathProcessorInterface|null
+   */
+  protected $pathProcessor;
+
+  /**
    * Constructs the service.
    */
   public function __construct(
@@ -60,12 +68,14 @@ class PageRules {
     AliasManagerInterface $alias_manager,
     TransliterationInterface $transliteration,
     LanguageManagerInterface $language_manager,
+    ?InboundPathProcessorInterface $path_processor = NULL,
   ) {
     $this->configFactory = $config_factory;
     $this->moduleHandler = $module_handler;
     $this->aliasManager = $alias_manager;
     $this->transliteration = $transliteration;
     $this->languageManager = $language_manager;
+    $this->pathProcessor = $path_processor;
   }
 
   /**
@@ -95,6 +105,66 @@ class PageRules {
    */
   public function isPageEntityType(string $entity_type_id): bool {
     return in_array($entity_type_id, $this->getPageEntityTypes(), TRUE);
+  }
+
+  /**
+   * Whether a value of "path" can be a path of the site.
+   *
+   * A value starting with two slashes is read as a URL without scheme: its
+   * first segment is taken as a host name and "//segment" would be the front
+   * page.
+   *
+   * @param string $path
+   *   The requested path.
+   */
+  public function isSitePath(string $path): bool {
+    return !str_starts_with($path, '//');
+  }
+
+  /**
+   * Whether a path is the canonical address of an entity.
+   *
+   * The path is processed as the router does (language prefix, alias, front
+   * page) and has to give exactly the internal path of the canonical URL of
+   * the entity. The other routes of the entity (edit and delete forms,
+   * revisions, latest version, translations, JSON:API...) and the other
+   * spellings of its internal path (letter case, leading zero, trailing slash)
+   * are not its address.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The entity of the route matched for the path.
+   * @param string $path
+   *   The requested path.
+   */
+  public function isCanonicalPath(EntityInterface $entity, string $path): bool {
+    try {
+      $internal = '/' . $entity->toUrl('canonical')->getInternalPath();
+      $request = Request::create($path);
+      $path_info = $request->getPathInfo();
+      // Same trim as the route provider of the core.
+      $trimmed = $path_info === '/' ? $path_info : rtrim($path_info, '/');
+      $processed = $this->getPathProcessor()->processInbound($trimmed, $request);
+    }
+    catch (\Exception $exception) {
+      // No canonical URL for this entity, or a path that cannot be processed.
+      return FALSE;
+    }
+    $requested = $this->getRequestedAlias($path);
+    $has_trailing_slash = $requested !== $internal && rtrim($requested, '/') === $internal;
+    return $processed === $internal && !$has_trailing_slash;
+  }
+
+  /**
+   * The inbound path processor of the router.
+   *
+   * Read from the container when the service was built by a container older
+   * than this argument (code deployed, cache not rebuilt yet).
+   */
+  protected function getPathProcessor(): InboundPathProcessorInterface {
+    if (!$this->pathProcessor) {
+      $this->pathProcessor = \Drupal::service('path_processor_manager');
+    }
+    return $this->pathProcessor;
   }
 
   /**
