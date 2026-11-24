@@ -61,7 +61,7 @@ Un nom fait de 1 à 20 caractères parmi `a-z`, `0-9` et `-`. `stack up` sur une
 
 Le code du profil est celui de l'arbre `<instance>/profile`, monté dans le site : une modification y est visible tout de suite (`stack drush a cr` si besoin). On y commit et on y pousse comme dans tout arbre git. Le hook `pre-commit` du dépôt cherche le `vendor/` du profil, absent d'un arbre d'instance : y committer avec `--no-verify` et vérifier le style par `stack phpcs`.
 
-`stack test` lance PHPUnit dans l'instance. Un chemin est relatif au profil. Les tests `tests/Functional` et la suite `existing-site-functional` sont refusés : ils installent et désinstallent des modules sur le site et y laissent du contenu. Un dossier qui en contient est refusé aussi : viser `tests/src/Unit`, `Kernel` ou `ExistingSite`.
+`stack test` lance PHPUnit dans l'instance. Un chemin est relatif au profil. Les tests Functional (`tests/Functional` et `tests/src/Functional`, les deux dispositions existent dans le profil) et la suite `existing-site-functional` sont refusés : ils installent et désinstallent des modules sur le site et y laissent du contenu. Un dossier qui en contient est refusé aussi : viser `tests/src/Unit`, `Kernel` ou `ExistingSite`. Les options de PHPUnit passent telles quelles (`--filter`, `--log-junit <fichier>`…) ; un rapport écrit sous `/var/www/html/` se retrouve dans `<instance>/drupal/`.
 
 `stack rm` supprime le projet ddev (conteneurs, base), le front, l'arbre du profil et le dossier de l'instance. La branche créée par `stack up` est supprimée si elle n'a pas de nouveau commit ; sinon elle est gardée et la commande le dit. `rm` refuse un arbre avec des modifications non commitées (`--force` pour les perdre). Il ne touche jamais un chemin donné par `--profile`.
 
