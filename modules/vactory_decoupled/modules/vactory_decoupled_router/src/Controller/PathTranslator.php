@@ -12,6 +12,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Url;
+use Symfony\Component\Routing\Exception\ResourceNotFoundException;
 use Symfony\Component\Routing\Route;
 use Drupal\Core\Entity\ContentEntityType;
 use Symfony\Component\Routing\RequestContext;
@@ -22,6 +23,7 @@ use Drupal\jsonapi\ResourceType\ResourceTypeRepository;
 use Symfony\Component\Routing\RouteCollection;
 use Drupal\redirect\RedirectRepository;
 use Drupal\vactory_decoupled\BlocksManager;
+use Drupal\vactory_decoupled_router\PageRules;
 
 /**
  * Controller that receives the path to inspect.
@@ -91,6 +93,13 @@ class PathTranslator extends ControllerBase {
   protected $redirectRepository;
 
   /**
+   * The rules of the router: page entity types and alias variants.
+   *
+   * @var \Drupal\vactory_decoupled_router\PageRules|null
+   */
+  protected $pageRules;
+
+  /**
    * EventInfoController constructor.
    */
   public function __construct(
@@ -100,6 +109,7 @@ class PathTranslator extends ControllerBase {
     EntityTypeManagerInterface $entityTypeManager,
     EntityRepositoryInterface $entityRepository,
     RedirectRepository $redirectRepository,
+    ?PageRules $pageRules = NULL,
   ) {
     $this->logger = $logger;
     $this->router = $router;
@@ -112,6 +122,7 @@ class PathTranslator extends ControllerBase {
       ->getId();
     $this->entityRepository = $entityRepository;
     $this->redirectRepository = $redirectRepository;
+    $this->pageRules = $pageRules;
   }
 
   /**
@@ -125,6 +136,7 @@ class PathTranslator extends ControllerBase {
       $container->get('entity_type.manager'),
       $container->get('entity.repository'),
       $container->get('redirect.repository'),
+      $container->get('vactory_decoupled_router.page_rules'),
     );
   }
 
@@ -194,19 +206,17 @@ class PathTranslator extends ControllerBase {
   private function resolveOutput(Request $request, string $path, array $output, array $error_match_info): ?array {
     $info = NULL;
     $match_info = $this->matchPath($request, $path, $output, $error_match_info, $info);
-    /** @var \Drupal\Core\Entity\EntityInterface $entity */
     $preview = $request->query->get('preview') ?? FALSE;
-    $entity = $this->findEntity($match_info, $preview);
+    /** @var \Drupal\Core\Entity\EntityInterface $entity */
+    // $info is set when the path is the alias of a Vactory system route.
+    $entity = $this->findPageEntity($match_info, $preview, $path, $output, $info !== NULL);
     if (!$entity) {
-      $this->logger->notice('A route has been found but it has no entity information.');
       /** @var \Drupal\Core\Entity\EntityInterface $entity */
       $entity = $this->findEntity($error_match_info);
       $info = [
         '_route' => 'error_page',
       ];
       $output['status'] = 404;
-      $output['message'] = "A route has been found for $path , but it has no entity information!";
-      // $this->response->setStatusCode(500);
     }
 
     $redirects_trace = [];
@@ -220,7 +230,14 @@ class PathTranslator extends ControllerBase {
       $output['system'] = $info;
     }
 
-    if ($this->isFollowNodePathPattern($path) && $entity->hasTranslation($this->currentLangcode)) {
+    // Only for the node of the path itself ($info not set): the error page
+    // and the node of a system route are not redirected to their alias.
+    if (
+      $info === NULL
+      && $this->isFollowNodePathPattern($path)
+      && $entity->getEntityTypeId() === 'node'
+      && $entity->hasTranslation($this->currentLangcode)
+    ) {
       // Get the translated entity.
       $trans_entity = $this->entityRepository->getTranslationFromContext($entity);
 
@@ -237,7 +254,104 @@ class PathTranslator extends ControllerBase {
       }
     }
 
+    // Vactory system routes ($info set) are skipped: their paths (facets...)
+    // share the node of the route.
+    if ($info === NULL) {
+      $output = $this->addAliasVariantRedirect($entity, $path, $output);
+    }
+
     return $output;
+  }
+
+  /**
+   * The published entity of the matched route, when it is a page.
+   *
+   * The entity type and the path are checked before the entity itself is
+   * inspected: a type out of the list of page entity types, or a path that is
+   * not the canonical address of the entity (edit form, revisions...), is
+   * never loaded further and gives the same answer whatever the entity.
+   *
+   * @param array $match_info
+   *   The router match info.
+   * @param bool|string $preview
+   *   Is preview mode.
+   * @param string $path
+   *   The requested path.
+   * @param array $output
+   *   The output; receives the message when there is no page.
+   * @param bool $is_system_route
+   *   TRUE when the route comes from the path of a Vactory system route, set
+   *   by an administrator: only the requested paths have to be canonical.
+   *
+   * @return \Drupal\Core\Entity\EntityInterface|null
+   *   The entity, or NULL when the error page has to be returned.
+   */
+  private function findPageEntity(array $match_info, $preview, string $path, array &$output, bool $is_system_route = FALSE): ?EntityInterface {
+    $candidate = $this->getRouteEntity($match_info);
+    $rules = $this->getPageRules();
+    $is_page = $candidate
+      && $rules->isPageEntityType($candidate->getEntityTypeId())
+      && ($is_system_route || $rules->isCanonicalPath($candidate, $path));
+    // A path that already gave the error page keeps its own message.
+    $refused = $output['status'] === 200 && $candidate && !$is_page;
+    if ($refused) {
+      // Not logged: such paths are requested in number by crawlers.
+      $output['message'] = "No decoupled page for $path";
+      return NULL;
+    }
+    $entity = $this->findEntity($match_info, $preview);
+    if (!$entity) {
+      $this->logger->notice('A route has been found but it has no entity information.');
+      $output['message'] = "A route has been found for $path , but it has no entity information!";
+      // $this->response->setStatusCode(500);
+    }
+    return $entity;
+  }
+
+  /**
+   * Adds a permanent redirect when the path is a variant of the node alias.
+   *
+   * The redirect status is the string '301', like the one of a Redirect
+   * entity: this is what the front reads as permanent.
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $entity
+   *   The resolved entity.
+   * @param string $path
+   *   The requested path.
+   * @param array $output
+   *   The output.
+   *
+   * @return array
+   *   The output, with the redirect when there is one.
+   *
+   * @see \Drupal\vactory_decoupled_router\PageRules::getAliasRedirectTarget()
+   */
+  private function addAliasVariantRedirect(EntityInterface $entity, string $path, array $output): array {
+    $is_candidate = $output['status'] === 200
+      && empty($output['redirect'])
+      && $entity->getEntityTypeId() === 'node';
+    $target = $is_candidate
+      ? $this->getPageRules()->getAliasRedirectTarget($entity, $path, $this->currentLangcode)
+      : NULL;
+    if ($target !== NULL) {
+      $output['status'] = 301;
+      $output['redirect'][] = [
+        'to' => $target,
+        'status' => '301',
+        'from' => $path,
+      ];
+    }
+    return $output;
+  }
+
+  /**
+   * The rules of the router.
+   */
+  private function getPageRules(): PageRules {
+    if (!$this->pageRules) {
+      $this->pageRules = \Drupal::service('vactory_decoupled_router.page_rules');
+    }
+    return $this->pageRules;
   }
 
   /**
@@ -248,6 +362,9 @@ class PathTranslator extends ControllerBase {
    */
   private function matchPath(Request $request, string $path, array &$output, array $error_match_info, &$info): array {
     try {
+      if (!$this->getPageRules()->isSitePath($path)) {
+        throw new ResourceNotFoundException("Not a path of the site: $path");
+      }
       // Drupal routes.
       return $this->router->match($path);
     }
@@ -444,29 +561,9 @@ class PathTranslator extends ControllerBase {
    *   entity lives in the route ('node' vs 'entity').
    */
   protected function findEntity(array $match_info, $preview = FALSE) {
-    $entity = NULL;
     /** @var \Symfony\Component\Routing\Route $route */
     $route = $match_info[RouteObjectInterface::ROUTE_OBJECT];
-    if (
-      !empty($match_info['entity']) &&
-      $match_info['entity'] instanceof EntityInterface
-    ) {
-      $entity = $match_info['entity'];
-    }
-    else {
-      $entity_type_id = $this->findEntityTypeFromRoute($route);
-      /** @var \Drupal\Core\Entity\EntityInterface $entity */
-      // @todo $match_info[$entity_type_id] is broken for JSON API 2.x routes.
-      // Now it will be $match_info[$entity_type_id] for core and
-      // $match_info['entity'] for JSON API :-(.
-      if (
-        !empty($entity_type_id) &&
-        !empty($match_info[$entity_type_id]) &&
-        $match_info[$entity_type_id] instanceof EntityInterface
-      ) {
-        $entity = $match_info[$entity_type_id];
-      }
-    }
+    $entity = $this->getRouteEntity($match_info);
 
     // Do not return unpublished entity.
     if ($entity) {
@@ -486,6 +583,27 @@ class PathTranslator extends ControllerBase {
     }
 
     return $entity;
+  }
+
+  /**
+   * The entity of a matched route, whatever its status.
+   *
+   * @param array $match_info
+   *   The router match info.
+   *
+   * @return \Drupal\Core\Entity\EntityInterface|null
+   *   The entity, or NULL when the route has none.
+   */
+  private function getRouteEntity(array $match_info): ?EntityInterface {
+    $entity = $match_info['entity'] ?? NULL;
+    if (!$entity instanceof EntityInterface) {
+      // @todo $match_info[$entity_type_id] is broken for JSON API 2.x routes.
+      // Now it will be $match_info[$entity_type_id] for core and
+      // $match_info['entity'] for JSON API :-(.
+      $entity_type_id = $this->findEntityTypeFromRoute($match_info[RouteObjectInterface::ROUTE_OBJECT]);
+      $entity = empty($entity_type_id) ? NULL : $match_info[$entity_type_id] ?? NULL;
+    }
+    return $entity instanceof EntityInterface ? $entity : NULL;
   }
 
   /**

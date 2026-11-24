@@ -6,7 +6,7 @@ gray=`tput setaf 7`
 reset=`tput sgr0`
 pink=`tput setaf 13`
 # Get staged files that have modified|added|conflict status then filter by php extensions.
-files=($(git diff --cached --name-status --diff-filter=ACM | grep -E "\.(php|module|install|profile|test|inc|theme|txt|md)$" | sed -E "s/(A|M|C)[[:space:]]+//g"));
+files=($(git diff --cached --name-status --diff-filter=ACM | grep -E "\.(php|module|install|profile|test|inc|theme)$" | sed -E "s/(A|M|C)[[:space:]]+//g"));
 # Set PHPCS Standard to Drupla.
 output=`vendor/bin/phpcs --config-set installed_paths vendor/drupal/coder/coder_sniffer`;
 # Apply phpcs to staged php files.

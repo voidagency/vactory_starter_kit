@@ -87,7 +87,18 @@ function vactory_decoupled_espace_prive_decoupled_webform_data_presubmit_alter(a
     // Only accept fields declared on the registration webform. This blocks
     // mass-assignment of privilege/identity fields such as roles[], status,
     // uid, etc. from the request body.
-    $user_data = _vactory_decoupled_espace_prive_filter_user_data($webform_data, 'vactory_espace_prive_register', ['mail', 'pass']);
+    $extra_keys = ['mail', 'pass'];
+    $user_data = _vactory_decoupled_espace_prive_filter_user_data($webform_data, 'vactory_espace_prive_register', $extra_keys);
+
+    // Roles are decided by the site, never by the request body: "roles" is
+    // stripped above, and the account gets the default roles chosen in the
+    // back office ("Registration" tab of the decoupled settings), with the
+    // same filtering as the JSON:API registration (no administrator role).
+    // The service is missing while the container predates it (code deployed,
+    // caches not rebuilt yet): the account is then created without role.
+    $user_data['roles'] = \Drupal::hasService('vactory_decoupled.user_registration_roles_subscriber')
+      ? \Drupal::service('vactory_decoupled.user_registration_roles_subscriber')->defaultRoles()
+      : [];
 
     // New accounts are always blocked until the approval logic below decides
     // otherwise; never trust a submitted status.

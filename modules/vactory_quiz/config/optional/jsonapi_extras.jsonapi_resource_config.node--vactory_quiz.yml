@@ -5,6 +5,7 @@ dependencies:
     - node.type.vactory_quiz
   enforced:
     module:
+      - vactory_decoupled
       - vactory_quiz
 id: node--vactory_quiz
 disabled: false

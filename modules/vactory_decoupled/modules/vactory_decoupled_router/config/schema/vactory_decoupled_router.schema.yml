@@ -14,3 +14,14 @@ vactory_decoupled_router.vactory_route.*:
     alias:
       type: string
       label: 'Alias'
+
+vactory_decoupled_router.settings:
+  type: config_object
+  label: 'Vactory decoupled router settings'
+  mapping:
+    page_entity_types:
+      type: sequence
+      label: 'Entity types resolved as pages'
+      sequence:
+        type: string
+        label: 'Entity type ID'

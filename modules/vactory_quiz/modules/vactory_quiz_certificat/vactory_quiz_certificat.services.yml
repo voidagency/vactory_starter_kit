@@ -9,3 +9,25 @@ services:
       - '@state'
       - '@language_manager'
       - '@entity.repository'
+  vactory_quiz_certificat.access:
+    class: Drupal\vactory_quiz_certificat\Services\CertificatAccess
+    arguments:
+      - '@database'
+      - '@stream_wrapper_manager'
+      - '@file_system'
+  vactory_quiz_certificat.login_redirect_subscriber:
+    class: Drupal\vactory_quiz_certificat\EventSubscriber\CertificatLoginRedirectSubscriber
+    arguments:
+      - '@current_user'
+      - '@stream_wrapper_manager'
+      - '@file_url_generator'
+      - '@page_cache_kill_switch'
+      - '@module_handler'
+    tags:
+      - { name: event_subscriber }
+  vactory_quiz_certificat.not_found_subscriber:
+    class: Drupal\vactory_quiz_certificat\EventSubscriber\CertificatNotFoundSubscriber
+    arguments:
+      - '@vactory_quiz_certificat.access'
+    tags:
+      - { name: event_subscriber }

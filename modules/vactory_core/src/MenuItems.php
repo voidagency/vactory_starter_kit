@@ -2,6 +2,7 @@
 
 namespace Drupal\vactory_core;
 
+use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -93,6 +94,16 @@ class MenuItems extends MenuItemsBase {
     $result = [];
     $current_user_roles = $this->currentUser->getRoles();
     foreach ($links as $item) {
+      // Same checks as simplify_menu 3.3 and MenuLinkTree::build(): the
+      // checkAccess manipulator does not remove inaccessible links, the code
+      // using the tree has to skip them.
+      if (!$item->link->isEnabled()) {
+        continue;
+      }
+      if ($item->access instanceof AccessResultInterface && !$item->access->isAllowed()) {
+        continue;
+      }
+
       $url_object = $item->link->getUrlObject();
 
       $entity = NULL;
