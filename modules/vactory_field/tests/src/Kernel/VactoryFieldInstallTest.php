@@ -37,12 +37,20 @@ class VactoryFieldInstallTest extends KernelTestBase {
    */
   protected static $modules = ['system', 'user'];
 
+  // phpcs:disable DrupalPractice.Objects.StrictSchemaDisabled.StrictConfigSchema
+
   /**
-   * The shipped config has options of modules this test does not check.
+   * Off: this test checks dependencies, not config schemas.
+   *
+   * With the profile as install profile, its config/install overrides the
+   * config of the modules, and system.cron of the profile already fails the
+   * schema (logging: 1, a boolean in the schema) before the module installs.
    *
    * @var bool
    */
   protected $strictConfigSchema = FALSE;
+
+  // phpcs:enable
 
   /**
    * {@inheritdoc}
