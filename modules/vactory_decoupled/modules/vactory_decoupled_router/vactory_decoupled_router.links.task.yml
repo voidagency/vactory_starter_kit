@@ -1,0 +1,10 @@
+entity.vactory_route.collection:
+  route_name: entity.vactory_route.collection
+  base_route: entity.vactory_route.collection
+  title: 'Routes'
+
+vactory_decoupled_router.page_entity_types:
+  route_name: vactory_decoupled_router.page_entity_types
+  base_route: entity.vactory_route.collection
+  title: 'Page entity types'
+  weight: 10

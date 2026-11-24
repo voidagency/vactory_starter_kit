@@ -1,0 +1,18 @@
+<?php
+
+/**
+ * @file
+ * Install and update functions for vactory_decoupled_router.
+ */
+
+/**
+ * Router: create the list of entity types resolved as pages (node).
+ */
+function vactory_decoupled_router_update_10001() {
+  $config = \Drupal::configFactory()->getEditable('vactory_decoupled_router.settings');
+  if (is_array($config->get('page_entity_types'))) {
+    return t('The list of page entity types already exists: nothing to do.');
+  }
+  $config->set('page_entity_types', ['node'])->save();
+  return t('Only nodes are resolved as pages by the router. Add the other entity types displayed by the front (taxonomy terms, custom entities) at /admin/config/system/vactory_router/page-entity-types.');
+}
