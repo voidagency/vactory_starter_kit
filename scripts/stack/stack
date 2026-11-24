@@ -956,7 +956,12 @@ cmd_test() {
         if [ "$a" = "--testsuite" ]; then suite="${1:-}"; shift || true; fi
         case ",$suite," in *,existing-site-functional,*|*,functional,*) die "suite « $suite » refusée : elle installe et désinstalle des modules sur le site et y laisse du contenu." ;; esac
         args+=(--testsuite "$suite"); has_target=1 ;;
-      --filter|--group|--exclude-group)
+      # Options de PHPUnit suivies d'une valeur : la valeur n'est pas un chemin.
+      --filter|--group|--exclude-group|--covers|--uses|--test-suffix|\
+      --log-junit|--log-teamcity|--testdox-html|--testdox-text|--testdox-xml|\
+      --coverage-clover|--coverage-cobertura|--coverage-crap4j|--coverage-html|\
+      --coverage-php|--coverage-text|--coverage-xml|--printer|--order-by|\
+      --random-order-seed|--repeat|--columns|--cache-result-file|--include-path|-d)
         args+=("$a" "${1:-}"); shift || true ;;
       -*) args+=("$a") ;;
       *)
