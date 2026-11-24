@@ -125,7 +125,12 @@ abstract class SondageKernelTestBase extends KernelTestBase implements LoggerInt
    *   Item data, in creation order.
    */
   protected function queuedItems(): array {
-    $rows = $this->container->get('database')->select('queue', 'q')
+    $database = $this->container->get('database');
+    // The queue table is created with the first item.
+    if (!$database->schema()->tableExists('queue')) {
+      return [];
+    }
+    $rows = $database->select('queue', 'q')
       ->fields('q', ['data'])
       ->condition('name', self::QUEUE)
       ->orderBy('item_id')
