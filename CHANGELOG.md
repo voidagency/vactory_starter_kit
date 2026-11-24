@@ -21,6 +21,8 @@
 - **Certificats déjà générés :** les migrer vers le dossier privé, procédure dans le ticket Dispatch.
 - **Front de projet qui a modifié l'appel de l'API des menus (#966) :** les menus reçus contiennent seulement les liens auxquels l'utilisateur a accès. Le front par défaut n'est pas concerné. Vérifier les menus du front après la mise à jour (étape 6) ; détail dans Redmine #71439.
 - **Boutons AddToAny (#959) :** le script AddToAny n'est plus chargé que là où le bloc de partage, le bloc « follow », le champ AddToAny d'un affichage d'entité ou le champ de vue AddToAny est affiché. Un template projet qui écrit lui-même le HTML des boutons (`a2a_kit`), sans ce bloc ni ce champ, doit attacher la librairie `addtoany/addtoany.front` (`{{ attach_library('addtoany/addtoany.front') }}`), sinon ses boutons ne s'affichent plus. Un module projet qui porte déjà son propre contournement (retrait du script AddToAny des pages sans boutons) peut le retirer après la mise à jour.
+- **Routeur découplé, pages qui ne sont pas des nœuds (#891) : un projet dont le front affiche par le routeur des entités autres que des nœuds (termes de taxonomie, entités personnalisées) doit ajouter ces types à la liste des types de page, avant ou juste après la mise à jour. Sinon ces pages répondent 404.** Avant : livrer avec le code `$settings['vactory_decoupled_router_page_entity_types'] = ['node', 'taxonomy_term'];` dans `settings.php` (aucune 404 pendant le déploiement). Après : cocher les types en back-office (étape 4). Sans réglage, seuls les nœuds sont servis, dès le déploiement du code. Le front par défaut n'affiche que des nœuds : rien à faire.
+- **Routeur découplé, variantes d'un alias (#891) :** un chemin qui ne diffère de l'alias d'une page que par la casse, les accents ou un slash final n'affiche plus la page : il est redirigé de façon permanente vers l'alias. Un lien interne, un sitemap ou une campagne qui utilise une telle variante passe par une redirection : corriger ces liens. Un front de projet qui a modifié la lecture des redirections du routeur vérifie qu'il suit bien celle-ci (étape 6).
 
 **Procédure, dans cet ordre**
 
@@ -60,6 +62,7 @@ drush cr
 - **Sites en config sync (rare) :** ensuite, `drush cex` et commiter (`core.extension.yml`, rôles `anonymous` et `authenticated`). Sinon, le prochain `drush cim` annule ces updates.
 - Si `drupal/consumers` passe de moins de 1.23 à 1.23 ou plus : ses updates 8110 à 8112 s'exécutent (champ `status`) (#944).
 - `vactory_quiz_history` 10001 (#963) : ajoute un index sur la colonne `uid` de la table `vactory_quiz_history`. Rien n'est fait si l'index existe déjà ; les lignes de la table ne sont pas modifiées.
+- `vactory_decoupled_router` 10001 (#891) : crée la config `vactory_decoupled_router.settings` avec la liste des types d'entité servis comme pages par le routeur (`node`). Rien n'est fait si la liste existe déjà. **Sites en config sync (rare) :** ensuite, `drush cex` et commiter ce fichier.
 
 **3. `drush fr -y <module>`** (features à réimporter)
 - **Aucune pour cette version.** Les configs modifiées dans le profil (`shield.settings`, `captcha.settings`, `vactory_toolbox`, `vactory_form_autosave`) ne servent qu'à l'installation : les sites existants gardent les leurs.
@@ -78,11 +81,13 @@ drush cr
 - **Si le projet attribue un rôle aux comptes créés par le webform d'inscription de l'espace privé** (`vactory_espace_prive_register`, utilisé par le front) : ce même réglage s'y applique (#950). Sans rôle coché, rien ne change : le compte est créé sans rôle. Un rôle ajouté par du code projet reste en place ; éviter de le régler aux deux endroits.
 - **Si `vactory_rate` est actif :** le formulaire des types de contenu ouverts au vote demande la permission `administer site configuration` (#961). La donner aux rôles non administrateurs qui utilisent ce formulaire.
 - **Si `vactory_quiz_certificat` est actif avec la méthode html2pdf (#953) :** définir `$settings['file_private_path']` dans `settings.php` (dossier accessible en écriture par le serveur web), puis vérifier que le rapport d'état (`/admin/reports/status`) n'affiche pas l'erreur « Quiz certificates ». Tant que le réglage manque, aucun certificat n'est généré : à chaque cron, l'erreur est journalisée et la demande reste dans la file, reprise aux crons suivants. Pour le support : un compte qui a la permission `administer site configuration` télécharge tous les certificats ; les autres comptes, seulement les leurs.
+- **Si le front affiche par le routeur des termes de taxonomie ou des entités personnalisées (#891) :** cocher ces types dans `/admin/config/system/vactory_router/page-entity-types` (onglet « Page entity types » de la config du routeur, permission `administer site configuration`). Si `$settings['vactory_decoupled_router_page_entity_types']` est défini dans `settings.php`, il remplace ce réglage, et le formulaire le signale.
 
 **5. `drush cr`**
 - Obligatoire : sans lui, les pages avec un menu plantent tant que l'ancien conteneur reste en cache (#914).
 - block_class 3.1 déclare un nouveau service pour ses hooks : sans `drush cr`, le rendu des blocs plante (#948).
 - Boutons AddToAny (#959) : sans `drush cr`, les boutons de partage ne s'affichent plus, tant que le nouveau hook qui leur attache le script n'est pas pris en compte.
+- Routeur découplé (#891) : sans `drush cr`, la page du réglage des types de page est introuvable. Si le front garde en cache les réponses du routeur, les nouvelles réponses (404, redirections) apparaissent au renouvellement de ce cache.
 
 **6. Vérifications**
 - `drush updb` n'a plus rien en attente, et `drush status` est correct.
@@ -102,6 +107,7 @@ drush cr
 - **Si `vactory_quiz_certificat` envoie le mail de notification (#963) :** ouvrir le lien du mail hors connexion : la page de connexion de Drupal s'affiche ; après connexion avec le compte qui a obtenu le certificat, le PDF se télécharge. Avec un autre compte, le lien répond « page introuvable ». Sur un site découplé, depuis un domaine `api.…` (où `vactory_decoupled` renvoie les pages de Drupal vers le front), la page de connexion n'est pas servie : pas de redirection, la réponse est celle d'un fichier introuvable.
 - **Si le front du projet a modifié l'appel de l'API des menus :** les menus du front, en anonyme puis connecté, contiennent les liens attendus ; un lien vers une page non publiée ou réservée n'y figure que pour les utilisateurs qui y ont accès (#966).
 - **Si le site affiche des boutons AddToAny (#959) :** sur une page sans boutons, le code source ne contient plus le script `static.addtoany.com` ; sur une page avec boutons (partage ou « follow »), il le contient, les boutons s'affichent et un partage s'ouvre au clic.
+- **Sites découplés (#891) :** une page du front s'affiche à son adresse habituelle ; la même adresse écrite avec des majuscules redirige vers l'adresse de l'alias (redirection permanente) ; `/taxonomy/term/<id>` répond 404, ou affiche le terme si le type a été ajouté à la liste des types de page.
 
 ### Sécurité
 - `vactory_core` : vérification TLS active par défaut dans le client HTTP de Drupal (#896).
@@ -125,6 +131,8 @@ drush cr
 - `vactory_quiz_certificat` : un certificat généré par html2pdf se télécharge connecté sur le site Drupal, et la méthode html2pdf exige `$settings['file_private_path']` ; le rapport d'état signale une erreur s'il manque (#953).
 - `vactory_quiz_certificat` : hors connexion, le lien d'un certificat (celui du mail de notification) mène à la page de connexion de Drupal, puis au certificat une fois connecté, au lieu d'une page d'erreur. Rien ne change pour un utilisateur connecté, ni pour les autres fichiers privés (#963, Redmine #71440).
 - `vactory_core` : le script externe AddToAny n'est chargé que sur les pages qui affichent des boutons de partage ou « follow » (bloc, champ ou champ de vue AddToAny), et plus sur toutes les pages (#959, Redmine #66851).
+- `vactory_decoupled_router` : le routeur répond « introuvable » (page d'erreur, statut 404) pour une entité dont le type n'est pas dans la liste des types de page, nœuds seuls par défaut : termes de taxonomie, utilisateurs, entités d'administration (#891, Redmine #69443).
+- `vactory_decoupled_router` : un chemin qui diffère de l'alias d'un nœud par la casse, les accents ou un slash final est redirigé de façon permanente vers l'alias, dans la langue de la requête ; le statut de cette redirection est la chaîne `"301"`, comme pour les redirections du module Redirect (#891, Redmine #69443).
 
 ### Ajouts
 - `vactory_admin_hardening` : nouveau module optionnel qui bloque en web l'interface de migration et l'interface de config du core, même pour uid 1 ; installé d'office sur les nouveaux sites uniquement (#886).
@@ -132,6 +140,7 @@ drush cr
 - `vactory_decoupled` : condition de visibilité des blocs selon le statut de la réponse (200, 403, 404), évaluée sur le statut renvoyé par le routeur découplé (#890).
 - `vactory_decoupled` : rôles attribués à l'inscription JSON:API, réglables dans le back-office (onglet *Registration* des réglages découplés, permission « administer permissions » ; jamais administrateur, anonyme ni authentifié) (#885).
 - `vactory_decoupled_espace_prive` : l'inscription par le webform de l'espace privé attribue les rôles de ce même réglage, avec le même filtre (jamais administrateur, anonyme ni authentifié) ; les rôles envoyés dans la soumission restent ignorés (#950, Redmine #71369).
+- `vactory_decoupled_router` : liste des types d'entité servis comme pages par le routeur, réglable en back-office (`/admin/config/system/vactory_router/page-entity-types`), dans `settings.php` (`$settings['vactory_decoupled_router_page_entity_types']`) ou par `hook_vactory_decoupled_router_page_entity_types_alter()` (#891, Redmine #69443).
 
 ### Correctifs
 - `vactory_dynamic_field_generator` : description de la commande `drush templates-generator` corrigée (elle reprenait celle d'un autre module) ; le README précise que la commande n'existe que si le module est activé et qu'aucun `drush.services.yml` n'est nécessaire (#968, Redmine #66249).

@@ -20,6 +20,14 @@ entity.vactory_route.collection:
   requirements:
     _permission: 'administer site configuration'
 
+vactory_decoupled_router.page_entity_types:
+  path: '/admin/config/system/vactory_router/page-entity-types'
+  defaults:
+    _form: '\Drupal\vactory_decoupled_router\Form\PageEntityTypesForm'
+    _title: 'Page entity types'
+  requirements:
+    _permission: 'administer site configuration'
+
 entity.vactory_route.add_form:
   path: '/admin/config/system/vactory_router/add'
   defaults:

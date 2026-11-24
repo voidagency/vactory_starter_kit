@@ -137,8 +137,10 @@ class PathTranslatorPathVariantsTest extends ExistingSiteBase {
   /**
    * Variants of an alias that resolve to the node, without any redirect.
    *
-   * @todo Each variant is a second address of the same page (status 200, no
-   *   redirect to the stored alias).
+   * The stored alias keeps answering without its leading slash, with a
+   * language prefix, a query string or a fragment, or inside a URL. The
+   * variants by letter case, accents or trailing slash are redirected to the
+   * stored alias (see PathTranslatorPageTypesAndAliasCaseTest).
    *
    * @covers ::translate
    * @dataProvider providerAliasVariants
@@ -155,15 +157,9 @@ class PathTranslatorPathVariantsTest extends ExistingSiteBase {
   public static function providerAliasVariants(): array {
     return [
       'stored alias' => ['/{alias}'],
-      'upper case' => ['/{ALIAS}'],
-      'first letter in upper case' => ['/{Alias}'],
-      'trailing slash' => ['/{alias}/'],
-      'upper case and trailing slash' => ['/{ALIAS}/'],
       'no leading slash' => ['{alias}'],
       'language prefix' => ['/en/{alias}'],
-      'language prefix and upper case' => ['/en/{ALIAS}'],
       'query string' => ['/{alias}?page=2'],
-      'upper case and query string' => ['/{ALIAS}?page=2'],
       'fragment' => ['/{alias}#top'],
       'absolute URL' => ['https://example.com/{alias}'],
       'protocol relative URL' => ['//example.com/{alias}'],
@@ -222,15 +218,25 @@ class PathTranslatorPathVariantsTest extends ExistingSiteBase {
    * An alias with accents is found without its accents, and the reverse.
    *
    * The alias lookup follows the collation of the database (accent and case
-   * insensitive on MySQL and MariaDB).
+   * insensitive on MySQL and MariaDB). The variants are redirected to the
+   * stored alias.
    *
    * @covers ::translate
    */
   public function testAliasWithAccents(): void {
     $segment = $this->randomSegment();
     $node = $this->createPage("/$segment-été");
-    foreach (["/$segment-été", "/$segment-ete", "/$segment-ÉTÉ"] as $path) {
-      $this->assertNode($node, $this->translate($path), $path);
+    $this->assertNode($node, $this->translate("/$segment-été"));
+    foreach (["/$segment-ete", "/$segment-ÉTÉ"] as $path) {
+      $data = $this->translate($path);
+      $this->assertSame($node->uuid(), $data['entity']['uuid'], $path);
+      $this->assertSame([
+        [
+          'to' => "/en/$segment-%C3%A9t%C3%A9",
+          'status' => '301',
+          'from' => $path,
+        ],
+      ], $data['redirect'], $path);
     }
   }
 
@@ -346,10 +352,22 @@ class PathTranslatorPathVariantsTest extends ExistingSiteBase {
     $this->assertNotFound($this->translate($en_alias, 'fr'), "No route found for $en_alias");
     $this->assertNotFound($this->translate($fr_alias, 'en'), "No route found for $fr_alias");
 
-    // The letter case of the alias is ignored in each language.
-    $this->assertNode($node, $this->translate(strtoupper($fr_alias), 'fr'));
-    $this->assertNode($node, $this->translate('/fr' . strtoupper($fr_alias), 'fr'));
-    $this->assertNode($node, $this->translate(strtoupper($en_alias), 'en'));
+    // The letter case of the alias is ignored in each language: the answer
+    // redirects to the alias of the language of the endpoint.
+    $variants = [
+      'fr' => [strtoupper($fr_alias), '/fr' . strtoupper($fr_alias)],
+      'en' => [strtoupper($en_alias)],
+    ];
+    foreach ($variants as $langcode => $paths) {
+      $alias = $langcode === 'fr' ? $fr_alias : $en_alias;
+      foreach ($paths as $path) {
+        $data = $this->translate($path, $langcode);
+        $this->assertSame(301, $data['status'], $path);
+        $this->assertSame([
+          ['to' => "/$langcode$alias", 'status' => '301', 'from' => $path],
+        ], $data['redirect'], $path);
+      }
+    }
 
     // A node without translation in the language of the endpoint: its alias
     // is unknown, /node/N gives the node in its own language.
@@ -362,7 +380,10 @@ class PathTranslatorPathVariantsTest extends ExistingSiteBase {
   }
 
   /**
-   * A taxonomy term is resolved like a node: by /taxonomy/term/N or alias.
+   * A taxonomy term is not a page: the error page with a 404.
+   *
+   * Only the page entity types (node by default) are resolved, see
+   * PathTranslatorPageTypesAndAliasCaseTest.
    *
    * @covers ::translate
    */
@@ -371,39 +392,31 @@ class PathTranslatorPathVariantsTest extends ExistingSiteBase {
     if (!$vocabularies) {
       $this->markTestSkipped('No vocabulary on this site.');
     }
-    $vocabulary = reset($vocabularies);
     $alias = '/' . $this->randomSegment();
-    $term = $this->createTerm($vocabulary, [
+    $term = $this->createTerm(reset($vocabularies), [
       'name' => 'Path variants term ' . $this->randomMachineName(6),
       'langcode' => 'en',
       'path' => ['alias' => $alias, 'pathauto' => PathautoState::SKIP],
     ]);
-    $resource = \Drupal::service('jsonapi.resource_type.repository')
-      ->get('taxonomy_term', $vocabulary->id())
-      ->getTypeName();
 
-    foreach (['/taxonomy/term/' . $term->id(), $alias, strtoupper($alias)] as $path) {
+    $paths = [
+      '/taxonomy/term/' . $term->id(),
+      '/taxonomy/term/' . $term->id() . '/edit',
+      $alias,
+      strtoupper($alias),
+    ];
+    foreach ($paths as $path) {
       $data = $this->translate($path);
-      $this->assertSame(['entity', 'jsonapi', 'status'], array_keys($data), $path);
-      $this->assertSame([
-        'type' => 'taxonomy_term',
-        'bundle' => $vocabulary->id(),
-        'label' => $term->label(),
-        'uuid' => $term->uuid(),
-        'id' => (string) $term->id(),
-      ], $data['entity'], $path);
-      $this->assertSame($resource, $data['jsonapi']['resourceName'], $path);
-      $this->assertStringEndsWith('/' . $term->uuid(), $data['jsonapi']['individual'], $path);
-      $this->assertSame(200, $data['status'], $path);
+      $this->assertNotFound($data, "No decoupled page for $path");
+      $this->assertArrayNotHasKey('redirect', $data, $path);
+      $this->assertStringNotContainsString($term->uuid(), json_encode($data), $path);
+      $this->assertStringNotContainsString($term->label(), json_encode($data), $path);
     }
 
-    // An unpublished term gives the error page.
+    // An unpublished term gives the error page too.
     $term->setUnpublished()->save();
     $path = '/taxonomy/term/' . $term->id();
-    $this->assertNotFound(
-      $this->translate($path),
-      "A route has been found for $path , but it has no entity information!"
-    );
+    $this->assertNotFound($this->translate($path), "No decoupled page for $path");
   }
 
   /**
