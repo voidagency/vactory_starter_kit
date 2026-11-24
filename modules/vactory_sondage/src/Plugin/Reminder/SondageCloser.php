@@ -66,15 +66,16 @@ class SondageCloser extends PluginBase implements ReminderInterface, ContainerFa
     }
     $entity = $this->entityTypeManager->getStorage($data['extra']['entity_type'])
       ->load($data['extra']['entity_id']);
-    if (!$entity) {
-      throw new SuspendCurrentItemException('The given sondage entity is not found.');
+    $close_date = $entity ? $entity->get($data['extra']['date_field_name'])->value : NULL;
+    if (!$close_date || (isset($data['extra']['close_date']) && $data['extra']['close_date'] !== $close_date)) {
+      // The sondage was deleted, or its close date was cleared or changed
+      // (the new date has its own item): the item is dropped.
+      return;
     }
-    // The reminder queue reads the stored date in the timezone of the site,
-    // the field stores it in UTC: on a site ahead of UTC, the item comes
-    // before the close date.
-    $close_date = $entity->get($data['extra']['date_field_name'])->value;
+    // The close date is stored in UTC. The reminder queue reads the date of
+    // the item in the timezone of the site, the one it runs in.
     $timezone = new \DateTimeZone(DateTimeItemInterface::STORAGE_TIMEZONE);
-    if ($close_date && (new \DateTime($close_date, $timezone))->getTimestamp() > $this->time->getCurrentTime()) {
+    if ((new \DateTime($close_date, $timezone))->getTimestamp() > $this->time->getCurrentTime()) {
       throw new SuspendCurrentItemException('The close date of the sondage has not come yet.');
     }
     // Close the concerned sondage.

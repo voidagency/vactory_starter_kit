@@ -10,7 +10,9 @@ services:
       - '@entity_type.manager'
       - '@database'
       - '@logger.factory'
-      - '@?vactory_reminder.queue.manager'
+      - '@queue'
+      - '@config.factory'
+      - '@module_handler'
   vactory_points.sondage_vote_subscriber:
     class: Drupal\vactory_sondage\EventSubscriber\SondageVoteEventsSubscriber
     tags:

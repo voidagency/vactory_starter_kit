@@ -2,16 +2,23 @@
 
 namespace Drupal\vactory_sondage\Services;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Logger\LoggerChannelFactoryInterface;
+use Drupal\Core\Queue\QueueFactory;
+use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 
 /**
  * Schedules the closing of a sondage at its close date.
  *
  * The closing is an item of the reminder queue of vactory_reminder, processed
  * by the "sondage_closer" reminder plugin once the close date has passed.
+ * The item carries its close date: the reminder queue does not load the
+ * sondage, and the plugin drops an item whose sondage is gone or whose close
+ * date was cleared or changed since.
  */
 class SondageClosingScheduler {
 
@@ -57,11 +64,25 @@ class SondageClosingScheduler {
   protected $loggerFactory;
 
   /**
-   * The reminder queue manager of vactory_reminder, NULL without it.
+   * The queue factory.
    *
-   * @var \Drupal\vactory_reminder\Services\ReminderQueueManager|null
+   * @var \Drupal\Core\Queue\QueueFactory
    */
-  protected $reminderQueueManager;
+  protected $queueFactory;
+
+  /**
+   * The config factory.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected $configFactory;
+
+  /**
+   * The module handler.
+   *
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
 
   /**
    * Constructs the scheduler.
@@ -72,21 +93,27 @@ class SondageClosingScheduler {
    *   The database connection.
    * @param \Drupal\Core\Logger\LoggerChannelFactoryInterface $logger_factory
    *   The logger factory.
-   * @param \Drupal\vactory_reminder\Services\ReminderQueueManager|null $reminder_queue_manager
-   *   The reminder queue manager of vactory_reminder, NULL without it.
+   * @param \Drupal\Core\Queue\QueueFactory $queue_factory
+   *   The queue factory.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The config factory.
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   The module handler.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, Connection $database, LoggerChannelFactoryInterface $logger_factory, $reminder_queue_manager = NULL) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, Connection $database, LoggerChannelFactoryInterface $logger_factory, QueueFactory $queue_factory, ConfigFactoryInterface $config_factory, ModuleHandlerInterface $module_handler) {
     $this->entityTypeManager = $entity_type_manager;
     $this->database = $database;
     $this->loggerFactory = $logger_factory;
-    $this->reminderQueueManager = $reminder_queue_manager;
+    $this->queueFactory = $queue_factory;
+    $this->configFactory = $config_factory;
+    $this->moduleHandler = $module_handler;
   }
 
   /**
    * Schedules the closing of a saved sondage when its close date is new.
    *
-   * A queued item reads the close date when it is processed: a sondage is
-   * scheduled again only when its close date is set or changed.
+   * A sondage is scheduled when its close date is set or changed. An item
+   * queued for a previous date is dropped when it is processed.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   An entity just inserted or updated.
@@ -105,21 +132,40 @@ class SondageClosingScheduler {
   /**
    * Queues the closing of a sondage.
    *
+   * The reminder queue reads the date of an item in the timezone of the site:
+   * the item date is the close date in that timezone. The close date stored
+   * in UTC is kept in the item, to recognize an outdated item.
+   *
    * @param \Drupal\Core\Entity\EntityInterface $sondage
-   *   A saved sondage block.
+   *   A saved sondage block, with a close date.
    */
   public function schedule(EntityInterface $sondage): void {
-    if (!$this->reminderQueueManager) {
+    if (!$this->moduleHandler->moduleExists('vactory_reminder')) {
       $this->loggerFactory->get('vactory_sondage')->warning('Sondage @id is not closed at its close date: vactory_reminder is not enabled.', [
         '@id' => $sondage->id(),
       ]);
       return;
     }
-    $this->reminderQueueManager->reminderQueuePush(self::CONSUMER_ID, self::PLUGIN_ID, [
-      'entity_type' => $sondage->getEntityTypeId(),
-      'entity_id' => $sondage->id(),
-      'date_field_name' => self::DATE_FIELD,
-    ]);
+    $close_date = $sondage->get(self::DATE_FIELD)->value;
+    $site_timezone = $this->configFactory->get('system.date')->get('timezone.default') ?: date_default_timezone_get();
+    $date = new \DateTime($close_date, new \DateTimeZone(DateTimeItemInterface::STORAGE_TIMEZONE));
+    $date->setTimezone(new \DateTimeZone($site_timezone));
+    $consumers = $this->configFactory->get('vactory_reminder.settings')->get('reminder_consumers');
+    $intervals = is_array($consumers) && isset($consumers[self::CONSUMER_ID]) ? (array) $consumers[self::CONSUMER_ID] : ['1 min'];
+    $queue = $this->queueFactory->get(self::QUEUE);
+    foreach ($intervals as $interval) {
+      $queue->createItem([
+        'date' => $date->format('Y-m-d H:i:s'),
+        'plugin_id' => self::PLUGIN_ID,
+        'extra' => [
+          'entity_type' => $sondage->getEntityTypeId(),
+          'entity_id' => $sondage->id(),
+          'date_field_name' => self::DATE_FIELD,
+          'close_date' => $close_date,
+        ],
+        'interval' => $interval,
+      ]);
+    }
   }
 
   /**
