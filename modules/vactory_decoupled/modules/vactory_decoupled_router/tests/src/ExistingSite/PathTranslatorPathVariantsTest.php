@@ -120,8 +120,8 @@ class PathTranslatorPathVariantsTest extends ExistingSiteBase {
    *
    * @param string $template
    *   A path with "{alias}" (the alias without its leading slash), "{ALIAS}"
-   *   (the same in upper case), "{nid}", "{uuid}" or "{jsonapi}" (the base
-   *   path of JSON:API, without its leading slash).
+   *   (the same in upper case), "{nid}", "{vid}" (the revision), "{uuid}" or
+   *   "{jsonapi}" (the base path of JSON:API, without its leading slash).
    * @param object $node
    *   The node.
    */
@@ -133,6 +133,7 @@ class PathTranslatorPathVariantsTest extends ExistingSiteBase {
       '{Alias}' => ucfirst($alias),
       '{nid}' => $node->id(),
       '{uuid}' => $node->uuid(),
+      '{vid}' => $node->getRevisionId(),
       '{jsonapi}' => ltrim(\Drupal::getContainer()->getParameter('jsonapi.base_path'), '/'),
     ]);
   }
@@ -301,6 +302,7 @@ class PathTranslatorPathVariantsTest extends ExistingSiteBase {
       'delete form' => ['/node/{nid}/delete'],
       'revisions' => ['/node/{nid}/revisions'],
       'latest version' => ['/node/{nid}/latest'],
+      'view of a revision' => ['/node/{nid}/revisions/{vid}/view'],
       'translations' => ['/node/{nid}/translations'],
       'JSON:API resource' => ['/{jsonapi}/node/vactory_page/{uuid}'],
     ];
