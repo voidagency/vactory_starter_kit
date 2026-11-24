@@ -56,7 +56,7 @@ stack snapshot a --rm avant-essai
 stack logs a [web|db|front|redis]
 stack stop a && stack start a
 stack rm a [--keep-branch] [--force] [--yes]
-stack rm --all --yes
+stack rm --all --yes               # toutes les instances (dossiers internes _baseline, _build ignorés) ; une instance en échec n'arrête pas les autres, bilan et code de sortie non nul à la fin
 ```
 
 Un nom fait de 1 à 20 caractères parmi `a-z`, `0-9` et `-`, sans `-` au début ni à la fin. Noms réservés aux ressources partagées, refusés : `baseline`, `front`, `yarn-cache`, `base`, `build`, `locks`. `stack up` sur une instance existante la redémarre et remet à niveau sa config (idempotent) ; il ne change pas sa branche.

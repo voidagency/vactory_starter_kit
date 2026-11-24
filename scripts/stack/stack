@@ -1243,10 +1243,15 @@ cmd_rm() {
   if [ "$all" = 1 ]; then
     [ -z "$names" ] || die "rm --all ne prend pas de nom."
     [ "$yes" = 1 ] || die "rm --all demande --yes."
-    for a in "$STACKS_DIR"/*/.stack-meta "$STACKS_DIR"/*/drupal; do
-      [ -e "$a" ] || continue
-      n="$(basename "$(dirname "$a")")"
-      case " $names " in *" $n "*) ;; *) names="$names $n" ;; esac
+    # Instances seulement : nom valide et non réservé, avec .stack-meta (écrit
+    # dès le début de la création) ou drupal/ (reste d'une version antérieure).
+    # Les dossiers internes (_baseline, _build d'une baseline interrompue,
+    # .locks) ne sont jamais des instances.
+    for a in "$STACKS_DIR"/*/; do
+      n="$(basename "$a")"
+      [ -z "$(name_error "$n")" ] || continue
+      [ -f "$a.stack-meta" ] || [ -d "${a}drupal" ] || continue
+      names="$names $n"
     done
     [ -n "$names" ] || { ok "aucune instance"; return; }
   fi
@@ -1259,11 +1264,21 @@ cmd_rm() {
     read -r -p "Supprimer${names} (site, base, front, arbre du profil) ? [o/N] " a
     case "$a" in o|O|y|Y|oui) ;; *) die "annulé" ;; esac
   fi
+  # Une instance en échec n'arrête pas les autres : chacune dans un
+  # sous-shell (set -e actif : hors de tout « if » ou « || »), bilan à la fin.
+  local failed="" code lock
   for n in $names; do
-    lock_take "inst-$n" 30
-    remove_instance "$n"
-    lock_release "inst-$n"
+    set +e
+    ( lock_take "inst-$n" 30; remove_instance "$n"; lock_release "inst-$n" )
+    code=$?
+    set -e
+    if [ "$code" != 0 ]; then
+      failed="$failed $n"
+      lock="$STACKS_DIR/.locks/inst-$n"
+      [ "$(cat "$lock/pid" 2>/dev/null || true)" != "$$" ] || rm -rf "$lock"
+    fi
   done
+  [ -z "$failed" ] || die "suppression en échec :$failed (voir ci-dessus)."
 }
 
 # --- Aide ------------------------------------------------------------------------
