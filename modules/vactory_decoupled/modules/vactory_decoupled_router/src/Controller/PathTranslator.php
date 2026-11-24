@@ -2,12 +2,10 @@
 
 namespace Drupal\vactory_decoupled_router\Controller;
 
-use Drupal\Component\Transliteration\TransliterationInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Routing\RouteObjectInterface;
-use Drupal\Core\Site\Settings;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -23,8 +21,8 @@ use Symfony\Component\Routing\Matcher\UrlMatcherInterface;
 use Drupal\jsonapi\ResourceType\ResourceTypeRepository;
 use Symfony\Component\Routing\RouteCollection;
 use Drupal\redirect\RedirectRepository;
-use Drupal\path_alias\AliasManagerInterface;
 use Drupal\vactory_decoupled\BlocksManager;
+use Drupal\vactory_decoupled_router\PageRules;
 
 /**
  * Controller that receives the path to inspect.
@@ -94,18 +92,11 @@ class PathTranslator extends ControllerBase {
   protected $redirectRepository;
 
   /**
-   * The path alias manager.
+   * The rules of the router: page entity types and alias variants.
    *
-   * @var \Drupal\path_alias\AliasManagerInterface|null
+   * @var \Drupal\vactory_decoupled_router\PageRules|null
    */
-  protected $aliasManager;
-
-  /**
-   * The transliteration service.
-   *
-   * @var \Drupal\Component\Transliteration\TransliterationInterface|null
-   */
-  protected $transliteration;
+  protected $pageRules;
 
   /**
    * EventInfoController constructor.
@@ -117,8 +108,7 @@ class PathTranslator extends ControllerBase {
     EntityTypeManagerInterface $entityTypeManager,
     EntityRepositoryInterface $entityRepository,
     RedirectRepository $redirectRepository,
-    ?AliasManagerInterface $aliasManager = NULL,
-    ?TransliterationInterface $transliteration = NULL,
+    ?PageRules $pageRules = NULL,
   ) {
     $this->logger = $logger;
     $this->router = $router;
@@ -131,8 +121,7 @@ class PathTranslator extends ControllerBase {
       ->getId();
     $this->entityRepository = $entityRepository;
     $this->redirectRepository = $redirectRepository;
-    $this->aliasManager = $aliasManager;
-    $this->transliteration = $transliteration;
+    $this->pageRules = $pageRules;
   }
 
   /**
@@ -146,8 +135,7 @@ class PathTranslator extends ControllerBase {
       $container->get('entity_type.manager'),
       $container->get('entity.repository'),
       $container->get('redirect.repository'),
-      $container->get('path_alias.manager'),
-      $container->get('transliteration'),
+      $container->get('vactory_decoupled_router.page_rules'),
     );
   }
 
@@ -293,7 +281,7 @@ class PathTranslator extends ControllerBase {
     // A path that already gave the error page keeps its own message.
     $refused = $output['status'] === 200
       && $candidate
-      && !in_array($candidate->getEntityTypeId(), $this->getPageEntityTypes(), TRUE);
+      && !$this->getPageRules()->isPageEntityType($candidate->getEntityTypeId());
     if ($refused) {
       // Not logged: such paths are requested in number by crawlers.
       $output['message'] = "No decoupled page for $path";
@@ -309,31 +297,10 @@ class PathTranslator extends ControllerBase {
   }
 
   /**
-   * The entity types the router resolves as pages.
-   *
-   * In this order: the "page_entity_types" key of the
-   * vactory_decoupled_router.settings config (node by default), replaced by
-   * $settings['vactory_decoupled_router_page_entity_types'] of settings.php
-   * when it is defined, then altered by
-   * hook_vactory_decoupled_router_page_entity_types_alter().
-   *
-   * @return string[]
-   *   The entity type IDs.
-   */
-  private function getPageEntityTypes(): array {
-    $entity_types = $this->config('vactory_decoupled_router.settings')->get('page_entity_types') ?? ['node'];
-    $entity_types = Settings::get('vactory_decoupled_router_page_entity_types', $entity_types);
-    $this->moduleHandler()->alter('vactory_decoupled_router_page_entity_types', $entity_types);
-    return array_values(array_filter((array) $entity_types, 'is_string'));
-  }
-
-  /**
    * Adds a permanent redirect when the path is a variant of the node alias.
    *
-   * The alias lookup of the database ignores the letter case (and the accents
-   * with the usual collations): each variant would be another address of the
-   * same page. The redirect status is the string '301', like the one of a
-   * Redirect entity: this is what the front reads as permanent.
+   * The redirect status is the string '301', like the one of a Redirect
+   * entity: this is what the front reads as permanent.
    *
    * @param \Drupal\Core\Entity\EntityInterface $entity
    *   The resolved entity.
@@ -344,18 +311,20 @@ class PathTranslator extends ControllerBase {
    *
    * @return array
    *   The output, with the redirect when there is one.
+   *
+   * @see \Drupal\vactory_decoupled_router\PageRules::getAliasRedirectTarget()
    */
   private function addAliasVariantRedirect(EntityInterface $entity, string $path, array $output): array {
     $is_candidate = $output['status'] === 200
       && empty($output['redirect'])
       && $entity->getEntityTypeId() === 'node';
-    if ($is_candidate && $this->isAliasVariant($entity, $path)) {
-      // The alias of the language of the request, whatever the language of
-      // the node: the visitor stays in the same language.
-      $options = ['language' => $this->languageManager()->getCurrentLanguage()];
+    $target = $is_candidate
+      ? $this->getPageRules()->getAliasRedirectTarget($entity, $path, $this->currentLangcode)
+      : NULL;
+    if ($target !== NULL) {
       $output['status'] = 301;
       $output['redirect'][] = [
-        'to' => $entity->toUrl('canonical', $options)->toString(),
+        'to' => $target,
         'status' => '301',
         'from' => $path,
       ];
@@ -364,62 +333,13 @@ class PathTranslator extends ControllerBase {
   }
 
   /**
-   * Whether the path is the alias of the node written in another way.
-   *
-   * Another letter case, other accents or a trailing slash. The stored alias
-   * itself is never a variant, with or without a language prefix, so that the
-   * target of the redirect is not redirected again.
+   * The rules of the router.
    */
-  private function isAliasVariant(EntityInterface $node, string $path): bool {
-    $system_path = '/node/' . $node->id();
-    $alias = $this->getAliasManager()->getAliasByPath($system_path, $this->currentLangcode);
-    $requested = $this->getRequestedAlias($path);
-    return $alias !== $system_path
-      && $requested !== $alias
-      && $this->foldAlias($requested) === $this->foldAlias($alias);
-  }
-
-  /**
-   * The requested path, as the alias lookup of the router received it.
-   *
-   * Decoded, with a leading slash, without query string, fragment or language
-   * prefix.
-   */
-  private function getRequestedAlias(string $path): string {
-    $requested = rawurldecode(Request::create($path)->getPathInfo());
-    $negotiation = $this->config('language.negotiation');
-    $parts = explode('/', ltrim($requested, '/'), 2);
-    $has_prefix = $negotiation->get('url.source') === 'path_prefix'
-      && $parts[0] !== ''
-      && in_array($parts[0], (array) $negotiation->get('url.prefixes'), TRUE);
-    return $has_prefix ? '/' . ($parts[1] ?? '') : $requested;
-  }
-
-  /**
-   * An alias without letter case, accents and trailing slash, to compare.
-   */
-  private function foldAlias(string $alias): string {
-    return mb_strtolower($this->getTransliteration()->removeDiacritics(rtrim($alias, '/')));
-  }
-
-  /**
-   * The path alias manager.
-   */
-  private function getAliasManager(): AliasManagerInterface {
-    if (!$this->aliasManager) {
-      $this->aliasManager = \Drupal::service('path_alias.manager');
+  private function getPageRules(): PageRules {
+    if (!$this->pageRules) {
+      $this->pageRules = \Drupal::service('vactory_decoupled_router.page_rules');
     }
-    return $this->aliasManager;
-  }
-
-  /**
-   * The transliteration service.
-   */
-  private function getTransliteration(): TransliterationInterface {
-    if (!$this->transliteration) {
-      $this->transliteration = \Drupal::service('transliteration');
-    }
-    return $this->transliteration;
+    return $this->pageRules;
   }
 
   /**

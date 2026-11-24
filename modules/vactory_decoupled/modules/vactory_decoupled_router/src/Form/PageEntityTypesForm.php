@@ -79,6 +79,16 @@ class PageEntityTypesForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    parent::validateForm($form, $form_state);
+    if (!array_filter((array) $form_state->getValue('page_entity_types'))) {
+      $form_state->setErrorByName('page_entity_types', $this->t('Check at least one entity type: with an empty list, the router resolves no page.'));
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $selected = array_keys(array_filter($form_state->getValue('page_entity_types')));
     $this->config('vactory_decoupled_router.settings')
