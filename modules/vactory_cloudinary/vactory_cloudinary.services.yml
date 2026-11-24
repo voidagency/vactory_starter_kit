@@ -1,10 +1,4 @@
 services:
-  console.output:
-    class: Symfony\Component\Console\Output\ConsoleOutput
-    argument: []
-  vactory_cloudinary.move_file_batch:
-    class: \Drupal\vactory_cloudinary\Services\MoveFileBatchService
-    argument: ['@entity_type.manager', '@logger.factory', '@console.output']
   vactory_cloudinary.commands:
     class: \Drupal\vactory_cloudinary\Commands\VactoryCloudinaryMoveFiles
     tags:

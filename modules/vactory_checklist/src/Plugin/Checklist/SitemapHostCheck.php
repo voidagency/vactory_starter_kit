@@ -3,7 +3,7 @@
 namespace Drupal\vactory_checklist\Plugin\Checklist;
 
 use Drupal\Core\Site\Settings;
-use GuzzleHttp\Exception\RequestException;
+use GuzzleHttp\Exception\GuzzleException;
 
 /**
  * Vérifie que les sitemaps contiennent des URLs valides.
@@ -99,7 +99,7 @@ class SitemapHostCheck extends ChecklistBase {
           ];
         }
       }
-      catch (RequestException $e) {
+      catch (GuzzleException $e) {
         $errors[] = [
           'error' => $this->t('Impossible de récupérer le sitemap pour la langue @lang : @error',
             [

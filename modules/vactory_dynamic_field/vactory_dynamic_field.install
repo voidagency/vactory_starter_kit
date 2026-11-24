@@ -24,8 +24,21 @@ function vactory_dynamic_field_update_9500(&$sandbox) {
   }
 
   // Enable paragraph_edit module when necessary.
-  if (Drupal::moduleHandler()->moduleExists('paragraphs_edit')) {
+  if (!Drupal::moduleHandler()->moduleExists('paragraphs_edit')) {
     \Drupal::service('module_installer')->install(['paragraphs_edit']);
+  }
+}
+
+/**
+ * Enable paragraphs_edit, a declared dependency of the module.
+ *
+ * Update 9500 was meant to enable it but its condition was inverted: sites
+ * updated through it may not have the module.
+ */
+function vactory_dynamic_field_update_9501() {
+  if (!\Drupal::moduleHandler()->moduleExists('paragraphs_edit')) {
+    \Drupal::service('module_installer')->install(['paragraphs_edit']);
+    return t('paragraphs_edit has been enabled.');
   }
 }
 

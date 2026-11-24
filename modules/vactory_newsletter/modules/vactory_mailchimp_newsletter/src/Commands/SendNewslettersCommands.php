@@ -30,7 +30,8 @@ class SendNewslettersCommands extends DrushCommands {
     // Get recipients list id.
     $list_id = \Drupal::service('vactory_mailchimp_newsletter.campaigns.manage')->mailchimpGetInfos()['list_id'];
     // Query to get all published newsletter.
-    $query = \Drupal::entityQuery('node');
+    // Runs from cron/Drush: select every due newsletter, whoever runs it.
+    $query = \Drupal::entityQuery('node')->accessCheck(FALSE);
     $query->condition('type', 'newsletter');
     $query->condition('status', 1);
     $query->condition('field_vactory_datetime', $current_date, '<=');

@@ -46,10 +46,15 @@ final class DynamicFieldGeneratorCommands extends DrushCommands {
   }
 
   /**
-   * Clear expired notifications data.
+   * Generates the missing Twig templates of custom dynamic field widgets.
+   *
+   * Only widgets under modules/custom are handled; an existing, non-empty
+   * template is left untouched.
    *
    * @command templates-generator
    * @aliases tg
+   * @usage drush templates-generator
+   *   Generates template.html.twig for each custom widget without one.
    */
   public function templatesGeneratorCommand($options = ['option-name' => 'default']) {
     $this->output()

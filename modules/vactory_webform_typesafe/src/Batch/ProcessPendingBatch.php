@@ -56,7 +56,7 @@ final class ProcessPendingBatch {
   /**
    * Reports completion without exposing API errors or submission contents.
    */
-  public static function finished(bool $success, array $results, array $operations): void {
+  public static function finished(bool $success, array $results): void {
     if (!$success) {
       \Drupal::messenger()->addError(t('Le traitement a été interrompu. Cron pourra traiter les soumissions encore en attente.'));
       return;

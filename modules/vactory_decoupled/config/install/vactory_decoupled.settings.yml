@@ -22,4 +22,4 @@ routes: |
 cache_excluded_types: []
 auth_roles_excluded: []
 iframe_excluded_paths: ''
-
+registration_default_roles: []

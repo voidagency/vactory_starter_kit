@@ -102,10 +102,7 @@ class EspacePriveManager {
       $raw,
       new \DateTimeZone(DateTimeItemInterface::STORAGE_TIMEZONE)
     );
-    if ($date instanceof \DateTimeImmutable) {
-      return $date->getTimestamp();
-    }
-    return NULL;
+    return $date instanceof \DateTimeImmutable ? $date->getTimestamp() : NULL;
   }
 
   /**

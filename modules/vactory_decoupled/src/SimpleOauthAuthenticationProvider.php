@@ -196,24 +196,29 @@ class SimpleOauthAuthenticationProvider extends BaseSimpleOauthAuthenticationPro
       throw new UnauthorizedHttpException('Bearer realm="keycloak"', 'Keycloak authentication is not configured');
     }
 
-    try {
-      $claims = $this->decodeKeycloakToken($jwt, $keycloak_issuer, FALSE);
+    $claims = $this->verifiedKeycloakClaims($jwt, $keycloak_issuer);
+    $user = $this->keycloakUser($claims);
+
+    // Never allow the super admin account or blocked users through Keycloak.
+    if ((int) $user->id() === 1 || $user->isBlocked()) {
+      throw new UnauthorizedHttpException('Bearer realm="keycloak"', 'Access denied');
     }
-    catch (\UnexpectedValueException $exception) {
-      // Unknown "kid": keys may have been rotated, refresh JWKS once.
-      if (strpos($exception->getMessage(), '"kid"') === FALSE) {
-        throw new UnauthorizedHttpException('Bearer realm="keycloak"', 'Access token could not be verified');
-      }
-      try {
-        $claims = $this->decodeKeycloakToken($jwt, $keycloak_issuer, TRUE);
-      }
-      catch (\Exception $e) {
-        throw new UnauthorizedHttpException('Bearer realm="keycloak"', 'Access token could not be verified');
-      }
-    }
-    catch (\Exception $exception) {
-      throw new UnauthorizedHttpException('Bearer realm="keycloak"', 'Access token could not be verified');
-    }
+
+    // Keep passing a lcobucci DataSet for backward compatibility with
+    // hook_simple_oauth_authentication_keycloak_alter() implementations.
+    $claims_set = new DataSet($claims, $jwt);
+    $this->moduleHandler->alter('simple_oauth_authentication_keycloak', $user, $claims_set, $jwt);
+    return $user;
+  }
+
+  /**
+   * Verifies the token (signature, time claims, issuer, audience).
+   *
+   * @throws \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
+   *   When the token cannot be verified.
+   */
+  private function verifiedKeycloakClaims(string $jwt, string $keycloak_issuer): array {
+    $claims = $this->decodeKeycloakTokenWithRefresh($jwt, $keycloak_issuer);
 
     if (($claims['iss'] ?? NULL) !== $keycloak_issuer) {
       throw new UnauthorizedHttpException('Bearer realm="keycloak"', 'Access token could not be verified');
@@ -226,7 +231,43 @@ class SimpleOauthAuthenticationProvider extends BaseSimpleOauthAuthenticationPro
         throw new UnauthorizedHttpException('Bearer realm="keycloak"', 'Access token could not be verified');
       }
     }
+    return $claims;
+  }
 
+  /**
+   * Decodes the token, refreshing the JWKS once on an unknown "kid".
+   *
+   * @throws \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
+   *   When the token cannot be verified.
+   */
+  private function decodeKeycloakTokenWithRefresh(string $jwt, string $keycloak_issuer): array {
+    try {
+      return $this->decodeKeycloakToken($jwt, $keycloak_issuer, FALSE);
+    }
+    catch (\UnexpectedValueException $exception) {
+      // Unknown "kid": keys may have been rotated, refresh JWKS once.
+      if (strpos($exception->getMessage(), '"kid"') === FALSE) {
+        throw new UnauthorizedHttpException('Bearer realm="keycloak"', 'Access token could not be verified');
+      }
+      try {
+        return $this->decodeKeycloakToken($jwt, $keycloak_issuer, TRUE);
+      }
+      catch (\Exception $e) {
+        throw new UnauthorizedHttpException('Bearer realm="keycloak"', 'Access token could not be verified');
+      }
+    }
+    catch (\Exception $exception) {
+      throw new UnauthorizedHttpException('Bearer realm="keycloak"', 'Access token could not be verified');
+    }
+  }
+
+  /**
+   * Loads, links (verified email only) or creates the Drupal user.
+   *
+   * @throws \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
+   *   When the token has no username.
+   */
+  private function keycloakUser(array $claims) {
     $username = $claims['preferred_username'] ?? NULL;
     if (!is_string($username) || $username === '') {
       throw new UnauthorizedHttpException('Bearer realm="keycloak"', 'Access token could not be verified');
@@ -240,25 +281,13 @@ class SimpleOauthAuthenticationProvider extends BaseSimpleOauthAuthenticationPro
       $user = user_load_by_mail($mail);
     }
     if (!$user) {
-      $values = [
+      $user = User::create([
         'status' => 1,
         'name' => $username,
         'mail' => $mail,
-      ];
-
-      $user = User::create($values);
+      ]);
       $user->save();
     }
-
-    // Never allow the super admin account or blocked users through Keycloak.
-    if ((int) $user->id() === 1 || $user->isBlocked()) {
-      throw new UnauthorizedHttpException('Bearer realm="keycloak"', 'Access denied');
-    }
-
-    // Keep passing a lcobucci DataSet for backward compatibility with
-    // hook_simple_oauth_authentication_keycloak_alter() implementations.
-    $claims_set = new DataSet($claims, $jwt);
-    $this->moduleHandler->alter('simple_oauth_authentication_keycloak', $user, $claims_set, $jwt);
     return $user;
   }
 

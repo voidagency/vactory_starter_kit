@@ -6,6 +6,7 @@ use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\NodeType;
 use Drupal\user\Entity\Role;
+use Drupal\vactory_decoupled\EventSubscriber\UserRegistrationRolesSubscriber;
 
 /**
  * Add protected routes.
@@ -101,6 +102,27 @@ class DecoupledSettingsForm extends ConfigFormBase {
       '#description' => $this->t("Roles will be excluded from front authentication"),
     ];
 
+    // Default roles of accounts created through the JSON:API registration
+    // resource or the "espace privé" registration webform. Granting roles
+    // requires "administer permissions".
+    $form['registration'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Registration'),
+      '#group' => 'settings_tab',
+      '#access' => $this->currentUser()->hasPermission('administer permissions'),
+    ];
+    $grantable = array_filter(Role::loadMultiple(), [
+      UserRegistrationRolesSubscriber::class,
+      'isGrantable',
+    ]);
+    $form['registration']['registration_default_roles'] = [
+      '#type' => 'checkboxes',
+      '#title' => $this->t('Roles granted on registration'),
+      '#options' => array_map(fn($role) => $role->label(), $grantable),
+      '#default_value' => $config->get('registration_default_roles') ?? [],
+      '#description' => $this->t('Roles added to accounts created through the JSON:API registration resource (/api/user/register) and through the "espace privé" registration webform (vactory_espace_prive_register). Roles sent in the registration request are always ignored. Administrator roles cannot be selected.'),
+    ];
+
     $form['iframe_excluded_paths']['iframe_paths'] = [
       '#type' => 'textarea',
       '#title' => t('Paths'),
@@ -115,12 +137,16 @@ class DecoupledSettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $this->config('vactory_decoupled.settings')
+    $config = $this->config('vactory_decoupled.settings')
       ->set('routes', $form_state->getValue('routes'))
       ->set('cache_excluded_types', array_filter($form_state->getValue('cache_excluded_types')))
       ->set('auth_roles_excluded', array_filter($form_state->getValue('auth_roles_excluded')))
-      ->set('iframe_excluded_paths', $form_state->getValue('iframe_paths'))
-      ->save();
+      ->set('iframe_excluded_paths', $form_state->getValue('iframe_paths'));
+    if ($form['registration']['#access']) {
+      $roles = array_filter($form_state->getValue('registration_default_roles') ?? []);
+      $config->set('registration_default_roles', array_values($roles));
+    }
+    $config->save();
     drupal_flush_all_caches();
     parent::submitForm($form, $form_state);
   }

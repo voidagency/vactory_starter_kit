@@ -12,4 +12,4 @@ lifetime: '3'
 dependencies:
   enforced:
     module:
-      - vactory_form_auotosave
+      - vactory_form_autosave

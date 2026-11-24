@@ -11,6 +11,7 @@ use Drupal\file\Entity\File;
 use Drupal\file\Plugin\rest\resource\FileUploadResource;
 use Drupal\webform\Entity\Webform;
 use Drupal\webform\Entity\WebformSubmission;
+use Drupal\webform\Plugin\WebformElement\WebformManagedFileBase;
 use Drupal\webform\WebformSubmissionForm;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\HttpException;
@@ -70,6 +71,9 @@ class WebformFileUploadResource extends FileUploadResource {
     $filename = $this->validateAndParseContentDispositionHeader($request);
 
     $element = $webform->getElement($field_name);
+    if (!$element || !$this->getElementPlugin($element) instanceof WebformManagedFileBase) {
+      throw new BadRequestHttpException('Invalid field_name value: not a file element.');
+    }
 
     $webform_submission = WebformSubmission::create([
       'webform_id' => $webform->id(),
@@ -109,7 +113,7 @@ class WebformFileUploadResource extends FileUploadResource {
     $lock_id = $this->generateLockIdFromFileUri($file_uri);
 
     if (!$this->lock->acquire($lock_id)) {
-      throw new HttpException(503, sprintf('File "%s" is already locked for writing'), NULL, ['Retry-After' => 1]);
+      throw new HttpException(503, sprintf('File "%s" is already locked for writing', $file_uri), NULL, ['Retry-After' => 1]);
     }
 
     // Begin building file entity.
@@ -187,8 +191,9 @@ class WebformFileUploadResource extends FileUploadResource {
   /**
    * Retrieves the upload validators for an element.
    *
-   * This is copied from \Drupal\file\Plugin\Field\FieldType\FileItem as there
-   * is no entity instance available here that a FileItem would exist for.
+   * Based on \Drupal\file\Plugin\Field\FieldType\FileItem as there is no
+   * entity instance available here, completed with the validators prepared
+   * by the webform element plugin.
    *
    * @param array $element
    *   The element for which to get validators.
@@ -215,6 +220,18 @@ class WebformFileUploadResource extends FileUploadResource {
     // Add the extension check if necessary.
     if (!empty($element['#file_extensions'])) {
       $validators['FileExtension'] = ['extensions' => $element['#file_extensions']];
+    }
+
+    // Apply the validators computed by the webform element plugin
+    // (WebformManagedFileBase::prepare()): they include webform's default
+    // allowed extensions when the element does not set #file_extensions.
+    if (!empty($element['#upload_validators'])) {
+      $validators = $element['#upload_validators'] + $validators;
+      // Keep the PHP upload limit as an upper bound.
+      $webform_limit = $element['#upload_validators']['FileSizeLimit']['fileLimit'] ?? 0;
+      if ($webform_limit) {
+        $validators['FileSizeLimit'] = ['fileLimit' => min($webform_limit, $max_filesize)];
+      }
     }
 
     return $validators;

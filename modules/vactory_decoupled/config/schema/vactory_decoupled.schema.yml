@@ -20,4 +20,10 @@ vactory_decoupled.settings:
     iframe_excluded_paths:
       type: text
       label: 'Iframe excluded paths'
+    registration_default_roles:
+      type: sequence
+      label: 'Roles granted on JSON:API registration'
+      sequence:
+        type: string
+        label: 'Role'
 

@@ -124,8 +124,6 @@ class MenusController extends ControllerBase {
    */
   public function index(Request $request) {
     $menu_name = $request->query->get('menu_name');
-    // Access check param.
-    $access_check = $request->query->get('ac', 1);
     if (empty($menu_name)) {
       throw new NotFoundHttpException('Unable to work with empty menu_name. Please send a ?menu_name query string parameter with your request.');
     }
@@ -160,12 +158,10 @@ class MenusController extends ControllerBase {
     $manipulators = [
       // Use the default sorting of menu links.
       ['callable' => 'menu.default_tree_manipulators:generateIndexAndSort'],
+      // Only show links that are accessible for the current user. The "ac"
+      // query parameter is ignored (Redmine #71439).
+      ['callable' => 'menu.default_tree_manipulators:checkAccess'],
     ];
-
-    if ($access_check) {
-      // Only show links that are accessible for the current user.
-      $manipulators[] = ['callable' => 'menu.default_tree_manipulators:checkAccess'];
-    }
 
     $tree = $menu_tree->transform($tree, $manipulators);
 

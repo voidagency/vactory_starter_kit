@@ -1,0 +1,32 @@
+vactory_html2pdf.settings:
+  type: config_object
+  label: 'Vactory HTML to PDF settings'
+  mapping:
+    font_directories:
+      type: text
+      label: 'Font directories (one per line, relative to the Drupal root)'
+    vactory_html2pdf_font_dirs:
+      type: sequence
+      label: 'Resolved font directories'
+      sequence:
+        type: string
+        label: 'Directory'
+    fonts_data:
+      type: sequence
+      label: 'Fonts'
+      sequence:
+        type: mapping
+        label: 'Font'
+        mapping:
+          R:
+            type: string
+            label: 'Regular'
+          B:
+            type: string
+            label: 'Bold'
+          I:
+            type: string
+            label: 'Italic'
+          BI:
+            type: string
+            label: 'Bold italic'

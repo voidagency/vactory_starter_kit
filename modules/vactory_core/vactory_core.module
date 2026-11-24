@@ -6,6 +6,7 @@
  */
 
 use Drupal\Component\Render\FormattableMarkup;
+use Drupal\Component\Utility\Html;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
 use Drupal\Core\Field\Plugin\Field\FieldWidget\StringTextareaWidget;
@@ -411,7 +412,10 @@ function vactory_core_page_attachments_alter(array &$attachments) {
       unset($attachments['#attached']['html_head'][$key]);
     }
   }
-  $addtoany_lib = array_search('addtoany/addtoany', $attachments['#attached']['library']);
+  // AddToAny attaches its external script to every page. Remove it here: it is
+  // attached only where AddToAny buttons are rendered, see
+  // _vactory_core_addtoany_attach().
+  $addtoany_lib = array_search('addtoany/addtoany.front', $attachments['#attached']['library']);
   if ($addtoany_lib !== FALSE) {
     unset($attachments['#attached']['library'][$addtoany_lib]);
   }
@@ -425,48 +429,80 @@ function vactory_core_xmlsitemap_link_alter(array &$link, array $context) {
   $front_page = Drupal::config('system.site')->get('page')['front'];
   if ($link['loc'] === $front_page) {
     $link['status'] = 0;
-    $link['acccess'] = FALSE;
+    $link['access'] = FALSE;
   }
 }
 
 /**
- * Implements hook_preprocess_HOOK().
+ * Implements hook_preprocess_HOOK() for addtoany_standard.
+ *
+ * The addtoany_standard template is used by the AddToAny share block, by the
+ * AddToAny field of entity displays and by the AddToAny views field.
  */
-function vactory_core_preprocess_block(&$variables) {
-  if (isset($variables['plugin_id']) && $variables['plugin_id'] === 'addtoany_block') {
-    $config = \Drupal::config('addtoany.settings');
-    // Initial JavaScript.
-    $additional_js = $config->get('additional_js');
-    if (\Drupal::moduleHandler()->moduleExists('token')) {
-      $node = \Drupal::routeMatch()->getParameter('node');
-      $data = [];
-      if ($node) {
-        if (is_numeric($node)) {
-          $node = Drupal::service('entity_type.manager')->getStorage('node')
-            ->load($node);
-        }
-        $data = ['node' => $node];
-        $additional_js = \Drupal::token()->replace($additional_js, $data);
-      }
+function vactory_core_preprocess_addtoany_standard(&$variables) {
+  _vactory_core_addtoany_attach($variables);
+}
+
+/**
+ * Implements hook_preprocess_HOOK() for addtoany_follow.
+ *
+ * The addtoany_follow template is used by the AddToAny follow block. Its
+ * icons are drawn by the AddToAny script, like the share buttons.
+ */
+function vactory_core_preprocess_addtoany_follow(&$variables) {
+  _vactory_core_addtoany_attach($variables);
+}
+
+/**
+ * Attaches the AddToAny script and its configuration to rendered buttons.
+ *
+ * Same attachments as addtoany_page_attachments(), which are removed from
+ * the page in vactory_core_page_attachments_alter(): the external script is
+ * loaded only where AddToAny buttons are rendered.
+ *
+ * @param array $variables
+ *   The variables of an AddToAny template. ThemeManager::render() bubbles
+ *   their "#attached" and "#cache" keys to the rendered element.
+ */
+function _vactory_core_addtoany_attach(array &$variables) {
+  $config = \Drupal::config('addtoany.settings');
+  $additional_js = (string) $config->get('additional_js');
+  // A change of the AddToAny settings rebuilds the cached buttons.
+  $variables['#cache']['tags'][] = 'config:addtoany.settings';
+  if (\Drupal::moduleHandler()->moduleExists('token') && \Drupal::token()->scan($additional_js)) {
+    // The tokens are replaced with the node of the current route, as AddToAny
+    // does at page level. Here the result is cached with the buttons (entity,
+    // field, block): it has to vary by route. Nothing changes for the sites
+    // without tokens in the "Additional JavaScript" setting.
+    $variables['#cache']['contexts'][] = 'route';
+    $node = \Drupal::routeMatch()->getParameter('node');
+    if (is_numeric($node)) {
+      $node = \Drupal::entityTypeManager()->getStorage('node')->load($node);
     }
-    $javascript_header = 'window.a2a_config=window.a2a_config||{};a2a_config.callbacks=[];a2a_config.overlays=[];a2a_config.templates={};'
-      . (($config->get('no_3p')) ? 'a2a_config.no_3p=1;' : '')
-      . $additional_js;
-    $variables['#attached']['html_head'][] = [
-      // The data.
-      [
-        // Add a <script> tag.
-        '#tag' => 'script',
-        // Add JavaScript to the <script> tag.
-        '#value' => Markup::create($javascript_header),
-        // Give weight so it appears after meta tags, etc.
-        '#weight' => 10,
-      ],
-      // Assign a key to reference this HTML <HEAD> element when altering.
-      'addtoany-js',
-    ];
-    $variables['#attached']['library'][] = 'addtoany/addtoany';
+    if ($node) {
+      $additional_js = \Drupal::token()->replace($additional_js, ['node' => $node]);
+    }
   }
+  // "no_3p" is a setting of AddToAny 1.x, absent from the 2.x schema and
+  // form: no update removes it, so a site upgraded from 1.x may still have it
+  // in its active configuration, and the AddToAny script still honors it.
+  $javascript_header = 'window.a2a_config=window.a2a_config||{};a2a_config.callbacks=[];a2a_config.overlays=[];a2a_config.templates={};'
+    . ($config->get('no_3p') ? 'a2a_config.no_3p=1;' : '')
+    . $additional_js;
+  $variables['#attached']['html_head'][] = [
+    // The data.
+    [
+      // Add a <script> tag.
+      '#tag' => 'script',
+      // Add JavaScript to the <script> tag.
+      '#value' => Markup::create($javascript_header),
+      // Give weight so it appears after meta tags, etc.
+      '#weight' => 10,
+    ],
+    // Assign a key to reference this HTML <HEAD> element when altering.
+    'addtoany-js',
+  ];
+  $variables['#attached']['library'][] = 'addtoany/addtoany.front';
 }
 
 /**
@@ -482,45 +518,48 @@ function vactory_core_field_widget_single_element_form_alter(&$element, FormStat
     // Get active theme.
     $current_theme = \Drupal::service('theme.manager')->getActiveTheme()->getName();
     if ($current_theme === $admin_theme_name && (isset($element['#maxlength']) || isset($element['value']['#maxlength']))) {
-      addCounterToTextElement($element);
+      addCounterToTextElement($element, $context['items']->getFieldDefinition()->getName());
     }
   }
 }
 
 /**
  * Attach textfield counter library to given element.
+ *
+ * The JavaScript of textfield_counter iterates "key" as a list and uses each
+ * value as a CSS class selector, the settings being keyed by that class. The
+ * class holds the field name and the maximum length, so two inputs sharing a
+ * class always share the same settings.
+ *
+ * @param array $element
+ *   The widget element: the counter goes on its "value" child when it has
+ *   one, on the element itself otherwise.
+ * @param string $field_name
+ *   (optional) The name of the field.
  */
 // phpcs:disable
-function addCounterToTextElement(&$element) {
+function addCounterToTextElement(&$element, $field_name = '') {
   // phpcs:enable
-  $delta = $element['#delta'];
-  $key = 'text-field-' . $delta;
   if (isset($element['value'])) {
-    $maxlength = $element['value']['#maxlength'];
-    $element['value']['#attributes']['class'][] = $key;
-    $element['value']['#attributes']['class'][] = 'textfield-counter-element';
-    $element['value']['#attributes']['data-field-definition-id'] = $key;
-    $element['value']['#attached']['library'][] = 'textfield_counter/counter';
-    $element['value']['#attached']['drupalSettings']['textfieldCounter'][$key]['key'][$delta] = $key;
-    $element['value']['#attached']['drupalSettings']['textfieldCounter'][$key]['maxlength'] = (int) $maxlength;
-    $element['value']['#attached']['drupalSettings']['textfieldCounter'][$key]['counterPosition'] = 'after';
-    $element['value']['#attached']['drupalSettings']['textfieldCounter'][$key]['textCountStatusMessage'] = '<span class="current_count">@current_length</span>/<span class="maxlength_count">@maxlength</span>';
-    $element['value']['#attached']['drupalSettings']['textfieldCounter'][$key]['preventSubmit'] = TRUE;
-    $element['value']['#attached']['drupalSettings']['textfieldCounter'][$key]['countHTMLCharacters'] = 0;
+    $input = &$element['value'];
   }
   else {
-    $maxlength = $element['#maxlength'];
-    $element['#attributes']['class'][] = $key;
-    $element['#attributes']['class'][] = 'textfield-counter-element';
-    $element['#attributes']['data-field-definition-id'] = $key;
-    $element['#attached']['library'][] = 'textfield_counter/counter';
-    $element['#attached']['drupalSettings']['textfieldCounter'][$key]['key'][$delta] = $key;
-    $element['#attached']['drupalSettings']['textfieldCounter'][$key]['maxlength'] = (int) $maxlength;
-    $element['#attached']['drupalSettings']['textfieldCounter'][$key]['counterPosition'] = 'after';
-    $element['#attached']['drupalSettings']['textfieldCounter'][$key]['textCountStatusMessage'] = '<span class="current_count">@current_length</span>/<span class="maxlength_count">@maxlength</span>';
-    $element['#attached']['drupalSettings']['textfieldCounter'][$key]['preventSubmit'] = TRUE;
-    $element['#attached']['drupalSettings']['textfieldCounter'][$key]['countHTMLCharacters'] = 0;
+    $input = &$element;
   }
+  $maxlength = (int) $input['#maxlength'];
+  $key = Html::cleanCssIdentifier('text-field-' . ($field_name !== '' ? $field_name : 'maxlength') . '-' . $maxlength);
+  $input['#attributes']['class'][] = $key;
+  $input['#attributes']['class'][] = 'textfield-counter-element';
+  $input['#attributes']['data-field-definition-id'] = $key;
+  $input['#attached']['library'][] = 'textfield_counter/counter';
+  $input['#attached']['drupalSettings']['textfieldCounter'][$key] = [
+    'key' => [$key],
+    'maxlength' => $maxlength,
+    'counterPosition' => 'after',
+    'textCountStatusMessage' => '<span class="current_count">@current_length</span>/<span class="maxlength_count">@maxlength</span>',
+    'preventSubmit' => TRUE,
+    'countHTMLCharacters' => 0,
+  ];
 }
 
 /**
@@ -722,4 +761,76 @@ function _get_profile__composer_version($profile_name) {
   }
 
   return NULL;
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for shield_admin_settings.
+ */
+function vactory_core_form_shield_admin_settings_alter(array &$form, FormStateInterface $form_state) {
+  $form['#validate'][] = 'vactory_core_shield_settings_validate';
+}
+
+/**
+ * Refuses to enable Shield with empty Basic Auth credentials.
+ *
+ * Shield accepts an empty user and password when they are not set: the site
+ * would look protected while anyone can log in.
+ */
+function vactory_core_shield_settings_validate(array &$form, FormStateInterface $form_state) {
+  if (!$form_state->getValue(['general', 'shield_enable'])) {
+    return;
+  }
+  if ($form_state->getValue(['credentials', 'credential_provider']) !== 'shield') {
+    return;
+  }
+  foreach (['user', 'pass'] as $key) {
+    $value = $form_state->getValue(['credentials', 'providers', 'shield', $key]);
+    if (trim((string) $value) === '') {
+      $form_state->setErrorByName('credentials][providers][shield][' . $key, t('Shield cannot be enabled without a user and a password.'));
+    }
+  }
+}
+
+/**
+ * Default captcha wrong answer message, in English and every site language.
+ *
+ * The captcha module only translates this message when the setting
+ * "wrong_captcha_response_message" is empty. A stored value equal to one of
+ * these strings is the default message, not a customised one.
+ *
+ * @return string[]
+ *   The default message and its interface translations.
+ */
+function _vactory_core_captcha_default_error_messages() {
+  // The source string must be the one used by _captcha_get_error_message().
+  $default = 'The answer you entered for the CAPTCHA was not correct.';
+  $messages = [$default];
+  foreach (array_keys(\Drupal::languageManager()->getLanguages()) as $langcode) {
+    // phpcs:ignore Drupal.Semantics.FunctionT.NotLiteralString
+    $messages[] = trim((string) t($default, [], ['langcode' => $langcode]));
+  }
+  return array_values(array_unique($messages));
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter() for captcha_settings.
+ *
+ * The captcha settings form prefills the wrong answer message with the
+ * default one and requires it: saving the form would store the message in the
+ * language of the administrator, and it would no longer be translated. Let it
+ * be empty instead, which makes captcha use its translated default message.
+ */
+function vactory_core_form_captcha_settings_alter(array &$form, FormStateInterface $form_state) {
+  if (!isset($form['wrong_captcha_response_message'])) {
+    return;
+  }
+  $message = trim((string) \Drupal::configFactory()->getEditable('captcha.settings')->get('wrong_captcha_response_message'));
+  if (in_array($message, _vactory_core_captcha_default_error_messages(), TRUE)) {
+    $message = '';
+  }
+  $element = &$form['wrong_captcha_response_message'];
+  $element['#required'] = FALSE;
+  $element['#default_value'] = $message;
+  $element['#attributes']['placeholder'] = t('The answer you entered for the CAPTCHA was not correct.');
+  $element['#description'] = t('Leave empty to use the default message, translated in every language by the interface translation. A message typed here is displayed as is, and is translated with the configuration translation.');
 }

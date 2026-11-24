@@ -6,6 +6,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\vactory_webform_typesafe\Exception\JevApiException;
 use GuzzleHttp\ClientInterface;
 use GuzzleHttp\Exception\GuzzleException;
+use Psr\Http\Message\ResponseInterface;
 
 /**
  * Calls Jev directly over HTTPS, without a Drupal AI provider dependency.
@@ -69,6 +70,23 @@ final class TypeSafeClassifier implements TypeSafeClassifierInterface {
    * Makes one bounded request; queue processing owns the retry policy.
    */
   private function request(string $method, string $path, ?array $body = NULL, ?int $timeout = NULL): array {
+    $options = $this->requestOptions($body, $timeout);
+    try {
+      $response = $this->httpClient->request($method, self::ENDPOINT . $path, $options);
+    }
+    catch (GuzzleException | \InvalidArgumentException) {
+      // Do not chain HTTP exceptions: they can expose headers and request
+      // bodies.
+      throw new JevApiException('Could not reach Jev. Check connectivity and try again.', TRUE);
+    }
+    $this->assertSuccess($response);
+    return $this->decode($response);
+  }
+
+  /**
+   * Builds the Guzzle options of a request.
+   */
+  private function requestOptions(?array $body, ?int $timeout): array {
     $options = [
       'headers' => [
         'Authorization' => 'Bearer ' . $this->keys->get(),
@@ -77,31 +95,55 @@ final class TypeSafeClassifier implements TypeSafeClassifierInterface {
       'allow_redirects' => FALSE,
       'http_errors' => FALSE,
       'connect_timeout' => 10,
-      'timeout' => $timeout ?? max(1, min(180, (int) ($this->configFactory->get('vactory_webform_typesafe.settings')->get('request_timeout') ?? 60))),
     ];
+    $options['timeout'] = $timeout ?? $this->configuredTimeout();
     if ($body !== NULL) {
       $options['headers']['Content-Type'] = 'application/json';
       $options['body'] = json_encode($body, JSON_THROW_ON_ERROR);
     }
-    try {
-      $response = $this->httpClient->request($method, self::ENDPOINT . $path, $options);
-    }
-    catch (GuzzleException | \InvalidArgumentException) {
-      // Do not chain HTTP exceptions: they can expose headers and request bodies.
-      throw new JevApiException('Could not reach Jev. Check connectivity and try again.', TRUE);
-    }
+    return $options;
+  }
+
+  /**
+   * Returns the configured request timeout, between 1 and 180 seconds.
+   */
+  private function configuredTimeout(): int {
+    $configured = (int) ($this->configFactory->get('vactory_webform_typesafe.settings')->get('request_timeout') ?? 60);
+    return max(1, min(180, $configured));
+  }
+
+  /**
+   * Turns non-2xx statuses into exceptions.
+   */
+  private function assertSuccess(ResponseInterface $response): void {
     $status = $response->getStatusCode();
     if ($status === 401 || $status === 403) {
       throw new JevApiException('Jev rejected the API key. Check Webform TypeSafe settings and account access.');
     }
     if ($status === 429 || $status === 529) {
-      $retry = trim($response->getHeaderLine('Retry-After'));
-      $delay = ctype_digit($retry) ? (int) $retry : max(0, (strtotime($retry) ?: 0) - time());
-      throw new JevApiException('Jev is busy or rate limited. Processing will retry later.', TRUE, min(86400, $delay));
+      throw new JevApiException('Jev is busy or rate limited. Processing will retry later.', TRUE, min(86400, self::retryDelay($response->getHeaderLine('Retry-After'))));
     }
     if ($status < 200 || $status >= 300) {
       throw new JevApiException('Jev returned HTTP ' . $status . '. Check the model and question settings.', $status >= 500 || $status === 408);
     }
+  }
+
+  /**
+   * Seconds to wait from a Retry-After header (seconds or HTTP date).
+   */
+  private static function retryDelay(string $header): int {
+    $retry = trim($header);
+    if (ctype_digit($retry)) {
+      return (int) $retry;
+    }
+    $date = strtotime($retry) ?: 0;
+    return max(0, $date - time());
+  }
+
+  /**
+   * Decodes a bounded JSON body.
+   */
+  private function decode(ResponseInterface $response): array {
     try {
       // Bound parsing memory even if an upstream service sends a bad response.
       $raw = $response->getBody()->read(2097153);

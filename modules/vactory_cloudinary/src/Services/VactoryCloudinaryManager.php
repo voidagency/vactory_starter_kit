@@ -2,8 +2,6 @@
 
 namespace Drupal\vactory_cloudinary\Services;
 
-use Cloudinary\Api\ApiResponse;
-use Cloudinary\Api\Exception\NotFound;
 use Cloudinary\Api\Upload\UploadApi;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
@@ -62,22 +60,37 @@ class VactoryCloudinaryManager {
   protected $cloudinarySdkSettings;
 
   /**
-   * Cloudinary upload API
+   * Cloudinary upload API.
+   *
+   * @var \Cloudinary\Api\Upload\UploadApi
    */
   protected $uploadApi;
 
   /**
+   * Resource type of the last public id computed by getPublicId().
+   *
+   * @var string|null
+   */
+  protected $resourceType;
+
+  /**
    * Cloudinary cloud name.
+   *
+   * @var string
    */
   protected $cloudName;
 
   /**
    * Cloudinary API key.
+   *
+   * @var string
    */
   protected $apiKey;
 
   /**
    * Cloudinary API secret.
+   *
+   * @var string
    */
   protected $apiSecret;
 
@@ -164,7 +177,7 @@ class VactoryCloudinaryManager {
         '%destination' => $destination,
       ]);
       throw new FileWriteException("The specified file '$source' could not be moved to '$destination'.");
-      //file_put_contents($real_destination, file_get_contents($real_source));
+      // file_put_contents($real_destination, file_get_contents($real_source));
     }
 
     // Set the permissions on the new file.
@@ -192,7 +205,7 @@ class VactoryCloudinaryManager {
    */
   public function getCloudinaryRessource($uri) {
     $public_id = $this->getPublicId($uri);
-    /** @var ApiResponse $response */
+    /** @var \Cloudinary\Api\ApiResponse $response */
     $response = $this->uploadApi->explicit($public_id, ['type' => 'upload']);
     $resource = $response->getArrayCopy();
     return $resource;
