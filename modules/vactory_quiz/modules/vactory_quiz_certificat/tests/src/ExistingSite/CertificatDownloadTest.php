@@ -16,19 +16,14 @@ use Psr\Http\Message\ResponseInterface;
  * downloads it, another account gets "not found" whatever its file
  * permissions, an anonymous user gets the login page.
  *
+ * The test never installs modules: vactory_quiz defines a field type, so it
+ * cannot be uninstalled from the site afterwards. It runs only on a site where
+ * vactory_quiz_certificat is already enabled, and is skipped elsewhere; the
+ * Kernel tests cover the same rules with and without File Entity.
+ *
  * @group vactory_quiz_certificat
  */
 class CertificatDownloadTest extends VactoryExistingSiteBase {
-
-  /**
-   * {@inheritdoc}
-   */
-  protected array $modulesToInstall = [
-    'vactory_quiz',
-    'vactory_quiz_history',
-    'vactory_html2pdf',
-    'vactory_quiz_certificat',
-  ];
 
   /**
    * URI of the certificate written for the test.
@@ -56,6 +51,9 @@ class CertificatDownloadTest extends VactoryExistingSiteBase {
    */
   protected function setUp(): void {
     parent::setUp();
+    if (!$this->container->get('module_handler')->moduleExists('vactory_quiz_certificat')) {
+      $this->markTestSkipped('vactory_quiz_certificat is not enabled on the site.');
+    }
     if (!$this->container->get('stream_wrapper_manager')->isValidScheme('private')) {
       $this->markTestSkipped('The site has no private files.');
     }
