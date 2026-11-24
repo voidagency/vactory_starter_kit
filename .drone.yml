@@ -18,7 +18,8 @@ trigger:
 
 steps:
   - name: setup
-    image: vactory/vactory-ci:latest
+    # Test only: native arm64 CI image (Redmine #71371).
+    image: vactory/vactory-ci:arm64-d06cefd7
     pull: if-not-exists
     environment:
       BITBUCKET_AUTHTOKEN:
