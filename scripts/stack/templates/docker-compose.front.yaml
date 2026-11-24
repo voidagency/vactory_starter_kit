@@ -1,0 +1,47 @@
+# Généré par scripts/stack (vactory_starter_kit). Ne pas modifier.
+# Front Next de l'instance et son Redis, dans le projet ddev.
+# Le front écoute sur le même port dans le conteneur et sur la machine, sous
+# le nom @@FRONT_HOST@@ : la même adresse marche depuis le navigateur et
+# depuis Drupal (vidage du cache du front).
+services:
+  front:
+    image: @@NODE_IMAGE@@
+    container_name: ddev-${DDEV_SITENAME}-front
+    labels:
+      com.ddev.site-name: ${DDEV_SITENAME}
+      com.ddev.approot: ${DDEV_APPROOT}
+    restart: "no"
+    working_dir: /app
+    command: ["yarn", "workspace", "@@FRONT_APP@@", "dev"]
+    environment:
+      - APP_NAME=@@FRONT_APP@@
+      - PORT=@@FRONT_PORT@@
+      - HOSTNAME=0.0.0.0
+      - NODE_TLS_REJECT_UNAUTHORIZED=0
+      - NEXT_TELEMETRY_DISABLED=1
+      - WIREIT_LOGGER=simple
+    volumes:
+      - "@@INST@@/front:/app"
+      - "vsk-front-node-modules:/app/node_modules:ro"
+    ports:
+      - "127.0.0.1:@@FRONT_PORT@@:@@FRONT_PORT@@"
+    external_links:
+      - "ddev-router:@@DRUPAL_HOST@@"
+    networks:
+      default:
+        aliases:
+          - "@@FRONT_HOST@@"
+      ddev_default: {}
+    depends_on:
+      - redis
+  redis:
+    image: @@REDIS_IMAGE@@
+    container_name: ddev-${DDEV_SITENAME}-redis
+    labels:
+      com.ddev.site-name: ${DDEV_SITENAME}
+      com.ddev.approot: ${DDEV_APPROOT}
+    restart: "no"
+    command: ["redis-server", "--save", "", "--appendonly", "no"]
+volumes:
+  vsk-front-node-modules:
+    external: true
