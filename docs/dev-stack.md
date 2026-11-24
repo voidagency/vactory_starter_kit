@@ -44,13 +44,15 @@ stack up a --no-oauth              # sans clés, clients OAuth ni comptes de tes
 stack ls                           # instances, état, branche, adresses
 stack info a [--json]              # détail ; --json : le contenu de stack.json
 stack url a [front|mail]
-stack drush a status
+stack drush a status               # lignes non coupées (COLUMNS=1000 ; STACK_DRUSH_COLUMNS pour changer)
 stack exec a ls web/sites
 stack uli a [utilisateur]          # lien de connexion (stack_editor par défaut)
 stack test a modules/vactory_decoupled/tests/src/Kernel/MenusEndpointTest.php
 stack test a --testsuite unit
 stack phpcs a modules/vactory_decoupled/src
-stack snapshot a avant-essai && stack restore a avant-essai   # copie du volume de base, ~8 s ; --list
+stack snapshot a avant-essai && stack restore a avant-essai   # base et fichiers du site ; 5 à 25 s mesurés
+stack snapshot a --list
+stack snapshot a --rm avant-essai
 stack logs a [web|db|front|redis]
 stack stop a && stack start a
 stack rm a [--keep-branch] [--force] [--yes]
@@ -92,7 +94,7 @@ Le code du profil est celui de l'arbre `<instance>/profile`, monté dans le site
     logs/up.log                    journal de création
 ```
 
-Volumes Docker : `vsk-baseline-db` et `vsk-front-node-modules` (référence), `vsk-<nom>-mariadb` (base de l'instance), `vsk-<nom>-snap-<étiquette>` (snapshots) ; `stack rm` supprime ceux de l'instance.
+Volumes Docker : `vsk-baseline-db` et `vsk-front-node-modules` (référence), `vsk-<nom>-mariadb` (base de l'instance), `vsk-<nom>-snap-<étiquette>` (snapshots ; les fichiers du site, `files` et `private`, sont copiés dans `<instance>/snapshots/<étiquette>/`) ; `stack rm` supprime ceux de l'instance. Un snapshot pris avant cette version n'a pas de copie des fichiers : `restore` le dit et ne remet que la base.
 
 Les secrets ne sont jamais affichés. Pour un mot de passe : l'ouvrir dans `secrets.env`, ou préférer `stack uli`.
 
@@ -101,7 +103,9 @@ Les secrets ne sont jamais affichés. Pour un mot de passe : l'ouvrir dans `secr
 - **Une instance par personne, par agent et par branche.** Nom court et parlant : ticket ou initiales (`71475`, `hb-menus`, `agent-2`).
 - **Jamais l'instance d'un autre**, ni le site local habituel pour des tests qui changent la base.
 - Chaque instance a son site, sa base, son Mailpit, ses comptes, son front et son Redis : rien n'est partagé à part le routeur ddev et la base de référence (lue seulement).
-- Deux `stack up` de noms différents peuvent tourner en même temps (verrous sur git, les ports et la base de référence).
+- Deux `stack up` de noms différents peuvent tourner en même temps (verrous sur git, les ports et la base de référence). Les `ddev start` passent un par un (verrou, voir Dépannage) : mesuré le 24/11 avec cinq `up` lancés presque ensemble, `ddev start` en 60 s pour le premier, 95 s pour le suivant, 220 s pour le cinquième ; `up` complet en 2 min 40 à 3 min 10 pour deux instances lancées à 2 s d'écart.
+- Chaque nom nouveau coupe tous les sites ddev de 2 à 4 s (recréation du routeur) : cinq coupures mesurées pour cinq noms nouveaux, aucune pour les commandes suivantes.
+- `stack <commande> --help` affiche l'aide.
 
 ### Agent automatisé
 
