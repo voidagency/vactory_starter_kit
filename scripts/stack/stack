@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2317 # on_exit (trap) et have (eval) sont appelées indirectement.
 # stack : pile locale complète et isolée par instance nommée (profil, site
 # Drupal, base, Mailpit, front Next + Redis), sur ddev.
 # Documentation : docs/dev-stack.md. Aide : stack help.
@@ -1216,4 +1217,7 @@ main() {
   esac
 }
 
-main "$@"
+# Sur une seule ligne : bash a lu toute la ligne avant d'exécuter main ; un
+# script modifié pendant une commande longue (git pull, merge) ne fait pas
+# lire la suite du fichier à un décalage périmé.
+{ main "$@"; exit $?; }
