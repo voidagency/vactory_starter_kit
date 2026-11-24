@@ -47,6 +47,11 @@ name: sonar
 kind: pipeline
 type: docker
 
+# Runs only on the runner reserved for Sonar (label role:sonar on the CI
+# machine): short analyses do not wait behind the "default" builds.
+node:
+  role: sonar
+
 # The default clone merges the pull request into 3.x and fails on a
 # conflict, before any analysis. Clone the commit of the build as it is.
 clone:
