@@ -10,6 +10,7 @@
 **Risques et points d'attention**
 - **⚠️ Risque principal, vérification TLS (#896) :** elle est active par défaut pour **tous** les appels HTTP du site (`\Drupal::httpClient()`, service `http_client` : profil, contrib, code projet), y compris quand le réglage n'a jamais été enregistré. Un service au certificat invalide ou auto-signé échoue (`cURL error 60`). **Tester chaque appel HTTPS du projet avant la mise en production** (étapes 4 et 6).
 - **Sites protégés par Shield (#988) :** la mise à jour fait passer Shield en 1.9 ou plus (1.11). Avec flood_control 2.x, Shield répond alors 500 à toute requête qui envoie des identifiants : plus personne n'entre. Le profil exige maintenant flood_control `^3.0.1`, qui corrige ce cas ; un projet qui fige flood_control en 2.x doit lever ce blocage (étape 1).
+- **Sites avec `vactory_sso` (SSO OAuth / Keycloak) (#992) :** `drupal/oauth_login_oauth2` passe en 3.1.1 (correctif de sécurité du module). L'adresse de retour de l'IdP devient `/mo_callback` au lieu de `/mo_login` : **ajouter `<site>/mo_callback` aux adresses de retour autorisées du client OAuth côté IdP avant le déploiement** (garder `/mo_login` le temps de la bascule), sinon le retour de l'IdP finit en 404. La connexion est refusée si l'IdP ne renvoie pas `email_verified = true` (étape 4).
 - **Front qui lit la configuration des webforms** sans rôle de confiance : l'adapter. La permission `access any webform configuration` n'est plus donnée aux rôles anonyme et authentifié (#897) ; le front par défaut ne l'utilise pas.
 - **Webforms découplés avec upload de fichier (#906) :** un fichier hors de la liste d'extensions de l'élément est refusé (422). Un élément sans `#file_extensions` applique la liste par défaut de webform.
 - **`term_2_slug` (#884) :** le slug de chaque traduction est normalisé à l'enregistrement du terme (minuscules ASCII, mots joints par `-`). Les URL et filtres front qui s'appuient sur un slug avec majuscules, accents, `_` ou `/` changent.
@@ -61,6 +62,7 @@ drush cr
 - **d. Paquets propres au projet devenus incompatibles** (exemple rencontré : `facebook/graph-sdk ~5.0`, qui exige PHP 7 et n'était plus utilisé) : vérifier leur usage dans le code, les retirer ou les remplacer.
 - **e. `composer install` après le `require`.** Des forks `voidagency/*` sont remplacés par le paquet `drupal/*` du même nom (`merge_translations`, `block_list_override`, `swiftmailer`) : composer installe le nouveau puis supprime le dossier en retirant l'ancien. `drush updb` échoue alors (« The module merge_translations does not exist »). `composer install` réinstalle ce qui manque ; vérifier que chaque module du `composer.lock` a son dossier.
 - **f. Si le projet exige `voidagency/vactory_dashboard` :** le monter en `^1.4.4` dans la même commande que le profil (`composer require voidagency/vactory_dashboard:^1.4.4 …`). Sa mise à jour `vactory_dashboard_update_9971` retire de l'index de recherche du dashboard le champ « Term slug » inutilisable sur un site sans `vactory_decoupled`, qui fait échouer `drush updb` avec search_api 1.43 (Redmine #71557). Testé de 1.2.4 à 1.4.4.
+- **`drupal/oauth_login_oauth2` (#992) :** la contrainte passe de `^2.6` à `^3.1.1`. Le profil ne déclare plus son patch « Store ressourceOwner into a session variable » (il ne s'applique plus) : si le projet porte sa propre copie de ce patch, la retirer.
 - **`google_tag` (#931, #942) :** la contrainte accepte 1.x et 2.x. Si le `composer.json` du projet n'exige pas google_tag, `-W` le fait passer en 2.x. Pour rester en 1.x : `composer require drupal/google_tag:^1.8` avant la mise à jour.
 - **`drupal/captcha` (#949) :** la contrainte du profil devient `^2.0.11` (un projet qui fige captcha en dessous, par exemple 2.0.10, bloque l'étape 1 : retirer ce figeage, voir 1.a) : 2.0.12 sur un core 10.3 ou plus, 2.0.11 en dessous. Le profil ne déclare plus le patch « Fix captcha error message translation ». **Si le projet porte sa propre copie de ce patch** (`extra.patches` ou fichier de patches) : la retirer, elle ne s'applique pas sur 2.0.12 et composer échoue.
 - **Si une feature du projet exporte `captcha.settings` :** y mettre `wrong_captcha_response_message: ''` après l'update. Sinon, un `drush fr` de cette feature remet le message anglais, qui n'est alors plus traduit (#949). Même chose pour un dossier de config importé par `drush cim`.
@@ -86,6 +88,7 @@ drush cr
 - `vactory_quiz_history` 10001 (#963) : ajoute un index sur la colonne `uid` de la table `vactory_quiz_history`. Rien n'est fait si l'index existe déjà ; les lignes de la table ne sont pas modifiées.
 - `vactory_decoupled_router` 10001 (#891) : crée la config `vactory_decoupled_router.settings` avec la liste des types d'entité servis comme pages par le routeur (`node`). Rien n'est fait si la liste existe déjà. **Sites en config sync (rare) :** ensuite, `drush cex` et commiter ce fichier.
 - `vactory_sondage` 10001 (#983) : supprime de la file de `vactory_reminder` les fermetures de sondage mises en file sans identifiant de sondage (elles échouaient à chaque passage), puis remet en file la fermeture de chaque sondage ouvert dont la date de fermeture est à venir. La sortie donne le nombre d'éléments supprimés, de sondages remis en file et de sondages ouverts dont la date est passée, laissés ouverts. Rien à faire si le module n'est pas actif.
+- Si `vactory_sso` est actif : `oauth_login_oauth2` 113101 chiffre le secret du client OAuth dans sa configuration ; `vactory_sso` 10001 passe l'adresse de retour de `/mo_login` à `/mo_callback` et l'indique dans sa sortie (#992). **Sites en config sync ou feature qui exporte `oauth_login_oauth2.settings` :** réexporter ensuite (secret chiffré, nouvelle adresse).
 
 **3. `drush fr -y <module>`** (features à réimporter)
 - **Aucune pour cette version.** Les configs modifiées dans le profil (`shield.settings`, `captcha.settings`, `vactory_toolbox`, `vactory_form_autosave`) ne servent qu'à l'installation : les sites existants gardent les leurs.
@@ -103,6 +106,7 @@ drush cr
 - **Si le projet attribue un rôle aux comptes créés par l'inscription JSON:API :** le régler dans `/admin/config/system/decoupled-settings`, onglet *Registration*. Les rôles envoyés par le front ne sont plus pris en compte (#885).
 - **Si le projet attribue un rôle aux comptes créés par le webform d'inscription de l'espace privé** (`vactory_espace_prive_register`, utilisé par le front) : ce même réglage s'y applique (#950). Sans rôle coché, rien ne change : le compte est créé sans rôle. Un rôle ajouté par du code projet reste en place ; éviter de le régler aux deux endroits.
 - **Si `vactory_rate` est actif :** le formulaire des types de contenu ouverts au vote demande la permission `administer site configuration` (#961). La donner aux rôles non administrateurs qui utilisent ce formulaire.
+- **Si `vactory_sso` est actif (#992) :** côté IdP, l'adresse `<site>/mo_callback` est autorisée (voir les risques). La 3.1.1 refuse la connexion d'un compte dont l'IdP ne renvoie pas `email_verified = true` : vérifier le mapper de l'IdP, ou cocher en connaissance de cause le réglage du module qui fait confiance aux e-mails non vérifiés. Comme avant, le module ne crée pas de compte : le compte Drupal doit exister.
 - **Si `vactory_quiz_certificat` est actif avec la méthode html2pdf (#953) :** définir `$settings['file_private_path']` dans `settings.php` (dossier accessible en écriture par le serveur web), puis vérifier que le rapport d'état (`/admin/reports/status`) n'affiche pas l'erreur « Quiz certificates ». Tant que le réglage manque, aucun certificat n'est généré : à chaque cron, l'erreur est journalisée et la demande reste dans la file, reprise aux crons suivants. Pour le support : un compte qui a la permission `administer site configuration` télécharge tous les certificats ; les autres comptes, seulement les leurs.
 - **Si le front affiche par le routeur des termes de taxonomie ou des entités personnalisées (#891) :** cocher ces types dans `/admin/config/system/vactory_router/page-entity-types` (onglet « Page entity types » de la config du routeur, permission `administer site configuration`). Si `$settings['vactory_decoupled_router_page_entity_types']` est défini dans `settings.php`, il remplace ce réglage, et le formulaire le signale.
 
@@ -124,6 +128,7 @@ drush cr
 - Un envoi de webform avec fichier aboutit, côté front.
 - Une mauvaise réponse à un CAPTCHA affiche le message d'erreur traduit, en français et en arabe (#949).
 - Connexion au back-office, et connexion front (OAuth, SSO s'il est utilisé) (#908, #928).
+- **Si `vactory_sso` est actif :** une connexion SSO réelle aboutit, et les champs du compte mappés dans `vactory_sso` sont recopiés depuis l'IdP (#992).
 - En back-office, l'autocomplete des liens d'un Dynamic Field propose des contenus et enregistre le lien choisi (linkit, #947).
 - **Si `vactory_quiz` est actif :** `views_autocomplete_filters` est actif (`drush pm:list`) ; sinon l'activer (`drush en views_autocomplete_filters`), car Drupal n'active pas une dépendance nouvellement déclarée sur un site existant. Sans lui, la vue « Mes quiz passés » fonctionne, mais son filtre Titre n'a pas d'autocomplete (#956).
 - **Si des rôles sont cochés dans l'onglet *Registration* :** un compte créé par le formulaire d'inscription du front les reçoit (#950).
@@ -144,6 +149,7 @@ drush cr
 - **Shield 1.11** stocke les identifiants encodés dans sa configuration : un script qui lisait `credentials.shield.user` / `pass` en clair ne fonctionne plus.
 
 ### Sécurité
+- `drupal/oauth_login_oauth2` 3.1.1 (correctif de sécurité du module) ; `vactory_sso` adapté (#992, Redmine #71556).
 - `vactory_core` : vérification TLS active par défaut dans le client HTTP de Drupal (#896).
 - `vactory_decoupled_webform` : permission `access any webform configuration` retirée aux rôles anonyme et authentifié (#897).
 - `vactory_decoupled_webform` : l'upload de fichiers applique les validateurs du webform, comme le formulaire Drupal : extensions, taille, longueur du nom (#906).
@@ -228,6 +234,7 @@ drush cr
 - `drupal/linkit` : 7.0.12 → `^7.0.16` (#947). La régression de linkit 7.0.13 sur les champs `url_extended` est gérée dans le profil depuis #912 (Redmine #71222).
 - `drupal/block_class` : `^3.0` au lieu de 3.0.0, figé sans raison (#948, Redmine #71222). La 3.1.0 exige un core 10.3 ou plus, pose les classes par `hook_block_view_alter` et valide le champ « CSS class(es) » ; aucun update. Pas de 4.x.
 - `drupal/flood_control` : `^2.3` → `^3.0.1` (#988, Redmine #71534).
+- `drupal/oauth_login_oauth2` : `^2.6` → `^3.1.1`, patch « Store ressourceOwner into a session variable » retiré : `vactory_sso` lit la réponse userinfo du module par un middleware du client HTTP, limité à la route de retour SSO, sans session (#992, Redmine #71556).
 
 ### Interne
 - Commande `scripts/stack/stack` : pile locale complète et isolée par instance nommée (arbre du profil, site Drupal et sa base, Mailpit, front Next et Redis en option), pour travailler à plusieurs ou avec des agents en parallèle ; documentation `docs/dev-stack.md` (Redmine #71475, #976).
