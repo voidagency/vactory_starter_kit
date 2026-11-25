@@ -9,6 +9,7 @@
 
 **Risques et points d'attention**
 - **⚠️ Risque principal, vérification TLS (#896) :** elle est active par défaut pour **tous** les appels HTTP du site (`\Drupal::httpClient()`, service `http_client` : profil, contrib, code projet), y compris quand le réglage n'a jamais été enregistré. Un service au certificat invalide ou auto-signé échoue (`cURL error 60`). **Tester chaque appel HTTPS du projet avant la mise en production** (étapes 4 et 6).
+- **Sites protégés par Shield (#988) :** la mise à jour fait passer Shield en 1.9 ou plus (1.11). Avec flood_control 2.x, Shield répond alors 500 à toute requête qui envoie des identifiants : plus personne n'entre. Le profil exige maintenant flood_control `^3.0.1`, qui corrige ce cas ; un projet qui fige flood_control en 2.x doit lever ce blocage (étape 1).
 - **Front qui lit la configuration des webforms** sans rôle de confiance : l'adapter. La permission `access any webform configuration` n'est plus donnée aux rôles anonyme et authentifié (#897) ; le front par défaut ne l'utilise pas.
 - **Webforms découplés avec upload de fichier (#906) :** un fichier hors de la liste d'extensions de l'élément est refusé (422). Un élément sans `#file_extensions` applique la liste par défaut de webform.
 - **`term_2_slug` (#884) :** le slug de chaque traduction est normalisé à l'enregistrement du terme (minuscules ASCII, mots joints par `-`). Les URL et filtres front qui s'appuient sur un slug avec majuscules, accents, `_` ou `/` changent.
@@ -56,6 +57,7 @@ drush cr
 - **Versions relâchées (#944) :** consumers, csv_serialization, editor_advanced_link, jquery_colorpicker, link_attributes et block_list_override montent à la dernière version compatible avec le core du projet. Vérifier le diff du `composer.lock` avant de commiter.
 - **`linkit` (#947) :** la contrainte passe de 7.0.12 à `^7.0.16` ; le projet monte en 7.0.18 ou plus. Un projet qui fige linkit en dessous de 7.0.16 (6.x, 7.0.12) aura un conflit composer : lever ce blocage. Un projet qui a son propre contournement de la régression linkit 7.0.13 (élément `uri` ajouté à `url_extended`, patch local) le retire : le profil la gère depuis #912.
 - **`drupal/block_class` (#948) :** la contrainte passe de 3.0.0 à `^3.0` : 3.1.0 sur un core 10.3 ou plus, 3.0.0 en dessous. Pour rester en 3.0.0 (classes de bloc avec `:` ou `/` saisies en back-office) : `composer require drupal/block_class:3.0.0` avant la mise à jour. Ne pas passer en 4.x (branche expérimentale).
+- **`drupal/flood_control` (#988) :** la contrainte passe de `^2.3` à `^3.0.1`. Si le `composer.json` du projet exige flood_control 2.x, lever cette contrainte, sinon conflit composer. Aucune update de base à lancer ; la liste des IP autorisées est conservée.
 - **Si du code projet appelle `vactory_html2pdf.manager::html2Pdf()` (#953) :** le PDF est écrit à l'URI demandée et l'`uri` renvoyée est un URI de flux (`public://dossier/fichier.pdf`). Adapter le code qui utilise cette `uri` ou le chemin du fichier. Un schéma indisponible sur le site lève `VactoryHtml2PdfException`.
 
 **2. `drush updb -y`** (à la main, après le déploiement)
@@ -98,6 +100,7 @@ drush cr
 **6. Vérifications**
 - `drush updb` n'a plus rien en attente, et `drush status` est correct.
 - Chaque appel HTTPS du projet (API métier, SSO, CRM, envoi de formulaire distant…) répond, sans `cURL error 60` dans les logs.
+- **Si Shield est actif :** une requête avec les identifiants Shield répond normalement, et avec un mauvais mot de passe 401, jamais 500 (#988).
 - **Si `vactory_decoupled_flag`, `vactory_decoupled_search_ai` ou `vactory_toolbox` est actif :** leurs dépendances nouvellement déclarées sont actives (`drush pm:list`), car Drupal ne les active pas sur un site existant (#904, #905).
 - Une page avec menu s'affiche ; `/sitemap.xml` et `/image-sitemap.xml` répondent.
 - **Si block_class est passé en 3.1 :** un bloc qui a une classe CSS l'affiche toujours (HTML Drupal, et propriété `classes` du bloc côté front) ; le formulaire d'un bloc avec classes s'enregistre (#948).
@@ -155,6 +158,7 @@ drush cr
 - `vactory_decoupled_router` : liste des types d'entité servis comme pages par le routeur, réglable en back-office (`/admin/config/system/vactory_router/page-entity-types`), dans `settings.php` (`$settings['vactory_decoupled_router_page_entity_types']`) ou par `hook_vactory_decoupled_router_page_entity_types_alter()` (#891, Redmine #69443).
 
 ### Correctifs
+- Shield et flood_control : un site protégé par Shield 1.9 ou plus répondait 500 à toute requête avec identifiants ; flood_control 3.0.1 ne dépend plus d'une fonction de son `.module`, pas encore chargé quand le middleware de Shield s'exécute (#988, Redmine #71534).
 - `vactory_sondage` : un sondage est fermé à sa date de fermeture. La fermeture était mise en file sans l'identifiant du sondage et échouait à chaque passage de la file de `vactory_reminder` ; elle a lieu à l'heure quel que soit le fuseau du site (la file de `vactory_reminder` lit la date dans le fuseau du site : en avance ou en retard du décalage avec UTC). Une fermeture en file pour un sondage supprimé, ou dont la date a été vidée ou changée, est abandonnée au lieu d'échouer à chaque passage. Sans `vactory_reminder` (dépendance déclarée, absente seulement si le module a été installé sans ses dépendances), un sondage s'enregistre au lieu d'une erreur, et l'absence de fermeture est journalisée (#983, Redmine #71443).
 - `vactory_quiz_certificat` : sur un site où File Entity est actif, le certificat se télécharge par son titulaire et par les comptes qui ont la permission `administer site configuration`, et reste refusé aux autres comptes quelles que soient leurs permissions sur les fichiers (#975, Redmine #71471).
 - `vactory_dynamic_field_generator` : description de la commande `drush templates-generator` corrigée (elle reprenait celle d'un autre module) ; le README précise que la commande n'existe que si le module est activé et qu'aucun `drush.services.yml` n'est nécessaire (#968, Redmine #66249).
@@ -201,6 +205,7 @@ drush cr
 - Contraintes relâchées, plus de version figée sans raison (#944, Redmine #71222) : `drupal/consumers` ^1.24, `drupal/csv_serialization` ^4.0, `drupal/editor_advanced_link` ^2.2.8 (lève l'exigence core ^10.5), `voidagency/jquery_colorpicker` ^5.0 \|\| ^6.0 (6.0 compatible Drupal 11), `drupal/link_attributes` ^2.1, `drupal/block_list_override` ^1.0.3 ; `league/csv` retiré (dépendance de csv_serialization).
 - `drupal/linkit` : 7.0.12 → `^7.0.16` (#947). La régression de linkit 7.0.13 sur les champs `url_extended` est gérée dans le profil depuis #912 (Redmine #71222).
 - `drupal/block_class` : `^3.0` au lieu de 3.0.0, figé sans raison (#948, Redmine #71222). La 3.1.0 exige un core 10.3 ou plus, pose les classes par `hook_block_view_alter` et valide le champ « CSS class(es) » ; aucun update. Pas de 4.x.
+- `drupal/flood_control` : `^2.3` → `^3.0.1` (#988, Redmine #71534).
 
 ### Interne
 - Commande `scripts/stack/stack` : pile locale complète et isolée par instance nommée (arbre du profil, site Drupal et sa base, Mailpit, front Next et Redis en option), pour travailler à plusieurs ou avec des agents en parallèle ; documentation `docs/dev-stack.md` (Redmine #71475, #976).
