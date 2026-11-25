@@ -201,7 +201,10 @@ def health(dirp, prefix, control_http, control_wd_msgs):
     """Broken = cr/cron failure, a core page answering 5xx/000 (or another code than in the control run), a module page 5xx, new errors."""
     h = {'cr_rc': int(rd(f'{dirp}/{prefix}-cr.rc', '-1') or -1), 'cron_rc': int(rd(f'{dirp}/{prefix}-cron.rc', '-1') or -1)}
     rows = http(f'{dirp}/{prefix}-http.jsonl')
-    ctl = {r['path']: r['code'] for r in control_http}
+    # Lines starting with "_" are markers, not pages (_router_wait: seconds waited for the ddev router).
+    h['router_wait'] = sum(x['time'] for x in rows if x['check'] == '_router_wait')
+    rows = [x for x in rows if not x['check'].startswith('_')]
+    ctl = {r['path']: r['code'] for r in control_http if not r['check'].startswith('_')}
     bad = []
     for r in rows:
         if r['check'] == 'module_page':
@@ -209,7 +212,6 @@ def health(dirp, prefix, control_http, control_wd_msgs):
                 bad.append(r)
         elif r['code'] != ctl.get(r['path'], r['code']) or r['code'] >= 500 or r['code'] == 0:
             bad.append(r)
-    rows = [x for x in rows if not x['check'].startswith('_')]
     h['unreachable'] = bool(rows) and all(x['code'] == 0 for x in rows if x['check'] != 'module_page')
     h['http'] = rows
     h['http_bad'] = bad
