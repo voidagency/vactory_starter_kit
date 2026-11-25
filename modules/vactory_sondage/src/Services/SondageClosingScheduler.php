@@ -138,13 +138,16 @@ class SondageClosingScheduler {
    *
    * @param \Drupal\Core\Entity\EntityInterface $sondage
    *   A saved sondage block, with a close date.
+   *
+   * @return bool
+   *   TRUE if the closing is queued, FALSE without vactory_reminder.
    */
-  public function schedule(EntityInterface $sondage): void {
+  public function schedule(EntityInterface $sondage): bool {
     if (!$this->moduleHandler->moduleExists('vactory_reminder')) {
       $this->loggerFactory->get('vactory_sondage')->warning('Sondage @id is not closed at its close date: vactory_reminder is not enabled.', [
         '@id' => $sondage->id(),
       ]);
-      return;
+      return FALSE;
     }
     $close_date = $sondage->get(self::DATE_FIELD)->value;
     $site_timezone = $this->configFactory->get('system.date')->get('timezone.default') ?: date_default_timezone_get();
@@ -166,6 +169,7 @@ class SondageClosingScheduler {
         'interval' => $interval,
       ]);
     }
+    return TRUE;
   }
 
   /**
@@ -209,8 +213,7 @@ class SondageClosingScheduler {
     $counts = ['removed' => $removed, 'scheduled' => 0, 'past' => 0];
     foreach ($storage->loadMultiple($ids) as $sondage) {
       if ($sondage->get(self::DATE_FIELD)->value > $now) {
-        $this->schedule($sondage);
-        $counts['scheduled']++;
+        $counts['scheduled'] += (int) $this->schedule($sondage);
         continue;
       }
       $counts['past']++;
