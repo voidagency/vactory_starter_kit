@@ -34,6 +34,13 @@ class ShieldFloodControlTest extends ExistingSiteBase {
   private array $original = [];
 
   /**
+   * Shield user and password, drawn for each run (no fixed credential).
+   *
+   * @var string[]
+   */
+  private array $credentials = [];
+
+  /**
    * {@inheritdoc}
    */
   protected function setUp(): void {
@@ -44,6 +51,7 @@ class ShieldFloodControlTest extends ExistingSiteBase {
     }
     $config = \Drupal::configFactory()->getEditable('shield.settings');
     $this->original = $config->getRawData();
+    $this->credentials = ['test-' . bin2hex(random_bytes(4)), bin2hex(random_bytes(16))];
     $config
       ->set('shield_enable', TRUE)
       ->set('method', 1)
@@ -54,8 +62,8 @@ class ShieldFloodControlTest extends ExistingSiteBase {
       ->set('domains', '')
       ->set('flood_control_enabled', TRUE)
       ->set('credential_provider', 'shield')
-      ->set('credentials.shield.user', 'recette')
-      ->set('credentials.shield.pass', 'bon-mot-de-passe')
+      ->set('credentials.shield.user', $this->credentials[0])
+      ->set('credentials.shield.pass', $this->credentials[1])
       ->save();
   }
 
@@ -80,8 +88,8 @@ class ShieldFloodControlTest extends ExistingSiteBase {
    */
   public function testBasicAuthWithFloodControl(): void {
     $this->assertSame(401, $this->request(NULL), 'No credentials.');
-    $this->assertSame(401, $this->request(['recette', 'faux']), 'Wrong password.');
-    $status = $this->request(['recette', 'bon-mot-de-passe']);
+    $this->assertSame(401, $this->request([$this->credentials[0], 'wrong']), 'Wrong password.');
+    $status = $this->request($this->credentials);
     $this->assertNotSame(401, $status, 'Valid credentials pass Shield.');
     $this->assertLessThan(500, $status, 'No server error with valid credentials.');
   }
