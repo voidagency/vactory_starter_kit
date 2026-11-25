@@ -189,12 +189,18 @@ def http(p):
 
 
 def wd(p):
+    """Errors listed by php/wd.php: the JSON line, even after drush warnings that also start with "["."""
     try:
-        txt = open(p).read()
-        i = txt.find('[')
-        return json.loads(txt[i:].splitlines()[0]) if i >= 0 else []
-    except Exception:
+        lines = open(p).read().splitlines()
+    except OSError:
         return []
+    for line in reversed(lines):
+        if line.startswith(('[{', '[]')):
+            try:
+                return json.loads(line)
+            except ValueError:
+                return []
+    return []
 
 
 def health(dirp, prefix, control_http, control_wd_msgs):
