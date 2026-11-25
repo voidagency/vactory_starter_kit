@@ -96,11 +96,24 @@ def run(inst, m, w, tag):
         r = json.load(open(host_out))
         os.remove(host_out)
     else:
-        r = {'module': m, 'with': w, 'enabled': False, 'modules': [],
+        # No probe output (timeout, failed `stack exec`): not a measurement. Not cached, so a rerun retries it.
+        r = {'module': m, 'with': w, 'enabled': False, 'modules': [], 'no_output': True,
              'errors': [{'where': 'phpunit', 'error': 'no probe output (rc %s): %s' % (rc, txt.strip()[-1500:]), 'at': ''}]}
     r.update({'_file': os.path.relpath(out, A), '_rc': rc, '_inst': inst, '_wall': round(time.time() - t0, 1), '_tag': tag})
-    json.dump(r, open(out, 'w'), indent=1, ensure_ascii=False)
+    if not r.get('no_output'):
+        json.dump(r, open(out, 'w'), indent=1, ensure_ascii=False)
     return r
+
+
+NO_OUTPUT = 'not measured: probe run without output'
+
+
+def no_output(res, *runs):
+    """Sets the verdict when a run gave no probe output; True if so (its errors prove nothing)."""
+    bad = [r for r in runs if r.get('no_output')]
+    if bad:
+        res['verdict'] = f"{NO_OUTPUT} (rc {bad[0]['_rc']}, see {bad[0]['_file'][:-5]}.phpunit.txt); rerun redoes it"
+    return bool(bad)
 
 
 def norm(e):
@@ -187,25 +200,28 @@ def undeclared(inst, x, m, kinds):
         rx = mentions(x)
         xe = [e for e in a['errors'] if rx.search(e['where'] + ' ' + e['error'])]
         mine = [e for e in xe if attributable(e, m) and ('| unmet:' not in e['error'] or unmet_has({'errors': [e]}, m, x))]
-        if x in a.get('modules', []):
+        if no_output(res, a):
+            pass
+        elif x in a.get('modules', []):
             res['verdict'] = f'not measurable: {x} is enabled anyway (pulled through ' + (', '.join(w) or "M's declared dependencies") + ')'
         elif mine:
             b = run(inst, m, w + [x], 'c')
             res['run_with'] = b['_file']
-            bn = {norm(e) for e in b['errors']}
-            # UnmetDependencies: compare the parsed missing lists (the message itself always changes with X present).
-            proven = [e for e in mine if (not unmet_has(b, m, x)) if '| unmet:' in e['error']] + \
-                     [e for e in mine if '| unmet:' not in e['error'] and norm(e) not in bn]
-            res['errors_naming_absent'] = mine
-            res['control_errors'] = b['errors'][:10]
-            res['control_enabled'] = b.get('enabled')
-            if proven:
-                res['proven_errors'] = proven
-                res['verdict'] = ('NEEDED: install fails without it: ' if not a.get('enabled') else 'NEEDED: errors naming it when absent: ') + first(proven)
-                if not b.get('enabled'):
-                    res['verdict'] += f' [with {x} the missing item disappears, but M still does not install on a clean site: ' + (first(b['errors'])[:300] if b['errors'] else '?') + ']'
-            else:
-                res['verdict'] = 'not proven: the same error happens with ' + x + ' installed'
+            if not no_output(res, b):
+                bn = {norm(e) for e in b['errors']}
+                # UnmetDependencies: compare the parsed missing lists (the message itself always changes with X present).
+                proven = [e for e in mine if (not unmet_has(b, m, x)) if '| unmet:' in e['error']] + \
+                         [e for e in mine if '| unmet:' not in e['error'] and norm(e) not in bn]
+                res['errors_naming_absent'] = mine
+                res['control_errors'] = b['errors'][:10]
+                res['control_enabled'] = b.get('enabled')
+                if proven:
+                    res['proven_errors'] = proven
+                    res['verdict'] = ('NEEDED: install fails without it: ' if not a.get('enabled') else 'NEEDED: errors naming it when absent: ') + first(proven)
+                    if not b.get('enabled'):
+                        res['verdict'] += f' [with {x} the missing item disappears, but M still does not install on a clean site: ' + (first(b['errors'])[:300] if b['errors'] else '?') + ']'
+                else:
+                    res['verdict'] = 'not proven: the same error happens with ' + x + ' installed'
         elif xe:
             ups = sorted({mm for e in xe for mm in re.findall(r'provided by (?:<em[^>]*>)?(\w+)', e['error'])} | {owner_of(e.get('at', '')) or '' for e in xe})
             ups = [u for u in ups if u and u != m]
@@ -260,7 +276,9 @@ def unused(inst, m, dd):
         named = [e for e in new if rx.search(e['where'] + ' ' + e['error'])]
         res['new_errors'] = new[:10]
         res['exercised_without'] = {k: a.get(k) for k in ('classes', 'services', 'plugins', 'routes', 'steps')}
-        if dd in a.get('modules', []):
+        if no_output(res, a, b):
+            pass
+        elif dd in a.get('modules', []):
             res['verdict'] = f'not measurable: {dd} is enabled anyway without the declaration (pulled through ' + (', '.join(wa) or 'another declared dependency') + ')'
         elif not b.get('enabled'):
             res['verdict'] = 'not measurable: M does not install on a clean site even with the declaration: ' + (first(b['errors']) if b['errors'] else '?')
@@ -277,6 +295,11 @@ def unused(inst, m, dd):
     log(inst, m, 'without declared', dd, '->', res['verdict'][:160])
 
 
+def judged(path):
+    """A pair is done when it has a result, except a result from a run without probe output."""
+    return os.path.exists(path) and not json.load(open(path)).get('verdict', '').startswith(NO_OUTPUT)
+
+
 def main():
     mode, lst, insts = sys.argv[2], sys.argv[3], sys.argv[4:]
     if mode not in ('undeclared', 'unused') or not insts:
@@ -291,12 +314,12 @@ def main():
             continue
         if mode == 'undeclared':
             x, m, k = f[0], f[1], (f[2] if len(f) > 2 else '')
-            if not FORCE and os.path.exists(f'{A}/deps/undeclared/{m}__{x}.json'):
+            if not FORCE and judged(f'{A}/deps/undeclared/{m}__{x}.json'):
                 continue
             groups.setdefault(m, []).append((x, m, k))
         else:
             m, dd = f[0], f[1]
-            if not FORCE and os.path.exists(f'{A}/deps/unused/{m}__{dd}.json'):
+            if not FORCE and judged(f'{A}/deps/unused/{m}__{dd}.json'):
                 continue
             groups.setdefault(m, []).append((m, dd))
     q = queue.Queue()
