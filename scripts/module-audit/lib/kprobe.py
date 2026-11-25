@@ -40,6 +40,22 @@ hidden: true
 """
 
 
+def dump_json(obj, path):
+    """Write then rename: a run killed mid-write never leaves a truncated result."""
+    tmp = f'{path}.tmp'
+    with open(tmp, 'w') as fh:
+        json.dump(obj, fh, indent=1, ensure_ascii=False)
+    os.replace(tmp, path)
+
+
+def load_json(path):
+    """A result file, or None when it is missing or unreadable (then measured again)."""
+    try:
+        return json.load(open(path))
+    except (OSError, ValueError):
+        return None
+
+
 def inst_path(inst, key):
     v = json.load(open(f'{A}/instances/{inst}.json'))
     for k in key.split('.'):
@@ -76,8 +92,9 @@ def run(inst, m, w, tag):
     d = f'{RUNS}/{m}'
     os.makedirs(d, exist_ok=True)
     out = f'{d}/{tag}-{key}.json'
-    if os.path.exists(out):
-        return json.load(open(out))
+    cached = load_json(out)
+    if cached is not None:
+        return cached
     dd = f"{inst_path(inst, 'drupal.path')}/{WORK}"
     name = f'k-{m}-{key}.json'
     host_out = f'{dd}/out/{name}'
@@ -101,7 +118,7 @@ def run(inst, m, w, tag):
              'errors': [{'where': 'phpunit', 'error': 'no probe output (rc %s): %s' % (rc, txt.strip()[-1500:]), 'at': ''}]}
     r.update({'_file': os.path.relpath(out, A), '_rc': rc, '_inst': inst, '_wall': round(time.time() - t0, 1), '_tag': tag})
     if not r.get('no_output'):
-        json.dump(r, open(out, 'w'), indent=1, ensure_ascii=False)
+        dump_json(r, out)
     return r
 
 
@@ -233,7 +250,7 @@ def undeclared(inst, x, m, kinds):
             res['verdict'] = f'not proven: no error naming {x} when M runs without it (code path not reached by the probe)'
             res['other_errors'] = a['errors'][:10]
     res['time'] = round(time.time() - t0, 1)
-    json.dump(res, open(out, 'w'), indent=1, ensure_ascii=False)
+    dump_json(res, out)
     log(inst, m, 'without', x, '->', res['verdict'][:160])
 
 
@@ -293,13 +310,14 @@ def unused(inst, m, dd):
         else:
             res['verdict'] = 'no error observed without it'
     res['time'] = round(time.time() - t0, 1)
-    json.dump(res, open(out, 'w'), indent=1, ensure_ascii=False)
+    dump_json(res, out)
     log(inst, m, 'without declared', dd, '->', res['verdict'][:160])
 
 
 def judged(path):
     """A pair is done when it has a result, except a result from a run without probe output."""
-    return os.path.exists(path) and not json.load(open(path)).get('verdict', '').startswith(NO_OUTPUT)
+    r = load_json(path)
+    return r is not None and not r.get('verdict', '').startswith(NO_OUTPUT)
 
 
 def main():
@@ -330,14 +348,17 @@ def main():
     log(mode, sum(len(v) for v in groups.values()), 'pairs,', len(groups), 'modules, on', insts)
 
     failed = []
+    stop = threading.Event()  # set on Ctrl-C: no new pair starts
 
     def worker(inst):
-        while True:
+        while not stop.is_set():
             try:
                 g = q.get_nowait()
             except queue.Empty:
                 return
             for item in g:
+                if stop.is_set():
+                    return
                 try:
                     (undeclared if mode == 'undeclared' else unused)(inst, *item)
                 except Exception as e:  # keep going; the pair stays without result -> rerun picks it up
@@ -346,8 +367,18 @@ def main():
     ts = [threading.Thread(target=worker, args=(i,)) for i in insts]
     for t in ts:
         t.start()
-    for t in ts:
-        t.join()
+    try:
+        while any(t.is_alive() for t in ts):
+            for t in ts:
+                t.join(0.5)
+    except KeyboardInterrupt:
+        stop.set()
+        log(mode, 'interrupted: waiting for the running pairs, then stop (resume picks up the pairs without result)')
+        for t in ts:
+            t.join()
+        for inst in insts:
+            teardown(inst)
+        sys.exit(130)
     for inst in insts:
         teardown(inst)
     log(mode, lst, 'done')

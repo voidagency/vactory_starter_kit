@@ -414,7 +414,9 @@ def cmd_result(d, m, control):
     f['reinstall_duplicates'] = bool(re_.get('duplicates'))
     f['measurement_invalid'] = any((r.get(k) or {}).get('unreachable') for k in ('health_after_install', 'health_after_uninstall'))
     r['flags'] = f
-    json.dump(r, open(f'{d}/result.json', 'w'), indent=1, ensure_ascii=False, sort_keys=True)
+    with open(f'{d}/result.json.tmp', 'w') as fh:  # write then rename: never a truncated result
+        json.dump(r, fh, indent=1, ensure_ascii=False, sort_keys=True)
+    os.replace(f'{d}/result.json.tmp', f'{d}/result.json')
     open(f'{d}/summary.md', 'w').write(summary_md(r))
 
 
