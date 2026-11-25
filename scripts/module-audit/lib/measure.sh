@@ -98,7 +98,7 @@ ref_step() {
   pulled=$("$PY" "$MA_HOME/lib/diff.py" pulled "$d/s0.json" "$d/s1.json" "$m")
   if [ -z "$pulled" ]; then return 0; fi
   t=$(now)
-  st restore "$inst" "$SNAP_LABEL" >"$d/40-ref-restore.txt" 2>&1
+  st restore "$inst" "$SNAP_LABEL" >"$d/40-ref-restore.txt" 2>&1 || return 1
   # shellcheck disable=SC2086 # liste de modules.
   drush_to "$inst" "$d/40-ref-deps-install.txt" en $pulled -y
   echo $? >"$d/40-ref-deps-install.rc"
@@ -110,11 +110,15 @@ ref_step() {
 # injoignable), alors refaite ; FORCE=1 refait tout.
 measure_module() {
   local inst="$1" m="$2" d="$OUT/raw/$2" ctl="$OUT/raw/_control/$1" t0 t mode w0 w1 w2 w3 w4 casc
-  if [ -f "$d/result.json" ] && "$PY" -c 'import json, sys; sys.exit(0 if json.load(open(sys.argv[1]))["flags"].get("measurement_invalid") else 1)' "$d/result.json"; then
+  if [ -f "$d/result.json" ] && "$PY" -c 'import json, sys
+try:
+    sys.exit(0 if json.load(open(sys.argv[1]))["flags"].get("measurement_invalid") else 1)
+except ValueError:
+    sys.exit(0)  # résultat tronqué : à refaire' "$d/result.json"; then
     mkdir -p "$OUT/raw/_invalid"
     rm -rf "$OUT/raw/_invalid/$m"
     mv "$d" "$OUT/raw/_invalid/$m"
-    log "$m : mesure précédente invalide (site injoignable), refaite"
+    log "$m : mesure précédente invalide (site injoignable) ou illisible, refaite"
   fi
   if [ -f "$d/result.json" ] && [ "${FORCE:-0}" != 1 ]; then
     log "$m : déjà mesuré, passé"
@@ -190,7 +194,12 @@ measure_module() {
   snap "$inst" "$d/s3.json"
 
   el "$t0" >"$d/total.time"
-  ref_step "$inst" "$m" "$d"
+  if ! ref_step "$inst" "$m" "$d"; then
+    log "$m : restauration du snapshot en échec avant la référence des restes, module non mesuré ($d/40-ref-restore.txt)"
+    rm -rf "$OUT/raw/_restore-failed-$m"
+    mv "$d" "$OUT/raw/_restore-failed-$m"
+    return 1
+  fi
   "$PY" "$MA_HOME/lib/diff.py" result "$d" "$m" "$ctl" || log "$m : diff.py a échoué"
   log "$m ($mode) : $(cat "$d/total.time") s"
 }
