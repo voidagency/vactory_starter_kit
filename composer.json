@@ -110,7 +110,7 @@
     "drupal/hreflang": "^1.16",
     "drupal/login_security": "^2.0",
     "drupal/memcache": "^2.2",
-    "drupal/oauth_login_oauth2": "^2.6",
+    "drupal/oauth_login_oauth2": "^3.1.1",
     "drupal/recaptcha": "^3.0",
     "drupal/scheduler": "^2.0",
     "drupal/seckit": "^2.0",
@@ -214,9 +214,6 @@
       },
       "drupal/features": {
         "Export config translation": "https://www.drupal.org/files/issues/features_export-config-translation-2869336-2.patch"
-      },
-      "drupal/oauth_login_oauth2": {
-        "Store ressourceOwner into a session variable.": "https://gist.githubusercontent.com/voidagency/94489fb9998406959ebefb31a758f39c/raw/6692adac21ef17ea4d66d69584159a6802707404/oauth-login-oauth2-add-resource-owner-to-session.patch"
       },
       "drupal/advagg": {
         "Remove version comments from minified files.": "https://gist.githubusercontent.com/voidagency/136f41faf39bcff92e334f364a173afb/raw/421944a391d8ed071ec648cf3ca8311f912372fe/advagg-remove-version-comment-from-minified-js.patch"

@@ -1,0 +1,8 @@
+services:
+  vactory_sso.userinfo_collector:
+    class: Drupal\vactory_sso\UserinfoCollector
+  vactory_sso.userinfo_capture_middleware:
+    class: Drupal\vactory_sso\HttpClientMiddleware\UserinfoCaptureMiddleware
+    arguments: ['@config.factory', '@current_route_match', '@vactory_sso.userinfo_collector']
+    tags:
+      - { name: http_client_middleware }

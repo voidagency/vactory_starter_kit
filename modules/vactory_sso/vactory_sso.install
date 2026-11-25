@@ -1,0 +1,25 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for vactory_sso.
+ */
+
+/**
+ * Points the SSO return address at /mo_callback (oauth_login_oauth2 3.x).
+ *
+ * In oauth_login_oauth2 3.x, the identity provider returns to /mo_callback
+ * instead of /mo_login, and the module does not update the stored address:
+ * without this, the return from the identity provider ends on a 404. The
+ * identity provider must also accept the new address (see the CHANGELOG).
+ */
+function vactory_sso_update_10001() {
+  $config = \Drupal::configFactory()->getEditable('oauth_login_oauth2.settings');
+  $uri = (string) $config->get('miniorange_auth_client_callback_uri');
+  if (!preg_match('#/mo_login/?$#', $uri)) {
+    return t('SSO return address unchanged (@uri).', ['@uri' => $uri === '' ? 'empty' : $uri]);
+  }
+  $new = preg_replace('#/mo_login/?$#', '/mo_callback', $uri);
+  $config->set('miniorange_auth_client_callback_uri', $new)->save();
+  return t('SSO return address changed to @uri: add it to the allowed redirect URIs of the identity provider.', ['@uri' => $new]);
+}
