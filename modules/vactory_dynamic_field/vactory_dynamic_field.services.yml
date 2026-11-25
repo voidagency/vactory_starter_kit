@@ -12,3 +12,11 @@ services:
     class: Drupal\vactory_dynamic_field\AutoPopulateManager
   df_pending_content.manager:
     class: Drupal\vactory_dynamic_field\PendingContentManager
+  vactory_dynamic_field.inline_file_usage:
+    class: Drupal\vactory_dynamic_field\InlineFileUsage
+    arguments:
+      - '@entity.repository'
+      - '@?file.usage'
+      - '@entity_type.manager'
+      - '@entity_field.manager'
+      - '@database'

@@ -43,6 +43,20 @@ function vactory_dynamic_field_update_9501() {
 }
 
 /**
+ * Record the files inserted in the editors of existing Dynamic Fields.
+ *
+ * Images uploaded from CKEditor in a Dynamic Field were left as temporary
+ * files without usage: they are made permanent and their usage is recorded,
+ * one per revision that references them, as core does for formatted text.
+ */
+function vactory_dynamic_field_update_9502(&$sandbox) {
+  $recorded = \Drupal::service('vactory_dynamic_field.inline_file_usage')->recordExistingContent($sandbox);
+  if ($sandbox['#finished'] >= 1) {
+    return t('@count file usages recorded for Dynamic Fields.', ['@count' => $recorded]);
+  }
+}
+
+/**
  * Content progress custom table schema.
  */
 function vactory_df_get_table_schema() {
