@@ -130,6 +130,14 @@ measure_module() {
   t=$(now)
   st restore "$inst" "$SNAP_LABEL" >"$d/00-restore.txt" 2>&1
   echo $? >"$d/00-restore.rc"
+  # Site non remis à l'état de base : rien à mesurer, sans résultat le module
+  # est repris par « module-audit resume ».
+  if [ "$(cat "$d/00-restore.rc")" != 0 ]; then
+    log "$m : restauration du snapshot en échec, module non mesuré ($d/00-restore.txt)"
+    rm -rf "$OUT/raw/_restore-failed-$m"
+    mv "$d" "$OUT/raw/_restore-failed-$m"
+    return 1
+  fi
   el "$t" >"$d/00-restore.time"
   push_php "$inst"
   snap "$inst" "$d/s0.json"
