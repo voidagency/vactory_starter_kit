@@ -210,6 +210,7 @@ drush cr
 ### Interne
 - Commande `scripts/stack/stack` : pile locale complète et isolée par instance nommée (arbre du profil, site Drupal et sa base, Mailpit, front Next et Redis en option), pour travailler à plusieurs ou avec des agents en parallèle ; documentation `docs/dev-stack.md` (Redmine #71475, #976).
 - `RELEASING.md` : la liste « Une PR est terminée quand » demande de tester ce qu'un point d'accès accepte encore (accès, valeurs, entité inexistante) et de rejouer une mise à jour de données sur des données d'avant la PR (#979, Redmine #71160).
+- `RELEASING.md` : une version candidate est publiée en pre-release GitHub (notes : section `[Non publié]` du commit taggé), ne se modifie pas après publication, et un problème trouvé donne une nouvelle `rcN` (#989, Redmine #71368).
 - Tests d'intégration des dépendances à historique d'incidents et contrats entre le profil et ses dépendances (Redmine #71160 ; #912 à #920, #934).
 - Tests de caractérisation, puis découpage des méthodes signalées par Sonar, sans changement de comportement (#935, #938, #939).
 - CI Drone : un build par commit, sans build pour les branches sans PR ni pour les tags (#921) ; jeton GitHub pour composer (#940) ; exclusions Sonar appliquées et règle `php:S1781` ignorée (#929).

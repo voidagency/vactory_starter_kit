@@ -56,7 +56,14 @@ Décrire le comportement corrigé et l'action à faire. Pas de chemin d'endpoint
 
 ## Publier une release
 1. **Complétude.** Comparer `git log --merges --first-parent --format=%s <dernier tag>..origin/3.x` aux numéros de PR de `[Non publié]`.
-2. **Version candidate (mineures et majeures).** Tagger le dernier commit de `3.x` : `git tag 3.x.y-rc1 origin/3.x && git push origin 3.x.y-rc1`. Un projet teste avec `composer require voidagency/vactory_starter_kit:3.x.y-rc1 -W`. Les projets utilisent toujours une version figée, jamais `3.x-dev`. Dérouler « Mise à jour des projets » telle qu'elle est écrite sur vactory8 et sur un ou deux projets clients à Features (canaries Autogit, Redmine #71368). On teste le guide autant que le code.
+2. **Version candidate (mineures et majeures).** Tagger le dernier commit de `3.x`, puis publier une pre-release GitHub avec la section `[Non publié]` de ce commit :
+   ```
+   git tag 3.x.y-rc1 origin/3.x && git push origin 3.x.y-rc1
+   { echo "Version candidate : à tester sur un projet de recette, pas en production."; echo;
+     git show 3.x.y-rc1:CHANGELOG.md | awk '/^## \[Non publié\]/{f=1;next} /^## \[/{f=0} f'; } > notes.md
+   gh release create 3.x.y-rc1 --prerelease --verify-tag --title 3.x.y-rc1 --notes-file notes.md --generate-notes
+   ```
+   La page porte le badge « Pre-release » et ne devient jamais « Latest ». Une version candidate publiée ne se modifie pas : un problème trouvé se corrige par une PR sur `3.x`, puis `3.x.y-rc2` (nouveau tag, nouvelle pre-release). Un brouillon de release GitHub peut servir à préparer les notes ; ce n'est pas une étape. Un projet teste avec `composer require voidagency/vactory_starter_kit:3.x.y-rc1 -W`. Les projets utilisent toujours une version figée, jamais `3.x-dev`. Dérouler « Mise à jour des projets » telle qu'elle est écrite sur vactory8 et sur un ou deux projets clients à Features (canaries Autogit, Redmine #71368). On teste le guide autant que le code.
 3. **PR de release.** `[Non publié]` devient `[3.x.y] - AAAA-MM-JJ` (date du tag final), avec une nouvelle section `[Non publié]` vide et les liens de bas de fichier mis à jour. Dans la même PR, `sonar.projectVersion` de `sonar-project.properties` passe à `3.x.y` : le « nouveau code » jugé par la porte qualité Sonar repart de cette version.
 4. **Tag et release GitHub.** La section du changelog en tête, les notes générées par GitHub à la suite :
    ```
