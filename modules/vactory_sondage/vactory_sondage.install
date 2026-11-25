@@ -21,3 +21,20 @@ function vactory_sondage_install($is_syncing) {
     ->set('reminder_consumers_string', $reminder_consumers_string)
     ->save();
 }
+
+/**
+ * Repairs the queued closings of sondages (Redmine #71443).
+ *
+ * The closings queued so far have no sondage ID and fail at every run of the
+ * reminder queue: they are deleted. The closing of each open sondage whose
+ * close date is still to come is queued again. An open sondage whose close
+ * date has passed is left open.
+ */
+function vactory_sondage_update_10001() {
+  $counts = \Drupal::service('vactory_sondage.closing_scheduler')->repairQueue();
+  return t('Sondage closings: @removed broken items deleted, @scheduled open sondages scheduled, @past open sondages with a passed close date left open.', [
+    '@removed' => $counts['removed'],
+    '@scheduled' => $counts['scheduled'],
+    '@past' => $counts['past'],
+  ]);
+}
