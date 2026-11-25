@@ -43,4 +43,18 @@ class SondageWithoutReminderTest extends SondageKernelTestBase {
     $this->assertStringContainsString('vactory_reminder', $this->logged[0]);
   }
 
+  /**
+   * The update counts no scheduled sondage when it cannot schedule one.
+   */
+  public function testUpdateSchedulesNothingWithoutReminder(): void {
+    $this->createSondage(3600);
+    $this->logged = [];
+
+    $this->container->get('module_handler')->loadInclude('vactory_sondage', 'install');
+    $message = (string) vactory_sondage_update_10001();
+
+    $this->assertStringContainsString('0 open sondages scheduled', $message);
+    $this->assertCount(1, $this->logged);
+  }
+
 }
