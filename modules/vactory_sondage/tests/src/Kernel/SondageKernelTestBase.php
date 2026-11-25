@@ -25,13 +25,6 @@ abstract class SondageKernelTestBase extends KernelTestBase implements LoggerInt
   protected const QUEUE = 'reminder_queue_processor';
 
   /**
-   * The shipped status field config does not pass the strict schema check.
-   *
-   * @var bool
-   */
-  protected $strictConfigSchema = FALSE;
-
-  /**
    * Messages logged in the channel of vactory_sondage.
    *
    * @var string[]
