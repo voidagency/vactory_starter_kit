@@ -40,18 +40,23 @@ push_php() {
 }
 
 # drush dans l'instance ; sortie dans $2 ; arrêt au bout de 15 min.
-# COLUMNS : les blocs d'erreur de drush ne sont pas coupés.
+# COLUMNS : les blocs d'erreur de drush ne sont pas coupés. Le délai est
+# appliqué dans le conteneur (tuer « stack exec » sur l'hôte laisse drush
+# tourner) ; l'hôte n'arrête « stack exec » qu'en dernier recours.
 drush_to() {
-  local inst="$1" out="$2" pid n=0
+  local inst="$1" out="$2" pid n=0 rc
   shift 2
-  "$STACK" exec "$inst" env COLUMNS=1000 drush "$@" >"$out" 2>&1 </dev/null &
+  "$STACK" exec "$inst" timeout -k 10 900 env COLUMNS=1000 drush "$@" >"$out" 2>&1 </dev/null &
   pid=$!
   while kill -0 "$pid" 2>/dev/null; do
     sleep 1
     n=$((n + 1))
-    if [ "$n" -gt 900 ]; then kill "$pid"; echo "module-audit: arrêté après 900 s" >>"$out"; fi
+    if [ "$n" -gt 960 ]; then kill -9 "$pid" 2>/dev/null; fi
   done
   wait "$pid"
+  rc=$?
+  if [ "$rc" = 124 ] || [ "$rc" = 137 ]; then echo "module-audit: arrêté après 900 s" >>"$out"; fi
+  return "$rc"
 }
 
 # php/<script> dans l'instance : $3 = fichier JSON écrit par le script.
