@@ -20,3 +20,9 @@ dependencies:
   - search_api_exclude_entity
   - vactory_dynamic_field
   - colorapi
+  - 'drupal:comment'
+  - 'drupal:datetime_range'
+  - 'drupal:menu_link_content'
+  - 'drupal:node'
+  - 'drupal:options'
+  - 'drupal:taxonomy'

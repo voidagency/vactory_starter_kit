@@ -4,6 +4,15 @@ services:
     arguments:
       - '@event_dispatcher'
       - '@vacory_decoupled.media_file_manager'
+  vactory_sondage.closing_scheduler:
+    class: Drupal\vactory_sondage\Services\SondageClosingScheduler
+    arguments:
+      - '@entity_type.manager'
+      - '@database'
+      - '@logger.factory'
+      - '@queue'
+      - '@config.factory'
+      - '@module_handler'
   vactory_points.sondage_vote_subscriber:
     class: Drupal\vactory_sondage\EventSubscriber\SondageVoteEventsSubscriber
     tags:

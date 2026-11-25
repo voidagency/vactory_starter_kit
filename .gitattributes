@@ -1,0 +1,6 @@
+# Outillage de développement du profil : absent de l'archive que Composer
+# installe dans les projets (zip GitHub).
+/scripts/stack export-ignore
+/scripts/module-audit export-ignore
+/docs/dev-stack.md export-ignore
+/docs/module-audit.md export-ignore

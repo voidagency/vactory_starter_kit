@@ -1,0 +1,22 @@
+# Généré par scripts/stack (vactory_starter_kit). Ne pas modifier : refait à chaque « stack up ».
+name: @@PROJECT@@
+type: drupal10
+docroot: ""
+php_version: "@@PHP@@"
+webserver_type: @@WEBSERVER@@
+database:
+  type: @@DB_TYPE@@
+  version: "@@DB_VERSION@@"
+project_tld: ddev.site
+performance_mode: none
+disable_settings_management: true
+xdebug_enabled: false
+# Pas de port fixe sur la machine : ddev choisit des ports libres.
+host_webserver_port: ""
+host_https_port: ""
+host_db_port: ""
+omit_containers: [ddev-ssh-agent]
+web_environment:
+  - IS_DDEV_PROJECT=true
+  - VACTORY_STACK=@@NAME@@
+  - BASE_FRONTEND_URL=@@FRONT_URL@@
