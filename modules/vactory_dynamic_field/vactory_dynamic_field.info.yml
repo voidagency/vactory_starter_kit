@@ -5,6 +5,7 @@ package: Vactory Core
 core_version_requirement: ^9 || ^10
 configure: vactory_dynamic_field.settings_form
 dependencies:
+  - 'drupal:block_content'
   - twig_tweak
   - jquery_colorpicker
   - field_group

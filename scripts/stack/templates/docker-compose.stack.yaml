@@ -1,0 +1,12 @@
+# Généré par scripts/stack (vactory_starter_kit). Ne pas modifier.
+# Le profil de l'instance remplace celui installé par composer ; son vendor/
+# est masqué (le bootstrap PHPUnit parcourt le profil et y trouverait un
+# autre core).
+services:
+  web:
+    volumes:
+      - "@@PROFILE@@:/var/www/html/profiles/contrib/vactory_starter_kit:cached"
+      - /var/www/html/profiles/contrib/vactory_starter_kit/vendor
+      - "@@INST@@/keys:/var/www/stack/keys:ro"
+      - "@@INST@@/secrets.env:/var/www/stack/secrets.env:ro"
+      - "@@TOOL@@:/var/www/stack/tool:ro"

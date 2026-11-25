@@ -42,14 +42,22 @@ function vactory_sondage_entity_presave(EntityInterface $entity) {
       // By default make sondage opened.
       $entity->set('field_sondage_status', 1);
     }
-    $reminder_manager = Drupal::service('vactory_reminder.queue.manager');
-    $extra_data = [
-      'entity_type'     => $entity->getEntityTypeId(),
-      'entity_id'       => $entity->id(),
-      'date_field_name' => 'field_sondage_close_date',
-    ];
-    $reminder_manager->reminderQueuePush('vactory_sondage_closer', 'sondage_closer', $extra_data);
   }
+}
+
+/**
+ * Implements hook_entity_insert().
+ */
+function vactory_sondage_entity_insert(EntityInterface $entity) {
+  // The closing is queued once the sondage has an ID.
+  Drupal::service('vactory_sondage.closing_scheduler')->onSave($entity);
+}
+
+/**
+ * Implements hook_entity_update().
+ */
+function vactory_sondage_entity_update(EntityInterface $entity) {
+  Drupal::service('vactory_sondage.closing_scheduler')->onSave($entity);
 }
 
 /**
