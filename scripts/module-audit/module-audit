@@ -227,12 +227,14 @@ for kind, mcol in (('undeclared', 1), ('unused', 0)):
 if want and want - seen:
     sys.exit('paires absentes des candidats (pairs-*.tsv) : ' + ', '.join(f'{m}:{x}' for m, x in sorted(want - seen)))
 EOF
-  # shellcheck disable=SC2046 # noms d'instances.
-  STACK="$STACK" "$PY" "$MA_HOME/lib/kprobe.py" "$OUT" unused "$OUT/work/run-unused.tsv" $(instance_names) </dev/null \
-    | tee -a "$OUT/logs/kprobe.log"
-  # shellcheck disable=SC2046
-  STACK="$STACK" "$PY" "$MA_HOME/lib/kprobe.py" "$OUT" undeclared "$OUT/work/run-undeclared.tsv" $(instance_names) </dev/null \
-    | tee -a "$OUT/logs/kprobe.log"
+  local kind
+  for kind in unused undeclared; do
+    # shellcheck disable=SC2046 # noms d'instances.
+    STACK="$STACK" "$PY" "$MA_HOME/lib/kprobe.py" "$OUT" "$kind" "$OUT/work/run-$kind.tsv" $(instance_names) </dev/null \
+      | tee -a "$OUT/logs/kprobe.log"
+    # Sans ce contrôle, un échec de kprobe.py laissait l'audit finir sans les dépendances.
+    [ "${PIPESTATUS[0]}" = 0 ] || die "kprobe.py $kind a échoué (logs/kprobe.log) ; « module-audit resume » reprend les paires sans résultat."
+  done
 }
 
 report_pass() {

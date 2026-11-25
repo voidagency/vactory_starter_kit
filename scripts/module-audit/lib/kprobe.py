@@ -327,6 +327,8 @@ def main():
         q.put(groups[m])
     log(mode, sum(len(v) for v in groups.values()), 'pairs,', len(groups), 'modules, on', insts)
 
+    failed = []
+
     def worker(inst):
         while True:
             try:
@@ -338,6 +340,7 @@ def main():
                     (undeclared if mode == 'undeclared' else unused)(inst, *item)
                 except Exception as e:  # keep going; the pair stays without result -> rerun picks it up
                     log(inst, 'ERROR', item, repr(e))
+                    failed.append(item)
     ts = [threading.Thread(target=worker, args=(i,)) for i in insts]
     for t in ts:
         t.start()
@@ -346,6 +349,8 @@ def main():
     for inst in insts:
         teardown(inst)
     log(mode, lst, 'done')
+    if failed:
+        sys.exit(f'{len(failed)} pair(s) without result after an error, see the log above')
 
 
 if __name__ == '__main__':
