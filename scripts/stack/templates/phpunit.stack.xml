@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Généré par scripts/stack (vactory_starter_kit). Pas de suite Functional :
+     elle installe et désinstalle des modules sur le site. -->
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         bootstrap="core/tests/bootstrap.php" colors="true"
+         beStrictAboutTestsThatDoNotTestAnything="true"
+         beStrictAboutOutputDuringTests="true"
+         beStrictAboutChangesToGlobalState="true"
+         failOnWarning="true"
+         cacheResult="false"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/9.3/phpunit.xsd">
+  <php>
+    <ini name="error_reporting" value="32767"/>
+    <ini name="memory_limit" value="-1"/>
+    <env name="SIMPLETEST_DB" value="mysql://db:db@db/db"/>
+    <env name="SIMPLETEST_BASE_URL" value="http://localhost"/>
+    <env name="DTT_BASE_URL" value="http://localhost"/>
+    <env name="BROWSERTEST_OUTPUT_DIRECTORY" value="/tmp"/>
+    <env name="SYMFONY_DEPRECATIONS_HELPER" value="disabled"/>
+  </php>
+  <testsuites>
+    <testsuite name="unit">
+      <directory>./profiles/contrib/vactory_starter_kit/modules/*/tests/src/Unit</directory>
+      <directory>./profiles/contrib/vactory_starter_kit/modules/*/modules/*/tests/src/Unit</directory>
+    </testsuite>
+    <testsuite name="kernel">
+      <directory>./profiles/contrib/vactory_starter_kit/modules/*/tests/src/Kernel</directory>
+      <directory>./profiles/contrib/vactory_starter_kit/modules/*/modules/*/tests/src/Kernel</directory>
+    </testsuite>
+    <testsuite name="existing-site">
+      <directory>./profiles/contrib/vactory_starter_kit/modules/*/tests/src/ExistingSite</directory>
+      <directory>./profiles/contrib/vactory_starter_kit/modules/*/modules/*/tests/src/ExistingSite</directory>
+    </testsuite>
+  </testsuites>
+</phpunit>

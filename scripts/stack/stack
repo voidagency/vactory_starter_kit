@@ -1,0 +1,1457 @@
+#!/usr/bin/env bash
+# shellcheck disable=SC2317 # on_exit (trap) et have (eval) sont appelées indirectement.
+# stack : pile locale complète et isolée par instance nommée (profil, site
+# Drupal, base, Mailpit, front Next + Redis), sur ddev.
+# Documentation : docs/dev-stack.md. Aide : stack help.
+#
+# Compatible bash 3.2 (macOS) et Linux. Aucun secret n'est affiché : ils sont
+# écrits dans <instance>/secrets.env (600) et lus par les conteneurs.
+
+set -euo pipefail
+umask 022
+
+# --- Emplacements -----------------------------------------------------------
+
+stack_resolve() {
+  # readlink -f n'existe pas partout (macOS < 12.3).
+  python3 -c 'import os,sys; print(os.path.realpath(sys.argv[1]))' "$1"
+}
+STACK_SELF="$(stack_resolve "$0")"
+STACK_HOME="$(dirname "$STACK_SELF")"
+STACK_TPL="$STACK_HOME/templates"
+STACK_LIB="$STACK_HOME/lib"
+STACK_CONFIG="${VACTORY_STACK_CONFIG:-$HOME/.config/vactory/stack.env}"
+
+NODE_IMAGE="${VACTORY_STACK_NODE_IMAGE:-node:22.23.5-bookworm-slim}"
+REDIS_IMAGE="${VACTORY_STACK_REDIS_IMAGE:-redis:7.4.11-alpine}"
+FRONT_VOLUME="vsk-front-node-modules"
+DB_VOLUME="vsk-baseline-db"
+BASE_PROJECT="vskbase"
+HELD_LOCKS=""
+CLEANUP_NAME=""
+
+# --- Sorties ------------------------------------------------------------------
+
+if [ -t 1 ]; then C_B=$'\033[1m'; C_R=$'\033[31m'; C_Y=$'\033[33m'; C_G=$'\033[32m'; C_0=$'\033[0m'; else C_B=; C_R=; C_Y=; C_G=; C_0=; fi
+say() { printf '%s\n' "$*"; }
+step() { printf '%s==>%s %s\n' "$C_B" "$C_0" "$*"; }
+ok() { printf '%s ok %s %s\n' "$C_G" "$C_0" "$*"; }
+warn() { printf '%sattention :%s %s\n' "$C_Y" "$C_0" "$*" >&2; }
+# Sortie d'erreur du terminal, gardée sur le descripteur 9 : dans run_logged,
+# la sortie d'erreur va au journal, mais une erreur fatale doit aussi
+# s'afficher (sinon : arrêt sans message, constaté au bout d'un verrou).
+exec 9>&2
+STACK_IN_LOG=""
+die() {
+  printf '%serreur :%s %s\n' "$C_R" "$C_0" "$*" >&2
+  [ -z "$STACK_IN_LOG" ] || printf '%serreur :%s %s\n' "$C_R" "$C_0" "$*" >&9
+  exit 1
+}
+have() { command -v "$1" >/dev/null 2>&1; }
+now() { date +%s; }
+since() { echo $(( $(now) - $1 ))s; }
+
+# Lance une commande, sortie dans un journal ; montre la fin du journal en cas d'échec.
+run_logged() {
+  local log="$1"; shift
+  mkdir -p "$(dirname "$log")"
+  printf '\n$ %s\n' "$*" >>"$log"
+  local prev="$STACK_IN_LOG" code=0
+  STACK_IN_LOG=1
+  "$@" >>"$log" 2>&1 || code=$?
+  STACK_IN_LOG="$prev"
+  if [ "$code" != 0 ]; then
+    say "--- fin de $log ---" >&2
+    tail -n 30 "$log" >&2 || true
+    return 1
+  fi
+}
+
+# --- Configuration -------------------------------------------------------------
+
+expand_home() {
+  # shellcheck disable=SC2088 # motif littéral « ~/ » à développer.
+  case "$1" in
+    "~") printf '%s' "$HOME" ;;
+    "~/"*) printf '%s/%s' "$HOME" "${1#\~/}" ;;
+    *) printf '%s' "$1" ;;
+  esac
+}
+
+load_config() {
+  local key value line
+  if [ -f "$STACK_CONFIG" ]; then
+    while IFS= read -r line || [ -n "$line" ]; do
+      case "$line" in ''|'#'*) continue ;; esac
+      key="${line%%=*}"; value="${line#*=}"
+      value="${value%\"}"; value="${value#\"}"
+      case "$key" in
+        VACTORY_DRUPAL_SRC|VACTORY_FRONT_SRC|VACTORY_STACKS_DIR|VACTORY_PROFILE_REPO|VACTORY_FRONT_APP|VACTORY_FRONT_PORT_BASE)
+          # Une variable d'environnement l'emporte sur le fichier.
+          if [ -z "$(eval "printf '%s' \"\${$key:-}\"")" ]; then
+            eval "$key=\$value"
+          fi ;;
+      esac
+    done <"$STACK_CONFIG"
+  fi
+  DRUPAL_SRC="$(expand_home "${VACTORY_DRUPAL_SRC:-}")"
+  FRONT_SRC="$(expand_home "${VACTORY_FRONT_SRC:-}")"
+  STACKS_DIR="$(expand_home "${VACTORY_STACKS_DIR:-$HOME/dev/.vactory-stacks}")"
+  FRONT_APP="${VACTORY_FRONT_APP:-starter}"
+  PORT_BASE="${VACTORY_FRONT_PORT_BASE:-4100}"
+  if [ -n "${VACTORY_PROFILE_REPO:-}" ]; then
+    PROFILE_REPO="$(expand_home "$VACTORY_PROFILE_REPO")"
+  else
+    # Dépôt principal du profil (et non l'arbre de travail d'où l'on lance).
+    local common
+    common="$(git -C "$STACK_HOME" rev-parse --path-format=absolute --git-common-dir 2>/dev/null || true)"
+    PROFILE_REPO="${common%/.git}"
+  fi
+  BASELINE_DIR="$STACKS_DIR/_baseline"
+}
+
+# Vide si $1 est un front Next utilisable (dossier du dépôt du front, avec
+# package.json et l'application VACTORY_FRONT_APP) ; sinon la raison. Une
+# source vide ou « / » copierait tout le disque (rsync --delete).
+front_src_error() {
+  local src="$1" real
+  [ -n "$src" ] || { printf 'pas de front configuré (VACTORY_FRONT_SRC vide : stack init)'; return; }
+  [ -d "$src" ] || { printf 'VACTORY_FRONT_SRC=%s : dossier introuvable' "$src"; return; }
+  real="$(stack_resolve "$src")"
+  case "$real" in /|"$(stack_resolve "$HOME")") printf 'VACTORY_FRONT_SRC=%s : pas un dépôt de front' "$src"; return ;; esac
+  [ -f "$src/package.json" ] && [ -f "$src/apps/$FRONT_APP/package.json" ] \
+    || printf 'VACTORY_FRONT_SRC=%s : ni package.json ni apps/%s/package.json, pas le front Next' "$src" "$FRONT_APP"
+}
+
+need_config() {
+  [ -f "$STACK_CONFIG" ] || [ -n "${VACTORY_DRUPAL_SRC:-}" ] || die "pas de configuration ($STACK_CONFIG) : lancer « stack init »."
+  [ -d "${DRUPAL_SRC:-/nonexistent}" ] || die "site Drupal source introuvable (VACTORY_DRUPAL_SRC=$DRUPAL_SRC)."
+  [ -d "${PROFILE_REPO:-/nonexistent}" ] || die "dépôt du profil introuvable (VACTORY_PROFILE_REPO)."
+}
+
+# Met à jour origin/3.x (sous le verrou git) ; s'arrête s'il n'existe pas.
+fetch_base() {
+  local log="$1" fetched=1
+  git -C "$PROFILE_REPO" fetch -q origin 3.x >>"$log" 2>&1 || fetched=0
+  git -C "$PROFILE_REPO" rev-parse -q --verify "origin/3.x^{commit}" >/dev/null 2>&1 \
+    || die "origin/3.x introuvable dans $PROFILE_REPO$([ "$fetched" = 1 ] || printf ' (git fetch impossible : réseau, remote origin ?)')."
+  [ "$fetched" = 1 ] || warn "git fetch impossible : origin/3.x local utilisé."
+}
+
+# --- Verrous (mkdir est atomique) ----------------------------------------------
+# Ordre de prise (un verrou n'est jamais demandé en tenant un verrou placé
+# après lui : pas d'interblocage) : inst-<nom> → baseline → git → ports →
+# ddev-start. « baseline » tient baseline puis prend git et ddev-start ;
+# « up » tient inst-<nom> et prend les autres l'un après l'autre (baseline
+# seulement pour copier la base et le front de référence, relâché avant ddev
+# start).
+
+lock_take() {
+  local name="$1" wait="${2:-900}" dir pid i=0
+  mkdir -p "$STACKS_DIR/.locks"
+  dir="$STACKS_DIR/.locks/$name"
+  while ! mkdir "$dir" 2>/dev/null; do
+    pid="$(cat "$dir/pid" 2>/dev/null || true)"
+    if [ -n "$pid" ] && ! kill -0 "$pid" 2>/dev/null; then
+      rm -rf "$dir"; continue
+    fi
+    i=$((i + 1))
+    [ "$i" -le "$wait" ] || die "verrou « $name » tenu par le processus ${pid:-?} depuis plus de ${wait}s."
+    sleep 1
+  done
+  echo $$ >"$dir/pid"
+  HELD_LOCKS="$HELD_LOCKS $name"
+}
+
+lock_release() {
+  local name="$1" rest="" l
+  rm -rf "$STACKS_DIR/.locks/$name"
+  for l in $HELD_LOCKS; do [ "$l" = "$name" ] || rest="$rest $l"; done
+  HELD_LOCKS="$rest"
+}
+
+on_exit() {
+  local code=$? l
+  if [ "$code" -ne 0 ] && [ -n "$CLEANUP_NAME" ] && [ -n "${VACTORY_STACK_KEEP_FAILED:-}" ]; then
+    warn "échec : « $CLEANUP_NAME » gardée pour diagnostic (VACTORY_STACK_KEEP_FAILED) ; « stack rm $CLEANUP_NAME --yes » ensuite."
+    CLEANUP_NAME=""
+  fi
+  if [ "$code" -ne 0 ] && [ -n "$CLEANUP_NAME" ]; then
+    warn "échec de la création de « $CLEANUP_NAME » : nettoyage."
+    local n="$CLEANUP_NAME"; CLEANUP_NAME=""
+    ( remove_instance "$n" force ) || warn "nettoyage incomplet : lancer « stack rm $n --yes »."
+  fi
+  for l in $HELD_LOCKS; do rm -rf "${STACKS_DIR:?}/.locks/$l"; done
+  exit "$code"
+}
+trap on_exit EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+
+# --- Instances -----------------------------------------------------------------
+
+# Noms réservés : étiquettes et noms des ressources partagées (volumes
+# vsk-baseline-db, vsk-front-node-modules, vsk-yarn-cache, projet vskbase).
+# Les dossiers internes (_baseline, _build, .locks) sont déjà exclus par le
+# motif du nom.
+RESERVED_NAMES="baseline front yarn-cache base build locks"
+
+name_error() {
+  # Vide si le nom est valide ; sinon la raison.
+  printf '%s' "$1" | grep -Eq '^[a-z0-9-]{1,20}$' || { printf '1 à 20 caractères parmi a-z, 0-9 et « - »'; return; }
+  case "$1" in -*|*-) printf 'ne commence ni ne finit par « - »'; return ;; esac
+  case " $RESERVED_NAMES " in *" $1 "*) printf 'nom réservé (ressources partagées : %s)' "$RESERVED_NAMES"; return ;; esac
+}
+valid_name() {
+  local e; e="$(name_error "$1")"
+  [ -z "$e" ] || die "nom invalide « $1 » : $e."
+}
+inst_dir() { printf '%s/%s' "$STACKS_DIR" "$1"; }
+project_of() { printf 'vsk-%s' "$1"; }
+drupal_host() { printf 'vsk-%s.ddev.site' "$1"; }
+front_host() { printf 'front.vsk-%s.ddev.site' "$1"; }
+
+meta_get() {
+  local file="$1/.stack-meta" key="$2"
+  [ -f "$file" ] || return 0
+  sed -n "s/^$key=//p" "$file" | tail -n 1
+}
+meta_set() {
+  local file="$1/.stack-meta" key="$2" value="$3"
+  touch "$file"
+  grep -v "^$key=" "$file" >"$file.tmp" || true
+  printf '%s=%s\n' "$key" "$value" >>"$file.tmp"
+  mv "$file.tmp" "$file"
+}
+
+need_instance() {
+  valid_name "$1"
+  [ -d "$(inst_dir "$1")" ] || die "instance « $1 » introuvable (stack ls)."
+  [ "$(meta_get "$(inst_dir "$1")" STATE)" = "ready" ] || die "instance « $1 » incomplète : « stack rm $1 --yes » puis « stack up $1 »."
+}
+
+in_drupal() { local d; d="$(inst_dir "$1")/drupal"; shift; ( cd "$d" && "$@" ); }
+
+ddev_status() {
+  # running / stopped / absent
+  local p; p="$(project_of "$1")"
+  ddev describe "$p" -j 2>/dev/null | python3 -c '
+import json,sys
+try:
+  d=json.load(sys.stdin)
+  print(d.get("raw",{}).get("status","absent"))
+except Exception:
+  print("absent")' 2>/dev/null || echo absent
+}
+
+json_field() {
+  python3 -c 'import json,sys
+d=json.load(open(sys.argv[1]))
+for k in sys.argv[2].split("."):
+  d=d.get(k) if isinstance(d,dict) else None
+print("" if d is None else d)' "$1" "$2"
+}
+
+# --- Copies --------------------------------------------------------------------
+
+# Copie un arbre en clones APFS (copie à l'écriture) ; rsync sinon.
+clone_tree() {
+  local src="$1" dest="$2"; shift 2
+  local e skip x
+  [ -d "$src" ] || die "copie impossible : $src absent."
+  mkdir -p "$dest"
+  if [ "$(uname -s)" = "Darwin" ] && cp -c "$STACK_SELF" "$dest/.clone-test" 2>/dev/null; then
+    rm -f "$dest/.clone-test"
+    for e in "$src"/* "$src"/.[!.]* "$src"/..?*; do
+      if [ ! -e "$e" ] && [ ! -L "$e" ]; then
+        # Motif sans correspondance : rien à copier. Entrée listée puis
+        # disparue : la source change pendant la copie, copie incomplète.
+        case "$e" in "$src/*"|"$src/.[!.]*"|"$src/..?*") continue ;; esac
+        die "copie de $src : « $e » a disparu pendant la copie."
+      fi
+      skip=0
+      for x in "$@"; do [ "$(basename "$e")" = "$x" ] && skip=1; done
+      [ "$skip" = 1 ] || cp -cRp "$e" "$dest/"
+    done
+  else
+    rm -f "$dest/.clone-test"
+    local args=()
+    for x in "$@"; do args+=(--exclude "/$x"); done
+    rsync -a ${args[@]+"${args[@]}"} "$src/" "$dest/"
+  fi
+}
+
+ddev_value() {
+  # Lit une valeur simple de la config ddev du site source (sans dépendance YAML).
+  local file="$DRUPAL_SRC/.ddev/config.yaml" key="$1" def="$2" v=""
+  if [ -f "$file" ]; then
+    case "$key" in
+      db_type) v="$(sed -n '/^database:/,/^[^ ]/s/^  type: *//p' "$file" | head -n1)" ;;
+      db_version) v="$(sed -n '/^database:/,/^[^ ]/s/^  version: *//p' "$file" | head -n1)" ;;
+      *) v="$(sed -n "s/^$key: *//p" "$file" | head -n1)" ;;
+    esac
+  fi
+  v="${v%\"}"; v="${v#\"}"
+  printf '%s' "${v:-$def}"
+}
+
+render() {
+  # render <modèle> <destination> CLE=VALEUR...
+  local tpl="$1" dest="$2"; shift 2
+  python3 - "$tpl" "$dest" "$@" <<'PY'
+import sys
+tpl, dest = sys.argv[1], sys.argv[2]
+text = open(tpl, encoding='utf-8').read()
+for pair in sys.argv[3:]:
+    k, v = pair.split('=', 1)
+    text = text.replace('@@%s@@' % k, v)
+if '@@' in text:
+    raise SystemExit('variable non remplacée dans %s' % tpl)
+open(dest, 'w', encoding='utf-8').write(text)
+PY
+}
+
+# Copie du site Drupal et sa config ddev.
+prepare_drupal() {
+  local name="$1" project="$2" dest="$3" profile="$4" inst="$5" front_url="$6"
+  clone_tree "$DRUPAL_SRC" "$dest" .git .ddev
+  chmod u+w "$dest/sites/default" "$dest/sites/default/settings.php"
+  rm -rf "$dest/sites/default/files" "$dest/sites/default/private"
+  mkdir -p "$dest/sites/default/files" "$dest/sites/default/private"
+  cp "$STACK_TPL/settings.stack.php" "$dest/sites/default/settings.stack.php"
+  cp "$STACK_TPL/phpunit.stack.xml" "$dest/phpunit.stack.xml"
+  cat >>"$dest/sites/default/settings.php" <<'PHP'
+
+// Instance stack (scripts/stack du profil) : réglages propres à l'instance.
+if (file_exists($app_root . '/' . $site_path . '/settings.stack.php')) {
+  include $app_root . '/' . $site_path . '/settings.stack.php';
+}
+PHP
+  mkdir -p "$dest/.ddev/php"
+  if ls "$DRUPAL_SRC/.ddev/php/"*.ini >/dev/null 2>&1; then
+    cp "$DRUPAL_SRC/.ddev/php/"*.ini "$dest/.ddev/php/"
+  fi
+  render "$STACK_TPL/config.yaml" "$dest/.ddev/config.yaml" \
+    PROJECT="$project" NAME="$name" FRONT_URL="$front_url" \
+    PHP="$(ddev_value php_version 8.3)" WEBSERVER="$(ddev_value webserver_type nginx-fpm)" \
+    DB_TYPE="$(ddev_value db_type mariadb)" DB_VERSION="$(ddev_value db_version 11.8)"
+  render "$STACK_TPL/docker-compose.stack.yaml" "$dest/.ddev/docker-compose.stack.yaml" \
+    PROFILE="$profile" INST="$inst" TOOL="$inst/tool"
+  mkdir -p "$inst/tool" "$inst/keys"
+  cp "$STACK_LIB/setup.php" "$inst/tool/setup.php"
+  [ -f "$inst/secrets.env" ] || ( umask 077; : >"$inst/secrets.env" )
+}
+
+gen_secrets() {
+  # Écrit les secrets de l'instance (600), sans rien afficher.
+  local inst="$1" name="$2"
+  ( umask 077
+    python3 - "$inst/secrets.env" "$name" <<'PY'
+import os, secrets, sys
+path, name = sys.argv[1], sys.argv[2]
+cur = {}
+if os.path.isfile(path):
+    for line in open(path):
+        if '=' in line:
+            k, v = line.rstrip('\n').split('=', 1)
+            cur[k] = v
+want = {
+    'STACK_FRONT_CLIENT_ID': 'stack-front-' + name,
+    'STACK_FRONT_CLIENT_SECRET': secrets.token_urlsafe(32),
+    'STACK_ADMIN_CLIENT_ID': 'stack-admin-' + name,
+    'STACK_ADMIN_CLIENT_SECRET': secrets.token_urlsafe(32),
+    'STACK_USER_NAME': 'stack_user',
+    'STACK_USER_PASSWORD': secrets.token_urlsafe(18),
+    'STACK_EDITOR_NAME': 'stack_editor',
+    'STACK_EDITOR_PASSWORD': secrets.token_urlsafe(18),
+    'STACK_NEXTAUTH_SECRET': secrets.token_urlsafe(32),
+    'FRONTEND_CACHE_KEY': secrets.token_urlsafe(24),
+}
+for k, v in want.items():
+    cur.setdefault(k, v)
+with open(path, 'w') as f:
+    f.write('# Secrets de l\'instance stack « %s ». Ne pas afficher ni partager.\n' % name)
+    for k, v in cur.items():
+        if not k.startswith('#'):
+            f.write('%s=%s\n' % (k, v))
+PY
+  )
+  chmod 600 "$inst/secrets.env"
+  if [ ! -f "$inst/keys/private.key" ]; then
+    ( umask 077
+      openssl genrsa -out "$inst/keys/private.key" 2048 >/dev/null 2>&1
+      openssl rsa -in "$inst/keys/private.key" -pubout -out "$inst/keys/public.key" >/dev/null 2>&1 )
+    chmod 600 "$inst/keys/private.key"; chmod 644 "$inst/keys/public.key"
+  fi
+}
+
+port_in_use() {
+  python3 - "$1" <<'PY'
+import socket, sys
+s = socket.socket()
+try:
+    s.bind(('127.0.0.1', int(sys.argv[1])))
+except OSError:
+    sys.exit(0)
+finally:
+    s.close()
+sys.exit(1)
+PY
+}
+
+alloc_port() {
+  # Sous verrou : un port libre, non réservé par une autre instance.
+  local inst="$1" p used f
+  p="$(meta_get "$inst" FRONT_PORT)"
+  if [ -n "$p" ]; then printf '%s' "$p"; return; fi
+  lock_take ports 120
+  used=" "
+  for f in "$STACKS_DIR"/*/.stack-meta; do
+    [ -f "$f" ] || continue
+    used="$used$(sed -n 's/^FRONT_PORT=//p' "$f") "
+  done
+  p="$PORT_BASE"
+  while [ "$p" -lt $((PORT_BASE + 100)) ]; do
+    case "$used" in *" $p "*) p=$((p + 1)); continue ;; esac
+    if port_in_use "$p"; then p=$((p + 1)); continue; fi
+    meta_set "$inst" FRONT_PORT "$p"
+    lock_release ports
+    printf '%s' "$p"; return
+  done
+  lock_release ports
+  die "aucun port libre entre $PORT_BASE et $((PORT_BASE + 99))."
+}
+
+write_stack_json() {
+  local name="$1" inst; inst="$(inst_dir "$name")"
+  local commit branch
+  if [ -d "$(meta_get "$inst" PROFILE_PATH)" ]; then
+    commit="$(git -C "$(meta_get "$inst" PROFILE_PATH)" rev-parse HEAD 2>/dev/null || true)"
+    branch="$(git -C "$(meta_get "$inst" PROFILE_PATH)" symbolic-ref --short -q HEAD 2>/dev/null || true)"
+  fi
+  # Valeurs passées par l'environnement, jamais écrites dans le code Python
+  # (une branche git peut contenir des guillemets).
+  S_NAME="$name" S_CREATED="$(meta_get "$inst" CREATED)" S_UPDATED="$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+  S_PROFILE_PATH="$(meta_get "$inst" PROFILE_PATH)" S_BRANCH="${branch:-}" S_COMMIT="${commit:-}" \
+  S_PROFILE_MODE="$(meta_get "$inst" PROFILE_MODE)" S_INST="$inst" \
+  S_DRUPAL_HOST="$(drupal_host "$name")" S_FRONT_HOST="$(front_host "$name")" \
+  S_FRONT="$(meta_get "$inst" FRONT)" S_PORT="$(meta_get "$inst" FRONT_PORT)" \
+  S_PROJECT="$(project_of "$name")" S_OAUTH="$(meta_get "$inst" OAUTH)" S_BASELINE="$(meta_get "$inst" BASELINE)" \
+  python3 - "$inst/stack.json" <<'PY'
+import json, os, sys
+e = os.environ
+front = e["S_FRONT"] == "1"
+port = e["S_PORT"]
+oauth = e["S_OAUTH"] == "1"
+d = {
+  "name": e["S_NAME"],
+  "created": e["S_CREATED"],
+  "updated": e["S_UPDATED"],
+  "profile": {"path": e["S_PROFILE_PATH"], "branch": e["S_BRANCH"], "commit": e["S_COMMIT"],
+              "external": e["S_PROFILE_MODE"] == "external"},
+  "drupal": {"path": e["S_INST"] + "/drupal", "url": "https://" + e["S_DRUPAL_HOST"],
+             "profile_in_container": "/var/www/html/profiles/contrib/vactory_starter_kit"},
+  "front": {"enabled": front, "url": ("http://%s:%s" % (e["S_FRONT_HOST"], port)) if front else None,
+            "port": int(port) if front and port else None, "path": e["S_INST"] + "/front" if front else None},
+  "mailpit": "https://%s:8026" % e["S_DRUPAL_HOST"],
+  "ddev_project": e["S_PROJECT"],
+  "oauth": oauth,
+  "users": ["stack_user", "stack_editor"] if oauth else [],
+  "secrets": e["S_INST"] + "/secrets.env",
+  "baseline": e["S_BASELINE"],
+}
+with open(sys.argv[1], "w") as f:
+    json.dump(d, f, indent=2, ensure_ascii=False)
+    f.write("\n")
+PY
+}
+
+summary() {
+  local name="$1" f; f="$(inst_dir "$name")/stack.json"
+  say ""
+  say "${C_B}Instance $name${C_0}"
+  say "  Drupal  : $(json_field "$f" drupal.url)"
+  [ "$(json_field "$f" front.enabled)" = "True" ] && say "  Front   : $(json_field "$f" front.url)"
+  say "  Mailpit : $(json_field "$f" mailpit)"
+  say "  Profil  : $(json_field "$f" profile.path) ($(json_field "$f" profile.branch) $(json_field "$f" profile.commit | cut -c1-8))"
+  [ "$(json_field "$f" oauth)" = "True" ] && say "  Comptes : stack_user, stack_editor ; mots de passe et clients OAuth dans $(json_field "$f" secrets)"
+  say "  Détail  : $f"
+}
+
+# --- Commandes : init, doctor ---------------------------------------------------
+
+cmd_init() {
+  local drupal="" front="" stacks=""
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --drupal) drupal="$2"; shift 2 ;;
+      --front) front="$2"; shift 2 ;;
+      --stacks-dir) stacks="$2"; shift 2 ;;
+      *) die "init : option inconnue $1" ;;
+    esac
+  done
+  if [ -t 0 ]; then
+    [ -n "$drupal" ] || read -r -p "Chemin du projet Drupal (composer, avec .ddev) [${DRUPAL_SRC:-}] : " drupal
+    [ -n "$front" ] || read -r -p "Chemin du front Next (vide si aucun) [${FRONT_SRC:-}] : " front
+    [ -n "$stacks" ] || read -r -p "Dossier des instances [$STACKS_DIR] : " stacks
+  fi
+  drupal="$(expand_home "${drupal:-$DRUPAL_SRC}")"; front="$(expand_home "${front:-$FRONT_SRC}")"
+  stacks="$(expand_home "${stacks:-$STACKS_DIR}")"
+  [ -f "${drupal:-/nonexistent}/composer.json" ] || die "init : projet Drupal invalide « $drupal » (composer.json absent)."
+  [ -d "$drupal/vendor" ] || die "init : « $drupal » sans vendor/ : lancer composer install dans le projet."
+  if [ -n "$front" ]; then [ -f "$front/package.json" ] || die "init : front invalide « $front »."; fi
+  mkdir -p "$(dirname "$STACK_CONFIG")" "$stacks"
+  { echo "# Configuration locale de scripts/stack (vactory_starter_kit). Hors dépôt."
+    echo "VACTORY_DRUPAL_SRC=$drupal"
+    echo "VACTORY_FRONT_SRC=$front"
+    echo "VACTORY_STACKS_DIR=$stacks"
+    echo "VACTORY_FRONT_APP=$FRONT_APP"
+  } >"$STACK_CONFIG"
+  ok "configuration écrite : $STACK_CONFIG"
+  say "Suite : stack doctor, puis stack baseline."
+}
+
+cmd_doctor() {
+  local bad=0 v
+  check() { if eval "$2" >/dev/null 2>&1; then ok "$1"; else warn "$1 : $3"; bad=1; fi; }
+  check "bash $BASH_VERSION" "true" ""
+  for v in ddev docker git curl python3 openssl; do check "$v" "have $v" "absent"; done
+  check "docker répond" "docker info" "démarrer Docker / OrbStack"
+  check "ddev $(ddev --version 2>/dev/null | awk '{print $3}')" "ddev --version" "absent"
+  check "configuration $STACK_CONFIG" "[ -f '$STACK_CONFIG' ]" "lancer stack init"
+  check "site Drupal source $DRUPAL_SRC" "[ -f '$DRUPAL_SRC/composer.json' ] && [ -d '$DRUPAL_SRC/vendor' ]" "VACTORY_DRUPAL_SRC"
+  check "dépôt du profil $PROFILE_REPO" "git -C '$PROFILE_REPO' rev-parse --git-dir" "VACTORY_PROFILE_REPO"
+  if [ -n "$FRONT_SRC" ]; then
+    check "front source $FRONT_SRC" "[ -f '$FRONT_SRC/apps/$FRONT_APP/package.json' ]" "VACTORY_FRONT_SRC / VACTORY_FRONT_APP"
+  else
+    say "    front : non configuré (--front indisponible)"
+  fi
+  check "base de référence" "[ -f '$BASELINE_DIR/manifest.json' ]" "lancer stack baseline"
+  if [ -f "$BASELINE_DIR/manifest.json" ]; then
+    say "    $(python3 -c 'import json,sys;d=json.load(open(sys.argv[1]));print("baseline : %s, mode %s, profil %s, front %s" % (d["created"], d["mode"], d["profile_commit"][:8], "oui" if d.get("front") else "non"))' "$BASELINE_DIR/manifest.json")"
+  fi
+  mkdir -p "$STACKS_DIR"
+  v="$(df -k "$STACKS_DIR" | awk 'NR==2{print int($4/1048576)}')"
+  check "disque libre ${v} Go" "[ $v -ge 20 ]" "moins de 20 Go libres"
+  if [ "$(uname -s)" = "Darwin" ]; then
+    v="$(( $(sysctl -n hw.memsize) / 1073741824 ))"
+  else
+    v="$(awk '/MemTotal/{print int($2/1048576)}' /proc/meminfo)"
+  fi
+  check "mémoire ${v} Go" "[ $v -ge 16 ]" "moins de 16 Go : une ou deux instances au plus"
+  v="$(docker info --format '{{.MemTotal}}' 2>/dev/null || echo 0)"
+  v=$((v / 1073741824))
+  check "mémoire de Docker ${v} Go" "[ $v -ge 6 ]" "Docker a moins de 6 Go : compter ~1,5 Go par instance avec front"
+  if [ "$bad" = 0 ]; then ok "prêt"; else warn "à corriger avant « stack up »"; return 1; fi
+}
+
+# --- Commande : baseline -------------------------------------------------------
+
+cmd_baseline() {
+  local mode=fresh dump="" do_front=1 front_only=0
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --fresh) mode=fresh; shift ;;
+      --from-dump) mode=dump; dump="$(expand_home "${2:-}")"; shift 2 || die "--from-dump <fichier>" ;;
+      --no-front) do_front=0; shift ;;
+      --front-only) front_only=1; shift ;;
+      *) die "baseline : option inconnue $1" ;;
+    esac
+  done
+  need_config
+  [ "$mode" != dump ] || [ -f "$dump" ] || die "dump introuvable : $dump"
+  # Front vérifié avant toute étape qui supprime ou copie.
+  local front_err; front_err="$(front_src_error "$FRONT_SRC")"
+  if [ "$front_only" = 1 ]; then
+    [ "$do_front" = 1 ] || die "--no-front et --front-only s'excluent."
+    [ -z "$front_err" ] || die "--front-only refusé : $front_err."
+  elif [ -z "$FRONT_SRC" ]; then
+    do_front=0
+  elif [ "$do_front" = 1 ] && [ -n "$front_err" ]; then
+    die "front de référence impossible : $front_err. Corriger VACTORY_FRONT_SRC ou lancer avec --no-front."
+  fi
+  lock_take baseline 30
+  local t0 build new log
+  t0="$(now)"; build="$STACKS_DIR/_build"; new="$STACKS_DIR/_baseline.new"
+  log="$STACKS_DIR/_baseline.log"; : >"$log"
+
+  if [ "$front_only" = 1 ]; then
+    [ -f "$BASELINE_DIR/manifest.json" ] || die "pas de base de référence : lancer stack baseline."
+    baseline_front "$BASELINE_DIR" "$log"
+    python3 - "$BASELINE_DIR/manifest.json" "$FRONT_SRC" "$(git -C "$FRONT_SRC" rev-parse HEAD 2>/dev/null || echo inconnu)" <<'PY'
+import json, sys, datetime
+p = sys.argv[1]; d = json.load(open(p))
+d["front"] = {"commit": sys.argv[3], "built": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")}
+json.dump(d, open(p, "w"), indent=2)
+PY
+    ok "front de référence refait en $(since "$t0")"; return
+  fi
+
+  step "base de référence ($mode), journal : $log"
+  # Référence vérifiée avant de créer quoi que ce soit.
+  lock_take git 300
+  fetch_base "$log"
+  local commit; commit="$(git -C "$PROFILE_REPO" rev-parse origin/3.x)"
+  lock_release git
+  rm -rf "$new"; mkdir -p "$new"
+  if ddev describe "$BASE_PROJECT" >/dev/null 2>&1; then ddev delete -O -y "$BASE_PROJECT" >>"$log" 2>&1 || true; fi
+  if [ -d "$build/profile" ]; then git -C "$PROFILE_REPO" worktree remove --force "$build/profile" >>"$log" 2>&1 || true; fi
+  rm -rf "$build"; mkdir -p "$build"
+  lock_take git 300
+  run_logged "$log" git -C "$PROFILE_REPO" worktree add --detach "$build/profile" "$commit"
+  lock_release git
+
+  step "copie du site et démarrage de $BASE_PROJECT"
+  prepare_drupal baseline "$BASE_PROJECT" "$build/drupal" "$build/profile" "$build" ""
+  gen_secrets "$build" baseline
+  run_logged "$log" ddev_start_locked in_drupal_path "$build/drupal"
+
+  if [ "$mode" = fresh ]; then
+    step "installation du profil (drush site-install), quelques minutes"
+    # Mot de passe admin tiré par drush, jamais gardé ni affiché : les
+    # instances ont leurs propres comptes.
+    in_drupal_path "$build/drupal" ddev exec -s web -- bash -c \
+      'cd /var/www/html && php -d memory_limit=-1 vendor/drush/drush/drush.php si vactory_starter_kit -y --site-name="Vactory (stack)" --account-name=admin 2>&1' \
+      2>&1 | grep -v -i 'password' >>"$log" || true
+    in_drupal_path "$build/drupal" ddev drush status --field=bootstrap 2>/dev/null | grep -q Successful \
+      || { tail -n 30 "$log" >&2; die "installation échouée (journal : $log)"; }
+    run_logged "$log" in_drupal_path "$build/drupal" ddev drush language:add ar,fr --skip-translations -y
+  else
+    step "import du dump $dump"
+    run_logged "$log" in_drupal_path "$build/drupal" ddev import-db --file="$dump"
+  fi
+  run_logged "$log" in_drupal_path "$build/drupal" ddev drush updb -y
+  run_logged "$log" in_drupal_path "$build/drupal" ddev drush cr
+
+  step "export de la base"
+  local dbt dbv; dbt="$(ddev_value db_type mariadb)"; dbv="$(ddev_value db_version 11.8)"
+  run_logged "$log" in_drupal_path "$build/drupal" ddev export-db --gzip --file="$new/db.sql.gz"
+  # Volume de base de données arrêté proprement puis copié : une instance
+  # part d'une copie de ce volume (quelques secondes, contre plusieurs
+  # minutes pour un import ou un « ddev snapshot restore »).
+  run_logged "$log" in_drupal_path "$build/drupal" ddev stop
+  if docker ps -q --filter "volume=$DB_VOLUME" | grep -q .; then
+    die "volume $DB_VOLUME en cours d'utilisation."
+  fi
+  docker volume rm -f "$DB_VOLUME.new" >/dev/null 2>&1 || true
+  run_logged "$log" docker volume create --label com.vactory.stack=baseline "$DB_VOLUME.new"
+  run_logged "$log" copy_volume "$BASE_PROJECT-$dbt" "$DB_VOLUME.new"
+  if [ -n "$(ls -A "$build/drupal/sites/default/files" 2>/dev/null)" ]; then
+    tar -C "$build/drupal/sites/default/files" -czf "$new/files.tar.gz" .
+  fi
+  python3 - "$new/manifest.json" "$mode" "${dump:-}" "$commit" "$DRUPAL_SRC" "$(git -C "$DRUPAL_SRC" rev-parse HEAD 2>/dev/null || echo inconnu)" "$dbt" "$dbv" <<'PY'
+import json, sys, datetime
+p, mode, dump, commit, src, src_commit, dbt, dbv = sys.argv[1:9]
+json.dump({
+  "created": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+  "mode": mode, "dump": dump or None,
+  "profile_commit": commit, "profile_ref": "origin/3.x",
+  "drupal_src": src, "drupal_src_commit": src_commit,
+  "db": {"type": dbt, "version": dbv, "volume": "vsk-baseline-db", "dump": "db.sql.gz"},
+  "front": None,
+}, open(p, "w"), indent=2)
+PY
+  step "arrêt et suppression de $BASE_PROJECT"
+  run_logged "$log" ddev delete -O -y "$BASE_PROJECT"
+  git -C "$PROFILE_REPO" worktree remove --force "$build/profile" >>"$log" 2>&1 || true
+  rm -rf "$build"
+
+  if [ "$do_front" = 1 ]; then
+    baseline_front "$new" "$log"
+    python3 - "$new/manifest.json" "$(git -C "$FRONT_SRC" rev-parse HEAD 2>/dev/null || echo inconnu)" <<'PY'
+import json, sys, datetime
+p = sys.argv[1]; d = json.load(open(p))
+d["front"] = {"commit": sys.argv[2], "built": datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")}
+json.dump(d, open(p, "w"), indent=2)
+PY
+  elif [ -d "$BASELINE_DIR/front" ] && [ -f "$BASELINE_DIR/manifest.json" ]; then
+    # Garde le front de référence déjà construit.
+    mv "$BASELINE_DIR/front" "$new/front"
+    python3 - "$new/manifest.json" "$BASELINE_DIR/manifest.json" <<'PY'
+import json, sys
+p, old = sys.argv[1], sys.argv[2]; d = json.load(open(p)); d["front"] = json.load(open(old)).get("front")
+json.dump(d, open(p, "w"), indent=2)
+PY
+  fi
+  rm -rf "$STACKS_DIR/_baseline.old"
+  if [ -d "$BASELINE_DIR" ]; then mv "$BASELINE_DIR" "$STACKS_DIR/_baseline.old"; fi
+  mv "$new" "$BASELINE_DIR"
+  rm -rf "$STACKS_DIR/_baseline.old"
+  # Volume copié sous son nom final, une fois la base de référence en place.
+  docker volume rm -f "$DB_VOLUME" >/dev/null 2>&1 || true
+  run_logged "$log" docker volume create --label com.vactory.stack=baseline "$DB_VOLUME"
+  run_logged "$log" copy_volume "$DB_VOLUME.new" "$DB_VOLUME"
+  docker volume rm -f "$DB_VOLUME.new" >/dev/null 2>&1 || true
+  ok "base de référence prête en $(since "$t0") : $BASELINE_DIR ($(du -sh "$BASELINE_DIR" | awk '{print $1}'))"
+}
+
+# Front de référence : sources sans node_modules ni builds, et node_modules
+# Linux dans un volume Docker partagé (lecture seule) par les instances.
+baseline_front() {
+  local dest="$1" log="$2" t0 err; t0="$(now)"
+  # Défense en profondeur : jamais de rsync --delete depuis une source vide ou « / ».
+  err="$(front_src_error "$FRONT_SRC")"; [ -z "$err" ] || die "front de référence refusé : $err."
+  { [ -n "$dest" ] && [ -d "$dest" ]; } || die "front de référence : dossier de destination invalide « $dest »."
+  step "front de référence (yarn install Linux, une fois), journal : $log"
+  if docker ps -q --filter "volume=$FRONT_VOLUME" | grep -q .; then
+    die "des instances avec front tournent : « stack stop » ou « stack rm » d'abord."
+  fi
+  rm -rf "$dest/front"; mkdir -p "$dest/front"
+  run_logged "$log" rsync -a --delete \
+    --exclude node_modules --exclude .next --exclude /.git --exclude '.env*' \
+    --exclude storybook-static --exclude test-results --exclude playwright-report \
+    --exclude .scannerwork --exclude /.opencode --exclude .wireit --exclude .turbo \
+    --exclude yarn-error.log --exclude .DS_Store \
+    "$FRONT_SRC/" "$dest/front/"
+  docker volume rm -f "$FRONT_VOLUME" >>"$log" 2>&1 || true
+  run_logged "$log" docker volume create --label com.vactory.stack=front "$FRONT_VOLUME"
+  run_logged "$log" docker run --rm -v "$dest/front:/app" -v "$FRONT_VOLUME:/app/node_modules" \
+    -v vsk-yarn-cache:/usr/local/share/.cache/yarn -w /app "$NODE_IMAGE" \
+    yarn install --frozen-lockfile --non-interactive --network-timeout 600000
+  ok "front de référence en $(since "$t0")"
+}
+
+# Un « ddev start » à la fois : deux démarrages simultanés recréent le
+# routeur ddev en même temps et l'un échoue (constaté). Le routeur est aussi
+# recréé au premier démarrage d'un nom jamais vu (nouveau certificat) :
+# ~3 s de coupure pour tous les sites ddev (mesuré).
+ddev_start_locked() {
+  local code=0
+  lock_take ddev-start 900
+  "$@" ddev start -y || code=$?
+  lock_release ddev-start
+  return "$code"
+}
+
+# Mémoire disponible de la VM Docker (MemAvailable, lue dans un conteneur
+# jetable de l'image Redis, déjà présente : jamais téléchargée ici). Refus
+# sous le seuil : deux suites lourdes en parallèle ont fait planter la VM.
+check_docker_memory() {
+  local what="$1" need="${VACTORY_STACK_MIN_FREE_MB:-3072}" kb mb
+  [ -z "${VACTORY_STACK_SKIP_MEMORY_CHECK:-}" ] || return 0
+  case "$need" in ''|*[!0-9]*) die "VACTORY_STACK_MIN_FREE_MB : un nombre de Mo." ;; esac
+  kb="$(docker run --rm --pull never --network none "$REDIS_IMAGE" cat /proc/meminfo 2>/dev/null | awk '/^MemAvailable:/{print $2}')" || kb=""
+  case "$kb" in
+    ''|*[!0-9]*) warn "mémoire libre de la VM Docker illisible : vérification sautée."; return 0 ;;
+  esac
+  mb=$((kb / 1024))
+  [ "$mb" -ge "$need" ] || die "$what refusé : $mb Mo libres dans la VM Docker, seuil $need Mo. Libérer de la mémoire (docker stats, « stack stop » sur les instances inutilisées, une seule suite lourde à la fois) ; forcer avec VACTORY_STACK_SKIP_MEMORY_CHECK=1, seuil réglable par VACTORY_STACK_MIN_FREE_MB."
+}
+
+copy_volume() {
+  # Copie un volume Docker dans un autre (image déjà utilisée par la pile).
+  docker run --rm -v "$1:/from:ro" -v "$2:/to" "$REDIS_IMAGE" sh -c 'cp -a /from/. /to/'
+}
+
+in_drupal_path() { local d="$1"; shift; ( cd "$d" && "$@" ); }
+
+# --- Commande : up ---------------------------------------------------------------
+
+write_ddev_config() {
+  local name="$1" inst; inst="$(inst_dir "$1")"
+  local d="$inst/drupal" project; project="$(project_of "$name")"
+  local front_url="" port=""
+  if [ "$(meta_get "$inst" FRONT)" = 1 ]; then
+    port="$(meta_get "$inst" FRONT_PORT)"
+    front_url="http://$(front_host "$name"):$port"
+  fi
+  render "$STACK_TPL/config.yaml" "$d/.ddev/config.yaml" \
+    PROJECT="$project" NAME="$name" FRONT_URL="$front_url" \
+    PHP="$(ddev_value php_version 8.3)" WEBSERVER="$(ddev_value webserver_type nginx-fpm)" \
+    DB_TYPE="$(ddev_value db_type mariadb)" DB_VERSION="$(ddev_value db_version 11.8)"
+  render "$STACK_TPL/docker-compose.stack.yaml" "$d/.ddev/docker-compose.stack.yaml" \
+    PROFILE="$(meta_get "$inst" PROFILE_PATH)" INST="$inst" TOOL="$inst/tool"
+  cp "$STACK_LIB/setup.php" "$inst/tool/setup.php"
+  if [ -n "$port" ]; then
+    render "$STACK_TPL/docker-compose.front.yaml" "$d/.ddev/docker-compose.front.yaml" \
+      NODE_IMAGE="$NODE_IMAGE" REDIS_IMAGE="$REDIS_IMAGE" FRONT_APP="$FRONT_APP" \
+      FRONT_PORT="$port" FRONT_HOST="$(front_host "$name")" DRUPAL_HOST="$(drupal_host "$name")" INST="$inst"
+  else
+    rm -f "$d/.ddev/docker-compose.front.yaml"
+  fi
+}
+
+write_front_env() {
+  local name="$1" inst; inst="$(inst_dir "$1")"
+  local port; port="$(meta_get "$inst" FRONT_PORT)"
+  local furl durl
+  furl="http://$(front_host "$name"):$port"; durl="https://$(drupal_host "$name")"
+  python3 "$STACK_LIB/front_env.py" "$FRONT_SRC/apps/$FRONT_APP" "$inst/front/apps/$FRONT_APP" "$inst/secrets.env" \
+    DRUPAL_BASE_URL="$durl" NEXT_DRUPAL_BACKOFFICE_URL="$durl" NEXT_IMAGE_DOMAIN="$(drupal_host "$name")" \
+    NEXT_BASE_URL="$furl" NEXTAUTH_URL="$furl" \
+    REDIS_HOST=redis REDIS_PORT=6379 REDIS_USERNAME= REDIS_PASSWORD= REDIS_PREFIX="vsk-$name:" \
+    NODE_TLS_REJECT_UNAUTHORIZED=0 SENTRY_DSN= SENTRY_AUTH_TOKEN= \
+    >>"$inst/logs/up.log"
+  if [ "$(meta_get "$inst" OAUTH)" != 1 ]; then
+    # Sans --no-oauth seulement : pas de client OAuth dans l'instance.
+    python3 - "$inst/front/apps/$FRONT_APP/.env.local" <<'PY'
+import sys
+p = sys.argv[1]
+lines = [l for l in open(p).read().splitlines() if not l.startswith(('OAUTH_CLIENT_ID=', 'OAUTH_CLIENT_SECRET='))]
+open(p, 'w').write('\n'.join(lines + ['OAUTH_CLIENT_ID=', 'OAUTH_CLIENT_SECRET=']) + '\n')
+PY
+  fi
+}
+
+wait_front() {
+  local name="$1" inst url code="" i=0 t0 err5=""; inst="$(inst_dir "$name")"; t0="$(now)"
+  url="http://$(front_host "$name"):$(meta_get "$inst" FRONT_PORT)"
+  step "front : première compilation de la page d'accueil ($url)"
+  while [ "$i" -lt 600 ]; do
+    code="$(curl -s -o /dev/null -m 120 -w '%{http_code}' "$url/" 2>/dev/null || true)"
+    case "$code" in
+      2*|3*) ok "front prêt en $(since "$t0") (HTTP $code)"; return 0 ;;
+      5*) [ -n "${err5:-}" ] || err5="$(now)"
+          if [ $(( $(now) - err5 )) -ge 120 ]; then
+            warn "le front répond $code depuis 2 min : stack logs $name front"; return 0
+          fi ;;
+      *) err5="" ;;
+    esac
+    if ! docker ps -q --filter "name=^ddev-$(project_of "$name")-front$" | grep -q .; then
+      docker logs --tail 30 "ddev-$(project_of "$name")-front" >&2 2>&1 || true
+      die "le conteneur du front s'est arrêté (stack logs $name front)."
+    fi
+    i=$((i + 3)); sleep 3
+  done
+  warn "front sans réponse après 10 min (dernier code : ${code:-aucun}) : stack logs $name front"
+}
+
+drupal_setup() {
+  # DB de référence, mises à jour, mail, OAuth. Journal : logs/up.log.
+  local name="$1" inst log; inst="$(inst_dir "$1")"; log="$inst/logs/up.log"
+  local t0; t0="$(now)"
+  run_logged "$log" in_drupal "$name" ddev drush updb -y
+  run_logged "$log" in_drupal "$name" ddev drush cr
+  if [ "$(meta_get "$inst" OAUTH)" = 1 ]; then
+    run_logged "$log" in_drupal "$name" ddev drush php:script /var/www/stack/tool/setup.php -- mail oauth
+  else
+    run_logged "$log" in_drupal "$name" ddev drush php:script /var/www/stack/tool/setup.php -- mail
+  fi
+  ok "updb, cr, mail$([ "$(meta_get "$inst" OAUTH)" = 1 ] && echo ', OAuth et comptes') en $(since "$t0")"
+}
+
+# Instance existante : --ref et --profile doivent désigner le code avec
+# lequel elle a été créée (sinon « up » relancerait un autre code que celui
+# demandé, sans prévenir).
+created_from() {
+  local inst="$1"
+  if [ "$(meta_get "$inst" PROFILE_MODE)" = external ]; then printf 'avec --profile %s' "$(meta_get "$inst" PROFILE_PATH)"
+  elif [ -n "$(meta_get "$inst" BRANCH)" ]; then printf 'sur la branche %s' "$(meta_get "$inst" BRANCH)"
+  elif [ -n "$(meta_get "$inst" REF)" ]; then printf 'avec --ref %s' "$(meta_get "$inst" REF)"
+  else printf 'sur un commit détaché'
+  fi
+}
+check_same_code() {
+  local name="$1" ref="$2" ext="$3" inst pmode ppath want have
+  inst="$(inst_dir "$name")"; pmode="$(meta_get "$inst" PROFILE_MODE)"; ppath="$(meta_get "$inst" PROFILE_PATH)"
+  if [ -n "$ext" ]; then
+    { [ "$pmode" = external ] && [ -d "$ext" ] && [ "$(stack_resolve "$ext")" = "$ppath" ]; } \
+      || die "« $name » a été créée $(created_from "$inst"), pas avec --profile $ext : recréer l'instance (« stack rm $name » puis « stack up $name --profile … »)."
+  fi
+  if [ -n "$ref" ]; then
+    [ "$ref" = "$(meta_get "$inst" REF)" ] && return 0
+    want="$(git -C "$PROFILE_REPO" rev-parse -q --verify "$ref^{commit}" 2>/dev/null || true)"
+    have=""
+    if [ "$pmode" = worktree ] && [ -z "$(meta_get "$inst" BRANCH)" ]; then
+      have="$(meta_get "$inst" REF_COMMIT)"
+      # Instance créée avant REF_COMMIT : commit de son arbre détaché.
+      [ -n "$have" ] || have="$(git -C "$ppath" rev-parse -q --verify HEAD 2>/dev/null || true)"
+    fi
+    { [ -n "$want" ] && [ "$want" = "$have" ]; } \
+      || die "« $name » a été créée $(created_from "$inst"), pas avec --ref $ref : recréer l'instance (« stack rm $name » puis « stack up $name --ref $ref »)."
+  fi
+}
+
+cmd_up() {
+  local name="${1:-}"; [ -n "$name" ] || die "usage : stack up <nom> [options]"; shift
+  valid_name "$name"
+  local branch="" ref="" ext="" front=0 oauth=1
+  while [ $# -gt 0 ]; do
+    case "$1" in
+      --branch) branch="${2:-}"; [ -n "$branch" ] || die "--branch <branche>"; shift 2 ;;
+      --ref) ref="${2:-}"; [ -n "$ref" ] || die "--ref <commit>"; shift 2 ;;
+      --profile) ext="$(expand_home "${2:-}")"; [ -n "$ext" ] || die "--profile <chemin>"; shift 2 ;;
+      --front) front=1; shift ;;
+      --no-oauth) oauth=0; shift ;;
+      *) die "up : option inconnue $1" ;;
+    esac
+  done
+  [ -z "$branch" ] || [ -z "$ref" ] || die "--branch et --ref s'excluent."
+  [ -z "$ext" ] || [ -z "$branch$ref" ] || die "--profile s'utilise sans --branch ni --ref."
+  need_config
+  [ -f "$BASELINE_DIR/manifest.json" ] || die "pas de base de référence : lancer « stack baseline »."
+  if [ "$front" = 1 ]; then
+    local front_err; front_err="$(front_src_error "$FRONT_SRC")"
+    [ -z "$front_err" ] || die "--front : $front_err."
+    if [ ! -d "$BASELINE_DIR/front" ] || ! docker volume inspect "$FRONT_VOLUME" >/dev/null 2>&1; then
+      die "--front : front de référence absent (stack baseline --front-only)."
+    fi
+  fi
+  check_docker_memory "stack up"
+  local inst t0 project; inst="$(inst_dir "$name")"; t0="$(now)"; project="$(project_of "$name")"
+  lock_take "inst-$name" 5
+
+  if [ -d "$inst" ]; then
+    [ "$(meta_get "$inst" STATE)" = ready ] || die "instance « $name » incomplète (création interrompue) : « stack rm $name --yes » puis relancer."
+    [ "$front" = 0 ] || [ "$(meta_get "$inst" FRONT)" = 1 ] || die "« $name » existe sans front : « stack rm $name » puis « stack up $name --front »."
+    if [ -n "$branch" ]; then
+      [ "$(git -C "$(meta_get "$inst" PROFILE_PATH)" symbolic-ref --short -q HEAD || true)" = "$branch" ] \
+        || die "« $name » existe sur une autre branche : changer de branche dans $(meta_get "$inst" PROFILE_PATH) ou recréer l'instance."
+    fi
+    check_same_code "$name" "$ref" "$ext"
+    step "« $name » existe : démarrage et remise à niveau"
+    mkdir -p "$inst/logs"
+    write_ddev_config "$name"
+    [ "$(meta_get "$inst" FRONT)" = 1 ] && write_front_env "$name"
+    run_logged "$inst/logs/up.log" ddev_start_locked in_drupal "$name"
+    if [ "$(meta_get "$inst" OAUTH)" = 1 ]; then
+      run_logged "$inst/logs/up.log" in_drupal "$name" ddev drush php:script /var/www/stack/tool/setup.php -- mail oauth
+    fi
+    write_stack_json "$name"
+    [ "$(meta_get "$inst" FRONT)" = 1 ] && wait_front "$name"
+    summary "$name"; say "  Durée   : $(since "$t0")"
+    return
+  fi
+  if ddev describe "$project" >/dev/null 2>&1; then
+    die "un projet ddev « $project » existe déjà hors des instances : le supprimer (ddev delete -O $project) ou choisir un autre nom."
+  fi
+
+  # Création. En cas d'échec ou d'interruption, on_exit défait tout.
+  CLEANUP_NAME="$name"
+  mkdir -p "$inst/logs"
+  meta_set "$inst" STATE creating
+  meta_set "$inst" CREATED "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+  meta_set "$inst" FRONT "$front"
+  meta_set "$inst" OAUTH "$oauth"
+  meta_set "$inst" BASELINE "$(json_field "$BASELINE_DIR/manifest.json" created)"
+  local log="$inst/logs/up.log"
+  say "Instance $name ; journal : $log"
+
+  # 1. Profil.
+  local t; t="$(now)"
+  if [ -n "$ext" ]; then
+    [ -f "$ext/vactory_starter_kit.info.yml" ] || die "--profile : « $ext » n'est pas le profil vactory_starter_kit."
+    meta_set "$inst" PROFILE_MODE external
+    meta_set "$inst" PROFILE_PATH "$(stack_resolve "$ext")"
+  else
+    meta_set "$inst" PROFILE_MODE worktree
+    meta_set "$inst" PROFILE_PATH "$inst/profile"
+    lock_take git 300
+    fetch_base "$log"
+    if [ -n "$ref" ]; then
+      meta_set "$inst" REF "$ref"
+      run_logged "$log" git -C "$PROFILE_REPO" worktree add --detach "$inst/profile" "$ref"
+      meta_set "$inst" REF_COMMIT "$(git -C "$inst/profile" rev-parse HEAD)"
+    else
+      [ -n "$branch" ] || branch="stack/$name"
+      git check-ref-format --branch "$branch" >/dev/null 2>&1 || die "nom de branche invalide : $branch"
+      meta_set "$inst" BRANCH "$branch"
+      if git -C "$PROFILE_REPO" show-ref --verify -q "refs/heads/$branch"; then
+        run_logged "$log" git -C "$PROFILE_REPO" worktree add "$inst/profile" "$branch"
+      else
+        git -C "$PROFILE_REPO" fetch -q origin "$branch" >>"$log" 2>&1 || true
+        local start="origin/3.x"
+        git -C "$PROFILE_REPO" show-ref --verify -q "refs/remotes/origin/$branch" && start="origin/$branch"
+        meta_set "$inst" BRANCH_START "$(git -C "$PROFILE_REPO" rev-parse "$start")"
+        meta_set "$inst" BRANCH_CREATED 1
+        run_logged "$log" git -C "$PROFILE_REPO" worktree add --no-track -b "$branch" "$inst/profile" "$start"
+      fi
+    fi
+    lock_release git
+  fi
+  ok "profil : $(meta_get "$inst" PROFILE_PATH) ($(git -C "$(meta_get "$inst" PROFILE_PATH)" rev-parse --short HEAD), $(since "$t"))"
+
+  # 2. Site Drupal (clones APFS) et 3. projet ddev.
+  t="$(now)"
+  [ "$front" = 1 ] && alloc_port "$inst" >/dev/null
+  prepare_drupal "$name" "$project" "$inst/drupal" "$(meta_get "$inst" PROFILE_PATH)" "$inst" ""
+  write_ddev_config "$name"
+  gen_secrets "$inst" "$name"
+  ok "copie du site en $(since "$t")"
+
+  # 4. Base (copie du volume de référence, avant le démarrage de ddev) et
+  # front de référence, sous le verrou baseline : « stack baseline » remplace
+  # _baseline (et --front-only refait _baseline/front) sous ce même verrou.
+  t="$(now)"
+  local dbvol; dbvol="$project-$(ddev_value db_type mariadb)"
+  lock_take baseline 300
+  docker volume inspect "$DB_VOLUME" >/dev/null 2>&1 || die "volume $DB_VOLUME absent : relancer « stack baseline »."
+  if [ "$front" = 1 ]; then
+    [ -f "$BASELINE_DIR/front/package.json" ] || die "--front : front de référence absent (stack baseline --front-only)."
+    clone_tree "$BASELINE_DIR/front" "$inst/front"
+  fi
+  run_logged "$log" docker volume create --label "com.vactory.stack.instance=$name" "$dbvol"
+  run_logged "$log" copy_volume "$DB_VOLUME" "$dbvol"
+  if [ -f "$BASELINE_DIR/files.tar.gz" ]; then tar -C "$inst/drupal/sites/default/files" -xzf "$BASELINE_DIR/files.tar.gz"; fi
+  lock_release baseline
+  if [ "$front" = 1 ]; then write_front_env "$name"; fi
+  ok "$([ "$front" = 1 ] && echo 'base et front copiés' || echo 'base copiée') en $(since "$t")"
+
+  t="$(now)"
+  step "démarrage de $project (ddev)"
+  run_logged "$log" ddev_start_locked in_drupal "$name"
+  ok "ddev démarré en $(since "$t")"
+
+  # 5-6. Mises à jour, mail, OAuth.
+  drupal_setup "$name"
+
+  meta_set "$inst" STATE ready
+  CLEANUP_NAME=""
+  write_stack_json "$name"
+  ok "Drupal prêt en $(since "$t0")"
+  [ "$front" = 1 ] && wait_front "$name"
+  summary "$name"
+  say "  Durée   : $(since "$t0")"
+}
+
+# --- Commandes de tous les jours ------------------------------------------------
+
+cmd_ls() {
+  local f n st list
+  list="$(ddev list -j 2>/dev/null || echo '{}')"
+  printf '%-20s %-9s %-28s %-36s %s\n' NOM ÉTAT BRANCHE DRUPAL FRONT
+  for f in "$STACKS_DIR"/*/.stack-meta; do
+    [ -f "$f" ] || continue
+    n="$(basename "$(dirname "$f")")"
+    st="$(printf '%s' "$list" | python3 -c 'import json,sys
+try: d=json.load(sys.stdin)
+except Exception: d={}
+for p in d.get("raw",[]):
+  if p.get("name")==sys.argv[1]: print(p.get("status","?")); break
+else: print("absent")' "$(project_of "$n")")"
+    [ "$(meta_get "$(dirname "$f")" STATE)" = ready ] || st="incomplet"
+    printf '%-20s %-9s %-28s %-36s %s\n' "$n" "$st" \
+      "$(git -C "$(meta_get "$(dirname "$f")" PROFILE_PATH)" symbolic-ref --short -q HEAD 2>/dev/null || git -C "$(meta_get "$(dirname "$f")" PROFILE_PATH)" rev-parse --short HEAD 2>/dev/null || echo '?')" \
+      "https://$(drupal_host "$n")" \
+      "$([ "$(meta_get "$(dirname "$f")" FRONT)" = 1 ] && echo "http://$(front_host "$n"):$(meta_get "$(dirname "$f")" FRONT_PORT)" || echo '-')"
+  done
+}
+
+cmd_info() {
+  local name="${1:-}"; need_instance "$name"
+  local inst; inst="$(inst_dir "$name")"
+  write_stack_json "$name"
+  if [ "${2:-}" = "--json" ]; then cat "$inst/stack.json"; return; fi
+  summary "$name"
+  say "  ddev    : $(project_of "$name") ($(ddev_status "$name"))"
+}
+
+cmd_url() {
+  local name="${1:-}"; need_instance "$name"
+  local f; f="$(inst_dir "$name")/stack.json"
+  case "${2:-drupal}" in
+    drupal) json_field "$f" drupal.url ;;
+    front) [ "$(json_field "$f" front.enabled)" = True ] || die "« $name » n'a pas de front."; json_field "$f" front.url ;;
+    mail|mailpit) json_field "$f" mailpit ;;
+    *) die "url <nom> [drupal|front|mail]" ;;
+  esac
+}
+
+quote_args() { local a out=""; for a in "$@"; do out="$out $(printf '%q' "$a")"; done; printf '%s' "$out"; }
+
+cmd_drush() {
+  local name="${1:-}"; need_instance "$name"; shift
+  # Lignes longues gardées entières (messages d'erreur de drush, sorties lues
+  # par un script) : drush coupe sinon à la largeur du terminal.
+  in_drupal "$name" ddev exec "COLUMNS=${STACK_DRUSH_COLUMNS:-1000} drush$(quote_args "$@")"
+}
+cmd_exec() {
+  local name="${1:-}"; need_instance "$name"; shift
+  [ $# -gt 0 ] || die "exec <nom> <commande>"
+  in_drupal "$name" ddev exec "$(quote_args "$@")"
+}
+
+cmd_uli() {
+  local name="${1:-}"; need_instance "$name"
+  local user="${2:-}"
+  if [ -z "$user" ]; then
+    [ "$(meta_get "$(inst_dir "$name")" OAUTH)" = 1 ] && user=stack_editor
+  fi
+  if [ -n "$user" ]; then
+    in_drupal "$name" ddev drush uli --name="$user" --uri="https://$(drupal_host "$name")"
+  else
+    in_drupal "$name" ddev drush uli --uri="https://$(drupal_host "$name")"
+  fi
+}
+
+PROFILE_IN_CONTAINER="profiles/contrib/vactory_starter_kit"
+
+# Chemin donné (relatif au profil, absolu dans l'arbre du profil, ou déjà
+# relatif à la racine Drupal) -> chemin relatif au profil, normalisé (« . »,
+# « .. » et « // » résolus) ; « . » pour la racine du profil. Refus de tout
+# chemin qui sort du profil, y compris par un lien symbolique.
+profile_rel() {
+  local name="$1" p="$2" prof rel; prof="$(meta_get "$(inst_dir "$name")" PROFILE_PATH)"
+  case "$p" in
+    "/var/www/html/$PROFILE_IN_CONTAINER"|"/var/www/html/$PROFILE_IN_CONTAINER"/*) p="${p#/var/www/html/"$PROFILE_IN_CONTAINER"}"; p="${p#/}" ;;
+    "$PROFILE_IN_CONTAINER"|"$PROFILE_IN_CONTAINER"/*) p="${p#"$PROFILE_IN_CONTAINER"}"; p="${p#/}" ;;
+  esac
+  rel="$(python3 - "$prof" "${p:-.}" <<'PY'
+import os, sys
+prof, p = sys.argv[1], sys.argv[2]
+def inside(path, base):
+    return path == base or path.startswith(base.rstrip('/') + '/')
+base = os.path.normpath(prof)
+full = os.path.normpath(p if os.path.isabs(p) else os.path.join(base, p))
+if not inside(full, base):
+    # Chemin absolu écrit sous une autre forme (/tmp et /private/tmp…).
+    if not os.path.isabs(p):
+        sys.exit(1)
+    full, base = os.path.realpath(full), os.path.realpath(prof)
+    if not inside(full, base):
+        sys.exit(1)
+if os.path.exists(full) and not inside(os.path.realpath(full), os.path.realpath(prof)):
+    sys.exit(1)
+print(os.path.relpath(full, base))
+PY
+)" || die "chemin refusé ($2) : hors du profil de l'instance."
+  printf '%s' "$rel"
+}
+
+# Chemin relatif au profil -> chemin vu depuis la racine Drupal du conteneur.
+container_path() {
+  if [ "$1" = . ]; then printf '%s' "$PROFILE_IN_CONTAINER"; else printf '%s/%s' "$PROFILE_IN_CONTAINER" "$1"; fi
+}
+
+# Un dossier de tests Functional (les deux dispositions du profil), sans
+# tenir compte de la casse (disque du Mac insensible à la casse).
+is_functional_path() {
+  case "$(printf '/%s/' "$1" | tr '[:upper:]' '[:lower:]')" in
+    */tests/functional/*|*/tests/src/functional/*) return 0 ;;
+  esac
+  return 1
+}
+
+cmd_test() {
+  local name="${1:-}"; need_instance "$name"; shift
+  local prof args=() a rel has_target=0
+  prof="$(meta_get "$(inst_dir "$name")" PROFILE_PATH)"
+  while [ $# -gt 0 ]; do
+    a="$1"; shift
+    case "$a" in
+      --testsuite|--testsuite=*)
+        local suite="${a#--testsuite=}"
+        if [ "$a" = "--testsuite" ]; then suite="${1:-}"; shift || true; fi
+        case ",$suite," in *,existing-site-functional,*|*,functional,*) die "suite « $suite » refusée : elle installe et désinstalle des modules sur le site et y laisse du contenu." ;; esac
+        args+=(--testsuite "$suite"); has_target=1 ;;
+      # Options de PHPUnit suivies d'une valeur : la valeur n'est pas un chemin.
+      --filter|--group|--exclude-group|--covers|--uses|--test-suffix|\
+      --log-junit|--log-teamcity|--testdox-html|--testdox-text|--testdox-xml|\
+      --coverage-clover|--coverage-cobertura|--coverage-crap4j|--coverage-html|\
+      --coverage-php|--coverage-text|--coverage-xml|--printer|--order-by|\
+      --random-order-seed|--repeat|--columns|--cache-result-file|--include-path|-d)
+        args+=("$a" "${1:-}"); shift || true ;;
+      -*) args+=("$a") ;;
+      *)
+        rel="$(profile_rel "$name" "$a")"
+        # Deux dispositions dans le profil : tests/Functional et tests/src/Functional.
+        if is_functional_path "$rel"; then
+          die "chemin refusé ($rel) : les tests Functional installent et désinstallent des modules sur le site."
+        fi
+        [ -e "$prof/$rel" ] || die "introuvable dans le profil de l'instance : $rel"
+        if [ -d "$prof/$rel" ] && [ -n "$(find -L "$prof/$rel" -type d \( -ipath '*/tests/functional' -o -ipath '*/tests/src/functional' \) -print -quit 2>/dev/null)" ]; then
+          die "dossier refusé ($rel) : il contient des tests Functional ; viser un fichier ou un sous-dossier tests/src/..."
+        fi
+        args+=("$(container_path "$rel")"); has_target=1 ;;
+    esac
+  done
+  [ "$has_target" = 1 ] || die "test <nom> <chemin>... ou --testsuite unit|kernel|existing-site"
+  check_docker_memory "stack test"
+  in_drupal "$name" ddev exec "cd /var/www/html && vendor/bin/phpunit --bootstrap=./vendor/weitzman/drupal-test-traits/src/bootstrap.php -c phpunit.stack.xml --stderr$(quote_args "${args[@]}")"
+}
+
+cmd_phpcs() {
+  local name="${1:-}"; need_instance "$name"; shift
+  [ $# -gt 0 ] || die "phpcs <nom> <chemins>"
+  local prof d files=() p rel f start
+  prof="$(meta_get "$(inst_dir "$name")" PROFILE_PATH)"; d="$(inst_dir "$name")/drupal"
+  for p in "$@"; do
+    rel="$(profile_rel "$name" "$p")"
+    [ -e "$prof/$rel" ] || die "introuvable dans le profil : $rel"
+    if [ -d "$prof/$rel" ]; then
+      [ "$rel" = . ] && start="$prof" || start="$prof/$rel"
+      # Sortie vide de find : une ligne vide, à ne pas prendre pour un fichier
+      # (le hook recevrait la racine du profil et sortirait 0 : faux vert).
+      while IFS= read -r f; do
+        if [ -z "$f" ] || [ ! -f "$f" ]; then continue; fi
+        files+=("$PROFILE_IN_CONTAINER/${f#"$prof"/}")
+      done <<EOF
+$(find "$start" -type f \( -name '*.php' -o -name '*.module' -o -name '*.install' -o -name '*.inc' -o -name '*.profile' -o -name '*.theme' -o -name '*.test' \) -not -path '*/vendor/*' -not -path '*/node_modules/*')
+EOF
+    else
+      files+=("$PROFILE_IN_CONTAINER/$rel")
+    fi
+  done
+  [ ${#files[@]} -gt 0 ] || { warn "aucun fichier PHP dans : $* ; rien de vérifié."; return 0; }
+  # Le script du hook charge ../../vendor depuis son dossier : copié sous la
+  # racine Drupal, il y trouve le vendor du site (celui du profil est masqué).
+  rm -rf "$d/.stack-phpcs"; mkdir -p "$d/.stack-phpcs"
+  cp -R "$prof/scripts/githooks" "$d/.stack-phpcs/githooks"
+  local code=0
+  in_drupal "$name" ddev exec "cd /var/www/html && php .stack-phpcs/githooks/phpCodeSniffer.php$(quote_args "${files[@]}")" || code=$?
+  rm -rf "$d/.stack-phpcs"
+  [ "$code" = 0 ] && ok "phpcs : ${#files[@]} fichier(s) sans erreur" || return "$code"
+}
+
+# Snapshots : copie du volume de la base, base arrêtée quelques secondes.
+# Plus rapide et plus sûr que « ddev snapshot restore » (mesuré : plusieurs
+# minutes pour la base de référence).
+db_wait_healthy() {
+  local c="$1" i=0 st
+  while [ "$i" -lt 120 ]; do
+    st="$(docker inspect -f '{{.State.Health.Status}}' "$c" 2>/dev/null || echo absent)"
+    [ "$st" = healthy ] && return 0
+    i=$((i + 1)); sleep 1
+  done
+  die "la base $c ne répond pas (stack logs <nom> db)."
+}
+
+snap_volumes() {
+  # Snapshots de l'instance, du plus récent au plus ancien : « date volume étiquette ».
+  local v
+  for v in $(docker volume ls -q --filter "label=com.vactory.stack.snapshot-of=$1"); do
+    docker volume inspect -f '{{.CreatedAt}} {{.Name}} {{index .Labels "com.vactory.stack.snapshot"}}' "$v"
+  done | sort -r
+}
+
+# Fichiers du site (publics et privés) avec la base : <instance>/snapshots/<étiquette>.
+snap_files() {
+  local mode="$1" name="$2" label="$3" d dir
+  d="$(inst_dir "$name")/drupal/sites/default"; dir="$(inst_dir "$name")/snapshots/$label"
+  if [ "$mode" = save ]; then
+    rm -rf "$dir"; mkdir -p "$dir/files" "$dir/private"
+    rsync -a "$d/files/" "$dir/files/"; rsync -a "$d/private/" "$dir/private/"
+  elif [ -d "$dir/files" ]; then
+    rsync -a --delete "$dir/files/" "$d/files/"; rsync -a --delete "$dir/private/" "$d/private/"
+  else
+    warn "snapshot « $label » sans copie des fichiers (créé avant cette version) : base seule restaurée."
+  fi
+}
+
+cmd_snapshot() {
+  local name="${1:-}"; need_instance "$name"
+  local project; project="$(project_of "$name")"
+  if [ "${2:-}" = "--list" ]; then
+    snap_volumes "$name" | awk '{print $3"\t"$1}'; return
+  fi
+  if [ "${2:-}" = "--rm" ]; then
+    [ -n "${3:-}" ] || die "snapshot <nom> --rm <étiquette>"
+    docker volume inspect "$project-snap-$3" >/dev/null 2>&1 || die "snapshot « $3 » introuvable (stack snapshot $name --list)."
+    docker volume rm "$project-snap-$3" >/dev/null
+    rm -rf "${STACKS_DIR:?}/$name/snapshots/$3"
+    ok "snapshot « $3 » de $name supprimé"; return
+  fi
+  local label="${2:-snap-$(date +%Y%m%d-%H%M%S)}"
+  printf '%s' "$label" | grep -Eq '^[a-z0-9][a-z0-9_.-]{0,39}$' || die "nom de snapshot invalide (a-z, 0-9, _ . -, 40 caractères au plus)."
+  local db="ddev-$project-db" vol="$project-snap-$label" src t0; t0="$(now)"
+  src="$project-$(ddev_value db_type mariadb)"
+  docker inspect "$db" >/dev/null 2>&1 || die "« $name » n'est pas démarrée (stack start $name)."
+  docker volume rm -f "$vol" >/dev/null 2>&1 || true
+  docker volume create --label "com.vactory.stack.instance=$name" --label "com.vactory.stack.snapshot-of=$name" \
+    --label "com.vactory.stack.snapshot=$label" "$vol" >/dev/null
+  docker stop "$db" >/dev/null
+  copy_volume "$src" "$vol" || { docker start "$db" >/dev/null; die "copie impossible"; }
+  docker start "$db" >/dev/null
+  snap_files save "$name" "$label"
+  db_wait_healthy "$db"
+  ok "snapshot « $label » de $name en $(since "$t0")"
+}
+
+cmd_restore() {
+  local name="${1:-}"; need_instance "$name"
+  local project label vol db src t0; project="$(project_of "$name")"; t0="$(now)"
+  label="${2:-}"
+  if [ -z "$label" ]; then
+    label="$(snap_volumes "$name" | head -n 1 | awk '{print $3}')"
+    [ -n "$label" ] || die "aucun snapshot pour « $name »."
+  fi
+  vol="$project-snap-$label"; db="ddev-$project-db"; src="$project-$(ddev_value db_type mariadb)"
+  docker volume inspect "$vol" >/dev/null 2>&1 || die "snapshot « $label » introuvable (stack snapshot $name --list)."
+  docker inspect "$db" >/dev/null 2>&1 || die "« $name » n'est pas démarrée (stack start $name)."
+  docker stop "$db" >/dev/null
+  docker run --rm -v "$vol:/from:ro" -v "$src:/to" "$REDIS_IMAGE" \
+    sh -c 'find /to -mindepth 1 -maxdepth 1 -exec rm -rf {} + && cp -a /from/. /to/' \
+    || { docker start "$db" >/dev/null; die "restauration impossible"; }
+  docker start "$db" >/dev/null
+  snap_files load "$name" "$label"
+  db_wait_healthy "$db"
+  in_drupal "$name" ddev drush cr >/dev/null 2>&1 || warn "drush cr a échoué après la restauration."
+  ok "« $label » restauré dans $name en $(since "$t0")"
+}
+
+cmd_logs() {
+  local name="${1:-}"; need_instance "$name"
+  local svc="${2:-web}"
+  if [ $# -ge 2 ]; then shift 2; else shift; fi
+  case "$svc" in web|db|front|redis) ;; *) die "logs <nom> [web|db|front|redis]" ;; esac
+  in_drupal "$name" ddev logs -s "$svc" "$@"
+}
+
+cmd_stop() { local name="${1:-}"; need_instance "$name"; in_drupal "$name" ddev stop; }
+cmd_start() {
+  local name="${1:-}"; need_instance "$name"
+  ddev_start_locked in_drupal "$name"
+  [ "$(meta_get "$(inst_dir "$name")" FRONT)" = 1 ] && wait_front "$name"
+  return 0
+}
+
+# --- Commande : rm ----------------------------------------------------------------
+
+RM_KEEP_BRANCH=0
+RM_FORCE=0
+
+remove_instance() {
+  local name="$1" mode="${2:-}" inst project prof pmode br
+  valid_name "$name"
+  inst="$(inst_dir "$name")"; project="$(project_of "$name")"
+  case "$inst" in "$STACKS_DIR"/[a-z0-9]*) ;; *) die "chemin inattendu : $inst" ;; esac
+  pmode="$(meta_get "$inst" PROFILE_MODE)"; prof="$inst/profile"
+  if [ "$mode" != force ] && [ "$RM_FORCE" = 0 ] && [ "$pmode" = worktree ] && [ -d "$prof" ]; then
+    if [ -n "$(git -C "$prof" status --porcelain 2>/dev/null)" ]; then
+      die "« $name » : modifications non commitées dans $prof ; les commiter, ou --force pour les perdre."
+    fi
+  fi
+  if ddev describe "$project" >/dev/null 2>&1; then
+    ddev delete -O -y "$project" >/dev/null 2>&1 || warn "ddev delete $project a échoué."
+  fi
+  # Reste éventuel (création interrompue avant l'enregistrement ddev).
+  local c; c="$(docker ps -aq --filter "label=com.ddev.site-name=$project" 2>/dev/null || true)"
+  # shellcheck disable=SC2086 # une liste d'identifiants.
+  [ -z "$c" ] || docker rm -f $c >/dev/null 2>&1 || true
+  for c in "$project-mariadb" "$project-mysql" "$project-postgres" "ddev-$project-snapshots"; do
+    docker volume rm "$c" >/dev/null 2>&1 || true
+  done
+  # Volumes de l'instance : étiquette propre aux instances, ou snapshot de
+  # l'instance (versions précédentes). Jamais l'étiquette com.vactory.stack,
+  # que portent aussi les volumes partagés.
+  for c in $(docker volume ls -q --filter "label=com.vactory.stack.instance=$name" 2>/dev/null) \
+           $(docker volume ls -q --filter "label=com.vactory.stack.snapshot-of=$name" 2>/dev/null); do
+    case "$c" in
+      "$DB_VOLUME"|"$DB_VOLUME.new"|"$FRONT_VOLUME"|vsk-yarn-cache) warn "volume partagé $c ignoré." ;;
+      "$project"-*) docker volume rm -f "$c" >/dev/null 2>&1 || true ;;
+      *) warn "volume $c ignoré : hors des noms de l'instance ($project-…)." ;;
+    esac
+  done
+  if [ "$pmode" = worktree ] || git -C "$PROFILE_REPO" worktree list --porcelain 2>/dev/null | grep -qx "worktree $prof"; then
+    git -C "$PROFILE_REPO" worktree remove --force "$prof" >/dev/null 2>&1 || true
+    git -C "$PROFILE_REPO" worktree prune >/dev/null 2>&1 || true
+    br="$(meta_get "$inst" BRANCH)"
+    if [ -n "$br" ] && [ "$(meta_get "$inst" BRANCH_CREATED)" = 1 ]; then
+      if [ "$RM_KEEP_BRANCH" = 1 ]; then
+        say "  branche $br gardée"
+      elif [ "$(git -C "$PROFILE_REPO" rev-parse -q --verify "refs/heads/$br" || true)" = "$(meta_get "$inst" BRANCH_START)" ]; then
+        git -C "$PROFILE_REPO" branch -D "$br" >/dev/null 2>&1 || true
+      elif git -C "$PROFILE_REPO" show-ref --verify -q "refs/heads/$br"; then
+        say "  branche $br gardée : elle a des commits (git branch -D $br pour la supprimer)"
+      fi
+    fi
+  fi
+  rm -rf "${inst:?}"
+  ok "« $name » supprimée"
+}
+
+cmd_rm() {
+  local all=0 yes=0 names="" a n
+  for a in "$@"; do
+    case "$a" in
+      --all) all=1 ;;
+      --yes|-y) yes=1 ;;
+      --keep-branch) RM_KEEP_BRANCH=1 ;;
+      --force) RM_FORCE=1 ;;
+      -*) die "rm : option inconnue $a" ;;
+      *) valid_name "$a"; names="$names $a" ;;
+    esac
+  done
+  if [ "$all" = 1 ]; then
+    [ -z "$names" ] || die "rm --all ne prend pas de nom."
+    [ "$yes" = 1 ] || die "rm --all demande --yes."
+    # Instances seulement : nom valide et non réservé, avec .stack-meta (écrit
+    # dès le début de la création) ou drupal/ (reste d'une version antérieure).
+    # Les dossiers internes (_baseline, _build d'une baseline interrompue,
+    # .locks) ne sont jamais des instances.
+    for a in "$STACKS_DIR"/*/; do
+      n="$(basename "$a")"
+      [ -z "$(name_error "$n")" ] || continue
+      [ -f "$a.stack-meta" ] || [ -d "${a}drupal" ] || continue
+      names="$names $n"
+    done
+    [ -n "$names" ] || { ok "aucune instance"; return; }
+  fi
+  [ -n "$names" ] || die "rm <nom>... [--keep-branch] [--force] [--yes] | rm --all --yes"
+  for n in $names; do
+    [ -d "$(inst_dir "$n")" ] || ddev describe "$(project_of "$n")" >/dev/null 2>&1 || die "instance « $n » introuvable."
+  done
+  if [ "$yes" = 0 ]; then
+    [ -t 0 ] || die "confirmer avec --yes."
+    read -r -p "Supprimer${names} (site, base, front, arbre du profil) ? [o/N] " a
+    case "$a" in o|O|y|Y|oui) ;; *) die "annulé" ;; esac
+  fi
+  # Une instance en échec n'arrête pas les autres : chacune dans un
+  # sous-shell (set -e actif : hors de tout « if » ou « || »), bilan à la fin.
+  local failed="" code lock
+  for n in $names; do
+    set +e
+    ( lock_take "inst-$n" 30; remove_instance "$n"; lock_release "inst-$n" )
+    code=$?
+    set -e
+    if [ "$code" != 0 ]; then
+      failed="$failed $n"
+      lock="$STACKS_DIR/.locks/inst-$n"
+      [ "$(cat "$lock/pid" 2>/dev/null || true)" != "$$" ] || rm -rf "$lock"
+    fi
+  done
+  [ -z "$failed" ] || die "suppression en échec :$failed (voir ci-dessus)."
+}
+
+# --- Aide ------------------------------------------------------------------------
+
+usage() {
+  cat <<'EOF'
+stack : pile locale complète et isolée par instance (docs/dev-stack.md).
+
+  stack init                       configuration locale (emplacements des sources)
+  stack doctor                     vérifie les prérequis
+  stack baseline [--fresh | --from-dump <fichier>] [--no-front | --front-only]
+  stack up <nom> [--branch <b> | --ref <commit>] [--profile <chemin>] [--front] [--no-oauth]
+  stack ls | info <nom> [--json] | url <nom> [front|mail]
+  stack drush <nom> <args>         stack exec <nom> <commande>
+  stack uli <nom> [utilisateur]    stack test <nom> <chemin>... | --testsuite <suite>
+  stack phpcs <nom> <chemins>      stack logs <nom> [web|db|front|redis]
+  stack snapshot <nom> [étiquette | --list | --rm <étiquette>]   stack restore <nom> [étiquette]
+  stack stop <nom>                 stack start <nom>
+  stack rm <nom> [--keep-branch] [--force] [--yes]   stack rm --all --yes
+EOF
+}
+
+main() {
+  local cmd="${1:-help}"; [ $# -gt 0 ] && shift
+  case "$cmd" in help|-h|--help) usage; return ;; esac
+  case " $* " in *" -h "*|*" --help "*) usage; return ;; esac
+  load_config
+  case "$cmd" in
+    init) cmd_init "$@" ;;
+    doctor) cmd_doctor "$@" ;;
+    baseline) cmd_baseline "$@" ;;
+    up) cmd_up "$@" ;;
+    ls|list) cmd_ls "$@" ;;
+    info) cmd_info "$@" ;;
+    url) cmd_url "$@" ;;
+    drush) cmd_drush "$@" ;;
+    exec) cmd_exec "$@" ;;
+    uli) cmd_uli "$@" ;;
+    test) cmd_test "$@" ;;
+    phpcs) cmd_phpcs "$@" ;;
+    snapshot) cmd_snapshot "$@" ;;
+    restore) cmd_restore "$@" ;;
+    logs) cmd_logs "$@" ;;
+    stop) cmd_stop "$@" ;;
+    start) cmd_start "$@" ;;
+    rm) cmd_rm "$@" ;;
+    *) die "commande inconnue « $cmd » (stack help)" ;;
+  esac
+}
+
+# Sur une seule ligne : bash a lu toute la ligne avant d'exécuter main ; un
+# script modifié pendant une commande longue (git pull, merge) ne fait pas
+# lire la suite du fichier à un décalage périmé.
+{ main "$@"; exit $?; }
