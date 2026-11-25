@@ -30,10 +30,15 @@
 
 **Procédure, dans cet ordre**
 
+Testée sur trois projets du parc (3.1.2, `3.x-dev` d'avant 3.1.3, 3.2.3), Redmine #71368. Sur les trois, la commande composer seule ne suffisait pas : faire les étapes 0 et 1 en entier.
+
 ```
+# 0. Avant : sauvegarde de la base ; Composer 2.8 (voir l'étape 0)
 # 1. Code et composer (en local, puis commit)
-composer require voidagency/vactory_starter_kit:<version> -W
-# 2. Déployer (capistrano ou Docker), puis à la main :
+composer remove --no-update <dépendances du profil recopiées dans le projet>   # voir 1.a
+composer require drush/drush:^13.7 voidagency/vactory_starter_kit:<version> -W
+composer install                                                                # voir 1.e
+# 2. Déployer (capistrano ou Docker), site en maintenance, puis à la main :
 drush updb -y
 # 3. Features à réimporter : aucune pour cette version
 # 4. Back-office : voir l'étape 4
@@ -42,12 +47,21 @@ drush cr
 # 6. Vérifications : voir ci-dessous
 ```
 
+**0. Avant de commencer**
+- Sauvegarder la base de l'environnement à mettre à jour, et la tester d'abord sur une copie (préproduction ou local).
+- **Composer 2.8.** Les versions 2.9 et plus refusent par défaut les paquets visés par un avis de sécurité, y compris ceux que le projet fige lui-même : l'étape 1 échoue. Correction des contraintes concernées suivie dans le profil (Redmine #71556).
+- Noter les erreurs du rapport d'état (`/admin/reports/status`) et les mises à jour déjà en attente (`drush updatedb-status`) : après la mise à jour, on compare.
+
 **1. Code et composer** (en local, avant le déploiement)
 - **Tous les sites :** figer la version du profil : `composer require voidagency/vactory_starter_kit:<version> -W`. Le `composer.lock` du profil n'est pas utilisé par les projets : c'est cette commande qui apporte les correctifs de sécurité des dépendances.
 - **Si le projet suit `3.x-dev` (ou une autre branche de dev) :** passer sur la version figée `voidagency/vactory_starter_kit:<version>`. Une branche de dev livre des changements non publiés, sans changelog ni tests de release.
-- **Si le projet est en 3.1.x :** appliquer aussi les notes des releases 3.2.x (changements de dépendances compris).
+- **a. Dépendances du profil recopiées dans le projet.** Beaucoup de projets redéclarent dans leur propre `composer.json` des paquets que le profil exige déjà, avec les contraintes de leur époque (un projet en 3.1.2 en avait 112). Une contrainte plus ancienne que celle du profil bloque l'étape 1. **Les retirer du projet** (`composer remove --no-update <paquets>`) et laisser le profil les piloter ; garder seulement ce que le projet utilise en plus du profil. Lister les paquets en commun : comparer les `require` du projet à ceux du `composer.json` du profil à la version visée. Cas rencontrés : `drupal/captcha` figé sous 2.0.11 (2.0.10), `drupal/flag` 4.x (profil `^5.0` depuis 3.1.5), `drupal/ctools` `^3` (profil `^4.1.1`), `drupal/metatag` `^1` (`^2`), `drupal/field_group` `^3` (`^4`), `drupal/search_api_exclude_entity` `^1` (`^3`), `drupal/colorapi` `^1` (`^2`), `voidagency/jquery_colorpicker` `^4`, `drupal/flood_control` `^2` (`^3.0.1`), versions figées (`drupal/search_api` 1.31.0…).
+- **b. drush 13.7 ou plus.** Le profil exige `drupal/devel ^5.5` (depuis 3.1.8), qui refuse drush avant 13.7. Un projet en drush 12 : `composer require drush/drush:^13.7` dans la même commande que le profil.
+- **c. Projets en 3.1.x ou sur un `3.x-dev` d'avant 3.2 :** les montées majeures arrivent en une fois (ctools 4, flag 5, metatag 2, field_group 4) ; `drush updb` convertit les données (metatag : plusieurs milliers d'enregistrements sur un site moyen). Prévoir le temps et la sauvegarde.
+- **d. Paquets propres au projet devenus incompatibles** (exemple rencontré : `facebook/graph-sdk ~5.0`, qui exige PHP 7 et n'était plus utilisé) : vérifier leur usage dans le code, les retirer ou les remplacer.
+- **e. `composer install` après le `require`.** Des forks `voidagency/*` sont remplacés par le paquet `drupal/*` du même nom (`merge_translations`, `block_list_override`, `swiftmailer`) : composer installe le nouveau puis supprime le dossier en retirant l'ancien. `drush updb` échoue alors (« The module merge_translations does not exist »). `composer install` réinstalle ce qui manque ; vérifier que chaque module du `composer.lock` a son dossier.
 - **`google_tag` (#931, #942) :** la contrainte accepte 1.x et 2.x. Si le `composer.json` du projet n'exige pas google_tag, `-W` le fait passer en 2.x. Pour rester en 1.x : `composer require drupal/google_tag:^1.8` avant la mise à jour.
-- **`drupal/captcha` (#949) :** la contrainte passe de 2.0.11 à `^2.0.11` : 2.0.12 sur un core 10.3 ou plus, 2.0.11 en dessous. Le profil ne déclare plus le patch « Fix captcha error message translation ». **Si le projet porte sa propre copie de ce patch** (`extra.patches` ou fichier de patches) : la retirer, elle ne s'applique pas sur 2.0.12 et composer échoue.
+- **`drupal/captcha` (#949) :** la contrainte du profil devient `^2.0.11` (un projet qui fige captcha en dessous, par exemple 2.0.10, bloque l'étape 1 : retirer ce figeage, voir 1.a) : 2.0.12 sur un core 10.3 ou plus, 2.0.11 en dessous. Le profil ne déclare plus le patch « Fix captcha error message translation ». **Si le projet porte sa propre copie de ce patch** (`extra.patches` ou fichier de patches) : la retirer, elle ne s'applique pas sur 2.0.12 et composer échoue.
 - **Si une feature du projet exporte `captcha.settings` :** y mettre `wrong_captcha_response_message: ''` après l'update. Sinon, un `drush fr` de cette feature remet le message anglais, qui n'est alors plus traduit (#949). Même chose pour un dossier de config importé par `drush cim`.
 - **Si le projet requiert `drupal/swiftmailer`, `drupal/social_auth_microsoft` ou `stevenmaguire/oauth2-microsoft` :** reprendre leurs patches dans le projet, le profil ne les déclare plus (#909).
 - **Si du code projet appelle `console.output` ou `vactory_cloudinary.move_file_batch` :** ces services sont retirés (#920), supprimer les appels.
@@ -61,6 +75,8 @@ drush cr
 - **Si du code projet appelle `vactory_html2pdf.manager::html2Pdf()` (#953) :** le PDF est écrit à l'URI demandée et l'`uri` renvoyée est un URI de flux (`public://dossier/fichier.pdf`). Adapter le code qui utilise cette `uri` ou le chemin du fichier. Un schéma indisponible sur le site lève `VactoryHtml2PdfException`.
 
 **2. `drush updb -y`** (à la main, après le déploiement)
+- **Site en maintenance entre le déploiement du code et la fin de `drush updb`.** Avec le nouveau code et l'ancien conteneur en cache (flood_control 3, Shield 1.11), les pages et la plupart des commandes drush répondent en erreur ; `drush updb` passe et le corrige.
+- **Sites sans `vactory_decoupled` qui ont `vactory_dashboard`** : `drush updb` peut échouer sur `entityqueue_post_update_relationship_limit_queue_list` (« Could not retrieve data definition for field 'Term slug' on index 'Dashboard Search' »). Retirer le champ de l'index : `drush php:eval "\Drupal\search_api\Entity\Index::load('vactory_dashboard_search')->removeField('slug')->save();"`, puis relancer `drush updb` (Redmine #71557).
 - Deux updates du profil : `vactory_decoupled_webform` 10102, qui retire la permission `access any webform configuration` aux rôles anonyme et authentifié (#897) ; `vactory_dynamic_field` 9501, qui active `paragraphs_edit`, avec `paragraphs` et `contextual`, sur les sites qui ne l'ont pas (#910).
 - `vactory_core` 10001 (#949) : vide le réglage `captcha.settings:wrong_captcha_response_message` quand il contient le message par défaut (en anglais ou dans une langue du site). CAPTCHA affiche alors son message par défaut traduit par la traduction d'interface, comme avec le patch. Un message personnalisé est conservé et signalé dans la sortie de la commande.
 - Si google_tag passe en 2.x et que le module est activé : ses propres updates s'exécutent aussi.
@@ -102,7 +118,7 @@ drush cr
 - Chaque appel HTTPS du projet (API métier, SSO, CRM, envoi de formulaire distant…) répond, sans `cURL error 60` dans les logs.
 - **Si Shield est actif :** une requête avec les identifiants Shield répond normalement, et avec un mauvais mot de passe 401, jamais 500 (#988).
 - **Si `vactory_decoupled_flag`, `vactory_decoupled_search_ai` ou `vactory_toolbox` est actif :** leurs dépendances nouvellement déclarées sont actives (`drush pm:list`), car Drupal ne les active pas sur un site existant (#904, #905).
-- Une page avec menu s'affiche ; `/sitemap.xml` et `/image-sitemap.xml` répondent.
+- Une page avec menu s'affiche ; `/sitemap.xml` répond, et `/image-sitemap.xml` si `vactory_image_sitemap` est actif (sur une copie sans les fichiers du site, les régénérer avant de vérifier : `drush xmlsitemap:rebuild` puis `drush xmlsitemap:regenerate` pour `/sitemap.xml` ; `drush cron` pour `/image-sitemap.xml`, produit par `vactory_image_sitemap`).
 - **Si block_class est passé en 3.1 :** un bloc qui a une classe CSS l'affiche toujours (HTML Drupal, et propriété `classes` du bloc côté front) ; le formulaire d'un bloc avec classes s'enregistre (#948).
 - Un envoi de webform avec fichier aboutit, côté front.
 - Une mauvaise réponse à un CAPTCHA affiche le message d'erreur traduit, en français et en arabe (#949).
@@ -120,6 +136,11 @@ drush cr
 - **Sites découplés (#891) :** une page du front s'affiche à son adresse habituelle ; la même adresse écrite avec des majuscules redirige vers l'adresse de l'alias (redirection permanente) ; `/taxonomy/term/<id>` répond 404, ou affiche le terme si le type a été ajouté à la liste des types de page.
 - **Sites découplés (#972) :** sur le front, une adresse inconnue et `/node/<id inconnu>` répondent 404 (statut 404, sans redirection vers la page d'erreur) ; l'adresse de modification d'une page (`/node/<id>/edit`) répond 404 ; `/node/<id>` d'une page publiée redirige toujours vers son alias ; les pages système (connexion, recherche, page d'erreur) s'affichent.
 - **Si `vactory_sondage` est actif (#983) :** créer un sondage avec une date de fermeture dans quelques minutes ; après cette date et un passage du cron de `vactory_reminder` (ou `drush rrq`), son statut est « Fermé ». `drush rrq` n'affiche plus d'élément `sondage_closer` en « Failed ».
+
+**Après la mise à jour : à prévoir**
+- **Menus (#957) :** les liens vers un contenu non publié ou réservé disparaissent pour les visiteurs qui n'y ont pas accès. Sur un projet testé, trois liens du menu principal, affichés aux anonymes avant, ont disparu : **prévenir le client** et corriger ces liens.
+- **swiftmailer :** le profil envoie les mails par `symfony_mailer`. Un projet qui exige encore `drupal/swiftmailer` et l'utilise comme expéditeur (`drush cget mailsystem.settings defaults`) a un module abandonné : prévoir la migration vers symfony_mailer, avec un envoi réel vérifié (formulaire, mot de passe oublié).
+- **Shield 1.11** stocke les identifiants encodés dans sa configuration : un script qui lisait `credentials.shield.user` / `pass` en clair ne fonctionne plus.
 
 ### Sécurité
 - `vactory_core` : vérification TLS active par défaut dans le client HTTP de Drupal (#896).
