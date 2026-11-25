@@ -321,13 +321,14 @@ cmd_report() {
 }
 
 cmd_status() {
-  local total measured
+  local total measured invalid
   [ "${1:-}" != --out ] || OUT="${2:-}"
   use_out
   total=$(wc -l <"$OUT/modules.txt" 2>/dev/null | tr -d ' ')
   measured=$(find "$OUT/raw" -mindepth 2 -maxdepth 2 -name result.json 2>/dev/null | wc -l | tr -d ' ')
   say "audit     : $OUT (ref $REF, $INSTANCES instance(s) $PREFIX-N)"
-  say "modules   : $measured / ${total:-?} mesurés"
+  invalid=$(grep -l '"measurement_invalid": true' "$OUT"/raw/*/result.json 2>/dev/null | wc -l | tr -d ' ')
+  say "modules   : $((measured - invalid)) / ${total:-?} mesurés$([ "$invalid" = 0 ] || echo ", $invalid mesure(s) invalide(s) à refaire (resume)")"
   say "dépendances : $(find "$OUT/deps/undeclared" "$OUT/deps/unused" -name '*__*.json' 2>/dev/null | wc -l | tr -d ' ') paires jugées"
   if [ -f "$OUT/.lock" ] && kill -0 "$(cat "$OUT/.lock")" 2>/dev/null; then say "en cours  : pid $(cat "$OUT/.lock")"; fi
 }

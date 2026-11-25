@@ -12,7 +12,11 @@ target |= {os.path.basename(p).split('__')[0] for p in glob.glob(f'{A}/deps/*/*_
 mods = {m: v for m, v in S['modules'].items() if m in target}
 res = {}
 for p in glob.glob(f'{A}/raw/*/result.json'):
-    r = json.load(open(p))
+    try:
+        r = json.load(open(p))
+    except ValueError:  # truncated by a killed run: shown as not measured, resume measures it again
+        print(f'unreadable, ignored: {p}', file=sys.stderr)
+        continue
     if r['module'] in mods:
         res[r['module']] = r
 
@@ -20,7 +24,11 @@ for p in glob.glob(f'{A}/raw/*/result.json'):
 def load_deps(kind):
     out = defaultdict(list)
     for p in sorted(glob.glob(f'{A}/deps/{kind}/*__*.json')):
-        r = json.load(open(p))
+        try:
+            r = json.load(open(p))
+        except ValueError:
+            print(f'unreadable, ignored: {p}', file=sys.stderr)
+            continue
         if r['module'] in mods:
             r['_file'] = os.path.relpath(p, A)
             out[r['module']].append(r)
@@ -115,8 +123,13 @@ for m in sorted(mods):
         rows.append(f'| {m} | — | not measured | | | | | | | {"<br>".join(dep_cells(m))} | |')
         groups['Not measured'].append(m)
         continue
-    times.append((m, r['times'].get('total', 0)))
     f = r['flags']
+    if f.get('measurement_invalid'):
+        # Site unreachable during the run (ddev router cut): no verdict, the run is redone by resume.
+        rows.append(f'| {m} | — | {link("measurement invalid (site unreachable): module-audit resume redoes it", ev)} | | | | | | | {"<br>".join(dep_cells(m))} | |')
+        groups['Measurement invalid (site unreachable, redo with resume)'].append((m, 'every page answered 000', ev))
+        continue
+    times.append((m, r['times'].get('total', 0)))
     mode = 'profile' if r['mode'] == 'enabled' else 'new'
     # 1 install
     if r['mode'] == 'new':
@@ -218,7 +231,7 @@ L = ['# Module install / uninstall audit of `vactory_starter_kit`', '']
 L += [f'Measured on `stack` instances (profile commit {S.get("_commit", "?")}, baseline DB of {baseline}). '
       'Every row comes from a run of `scripts/module-audit/module-audit` (fresh restore of the `audit-base` snapshot before each module); dependency cells come from `kprobe.py` runs (Kernel probe `php/DepProbeTest.php` in the instance: M installed on a fresh Kernel site without X, then a control run with X; only errors that name X, come from M and disappear with X count). '
       'Static grep (`static.json`) only chose what to measure.', '']
-L += [f'Modules: {len(mods)} measured target, {len(res)} measured, excluded: ' + ', '.join(f'`{e["module"]}` ({e["why"]})' for e in S['excluded']), '']
+L += [f'Modules: {len(mods)} measured target, {len(res) - len(groups.get("Measurement invalid (site unreachable, redo with resume)", []))} measured, excluded: ' + ', '.join(f'`{e["module"]}` ({e["why"]})' for e in S['excluded']), '']
 if times:
     tot = sum(t for _, t in times)
     L += [f'Time per module: mean {tot / len(times):.0f} s, min {min(t for _, t in times):.0f} s, max {max(t for _, t in times):.0f} s ({max(times, key=lambda x: x[1])[0]}); sum {tot / 60:.0f} min.', '']
@@ -228,7 +241,7 @@ L += ['Legend: *new* = not enabled by the profile install (install alone measure
 L += ['| Module | Mode | Install alone | Content added | Health after install | Uninstall | Health after uninstall | Leftovers | Reinstall | Dependencies (measured) | Time (s) |',
       '|---|---|---|---|---|---|---|---|---|---|---|'] + rows
 L += ['', '## Modules that need a fix, by kind of defect', '']
-order = ['Install alone fails', 'Site broken after install', 'Uninstall refused', 'Site broken after uninstall', 'New log errors (site still works)', 'Content left after uninstall', 'Reinstall fails after uninstall',
+order = ['Measurement invalid (site unreachable, redo with resume)', 'Install alone fails', 'Site broken after install', 'Uninstall refused', 'Site broken after uninstall', 'New log errors (site still works)', 'Content left after uninstall', 'Reinstall fails after uninstall',
          'Reinstall creates duplicates', 'Install creates content (not config)', 'Uninstall cascades to other modules', 'Other leftovers after uninstall (tables/config/state/key_value/permissions)',
          'Undeclared dependency, proven (fails without it)', 'Declared dependency not needed (no error without it)', 'Heavy chain (install pulls ≥ 15 modules)', 'Self or circular dependency (info.yml)']
 for g in order:
