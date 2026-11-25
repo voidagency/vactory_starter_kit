@@ -62,10 +62,12 @@ cr_cron() { # instance, dossier, préfixe
 has_snapshot() { st snapshot "$1" --list 2>/dev/null | awk '{print $1}' | grep -qx "$SNAP_LABEL"; }
 
 # Prépare une instance : dblog, snapshot « audit-base », passage témoin (les
-# mêmes étapes sans module, pour connaître le bruit). Refait si le snapshot manque.
+# mêmes étapes sans module, pour connaître le bruit). Refait si le snapshot
+# manque ou si le témoin n'est pas allé au bout (marqueur control.done écrit en
+# dernier).
 prepare() {
   local inst="$1" d="$OUT/raw/_control/$1" t0 w
-  if [ -f "$d/base-modules.txt" ] && has_snapshot "$inst"; then return 0; fi
+  if [ -f "$d/control.done" ] && has_snapshot "$inst"; then return 0; fi
   t0=$(now)
   rm -rf "$d"
   mkdir -p "$d"
@@ -84,7 +86,8 @@ prepare() {
   snap "$inst" "$d/s1.json"
   w=$(json_max_wid "$d/s0.json")
   wd "$inst" "$w" "$d/wd.json"
-  st restore "$inst" "$SNAP_LABEL" >"$d/restore.txt" 2>&1
+  st restore "$inst" "$SNAP_LABEL" >"$d/restore.txt" 2>&1 || { cat "$d/restore.txt"; return 1; }
+  : >"$d/control.done"
   log "$inst préparée en $(el "$t0") s"
 }
 
