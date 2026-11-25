@@ -244,6 +244,8 @@ def unused(inst, m, dd):
     rel = f'{S[m]["path"]}/{m}.info.yml'
     prof = inst_path(inst, 'profile.path')
     info = f'{prof}/{rel}'
+    # A run killed before the finally below leaves the copy amputated: start from the committed file.
+    subprocess.run(['git', '-C', prof, 'checkout', '--', rel], capture_output=True)
     orig = open(info).read()
     # list item (last line may have no trailing newline) or scalar `dependencies: D`
     s2 = re.sub(r'(?m)^[ \t]*-[ \t]*[\'"]?([a-z0-9_]+:)?' + re.escape(dd) + r'\b[^\n]*(\n|\Z)', '', orig)
