@@ -51,7 +51,8 @@ class ShieldFloodControlTest extends ExistingSiteBase {
     }
     $config = \Drupal::configFactory()->getEditable('shield.settings');
     $this->original = $config->getRawData();
-    $this->credentials = ['test-' . bin2hex(random_bytes(4)), bin2hex(random_bytes(16))];
+    $user = 'test-' . bin2hex(random_bytes(4));
+    $this->credentials = [$user, bin2hex(random_bytes(16))];
     $config
       ->set('shield_enable', TRUE)
       ->set('method', 1)
