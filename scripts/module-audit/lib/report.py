@@ -30,6 +30,7 @@ def load_deps(kind):
 undec = load_deps('undeclared')
 unused = load_deps('unused')
 unused_fp = [x for x in json.load(open(f'{A}/unused-false-positives.json')) if x[0] in mods] if os.path.exists(f'{A}/unused-false-positives.json') else []
+PROFILE_URL = 'https://github.com/voidagency/vactory_starter_kit'
 inst_files = sorted(glob.glob(f'{A}/instances/*.json'))
 baseline = json.load(open(inst_files[0])).get('baseline', '?') if inst_files else '?'
 
@@ -75,6 +76,13 @@ def count_ents(c):
 groups = defaultdict(list)
 
 
+def info_url(m):
+    """The module's .info.yml in the profile at the audited commit (it is not in the results directory)."""
+    rel = f'{mods[m]["path"]}/{m}.info.yml'
+    commit = S.get('_commit')
+    return f'{PROFILE_URL}/blob/{commit}/{rel}' if commit else rel
+
+
 def dep_cells(m):
     """Dependency cell of module m (measured verdicts); fills the groups."""
     st = mods[m]
@@ -94,7 +102,7 @@ def dep_cells(m):
     if m in S.get('cycles', []):
         selfdep = m in st['declared']
         db.append('**self-dependency**' if selfdep else '**circular**')
-        groups['Self or circular dependency (info.yml)'].append((m, 'declares itself' if selfdep else 'circular via ' + ', '.join(x for x in st['declared'] if m in mods.get(x, {}).get('closure', [])), f'{mods[m]["path"]}/{m}.info.yml'))
+        groups['Self or circular dependency (info.yml)'].append((m, 'declares itself' if selfdep else 'circular via ' + ', '.join(x for x in st['declared'] if m in mods.get(x, {}).get('closure', [])), info_url(m)))
     return db
 
 
