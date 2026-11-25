@@ -118,7 +118,7 @@ drush cr
 - Chaque appel HTTPS du projet (API métier, SSO, CRM, envoi de formulaire distant…) répond, sans `cURL error 60` dans les logs.
 - **Si Shield est actif :** une requête avec les identifiants Shield répond normalement, et avec un mauvais mot de passe 401, jamais 500 (#988).
 - **Si `vactory_decoupled_flag`, `vactory_decoupled_search_ai` ou `vactory_toolbox` est actif :** leurs dépendances nouvellement déclarées sont actives (`drush pm:list`), car Drupal ne les active pas sur un site existant (#904, #905).
-- Une page avec menu s'affiche ; `/sitemap.xml` répond, et `/image-sitemap.xml` si `vactory_image_sitemap` est actif (sur une copie sans les fichiers du site : `drush xmlsitemap:rebuild` puis `drush xmlsitemap:regenerate` avant de vérifier).
+- Une page avec menu s'affiche ; `/sitemap.xml` répond, et `/image-sitemap.xml` si `vactory_image_sitemap` est actif (sur une copie sans les fichiers du site, les régénérer avant de vérifier : `drush xmlsitemap:rebuild` puis `drush xmlsitemap:regenerate` pour `/sitemap.xml` ; `drush cron` pour `/image-sitemap.xml`, produit par `vactory_image_sitemap`).
 - **Si block_class est passé en 3.1 :** un bloc qui a une classe CSS l'affiche toujours (HTML Drupal, et propriété `classes` du bloc côté front) ; le formulaire d'un bloc avec classes s'enregistre (#948).
 - Un envoi de webform avec fichier aboutit, côté front.
 - Une mauvaise réponse à un CAPTCHA affiche le message d'erreur traduit, en français et en arabe (#949).
