@@ -150,14 +150,19 @@ def owner_of(at):
     return best
 
 
+def provided_by(m, text):
+    """Drupal's "… provided by <em>m</em> …" in an error message."""
+    return bool(re.search(r'provided by (<em[^>]*>)?' + re.escape(m) + r'(</em>)?\s', text))
+
+
 def attributable(e, m):
     w, err, at = e['where'], e['error'], e.get('at', '')
     if w.startswith('plugin manager '):
         # Discovery of a whole plugin type: the failing definition may belong to any enabled module.
-        return owner_of(at) == m or bool(re.search(r'provided by (<em[^>]*>)?' + re.escape(m) + r'(</em>)?\s', err))
+        return owner_of(at) == m or provided_by(m, err)
     if w.startswith(('class Drupal\\' + m + '\\', 'service ', 'plugin ', 'config ', 'hook_cron', 'route ')):
         return True
-    if re.search(r'provided by (<em[^>]*>)?' + re.escape(m) + r'(</em>)?\s', err):
+    if provided_by(m, err):
         return True
     return owner_of(at) == m
 
@@ -178,7 +183,7 @@ def missing_modules(r, exclude):
 def unmet_has(r, m, x):
     """True if r has an UnmetDependencies error for config provided by m whose missing list contains module x."""
     for e in r.get('errors', []):
-        if '| unmet:' in e['error'] and re.search(r'provided by (<em[^>]*>)?' + re.escape(m) + r'(</em>)?\s', e['error']):
+        if '| unmet:' in e['error'] and provided_by(m, e['error']):
             for item in re.findall(r'\(([^)]*)\)', e['error'].split('| unmet:', 1)[1]):
                 if x in [y.strip() for y in item.split(',')]:
                     return True
@@ -221,7 +226,7 @@ def undeclared(inst, x, m, kinds):
         xe = [e for e in a['errors'] if rx.search(e['where'] + ' ' + e['error'])]
         mine = [e for e in xe if attributable(e, m) and ('| unmet:' not in e['error'] or unmet_has({'errors': [e]}, m, x))]
         if no_output(res, a):
-            pass
+            log(inst, m, 'without', x, ': no probe output, rerun redoes it')
         elif x in a.get('modules', []):
             res['verdict'] = f'not measurable: {x} is enabled anyway (pulled through ' + (', '.join(w) or "M's declared dependencies") + ')'
         elif mine:
@@ -299,7 +304,7 @@ def unused(inst, m, dd):
         res['new_errors'] = new[:10]
         res['exercised_without'] = {k: a.get(k) for k in ('classes', 'services', 'plugins', 'routes', 'steps')}
         if no_output(res, a, b):
-            pass
+            log(inst, m, 'without declared', dd, ': no probe output, rerun redoes it')
         elif dd in a.get('modules', []):
             res['verdict'] = f'not measurable: {dd} is enabled anyway without the declaration (pulled through ' + (', '.join(wa) or 'another declared dependency') + ')'
         elif not b.get('enabled'):
