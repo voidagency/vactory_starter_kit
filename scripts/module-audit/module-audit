@@ -257,16 +257,20 @@ audit_all() {
 
 # --- Commandes -------------------------------------------------------------------
 
+# Option suivie de sa valeur : sans valeur, erreur (et pas de « shift 2 » qui
+# échoue en boucle).
+need_value() { [ $# -ge 2 ] || die "$1 : valeur attendue"; }
+
 cmd_run() {
   REF=origin/3.x PREFIX=audit INSTANCES=1 MODULES=all DEPS=1
   while [ $# -gt 0 ]; do
     case "$1" in
-      --instances) INSTANCES="${2:-}"; shift 2 ;;
-      --modules) MODULES="${2:-}"; shift 2 ;;
-      --ref) REF="${2:-}"; shift 2 ;;
-      --prefix) PREFIX="${2:-}"; shift 2 ;;
+      --instances) need_value "$@"; INSTANCES="$2"; shift 2 ;;
+      --modules) need_value "$@"; MODULES="$2"; shift 2 ;;
+      --ref) need_value "$@"; REF="$2"; shift 2 ;;
+      --prefix) need_value "$@"; PREFIX="$2"; shift 2 ;;
       --no-deps) DEPS=0; shift ;;
-      --out) OUT="${2:-}"; shift 2 ;;
+      --out) need_value "$@"; OUT="$2"; shift 2 ;;
       *) die "run : option inconnue $1" ;;
     esac
   done
@@ -294,8 +298,8 @@ cmd_deps() {
   local only=""
   while [ $# -gt 0 ]; do
     case "$1" in
-      --only) only="${2:-}"; shift 2 ;;
-      --out) OUT="${2:-}"; shift 2 ;;
+      --only) need_value "$@"; only="$2"; shift 2 ;;
+      --out) need_value "$@"; OUT="$2"; shift 2 ;;
       *) die "deps : option inconnue $1" ;;
     esac
   done
