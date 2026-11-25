@@ -182,10 +182,14 @@ class SondageClosingScheduler {
    */
   public function repairQueue(): array {
     $removed = 0;
-    $rows = $this->database->select('queue', 'q')
-      ->fields('q', ['item_id', 'data'])
-      ->condition('name', self::QUEUE)
-      ->execute();
+    // Core creates the queue table with the first queued item.
+    $rows = [];
+    if ($this->database->schema()->tableExists('queue')) {
+      $rows = $this->database->select('queue', 'q')
+        ->fields('q', ['item_id', 'data'])
+        ->condition('name', self::QUEUE)
+        ->execute();
+    }
     foreach ($rows as $row) {
       $data = unserialize($row->data, ['allowed_classes' => FALSE]);
       if (is_array($data) && ($data['plugin_id'] ?? NULL) === self::PLUGIN_ID && empty($data['extra']['entity_id'])) {
