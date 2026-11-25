@@ -152,6 +152,9 @@ def owner_of(at):
 
 def attributable(e, m):
     w, err, at = e['where'], e['error'], e.get('at', '')
+    if w.startswith('plugin manager '):
+        # Discovery of a whole plugin type: the failing definition may belong to any enabled module.
+        return owner_of(at) == m or bool(re.search(r'provided by (<em[^>]*>)?' + re.escape(m) + r'(</em>)?\s', err))
     if w.startswith(('class Drupal\\' + m + '\\', 'service ', 'plugin ', 'config ', 'hook_cron', 'route ')):
         return True
     if re.search(r'provided by (<em[^>]*>)?' + re.escape(m) + r'(</em>)?\s', err):
