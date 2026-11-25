@@ -213,6 +213,7 @@ drush cr
 - CI Drone : le pipeline `sonar` tourne sur un runner qui lui est réservé et n'attend plus derrière les builds `default` (#977).
 - CI Drone : étape `setup` sur l'image `vactory-ci` en arm64 natif (plus de Rosetta sur la machine CI) ; build plus court de 25 à 35 %, mêmes tests (#982).
 - Sonar : les outils de développement `scripts/stack` et `scripts/module-audit` sont exclus de l'analyse (#985).
+- Sonar : `sonar.projectVersion` suit la version publiée ; le « nouveau code » de la porte qualité repart de chaque release au lieu du 2025-10-02 (Redmine #71220, #PR).
 - Dependabot limité aux mises à jour de sécurité (#930).
 - Hook git `pre-commit` : phpcs ne vérifie plus les fichiers `.md` et `.txt`, comme la CI (#971).
 - `vactory_image_sitemap` : phpcs propre, sans changement de comportement (#937).
