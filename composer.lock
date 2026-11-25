@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "5a364690e579fd2022ee7e73ecd42ec4",
+    "content-hash": "092b20c11d65b3409e4ffafe738a8328",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -4629,26 +4629,26 @@
         },
         {
             "name": "drupal/flood_control",
-            "version": "2.3.3",
+            "version": "3.0.1",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/flood_control.git",
-                "reference": "2.3.3"
+                "reference": "3.0.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/flood_control-2.3.3.zip",
-                "reference": "2.3.3",
-                "shasum": "51ff0fa2d5e6df675e32b276465b4ba17a666f22"
+                "url": "https://ftp.drupal.org/files/projects/flood_control-3.0.1.zip",
+                "reference": "3.0.1",
+                "shasum": "02f601483022c7defc057dab121180507d821d06"
             },
             "require": {
-                "drupal/core": "^9 || ^10"
+                "drupal/core": "^10.2 || ^11"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "2.3.3",
-                    "datestamp": "1695975407",
+                    "version": "3.0.1",
+                    "datestamp": "1771613535",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -4656,7 +4656,7 @@
                 },
                 "drush": {
                     "services": {
-                        "drush.services.yml": "^9 || ^10 || ^11"
+                        "drush.services.yml": ">=9"
                     }
                 }
             },
@@ -4670,7 +4670,7 @@
                     "homepage": "https://www.drupal.org/user/22175"
                 },
                 {
-                    "name": "Dave Reid",
+                    "name": "dave reid",
                     "homepage": "https://www.drupal.org/user/53892"
                 },
                 {
