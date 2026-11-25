@@ -164,6 +164,8 @@ for m in sorted(mods):
     c5 = h_cell(r.get('health_after_uninstall'), ev)
     if f.get('breaks_after_uninstall'):
         groups['Site broken after uninstall'].append((m, c5, ev))
+    if f.get('new_log_errors'):
+        groups['New log errors (site still works)'].append((m, '; '.join(c for c in (c3, c5) if 'watchdog' in c), ev))
     # 5 leftovers
     lo = {k: v for k, v in r.get('leftovers', {}).items() if not k.startswith('_')}
     lb = []
@@ -226,7 +228,7 @@ L += ['Legend: *new* = not enabled by the profile install (install alone measure
 L += ['| Module | Mode | Install alone | Content added | Health after install | Uninstall | Health after uninstall | Leftovers | Reinstall | Dependencies (measured) | Time (s) |',
       '|---|---|---|---|---|---|---|---|---|---|---|'] + rows
 L += ['', '## Modules that need a fix, by kind of defect', '']
-order = ['Install alone fails', 'Site broken after install', 'Uninstall refused', 'Site broken after uninstall', 'Content left after uninstall', 'Reinstall fails after uninstall',
+order = ['Install alone fails', 'Site broken after install', 'Uninstall refused', 'Site broken after uninstall', 'New log errors (site still works)', 'Content left after uninstall', 'Reinstall fails after uninstall',
          'Reinstall creates duplicates', 'Install creates content (not config)', 'Uninstall cascades to other modules', 'Other leftovers after uninstall (tables/config/state/key_value/permissions)',
          'Undeclared dependency, proven (fails without it)', 'Declared dependency not needed (no error without it)', 'Heavy chain (install pulls ≥ 15 modules)', 'Self or circular dependency (info.yml)']
 for g in order:

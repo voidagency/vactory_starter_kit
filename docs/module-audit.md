@@ -39,7 +39,7 @@ Un audit complet prend donc environ 7 h : le lancer le soir, `status` le lendema
 Avant chaque module, l'instance revient au snapshot `audit-base` (base et fichiers ; pris après l'installation du profil, `dblog` activé). Puis :
 1. **Installation seule** (`drush en <module> -y`), pour un module que le profil n'active pas : réussite, modules tirés, message d'erreur, erreurs du journal.
 2. **Ajouts de l'installation** hors configuration : contenus, liens de menu, placements de blocs, page d'accueil, révisions, fichiers, état.
-3. **Santé** : `drush cr`, `drush cron`, pages (accueil, connexion, routeur découplé et JSON:API de la page d'accueil, six pages d'administration, routes sans paramètre ajoutées par le module), nouvelles erreurs du journal.
+3. **Santé** : `drush cr`, `drush cron`, pages (accueil, connexion, routeur découplé et JSON:API de la page d'accueil, six pages d'administration, routes sans paramètre ajoutées par le module), nouvelles erreurs du journal. Le site est « cassé » sur un échec de `cr`/`cron` ou une page en erreur ; de nouvelles erreurs du journal seules ne le cassent pas, mais classent le module dans « New log errors (site still works) ».
 4. **Désinstallation** (`drush pmu <module> -y`) : refus, modules emportés en cascade, puis santé comme en 3.
 5. **Restes** : ce qui reste après la désinstallation (tables, configuration, état, `key_value`, permissions, contenus, liens de menu, fichiers), comparé à la base plus les seules dépendances que l'installation a tirées (elles restent légitimement).
 6. **Réinstallation** (`drush en`, puis les modules emportés en cascade) : réussite et doublons (contenus ou liens recréés une seconde fois).

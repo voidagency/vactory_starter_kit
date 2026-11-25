@@ -198,7 +198,10 @@ def wd(p):
 
 
 def health(dirp, prefix, control_http, control_wd_msgs):
-    """Broken = cr/cron failure, a core page answering 5xx/000 (or another code than in the control run), a module page 5xx, new errors."""
+    """Broken = cr/cron failure, a core page answering 5xx/000 (or another code than in the control run), a module page 5xx.
+
+    New log errors are kept apart (watchdog_errors, flag new_log_errors): the site still works, the module still needs a look.
+    """
     h = {'cr_rc': int(rd(f'{dirp}/{prefix}-cr.rc', '-1') or -1), 'cron_rc': int(rd(f'{dirp}/{prefix}-cron.rc', '-1') or -1)}
     rows = http(f'{dirp}/{prefix}-http.jsonl')
     # Lines starting with "_" are markers, not pages (_router_wait: seconds waited for the ddev router).
@@ -396,6 +399,8 @@ def cmd_result(d, m, control):
     f['uninstall_refused'] = not un['ok']
     f['uninstall_cascade'] = bool(un.get('cascade'))
     f['breaks_after_uninstall'] = r['health_after_uninstall']['broken']
+    f['new_log_errors'] = any((r.get(k) or {}).get('watchdog_errors') and not (r.get(k) or {}).get('broken')
+                              for k in ('health_after_install', 'health_after_uninstall'))
     lo = r.get('leftovers', {})
     f['leftovers'] = bool({k: v for k, v in lo.items() if not k.startswith('_')})
     f['leftover_content'] = bool((lo.get('content') or {}).get('entities_added') or lo.get('menu_links_added'))
