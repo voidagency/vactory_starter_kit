@@ -222,6 +222,7 @@ drush cr
 - Décisions d'architecture consignées dans `docs/adr/` : fichiers temporaires, version figée du profil, Features, clé `url` des liens, block_class 3.x (#960). Les ADR couvrent le profil, pas la CI (#962).
 - `vactory_quiz_history` : index sur la colonne `uid`, utilisée par le contrôle d'accès au téléchargement des certificats ; `vactory_html2pdf` : test du cas « chemin sans schéma » de `html2Pdf()` (#963).
 - `vactory_decoupled_router` : tests de caractérisation de l'endpoint de routage lu par le front (casse et variantes d'un alias, langues, redirections, types d'entité autres que les nœuds, paramètre `path`, en-têtes de cache), sans changement de comportement (Redmine #69443, #969).
+- Outil d'audit des modules `scripts/module-audit/module-audit` : installation seule, désinstallation, restes et réinstallation de chaque module, dépendances non déclarées ou inutiles prouvées par une sonde Kernel, rapport `RESULT.md` ; à lancer avant chaque release ; documentation `docs/module-audit.md` ; nécessite la commande `stack` (#976) (Redmine #71479, #980).
 
 ## [3.2.3] - 2026-10-07
 Voir la [release 3.2.3](https://github.com/voidagency/vactory_starter_kit/releases/tag/3.2.3).
