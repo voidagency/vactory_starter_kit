@@ -196,6 +196,26 @@ class SondageClosingTest extends SondageKernelTestBase {
   }
 
   /**
+   * The update runs on a site where no queue table was ever created.
+   *
+   * Core creates the queue table with the first queued item. "drush updb"
+   * runs updates in a batch, which creates it: the update is also called
+   * outside of a batch here.
+   */
+  public function testUpdateWithoutQueueTable(): void {
+    $future = $this->createSondage(3600);
+    $this->container->get('database')->schema()->dropTable('queue');
+
+    $this->container->get('module_handler')->loadInclude('vactory_sondage', 'install');
+    $message = (string) vactory_sondage_update_10001();
+
+    $this->assertStringContainsString('0 broken items deleted, 1 open sondages scheduled', $message);
+    $items = $this->queuedItems();
+    $this->assertCount(1, $items);
+    $this->assertEquals($future->id(), $items[0]['extra']['entity_id']);
+  }
+
+  /**
    * Processes the items of the reminder queue, as "drush rrq" does.
    */
   protected function processReminderQueue(): void {
