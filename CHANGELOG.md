@@ -205,6 +205,7 @@ drush cr
 - CI Drone : suites `unit` et `kernel` lancées pendant l'installation du site, sur une base à part ; build plus court d'environ 7 minutes, mêmes tests (#970).
 - CI Drone : le pipeline `sonar` analyse le commit de la PR sans le fusionner dans `3.x` ; une PR en conflit n'empêche plus l'analyse (#973).
 - CI Drone : le pipeline `sonar` tourne sur un runner qui lui est réservé et n'attend plus derrière les builds `default` (#977).
+- CI Drone : étape `setup` sur l'image `vactory-ci` en arm64 natif (plus de Rosetta sur la machine CI) ; build plus court de 25 à 35 %, mêmes tests (#982).
 - Dependabot limité aux mises à jour de sécurité (#930).
 - Hook git `pre-commit` : phpcs ne vérifie plus les fichiers `.md` et `.txt`, comme la CI (#971).
 - `vactory_image_sitemap` : phpcs propre, sans changement de comportement (#937).
