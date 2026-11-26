@@ -257,6 +257,7 @@ drush cr
 - `drupal/block_class` : `^3.0` au lieu de 3.0.0, figé sans raison (#948, Redmine #71222). La 3.1.0 exige un core 10.3 ou plus, pose les classes par `hook_block_view_alter` et valide le champ « CSS class(es) » ; aucun update. Pas de 4.x.
 - `drupal/flood_control` : `^2.3` → `^3.0.1` (#988, Redmine #71534).
 - Lock seul, sans changement de contrainte : `drupal/core` 10.6.23, `drupal/webform` 6.3.1, `drupal/paragraphs` 1.23.0, `drupal/paragraphs_edit` 3.0.2, `drupal/simple_oauth` 5.2.6, `drupal/single_content_sync` 1.4.19, `drupal/scheduler` 2.3.1, `drupal/shield` 1.11.0, `drupal/menu_link_attributes` 1.10.0, `drupal/yoast_seo` 2.2.0, `drupal/facets` 2.0.10, `drupal/entity` 1.8.0, `drupal/eu_cookie_compliance` 1.29.0, `drupal/admin_feedback` 2.10.0, `drupal/persistent_login` 1.11.0, `drupal/search_api_autocomplete` 1.12.0, `drupal/seckit` 2.0.3, `drupal/smart_trim` 2.2.2, `twig/twig` 3.31.1, `league/csv` 9.29.1 (#996, Redmine #71556).
+- Dependabot, lock seul : `phpseclib/phpseclib` 3.0.37 → 3.0.58 (#925 ; retiré du lock depuis par #995, plus requis par aucun paquet), `twig/twig` 3.22.1 → 3.30.0 (#926 ; 3.31.1 depuis #996).
 - Lock seul : `symfony/http-kernel`, `symfony/http-foundation`, `symfony/routing`, `symfony/serializer` 6.4.51, `symfony/http-client` 5.4.57 (#997, Redmine #71556).
 - `firebase/php-jwt` `^6.0` → `^7.1.1` ; `stevenmaguire/oauth2-keycloak` `^5.0` → `^6.0` ; `google/apiclient` 2.15 → 2.20 dans le lock, sans changement de contrainte (#995, Redmine #71556).
 - `drupal/stage_file_proxy` `^2.0` → `^3.1.7` ; `drupal/gin` `^3.0@RC` → `^4.1.4 || ^5.0.16` ; `drupal/responsive_favicons` `1.x-dev@dev` → `^2.0.2 || ^3.0 || ^4.0` ; `drupal/tinypng` `^1.0@RC` → `^2.0.2` (#993, Redmine #71556).
@@ -274,7 +275,7 @@ drush cr
 - Commande `scripts/stack/stack` : pile locale complète et isolée par instance nommée (arbre du profil, site Drupal et sa base, Mailpit, front Next et Redis en option), pour travailler à plusieurs ou avec des agents en parallèle ; documentation `docs/dev-stack.md` (Redmine #71475, #976).
 - `RELEASING.md` : la liste « Une PR est terminée quand » demande de tester ce qu'un point d'accès accepte encore (accès, valeurs, entité inexistante) et de rejouer une mise à jour de données sur des données d'avant la PR (#979, Redmine #71160).
 - `RELEASING.md` : une version candidate est publiée en pre-release GitHub (notes : section `[Non publié]` du commit taggé), ne se modifie pas après publication, et un problème trouvé donne une nouvelle `rcN` (#989, Redmine #71368).
-- Tests d'intégration des dépendances à historique d'incidents et contrats entre le profil et ses dépendances (Redmine #71160 ; #912 à #920, #934).
+- Tests d'intégration des dépendances à historique d'incidents et contrats entre le profil et ses dépendances (Redmine #71160) : linkit (#912, #934), Google Places et views_autocomplete_filters (#913), simplify_menu (#914), API de recherche exposée (#915), API de vote (#916), téléchargement de fichiers privés (#917), contrats profil / dépendances (#918), drupal/amp (#919), voidagency/cloudinary (#920).
 - Tests de caractérisation, puis découpage des méthodes signalées par Sonar, sans changement de comportement (#935, #938, #939).
 - CI Drone : un build par commit, sans build pour les branches sans PR ni pour les tags (#921) ; jeton GitHub pour composer (#940) ; exclusions Sonar appliquées et règle `php:S1781` ignorée (#929).
 - CI Drone : suites `unit` et `kernel` lancées pendant l'installation du site, sur une base à part ; build plus court d'environ 7 minutes, mêmes tests (#970).
@@ -284,10 +285,11 @@ drush cr
 - Sonar : les outils de développement `scripts/stack` et `scripts/module-audit` sont exclus de l'analyse (#985).
 - Sonar : `sonar.projectVersion` suit la version publiée ; le « nouveau code » de la porte qualité repart de chaque release au lieu du 2025-10-02 (Redmine #71220, #987).
 - Dependabot limité aux mises à jour de sécurité (#930).
+- Documentation de release : ce CHANGELOG depuis 3.2.3, `RELEASING.md` et modèle de PR (#941) ; guide « Mise à jour des projets » testé sur trois projets (#990) et étape `vactory_dashboard` (#991).
 - Hook git `pre-commit` : phpcs ne vérifie plus les fichiers `.md` et `.txt`, comme la CI (#971).
 - `vactory_image_sitemap` : phpcs propre, sans changement de comportement (#937).
 - `vactory_image_sitemap` : variable inutilisée retirée (Sonar S1481, #945).
-- CI Drone : l'analyse Sonar tourne dans son propre pipeline, sur une image arm64 native ; le scanner se figeait par moments sous émulation (Redmine #71371).
+- CI Drone : l'analyse Sonar tourne dans son propre pipeline, sur une image arm64 native ; le scanner se figeait par moments sous émulation (#951) ; l'image du plugin Sonar est tirée depuis Docker Hub (#958, Redmine #71371).
 - `vactory_decoupled` : test du contrat avec block_class (classes dans le HTML du bloc et dans la sortie découplée) (#948).
 - `vactory_decoupled` : test de l'endpoint de menus lu par le front (liens inaccessibles ou désactivés absents pour un anonyme) (#957).
 - Décisions d'architecture consignées dans `docs/adr/` : fichiers temporaires, version figée du profil, Features, clé `url` des liens, block_class 3.x (#960). Les ADR couvrent le profil, pas la CI (#962).
