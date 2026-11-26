@@ -4,3 +4,4 @@
 /scripts/module-audit export-ignore
 /docs/dev-stack.md export-ignore
 /docs/module-audit.md export-ignore
+/tests/e2e export-ignore

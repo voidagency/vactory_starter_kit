@@ -230,6 +230,7 @@ drush cr
 - `drupal/flood_control` : `^2.3` → `^3.0.1` (#988, Redmine #71534).
 
 ### Interne
+- Premier parcours e2e Playwright (`tests/e2e/`, exclu de l'archive des projets) : un contributeur crée puis modifie une page avec un paragraphe Dynamic Field par la popin (image, texte, lien linkit) ; vérifie la base, le rendu Drupal et le JSON:API lu par le front ; toute erreur JavaScript non attrapée fait échouer le test. Lancé par `tests/e2e/run.sh <instance>` contre une instance `stack` (#PRNUM, Redmine #71571).
 - Commande `scripts/stack/stack` : pile locale complète et isolée par instance nommée (arbre du profil, site Drupal et sa base, Mailpit, front Next et Redis en option), pour travailler à plusieurs ou avec des agents en parallèle ; documentation `docs/dev-stack.md` (Redmine #71475, #976).
 - `RELEASING.md` : la liste « Une PR est terminée quand » demande de tester ce qu'un point d'accès accepte encore (accès, valeurs, entité inexistante) et de rejouer une mise à jour de données sur des données d'avant la PR (#979, Redmine #71160).
 - `RELEASING.md` : une version candidate est publiée en pre-release GitHub (notes : section `[Non publié]` du commit taggé), ne se modifie pas après publication, et un problème trouvé donne une nouvelle `rcN` (#989, Redmine #71368).
