@@ -18050,16 +18050,16 @@
         },
         {
             "name": "symfony/http-client",
-            "version": "v5.4.56",
+            "version": "v5.4.57",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/http-client.git",
-                "reference": "979468e41c5882435793215112a5d9db54715df4"
+                "reference": "13a5d39dddc844bfdf7b23836492c0ba93e08cc0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/http-client/zipball/979468e41c5882435793215112a5d9db54715df4",
-                "reference": "979468e41c5882435793215112a5d9db54715df4",
+                "url": "https://api.github.com/repos/symfony/http-client/zipball/13a5d39dddc844bfdf7b23836492c0ba93e08cc0",
+                "reference": "13a5d39dddc844bfdf7b23836492c0ba93e08cc0",
                 "shasum": ""
             },
             "require": {
@@ -18088,6 +18088,7 @@
                 "php-http/message-factory": "^1.0",
                 "psr/http-client": "^1.0",
                 "symfony/dependency-injection": "^4.4|^5.0|^6.0",
+                "symfony/http-foundation": "^5.4.57|^6.4.50",
                 "symfony/http-kernel": "^4.4.13|^5.1.5|^6.0",
                 "symfony/process": "^4.4|^5.0|^6.0",
                 "symfony/stopwatch": "^4.4|^5.0|^6.0"
@@ -18121,7 +18122,7 @@
                 "http"
             ],
             "support": {
-                "source": "https://github.com/symfony/http-client/tree/v5.4.56"
+                "source": "https://github.com/symfony/http-client/tree/v5.4.57"
             },
             "funding": [
                 {
@@ -18141,7 +18142,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-11-04T07:39:44+00:00"
+            "time": "2026-11-25T07:23:58+00:00"
         },
         {
             "name": "symfony/http-client-contracts",
@@ -18223,16 +18224,16 @@
         },
         {
             "name": "symfony/http-foundation",
-            "version": "v6.4.50",
+            "version": "v6.4.51",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/http-foundation.git",
-                "reference": "f0cd207e06ba547c9ad4ee4bdf04729984d39045"
+                "reference": "5425eb83392d3badcaff9d17b8497d64769ea8ad"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/http-foundation/zipball/f0cd207e06ba547c9ad4ee4bdf04729984d39045",
-                "reference": "f0cd207e06ba547c9ad4ee4bdf04729984d39045",
+                "url": "https://api.github.com/repos/symfony/http-foundation/zipball/5425eb83392d3badcaff9d17b8497d64769ea8ad",
+                "reference": "5425eb83392d3badcaff9d17b8497d64769ea8ad",
                 "shasum": ""
             },
             "require": {
@@ -18280,7 +18281,7 @@
             "description": "Defines an object-oriented layer for the HTTP specification",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/http-foundation/tree/v6.4.50"
+                "source": "https://github.com/symfony/http-foundation/tree/v6.4.51"
             },
             "funding": [
                 {
@@ -18300,20 +18301,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-11-04T08:16:31+00:00"
+            "time": "2026-11-24T18:01:43+00:00"
         },
         {
             "name": "symfony/http-kernel",
-            "version": "v6.4.50",
+            "version": "v6.4.51",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/http-kernel.git",
-                "reference": "e094931cc6c7cd24537494e5494dbe6daf2f0ebb"
+                "reference": "2e1fbf338efb6911cfc2e7d66848bc5d87844ef7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/http-kernel/zipball/e094931cc6c7cd24537494e5494dbe6daf2f0ebb",
-                "reference": "e094931cc6c7cd24537494e5494dbe6daf2f0ebb",
+                "url": "https://api.github.com/repos/symfony/http-kernel/zipball/2e1fbf338efb6911cfc2e7d66848bc5d87844ef7",
+                "reference": "2e1fbf338efb6911cfc2e7d66848bc5d87844ef7",
                 "shasum": ""
             },
             "require": {
@@ -18322,7 +18323,7 @@
                 "symfony/deprecation-contracts": "^2.5|^3",
                 "symfony/error-handler": "^6.4|^7.0",
                 "symfony/event-dispatcher": "^5.4|^6.0|^7.0",
-                "symfony/http-foundation": "^6.4|^7.0",
+                "symfony/http-foundation": "^6.4.51|^7.4.24",
                 "symfony/polyfill-ctype": "^1.8"
             },
             "conflict": {
@@ -18398,7 +18399,7 @@
             "description": "Provides a structured process for converting a Request into a Response",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/http-kernel/tree/v6.4.50"
+                "source": "https://github.com/symfony/http-kernel/tree/v6.4.51"
             },
             "funding": [
                 {
@@ -18418,7 +18419,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-11-04T11:19:16+00:00"
+            "time": "2026-11-25T09:18:13+00:00"
         },
         {
             "name": "symfony/mailer",
@@ -19724,16 +19725,16 @@
         },
         {
             "name": "symfony/routing",
-            "version": "v6.4.50",
+            "version": "v6.4.51",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/routing.git",
-                "reference": "80253f3a04ea4e1ba4d78690b8a1727ed9f104e0"
+                "reference": "238f28b27658bec77e5039e7e31744174bdc58b6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/routing/zipball/80253f3a04ea4e1ba4d78690b8a1727ed9f104e0",
-                "reference": "80253f3a04ea4e1ba4d78690b8a1727ed9f104e0",
+                "url": "https://api.github.com/repos/symfony/routing/zipball/238f28b27658bec77e5039e7e31744174bdc58b6",
+                "reference": "238f28b27658bec77e5039e7e31744174bdc58b6",
                 "shasum": ""
             },
             "require": {
@@ -19787,7 +19788,7 @@
                 "url"
             ],
             "support": {
-                "source": "https://github.com/symfony/routing/tree/v6.4.50"
+                "source": "https://github.com/symfony/routing/tree/v6.4.51"
             },
             "funding": [
                 {
@@ -19807,20 +19808,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-11-04T08:16:31+00:00"
+            "time": "2026-11-24T18:01:43+00:00"
         },
         {
             "name": "symfony/serializer",
-            "version": "v6.4.50",
+            "version": "v6.4.51",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/serializer.git",
-                "reference": "665e460894db3b8650c2ff79a7a1c10d09edd39a"
+                "reference": "84553ca192f71f937617cb242ff443625172bdfe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/serializer/zipball/665e460894db3b8650c2ff79a7a1c10d09edd39a",
-                "reference": "665e460894db3b8650c2ff79a7a1c10d09edd39a",
+                "url": "https://api.github.com/repos/symfony/serializer/zipball/84553ca192f71f937617cb242ff443625172bdfe",
+                "reference": "84553ca192f71f937617cb242ff443625172bdfe",
                 "shasum": ""
             },
             "require": {
@@ -19889,7 +19890,7 @@
             "description": "Handles serializing and deserializing data structures, including object graphs, into array structures or other formats like XML and JSON.",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/serializer/tree/v6.4.50"
+                "source": "https://github.com/symfony/serializer/tree/v6.4.51"
             },
             "funding": [
                 {
@@ -19909,7 +19910,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2026-11-04T08:16:31+00:00"
+            "time": "2026-11-24T18:01:43+00:00"
         },
         {
             "name": "symfony/service-contracts",
