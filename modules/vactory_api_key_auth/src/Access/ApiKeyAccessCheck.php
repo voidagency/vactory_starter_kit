@@ -5,20 +5,23 @@ namespace Drupal\vactory_api_key_auth\Access;
 use Drupal\Core\Access\AccessResult;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Routing\Access\AccessInterface;
-use Symfony\Component\HttpFoundation\Request;
+use Drupal\vactory_api_key_auth\Authentication\Provider\ApiKeyAuth;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
- * Checks if API Key authentication credentials are given and correct.
+ * Access check "_route_api_key_auth__access_check".
+ *
+ * Grants access when the "apikey" header holds a key linked to an active
+ * account.
  */
 class ApiKeyAccessCheck implements AccessInterface {
 
   /**
-   * The current request.
+   * The request stack.
    *
-   * @var \Symfony\Component\HttpFoundation\Request
+   * @var \Symfony\Component\HttpFoundation\RequestStack
    */
-  private $request;
+  protected $requestStack;
 
   /**
    * The entity type manager.
@@ -28,74 +31,32 @@ class ApiKeyAccessCheck implements AccessInterface {
   protected $entityTypeManager;
 
   /**
-   * ApiKeyAccessCheck constructor.
-   *
-   * @param \Symfony\Component\HttpFoundation\RequestStack $requestStack
-   *   The current request stack.
-   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
-   *   The entity manager service.
+   * Constructs an ApiKeyAccessCheck object.
    */
   public function __construct(RequestStack $requestStack, EntityTypeManagerInterface $entity_type_manager) {
-    $this->request = $requestStack->getCurrentRequest();
+    $this->requestStack = $requestStack;
     $this->entityTypeManager = $entity_type_manager;
   }
 
   /**
-   * Checks access for api key protected routes.
-   *
-   * @return \Drupal\Core\Access\AccessResultInterface
-   *   The access result.
+   * Checks access.
    */
   public function access() {
-    $key = $this->getKey($this->request);
-    if (!$key) {
-      return AccessResult::forbidden();
+    $request = $this->requestStack->getCurrentRequest();
+    $key = $request ? ApiKeyAuth::keyFromRequest($request) : FALSE;
+    if ($key === FALSE) {
+      return AccessResult::forbidden()->setCacheMaxAge(0);
     }
-
-    if (!$this->authenticate($key)) {
-      return AccessResult::forbidden();
+    foreach ($this->entityTypeManager->getStorage('api_key')->loadMultiple() as $api_key) {
+      if (is_string($api_key->key) && $api_key->key !== '' && hash_equals($api_key->key, $key)) {
+        $account = $this->entityTypeManager->getStorage('user')->load($api_key->user_uuid);
+        if ($account && !$account->isBlocked()) {
+          return AccessResult::allowed()->setCacheMaxAge(0);
+        }
+        break;
+      }
     }
-
-    return AccessResult::allowed();
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function authenticate($key) {
-    // Load config entity.
-    $api_key_entities = $this->entityTypeManager->getStorage('api_key')
-      ->loadByProperties(['key' => $key]);
-
-    return reset($api_key_entities);
-  }
-
-  /**
-   * Retrieve key from request.
-   *
-   * @param \Symfony\Component\HttpFoundation\Request $request
-   *   The request object that the service will respond to.
-   *
-   * @return bool
-   *   True if api key is present
-   */
-  public function getKey(Request $request) {
-    $form_api_key = $request->get('api_key');
-
-    if (!empty($form_api_key)) {
-      return $form_api_key;
-    }
-
-    $query_api_key = $request->query->get('api_key');
-    if (!empty($query_api_key)) {
-      return $query_api_key;
-    }
-
-    $header_api_key = $request->headers->get('apikey');
-    if (!empty($header_api_key)) {
-      return $header_api_key;
-    }
-    return FALSE;
+    return AccessResult::forbidden()->setCacheMaxAge(0);
   }
 
 }

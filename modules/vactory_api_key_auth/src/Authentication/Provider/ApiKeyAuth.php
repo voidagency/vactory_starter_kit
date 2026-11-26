@@ -12,7 +12,10 @@ use Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 /**
- * HTTP Basic authentication provider.
+ * API key authentication provider.
+ *
+ * Not global: it applies only to routes that list api_key_auth in their
+ * _auth option.
  */
 class ApiKeyAuth implements AuthenticationProviderInterface {
   /**
@@ -68,26 +71,37 @@ class ApiKeyAuth implements AuthenticationProviderInterface {
    * {@inheritdoc}
    */
   public function authenticate(Request $request) {
-    // Load config entity.
-    $api_key_entities = $this->entityTypeManager->getStorage('api_key')
-      ->loadMultiple();
+    $api_key = $this->findApiKey((string) $this->getKey($request));
+    if (!$api_key) {
+      return NULL;
+    }
+    $account = $this->entityTypeManager->getStorage('user')->load($api_key->user_uuid);
+    // A blocked account is refused, as with a password.
+    if (!$account || $account->isBlocked()) {
+      return NULL;
+    }
+    return $account;
+  }
 
-    // @todo: use entityTypeManager for a direct lookup for the key
-    // no loop
-    $user_storage = $this->entityTypeManager->getStorage('user');
-    foreach ($api_key_entities as $key_item) {
-      if ($this->getKey($request) == $key_item->key) {
-        $accounts = $user_storage->loadByProperties(['uid' => $key_item->user_uuid]);
-        $account = reset($accounts);
-
-        if (isset($account)) {
-          return $account;
-        }
-        break;
+  /**
+   * Returns the API key entity that matches the given key.
+   *
+   * @param string $key
+   *   Key sent by the client.
+   *
+   * @return \Drupal\vactory_api_key_auth\Entity\ApiKey|null
+   *   The API key entity, or NULL.
+   */
+  public function findApiKey(string $key) {
+    if ($key === '') {
+      return NULL;
+    }
+    foreach ($this->entityTypeManager->getStorage('api_key')->loadMultiple() as $api_key) {
+      if (is_string($api_key->key) && $api_key->key !== '' && hash_equals($api_key->key, $key)) {
+        return $api_key;
       }
     }
-
-    return [];
+    return NULL;
   }
 
   /**
@@ -110,13 +124,17 @@ class ApiKeyAuth implements AuthenticationProviderInterface {
   }
 
   /**
-   * Retrieve key from request.
+   * Retrieves the key from the request.
+   *
+   * The key is read from the "apikey" header only: in a query string or a
+   * form body it would end up in server logs, browser history and Referer
+   * headers.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
    *   The request object that the service will respond to.
    *
-   * @return bool
-   *   True if api key is present
+   * @return string|false
+   *   The key, or FALSE when there is none.
    */
   public function getKey(Request $request) {
     // Exempt edit/delete form route.
@@ -124,23 +142,21 @@ class ApiKeyAuth implements AuthenticationProviderInterface {
     if (is_string($route_name) && strstr($route_name, 'entity.api_key')) {
       return FALSE;
     }
+    return static::keyFromRequest($request);
+  }
 
-    $form_api_key = $request->get('api_key');
-
-    if (!empty($form_api_key)) {
-      return $form_api_key;
-    }
-
-    $query_api_key = $request->query->get('api_key');
-    if (!empty($query_api_key)) {
-      return $query_api_key;
-    }
-
-    $header_api_key = $request->headers->get('apikey');
-    if (!empty($header_api_key)) {
-      return $header_api_key;
-    }
-    return FALSE;
+  /**
+   * Returns the key of the "apikey" header, or FALSE.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   The request.
+   *
+   * @return string|false
+   *   The key, or FALSE when there is none.
+   */
+  public static function keyFromRequest(Request $request) {
+    $key = $request->headers->get('apikey');
+    return is_string($key) && $key !== '' ? $key : FALSE;
   }
 
 }
