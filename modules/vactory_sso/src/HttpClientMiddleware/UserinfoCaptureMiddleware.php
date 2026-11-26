@@ -4,6 +4,7 @@ namespace Drupal\vactory_sso\HttpClientMiddleware;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\vactory_sso\UnverifiedEmailTracker;
 use Drupal\vactory_sso\UserinfoCollector;
 use GuzzleHttp\Psr7\Utils;
 use Psr\Http\Message\RequestInterface;
@@ -49,11 +50,14 @@ final class UserinfoCaptureMiddleware {
    *   The current route match.
    * @param \Drupal\vactory_sso\UserinfoCollector $collector
    *   Keeps the claims for vactory_sso_user_login().
+   * @param \Drupal\vactory_sso\UnverifiedEmailTracker $unverifiedEmails
+   *   Records the logins the contrib module refuses for an unverified email.
    */
   public function __construct(
     private readonly ConfigFactoryInterface $configFactory,
     private readonly RouteMatchInterface $routeMatch,
     private readonly UserinfoCollector $collector,
+    private readonly UnverifiedEmailTracker $unverifiedEmails,
   ) {}
 
   /**
@@ -70,6 +74,7 @@ final class UserinfoCaptureMiddleware {
           $claims = json_decode($contents, TRUE);
           if ($response->getStatusCode() === 200 && is_array($claims) && !isset($claims['error'])) {
             $this->collector->set($claims);
+            $this->unverifiedEmails->record($claims);
           }
           // Hand a fresh, unread body back to the contrib module.
           return $response->withBody(Utils::streamFor($contents));

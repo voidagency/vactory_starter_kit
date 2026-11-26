@@ -73,6 +73,7 @@ class UserLoginMappingTest extends KernelTestBase {
       ->save();
     $this->config('oauth_login_oauth2.settings')
       ->set('miniorange_auth_client_user_info_ep', self::USERINFO)
+      ->set('miniorange_oauth_client_email_attr_val', 'email')
       ->save();
     $this->setCurrentRoute(UserinfoCaptureMiddleware::CALLBACK_ROUTES[0]);
   }
@@ -157,6 +158,69 @@ class UserLoginMappingTest extends KernelTestBase {
     $this->assertSame('vactory_sso.mo_login', $match[RouteObjectInterface::ROUTE_NAME]);
     $this->assertSame($callback->getDefault('_controller'), $match['_controller']);
     $this->assertSame($callback->getRequirements(), $match[RouteObjectInterface::ROUTE_OBJECT]->getRequirements());
+  }
+
+  /**
+   * Logins refused for an unverified email are recorded and reported.
+   *
+   * @dataProvider providerEmailVerified
+   */
+  public function testUnverifiedEmailRecorded(array $claims, bool $trust, ?string $expected_claim): void {
+    $this->config('oauth_login_oauth2.settings')
+      ->set('miniorange_oauth_client_trust_unverified_email', $trust)
+      ->save();
+    $response = new Response(200, ['Content-Type' => 'application/json'], json_encode($claims));
+    $this->mockIdentityProvider($response, clone $response);
+    $this->createUser([], NULL, FALSE, ['mail' => 'jane@example.com']);
+    $this->setCurrentRoute('vactory_sso.mo_login');
+
+    UserResource::getResourceOwner(self::USERINFO, 'access-token');
+    UserResource::getResourceOwner(self::USERINFO, 'access-token');
+
+    $tracker = $this->container->get('vactory_sso.unverified_email_tracker');
+    $this->container->get('module_handler')->loadInclude('vactory_sso', 'install');
+    $requirement = vactory_sso_requirements('runtime')['vactory_sso_unverified_email'];
+    if ($expected_claim === NULL) {
+      $this->assertSame([], $tracker->all());
+      $this->assertSame(REQUIREMENT_OK, $requirement['severity']);
+      return;
+    }
+    $entries = $tracker->all();
+    $this->assertSame(['jane@example.com'], array_keys($entries));
+    $this->assertSame(2, $entries['jane@example.com']['count']);
+    $this->assertSame($expected_claim, $entries['jane@example.com']['claim']);
+    $this->assertSame(REQUIREMENT_WARNING, $requirement['severity']);
+    $this->assertStringContainsString('1 address refused', (string) $requirement['value']);
+
+    $tracker->reset();
+    $this->assertSame([], $tracker->all());
+  }
+
+  /**
+   * Claims and setting, and the email_verified value recorded, if any.
+   */
+  public static function providerEmailVerified(): array {
+    $claims = ['sub' => 'f3c1', 'email' => 'Jane@Example.com'];
+    return [
+      'verified' => [$claims + ['email_verified' => TRUE], FALSE, NULL],
+      'verified, as a string' => [
+        $claims + ['email_verified' => 'true'],
+        FALSE,
+        NULL,
+      ],
+      'not verified' => [
+        $claims + ['email_verified' => FALSE],
+        FALSE,
+        'false',
+      ],
+      'not verified, trust setting on' => [
+        $claims + ['email_verified' => FALSE],
+        TRUE,
+        'false',
+      ],
+      'claim absent' => [$claims, FALSE, 'absent'],
+      'claim absent, trust setting on' => [$claims, TRUE, NULL],
+    ];
   }
 
   /**
