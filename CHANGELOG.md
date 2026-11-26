@@ -204,6 +204,7 @@ drush cr
 - `vactory_decoupled_router` : liste des types d'entité servis comme pages par le routeur, réglable en back-office (`/admin/config/system/vactory_router/page-entity-types`), dans `settings.php` (`$settings['vactory_decoupled_router_page_entity_types']`) ou par `hook_vactory_decoupled_router_page_entity_types_alter()` (#891, Redmine #69443).
 
 ### Correctifs
+- `vactory_node_view_count` : schéma de configuration du réglage « compter les vues » des types de contenu (`enabling_count_node`), absent jusque-là (#999).
 - Installation : l'attribut de lien de menu « Wrapper Class » est installé sous le nom `wrapper-class` ; `wrapper_class` n'était plus proposé sur le formulaire des liens de menu avec menu_link_attributes 1.10 (#996).
 - Shield et flood_control : un site protégé par Shield 1.9 ou plus répondait 500 à toute requête avec identifiants ; flood_control 3.0.1 ne dépend plus d'une fonction de son `.module`, pas encore chargé quand le middleware de Shield s'exécute (#988, Redmine #71534).
 - `vactory_sondage` : un sondage est fermé à sa date de fermeture. La fermeture était mise en file sans l'identifiant du sondage et échouait à chaque passage de la file de `vactory_reminder` ; elle a lieu à l'heure quel que soit le fuseau du site (la file de `vactory_reminder` lit la date dans le fuseau du site : en avance ou en retard du décalage avec UTC). Une fermeture en file pour un sondage supprimé, ou dont la date a été vidée ou changée, est abandonnée au lieu d'échouer à chaque passage. Sans `vactory_reminder` (dépendance déclarée, absente seulement si le module a été installé sans ses dépendances), un sondage s'enregistre au lieu d'une erreur, et l'absence de fermeture est journalisée (#983, Redmine #71443).
@@ -261,7 +262,7 @@ drush cr
 
 ### Interne
 - `vactory_api_key_auth` : test HTTP de l'authentification par clé : routes couvertes, en-tête seul, compte bloqué, JSON:API (#998).
-- `vactory_node_view_count` : test HTTP du comptage des vues par un anonyme : sans enregistrement du nœud, première vue (nœud traduit), nœud non visible ou inexistant, pas de limite par défaut (#999).
+- `vactory_node_view_count` : test HTTP du comptage des vues par un anonyme : sans enregistrement du nœud, première vue (nœud traduit), nœud non visible ou inexistant, pas de limite par défaut ; test Kernel de la limite réglée par `settings.php` (429, par adresse IP) (#999).
 - Premier parcours e2e Playwright (`tests/e2e/`, exclu de l'archive des projets) : un contributeur crée puis modifie une page avec un paragraphe Dynamic Field par la popin (image, texte, lien linkit) ; vérifie la base, le rendu Drupal et le JSON:API lu par le front ; toute erreur JavaScript non attrapée fait échouer le test. Lancé par `tests/e2e/run.sh <instance>` contre une instance `stack` (#994, Redmine #71571).
 - `vactory_core` : test des attributs de liens de menu installés par le profil : chacun est proposé sur le formulaire d'un lien de menu (échoue avec `wrapper_class` sous menu_link_attributes 1.10) (#996).
 - `vactory_decoupled` : test de l'authentification Keycloak avec une clé de realm de 1024 bits, refusée avec php-jwt 7 et acceptée avec php-jwt 6 (#995).

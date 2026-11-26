@@ -1,0 +1,7 @@
+node.type.*.third_party.vactory_node_view_count:
+  type: mapping
+  label: 'Vactory node view count settings'
+  mapping:
+    enabling_count_node:
+      type: boolean
+      label: 'Count the views of the nodes of this type'
