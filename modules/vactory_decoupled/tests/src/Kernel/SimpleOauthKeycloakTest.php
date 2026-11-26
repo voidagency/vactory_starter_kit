@@ -522,6 +522,65 @@ class SimpleOauthKeycloakTest extends KernelTestBase {
   }
 
   /**
+   * A realm key shorter than 2048 bits is refused.
+   *
+   * The same token signed with the 2048-bit realm key is accepted, which
+   * proves the token is valid apart from the key size.
+   *
+   * @covers ::authenticate
+   */
+  public function testWeakRealmKey(): void {
+    $weak = openssl_pkey_new([
+      'private_key_bits' => 1024,
+      'private_key_type' => OPENSSL_KEYTYPE_RSA,
+    ]);
+    $details = openssl_pkey_get_details($weak);
+    $this->queueJwks([
+      $this->main(),
+      [
+        'kid' => 'kid-weak',
+        'alg' => 'RS256',
+        'use' => 'sig',
+        'kty' => 'RSA',
+        'n' => static::b64($details['rsa']['n']),
+        'e' => static::b64($details['rsa']['e']),
+      ],
+    ]);
+
+    $this->assertRefused($this->signedWith($weak, 'kid-weak'));
+    $this->assertSame(1, $this->userCount(), 'No user created.');
+
+    $main = openssl_pkey_get_private(static::key('main')['private']);
+    $this->assertAuthenticated('jdoe', $this->signedWith($main, 'kid-main'));
+  }
+
+  /**
+   * Signs valid claims with an RSA key, whatever its size.
+   *
+   * JWT::encode() cannot be used: it refuses keys under 2048 bits.
+   */
+  protected function signedWith(\OpenSSLAsymmetricKey $key, string $kid): string {
+    $now = time();
+    $header = static::b64(json_encode([
+      'typ' => 'JWT',
+      'alg' => 'RS256',
+      'kid' => $kid,
+    ]));
+    $payload = static::b64(json_encode([
+      'iss' => self::ISSUER,
+      'iat' => $now,
+      'exp' => $now + 300,
+      'aud' => 'account',
+      'azp' => 'frontend-client',
+      'preferred_username' => 'jdoe',
+      'email' => 'jdoe@example.test',
+      'email_verified' => TRUE,
+    ]));
+    openssl_sign("$header.$payload", $signature, $key, OPENSSL_ALGO_SHA256);
+    return "$header.$payload." . static::b64($signature);
+  }
+
+  /**
    * Unknown "kid": one JWKS refresh, then failure, then throttling.
    *
    * @covers ::authenticate
