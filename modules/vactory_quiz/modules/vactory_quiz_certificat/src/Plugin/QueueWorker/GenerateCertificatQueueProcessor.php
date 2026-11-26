@@ -168,37 +168,65 @@ class GenerateCertificatQueueProcessor extends QueueWorkerBase implements Contai
   }
 
   /**
+   * Logs why an item is dropped: it can never be processed.
+   *
+   * Missing or invalid data, deleted user or quiz: retrying would fail the
+   * same way on each cron run. processItem() returns after this call, and the
+   * cron removes the item from the queue.
+   *
+   * @param string $reason
+   *   Why the certificate cannot be generated.
+   */
+  protected function drop(string $reason): void {
+    \Drupal::logger('vactory_quiz_certificat')->error('Certificate not generated, item removed from the queue: @reason', [
+      '@reason' => $reason,
+    ]);
+  }
+
+  /**
+   * Returns why the item data cannot be processed, or NULL.
+   */
+  protected function invalidDataReason($data): ?string {
+    $reason = NULL;
+    $required = [
+      'html_output',
+      'output_file',
+      'quiz_id',
+      'user_id',
+      'user_answers',
+      'user_mark',
+    ];
+    if (!is_array($data) || array_diff($required, array_keys(array_filter($data, static fn($value) => $value !== NULL)))) {
+      $reason = 'Insufficient item data missing one of html_output|output_file|quiz_id|user_id|user_answers|user_mark';
+    }
+    elseif (!is_numeric($data['quiz_id']) || !is_numeric($data['user_id'])) {
+      $reason = 'Invalid type for user_id|quiz_id data, needs to be numeric';
+    }
+    return $reason;
+  }
+
+  /**
    * {@inheritdoc}
    *
    * @throws \Drupal\Core\Queue\DelayedRequeueException
-   *   When the certificate could not be generated: the item is retried later.
+   *   When the PDF could not be generated: the item is retried later.
    */
   public function processItem($data) {
-    if (
-      !isset($data['html_output']) ||
-      !isset($data['output_file']) ||
-      !isset($data['quiz_id']) ||
-      !isset($data['user_id']) ||
-      !isset($data['user_mark']) ||
-      !isset($data['user_answers'])
-    ) {
-      throw $this->retryLater('Insufficient item data missing one of html_output|output_file|quiz_id|user_id|user_answers|user_mark');
+    $reason = $this->invalidDataReason($data);
+    $user = $quiz = NULL;
+    if ($reason === NULL) {
+      $user = $this->entityTypeManager->getStorage('user')->load($data['user_id']);
+      $quiz = $this->entityTypeManager->getStorage('node')->load($data['quiz_id']);
+      if (!$user instanceof UserInterface) {
+        $reason = 'No user has been found for user_id=' . $data['user_id'];
+      }
+      elseif (!$quiz instanceof NodeInterface) {
+        $reason = 'No quiz node has been found for quiz_id=' . $data['quiz_id'];
+      }
     }
-    if (
-      !is_numeric($data['quiz_id']) ||
-      !is_numeric($data['user_id'])
-    ) {
-      throw $this->retryLater('Invalid type for user_id|quiz_id data, needs to be numeric');
-    }
-    $user = $this->entityTypeManager->getStorage('user')
-      ->load($data['user_id']);
-    if (!$user instanceof UserInterface) {
-      throw $this->retryLater('No user has been found for user_id=' . $data['user_id']);
-    }
-    $quiz = $this->entityTypeManager->getStorage('node')
-      ->load($data['quiz_id']);
-    if (!$quiz instanceof NodeInterface) {
-      throw $this->retryLater('No quiz node has been found for quiz_id=' . $data['quiz_id']);
+    if ($reason !== NULL) {
+      $this->drop($reason);
+      return;
     }
     $html_output = $data['html_output'];
     $output_file = $data['output_file'];
