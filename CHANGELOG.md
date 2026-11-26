@@ -237,6 +237,7 @@ drush cr
 - `drupal/stage_file_proxy` `^2.0` → `^3.1.7` ; `drupal/gin` `^3.0@RC` → `^4.1.4 || ^5.0.16` ; `drupal/responsive_favicons` `1.x-dev@dev` → `^2.0.2 || ^3.0 || ^4.0` ; `drupal/tinypng` `^1.0@RC` → `^2.0.2` (#993, Redmine #71556).
 
 ### Interne
+- Premier parcours e2e Playwright (`tests/e2e/`, exclu de l'archive des projets) : un contributeur crée puis modifie une page avec un paragraphe Dynamic Field par la popin (image, texte, lien linkit) ; vérifie la base, le rendu Drupal et le JSON:API lu par le front ; toute erreur JavaScript non attrapée fait échouer le test. Lancé par `tests/e2e/run.sh <instance>` contre une instance `stack` (#994, Redmine #71571).
 - `vactory_decoupled` : test de l'authentification Keycloak avec une clé de realm de 1024 bits, refusée avec php-jwt 7 et acceptée avec php-jwt 6 (#995).
 - Tests d'intégration des modules contrib montés en version corrigée : stage_file_proxy (téléchargement depuis l'origine, origine en erreur), tinypng (réglages enregistrés), responsive_favicons (balises rendues, icône absente écartée), gin (back-office rendu en thème d'administration) ; chacun échoue avec l'ancienne version ou une interaction cassée (#993, Redmine #71539).
 - Commande `scripts/stack/stack` : pile locale complète et isolée par instance nommée (arbre du profil, site Drupal et sa base, Mailpit, front Next et Redis en option), pour travailler à plusieurs ou avec des agents en parallèle ; documentation `docs/dev-stack.md` (Redmine #71475, #976).
