@@ -17,8 +17,7 @@ function vactory_api_key_auth_help($route_name, RouteMatchInterface $route_match
       $output = '';
       $output .= '<h3>' . t('About') . '</h3>';
       $output .= '<p>' . t('API Key Auth') . '</p>';
-      $output .= '<p>' . t('The API Key Auth module provides an authentication 
-      provider to authenticate users via a GET or POST Parameter (api_key=1234)') . '</p>';
+      $output .= '<p>' . t('The API Key Auth module provides an authentication provider that authenticates users with the key sent in the "apikey" header, on routes that declare it.') . '</p>';
 
       return $output;
   }
