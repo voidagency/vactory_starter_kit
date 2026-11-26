@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "092b20c11d65b3409e4ffafe738a8328",
+    "content-hash": "ffc77027e94e9c8524015517f7e7010c",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -4803,30 +4803,30 @@
         },
         {
             "name": "drupal/gin",
-            "version": "3.0.0-rc10",
+            "version": "4.1.4",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/gin.git",
-                "reference": "8.x-3.0-rc10"
+                "reference": "4.1.4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/gin-8.x-3.0-rc10.zip",
-                "reference": "8.x-3.0-rc10",
-                "shasum": "f79fd895dd1f16c3af457bfaed5527f5b5bc752c"
+                "url": "https://ftp.drupal.org/files/projects/gin-4.1.4.zip",
+                "reference": "4.1.4",
+                "shasum": "3dcb347e61f29981dcf2afdcdc9860851d6eee66"
             },
             "require": {
-                "drupal/core": "^9 || ^10",
-                "drupal/gin_toolbar": "^1.0@beta"
+                "drupal/core": "^10.3 || ^11 <11.2",
+                "drupal/gin_toolbar": "^2.0"
             },
             "type": "drupal-theme",
             "extra": {
                 "drupal": {
-                    "version": "8.x-3.0-rc10",
-                    "datestamp": "1712686345",
+                    "version": "4.1.4",
+                    "datestamp": "1791998624",
                     "security-coverage": {
-                        "status": "not-covered",
-                        "message": "RC releases are not covered by Drupal security advisories."
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
                     }
                 }
             },
@@ -4844,6 +4844,10 @@
                     "name": "Sascha Eggenberger (saschaeggi)",
                     "homepage": "https://www.drupal.org/u/saschaeggi",
                     "role": "Maintainer"
+                },
+                {
+                    "name": "saschaeggi",
+                    "homepage": "https://www.drupal.org/user/1999056"
                 }
             ],
             "description": "For a better Admin and Content Editor Experience.",
@@ -4865,29 +4869,30 @@
         },
         {
             "name": "drupal/gin_toolbar",
-            "version": "1.0.0-rc5",
+            "version": "2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/gin_toolbar.git",
-                "reference": "8.x-1.0-rc5"
+                "reference": "2.1.0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/gin_toolbar-8.x-1.0-rc5.zip",
-                "reference": "8.x-1.0-rc5",
-                "shasum": "523b565244440a16fa447065a98841770992bd2e"
+                "url": "https://ftp.drupal.org/files/projects/gin_toolbar-2.1.0.zip",
+                "reference": "2.1.0",
+                "shasum": "b312a2dea5379ea5883d92c2a2e5f0499972a083"
             },
             "require": {
-                "drupal/core": "^9 || ^10"
+                "drupal/core": "^10 || ^11 <11.2",
+                "drupal/toolbar": "*"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-1.0-rc5",
-                    "datestamp": "1702727588",
+                    "version": "2.1.0",
+                    "datestamp": "1750245881",
                     "security-coverage": {
-                        "status": "not-covered",
-                        "message": "RC releases are not covered by Drupal security advisories."
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
                     }
                 }
             },
@@ -4900,6 +4905,10 @@
                     "name": "Sascha Eggenberger (saschaeggi)",
                     "homepage": "https://www.drupal.org/u/saschaeggi",
                     "role": "Maintainer"
+                },
+                {
+                    "name": "saschaeggi",
+                    "homepage": "https://www.drupal.org/user/1999056"
                 }
             ],
             "description": "Gin Toolbar for Frontend use",
@@ -8506,26 +8515,29 @@
         },
         {
             "name": "drupal/responsive_favicons",
-            "version": "dev-1.x",
+            "version": "4.0.0",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/responsive_favicons.git",
-                "reference": "7bb390af3db92008ca237cc988e0c54903ae3f46"
+                "reference": "4.0.0"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://ftp.drupal.org/files/projects/responsive_favicons-4.0.0.zip",
+                "reference": "4.0.0",
+                "shasum": "75cb90b1bba79bff12cd6d9fa946bf9689b84adf"
             },
             "require": {
-                "drupal/core": "^9.3 || ^10"
+                "drupal/core": "^10.3 || ^11"
             },
             "type": "drupal-module",
             "extra": {
-                "branch-alias": {
-                    "dev-1.x": "1.x-dev"
-                },
                 "drupal": {
-                    "version": "8.x-1.x-dev",
-                    "datestamp": "1682128329",
+                    "version": "4.0.0",
+                    "datestamp": "1757414231",
                     "security-coverage": {
-                        "status": "not-covered",
-                        "message": "Dev releases are not covered by Drupal security advisories."
+                        "status": "covered",
+                        "message": "Covered by Drupal's security advisory policy"
                     }
                 }
             },
@@ -8535,8 +8547,8 @@
             ],
             "authors": [
                 {
-                    "name": "liuba",
-                    "homepage": "https://www.drupal.org/user/318617"
+                    "name": "mably",
+                    "homepage": "https://www.drupal.org/user/3375160"
                 },
                 {
                     "name": "wiifm",
@@ -10113,39 +10125,37 @@
         },
         {
             "name": "drupal/stage_file_proxy",
-            "version": "2.1.4",
+            "version": "3.1.7",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/stage_file_proxy.git",
-                "reference": "2.1.4"
+                "reference": "3.1.7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/stage_file_proxy-2.1.4.zip",
-                "reference": "2.1.4",
-                "shasum": "85f8451f123fcfb1b272f5a0cc11e6bd1673476c"
+                "url": "https://ftp.drupal.org/files/projects/stage_file_proxy-3.1.7.zip",
+                "reference": "3.1.7",
+                "shasum": "f9b6acda790f42da68892d9139746e761da52207"
             },
             "require": {
-                "drupal/core": "^9 || ^10",
-                "php": ">=8"
+                "drupal/core": "^10.3 || ^11",
+                "php": ">=8.1"
+            },
+            "conflict": {
+                "drush/drush": "<12"
             },
             "require-dev": {
                 "drupal/coder": "^8.3",
-                "drush/drush": "^11 || ^12"
+                "drush/drush": ">=12"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "2.1.4",
-                    "datestamp": "1706627704",
+                    "version": "3.1.7",
+                    "datestamp": "1793215471",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
-                    }
-                },
-                "drush": {
-                    "services": {
-                        "stage_file_proxy.drush.services.yml": "^11"
                     }
                 }
             },
@@ -10561,27 +10571,27 @@
         },
         {
             "name": "drupal/tinypng",
-            "version": "1.2.0",
+            "version": "2.0.2",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/tinypng.git",
-                "reference": "8.x-1.2"
+                "reference": "2.0.2"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/tinypng-8.x-1.2.zip",
-                "reference": "8.x-1.2",
-                "shasum": "51b5c14b33ad0a1e3cb80dd25ce6526cd627e887"
+                "url": "https://ftp.drupal.org/files/projects/tinypng-2.0.2.zip",
+                "reference": "2.0.2",
+                "shasum": "2ac9fb43b30d5b00e4a9dcd3490577af4cf90edf"
             },
             "require": {
-                "drupal/core": "^8 || ^9 || ^10",
+                "drupal/core": "^10.3 || ^11",
                 "tinify/tinify": "^1"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-1.2",
-                    "datestamp": "1655804319",
+                    "version": "2.0.2",
+                    "datestamp": "1792605572",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -10609,6 +10619,10 @@
             ],
             "description": "Compress images using the TinyPNG service",
             "homepage": "https://www.drupal.org/project/tinypng",
+            "keywords": [
+                "Media",
+                "Minimally maintained"
+            ],
             "support": {
                 "source": "https://git.drupalcode.org/project/tinypng"
             }
@@ -21377,8 +21391,6 @@
         "drupal/viewsreference": 10,
         "drupal/webform": 10,
         "drupal/styleguide": 10,
-        "drupal/responsive_favicons": 20,
-        "drupal/tinypng": 5,
         "drupal/votingapi": 10,
         "drupal/social_auth_facebook": 5,
         "drupal/social_auth_google": 5,
@@ -21387,7 +21399,6 @@
         "drupal/jsonapi_user_resources": 10,
         "drupal/symfony_mailer": 15,
         "drupal/default_content": 15,
-        "drupal/gin": 5,
         "drupal/search_api_ai": 15,
         "drupal/openai": 10,
         "drupal/google_news_sitemap": 20,
