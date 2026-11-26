@@ -27,8 +27,13 @@ vactory_decoupled.translations:
 
 ```
 
-You can send `api_key` as query string param in a GET request or POST
-or as a header using `apikey` (recommended)
+Send the key in the `apikey` header. The key is not read from the query
+string or from a form body (they end up in server logs and browser history).
+
+The provider is not global: it authenticates only on routes that list
+`api_key_auth` in their `_auth` option (JSON:API routes list every provider).
+A key linked to a blocked account is refused. Link keys to technical accounts
+with the permissions they need, never to an administrator.
 
 ## API Key using route access checking
 
