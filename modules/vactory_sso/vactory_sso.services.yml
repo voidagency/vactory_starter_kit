@@ -1,0 +1,14 @@
+services:
+  vactory_sso.userinfo_collector:
+    class: Drupal\vactory_sso\UserinfoCollector
+  logger.channel.vactory_sso:
+    parent: logger.channel_base
+    arguments: ['vactory_sso']
+  vactory_sso.unverified_email_tracker:
+    class: Drupal\vactory_sso\UnverifiedEmailTracker
+    arguments: ['@config.factory', '@keyvalue', '@logger.channel.vactory_sso', '@datetime.time']
+  vactory_sso.userinfo_capture_middleware:
+    class: Drupal\vactory_sso\HttpClientMiddleware\UserinfoCaptureMiddleware
+    arguments: ['@config.factory', '@current_route_match', '@vactory_sso.userinfo_collector', '@vactory_sso.unverified_email_tracker']
+    tags:
+      - { name: http_client_middleware }

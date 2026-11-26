@@ -6,7 +6,7 @@ use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Class VactorySSOConfigForm.
+ * Settings form of the Keycloak attributes mapping.
  *
  * @package Drupal\vactory_sso\Form
  */

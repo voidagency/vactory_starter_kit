@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "13fe91c68c83d3394842973951d98638",
+    "content-hash": "43f79ce7540804e2a70e1647e2bd4140",
     "packages": [
         {
             "name": "asm89/stack-cors",
@@ -7608,26 +7608,26 @@
         },
         {
             "name": "drupal/oauth_login_oauth2",
-            "version": "2.6.0",
+            "version": "3.1.1",
             "source": {
                 "type": "git",
                 "url": "https://git.drupalcode.org/project/oauth_login_oauth2.git",
-                "reference": "8.x-2.06"
+                "reference": "3.1.1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://ftp.drupal.org/files/projects/oauth_login_oauth2-8.x-2.06.zip",
-                "reference": "8.x-2.06",
-                "shasum": "22211841af6154e8e8eac7394a990567f081b131"
+                "url": "https://ftp.drupal.org/files/projects/oauth_login_oauth2-3.1.1.zip",
+                "reference": "3.1.1",
+                "shasum": "e38ba6a48f379e6bef1fdfef75ac5c8bdbd4c820"
             },
             "require": {
-                "drupal/core": "^8 || ^9 || ^10"
+                "drupal/core": "^9.3 || ^10 || ^11"
             },
             "type": "drupal-module",
             "extra": {
                 "drupal": {
-                    "version": "8.x-2.06",
-                    "datestamp": "1669638862",
+                    "version": "3.1.1",
+                    "datestamp": "1793215390",
                     "security-coverage": {
                         "status": "covered",
                         "message": "Covered by Drupal's security advisory policy"
@@ -7652,15 +7652,35 @@
                     "homepage": "https://www.drupal.org/user/3288491"
                 },
                 {
-                    "name": "shashank_thigale",
-                    "homepage": "https://www.drupal.org/user/3632808"
+                    "name": "hisam45",
+                    "homepage": "https://www.drupal.org/user/3850434"
                 },
                 {
-                    "name": "Shrishail Hiremath",
+                    "name": "khairnarakash",
+                    "homepage": "https://www.drupal.org/user/3849224"
+                },
+                {
+                    "name": "neetu01",
+                    "homepage": "https://www.drupal.org/user/3871516"
+                },
+                {
+                    "name": "purva_shende",
+                    "homepage": "https://www.drupal.org/user/3723921"
+                },
+                {
+                    "name": "rahul.mehta@xecurify.com",
+                    "homepage": "https://www.drupal.org/user/3871177"
+                },
+                {
+                    "name": "shrishail hiremath",
                     "homepage": "https://www.drupal.org/user/3669372"
+                },
+                {
+                    "name": "singh_ankit",
+                    "homepage": "https://www.drupal.org/user/3723914"
                 }
             ],
-            "description": "This module allows you to login in your Drupal site  using any oauth2 or openID compliant server.",
+            "description": "This module allows you to login in your Drupal site  using any OAuth 2.0 or OpenID Connect compliant server.",
             "homepage": "https://www.drupal.org/project/oauth_login_oauth2",
             "support": {
                 "source": "https://git.drupalcode.org/project/oauth_login_oauth2"

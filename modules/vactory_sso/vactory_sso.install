@@ -1,0 +1,26 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for vactory_sso.
+ */
+
+use Drupal\vactory_sso\UnverifiedEmailTracker;
+
+/**
+ * Implements hook_requirements().
+ */
+function vactory_sso_requirements($phase) {
+  if ($phase !== 'runtime') {
+    return [];
+  }
+  $count = count(\Drupal::keyValue(UnverifiedEmailTracker::COLLECTION)->getAll());
+  return [
+    'vactory_sso_unverified_email' => [
+      'title' => t('SSO: unverified emails'),
+      'value' => $count ? \Drupal::translation()->formatPlural($count, '1 address refused', '@count addresses refused') : t('No SSO login refused'),
+      'description' => $count ? t('The identity provider did not report email_verified = true for these addresses, and the SSO login was refused. List them with <code>drush vactory-sso:unverified-emails</code>, then verify the emails on the identity provider.') : '',
+      'severity' => $count ? REQUIREMENT_WARNING : REQUIREMENT_OK,
+    ],
+  ];
+}
