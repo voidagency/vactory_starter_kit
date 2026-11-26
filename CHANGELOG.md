@@ -102,6 +102,7 @@ drush cr
 - **Si `vactory_quiz_certificat` est actif (#963) :** rien à réimporter. Le corps de mail par défaut est corrigé pour les nouvelles installations ; le corps de mail enregistré sur un site existant n'est pas modifié, et son jeton `[quiz:certificat_url]` est maintenant remplacé par le lien du certificat.
 
 **4. Back-office**
+- **Si Mailchimp est utilisé (`vactory_mailchimp`, `vactory_mailchimp_newsletter`) (#1000) :** les configurations installées par le profil n'ont plus de clé d'API. Vérifier que la clé du site (`drush cget mailchimp.settings api_key`, réglages du handler Mailchimp du webform newsletter) est bien celle du projet, et non une clé reprise d'une ancienne version du profil : ces clés-là sont publiques, donc compromises, et ne doivent plus servir.
 - **Si un service appelé en HTTPS a un certificat invalide ou auto-signé (#896) :** désactiver la vérification TLS pour cet environnement dans `/admin/config/vactory-core-config`, ou dans `settings.php` : `$config['vactory_core.global_config']['http_client_ssl_verification'] = FALSE;`. Un appel qui passe `verify` reste prioritaire.
 - **Si Shield est actif :** vérifier les identifiants du site dans la config de Shield (#911, détail dans le ticket Dispatch).
 - **Message d'erreur du CAPTCHA (#949) :** dans `/admin/config/people/captcha`, laisser « Wrong CAPTCHA response error message » vide pour garder le message par défaut traduit. Si `drush updb` a signalé un message personnalisé : le vider, ou le traduire.
@@ -155,6 +156,7 @@ drush cr
 - **Shield 1.11** stocke les identifiants encodés dans sa configuration : un script qui lisait `credentials.shield.user` / `pass` en clair ne fonctionne plus.
 
 ### Sécurité
+- `vactory_mailchimp`, `vactory_mailchimp_newsletter` : clés d'API Mailchimp retirées des configurations installées par le profil ; un test échoue si une clé Mailchimp ou une clé privée est ajoutée au profil (#1000, Redmine #71353).
 - `composer.lock` : versions corrigées des dépendances visées par un avis de sécurité, autorisées par les contraintes du profil mais restées anciennes dans le lock (webform, paragraphs, simple_oauth, single_content_sync, scheduler, facets, Drupal core, twig…). La CI teste ainsi les versions que reçoivent les projets ; `composer audit` ne signalait plus que `drupal/oauth_login_oauth2`, corrigé par #992 (#996, Redmine #71556).
 - `composer.lock` : `symfony/http-kernel`, `routing`, `serializer` 6.4.51 (et `http-foundation`, qu'exige http-kernel), `symfony/http-client` 5.4.57, versions corrigées d'avis de sécurité publiés le 25/11/2026 (#997, Redmine #71556).
 - `firebase/php-jwt` `^7.1.1` : les jetons signés par une clé trop courte sont refusés (#995, Redmine #71556).
@@ -253,6 +255,7 @@ drush cr
 - `drupal/oauth_login_oauth2` : `^2.6` → `^3.1.1`, patch « Store ressourceOwner into a session variable » retiré : `vactory_sso` lit la réponse userinfo du module par un middleware du client HTTP, limité aux routes de retour SSO, sans session, et sert le retour SSO sur `/mo_login`, l'adresse de la 2.x (#992, Redmine #71556).
 
 ### Interne
+- `vactory_core` : test qui parcourt le profil à la recherche de secrets (clés d'API Mailchimp, clés privées) (#1000).
 - Premier parcours e2e Playwright (`tests/e2e/`, exclu de l'archive des projets) : un contributeur crée puis modifie une page avec un paragraphe Dynamic Field par la popin (image, texte, lien linkit) ; vérifie la base, le rendu Drupal et le JSON:API lu par le front ; toute erreur JavaScript non attrapée fait échouer le test. Lancé par `tests/e2e/run.sh <instance>` contre une instance `stack` (#994, Redmine #71571).
 - `vactory_core` : test des attributs de liens de menu installés par le profil : chacun est proposé sur le formulaire d'un lien de menu (échoue avec `wrapper_class` sous menu_link_attributes 1.10) (#996).
 - `vactory_decoupled` : test de l'authentification Keycloak avec une clé de realm de 1024 bits, refusée avec php-jwt 7 et acceptée avec php-jwt 6 (#995).
