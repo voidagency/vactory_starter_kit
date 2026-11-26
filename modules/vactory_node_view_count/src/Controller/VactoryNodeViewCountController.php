@@ -3,9 +3,10 @@
 namespace Drupal\vactory_node_view_count\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\node\Entity\Node;
-use Drupal\node\Entity\NodeType;
+use Drupal\Core\Flood\FloodInterface;
 use Drupal\node\NodeInterface;
+use Drupal\vactory_node_view_count\NodeViewCounter;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -15,81 +16,89 @@ use Symfony\Component\HttpFoundation\Request;
 class VactoryNodeViewCountController extends ControllerBase {
 
   /**
+   * Views counted per node and per IP address within the flood window.
+   */
+  public const FLOOD_THRESHOLD = 20;
+
+  /**
+   * Flood window, in seconds.
+   */
+  public const FLOOD_WINDOW = 60;
+
+  /**
+   * Constructs a VactoryNodeViewCountController object.
+   */
+  public function __construct(
+    protected NodeViewCounter $counter,
+    protected FloodInterface $flood,
+  ) {}
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('vactory_node_view_count.counter'),
+      $container->get('flood'),
+    );
+  }
+
+  /**
    * Update counter (get nid from path).
    */
-  public function incrementCounter($nid) {
-    $node = Node::load($nid);
-    $bundle = $node->bundle();
-    $type = NodeType::load($bundle);
-    $view_count_enabled = (bool) $type->getThirdPartySetting('vactory_node_view_count', 'enabling_count_node', '');
-    if (!$view_count_enabled) {
-      return new JsonResponse([
-        'message' => $this->t("Views count is not enabled for {$bundle}"),
-        'code' => -3,
-      ], 400);
-    }
-    if ($node instanceof NodeInterface) {
-      if ($node->hasField('field_node_count_view')) {
-        $count = isset($node->get('field_node_count_view')->getValue()[0]) ? $node->get('field_node_count_view')->getValue()[0]['value'] : 0;
-        $count++;
-        $node->set('field_node_count_view', $count);
-        $node->save();
-        return new JsonResponse([
-          'message' => $this->t('Node count has been incremented'),
-          'count' => $node->get('field_node_count_view')->getValue()[0]['value'],
-          'code' => 1,
-        ]);
-      }
-      return new JsonResponse([
-        'message' => $this->t('The specific node has no field (count views)!'),
-        'code' => -1,
-      ], 400);
-    }
-    return new JsonResponse([
-      'message' => $this->t('Invalid node id!'),
-      'code' => -2,
-    ], 400);
+  public function incrementCounter($nid, Request $request) {
+    return $this->count($nid, $request);
   }
 
   /**
    * Update counter (get nid from request body).
    */
   public function updateCounter(Request $request) {
-    $nid = $request->request->all('nid');
-    if ($nid) {
-      $node = Node::load($nid);
-      $bundle = $node->bundle();
-      $type = NodeType::load($bundle);
-      $view_count_enabled = (bool) $type->getThirdPartySetting('vactory_node_view_count', 'enabling_count_node', '');
-      if (!$view_count_enabled) {
-        return new JsonResponse([
-          'message' => $this->t("Views count is not enabled for {$bundle}"),
-          'code' => -3,
-        ], 400);
-      }
-      if ($node instanceof NodeInterface) {
-        if ($node->hasField('field_node_count_view')) {
-          $count = isset($node->get('field_node_count_view')->getValue()[0]) ? $node->get('field_node_count_view')->getValue()[0]['value'] : 0;
-          $count++;
-          $node->set('field_node_count_view', $count);
-          $node->save();
-          return new JsonResponse([
-            'message' => $this->t('Node count has been incremented'),
-            'count' => $node->get('field_node_count_view')->getValue()[0]['value'],
-            'code' => 1,
-          ]);
-        }
-        return new JsonResponse([
-          'message' => $this->t('The specific node has no field (count views)!'),
-          'code' => -1,
-        ], 400);
-      }
+    return $this->count($request->request->all()['nid'] ?? NULL, $request);
+  }
+
+  /**
+   * Counts one view of the node, if the current user may view it.
+   */
+  protected function count($nid, Request $request): JsonResponse {
+    $node = is_scalar($nid) && ctype_digit((string) $nid)
+      ? $this->entityTypeManager()->getStorage('node')->load($nid)
+      : NULL;
+    if (!$node instanceof NodeInterface || !$node->access('view')) {
+      return new JsonResponse([
+        'message' => $this->t('Invalid node id!'),
+        'code' => -2,
+      ], 404);
     }
+    $bundle = $node->bundle();
+    $type = $this->entityTypeManager()->getStorage('node_type')->load($bundle);
+    if (!$type->getThirdPartySetting('vactory_node_view_count', 'enabling_count_node', '')) {
+      return new JsonResponse([
+        'message' => $this->t('Views count is not enabled for @bundle', ['@bundle' => $bundle]),
+        'code' => -3,
+      ], 400);
+    }
+    if (!$node->hasField(NodeViewCounter::FIELD)) {
+      return new JsonResponse([
+        'message' => $this->t('The specific node has no field (count views)!'),
+        'code' => -1,
+      ], 400);
+    }
+    $event = 'vactory_node_view_count.view';
+    $identifier = $request->getClientIp() . ':' . $node->id();
+    if (!$this->flood->isAllowed($event, self::FLOOD_THRESHOLD, self::FLOOD_WINDOW, $identifier)) {
+      return new JsonResponse([
+        'message' => $this->t('Too many views counted for this node.'),
+        'code' => -4,
+      ], 429);
+    }
+    $this->flood->register($event, self::FLOOD_WINDOW, $identifier);
 
     return new JsonResponse([
-      'message' => $this->t('Invalid node id!'),
-      'code' => -2,
-    ], 400);
+      'message' => $this->t('Node count has been incremented'),
+      'count' => $this->counter->increment($node),
+      'code' => 1,
+    ]);
   }
 
 }
