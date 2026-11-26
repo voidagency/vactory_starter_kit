@@ -71,44 +71,60 @@ class VactoryNodeViewCountController extends ControllerBase {
     $node = is_scalar($nid) && ctype_digit((string) $nid)
       ? $this->entityTypeManager()->getStorage('node')->load($nid)
       : NULL;
-    if (!$node instanceof NodeInterface || !$node->access('view')) {
-      return new JsonResponse([
-        'message' => $this->t('Invalid node id!'),
-        'code' => -2,
-      ], 404);
+    $error = $this->rejection($node);
+    if ($error === NULL && !$this->registerView($node, $request)) {
+      $error = [$this->t('Too many views counted for this node.'), -4, 429];
     }
-    $bundle = $node->bundle();
-    $type = $this->entityTypeManager()->getStorage('node_type')->load($bundle);
-    if (!$type->getThirdPartySetting('vactory_node_view_count', 'enabling_count_node', '')) {
-      return new JsonResponse([
-        'message' => $this->t('Views count is not enabled for @bundle', ['@bundle' => $bundle]),
-        'code' => -3,
-      ], 400);
+    if ($error !== NULL) {
+      return new JsonResponse(['message' => $error[0], 'code' => $error[1]], $error[2]);
     }
-    if (!$node->hasField(NodeViewCounter::FIELD)) {
-      return new JsonResponse([
-        'message' => $this->t('The specific node has no field (count views)!'),
-        'code' => -1,
-      ], 400);
-    }
-    $threshold = (int) Settings::get('vactory_node_view_count_flood_threshold', self::FLOOD_THRESHOLD);
-    if ($threshold > 0) {
-      $event = 'vactory_node_view_count.view';
-      $identifier = $request->getClientIp() . ':' . $node->id();
-      if (!$this->flood->isAllowed($event, $threshold, self::FLOOD_WINDOW, $identifier)) {
-        return new JsonResponse([
-          'message' => $this->t('Too many views counted for this node.'),
-          'code' => -4,
-        ], 429);
-      }
-      $this->flood->register($event, self::FLOOD_WINDOW, $identifier);
-    }
-
     return new JsonResponse([
       'message' => $this->t('Node count has been incremented'),
       'count' => $this->counter->increment($node),
       'code' => 1,
     ]);
+  }
+
+  /**
+   * Returns why the view of the node cannot be counted, or NULL.
+   *
+   * @return array|null
+   *   Message, code and HTTP status of the response, or NULL.
+   */
+  protected function rejection($node): ?array {
+    $error = NULL;
+    if (!$node instanceof NodeInterface || !$node->access('view')) {
+      $error = [$this->t('Invalid node id!'), -2, 404];
+    }
+    elseif (!$this->entityTypeManager()->getStorage('node_type')->load($node->bundle())
+      ->getThirdPartySetting('vactory_node_view_count', 'enabling_count_node', '')) {
+      $message = $this->t('Views count is not enabled for @bundle', [
+        '@bundle' => $node->bundle(),
+      ]);
+      $error = [$message, -3, 400];
+    }
+    elseif (!$node->hasField(NodeViewCounter::FIELD)) {
+      $message = $this->t('The specific node has no field (count views)!');
+      $error = [$message, -1, 400];
+    }
+    return $error;
+  }
+
+  /**
+   * Registers the view for the flood limit; FALSE when over the limit.
+   */
+  protected function registerView(NodeInterface $node, Request $request): bool {
+    $threshold = (int) Settings::get('vactory_node_view_count_flood_threshold', self::FLOOD_THRESHOLD);
+    if ($threshold <= 0) {
+      return TRUE;
+    }
+    $event = 'vactory_node_view_count.view';
+    $identifier = $request->getClientIp() . ':' . $node->id();
+    $allowed = $this->flood->isAllowed($event, $threshold, self::FLOOD_WINDOW, $identifier);
+    if ($allowed) {
+      $this->flood->register($event, self::FLOOD_WINDOW, $identifier);
+    }
+    return $allowed;
   }
 
 }

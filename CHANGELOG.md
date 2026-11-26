@@ -263,6 +263,7 @@ drush cr
 - `drupal/oauth_login_oauth2` : `^2.6` → `^3.1.1`, patch « Store ressourceOwner into a session variable » retiré : `vactory_sso` lit la réponse userinfo du module par un middleware du client HTTP, limité aux routes de retour SSO, sans session, et sert le retour SSO sur `/mo_login`, l'adresse de la 2.x (#992, Redmine #71556).
 
 ### Interne
+- `vactory_node_view_count` : contrôleur de comptage découpé (contrôles du nœud, limite par IP), sans changement de comportement, pour la porte qualité Sonar (#1001).
 - `vactory_api_key_auth` : test HTTP de l'authentification par clé : routes couvertes, en-tête seul, compte bloqué, JSON:API (#998).
 - `vactory_core` : test qui parcourt le profil à la recherche de secrets (clés d'API Mailchimp, clés privées) (#1000).
 - `vactory_node_view_count` : test HTTP du comptage des vues par un anonyme : sans enregistrement du nœud, première vue (nœud traduit), nœud non visible ou inexistant, pas de limite par défaut ; test Kernel de la limite réglée par `settings.php` (429, par adresse IP) et de l'invalidation espacée du cache du nœud (#999).
