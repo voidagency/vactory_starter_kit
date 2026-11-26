@@ -16,7 +16,7 @@ use Drupal\vactory_sso\NestedAttribute;
 function vactory_sso_user_login(UserInterface $account) {
   $route_name = Drupal::routeMatch()->getRouteName();
   // Check if it's a user from Keycloak IDP then update fields.
-  if ($route_name == UserinfoCaptureMiddleware::CALLBACK_ROUTE) {
+  if (UserinfoCaptureMiddleware::isCallbackRoute($route_name)) {
     $collector = Drupal::service('vactory_sso.userinfo_collector');
     // Claims of the userinfo response, captured by
     // UserinfoCaptureMiddleware during this SSO callback.

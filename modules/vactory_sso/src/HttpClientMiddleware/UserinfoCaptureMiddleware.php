@@ -22,9 +22,23 @@ use Psr\Http\Message\ResponseInterface;
 final class UserinfoCaptureMiddleware {
 
   /**
-   * Route of the oauth_login_oauth2 SSO callback (/mo_callback in 3.x).
+   * Routes of the SSO callback.
+   *
+   * The oauth_login_oauth2 route (/mo_callback in 3.x) and the vactory_sso
+   * route that serves the same controller on /mo_login, the return address
+   * of 2.x.
    */
-  public const CALLBACK_ROUTE = 'oauth_login_oauth2.mo_login';
+  public const CALLBACK_ROUTES = [
+    'oauth_login_oauth2.mo_login',
+    'vactory_sso.mo_login',
+  ];
+
+  /**
+   * Whether the given route is an SSO callback route.
+   */
+  public static function isCallbackRoute(?string $route_name): bool {
+    return in_array($route_name, self::CALLBACK_ROUTES, TRUE);
+  }
 
   /**
    * Constructs a UserinfoCaptureMiddleware object.
@@ -68,7 +82,7 @@ final class UserinfoCaptureMiddleware {
    * Whether the request is the userinfo call of the SSO callback.
    */
   private function applies(RequestInterface $request): bool {
-    if ($request->getMethod() !== 'GET' || $this->routeMatch->getRouteName() !== self::CALLBACK_ROUTE) {
+    if ($request->getMethod() !== 'GET' || !self::isCallbackRoute($this->routeMatch->getRouteName())) {
       return FALSE;
     }
     $endpoint = (string) $this->configFactory->get('oauth_login_oauth2.settings')->get('miniorange_auth_client_user_info_ep');

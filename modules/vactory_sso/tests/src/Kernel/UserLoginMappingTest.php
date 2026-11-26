@@ -74,7 +74,7 @@ class UserLoginMappingTest extends KernelTestBase {
     $this->config('oauth_login_oauth2.settings')
       ->set('miniorange_auth_client_user_info_ep', self::USERINFO)
       ->save();
-    $this->setCurrentRoute(UserinfoCaptureMiddleware::CALLBACK_ROUTE);
+    $this->setCurrentRoute(UserinfoCaptureMiddleware::CALLBACK_ROUTES[0]);
   }
 
   /**
@@ -108,8 +108,11 @@ class UserLoginMappingTest extends KernelTestBase {
 
   /**
    * Mapped attributes of the userinfo response are copied to the user.
+   *
+   * @dataProvider providerCallbackRoutes
    */
-  public function testMappingOnLogin(): void {
+  public function testMappingOnLogin(string $route): void {
+    $this->setCurrentRoute($route);
     $this->mockIdentityProvider(new Response(200, ['Content-Type' => 'application/json'], json_encode($this->claims())));
     $account = $this->createUser();
 
@@ -129,6 +132,34 @@ class UserLoginMappingTest extends KernelTestBase {
   }
 
   /**
+   * Both SSO return addresses: /mo_callback (3.x) and /mo_login (2.x).
+   */
+  public static function providerCallbackRoutes(): array {
+    return [
+      '/mo_callback' => ['oauth_login_oauth2.mo_login'],
+      '/mo_login' => ['vactory_sso.mo_login'],
+    ];
+  }
+
+  /**
+   * The 2.x return address runs the SSO callback of the contrib module.
+   *
+   * Existing sites keep /mo_login as stored return address, the one allowed
+   * on their identity provider.
+   */
+  public function testLegacyReturnAddress(): void {
+    $this->container->get('router.builder')->rebuild();
+    $provider = $this->container->get('router.route_provider');
+    $callback = $provider->getRouteByName('oauth_login_oauth2.mo_login');
+    $this->assertSame('/mo_callback', $callback->getPath());
+
+    $match = $this->container->get('router.no_access_checks')->match('/mo_login');
+    $this->assertSame('vactory_sso.mo_login', $match[RouteObjectInterface::ROUTE_NAME]);
+    $this->assertSame($callback->getDefault('_controller'), $match['_controller']);
+    $this->assertSame($callback->getRequirements(), $match[RouteObjectInterface::ROUTE_OBJECT]->getRequirements());
+  }
+
+  /**
    * Only the userinfo response of the SSO callback is captured.
    *
    * @dataProvider providerIgnoredResponses
@@ -142,7 +173,7 @@ class UserLoginMappingTest extends KernelTestBase {
     $this->container->get('http_client')->request('GET', $url, ['http_errors' => FALSE]);
     $this->assertNull($this->container->get('vactory_sso.userinfo_collector')->get());
 
-    $this->setCurrentRoute(UserinfoCaptureMiddleware::CALLBACK_ROUTE);
+    $this->setCurrentRoute(UserinfoCaptureMiddleware::CALLBACK_ROUTES[0]);
     vactory_sso_user_login($account);
     $this->assertSame('before@example.com', User::load($account->id())->getInitialEmail());
   }
@@ -152,7 +183,7 @@ class UserLoginMappingTest extends KernelTestBase {
    */
   public static function providerIgnoredResponses(): array {
     $claims = ['email' => 'jane@example.com'];
-    $callback = UserinfoCaptureMiddleware::CALLBACK_ROUTE;
+    $callback = UserinfoCaptureMiddleware::CALLBACK_ROUTES[0];
     return [
       'other route' => ['user.login', self::USERINFO, 200, $claims],
       'other URL' => [

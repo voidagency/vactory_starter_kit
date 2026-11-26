@@ -5,3 +5,14 @@ vactory_sso.settings:
     _title: 'Vactory SSO Settings'
   requirements:
     _permission: 'administer site configuration'
+
+# SSO return address of oauth_login_oauth2 2.x, still registered on the
+# identity providers of existing sites. oauth_login_oauth2 3.x serves its
+# callback on /mo_callback only: /mo_login runs the same controller, so the
+# stored return address and the identity provider keep working unchanged.
+vactory_sso.mo_login:
+  path: /mo_login
+  defaults:
+    _controller: '\Drupal\oauth_login_oauth2\Controller\miniorange_oauth_clientController::miniorange_oauth_client_mo_login'
+  requirements:
+    _access: 'TRUE'
