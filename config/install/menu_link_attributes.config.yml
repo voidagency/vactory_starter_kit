@@ -2,7 +2,7 @@ attributes:
   class:
     label: ''
     description: ''
-  wrapper_class:
+  wrapper-class:
     label: 'Wrapper Class'
     description: ''
   id:
