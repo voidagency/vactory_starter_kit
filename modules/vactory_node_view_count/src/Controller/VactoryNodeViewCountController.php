@@ -4,6 +4,7 @@ namespace Drupal\vactory_node_view_count\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Flood\FloodInterface;
+use Drupal\Core\Site\Settings;
 use Drupal\node\NodeInterface;
 use Drupal\vactory_node_view_count\NodeViewCounter;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -17,6 +18,11 @@ class VactoryNodeViewCountController extends ControllerBase {
 
   /**
    * Views counted per node and per IP address within the flood window.
+   *
+   * Overridden by $settings['vactory_node_view_count_flood_threshold'];
+   * 0 disables the limit. Behind a reverse proxy, the limit needs the proxy
+   * to be declared ($settings['reverse_proxy']): otherwise every visitor has
+   * the IP address of the proxy and shares the same limit.
    */
   public const FLOOD_THRESHOLD = 20;
 
@@ -84,15 +90,18 @@ class VactoryNodeViewCountController extends ControllerBase {
         'code' => -1,
       ], 400);
     }
-    $event = 'vactory_node_view_count.view';
-    $identifier = $request->getClientIp() . ':' . $node->id();
-    if (!$this->flood->isAllowed($event, self::FLOOD_THRESHOLD, self::FLOOD_WINDOW, $identifier)) {
-      return new JsonResponse([
-        'message' => $this->t('Too many views counted for this node.'),
-        'code' => -4,
-      ], 429);
+    $threshold = (int) Settings::get('vactory_node_view_count_flood_threshold', self::FLOOD_THRESHOLD);
+    if ($threshold > 0) {
+      $event = 'vactory_node_view_count.view';
+      $identifier = $request->getClientIp() . ':' . $node->id();
+      if (!$this->flood->isAllowed($event, $threshold, self::FLOOD_WINDOW, $identifier)) {
+        return new JsonResponse([
+          'message' => $this->t('Too many views counted for this node.'),
+          'code' => -4,
+        ], 429);
+      }
+      $this->flood->register($event, self::FLOOD_WINDOW, $identifier);
     }
-    $this->flood->register($event, self::FLOOD_WINDOW, $identifier);
 
     return new JsonResponse([
       'message' => $this->t('Node count has been incremented'),
