@@ -112,27 +112,56 @@ class CertificatQueueWorkerTest extends KernelTestBase implements LoggerInterfac
   }
 
   /**
-   * Failing items stay in the queue and are retried by a later cron run.
+   * Items that can never be processed are logged once and removed.
+   *
+   * Missing data, unknown user, deleted quiz: retrying them would fail the
+   * same way on each cron run.
    */
-  public function testFailingItemsAreKeptAndRetriedLater(): void {
+  public function testInvalidItemsAreRemoved(): void {
+    // The first account is the super user: not used.
+    $this->createUser();
+    $user = $this->createUser();
     $queue = $this->container->get('queue')->get(self::QUEUE);
-    // Two items that cannot be processed: data missing, unknown user.
     $queue->createItem(['quiz_id' => 1]);
+    $queue->createItem($this->itemData('abc', 1));
     $queue->createItem($this->itemData(999, 1));
+    $queue->createItem($this->itemData($user->id(), 999));
 
     // Without vactory_reminder this used to end the run with a PHP error.
     $this->runQueueAsCron();
 
-    // Both items were tried in the same run, and both are kept.
-    $this->assertCount(2, $this->logged);
-    $this->assertStringContainsString('item kept in the queue and retried later', $this->logged[0]);
+    $this->assertCount(4, $this->logged);
+    foreach ($this->logged as $message) {
+      $this->assertStringContainsString('item removed from the queue', $message);
+    }
     $this->assertStringContainsString('Insufficient item data', $this->logged[0]);
-    $this->assertStringContainsString('No user has been found for user_id=999', $this->logged[1]);
-    $this->assertSame(2, (int) $queue->numberOfItems());
-    // They are not claimed again right away.
+    $this->assertStringContainsString('Invalid type', $this->logged[1]);
+    $this->assertStringContainsString('No user has been found for user_id=999', $this->logged[2]);
+    $this->assertStringContainsString('No quiz node has been found for quiz_id=999', $this->logged[3]);
+    $this->assertSame(0, (int) $queue->numberOfItems());
+  }
+
+  /**
+   * An item whose PDF fails is kept and retried by a later cron run.
+   *
+   * The private file path is not set in this test: "private://" is unknown.
+   */
+  public function testGenerationFailureIsRetriedLater(): void {
+    $this->createUser();
+    $user = $this->createUser();
+    $quiz = Node::create(['type' => 'vactory_quiz', 'title' => 'Quiz']);
+    $quiz->save();
+    $queue = $this->container->get('queue')->get(self::QUEUE);
+    $queue->createItem($this->itemData($user->id(), $quiz->id()));
+
+    $this->runQueueAsCron();
+    $this->assertCount(1, $this->logged);
+    $this->assertStringContainsString('item kept in the queue and retried later', $this->logged[0]);
+    $this->assertSame(1, (int) $queue->numberOfItems());
+    // It is not claimed again right away.
     $this->assertFalse($queue->claimItem());
 
-    // Once the delay is over, a cron run tries them again: system_cron()
+    // Once the delay is over, a cron run tries it again: system_cron()
     // releases the items whose delay has expired.
     $this->container->get('database')->update('queue')
       ->fields(['expire' => 1])
@@ -140,8 +169,8 @@ class CertificatQueueWorkerTest extends KernelTestBase implements LoggerInterfac
       ->execute();
     $queue->garbageCollection();
     $this->runQueueAsCron();
-    $this->assertCount(4, $this->logged);
-    $this->assertSame(2, (int) $queue->numberOfItems());
+    $this->assertCount(2, $this->logged);
+    $this->assertSame(1, (int) $queue->numberOfItems());
   }
 
   /**

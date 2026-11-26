@@ -208,6 +208,7 @@ drush cr
 - `vactory_decoupled_router` : liste des types d'entité servis comme pages par le routeur, réglable en back-office (`/admin/config/system/vactory_router/page-entity-types`), dans `settings.php` (`$settings['vactory_decoupled_router_page_entity_types']`) ou par `hook_vactory_decoupled_router_page_entity_types_alter()` (#891, Redmine #69443).
 
 ### Correctifs
+- `vactory_quiz_certificat` : un élément de la file de génération qui ne pourra jamais être traité (données manquantes ou invalides, utilisateur ou quiz supprimé) est journalisé une fois et retiré de la file, au lieu d'être retenté à chaque cron ; un échec de génération du PDF reste retenté plus tard (#1005, Redmine #71703).
 - `vactory_node_view_count` : schéma de configuration du réglage « compter les vues » des types de contenu (`enabling_count_node`), absent jusque-là (#999).
 - Installation : l'attribut de lien de menu « Wrapper Class » est installé sous le nom `wrapper-class` ; `wrapper_class` n'était plus proposé sur le formulaire des liens de menu avec menu_link_attributes 1.10 (#996).
 - Shield et flood_control : un site protégé par Shield 1.9 ou plus répondait 500 à toute requête avec identifiants ; flood_control 3.0.1 ne dépend plus d'une fonction de son `.module`, pas encore chargé quand le middleware de Shield s'exécute (#988, Redmine #71534).
