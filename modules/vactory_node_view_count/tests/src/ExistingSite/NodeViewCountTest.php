@@ -30,11 +30,6 @@ class NodeViewCountTest extends VactoryExistingSiteBase {
   private const FIELD = 'field_node_count_view';
 
   /**
-   * Views counted per node and per IP address within a minute.
-   */
-  private const FLOOD_THRESHOLD = 20;
-
-  /**
    * {@inheritdoc}
    */
   protected function setUp(): void {
@@ -139,18 +134,20 @@ class NodeViewCountTest extends VactoryExistingSiteBase {
   }
 
   /**
-   * Views are limited per node and per IP address.
+   * No limit per IP address by default.
+   *
+   * Behind a reverse proxy that is not declared, every visitor would share
+   * the IP address of the proxy: the limit is set by settings.php only.
    */
-  public function testFlood(): void {
+  public function testNoLimitByDefault(): void {
     $node = $this->createNode([
       'type' => self::BUNDLE,
       'moderation_state' => 'published',
     ]);
-    for ($i = 0; $i < self::FLOOD_THRESHOLD; $i++) {
+    for ($i = 1; $i <= 25; $i++) {
       $this->assertSame(200, $this->put($node->id())[0]);
     }
-    $this->assertSame(429, $this->put($node->id())[0]);
-    $this->assertSame(self::FLOOD_THRESHOLD, (int) $this->reload($node)->get(self::FIELD)->value);
+    $this->assertSame(25, (int) $this->reload($node)->get(self::FIELD)->value);
   }
 
   /**

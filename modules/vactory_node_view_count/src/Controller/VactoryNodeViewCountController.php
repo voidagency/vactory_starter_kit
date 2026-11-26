@@ -17,14 +17,15 @@ use Symfony\Component\HttpFoundation\Request;
 class VactoryNodeViewCountController extends ControllerBase {
 
   /**
-   * Views counted per node and per IP address within the flood window.
+   * Default limit of views counted per node and per IP address: none.
    *
-   * Overridden by $settings['vactory_node_view_count_flood_threshold'];
-   * 0 disables the limit. Behind a reverse proxy, the limit needs the proxy
-   * to be declared ($settings['reverse_proxy']): otherwise every visitor has
-   * the IP address of the proxy and shares the same limit.
+   * $settings['vactory_node_view_count_flood_threshold'] sets a limit per
+   * node, per IP address and per minute (20 is a sensible value). Enable it
+   * only when the reverse proxy is declared ($settings['reverse_proxy']):
+   * otherwise every visitor has the IP address of the proxy and shares the
+   * same limit.
    */
-  public const FLOOD_THRESHOLD = 20;
+  public const FLOOD_THRESHOLD = 0;
 
   /**
    * Flood window, in seconds.
