@@ -2,6 +2,7 @@
 
 namespace Drupal\vactory_api_key_auth\PageCache;
 
+use Drupal\vactory_api_key_auth\Authentication\Provider\ApiKeyAuth;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -15,22 +16,7 @@ class DisallowApiKeyRequests implements ApiKeyRequestPolicyInterface {
    * {@inheritdoc}
    */
   public function isApiKeyRequest(Request $request) {
-    $form_api_key = $request->get('api_key');
-
-    if (!empty($form_api_key)) {
-      return $form_api_key;
-    }
-
-    $query_api_key = $request->query->get('api_key');
-    if (!empty($query_api_key)) {
-      return $query_api_key;
-    }
-
-    $header_api_key = $request->headers->get('apikey');
-    if (!empty($header_api_key)) {
-      return $header_api_key;
-    }
-    return FALSE;
+    return ApiKeyAuth::keyFromRequest($request);
   }
 
   /**

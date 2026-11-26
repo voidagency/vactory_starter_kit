@@ -11,6 +11,7 @@
 - **⚠️ Risque principal, vérification TLS (#896) :** elle est active par défaut pour **tous** les appels HTTP du site (`\Drupal::httpClient()`, service `http_client` : profil, contrib, code projet), y compris quand le réglage n'a jamais été enregistré. Un service au certificat invalide ou auto-signé échoue (`cURL error 60`). **Tester chaque appel HTTPS du projet avant la mise en production** (étapes 4 et 6).
 - **Sites protégés par Shield (#988) :** la mise à jour fait passer Shield en 1.9 ou plus (1.11). Avec flood_control 2.x, Shield répond alors 500 à toute requête qui envoie des identifiants : plus personne n'entre. Le profil exige maintenant flood_control `^3.0.1`, qui corrige ce cas ; un projet qui fige flood_control en 2.x doit lever ce blocage (étape 1).
 - **Sites avec `vactory_sso` (SSO OAuth / Keycloak) (#992) :** `drupal/oauth_login_oauth2` passe en 3.1.1 (correctif de sécurité du module). Rien à changer côté IdP pour l'adresse de retour : la 3.1.1 la sert sur `/mo_callback`, et `vactory_sso` sert le même retour sur `/mo_login`, l'adresse enregistrée par la 2.x, qui reste en place. **Ne pas enregistrer l'onglet *Settings* du module** sans avoir d'abord autorisé `<site>/mo_callback` côté IdP : il remplace l'adresse de retour par `/mo_callback`. **La connexion est refusée si l'IdP ne renvoie pas `email_verified = true`** (moitié du correctif de sécurité, gardée) : vérifier avant la mise à jour si le projet est concerné, voir `docs/sso-email-verified.md` (étape 4).
+- **Clés d'API `vactory_api_key_auth` (#998) :** la clé n'est plus lue que dans l'en-tête `apikey` (plus dans `?api_key=` ni dans le corps d'un POST), et n'authentifie que sur les routes qui déclarent `api_key_auth` (routes de `vactory_content_sheets`, `vactory_checklist`, `vactory_diff_config_server`, et JSON:API). La clé d'un compte bloqué est refusée. Une intégration qui envoie la clé autrement, ou l'utilise sur une autre route, reçoit 403 : l'adapter (étape 6).
 - **Front qui lit la configuration des webforms** sans rôle de confiance : l'adapter. La permission `access any webform configuration` n'est plus donnée aux rôles anonyme et authentifié (#897) ; le front par défaut ne l'utilise pas.
 - **Webforms découplés avec upload de fichier (#906) :** un fichier hors de la liste d'extensions de l'élément est refusé (422). Un élément sans `#file_extensions` applique la liste par défaut de webform.
 - **`term_2_slug` (#884) :** le slug de chaque traduction est normalisé à l'enregistrement du terme (minuscules ASCII, mots joints par `-`). Les URL et filtres front qui s'appuient sur un slug avec majuscules, accents, `_` ou `/` changent.
@@ -104,6 +105,7 @@ drush cr
 **4. Back-office**
 - **Si un service appelé en HTTPS a un certificat invalide ou auto-signé (#896) :** désactiver la vérification TLS pour cet environnement dans `/admin/config/vactory-core-config`, ou dans `settings.php` : `$config['vactory_core.global_config']['http_client_ssl_verification'] = FALSE;`. Un appel qui passe `verify` reste prioritaire.
 - **Si Shield est actif :** vérifier les identifiants du site dans la config de Shield (#911, détail dans le ticket Dispatch).
+- **Si `vactory_api_key_auth` est actif (#998) :** dans `/admin/config/services/api_key`, relier chaque clé à un compte technique qui n'a que les permissions nécessaires, jamais à un administrateur.
 - **Message d'erreur du CAPTCHA (#949) :** dans `/admin/config/people/captcha`, laisser « Wrong CAPTCHA response error message » vide pour garder le message par défaut traduit. Si `drush updb` a signalé un message personnalisé : le vider, ou le traduire.
 - **Si google_tag est passé en 2.x :** vérifier les conteneurs GTM dans la config de Google Tag.
 - **Si `vactory_google_places` est actif :** revoir les vues où l'option « Vactory google places instance » est cochée ; l'autocomplete Google Places y est de nouveau chargé (#913).
@@ -127,6 +129,7 @@ drush cr
 - `drush updb` n'a plus rien en attente, et `drush status` est correct.
 - Chaque appel HTTPS du projet (API métier, SSO, CRM, envoi de formulaire distant…) répond, sans `cURL error 60` dans les logs.
 - **Si Shield est actif :** une requête avec les identifiants Shield répond normalement, et avec un mauvais mot de passe 401, jamais 500 (#988).
+- **Si `vactory_api_key_auth` est actif (#998) :** chaque intégration qui utilise une clé (script Google de `vactory_content_sheets`, `vactory_diff`, `vactory_checklist`) répond, avec la clé dans l'en-tête `apikey`.
 - **Responsive favicons 4.0 :** le rapport d'état signale une erreur si les fichiers d'icônes déclarés sont absents du disque (l'ancienne version ne vérifiait pas) ; sur une copie sans les fichiers du site, ce n'est pas une régression (#993).
 - **Si `vactory_decoupled_flag`, `vactory_decoupled_search_ai` ou `vactory_toolbox` est actif :** leurs dépendances nouvellement déclarées sont actives (`drush pm:list`), car Drupal ne les active pas sur un site existant (#904, #905).
 - Une page avec menu s'affiche ; `/sitemap.xml` répond, et `/image-sitemap.xml` si `vactory_image_sitemap` est actif (sur une copie sans les fichiers du site, les régénérer avant de vérifier : `drush xmlsitemap:rebuild` puis `drush xmlsitemap:regenerate` pour `/sitemap.xml` ; `drush cron` pour `/image-sitemap.xml`, produit par `vactory_image_sitemap`).
@@ -155,6 +158,7 @@ drush cr
 - **Shield 1.11** stocke les identifiants encodés dans sa configuration : un script qui lisait `credentials.shield.user` / `pass` en clair ne fonctionne plus.
 
 ### Sécurité
+- `vactory_api_key_auth` : la clé n'est lue que dans l'en-tête `apikey`, n'authentifie que sur les routes qui déclarent le fournisseur, et pas pour un compte bloqué ; comparaison à temps constant (#998, Redmine #71356).
 - `composer.lock` : versions corrigées des dépendances visées par un avis de sécurité, autorisées par les contraintes du profil mais restées anciennes dans le lock (webform, paragraphs, simple_oauth, single_content_sync, scheduler, facets, Drupal core, twig…). La CI teste ainsi les versions que reçoivent les projets ; `composer audit` ne signalait plus que `drupal/oauth_login_oauth2`, corrigé par #992 (#996, Redmine #71556).
 - `composer.lock` : `symfony/http-kernel`, `routing`, `serializer` 6.4.51 (et `http-foundation`, qu'exige http-kernel), `symfony/http-client` 5.4.57, versions corrigées d'avis de sécurité publiés le 25/11/2026 (#997, Redmine #71556).
 - `firebase/php-jwt` `^7.1.1` : les jetons signés par une clé trop courte sont refusés (#995, Redmine #71556).
@@ -253,6 +257,7 @@ drush cr
 - `drupal/oauth_login_oauth2` : `^2.6` → `^3.1.1`, patch « Store ressourceOwner into a session variable » retiré : `vactory_sso` lit la réponse userinfo du module par un middleware du client HTTP, limité aux routes de retour SSO, sans session, et sert le retour SSO sur `/mo_login`, l'adresse de la 2.x (#992, Redmine #71556).
 
 ### Interne
+- `vactory_api_key_auth` : test HTTP de l'authentification par clé : routes couvertes, en-tête seul, compte bloqué, JSON:API (#998).
 - Premier parcours e2e Playwright (`tests/e2e/`, exclu de l'archive des projets) : un contributeur crée puis modifie une page avec un paragraphe Dynamic Field par la popin (image, texte, lien linkit) ; vérifie la base, le rendu Drupal et le JSON:API lu par le front ; toute erreur JavaScript non attrapée fait échouer le test. Lancé par `tests/e2e/run.sh <instance>` contre une instance `stack` (#994, Redmine #71571).
 - `vactory_core` : test des attributs de liens de menu installés par le profil : chacun est proposé sur le formulaire d'un lien de menu (échoue avec `wrapper_class` sous menu_link_attributes 1.10) (#996).
 - `vactory_decoupled` : test de l'authentification Keycloak avec une clé de realm de 1024 bits, refusée avec php-jwt 7 et acceptée avec php-jwt 6 (#995).
