@@ -11,6 +11,9 @@ use weitzman\DrupalTestTraits\ExistingSiteBase;
 /**
  * Roles sent to the JSON:API registration resource are not kept.
  *
+ * Only the roles set in the back office (Registration tab of the decoupled
+ * settings) are granted.
+ *
  * The jsonapi_user_resources module maps the whole payload onto the new
  * account without field access checks, so an anonymous POST could otherwise
  * register itself as administrator.
@@ -27,6 +30,13 @@ class UserRegistrationRolesTest extends ExistingSiteBase {
    * @var string|null
    */
   protected $originalRegister;
+
+  /**
+   * Original "vactory_decoupled.settings:registration_default_roles" value.
+   *
+   * @var array
+   */
+  protected $originalDefaultRoles;
 
   /**
    * Name of the account registered by the test.
@@ -46,6 +56,10 @@ class UserRegistrationRolesTest extends ExistingSiteBase {
       $this->originalRegister = $config->get('register');
       $config->set('register', UserInterface::REGISTER_VISITORS_ADMINISTRATIVE_APPROVAL)->save();
     }
+    // The site may grant roles at registration (Registration tab of the
+    // decoupled settings): each test sets the value it expects.
+    $this->originalDefaultRoles = \Drupal::config('vactory_decoupled.settings')->get('registration_default_roles') ?? [];
+    $this->setDefaultRoles([]);
   }
 
   /**
@@ -58,6 +72,7 @@ class UserRegistrationRolesTest extends ExistingSiteBase {
     foreach ($accounts as $account) {
       $account->delete();
     }
+    $this->setDefaultRoles($this->originalDefaultRoles);
     if ($this->originalRegister !== NULL) {
       \Drupal::configFactory()->getEditable('user.settings')
         ->set('register', $this->originalRegister)->save();
@@ -69,6 +84,43 @@ class UserRegistrationRolesTest extends ExistingSiteBase {
    * An anonymous registration asking for roles gets none.
    */
   public function testRolesInPayloadAreDropped(): void {
+    $account = $this->registerAsking($this->privilegedRoles());
+    $this->assertSame([], $account->getRoles(TRUE), 'No role from the payload is kept.');
+    $this->assertSame($this->name . '@example.com', $account->getEmail());
+  }
+
+  /**
+   * The roles set in the back office are granted, never those of the payload.
+   */
+  public function testDefaultRolesAreGranted(): void {
+    $role = Role::create([
+      'id' => strtolower($this->randomMachineName()),
+      'label' => 'Registration default',
+    ]);
+    $role->save();
+    $this->markEntityForCleanup($role);
+    $this->setDefaultRoles([$role->id()]);
+
+    $account = $this->registerAsking($this->privilegedRoles());
+    $this->assertSame([$role->id()], $account->getRoles(TRUE));
+  }
+
+  /**
+   * Sets the roles granted at registration.
+   */
+  protected function setDefaultRoles(array $role_ids): void {
+    \Drupal::configFactory()->getEditable('vactory_decoupled.settings')
+      ->set('registration_default_roles', $role_ids)
+      ->save();
+  }
+
+  /**
+   * Roles that a registration must never get from its payload.
+   *
+   * @return \Drupal\user\RoleInterface[]
+   *   Administrator and webmaster when they exist, otherwise a new role.
+   */
+  protected function privilegedRoles(): array {
     $requested = array_filter(
       [Role::load('administrator'), Role::load('webmaster')],
     );
@@ -81,7 +133,19 @@ class UserRegistrationRolesTest extends ExistingSiteBase {
       $this->markEntityForCleanup($role);
       $requested = [$role];
     }
+    return $requested;
+  }
 
+  /**
+   * Registers an account over JSON:API, asking for the given roles.
+   *
+   * @param \Drupal\user\RoleInterface[] $requested
+   *   Roles sent in the payload.
+   *
+   * @return \Drupal\user\Entity\User
+   *   The registered account, reloaded.
+   */
+  protected function registerAsking(array $requested): User {
     $attributes = [
       'name' => $this->name,
       'mail' => $this->name . '@example.com',
@@ -130,8 +194,7 @@ class UserRegistrationRolesTest extends ExistingSiteBase {
     $this->assertCount(1, $accounts);
     $account = reset($accounts);
     assert($account instanceof User);
-    $this->assertSame([], $account->getRoles(TRUE), 'No role from the payload is kept.');
-    $this->assertSame($this->name . '@example.com', $account->getEmail());
+    return $account;
   }
 
 }
