@@ -1,3 +1,6 @@
 services:
   vactory_node_view_count.node_view_count:
     class: Drupal\vactory_node_view_count\Services\NodeViewCountService
+  vactory_node_view_count.counter:
+    class: Drupal\vactory_node_view_count\NodeViewCounter
+    arguments: ['@database', '@entity_type.manager', '@cache_tags.invalidator', '@keyvalue.expirable']
