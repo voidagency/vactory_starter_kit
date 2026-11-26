@@ -160,7 +160,7 @@ drush cr
 
 ### Sécurité
 - `vactory_api_key_auth` : la clé n'est lue que dans l'en-tête `apikey`, n'authentifie que sur les routes qui déclarent le fournisseur, et pas pour un compte bloqué ; comparaison à temps constant (#998, Redmine #71356).
-- `vactory_node_view_count` : une vue n'enregistre plus le nœud (compteur écrit en SQL, seul le tag de cache du nœud est invalidé) ; un nœud que le visiteur ne peut pas voir, ou inexistant, n'est pas compté (404) ; limite des vues par adresse IP disponible, désactivée par défaut (`$settings['vactory_node_view_count_flood_threshold']`) (#999, Redmine #71358).
+- `vactory_node_view_count` : une vue n'enregistre plus le nœud (compteur écrit en SQL ; le tag de cache du nœud est invalidé au plus une fois toutes les 5 minutes par nœud, `$settings['vactory_node_view_count_invalidation_interval']`, 0 pour chaque vue) ; un nœud que le visiteur ne peut pas voir, ou inexistant, n'est pas compté (404) ; limite des vues par adresse IP disponible, désactivée par défaut (`$settings['vactory_node_view_count_flood_threshold']`) (#999, Redmine #71358).
 - `composer.lock` : versions corrigées des dépendances visées par un avis de sécurité, autorisées par les contraintes du profil mais restées anciennes dans le lock (webform, paragraphs, simple_oauth, single_content_sync, scheduler, facets, Drupal core, twig…). La CI teste ainsi les versions que reçoivent les projets ; `composer audit` ne signalait plus que `drupal/oauth_login_oauth2`, corrigé par #992 (#996, Redmine #71556).
 - `composer.lock` : `symfony/http-kernel`, `routing`, `serializer` 6.4.51 (et `http-foundation`, qu'exige http-kernel), `symfony/http-client` 5.4.57, versions corrigées d'avis de sécurité publiés le 25/11/2026 (#997, Redmine #71556).
 - `firebase/php-jwt` `^7.1.1` : les jetons signés par une clé trop courte sont refusés (#995, Redmine #71556).
@@ -178,7 +178,7 @@ drush cr
 - `vactory_decoupled` : l'API des menus applique toujours le contrôle d'accès aux liens (#966, Redmine #71439).
 
 ### Changements de comportement
-- `vactory_node_view_count` : une vue ne change plus la date de modification du nœud, ne crée plus de révision et ne vide plus le cache du front Next ; les routes de comptage répondent 404 pour un nœud inexistant ou non visible (au lieu de 500 ou 200), et 429 au-delà de la limite par IP si un projet l'active (#999).
+- `vactory_node_view_count` : une vue ne change plus la date de modification du nœud, ne crée plus de révision et ne vide plus le cache du front Next ; une page en cache affiche le compteur avec au plus 5 minutes de retard (valeur en base toujours exacte) ; les routes de comptage répondent 404 pour un nœud inexistant ou non visible (au lieu de 500 ou 200), et 429 au-delà de la limite par IP si un projet l'active (#999).
 - `vactory_core` : les options passées au client HTTP de Drupal par l'appelant (timeout…) sont maintenant transmises (#896).
 - `vactory_decoupled` : à chaque enregistrement d'un terme, le slug `term_2_slug` de chaque traduction est normalisé (minuscules ASCII, mots joints par `-`), y compris un slug saisi à la main (#884).
 - `vactory_decoupled_webform` : upload limité à 150 caractères pour le nom de fichier (au lieu de 240), et `file.default_max_filesize` appliqué (#906).
@@ -262,7 +262,7 @@ drush cr
 
 ### Interne
 - `vactory_api_key_auth` : test HTTP de l'authentification par clé : routes couvertes, en-tête seul, compte bloqué, JSON:API (#998).
-- `vactory_node_view_count` : test HTTP du comptage des vues par un anonyme : sans enregistrement du nœud, première vue (nœud traduit), nœud non visible ou inexistant, pas de limite par défaut ; test Kernel de la limite réglée par `settings.php` (429, par adresse IP) (#999).
+- `vactory_node_view_count` : test HTTP du comptage des vues par un anonyme : sans enregistrement du nœud, première vue (nœud traduit), nœud non visible ou inexistant, pas de limite par défaut ; test Kernel de la limite réglée par `settings.php` (429, par adresse IP) et de l'invalidation espacée du cache du nœud (#999).
 - Premier parcours e2e Playwright (`tests/e2e/`, exclu de l'archive des projets) : un contributeur crée puis modifie une page avec un paragraphe Dynamic Field par la popin (image, texte, lien linkit) ; vérifie la base, le rendu Drupal et le JSON:API lu par le front ; toute erreur JavaScript non attrapée fait échouer le test. Lancé par `tests/e2e/run.sh <instance>` contre une instance `stack` (#994, Redmine #71571).
 - `vactory_core` : test des attributs de liens de menu installés par le profil : chacun est proposé sur le formulaire d'un lien de menu (échoue avec `wrapper_class` sous menu_link_attributes 1.10) (#996).
 - `vactory_decoupled` : test de l'authentification Keycloak avec une clé de realm de 1024 bits, refusée avec php-jwt 7 et acceptée avec php-jwt 6 (#995).

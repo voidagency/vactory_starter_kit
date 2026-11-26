@@ -88,6 +88,46 @@ class ViewCountFloodTest extends KernelTestBase {
   }
 
   /**
+   * The node cache tag is invalidated at most once per interval.
+   */
+  public function testInvalidationIsSpaced(): void {
+    $before = $this->invalidations();
+    for ($i = 0; $i < 5; $i++) {
+      $this->views(1, '203.0.113.1');
+      $this->invalidations();
+    }
+    $this->assertSame($before + 1, $this->invalidations(), 'One invalidation for 5 views.');
+
+    // Once the interval is over, the next view invalidates again.
+    \Drupal::keyValueExpirable('vactory_node_view_count.invalidated')->delete((string) $this->node->id());
+    $this->views(1, '203.0.113.1');
+    $this->assertSame($before + 2, $this->invalidations());
+
+    // Interval set to 0: each view invalidates.
+    new Settings(['vactory_node_view_count_invalidation_interval' => 0] + Settings::getAll());
+    // Core counts one invalidation of a tag per request: each view is a
+    // request of its own.
+    for ($i = 0; $i < 3; $i++) {
+      $this->views(1, '203.0.113.1');
+      $this->invalidations();
+    }
+    $this->assertSame($before + 5, $this->invalidations());
+  }
+
+  /**
+   * Number of invalidations of the node cache tag.
+   */
+  private function invalidations(): int {
+    // Forgets the tags already invalidated during this request.
+    \Drupal::service('cache_tags.invalidator.checksum')->reset();
+    return (int) \Drupal::database()->select('cachetags', 'c')
+      ->fields('c', ['invalidations'])
+      ->condition('tag', 'node:' . $this->node->id())
+      ->execute()
+      ->fetchField();
+  }
+
+  /**
    * Sends views from the given IP address and returns the status codes.
    */
   private function views(int $number, string $ip): array {

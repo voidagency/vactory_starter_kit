@@ -7,6 +7,8 @@ use Drupal\Core\Database\Connection;
 use Drupal\Core\Database\IntegrityConstraintViolationException;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Entity\Sql\SqlEntityStorageInterface;
+use Drupal\Core\KeyValueStore\KeyValueExpirableFactoryInterface;
+use Drupal\Core\Site\Settings;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\node\NodeInterface;
 
@@ -15,8 +17,10 @@ use Drupal\node\NodeInterface;
  *
  * Saving the node for each view created a revision, changed its date and
  * cleared the front-end caches. The counter is written to the field tables
- * directly, in one SQL statement, then only the node cache tag is
- * invalidated.
+ * directly, in one SQL statement. The node cache tag is invalidated at most
+ * once per interval and per node, so that a burst of views does not rebuild
+ * the cached pages of the node on each view: the stored count is always
+ * exact, a cached page shows it with at most this delay.
  */
 class NodeViewCounter {
 
@@ -26,12 +30,21 @@ class NodeViewCounter {
   public const FIELD = 'field_node_count_view';
 
   /**
+   * Default interval between two invalidations of a node, in seconds.
+   *
+   * Overridden by $settings['vactory_node_view_count_invalidation_interval'];
+   * 0 invalidates on each view.
+   */
+  public const INVALIDATION_INTERVAL = 300;
+
+  /**
    * Constructs a NodeViewCounter object.
    */
   public function __construct(
     protected Connection $database,
     protected EntityTypeManagerInterface $entityTypeManager,
     protected CacheTagsInvalidatorInterface $cacheTagsInvalidator,
+    protected KeyValueExpirableFactoryInterface $keyValueExpirable,
   ) {}
 
   /**
@@ -75,7 +88,7 @@ class NodeViewCounter {
     }
 
     $storage->resetCache([$node->id()]);
-    $this->cacheTagsInvalidator->invalidateTags(['node:' . $node->id()]);
+    $this->invalidateSpaced($node);
 
     return (int) $this->database->select($mapping->getDedicatedDataTableName($field_storage), 'f')
       ->fields('f', [$column])
@@ -85,6 +98,21 @@ class NodeViewCounter {
       ->condition('langcode', $langcode)
       ->execute()
       ->fetchField();
+  }
+
+  /**
+   * Invalidates the cache tag of the node, at most once per interval.
+   */
+  protected function invalidateSpaced(NodeInterface $node): void {
+    $interval = (int) Settings::get('vactory_node_view_count_invalidation_interval', self::INVALIDATION_INTERVAL);
+    if ($interval > 0) {
+      $recent = $this->keyValueExpirable->get('vactory_node_view_count.invalidated');
+      // Only the first view of the interval invalidates the tag.
+      if (!$recent->setWithExpireIfNotExists((string) $node->id(), TRUE, $interval)) {
+        return;
+      }
+    }
+    $this->cacheTagsInvalidator->invalidateTags(['node:' . $node->id()]);
   }
 
   /**
