@@ -56,12 +56,10 @@ class NodeViewCounter {
     ];
     $column = $mapping->getFieldColumnName($field_storage, 'value');
 
-    $default = $node->getUntranslated();
-    // A translatable count is kept per language: the default language is
-    // counted, as before. Otherwise every translation holds the same value.
-    $langcodes = $node->getFieldDefinition(self::FIELD)->isTranslatable()
-      ? [$default->language()->getId()]
-      : array_keys($node->getTranslationLanguages());
+    // Drupal stores an untranslatable field in the default language only;
+    // a translatable count is kept per language and the default language is
+    // counted, as before.
+    $langcode = $node->getUntranslated()->language()->getId();
 
     foreach ($tables as $table => $condition) {
       $updated = $this->database->update($table)
@@ -69,10 +67,10 @@ class NodeViewCounter {
         ->condition(key($condition), current($condition))
         ->condition('deleted', 0)
         ->condition('delta', 0)
-        ->condition('langcode', $langcodes, 'IN')
+        ->condition('langcode', $langcode)
         ->execute();
       if (!$updated) {
-        $this->insertFirstView($table, $column, $node, $langcodes);
+        $this->insertFirstView($table, $column, $node, $langcode);
       }
     }
 
@@ -84,7 +82,7 @@ class NodeViewCounter {
       ->condition('entity_id', $node->id())
       ->condition('deleted', 0)
       ->condition('delta', 0)
-      ->condition('langcode', $default->language()->getId())
+      ->condition('langcode', $langcode)
       ->execute()
       ->fetchField();
   }
@@ -92,31 +90,29 @@ class NodeViewCounter {
   /**
    * Stores the first view of a node whose count was never set.
    */
-  protected function insertFirstView(string $table, string $column, NodeInterface $node, array $langcodes): void {
-    foreach ($langcodes as $langcode) {
-      try {
-        $this->database->insert($table)
-          ->fields([
-            'bundle' => $node->bundle(),
-            'deleted' => 0,
-            'entity_id' => $node->id(),
-            'revision_id' => $node->getRevisionId(),
-            'langcode' => $langcode,
-            'delta' => 0,
-            $column => 1,
-          ])
-          ->execute();
-      }
-      catch (IntegrityConstraintViolationException) {
-        // Another request stored the first view in the meantime.
-        $this->database->update($table)
-          ->expression($column, "$column + 1")
-          ->condition('revision_id', $node->getRevisionId())
-          ->condition('deleted', 0)
-          ->condition('delta', 0)
-          ->condition('langcode', $langcode)
-          ->execute();
-      }
+  protected function insertFirstView(string $table, string $column, NodeInterface $node, string $langcode): void {
+    try {
+      $this->database->insert($table)
+        ->fields([
+          'bundle' => $node->bundle(),
+          'deleted' => 0,
+          'entity_id' => $node->id(),
+          'revision_id' => $node->getRevisionId(),
+          'langcode' => $langcode,
+          'delta' => 0,
+          $column => 1,
+        ])
+        ->execute();
+    }
+    catch (IntegrityConstraintViolationException) {
+      // Another request stored the first view in the meantime.
+      $this->database->update($table)
+        ->expression($column, "$column + 1")
+        ->condition('revision_id', $node->getRevisionId())
+        ->condition('deleted', 0)
+        ->condition('delta', 0)
+        ->condition('langcode', $langcode)
+        ->execute();
     }
   }
 

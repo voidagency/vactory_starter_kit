@@ -77,10 +77,32 @@ class NodeViewCountTest extends VactoryExistingSiteBase {
    * The first view of a node without stored count (created before the field).
    */
   public function testFirstViewWithoutStoredCount(): void {
+    // Untranslatable count, as some projects set it: Drupal stores it in the
+    // default language only.
+    $field = FieldConfig::loadByName('node', self::BUNDLE, self::FIELD);
+    $translatable = $field->isTranslatable();
+    $field->setTranslatable(FALSE)->save();
+    try {
+      $this->assertFirstViewWithoutStoredCount();
+    }
+    finally {
+      $field->setTranslatable($translatable)->save();
+    }
+  }
+
+  /**
+   * Checks the first view of a translated node without stored count.
+   */
+  private function assertFirstViewWithoutStoredCount(): void {
     $node = $this->createNode([
       'type' => self::BUNDLE,
       'moderation_state' => 'published',
     ]);
+    // A translated node: the count stays in the default language.
+    $other = array_diff(array_keys(\Drupal::languageManager()->getLanguages()), [$node->language()->getId()]);
+    if ($other) {
+      $node->addTranslation(reset($other), ['title' => 'Translation'] + $node->toArray())->save();
+    }
     $database = \Drupal::database();
     foreach (['node__', 'node_revision__'] as $prefix) {
       $database->delete($prefix . self::FIELD)->condition('entity_id', $node->id())->execute();
@@ -90,6 +112,15 @@ class NodeViewCountTest extends VactoryExistingSiteBase {
     $this->assertSame(1, $this->put($node->id())[1]['count']);
     $this->assertSame(2, $this->put($node->id())[1]['count']);
     $this->assertSame(2, (int) $this->reload($node)->get(self::FIELD)->value);
+    // One row per table, in the default language, as Drupal stores it.
+    foreach (['node__', 'node_revision__'] as $prefix) {
+      $rows = $database->select($prefix . self::FIELD, 'f')
+        ->fields('f', ['langcode'])
+        ->condition('entity_id', $node->id())
+        ->execute()
+        ->fetchCol();
+      $this->assertSame([$node->language()->getId()], $rows);
+    }
   }
 
   /**
