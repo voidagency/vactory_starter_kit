@@ -193,7 +193,8 @@ test('contributeur : créer puis modifier une page avec un paragraphe Dynamic Fi
     await page.getByRole('link', { name: /^\+?\s*Add content$/ }).first().click();
     // Plusieurs types de contenu : page de choix ; un seul : Drupal redirige.
     if (!/\/node\/add\/vactory_page/.test(page.url())) {
-      await page.locator('a[href$="/node/add/vactory_page"]').first().click();
+      // Le lien de la page de choix, pas celui (caché) de la barre d'administration.
+      await page.getByRole('main').locator('a[href$="/node/add/vactory_page"]').first().click();
     }
     await expect(page).toHaveURL(/\/node\/add\/vactory_page$/);
     await expect(page.getByRole('heading', { name: /Create Page/ })).toBeVisible();
