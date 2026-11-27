@@ -262,12 +262,18 @@ class SimpleOauthAuthenticationProvider extends BaseSimpleOauthAuthenticationPro
    *   Name and email given to such accounts, e.g. "123@google.com".
    */
   private function socialIdentityUser(string $identity, string $own_name) {
-    $user_data = \Drupal::service('user.data');
-    foreach ($user_data->get('vactory_decoupled', NULL, 'social_identity') as $uid => $value) {
-      if ($value === $identity && ($user = User::load($uid))) {
-        return $user;
-      }
+    $uid = \Drupal::database()->select('users_data', 'd')
+      ->fields('d', ['uid'])
+      ->condition('module', 'vactory_decoupled')
+      ->condition('name', 'social_identity')
+      ->condition('value', $identity)
+      ->range(0, 1)
+      ->execute()
+      ->fetchField();
+    if ($uid && ($user = User::load($uid))) {
+      return $user;
     }
+    $user_data = \Drupal::service('user.data');
     $user = user_load_by_name($own_name);
     if ($user && $user->getEmail() === $own_name && empty($user->getPassword())) {
       $user_data->set('vactory_decoupled', $user->id(), 'social_identity', $identity);
