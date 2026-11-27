@@ -23,7 +23,7 @@
 				{% set menuBlock = (menu_item.fields.field_injected_block.plugin_id is defined) ? "has-sub menu-block" : "" %}
 
 				{# Check of item has wrapper class #}
-				{% set wrapper_class = (menu_item.options.attributes.wrapper_class is defined) ? menu_item.options.attributes.wrapper_class : '' %}
+				{% set wrapper_class = (menu_item.options.attributes['wrapper-class'] ?? menu_item.options.attributes.wrapper_class ?? '') %}
 
 				{% set link_target = (menu_item.options.attributes.target is defined) ? menu_item.options.attributes.target : '_self' %}
 

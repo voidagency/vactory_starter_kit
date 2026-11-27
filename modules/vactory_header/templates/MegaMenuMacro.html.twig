@@ -26,7 +26,7 @@
       {% set drop_item_id = 'dropdown_' ~ loop.index ~ '_' ~ random(1, 20) %}
 
       {# Attributes Class #}
-      {% set wrapper_class = menu_item.options.attributes.wrapper_class %}
+      {% set wrapper_class = (menu_item.options.attributes['wrapper-class'] ?? menu_item.options.attributes.wrapper_class ?? '') %}
       {% set item_class = menu_item.options.attributes.class %}
 			{% set item_rel = menu_item.options.attributes.rel %}
 
