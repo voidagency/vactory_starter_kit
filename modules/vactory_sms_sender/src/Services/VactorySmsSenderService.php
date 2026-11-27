@@ -2,6 +2,8 @@
 
 namespace Drupal\vactory_sms_sender\Services;
 
+use Drupal\Core\Site\Settings;
+
 /**
  * Vactory SMS Sender Service.
  */
@@ -27,6 +29,24 @@ class VactorySmsSenderService {
     $basic_auth_password = $config->get('basic_auth_password');
     $api_content_type = $config->get('api_content_type');
     $data_keys = $config->get('data_keys');
+    
+    // Get the vactory_enable_sms setting from settings.php.
+    $vactory_sms_enabled = Settings::get('vactory_enable_sms', '');
+    // Check if the machine is in production.
+    $is_production = file_exists('/etc/machine-id');
+
+    // If not production and vactory_sms_enabled is false, do not send SMS.
+    if (!$is_production && empty($vactory_sms_enabled)) {
+      if (!$is_production) {
+        \Drupal::logger('vactory_sms_sender')
+          ->info("SMS sending skipped: Production environment detected, the sms was not sent");
+      }
+      if (empty($vactory_sms_enabled)) {
+        \Drupal::logger('vactory_sms_sender')
+          ->info("SMS sending skipped: vactory_sms_enabled is not defined in settings.php");
+      }
+      return FALSE;
+    }
 
     // Prepare Authorization part.
     if ($authorization === 'api_key') {
