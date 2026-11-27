@@ -15,7 +15,7 @@
     {# Check if this item has childs. #}
     {% set has_sub = ((menu_item.submenu) ? 'has-sub' : '') %}
     {# Attribtes #}
-    {% set wrapper_class = menu_item.options.attributes.wrapper_class %}
+    {% set wrapper_class = (menu_item.options.attributes['wrapper-class'] ?? menu_item.options.attributes.wrapper_class ?? '') %}
     {% set item_class = menu_item.options.attributes.class %}
     {% set item_rel = menu_item.options.attributes.rel %}
     
