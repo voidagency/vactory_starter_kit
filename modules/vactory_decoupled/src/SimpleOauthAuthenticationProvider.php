@@ -79,7 +79,7 @@ class SimpleOauthAuthenticationProvider extends BaseSimpleOauthAuthenticationPro
    */
   private function authenticateGoogle(string $jwt) {
     $realm = 'Bearer realm="google"';
-    $payload = $this->socialPayload('google:' . $jwt, $realm, function () use ($jwt) {
+    $payload = $this->socialPayload('google:' . hash('sha256', $jwt), $realm, function () use ($jwt) {
       $client_ids = array_filter((array) Settings::get('GOOGLE_CLIENT_ID', []));
       if ($client_ids) {
         $info = $this->fetchJson('https://oauth2.googleapis.com/tokeninfo', [
@@ -114,7 +114,7 @@ class SimpleOauthAuthenticationProvider extends BaseSimpleOauthAuthenticationPro
    */
   private function authenticateFacebook(string $jwt) {
     $realm = 'Bearer realm="facebook"';
-    $payload = $this->socialPayload('facebook:' . $jwt, $realm, function () use ($jwt) {
+    $payload = $this->socialPayload('facebook:' . hash('sha256', $jwt), $realm, function () use ($jwt) {
       $app_id = (string) Settings::get('FACEBOOK_APP_ID', '');
       $app_secret = (string) Settings::get('FACEBOOK_APP_SECRET', '');
       if ($app_id !== '' && $app_secret !== '') {
@@ -148,7 +148,7 @@ class SimpleOauthAuthenticationProvider extends BaseSimpleOauthAuthenticationPro
    * Returns the provider payload for a token, cached ten minutes.
    *
    * @param string $cache_key
-   *   Cache id of the token.
+   *   Cache id of the token (a hash: the token itself is never stored).
    * @param string $realm
    *   WWW-Authenticate value of a refusal.
    * @param callable $fetch

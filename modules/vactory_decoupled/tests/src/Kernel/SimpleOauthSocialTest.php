@@ -242,6 +242,34 @@ class SimpleOauthSocialTest extends KernelTestBase {
   }
 
   /**
+   * The cache holds the provider answer, never the token nor the account.
+   *
+   * Blocking an account or giving it an admin role applies at once, even
+   * for a cached token.
+   */
+  public function testCacheAndAccountChanges(): void {
+    $bob = $this->createAccount('bob', 'bob@example.test');
+    $this->queue($this->google('g1', 'bob@example.test'));
+    $this->assertSame($bob->id(), $this->authenticate('google', 'tok-cached')->id());
+
+    $cache = \Drupal::cache('vactory_decoupled_oauth');
+    $this->assertFalse($cache->get('google:tok-cached'), 'The token is not a cache id.');
+    $this->assertNotFalse($cache->get('google:' . hash('sha256', 'tok-cached')));
+
+    $bob->block()->save();
+    $this->assertRefused('google', 'tok-cached', 'Access denied');
+    Role::create([
+      'id' => 'administrator',
+      'label' => 'Administrator',
+      'is_admin' => TRUE,
+    ])->save();
+    $bob->activate()->addRole('administrator');
+    $bob->save();
+    $this->assertRefused('google', 'tok-cached', 'Access denied');
+    $this->assertCount(1, $this->history, 'Served from the cache.');
+  }
+
+  /**
    * GOOGLE_CLIENT_ID: the token must be issued for this client.
    */
   public function testGoogleAudience(): void {
