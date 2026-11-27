@@ -209,11 +209,10 @@ class SimpleOauthAuthenticationProvider extends BaseSimpleOauthAuthenticationPro
     if ($id === '') {
       throw new UnauthorizedHttpException($realm, 'Access token could not be verified');
     }
-    // Account created for this identity when it had no verified email.
-    $own_name = $id . '@' . $provider . '.com';
+    $identity = $provider . ':' . $id;
     $user = $email !== '' ? user_load_by_mail($email) : NULL;
     if (!$user) {
-      $user = user_load_by_name($own_name);
+      $user = $this->socialIdentityUser($identity, $id . '@' . $provider . '.com');
     }
 
     if ($user) {
@@ -228,7 +227,11 @@ class SimpleOauthAuthenticationProvider extends BaseSimpleOauthAuthenticationPro
       return $user;
     }
 
-    $name = $email !== '' && !user_load_by_name($email) ? $email : $own_name;
+    $own_name = $id . '@' . $provider . '.com';
+    $name = $email;
+    if ($name === '' || user_load_by_name($name)) {
+      $name = user_load_by_name($own_name) ? $provider . '-' . hash('crc32b', $identity . microtime()) . '-' . $id : $own_name;
+    }
     $values = [
       'status' => 1,
       'name' => $name,
@@ -242,7 +245,35 @@ class SimpleOauthAuthenticationProvider extends BaseSimpleOauthAuthenticationPro
     }
     $user = User::create($values);
     $user->save();
+    \Drupal::service('user.data')->set('vactory_decoupled', $user->id(), 'social_identity', $identity);
     return $user;
+  }
+
+  /**
+   * Account created by this provider for an identity without verified email.
+   *
+   * Found by the identity stored in users_data, never by a name someone else
+   * could register. An account created before that mark (same name and email,
+   * no password) is taken over and marked.
+   *
+   * @param string $identity
+   *   Provider name and identifier, e.g. "google:123".
+   * @param string $own_name
+   *   Name and email given to such accounts, e.g. "123@google.com".
+   */
+  private function socialIdentityUser(string $identity, string $own_name) {
+    $user_data = \Drupal::service('user.data');
+    foreach ($user_data->get('vactory_decoupled', NULL, 'social_identity') as $uid => $value) {
+      if ($value === $identity && ($user = User::load($uid))) {
+        return $user;
+      }
+    }
+    $user = user_load_by_name($own_name);
+    if ($user && $user->getEmail() === $own_name && empty($user->getPassword())) {
+      $user_data->set('vactory_decoupled', $user->id(), 'social_identity', $identity);
+      return $user;
+    }
+    return NULL;
   }
 
   /**

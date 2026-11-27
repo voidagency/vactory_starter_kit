@@ -220,6 +220,42 @@ class SimpleOauthSocialTest extends KernelTestBase {
   }
 
   /**
+   * An account someone registered under the provider name is not taken over.
+   *
+   * Accounts created for an identity without a verified email are found by
+   * the identity stored in users_data, never by their name.
+   */
+  public function testProviderNameNotTakenOver(): void {
+    // Registered by someone else, with a password, under the provider name.
+    $squatter = User::create([
+      'name' => 'g5@google.com',
+      'mail' => 'g5@google.com',
+      'pass' => 'a-password',
+      'status' => 1,
+    ]);
+    $squatter->save();
+    $this->queue($this->google('g5', 'victim@example.test', FALSE));
+    $user = $this->authenticate('google', 'tok-5');
+    $this->assertNotEquals($squatter->id(), $user->id());
+    $this->assertStringStartsWith('google-', $user->getAccountName());
+
+    // The same identity finds its own account again, by its mark.
+    $this->queue($this->google('g5', 'victim@example.test', FALSE));
+    $this->assertSame($user->id(), $this->authenticate('google', 'tok-5b')->id());
+  }
+
+  /**
+   * An account created before the mark (no password) is taken over once.
+   */
+  public function testLegacyProviderAccount(): void {
+    $legacy = $this->createAccount('f6@facebook.com', 'f6@facebook.com');
+    $this->queue(['id' => 'f6', 'name' => 'A B']);
+    $this->assertSame($legacy->id(), $this->authenticate('facebook', 'tok-6')->id());
+    $mark = \Drupal::service('user.data')->get('vactory_decoupled', $legacy->id(), 'social_identity');
+    $this->assertSame('facebook:f6', $mark);
+  }
+
+  /**
    * The super admin, blocked accounts and admin roles are refused.
    */
   public function testRefusedAccounts(): void {
