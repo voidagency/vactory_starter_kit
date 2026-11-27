@@ -34,3 +34,14 @@ function vactory_google_places_uninstall($is_syncing) {
       ->save();
   }
 }
+
+/**
+ * Enable views_autocomplete_filters, now a declared dependency.
+ */
+function vactory_google_places_update_10001() {
+  if (\Drupal::moduleHandler()->moduleExists('views_autocomplete_filters')) {
+    return t('views_autocomplete_filters is already enabled.');
+  }
+  \Drupal::service('module_installer')->install(['views_autocomplete_filters']);
+  return t('views_autocomplete_filters enabled: Vactory Google Places requires it for the text filters of views.');
+}
