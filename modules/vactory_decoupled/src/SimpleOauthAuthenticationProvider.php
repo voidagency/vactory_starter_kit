@@ -210,23 +210,40 @@ class SimpleOauthAuthenticationProvider extends BaseSimpleOauthAuthenticationPro
       throw new UnauthorizedHttpException($realm, 'Access token could not be verified');
     }
     $identity = $provider . ':' . $id;
+    $own_name = $id . '@' . $provider . '.com';
     $user = $email !== '' ? user_load_by_mail($email) : NULL;
     if (!$user) {
-      $user = $this->socialIdentityUser($identity, $id . '@' . $provider . '.com');
+      $user = $this->socialIdentityUser($identity, $own_name);
     }
-
     if ($user) {
-      $admin = FALSE;
-      foreach ($user->getRoles(TRUE) as $rid) {
-        $role = \Drupal::entityTypeManager()->getStorage('user_role')->load($rid);
-        $admin = $admin || ($role && $role->isAdmin());
-      }
-      if ((int) $user->id() === 1 || $user->isBlocked() || $admin) {
-        throw new UnauthorizedHttpException($realm, 'Access denied');
-      }
+      $this->assertSocialAccountAllowed($user, $realm);
       return $user;
     }
+    return $this->createSocialUser($provider, $id, $email, $fields, $picture_url);
+  }
 
+  /**
+   * Refuses the super admin, blocked accounts and accounts with an admin role.
+   *
+   * @throws \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
+   */
+  private function assertSocialAccountAllowed($user, string $realm): void {
+    $role_storage = \Drupal::entityTypeManager()->getStorage('user_role');
+    $admin = FALSE;
+    foreach ($user->getRoles(TRUE) as $rid) {
+      $role = $role_storage->load($rid);
+      $admin = $admin || ($role && $role->isAdmin());
+    }
+    if ((int) $user->id() === 1 || $user->isBlocked() || $admin) {
+      throw new UnauthorizedHttpException($realm, 'Access denied');
+    }
+  }
+
+  /**
+   * Creates the account of a Google or Facebook identity and marks it.
+   */
+  private function createSocialUser(string $provider, string $id, string $email, array $fields, ?string $picture_url) {
+    $identity = $provider . ':' . $id;
     $own_name = $id . '@' . $provider . '.com';
     $name = $email;
     if ($name === '' || user_load_by_name($name)) {
@@ -237,16 +254,25 @@ class SimpleOauthAuthenticationProvider extends BaseSimpleOauthAuthenticationPro
       'name' => $name,
       'mail' => $email !== '' ? $email : $own_name,
     ] + $fields;
-    if ($picture_url && $this->userManager && method_exists($this->userManager, 'userPictureEnabled') && $this->userManager->userPictureEnabled()) {
-      $file = $this->userManager->downloadProfilePic($picture_url, $id);
-      if ($file) {
-        $values['user_picture'] = $file->id();
-      }
+    $file = $picture_url ? $this->socialPicture($picture_url, $id) : NULL;
+    if ($file) {
+      $values['user_picture'] = $file->id();
     }
     $user = User::create($values);
     $user->save();
     \Drupal::service('user.data')->set('vactory_decoupled', $user->id(), 'social_identity', $identity);
     return $user;
+  }
+
+  /**
+   * Downloads the profile picture when user pictures are enabled.
+   */
+  private function socialPicture(string $picture_url, string $id) {
+    $manager = $this->userManager;
+    if ($manager && method_exists($manager, 'userPictureEnabled') && $manager->userPictureEnabled()) {
+      return $manager->downloadProfilePic($picture_url, $id);
+    }
+    return NULL;
   }
 
   /**
