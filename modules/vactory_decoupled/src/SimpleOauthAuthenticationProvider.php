@@ -70,112 +70,178 @@ class SimpleOauthAuthenticationProvider extends BaseSimpleOauthAuthenticationPro
 
   /**
    * Authenticate google.
+   *
+   * The access token is sent to Google's userinfo endpoint. An existing
+   * account is linked only by an email Google verified (Redmine #71366).
+   * Optional setting:
+   * - GOOGLE_CLIENT_ID: client id (string or list) the token must be issued
+   *   for, checked with Google's tokeninfo endpoint.
    */
   private function authenticateGoogle(string $jwt) {
-    $cacheKey = "google:" . $jwt;
-    if ($cache = $this->cache->get($cacheKey)) {
-      $payload = $cache->data;
-    }
-    else {
-      $result = \Drupal::httpClient()
-        ->get("https://openidconnect.googleapis.com/v1/userinfo", [
-          'headers' => [
-            'Authorization' => "Bearer " . $jwt,
-          ],
+    $realm = 'Bearer realm="google"';
+    $payload = $this->socialPayload('google:' . $jwt, $realm, function () use ($jwt) {
+      $client_ids = array_filter((array) Settings::get('GOOGLE_CLIENT_ID', []));
+      if ($client_ids) {
+        $info = $this->fetchJson('https://oauth2.googleapis.com/tokeninfo', [
+          'query' => ['access_token' => $jwt],
         ]);
-      $payload = json_decode((string) $result->getBody(), TRUE);
-      $ten_minutes = 60 * 10;
-      $this->cache->set($cacheKey, $payload, $this->getRequestTime() + $ten_minutes);
-    }
-
-    $id = $payload["sub"];
-    $name = $payload["name"];
-    $first_name = $payload["given_name"];
-    $last_name = $payload["family_name"] ?? "";
-    $email = $payload["email"];
-    $picture_url = $payload["picture"];
-    $username = (!empty($email)) ? $email : "{$id}@google.com";
-    $mail = (!empty($email)) ? $email : "{$id}@google.com";
-
-    $user = user_load_by_name($username);
-    if (empty($user)) {
-      // Try loading user by mail.
-      $user = user_load_by_mail($mail);
-    }
-    if (!$user) {
-      $values = [
-        'status' => 1,
-        'name' => $username,
-        'mail' => $mail,
-        'field_first_name' => $first_name,
-        'field_last_name' => $last_name,
-      ];
-
-      if (!empty($picture_url) && $this->userManager->userPictureEnabled()) {
-        $file = $this->userManager->downloadProfilePic($picture_url, $id);
-        if ($file) {
-          $values['user_picture'] = $file->id();
+        $audiences = array_filter([$info['aud'] ?? NULL, $info['azp'] ?? NULL]);
+        if (!array_intersect($audiences, $client_ids)) {
+          return NULL;
         }
       }
+      return $this->fetchJson('https://openidconnect.googleapis.com/v1/userinfo', [
+        'headers' => ['Authorization' => 'Bearer ' . $jwt],
+      ]);
+    });
 
-      $user = User::create($values);
-      $user->save();
-    }
-    return $user;
+    $id = (string) ($payload['sub'] ?? '');
+    $email_verified = filter_var($payload['email_verified'] ?? FALSE, FILTER_VALIDATE_BOOLEAN);
+    $email = $email_verified ? (string) ($payload['email'] ?? '') : '';
+    return $this->socialUser('google', $id, $email, $realm, [
+      'field_first_name' => $payload['given_name'] ?? '',
+      'field_last_name' => $payload['family_name'] ?? '',
+    ], $payload['picture'] ?? NULL);
   }
 
   /**
    * Authenticate facebook.
+   *
+   * The access token is sent to the Graph API (/me). Facebook only returns a
+   * confirmed email. Optional settings:
+   * - FACEBOOK_APP_ID and FACEBOOK_APP_SECRET: the token must be issued for
+   *   this application, checked with the Graph API debug_token endpoint.
    */
   private function authenticateFacebook(string $jwt) {
-    $cacheKey = "facebook:" . $jwt;
-    if ($cache = $this->cache->get($cacheKey)) {
-      $payload = $cache->data;
-    }
-    else {
-      $result = \Drupal::httpClient()->get("https://graph.facebook.com/me", [
+    $realm = 'Bearer realm="facebook"';
+    $payload = $this->socialPayload('facebook:' . $jwt, $realm, function () use ($jwt) {
+      $app_id = (string) Settings::get('FACEBOOK_APP_ID', '');
+      $app_secret = (string) Settings::get('FACEBOOK_APP_SECRET', '');
+      if ($app_id !== '' && $app_secret !== '') {
+        $debug = $this->fetchJson('https://graph.facebook.com/debug_token', [
+          'query' => [
+            'input_token' => $jwt,
+            'access_token' => $app_id . '|' . $app_secret,
+          ],
+        ]);
+        if (empty($debug['data']['is_valid']) || (string) ($debug['data']['app_id'] ?? '') !== $app_id) {
+          return NULL;
+        }
+      }
+      return $this->fetchJson('https://graph.facebook.com/me', [
         'query' => [
           'access_token' => $jwt,
           'fields' => 'id,name,email,picture',
         ],
       ]);
-      $payload = json_decode((string) $result->getBody(), TRUE);
-      $ten_minutes = 60 * 10;
-      $this->cache->set($cacheKey, $payload, $this->getRequestTime() + $ten_minutes);
-    }
+    });
 
-    $id = $payload["id"];
-    $name = $payload["name"];
-    [$first_name, $last_name] = array_pad(explode(' ', $name), 4, '');
-    $email = $payload["email"];
-    $picture_url = $payload["picture"];
-    $username = (!empty($email)) ? $email : "{$id}@facebook.com";
-    $mail = (!empty($email)) ? $email : "{$id}@facebook.com";
+    $id = (string) ($payload['id'] ?? '');
+    [$first_name, $last_name] = array_pad(explode(' ', (string) ($payload['name'] ?? ''), 2), 2, '');
+    return $this->socialUser('facebook', $id, (string) ($payload['email'] ?? ''), $realm, [
+      'field_first_name' => $first_name,
+      'field_last_name' => $last_name,
+    ], $payload['picture']['data']['url'] ?? NULL);
+  }
 
-    $user = user_load_by_name($username);
-    if (empty($user)) {
-      // Try loading user by mail.
-      $user = user_load_by_mail($mail);
+  /**
+   * Returns the provider payload for a token, cached ten minutes.
+   *
+   * @param string $cache_key
+   *   Cache id of the token.
+   * @param string $realm
+   *   WWW-Authenticate value of a refusal.
+   * @param callable $fetch
+   *   Returns the payload, or NULL when the token is not for this site.
+   *
+   * @throws \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
+   */
+  private function socialPayload(string $cache_key, string $realm, callable $fetch): array {
+    if ($cache = $this->cache->get($cache_key)) {
+      return $cache->data;
     }
+    try {
+      $payload = $fetch();
+    }
+    catch (\Throwable $e) {
+      // Invalid or expired token, or the provider is unreachable.
+      $payload = NULL;
+    }
+    if (!is_array($payload)) {
+      throw new UnauthorizedHttpException($realm, 'Access token could not be verified');
+    }
+    $this->cache->set($cache_key, $payload, $this->getRequestTime() + 600);
+    return $payload;
+  }
+
+  /**
+   * GET request decoded as JSON.
+   */
+  private function fetchJson(string $url, array $options): ?array {
+    $result = \Drupal::httpClient()->get($url, $options);
+    $data = json_decode((string) $result->getBody(), TRUE);
+    return is_array($data) ? $data : NULL;
+  }
+
+  /**
+   * Loads or creates the account of a Google or Facebook identity.
+   *
+   * An existing account is linked by the verified email only, never by its
+   * name. The super admin, blocked accounts and accounts with an admin role
+   * are refused, as on the Keycloak path.
+   *
+   * @param string $provider
+   *   Provider name: google or facebook.
+   * @param string $id
+   *   Identifier of the person at the provider.
+   * @param string $email
+   *   Verified email, or an empty string.
+   * @param string $realm
+   *   WWW-Authenticate value of a refusal.
+   * @param array $fields
+   *   Field values of a new account.
+   * @param string|null $picture_url
+   *   Profile picture of a new account.
+   *
+   * @throws \Symfony\Component\HttpKernel\Exception\UnauthorizedHttpException
+   */
+  private function socialUser(string $provider, string $id, string $email, string $realm, array $fields, ?string $picture_url) {
+    if ($id === '') {
+      throw new UnauthorizedHttpException($realm, 'Access token could not be verified');
+    }
+    // Account created for this identity when it had no verified email.
+    $own_name = $id . '@' . $provider . '.com';
+    $user = $email !== '' ? user_load_by_mail($email) : NULL;
     if (!$user) {
-      $values = [
-        'status' => 1,
-        'name' => $username,
-        'mail' => $mail,
-        'field_first_name' => $first_name,
-        'field_last_name' => $last_name,
-      ];
-
-      if (isset($picture_url["data"]["url"]) && $this->userManager->userPictureEnabled()) {
-        $file = $this->userManager->downloadProfilePic($picture_url["data"]["url"], $id);
-        if ($file) {
-          $values['user_picture'] = $file->id();
-        }
-      }
-
-      $user = User::create($values);
-      $user->save();
+      $user = user_load_by_name($own_name);
     }
+
+    if ($user) {
+      $admin = FALSE;
+      foreach ($user->getRoles(TRUE) as $rid) {
+        $role = \Drupal::entityTypeManager()->getStorage('user_role')->load($rid);
+        $admin = $admin || ($role && $role->isAdmin());
+      }
+      if ((int) $user->id() === 1 || $user->isBlocked() || $admin) {
+        throw new UnauthorizedHttpException($realm, 'Access denied');
+      }
+      return $user;
+    }
+
+    $name = $email !== '' && !user_load_by_name($email) ? $email : $own_name;
+    $values = [
+      'status' => 1,
+      'name' => $name,
+      'mail' => $email !== '' ? $email : $own_name,
+    ] + $fields;
+    if ($picture_url && $this->userManager && method_exists($this->userManager, 'userPictureEnabled') && $this->userManager->userPictureEnabled()) {
+      $file = $this->userManager->downloadProfilePic($picture_url, $id);
+      if ($file) {
+        $values['user_picture'] = $file->id();
+      }
+    }
+    $user = User::create($values);
+    $user->save();
     return $user;
   }
 
