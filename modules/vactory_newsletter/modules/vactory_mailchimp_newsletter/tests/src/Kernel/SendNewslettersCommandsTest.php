@@ -7,13 +7,13 @@ use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\KernelTests\KernelTestBase;
 use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
-use Drupal\vactory_mailchimp_newsletter\Commands\SendNewslettersCommands;
+use Drupal\vactory_mailchimp_newsletter\Drush\Commands\SendNewslettersCommands;
 use Drupal\vactory_mailchimp_newsletter\Services\CampaignsService;
 
 /**
  * Tests the send_newsletters Drush command.
  *
- * @coversDefaultClass \Drupal\vactory_mailchimp_newsletter\Commands\SendNewslettersCommands
+ * @coversDefaultClass \Drupal\vactory_mailchimp_newsletter\Drush\Commands\SendNewslettersCommands
  * @group vactory_mailchimp_newsletter
  */
 class SendNewslettersCommandsTest extends KernelTestBase {

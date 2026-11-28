@@ -2,7 +2,8 @@ services:
   vactory_mailchimp_newsletter.campaigns.manage:
     class: Drupal\vactory_mailchimp_newsletter\Services\CampaignsService
     arguments: ['@logger.factory', '@entity_type.manager', '@config.factory', '@renderer']
+  # The drush.command tag is no longer read by Drush 12 and 13: the command
+  # is declared in src/Drush/Commands. Service kept for code that calls it.
   newsletters_send.commands:
     class: \Drupal\vactory_mailchimp_newsletter\Commands\SendNewslettersCommands
-    tags:
-      - { name: drush.command }
+    deprecated: The "%service_id%" service is deprecated in vactory_starter_kit:3.3.1 and is removed from vactory_starter_kit:3.4.0. Run "drush send_newsletters" instead.
