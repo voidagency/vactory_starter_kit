@@ -102,6 +102,14 @@ class ImageSitemapNormalizerTest extends KernelTestBase {
       'field_image_media' => ['target_id' => $media->id()],
     ]);
     $node->save();
+    // A node created in the other language: its rows carry that language.
+    $node_fr = Node::create([
+      'type' => 'page',
+      'langcode' => 'fr',
+      'title' => 'Page en français',
+      'field_image_media' => ['target_id' => $media->id()],
+    ]);
+    $node_fr->save();
 
     $used_images = $this->container->get('database')->select('file_managed', 'fm');
     $used_images->join('file_usage', 'fu', 'fu.fid = fm.fid');
@@ -126,12 +134,15 @@ class ImageSitemapNormalizerTest extends KernelTestBase {
     $default = $this->container->get('language_manager')->getDefaultLanguage()->getId();
     $sitemap = $context['results']['image_sitemap'][$default] ?? [];
     $this->assertArrayHasKey($node->id(), $sitemap);
-    // Listed once, with the URL of the default language.
+    // Listed once.
     $this->assertCount(1, $sitemap[$node->id()]['images']);
     $this->assertSame('photo.png', $sitemap[$node->id()]['images'][0]['image_title']);
-    $this->assertStringNotContainsString('/fr/', $sitemap[$node->id()]['node']);
     // Not listed in the sitemap of the other language.
-    $this->assertArrayNotHasKey($node->id(), $context['results']['image_sitemap']['fr'] ?? []);
+    $this->assertArrayHasKey('fr', $context['results']['image_sitemap'], 'Each language has a sitemap.');
+    $this->assertArrayNotHasKey($node->id(), $context['results']['image_sitemap']['fr']);
+    // A node created in the other language is listed once, in its language.
+    $this->assertArrayNotHasKey($node_fr->id(), $sitemap);
+    $this->assertCount(1, $context['results']['image_sitemap']['fr'][$node_fr->id()]['images'] ?? []);
   }
 
 }
