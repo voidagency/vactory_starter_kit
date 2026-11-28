@@ -188,7 +188,7 @@ drush cr
 - `vactory_decoupled` : l'API des menus applique toujours le contrôle d'accès aux liens (#966, Redmine #71439).
 
 ### Changements de comportement
-- `vactory_decoupled` : l'API des menus renvoie aussi, sous leur ancien nom, les attributs de lien renommés par menu_link_attributes 1.10 (`wrapper-class` aussi en `wrapper_class`), sauf si le lien a déjà une valeur sous ce nom. Compatibilité dépréciée, retirée en 3.4 (Redmine #71765).
+- `vactory_decoupled` : l'API des menus renvoie aussi, sous leur ancien nom, les attributs de lien renommés par menu_link_attributes 1.10 (`wrapper-class` aussi en `wrapper_class`), sauf si le lien a déjà une valeur sous ce nom ; les attributs `aria-*` et `data-*` ne sont pas dupliqués. Compatibilité dépréciée, retirée en 3.4 (Redmine #71765).
 - `vactory_node_view_count` : une vue ne change plus la date de modification du nœud, ne crée plus de révision et ne vide plus le cache du front Next ; une page en cache affiche le compteur avec au plus 5 minutes de retard (valeur en base toujours exacte) ; les routes de comptage répondent 404 pour un nœud inexistant ou non visible (au lieu de 500 ou 200), et 429 au-delà de la limite par IP si un projet l'active (#999).
 - `vactory_core` : les options passées au client HTTP de Drupal par l'appelant (timeout…) sont maintenant transmises (#896).
 - `vactory_decoupled` : à chaque enregistrement d'un terme, le slug `term_2_slug` de chaque traduction est normalisé (minuscules ASCII, mots joints par `-`), y compris un slug saisi à la main (#884).

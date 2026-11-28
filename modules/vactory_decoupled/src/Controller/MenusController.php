@@ -323,11 +323,10 @@ class MenusController extends ControllerBase {
    *
    * The 1.10 release of menu_link_attributes renames, on every existing
    * link, the attributes whose name has "_" (wrapper_class becomes
-   * wrapper-class). A front that
-   * still reads the former name would get nothing. Until 3.4, each attribute
-   * with "-" is also sent under its former name, unless the link has a value
-   * for that name. Deprecated: fronts must read the name with "-" (the
-   * former names are removed in 3.4).
+   * wrapper-class). A front that still reads the former name would get
+   * nothing. Until 3.4, each attribute with "-" is also sent under its former
+   * name, unless the link has a value for that name, or it is an aria-* or
+   * data-* attribute. Deprecated: fronts must read the name with "-".
    *
    * @param array $options
    *   The options of the menu link.
@@ -340,7 +339,11 @@ class MenusController extends ControllerBase {
       return $options;
     }
     foreach ($options['attributes'] as $name => $value) {
-      if (!is_string($name) || !str_contains($name, '-')) {
+      // HTML attributes that have a "-" in their own name (aria-label,
+      // data-*) were never renamed: a front that copies every attribute on
+      // the element must not get them twice.
+      if (!is_string($name) || !str_contains($name, '-')
+        || str_starts_with($name, 'aria-') || str_starts_with($name, 'data-')) {
         continue;
       }
       $legacy = str_replace('-', '_', $name);

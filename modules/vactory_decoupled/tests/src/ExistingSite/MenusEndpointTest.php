@@ -167,7 +167,9 @@ class MenusEndpointTest extends ExistingSiteBase {
         'options' => [
           'attributes' => [
             'wrapper-class' => 'mega',
+            'container-class' => 'col',
             'aria-label' => 'Main',
+            'data-track' => 'menu',
           ],
         ],
       ],
@@ -179,7 +181,11 @@ class MenusEndpointTest extends ExistingSiteBase {
     }
     $this->assertSame('mega', $attributes['Renamed']['wrapper-class']);
     $this->assertSame('mega', $attributes['Renamed']['wrapper_class']);
-    $this->assertSame('Main', $attributes['Renamed']['aria_label']);
+    $this->assertSame('col', $attributes['Renamed']['container_class']);
+    // HTML attributes with "-" in their own name are not duplicated.
+    $this->assertSame('Main', $attributes['Renamed']['aria-label']);
+    $this->assertArrayNotHasKey('aria_label', $attributes['Renamed']);
+    $this->assertArrayNotHasKey('data_track', $attributes['Renamed']);
   }
 
   /**
