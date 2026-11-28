@@ -12,6 +12,9 @@
 #   GitHub API (gh pr view "$DRONE_PULL_REQUEST" --json body -q .body).
 # Exit code: 0 if everything is there, 1 if something is missing, 2 if the
 # check could not run.
+#
+# Drone does not start a build when only the description of the PR changes:
+# after fixing the description, push a commit or restart the build.
 set -uo pipefail
 
 body_file="${1:-}"
