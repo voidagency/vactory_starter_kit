@@ -88,3 +88,45 @@ steps:
       sonar_token:
         from_secret: sonar_token
       use_node_version: 22.23.4
+
+---
+# Checks of the pull request itself (Redmine #71766): an existing test
+# assertion removed or rewritten without a "Changements de comportement" line
+# in the CHANGELOG, and the title and description of the PR.
+# Warning mode first: a missing item (code 1) or a check that could not run
+# (code 2) is printed in the log and the build stays green. Set
+# CHECKS_BLOCKING to "true" to make them fail the build.
+name: pr-checks
+kind: pipeline
+type: docker
+
+clone:
+  disable: true
+
+trigger:
+  event:
+    - pull_request
+
+steps:
+  - name: clone
+    image: drone/git
+    pull: if-not-exists
+    commands:
+      - git init -q .
+      - git remote add origin "$DRONE_GIT_HTTP_URL"
+      - git fetch -q origin "+refs/heads/$DRONE_TARGET_BRANCH:refs/remotes/origin/$DRONE_TARGET_BRANCH"
+      - git fetch -q origin "$DRONE_COMMIT_REF"
+      - git checkout -q "$DRONE_COMMIT"
+      - git log --oneline -1
+
+  - name: checks
+    # Only bash, git, curl and jq are needed; the image is already on the CI
+    # machine. With "commands", Drone runs them instead of the image entrypoint.
+    image: vactory/vactory-ci:arm64
+    pull: if-not-exists
+    environment:
+      CHECKS_BLOCKING: "false"
+      GITHUB_TOKEN:
+        from_secret: GITHUB_TOKEN
+    commands:
+      - bash scripts/ci/pr-checks.sh
