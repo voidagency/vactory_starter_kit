@@ -2,7 +2,9 @@
 
 namespace Drupal\vactory_mailchimp_newsletter\Drush\Commands;
 
-use Drupal\node\Entity\Node;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Logger\LoggerChannelFactoryInterface;
+use Drupal\vactory_mailchimp_newsletter\Services\CampaignsService;
 use Drush\Commands\DrushCommands;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -14,10 +16,25 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class SendNewslettersCommands extends DrushCommands {
 
   /**
+   * Constructs a SendNewslettersCommands object.
+   */
+  public function __construct(
+    protected CampaignsService $campaigns,
+    protected EntityTypeManagerInterface $entityTypeManager,
+    protected LoggerChannelFactoryInterface $loggerChannelFactory,
+  ) {
+    parent::__construct();
+  }
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
-    return new static();
+    return new static(
+      $container->get('vactory_mailchimp_newsletter.campaigns.manage'),
+      $container->get('entity_type.manager'),
+      $container->get('logger.factory'),
+    );
   }
 
   /**
@@ -32,10 +49,11 @@ class SendNewslettersCommands extends DrushCommands {
     $current_time = new \DateTime('now');
     $current_date = $current_time->format('Y-m-d\TH:i:s');
     // Get recipients list id.
-    $list_id = \Drupal::service('vactory_mailchimp_newsletter.campaigns.manage')->mailchimpGetInfos()['list_id'];
+    $list_id = $this->campaigns->mailchimpGetInfos()['list_id'];
     // Query to get all published newsletter.
     // Runs from cron/Drush: select every due newsletter, whoever runs it.
-    $query = \Drupal::entityQuery('node')->accessCheck(FALSE);
+    $storage = $this->entityTypeManager->getStorage('node');
+    $query = $storage->getQuery()->accessCheck(FALSE);
     $query->condition('type', 'newsletter');
     $query->condition('status', 1);
     $query->condition('field_vactory_datetime', $current_date, '<=');
@@ -43,12 +61,12 @@ class SendNewslettersCommands extends DrushCommands {
 
     foreach ($newsletters as $newsletter) {
       // Load newsletter.
-      $node = Node::load($newsletter);
+      $node = $storage->load($newsletter);
       $recurrence = isset($node->get('field_recurrence')->value) ? $node->get('field_recurrence')->value : '';
       $sending_date = $node->get('field_vactory_datetime')->value;
 
       // Send newsletter.
-      \Drupal::service('vactory_mailchimp_newsletter.campaigns.manage')->mailchimpSendNewsletter($node, $list_id);
+      $this->campaigns->mailchimpSendNewsletter($node, $list_id);
 
       switch ($recurrence) {
         case 'everyday':
@@ -72,7 +90,7 @@ class SendNewslettersCommands extends DrushCommands {
       $node->save();
     }
 
-    \Drupal::logger('bfig_mailchimp')->notice('Sending Newsletters has been completed.');
+    $this->loggerChannelFactory->get('bfig_mailchimp')->notice('Sending Newsletters has been completed.');
   }
 
 }

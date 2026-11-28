@@ -6,4 +6,5 @@ services:
   # is declared in src/Drush/Commands. Service kept for code that calls it.
   newsletters_send.commands:
     class: \Drupal\vactory_mailchimp_newsletter\Commands\SendNewslettersCommands
+    arguments: ['@vactory_mailchimp_newsletter.campaigns.manage', '@entity_type.manager', '@logger.factory']
     deprecated: The "%service_id%" service is deprecated in vactory_starter_kit:3.4.0 and is removed from vactory_starter_kit:3.5.0. Run "drush send_newsletters" instead.

@@ -79,9 +79,19 @@ class SendNewslettersCommandsTest extends KernelTestBase {
       ->with($this->callback(fn ($sent) => (int) $sent->id() === (int) $node->id()), 'list-1');
     $this->container->set('vactory_mailchimp_newsletter.campaigns.manage', $campaigns);
 
-    (new SendNewslettersCommands())->sendNewsletters();
+    SendNewslettersCommands::create($this->container)->sendNewsletters();
 
     $this->assertFalse(Node::load($node->id())->isPublished());
+  }
+
+  /**
+   * The deprecated service still builds the command, until 3.5.
+   *
+   * @group legacy
+   */
+  public function testDeprecatedService(): void {
+    $this->expectDeprecation('The "newsletters_send.commands" service is deprecated in vactory_starter_kit:3.4.0 and is removed from vactory_starter_kit:3.5.0. Run "drush send_newsletters" instead.');
+    $this->assertInstanceOf(SendNewslettersCommands::class, $this->container->get('newsletters_send.commands'));
   }
 
 }
