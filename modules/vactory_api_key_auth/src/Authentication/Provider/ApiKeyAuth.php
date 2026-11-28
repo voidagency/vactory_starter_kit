@@ -75,6 +75,10 @@ class ApiKeyAuth implements AuthenticationProviderInterface {
     if (!$api_key) {
       return NULL;
     }
+    if (empty($api_key->user_uuid)) {
+      // A key without account authenticates nobody (Redmine #71343).
+      return NULL;
+    }
     $account = $this->entityTypeManager->getStorage('user')->load($api_key->user_uuid);
     // A blocked account is refused, as with a password.
     if (!$account || $account->isBlocked()) {

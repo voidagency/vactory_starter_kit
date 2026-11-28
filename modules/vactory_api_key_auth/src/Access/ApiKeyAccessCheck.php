@@ -49,7 +49,9 @@ class ApiKeyAccessCheck implements AccessInterface {
     }
     foreach ($this->entityTypeManager->getStorage('api_key')->loadMultiple() as $api_key) {
       if (is_string($api_key->key) && $api_key->key !== '' && hash_equals($api_key->key, $key)) {
-        $account = $this->entityTypeManager->getStorage('user')->load($api_key->user_uuid);
+        // A key without account opens nothing: every key belongs to an
+        // account (Redmine #71343).
+        $account = empty($api_key->user_uuid) ? NULL : $this->entityTypeManager->getStorage('user')->load($api_key->user_uuid);
         if ($account && !$account->isBlocked()) {
           return AccessResult::allowed()->setCacheMaxAge(0);
         }
