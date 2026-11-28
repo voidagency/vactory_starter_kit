@@ -95,14 +95,14 @@ class ImageSitemapGenerator {
     $used_images,
     &$context
   ) {
-    $default_langcode = \Drupal::languageManager()->getDefaultLanguage();
-    $langcode = $language->getId();
+    $default_langcode = \Drupal::languageManager()->getDefaultLanguage()->getId();
     $image_sitemap = isset($context['results']['image_sitemap']) ? $context['results']['image_sitemap'] : [];
     $file_url_generator = \Drupal::service('file_url_generator');
     foreach ($image_fields as $image_field_info) {
-      if (!$image_field_info['translatable']) {
-        $langcode = $default_langcode;
-      }
+      // An image field that is not translatable is listed in the sitemap of
+      // the default language. Set for each field: a field must not inherit
+      // the language of the previous one.
+      $langcode = $image_field_info['translatable'] ? $language->getId() : $default_langcode;
       $node_image_table = 'node__' . $image_field_info['field_name'];
       $query = \Drupal::service('database')->select($node_image_table, 'nit');
       $query->fields('nit', ['entity_id']);
@@ -140,7 +140,7 @@ class ImageSitemapGenerator {
       }
     }
     if (empty($image_fields)) {
-      $image_sitemap[$langcode] = [];
+      $image_sitemap[$language->getId()] = [];
     }
     $context['results']['image_sitemap'] = $image_sitemap;
     $context['message'] = t('Fetch and normalize existing used media image...');
