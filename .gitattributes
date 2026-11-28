@@ -2,6 +2,7 @@
 # installe dans les projets (zip GitHub).
 /scripts/stack export-ignore
 /scripts/module-audit export-ignore
+/scripts/ci export-ignore
 /docs/dev-stack.md export-ignore
 /docs/module-audit.md export-ignore
 /tests/e2e export-ignore
