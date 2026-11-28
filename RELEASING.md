@@ -36,13 +36,13 @@ Une décision difficile à défaire, surprenante sans son contexte et issue d'un
 Décrire le comportement corrigé et l'action à faire. Pas de chemin d'endpoint, pas d'identifiant, pas de scénario d'attaque, rien sur l'état des sites pas encore mis à jour. Le détail va dans le ticket Redmine et dans le ticket Dispatch.
 
 ## Numéro de version
-- **Patch (`3.3.1`) :** correctifs seuls. Pas d'update hook, pas de contrainte modifiée dans `composer.json`, aucune action sur les projets au-delà de `drush cr`.
+- **Patch (`3.3.1`) :** correctifs seuls. Pas d'update hook, pas de changement de comportement, pas de contrainte modifiée dans `composer.json`, aucune action sur les projets au-delà de `drush cr`. Une PR qui ne respecte pas ces conditions attend la mineure suivante, même si elle corrige un bug.
 - **Mineure (`3.4.0`) :** ajouts, modules optionnels, update hooks, changements de comportement par défaut (durcissements de sécurité compris), contraintes composer modifiées, retrait d'un élément déjà déprécié ou dont on a vérifié qu'il n'est pas utilisé.
 - **Majeure (`4.0.0`) :** version majeure de Drupal, version minimale de PHP, retrait d'API publique utilisée, sans dépréciation.
 - Si « Mise à jour des projets » contient autre chose que la mise à jour composer et `drush cr`, la version est au moins mineure. La release en préparation sera donc la **3.3.0**.
 - API publique : identifiants de services, routes et sorties JSON lues par le front, permissions, schémas de config, hooks, identifiants de plugins. Les classes PHP et leurs constructeurs sont internes.
 - Version majeure d'une dépendance : préférer une contrainte qui accepte les deux (`^1 || ^2`) ; sinon, version mineure avec une note de mise à jour.
-- Dépréciation : rubrique « Dépréciations » et `@deprecated in 3.N.0, removed in 4.0.0` dans le code ; le retrait se fait à la version majeure.
+- Dépréciation : l'ancien comportement reste et signale son usage (avertissement de dépréciation, journal). Rubrique « Dépréciations » du changelog avec la version de retrait, et la même version dans le code (`deprecated in vactory_starter_kit:3.N.0 and is removed from vactory_starter_kit:3.M.0`). Le retrait se fait à la **version mineure suivante**, à condition qu'au moins une release publiée contienne la dépréciation : déprécié en 3.3.0, retiré au plus tôt en 3.4.0. Retirer sans dépréciation un élément public encore utilisé est une rupture (majeure) ; un élément dont on a vérifié qu'il n'est pas utilisé peut être retiré à une mineure (voir ci-dessus).
 
 ## Une PR est terminée quand
 - les tests sont ajoutés ou mis à jour, et la CI est verte (tests, phpcs, Sonar) ;
