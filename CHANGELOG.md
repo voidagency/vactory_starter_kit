@@ -99,6 +99,7 @@ drush cr
 - **Sites en config sync (rare) :** ensuite, `drush cex` et commiter (`core.extension.yml`, rôles `anonymous` et `authenticated`). Sinon, le prochain `drush cim` annule ces updates.
 - Si `drupal/consumers` passe de moins de 1.23 à 1.23 ou plus : ses updates 8110 à 8112 s'exécutent (champ `status`) (#944).
 - `vactory_google_places` 10001 (Redmine #71714) : active `views_autocomplete_filters` si ce n'est pas déjà fait. `vactory_google_places` en dépend depuis #913 ; sans lui, toute vue avec un filtre texte tombait en erreur (`/admin/content` en 500). Rien n'est fait si le module est déjà actif.
+- `vactory_reminder` 10001 (Redmine #71518) : remplace la chaîne vide des consommateurs de rappels par une liste vide, type attendu par le nouveau schéma de `vactory_reminder.settings`. Rien n'est fait si la valeur est déjà une liste ou si les réglages n'existent pas.
 - `vactory_quiz_history` 10001 (#963) : ajoute un index sur la colonne `uid` de la table `vactory_quiz_history`. Rien n'est fait si l'index existe déjà ; les lignes de la table ne sont pas modifiées.
 - `vactory_decoupled_router` 10001 (#891) : crée la config `vactory_decoupled_router.settings` avec la liste des types d'entité servis comme pages par le routeur (`node`). Rien n'est fait si la liste existe déjà. **Sites en config sync (rare) :** ensuite, `drush cex` et commiter ce fichier.
 - `vactory_sondage` 10001 (#983) : supprime de la file de `vactory_reminder` les fermetures de sondage mises en file sans identifiant de sondage (elles échouaient à chaque passage), puis remet en file la fermeture de chaque sondage ouvert dont la date de fermeture est à venir. La sortie donne le nombre d'éléments supprimés, de sondages remis en file et de sondages ouverts dont la date est passée, laissés ouverts. Rien à faire si le module n'est pas actif.
@@ -216,6 +217,7 @@ drush cr
 - `vactory_decoupled_router` : liste des types d'entité servis comme pages par le routeur, réglable en back-office (`/admin/config/system/vactory_router/page-entity-types`), dans `settings.php` (`$settings['vactory_decoupled_router_page_entity_types']`) ou par `hook_vactory_decoupled_router_page_entity_types_alter()` (#891, Redmine #69443).
 
 ### Correctifs
+- `vactory_reminder` : schéma de configuration de `vactory_reminder.settings`, absent jusque-là ; la liste des consommateurs est une liste vide par défaut, et `drush updb` convertit la chaîne vide des sites existants (update 10001). Un consommateur saisi sur trois lignes ou plus gardait un nombre au lieu de la liste de ses intervalles : corrigé (Redmine #71518).
 - `vactory_api_key_auth` : une clé sans compte utilisateur ne provoque plus d'erreur (assertion sur un chargement d'utilisateur sans identifiant) dans le contrôle d'accès et le fournisseur d'authentification : elle est refusée (Redmine #71765).
 - `vactory_header`, `vactory_toolbox` : les templates de menu lisent l'attribut « Wrapper Class » sous `wrapper-class`, le nom que menu_link_attributes 1.10 donne à tous les liens existants à `drush updb`, avec repli sur `wrapper_class`. Sans cela, la classe disparaissait de tous les liens des en-têtes et de la toolbox (Redmine #71732).
 - `vactory_google_places` : sur un site où `views_autocomplete_filters` n'était pas activé, la 3.3.0-rc4 faisait tomber en erreur toute vue avec un filtre texte (`/admin/content` en 500), sans alerte dans le rapport d'état ni dans `drush updb`. Le filtre de Google Places ne remplace plus le filtre texte quand ce module est absent, et l'update 10001 l'active (Redmine #71714).
@@ -278,6 +280,7 @@ drush cr
 - `drupal/oauth_login_oauth2` : `^2.6` → `^3.1.1`, patch « Store ressourceOwner into a session variable » retiré : `vactory_sso` lit la réponse userinfo du module par un middleware du client HTTP, limité aux routes de retour SSO, sans session, et sert le retour SSO sur `/mo_login`, l'adresse de la 2.x (#992, Redmine #71556).
 
 ### Interne
+- `vactory_reminder` : test Kernel des réglages en schéma strict (installation, formulaire, update) ; `vactory_sondage` : son test de fermeture des sondages n'exclut plus ces réglages du contrôle de schéma (Redmine #71518).
 - `vactory_api_key_auth` : test de caractérisation des clés acceptées par le contrôle d'accès et le fournisseur (compte actif, bloqué, supprimé, sans compte) (Redmine #71765).
 - `vactory_decoupled` : le test des rôles à l'inscription JSON:API fixe lui-même les rôles par défaut du site (il échouait sur un site qui en configure) et vérifie aussi qu'ils sont attribués (#1004, Redmine #71702).
 - `vactory_node_view_count` : contrôleur de comptage découpé (contrôles du nœud, limite par IP), sans changement de comportement, pour la porte qualité Sonar (#1001).

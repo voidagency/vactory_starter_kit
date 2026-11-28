@@ -1,0 +1,20 @@
+<?php
+
+/**
+ * @file
+ * Install and update hooks of the vactory_reminder module.
+ */
+
+/**
+ * Stores the reminder consumers as a list (Redmine #71518).
+ *
+ * The settings were installed with an empty string for the consumers; the
+ * schema now expects a list, keyed by consumer ID.
+ */
+function vactory_reminder_update_10001() {
+  $config = \Drupal::configFactory()->getEditable('vactory_reminder.settings');
+  if ($config->isNew() || is_array($config->get('reminder_consumers'))) {
+    return;
+  }
+  $config->set('reminder_consumers', [])->save();
+}
