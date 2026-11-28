@@ -46,6 +46,9 @@ Décrire le comportement corrigé et l'action à faire. Pas de chemin d'endpoint
 
 ## Une PR est terminée quand
 - les tests sont ajoutés ou mis à jour, et la CI est verte (tests, phpcs, Sonar) ;
+- les tests ont été vus en échec sans le correctif ;
+- un comportement existant que la PR change est d'abord figé par un test (test de caractérisation) ; la PR montre l'avant et l'après, et ajoute la ligne « Changements de comportement » au changelog ;
+- un comportement public qui change pour un projet est déprécié avant d'être retiré (l'ancien comportement reste, avec un journal ou un avertissement, et la version de retrait est annoncée), et les usages sont cherchés dans les dépôts du parc ;
 - un point d'accès créé ou durci est testé sur ce qu'il accepte encore, pas seulement sur ce que la PR change : accès en lecture à l'entité visée, valeurs reçues, entité ou type inexistant (404, pas 500), rien d'enregistré avant ces contrôles ;
 - une mise à jour de données (update hook) est testée sur des données d'avant la PR, y compris les révisions et les contenus multilingues, puis sur les opérations qui suivent (édition, suppression de révision) ;
 - une personne l'a relue ;
