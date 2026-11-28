@@ -14,6 +14,11 @@
 set -uo pipefail
 cd "$(dirname "$0")/../.."
 
+# The clone step runs as root, this image as user 1001: git refuses a
+# repository owned by another user ("dubious ownership"). Trust it through the
+# environment, as HOME is not writable in the image.
+export GIT_CONFIG_COUNT=1 GIT_CONFIG_KEY_0=safe.directory GIT_CONFIG_VALUE_0='*'
+
 blocking="${CHECKS_BLOCKING:-false}"
 body_file="$(mktemp)"
 trap 'rm -f "$body_file"' EXIT
