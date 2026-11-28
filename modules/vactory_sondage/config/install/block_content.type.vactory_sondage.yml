@@ -6,5 +6,5 @@ dependencies:
       - vactory_sondage
 id: vactory_sondage
 label: Sondage
-revision: 1
+revision: true
 description: 'Utiliser ce type de bloc pour créer un sondage.'
