@@ -214,7 +214,7 @@ drush cr
 - `vactory_decoupled_router` : liste des types d'entité servis comme pages par le routeur, réglable en back-office (`/admin/config/system/vactory_router/page-entity-types`), dans `settings.php` (`$settings['vactory_decoupled_router_page_entity_types']`) ou par `hook_vactory_decoupled_router_page_entity_types_alter()` (#891, Redmine #69443).
 
 ### Correctifs
-- `vactory_mailchimp_newsletter`, `vactory_cloudinary` : les commandes `drush send_newsletters` et `drush move-to-cloudinary` étaient introuvables avec Drush 12 et 13 (« Command is not defined ») ; elles sont déclarées dans `src/Drush/Commands`. Les services `newsletters_send.commands` et `vactory_cloudinary.commands` restent, dépréciés, retirés en 3.5 (Redmine #71531).
+- `vactory_mailchimp_newsletter`, `vactory_cloudinary` : les commandes `drush send_newsletters` et `drush move-to-cloudinary` étaient introuvables avec Drush 12 et 13 (« Command is not defined ») ; elles sont déclarées dans `src/Drush/Commands`. (Redmine #71531).
 - `vactory_header`, `vactory_toolbox` : les templates de menu lisent l'attribut « Wrapper Class » sous `wrapper-class`, le nom que menu_link_attributes 1.10 donne à tous les liens existants à `drush updb`, avec repli sur `wrapper_class`. Sans cela, la classe disparaissait de tous les liens des en-têtes et de la toolbox (Redmine #71732).
 - `vactory_google_places` : sur un site où `views_autocomplete_filters` n'était pas activé, la 3.3.0-rc4 faisait tomber en erreur toute vue avec un filtre texte (`/admin/content` en 500), sans alerte dans le rapport d'état ni dans `drush updb`. Le filtre de Google Places ne remplace plus le filtre texte quand ce module est absent, et l'update 10001 l'active (Redmine #71714).
 - `vactory_quiz_certificat` : un élément de la file de génération qui ne pourra jamais être traité (données manquantes ou invalides, utilisateur ou quiz supprimé) est journalisé une fois et retiré de la file, au lieu d'être retenté à chaque cron ; un échec de génération du PDF reste retenté plus tard (#1005, Redmine #71703).
@@ -254,6 +254,9 @@ drush cr
 - `vactory_quiz_certificat` : la génération des certificats par le cron ne dépend plus de `vactory_reminder`, qui n'était pas déclaré. Sans ce module, une demande en échec interrompait le cron ; elle reste maintenant dans la file, est reprise à un cron suivant, et l'erreur est journalisée dans le canal `vactory_quiz_certificat` (#963).
 - `vactory_dynamic_field`, `vactory_field` : dépendances déclarées, les modules s'installent avec leurs seules dépendances. `vactory_dynamic_field` déclare `block_content` (type de bloc `vactory_block_component`) ; les réglages de traduction de ce type de bloc passent dans `config/optional` : installés avec `content_translation`, que le module n'impose plus. `vactory_field` déclare `comment`, `datetime_range`, `menu_link_content`, `node`, `options` et `taxonomy` (stockages de champs livrés, vocabulaire `tags`) ; sur un site du profil où `media` est déjà actif, il reste refusé tant que le profil livre une copie de ses configs média (Redmine #71508). Rien à faire sur les sites existants : le profil installe tous ces modules, Drupal n'active pas une dépendance nouvellement déclarée et la config déjà en base ne change pas ; aucune feature à réimporter (#984, Redmine #71511).
 
+### Dépréciations
+- `vactory_mailchimp_newsletter`, `vactory_cloudinary` : les services `newsletters_send.commands` et `vactory_cloudinary.commands`, et les classes `…\Commands\SendNewslettersCommands` et `…\Commands\VactoryCloudinaryMoveFiles`, dépréciés en 3.4.0, retirés en 3.5.0 : lancer `drush send_newsletters` ou `drush move-to-cloudinary` (Redmine #71531).
+
 ### Retraits
 - `vactory_cloudinary` : services `console.output` et `vactory_cloudinary.move_file_batch`, inutilisés (la classe du second n'existe pas) (#920).
 - `vactory_decoupled` : hook mort `vactory_decoupled_jsonapi_default_enhancers_info()`, jamais appelé (#909).
@@ -276,6 +279,7 @@ drush cr
 - `drupal/oauth_login_oauth2` : `^2.6` → `^3.1.1`, patch « Store ressourceOwner into a session variable » retiré : `vactory_sso` lit la réponse userinfo du module par un middleware du client HTTP, limité aux routes de retour SSO, sans session, et sert le retour SSO sur `/mo_login`, l'adresse de la 2.x (#992, Redmine #71556).
 
 ### Interne
+- `vactory_core` : test qui lance `drush list` sur le site et vérifie que les commandes de `vactory_mailchimp_newsletter` et `vactory_cloudinary` sont découvertes (Redmine #71531).
 - `vactory_core` : test qui refuse le tag `drush.command` dans un `*.services.yml` de module, ignoré par Drush 12 et 13 (Redmine #71531).
 - `vactory_decoupled` : le test des rôles à l'inscription JSON:API fixe lui-même les rôles par défaut du site (il échouait sur un site qui en configure) et vérifie aussi qu'ils sont attribués (#1004, Redmine #71702).
 - `vactory_node_view_count` : contrôleur de comptage découpé (contrôles du nœud, limite par IP), sans changement de comportement, pour la porte qualité Sonar (#1001).
