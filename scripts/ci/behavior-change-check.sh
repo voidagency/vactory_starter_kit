@@ -32,9 +32,18 @@ fi
 
 # Assertions removed from test files that already existed in the base
 # (modified, deleted or renamed).
+diff_tests="$(git diff --unified=0 --find-renames --diff-filter=MDR "$merge_base" -- \
+  'modules/**/tests/**/*.php' 'tests/**/*.php')" || {
+  echo "behavior-change-check: git diff failed against $merge_base." >&2
+  exit 2
+}
+diff_changelog="$(git diff --unified=0 "$merge_base" -- CHANGELOG.md)" || {
+  echo "behavior-change-check: git diff of CHANGELOG.md failed against $merge_base." >&2
+  exit 2
+}
+
 changed="$(
-  git diff --unified=0 --find-renames --diff-filter=MDR "$merge_base" -- \
-    'modules/**/tests/**/*.php' 'tests/**/*.php' \
+  printf '%s\n' "$diff_tests" \
   | awk '
       /^--- a\// { file = substr($0, 7); next }
       /^\+\+\+ b\// { file = substr($0, 7); next }
@@ -52,7 +61,7 @@ fi
 # Lines added under "### Changements de comportement" of the [Non publié]
 # section of the changelog.
 declared="$(
-  git diff --unified=0 "$merge_base" -- CHANGELOG.md \
+  printf '%s\n' "$diff_changelog" \
   | awk '/^@@/ { split($3, a, ","); n = substr(a[1], 2) + 0; next }
          /^\+\+\+ / { next }
          /^\+/ { print n; n++ }' \

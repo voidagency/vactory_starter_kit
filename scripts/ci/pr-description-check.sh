@@ -43,7 +43,25 @@ section() {
     /^## / { inside = ($0 == "## " title); next }
     inside { print }
   ' "$body_file" \
-  | perl -0pe 's/<!--.*?-->//gs' \
+  | awk '
+      # Removes HTML comments, also over several lines.
+      {
+        line = $0; out = "";
+        while (line != "") {
+          if (incomment) {
+            end = index(line, "-->");
+            if (!end) { line = ""; break }
+            line = substr(line, end + 3); incomment = 0;
+          }
+          else {
+            start = index(line, "<!--");
+            if (!start) { out = out line; line = ""; break }
+            out = out substr(line, 1, start - 1);
+            line = substr(line, start + 4); incomment = 1;
+          }
+        }
+        print out
+      }' \
   | grep -vE '^[[:space:]]*$' || true
 }
 
