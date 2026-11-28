@@ -99,10 +99,14 @@ class ImageSitemapGenerator {
     $image_sitemap = isset($context['results']['image_sitemap']) ? $context['results']['image_sitemap'] : [];
     $file_url_generator = \Drupal::service('file_url_generator');
     foreach ($image_fields as $image_field_info) {
-      // An image field that is not translatable is listed in the sitemap of
-      // the default language. Set for each field: a field must not inherit
-      // the language of the previous one.
-      $langcode = $image_field_info['translatable'] ? $language->getId() : $default_langcode;
+      // An image field that is not translatable is listed once, in the
+      // sitemap of the default language: skip it in the other languages.
+      // Set for each field: a field must not inherit the language of the
+      // previous one.
+      if (!$image_field_info['translatable'] && $language->getId() !== $default_langcode) {
+        continue;
+      }
+      $langcode = $language->getId();
       $node_image_table = 'node__' . $image_field_info['field_name'];
       $query = \Drupal::service('database')->select($node_image_table, 'nit');
       $query->fields('nit', ['entity_id']);

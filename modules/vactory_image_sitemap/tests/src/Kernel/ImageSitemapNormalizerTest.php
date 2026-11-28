@@ -7,6 +7,7 @@ use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\file\Entity\File;
 use Drupal\KernelTests\KernelTestBase;
+use Drupal\language\Entity\ConfigurableLanguage;
 use Drupal\media\Entity\Media;
 use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
@@ -31,6 +32,7 @@ class ImageSitemapNormalizerTest extends KernelTestBase {
     'field',
     'file',
     'image',
+    'language',
     'media',
     'node',
     'text',
@@ -47,7 +49,15 @@ class ImageSitemapNormalizerTest extends KernelTestBase {
     $this->installEntitySchema('node');
     $this->installSchema('file', ['file_usage']);
     $this->installSchema('node', ['node_access']);
-    $this->installConfig(['system', 'field', 'image', 'media', 'node']);
+    $this->installConfig([
+      'system',
+      'field',
+      'image',
+      'language',
+      'media',
+      'node',
+    ]);
+    ConfigurableLanguage::createFromLangcode('fr')->save();
 
     $this->createMediaType('image', ['id' => 'image']);
     NodeType::create(['type' => 'page', 'name' => 'Page'])->save();
@@ -101,19 +111,27 @@ class ImageSitemapNormalizerTest extends KernelTestBase {
       ->fetchAll();
     $this->assertNotEmpty($used_images);
 
-    $language = $this->container->get('language_manager')->getDefaultLanguage();
-    $this->assertInstanceOf(LanguageInterface::class, $language);
+    // One batch operation per language, as process() does.
     $context = [];
-    ImageSitemapGenerator::imageSitemapNormalizerBatchProcess(
-      $language,
-      [['field_name' => 'field_image_media', 'translatable' => FALSE]],
-      $used_images,
-      $context,
-    );
+    foreach ($this->container->get('language_manager')->getLanguages() as $language) {
+      $this->assertInstanceOf(LanguageInterface::class, $language);
+      ImageSitemapGenerator::imageSitemapNormalizerBatchProcess(
+        $language,
+        [['field_name' => 'field_image_media', 'translatable' => FALSE]],
+        $used_images,
+        $context,
+      );
+    }
 
-    $sitemap = $context['results']['image_sitemap'][$language->getId()] ?? [];
+    $default = $this->container->get('language_manager')->getDefaultLanguage()->getId();
+    $sitemap = $context['results']['image_sitemap'][$default] ?? [];
     $this->assertArrayHasKey($node->id(), $sitemap);
+    // Listed once, with the URL of the default language.
+    $this->assertCount(1, $sitemap[$node->id()]['images']);
     $this->assertSame('photo.png', $sitemap[$node->id()]['images'][0]['image_title']);
+    $this->assertStringNotContainsString('/fr/', $sitemap[$node->id()]['node']);
+    // Not listed in the sitemap of the other language.
+    $this->assertArrayNotHasKey($node->id(), $context['results']['image_sitemap']['fr'] ?? []);
   }
 
 }
