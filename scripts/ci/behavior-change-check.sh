@@ -10,17 +10,27 @@
 # whose expected value changes on another line is not detected.
 #
 # Usage: scripts/ci/behavior-change-check.sh [base]   (default: origin/3.x)
-# Exit code: 0 if nothing to declare or declared, 1 otherwise.
+# A deleted or moved test counts: its removed assertions must be declared.
+#
+# Exit code: 0 if nothing to declare or declared, 1 if not declared, 2 if the
+# check could not run.
 set -euo pipefail
 
 base="${1:-origin/3.x}"
-merge_base="$(git merge-base "$base" HEAD)"
+# Exit code 2: the check could not run (unknown base, shallow clone). It must
+# not look like a rejection of the PR.
+if ! merge_base="$(git merge-base "$base" HEAD 2>/dev/null)"; then
+  echo "behavior-change-check: cannot find the merge base with $base (fetch it, or deepen the clone)." >&2
+  exit 2
+fi
 
-# Assertions removed from test files that already existed in the base.
+# Assertions removed from test files that already existed in the base
+# (modified, deleted or renamed).
 changed="$(
-  git diff --unified=0 --diff-filter=M "$merge_base" -- \
+  git diff --unified=0 --find-renames --diff-filter=MDR "$merge_base" -- \
     'modules/**/tests/**/*.php' 'tests/**/*.php' \
   | awk '
+      /^--- a\// { file = substr($0, 7); next }
       /^\+\+\+ b\// { file = substr($0, 7); next }
       /^-[^-]/ && /(assert|expectException|markTestSkipped)/ {
         line = substr($0, 2); gsub(/^[ \t]+/, "", line);
