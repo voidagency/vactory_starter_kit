@@ -4,7 +4,7 @@ vactory_quiz.answers_modal_form:
     _title: 'Quiz Answers Modal Form'
     _controller: '\Drupal\vactory_quiz\Controller\QuizAnswersModalFormController::openAnswersModalForm'
   requirements:
-    _access: 'TRUE'
+    _custom_access: '\Drupal\vactory_quiz\Controller\QuizAnswersModalFormController::access'
   options:
     _admin_route: TRUE
 vactory_quiz.get:
@@ -14,16 +14,18 @@ vactory_quiz.get:
   methods:  [GET]
   requirements:
     _permission: 'access content'
+    _user_is_logged_in: 'TRUE'
   options:
     _auth: ['oauth2']
     _is_jsonapi: 1
 vactory_quiz.post:
-  path: 'quiz_history/post'
+  path: '/quiz_history/post'
   defaults:
     _controller: '\Drupal\vactory_quiz\Controller\QuizApiController::postQuiz'
   methods:  [POST]
   requirements:
     _permission: 'access content'
+    _user_is_logged_in: 'TRUE'
   options:
     _auth: ['oauth2']
     _is_jsonapi: 1
