@@ -20,6 +20,13 @@ if [ -z "${PR_TITLE:-}" ] || [ -z "$body_file" ] || [ ! -r "$body_file" ]; then
   exit 2
 fi
 
+# The GitHub API returns CRLF line endings for a description typed in the web
+# interface: work on a copy with LF only.
+body_lf="$(mktemp)"
+trap 'rm -f "$body_lf"' EXIT
+tr -d '\r' < "$body_file" > "$body_lf"
+body_file="$body_lf"
+
 missing=()
 
 if ! printf '%s' "$PR_TITLE" | grep -qE '^(feat|fix|refactor|build|chore|ci|docs|perf|revert|style|test)(\([^)]*\))?: #[0-9]+ - .+'; then
