@@ -32,6 +32,7 @@
 - **Aperçu du front dans le back-office (#972) :** sur la page d'une révision d'un contenu (`/node/<id>/revisions/<révision>/view`), le cadre d'aperçu du front affichait la version publiée du contenu, et non la révision ; il affiche maintenant la page 404 du front. L'aperçu d'un brouillon par « Enregistrer et voir la page » ne change pas.
 - **Attributs de liens de menu (menu_link_attributes 1.10, #996) :** un nom d'attribut qui n'est pas un nom d'attribut HTML valide n'est plus proposé sur le formulaire d'un lien de menu, et le formulaire de réglages du module refuse de l'enregistrer. `drush updb` renomme ceux qui ne diffèrent que par `_` (dans la configuration et sur les liens existants) : l'attribut « Wrapper Class » du profil passe de `wrapper_class` à `wrapper-class`. **Un thème, un template, un JS ou un front qui lit `wrapper_class` sur les liens de menu doit lire `wrapper-class`** : menu_link_attributes 1.10 renomme la valeur sur **tous** les liens existants. Les templates de menu du profil (`vactory_header`, `vactory_toolbox`) lisent les deux noms (Redmine #71732) ; un template surchargé dans le thème du projet doit faire de même, par exemple `menu_item.options.attributes['wrapper-class'] ?? menu_item.options.attributes.wrapper_class`. Un attribut propre au projet avec `_` suit la même règle (message de `drush updb`).
 - **Sites avec `vactory_sondage` (#983) :** un sondage ouvert est maintenant fermé à sa date de fermeture, au passage suivant du cron de `vactory_reminder` (tâche Ultimate Cron `vactory_reminder_cron`, toutes les 5 minutes par défaut) ; jusqu'ici aucun sondage n'était fermé automatiquement. Un sondage ouvert dont la date de fermeture est déjà passée reste ouvert : `drush updb` en donne le nombre (étape 2), le fermer en back-office si besoin.
+- **Sites avec `vactory_quiz` :** l'historique des quiz (`/api/quiz_history/get`, `/quiz_history/post`) répond 403 à un visiteur non connecté. Un front qui l'appelait sans jeton d'utilisateur doit le faire pour un utilisateur connecté (étape 6). Les rôles qui éditent les quiz doivent avoir la permission de créer ou de modifier le type « quiz » pour ouvrir la fenêtre des réponses (Redmine #71390).
 
 **Procédure, dans cet ordre**
 
@@ -167,6 +168,7 @@ drush cr
 - **Shield 1.11** stocke les identifiants encodés dans sa configuration : un script qui lisait `credentials.shield.user` / `pass` en clair ne fonctionne plus.
 
 ### Sécurité
+- `vactory_quiz` : contrôles d'accès renforcés sur la fenêtre des réponses du formulaire de quiz et sur l'historique des quiz (Redmine #71390).
 - `vactory_decoupled` : authentification du front par jeton Google ou Facebook (`X-Auth-Provider`). Un compte existant n'est rattaché que par un e-mail vérifié, plus par son nom. Le super administrateur, les comptes bloqués et les rôles administrateurs sont refusés, comme pour Keycloak. Un jeton refusé par le fournisseur donne un 401. Audience vérifiée si `GOOGLE_CLIENT_ID`, ou `FACEBOOK_APP_ID` et `FACEBOOK_APP_SECRET`, sont définis (Redmine #71366).
 - `vactory_api_key_auth` : la clé n'est lue que dans l'en-tête `apikey`, n'authentifie que sur les routes qui déclarent le fournisseur, et pas pour un compte bloqué ; comparaison à temps constant (#998, Redmine #71356).
 - `vactory_mailchimp`, `vactory_mailchimp_newsletter` : clés d'API Mailchimp retirées des configurations installées par le profil ; un test échoue si une clé Mailchimp ou une clé privée est ajoutée au profil (#1000, Redmine #71353).
@@ -188,6 +190,7 @@ drush cr
 - `vactory_decoupled` : l'API des menus applique toujours le contrôle d'accès aux liens (#966, Redmine #71439).
 
 ### Changements de comportement
+- `vactory_quiz` : la fenêtre des réponses d'une question (`/admin/config/quiz-answers-modal-form`) demande la permission de créer ou de modifier un quiz ; l'historique des quiz (`/api/quiz_history/get`, `/quiz_history/post`) demande d'être connecté (Redmine #71390).
 - `vactory_node_view_count` : une vue ne change plus la date de modification du nœud, ne crée plus de révision et ne vide plus le cache du front Next ; une page en cache affiche le compteur avec au plus 5 minutes de retard (valeur en base toujours exacte) ; les routes de comptage répondent 404 pour un nœud inexistant ou non visible (au lieu de 500 ou 200), et 429 au-delà de la limite par IP si un projet l'active (#999).
 - `vactory_core` : les options passées au client HTTP de Drupal par l'appelant (timeout…) sont maintenant transmises (#896).
 - `vactory_decoupled` : à chaque enregistrement d'un terme, le slug `term_2_slug` de chaque traduction est normalisé (minuscules ASCII, mots joints par `-`), y compris un slug saisi à la main (#884).

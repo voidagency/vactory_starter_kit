@@ -2,10 +2,13 @@
 
 namespace Drupal\vactory_quiz\Controller;
 
+use Drupal\Core\Access\AccessResult;
+use Drupal\Core\Access\AccessResultInterface;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\OpenDialogCommand;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Form\FormBuilder;
+use Drupal\Core\Session\AccountInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -54,6 +57,20 @@ class QuizAnswersModalFormController extends ControllerBase {
     ]));
 
     return $response;
+  }
+
+  /**
+   * Access to the answers dialog: editors of quizzes only.
+   *
+   * The dialog is opened from the questions field of the quiz form.
+   */
+  public static function access(AccountInterface $account): AccessResultInterface {
+    return AccessResult::allowedIfHasPermissions($account, [
+      'create vactory_quiz content',
+      'edit own vactory_quiz content',
+      'edit any vactory_quiz content',
+      'bypass node access',
+    ], 'OR');
   }
 
 }
