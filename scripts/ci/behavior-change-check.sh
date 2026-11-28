@@ -6,8 +6,14 @@
 # "### Changements de comportement" (Redmine #71766, AGENTS.md).
 #
 # Limit: an assertion is detected by the removed line that holds the word
-# "assert" (or expectException, markTestSkipped). A multi-line assertion
-# whose expected value changes on another line is not detected.
+# "assert" (or expectException, markTestSkipped). An expected value changed
+# elsewhere (another line of a multi-line assertion, a data provider, an
+# $expected variable) is not detected.
+#
+# Way out for a test that is only rewritten or moved: tick "Le comportement
+# existant ne change pas" in the description of the PR, and give the file
+# with the description in PR_BODY_FILE. The check then passes and still lists
+# the assertions, for the reviewer.
 #
 # Usage: scripts/ci/behavior-change-check.sh [base]   (default: origin/3.x)
 # A deleted or moved test counts: its removed assertions must be declared.
@@ -65,10 +71,19 @@ if [ -n "$declared" ]; then
   exit 0
 fi
 
+if [ -n "${PR_BODY_FILE:-}" ] && [ -r "$PR_BODY_FILE" ] \
+  && tr -d '\r' < "$PR_BODY_FILE" | grep -qE '^\s*- \[[xX]\] Le comportement existant ne change pas'; then
+  echo "behavior-change-check: assertions of existing tests changed, and the PR says the behavior does not change:"
+  echo "$changed"
+  echo "Check it in the review."
+  exit 0
+fi
+
 echo "behavior-change-check: assertions of existing tests were removed or rewritten:"
 echo "$changed"
 echo
 echo "If the behavior of the profile changes, add a line under"
 echo "\"### Changements de comportement\" in CHANGELOG.md ([Non publié])."
-echo "If it does not (the test was wrong, or only rewritten), say so in the PR."
+echo "If it does not (test only rewritten or moved), tick \"Le comportement existant ne change pas\""
+echo "in the description of the PR (read through PR_BODY_FILE)."
 exit 1
