@@ -81,7 +81,14 @@ class ReminderSettingsTest extends KernelTestBase {
     ]);
     $this->container->get('config.factory')->reset('vactory_reminder.settings');
 
+    // The update is found by the update system of core, as drush updb does.
     $this->container->get('module_handler')->loadInclude('vactory_reminder', 'install');
+    $registry = $this->container->get('update.update_hook_registry');
+    $registry->setInstalledVersion('vactory_reminder', 9000);
+    $this->assertContains(10001, $registry->getAvailableUpdates('vactory_reminder'));
+    require_once $this->root . '/core/includes/update.inc';
+    $pending = update_get_update_list()['vactory_reminder']['pending'] ?? [];
+    $this->assertArrayHasKey(10001, $pending);
     vactory_reminder_update_10001();
 
     $this->assertSame([], $this->config('vactory_reminder.settings')->get('reminder_consumers'));
