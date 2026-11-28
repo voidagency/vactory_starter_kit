@@ -5,3 +5,26 @@ services:
   vactory_reminder.queue.manager:
     class: Drupal\vactory_reminder\Services\ReminderQueueManager
     arguments: ['@queue', '@plugin.manager.reminder', '@entity_type.manager']
+  vactory_reminder.queue_runner:
+    class: Drupal\vactory_reminder\Services\ReminderQueueRunner
+    arguments:
+      - '@config.factory'
+      - '@account_switcher'
+      - '@queue'
+      - '@plugin.manager.queue_worker'
+      - '@lock'
+      - '@logger.factory'
+      - '@database'
+  # Former name, declared until 3.3.0 in drush.services.yml only (so missing
+  # outside Drush, and from the Drupal container since Drush 12).
+  vactory_reminder.commands:
+    class: Drupal\vactory_reminder\Services\ReminderQueueRunner
+    arguments:
+      - '@config.factory'
+      - '@account_switcher'
+      - '@queue'
+      - '@plugin.manager.queue_worker'
+      - '@lock'
+      - '@logger.factory'
+      - '@database'
+    deprecated: The "%service_id%" service is deprecated in vactory_starter_kit:3.3.1 and is removed from vactory_starter_kit:3.4.0. Use the "vactory_reminder.queue_runner" service instead.

@@ -59,6 +59,19 @@ class SondageClosingTest extends SondageKernelTestBase {
   }
 
   /**
+   * The cron of vactory_reminder closes the sondage, outside Drush.
+   *
+   * The other tests process the queue themselves; this one goes through the
+   * hook_cron that Ultimate Cron runs in production.
+   */
+  public function testSondageIsClosedByTheReminderCron(): void {
+    $sondage = $this->createSondage(-3600);
+    $this->container->get('module_handler')->invoke('vactory_reminder', 'cron');
+    $this->assertSame('0', BlockContent::load($sondage->id())->get('field_sondage_status')->value);
+    $this->assertSame([], $this->queuedItems());
+  }
+
+  /**
    * A sondage whose close date has not come yet stays open.
    *
    * The reminder queue reads the stored UTC date in the timezone of the site.

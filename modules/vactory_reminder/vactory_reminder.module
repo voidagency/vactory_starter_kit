@@ -21,7 +21,7 @@ function vactory_reminder_theme($existing, $type, $theme, $path) {
  * Implements hook_cron().
  */
 function vactory_reminder_cron() {
-  Drupal::service('vactory_reminder.commands')->runReminderQueue();
+  \Drupal::service('vactory_reminder.queue_runner')->run();
 }
 
 /**
