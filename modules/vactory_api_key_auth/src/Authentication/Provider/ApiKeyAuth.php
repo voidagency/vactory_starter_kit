@@ -72,15 +72,13 @@ class ApiKeyAuth implements AuthenticationProviderInterface {
    */
   public function authenticate(Request $request) {
     $api_key = $this->findApiKey((string) $this->getKey($request));
-    if (!$api_key) {
+    // A key without account authenticates nobody (Redmine #71343).
+    if (!$api_key || empty($api_key->user_uuid)) {
       return NULL;
     }
     $account = $this->entityTypeManager->getStorage('user')->load($api_key->user_uuid);
-    // A blocked account is refused, as with a password.
-    if (!$account || $account->isBlocked()) {
-      return NULL;
-    }
-    return $account;
+    // A blocked or deleted account is refused, as with a password.
+    return $account && !$account->isBlocked() ? $account : NULL;
   }
 
   /**

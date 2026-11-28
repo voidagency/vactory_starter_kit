@@ -100,8 +100,8 @@ class VactoryReminderSettingsForm extends ConfigFormBase {
             $key = trim($consumer[0]);
             $value = trim($consumer[1]);
             if (isset($consumers[$key])) {
-              $value0 = $consumers[$key];
-              $consumers[$key] = !is_array($value0) ? [$value0, $value] : array_push($value0, $value);
+              // A consumer listed on several lines gets a list of intervals.
+              $consumers[$key] = array_merge((array) $consumers[$key], [$value]);
             }
             else {
               $consumers[$key] = $value;
