@@ -73,12 +73,12 @@ content:
     settings:
       plugin_types:
         page: page
-        default: 0
-        block: 0
-        feed: 0
-        attachment: 0
-        rest_export: 0
-        embed: 0
+        default: '0'
+        block: '0'
+        feed: '0'
+        attachment: '0'
+        rest_export: '0'
+        embed: '0'
     third_party_settings: {  }
     type: viewsreference_formatter
     region: content

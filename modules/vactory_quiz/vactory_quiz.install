@@ -1,0 +1,26 @@
+<?php
+
+/**
+ * @file
+ * Install and update hooks of the vactory_quiz module.
+ */
+
+/**
+ * Enables the modules that vactory_quiz requires since 3.3.0.
+ *
+ * Its shipped view uses views_autocomplete_filters and vactory_views
+ * (Redmine #71362). Drupal does not enable a newly declared dependency on a
+ * site where the module is already installed.
+ */
+function vactory_quiz_update_10001() {
+  $module_handler = \Drupal::moduleHandler();
+  $missing = array_values(array_filter(
+    ['views_autocomplete_filters', 'vactory_views'],
+    fn (string $module) => !$module_handler->moduleExists($module),
+  ));
+  if (!$missing) {
+    return t('The modules required by Vactory Quiz are already enabled.');
+  }
+  \Drupal::service('module_installer')->install($missing);
+  return t('Enabled for Vactory Quiz: @modules.', ['@modules' => implode(', ', $missing)]);
+}
