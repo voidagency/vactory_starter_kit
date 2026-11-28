@@ -275,6 +275,7 @@ drush cr
 - `drupal/oauth_login_oauth2` : `^2.6` → `^3.1.1`, patch « Store ressourceOwner into a session variable » retiré : `vactory_sso` lit la réponse userinfo du module par un middleware du client HTTP, limité aux routes de retour SSO, sans session, et sert le retour SSO sur `/mo_login`, l'adresse de la 2.x (#992, Redmine #71556).
 
 ### Interne
+- `AGENTS.md` : règles pour contribuer au profil (surface publique, tests vus en échec, test du chemin réel, caractérisation, dépréciation avant retrait, impact sur le parc, garde-fous) (Redmine #71766).
 - `vactory_decoupled` : le test des rôles à l'inscription JSON:API fixe lui-même les rôles par défaut du site (il échouait sur un site qui en configure) et vérifie aussi qu'ils sont attribués (#1004, Redmine #71702).
 - `vactory_node_view_count` : contrôleur de comptage découpé (contrôles du nœud, limite par IP), sans changement de comportement, pour la porte qualité Sonar (#1001).
 - `vactory_api_key_auth` : test HTTP de l'authentification par clé : routes couvertes, en-tête seul, compte bloqué, JSON:API (#998).
