@@ -95,18 +95,24 @@ class ImageSitemapGenerator {
     $used_images,
     &$context
   ) {
-    $default_langcode = \Drupal::languageManager()->getDefaultLanguage();
     $langcode = $language->getId();
     $image_sitemap = isset($context['results']['image_sitemap']) ? $context['results']['image_sitemap'] : [];
+    // Each language has a sitemap file, even without image.
+    $image_sitemap[$langcode] = $image_sitemap[$langcode] ?? [];
     $file_url_generator = \Drupal::service('file_url_generator');
     foreach ($image_fields as $image_field_info) {
-      if (!$image_field_info['translatable']) {
-        $langcode = $default_langcode;
-      }
       $node_image_table = 'node__' . $image_field_info['field_name'];
       $query = \Drupal::service('database')->select($node_image_table, 'nit');
       $query->fields('nit', ['entity_id']);
       $query->condition('nit.langcode', $langcode);
+      if (!$image_field_info['translatable']) {
+        // The images of a field that is not translatable are the same in
+        // every translation: list them once, in the sitemap of the original
+        // language of the node.
+        $query->join('node_field_data', 'nfd', 'nfd.nid = nit.entity_id AND nfd.langcode = nit.langcode');
+        $query->condition('nfd.default_langcode', 1);
+      }
+      $query->distinct();
       $nids = $query->execute()->fetchAll();
       $nids = array_map(function ($object) {
         return $object->entity_id;
@@ -138,9 +144,6 @@ class ImageSitemapGenerator {
           }
         }
       }
-    }
-    if (empty($image_fields)) {
-      $image_sitemap[$langcode] = [];
     }
     $context['results']['image_sitemap'] = $image_sitemap;
     $context['message'] = t('Fetch and normalize existing used media image...');
