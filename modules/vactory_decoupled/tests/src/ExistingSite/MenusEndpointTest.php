@@ -154,6 +154,35 @@ class MenusEndpointTest extends ExistingSiteBase {
   }
 
   /**
+   * Renamed link attributes are also sent under their former name.
+   *
+   * Menu_link_attributes 1.10 renames wrapper_class to wrapper-class on every
+   * link; fronts that read the former name keep working until 3.4.
+   */
+  public function testRenamedAttributesKeepTheirFormerName(): void {
+    $page = $this->createPage(TRUE);
+    $this->addLink('Renamed', 'entity:node/' . $page->id(), [
+      'link' => [
+        'uri' => 'entity:node/' . $page->id(),
+        'options' => [
+          'attributes' => [
+            'wrapper-class' => 'mega',
+            'aria-label' => 'Main',
+          ],
+        ],
+      ],
+    ]);
+
+    $attributes = [];
+    foreach ($this->menuData()['items'] as $item) {
+      $attributes[(string) $item['title']] = $item['options']['attributes'] ?? [];
+    }
+    $this->assertSame('mega', $attributes['Renamed']['wrapper-class']);
+    $this->assertSame('mega', $attributes['Renamed']['wrapper_class']);
+    $this->assertSame('Main', $attributes['Renamed']['aria_label']);
+  }
+
+  /**
    * Flattens the items of the endpoint into a list of titles.
    */
   protected function flatten(array $items): array {
