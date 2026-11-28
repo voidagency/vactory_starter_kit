@@ -13,7 +13,10 @@
 # Way out for a test that is only rewritten or moved: tick "Le comportement
 # existant ne change pas" in the description of the PR, and give the file
 # with the description in PR_BODY_FILE. The check then passes and still lists
-# the assertions, for the reviewer.
+# the assertions, for the reviewer. It does not apply when assertions are
+# deleted (fewer assertions after than before in a file, or a test file
+# deleted): a deleted assertion is a promise the profile no longer makes, it
+# is always declared in the changelog.
 #
 # Usage: scripts/ci/behavior-change-check.sh [base]   (default: origin/3.x)
 # A deleted or moved test counts: its removed assertions must be declared.
@@ -33,7 +36,7 @@ fi
 # Assertions removed from test files that already existed in the base
 # (modified, deleted or renamed).
 diff_tests="$(git diff --unified=0 --find-renames --diff-filter=MDR "$merge_base" -- \
-  'modules/**/tests/**/*.php' 'tests/**/*.php')" || {
+  ':(glob)modules/**/tests/**/*.php' ':(glob)tests/**/*.php')" || {
   echo "behavior-change-check: git diff failed against $merge_base." >&2
   exit 2
 }
@@ -41,6 +44,18 @@ diff_changelog="$(git diff --unified=0 "$merge_base" -- CHANGELOG.md)" || {
   echo "behavior-change-check: git diff of CHANGELOG.md failed against $merge_base." >&2
   exit 2
 }
+
+# Files where assertions were removed without as many added: an assertion
+# was deleted, not only rewritten. The way out below does not apply to them.
+net_removed="$(
+  printf '%s\n' "$diff_tests" \
+  | awk '
+      /^--- / { if ($2 != "/dev/null") file = substr($2, 3); next }
+      /^\+\+\+ / { if ($2 != "/dev/null") file = substr($2, 3); next }
+      /^-[^-]/ && /(assert|expectException|markTestSkipped)/ { removed[file]++ }
+      /^\+[^+]/ && /(assert|expectException|markTestSkipped)/ { added[file]++ }
+      END { for (f in removed) if (removed[f] > added[f]) print f }'
+)"
 
 changed="$(
   printf '%s\n' "$diff_tests" \
@@ -80,7 +95,7 @@ if [ -n "$declared" ]; then
   exit 0
 fi
 
-if [ -n "${PR_BODY_FILE:-}" ] && [ -r "$PR_BODY_FILE" ] \
+if [ -z "$net_removed" ] && [ -n "${PR_BODY_FILE:-}" ] && [ -r "$PR_BODY_FILE" ] \
   && tr -d '\r' < "$PR_BODY_FILE" | grep -qE '^\s*- \[[xX]\] Le comportement existant ne change pas'; then
   echo "behavior-change-check: assertions of existing tests changed, and the PR says the behavior does not change:"
   echo "$changed"
@@ -94,5 +109,6 @@ echo
 echo "If the behavior of the profile changes, add a line under"
 echo "\"### Changements de comportement\" in CHANGELOG.md ([Non publié])."
 echo "If it does not (test only rewritten or moved), tick \"Le comportement existant ne change pas\""
-echo "in the description of the PR (read through PR_BODY_FILE)."
+echo "in the description of the PR (read through PR_BODY_FILE). Not for a deleted assertion:"
+echo "it is always declared."
 exit 1

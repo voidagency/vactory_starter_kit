@@ -276,7 +276,7 @@ drush cr
 
 ### Interne
 - `scripts/ci/pr-description-check.sh` : vérifie le titre d'une PR (`type: #ticket - sujet`), le ticket Redmine cité et les rubriques du modèle de PR qui disent l'effet sur les projets. À brancher dans la CI (Redmine #71766).
-- `scripts/ci/behavior-change-check.sh` : signale une PR qui retire ou réécrit une assertion d'un test existant sans ligne « Changements de comportement » au changelog. À brancher dans la CI (Redmine #71766).
+- `scripts/ci/behavior-change-check.sh` : signale une PR qui retire ou réécrit une assertion d'un test existant sans ligne « Changements de comportement » au changelog. Une assertion seulement réécrite passe si la PR coche « Le comportement existant ne change pas » (la sortie la liste pour la relecture) ; une assertion supprimée doit toujours être déclarée. À brancher dans la CI (Redmine #71766).
 - `vactory_decoupled` : le test des rôles à l'inscription JSON:API fixe lui-même les rôles par défaut du site (il échouait sur un site qui en configure) et vérifie aussi qu'ils sont attribués (#1004, Redmine #71702).
 - `vactory_node_view_count` : contrôleur de comptage découpé (contrôles du nœud, limite par IP), sans changement de comportement, pour la porte qualité Sonar (#1001).
 - `vactory_api_key_auth` : test HTTP de l'authentification par clé : routes couvertes, en-tête seul, compte bloqué, JSON:API (#998).
