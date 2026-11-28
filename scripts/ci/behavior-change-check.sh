@@ -5,6 +5,10 @@
 # the profile promises: the changelog must then get a line under
 # "### Changements de comportement" (Redmine #71766, AGENTS.md).
 #
+# Limit: an assertion is detected by the removed line that holds the word
+# "assert" (or expectException, markTestSkipped). A multi-line assertion
+# whose expected value changes on another line is not detected.
+#
 # Usage: scripts/ci/behavior-change-check.sh [base]   (default: origin/3.x)
 # Exit code: 0 if nothing to declare or declared, 1 otherwise.
 set -euo pipefail
@@ -34,12 +38,13 @@ fi
 declared="$(
   git diff --unified=0 "$merge_base" -- CHANGELOG.md \
   | awk '/^@@/ { split($3, a, ","); n = substr(a[1], 2) + 0; next }
-         /^\+[^+]/ { print n; n++ }' \
+         /^\+\+\+ / { next }
+         /^\+/ { print n; n++ }' \
   | while read -r n; do
       awk -v target="$n" '
         /^## \[/ { release = ($0 ~ /Non publié/) }
         /^### / { section = $0 }
-        NR == target && release && section ~ /Changements de comportement/ { print; exit }
+        NR == target && release && section ~ /Changements de comportement/ && /^- / { print; exit }
       ' CHANGELOG.md
     done
 )"
