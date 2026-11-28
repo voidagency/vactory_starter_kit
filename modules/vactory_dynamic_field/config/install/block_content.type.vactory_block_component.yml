@@ -3,5 +3,5 @@ status: true
 dependencies: {  }
 id: vactory_block_component
 label: Template
-revision: 1
+revision: true
 description: 'Template block type'

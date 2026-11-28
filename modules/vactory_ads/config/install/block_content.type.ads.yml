@@ -3,5 +3,5 @@ status: true
 dependencies: {  }
 id: ads
 label: Ads
-revision: 0
+revision: false
 description: 'Ads block type'

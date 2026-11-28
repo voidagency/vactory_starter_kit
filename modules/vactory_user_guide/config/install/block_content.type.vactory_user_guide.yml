@@ -6,5 +6,5 @@ dependencies:
       - vactory_user_guide
 id: vactory_user_guide
 label: 'User Guide'
-revision: 0
+revision: false
 description: 'Utiliser ce block pour créer des guide d''utilisateur.'
