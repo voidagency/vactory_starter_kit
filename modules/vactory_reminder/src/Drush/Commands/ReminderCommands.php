@@ -31,6 +31,7 @@ final class ReminderCommands extends DrushCommands {
    * Runs the reminder queue: sends the reminders whose date has come.
    *
    * @command run-reminder-queue
+   * @aliases rrq
    * @option time-limit Seconds to run (default: module setting).
    * @option lease-time Seconds an item is claimed for (default: module
    *   setting).
