@@ -1,0 +1,21 @@
+vactory_reminder.settings:
+  type: config_object
+  label: 'Vactory reminder settings'
+  mapping:
+    reminder_lease_time:
+      type: integer
+      label: 'Queue item lease time, in seconds'
+    reminder_time_limit:
+      type: integer
+      label: 'Queue run time limit, in seconds'
+    reminder_consumers:
+      type: sequence
+      label: 'Date interval of each consumer, keyed by consumer ID'
+      sequence:
+        # One interval ("1 min") or a list of intervals, depending on the
+        # number of lines of the consumer in the settings form.
+        type: ignore
+        label: 'Date interval, or list of date intervals'
+    reminder_consumers_string:
+      type: string
+      label: 'Consumers, as entered in the settings form'

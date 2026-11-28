@@ -32,17 +32,6 @@ class SondageClosingTest extends SondageKernelTestBase {
   ];
 
   /**
-   * Config without schema, saved by vactory_sondage_install().
-   *
-   * The vactory_reminder module does not provide a schema for its settings.
-   *
-   * @var string[]
-   */
-  protected static $configSchemaCheckerExclusions = [
-    'vactory_reminder.settings',
-  ];
-
-  /**
    * {@inheritdoc}
    */
   protected function setUp(): void {

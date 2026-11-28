@@ -214,6 +214,7 @@ drush cr
 - `vactory_decoupled_router` : liste des types d'entité servis comme pages par le routeur, réglable en back-office (`/admin/config/system/vactory_router/page-entity-types`), dans `settings.php` (`$settings['vactory_decoupled_router_page_entity_types']`) ou par `hook_vactory_decoupled_router_page_entity_types_alter()` (#891, Redmine #69443).
 
 ### Correctifs
+- `vactory_reminder` : schéma de configuration de `vactory_reminder.settings`, absent jusque-là ; la liste des consommateurs est une liste vide par défaut, et `drush updb` convertit la chaîne vide des sites existants (update 10001). Un consommateur saisi sur trois lignes ou plus gardait un nombre au lieu de la liste de ses intervalles : corrigé (Redmine #71518).
 - `vactory_header`, `vactory_toolbox` : les templates de menu lisent l'attribut « Wrapper Class » sous `wrapper-class`, le nom que menu_link_attributes 1.10 donne à tous les liens existants à `drush updb`, avec repli sur `wrapper_class`. Sans cela, la classe disparaissait de tous les liens des en-têtes et de la toolbox (Redmine #71732).
 - `vactory_google_places` : sur un site où `views_autocomplete_filters` n'était pas activé, la 3.3.0-rc4 faisait tomber en erreur toute vue avec un filtre texte (`/admin/content` en 500), sans alerte dans le rapport d'état ni dans `drush updb`. Le filtre de Google Places ne remplace plus le filtre texte quand ce module est absent, et l'update 10001 l'active (Redmine #71714).
 - `vactory_quiz_certificat` : un élément de la file de génération qui ne pourra jamais être traité (données manquantes ou invalides, utilisateur ou quiz supprimé) est journalisé une fois et retiré de la file, au lieu d'être retenté à chaque cron ; un échec de génération du PDF reste retenté plus tard (#1005, Redmine #71703).
@@ -275,6 +276,7 @@ drush cr
 - `drupal/oauth_login_oauth2` : `^2.6` → `^3.1.1`, patch « Store ressourceOwner into a session variable » retiré : `vactory_sso` lit la réponse userinfo du module par un middleware du client HTTP, limité aux routes de retour SSO, sans session, et sert le retour SSO sur `/mo_login`, l'adresse de la 2.x (#992, Redmine #71556).
 
 ### Interne
+- `vactory_reminder` : test Kernel des réglages en schéma strict (installation, formulaire, update) ; `vactory_sondage` : son test de fermeture des sondages n'exclut plus ces réglages du contrôle de schéma (Redmine #71518).
 - `vactory_decoupled` : le test des rôles à l'inscription JSON:API fixe lui-même les rôles par défaut du site (il échouait sur un site qui en configure) et vérifie aussi qu'ils sont attribués (#1004, Redmine #71702).
 - `vactory_node_view_count` : contrôleur de comptage découpé (contrôles du nœud, limite par IP), sans changement de comportement, pour la porte qualité Sonar (#1001).
 - `vactory_api_key_auth` : test HTTP de l'authentification par clé : routes couvertes, en-tête seul, compte bloqué, JSON:API (#998).
