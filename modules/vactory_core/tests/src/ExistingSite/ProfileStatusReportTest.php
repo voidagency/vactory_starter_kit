@@ -19,8 +19,10 @@ class ProfileStatusReportTest extends ExistingSiteBase {
    */
   public function testAdminToolbarLinksAccessFilterIsNotInstalled(): void {
     $this->assertFalse(\Drupal::moduleHandler()->moduleExists('admin_toolbar_links_access_filter'));
+    // A profile lists the modules it installs under "install".
     $info = \Drupal::service('extension.list.profile')->getExtensionInfo('vactory_starter_kit');
-    $this->assertNotContains('admin_toolbar_links_access_filter', $info['dependencies'] ?? []);
+    $this->assertNotEmpty($info['install']);
+    $this->assertNotContains('admin_toolbar_links_access_filter', $info['install']);
   }
 
   /**
