@@ -68,8 +68,6 @@ install:
   - admin_toolbar
   - admin_toolbar_tools
   - admin_toolbar_tools
-  - admin_toolbar_links_access_filter
-  - admin_toolbar_links_access_filter
   #  - module_filter
   - advagg
   - advagg_mod

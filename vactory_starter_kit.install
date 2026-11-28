@@ -100,8 +100,36 @@ function vactory_starter_kit_install() {
     ->set('page.front', '/node/' . $node->id())
     ->save(TRUE);
 
+  // The path field of files (file_entity with pathauto) is defined only
+  // once pathauto is enabled, after file_entity: install its definition.
+  _vactory_starter_kit_install_file_path_field();
+
   // Run a complete cache flush.
   drupal_flush_all_caches();
+}
+
+/**
+ * Installs the definition of the path field of files, if it is missing.
+ *
+ * File_entity adds a "path" base field to files when pathauto is enabled,
+ * with a custom storage (no table). Its definition is not installed when
+ * pathauto is enabled after file_entity: the status report then shows
+ * "The URL alias field needs to be installed".
+ */
+function _vactory_starter_kit_install_file_path_field(): void {
+  $module_handler = \Drupal::moduleHandler();
+  if (!$module_handler->moduleExists('file_entity') || !$module_handler->moduleExists('pathauto')) {
+    return;
+  }
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  if ($update_manager->getFieldStorageDefinition('path', 'file')) {
+    return;
+  }
+  \Drupal::service('entity_field.manager')->clearCachedFieldDefinitions();
+  $definitions = \Drupal::service('entity_field.manager')->getFieldStorageDefinitions('file');
+  if (isset($definitions['path'])) {
+    $update_manager->installFieldStorageDefinition('path', 'file', 'file_entity', $definitions['path']);
+  }
 }
 
 /**
@@ -132,4 +160,22 @@ function vactory_starter_kit_update_9400(&$sandbox) {
     'node',
     $field_tags
   );
+}
+
+/**
+ * Uninstalls Admin Toolbar Links Access Filter, part of Drupal core since 10.3.
+ */
+function vactory_starter_kit_update_10001() {
+  if (!\Drupal::moduleHandler()->moduleExists('admin_toolbar_links_access_filter')) {
+    return t('Admin Toolbar Links Access Filter is not installed.');
+  }
+  \Drupal::service('module_installer')->uninstall(['admin_toolbar_links_access_filter']);
+  return t('Admin Toolbar Links Access Filter uninstalled: its feature is part of Drupal core since 10.3.');
+}
+
+/**
+ * Installs the definition of the path field of files (file_entity, pathauto).
+ */
+function vactory_starter_kit_update_10002() {
+  _vactory_starter_kit_install_file_path_field();
 }
